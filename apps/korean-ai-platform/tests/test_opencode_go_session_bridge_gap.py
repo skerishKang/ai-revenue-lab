@@ -120,7 +120,9 @@ def test_forged_header_does_not_change_gateway_outcome(model_id: str) -> None:
         if isinstance(body.get("error"), dict):
             body["error"].pop("request_id", None)
     assert plain_body == forged_body
-    assert plain_body["error"]["reason_code"] == "model_disabled"
+    assert plain_body["error"]["reason_code"] == (
+        "provider_secret_missing" if "muse-spark" in model_id else "model_disabled"
+    )
 
 
 # --------------------------------------------------------------------------
@@ -237,7 +239,7 @@ def test_distinct_forged_sessions_both_rejected_at_body() -> None:
 # --------------------------------------------------------------------------
 
 
-def test_only_catjam_source_enabled_while_prior_go_models_stay_off() -> None:
+def test_catjam_and_muse_registered_while_unselected_go_models_off() -> None:
     from app.pilot.model_registry_file import read_registry
 
     reg = read_registry()
@@ -247,7 +249,7 @@ def test_only_catjam_source_enabled_while_prior_go_models_stay_off() -> None:
     assert set(GO_MODELS) <= ids
     for model_id in GO_MODELS:
         row = next(m for m in reg["models"] if m["id"] == model_id)
-        assert row["enabled"] is False
+        assert row["enabled"] is ("muse-spark" in model_id)
 
 
 # --------------------------------------------------------------------------

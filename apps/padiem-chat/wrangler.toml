@@ -61,11 +61,22 @@ binding = "PADIEM_EXLAB_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_EXLAB_API_KEY"
 
+# GitHub App user-to-server OAuth. Set the value in Cloudflare Secrets Store,
+# never commit it or expose it to the browser. Missing value => connector OFF.
+[[secrets_store_secrets]]
+binding = "PADIEM_GITHUB_APP_CLIENT_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GITHUB_APP_CLIENT_SECRET"
+
 [vars]
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
 PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
+# #4469 Claw public research: owner-approved opt-in. The Worker requires
+# live B14 + canonical identity/Engine client + a durable D1 quota in addition
+# to this flag; no unauthenticated or unmetered invocation can use it.
+PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED = "true"
 # Connector product availability defaults ON (not an opt-in/approval toggle).
 PADIEM_CHAT_PUBLIC_BASE_URL = "https://chat.padiem.net"
 PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE = "owner-controlled-production-4139"

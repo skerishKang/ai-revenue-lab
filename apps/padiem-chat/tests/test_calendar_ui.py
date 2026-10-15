@@ -118,13 +118,13 @@ def test_calendar_js_targets_both_existing_endpoints_with_explicit_timezone() ->
     read_block = source.split("async function load() {", 1)[1].split("function selectTab(", 1)[0]
     assert "method:" not in read_block
     assert 'fetch(`${routeFor(currentTab)}${buildQuery(timezone)}`' in read_block
-    # #2834 A4/A5: exactly two write methods exist in the whole module, and both
-    # are pre-registered native authorities (work-log POST, appointment POST).
-    # No PUT/PATCH/DELETE is ever used, and no third write path is introduced.
-    assert source.count('method: "POST"') == 2
+    # Native scoped work-log and appointment authorities now support editing.
+    assert source.count('method: method') == 2
     assert '"/api/calendar/work-logs"' in source
     assert '"/api/calendar/appointments"' in source
-    assert not re.search(r"\b(PUT|PATCH|DELETE)\b", source)
+    assert 'method: "DELETE"' in source
+    assert 'method === "PUT"' in source
+    assert not re.search(r"\bPATCH\b", source)
 
 
 def test_calendar_js_separates_loading_empty_error_ready_and_retry() -> None:
@@ -141,8 +141,8 @@ def test_calendar_js_separates_loading_empty_error_ready_and_retry() -> None:
     assert 'retry.addEventListener("click", () => load())' in source
     assert "requestToken" in source
     # The failed-response path and the zero-item path are distinct code paths.
-    assert re.search(r"function showError\(\) \{\s*lastItems = null;\s*list\.replaceChildren\(\);\s*setStatus\(\"error\"\);", source)
-    assert re.search(r"if \(!response\.ok \|\| !items\) \{\s*showError\(\);\s*return;", source)
+    assert "function showError(code)" in source and "lastItems = null;" in source and 'setStatus("error")' in source
+    assert re.search(r"if \(!response\.ok \|\| !items\) \{\s*showError\(response\.status\);\s*return;", source)
     assert re.search(r"if \(items\.length === 0\) \{\s*list\.replaceChildren\(\);\s*setStatus\(\"empty\"\);\s*return;", source)
 
 
@@ -218,7 +218,7 @@ def test_calendar_item_detail_is_read_only_and_link_backs_are_server_validated()
     assert 'cache: "no-store"' in detail_block
     assert "createElement(\"a\")" not in source
     assert "href" not in source
-    assert source.count('method: "POST"') == 2
+    assert source.count('method: method') == 2
     for kind in ("claw_session", "task", "artifact", "run"):
         assert f'"{kind}"' in source
     app = APP_PATH.read_text(encoding="utf-8")

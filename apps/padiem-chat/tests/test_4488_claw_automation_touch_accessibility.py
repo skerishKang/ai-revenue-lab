@@ -204,7 +204,7 @@ def test_the_calendar_hit_target_and_stacking_fixes_are_preserved() -> None:
     view = _rule(css, ".calendar-view {")
     assert _declares(view, "position: relative")
     assert re.search(r"z-index:\s*2\s*;", view)
-    assert css.count("z-index:") == 1
+    assert css.count("z-index:") == 2 and "z-index: 50;" in css
     # #2834: the sidebar row keeps its 40px contract.
     nav = _rule(css, "#calendarNavButton {")
     assert _declares(nav, "min-height: 40px") and "44px" not in nav

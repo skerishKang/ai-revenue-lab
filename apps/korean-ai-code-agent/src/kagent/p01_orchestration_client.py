@@ -445,6 +445,20 @@ class P01EngineOrchestrationClient:
                 and not isinstance(model_retries, bool)
                 and model_retries == 0
             )
+            or (
+                set(model_policy) == {"model", "max_retries", "product_tier"}
+                and model_policy["product_tier"] in ("free", "plus", "pro", "max")
+                and (
+                    model_policy["model"] in PADIEM_EXECUTABLE_MODEL_IDS
+                    or (
+                        model_policy["product_tier"] == "plus"
+                        and _registered_b14_candidate_syntax(model_policy["model"])
+                    )
+                )
+                and isinstance(model_retries, int)
+                and not isinstance(model_retries, bool)
+                and model_retries == 0
+            )
         )
         if (
             not valid_model_policy

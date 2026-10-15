@@ -37,6 +37,9 @@
   <link rel="stylesheet" href="./library.css" />
   <link rel="stylesheet" href="./claw-task-hub.css" />
   <link rel="stylesheet" href="./padiem-shared-ui.css" />
+  <link rel="stylesheet" href="./claw-connection-guide.css" />
+  <link rel="stylesheet" href="./answer-actions.css" />
+  <link rel="stylesheet" href="./standalone-views.css" />
   <link rel="stylesheet" href="./claw-focus-layout.css" />
   <!-- #4643 shared Chat/Claw microphone entry. Inert until a server-granted
        recognizer is registered and a signed-in session exists. -->
@@ -57,7 +60,7 @@
       <nav class="side-nav" data-locale-aria-label="chat-menu" aria-label="채팅 메뉴">
         <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
         <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
-        <button class="side-item" id="connectorsNavButton" type="button" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
+        <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
         <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
       </nav>
       <nav class="side-nav" id="workspaceNav" data-locale-aria-label="workspace-menu" aria-label="워크스페이스 메뉴">
@@ -174,7 +177,7 @@
           <div><p class="capability-kicker" data-locale-key="connectors-kicker">CONNECTORS</p><h2 class="capability-title" id="connectorsDialogTitle" data-locale-key="connectors-title">Connectors</h2></div>
           <button class="capability-close" id="connectorsDialogClose" type="button" data-locale-aria-label="capability-close-aria" aria-label="닫기">×</button>
         </div>
-        <p class="capability-tagline" data-locale-key="connectors-note">읽기 지원 여부와 이 워크스페이스의 연결 상태를 각각 표시합니다. Google Drive와 Google Calendar 읽기 연결은 이 화면에서 시작할 수 있으며, 전송·쓰기 권한은 변경하지 않습니다.</p>
+        <p class="capability-tagline" data-locale-key="connectors-note">읽기 지원 여부와 이 워크스페이스의 연결 상태를 각각 표시합니다. Google Drive와 GitHub의 연결·연결 삭제는 이 화면에서 관리합니다. 연결 삭제는 계정 인증을 제거하는 것이며 파일이나 저장소를 삭제하지 않습니다.</p>
         <div class="connector-live-status" id="connectorsLiveStatus" role="status" aria-live="polite" aria-atomic="true">
           <span id="connectorsLoading" data-locale-key="connectors-loading" hidden>연결 상태 확인 중…</span>
           <span id="connectorsError" data-locale-key="connectors-error" hidden>연결 상태를 불러오지 못했습니다.</span>
@@ -182,8 +185,8 @@
         </div>
         <div class="capability-grid" data-locale-aria-label="connectors-grid-aria" aria-label="커넥터 지원 및 워크스페이스 연결 상태">
           <div class="capability-card" id="connectorComputerCard" tabindex="-1" data-connector="computer" data-connector-status="preparing"><strong data-locale-key="claw-home-computer">컴퓨터 연결하기</strong><span class="capability-soon" data-locale-key="claw-home-computer-setup">Windows 앱 연결 준비 중 · 설치 및 서버 연결 확인이 필요합니다.</span><span class="capability-workspace" role="status" aria-live="polite" id="clawComputerLiveStatus" hidden></span><button type="button" class="connector-retry" id="clawComputerDeviceStatusButton" data-locale-key="claw-home-device-status">연결 상태 확인</button></div>
-          <div class="capability-card" data-connector="google-drive" data-connector-id="connector:google:drive@1" data-connector-status="loading"><strong>Google Drive</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span><button class="connector-retry connector-connect" type="button" data-google-connector-connect="google-drive" data-google-connect-endpoint="/api/connectors/google/ticket" data-locale-key="connectors-connect-drive" hidden>Google Drive 연결</button></div>
-          <div class="capability-card" id="connectorGithubCard" tabindex="-1" data-connector="github" data-connector-status="preparing"><strong>GitHub</strong><span class="capability-soon" data-locale-key="claw-home-github-setup">GitHub 직접 연결은 준비 중입니다.</span></div>
+          <div class="capability-card" data-connector="google-drive" data-connector-id="connector:google:drive@1" data-connector-status="loading"><strong>Google Drive</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span><button class="connector-retry connector-connect" type="button" data-google-connector-connect="google-drive" data-google-connect-endpoint="/api/connectors/google/ticket" data-locale-key="connectors-connect-drive" hidden>Google Drive 연결</button><button class="connector-retry connector-connect" type="button" id="connectorDriveRemove" hidden>연결 삭제</button><span class="capability-workspace" id="connectorDriveFeedback" role="status" hidden></span></div>
+          <div class="capability-card" id="connectorGithubCard" tabindex="-1" data-connector="github" data-connector-status="loading"><strong>GitHub</strong><span class="capability-workspace" id="connectorGithubState" role="status" aria-live="polite">연결 상태 확인 중</span><button type="button" class="connector-retry connector-connect" id="connectorGithubPrimary" hidden>GitHub 연결</button><button type="button" class="connector-retry connector-connect" id="connectorGithubRemove" hidden>연결 삭제</button><a href="/api/connectors/github/installations" rel="noopener noreferrer" target="_blank" class="connector-retry connector-connect" id="connectorGithubPermissions" hidden>저장소 권한 관리</a><span class="capability-workspace" id="connectorGithubFeedback" role="status" hidden></span></div>
           <div class="capability-card" data-connector="gmail" data-connector-id="connector:google:gmail@1" data-connector-status="loading"><strong>Gmail</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
           <div class="capability-card" data-connector="telegram" data-connector-id="connector:telegram:bot@1" data-connector-status="loading"><strong>Telegram</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
           <div class="capability-card" data-connector="slack" data-connector-id="connector:slack:workspace@1" data-connector-status="loading"><strong>Slack</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
@@ -191,6 +194,27 @@
           <div class="capability-card" data-connector="discord" data-connector-status="preparing"><strong>Discord</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
           <div class="capability-card" data-connector="kakao-business" data-connector-status="preparing"><strong>Kakao Business</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
         </div>
+      </dialog>
+      <!-- A small status-button guide, never a second connector authority. -->
+      <dialog class="claw-connection-guide" id="clawConnectionGuide"
+              aria-labelledby="clawConnectionGuideTitle" aria-describedby="clawConnectionGuideDescription">
+        <section class="claw-connection-guide-panel">
+          <header class="claw-connection-guide-head">
+            <span class="claw-connection-guide-mark" aria-hidden="true">P</span>
+            <div class="claw-connection-guide-heading">
+              <p class="claw-connection-guide-kicker" id="clawConnectionGuideEyebrow">PADIEM CLAW</p>
+              <h2 class="claw-connection-guide-title" id="clawConnectionGuideTitle">연결 안내</h2>
+            </div>
+            <button class="claw-connection-guide-close" type="button"
+                    data-claw-guide-close aria-label="닫기">×</button>
+          </header>
+          <p class="claw-connection-guide-description" id="clawConnectionGuideDescription"></p>
+          <p class="claw-connection-guide-hint" id="clawConnectionGuideHint"></p>
+          <footer class="claw-connection-guide-actions">
+            <form method="dialog"><button class="claw-connection-guide-cancel" type="submit">나중에</button></form>
+            <button class="claw-connection-guide-continue" id="clawConnectionGuideAction" type="button">연결 설정 보기</button>
+          </footer>
+        </section>
       </dialog>
       <dialog class="capability-dialog" id="skillsDialog" aria-labelledby="skillsDialogTitle">
         <div class="capability-dialog-header">
@@ -383,7 +407,7 @@
           </div>
           <button type="button" class="calendar-refresh-button" id="calendarRefresh" data-locale-aria-label="calendar-refresh-aria" aria-label="목록 새로고침">↻</button>
         </header>
-        <p class="calendar-view-help" data-locale-key="calendar-help">오늘 예정된 항목과 다가오는 항목을 보여줍니다. 업무 기록과 일정(예약)을 직접 만들 수 있고, 일정 수정·삭제는 아직 지원하지 않습니다.</p>
+        <p class="calendar-view-help" hidden data-locale-key="calendar-help">오늘 예정된 항목과 다가오는 항목을 보여줍니다. 업무 기록과 일정(예약)을 직접 만들 수 있고, 일정 수정·삭제는 아직 지원하지 않습니다.</p>
         <details class="calendar-record" id="calendarRecord">
           <summary class="calendar-record-summary" data-locale-key="calendar-record-summary">업무 기록 추가</summary>
           <p class="calendar-record-hint" data-locale-key="calendar-record-hint">오늘 한 일을 간단히 남깁니다. AI 장기 기억으로 자동 저장되지 않습니다.</p>
@@ -482,6 +506,34 @@
           <div class="calendar-list" id="calendarList" role="list" hidden></div>
         </div>
       </section>
+      <!-- Standalone Connectors page: the card grid and status nodes are moved
+           here from #connectorsDialog on first open by the main script. The dialog
+           element stays in the DOM for contract compatibility but is never
+           opened as a popup. Connection logic, endpoints and auth are reused
+           unchanged; no permission or login state is reset by the move. -->
+      <section class="standalone-view connectors-view" id="connectorsView" aria-labelledby="connectorsViewTitle" hidden>
+        <header class="standalone-view-header">
+          <div>
+            <p class="standalone-view-kicker" data-locale-key="connectors-kicker">CONNECTORS</p>
+            <h2 class="standalone-view-title" id="connectorsViewTitle" data-locale-key="connectors-title">Connectors</h2>
+          </div>
+        </header>
+        <p class="standalone-view-tagline" data-locale-key="connectors-note">읽기 지원 여부와 이 워크스페이스의 연결 상태를 각각 표시합니다. Google Drive와 Google Calendar 읽기 연결은 이 화면에서 시작할 수 있으며, 전송·쓰기 권한은 변경하지 않습니다.</p>
+        <div class="standalone-view-body" id="connectorsViewBody"></div>
+      </section>
+      <!-- Standalone Automation page: the existing #clawAutomation section is
+           moved here on first open by the main script. List, create, edit,
+           enable/disable, status, alerts and permission checks are reused
+           unchanged against the same APIs and store. -->
+      <section class="standalone-view automation-view" id="automationView" aria-labelledby="automationViewTitle" hidden>
+        <header class="standalone-view-header">
+          <div>
+            <p class="standalone-view-kicker" data-locale-key="automation-view-kicker">AUTOMATION</p>
+            <h2 class="standalone-view-title" id="automationViewTitle" data-locale-key="automation-view-title">자동화</h2>
+          </div>
+        </header>
+        <div class="standalone-view-body" id="automationViewBody"></div>
+      </section>
       <!-- #4489: Library is its own destination, driven by static/library.js.
            All copy is set by that module so it follows the document language. -->
       <section class="library-view" id="libraryView" aria-labelledby="libraryTitle" hidden>
@@ -507,7 +559,7 @@
       </section>
       <section class="conversation" aria-live="polite">
         <div class="empty-state" id="emptyState">
-          <p class="eyebrow"><span class="chat-hero-eyebrow">PADIEM AI</span><span class="claw-hero-eyebrow">PADIEM CLAW</span></p>
+          <p class="eyebrow"><span class="chat-hero-eyebrow">PADIEM CHAT</span><span class="claw-hero-eyebrow">PADIEM CLAW</span></p>
           <h1>
             <span class="chat-hero-line" data-locale-key="hello">안녕하세요.</span><br class="chat-hero-line" />
             <span class="chat-hero-line" data-locale-key="ask">무엇을 도와드릴까요?</span>
@@ -528,15 +580,15 @@
             <!-- Shared Chat starter button; Claw only supplies labels and truthful connection state. -->
             <div class="claw-home-card" data-claw-card="computer">
               <button type="button" class="starter claw-workspace-starter" id="clawComputerWorkspace"><span class="starter-icon" aria-hidden="true"><svg class="claw-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></span><span><strong data-locale-key="claw-home-computer">컴퓨터 연결하기</strong><small data-locale-key="claw-home-computer-copy">내 컴퓨터에서 직접 작업하기</small></span></button>
-              <button type="button" class="claw-connection-toggle" data-claw-connection="pc" data-connection-state="unknown" aria-label="컴퓨터 연결하기 연결 상태 확인 불가"><span class="claw-connection-track" aria-hidden="true"><span class="claw-state-on">ON</span><span class="claw-state-off">OFF</span></span><span class="claw-connection-label">확인 불가</span></button>
+              <button type="button" class="claw-connection-toggle" data-claw-connection="pc" aria-haspopup="dialog" aria-controls="clawConnectionGuide" data-connection-state="unknown" aria-label="컴퓨터 연결하기 연결 상태 확인 불가"><span class="claw-connection-track" aria-hidden="true"><span class="claw-state-on">ON</span><span class="claw-state-off">OFF</span></span><span class="claw-connection-label">확인 불가</span></button>
             </div>
             <div class="claw-home-card" data-claw-card="drive">
               <button type="button" class="starter claw-workspace-starter" id="clawDriveWorkspace"><span class="starter-icon" aria-hidden="true"><svg class="claw-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h6l8 14-3 5h-6L5 8z"></path><path d="M8 3 1 17l3 5h15M5 8l8 14M1 17h21"></path></svg></span><span><strong data-locale-key="claw-home-drive">구글 드라이브</strong><small data-locale-key="claw-home-drive-copy">클라우드 파일로 작업하기</small></span></button>
-              <button type="button" class="claw-connection-toggle" data-claw-connection="drive" data-connection-state="unknown" aria-label="구글 드라이브 연결 상태 확인 불가"><span class="claw-connection-track" aria-hidden="true"><span class="claw-state-on">ON</span><span class="claw-state-off">OFF</span></span><span class="claw-connection-label">확인 불가</span></button>
+              <button type="button" class="claw-connection-toggle" data-claw-connection="drive" aria-haspopup="dialog" aria-controls="clawConnectionGuide" data-connection-state="unknown" aria-label="구글 드라이브 연결 상태 확인 불가"><span class="claw-connection-track" aria-hidden="true"><span class="claw-state-on">ON</span><span class="claw-state-off">OFF</span></span><span class="claw-connection-label">확인 불가</span></button>
             </div>
             <div class="claw-home-card" data-claw-card="github">
               <button type="button" class="starter claw-workspace-starter" id="clawGithubWorkspace"><span class="starter-icon" aria-hidden="true"><svg class="claw-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4 1-4-2-6-2m12 4v-3.4c0-1 .1-1.4-.5-2a6.2 6.2 0 0 0 1.8-4.4 6 6 0 0 0-1.5-4.1c0-1 .1-2-.3-3-1.5 0-2.5 1-3 1.5a11 11 0 0 0-6 0c-.5-.5-1.5-1.5-3-1.5-.4 1-.3 2-.3 3A6 6 0 0 0 1 11.2a6.2 6.2 0 0 0 1.8 4.4c-.6.6-.5 1-.5 2V21" transform="translate(3 0) scale(.83 1)"></path></svg></span><span><strong data-locale-key="claw-home-github">GitHub</strong><small data-locale-key="claw-home-github-copy">코드·프로젝트 작업하기</small></span></button>
-              <button type="button" class="claw-connection-toggle" data-claw-connection="github" data-connection-state="unknown" aria-label="GitHub 연결 상태 확인 불가"><span class="claw-connection-track" aria-hidden="true"><span class="claw-state-on">ON</span><span class="claw-state-off">OFF</span></span><span class="claw-connection-label">확인 불가</span></button>
+              <button type="button" class="claw-connection-toggle" data-claw-connection="github" aria-haspopup="dialog" aria-controls="clawConnectionGuide" data-connection-state="unknown" aria-label="GitHub 연결 상태 확인 불가"><span class="claw-connection-track" aria-hidden="true"><span class="claw-state-on">ON</span><span class="claw-state-off">OFF</span></span><span class="claw-connection-label">확인 불가</span></button>
             </div>
             <div class="claw-home-card" data-claw-card="web">
               <button type="button" class="starter claw-workspace-starter" id="clawWebWorkspace"><span class="starter-icon" aria-hidden="true"><svg class="claw-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"></path></svg></span><span><strong data-locale-key="claw-home-web">웹에서 하기</strong><small data-locale-key="claw-home-web-copy">웹에서 바로 작업하기</small></span></button>
@@ -826,7 +878,7 @@
             </div>
           </div>
           <label for="clawVerifiedModelSelect" class="claw-model-choice">
-            <span data-locale-key="claw-verified-model-label">파디엠플러스 모델 선택</span>
+            <span>AI 모델 선택</span>
             <select id="clawVerifiedModelSelect" aria-describedby="clawVerifiedModelHint">
               <option value="">모델을 직접 선택하세요</option>
             </select>
@@ -944,7 +996,7 @@
     <ul id="ownerModelPreviewList" class="owner-model-preview-list" aria-label="모델 현황"></ul>
     <p data-locale-key="owner-model-preview-no-activation">모델을 표시해도 자동 선택·호출·결제가 발생하지 않습니다.</p>
   </dialog>
-  <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div></article></template>
+  <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div><span class="user-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"></circle><path d="M5 19.5c1.2-3.2 3.9-5 7-5s5.8 1.8 7 5"></path></svg></span></article></template>
   <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span data-assistant-product>Padiem Chat</span><span class="demo-label" data-runtime-label data-locale-key="answer-preparing">답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
   <script src="./theme.js"></script>
   <script src="./padiem-glass-shell.js"></script>
@@ -965,9 +1017,15 @@
   <script src="./voice-stt-input.js"></script>
   <script src="./voice-composer.js"></script>
   <script src="./voice-stt-wiring.js"></script>
+  <!-- Browser-only TTS output primitive for answer listen/stop. No provider
+       endpoint or credentials; explicit user Start per playback. -->
+  <script src="./voice-tts-output.js"></script>
   <script src="./app.js"></script>
   <script src="./claw-home-choices.js"></script>
   <script src="./claw-connection-chips.js"></script>
+  <script src="./claw-connection-guide.js"></script>
+  <script src="./claw-drive-account-management.js"></script>
+  <script src="./claw-connector-management.js"></script>
   <script src="./b66-quote-runtime.js"></script>
   <script src="./product-capabilities.js"></script>
   <script src="./conversation-search.js" defer></script>

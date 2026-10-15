@@ -69,7 +69,7 @@ def revision(number: int = 1, *, selections=None) -> PadiemRoutingProfileRevisio
         profile_id="padiem",
         revision=number,
         policy_version=PRODUCT_TIER_POLICY_VERSION,
-        selections=selections or tuple(selection(tier) for tier in ProductTierLabel),
+        selections=selections or tuple(selection(tier) for tier in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)),
         created_at=NOW,
     )
 
@@ -91,7 +91,7 @@ def grant(*actions: PadiemRoutingProfileOperatorAction) -> PadiemRoutingProfileO
 
 def staged(*, base: int = 1, selections=None) -> PadiemRoutingProfileStagedChange:
     before = revision(base)
-    after_selections = selections or tuple(selection(tier) for tier in ProductTierLabel)
+    after_selections = selections or tuple(selection(tier) for tier in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX))
     after = revision(base + 1, selections=after_selections)
     return PadiemRoutingProfileStagedChange(
         stage_ref="stage-1",
@@ -168,7 +168,7 @@ def test_exact_revision_conflict_fails_closed_and_never_auto_merges() -> None:
 def test_unavailable_route_states_are_rejected(state, code) -> None:
     proposed = tuple(
         selection(tier, state=state, reason="ROUTE_BLOCKED") if tier is ProductTierLabel.PRO else selection(tier)
-        for tier in ProductTierLabel
+        for tier in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)
     )
     with pytest.raises(ValueError) as error:
         validate_padiem_routing_profile_stage(staged(selections=proposed), current_revision=1, now=NOW)
@@ -195,7 +195,7 @@ def test_credential_not_ready_is_rejected_without_raw_credential_fields() -> Non
     proposed = tuple(
         selection(tier, credential=PadiemRoutingProfileCredentialState.NOT_READY, reason="CREDENTIAL_MISSING")
         if tier is ProductTierLabel.PRO else selection(tier)
-        for tier in ProductTierLabel
+        for tier in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)
     )
     with pytest.raises(ValueError) as error:
         validate_padiem_routing_profile_stage(staged(selections=proposed), current_revision=1, now=NOW)
@@ -236,7 +236,7 @@ def test_apply_requires_apply_capability_separately_from_stage() -> None:
 
 def test_rollback_creates_new_revision_and_retains_history_anchor() -> None:
     original = revision(1)
-    changed = revision(2, selections=tuple(selection(tier) for tier in ProductTierLabel))
+    changed = revision(2, selections=tuple(selection(tier) for tier in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)))
     anchor = PadiemRoutingProfileRollbackAnchor(
         anchor_ref="anchor-1", profile_id="padiem", source_revision=2, target_revision=1,
         target_selections=original.selections, created_at=NOW,

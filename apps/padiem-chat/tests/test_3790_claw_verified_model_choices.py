@@ -36,24 +36,44 @@ def test_guest_cannot_read_models_or_contact_authority(monkeypatch):
     assert catalog.calls == 0
 
 
-def test_model_list_tracks_b14_without_product_specific_retesting(monkeypatch):
+def test_free_member_sees_only_registered_free_choices(monkeypatch):
     rows = [
-        {"model_id": "google/gemini-3.5-flash-lite", "name": "gemini-3.5-flash-lite"},
-        {"model_id": "sensenova/sensenova-6.8-flash-lite", "name": "sensenova-6.8-flash-lite"},
+        {"model_id": "opencode-go/cat-jam-free", "name": "Cat Jam Free"},
+        {"model_id": "google/gemini-3.1-flash-lite", "name": "Gemini 3.1 Flash Lite"},
+        {"model_id": "google/gemini-3.5-flash-lite", "name": "Gemini 3.5"},
     ]
     catalog = Catalog(rows)
     with client_with(monkeypatch, catalog=catalog) as client:
-        first = client.get("/choices")
-        catalog.rows.append({"model_id": "new-provider/new-model", "name": "new-model"})
-        second = client.get("/choices")
+        first = client.get("/choices?tier=free")
+        catalog.rows.append({"model_id": "other/paid", "name": "paid"})
+        second = client.get("/choices?tier=free")
+        refused = client.get("/choices?tier=plus")
     assert first.status_code == second.status_code == 200
     assert first.headers["cache-control"] == "no-store"
     assert second.json()["scope"] == "b14_owner_allowed_live_ready"
     assert second.json()["automatic_default"] is False
-    assert [x["model_id"] for x in first.json()["model_choices"]] == [x["model_id"] for x in rows[:2]]
-    assert [x["model_id"] for x in second.json()["model_choices"]] == [x["model_id"] for x in rows]
-    assert all(x["customer_selectable"] is True for x in second.json()["model_choices"])
+    assert [x["model_id"] for x in second.json()["model_choices"]] == [
+        "opencode-go/cat-jam-free", "google/gemini-3.1-flash-lite"]
+    assert all(x["product_name_prefix"] == "파디엠프리" for x in second.json()["model_choices"])
+    assert refused.status_code == 403
+    assert refused.json()["error"]["code"] == "tier_not_available"
     assert catalog.calls == 2
+
+
+def test_pro_member_gets_tier_ceiling_but_no_browser_escalation(monkeypatch):
+    class VerifiedStore:
+        async def runtime_access(self, user_id):
+            assert user_id == "usr_fixture"
+            return {"status": "approved", "tier": "pro"}
+    rows = [{"model_id": "google/gemini-3.5-flash-lite", "name": "Gemini 3.5"}]
+    with client_with(monkeypatch, catalog=Catalog(rows)) as client:
+        client.app.state.b66_member_admin_store = VerifiedStore()
+        allowed = client.get("/choices?tier=plus")
+        denied = client.get("/choices?tier=max")
+    assert allowed.status_code == 200
+    assert [x["model_id"] for x in allowed.json()["model_choices"]] == [rows[0]["model_id"]]
+    assert denied.status_code == 403
+
 
 
 def test_missing_or_invalid_catalog_fails_closed(monkeypatch):
@@ -81,7 +101,7 @@ def test_no_default_and_advanced_exact_id_retained():
     assert 'id="clawModelIdInput" type="text" value=""' in html
     assert 'claw-model-advanced' in html
     assert 'claw-verified-model-choice.js' in html
-    assert 'if (clawGeneralRequest && !contextSnapshot.selectedModelId)' in app
+    assert '["free", "plus"].includes(selectedProductTier())' in app
     assert 'payload.model_id = contextSnapshot.selectedModelId' in app
     assert 'scope==="b14_owner_allowed_live_ready"' in chooser
     assert 'const IDS=' not in chooser and 'const PROVEN=' not in chooser

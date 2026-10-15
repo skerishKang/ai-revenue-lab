@@ -50,12 +50,10 @@ def _preserve_real_plus_hold_for_explicit_selection(monkeypatch):
 def test_explicit_model_ids_are_used_exactly_once_and_do_not_pick_defaults():
     for model in MODELS:
         profile = _agent_profile(selected_model_id=model)
-        assert profile.model_policy == {"model": model, "max_retries": 0}
+        assert profile.model_policy == {"model": model, "max_retries": 0, "product_tier": "plus"}
         assert profile.max_steps == 1
         assert profile.allowed_tools == ()
-    with pytest.raises(P01AdapterError) as error:
-        _agent_profile()
-    assert error.value.code == "tier_hold"
+    assert _agent_profile().model_policy == {"model": "opencode-go/cat-jam-free", "max_retries": 0, "product_tier": "plus"}
 
 
 def test_factory_threads_one_exact_model_to_engine_request():
@@ -150,14 +148,14 @@ def test_claw_api_threads_explicit_id_without_default_fallback():
         assert kwargs["subject_id"] is None
 
 
-def test_claw_api_missing_model_keeps_plus_hold_before_dispatch():
+def test_claw_api_without_explicit_model_uses_grade_catjam():
     adapter = _adapter()
     with _client(adapter) as client:
         response = client.post("/api/claw/general", json=_payload())
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "tier_unavailable"
-    assert "등록된 실행 모델 ID" in response.json()["error"]["message"]
-    adapter.execute.assert_not_called()
+    assert response.status_code == 200
+    adapter.execute.assert_awaited_once()
+    assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.PLUS
+    assert "selected_model_id" not in adapter.execute.await_args.kwargs
 
 
 @pytest.mark.parametrize("value", ["b14/auto", "padiem-profile/plus-hold", "../bad", 123])

@@ -34,6 +34,8 @@ from .b66_reasoning_level import (
 )
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .request_contract import MAX_BROWSER_BODY_BYTES
+from .member_grade_access import verified_member_grade, GRADES
+from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 from .claw_memory_routes import _resolve_memory_workspace
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
@@ -183,20 +185,18 @@ async def _interpret_reserved(
     skill: dict,
     model_id: str,
     reasoning_level: str | None = None,
+    product_tier: str | None = None,
 ):
     try:
         # An omitted reasoning level is passed as an absence, exactly like an
         # omitted model_id, so legacy interpreters and quote-parser clients that
         # do not know the #3906 keyword keep their original call shape.
-        if reasoning_level is None:
-            value = interpret_fn(message=message, skill=skill, model_id=model_id)
-        else:
-            value = interpret_fn(
-                message=message,
-                skill=skill,
-                model_id=model_id,
-                reasoning_level=reasoning_level,
-            )
+        kwargs = {"message": message, "skill": skill, "model_id": model_id}
+        if reasoning_level is not None:
+            kwargs["reasoning_level"] = reasoning_level
+        if product_tier is not None:
+            kwargs["product_tier"] = product_tier
+        value = interpret_fn(**kwargs)
         return await value if inspect.isawaitable(value) else value
     finally:
         # The dispatch adapter marks the receipt before the actual B14 POST.
@@ -408,6 +408,19 @@ async def b66_quote_models(request: Request) -> JSONResponse:
         if access["active_policy"]:
             allowed_ids = set(access["model_ids"])
             models = [row for row in models if row["model_id"] in allowed_ids]
+    # Customer-facing model picker is a grade selector, not a full provider catalog.
+    # The raw model catalog stays unchanged for existing/admin consumers.
+    grade_order = ("free", "plus", "pro", "max")
+    member_grade = await verified_member_grade(request, uid, access)
+    permitted = grade_order[:grade_order.index(member_grade)+1]
+    catjam = next((row for row in models if row["model_id"] == FREE_PRIMARY_B14_MODEL_ID), None)
+    grade_choices = [
+        {"tier": grade, "name": "PADIEM " + grade.capitalize(),
+         "model_id": FREE_PRIMARY_B14_MODEL_ID,
+         "reasoning_levels": reasoning_options_for_model(
+             FREE_PRIMARY_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
+        for grade in permitted
+    ] if catjam is not None else []
     # A configured default can only be offered if it remains permitted.
     proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
     default = proposed_default if (
@@ -430,7 +443,7 @@ async def b66_quote_models(request: Request) -> JSONResponse:
         for row in models
     ]
     return JSONResponse(
-        {"ok": True, "models": rows, "default_model_id": default},
+        {"ok": True, "models": rows, "default_model_id": default, "tiers": grade_choices, "default_tier": grade_choices[0]["tier"] if grade_choices else None},
         headers=_NO_STORE,
     )
 
@@ -446,11 +459,23 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     data = await _json(request, max_body_bytes=MAX_BROWSER_BODY_BYTES)
     if isinstance(data, JSONResponse):
         return data
-    if set(data) - {"saved_skill_id", "message", "model_id", "reasoning_level"}:
+    if set(data) - {"saved_skill_id", "message", "model_id", "reasoning_level", "tier"}:
         return _error(400, "unsupported_field", "지원되지 않는 요청 필드가 있습니다.")
     saved_skill_id = data.get("saved_skill_id")
     message = data.get("message")
-    model_id = data.get("model_id")
+    selected_grade = data.get("tier")
+    if selected_grade is not None:
+        grade_order = ("free", "plus", "pro", "max")
+        if not isinstance(selected_grade, str) or selected_grade not in grade_order:
+            return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+        member_grade = await verified_member_grade(request, uid, access)
+        if grade_order.index(selected_grade) > grade_order.index(member_grade):
+            return _error(403, "tier_not_available", "이용 등급 이하의 AI 등급을 선택해 주세요.")
+        if data.get("model_id") not in (None, FREE_PRIMARY_B14_MODEL_ID):
+            return _error(400, "invalid_model_id", "선택한 등급의 AI 모델과 일치하지 않습니다.")
+        model_id = FREE_PRIMARY_B14_MODEL_ID
+    else:
+        model_id = data.get("model_id")
     reasoning_level = data.get("reasoning_level")
     if not isinstance(model_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
@@ -529,6 +554,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
             skill=skill,
             model_id=model_id,
             reasoning_level=accepted_reasoning_level,
+            product_tier=selected_grade,
         )
     except B66ModelRouteError as exc:
         return _model_route_error_response(exc)

@@ -159,6 +159,66 @@ def test_withdrawal_is_owner_scoped_and_cannot_resurrect_old_consent():
     assert port.current_consent(consent_id=CONSENT_ID, now=NOW).withdrawn_at == NOW
 
 
+def test_withdrawal_verifies_by_reread_when_changes_cursor_is_empty():
+    """The production Durable Object SQLite cursor returned no usable
+    `SELECT changes()` row on the withdraw path (observed as
+    connector_enrollment_durable_corrupt on a live, otherwise healthy row).
+    The withdraw verification must depend only on the proven row-projection
+    shape, so an empty changes cursor still commits the withdrawal."""
+
+    class NoChangesSql(Sql):
+        def exec(self, statement, *args):
+            if statement.lstrip().upper().startswith("SELECT CHANGES()"):
+                return Cursor([])
+            return super().exec(statement, *args)
+
+    class NoChangesStorage(Storage):
+        def __init__(self):
+            self.db = sqlite3.connect(":memory:", isolation_level=None)
+            self.sql = NoChangesSql(self.db)
+
+    storage = NoChangesStorage()
+    sessions = CanonicalSessions(session())
+    port = IdentityDurableConnectorEnrollmentRecords(
+        storage=storage, session_reader=sessions
+    )
+    port.install_schema()
+    port.persist_preverified_consent(consent=consent(), now=NOW)
+    port.withdraw_preverified_consent(consent_id=CONSENT_ID, owner_subject_id=OWNER, now=NOW)
+    past = port.current_consent(consent_id=CONSENT_ID, now=NOW + timedelta(seconds=1))
+    assert past is not None and past.withdrawn_at == NOW
+
+
+def test_install_repairs_a_consent_table_missing_withdrawal_tracking():
+    """A consent table created before withdrawal tracking keeps every row;
+    install adds only the missing nullable column and the full grant/read/
+    withdraw cycle works on the preserved data."""
+    storage = Storage()
+    storage.db.execute(
+        "CREATE TABLE canonical_connector_enrollment_consent ("
+        "consent_id TEXT PRIMARY KEY, owner_subject_id TEXT NOT NULL, "
+        "account_ref TEXT NOT NULL, workspace_ref TEXT NOT NULL, "
+        "device_id TEXT NOT NULL, granted_at TEXT NOT NULL)"
+    )
+    storage.db.execute(
+        "INSERT INTO canonical_connector_enrollment_consent "
+        "(consent_id,owner_subject_id,account_ref,workspace_ref,device_id,granted_at) "
+        "VALUES (?,?,?,?,?,?)",
+        (CONSENT_ID, OWNER, "account.connector", "workspace.connector",
+         DEVICE, NOW.isoformat().replace("+00:00", "Z")),
+    )
+    sessions = CanonicalSessions(session())
+    port = IdentityDurableConnectorEnrollmentRecords(
+        storage=storage, session_reader=sessions
+    )
+    port.install_schema()
+    live = port.current_consent(consent_id=CONSENT_ID, now=NOW + timedelta(seconds=1))
+    assert live is not None and live.withdrawn_at is None
+    port.withdraw_preverified_consent(consent_id=CONSENT_ID, owner_subject_id=OWNER, now=NOW)
+    past = port.current_consent(consent_id=CONSENT_ID, now=NOW + timedelta(seconds=1))
+    assert past is not None and past.withdrawn_at == NOW
+
+
 def test_challenge_session_binding_uses_original_session_not_client_identity():
     port, _, reader = fixture()
     port.install_schema()

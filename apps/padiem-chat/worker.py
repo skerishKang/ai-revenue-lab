@@ -106,6 +106,7 @@ from app.voice_stt_routes import CloudflareVoiceSttServiceTransport
 from app.web_xlsx_p01_engine_client import build_web_xlsx_p01_engine_client
 from app.web_xlsx_quote_write_engine_client import build_web_quote_write_engine_client
 from app.claw_web_xlsx_quote_pdf import BrowserQuotePdfRenderer
+from app.claw_search_decision import trusted_claw_search_activation
 from kagent.claw_automation import ClawAutomationTickRuntime
 from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
@@ -858,8 +859,34 @@ class Default(WorkerEntrypoint):
                         "Connector owner enrollment unavailable.", status=503,
                         headers={"Content-Type": "text/plain; charset=utf-8"},
                     ), path)
+                github_secret_binding = binding_value(self.env, "PADIEM_GITHUB_APP_CLIENT_SECRET")
+                github_client_secret = None
+                if github_secret_binding is not None:
+                    try:
+                        if isinstance(github_secret_binding, str):
+                            github_client_secret = github_secret_binding
+                        else:
+                            getter = getattr(github_secret_binding, "get", None)
+                            if callable(getter):
+                                pending_secret = getter()
+                                if hasattr(pending_secret, "__await__"):
+                                    github_client_secret = await pending_secret
+                    except Exception:
+                        # No provider exception, binding material or secret enters logs.
+                        github_client_secret = None
+                github_store = None
+                github_provider = None
+                if (db_binding is not None and isinstance(github_client_secret, str)
+                        and github_client_secret and settings.session_secret):
+                    from app.github_oauth_store import D1GitHubOAuthStore
+                    from app.github_oauth_provider import GitHubAppOAuthProvider
+                    github_store = D1GitHubOAuthStore(db_binding, session_secret=settings.session_secret)
+                    github_provider = GitHubAppOAuthProvider(client_secret=github_client_secret,
+                                                               transport=CloudflareExternalHttpTransport())
                 _worker_app = create_app(
                     settings=settings,
+                    github_oauth_store=github_store,
+                    github_oauth_provider=github_provider,
                     connector_owner_enrollment=connector_owner_ports,
                     history_store=history_store,
                     d1_binding=db_binding,
@@ -1046,6 +1073,18 @@ class Default(WorkerEntrypoint):
                 ) = build_claw_p01_lanes_with_diagnostic(
                     self.env,
                     request_factory=Request,
+                )
+                # #4469: Owner-requested Claw public web research. An explicit
+                # Worker flag is only a request to activate: the real B14
+                # runtime, canonical member/Engine lane and durable D1 quota
+                # must ALL be present. One accepted Claw turn is already
+                # reserved by _usage_gate_denial before its bounded single
+                # judgement and optional search; no browser input can arm it.
+                _worker_app.state.claw_web_search_enabled = trusted_claw_search_activation(
+                    flag=binding_value(self.env, "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"),
+                    runtime_mode=settings.runtime_mode,
+                    adapter=_worker_app.state.claw_p01_adapter,
+                    usage_gate=_worker_app.state.usage_gate,
                 )
                 # #3580 WEB-FIRST: fixed private Engine ToolRuntime endpoint,
                 # authenticated with the pre-existing P01 service caller.

@@ -92,7 +92,7 @@ async def test_completed_protocols_with_synthetic_headers(monkeypatch, name, rep
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("name", ["gpt-6-luna", "muse-spark-1.2-contributor"])
+@pytest.mark.parametrize("name", ["gpt-6-luna", "step-5-preview-free"])
 async def test_disabled_registry_never_sends_live_request(name):
     calls = []
     async def fail_if_called(h, wire):

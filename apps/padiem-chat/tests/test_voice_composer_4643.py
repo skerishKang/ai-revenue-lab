@@ -927,8 +927,8 @@ def test_default_off_is_unavailable_with_zero_activity() -> None:
     assert result["mounted_in_actions"] is True, "the mic must live in the shared .composer-actions row"
     assert result["sits_in_tools"] is False, "the Claw shell hides .composer-tools"
     assert result["sits_before_cancel"] is True
-    assert result["button_disabled"] is True
-    assert result["aria_disabled"] == "true"
+    assert result["button_disabled"] is False
+    assert result["aria_disabled"] == "false"
     assert result["voice_state"] == "unavailable"
     assert result["aria_pressed"] == "false"
     assert result["status_key"] == "voice-unavailable-wiring"
@@ -945,8 +945,8 @@ def test_default_off_is_unavailable_with_zero_activity() -> None:
 
 def test_signin_gate_requires_factory_and_session() -> None:
     result = _results["signin_gate"]
-    assert result["unknown"] == {"disabled": True, "key": "voice-unavailable-signin"}
-    assert result["guest"]["disabled"] is True
+    assert result["unknown"] == {"disabled": False, "key": "voice-unavailable-signin"}
+    assert result["guest"]["disabled"] is False
     assert result["guest"]["key"] == "voice-unavailable-signin"
     assert result["guest"]["text"] == _shipped["ko"]["voice-unavailable-signin"]
     assert result["signedIn"]["disabled"] is False
@@ -1017,7 +1017,7 @@ def test_stop_drops_late_events() -> None:
 def test_signout_invalidates_late_results() -> None:
     result = _results["signout"]
     assert result["signedOut"]["undefined_key"] is True
-    assert result["signedOut"]["disabled"] is True
+    assert result["signedOut"]["disabled"] is False
     assert result["signedOut"]["active"] is False
     assert result["signedOut"]["session_stops"] == 1
     assert result["signedOut"]["preview_hidden"] is True

@@ -177,6 +177,7 @@
     state.user = null;
     state.skills = [];
     state.quoteModels = [];
+    state.quoteModelByTier = {};
     state.quoteReasoningByModel = {};
     const modelSelect = byId("padiemQuoteModelSelect");
     if (modelSelect) {
@@ -300,6 +301,7 @@
     const select = byId("padiemQuoteModelSelect");
     if (!select) return;
     state.quoteModels = [];
+    state.quoteModelByTier = {};
     select.replaceChildren();
     select.addEventListener("change", syncReasoningOptions);
     const placeholder = document.createElement("option");
@@ -310,22 +312,25 @@
     try {
       const result = await api("/b66/quote/models");
       if (!result.response.ok || !result.data || result.data.ok !== true ||
-          !Array.isArray(result.data.models)) return;
+          !Array.isArray(result.data.tiers)) return;
       const safeId = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
-      const records = result.data.models.filter((row) =>
-        row && typeof row.model_id === "string" && safeId.test(row.model_id) &&
+      const knownTiers = new Set(["free", "plus", "pro", "max"]);
+      const records = result.data.tiers.filter((row) =>
+        row && knownTiers.has(row.tier) &&
+        typeof row.model_id === "string" && safeId.test(row.model_id) &&
         typeof row.name === "string"
       );
       records.forEach((row) => {
         const option = document.createElement("option");
-        option.value = row.model_id;
+        option.value = row.tier;
         option.textContent = row.name;
         select.append(option);
       });
-      state.quoteModels = records.map((row) => row.model_id);
+      state.quoteModels = records.map((row) => row.tier);
+      state.quoteModelByTier = Object.fromEntries(records.map((row) => [row.tier, row.model_id]));
       state.quoteReasoningByModel = {};
       records.forEach((row) => {
-        state.quoteReasoningByModel[row.model_id] = Array.isArray(row.reasoning_levels)
+        state.quoteReasoningByModel[row.tier] = Array.isArray(row.reasoning_levels)
           ? row.reasoning_levels.filter((level) => level &&
               typeof level.value === "string" && /^[a-z0-9-]{1,32}$/.test(level.value) &&
               typeof level.label === "string")
@@ -333,12 +338,9 @@
       });
       // B66 owner-approved default; only choose when the authenticated server
       // actually registers this model. Never construct a synthetic model option.
-      const preferred = "google/gemini-3.5-flash-lite";
-      const configured = result.data.default_model_id;
-      select.value = state.quoteModels.includes(preferred)
-        ? preferred
-        : (typeof configured === "string" && state.quoteModels.includes(configured)
-          ? configured : "");
+      const configured = result.data.default_tier;
+      select.value = typeof configured === "string" && state.quoteModels.includes(configured)
+        ? configured : "";
       select.disabled = records.length === 0;
       syncReasoningOptions();
     } catch (_) {
@@ -794,15 +796,16 @@
   async function chatMessages(messages, options) {
     if (!state.authenticated) return { ok: false, code: "unauthorized" };
     const select = byId("padiemQuoteModelSelect");
-    const modelId = select && select.value;
-    if (!modelId || !state.quoteModels.includes(modelId)) {
+    const selectedTier = select && select.value;
+    const modelId = state.quoteModelByTier[selectedTier];
+    if (!modelId || !state.quoteModels.includes(selectedTier)) {
       return { ok: false, code: "model_selection_required" };
     }
     if (!Array.isArray(messages) || !messages.length) {
       return { ok: false, code: "invalid_messages" };
     }
-    const payload = { model_id: modelId, messages };
-    const reasoningLevel = selectedReasoningLevel(modelId);
+    const payload = { model_id: modelId, tier: selectedTier, messages };
+    const reasoningLevel = selectedReasoningLevel(selectedTier);
     if (reasoningLevel) payload.reasoning_level = reasoningLevel;
     /* #4657: continuing an existing B66 dialogue. The id is opaque to the
        browser and the server re-authorizes it against the signed-in owner and
@@ -925,8 +928,9 @@
 
     /* 진행 중인 견적이 있으면 원문과 합쳐 한 번에 다시 해석한다(서버는 stateless). */
     const modelSelect = byId("padiemQuoteModelSelect");
-    const modelId = modelSelect && modelSelect.value;
-    if (!modelId || !state.quoteModels.includes(modelId)) {
+    const selectedTier = modelSelect && modelSelect.value;
+    const modelId = state.quoteModelByTier[selectedTier];
+    if (!modelId || !state.quoteModels.includes(selectedTier)) {
       return { ok: false, code: "model_selection_required" };
     }
     let message = text;
@@ -952,9 +956,10 @@
     const payload = {
       saved_skill_id: state.loadedSkill.savedSkillId,
       message,
-      model_id: modelId
+      model_id: modelId,
+      tier: selectedTier
     };
-    const reasoningLevel = selectedReasoningLevel(modelId);
+    const reasoningLevel = selectedReasoningLevel(selectedTier);
     if (reasoningLevel) payload.reasoning_level = reasoningLevel;
 
     try {

@@ -82,6 +82,13 @@ def build_parser() -> argparse.ArgumentParser:
         "--operator-wss-review", action="store_true",
         help="one-shot Windows DPAPI/WSS acceptance only; explicit operator gates required",
     )
+    offer = sub.add_parser(
+        "offer", help="offer this PC for owner approval, then auto-enroll on approval",
+    )
+    offer.add_argument(
+        "--operator-wss-review", action="store_true",
+        help="one-shot Windows DPAPI/WSS acceptance only; explicit operator gates required",
+    )
 
     autostart = sub.add_parser("autostart", help="credential-gated Windows logon")
     autostart.add_argument("autostart_mode", choices=["on", "off", "show"])
@@ -243,6 +250,37 @@ def main(argv: list[str] | None = None) -> int:
             json.dumps(
                 {"ok": True, "enrollment": result.safe_dict(),
                  "autostart": auto_outcome.value if auto_outcome else "unavailable",
+                 "state": app.connector_status().value},
+                ensure_ascii=False,
+            )
+        )
+        return 0
+
+    if args.command == "offer":
+        from .operator_wss_enrollment import operator_review_admitted
+        if not getattr(args, "operator_wss_review", False) or not operator_review_admitted():
+            print(json.dumps({
+                "ok": False, "blocked": True,
+                "detail": "operator WSS/DPAPI acceptance is not configured",
+            }, ensure_ascii=False))
+            return 1
+        try:
+            from .operator_wss_enrollment import enroll_via_pending_pc_offer
+            result = asyncio.run(enroll_via_pending_pc_offer(enrollment=app.enrollment))
+        except EnrollmentContractError as exc:
+            print(json.dumps({"ok": False, "detail": str(exc)}, ensure_ascii=False))
+            return 2
+        except Exception:
+            # WebSocket/DPAPI may reveal file paths or credentials through
+            # third-party exceptions. Do not project the raw error.
+            print(json.dumps({"ok": False, "blocked": True,
+                              "detail": "operator WSS pairing security hold"}))
+            return 1
+        # Explicit review must never register Windows logon autostart.
+        print(
+            json.dumps(
+                {"ok": True, "enrollment": result.safe_dict(),
+                 "autostart": "unavailable",
                  "state": app.connector_status().value},
                 ensure_ascii=False,
             )

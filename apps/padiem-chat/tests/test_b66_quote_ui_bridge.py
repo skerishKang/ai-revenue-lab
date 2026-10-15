@@ -99,3 +99,19 @@ def test_quote_ui_bridge_loads_only_bounded_private_quote_assets() -> None:
     assert "data:" in source and ";base64," in source
     assert "FileReader" not in source
     assert "FormData" not in source
+
+
+def test_quote_preview_is_created_only_after_successful_request_and_never_same_origin() -> None:
+    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    ensure = source.split("  function ensureUi() {", 1)[1].split("  function ensurePreviewFrame()", 1)[0]
+    assert 'document.createElement("iframe")' not in ensure
+    creation = source.split("  function ensurePreviewFrame() {", 1)[1].split("  function waitForFrame(", 1)[0]
+    assert 'document.createElement("iframe")' in creation
+    assert 'frame.referrerPolicy = "no-referrer"' in creation
+    assert 'frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals")' in creation
+    render = source.split("  async function generate(event)", 1)[1].split("  function receiveEmbedMessage(", 1)[0]
+    assert render.index("const assets = await loadPrivateAssets(skill)") < render.index("const frame = ensurePreviewFrame()")
+    assert render.index("const frame = ensurePreviewFrame()") < render.index("await waitForFrame(frame, runtime.embedUrl)")
+    assert "if (embed.origin === window.location.origin) return null" in source
+    assert 'event.source !== frame.contentWindow' in source
+    assert 'event.origin !== runtime.origin' in source

@@ -32,9 +32,15 @@
     projectFilesReady: false,
     sessionState: "unavailable",
     displayName: "",
+    memberGrade: "free",
   });
 
-  const AVAILABLE_TIERS = Object.freeze(["free", "plus"]);
+  const TIER_ORDER = Object.freeze(["free", "plus", "pro", "max"]);
+  function availableTiers() {
+    const current = auth.memberGrade;
+    const index = TIER_ORDER.indexOf(current);
+    return TIER_ORDER.slice(0, index < 0 ? 1 : index + 1);
+  }
 
   const TIER_COPY = Object.freeze({
     ko: Object.freeze({
@@ -63,11 +69,10 @@
     }),
   });
 
-  // Display-only tier list. Free and Plus are shown as available; Pro/Max are
-  // shown as unavailable until the admin console sets access rules.
+  // Existing tier picker derives its availability only from server-verified membership.
   const TIER_LIST = Object.freeze(["free", "plus", "pro", "max"]);
 
-  let selectedTier = "plus";
+  let selectedTier = "free";
 
   const ACCOUNT_COPY = Object.freeze({
     ko: Object.freeze({
@@ -145,6 +150,7 @@
       projectFilesReady: bool(data.project_files_ready),
       sessionState,
       displayName,
+      memberGrade: authenticated && TIER_ORDER.includes(data.member_grade) ? data.member_grade : "free",
     });
   }
 
@@ -290,7 +296,7 @@
   }
 
   function selectTier(tier) {
-    if (!AVAILABLE_TIERS.includes(tier)) return false;
+    if (!availableTiers().includes(tier)) return false;
     selectedTier = tier;
     syncModeCopy();
     window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier } }));
@@ -299,7 +305,7 @@
 
   function createModeOption(tier) {
     const copy = currentModeCopy();
-    const available = AVAILABLE_TIERS.includes(tier);
+    const available = availableTiers().includes(tier);
     const button = document.createElement("button");
     button.type = "button";
     button.className = "mode-option";
@@ -314,12 +320,10 @@
     state.className = "mode-option-state";
     state.textContent = available ? copy.available : copy.unavailable;
     button.append(title, state);
-    if (available) {
-      button.addEventListener("click", () => {
-        if (!selectTier(tier)) return;
-        closeModePanel({ restoreFocus: true });
-      });
-    }
+    button.addEventListener("click", () => {
+      if (!selectTier(tier)) return;
+      closeModePanel({ restoreFocus: true });
+    });
     return button;
   }
 
@@ -338,11 +342,13 @@
     modePanel.querySelectorAll("[data-mode-value]").forEach((button) => {
       const tier = button.dataset.modeValue;
       if (!copy[tier]) return;
-      const available = AVAILABLE_TIERS.includes(tier);
+      const available = availableTiers().includes(tier);
       const optionTitle = button.querySelector("strong");
       const state = button.querySelector(".mode-option-state");
       if (optionTitle) optionTitle.textContent = copy[tier][0];
       if (state) state.textContent = available ? copy.available : copy.unavailable;
+      button.disabled = !available;
+      button.setAttribute("aria-disabled", available ? "false" : "true");
       button.setAttribute("aria-pressed", tier === selectedTier ? "true" : "false");
     });
   }
@@ -454,6 +460,11 @@
       nextAuth = EMPTY_AUTH;
     }
     auth = nextAuth;
+    if (!availableTiers().includes(selectedTier)) {
+      selectedTier = "free";
+      window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier: selectedTier } }));
+    }
+    syncModeCopy();
     syncAll();
     return auth;
   }
@@ -521,7 +532,7 @@
   window.PadiemTierSelection = Object.freeze({
     get: () => selectedTier,
     set: (tier) => selectTier(String(tier || "").toLowerCase()),
-    available: () => AVAILABLE_TIERS.slice(),
+    available: () => availableTiers(),
     open: openModePanel,
     close: () => closeModePanel({ restoreFocus: true }),
   });

@@ -135,7 +135,7 @@ _ALLOWED_MESSAGE_FIELDS = frozenset({"role", "content"})
 _ALLOWED_B14_FIELDS = frozenset({
     "task_type", "required_capabilities", "optimize_for",
     "allow_external_fallback", "provider_order", "max_attempts",
-    "max_retries", "allow_paid",
+    "max_retries", "allow_paid", "product_tier",
 })
 _B14_OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
 _B14_TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
@@ -301,6 +301,12 @@ def _validate_b14_options(raw: Any) -> dict:
         raise _InvalidBody(f"Unexpected business14 fields: {', '.join(sorted(extra))}")
 
     opts: dict = {}
+
+    tier = raw.get("product_tier")
+    if tier is not None:
+        if not isinstance(tier, str) or tier not in ("free", "plus", "pro", "max"):
+            raise _InvalidBody("business14.product_tier must be a supported product tier")
+        opts["product_tier"] = tier
 
     tt = raw.get("task_type")
     if tt is not None:
@@ -754,6 +760,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         allow_external_fallback=b14_opts.get(
             "allow_external_fallback", model_id == "b14/auto"
         ),
+        product_tier=b14_opts.get("product_tier", "free"),
     )
     decision = rcore.resolve_route(model_id, b14_opts)
 

@@ -103,6 +103,11 @@ on:
         required: false
         type: boolean
         default: false
+      activate_claw_public_search:
+        description: "Owner-authorized one-variable Claw web-search ON addition; preserve all other live settings"
+        required: false
+        type: boolean
+        default: false
       preserve_existing_b66_membership_secret:
         description: "Explicitly admit only the already-existing B66_MEMBERSHIP_ENFORCED secret_text metadata when a concurrent B66 change is present; do not read/set value"
         required: false
@@ -610,6 +615,7 @@ jobs:
       CONFIRMATION: ${{ inputs.confirmation }}
       ATTACH_WEB_SECRETS_STORE: ${{ inputs.attach_existing_web_secrets_store }}
       ATTACH_EXISTING_CONNECTOR_BROKER: ${{ inputs.attach_existing_connector_broker }}
+      ACTIVATE_CLAW_PUBLIC_SEARCH: ${{ inputs.activate_claw_public_search }}
       PRESERVE_B66_MEMBERSHIP_SECRET: ${{ inputs.preserve_existing_b66_membership_secret }}
       COMMISSION_HARK_BROWSER: ${{ inputs.commission_hark_browser }}
     steps:
@@ -617,12 +623,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+            test "${P01_SSE_RECOVERY_OFF}" != "true"
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
+            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+          fi
           if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
             test "${CONFIRMATION}" = "RECOVER_B62_P01_SSE_OFF_FROM_PINNED_SNAPSHOT"
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
             test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
             test "${COMMISSION_HARK_BROWSER}" = "false"
             echo "SSE_RECOVERY_OFF_OWNER_AUTHORIZED=PASS"
+          elif [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+            test "${CONFIRMATION}" = "DEPLOY_B62_CLAW_PUBLIC_WEB_SEARCH_FROM_EXACT_MAIN"
+            echo "CLAW_PUBLIC_SEARCH_OWNER_AUTHORIZED=PASS"
           elif [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
             test "${CONFIRMATION}" = "DEPLOY_B62_WITH_EXACT_B66_MEMBERSHIP_SECRET"
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
@@ -646,6 +662,8 @@ jobs:
           echo "PUBLIC_BASE_URL_INJECTED_BY_DEPLOY=NO"
           if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
             echo "RECOVERY_MUTATES_ONLY_UNACCEPTED_SSE_FLAG=REMOVE"
+          elif [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+            echo "DEPLOY_ADDS_ONLY_EXPLICIT_CLAW_SEARCH_ON=YES"
           else
             echo "DEPLOY_MUTATES_LIVE_CONFIG=NO"
           fi
@@ -974,6 +992,13 @@ jobs:
             test "${ATTACH_EXISTING_CONNECTOR_BROKER}" != "true"
             extra_args=(--attach-existing-web-secrets-store)
           fi
+          if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
+            extra_args=(--activate-claw-public-search)
+          fi
           if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
             test "${COMMISSION_HARK_BROWSER}" != "true"
             extra_args=(--attach-existing-connector-broker)
@@ -1115,6 +1140,9 @@ jobs:
           if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
             verify_args=(--expected-add-connector-broker)
           fi
+          if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+            verify_args=(--expected-add-claw-public-search)
+          fi
           if [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
             verify_args=(--expected-add-b66-membership-secret)
           fi
@@ -1122,7 +1150,7 @@ jobs:
             "${verify_args[@]}" \
             --before "${normalized_before}" \
             --after "${settings}"
-          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
+          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ] || [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             echo "BINDINGS_PRESERVED_AND_APPROVED_ADDED=PASS"
           else
             echo "BINDINGS_PRESERVED_EXACTLY=PASS"

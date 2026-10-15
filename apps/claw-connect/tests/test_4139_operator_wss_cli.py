@@ -110,3 +110,39 @@ def test_review_login_opens_fixed_owner_page_and_returns_only_device_id(monkeypa
     assert data["device_connected"] is False
     assert web_calls == ["https://chat.padiem.net/api/claw/connector/enrollments/setup"]
     assert "device.local.1" not in web_calls[0]
+
+
+def test_offer_refused_without_operator_gates(monkeypatch, capsys):
+    monkeypatch.setenv(gate._REVIEW_OPERATOR_ENV, gate._REVIEW_OPERATOR_VALUE)
+    monkeypatch.delenv(gate._CANONICAL_CREDENTIAL_DIR_ENV, raising=False)
+    assert cli.main(["offer", "--operator-wss-review"]) == 1
+    result = json.loads(capsys.readouterr().out)
+    assert result["blocked"] is True and result["ok"] is False
+    assert cli.main(["offer"]) == 1
+
+
+def test_offer_drives_pending_offer_then_auto_enrolls_without_typed_secrets(monkeypatch, capsys):
+    monkeypatch.setattr(gate, "operator_review_admitted", lambda: True)
+    response = SimpleNamespace(
+        safe_dict=lambda: {"device_id": "device.local.1", "raw_device_credential": False},
+    )
+    app = SimpleNamespace(
+        enrollment=object(), connector_status=lambda: SimpleNamespace(value="unregistered"),
+    )
+    monkeypatch.setattr(cli, "ConnectApp", lambda: app)
+    async def approved(**kwargs):
+        assert set(kwargs) == {"enrollment"}
+        return response
+    monkeypatch.setattr(gate, "enroll_via_pending_pc_offer", approved)
+    assert cli.main(["offer", "--operator-wss-review"]) == 0
+    printed = capsys.readouterr().out
+    data = json.loads(printed)
+    assert data["ok"] is True and data["enrollment"]["raw_device_credential"] is False
+    assert data["autostart"] == "unavailable"
+
+
+def test_offer_parser_requires_no_secret_positionals():
+    parser = cli.build_parser()
+    parsed = parser.parse_args(["offer", "--operator-wss-review"])
+    assert parsed.command == "offer" and parsed.operator_wss_review is True
+    assert parser.parse_args(["offer"]).operator_wss_review is False

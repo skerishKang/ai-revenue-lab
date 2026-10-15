@@ -46,6 +46,7 @@ CONNECTOR_EXPLICIT_VARS: dict[str, str] = {
     "PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED": "enabled",
     "PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED": "enabled",
 }
+CLAW_SEARCH_FLAG = "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
 # #3252: a live version_metadata binding is runtime provenance. Exactly one may
@@ -162,6 +163,7 @@ def build_production_config(
     attach_web_secrets_store: bool = False,
     commission_hark_browser: bool = False,
     attach_connector_broker_service: bool = False,
+    activate_claw_public_search: bool = False,
 ) -> str:
     try:
         repo = tomllib.loads(repo_config_path.read_text(encoding="utf-8"))
@@ -447,6 +449,15 @@ def build_production_config(
                 )
             output_vars[key] = expected
 
+    if activate_claw_public_search:
+        # #4469: the owner approved public research, not a generic var copy.
+        # A contradictory existing binding requires the separate config gate;
+        # this additive rollout can only add the exact missing ON flag.
+        existing = output_vars.get(CLAW_SEARCH_FLAG)
+        if existing is not None and existing != "true":
+            raise ProductionConfigError("Claw search flag conflicts with existing live authority")
+        output_vars[CLAW_SEARCH_FLAG] = "true"
+
     lines.append("[vars]")
     for name in sorted(output_vars):
         lines.append(f"{name} = {_toml_string(output_vars[name])}")
@@ -458,6 +469,7 @@ def verify_mutation_zero(
     config_text: str,
     live: dict[str, object],
     allow_connector_broker: bool = False,
+    allow_claw_public_search: bool = False,
 ) -> None:
     """The generated [vars] block must equal the live plain-text variables exactly.
 
@@ -489,6 +501,11 @@ def verify_mutation_zero(
                     f"Connector var drift on {key!r}; activation owns the live value"
                 )
             expected.setdefault(key, value)
+    if allow_claw_public_search:
+        existing = expected.get(CLAW_SEARCH_FLAG)
+        if existing is not None and existing != "true":
+            raise ProductionConfigError("Claw search flag conflicts with existing live authority")
+        expected[CLAW_SEARCH_FLAG] = "true"
     if generated != expected:
         changed = sorted(
             name for name in set(generated) | set(expected)
@@ -510,11 +527,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--commission-hark-browser", action="store_true", help="owner-authorized additive BROWSER binding, no PDF calls")
     parser.add_argument("--attach-existing-connector-broker", action="store_true",
                         help="generate a candidate with only the existing canonical Broker Service Binding; does not deploy")
+    parser.add_argument("--activate-claw-public-search", action="store_true",
+                        help="owner-reviewed single exact Claw public search ON var, preserving every other live binding")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     try:
         payload = json.loads(args.settings.read_text(encoding="utf-8"))
         live = parse_live_bindings(payload)
+        if args.activate_claw_public_search and (
+            args.attach_existing_connector_broker or args.commission_hark_browser
+            or args.attach_existing_web_secrets_store or args.owner_d1_database_id is not None
+        ):
+            raise ProductionConfigError("Claw search activation must be the only additive mode")
         if args.attach_existing_connector_broker and (
             args.commission_hark_browser or args.attach_existing_web_secrets_store
             or args.owner_d1_database_id is not None
@@ -538,10 +562,12 @@ def main(argv: list[str] | None = None) -> int:
             attach_web_secrets_store=args.attach_existing_web_secrets_store,
             commission_hark_browser=args.commission_hark_browser,
             attach_connector_broker_service=args.attach_existing_connector_broker,
+            activate_claw_public_search=args.activate_claw_public_search,
         )
         verify_mutation_zero(
             config_text, live,
             allow_connector_broker=args.attach_existing_connector_broker,
+            allow_claw_public_search=args.activate_claw_public_search,
         )
     except (ProductionConfigError, OSError, json.JSONDecodeError) as exc:
         print(f"B62_PRODUCTION_CONFIG_GENERATED=FAIL\nREASON={exc}", file=sys.stderr)
@@ -578,6 +604,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print("CONNECTOR_VARS_APPLIED=0")
         print(f"CONNECTOR_VARS_ALLOWLISTED={len(CONNECTOR_EXPLICIT_VARS)}")
+    print(f"CLAW_PUBLIC_SEARCH_EXPLICIT_ACTIVATION={int(args.activate_claw_public_search)}")
     print("CONNECTOR_BROKER_RELEASE_AUTHORIZED=NO")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")

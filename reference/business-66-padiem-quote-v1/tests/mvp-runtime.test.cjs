@@ -19,7 +19,7 @@ const easySource = fs.readFileSync(path.join(SRC, "easy-mode.js"), "utf8");
 
 const NOW = "2026-10-04T09:00:00.000Z";
 const SKILL_ID = "b66skill_" + "1".repeat(32);
-const SELECTED_MODEL_ID = "test-fixture/b66-manual-chat";
+const SELECTED_MODEL_ID = "opencode-go/cat-jam-free";
 
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 async function flush() {
@@ -187,13 +187,16 @@ function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
     }
     if (target.endsWith("/api/padiem/b66/quote/models")) {
       return jsonResponse({
-        ok: true, models: [{ model_id: SELECTED_MODEL_ID, name: "Synthetic Model" }],
-        default_model_id: null
+        ok: true, models: [{ model_id: SELECTED_MODEL_ID, name: "Cat Jam" }],
+        default_model_id: null,
+        tiers: [{tier:"free", name:"PADIEM Free", model_id:SELECTED_MODEL_ID}],
+        default_tier: null
       });
     }
     if (target.endsWith("/api/padiem/b66/quote/interpret")) {
       const body = JSON.parse(opts.body || "{}");
-      assert.equal(body.model_id, SELECTED_MODEL_ID, "exact user model_id forwarded to the server");
+      assert.equal(body.model_id, SELECTED_MODEL_ID, "selected grade resolves Cat Jam");
+      assert.equal(body.tier,"free","selected grade forwarded to B14");
       if (!body.message || !body.saved_skill_id) {
         return jsonResponse({ ok: false, error: { code: "quote_input_unrecognized" } }, 422);
       }
@@ -259,8 +262,8 @@ function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
 function manuallyChooseModel(env) {
   const dropdown = env.getElement("padiemQuoteModelSelect");
   assert.equal(dropdown.value, "", "no hidden model default in B66");
-  assert.ok(dropdown.children.some((option) => option.value === SELECTED_MODEL_ID));
-  dropdown.value = SELECTED_MODEL_ID; // real customer would choose this ID
+  assert.ok(dropdown.children.some((option) => option.value === "free"));
+  dropdown.value = "free"; // real customer chooses the model grade
 }
 
 async function harnessA() {

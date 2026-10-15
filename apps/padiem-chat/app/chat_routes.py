@@ -32,6 +32,7 @@ from .history import (
 )
 from .history import PRODUCT_SCOPE_CHAT
 from .model_policy import model_supports, request_tier_context, FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
+from .member_grade_access import selected_grade_denial
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
 from .request_contract import (
@@ -197,7 +198,7 @@ async def api_chat_stream(request: Request):
         messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
         selected_model, messages = _apply_b62_model_policy(
             messages,
-            tier_id=raw.get("tier"),
+            tier_id=raw.get("tier", "free"),
         )
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
@@ -210,6 +211,10 @@ async def api_chat_stream(request: Request):
         )
 
     uid = current_user_id(request) if auth_ready(request) else None
+    if "tier" in raw:
+        tier_denial = await selected_grade_denial(request, uid, raw["tier"])
+        if tier_denial is not None:
+            return tier_denial
     # Free is available to every signed-in member; it is not an anonymous
     # platform-key proxy. Never read tier/upgrade claims from browser state.
     if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
@@ -295,7 +300,7 @@ async def api_chat_stream(request: Request):
         reference_context = auto_plan.prepared.context
 
     client: B14Client = request.app.state.b14_client
-    with request_tier_context(raw.get("tier")):
+    with request_tier_context(raw.get("tier", "free")):
         stream = client.stream_text_auto(
             messages,
             skill=skill,
@@ -431,7 +436,7 @@ async def api_chat(request: Request) -> JSONResponse:
         messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
         selected_model, messages = _apply_b62_model_policy(
             messages,
-            tier_id=raw.get("tier"),
+            tier_id=raw.get("tier", "free"),
         )
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
@@ -460,6 +465,10 @@ async def api_chat(request: Request) -> JSONResponse:
             )
 
     uid = current_user_id(request) if auth_ready(request) else None
+    if "tier" in raw:
+        tier_denial = await selected_grade_denial(request, uid, raw["tier"])
+        if tier_denial is not None:
+            return tier_denial
     # Free is available to every signed-in member; it is not an anonymous
     # platform-key proxy. Never read tier/upgrade claims from browser state.
     if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
@@ -536,7 +545,7 @@ async def api_chat(request: Request) -> JSONResponse:
             return _usage_denied_response(usage_decision)
 
     try:
-        with request_tier_context(raw.get("tier")):
+        with request_tier_context(raw.get("tier", "free")):
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
                 auto_decision = None if image_attachments else auto_grounding.decide(messages, skill=skill)

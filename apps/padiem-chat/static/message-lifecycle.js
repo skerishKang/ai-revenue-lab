@@ -458,7 +458,9 @@
     paragraph.textContent = data.answer;
     content.appendChild(paragraph);
     const label = article.querySelector("[data-runtime-label]");
-    if (label) label.textContent = "AI 응답";
+    // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
+    // The repetitive "AI 응답" line is removed on completion.
+    if (label && label.textContent === "AI 응답") label.textContent = "";
     const conversationState = window.PadiemChatConversationState;
     if (conversationState) {
       conversationState.commitAssistant(requestPayload.messages, data.answer);

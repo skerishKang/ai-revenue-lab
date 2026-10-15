@@ -236,7 +236,10 @@ def test_return_refreshes_canonical_truth_instead_of_assuming_success() -> None:
     block = _connector_block()
     assert 'part === "google_connector=connected"' in block
     assert "openConnectorsDialog();" in block
-    assert "void loadConnectorStatus();" in _function("openConnectorsDialog")
+    # The Connectors surface is a standalone page: the dialog opener delegates
+    # to the view, which reloads the same status projection on open.
+    assert "openConnectorsView();" in _function("openConnectorsDialog")
+    assert "void loadConnectorStatus();" in _function("openConnectorsView")
     load = _function("loadConnectorStatus")
     assert 'fetch("/api/connectors/status", {' in load
     assert "renderConnectorStatus(data);" in load

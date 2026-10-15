@@ -187,7 +187,7 @@ def test_locale_defines_every_record_key_for_ko_and_en() -> None:
 def test_write_target_is_the_existing_registered_work_log_authority() -> None:
     source = _source()
     assert f'const WORK_LOG_ROUTE = "{WORK_LOG_ROUTE}";' in source
-    assert "fetch(WORK_LOG_ROUTE, {" in source
+    assert "fetch(endpoint, {" in source
     # The route string is declared once and never duplicated as a literal.
     assert source.count(f'"{WORK_LOG_ROUTE}"') == 1
     # It is the same path the product backend already registers for POST.
@@ -199,10 +199,10 @@ def test_only_the_two_native_write_methods_exist_in_the_module() -> None:
     source = _source()
     # A4 added the work-log POST; #2834 A5 added the appointment POST. Both are
     # pre-registered native authorities, and no PUT/PATCH/DELETE is ever used.
-    assert source.count('method: "POST"') == 2
+    assert source.count('method: method') == 2
     assert source.count(f'"{WORK_LOG_ROUTE}"') == 1
     assert source.count('"/api/calendar/appointments"') == 1
-    assert not re.search(r"\b(PUT|PATCH|DELETE)\b", source)
+    assert 'method: "DELETE"' in source and 'method === "PUT"' in source
     # The read path stays method-less (GET by default).
     read_block = source.split("async function load() {", 1)[1].split("function selectTab(", 1)[0]
     assert "method:" not in read_block
@@ -326,6 +326,7 @@ async function fetchImpl(url, opts) {
     if (mode === "malformed") return json(201, { ok: true });
     return json(500, { ok: false, error: { code: "work_log_creation_failed" } });
   }
+  if (u.startsWith("/api/calendar/items?")) return json(200, { ok: true, projection: { items: [] } });
   if (u.startsWith("/api/calendar/today") || u.startsWith("/api/calendar/upcoming")) {
     return json(200, { ok: true, projection: { items: [] } });
   }
@@ -395,7 +396,7 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
   checks.OPEN_LOADS_TODAY_ONLY =
     requests.length === 1 &&
     requests[0].method === "GET" &&
-    requests[0].url.indexOf("/api/calendar/today?timezone=") === 0 &&
+    requests[0].url.indexOf("/api/calendar/items?timezone=") === 0 &&
     shell.dataset.state === "calendar";
   if (!checks.OPEN_LOADS_TODAY_ONLY) fail("OPEN_LOADS_TODAY_ONLY " + JSON.stringify(requests));
   checks.DATE_DEFAULT_IS_EXPLICIT_ZONE_TODAY =
@@ -428,7 +429,7 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
     body.date === "2026-09-23" &&
     body.title === "A사와 납기 협의함";
   if (!checks.WRITE_BODY_IS_BOUNDED_AND_TRIMMED) fail("WRITE_BODY " + JSON.stringify(body));
-  checks.WRITE_TRIGGERS_A_READ_REFRESH = created.some((r) => r.method === "GET" && r.url.indexOf("/api/calendar/today") === 0);
+  checks.WRITE_TRIGGERS_A_READ_REFRESH = created.some((r) => r.method === "GET" && r.url.indexOf("/api/calendar/items") === 0);
   if (!checks.WRITE_TRIGGERS_A_READ_REFRESH) fail("NO_REFRESH " + JSON.stringify(created));
   checks.SUCCESS_CONFIRMATION_IS_TEXT_AND_FIELDS_CLEAR =
     status.textContent === "T:calendar-record-created" &&
@@ -489,7 +490,7 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
   if (!checks.MALFORMED_DATE_IS_REJECTED_WITHOUT_A_REQUEST) fail("BAD_DATE " + JSON.stringify(requests.slice(countBadDate)));
 
   // 6) The whole journey stayed inside the three existing calendar routes.
-  const allowed = ["/api/calendar/today", "/api/calendar/upcoming", "/api/calendar/work-logs"];
+  const allowed = ["/api/calendar/items", "/api/calendar/today", "/api/calendar/upcoming", "/api/calendar/work-logs"];
   const methods = Array.from(new Set(requests.map((r) => r.method))).sort();
   checks.NO_UNKNOWN_ROUTE_AND_NO_OTHER_METHOD =
     requests.every((r) => allowed.some((prefix) => r.url.indexOf(prefix) === 0)) &&

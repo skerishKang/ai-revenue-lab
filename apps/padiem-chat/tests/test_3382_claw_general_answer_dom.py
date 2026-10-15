@@ -416,6 +416,8 @@ function buildSandbox(sseCase) {
       copy: () => ({ idleNote: "idle", unsupportedFormat: "unsupported", textTooLarge: "too large" }),
     },
     PadiemBinaryDocuments: null,
+    // The owner-selected tier is represented explicitly in the real composer.
+    PadiemTierSelection: { get: () => sseCase.tier || "plus" },
   };
   sandbox.window = sandbox;
   sandbox.globalThis = sandbox;
@@ -552,7 +554,9 @@ def test_claw_answer_lands_in_the_answer_dom_and_commits() -> None:
     dom = result["answerDom"]
     assert dom is not None, "no assistant article was rendered for a 200 SSE answer"
     assert dom["paragraphText"] == ANSWER_WITH_MARKUP, dom
-    assert dom["label"] == "AI 답변", dom
+    # Completed answers keep the brand product label; the repetitive
+    # "AI 답변" runtime line is not rendered.
+    assert dom["label"] != "AI 답변", dom
     assert dom["productLabel"] == "Padiem Claw", dom
     assert "completed" in result["lifecycleSets"], result["lifecycleSets"]
     assert result["committed"] == [ANSWER_WITH_MARKUP], result["committed"]
@@ -644,14 +648,28 @@ def test_visible_default_sends_one_exact_model_id() -> None:
     assert _lane_only(result) == [GENERAL_ROUTE_PATH]
 
 
-def test_user_cleared_model_sends_no_model_id_field() -> None:
-    """Clearing the explicit model fails closed BEFORE sending any Claw request."""
+def test_claw_free_greeting_sends_without_an_invisible_plus_model_choice() -> None:
     _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP)
-    result = _run_client([{"name": "cleared-selection", "mode": "stream", "raw": raw, "modelId": ""}])[0]
-    # #3790: an empty choice is rejected on the client before quota/network.
+    case = {"name": "free-greeting", "mode": "stream", "raw": raw, "tier": "free", "modelId": "", "prompt": "??"}
+    result = _run_client([case])[0]
     general = _general_posts(result)
-    assert general == [], result["requests"]
-    assert _lane_only(result) == [], result["requests"]
+    assert len(general) == 1, result["requests"]
+    data = json.loads(general[0]["body"])
+    assert data["tier"] == "free", data
+    assert "model_id" not in data, data
+    assert _lane_only(result) == [GENERAL_ROUTE_PATH]
+
+
+def test_cleared_explicit_model_uses_server_verified_grade_without_model_id() -> None:
+    """A grade-only Claw request delegates exact model resolution to the server."""
+    _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP)
+    result = _run_client([{"name": "cleared-selection", "mode": "stream", "raw": raw, "modelId": "", "tier": "plus"}])[0]
+    general = _general_posts(result)
+    assert len(general) == 1, result["requests"]
+    sent = json.loads(general[0]["body"])
+    assert sent["tier"] == "plus", sent
+    assert "model_id" not in sent, sent
+    assert _lane_only(result) == [GENERAL_ROUTE_PATH], result["requests"]
 
 
 def test_502_engine_failure_shows_bounded_error_and_never_dispatches_again() -> None:

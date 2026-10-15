@@ -170,6 +170,7 @@ def _platform_secret_present(cm) -> bool:
 def resolve_manual_route(
     model_id: str,
     allow_external_fallback: bool = False,
+    product_tier: str = "free",
 ) -> RouteDecision:
     """Resolve a manual route for a specific model ID.
 
@@ -227,18 +228,21 @@ def resolve_manual_route(
 
     route_id = f"platform:{cm.model_id}"
 
-    owner_free_pair = model_id == "opencode-go/cat-jam-free"
+    owner_tier_pair = model_id == "opencode-go/cat-jam-free"
     fallback_candidates: list[dict[str, str]] = []
-    if owner_free_pair:
-        gemini = get_catalog_by_id("google/gemini-3.1-flash-lite")
-        if gemini is not None and gemini.enabled and _platform_secret_present(gemini):
+    if owner_tier_pair:
+        from .tier_fallback import TIER_FALLBACK_B14_MODELS
+        if product_tier not in TIER_FALLBACK_B14_MODELS:
+            raise NoSafeRoute(reason_code="invalid_product_tier", message="Unsupported product tier.", upstream_called=False)
+        target = get_catalog_by_id(TIER_FALLBACK_B14_MODELS[product_tier])
+        if target is not None and target.enabled and _platform_secret_present(target):
             fallback_candidates = [{
-                "model_id": gemini.model_id,
-                "upstream_model": gemini.upstream_model,
-                "provider": gemini.provider,
-                "platform_provider_id": gemini.platform_provider_id,
-                "route_id": f"platform:{gemini.model_id}",
-                "reason": "owner_selected_free_fallback",
+                "model_id": target.model_id,
+                "upstream_model": target.upstream_model,
+                "provider": target.provider,
+                "platform_provider_id": target.platform_provider_id,
+                "route_id": f"platform:{target.model_id}",
+                "reason": "owner_selected_tier_fallback",
             }]
     elif allow_external_fallback:
         all_models = get_catalog_models()
@@ -258,8 +262,8 @@ def resolve_manual_route(
         ][:3]  # limit to top 3 fallback candidates
 
     reason_codes = ["manual_selection"]
-    if owner_free_pair:
-        reason_codes.append("owner_selected_free_fallback")
+    if owner_tier_pair:
+        reason_codes.append("owner_selected_tier_fallback:" + product_tier)
     elif not allow_external_fallback:
         reason_codes.append("external_fallback_disabled")
 
@@ -270,7 +274,7 @@ def resolve_manual_route(
         selected_upstream_model=cm.upstream_model,
         selected_route_id=route_id,
         reason_codes=reason_codes,
-        fallback_allowed=bool(fallback_candidates) if owner_free_pair else allow_external_fallback,
+        fallback_allowed=bool(fallback_candidates) if owner_tier_pair else allow_external_fallback,
         eligible_fallback=fallback_candidates,
         excluded_candidates=[],
         credential_available=cred_ok,
@@ -278,7 +282,7 @@ def resolve_manual_route(
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
         provider_mode=runtime_config.provider_mode,
-        max_attempts=(1 + len(fallback_candidates)) if owner_free_pair else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3)),
+        max_attempts=(1 + len(fallback_candidates)) if owner_tier_pair else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3)),
         credential_source=cred_source,
         platform_provider_id=plat_pid,
     )
@@ -510,6 +514,7 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
     return resolve_manual_route(
         model_id,
         allow_external_fallback=allow_external_fallback,
+        product_tier=opts.get("product_tier", "free"),
     )
 
 

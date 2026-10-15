@@ -38,7 +38,7 @@ ROOT = Path(__file__).resolve().parents[1]
 _EVIDENCE_DIR = os.environ.get("B66_4657_EVIDENCE_DIR")
 EVIDENCE = Path(_EVIDENCE_DIR) if _EVIDENCE_DIR else None
 
-MODEL_ID = "google/gemini-3.5-flash-lite"
+MODEL_ID = "opencode-go/cat-jam-free"
 DIALOGUE_ID = "chat_" + "a" * 32
 SECOND_DIALOGUE_ID = "chat_" + "b" * 32
 EMAIL = "demo@example.test"
@@ -235,10 +235,16 @@ def _reset_state() -> None:
         "/b66/quote/models": {
             "ok": True,
             "models": [{
-                "model_id": MODEL_ID, "name": "Gemini 3.5 Flash Lite",
+                "model_id": MODEL_ID, "name": "Cat Jam",
                 "reasoning_levels": [{"value": "default", "label": "기본(제공자 기본값)"}],
             }],
             "default_model_id": None,
+            "tiers": [
+                {"tier": t, "name": "PADIEM " + t.capitalize(), "model_id": MODEL_ID,
+                 "reasoning_levels": [{"value": "default", "label": "기본(제공자 기본값)"}]}
+                for t in ("free", "plus", "pro", "max")
+            ],
+            "default_tier": "free",
         },
         # No assigned CGI Skill: the customer is in the real AI-dialogue case.
         "/b66/saved-skills": {"ok": True, "skills": [], "limit": 20},

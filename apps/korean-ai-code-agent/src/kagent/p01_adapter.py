@@ -22,6 +22,8 @@ from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
     active_route_for,
+    FREE_PRIMARY_B14_MODEL_ID,
+    FREE_FALLBACK_B14_MODEL_ID,
 )
 
 from .contracts import (
@@ -304,12 +306,20 @@ def _agent_profile(
             dispatch_class=P01DispatchClass.NOT_DISPATCHED,
         ) from exc
 
-    if selected_model_id is not None and product_tier is not ProductTierLabel.PLUS:
-        raise P01AdapterError(
-            "explicit_model_tier_unsupported",
-            "Explicit model choice is currently limited to the Plus MVP lane.",
-            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
-        )
+    if selected_model_id is not None:
+        if product_tier is ProductTierLabel.FREE:
+            if selected_model_id not in (FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID):
+                raise P01AdapterError(
+                    "model_not_available_for_tier",
+                    "Free member cannot select a non-Free model.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                )
+        elif product_tier is not ProductTierLabel.PLUS:
+            raise P01AdapterError(
+                "explicit_model_tier_unsupported",
+                "Explicit model choice is not enabled for this tier.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
     chosen_model = (
         validate_explicit_b14_model_id(selected_model_id)
         if selected_model_id is not None
@@ -342,7 +352,10 @@ def _agent_profile(
         # provider at most once. `max_retries=0` pins B14's same-route retry
         # ceiling to zero; the port refuses any other budget, so widening
         # requires a fresh explicit owner decision.
-        model_policy={"model": chosen_model, "max_retries": 0},
+        model_policy={
+            "model": chosen_model, "max_retries": 0,
+            "product_tier": product_tier.value.removeprefix("Padiem ").lower(),
+        },
         max_steps=1,
         output_contract={},
     )

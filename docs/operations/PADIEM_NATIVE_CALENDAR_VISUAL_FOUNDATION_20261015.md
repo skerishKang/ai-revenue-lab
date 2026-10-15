@@ -24,3 +24,14 @@ Read paths: `GET /api/calendar/today`, `GET /api/calendar/upcoming`, `GET /api/c
 
 ## Release
 Implementation is in `apps/padiem-chat/static/calendar.js`, `calendar.css` and the existing static entry markup. Focused calendar suite: 19 PASS at source head before merge. Production deployment must use the protected B62 exact-main workflow preserving all live service bindings and secrets. Record final run ID in #2834 without asserting AI scheduling or live API read acceptance.
+
+## Phase 2 - native calendar management and layout (2026-10-15)
+
+- Calendar kicker displays the same cyan 6-pixel dot as Chat/Claw. The long introductory text and persistent top-of-page creation accordions are visually removed.
+- Selecting a month date or week column opens the existing native appointment editor with the date prefilled. Selecting a day-hour slot also prefills time. Existing native events support edit and delete, with confirmation for deletion.
+- The Month/Week/Day calendar display has a stable fixed viewport and scrolls internally. Day view initially scrolls to 09:00 while all 24 hours remain accessible.
+- Server endpoints: PUT/DELETE /api/calendar/appointments/{appointment_id} and PUT/DELETE /api/calendar/work-logs/{log_id}. They use existing native D1 tables and the authenticated server-derived owner/workspace, verify the specific existing item's ownership, validate the replacement via existing domain contracts and preserve created_at.
+- Foreign/nonexistent items fail closed (404); anonymous writes fail closed (401). The client never supplies owner_id, workspace_id or tenant_id.
+- Failed read views distinguish sign-in required (401) from bounded 4xx or 5xx error statuses, without exposing raw server content.
+- A PUBLIC ANONYMOUS request to /api/calendar/items returned 401, as expected. The earlier screenshot of a signed-in browser's failed read remains UNRESOLVED until an authenticated request's status and response are observed; this release does not claim that underlying failure is fixed.
+- Chat/Claw AI natural-language calendar tooling remains follow-up #4745. No second store, new external connector grant, autonomous scheduling, or reminder delivery was added.

@@ -25,6 +25,12 @@ from .claw_connector_enrollment_routes import (
 )
 from .connector_owner_setup_page import (
     SETUP_PATH, SCRIPT_PATH, owner_setup_page, owner_setup_script,
+);
+from .connector_owner_role_bootstrap import (
+    OWNER_ROLE_BOOTSTRAP_PATH, bootstrap_owner_role,
+)
+from .connector_enrollment_schema_install import (
+    ENROLLMENT_SCHEMA_INSTALL_PATH, install_enrollment_schema,
 )
 from .control_plane_broker_pairing_client import CloudflareCanonicalBrokerPairingClient
 from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
@@ -192,4 +198,6 @@ def reviewed_owner_enrollment_routes(ports: OwnerEnrollmentPorts) -> tuple[Route
         Route(CONNECTOR_ENROLLMENT_CONSENT_REVOKE_PATH,
               connector_enrollment_consent_revoke, methods=["POST"]),
         Route(CONNECTOR_ENROLLMENT_ISSUE_PATH, connector_enrollment_issue, methods=["POST"]),
+        Route(OWNER_ROLE_BOOTSTRAP_PATH, bootstrap_owner_role, methods=["POST"]),
+        Route(ENROLLMENT_SCHEMA_INSTALL_PATH, install_enrollment_schema, methods=["POST"]),
     ) + one_click_route

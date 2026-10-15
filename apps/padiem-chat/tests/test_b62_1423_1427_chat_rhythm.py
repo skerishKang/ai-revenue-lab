@@ -9,13 +9,14 @@ VISUAL_WORKFLOW = (REPO_ROOT / ".github/workflows/b62-browser-qa-unified.yml").r
 VISUAL_TAIL = (REPO_ROOT / ".github/scripts/b62_browser_qa_tail_parallel.py").read_text(encoding="utf-8")
 
 
-def test_1423_outer_surfaces_stay_wide_while_prose_has_readable_measure() -> None:
+def test_1423_assistant_response_and_error_have_bounded_widths() -> None:
     assert "--padiem-chat-reading-measure: 76ch;" in ALIGNMENT_CSS
     assert ".assistant-content {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
-    assert ".error-box {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
+    assert '.assistant-content > .rich-response {' in ALIGNMENT_CSS
+    assert '.assistant-content > .error-box {' in ALIGNMENT_CSS
+    assert "width: calc(100% - 32px - var(--padiem-chat-meta-gap)) !important;" in ALIGNMENT_CSS
     assert ".rich-response-paragraph," in ALIGNMENT_CSS
     assert "max-inline-size: min(var(--padiem-chat-reading-measure), 100%);" in ALIGNMENT_CSS
-    # Wide structured surfaces are intentionally not put behind the prose measure.
     assert ".rich-code-block," not in ALIGNMENT_CSS
     assert ".rich-table-block," not in ALIGNMENT_CSS
 
