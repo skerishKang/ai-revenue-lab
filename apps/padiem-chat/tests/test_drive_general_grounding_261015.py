@@ -55,6 +55,7 @@ def test_read_after_one_verified_search(monkeypatch):
     assert "합계 100원" in ctx
     assert "신뢰하지 않는" in ctx
     assert len(sources) == 1
+    assert sources[0]["url"] == "https://drive.google.com/file/d/file_123/view"
     assert engine.calls == [("search", "workspace_server_verified", "견적서"), ("read", "workspace_server_verified", "file_123")]
 
 
@@ -74,3 +75,25 @@ def test_multiple_matches_do_not_autoread(monkeypatch):
     ctx, _ = asyncio.run(drive_general_grounding(request, "드라이브 견적서 요약해줘"))
     assert "[선택된 파일 본문]" not in ctx
     assert not engine.calls
+
+def test_provider_file_id_gets_official_google_open_link_without_web_view_link(monkeypatch):
+    from app import drive_general_grounding as mod
+    monkeypatch.setattr(mod, "auth_ready", lambda request: True)
+    monkeypatch.setattr(mod, "current_user_id", lambda request: "signed_user")
+    engine = Engine()
+
+    async def no_link(*, workspace_ref, query):
+        assert workspace_ref == "workspace_server_verified"
+        return {"files": [{"file_id": "file_123", "name": "견적서.txt",
+                           "mime_type": "text/plain", "url": None}], "more": False}
+
+    engine.general_search = no_link
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        identity_shadow_store=Store(),
+        control_plane_identity_authority=Authority(),
+        drive_case_folder_engine_client=engine,
+    )))
+    ctx, sources = asyncio.run(drive_general_grounding(request, "구글드라이브에서 견적서 찾아줘"))
+    assert "견적서.txt" in ctx
+    assert sources[0]["url"] == "https://drive.google.com/open?id=file_123"
+    assert engine.calls == []
