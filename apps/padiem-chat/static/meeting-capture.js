@@ -208,7 +208,7 @@
       ' <p class="meeting-status" id="meetingStatus" role="status" aria-live="polite">대기 중 · 아직 녹음하지 않았습니다.</p>',
       ' <label for="meetingTranscript">전사 원문 (편집 가능)</label><textarea id="meetingTranscript" rows="8" placeholder="실시간 전사 내용을 이곳에서 확인할 수 있습니다."></textarea>',
       ' <p id="meetingInterim" role="status" class="meeting-interim"></p>',
-      ' <div class="meeting-exports"><button type="button" id="meetingDownloadAudio" disabled>녹음 파일 다운로드</button><button type="button" id="meetingDownloadText" disabled>전사 TXT 다운로드</button></div>',
+      ' <div class="meeting-exports"><button type="button" id="meetingDownloadAudio" disabled>녹음 파일 다운로드</button><button type="button" id="meetingDownloadText" disabled>전사 TXT 다운로드</button><button type="button" id="meetingDraftInClaw" disabled>Claw로 회의록 초안 만들기</button></div>',
       ' <p class="meeting-storage-note">Google Drive 직접 저장은 쓰기 권한 연결이 필요합니다. 현재는 파일을 기기에 다운로드해 보관할 수 있습니다. 서버에 원본을 올리지 않으며 새로고침하면 임시 기록이 사라집니다.</p>',
       '</div>',
     ].join("");
@@ -218,6 +218,7 @@
     const startButton = find("meetingStart"), stopButton = find("meetingStop");
     const downloadAudio = find("meetingDownloadAudio"), downloadText = find("meetingDownloadText");
     const closeButton = find("meetingClose"), interim = find("meetingInterim");
+    const draftInClaw = find("meetingDraftInClaw");
     let signedIn = false, audio = null;
     const statuses = {
       recording: "녹음 중 · 마이크가 켜져 있습니다.",
@@ -250,6 +251,7 @@
         interim.textContent = state.interim ? "인식 중: " + state.interim : "";
         downloadAudio.disabled = state.active || !audio;
         downloadText.disabled = state.active || !text.value.trim();
+        draftInClaw.disabled = state.active || !text.value.trim() || !signedIn;
       },
     });
     function download(blob, name) {
@@ -287,6 +289,7 @@
         trigger.setAttribute("aria-expanded", "false");
         const discard = () => {
           audio = null; text.value = ""; downloadAudio.disabled = true; downloadText.disabled = true;
+          draftInClaw.disabled = true;
           controller.discard();
         };
         if (controller.snapshot().active) void controller.stop().then(discard);
@@ -320,8 +323,31 @@
       audio = state.artifact;
       downloadAudio.disabled = !audio;
       downloadText.disabled = !text.value.trim();
+      draftInClaw.disabled = !text.value.trim();
     });
-    text.addEventListener("input", () => { downloadText.disabled = controller.snapshot().active || !text.value.trim(); });
+    text.addEventListener("input", () => {
+      const unavailable = controller.snapshot().active || !text.value.trim();
+      downloadText.disabled = unavailable;
+      draftInClaw.disabled = unavailable || !signedIn;
+    });
+    draftInClaw.addEventListener("click", () => {
+      if (!signedIn || controller.snapshot().active || !text.value.trim()) return;
+      const composer = find("messageInput");
+      const clawNav = find("clawNavButton");
+      const prompt = "다음 회의 전사문을 바탕으로 회의록 초안을 작성해 주세요. 원문에 없는 사실·담당자·기한을 추정하지 말고, 주요 논의·결정사항·할 일 후보·미정 사항을 구분해 주세요.\\n\\n" + text.value.trim();
+      if (!composer || !clawNav || prompt.length > 9000 || (composer.maxLength > 0 && prompt.length > composer.maxLength)) {
+        say("전사문이 너무 길거나 Claw 입력창을 열 수 없습니다. TXT를 내려받아 파일로 전달하세요.");
+        return;
+      }
+      clawNav.click();
+      if (doc.querySelector(".app-shell")?.dataset.state !== "claw") { say("Claw 화면을 열 수 없습니다."); return; }
+      composer.value = prompt;
+      composer.dispatchEvent(new win.Event("input", { bubbles: true }));
+      dialog.close?.();
+      trigger.setAttribute("aria-expanded", "false");
+      composer.focus?.();
+      // Human chooses Send through the existing authorized composer form, never automatic.
+    });
     downloadAudio.addEventListener("click", () => {
       if (audio && !controller.snapshot().active) {
         download(audio, "padiem-meeting-" + Date.now() + (audio.type.includes("mp4") ? ".m4a" : ".webm"));

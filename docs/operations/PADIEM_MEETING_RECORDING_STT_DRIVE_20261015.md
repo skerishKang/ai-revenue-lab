@@ -83,6 +83,7 @@ Drive 기술 근거: https://developers.google.com/workspace/drive/api/guides/ma
 
 - `apps/padiem-chat/static/meeting-capture.js`: 표준 브라우저 MediaRecorder와 Web Speech Recognition의 **분리된 회의 세션**. 녹음만 / 실시간 전사만 / 동시 실행. 녹음 오류와 STT 오류를 분리하고, 복수 번 전사 final 중복 방지, 로그인 상실 시 메모리 폐기, 명시적 녹음 종료, TXT/오디오 로컬 다운로드.
 - `meeting-capture.css`: 공통 PADIEM 클라이언트에 별도 회의 UI.
+- 전사 종료 후 사용자가 **Claw로 회의록 초안 만들기**를 선택하면 검토 가능한 회의록 작성 요청을 기존 Claw composer에 채우고, **사용자가 기존 보내기 버튼을 눌러야만** 기존 인증/모델/요금 경로로 전송한다. 브라우저가 회의록 AI 호출·자동 전송을 독자적으로 수행하지 않는다.
 - `static/index.html`, `static/app.js`: 메뉴 진입과 Claw에서 명시적 “회의록 준비해 줘” 명령을 같은 UI로 연결. 다른 대화는 기존 P01/Chat 경로로 전송. 기존 짧은 음성 입력 #4643/Mode1·Mode2 파일 미수정.
 - `tests/test_4647_meeting_capture_node.js`: 세 모드, STT 오류 시 녹음 유지, 중복 final 방지 및 중복 stop 범위의 단위 테스트.
 
