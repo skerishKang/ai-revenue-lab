@@ -38,6 +38,14 @@
   html[data-b66-theme="dark"] body.b66-three-pane .shell-rail-section #shellManualQuote small {
     color: #c5dce9;
   }
+  /* Live browser QA: settings Close was white-on-white, and preview reopen
+     was white text on a pale-blue action surface. */
+  html[data-b66-theme="dark"] body.b66-three-pane #settingsClose {
+    background: #304c61; color: #edf7ff; border: 1px solid #628299;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .shell-preview-reopen {
+    background: #90c8ed; color: #102a3e; border: 1px solid #90c8ed;
+  }
   html[data-b66-theme="dark"] body.b66-three-pane .easy-view { background: linear-gradient(155deg, #1d303f, #152530); }
   html[data-b66-theme="dark"] body.b66-three-pane .easy-empty::before {
     background: radial-gradient(ellipse, rgba(78,139,180,.22), transparent 72%);
