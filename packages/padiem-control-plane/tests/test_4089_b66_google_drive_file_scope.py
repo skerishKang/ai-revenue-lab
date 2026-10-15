@@ -11,6 +11,7 @@ import pytest
 from google_oauth_durable_store import (
     B66_GOOGLE_DRIVE_FILE_CONNECTOR,
     B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+    B66_GOOGLE_DRIVE_OIDC_SCOPES,
     GOOGLE_DRIVE_FILE_SCOPE,
     GOOGLE_DRIVE_FULL_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
@@ -24,6 +25,7 @@ from google_oauth_webcrypto_sealer import (
 from padiem_control_plane.connector_connect_ticket import (
     B66_GOOGLE_DRIVE_FILE_CONNECTOR,
     B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+    B66_GOOGLE_DRIVE_OIDC_SCOPES as TICKET_OIDC_SCOPES,
 )
 from google_oauth_access_lease import _REVIEWED_SCOPES as lease_reviewed_scopes
 
@@ -46,12 +48,28 @@ class FileTokenExchange(FakeTokenExchange):
                 "access_token": ACCESS_TOKEN,
                 "refresh_token": REFRESH_TOKEN,
                 "token_type": "Bearer",
-                "scope": GOOGLE_DRIVE_FILE_SCOPE,
+                "scope": " ".join(
+                    (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
+                ),
             }
         )
 
 
 class FullTokenExchange(FakeTokenExchange):
+    def __init__(self) -> None:
+        super().__init__(
+            payload={
+                "access_token": ACCESS_TOKEN,
+                "refresh_token": REFRESH_TOKEN,
+                "token_type": "Bearer",
+                "scope": " ".join(
+                    (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
+                ),
+            }
+        )
+
+
+class DriveOnlyTokenExchange(FakeTokenExchange):
     def __init__(self) -> None:
         super().__init__(
             payload={
@@ -104,9 +122,9 @@ def b66_ticket(
     ticket_id: str = "ticket_b66",
 ) -> str:
     scope = (
-        GOOGLE_DRIVE_FULL_SCOPE
+        (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
         if connector_id == B66_GOOGLE_DRIVE_FULL_CONNECTOR
-        else GOOGLE_DRIVE_FILE_SCOPE
+        else (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
     )
     return authority.issue(
         auth_session=auth_session(),
@@ -115,7 +133,7 @@ def b66_ticket(
         actor_ref="actor_b66_a",
         account_ref="account_b66_a",
         workspace_ref="workspace_b66_a",
-        scopes=(scope,),
+        scopes=scope,
         now=NOW,
         ttl_seconds=180,
     )
@@ -127,11 +145,17 @@ def test_b66_file_connector_is_separate_from_shared_readonly_drive():
     from padiem_control_plane.connector_connect_ticket import _REVIEWED_SCOPES as ticket_scopes
 
     assert ticket_scopes["google-drive"] == (GOOGLE_DRIVE_READONLY_SCOPE,)
-    assert ticket_scopes[B66_GOOGLE_DRIVE_FILE_CONNECTOR] == (GOOGLE_DRIVE_FILE_SCOPE,)
+    assert ticket_scopes[B66_GOOGLE_DRIVE_FILE_CONNECTOR] == (
+        (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
+    )
     assert _OAUTH_REVIEWED_SCOPES["google-drive"] == (GOOGLE_DRIVE_READONLY_SCOPE,)
-    assert _OAUTH_REVIEWED_SCOPES[B66_GOOGLE_DRIVE_FILE_CONNECTOR] == (GOOGLE_DRIVE_FILE_SCOPE,)
+    assert _OAUTH_REVIEWED_SCOPES[B66_GOOGLE_DRIVE_FILE_CONNECTOR] == (
+        (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
+    )
     assert _REVIEWED_SCOPES["google-drive"] == (GOOGLE_DRIVE_READONLY_SCOPE,)
-    assert _REVIEWED_SCOPES[B66_GOOGLE_DRIVE_FILE_CONNECTOR] == (GOOGLE_DRIVE_FILE_SCOPE,)
+    assert _REVIEWED_SCOPES[B66_GOOGLE_DRIVE_FILE_CONNECTOR] == (
+        (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
+    )
 
 
 def test_b66_file_connector_rejects_a_readonly_grant_callback():
@@ -169,7 +193,7 @@ def test_b66_file_begin_requests_drive_file_and_completes_with_verified_destinat
 
     parsed = urlsplit(receipt.authorization_url)
     params = parse_qs(parsed.query)
-    assert params["scope"] == [GOOGLE_DRIVE_FILE_SCOPE]
+    assert params["scope"] == [" ".join((GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES)]
     assert params["access_type"] == ["offline"]
     assert GOOGLE_DRIVE_READONLY_SCOPE not in receipt.authorization_url
     state_ref = params["state"][0]
@@ -185,7 +209,7 @@ def test_b66_file_begin_requests_drive_file_and_completes_with_verified_destinat
     assert connected.connector_id == B66_GOOGLE_DRIVE_FILE_CONNECTOR
     assert connected.actor_ref == "actor_b66_a"
     assert connected.workspace_ref == "workspace_b66_a"
-    assert connected.scopes == (GOOGLE_DRIVE_FILE_SCOPE,)
+    assert connected.scopes == (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
     assert destination_port.calls == [ACCESS_TOKEN]
     assert exchange.calls
     assert storage.count("google_oauth_refresh_credential") == 1
@@ -196,7 +220,7 @@ def test_b66_file_begin_requests_drive_file_and_completes_with_verified_destinat
     assert record.connector_id == B66_GOOGLE_DRIVE_FILE_CONNECTOR
     assert record.provider_subject == "google-sub-12345678"
     assert record.provider_email == "owner@drive.test"
-    assert record.scopes == (GOOGLE_DRIVE_FILE_SCOPE,)
+    assert record.scopes == (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
     context = GoogleOAuthSealContext(
         purpose=GoogleOAuthSealPurpose.REFRESH_TOKEN,
         connector_id=B66_GOOGLE_DRIVE_FILE_CONNECTOR,
@@ -308,14 +332,24 @@ def test_b66_full_drive_connector_is_separate_and_shared_drive_stays_readonly():
     from padiem_control_plane.connector_connect_ticket import _REVIEWED_SCOPES as ticket_scopes
 
     assert ticket_scopes["google-drive"] == (GOOGLE_DRIVE_READONLY_SCOPE,)
-    assert ticket_scopes[B66_GOOGLE_DRIVE_FILE_CONNECTOR] == (GOOGLE_DRIVE_FILE_SCOPE,)
-    assert ticket_scopes[B66_GOOGLE_DRIVE_FULL_CONNECTOR] == (GOOGLE_DRIVE_FULL_SCOPE,)
+    assert ticket_scopes[B66_GOOGLE_DRIVE_FILE_CONNECTOR] == (
+        (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
+    )
+    assert ticket_scopes[B66_GOOGLE_DRIVE_FULL_CONNECTOR] == (
+        (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
+    )
     assert _OAUTH_REVIEWED_SCOPES["google-drive"] == (GOOGLE_DRIVE_READONLY_SCOPE,)
-    assert _OAUTH_REVIEWED_SCOPES[B66_GOOGLE_DRIVE_FULL_CONNECTOR] == (GOOGLE_DRIVE_FULL_SCOPE,)
+    assert _OAUTH_REVIEWED_SCOPES[B66_GOOGLE_DRIVE_FULL_CONNECTOR] == (
+        (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
+    )
     assert _REVIEWED_SCOPES["google-drive"] == (GOOGLE_DRIVE_READONLY_SCOPE,)
-    assert _REVIEWED_SCOPES[B66_GOOGLE_DRIVE_FULL_CONNECTOR] == (GOOGLE_DRIVE_FULL_SCOPE,)
+    assert _REVIEWED_SCOPES[B66_GOOGLE_DRIVE_FULL_CONNECTOR] == (
+        (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
+    )
     assert lease_reviewed_scopes["google-drive"] == (GOOGLE_DRIVE_READONLY_SCOPE,)
-    assert lease_reviewed_scopes[B66_GOOGLE_DRIVE_FULL_CONNECTOR] == (GOOGLE_DRIVE_FULL_SCOPE,)
+    assert lease_reviewed_scopes[B66_GOOGLE_DRIVE_FULL_CONNECTOR] == (
+        (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
+    )
 
 
 def test_b66_callback_state_is_bound_to_canonical_owner_without_browser_owner_input():
@@ -333,7 +367,7 @@ def test_b66_callback_state_is_bound_to_canonical_owner_without_browser_owner_in
         product_id="b62",
         subject_type="user",
         subject_id="subject 1 한글",
-        scopes=(GOOGLE_DRIVE_FULL_SCOPE,),
+        scopes=(GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
         code_verifier=PKCE_VERIFIER,
         redirect_uri="https://oauth.example.invalid/v1/google/callback",
         created_at=created,
@@ -360,7 +394,7 @@ def test_b66_full_drive_begin_requests_full_scope_and_completes_with_verified_de
     receipt = asyncio.run(runtime.begin(connect_ticket=raw_ticket))
 
     params = parse_qs(urlsplit(receipt.authorization_url).query)
-    assert params["scope"] == [GOOGLE_DRIVE_FULL_SCOPE]
+    assert params["scope"] == [" ".join((GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES)]
     assert GOOGLE_DRIVE_READONLY_SCOPE not in receipt.authorization_url
     assert GOOGLE_DRIVE_FILE_SCOPE not in receipt.authorization_url
     state_ref = params["state"][0]
@@ -374,14 +408,14 @@ def test_b66_full_drive_begin_requests_full_scope_and_completes_with_verified_de
     )
 
     assert connected.connector_id == B66_GOOGLE_DRIVE_FULL_CONNECTOR
-    assert connected.scopes == (GOOGLE_DRIVE_FULL_SCOPE,)
+    assert connected.scopes == (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
     assert destination_port.calls == [ACCESS_TOKEN]
     assert storage.count("google_oauth_refresh_credential") == 1
     assert storage.count("google_oauth_provider_destination") == 1
 
     record = store.load_active_credential(binding_ref=connected.binding_ref, now=NOW)
     assert record.connector_id == B66_GOOGLE_DRIVE_FULL_CONNECTOR
-    assert record.scopes == (GOOGLE_DRIVE_FULL_SCOPE,)
+    assert record.scopes == (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES
     assert record.provider_subject == "google-sub-12345678"
     assert record.provider_email == "owner@drive.test"
     context = GoogleOAuthSealContext(
@@ -422,6 +456,32 @@ def test_b66_full_drive_rejects_a_drive_file_grant_without_silent_scope_widening
     )
     runtime._token_exchange = exchange
     raw_ticket = b66_ticket(authority, connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR)
+    receipt = asyncio.run(runtime.begin(connect_ticket=raw_ticket))
+    state_ref = parse_qs(urlsplit(receipt.authorization_url).query)["state"][0]
+
+    with pytest.raises(Exception) as mismatch:
+        asyncio.run(
+            runtime.complete_callback(
+                state_ref=state_ref,
+                authorization_code=AUTH_CODE,
+                provider_error=None,
+            )
+        )
+    assert mismatch.value.code == "google_oauth_scope_mismatch"
+    assert storage.count("google_oauth_refresh_credential") == 0
+    assert storage.count("google_oauth_provider_destination") == 0
+
+
+def test_b66_full_drive_rejects_a_true_drive_only_grant():
+    runtime, storage, _, _, authority, _, _ = b66_fixture(
+        connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+    )
+    runtime._token_exchange = DriveOnlyTokenExchange()
+    raw_ticket = b66_ticket(
+        authority,
+        connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        ticket_id="ticket_b66_drive_only",
+    )
     receipt = asyncio.run(runtime.begin(connect_ticket=raw_ticket))
     state_ref = parse_qs(urlsplit(receipt.authorization_url).query)["state"][0]
 

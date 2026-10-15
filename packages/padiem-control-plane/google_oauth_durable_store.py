@@ -21,12 +21,20 @@ GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
 GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 GOOGLE_DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive"
+GOOGLE_OPENID_SCOPE = "openid"
+GOOGLE_PROFILE_SCOPE = "profile"
+GOOGLE_EMAIL_SCOPE = "email"
 # #2010: the Control Plane owns the long-lived Google refresh credential and
 # issues short-lived read leases. Calendar joins the same reviewed OAuth
 # authority with exactly one readonly scope.
 GOOGLE_CALENDAR_READONLY_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"
 B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
 B66_GOOGLE_DRIVE_FULL_CONNECTOR = "b66-google-drive-full"
+B66_GOOGLE_DRIVE_OIDC_SCOPES = (
+    GOOGLE_OPENID_SCOPE,
+    GOOGLE_PROFILE_SCOPE,
+    GOOGLE_EMAIL_SCOPE,
+)
 B66_GOOGLE_DRIVE_CONNECTORS = frozenset({
     B66_GOOGLE_DRIVE_FILE_CONNECTOR,
     B66_GOOGLE_DRIVE_FULL_CONNECTOR,
@@ -40,8 +48,8 @@ _OAUTH_REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
-    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,),
-    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,),
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
 }
 # Backwards-compatible module-level map used by the Control Plane modules.
 _REVIEWED_SCOPES = _OAUTH_REVIEWED_SCOPES
@@ -1370,6 +1378,7 @@ WORKSPACE_READ_SEALED_CREDENTIAL_OUTPUT = False
 WORKSPACE_READ_SCHEMA_UNIQUE_INDEX_ADDED = False
 B66_GOOGLE_DRIVE_FILE_SCOPE_REVIEWED = True
 B66_GOOGLE_DRIVE_FULL_SCOPE_REVIEWED = True
+B66_GOOGLE_DRIVE_OIDC_SCOPES_REVIEWED = True
 B66_GOOGLE_DRIVE_FILE_CONNECTOR_REVIEWED = True
 B66_GOOGLE_DRIVE_FULL_CONNECTOR_REVIEWED = True
 B66_FULL_DRIVE_SCOPE = GOOGLE_DRIVE_FULL_SCOPE

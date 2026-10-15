@@ -12,6 +12,7 @@ from padiem_control_plane.contracts import ControlPlaneContractError
 from google_oauth_durable_store import (
     B66_GOOGLE_DRIVE_FILE_CONNECTOR,
     B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+    B66_GOOGLE_DRIVE_OIDC_SCOPES,
     GMAIL_READONLY_SCOPE,
     GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_FILE_SCOPE,
@@ -41,10 +42,11 @@ _REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     # with exactly one readonly provider scope. No Calendar write/full scope.
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
     # #4089 B66 Drive FILE is a separate reviewed B66 connector only.
-    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,),
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
     # #4089/#4871: B66 full-Drive connector is reviewed separately. Existing
     # drive.file grants are not silently interpreted as the broader grant.
-    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,),
+    # OIDC identify scopes support verified UserInfo only.
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
 }
 
 
@@ -319,6 +321,7 @@ class GoogleOAuthAccessLeaseRuntime:
             "shared_google_drive_write_scope": False,
             "b66_google_drive_file_scope": True,
             "b66_google_drive_full_scope": True,
+            "b66_google_drive_oidc_scopes": True,
             "google_write_scope": True,
             "refresh_port": refresh_safe() if callable(refresh_safe) else {"test_port": True},
         }
@@ -330,4 +333,5 @@ GOOGLE_WRITE_SCOPE = True
 SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False
 B66_GOOGLE_DRIVE_FILE_SCOPE = True
 B66_GOOGLE_DRIVE_FULL_SCOPE = True
+B66_GOOGLE_DRIVE_OIDC_SCOPES = True
 PRIVATE_ACCESS_LEASE_SOURCE_READY = True

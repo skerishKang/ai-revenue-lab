@@ -21,6 +21,7 @@ from google_oauth_durable_store import (
     B66_GOOGLE_DRIVE_CONNECTORS,
     B66_GOOGLE_DRIVE_FILE_CONNECTOR,
     B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+    B66_GOOGLE_DRIVE_OIDC_SCOPES,
     GMAIL_READONLY_SCOPE,
     GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_FILE_SCOPE,
@@ -61,11 +62,12 @@ _REVIEWED_SCOPES = {
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
     # #4089: B66's independent Drive storage destination is a separate reviewed
     # connector. The shared google-drive connector remains drive.readonly.
-    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,),
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
     # #4089/#4871: B66 final Drive connection requests the full working
-    # https://www.googleapis.com/auth/drive grant. The old drive.file connector
-    # remains for prior granted credentials and is never silently widened.
-    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,),
+    # https://www.googleapis.com/auth/drive grant plus the OIDC identity scopes
+    # required for verified Google UserInfo. The OIDC scopes identify the
+    # destination Google account; they are not additional Drive file grants.
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
 }
 _AUTH_SESSION_SENTINEL = "sealed-session-identity"
 
@@ -252,7 +254,7 @@ class GoogleOAuthSessionPayload:
         if expected is None or not isinstance(self.scopes, tuple) or set(self.scopes) != set(expected):
             raise ControlPlaneContractError(
                 "unreviewed_google_oauth_scope",
-                "OAuth session scopes must exactly match the reviewed readonly set",
+                "OAuth session scopes must exactly match the reviewed set",
             )
         object.__setattr__(self, "scopes", expected)
         verifier = _bounded_secret(self.code_verifier, "code_verifier", max_chars=128)
@@ -968,6 +970,7 @@ class GoogleOAuthIngressRuntime:
             "shared_google_drive_write_scope": False,
             "b66_google_drive_file_scope": True,
             "b66_google_drive_full_scope": True,
+            "b66_google_drive_oidc_scopes": True,
             "google_write_scope": True,
             "raw_connect_ticket_persisted": False,
             "raw_authorization_code_persisted": False,
@@ -991,6 +994,7 @@ GOOGLE_WRITE_SCOPE = True
 SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False
 B66_GOOGLE_DRIVE_FILE_SCOPE = True
 B66_GOOGLE_DRIVE_FULL_SCOPE = True
+B66_GOOGLE_DRIVE_OIDC_SCOPES = True
 CALLBACK_STATE_OWNER_BOUND = True
 CLIENT_ASSERTED_CALLBACK_OWNER = False
 PUBLIC_HOSTNAME_CONFIGURED = False

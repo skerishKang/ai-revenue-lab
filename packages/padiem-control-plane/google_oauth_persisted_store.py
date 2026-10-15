@@ -334,12 +334,9 @@ class CloudflareDurableGoogleOAuthStore(_RowsWrittenGoogleOAuthStore):
                 label="credential",
             )
 
-        self.transaction(operation)
+            if record.provider_subject is None:
+                return
 
-        if record.provider_subject is None:
-            return
-
-        def persist_destination() -> None:
             existing_destination = _single_or_none(
                 _rows(
                     self._sql.exec(
@@ -390,7 +387,7 @@ class CloudflareDurableGoogleOAuthStore(_RowsWrittenGoogleOAuthStore):
                 label="verified destination",
             )
 
-        self.transaction(persist_destination)
+        self.transaction(operation)
 
     def revoke_credential(self, *, binding_ref: str, revoked_at: datetime) -> None:
         binding_ref = _safe_ref(binding_ref, "binding_ref")

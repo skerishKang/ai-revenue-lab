@@ -4,11 +4,14 @@ from __future__ import annotations
 
 from dataclasses import replace
 from datetime import timedelta
+from typing import Any
 
 import httpx
 import pytest
+from starlette.requests import Request
 
 from app.auth import SESSION_COOKIE
+from app.b66_drive_routes import b66_drive_status
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.main import create_app
@@ -28,6 +31,8 @@ OTHER = "usr_" + "b" * 32
 FILE_CONNECTOR_ID = "b66-google-drive-file"
 FULL_CONNECTOR_ID = "b66-google-drive-full"
 FULL_SCOPE = "https://www.googleapis.com/auth/drive"
+OIDC_SCOPES = ("openid", "profile", "email")
+FULL_AUTH_SCOPES = (FULL_SCOPE,) + OIDC_SCOPES
 FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 
 
@@ -89,7 +94,7 @@ def connection_receipt(*, scope: str = FULL_SCOPE, connector_id: str = FULL_CONN
         "actor_ref": "actor_a",
         "account_ref": "account_a",
         "workspace_ref": "workspace_a",
-        "scopes": [scope],
+        "scopes": list(FULL_AUTH_SCOPES),
         "connected_at": NOW.isoformat(),
         "expires_at": None,
         "refresh_token_persisted_sealed": True,
@@ -381,6 +386,63 @@ async def test_b66_disconnect_revokes_full_and_precursor_file_grants():
         {"full": {"workspace_ref": "workspace_a"}},
         {"file": {"workspace_ref": "workspace_a"}},
     ]
+
+
+@pytest.mark.asyncio
+async def test_read_only_status_get_rejects_foreign_origin():
+    app, history, _, google = app_fixture()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(SESSION_COOKIE, cookie_for(OWNER), domain="chat.example.test", path="/")
+        foreign_origin = await client.get(
+            "/api/b66/drive/status",
+            headers={"Origin": "https://attacker.example.test"},
+        )
+
+    assert foreign_origin.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_status_route_accepts_absent_origin_for_signed_owner_get():
+    app, history, _, google = app_fixture()
+    cookie = cookie_for(OWNER)
+    scope = {
+        "type": "http",
+        "http_version": "1.1",
+        "method": "GET",
+        "scheme": "https",
+        "path": "/api/b66/drive/status",
+        "raw_path": b"/api/b66/drive/status",
+        "query_string": b"",
+        "headers": [(b"cookie", f"{SESSION_COOKIE}={cookie}".encode())],
+        "client": ("browser", 12345),
+        "server": ("chat.example.test", 443),
+        "app": app,
+    }
+
+    async def receive() -> dict[str, Any]:
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    response = await b66_drive_status(Request(scope, receive))
+
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_mutating_connect_post_requires_matching_origin():
+    app, history, binding, google = app_fixture()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(SESSION_COOKIE, cookie_for(OWNER), domain="chat.example.test", path="/")
+        client.headers["origin"] = ""
+        missing_origin = await client.post("/api/b66/drive/connect")
+    assert missing_origin.status_code == 403
+    assert binding.ticket_calls == []
+    assert google.begin_calls == []
 
 
 @pytest.mark.asyncio

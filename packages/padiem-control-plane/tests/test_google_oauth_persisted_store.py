@@ -6,6 +6,9 @@ import sqlite3
 import pytest
 
 from google_oauth_durable_store import (
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+    B66_GOOGLE_DRIVE_OIDC_SCOPES,
+    GOOGLE_DRIVE_FULL_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     DurableGoogleOAuthAuthorizationState,
     DurableGoogleOAuthCredential,
@@ -64,6 +67,19 @@ class AlwaysZeroRowsWrittenStorage:
         return self.connection.execute(statement, args).fetchone()[0]
 
 
+class DestinationInsertFailureSql(AlwaysZeroRowsWrittenSql):
+    def exec(self, statement: str, *args):
+        if "INSERT INTO google_oauth_provider_destination" in statement:
+            raise RuntimeError("injected verified destination insertion failure")
+        return super().exec(statement, *args)
+
+
+class DestinationInsertFailureStorage(AlwaysZeroRowsWrittenStorage):
+    def __init__(self) -> None:
+        self.connection = sqlite3.connect(":memory:", isolation_level=None)
+        self.sql = DestinationInsertFailureSql(self.connection)
+
+
 def _store() -> tuple[CloudflareDurableGoogleOAuthStore, AlwaysZeroRowsWrittenStorage]:
     storage = AlwaysZeroRowsWrittenStorage()
     return CloudflareDurableGoogleOAuthStore(storage), storage
@@ -103,6 +119,24 @@ def _credential(*, binding_ref: str = "binding.persisted.1") -> DurableGoogleOAu
         scopes=(GOOGLE_DRIVE_READONLY_SCOPE,),
         sealed_refresh_token=SEALED_REFRESH,
         issued_at=NOW,
+    )
+
+
+def _b66_credential(
+    *,
+    binding_ref: str = "binding.b66.persisted.1",
+) -> DurableGoogleOAuthCredential:
+    return DurableGoogleOAuthCredential(
+        binding_ref=binding_ref,
+        connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        actor_ref="actor.b66.persisted.1",
+        account_ref="account.b66.persisted.1",
+        workspace_ref="workspace.b66.persisted.1",
+        scopes=(GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
+        sealed_refresh_token=SEALED_REFRESH,
+        issued_at=NOW,
+        provider_subject="google-sub-12345678",
+        provider_email="owner@drive.test",
     )
 
 
@@ -200,3 +234,27 @@ def test_expired_state_is_still_permanently_consumed_with_zero_rows_written() ->
             now=NOW + timedelta(seconds=32),
         )
     assert replay.value.code == "missing_google_oauth_state"
+
+
+def test_b66_credential_and_verified_destination_persist_together() -> None:
+    store, storage = _store()
+    record = _b66_credential()
+
+    store.save_credential(record, verified_at=NOW)
+
+    assert storage.scalar("SELECT count(*) FROM google_oauth_refresh_credential") == 1
+    assert storage.scalar("SELECT count(*) FROM google_oauth_provider_destination") == 1
+    assert store.load_active_credential(binding_ref=record.binding_ref, now=NOW) == record
+
+
+def test_destination_insert_failure_rolls_back_b66_credential() -> None:
+    storage = DestinationInsertFailureStorage()
+    store = CloudflareDurableGoogleOAuthStore(storage)
+    record = _b66_credential(binding_ref="binding.b66.rollback.1")
+
+    with pytest.raises(RuntimeError, match="injected verified destination insertion failure"):
+        store.save_credential(record, verified_at=NOW)
+
+    assert storage.scalar("SELECT count(*) FROM google_oauth_refresh_credential") == 0
+    assert storage.scalar("SELECT count(*) FROM google_oauth_provider_destination") == 0
+

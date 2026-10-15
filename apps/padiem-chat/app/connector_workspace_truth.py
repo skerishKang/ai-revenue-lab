@@ -51,9 +51,10 @@ _B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
 _B66_GOOGLE_DRIVE_FULL_CONNECTOR = "b66-google-drive-full"
 _B66_GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 _B66_GOOGLE_DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive"
+_B66_GOOGLE_DRIVE_OIDC_SCOPES = ("openid", "profile", "email")
 _B66_DRIVE_SCOPES = {
-    _B66_GOOGLE_DRIVE_FILE_CONNECTOR: _B66_GOOGLE_DRIVE_FILE_SCOPE,
-    _B66_GOOGLE_DRIVE_FULL_CONNECTOR: _B66_GOOGLE_DRIVE_FULL_SCOPE,
+    _B66_GOOGLE_DRIVE_FILE_CONNECTOR: (_B66_GOOGLE_DRIVE_FILE_SCOPE,) + _B66_GOOGLE_DRIVE_OIDC_SCOPES,
+    _B66_GOOGLE_DRIVE_FULL_CONNECTOR: (_B66_GOOGLE_DRIVE_FULL_SCOPE,) + _B66_GOOGLE_DRIVE_OIDC_SCOPES,
 }
 _BEGIN_CONNECT_KEYS = frozenset({"connect_ticket"})
 _AUTHORIZATION_KEYS = frozenset({"authorization_url", "connector_id", "expires_at"})
@@ -427,7 +428,7 @@ class CloudflareGoogleOAuthWorkspaceTruth:
             raise _invalid()
         if connection.get("connector_id") != connector_id:
             raise _invalid()
-        if connection.get("scopes") != [_B66_DRIVE_SCOPES[connector_id]]:
+        if connection.get("scopes") != list(_B66_DRIVE_SCOPES[connector_id]):
             raise _invalid()
         if connection.get("refresh_token_persisted_sealed") is not True:
             raise _invalid()

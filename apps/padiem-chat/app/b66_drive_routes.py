@@ -46,7 +46,11 @@ async def _host(request: Request) -> tuple[str, B66DriveFileHost] | JSONResponse
     expected_origin = expected_browser_origin(request.app.state.settings)
     if expected_origin is None:
         return _reply(503, "b66_drive_unavailable")
-    if request.headers.get("origin") != expected_origin:
+    supplied_origin = request.headers.get("origin")
+    if request.method.upper() in {"GET", "HEAD"}:
+        if supplied_origin is not None and supplied_origin != expected_origin:
+            return _reply(403, "b66_drive_origin_rejected")
+    elif supplied_origin != expected_origin:
         return _reply(403, "b66_drive_origin_rejected")
     user_id = current_user_id(request) if auth_ready(request) else None
     if not user_id:
