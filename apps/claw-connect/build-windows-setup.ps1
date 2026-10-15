@@ -77,8 +77,11 @@ SourceFiles0=__STAGE__
     $SedFile = Join-Path $Stage 'padiem-setup.sed'
     $SedText = $SedTemplate.Replace('__TARGET__', $OutputExe).Replace('__STAGE__', ($Stage + '\'))
     [System.IO.File]::WriteAllText($SedFile, $SedText, [System.Text.Encoding]::Default)
-    & $IExpress /N /Q /M $SedFile
-    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $OutputExe -PathType Leaf)) {
+    # IExpress is a GUI-subsystem program. Direct '& iexpress' returns before
+    # the CAB/EXE is written and caused a false build failure + early temp
+    # cleanup. Wait for the actual packager process to exit before checking.
+    $Build = Start-Process -FilePath $IExpress -ArgumentList @('/N','/Q','/M', ('"' + $SedFile + '"')) -PassThru -Wait
+    if ($Build.ExitCode -ne 0 -or -not (Test-Path -LiteralPath $OutputExe -PathType Leaf)) {
         throw 'IExpress did not produce a Windows customer setup EXE.'
     }
     $File = Get-Item -LiteralPath $OutputExe
