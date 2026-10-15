@@ -98,7 +98,7 @@
         "opencode.ai"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_OPENCODE_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_11",
       "enabled": true
     },
     "zanslab": {

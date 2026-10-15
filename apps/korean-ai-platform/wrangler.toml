@@ -115,9 +115,9 @@ secret_name = "PADIEM_TOKEN_HARBOR_API_KEY"
 # Intake only: both providers remain disabled until model-specific protocol and
 # executable route are separately reviewed. No key material is in source.
 [[secrets_store_secrets]]
-binding = "PADIEM_OPENCODE_API_KEY"
+binding = "PADIEM_B14_CREDENTIAL_11"
 store_id = "f0b09ca04a7b43248154c773704a5616"
-secret_name = "PADIEM_OPENCODE_API_KEY"
+secret_name = "PADIEM_B14_CREDENTIAL_11"
 
 [[secrets_store_secrets]]
 binding = "PADIEM_ZANSLAB_API_KEY"

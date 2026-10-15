@@ -57,7 +57,7 @@ def test_current_truth_all_four_tiers_use_catjam_with_retired_routes_data_only()
     routes = _executables()
     assert set(routes) == set(ProductTierLabel)
     assert {route.model_id for route in routes.values()} == {"opencode-go/cat-jam-free"}
-    assert all(route.credential_binding == "PADIEM_OPENCODE_API_KEY" for route in routes.values())
+    assert all(route.credential_binding == "PADIEM_B14_CREDENTIAL_11" for route in routes.values())
     assert all(route.status is ProductRouteStatus.EXECUTABLE for route in routes.values())
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
     assert next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID).status is ProductRouteStatus.HOLD_AS_DATA_ONLY
