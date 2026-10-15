@@ -31,6 +31,109 @@ def protected_credential_directory(state_dir: Path) -> Path:
     return target
 
 
+
+def _validated_browser_executable(pid: int) -> str | None:
+    """Resolve only a known browser EXE, without reading its profile or tabs."""
+    if os.name != "nt" or not isinstance(pid, int) or pid <= 0:
+        return None
+    import ctypes
+    from ctypes import wintypes
+
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel.OpenProcess.restype = wintypes.HANDLE
+    kernel.QueryFullProcessImageNameW.argtypes = [
+        wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR,
+        ctypes.POINTER(wintypes.DWORD),
+    ]
+    kernel.QueryFullProcessImageNameW.restype = wintypes.BOOL
+    kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+    handle = kernel.OpenProcess(0x1000, False, pid)
+    if not handle:
+        return None
+    try:
+        filename = ctypes.create_unicode_buffer(32768)
+        size = wintypes.DWORD(len(filename))
+        if not kernel.QueryFullProcessImageNameW(
+            handle, 0, filename, ctypes.byref(size)
+        ):
+            return None
+        candidate = Path(filename.value)
+        if candidate.name.casefold() not in {
+            "tabbit browser.exe", "msedge.exe", "chrome.exe", "brave.exe",
+        } or not candidate.is_file():
+            return None
+        return str(candidate)
+    finally:
+        kernel.CloseHandle(handle)
+
+
+def _launching_browser_process() -> str | None:
+    """Prefer the external-protocol launcher's browser, not the OS default.
+
+    Toolhelp32 parent evidence is stronger than foreground evidence. A native
+    console can briefly receive focus, so foreground is only a fallback.
+    """
+    if os.name != "nt":
+        return None
+    import ctypes
+    from ctypes import wintypes
+
+    class ProcessEntry(ctypes.Structure):
+        _fields_ = [
+            ("dwSize", wintypes.DWORD),
+            ("cntUsage", wintypes.DWORD),
+            ("th32ProcessID", wintypes.DWORD),
+            ("th32DefaultHeapID", ctypes.c_void_p),
+            ("th32ModuleID", wintypes.DWORD),
+            ("cntThreads", wintypes.DWORD),
+            ("th32ParentProcessID", wintypes.DWORD),
+            ("pcPriClassBase", ctypes.c_long),
+            ("dwFlags", wintypes.DWORD),
+            ("szExeFile", wintypes.WCHAR * 260),
+        ]
+
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.CreateToolhelp32Snapshot.argtypes = [wintypes.DWORD, wintypes.DWORD]
+    kernel.CreateToolhelp32Snapshot.restype = wintypes.HANDLE
+    kernel.Process32FirstW.argtypes = [wintypes.HANDLE, ctypes.POINTER(ProcessEntry)]
+    kernel.Process32FirstW.restype = wintypes.BOOL
+    kernel.Process32NextW.argtypes = [wintypes.HANDLE, ctypes.POINTER(ProcessEntry)]
+    kernel.Process32NextW.restype = wintypes.BOOL
+    kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+    snap = kernel.CreateToolhelp32Snapshot(0x00000002, 0)
+    if snap and ctypes.c_void_p(snap).value != ctypes.c_void_p(-1).value:
+        try:
+            entry = ProcessEntry()
+            entry.dwSize = ctypes.sizeof(entry)
+            if kernel.Process32FirstW(snap, ctypes.byref(entry)):
+                while True:
+                    if entry.th32ProcessID == os.getpid():
+                        path = _validated_browser_executable(
+                            int(entry.th32ParentProcessID)
+                        )
+                        if path:
+                            return path
+                        break
+                    if not kernel.Process32NextW(snap, ctypes.byref(entry)):
+                        break
+        finally:
+            kernel.CloseHandle(snap)
+
+    user = ctypes.WinDLL("user32", use_last_error=True)
+    user.GetForegroundWindow.restype = wintypes.HWND
+    user.GetWindowThreadProcessId.argtypes = [
+        wintypes.HWND, ctypes.POINTER(wintypes.DWORD),
+    ]
+    user.GetWindowThreadProcessId.restype = wintypes.DWORD
+    hwnd = user.GetForegroundWindow()
+    if not hwnd:
+        return None
+    pid = wintypes.DWORD()
+    user.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+    return _validated_browser_executable(int(pid.value))
+
+
 def _existing_padiem_browser() -> str | None:
     """Find one already-open PADIEM Chat browser; never read its profile/cookies."""
     if os.name != "nt":
@@ -96,7 +199,6 @@ def _open_owner_approval_page(url: str) -> None:
     """Open the handoff in the browser already hosting the original Claw tab."""
     import re
     import subprocess
-    import webbrowser
 
     # This URL is public correlation only: never carry codes, credentials,
     # browser cookies, or account identities to the native launcher.
@@ -105,15 +207,16 @@ def _open_owner_approval_page(url: str) -> None:
         r"[?]request_ref=link[.][0-9a-f]{32}", url,
     ):
         raise DeviceSessionRefused("pc_offer_owner_url_invalid")
-    browser = _existing_padiem_browser()
-    if browser:
-        try:
-            subprocess.Popen([browser, url], shell=False, close_fds=True)
-            return
-        except OSError as exc:
-            raise DeviceSessionRefused("pc_offer_owner_browser_unavailable") from exc
-    if not webbrowser.open(url, new=2):
+    # The OS default browser might be Edge while the signed original Claw tab
+    # is Tabbit (or another allowlisted browser). BroadcastChannel cannot
+    # cross browser profiles, so NEVER silently open an unrelated default.
+    browser = _launching_browser_process() or _existing_padiem_browser()
+    if not browser:
         raise DeviceSessionRefused("pc_offer_owner_browser_unavailable")
+    try:
+        subprocess.Popen([browser, url], shell=False, close_fds=True)
+    except OSError as exc:
+        raise DeviceSessionRefused("pc_offer_owner_browser_unavailable") from exc
 
 async def enroll_customer_pending_offer(*, enrollment: Any, on_stage: Any = None) -> Any:
     """Attempt a SINGLE live PC offer and normal canonical credential commit.
