@@ -799,7 +799,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     display: inline-flex !important;
   }
 }
-.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) #clawManualEntryBar {
+/* The manual shortcut is hidden only while the first-use hero is visible.
+ * Once that hero is dismissed, keep the existing manual workflow accessible
+ * without changing the general Chat/Claw composer layout or backend route. */
+.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden])) #clawManualEntryBar {
   display: none !important;
 }
 @media (max-width: 640px) {
