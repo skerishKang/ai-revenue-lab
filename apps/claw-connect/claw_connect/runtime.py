@@ -139,7 +139,9 @@ class ConnectApp:
         self._offer_signal = QuitSignal("PadiemClawConnect.CustomerOffer.v1")
         self._offer_lock = threading.Lock()
         self._offer_attempted = False
+        self._offer_running = False
         self._offer_failure: str | None = None
+        self._offer_stage = "not_started"
         self._tray: Any = None
         self._quit = threading.Event()
 
@@ -382,9 +384,49 @@ class ConnectApp:
         """Existing web launch activates the already-running tray, no URL data."""
         return self._offer_signal.signal()
 
+    def _record_offer_stage(self, stage: str, failure: str | None = None) -> None:
+        """Persist only fixed phase codes; never frames, refs, or credentials."""
+        from pathlib import Path
+        import os
+        import tempfile
+
+        stages = frozenset({
+            "not_started", "offer_started", "ready_received",
+            "owner_page_open_requested", "owner_link_confirmed",
+            "credential_once_received", "dpapi_store_confirmed",
+            "install_ack_sent", "install_ack_accepted", "enrollment_published",
+        })
+        if stage not in stages:
+            return
+        self._offer_stage = stage
+        try:
+            root = Path(self._state_dir)
+            root.mkdir(parents=True, exist_ok=True)
+            handle, temporary = tempfile.mkstemp(prefix=".offer-stage-", dir=root)
+            try:
+                with os.fdopen(handle, "w", encoding="utf-8") as output:
+                    # A fixed reason class only, never an exception's raw text.
+                    json.dump({
+                        "stage": stage, "result": (
+                            "failed" if failure else (
+                                "complete" if stage == "enrollment_published"
+                                else "in_progress"
+                            )
+                        ),
+                        "reason": (
+                            "offer_refused" if failure else None
+                        ),
+                    }, output)
+                os.replace(temporary, root / "customer-offer-stage.json")
+            finally:
+                if os.path.exists(temporary):
+                    os.unlink(temporary)
+        except OSError:
+            pass
+
     def _start_customer_offer_once(self, *, explicit: bool = False) -> None:
-        """One enrollment attempt per tray lifetime; no blind credential retry."""
-        if self._quit.is_set() or self._offer_attempted:
+        """One in-flight PC offer; a new explicit request may retry after failure."""
+        if self._quit.is_set():
             return
         try:
             if self._enrollment.committed_record() is not None:
@@ -392,45 +434,53 @@ class ConnectApp:
         except Exception:
             self._offer_failure = "enrollment_record_unreadable"
             return
-        # An explicit owner OFF is never reverted by setup/re-install.
-        if (self._autostart.preference() == "off" or self._user_paused) and not explicit:
+        # Explicit reconnect never clears the customer's persisted pause/OFF.
+        if self._user_paused or (self._autostart.preference() == "off" and not explicit):
             return
         with self._offer_lock:
-            if explicit and self._offer_failure is not None:
-                # A new owner click is a NEW intent, never a hidden network
-                # retry of the prior consumed one-time request.
-                self._offer_attempted = False
-            if self._offer_attempted:
+            if self._offer_running:
                 return
-            if explicit and self._user_paused:
-                from .pause_preference import set_paused
-                set_paused(self._state_dir, False)
-                self._user_paused = False
+            if self._offer_attempted and not (explicit and self._offer_failure is not None):
+                return
             self._offer_attempted = True
-        thread = threading.Thread(
-            target=self._enroll_customer_in_thread,
-            name="padiem-customer-first-offer",
-            daemon=True,
-        )
-        thread.start()
+            self._offer_running = True
+            self._offer_failure = None
+        self._record_offer_stage("offer_started")
+        try:
+            threading.Thread(
+                target=self._enroll_customer_in_thread,
+                name="padiem-customer-first-offer",
+                daemon=True,
+            ).start()
+        except RuntimeError:
+            with self._offer_lock:
+                self._offer_running = False
+                self._offer_failure = "customer_offer_thread_unavailable"
+            self._record_offer_stage(self._offer_stage, failure="thread_unavailable")
 
     def _enroll_customer_in_thread(self) -> None:
         import asyncio
         from .customer_enrollment import enroll_customer_pending_offer
         from .device_wss_enrollment import DeviceSessionRefused
 
+        failure: str | None = None
         try:
-            asyncio.run(enroll_customer_pending_offer(enrollment=self._enrollment))
+            asyncio.run(enroll_customer_pending_offer(enrollment=self._enrollment, on_stage=self._record_offer_stage))
+            self._record_offer_stage("enrollment_published")
             self.reconcile_autostart()
             if not self._quit.is_set():
                 self.start_registered_resident()
-            self._offer_failure = None
         except DeviceSessionRefused as exc:
-            self._offer_failure = str(exc)
+            failure = str(exc)
         except Exception:
             # No socket data, code, credential, or owner identity in diagnostics.
-            self._offer_failure = "customer_offer_unavailable"
+            failure = "customer_offer_unavailable"
         finally:
+            with self._offer_lock:
+                self._offer_failure = failure
+                self._offer_running = False
+            if failure is not None:
+                self._record_offer_stage(self._offer_stage, failure=failure)
             self._refresh_tray()
 
     def _watch_quit_event(self) -> None:

@@ -90,6 +90,7 @@ async def run_pending_pc_offer(
     owner_approval_open: Callable[[str], Any],
     now: datetime | None = None,
     acceptance: bool = False,
+    on_stage: Callable[[str], Any] | None = None,
 ) -> tuple[PendingPcOfferReceipt, str, str]:
     """Start a verified outbound WSS and receive the one-time owner approval.
 
@@ -167,11 +168,15 @@ async def run_pending_pc_offer(
         receipt = PendingPcOfferReceipt(
             device_id=device_id, request_ref=ready["request_ref"], expires_at=expires_at,
         )
+        if on_stage is not None:
+            on_stage("ready_received")
         # This does not assert the browser user is signed in; the B54 owner
         # endpoint checks the signed session + explicit consent independently.
         owner_approval_open(pending_owner_approval_url(
             receipt.request_ref, acceptance=acceptance,
         ))
+        if on_stage is not None:
+            on_stage("owner_page_open_requested")
         # No retry after approval-frame loss: the broker offer might have been
         # reserved and challenge issued already. Wait only until expiry.
         remaining = max(0.0, (expires_at - datetime.now(timezone.utc)).total_seconds())
@@ -196,6 +201,8 @@ async def run_pending_pc_offer(
             or _CODE.fullmatch(result["pairing_code"]) is None
         ):
             raise DeviceSessionRefused("pc_offer_approval_invalid")
+        if on_stage is not None:
+            on_stage("owner_link_confirmed")
         return receipt, result["challenge_id"], result["pairing_code"]
     except DeviceSessionRefused:
         raise
@@ -209,6 +216,7 @@ async def run_pending_pc_offer_and_enroll(
     binding_factory: Callable[..., Any] | None = None,
     acceptance: bool = False,
     binding_store: Any | None = None,
+    on_stage: Callable[[str], Any] | None = None,
 ) -> Any:
     """One socket, from pending offer through *existing* Windows DPAPI ACK."""
     from .device_wss_enrollment import (
@@ -221,14 +229,14 @@ async def run_pending_pc_offer_and_enroll(
         receipt, challenge, code = await run_pending_pc_offer(
             socket=socket, trusted_tls=trusted_tls,
             device_id=record.device_id, owner_approval_open=owner_approval_open,
-            acceptance=acceptance,
+            acceptance=acceptance, on_stage=on_stage,
         )
         del receipt  # Not proof of enrollment.
         return await run_and_stage_review_only_device_enrollment(
             enrollment=enrollment, socket=socket, trusted_tls=trusted_tls,
             receiver=receiver, challenge_id=challenge, pairing_code=code,
             binding_factory=binding_factory or canonical_kagent_binding_factory,
-            binding_store=binding_store,
+            binding_store=binding_store, on_stage=on_stage,
         )
     finally:
         # The canonical enrollment itself closes the socket on success/failure.
