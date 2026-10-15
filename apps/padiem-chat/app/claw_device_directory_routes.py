@@ -1,8 +1,10 @@
-"""#4139 — owner/workspace-scoped read-only Claw Connect device directory.
+"""#4139 owner/workspace-scoped Claw device read + reversible PC use gate.
 
 This is a B62 consumer of the *existing* canonical Local Agent Broker
 device_directory RPC (#4418), not a second online/identity authority.
-No pairing, credentials, command, P01 grants or device writes occur here.
+GET remains read-only. POST pause/resume changes only the canonical Broker's
+owner-scoped use preference; command dispatch/admission is blocked there.
+No pairing, credential rotation, P01 grant or device revocation occurs here.
 """
 from __future__ import annotations
 
@@ -16,6 +18,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .same_origin_guard import expected_browser_origin
 from .claw_memory_routes import _resolve_memory_workspace
 from .claw_local_access_source import CanonicalClawLocalAccessTruthSource
 from .worker_config import (
@@ -24,6 +27,8 @@ from .worker_config import (
 )
 
 CLAW_DEVICE_DIRECTORY_PATH = "/api/claw/local-access/devices"
+CLAW_PC_PAUSE_PATH = "/api/claw/local-access/devices/pause"
+CLAW_PC_RESUME_PATH = "/api/claw/local-access/devices/resume"
 _DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 _DEVICE_LIMIT = 24
 _NO_STORE = {
@@ -59,6 +64,7 @@ class BrokerDeviceDirectorySource:
         if not callable(port):
             raise TypeError("canonical broker directory RPC unavailable")
         self._port = port
+        self._set_usage = getattr(binding, "set_owner_usage", None)
 
     async def list_devices(
         self, *, owner_id: str, workspace_id: str, now: datetime
@@ -81,6 +87,9 @@ class BrokerDeviceDirectorySource:
         if not isinstance(raw, list) or len(raw) > _DEVICE_LIMIT:
             return None
         if result.get("device_count") != len(raw):
+            return None
+        paused = result.get("usage_paused")
+        if paused is not None and type(paused) is not bool:
             return None
         seen: set[str] = set()
         items: list[dict[str, Any]] = []
@@ -118,8 +127,29 @@ class BrokerDeviceDirectorySource:
                 "usable": online,
                 "revoked": revoked,
                 "expired": expired,
+                **({"usagePaused": paused} if paused is not None else {}),
             })
         return sorted(items, key=lambda row: row["deviceId"])
+
+    async def set_usage(self, *, owner_id: str, workspace_id: str, paused: bool) -> dict | None:
+        # The browser cannot supply a device, owner, workspace or credential.
+        if not callable(self._set_usage) or type(paused) is not bool:
+            return None
+        try:
+            result = self._set_usage({
+                "account_ref": owner_id,
+                "workspace_ref": workspace_id,
+                "paused": paused,
+            })
+            if inspect.isawaitable(result):
+                result = await result
+        except Exception:
+            return None
+        if (not isinstance(result, Mapping) or result.get("ok") is not True
+            or result.get("paused") is not paused
+            or result.get("dispatch_authorized") is not (not paused)):
+            return None
+        return {"ok": True, "usagePaused": paused}
 
 
 def build_broker_device_directory_source(env: Any) -> BrokerDeviceDirectorySource | None:
@@ -188,12 +218,56 @@ async def claw_device_directory(request: Request) -> JSONResponse:
         })
     # Even a valid sole connected PC is only a visual candidate; selection is
     # explicit in the browser and execution authority is never present here.
+    pause_values = {row.get("usagePaused") for row in devices}
+    if len(pause_values) > 1 or any(
+        value is not None and type(value) is not bool for value in pause_values
+    ):
+        return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
+    paused = next(iter(pause_values), None)
     return _response({
         "ok": True, "available": True, "ownerScoped": True,
+        **({"usagePaused": paused} if paused is not None else {}),
         "devices": sorted(safe, key=lambda row: row["deviceId"]),
     })
 
-MUTATION = False
-PRODUCTION_MUTATION = False
+async def _owner_usage_mutation(request: Request, *, paused: bool) -> JSONResponse:
+    # Same-origin, zero-body authenticated owner gesture, matching GitHub's
+    # established CSRF/mutation contract. No client-chosen device identity.
+    if (request.query_params or request.headers.get("content-length") not in (None, "", "0")
+        or request.headers.get("transfer-encoding")
+        or request.headers.get("origin") != expected_browser_origin(request.app.state.settings)):
+        return _error(403, "pc_usage_request_rejected")
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not uid:
+        return _error(401, "pc_usage_auth_required")
+    workspace_id = await _resolve_memory_workspace(request, uid)
+    if not workspace_id:
+        return _error(503, "pc_usage_workspace_unavailable")
+    source = getattr(request.app.state, "claw_device_directory_source", None)
+    port = getattr(source, "set_usage", None)
+    if not callable(port) or getattr(source, "configured", False) is not True:
+        return _error(503, "pc_usage_unavailable")
+    try:
+        result = port(owner_id=uid, workspace_id=workspace_id, paused=paused)
+        if inspect.isawaitable(result):
+            result = await result
+    except Exception:
+        result = None
+    if (not isinstance(result, Mapping) or result.get("ok") is not True
+        or result.get("usagePaused") is not paused):
+        return _error(503, "pc_usage_not_confirmed")
+    return _response({"ok": True, "usagePaused": paused})
+
+
+async def claw_pc_pause(request: Request) -> JSONResponse:
+    return await _owner_usage_mutation(request, paused=True)
+
+
+async def claw_pc_resume(request: Request) -> JSONResponse:
+    return await _owner_usage_mutation(request, paused=False)
+
+
+MUTATION = True
+PRODUCTION_MUTATION = True
 NEW_ONLINE_AUTHORITY = False
 PUBLIC_DEVICE_PAIRING = False

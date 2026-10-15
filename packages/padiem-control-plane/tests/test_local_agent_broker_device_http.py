@@ -81,7 +81,7 @@ def _encoded(value: bytes) -> str:
     return base64.b64encode(value).decode("ascii")
 
 
-def _service_fixture():
+def _service_fixture(*, owner_usage_gate=None):
     state = _DurableMemoryStatePort()
     authority = StateBackedLocalAgentBrokerAuthority(
         pepper=PEPPER,
@@ -117,6 +117,7 @@ def _service_fixture():
         material_resolver=_UnusedMaterialResolver(),
         session_open_transaction=_passthrough_transaction,
         clock=lambda: BASE + timedelta(seconds=10),
+        owner_usage_gate=owner_usage_gate,
     )
     return state, authority, http_state, service
 
@@ -223,6 +224,38 @@ def test_device_service_rejects_transport_shape_before_credential_auth() -> None
 
     oversized = _envelope(b"x" * (MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 1))
     assert service.handle(oversized)["status"] == 413
+
+
+def test_native_poll_and_material_are_gated_by_durable_owner_off() -> None:
+    calls = []
+    paused = {"value": True}
+    def usage(account, workspace):
+        calls.append((account, workspace))
+        return paused["value"]
+
+    _, _, _, service = _service_fixture(owner_usage_gate=usage)
+    body = _session_body(session_id="session.usage.1")
+    for route in ("/poll", "/material"):
+        result = service.handle(_envelope(body, route=route))
+        assert result["status"] == 409, (route, result)
+        assert result["body"]["error"]["code"] == "owner_pc_paused"
+    assert calls == [("account.http.1", "workspace.http.1")] * 2
+    # The original privileged channel remains authenticated; OFF does not
+    # revoke the credential, and only the two new-work routes are gated.
+    result = service.handle(_envelope(body, route="/session"))
+    assert result["status"] == 200, result
+    assert calls == [("account.http.1", "workspace.http.1")] * 2
+    paused["value"] = False
+    resumed_poll = service.handle(_envelope(body, route="/poll"))
+    assert resumed_poll["body"].get("error", {}).get("code") != "owner_pc_paused"
+
+
+def test_native_usage_unavailable_fails_closed_without_minting_online() -> None:
+    _, _, _, service = _service_fixture(owner_usage_gate=lambda a,w: None)
+    result = service.handle(_envelope(
+        _session_body(session_id="session.usage.2"), route="/poll"))
+    assert result["status"] == 503
+    assert result["body"]["error"]["code"] == "owner_pc_usage_unavailable"
 
 
 def test_device_service_boundary_truth() -> None:
