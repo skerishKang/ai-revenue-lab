@@ -2,7 +2,7 @@
 (() => {
   "use strict";
   const dialog = document.getElementById("connectorsDialog");
-  const card = dialog?.querySelector('[data-connector-id="connector:google:drive@1"]');
+  const card = document.querySelector('[data-connector-id="connector:google:drive@1"]');
   const remove = document.getElementById("connectorDriveRemove");
   const feedback = document.getElementById("connectorDriveFeedback");
   if (!dialog || !card || !remove || !feedback) return;
