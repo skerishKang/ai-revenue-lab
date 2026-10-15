@@ -39,6 +39,25 @@
       return document.querySelector(".sidebar-account")?.dataset.accountState === "signed_in";
     }
 
+    // A guest card click must go to the EXISTING PADIEM authentication UI,
+    // never to the Windows protocol, installer, or connector management.
+    // We do not remember a privileged click across the login boundary.
+    function promptForPcLogin() {
+      if (signedIn()) return false;
+      pcNote("\uCEF4\uD4E8\uD130\uB97C \uC5F0\uACB0\uD558\uB824\uBA74 \uBA3C\uC800 PADIEM\uC5D0 \uB85C\uADF8\uC778\uD574 \uC8FC\uC138\uC694.",
+             "Sign in to PADIEM before connecting your computer.");
+      const hint = document.getElementById("clawPcCardStatus");
+      if (hint) hint.textContent = document.documentElement.lang === "en"
+        ? "Sign in first" : "\uB85C\uADF8\uC778\uD558\uC138\uC694";
+      const login = document.getElementById("loginButton");
+      const account = document.getElementById("accountContainer");
+      // A mismatched/loading account must never accidentally click Logout.
+      if (account?.dataset.accountState === "signed_in" ||
+          !login || login.hidden || login.disabled) return true;
+      login.click(); // opens the canonical app.js auth dialog, no extra modal
+      return true;
+    }
+
     function pcNote(ko, en) {
       const note = document.getElementById("clawComputerLiveStatus");
       if (!note) return;
@@ -155,10 +174,21 @@
     for (const [id, target] of Object.entries(actions)) {
       const card = document.getElementById(id);
       if (card) card.addEventListener("click", () => {
-        if (id === "clawComputerWorkspace" && startPcConnectionFromOriginalClick()) return;
+        if (id === "clawComputerWorkspace") {
+          if (!isClawHome()) return;
+          if (promptForPcLogin()) return;
+          if (startPcConnectionFromOriginalClick()) return;
+        }
         openWorkspaceConnector(target);
       });
     }
+
+    // Empty parts of the same PC card behave like its one primary action.
+    // The single ON/OFF switch stops propagation, so OFF cannot reconnect.
+    document.querySelector('[data-claw-card="computer"]')?.addEventListener("click", event => {
+      if (!isClawHome() || event.target.closest("button")) return;
+      document.getElementById("clawComputerWorkspace")?.click();
+    });
 
     const web = document.getElementById("clawWebWorkspace");
     web?.addEventListener("click", () => {

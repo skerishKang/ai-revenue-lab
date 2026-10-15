@@ -36,7 +36,8 @@ function set(id,value){
  element.dataset.connectionState=value;
  element.setAttribute("aria-label",(id==="pc"?message("컴퓨터","Computer"):id==="drive"?"Google Drive":"GitHub")+" "+display);
 }
-const reset=()=>{ids.forEach(id=>set(id,"unknown"));pcTruth("unknown","연결 확인 필요","Connection needs checking");const gh=chip("github");if(gh)delete gh.dataset.connectionLinked;};
+const reset=()=>{ids.forEach(id=>set(id,"unknown"));pcTruth("unknown","\uC5F0\uACB0 \uD655\uC778 \uD544\uC694","Connection needs checking");const gh=chip("github");if(gh)delete gh.dataset.connectionLinked;};
+const guestHint=()=>{if(home()&&!signedIn())pcTruth("login_required","\uB85C\uADF8\uC778\uD558\uC138\uC694","Sign in first");};
 const feedback=(ko,en)=>{const el=document.getElementById("clawConnectionFeedback");if(!el)return;el.textContent=message(ko,en);el.hidden=false;};
 async function read(url){
  const r=await fetch(url,{method:"GET",credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});
@@ -44,7 +45,7 @@ async function read(url){
  const s=await r.text();if(s.length>32768)throw Error("oversized");return JSON.parse(s);
 }
 async function refresh(){
- const current=++generation;if(!home()||!signedIn()){reset();return;}
+ const current=++generation;if(!home()||!signedIn()){reset();guestHint();return;}
  const result=await Promise.allSettled([read("/api/claw/local-access/devices"),read("/api/connectors/status"),read("/api/connectors/github/status")]);
  if(current!==generation||!home()||!signedIn())return;
  reset();
@@ -53,15 +54,15 @@ async function refresh(){
   if(d?.ok===true&&d.available===true&&d.ownerScoped===true&&Array.isArray(d.devices)&&d.devices.length<=25){
    if(!d.devices.length){
     set("pc","off");
-    pcTruth("unregistered","연결하세요","Connect your computer");
+    pcTruth("unregistered","\uC5F0\uACB0\uD558\uC138\uC694","Connect your computer");
    }else{
     const records=d.devices.map(x=>x?.projection&&typeof x.projection==="object"?x.projection:x);
     if(records.some(x=>x?.state==="CONNECTED"&&x.usable===true&&x.revoked!==true&&x.expired!==true)){
      set("pc","on");
-     pcTruth("online","연결되었습니다","Connected");
+     pcTruth("online","\uC5F0\uACB0\uB418\uC5C8\uC2B5\uB2C8\uB2E4","Connected");
     }else if(records.every(x=>x&&["PAIRING","OFFLINE","REVOKED","ACTION_REQUIRED"].includes(x.state))){
      set("pc","off");
-     pcTruth("offline","연결 확인 필요","Connection needs checking");
+     pcTruth("offline","\uC5F0\uACB0 \uD655\uC778 \uD544\uC694","Connection needs checking");
     }
    }
   }
@@ -134,7 +135,8 @@ ids.forEach(id=>chip(id)?.addEventListener("click",event=>{
   event.stopPropagation();
   if(!home())return;
   if(!signedIn()){
-   document.getElementById("loginButton")?.click();
+   // Reuse the primary PC card's canonical login gate (and its visible note).
+   document.getElementById("clawComputerWorkspace")?.click();
    return;
   }
   const target=event.target?.closest?.(".claw-state-off")?"off":"on";
@@ -152,7 +154,7 @@ ids.forEach(id=>chip(id)?.addEventListener("click",event=>{
    return;
   }
   if(state==="on")return;
-  pcTruth("connecting","연결 중...","Connecting...");
+  pcTruth("connecting","\uC5F0\uACB0 \uC911...","Connecting...");
   document.getElementById("clawComputerWorkspace")?.click();
   return;
  }
@@ -193,10 +195,10 @@ ids.forEach(id=>chip(id)?.addEventListener("click",event=>{
  if(state==="unknown")feedback("연결 상태를 확인할 수 없습니다. 연결 관리에서 확인해 주세요.",
     "Connection status is unavailable. Please check Connectors.");
 }));
-const observer=new MutationObserver(()=>{++generation;reset();if(home()&&signedIn())void refresh();});
+const observer=new MutationObserver(()=>{++generation;reset();if(home()&&signedIn())void refresh();else guestHint();});
 observer.observe(shell,{attributes:true,attributeFilter:["data-state"]});
 observer.observe(owner,{attributes:true,attributeFilter:["data-account-state"]});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&home())void refresh();});
 window.addEventListener("focus",()=>{if(home())void refresh();});
-if(home()&&signedIn())void refresh();
+if(home())void refresh();
 })();
