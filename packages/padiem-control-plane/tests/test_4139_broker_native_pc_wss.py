@@ -451,3 +451,31 @@ def test_review_do_caps_unverified_websockets_without_minting_credentials(monkey
         assert further.status==404
         assert rows(do._storage)==[]
     asyncio.run(main())
+
+
+def test_wss_actor_resolution_uses_underlying_js_socket_identity():
+    """Distinct JsProxy wrappers must refer to the exact same native socket."""
+    from padiem_control_plane.broker_pending_pc_wss import _resolve_native_actor
+
+    class Proxy:
+        def __init__(self, socket):
+            self.socket = socket
+
+        def deserializeAttachment(self):
+            return self.socket.deserializeAttachment()
+
+        def __eq__(self, other):
+            # Mirrors Pyodide JsProxy equality: JavaScript strict identity.
+            return type(other) is Proxy and self.socket is other.socket
+
+    original = Socket()
+    original.serializeAttachment("pc-offer-4139." + "c" * 32)
+    held, delivered = Proxy(original), Proxy(original)
+    assert held is not delivered and held == delivered
+    actor = SimpleNamespace(_socket=SimpleNamespace(raw=held))
+    owner = SimpleNamespace(_pending_pc_wss_by_id={"c" * 32: actor})
+    assert _resolve_native_actor(owner, delivered) == ("c" * 32, actor)
+
+    unrelated = Socket()
+    unrelated.serializeAttachment(original.tag)
+    assert _resolve_native_actor(owner, Proxy(unrelated)) is None

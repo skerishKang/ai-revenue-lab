@@ -409,7 +409,9 @@ def _resolve_native_actor(owner_do: Any, ws: Any):
         if len(session) != 32 or re.fullmatch(r"[0-9a-f]{32}", session) is None:
             return None
         actor = getattr(owner_do, "_pending_pc_wss_by_id", {}).get(session)
-        if actor is None or actor._socket.raw is not ws:
+        # Pyodide JsProxy wrappers may differ across DO WebSocket callbacks.
+        # JsProxy equality is JS strict identity (===), unlike Python identity.
+        if actor is None or actor._socket.raw != ws:
             return None
         return session, actor
     except Exception:
