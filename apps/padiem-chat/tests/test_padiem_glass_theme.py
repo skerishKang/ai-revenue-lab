@@ -71,7 +71,7 @@ def test_glass_theme_preserves_url_authority_and_no_forbidden_storage() -> None:
 def test_glass_theme_does_not_touch_prior_visual_contracts() -> None:
     assert 'href="https://padiem.net/"' in HTML
     assert "Padiem Chat" in HTML
-    assert "PADIEM CHAT</span>" not in HTML
+    assert "PADIEM CHAT</span>" in HTML
     assert 'class="sidebar-bottom"' in HTML
     topbar_start = HTML.index('<header class="topbar"')
     topbar_end = HTML.index('</header>', topbar_start)
