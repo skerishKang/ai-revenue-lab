@@ -178,6 +178,19 @@ def test_platform_model_has_no_free_capability():
     assert "free" not in model.capabilities
 
 
+def test_missing_credential_error_does_not_expose_binding_or_provider():
+    """Preserve fail-closed behavior without returning internal credentials metadata."""
+    spec = ps.get_platform_provider(TEST_PROVIDER_ID)
+    assert spec is not None
+    with pytest.raises(PilotNotConfigured) as exc:
+        plat._request_headers(spec)
+    response = exc.value.to_dict()
+    assert response["code"] == "pilot_not_configured"
+    assert TEST_BINDING not in response["message"]
+    assert TEST_PROVIDER_ID not in response["message"]
+    assert "credential" in response["message"]
+
+
 # ---------------------------------------------------------------------------
 # Manual route: secret present / missing
 # ---------------------------------------------------------------------------
