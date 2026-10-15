@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from datetime import timedelta
 from urllib.parse import parse_qs, urlsplit
 
 import pytest
@@ -15,7 +16,7 @@ from google_oauth_durable_store import (
     GOOGLE_DRIVE_READONLY_SCOPE,
     CloudflareDurableGoogleOAuthStore,
 )
-from google_oauth_ingress_runtime import GoogleOAuthIngressRuntime
+from google_oauth_ingress_runtime import GoogleOAuthIngressRuntime, GoogleOAuthSessionPayload
 from google_oauth_webcrypto_sealer import (
     GoogleOAuthSealContext,
     GoogleOAuthSealPurpose,
@@ -30,6 +31,7 @@ from test_google_oauth_ingress_runtime import (
     NOW,
     ACCESS_TOKEN,
     AUTH_CODE,
+    PKCE_VERIFIER,
     REFRESH_TOKEN,
     FakeTokenExchange,
     auth_session,
@@ -314,6 +316,36 @@ def test_b66_full_drive_connector_is_separate_and_shared_drive_stays_readonly():
     assert _REVIEWED_SCOPES[B66_GOOGLE_DRIVE_FULL_CONNECTOR] == (GOOGLE_DRIVE_FULL_SCOPE,)
     assert lease_reviewed_scopes["google-drive"] == (GOOGLE_DRIVE_READONLY_SCOPE,)
     assert lease_reviewed_scopes[B66_GOOGLE_DRIVE_FULL_CONNECTOR] == (GOOGLE_DRIVE_FULL_SCOPE,)
+
+
+def test_b66_callback_state_is_bound_to_canonical_owner_without_browser_owner_input():
+    runtime, _, _, _, _, _, _ = b66_fixture(
+        connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+    )
+    created = NOW
+    payload = GoogleOAuthSessionPayload(
+        state_ref="state_owner_bound",
+        connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        actor_ref="actor_b66_a",
+        account_ref="account_b66_a",
+        workspace_ref="workspace_b66_a",
+        session_id="sess_owner_bound",
+        product_id="b62",
+        subject_type="user",
+        subject_id="subject 1 한글",
+        scopes=(GOOGLE_DRIVE_FULL_SCOPE,),
+        code_verifier=PKCE_VERIFIER,
+        redirect_uri="https://oauth.example.invalid/v1/google/callback",
+        created_at=created,
+        expires_at=created + timedelta(seconds=600),
+    )
+    roundtrip = GoogleOAuthSessionPayload.from_plaintext(payload.to_plaintext())
+
+    assert roundtrip.session_id == "sess_owner_bound"
+    assert roundtrip.product_id == "b62"
+    assert roundtrip.subject_type == "user"
+    assert roundtrip.subject_id == "subject 1 한글"
+    assert runtime.safe_dict()["callback_state_owner_bound"] is True
 
 
 def test_b66_full_drive_begin_requests_full_scope_and_completes_with_verified_destination():

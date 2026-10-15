@@ -79,6 +79,20 @@ def _safe_ref(value: Any, field_name: str) -> str:
     return value
 
 
+def _bounded_subject_id(value: Any, field_name: str) -> str:
+    if (
+        not isinstance(value, str)
+        or not value
+        or len(value) > 256
+        or any(ord(character) < 32 for character in value)
+    ):
+        raise ControlPlaneContractError(
+            "invalid_google_oauth_ingress",
+            f"{field_name} must be a bounded canonical subject",
+        )
+    return value
+
+
 def _bounded_secret(value: Any, field_name: str, *, max_chars: int) -> str:
     if (
         not isinstance(value, str)
@@ -211,6 +225,10 @@ class GoogleOAuthSessionPayload:
     actor_ref: str
     account_ref: str
     workspace_ref: str
+    session_id: str
+    product_id: str
+    subject_type: str
+    subject_id: str
     scopes: tuple[str, ...]
     code_verifier: str = field(repr=False)
     redirect_uri: str
@@ -224,8 +242,12 @@ class GoogleOAuthSessionPayload:
             "actor_ref",
             "account_ref",
             "workspace_ref",
+            "session_id",
+            "product_id",
+            "subject_type",
         ):
             object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
+        object.__setattr__(self, "subject_id", _bounded_subject_id(self.subject_id, "subject_id"))
         expected = _REVIEWED_SCOPES.get(self.connector_id)
         if expected is None or not isinstance(self.scopes, tuple) or set(self.scopes) != set(expected):
             raise ControlPlaneContractError(
@@ -256,6 +278,10 @@ class GoogleOAuthSessionPayload:
                 "actor_ref": self.actor_ref,
                 "account_ref": self.account_ref,
                 "workspace_ref": self.workspace_ref,
+                "session_id": self.session_id,
+                "product_id": self.product_id,
+                "subject_type": self.subject_type,
+                "subject_id": self.subject_id,
                 "scopes": list(self.scopes),
                 "code_verifier": self.code_verifier,
                 "redirect_uri": self.redirect_uri,
@@ -285,6 +311,10 @@ class GoogleOAuthSessionPayload:
                     "actor_ref",
                     "account_ref",
                     "workspace_ref",
+                    "session_id",
+                    "product_id",
+                    "subject_type",
+                    "subject_id",
                     "scopes",
                     "code_verifier",
                     "redirect_uri",
@@ -307,6 +337,10 @@ class GoogleOAuthSessionPayload:
             actor_ref=wire["actor_ref"],
             account_ref=wire["account_ref"],
             workspace_ref=wire["workspace_ref"],
+            session_id=wire["session_id"],
+            product_id=wire["product_id"],
+            subject_type=wire["subject_type"],
+            subject_id=wire["subject_id"],
             scopes=scopes,
             code_verifier=wire["code_verifier"],
             redirect_uri=wire["redirect_uri"],
@@ -725,6 +759,10 @@ class GoogleOAuthIngressRuntime:
             actor_ref=claims.actor_ref,
             account_ref=claims.account_ref,
             workspace_ref=claims.workspace_ref,
+            session_id=claims.session_id,
+            product_id=claims.product_id,
+            subject_type=claims.subject_type,
+            subject_id=claims.subject_id,
             scopes=expected_scopes,
             code_verifier=verifier,
             redirect_uri=self._config.redirect_uri,
@@ -921,6 +959,7 @@ class GoogleOAuthIngressRuntime:
             "connect_ticket_body_only": True,
             "state_pkce_server_generated": True,
             "authorization_session_sealed": True,
+            "callback_state_owner_bound": True,
             "callback_state_single_use": True,
             "provider_denial_consumes_state": True,
             "token_exchange_failure_consumes_state": True,
@@ -952,5 +991,7 @@ GOOGLE_WRITE_SCOPE = True
 SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False
 B66_GOOGLE_DRIVE_FILE_SCOPE = True
 B66_GOOGLE_DRIVE_FULL_SCOPE = True
+CALLBACK_STATE_OWNER_BOUND = True
+CLIENT_ASSERTED_CALLBACK_OWNER = False
 PUBLIC_HOSTNAME_CONFIGURED = False
 PRODUCTION_MUTATION = False
