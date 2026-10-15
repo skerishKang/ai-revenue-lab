@@ -429,7 +429,8 @@ class ConnectApp:
         if self._quit.is_set():
             return
         try:
-            if self._enrollment.committed_record() is not None:
+            record = self._enrollment.committed_record()
+            if record is not None and record.is_enrolled():
                 return
         except Exception:
             self._offer_failure = "enrollment_record_unreadable"
@@ -490,7 +491,8 @@ class ConnectApp:
                 self.quit()
                 return
             if self._offer_signal.wait(0):
-                if self._enrollment.committed_record() is not None:
+                record = self._enrollment.committed_record()
+                if record is not None and record.is_enrolled():
                     self.reconnect()
                 else:
                     self._start_customer_offer_once(explicit=True)
