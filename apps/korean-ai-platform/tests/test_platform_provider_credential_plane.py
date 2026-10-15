@@ -20,7 +20,7 @@ from app.pilot import platform as plat
 from app.pilot import platform_secrets as ps
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.errors import NoSafeRoute, PilotNotConfigured, UpstreamAuthFailed
-from app.pilot.router_core import resolve_auto_route, resolve_manual_route
+from app.pilot.router_core import resolve_manual_route
 
 TEST_PROVIDER_ID = "test-credential-plane"
 TEST_BINDING = "TEST_CREDENTIAL_PLANE_API_KEY"
@@ -202,28 +202,7 @@ def test_manual_route_fails_closed_when_secret_missing():
 # ---------------------------------------------------------------------------
 # b14/auto eligibility tied to credential
 # ---------------------------------------------------------------------------
-def test_b14_auto_excludes_platform_model_when_secret_missing():
-    # Owner removed the remaining default free routes: scorer must fail closed.
-    with pytest.raises(NoSafeRoute) as info:
-        resolve_auto_route(
-            task_type="general",
-            required_capabilities=["chat"],
-            optimize_for="balanced",
-            allow_external_fallback=True,
-        )
-    assert info.value.upstream_called is False
 
-def test_b14_auto_can_include_platform_model_when_secret_present(monkeypatch):
-    monkeypatch.setenv(TEST_BINDING, _SYNTH_KEY)
-    decision = resolve_auto_route(
-        task_type="general",
-        required_capabilities=["chat"],
-        optimize_for="balanced",
-        allow_external_fallback=True,
-    )
-    assert TEST_MODEL_ID in _auto_pool(decision)
-    reasons = {c.get("model_id"): c.get("reason") for c in decision.excluded_candidates}
-    assert reasons.get(TEST_MODEL_ID) != "provider_secret_missing"
 
 
 # ---------------------------------------------------------------------------

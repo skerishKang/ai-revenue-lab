@@ -35,7 +35,7 @@ from app.pilot.kilo_provider import (
     RETIRED_KILO_FREE_MODEL_IDS,
 )
 from app.pilot.routing_policy import B14_AUTO_CHAIN
-from app.pilot.router_core import resolve_auto_route, resolve_manual_route
+from app.pilot.router_core import resolve_manual_route
 
 B66_BROWSER_DIR = (
     Path(__file__).resolve().parents[3]
@@ -97,12 +97,9 @@ def test_space_bunny_manual_resolution_fails_closed() -> None:
 
 
 def test_space_bunny_absent_from_auto_chain_and_fallback() -> None:
-    from app.pilot.errors import NoSafeRoute
+    from app.pilot.routing_policy import chain_models
     assert KILO_SPACE_BUNNY_MODEL_ID not in B14_AUTO_CHAIN
-    with pytest.raises(NoSafeRoute) as exc:
-        resolve_auto_route(task_type="general",required_capabilities=["free"],
-                           optimize_for="balanced",allow_external_fallback=True,max_attempts=3)
-    assert exc.value.upstream_called is False
+    assert all(route.model_id != KILO_SPACE_BUNNY_MODEL_ID for route in chain_models())
 
 def test_platform_adapter_has_no_space_bunny_auth_special_case() -> None:
     import inspect

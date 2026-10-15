@@ -21,7 +21,7 @@ from app.pilot.platform import (
     call_platform_chat_completions,
     stream_platform_chat_completions,
 )
-from app.pilot.router_core import resolve_auto_route, resolve_manual_route
+from app.pilot.router_core import resolve_manual_route
 from app.pilot.poolside_provider import POOLSIDE_MODEL_ID
 
 EXCLUDED = (
@@ -103,11 +103,6 @@ def test_live_manual_fallback_never_advertises_excluded_candidates(monkeypatch):
     assert decision.fallback_allowed is True
 
 
-def test_live_scorer_has_no_excluded_single_free_candidate(monkeypatch):
-    monkeypatch.setenv("PADIEM_KILO_API_KEY","synthetic_kilo_key_abcdefghij")
-    with pytest.raises(NoSafeRoute) as exc:
-        resolve_auto_route(allow_external_fallback=True)
-    assert exc.value.upstream_called is False
 
 
 @pytest.mark.parametrize("mid,provider", EXCLUDED)

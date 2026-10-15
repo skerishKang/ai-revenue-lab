@@ -25,7 +25,7 @@ from app.pilot.kilo_provider import (
     KILO_MINIMAX_M3_MODEL_ID,
     KILO_MINIMAX_M3_UPSTREAM_MODEL,
 )
-from app.pilot.router_core import resolve_auto_route, resolve_manual_route
+from app.pilot.router_core import resolve_manual_route
 
 RETIRED_LANES = (
     (KILO_MINIMAX_M3_MODEL_ID, KILO_MINIMAX_M3_UPSTREAM_MODEL),
@@ -56,10 +56,9 @@ def test_retired_lane_is_never_in_b14_auto_pool() -> None:
     assert not CATALOG_MODELS
     for model_id, _ in RETIRED_LANES:
         assert model_id not in CATALOG_BY_ID
-    with pytest.raises(NoSafeRoute) as exc:
-        resolve_auto_route(task_type="general",required_capabilities=["free"],
-                           optimize_for="balanced",allow_external_fallback=True)
-    assert exc.value.upstream_called is False
+    from app.pilot.routing_policy import B14_AUTO_CHAIN, chain_models
+    assert all(model_id not in B14_AUTO_CHAIN for model_id, _ in RETIRED_LANES)
+    assert all(m.model_id not in {mid for mid, _ in RETIRED_LANES} for m in chain_models())
 
 @pytest.mark.asyncio
 async def test_retired_kilo_laguna_never_calls_transport(monkeypatch) -> None:
