@@ -645,17 +645,19 @@ async def api_chat(request: Request) -> JSONResponse:
             return JSONResponse({"error": {"code": "calendar_unavailable", "message": "native calendar unavailable"}}, status_code=503)
         if native_result is not None:
             answer = native_result.get("answer", "")
+            result = {"answer": answer}
+            if native_result.get("native_calendar") is not None:
+                result["native_calendar"] = native_result["native_calendar"]
             if uid is not None and store is not None and latest_user_text:
                 try:
                     saved_id = await store.append_exchange(uid, conversation_id, latest_user_text, answer, product_scope=PRODUCT_SCOPE_CHAT)
                 except Exception:
                     saved_id = None
-                result = {"answer": answer}
-                if native_result.get("native_calendar") is not None:
-                    result["native_calendar"] = native_result["native_calendar"]
-                if saved_id is not None:
-                    result["conversation_id"] = saved_id
-                return JSONResponse(public_chat_result(result))
+            else:
+                saved_id = None
+            if saved_id is not None:
+                result["conversation_id"] = saved_id
+            return JSONResponse(public_chat_result(result))
 
     try:
         with request_tier_context(raw.get("tier", "free")):
