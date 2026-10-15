@@ -64,11 +64,27 @@
     }
   }
 
+  function calendarRequestFields(payload) {
+    const result = { ...payload };
+    if (typeof result.timezone !== "string" || !result.timezone) {
+      try { result.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (_) { result.timezone = ""; }
+    }
+    if (typeof result.calendar_turn_id !== "string" || !result.calendar_turn_id) {
+      if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        result.calendar_turn_id = crypto.randomUUID();
+      }
+    }
+    if (!result.calendar_turn_id) delete result.calendar_turn_id;
+    if (!result.timezone) delete result.timezone;
+    return result;
+  }
+
   async function requestCompleted(payload, signal) {
+    const wire = calendarRequestFields(payload);
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(wired),
       signal,
     });
     const data = await response.json().catch(() => null);
@@ -191,8 +207,9 @@
     // The selected id is only a hint: canonical Identity/Broker decide authority.
     const chosenDevice = typeof window.padiemClawSelectedDeviceId === "function"
       ? window.padiemClawSelectedDeviceId() : null;
-    const wire = typeof chosenDevice === "string" && chosenDevice
-      ? { ...payload, device_id: chosenDevice } : payload;
+    const wired = typeof chosenDevice === "string" && chosenDevice
+      ? { ...calendarRequestFields(payload), device_id: chosenDevice }
+      : calendarRequestFields(payload);
     const response = await fetch("/api/claw/general", {
       method: "POST",
       headers,
@@ -215,13 +232,14 @@
   }
 
   async function requestStreaming(payload, signal) {
-    const orchestrated = await tryOrchestration(payload, signal);
+    const wire = calendarRequestFields(payload);
+    const orchestrated = await tryOrchestration(wire, signal);
     if (orchestrated) return orchestrated;
 
     const response = await fetch("/api/chat/stream", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(wire),
       signal,
     });
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
