@@ -1815,9 +1815,8 @@
       // #4745: retain the exact user-turn claim for a manual retry. A new
       // submitPrompt receives a new contextSnapshot, so a separate identical
       // request obtains a distinct key; explicit retry reuses this snapshot.
-      if (!contextSnapshot.calendarTurnId && typeof crypto !== "undefined" &&
-          typeof crypto.randomUUID === "function") {
-        contextSnapshot.calendarTurnId = crypto.randomUUID();
+      if (!contextSnapshot.calendarTurnId) {
+        contextSnapshot.calendarTurnId = chatTransport.createCalendarTurnId?.() || null;
       }
       if (contextSnapshot.calendarTurnId) payload.calendar_turn_id = contextSnapshot.calendarTurnId;
       // #3554: exactly one explicit B14 model per Claw submit; no auto/default
