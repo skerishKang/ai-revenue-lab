@@ -155,6 +155,7 @@ const doc = {
   querySelector: (sel) => (sel === ".app-shell" ? shell : sel === ".sidebar-account" ? accountContainer : null),
   querySelectorAll: () => [],
   createElement: (tag) => makeEl(tag),
+  createElementNS: (_namespace, tag) => makeEl(tag),
   addEventListener() {},
 };
 byId.projectForm.querySelector = () => makeEl("div");

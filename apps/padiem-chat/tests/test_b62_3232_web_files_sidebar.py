@@ -270,6 +270,7 @@ const doc = {
   querySelector: (sel) => (sel === ".app-shell" ? shell : sel === ".sidebar-account" ? accountContainer : null),
   querySelectorAll: () => [],
   createElement: (tag) => makeEl(tag),
+  createElementNS: (_namespace, tag) => makeEl(tag),
   addEventListener() {},
 };
 
@@ -539,8 +540,10 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     buttons[0].click();
     await tick(60);
     s = snapshot();
-    // Opening reuses the canonical project dialog with its existing files panel.
-    // Compatibility: current UI shows existing project files inline even when a dialog is not opened.
+    // A stored file must open the canonical owner-scoped project dialog.
+    if (!s.dialogOpen) fail("MUST_OPEN_PROJECT_DIALOG");
+    if (s.dialogTitle !== "project-edit-title") fail("MUST_REUSE_EDIT_FLOW:" + s.dialogTitle);
+    if (s.projectFilesPanelHidden) fail("MUST_SHOW_EXISTING_FILES_PANEL");
   } else if (mode === "account_switch_same_flags") {
     dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
     await tick(30);
