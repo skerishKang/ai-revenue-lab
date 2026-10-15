@@ -201,6 +201,24 @@ function padiemTarget(url, method) {
     if (!SKILL_CANDIDATE_ROW.test(id)) return null;
     return "/api/b66/saved-skill-candidates/" + id;
   }
+  /* #3186 STEP 3-A: staff-only read-only approval request projection.
+     The worker exposes only bounded read paths; server auth is still required. */
+  if (path === "/api/padiem/b66/admin/saved-skill-candidates" && method === "GET") {
+    const allowed = new Set(["limit", "status"]);
+    for (const key of url.searchParams.keys()) {
+      if (!allowed.has(key)) return null;
+    }
+    const status = url.searchParams.get("status") || "pending";
+    if (!["pending", "approved", "rejected"].includes(status)) return null;
+    const raw = url.searchParams.get("limit");
+    const limit = raw === null ? 20 : Number(raw);
+    if (raw !== null && (!/^[0-9]{1,2}$/.test(raw) || !Number.isInteger(limit) || limit < 1 || limit > 20)) return null;
+    return "/api/b66/admin/saved-skill-candidates?status=" + encodeURIComponent(status) + "&limit=" + String(limit);
+  }
+  const adminSkillCandidateMatch = path.match(/^\/api\/padiem\/b66\/admin\/saved-skill-candidates\/(b66cand_[a-f0-9]{32})$/);
+  if (adminSkillCandidateMatch && method === "GET") {
+    return "/api/b66/admin/saved-skill-candidates/" + adminSkillCandidateMatch[1];
+  }
 
   const assetPrefix = "/api/padiem/b66/assets/";
   if (path.startsWith(assetPrefix) && method === "GET") {
