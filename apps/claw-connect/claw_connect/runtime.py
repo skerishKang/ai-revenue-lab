@@ -440,7 +440,10 @@ class ConnectApp:
                 self.quit()
                 return
             if self._offer_signal.wait(0):
-                self._start_customer_offer_once(explicit=True)
+                if self._enrollment.committed_record() is not None:
+                    self.reconnect()
+                else:
+                    self._start_customer_offer_once(explicit=True)
             # A lost Resident process is not a user OFF decision. A bounded
             # supervisor restart reuses the committed DPAPI binding, never a
             # second pairing or fabricated credential.
@@ -449,7 +452,7 @@ class ConnectApp:
                     self.start_registered_resident()
                 next_restart_at = time.monotonic() + 15.0
 
-    def run(self) -> int:
+    def run(self, *, explicit_connect: bool = False) -> int:
         """Start the tray. Returns the process exit code.
 
         0 = clean quit, 3 = another instance already owns this PC.
@@ -464,11 +467,12 @@ class ConnectApp:
             # Resident up, on the committed enrollment. Offline or unconfigured
             # is reported through ``resident_launch_reason`` instead of a
             # silently absent Resident.
-            self.start_registered_resident()
+            if explicit_connect or (self._autostart.preference() != "off" and not self._user_paused):
+                self.start_registered_resident()
             # Following the already selected web Computer Connect action,
             # setup bootstraps its offer without an operator command or ID.
             if sys.platform == "win32" and getattr(sys, "frozen", False):
-                self._start_customer_offer_once()
+                self._start_customer_offer_once(explicit=explicit_connect)
             if sys.platform == "win32":
                 from .tray import ConnectTray  # noqa: PLC0415
 

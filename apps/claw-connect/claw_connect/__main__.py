@@ -130,7 +130,7 @@ def main(argv: list[str] | None = None) -> int:
         # Browser link can only start a tray; it cannot supply any account or
         # device entitlement, cookie, one-time code or executable command.
         app = ConnectApp()
-        status = app.run()
+        status = app.run(explicit_connect=True)
         if status == CONNECT_APP_EXIT_ALREADY_RUNNING:
             # Browser clicked while tray is already present: signal its one
             # existing owner-initiated offer. No URL data is conveyed.
