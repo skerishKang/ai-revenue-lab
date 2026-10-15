@@ -74,11 +74,27 @@ class GitHubAppOAuthProvider:
         return valid[0]
 
     async def repositories(self, token: str, installation_id: int):
-        data = await self._call("GET",
-            f"https://api.github.com/user/installations/{installation_id}/repositories", token=token)
-        entries = data.get("repositories")
-        if not isinstance(entries, list):
-            raise ValueError("GitHub repositories unavailable")
-        return [{"full_name": item["full_name"], "private": item.get("private") is True}
-                for item in entries[:50] if isinstance(item, dict)
-                and isinstance(item.get("full_name"), str)]
+        # GitHub defaults to 30 entries. A granted All repositories installation
+        # may be larger: fetch complete pages instead of silently hiding repos.
+        collected = []
+        for page in range(1, 11):
+            data = await self._call(
+                "GET",
+                f"https://api.github.com/user/installations/{installation_id}/repositories"
+                f"?per_page=100&page={page}", token=token)
+            entries = data.get("repositories")
+            total = data.get("total_count")
+            if not isinstance(entries, list) or not isinstance(total, int) or total < 0:
+                raise ValueError("GitHub repositories unavailable")
+            for item in entries:
+                if isinstance(item, dict) and isinstance(item.get("full_name"), str):
+                    collected.append({
+                        "full_name": item["full_name"],
+                        "private": item.get("private") is True,
+                    })
+            if len(collected) >= total:
+                return collected
+            if len(entries) < 100:
+                raise ValueError("GitHub repositories incomplete")
+        # Never misrepresent a truncated subset as the entire installation.
+        raise ValueError("GitHub repositories exceed safe page limit")
