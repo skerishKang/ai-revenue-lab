@@ -55,12 +55,17 @@ def test_browser_protocol_refuses_additional_argv_before_device_state(monkeypatc
 def test_allowed_link_starts_existing_tray_only_and_never_claims_pairing(monkeypatch):
     events = []
     class ExistingTray:
-        def run(self):
+        def run(self, *, explicit_connect: bool = False):
+            assert explicit_connect is True
             events.append("start_tray")
             return cli.CONNECT_APP_EXIT_ALREADY_RUNNING
+
+        def signal_customer_offer(self):
+            events.append("signal_customer_offer")
+            return True
     monkeypatch.setattr(cli, "ConnectApp", ExistingTray)
     assert cli.main(["open-from-web", BROWSER_START_URI]) == 0
-    assert events == ["start_tray"]
+    assert events == ["start_tray", "signal_customer_offer"]
 
 
 def test_launch_protocol_is_standalone_local_package_entrypoint():
