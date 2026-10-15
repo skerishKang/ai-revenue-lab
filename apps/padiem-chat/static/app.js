@@ -595,6 +595,33 @@
     });
     if (!selectedAttachment) setNote(idleNote());
   }
+  // Static, accessible sidebar actions: keep the translated button text
+  // and ARIA labels; only replace the low-contrast visual affordance.
+  function sidebarActionIcon(kind) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.9");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    const shape = document.createElementNS(ns, "path");
+    shape.setAttribute("d", kind === "settings"
+      ? "M12 2l1.5 2.4 2.8.5 1.9-1.2 2 3.5-1.9 1.9.1 2.9 1.8 1.9-2 3.5-2.8-.5-2.4 1.4L12 21l-3.1-2.7-2.4-1.4-2.8.5-2-3.5 1.8-1.9.1-2.9-1.9-1.9 2-3.5 1.9 1.2 2.8-.5L12 2Z"
+      : "M4 6h16M9 6V4h6v2M6 6l1 15h10l1-15M10 10v7M14 10v7");
+    svg.appendChild(shape);
+    if (kind === "settings") {
+      const center = document.createElementNS(ns, "circle");
+      center.setAttribute("cx", "12");
+      center.setAttribute("cy", "11.5");
+      center.setAttribute("r", "3.1");
+      svg.appendChild(center);
+    }
+    return svg;
+  }
   function renderProjects() {
     projectsList.replaceChildren();
     projectsSection.hidden = !projectsReady;
@@ -613,7 +640,9 @@
       manage.type = "button";
       manage.className = "project-manage";
       manage.textContent = uiT("manage");
+      manage.prepend(sidebarActionIcon("settings"));
       manage.setAttribute("aria-label", uiT("project-manage-aria", { name: project.name }));
+      manage.title = uiT("project-manage-aria", { name: project.name });
       manage.addEventListener("click", () => openProjectDialog(project));
       row.append(button, manage);
       projectsList.appendChild(row);
@@ -1315,7 +1344,9 @@
         remove.type = "button";
         remove.className = "history-delete";
         remove.textContent = uiT("delete");
+        remove.prepend(sidebarActionIcon("trash"));
         remove.setAttribute("aria-label", uiT("conversation-delete-aria", { title: conversation.title }));
+        remove.title = uiT("conversation-delete-aria", { title: conversation.title });
         remove.addEventListener("click", () => deleteConversation(conversation.id, conversation.title));
         row.append(button, remove);
         historyList.appendChild(row);
