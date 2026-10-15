@@ -181,6 +181,7 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
         # executable B14 catalog must still exclude them.
         "opencode-go/longcat-2.5-preview-free",
         "opencode-go/step-5-preview-free",
+        "opencode-go/cat-jam-free",
     }
 
 

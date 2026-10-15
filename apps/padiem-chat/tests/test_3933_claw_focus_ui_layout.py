@@ -41,12 +41,12 @@ def _nodes():
 
 def test_focus_stylesheet_is_last_and_loads_after_complex_claw_layout():
     links = _nodes().stylesheets
-    # Keep the Claw focus workbench as the final *layout* stylesheet.
+    # Keep the final shared six-panel frame after Claw focus and voice CSS.
     # The later voice-composer.css is component-local (#voiceMicButton and
     # .voice-interim-preview), not a Claw layout override.
     focus = links.index("./claw-focus-layout.css")
     trailing = links[focus + 1:]
-    assert trailing in ([], ["./voice-composer.css"])
+    assert trailing == ["./voice-composer.css", "./shared-six-panel-frame.css"]
     if trailing:
         voice_css = (STATIC / "voice-composer.css").read_text(encoding="utf-8")
         assert "#voiceMicButton" in voice_css
