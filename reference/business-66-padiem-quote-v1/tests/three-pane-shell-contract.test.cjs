@@ -85,8 +85,10 @@ check(resetStart !== -1 && resetConfirm > resetStart && resetCommitted > resetCo
 const easy = fs.readFileSync(path.join(ROOT, "easy-mode.js"), "utf8");
 check(easy.includes('document.addEventListener("b66:new-quote-started"') &&
   easy.includes('recordDialogueState(null);') &&
-  easy.includes('recordProductState("free-form", { replace: true });'),
-  "accepted new quote clears current conversation context and replaces active view");
+  easy.includes('resetServerQuoteConversation();') &&
+  easy.includes('showHome({ history: false });') &&
+  easy.includes('recordProductState("home", { replace: true });'),
+  "accepted new quote clears owner-scoped server conversation and returns to Home");
 check(!/clickExisting\("newQuote"\);\s*document\.dispatchEvent/.test(shell),
   "cancelled new-quote action never navigates from the rail itself");
 check(shell.includes('세부 항목 편집 중') && shell.includes('shell-edit-return'),

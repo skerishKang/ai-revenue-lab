@@ -1384,8 +1384,18 @@
             skillUiState.activeSkillId, profile.fingerprint)
         : null;
       const result = await bridge.downloadPdf(model, previewModel);
-      if (result && result.ok === true) toast("PDF 견적서를 다운로드했습니다.");
-      else toast(result && result.message ? result.message : "PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
+      if (result && result.ok === true) {
+        toast("PDF 견적서를 다운로드했습니다.");
+        // Share the SAME verified PDF bytes with the conversation UI. Do not
+        // re-render with a model or create a second document implementation.
+        if (result.blob instanceof Blob && result.blob.type === "application/pdf") {
+          document.dispatchEvent(new CustomEvent("b66:quote-pdf-ready", {
+            detail: { blob: result.blob, filename: result.filename }
+          }));
+        }
+      } else {
+        toast(result && result.message ? result.message : "PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
+      }
     } catch (_) {
       toast("PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
     } finally {

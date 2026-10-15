@@ -42,8 +42,9 @@ METHOD_GUIDED = "guided"
 METHODS = frozenset({METHOD_FLEXIBLE, METHOD_GUIDED})
 
 ACTION_APPROVE_DRAFT = "approve_draft"
+ACTION_START_NEW = "start_new"
 
-ACTIONS = frozenset({"message", "choose_method", "confirm", "cancel_staged", ACTION_APPROVE_DRAFT})
+ACTIONS = frozenset({"message", "choose_method", "confirm", "cancel_staged", ACTION_APPROVE_DRAFT, ACTION_START_NEW})
 
 TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
 
@@ -681,7 +682,11 @@ def apply_message_transition(state: dict, reply: str, intent: str, delta: dict) 
             # Only an explicit authoring request opens authoring. The word 견적
             # alone (quote_explain / general) never does.
             data["mode"] = MODE_QUOTE
-            data["awaiting_method"] = True
+            # A complete one-sentence request does not need a redundant choice.
+            complete_request = not missing_fields(data["facts"])
+            if complete_request and data["method"] is None:
+                data["method"] = METHOD_FLEXIBLE
+            data["awaiting_method"] = data["method"] is None
             data["approval_required"] = False
             mode_changed = True
         # quote_modify without an active authoring slot stays general: there is
@@ -885,6 +890,7 @@ def valid_revision(value: Any) -> bool:
 
 __all__ = [
     "ACTION_APPROVE_DRAFT",
+    "ACTION_START_NEW",
     "ACTIONS",
     "B66ConversationError",
     "ConversationRevisionConflict",
