@@ -276,6 +276,8 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # ``read_verified_file_text`` contract. The table, its SQLite schema and its
     # command/binding/ACK correlation gate live in
     # ``local_agent_broker_text_results`` — this file still only forwards and
-    # holds no storage, schema or authority. The bound moves by exactly that
-    # passthrough (248 -> 259 lines) and keeps its original three-line margin.
-    assert len(source.splitlines()) < 262
+    # holds no storage, schema or authority. The 4139 installed execution
+    # profile adds one thin store composition and two private RPC passthroughs;
+    # the actual SQLite/auth implementation remains in separate modules.
+    # Update the structural size budget (259 -> 274), preserving its margin.
+    assert len(source.splitlines()) < 278
