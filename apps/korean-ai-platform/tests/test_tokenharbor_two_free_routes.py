@@ -23,7 +23,7 @@ from app.pilot.platform_secrets import get_platform_provider
 from app.pilot.router_core import resolve_manual_route
 
 PROVIDER = "tokenharbor"
-BINDING = "PADIEM_TOKEN_HARBOR_API_KEY"
+BINDING = "PADIEM_B14_CREDENTIAL_13"
 ORIGIN = "https://tokenharbor.ai/v1"
 ALLOWED = {
     "tokenharbor/claude-haiku-5.5:free": "claude-haiku-5.5:free",
@@ -190,7 +190,7 @@ def test_unapproved_public_model_has_no_manual_route(live_key):
 def test_missing_secret_denied_before_network(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.delenv(BINDING, raising=False)
-    monkeypatch.setenv("PADIEM_GEMINI_API_KEY", "synthetic_other_provider")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "synthetic_other_provider")
     called = []
     with pytest.raises(PilotNotConfigured):
         asyncio.run(call_platform_chat_completions(

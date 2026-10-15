@@ -67,7 +67,7 @@ def test_space_bunny_identity_survives_only_as_historical_metadata() -> None:
     assert KILO_SPACE_BUNNY_MODEL_ID == "kilo/stealth-space-bunny-alpha"
     assert KILO_SPACE_BUNNY_UPSTREAM_MODEL == "stealth/space-bunny-alpha"
     assert KILO_SPACE_BUNNY_SOURCE_CHECKED_AT == "2026-09-28"
-    assert KILO_SPACE_BUNNY_CREDENTIAL_BINDING == "PADIEM_KILO_API_KEY"
+    assert KILO_SPACE_BUNNY_CREDENTIAL_BINDING == "PADIEM_B14_CREDENTIAL_08"
 
 
 def test_space_bunny_is_absent_from_routes_catalog_and_chain() -> None:

@@ -100,12 +100,12 @@ def test_provider_readiness_makes_no_upstream_provider_call(monkeypatch):
 
 
 def test_agnes_legacy_binding_name_never_satisfies_reonboarded_provider(monkeypatch):
-    # #2133 re-onboards Agnes under PADIEM_AGNES_API_KEY. The #1933 S2-b
+    # #2133 re-onboards Agnes under PADIEM_B14_CREDENTIAL_01. The #1933 S2-b
     # retirement intent survives as an isolation contract: the legacy intake
     # name AGNES_API_KEY must not satisfy readiness for anything.
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv("AGNES_API_KEY", "legacy-name-1234567890abcdef")
-    monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_01", raising=False)
 
     response = TestClient(create_app()).get("/api/pilot/provider-readiness")
 

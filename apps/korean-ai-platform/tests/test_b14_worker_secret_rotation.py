@@ -29,7 +29,7 @@ def spec(provider: str) -> PlatformProviderSpec:
     return PlatformProviderSpec(
         provider_id=provider,
         credential_source=CredentialSource.PLATFORM_SECRET,
-        credential_binding_name=f"PADIEM_{provider.upper()}_API_KEY",
+        credential_binding_name=("PADIEM_B14_CREDENTIAL_05" if provider == "gemini" else f"PADIEM_{provider.upper()}_API_KEY"),
         base_origin=f"https://{provider}.example.net/v1",
         allowed_hosts=(f"{provider}.example.net",),
     )
@@ -160,7 +160,7 @@ def test_worker_entrypoint_guards_scoped_binding_and_global_secret():
     assert "token = bind_request_env(env_overrides)" in contents
     assert "finally:\n            reset_request_env(token)" in contents
     assert "if _env_key in _NON_SECRET_ENV_KEYS:" in contents
-    assert "PADIEM_EXLAB_API_KEY" in contents  # stable account binding name
+    assert "PADIEM_B14_CREDENTIAL_04" in contents  # stable account binding name
     assert 'if _env_key in _NON_SECRET_ENV_KEYS:\n            _os.environ' in contents
 
 @pytest.mark.asyncio
@@ -256,30 +256,30 @@ async def test_lazy_gemini_does_not_fetch_unrelated_provider():
     kira = CountingSecret("synthetic_kira_unrelated")
     exlab = CountingSecret("synthetic_exlab_unrelated")
     env = SimpleNamespace(
-        PADIEM_GEMINI_API_KEY=gemini,
-        PADIEM_KIRAAI_API_KEY=kira,
-        PADIEM_EXLAB_API_KEY=exlab,
+        PADIEM_B14_CREDENTIAL_05=gemini,
+        PADIEM_B14_CREDENTIAL_09=kira,
+        PADIEM_B14_CREDENTIAL_04=exlab,
     )
     handles = collect_request_bindings(env, (
-        "PADIEM_GEMINI_API_KEY", "PADIEM_KIRAAI_API_KEY", "PADIEM_EXLAB_API_KEY"
+        "PADIEM_B14_CREDENTIAL_05", "PADIEM_B14_CREDENTIAL_09", "PADIEM_B14_CREDENTIAL_04"
     ))
     assert (gemini.calls, kira.calls, exlab.calls) == (0, 0, 0)
     token = bind_request_env(handles)
     try:
         await ensure_route_secrets("google/gemini-3.1-flash-lite")
         await ensure_route_secrets("google/gemini-3.1-flash-lite")
-        assert scoped_secret("PADIEM_GEMINI_API_KEY") == "synthetic_gemini_new"
+        assert scoped_secret("PADIEM_B14_CREDENTIAL_05") == "synthetic_gemini_new"
         assert (gemini.calls, kira.calls, exlab.calls) == (1, 0, 0)
-        assert scoped_secret("PADIEM_KIRAAI_API_KEY") == ""
+        assert scoped_secret("PADIEM_B14_CREDENTIAL_09") == ""
     finally:
         reset_request_env(token)
-    assert scoped_secret("PADIEM_GEMINI_API_KEY") is None
+    assert scoped_secret("PADIEM_B14_CREDENTIAL_05") is None
 
 
 @pytest.mark.asyncio
 async def test_lazy_revoke_rotation_and_failed_get_are_fail_closed(monkeypatch):
     from types import SimpleNamespace
-    key = "PADIEM_GEMINI_API_KEY"
+    key = "PADIEM_B14_CREDENTIAL_05"
     monkeypatch.setenv(key, "synthetic_global_must_not_be_used")
 
     class MutableSecret:
@@ -302,7 +302,7 @@ async def test_lazy_revoke_rotation_and_failed_get_are_fail_closed(monkeypatch):
     ):
         secret.value = candidate
         token = bind_request_env(collect_request_bindings(
-            SimpleNamespace(PADIEM_GEMINI_API_KEY=secret), (key,)
+            SimpleNamespace(PADIEM_B14_CREDENTIAL_05=secret), (key,)
         ))
         try:
             assert resolve_secret(spec_gemini) == ""
@@ -317,7 +317,7 @@ async def test_lazy_revoke_rotation_and_failed_get_are_fail_closed(monkeypatch):
 @pytest.mark.asyncio
 async def test_lazy_overlapping_requests_isolate_handle_and_key():
     from types import SimpleNamespace
-    key = "PADIEM_GEMINI_API_KEY"
+    key = "PADIEM_B14_CREDENTIAL_05"
 
     class BoundSecret:
         def __init__(self, value):
@@ -332,7 +332,7 @@ async def test_lazy_overlapping_requests_isolate_handle_and_key():
     async def invoke(value):
         binding = BoundSecret(value)
         token = bind_request_env(collect_request_bindings(
-            SimpleNamespace(PADIEM_GEMINI_API_KEY=binding), (key,)
+            SimpleNamespace(PADIEM_B14_CREDENTIAL_05=binding), (key,)
         ))
         try:
             await load_request_secret(key)
@@ -376,9 +376,9 @@ async def test_auto_chain_fetches_only_chain_and_stops_without_fallback(monkeypa
     assert len(chain_keys) == 2
     first, second, other = Binding("synthetic_agnes_usable"), Binding("synthetic_poolside"), Binding("synthetic_exlab")
     env = SimpleNamespace(**dict(zip(chain_keys, (first, second))),
-                          PADIEM_EXLAB_API_KEY=other)
+                          PADIEM_B14_CREDENTIAL_04=other)
     token = bind_request_env(collect_request_bindings(
-        env, (*chain_keys, "PADIEM_EXLAB_API_KEY")
+        env, (*chain_keys, "PADIEM_B14_CREDENTIAL_04")
     ))
     try:
         await ensure_route_secrets("b14/auto", allow_external_fallback=False)
@@ -390,7 +390,7 @@ async def test_auto_chain_fetches_only_chain_and_stops_without_fallback(monkeypa
     # fixed-chain position to be selected, not falsely report no route.
     first.value = None
     token = bind_request_env(collect_request_bindings(
-        env, (*chain_keys, "PADIEM_EXLAB_API_KEY")
+        env, (*chain_keys, "PADIEM_B14_CREDENTIAL_04")
     ))
     try:
         await ensure_route_secrets("b14/auto", allow_external_fallback=False)
@@ -400,7 +400,7 @@ async def test_auto_chain_fetches_only_chain_and_stops_without_fallback(monkeypa
     first.value = "synthetic_agnes_usable"
 
     token = bind_request_env(collect_request_bindings(
-        env, (*chain_keys, "PADIEM_EXLAB_API_KEY")
+        env, (*chain_keys, "PADIEM_B14_CREDENTIAL_04")
     ))
     try:
         await ensure_route_secrets("b14/auto", allow_external_fallback=True)
@@ -413,7 +413,7 @@ async def test_auto_chain_fetches_only_chain_and_stops_without_fallback(monkeypa
 @pytest.mark.asyncio
 async def test_same_request_concurrent_loads_share_inflight_read():
     from types import SimpleNamespace
-    key = "PADIEM_GEMINI_API_KEY"
+    key = "PADIEM_B14_CREDENTIAL_05"
 
     class SlowSecret:
         calls = 0
@@ -425,7 +425,7 @@ async def test_same_request_concurrent_loads_share_inflight_read():
 
     binding = SlowSecret()
     token = bind_request_env(collect_request_bindings(
-        SimpleNamespace(PADIEM_GEMINI_API_KEY=binding), (key,)
+        SimpleNamespace(PADIEM_B14_CREDENTIAL_05=binding), (key,)
     ))
     try:
         async def reader():

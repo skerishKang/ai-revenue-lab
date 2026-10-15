@@ -135,7 +135,7 @@ def test_agnes_route_reonboarded_as_manual_pin_candidate():
     # public-surface contracts live in tests/test_agnes_provider.py.
     spec = ps.get_platform_provider("agnes-ai")
     assert spec is not None
-    assert spec.credential_binding_name == "PADIEM_AGNES_API_KEY"
+    assert spec.credential_binding_name == "PADIEM_B14_CREDENTIAL_01"
     assert spec.base_origin == "https://apihub.agnes-ai.com/v1"
 
     from app.pilot.agnes_provider import CATALOG_BY_ID as _REAL_BY_ID

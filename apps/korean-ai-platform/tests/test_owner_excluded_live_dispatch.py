@@ -94,7 +94,7 @@ def test_provider_stream_egress_denied_before_secret_and_transport(mid, provider
 
 
 def test_live_manual_fallback_never_advertises_excluded_candidates(monkeypatch):
-    monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY","synthetic_poolside_key_abcdefghij")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12","synthetic_poolside_key_abcdefghij")
     assert excluded_from_owner_customer_selection(POOLSIDE_MODEL_ID) is False
     decision=resolve_manual_route(POOLSIDE_MODEL_ID, allow_external_fallback=True)
     assert decision.selected_model == POOLSIDE_MODEL_ID
@@ -184,7 +184,7 @@ def test_inkling_small_upstream_spoof_blocked_before_network():
 def test_google_selected_route_keeps_its_own_missing_key_gate(monkeypatch):
     google="google/gemini-3.1-flash-lite"
     assert excluded_from_owner_customer_selection(google) is False
-    monkeypatch.delenv("PADIEM_GEMINI_API_KEY",raising=False)
+    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_05",raising=False)
     with pytest.raises(NoSafeRoute) as exc:
         resolve_manual_route(google)
     assert exc.value.reason_code=="provider_secret_missing"
@@ -209,7 +209,7 @@ def test_spoofed_safe_public_id_cannot_evoke_owner_excluded_upstream(
     provider,upstream,monkeypatch
 ):
     """No alias can execute an excluded provider/model tuple."""
-    monkeypatch.setenv("PADIEM_GEMINI_API_KEY","synthetic_key_abcdefghij")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05","synthetic_key_abcdefghij")
     calls=[]
     def unexpected(request):
         calls.append(request)

@@ -13,7 +13,7 @@ from app.pilot.platform_secrets import (
 ATRIA_PROVIDER_ID = "atria"
 ATRIA_BASE_ORIGIN = "https://api.atria-asi.ai/v1"
 ATRIA_ALLOWED_HOST = "api.atria-asi.ai"
-ATRIA_CREDENTIAL_BINDING = "PADIEM_ATRIA_API_KEY"
+ATRIA_CREDENTIAL_BINDING = "PADIEM_B14_CREDENTIAL_02"
 ATRIA_MODEL_ID = "atria/Atria-Dawn-Preview"
 ATRIA_UPSTREAM_MODEL = "Atria-Dawn-Preview"
 ATRIA_SOURCE_CHECKED_AT = "2026-09-18"

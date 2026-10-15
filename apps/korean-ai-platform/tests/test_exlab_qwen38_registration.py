@@ -20,7 +20,7 @@ from app.pilot.router_core import resolve_manual_route
 MODEL = "experiential/qwen3.8-flash-next-uncensored"
 UPSTREAM = "qwen3.8-flash-next-uncensored"
 ORIGIN = "https://api.experientiallabs.ai/v1"
-BINDING = "PADIEM_EXLAB_API_KEY"
+BINDING = "PADIEM_B14_CREDENTIAL_04"
 
 
 def test_exlab_catalog_is_manual_only_and_uses_existing_secret_name():

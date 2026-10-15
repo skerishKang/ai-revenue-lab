@@ -19,7 +19,7 @@ def test_exact_kira_single_attempt_504_has_observed_547_byte_b14_fingerprint(mon
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     # Synthetic string; not an account credential. Egress is stubbed before any IO.
-    monkeypatch.setenv("PADIEM_KIRAAI_API_KEY", "synthetic-fingerprint-20261010-not-a-secret")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_09", "synthetic-fingerprint-20261010-not-a-secret")
     outbound = []
 
     async def timeout_once(**kwargs):
@@ -61,4 +61,4 @@ def test_exact_kira_single_attempt_504_has_observed_547_byte_b14_fingerprint(mon
     # error serializer changes, reconcile and document before updating.
     assert len(result.content) == 547
     assert "synthetic error fingerprint" not in result.text
-    assert "PADIEM_KIRAAI_API_KEY" not in result.text
+    assert "PADIEM_B14_CREDENTIAL_09" not in result.text

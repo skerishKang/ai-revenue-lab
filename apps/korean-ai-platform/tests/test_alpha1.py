@@ -116,7 +116,7 @@ def _reset_config(monkeypatch):
     documented keyless/mock defaults.
     """
     monkeypatch.delenv("KILO_API_KEY", raising=False)
-    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-route-0123456789")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-route-0123456789")
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
         "provider_mode": rcfg.provider_mode,
@@ -322,8 +322,8 @@ class TestAutoRoute:
 
     def test_auto_route_unknown_capability_is_ignored(self, client, monkeypatch):
         """D14 (#2044): capability options no longer filter b14/auto; they are ignored."""
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={
@@ -420,8 +420,8 @@ class TestFallbackExecution:
         """Auto route: first chain position 429 → fallback to second (D14 fixed chain)."""
         from app.pilot.errors import UpstreamRateLimited
         _set_live()
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
         original = plat.call_platform_chat_completions
         calls = []
 
@@ -503,7 +503,7 @@ class TestLiveFailClosed:
 
     def test_missing_key_live_allows_keyless_route(self, client, monkeypatch):
         """Live mode without active chain credentials fails closed."""
-        monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
+        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_01", raising=False)
         rcfg.provider_mode = "live"
         rcfg.api_key = ""
         captured = self._install_keyless_live_probe(monkeypatch)
@@ -516,7 +516,7 @@ class TestLiveFailClosed:
 
     def test_placeholder_key_live_not_forwarded(self, client, monkeypatch):
         """A stale OpenRouter placeholder key does not satisfy Agnes."""
-        monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
+        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_01", raising=False)
         rcfg.provider_mode = "live"
         rcfg.api_key = "sk-your-key-here"
         captured = self._install_keyless_live_probe(monkeypatch)
@@ -544,8 +544,8 @@ class TestMockMode:
         assert data["choices"][0]["message"]["content"]
 
     def test_mock_mode_auto_model(self, client, monkeypatch):
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
@@ -1296,8 +1296,8 @@ class TestFallbackActualEvidence:
         self, client, monkeypatch
     ):
         _set_live()
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
         from app.pilot.errors import UpstreamServerError
 
         calls = []
@@ -1330,7 +1330,7 @@ class TestFallbackActualEvidence:
     def test_fallback_metadata_describes_actual_success_candidate(self, client, monkeypatch):
         _set_live()
         monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
-        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
         from app.pilot.errors import UpstreamRateLimited
         original = plat.call_platform_chat_completions
         calls = []
@@ -1427,8 +1427,8 @@ class TestOptionEnforcement:
 
     def test_provider_order_option_ignored_by_fixed_chain(self, client, monkeypatch):
         """D14 (#2044): provider_order is accepted but does not change b14/auto."""
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
@@ -1977,7 +1977,7 @@ class TestActualRouteId:
         """Fallback success: selected_route_id = actual fallback success candidate route_id."""
         _set_live()
         monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
-        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
         pass  # OpenRouter retired (#1933 S2): platform adapter is patched directly
         from app.pilot.errors import UpstreamRateLimited
         original = plat.call_platform_chat_completions

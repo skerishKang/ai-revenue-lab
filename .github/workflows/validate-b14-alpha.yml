@@ -139,7 +139,7 @@ jobs:
       - name: Verify platform live readiness never executes chat without a credential
         env:
           PADIEM_SENSENOVA_API_KEY: ''
-          PADIEM_POOLSIDE_API_KEY: ''
+          PADIEM_B14_CREDENTIAL_12: ''
           B14_PROVIDER_MODE: live
         shell: bash
         run: |

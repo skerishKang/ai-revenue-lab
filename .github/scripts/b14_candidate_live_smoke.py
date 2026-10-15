@@ -84,7 +84,7 @@ class CandidateSpec:
     ``credential_binding`` is the **name** of the expected platform secret
     binding. Its value is never read, printed, or transmitted by this module.
     Space Bunny may reuse the owner-managed Kilo credential
-    ``PADIEM_KILO_API_KEY`` when present, but its candidate contract remains
+    ``PADIEM_B14_CREDENTIAL_08`` when present, but its candidate contract remains
     runnable when B14 reports no key so the documented anonymous free-model path
     can be measured. Callers never supply or override the credential.
     """
@@ -121,8 +121,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Agnes AI",
         model_id="agnes-ai/agnes-3.0-flash",
         upstream_model="agnes-3.0-flash",
-        credential_binding="PADIEM_AGNES_API_KEY",
-        expected_binding="PADIEM_AGNES_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_01",
+        expected_binding="PADIEM_B14_CREDENTIAL_01",
     ),
     CandidateSpec(
         candidate_id="sensenova",
@@ -141,8 +141,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Poolside",
         model_id="poolside/laguna-s-2.1",
         upstream_model="poolside/laguna-s-2.1",
-        credential_binding="PADIEM_POOLSIDE_API_KEY",
-        expected_binding="PADIEM_POOLSIDE_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_12",
+        expected_binding="PADIEM_B14_CREDENTIAL_12",
     ),
     CandidateSpec(
         candidate_id="motif",
@@ -151,8 +151,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Infron",
         model_id="infron/motif/motif-3",
         upstream_model="motif/motif-3",
-        credential_binding="PADIEM_INFRON_API_KEY",
-        expected_binding="PADIEM_INFRON_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_07",
+        expected_binding="PADIEM_B14_CREDENTIAL_07",
     ),
     CandidateSpec(
         candidate_id="mercury",
@@ -161,8 +161,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Inception",
         model_id="inception/mercury-2.5",
         upstream_model="mercury-2.5",
-        credential_binding="PADIEM_INCEPTION_MERCURY_API_KEY",
-        expected_binding="PADIEM_INCEPTION_MERCURY_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_06",
+        expected_binding="PADIEM_B14_CREDENTIAL_06",
     ),
     CandidateSpec(
         candidate_id="atria",
@@ -171,8 +171,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Atria",
         model_id="atria/Atria-Dawn-Preview",
         upstream_model="Atria-Dawn-Preview",
-        credential_binding="PADIEM_ATRIA_API_KEY",
-        expected_binding="PADIEM_ATRIA_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_02",
+        expected_binding="PADIEM_B14_CREDENTIAL_02",
     ),
     CandidateSpec(
         candidate_id="luna",
@@ -181,8 +181,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Experiential Labs",
         model_id="experiential/gpt-5.6-luna",
         upstream_model="gpt-5.6-luna",
-        credential_binding="PADIEM_EXLAB_API_KEY",
-        expected_binding="PADIEM_EXLAB_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_04",
+        expected_binding="PADIEM_B14_CREDENTIAL_04",
     ),
     # space-bunny removed from the allowlist: owner final retirement decision
     # (2026-10-07). Historical id: kilo/stealth-space-bunny-alpha.

@@ -161,8 +161,8 @@ def test_unknown_model_fails_closed() -> None:
 
 def test_binding_is_name_only() -> None:
     resolved = oneshot.resolve_exlab(EXLAB_ID)
-    assert resolved.credential_binding == "PADIEM_EXLAB_API_KEY"
-    assert resolved.expected_binding == "PADIEM_EXLAB_API_KEY"
+    assert resolved.credential_binding == "PADIEM_B14_CREDENTIAL_04"
+    assert resolved.expected_binding == "PADIEM_B14_CREDENTIAL_04"
 
 
 def test_contract_constants_pin_one_call_no_retry_no_fallback() -> None:
@@ -223,7 +223,7 @@ def test_chat_body_pins_exact_manual_model_with_no_retry_policy() -> None:
 
 def test_expected_binding_name_is_emitted_without_any_secret_value() -> None:
     _, out = _run_capture(EXLAB_ID, transport=_happy_transport())
-    assert "EXPECTED_BINDING=PADIEM_EXLAB_API_KEY" in out
+    assert "EXPECTED_BINDING=PADIEM_B14_CREDENTIAL_04" in out
     assert "CREDENTIAL_BOUND=YES" in out
     assert "PRIVATE_ANSWER_SENTINEL_42" not in out
     assert "정상" not in out
