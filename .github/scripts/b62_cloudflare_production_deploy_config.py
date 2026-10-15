@@ -31,6 +31,10 @@ GRAFANA_OTLP_BINDING = {
     "store_id": "f0b09ca04a7b43248154c773704a5616",
     "secret_name": "PADIEM_GRAFANA_OTLP_TOKEN",
 }
+GRAFANA_OTLP_PUBLIC_VARS = {
+    "PADIEM_GRAFANA_OTLP_ENDPOINT": "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs",
+    "PADIEM_GRAFANA_OTLP_USERNAME": "1876517",
+}
 SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "browser", "plain_text", "secret_text", "version_metadata", "secrets_store_secret"}
 HARK_BROWSER_BINDING = "BROWSER"
 # #4139 opt-in candidate builder only: never activated via production CLI.
@@ -474,6 +478,29 @@ def build_production_config(
     # base URL, operational settings) is preserved verbatim. Normal deploys
     # never take this path.
     output_vars = dict(plain_vars)
+    if attach_grafana_telemetry:
+        source_vars = repo.get("vars")
+        if not isinstance(source_vars, dict) or any(
+            source_vars.get(name) != value
+            for name, value in GRAFANA_OTLP_PUBLIC_VARS.items()
+        ):
+            raise ProductionConfigError("Grafana source public metadata differs from approved constants")
+        other_names = (
+            {item["name"] for key in ("assets", "services", "d1", "r2") for item in live[key]}
+            | set(live["secret_names"])
+            | {item["name"] for item in live["secrets_store"]}
+        )
+        if live["version_metadata"] is not None:
+            other_names.add(live["version_metadata"]["name"])
+        if live["browser"] is not None:
+            other_names.add(live["browser"]["name"])
+        if other_names & set(GRAFANA_OTLP_PUBLIC_VARS):
+            raise ProductionConfigError("Grafana public metadata collides with a non-variable binding")
+        for name, value in GRAFANA_OTLP_PUBLIC_VARS.items():
+            present = output_vars.get(name)
+            if present is not None and present != value:
+                raise ProductionConfigError("Grafana live public metadata drift: " + name)
+            output_vars[name] = value
     if attach_connector_broker_service:
         for key, expected in CONNECTOR_EXPLICIT_VARS.items():
             existing = output_vars.get(key)
@@ -504,6 +531,7 @@ def verify_mutation_zero(
     live: dict[str, object],
     allow_connector_broker: bool = False,
     allow_claw_public_search: bool = False,
+    allow_grafana_telemetry: bool = False,
 ) -> None:
     """The generated [vars] block must equal the live plain-text variables exactly.
 
@@ -535,6 +563,12 @@ def verify_mutation_zero(
                     f"Connector var drift on {key!r}; activation owns the live value"
                 )
             expected.setdefault(key, value)
+    if allow_grafana_telemetry:
+        for name, value in GRAFANA_OTLP_PUBLIC_VARS.items():
+            existing = expected.get(name)
+            if existing is not None and existing != value:
+                raise ProductionConfigError("Grafana live public metadata drift: " + name)
+            expected[name] = value
     if allow_claw_public_search:
         existing = expected.get(CLAW_SEARCH_FLAG)
         if existing is not None and existing != "true":
@@ -611,6 +645,7 @@ def main(argv: list[str] | None = None) -> int:
             config_text, live,
             allow_connector_broker=args.attach_existing_connector_broker,
             allow_claw_public_search=args.activate_claw_public_search,
+            allow_grafana_telemetry=args.attach_existing_grafana_telemetry,
         )
     except (ProductionConfigError, OSError, json.JSONDecodeError) as exc:
         print(f"B62_PRODUCTION_CONFIG_GENERATED=FAIL\nREASON={exc}", file=sys.stderr)

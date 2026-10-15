@@ -1239,7 +1239,10 @@ jobs:
               --before "${RUNNER_TEMP}/b62-version-before.json" \
               --after "${detail}"
             jq -e '.result.resources.bindings | any(.name == "PADIEM_GRAFANA_OTLP_TOKEN" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "PADIEM_GRAFANA_OTLP_TOKEN")' "${detail}" >/dev/null
+            jq -e '[.result.resources.bindings[] | select(.name == "PADIEM_GRAFANA_OTLP_ENDPOINT" and .type == "plain_text" and .text == "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs")] | length == 1' "${detail}" >/dev/null
+            jq -e '[.result.resources.bindings[] | select(.name == "PADIEM_GRAFANA_OTLP_USERNAME" and .type == "plain_text" and .text == "1876517")] | length == 1' "${detail}" >/dev/null
             echo "GRAFANA_SERVED_IMMUTABLE_BINDING=PASS"
+            echo "GRAFANA_SERVED_PUBLIC_VARS=PASS"
           fi
           if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             python .github/scripts/b62_binding_state_guard.py \
