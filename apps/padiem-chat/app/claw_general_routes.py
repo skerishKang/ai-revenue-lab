@@ -817,28 +817,52 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     native_plan = parse_native_calendar_intent(user_text, timezone_name=timezone_name)
     if native_plan.get("op") != "none":
         native_store = getattr(request.app.state, "calendar_store", None)
-        if native_store is not None:
-            native_uid = current_user_id(request) if auth_ready(request) else None
-            turn_seed = "|".join(str(v) for v in (native_uid, conversation_id, user_text))
-            turn_key = "claw-" + __import__("hashlib").sha256(turn_seed.encode("utf-8")).hexdigest()[:16]
+        if native_store is None:
+            return _error(503, "calendar_store_unavailable", "캘린더 저장소를 사용할 수 없습니다.")
+        native_uid = current_user_id(request) if auth_ready(request) else None
+        if native_uid is None:
+            return _error(401, "unauthorized", "로그인이 필요합니다.")
+        turn_seed = "|".join(str(v) for v in (native_uid, conversation_id, user_text))
+        turn_key = "claw-" + __import__("hashlib").sha256(turn_seed.encode("utf-8")).hexdigest()[:16]
+        if native_plan.get("op") == "clarify":
+            return _error(422, "clarification_required", str(native_plan.get("question")))
+        # Do not fake claim state for native actions: claim only if a real first-turn
+        # grant was reserved above; otherwise fail closed without Calendar write.
+        if first_turn_context is not None:
+            first_turn_store = getattr(request.app.state, "claw_first_turn_grant_store", None)
             try:
-                native_result = await execute_native_calendar_plan(request, native_store, native_uid, native_plan, turn_key=turn_key)
+                claimed = await claim_first_turn_grant(first_turn_store, first_turn_context)
             except Exception:
-                native_result = {"ok": False, "operation": "unavailable", "error": {"code": "calendar_unavailable"}}
-            if native_result and native_result.get("ok"):
-                if native_result.get("operation") == "create_appointment":
-                    apt = native_result.get("appointment", {})
-                    native_answer = "네이티브 일정이 등록되었습니다: " + str(apt.get("title")) + " (" + str(apt.get("date")) + ")"
-                elif native_result.get("operation") == "read":
-                    items = native_result.get("items", [])
-                    if not items:
-                        native_answer = "해당 기간에 저장된 네이티브 일정이 없습니다 (" + str(native_result.get("timezone")) + ")."
-                    else:
-                        native_answer = "네이티브 일정 " + str(len(items)) + "건입니다."
-                else:
-                    native_answer = str(native_result.get("question", "Clarification required"))
-                await _record_completed_claw_result(request, run_id="native-calendar", conversation_id=conversation_id, user_text=user_text, answer=native_answer, authorized_workspace_id=authorized_workspace_id, first_turn_grant=first_turn_context)
-                return _claw_general_sse(native_answer, None)
+                await _refund_active_reservation()
+                await fail_first_turn_grant(request, first_turn_context)
+                return _error(503, "first_turn_grant_unavailable", "대화 권한 저장소를 사용할 수 없습니다.")
+            if not claimed:
+                await _refund_active_reservation()
+                return _error(409, "first_turn_dispatch_in_progress", "같은 요청이 이미 처리 중입니다. 잠시 후 다시 시도해 주세요.")
+        try:
+            native_result = await execute_native_calendar_plan(request, native_store, native_uid, native_plan, turn_key=turn_key)
+        except Exception as exc:
+            await _refund_active_reservation()
+            await fail_first_turn_grant(request, first_turn_context)
+            return _error(getattr(exc, "status_code", 503), getattr(exc, "code", "calendar_unavailable"), getattr(exc, "message", "Calendar operation failed"))
+        if not native_result.get("ok"):
+            await _refund_active_reservation()
+            await fail_first_turn_grant(request, first_turn_context)
+            return _error(502, "calendar_unavailable", "Calendar operation failed")
+        if native_result.get("operation") == "create_appointment":
+            apt = native_result.get("appointment", {})
+            native_answer = "네이티브 일정이 등록되었습니다: " + str(apt.get("title")) + " (" + str(apt.get("date")) + ")"
+        elif native_result.get("operation") == "read":
+            items = native_result.get("items", [])
+            if not items:
+                native_answer = "해당 기간에 저장된 네이티브 일정이 없습니다 (" + str(native_result.get("timezone")) + ")."
+            else:
+                native_answer = "네이티브 일정 " + str(len(items)) + "건입니다."
+        else:
+            native_answer = str(native_result.get("question", "일정 정보가 필요합니다."))
+        await _record_completed_claw_result(request, run_id="native-calendar", conversation_id=conversation_id, user_text=user_text, answer=native_answer, authorized_workspace_id=authorized_workspace_id, first_turn_grant=first_turn_context)
+        return _claw_general_sse(native_answer, None)
+    # continue normal P01 path below
     # continue normal P01 path below
     run = create_claw_run("padiem-chat", model_user_text, model_only_text=True)
 

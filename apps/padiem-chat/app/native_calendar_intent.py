@@ -12,7 +12,7 @@ except ImportError:
     ZoneInfo = None
 
 READ_WORDS = ("일정", "스케줄", "약속", "회의")
-CREATE_WORDS = ("등록", "추가", "잡아", "잡아줘", "생성", " inequality")
+CREATE_WORDS = ("등록", "추가", "잡아", "잡아줘", "생성", )
 
 def _today_tz(tz_name: str) -> date:
     return datetime.now(ZoneInfo(tz_name)).date() if ZoneInfo else date.today()
@@ -113,9 +113,12 @@ def parse_native_calendar_intent(text: str, *, timezone_name: str | None = None)
         if not title:
             return {"version": "native-calendar-tool.v1", "op": "clarify",
                     "args": {}, "question": "일정 제목을 알려주세요."}
-        start_iso = f"{parsed_date.isoformat()}T{start_time}+{'+' + '09:00' if False else ''}"
         # preserve supplied timezone offset via zoneinfo identifier in context? adapter needs aware datetime.
         # provide at local no offset concrete using UTC offsets impossible without zone; store offset unknown. Use offset now.
+        start_iso = _local_iso(parsed_date, start_time, timezone_name)
+        if start_iso is None:
+            return {"version": "native-calendar-tool.v1", "op": "clarify",
+                    "args": {}, "question": "시간대 또는 시간 형식을 확인해 주세요."}
         return {
             "version": "native-calendar-tool.v1",
             "op": "create_appointment",
@@ -124,7 +127,7 @@ def parse_native_calendar_intent(text: str, *, timezone_name: str | None = None)
                 "title": title,
                 "date": parsed_date.isoformat(),
                 "timezone": timezone_name,
-                "start_at": _local_iso(parsed_date, start_time, timezone_name),
+                "start_at": start_iso,
             },
         }
     else:
@@ -152,13 +155,13 @@ def parse_native_calendar_intent(text: str, *, timezone_name: str | None = None)
         }
 
 
-def _local_iso(d: date, time_str: str, tz_name: str) -> str:
+def _local_iso(d: date, time_str: str, tz_name: str) -> str | None:
     try:
         from zoneinfo import ZoneInfo
         dt = datetime.combine(d, datetime.strptime(time_str, "%H:%M:%S").time(), tzinfo=ZoneInfo(tz_name))
         return dt.isoformat()
     except Exception:
-        return f"{d.isoformat()}T{time_str}"
+        return None
 
 
 def latest_user_text(messages):
@@ -167,6 +170,8 @@ def latest_user_text(messages):
             return item["content"].strip()
     return ""
 
+
+from .native_calendar_adapter import NativeCalendarAdapterError
 
 async def try_native_calendar_chat(request, store, uid, messages, timezone_name=None, turn_key=None):
     """Best-effort native Calendar execution for a clearly local calendar request."""
@@ -182,6 +187,8 @@ async def try_native_calendar_chat(request, store, uid, messages, timezone_name=
     if turn_key is None:
         turn_seed = "|".join(str(v) for v in (uid, text))
         turn_key = "chat-" + hashlib.sha256(turn_seed.encode("utf-8")).hexdigest()[:16]
+    if store is None:
+        raise NativeCalendarAdapterError("calendar_store_unavailable", "Calendar storage is unavailable", 503)
     result = await execute_native_calendar_plan(request, store, uid, plan, turn_key=turn_key)
     if result.get("operation") == "read":
         items = result.get("items", [])
