@@ -153,6 +153,11 @@
   let activeRequestController = null;
   let activeRequestArticle = null;
   let activeRequestCancelReason = null;
+  // Latest successfully completed answer request, for the one-click
+  // regenerate action. Replays through requestAnswer with the exact stored
+  // routing snapshot, so model lane, tier, auth and approval conditions are
+  // identical to the original send. Cleared on conversation reset.
+  let lastCompletedAnswerRequest = null;
   let conversationEpoch = 0;
   let selectedAttachment = null;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
@@ -247,8 +252,12 @@
     // New Chat no longer shows a mode hint: the redundant label was removed
     // when the sidebar actions row was rearranged (B62 split-search task).
     if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
-    if (chatNav) chatNav.setAttribute("aria-current", state === "claw" ? "false" : "page");
+    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation") ? "false" : "page");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
+    const connectorsNav = document.getElementById("connectorsNavButton");
+    if (connectorsNav) connectorsNav.setAttribute("aria-current", state === "connectors" ? "page" : "false");
+    const automationNav = document.getElementById("automationNavButton");
+    if (automationNav) automationNav.setAttribute("aria-current", state === "automation" ? "page" : "false");
     if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsNav) alertsNav.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
     if (tasksEntry) tasksEntry.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
@@ -317,8 +326,11 @@
       content.appendChild(used);
     }
     const skillTitle = result.skill && result.skill.id !== "auto" && typeof result.skill.title === "string" ? result.skill.title : "";
-    const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : uiT("ai-response");
-    article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
+    // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
+    // The repetitive runtime line is removed: only a truthful non-default
+    // state (mock preview) or an explicit skill title is shown.
+    const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : "";
+    article.querySelector("[data-runtime-label]").textContent = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
@@ -802,6 +814,7 @@
 
   function resetConversation(preserveProject = true) {
     conversationEpoch += 1;
+    lastCompletedAnswerRequest = null;
     if (activeRequestController) {
       activeRequestCancelReason = "conversation_reset";
       activeRequestController.abort();
@@ -1057,6 +1070,17 @@
         delete workspace.dataset.inboxKind;
         if (workspace.dataset.view === "inbox") workspace.dataset.view = "general";
         if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
+      }
+      // Auth loss hides the standalone Connectors/Automation pages the same
+      // way the Claw automation panel never outlives its session. The moved
+      // nodes stay mounted; reopening after sign-in reloads fresh state.
+      const connectorsView = document.getElementById("connectorsView");
+      if (connectorsView) connectorsView.hidden = true;
+      const automationView = document.getElementById("automationView");
+      if (automationView) automationView.hidden = true;
+      if (shell && (shell.dataset.state === "connectors" || shell.dataset.state === "automation")) {
+        shell.dataset.state = "home";
+        setNavActive();
       }
       // Auth loss also closes PDF previews and revokes ephemeral private blobs.
       window.PadiemClawPdfPreview?.revokeAll?.();
@@ -1568,7 +1592,8 @@
             content.replaceChildren();
             paragraph = document.createElement("p");
             content.appendChild(paragraph);
-            article.querySelector("[data-runtime-label]").textContent = uiT("ai-response");
+            // The template's "answer-preparing" label stays during streaming;
+            // no repetitive runtime line is rendered on first delta.
           }
           answer += data.delta;
           paragraph.textContent = answer;
@@ -1711,9 +1736,13 @@
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
       if (contextSnapshot.project) payload.project_id = contextSnapshot.project.id;
       if (attachments) {
-        return await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
+        const completedOk = await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
+        if (completedOk) {
+          lastCompletedAnswerRequest = { outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest: Boolean(clawGeneralRequest), article };
+        }
+        return completedOk;
       }
-      return await requestStreamingAnswer(
+      const streamOk = await requestStreamingAnswer(
         article,
         payload,
         outboundMessages,
@@ -1722,6 +1751,10 @@
         controller.signal,
         clawGeneralRequest ? { clawGeneral: true } : null,
       );
+      if (streamOk) {
+        lastCompletedAnswerRequest = { outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest: Boolean(clawGeneralRequest), article };
+      }
+      return streamOk;
     } catch (error) {
       if (error && error.name === "AbortError") {
         if (activeRequestCancelReason === "user_cancel" && requestEpoch === conversationEpoch) {
@@ -1765,6 +1798,35 @@
   function clawGeneralRequestActive() {
     return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
   }
+
+  // One-click answer regenerate for the action bar (outputs.js). Only the
+  // latest completed answer may regenerate: the stored article, lifecycle
+  // state and DOM position are all re-verified, and requestAnswer's inFlight
+  // lock rejects any overlapping second call, so no duplicate or unintended
+  // paid model call can fire. No user bubble is added; the same outbound
+  // messages replay through the identical routing path.
+  function storedRegenerateRequest(article) {
+    const stored = lastCompletedAnswerRequest;
+    if (!stored || stored.article !== article) return null;
+    if (!article || !article.isConnected) return null;
+    if (!window.PadiemChatLifecycle || !window.PadiemChatLifecycle.isCompleted(article)) return null;
+    if (inFlight) return null;
+    const list = document.getElementById("messageList");
+    const items = list ? list.querySelectorAll(".assistant-message") : [];
+    if (!items.length || items[items.length - 1] !== article) return null;
+    return stored;
+  }
+  window.PadiemChatRegenerate = Object.freeze({
+    available(article) {
+      return storedRegenerateRequest(article) !== null;
+    },
+    regenerate(article) {
+      const stored = storedRegenerateRequest(article);
+      if (!stored) return false;
+      void requestAnswer(stored.outboundMessages, stored.skill, stored.attachment, stored.contextSnapshot, stored.clawGeneralRequest);
+      return true;
+    },
+  });
 
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
@@ -3255,21 +3317,38 @@
     });
   }
 
+  // Standalone Automation page: the existing #clawAutomation section is moved
+  // once into #automationViewBody. Moving (not cloning) preserves every bound
+  // listener and all getElementById handles, so list/create/edit/toggle/
+  // status/alerts and the permission/workspace checks run against the same
+  // APIs and store. An enabled rule list never claims the scheduler itself
+  // is running; the existing scheduler note stays verbatim.
+  let automationViewMounted = false;
+  function mountAutomationView() {
+    if (automationViewMounted) return;
+    let body = null;
+    let panel = null;
+    try {
+      body = document.getElementById("automationViewBody");
+      panel = document.getElementById("clawAutomation");
+    } catch (_) {
+      return;
+    }
+    if (!body || !panel) return;
+    body.appendChild(panel);
+    automationViewMounted = true;
+  }
+
   function openClawAutomation() {
     if (!clawWorkspace || !clawAutomation || !authState.authenticated) return;
-    shell.dataset.state = "claw";
-    clawWorkspace.dataset.view = "automation";
-    delete clawWorkspace.dataset.inboxKind;
+    mountAutomationView();
+    const view = document.getElementById("automationView");
+    if (view) view.hidden = false;
+    shell.dataset.state = "automation";
     clawAutomation.hidden = false;
-    if (clawInbox) clawInbox.hidden = true;
-    if (clawManualForm) clawManualForm.hidden = true;
-    if (clawResultArea) clawResultArea.hidden = true;
-    clearClawRecovery({ syncControls: true });
     clearClawWait();
     setNavActive();
     closeSidebar();
-    syncApprovedMemoryVisibility();
-    syncClawRunHistoryVisibility();
     loadClawAutomationRules();
   }
 
@@ -3465,29 +3544,54 @@
   }
 
   function liveConnectorCards() {
-    if (!connectorsDialog) return [];
-    return Array.from(connectorsDialog.querySelectorAll("[data-connector-id]"));
+    const scope = connectorsScope();
+    if (!scope) return [];
+    try {
+      return Array.from(scope.querySelectorAll("[data-connector-id]"));
+    } catch (_) {
+      return [];
+    }
   }
 
   function googleCalendarConnectButton() {
-    if (!connectorsDialog) return null;
-    return connectorsDialog.querySelector(`[data-google-connector-connect="${GOOGLE_CALENDAR_CONNECTOR}"]`);
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-google-connector-connect="${GOOGLE_CALENDAR_CONNECTOR}"]`);
+    } catch (_) {
+      return null;
+    }
   }
 
   function googleCalendarCard() {
-    if (!connectorsDialog) return null;
-    return connectorsDialog.querySelector(`[data-connector-id="connector:google:calendar@1"]`);
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-connector-id="connector:google:calendar@1"]`);
+    } catch (_) {
+      return null;
+    }
   }
 
 
   function googleDriveConnectButton() {
-    if (!connectorsDialog) return null;
-    return connectorsDialog.querySelector(`[data-google-connector-connect="${GOOGLE_DRIVE_CONNECTOR}"]`);
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-google-connector-connect="${GOOGLE_DRIVE_CONNECTOR}"]`);
+    } catch (_) {
+      return null;
+    }
   }
 
   function googleDriveCard() {
-    if (!connectorsDialog) return null;
-    return connectorsDialog.querySelector(`[data-connector-id="connector:google:drive@1"]`);
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-connector-id="connector:google:drive@1"]`);
+    } catch (_) {
+      return null;
+    }
   }
 
   /** The whole Drive visibility rule as a pure predicate: an authenticated
@@ -3823,13 +3927,52 @@
     }
   }
 
-  function openConnectorsDialog() {
-    if (!connectorsDialog) return;
-    if (typeof connectorsDialog.showModal === "function") connectorsDialog.showModal();
-    else connectorsDialog.setAttribute("open", "");
-    if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "true");
+  // Standalone Connectors page: the card grid and the live-status block are
+  // moved once from #connectorsDialog into #connectorsViewBody. Moving (not
+  // cloning) preserves every directly bound listener, and all status queries
+  // below scope to the view body first with the dialog as fallback, so the
+  // existing fetch/render/connect/retry/OAuth logic is reused byte-for-byte.
+  // No endpoint, permission, login or connection state is reset by the move.
+  function connectorsScope() {
+    try {
+      const body = document.getElementById("connectorsViewBody");
+      if (body && body.querySelector("[data-connector-id]")) return body;
+    } catch (_) {}
+    return connectorsDialog;
+  }
+  let connectorsViewMounted = false;
+  function mountConnectorsView() {
+    if (connectorsViewMounted) return;
+    let body = null;
+    let grid = null;
+    let status = null;
+    try {
+      body = document.getElementById("connectorsViewBody");
+      grid = connectorsDialog ? connectorsDialog.querySelector(".capability-grid") : null;
+      status = document.getElementById("connectorsLiveStatus");
+    } catch (_) {
+      return;
+    }
+    if (!body || !grid) return;
+    if (status) body.appendChild(status);
+    body.appendChild(grid);
+    connectorsViewMounted = true;
+  }
+
+  function openConnectorsView() {
+    mountConnectorsView();
+    const view = document.getElementById("connectorsView");
+    if (view) view.hidden = false;
+    shell.dataset.state = "connectors";
+    setNavActive();
     closeSidebar();
+    if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "false");
     void loadConnectorStatus();
+  }
+  // Kept for existing callers (OAuth return, quick-connect fallback): the
+  // Connectors surface is now the standalone page, never a popup.
+  function openConnectorsDialog() {
+    openConnectorsView();
   }
   function closeConnectorsDialog() {
     if (!connectorsDialog) return;
@@ -3841,7 +3984,7 @@
       if (typeof connectorsNavButton.focus === "function") connectorsNavButton.focus();
     }
   }
-  if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsDialog);
+  if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsView);
   if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
   if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
   document.addEventListener("padiem:refresh-connector-status", () => void loadConnectorStatus());

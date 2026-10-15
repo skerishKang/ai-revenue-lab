@@ -265,6 +265,10 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     await _wait_text(page, "#messageList", ANSWER)
     # #4462 CTO follow-up: copy/download stay on completed answers; the
     # per-answer save entry stays hidden (no retrieval path by design).
+    # Answer bar is five Glass icons: copy is direct, TXT download lives in
+    # the more (···) menu.
+    await page.locator("#messageList .answer-copy").wait_for(state="visible")
+    await page.locator("#messageList .answer-more").click()
     for selector in (".answer-copy", ".answer-download"):
         await page.locator(f"#messageList {selector}").wait_for(state="visible")
     save = page.locator("#messageList .answer-save")

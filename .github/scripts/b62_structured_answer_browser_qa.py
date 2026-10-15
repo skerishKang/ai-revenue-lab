@@ -191,6 +191,8 @@ async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[s
         raise AssertionError(f"CSV content mismatch: {csv_text!r}")
 
     # outputs.js must still operate from the exact hidden raw paragraph.
+    # TXT download lives in the answer-bar more (···) menu: open it first.
+    await article.locator(".answer-more").click()
     answer_download = article.locator(".answer-download")
     await answer_download.wait_for(state="visible", timeout=5_000)
     async with page.expect_download(timeout=5_000) as txt_info:

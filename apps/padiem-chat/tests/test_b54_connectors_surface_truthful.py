@@ -137,14 +137,15 @@ def _pure_mapping_block() -> str:
     return start.lstrip() + app.split(start, 1)[1].split(end, 1)[0]
 
 
-def test_connectors_nav_is_enabled_and_bound_to_existing_dialog() -> None:
+def test_connectors_nav_is_enabled_and_bound_to_standalone_page() -> None:
     nav = _nav_markup()
     assert 'type="button"' in nav
     assert "disabled" not in nav
     assert 'aria-disabled="true"' not in nav
-    assert 'aria-haspopup="dialog"' in nav
-    assert f'aria-controls="{DIALOG_ID}"' in nav
-    assert 'aria-expanded="false"' in nav
+    # Standalone page, never a popup: no dialog popup semantics on the nav.
+    assert 'aria-haspopup="dialog"' not in nav
+    assert 'aria-controls="connectorsView"' in nav
+    assert 'aria-expanded="false"' not in nav
 
 
 def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:

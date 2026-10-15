@@ -38,6 +38,8 @@
   <link rel="stylesheet" href="./claw-task-hub.css" />
   <link rel="stylesheet" href="./padiem-shared-ui.css" />
   <link rel="stylesheet" href="./claw-connection-guide.css" />
+  <link rel="stylesheet" href="./answer-actions.css" />
+  <link rel="stylesheet" href="./standalone-views.css" />
   <link rel="stylesheet" href="./claw-focus-layout.css" />
   <!-- #4643 shared Chat/Claw microphone entry. Inert until a server-granted
        recognizer is registered and a signed-in session exists. -->
@@ -58,7 +60,7 @@
       <nav class="side-nav" data-locale-aria-label="chat-menu" aria-label="채팅 메뉴">
         <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
         <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
-        <button class="side-item" id="connectorsNavButton" type="button" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
+        <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
         <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
       </nav>
       <nav class="side-nav" id="workspaceNav" data-locale-aria-label="workspace-menu" aria-label="워크스페이스 메뉴">
@@ -503,6 +505,34 @@
           <p class="calendar-empty" id="calendarEmpty" hidden></p>
           <div class="calendar-list" id="calendarList" role="list" hidden></div>
         </div>
+      </section>
+      <!-- Standalone Connectors page: the card grid and status nodes are moved
+           here from #connectorsDialog on first open by the main script. The dialog
+           element stays in the DOM for contract compatibility but is never
+           opened as a popup. Connection logic, endpoints and auth are reused
+           unchanged; no permission or login state is reset by the move. -->
+      <section class="standalone-view connectors-view" id="connectorsView" aria-labelledby="connectorsViewTitle" hidden>
+        <header class="standalone-view-header">
+          <div>
+            <p class="standalone-view-kicker" data-locale-key="connectors-kicker">CONNECTORS</p>
+            <h2 class="standalone-view-title" id="connectorsViewTitle" data-locale-key="connectors-title">Connectors</h2>
+          </div>
+        </header>
+        <p class="standalone-view-tagline" data-locale-key="connectors-note">읽기 지원 여부와 이 워크스페이스의 연결 상태를 각각 표시합니다. Google Drive와 Google Calendar 읽기 연결은 이 화면에서 시작할 수 있으며, 전송·쓰기 권한은 변경하지 않습니다.</p>
+        <div class="standalone-view-body" id="connectorsViewBody"></div>
+      </section>
+      <!-- Standalone Automation page: the existing #clawAutomation section is
+           moved here on first open by the main script. List, create, edit,
+           enable/disable, status, alerts and permission checks are reused
+           unchanged against the same APIs and store. -->
+      <section class="standalone-view automation-view" id="automationView" aria-labelledby="automationViewTitle" hidden>
+        <header class="standalone-view-header">
+          <div>
+            <p class="standalone-view-kicker" data-locale-key="automation-view-kicker">AUTOMATION</p>
+            <h2 class="standalone-view-title" id="automationViewTitle" data-locale-key="automation-view-title">자동화</h2>
+          </div>
+        </header>
+        <div class="standalone-view-body" id="automationViewBody"></div>
       </section>
       <!-- #4489: Library is its own destination, driven by static/library.js.
            All copy is set by that module so it follows the document language. -->
@@ -966,7 +996,7 @@
     <ul id="ownerModelPreviewList" class="owner-model-preview-list" aria-label="모델 현황"></ul>
     <p data-locale-key="owner-model-preview-no-activation">모델을 표시해도 자동 선택·호출·결제가 발생하지 않습니다.</p>
   </dialog>
-  <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div></article></template>
+  <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div><span class="user-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"></circle><path d="M5 19.5c1.2-3.2 3.9-5 7-5s5.8 1.8 7 5"></path></svg></span></article></template>
   <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span data-assistant-product>Padiem Chat</span><span class="demo-label" data-runtime-label data-locale-key="answer-preparing">답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
   <script src="./theme.js"></script>
   <script src="./padiem-glass-shell.js"></script>
@@ -987,6 +1017,9 @@
   <script src="./voice-stt-input.js"></script>
   <script src="./voice-composer.js"></script>
   <script src="./voice-stt-wiring.js"></script>
+  <!-- Browser-only TTS output primitive for answer listen/stop. No provider
+       endpoint or credentials; explicit user Start per playback. -->
+  <script src="./voice-tts-output.js"></script>
   <script src="./app.js"></script>
   <script src="./claw-home-choices.js"></script>
   <script src="./claw-connection-chips.js"></script>

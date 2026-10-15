@@ -1,0 +1,155 @@
+/* Standalone Connectors / Automation pages. State gating mirrors
+ * calendar.css: each view is owned by its own .app-shell[data-state] and is
+ * hidden everywhere else. The shared conversation column and the bottom
+ * composer are hidden in these surfaces, while the sidebar stays available
+ * for navigation. Glass panel, kicker dot, left alignment and responsive
+ * rules match the Calendar page.
+ */
+
+.standalone-view {
+  display: none;
+  position: relative;
+  z-index: 2;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px clamp(18px, 4vw, 44px) 40px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.app-shell[data-state="connectors"] .connectors-view,
+.app-shell[data-state="automation"] .automation-view {
+  display: flex;
+}
+
+.app-shell:not([data-state="connectors"]) .connectors-view,
+.app-shell:not([data-state="automation"]) .automation-view {
+  display: none !important;
+}
+
+.app-shell[data-state="connectors"] .conversation,
+.app-shell[data-state="connectors"] .composer-wrap,
+.app-shell[data-state="automation"] .conversation,
+.app-shell[data-state="automation"] .composer-wrap {
+  display: none !important;
+}
+
+.standalone-view-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.standalone-view-kicker {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  color: var(--muted, #5b6672);
+}
+.standalone-view-title {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.standalone-view-tagline {
+  margin: 0;
+  color: var(--muted, #5b6672);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.standalone-view-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* The moved Connectors grid keeps its card layout inside the page. */
+.standalone-view-body .capability-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.standalone-view-body .connector-live-status {
+  margin-bottom: 4px;
+}
+
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="connectors"], [data-state="automation"]) .standalone-view-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  letter-spacing: 0.16em;
+  color: #334a5b;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="connectors"], [data-state="automation"]) .standalone-view-kicker::before {
+  content: "";
+  display: inline-block;
+  flex: 0 0 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(121, 188, 231, 0.95);
+  box-shadow: 0 0 12px rgba(121, 188, 231, 0.32);
+}
+
+/* The moved Connectors cards keep the bright-card treatment on the Glass
+ * page. These rules are additive mirrors of the #connectorsDialog scoped
+ * rules in capability-nav.css, which stay untouched. */
+#connectorsViewBody .capability-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(23, 33, 42, 0.14);
+}
+#connectorsViewBody .connector-retry {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(23, 33, 42, 0.16);
+  color: #17212a;
+}
+#connectorsViewBody .capability-status,
+#connectorsViewBody .capability-card small,
+#connectorsViewBody .capability-soon {
+  opacity: 1;
+  color: #3d4c59;
+}
+#connectorsViewBody .capability-workspace {
+  color: #3d4c59;
+}
+#connectorsViewBody .capability-card[data-connector-status="connected"] .capability-workspace {
+  color: #1f5f86;
+}
+#connectorsViewBody .capability-read-state[data-read-state="pending"] {
+  color: #8a5300;
+}
+#connectorsViewBody .capability-read-state[data-read-state="activating"] {
+  color: #175cd3;
+}
+#connectorsViewBody .capability-read-state[data-read-state="active"] {
+  color: #16794c;
+}
+#connectorsViewBody .capability-read-state[data-read-state="failed"] {
+  color: #b3261e;
+}
+#connectorsViewBody .capability-read-state[data-read-state="unavailable"] {
+  color: #3d4c59;
+}
+
+/* Automation rules keep their Claw touch targets and Glass form styling on
+ * the standalone page. These rules are additive: the existing
+ * data-state="claw" scoped rules are untouched. */
+.app-shell[data-state="automation"] #clawAutomation .calendar-record-summary {
+  min-height: 44px;
+}
+.app-shell[data-state="automation"] #clawAutomation .calendar-record-field :is(input, textarea, select) {
+  min-height: 44px;
+}
+
+@media (max-width: 700px) {
+  .standalone-view {
+    padding: 20px 14px 32px;
+  }
+  .standalone-view-body .capability-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,100 @@
+/* Answer action bar: five Glass icon buttons (copy, regenerate, listen,
+ * share, more). The .answer-actions/.answer-action base classes and the
+ * answer-copy/answer-download modifiers are preserved for contract tests. */
+
+/* User bubble avatar: small circle on the right of the bubble. Bubble color,
+ * size and the row layout stay untouched; only a gap and the avatar are new. */
+.user-message {
+  column-gap: 8px;
+  align-items: flex-end;
+}
+.user-message .message-bubble {
+  margin-right: 0;
+}
+.user-avatar {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(101, 87, 232, 0.12);
+  color: #6557e8;
+  border: 1px solid rgba(101, 87, 232, 0.28);
+}
+.user-avatar svg {
+  width: 16px;
+  height: 16px;
+}
+
+.answer-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+.answer-action {
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(101, 87, 232, 0.22);
+  background: rgba(255, 255, 255, 0.55);
+  color: #4c3fd1;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.answer-action:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(101, 87, 232, 0.45);
+}
+.answer-action:focus-visible {
+  outline: 2px solid #6557e8;
+  outline-offset: 2px;
+}
+.answer-action[aria-pressed="true"] {
+  background: rgba(101, 87, 232, 0.16);
+  border-color: #6557e8;
+}
+.answer-action:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.answer-action .answer-action-glyph {
+  font-style: normal;
+  pointer-events: none;
+}
+.answer-more-menu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
+  padding: 4px 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(101, 87, 232, 0.22);
+  background: rgba(255, 255, 255, 0.7);
+}
+.answer-more-menu .answer-action {
+  width: auto;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .answer-action {
+    width: 36px;
+    height: 36px;
+  }
+  .user-avatar {
+    width: 26px;
+    height: 26px;
+  }
+}
