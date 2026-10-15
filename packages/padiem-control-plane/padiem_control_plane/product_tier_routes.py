@@ -11,7 +11,8 @@ Owner policy encoded here (#2085):
 * AUTO_PROVIDER_SELECTION = NO
 * AUTO_MODEL_SELECTION = NO
 * USER_VISIBLE_AUTO_LABEL = NO
-* SILENT_FALLBACK = NO
+* UNRESTRICTED_SILENT_MODEL_SUBSTITUTION = NO
+* OWNER_PINNED_TIER_FALLBACK = YES, on recoverable provider failures only
 * USER_VISIBLE_LABELS = "Padiem Plus" / "Padiem Pro" / "Padiem Max"
 
 Separation of duties (#2099 ACT-0 decision):
@@ -46,7 +47,22 @@ _FORBIDDEN_VISIBLE_TOKENS = ("auto", "fallback")
 class ProductTierRoutesError(ValueError):
     """Raised when the contract violates the #2085/#2099 policy (fail closed)."""
 
+FREE_PRIMARY_B14_MODEL_ID = "opencode-go/cat-jam-free"
+FREE_FALLBACK_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
+TIER_FALLBACK_B14_MODELS = {
+    "free": FREE_FALLBACK_B14_MODEL_ID,
+    "plus": "google/gemini-3.5-flash-lite",
+    "pro": "opencode-go/muse-spark-1.2-contributor",
+    "max": "opencode-go/muse-spark-1.3-contributor",
+}
+
+# A declared grade's fallback is a specific owner choice, not b14/auto or
+# permission for an unrelated/paid model. B14 verifies live registration,
+# credentials and eligible 429/5xx/timeout before any failover.
+OWNER_PINNED_TIER_FALLBACK_ON_RECOVERABLE_ERROR = True
+
 class ProductTierLabel(str, Enum):
+    FREE = "Padiem Free"
     PLUS = "Padiem Plus"
     PRO = "Padiem Pro"
     MAX = "Padiem Max"
@@ -96,6 +112,8 @@ class ProductTierRoute:
 class ProductTierDefinition:
     label: ProductTierLabel
     routes: tuple[ProductTierRoute, ...]
+    # False forbids arbitrary/unlisted substitutions, NOT the separately
+    # owner-pinned per-grade provider-failure recovery roster below.
     silent_fallback_allowed: bool = False
     policy_version: str = PRODUCT_TIER_POLICY_VERSION
 
@@ -151,7 +169,7 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
     labels = [tier.label for tier in tiers]
     _require(
         sorted(label.value for label in labels) == sorted(tier.value for tier in ProductTierLabel),
-        "contract must define exactly the three Padiem tier labels",
+        "contract must define all Padiem tier labels",
     )
     _require(len(set(labels)) == len(labels), "duplicate tier label in contract")
     for tier in tiers:
@@ -188,7 +206,7 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
                 "Padiem Plus without an executable route must expose the Plus hold identity",
             )
         if tier.label is ProductTierLabel.MAX:
-            _require(not active, "Padiem Max must not expose an executable route")
+            # Owner replaced Max HOLD with Cat Jam; preserve historic HOLD entries.
             held = {
                 route.model_family
                 for route in tier.routes
@@ -209,8 +227,27 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
 
 PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
     ProductTierDefinition(
+        label=ProductTierLabel.FREE,
+        routes=(ProductTierRoute(
+            route_id="free.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
+            model_family="cat-jam", provider_id="opencode-go",
+            model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+            credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+            credential_binding="PADIEM_OPENCODE_API_KEY",
+            evidence="B14 live Cat Jam response and owner Free model decision 2026-10-15.",
+        ),),
+    ),
+    ProductTierDefinition(
         label=ProductTierLabel.PLUS,
         routes=(
+            ProductTierRoute(
+                route_id="plus.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="cat-jam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_OPENCODE_API_KEY",
+                evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
+            ),
             ProductTierRoute(
                 route_id="plus.hold.v1",
                 status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
@@ -285,6 +322,14 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PRO,
         routes=(
             ProductTierRoute(
+                route_id="pro.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="cat-jam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_OPENCODE_API_KEY",
+                evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
+            ),
+            ProductTierRoute(
                 route_id="pro.hold.v1",
                 status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="pro",
@@ -351,6 +396,14 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
     ProductTierDefinition(
         label=ProductTierLabel.MAX,
         routes=(
+            ProductTierRoute(
+                route_id="max.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="cat-jam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_OPENCODE_API_KEY",
+                evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
+            ),
             ProductTierRoute(
                 route_id="max.hold.qwen.v1",
                 status=ProductRouteStatus.HOLD_AS_DATA_ONLY,

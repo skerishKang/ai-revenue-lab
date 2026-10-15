@@ -15,6 +15,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .b66_quote_history_routes import _owner_and_workspace, _reject_client_owner, _NO_STORE
+from .history import _title_from_user_text
 
 MAX_STATE_BYTES = 131072
 MAX_TRANSCRIPT_MESSAGES = 80
@@ -194,7 +195,7 @@ class D1GuidedDraftStore:
 
     async def list_transcripts(self, *, user_id: str, workspace_id: str) -> list[dict]:
         rows = await self.db.prepare(
-            "SELECT conversation_id,updated_at FROM b66_guided_transcript"
+            "SELECT conversation_id,updated_at,messages_json FROM b66_guided_transcript"
             " WHERE user_id=? AND workspace_id=? ORDER BY updated_at DESC LIMIT 20"
         ).bind(user_id, workspace_id).all()
         if isinstance(rows, list):
@@ -208,8 +209,20 @@ class D1GuidedDraftStore:
             if not isinstance(row, dict):
                 row = row.to_py() if callable(getattr(row, "to_py", None)) else dict(row)
             if GUIDED_ID_RE.fullmatch(str(row.get("conversation_id", ""))):
+                # First customer answer from this owner's stored transcript only.
+                # No model-generated title, summary or provider call.
+                title = "견적 상담"
+                try:
+                    messages = normalize_guided_transcript(
+                        json.loads(row.get("messages_json") or "[]"))
+                    for message in messages:
+                        if message["role"] == "user":
+                            title = _title_from_user_text(message["content"])
+                            break
+                except (ValueError, TypeError, UnicodeError, RecursionError, GuidedDraftError):
+                    pass
                 records.append({"conversation_id": row["conversation_id"],
-                                "updated_at": row["updated_at"]})
+                                "updated_at": row["updated_at"], "title": title})
         return records
 
     async def get_transcript(self, *, user_id: str, workspace_id: str, conversation_id: str) -> dict | None:

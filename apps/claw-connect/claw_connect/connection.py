@@ -27,6 +27,14 @@ class ConnectionState(str, Enum):
     CONNECTING = "connecting"
     CONNECTED = "connected"
     PAUSED = "paused"
+    # Device-authority states owned by ``enrollment.ConnectorEnrollment``. They
+    # are the operator-visible result of the canonical Broker device lifecycle
+    # (unpaired / paired_offline / online / revoked / credential_expired /
+    # update_required) plus the local pause, and they are never claimed by the
+    # connection machine on its own authority.
+    UNREGISTERED = "unregistered"
+    OFFLINE = "offline"
+    REVOKED = "revoked"
 
 
 #: Allowed transitions. Anything else is a programming error and refused.
@@ -41,6 +49,13 @@ _ALLOWED: dict[ConnectionState, frozenset[ConnectionState]] = {
     ConnectionState.PAUSED: frozenset(
         {ConnectionState.CONNECTING, ConnectionState.DISCONNECTED}
     ),
+    # A device that was never enrolled, or whose batch was revoked, may only
+    # reach the network through a fresh, explicitly consented enrollment.
+    ConnectionState.UNREGISTERED: frozenset({ConnectionState.CONNECTING}),
+    ConnectionState.OFFLINE: frozenset(
+        {ConnectionState.CONNECTING, ConnectionState.REVOKED, ConnectionState.UNREGISTERED}
+    ),
+    ConnectionState.REVOKED: frozenset({ConnectionState.UNREGISTERED}),
 }
 
 

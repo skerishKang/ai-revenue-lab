@@ -660,7 +660,7 @@ def test_browser_plus_tier_is_forwarded_to_claw_p01_adapter() -> None:
     assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.PLUS
 
 
-def test_browser_default_tier_is_plus_when_omitted() -> None:
+def test_browser_default_tier_is_free_when_omitted() -> None:
     adapter = _make_adapter()
     with _injected_adapter(client := TestClient(create_app(settings=Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"))), adapter):
         resp = client.post(
@@ -668,19 +668,19 @@ def test_browser_default_tier_is_plus_when_omitted() -> None:
             json={"content": "기본 등급 실행 테스트", "channel": "sms", "action": "reply"},
         )
     assert resp.status_code == 200
-    assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.PLUS
+    assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.FREE
 
 
-def test_browser_max_tier_fails_closed_before_claw_dispatch() -> None:
+def test_browser_max_tier_dispatches_with_current_executable_mock_grade() -> None:
     adapter = _make_adapter()
     with _injected_adapter(client := TestClient(create_app(settings=Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"))), adapter):
         resp = client.post(
             EXECUTE_ROUTE_PATH,
             json={"content": "Max 등급 테스트", "channel": "sms", "action": "reply", "tier": "max"},
         )
-    assert resp.status_code == 503
-    assert resp.json()["error"]["code"] == "tier_unavailable"
-    adapter.execute.assert_not_called()
+    assert resp.status_code == 200
+    adapter.execute.assert_awaited_once()
+    assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.MAX
 
 
 def test_browser_unknown_tier_fails_closed_before_claw_dispatch() -> None:

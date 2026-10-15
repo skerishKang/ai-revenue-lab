@@ -344,6 +344,10 @@ jobs:
         env:
           B62_QA_VISUAL_SCOPE: ${{ needs.plan.outputs.glass_visual_tail_required == 'false' && 'leaf' || 'full' }}
         run: uv run python ../../.github/scripts/b62_browser_visual_qa.py
+      - name: Claw first-use Chat alignment and shared composer browser QA
+        run: uv run python ../../.github/scripts/claw_first_use_composer_parity_qa.py
+      - name: Claw canonical connection status chips browser QA
+        run: uv run python ../../.github/scripts/claw_connection_status_browser_qa.py
       # #3989 exact modified-only independent JS owner scope: these shared
       # visual/product-certification checks do not exercise the leaf modules.
       # Run them for any mixed/shared/unknown PR. Baseline desktop/mobile/Claw,

@@ -1323,3 +1323,27 @@ def test_calendar_binding_gateway_is_private_service_binding_only() -> None:
     assert worker.CALENDAR_BINDING_SELECTION_CONNECTOR_FIXED_IN_CODE is True
     assert worker.CALENDAR_BINDING_SELECTION_RAW_CREDENTIAL_OUTPUT is False
     assert worker.CALENDAR_BINDING_SELECTION_ACCESS_LEASE_ISSUED is False
+
+
+def test_private_drive_disconnect_revokes_only_selected_workspace_and_is_idempotent():
+    storage, durable = _durable_object()
+    store = CloudflareDurableGoogleOAuthStore(storage)
+    store.save_credential(_credential(binding_ref="drive.owner.a", connector_id="google-drive", workspace_ref=WORKSPACE_A))
+    store.save_credential(_credential(binding_ref="drive.owner.b", connector_id="google-drive", workspace_ref=WORKSPACE_B))
+    result = asyncio.run(durable.disconnect_drive({"workspace_ref": WORKSPACE_A}))
+    assert result == {"ok": True, "revoked": True}
+    assert store.select_active_drive_binding(workspace_ref=WORKSPACE_A, now=datetime.now(timezone.utc)).status.value == "not_connected"
+    assert store.select_active_drive_binding(workspace_ref=WORKSPACE_B, now=datetime.now(timezone.utc)).status.value == "resolved"
+    assert asyncio.run(durable.disconnect_drive({"workspace_ref": WORKSPACE_A})) == {"ok": True, "revoked": False}
+
+
+def test_private_drive_disconnect_denies_browser_supplied_binding_and_ambiguous_rows():
+    storage, durable = _durable_object()
+    store = CloudflareDurableGoogleOAuthStore(storage)
+    store.save_credential(_credential(binding_ref="drive.one", connector_id="google-drive"))
+    store.save_credential(_credential(binding_ref="drive.two", connector_id="google-drive"))
+    denied = asyncio.run(durable.disconnect_drive({"workspace_ref": WORKSPACE_A, "binding_ref": "drive.one"}))
+    assert denied["ok"] is False
+    ambiguous = asyncio.run(durable.disconnect_drive({"workspace_ref": WORKSPACE_A}))
+    assert ambiguous["ok"] is False
+    assert store.select_active_drive_binding(workspace_ref=WORKSPACE_B, now=datetime.now(timezone.utc)).status.value == "not_connected"

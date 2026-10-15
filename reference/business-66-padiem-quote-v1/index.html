@@ -35,6 +35,7 @@
   <script src="quote-skill-start-dialog.js" defer></script>
   <script src="app.js" defer></script>
   <script src="b66-safe-markdown.js" defer></script>
+  <script src="shared-conversation-composer.js" defer></script>
   <script src="easy-mode.js" defer></script>
   <script src="company-profile-settings.js" defer></script>
   <script src="quote-browser-pdf.js" defer></script>
@@ -51,7 +52,7 @@
   <main class="shell">
     <header class="topbar">
       <div class="brand">
-        <h1><button class="brand-home" id="brandHome" type="button" aria-label="새 AI 견적 대화 시작">견적서 만들기</button></h1>
+        <h1><button class="brand-home" id="brandHome" type="button" aria-label="새 AI 견적 대화 시작">시지아이 견적서 만들기</button></h1>
         <p>입력부터 PDF 저장까지 한 화면에서</p>
       </div>
       <div class="topbar-actions">
@@ -72,9 +73,9 @@
         </label>
         <!-- #3536: single free-form input and send action live at easyComposer/easySend.
              The registered model stays visible; reasoning remains controlled by the provider default until admin policy is built. -->
-        <label>사용할 AI 모델
-          <select id="padiemQuoteModelSelect" aria-label="사용할 AI 모델" required>
-            <option value="">모델을 선택하세요</option>
+        <label>AI 등급
+          <select id="padiemQuoteModelSelect" aria-label="사용할 AI 등급" required>
+            <option value="">AI 등급을 선택하세요</option>
           </select>
         </label>
         <!-- #3906: per-model reasoning level. The options are supplied by
@@ -487,6 +488,16 @@
     </div>
     </section>
   </main>
+  <dialog id="b66NewQuoteDialog" class="b66-new-quote-dialog" aria-labelledby="b66NewQuoteTitle" aria-describedby="b66NewQuoteDescription">
+    <form method="dialog">
+      <h2 id="b66NewQuoteTitle">시지아이 견적서 만들기</h2>
+      <p id="b66NewQuoteDescription">현재 작성 중인 견적과 화면의 대화 내용을 초기화하고 새 견적서를 작성하시겠습니까? 저장된 이전 견적과 대화 기록은 유지됩니다.</p>
+      <div class="b66-new-quote-actions">
+        <button type="submit" value="cancel">취소</button>
+        <button type="submit" value="confirm" class="b66-new-quote-confirm">새 견적 시작</button>
+      </div>
+    </form>
+  </dialog>
   <dialog id="b66InquiryDialog" aria-labelledby="b66InquiryTitle">
     <section class="b66-inquiry-card">
       <header><h2 id="b66InquiryTitle">운영자에게 문의하기</h2>

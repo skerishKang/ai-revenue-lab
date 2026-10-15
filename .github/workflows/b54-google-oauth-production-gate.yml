@@ -160,7 +160,8 @@ jobs:
           assert "PUBLIC_FETCH = False" in identity_source
 
           b62_config = Path("apps/padiem-chat/wrangler.toml").read_text(encoding="utf-8")
-          assert "IDENTITY_AUTHORITY_SERVICE" not in b62_config
+          assert 'binding = "IDENTITY_AUTHORITY_SERVICE"' in b62_config
+          assert 'service = "padiem-control-plane-identity"' in b62_config
           b62_worker = Path("apps/padiem-chat/worker.py").read_text(encoding="utf-8")
           assert "IDENTITY_AUTHORITY_SERVICE" in b62_worker
 
@@ -258,6 +259,11 @@ jobs:
       oauth_edge_worker_state: ${{ steps.inspect.outputs.oauth_edge_worker_state }}
       b62_identity_binding_state: ${{ steps.inspect.outputs.b62_identity_binding_state }}
     steps:
+      - name: Checkout exact dispatch source for served-version resolver
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
       - name: Read-only Cloudflare collision and topology audit
         id: inspect
         shell: bash
@@ -496,18 +502,30 @@ jobs:
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
           echo "PREMUTATION_EXACT_MAIN=PASS"
 
-      - name: Require Custom Domain still absent before private Worker deployment
+      - name: Reconfirm OAuth Custom Domain ownership before private Worker deployment
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DOMAIN_STATE: ${{ needs.cloudflare-readonly.outputs.candidate_domain_state }}
+          DOMAIN_ID: ${{ needs.cloudflare-readonly.outputs.candidate_domain_id }}
         run: |
           set -euo pipefail
           domains="${RUNNER_TEMP}/domains-premutation.json"
           curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
-          jq -e --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length == 0' "${domains}" >/dev/null
-          echo "PUBLIC_INGRESS_PREMUTATION=ABSENT"
+          jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${OAUTH_EDGE_WORKER}" \
+            --arg state "${DOMAIN_STATE}" --arg domain_id "${DOMAIN_ID}" '
+            .success == true and (.result | type == "array") and
+            ([.result[] | select(.hostname == $host)] as $hits |
+              if $state == "absent" then ($hits | length) == 0
+              elif $state == "present_edge" then
+                ($hits | length) == 1 and $hits[0].service == $edge and $hits[0].id == $domain_id
+              else false end)
+          ' "${domains}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" --arg oauth "${OAUTH_STATE_WORKER}" \
+            '[.result[] | select(.service == $identity or .service == $oauth)] | length == 0' "${domains}" >/dev/null
+          echo "PUBLIC_INGRESS_PREMUTATION=UNCHANGED_VERIFIED"
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -608,17 +626,27 @@ jobs:
           rm -f "${temp_config}"
           echo "OAUTH_EDGE_WORKER_DEPLOY=SUCCESS"
 
-      - name: Read back private topology and preserve zero public ingress
+      - name: Read back private topology and verify public ingress unchanged
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DOMAIN_STATE: ${{ needs.cloudflare-readonly.outputs.candidate_domain_state }}
+          DOMAIN_ID: ${{ needs.cloudflare-readonly.outputs.candidate_domain_id }}
         run: |
           set -euo pipefail
           auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
           domains="${RUNNER_TEMP}/domains-after-private.json"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
-          jq -e --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length == 0' "${domains}" >/dev/null
+          jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${OAUTH_EDGE_WORKER}" \
+            --arg state "${DOMAIN_STATE}" --arg domain_id "${DOMAIN_ID}" '
+            .success == true and (.result | type == "array") and
+            ([.result[] | select(.hostname == $host)] as $hits |
+              if $state == "absent" then ($hits | length) == 0
+              elif $state == "present_edge" then
+                ($hits | length) == 1 and $hits[0].service == $edge and $hits[0].id == $domain_id
+              else false end)
+          ' "${domains}" >/dev/null
           jq -e --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '[.result[] | select(.service == $identity or .service == $state)] | length == 0' "${domains}" >/dev/null
 
           for worker in "${IDENTITY_WORKER}" "${OAUTH_STATE_WORKER}" "${OAUTH_EDGE_WORKER}"; do
@@ -640,7 +668,7 @@ jobs:
           jq -e '.result.bindings | any(.name == "GOOGLE_CONNECT_TICKET_KEY")' "${RUNNER_TEMP}/${IDENTITY_WORKER}-settings-after.json" >/dev/null
 
           echo "PRIVATE_WORKERS_DEPLOYED=YES"
-          echo "PUBLIC_OAUTH_CUSTOM_DOMAIN=NO"
+          echo "PUBLIC_OAUTH_CUSTOM_DOMAIN=UNCHANGED"
           echo "B62_BINDING_MUTATION=NO"
           echo "LOCAL_AGENT_INGRESS_CHANGED=NO"
 

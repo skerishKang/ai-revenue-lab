@@ -14,7 +14,8 @@ drives:
     → assistant result
 
 It is deliberately NOT the manual-intake/quote/order flow and NOT the standalone
-B62 ``/api/chat`` composer. There is NO direct-B14 fallback: an unbound P01 lane
+B62 ``/api/chat`` composer. #4139 intercepts explicit owner PC TXT READ intents
+before provider dispatch and uses the existing Broker command/result pipeline. There is NO direct-B14 fallback: an unbound P01 lane
 fails closed (503) instead of silently degrading into the standalone B62
 ``/api/chat/stream`` route, and the canonical USER subject is resolved
 SERVER-SIDE from the signed Padiem session before the usage gate and before any
@@ -35,10 +36,13 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
+from .member_grade_access import selected_grade_denial
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
     active_route_for,
+    FREE_PRIMARY_B14_MODEL_ID,
+    FREE_FALLBACK_B14_MODEL_ID,
 )
 
 from kagent.p01_adapter import (
@@ -50,8 +54,14 @@ from kagent.p01_adapter import (
     validate_explicit_b14_model_id,
 )
 from kagent.p01_run_flow import create_claw_run
+from .claw_search_decision import (
+    build_judgement_digest,
+    evidence_agent,
+    verdict_from_model,
+)
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .drive_general_grounding import DriveGroundingError, drive_general_grounding
 from .claw_first_turn_authority import (
     B54VerifiedCodingContextV1,
     FirstTurnAuthorityError,
@@ -163,6 +173,7 @@ def _claw_general_sse(
     *,
     history: tuple[dict[str, object], ...] = (),
     conversation_id: str | None = None,
+    sources: tuple[dict[str, str], ...] = (),
 ) -> Response:
     """Bounded terminal SSE, optionally preceded by real *post-execution* history.
 
@@ -187,6 +198,8 @@ def _claw_general_sse(
     terminal = {"done": True}
     if conversation_id is not None:
         terminal["conversation_id"] = conversation_id
+    if sources:
+        terminal["sources"] = list(sources)
     frames += _sse_frame("delta", {"delta": answer}) + _sse_frame("done", terminal)
     return Response(
         frames,
@@ -402,6 +415,171 @@ async def claw_general_capabilities(request: Request) -> JSONResponse:
     return JSONResponse(result, headers=_NO_STORE_HEADERS)
 
 
+CLAW_PUBLIC_SEARCH_STATE_FLAG = "claw_web_search_enabled"
+MAX_CLAW_SEARCH_SOURCES = 5
+MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS = 200
+CLAW_GROUNDING_PREAMBLE_MARKER = "웹 근거 사용 규칙"
+
+
+
+def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
+    """Verified provenance only: https URL, title and retrieval timestamp."""
+
+    if not isinstance(raw, (list, tuple)) or not raw:
+        return None
+    projected: list[dict[str, str]] = []
+    for item in raw[:MAX_CLAW_SEARCH_SOURCES]:
+        if not isinstance(item, dict):
+            return None
+        url = item.get("url")
+        title = item.get("title")
+        retrieved_at = item.get("retrieved_at")
+        if not isinstance(url, str) or not url.startswith("https://"):
+            return None
+        if not isinstance(title, str) or not isinstance(retrieved_at, str):
+            return None
+        projected.append({
+            "url": url[:2048],
+            "title": title[:MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS],
+            "retrieved_at": retrieved_at[:64],
+        })
+    return tuple(projected)
+
+
+async def _claw_public_search_grounding(
+    request: Request, adapter: Any, messages: Any
+) -> tuple[str | None, tuple[dict[str, str], ...]]:
+    """Let the model decide, then reuse the existing Engine evidence operation once.
+
+    The conversation digest stays inside Padiem. Only a query that survives this lane's
+    own privacy and length checks may reach a provider, and grounding plus provenance
+    stand or fall together. Any refusal degrades to the pre-search answer surface.
+    """
+
+    denied = (None, ())
+    if getattr(request.app.state, CLAW_PUBLIC_SEARCH_STATE_FLAG, False) is not True:
+        return denied
+    client = getattr(getattr(adapter, "_runner", None), "_client", None)
+    judge = getattr(client, "search_judgement", None)
+    search_evidence = getattr(client, "search_evidence", None)
+    if not callable(judge) or not callable(search_evidence):
+        return denied
+    digest = build_judgement_digest(messages)
+    if digest is None:
+        return denied
+    agent = evidence_agent()
+    try:
+        verdict = verdict_from_model(await judge(conversation=digest, agent=agent))
+    except Exception:
+        return denied
+    if not verdict.should_search:
+        return denied
+    try:
+        evidence = await search_evidence(query=verdict.query, agent=agent)
+    except Exception:
+        return denied
+    if not isinstance(evidence, dict):
+        return denied
+    sources = _project_search_sources(evidence.get("sources"))
+    context = evidence.get("grounding_context")
+    if sources is None:
+        # Provenance that cannot be shown means the claim cannot be made either.
+        return denied
+    if not isinstance(context, str) or not context.strip() or len(context) > 32_768:
+        return denied
+    if CLAW_GROUNDING_PREAMBLE_MARKER not in context:
+        # Without Core's untrusted-data preamble the text would enter the prompt as
+        # ordinary context, which is exactly the promotion this route forbids.
+        return denied
+    return context, sources
+
+
+def _requested_local_txt_path(user_text: str) -> tuple[bool, str | None]:
+    """Narrow first-party PC TXT read intent: no model or browser-made grant."""
+    compact = "".join(user_text.lower().split())
+    if not any(marker in compact for marker in (
+        "내pc", "내컴퓨터", "로컬pc", "로컬컴퓨터", "mypc", "mycomputer",
+    )):
+        return False, None
+    if not re.search("읽어|보여|열어|확인해|read|open|show", user_text, re.I):
+        return False, None
+    if ".txt" not in user_text.lower():
+        return False, None
+    matches = []
+    for word in user_text.split():
+        token = word.strip(".,!?()[]'\\\"“”‘’")
+        for particle in ("에서", "를", "을", "은", "도", "이"):
+            if token.lower().endswith(".txt" + particle):
+                token = token[:-len(particle)]
+                break
+        if token.lower().endswith(".txt"):
+            matches.append(token)
+    return True, matches[0] if len(matches) == 1 else None
+
+
+async def _dispatch_user_txt_request(
+    request: Request, *, user_text: str, path_relative: str,
+    data: dict[str, Any],
+) -> JSONResponse | Response:
+    """Claw's existing composer → existing Broker enqueue, with owned run."""
+    from .claw_memory_routes import _resolve_memory_workspace
+    from .connector_txt_read_routes import (
+        choose_verified_txt_device, dispatch_verified_txt_read,
+    )
+
+    conversation_id, denial = await _resolve_intake_session_reference(request, data)
+    if denial is not None:
+        return denial
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not isinstance(uid, str) or not uid:
+        return _error(401, "canonical_session_required", "로그인이 필요합니다.")
+    selected = data.get("device_id")
+    if selected is not None and (not isinstance(selected, str) or not selected):
+        return _error(422, "txt_read_device_invalid", "선택한 PC를 확인할 수 없습니다.")
+    device_id, error = await choose_verified_txt_device(
+        request, selected_device_id=selected,
+    )
+    if error is not None:
+        return error
+    try:
+        workspace = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace = None
+    if not isinstance(workspace, str) or not workspace:
+        return _error(503, "txt_read_workspace_unavailable", "대화 범위를 확인할 수 없습니다.")
+    history = getattr(request.app.state, "history_store", None)
+    stage = getattr(history, "record_txt_pending_run", None)
+    if not callable(stage):
+        return _error(503, "txt_read_history_unavailable", "대화 저장소를 확인할 수 없습니다.")
+    run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+    try:
+        cid = await stage(
+            user_id=uid, run_id=run.run_id, workspace_id=workspace,
+            user_text=user_text, conversation_id=conversation_id,
+        )
+    except Exception:
+        return _error(503, "txt_read_history_unavailable", "대화 저장에 실패했습니다.")
+    dispatched = await dispatch_verified_txt_read(request, {
+        "device_id": device_id, "root_ref": "root.3140",
+        "path_relative": path_relative, "run_id": run.run_id,
+        "confirmed": True,  # derived from this authenticated user's actual READ text
+    })
+    if dispatched.status_code != 200:
+        mark_failed = getattr(history, "update_claw_run_status", None)
+        if callable(mark_failed):
+            try:
+                await mark_failed(uid, run.run_id, "failed")
+            except Exception:
+                pass
+        return dispatched
+    # Only a wait response is emitted. The *verified* PC body is appended
+    # asynchronously on existing run-history/local-result reconciliation.
+    return _claw_general_sse(
+        "PC의 TXT 파일을 읽는 중입니다. 실제 파일 내용은 작업 완료 후 이 대화에 표시됩니다.",
+        conversation_id=cid,
+    )
+
+
 async def claw_general_execute(request: Request) -> JSONResponse | Response:
     """Run one generic B54 Claw request through the canonical P01 Engine lane (#3539).
 
@@ -443,12 +621,27 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if text_error is not None:
         return text_error
 
-    raw_tier = data.get("tier", "plus")
+    txt_requested, txt_path = _requested_local_txt_path(user_text)
+    if txt_requested:
+        if txt_path is None:
+            return _error(422, "txt_read_path_required",
+                          "내 PC에서 읽을 TXT 파일의 상대 경로를 하나 지정해 주세요.")
+        return await _dispatch_user_txt_request(
+            request, user_text=user_text, path_relative=txt_path, data=data,
+        )
+
+    raw_tier = data.get("tier", "free")
     if not isinstance(raw_tier, str):
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
     product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
     if product_tier is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    if "tier" in data:
+        tier_denial = await selected_grade_denial(
+            request, current_user_id(request) if auth_ready(request) else None, raw_tier.strip().lower()
+        )
+        if tier_denial is not None:
+            return tier_denial
     raw_model = data.get("model_id")
     selected_model_id: str | None = None
     if raw_model is not None:
@@ -456,8 +649,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             selected_model_id = validate_explicit_b14_model_id(raw_model)
         except P01AdapterError:
             return _error(422, "invalid_selected_model", "등록된 B14 모델 ID 하나를 선택해 주세요.")
-        if product_tier is not ProductTierLabel.PLUS:
-            return _error(422, "explicit_model_tier_unsupported", "모델 직접 선택은 현재 Plus에서만 지원됩니다.")
+        if product_tier is ProductTierLabel.FREE:
+            if selected_model_id not in (FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID):
+                return _error(403, "model_not_available_for_tier", "Free 등급에서 선택할 수 없는 모델입니다.")
+        elif product_tier is not ProductTierLabel.PLUS:
+            return _error(422, "explicit_model_tier_unsupported", "이 등급의 모델 직접 선택은 아직 지원되지 않습니다.")
     try:
         tier_route = active_route_for(product_tier)
     except ProductTierRoutesError:
@@ -525,6 +721,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             if not isinstance(authorized_workspace_id, str) or not authorized_workspace_id:
                 return _error(403, "workspace_scope_unavailable",
                               "대화 작업 공간을 확인할 수 없습니다.")
+
+    # Use the signed owner and Control Plane workspace for the connected
+    # Drive. Never let browser-provided historical turns choose file access.
+    try:
+        drive_context, drive_sources = await drive_general_grounding(request, user_text)
+    except DriveGroundingError as exc:
+        return _error(exc.status_code, exc.code, exc.message)
 
     # #3790: in the production Worker Claw uses the central model
     # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
@@ -632,18 +835,35 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         request.headers.get(CLAW_EVIDENCE_REQUEST_HEADER, "").strip() == CLAW_EVIDENCE_MARKER
     )
 
+    # #3936/#3655: a request this route is going to refuse must be refused before any
+    # search judgement, so a rejected call can never spend a model inference or reach a
+    # provider. The quota refund and first-turn release stay exactly as they were.
+    if live_requested and evidence_requested:
+        await _refund_active_reservation()
+        # Proven pre-dispatch denial after a successful claim: the claimed grant must
+        # fail here, or it stays active (in-progress) until expiry and blocks the key.
+        await fail_first_turn_grant(request, first_turn_context)
+        return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
+
+    # #4469: optional public web grounding, judged by the model and off unless the
+    # server says otherwise. It reads the SAME owner-verified history the answer lane
+    # uses, never browser-supplied prior turns, so forged history cannot move the
+    # search target. Everything downstream is unchanged when it returns nothing.
+    # Private Drive data never enters the public web search judgement/query.
+    if drive_context is None:
+        grounding_context, search_sources = await _claw_public_search_grounding(
+            request, adapter, model_user_text
+        )
+    else:
+        grounding_context, search_sources = drive_context, drive_sources
+
     if live_requested:
-        if evidence_requested:
-            await _refund_active_reservation()
-            # Proven pre-dispatch denial after a successful claim: the
-            # claimed grant must fail here, or it stays active (in-progress)
-            # until expiry and blocks the key. Mirrors NOT_DISPATCHED below.
-            await fail_first_turn_grant(request, first_turn_context)
-            return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
         from .claw_live_events import live_claw_sse
         live_args = {"product_tier": product_tier, "subject_id": subject_id}
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
+        if grounding_context is not None:
+            live_args["additional_system_context"] = grounding_context
         async def after_verified_live_completion(answer: str) -> str | None:
             # Runs after validated terminal P01 completion, never on pause,
             # failure, disconnect or an unverified/empty answer.
@@ -657,12 +877,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         return live_claw_sse(
             adapter, run, live_args,
             on_completed=after_verified_live_completion,
+            sources=search_sources,
         )
 
     try:
         dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
+        if grounding_context is not None:
+            dispatch_args["additional_system_context"] = grounding_context
         outcome = await adapter.execute(run, **dispatch_args)
     except P01AdapterError as exc:
         if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
@@ -765,6 +988,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
         history=getattr(outcome, "p01_event_history", ()),
         conversation_id=saved_conversation_id,
+        sources=search_sources,
     )
 
 

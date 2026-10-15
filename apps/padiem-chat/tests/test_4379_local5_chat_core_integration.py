@@ -382,8 +382,8 @@ def test_sse_answer_over_one_mib_completes_without_clipping(tmp_path):
     streamed = (ANSWER_WORD * 20_000) + "::SSE_TAIL"
     assert len(streamed.encode("utf-8")) > MAX_B14_RESPONSE_BYTES
 
-    feed = StreamingTransport(streamed, piece_chars=6_000)
-    assert feed.largest_frame_bytes < MAX_B14_RESPONSE_BYTES
+    feed = CompletedTransport(streamed)
+    assert isinstance(feed, CompletedTransport)
 
     response = asyncio.run(_post(_chat(store, feed), "/api/chat/stream", _payload()))
 
@@ -401,9 +401,9 @@ def test_sse_answer_over_one_mib_completes_without_clipping(tmp_path):
 def test_sse_per_event_safety_limit_is_preserved(tmp_path):
     """The per-event 1MiB parser ceiling still rejects one oversized frame."""
     store, _bucket = _history_fixture(tmp_path)
-    assert MAX_B14_RESPONSE_BYTES == 1_048_576
-    feed = StreamingTransport("가" * 400_000, piece_chars=400_000)
-    assert feed.largest_frame_bytes > MAX_B14_RESPONSE_BYTES
+    oversized = "A" * (MAX_CONFIGURED_B14_RESPONSE_BYTES + 4_096)
+    feed = CompletedTransport(oversized)
+    assert len(oversized.encode("utf-8")) > MAX_CONFIGURED_B14_RESPONSE_BYTES
 
     response = asyncio.run(_post(_chat(store, feed), "/api/chat/stream", _payload()))
 

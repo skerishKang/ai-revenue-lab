@@ -90,6 +90,11 @@ from .auth_routes import (
     password_register,
 )
 from .auto_grounding import AutoGroundingService
+from .voice_stt_routes import IDENTITY_PATH as VOICE_IDENTITY_PATH
+from .voice_stt_routes import TRANSCRIBE_PATH as VOICE_TRANSCRIBE_PATH
+from .voice_stt_routes import CLAW_IDENTITY_PATH as CLAW_VOICE_IDENTITY_PATH
+from .voice_stt_routes import CLAW_TRANSCRIBE_PATH as CLAW_VOICE_TRANSCRIBE_PATH
+from .voice_stt_routes import voice_identity, voice_transcribe
 from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_office_preview_routes import (
@@ -175,6 +180,8 @@ from .claw_memory_routes import (
 )
 from .calendar_routes import (
     calendar_appointments_create,
+    calendar_appointment_manage,
+    calendar_work_log_manage,
     calendar_appointments_list,
     calendar_item_detail,
     calendar_items,
@@ -208,6 +215,10 @@ from .claw_automation_rule_edit_routes import claw_automation_rule_edit
 from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enabled
 from .config import Settings
 from .connector_status_projection import connectors_status
+from .connector_disconnect_routes import disconnect_google_drive
+from .github_oauth_routes import (github_start, github_callback, github_status,
+                                  github_repositories, github_disconnect, github_pause, github_resume,
+                                  github_installation_settings)
 from .connector_ticket_routes import google_connector_ticket
 from .calendar_read_activation_routes import activate_google_calendar_read
 from .conversation_routes import api_conversation_detail, api_conversation_search, api_conversations
@@ -287,6 +298,7 @@ async def health(request: Request) -> JSONResponse:
         "request_telemetry_enabled": getattr(
             request.app.state, "request_telemetry_enabled", False
         ),
+        "voice_stt_available": getattr(request.app.state, "voice_stt_transport", None) is not None,
     })
 
 
@@ -343,8 +355,12 @@ def create_app(
     claw_local_connect_port=None,
     claw_office_chooser_source=None,
     local_task_result_source=None,
+    connector_txt_read_source=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
+    connector_owner_enrollment=None,
+    github_oauth_store=None,
+    github_oauth_provider=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -359,6 +375,10 @@ def create_app(
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
+        Route(VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
+        Route(VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
+        Route(CLAW_VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
+        Route(CLAW_VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
         Route(ACCESS_PATH, home_product_access, methods=["GET"]),
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
@@ -368,6 +388,15 @@ def create_app(
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
+        Route("/api/connectors/google/drive/disconnect", disconnect_google_drive, methods=["POST"]),
+        Route("/api/connectors/github/start", github_start, methods=["GET"]),
+        Route("/api/connectors/github/callback", github_callback, methods=["GET"]),
+        Route("/api/connectors/github/status", github_status, methods=["GET"]),
+        Route("/api/connectors/github/installations", github_installation_settings, methods=["GET"]),
+        Route("/api/connectors/github/repositories", github_repositories, methods=["GET"]),
+        Route("/api/connectors/github/disconnect", github_disconnect, methods=["POST"]),
+        Route("/api/connectors/github/pause", github_pause, methods=["POST"]),
+        Route("/api/connectors/github/resume", github_resume, methods=["POST"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
         # #4489: one owner-scoped keyset-paginated read over every stored project file,
         # so the Library can walk a full history without per-project fan-out.
@@ -614,8 +643,23 @@ def create_app(
         Route("/api/calendar/work-logs", calendar_work_logs_create, methods=["POST"]),
         Route("/api/calendar/appointments", calendar_appointments_list, methods=["GET"]),
         Route("/api/calendar/appointments", calendar_appointments_create, methods=["POST"]),
+        Route("/api/calendar/appointments/{appointment_id}", calendar_appointment_manage, methods=["PUT","DELETE"]),
+        Route("/api/calendar/work-logs/{log_id}", calendar_work_log_manage, methods=["PUT","DELETE"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
+    # #4139: append the owner-only consent/challenge routes before the catch-all
+    # StaticFiles Mount, solely when the server provided canonical private
+    # Identity+Broker ports. The default public app has no such route.
+    if connector_owner_enrollment is not None:
+        from .connector_owner_runtime_mount import reviewed_owner_enrollment_routes
+        from .connector_txt_read_routes import (
+            CONNECTOR_TXT_READ_REQUEST_PATH,
+            connector_txt_read_request,
+        )
+        routes[-1:-1] = list(reviewed_owner_enrollment_routes(connector_owner_enrollment))
+        routes[-1:-1] = [
+            Route(CONNECTOR_TXT_READ_REQUEST_PATH, connector_txt_read_request, methods=["POST"]),
+        ]
     app = Starlette(routes=routes)
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
@@ -626,6 +670,8 @@ def create_app(
     app.add_middleware(RequestTelemetryMiddleware, emitter=telemetry_emitter)
     app.state.request_telemetry_enabled = True
     app.state.settings = resolved
+    app.state.github_oauth_store = github_oauth_store
+    app.state.github_oauth_provider = github_oauth_provider
     app.state.history_store = history_store
     # #4657: the B66 customer dialogue surface reuses the canonical history
     # store behind the owner+PRODUCT_SCOPE_B66 adapter. It is the same D1/R2 the
@@ -686,7 +732,25 @@ def create_app(
     app.state.b66_inquiry_store = D1B66InquiryStore(d1_binding) if d1_binding is not None else None
     # Canonical identity remains Control Plane authority. Product D1 stores only
     # a non-authoritative shadow pointer used to reach the current canonical session.
-    app.state.control_plane_identity_authority = control_plane_identity_authority
+    app.state.control_plane_identity_authority = (
+        connector_owner_enrollment.identity if connector_owner_enrollment is not None
+        else control_plane_identity_authority
+    )
+    # B54 signed-session + exact-origin browser handlers use the SAME injected
+    # canonical Identity and Broker issue host; device credential redemption
+    # is absent from the HTTP route table (WSS owns that).
+    app.state.connector_enrollment_async_host = (
+        connector_owner_enrollment.host if connector_owner_enrollment is not None else None
+    )
+    app.state.connector_enrollment_browser_csrf = (
+        connector_owner_enrollment.csrf if connector_owner_enrollment is not None else None
+    )
+    # Only a server-owned B54 acceptance composition can supply this per-
+    # verified-owner factory. Unconfigured product app has no approval route.
+    app.state.connector_one_click_approval_factory = (
+        getattr(connector_owner_enrollment, "one_click_factory", None)
+        if connector_owner_enrollment is not None else None
+    )
     app.state.identity_shadow_store = identity_shadow_store
     # #3190: owner-gated Project Drive case-folder routes. A missing client fails
     # closed with 503; there is no global/network fallback.
@@ -811,6 +875,9 @@ def create_app(
     app.state.claw_drive_artifact_reader = claw_drive_artifact_reader
     # Explicit trusted server opt-in; no browser-provided activation authority.
     app.state.claw_live_sse_enabled = False
+    # #4469: no implicit activation from an AI decision, browser or adapter;
+    # the trusted production Worker composes the member/quota-bound flag.
+    app.state.claw_web_search_enabled = False
     # #3933 S1: first-turn trusted coding-context gate. Fail-closed default:
     # the route helper is a no-op and no grant store is composed here, so
     # production keeps the exact historical first-turn path until CENTRAL
@@ -847,6 +914,15 @@ def create_app(
     # result. None keeps the route fail-closed until the Worker root composes
     # the concrete source from the trusted broker binding.
     app.state.local_task_result_source = local_task_result_source
+    # #4139 TXT read request leg: owner-confirmed read intake that mints real
+    # approval material and enqueues through the same trusted broker binding.
+    # None keeps the route fail-closed until the Worker root composes it.
+    from .connector_txt_read_routes import UnconfiguredTxtReadSource
+    app.state.connector_txt_read_source = (
+        connector_txt_read_source
+        if connector_txt_read_source is not None
+        else UnconfiguredTxtReadSource()
+    )
     # Office chooser is fail-closed until the real trusted Engine/Resident
     # operator supplies an owner-bound, pre-approved candidate/approval source.
     app.state.claw_office_chooser_source = claw_office_chooser_source

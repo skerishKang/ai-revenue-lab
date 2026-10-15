@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "Gate mode; only bootstrap_private mutates Cloudflare"
+        description: "Gate mode; only reviewed bootstrap_private/redeploy_private mutates Cloudflare"
         required: true
         type: choice
         default: repository_preflight
@@ -12,6 +12,7 @@ on:
           - repository_preflight
           - cloudflare_readonly
           - bootstrap_private
+          - redeploy_private
       target_sha:
         description: "Exact current main SHA to validate or bootstrap"
         required: true
@@ -74,7 +75,7 @@ jobs:
           assert state["main"] == "local_agent_broker_worker.py"
           assert state["workers_dev"] is False and state["preview_urls"] is False
           assert "routes" not in state and "route" not in state
-          assert state["vars"] == {"LOCAL_AGENT_BROKER_AUTHORITY_REF": "control-plane.local-agent-broker.production.v1"}
+          assert state["vars"] == {"LOCAL_AGENT_BROKER_AUTHORITY_REF": "control-plane.local-agent-broker.production.v1", **{'LOCAL_AGENT_BROKER_PENDING_PC_OWNER_RPC_ENABLED': 'enabled', 'LOCAL_AGENT_BROKER_PENDING_PC_SCHEMA_INSTALLED': 'installed', 'LOCAL_AGENT_BROKER_PENDING_PC_RELEASE_SCOPE': 'owner-controlled-production-4139', 'LOCAL_AGENT_BROKER_PENDING_PC_PRODUCTION_ENABLED': 'enabled', 'LOCAL_AGENT_BROKER_PENDING_PC_WSS_ENABLED': 'enabled', 'LOCAL_AGENT_BROKER_PENDING_PC_CANONICAL_BOOTSTRAP_ENABLED': 'enabled', 'LOCAL_AGENT_BROKER_PENDING_PC_IDENTITY_HANDOFF_ENABLED': 'enabled', 'LOCAL_AGENT_BROKER_PENDING_PC_NATIVE_DELIVERY_ENABLED': 'enabled', 'LOCAL_AGENT_BROKER_PAIRING_RPC_ENABLED': 'true', 'LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED': 'true', 'LOCAL_AGENT_BROKER_PAIRING_ISSUANCE_RATE_LIMIT': '4', 'LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_ENABLED': 'true', 'LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALLED': 'true'}}
           assert state["secrets"] == {"required": ["LOCAL_AGENT_BROKER_PEPPER"]}
           assert state["durable_objects"]["bindings"] == [{"name": "LOCAL_AGENT_BROKER_STATE", "class_name": "LocalAgentBrokerDurableObject"}]
           assert state["exports"]["LocalAgentBrokerDurableObject"] == {"type": "durable-object", "storage": "sqlite"}
@@ -120,12 +121,32 @@ jobs:
 
           test -d "${RUNNER_TEMP}/b54-state-dry-run"
           test -d "${RUNNER_TEMP}/b54-edge-dry-run"
+          python ../../.github/scripts/connector_bundle_fingerprint.py \
+            --worker padiem-local-agent-broker-state \
+            --source-sha "$(git rev-parse HEAD)" \
+            --bundle-dir "${RUNNER_TEMP}/b54-state-dry-run" \
+            --output "${RUNNER_TEMP}/b54-broker-state-fingerprint.json"
+          python ../../.github/scripts/connector_bundle_fingerprint.py \
+            --worker padiem-local-agent-broker-edge \
+            --source-sha "$(git rev-parse HEAD)" \
+            --bundle-dir "${RUNNER_TEMP}/b54-edge-dry-run" \
+            --output "${RUNNER_TEMP}/b54-broker-edge-fingerprint.json"
           echo "PYTHON_WORKER_PACKAGING_PREFLIGHT=PASS"
           echo "PRODUCTION_MUTATION=0"
 
+      - name: Retain redacted Broker State/Edge dry-run fingerprints
+        uses: actions/upload-artifact@v4
+        with:
+          name: connector-broker-bundle-fingerprints
+          path: |
+            ${{ runner.temp }}/b54-broker-state-fingerprint.json
+            ${{ runner.temp }}/b54-broker-edge-fingerprint.json
+          if-no-files-found: error
+          retention-days: 30
+
   cloudflare-readonly:
     needs: repository-preflight
-    if: ${{ inputs.mode == 'cloudflare_readonly' || inputs.mode == 'bootstrap_private' }}
+    if: ${{ inputs.mode == 'cloudflare_readonly' || inputs.mode == 'bootstrap_private' || inputs.mode == 'redeploy_private' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
@@ -165,31 +186,48 @@ jobs:
 
   bootstrap-private:
     needs: [repository-preflight, cloudflare-readonly]
-    if: ${{ inputs.mode == 'bootstrap_private' }}
+    if: ${{ inputs.mode == 'bootstrap_private' || inputs.mode == 'redeploy_private' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     environment: production
     steps:
-      - name: Require explicit private-bootstrap authorization
+      - name: Require explicit reviewed private Broker deployment authorization
         shell: bash
         env:
+          DEPLOY_MODE: ${{ inputs.mode }}
           CONFIRMATION: ${{ inputs.confirmation }}
           STATE_WORKER_STATE: ${{ needs.cloudflare-readonly.outputs.state_worker_state }}
           EDGE_WORKER_STATE: ${{ needs.cloudflare-readonly.outputs.edge_worker_state }}
           BROKER_PEPPER: ${{ secrets.LOCAL_AGENT_BROKER_PEPPER }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          test "${CONFIRMATION}" = "BOOTSTRAP_PADIEM_LOCAL_AGENT_BROKER_PRIVATE"
           test -n "${BROKER_PEPPER}"
-          if [ "${STATE_WORKER_STATE}" != "absent" ]; then
-            echo "Refusing automatic state Worker replacement; durable authority requires separate owner review." >&2
+          if [ "${DEPLOY_MODE}" = "bootstrap_private" ]; then
+            test "${CONFIRMATION}" = "BOOTSTRAP_PADIEM_LOCAL_AGENT_BROKER_PRIVATE"
+            test "${STATE_WORKER_STATE}" = "absent"
+            test "${EDGE_WORKER_STATE}" = "absent"
+          elif [ "${DEPLOY_MODE}" = "redeploy_private" ]; then
+            test "${CONFIRMATION}" = "REDEPLOY_PADIEM_LOCAL_AGENT_BROKER_PRIVATE_EXACT_MAIN"
+            test "${STATE_WORKER_STATE}" = "present"
+            test "${EDGE_WORKER_STATE}" = "present"
+            # Existing SQLite DO identity is immutable during an in-place update.
+            state_settings="${RUNNER_TEMP}/existing-broker-state-settings.json"
+            edge_settings="${RUNNER_TEMP}/existing-broker-edge-settings.json"
+            for pair in "${STATE_WORKER}:${state_settings}" "${EDGE_WORKER}:${edge_settings}"; do
+              worker="${pair%%:*}"
+              target="${pair#*:}"
+              curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" -o "${target}"
+            done
+            jq -e '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_STATE")) and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_PEPPER")) and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_AUTHORITY_REF"))' "${state_settings}" >/dev/null
+            jq -e '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE"))' "${edge_settings}" >/dev/null
+          else
+            echo "Unrecognized Broker deployment mode" >&2
             exit 1
           fi
-          if [ "${EDGE_WORKER_STATE}" != "absent" ]; then
-            echo "Refusing bootstrap over an existing edge Worker." >&2
-            exit 1
-          fi
-          echo "PRIVATE_BOOTSTRAP_AUTHORIZATION=PASS"
+          echo "PRIVATE_BROKER_DEPLOYMENT_AUTHORIZATION=PASS"
 
       - name: Checkout exact approved main SHA
         uses: actions/checkout@v4

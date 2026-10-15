@@ -153,6 +153,11 @@
   let activeRequestController = null;
   let activeRequestArticle = null;
   let activeRequestCancelReason = null;
+  // Latest successfully completed answer request, for the one-click
+  // regenerate action. Replays through requestAnswer with the exact stored
+  // routing snapshot, so model lane, tier, auth and approval conditions are
+  // identical to the original send. Cleared on conversation reset.
+  let lastCompletedAnswerRequest = null;
   let conversationEpoch = 0;
   let selectedAttachment = null;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
@@ -185,8 +190,32 @@
     runtimeNote.textContent = text;
     runtimeNote.dataset.state = state;
   }
+  // Short-lived overlay, not a new composer row.
+  const composerInlineHint = document.getElementById("composerInlineHint");
+  let composerInlineHintTimer = null;
+  function showComposerInlineHint(key) {
+    if (!composerInlineHint) return;
+    composerInlineHint.textContent = uiT(key);
+    composerInlineHint.hidden = false;
+    if (composerInlineHintTimer !== null) window.clearTimeout(composerInlineHintTimer);
+    composerInlineHintTimer = window.setTimeout(() => {
+      composerInlineHint.hidden = true;
+      composerInlineHint.textContent = "";
+      composerInlineHintTimer = null;
+    }, 3000);
+  }
+  window.addEventListener("padiem:composer-hint", (event) => {
+    if (event && event.detail && typeof event.detail.key === "string") {
+      showComposerInlineHint(event.detail.key);
+    }
+  });
+  sendButton.addEventListener("click", () => {
+    if (!input.value.trim() && !inFlight) showComposerInlineHint("composer-empty-message");
+  });
+
   function updateComposer() {
-    sendButton.disabled = inFlight || input.value.trim().length === 0;
+    // Empty clicks are allowed; submitPrompt() already ignores blank or busy submissions.
+    sendButton.disabled = false;
     input.disabled = inFlight;
     attachmentButton.disabled = inFlight;
     removeAttachment.disabled = inFlight;
@@ -195,8 +224,12 @@
     cancelStreamButton.hidden = !inFlight;
     cancelStreamButton.disabled = !inFlight;
     cancelStreamButton.setAttribute("aria-disabled", inFlight ? "false" : "true");
-    input.style.height = "auto";
-    input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
+    if (window.PadiemConversationComposer?.resizeTextarea) {
+      window.PadiemConversationComposer.resizeTextarea(input, { maxHeight: 180 });
+    } else {
+      input.style.height = "auto";
+      input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
+    }
   }
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
@@ -223,15 +256,34 @@
     // New Chat no longer shows a mode hint: the redundant label was removed
     // when the sidebar actions row was rearranged (B62 split-search task).
     if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
-    if (chatNav) chatNav.setAttribute("aria-current", state === "claw" ? "false" : "page");
+    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation") ? "false" : "page");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
+    const connectorsNav = document.getElementById("connectorsNavButton");
+    if (connectorsNav) connectorsNav.setAttribute("aria-current", state === "connectors" ? "page" : "false");
+    const automationNav = document.getElementById("automationNavButton");
+    if (automationNav) automationNav.setAttribute("aria-current", state === "automation" ? "page" : "false");
     if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsNav) alertsNav.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
     if (tasksEntry) tasksEntry.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsEntry) alertsEntry.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
-  function showConversation({ preserveClaw = false } = {}) {
-    emptyState.hidden = true;
+  // The first user turn extends the original landing panel. Older saved
+  // threads still open directly on messages instead of replaying the hero.
+  function showConversation({ preserveClaw = false, restoreSaved = false } = {}) {
+    const conversationPanel = messageList.closest(".conversation");
+    const startingOnLanding = !restoreSaved
+      && !emptyState.hidden
+      && messageList.childElementCount === 0
+      && (shell.dataset.state === "home"
+        || (preserveClaw && shell.dataset.state === "claw"));
+    const continuingLanding = !restoreSaved
+      && conversationPanel?.dataset.continuousThread === "true";
+    const keepLanding = startingOnLanding || continuingLanding;
+    if (conversationPanel) {
+      if (keepLanding) conversationPanel.dataset.continuousThread = "true";
+      else delete conversationPanel.dataset.continuousThread;
+    }
+    emptyState.hidden = !keepLanding;
     messageList.hidden = false;
     // #3931: Keep an in-flight Claw conversation in the Claw workspace.
     // Saved Chat conversations and ordinary Chat sends still use Chat.
@@ -293,8 +345,11 @@
       content.appendChild(used);
     }
     const skillTitle = result.skill && result.skill.id !== "auto" && typeof result.skill.title === "string" ? result.skill.title : "";
-    const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : uiT("ai-response");
-    article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
+    // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
+    // The repetitive runtime line is removed: only a truthful non-default
+    // state (mock preview) or an explicit skill title is shown.
+    const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : "";
+    article.querySelector("[data-runtime-label]").textContent = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
@@ -559,6 +614,45 @@
     });
     if (!selectedAttachment) setNote(idleNote());
   }
+  // Static, accessible sidebar actions: keep the translated button text
+  // and ARIA labels; only replace the low-contrast visual affordance.
+  function sidebarActionIcon(kind) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.9");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    if (kind === "more") {
+      for (const cy of [5, 12, 19]) {
+        const dot = document.createElementNS(ns, "circle");
+        dot.setAttribute("cx", "12");
+        dot.setAttribute("cy", String(cy));
+        dot.setAttribute("r", "1.65");
+        dot.setAttribute("fill", "currentColor");
+        dot.setAttribute("stroke", "none");
+        svg.appendChild(dot);
+      }
+      return svg;
+    }
+    const shape = document.createElementNS(ns, "path");
+    shape.setAttribute("d", kind === "settings"
+      ? "M12 2l1.5 2.4 2.8.5 1.9-1.2 2 3.5-1.9 1.9.1 2.9 1.8 1.9-2 3.5-2.8-.5-2.4 1.4L12 21l-3.1-2.7-2.4-1.4-2.8.5-2-3.5 1.8-1.9.1-2.9-1.9-1.9 2-3.5 1.9 1.2 2.8-.5L12 2Z"
+      : "M4 6h16M9 6V4h6v2M6 6l1 15h10l1-15M10 10v7M14 10v7");
+    svg.appendChild(shape);
+    if (kind === "settings") {
+      const center = document.createElementNS(ns, "circle");
+      center.setAttribute("cx", "12");
+      center.setAttribute("cy", "11.5");
+      center.setAttribute("r", "3.1");
+      svg.appendChild(center);
+    }
+    return svg;
+  }
   function renderProjects() {
     projectsList.replaceChildren();
     projectsSection.hidden = !projectsReady;
@@ -577,7 +671,9 @@
       manage.type = "button";
       manage.className = "project-manage";
       manage.textContent = uiT("manage");
+      manage.prepend(sidebarActionIcon("settings"));
       manage.setAttribute("aria-label", uiT("project-manage-aria", { name: project.name }));
+      manage.title = uiT("project-manage-aria", { name: project.name });
       manage.addEventListener("click", () => openProjectDialog(project));
       row.append(button, manage);
       projectsList.appendChild(row);
@@ -778,6 +874,7 @@
 
   function resetConversation(preserveProject = true) {
     conversationEpoch += 1;
+    lastCompletedAnswerRequest = null;
     if (activeRequestController) {
       activeRequestCancelReason = "conversation_reset";
       activeRequestController.abort();
@@ -793,6 +890,7 @@
     clearAttachment();
     messageList.replaceChildren();
     messageList.hidden = true;
+    delete messageList.closest(".conversation")?.dataset.continuousThread;
     conversationArtifactContext?.clear?.();
     emptyState.hidden = false;
     shell.dataset.state = "home";
@@ -1034,6 +1132,17 @@
         if (workspace.dataset.view === "inbox") workspace.dataset.view = "general";
         if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
       }
+      // Auth loss hides the standalone Connectors/Automation pages the same
+      // way the Claw automation panel never outlives its session. The moved
+      // nodes stay mounted; reopening after sign-in reloads fresh state.
+      const connectorsView = document.getElementById("connectorsView");
+      if (connectorsView) connectorsView.hidden = true;
+      const automationView = document.getElementById("automationView");
+      if (automationView) automationView.hidden = true;
+      if (shell && (shell.dataset.state === "connectors" || shell.dataset.state === "automation")) {
+        shell.dataset.state = "home";
+        setNavActive();
+      }
       // Auth loss also closes PDF previews and revokes ephemeral private blobs.
       window.PadiemClawPdfPreview?.revokeAll?.();
       // Auth loss tears down any pending execute recovery: no timer outlives the session.
@@ -1263,19 +1372,58 @@
         button.textContent = clawConversationIds.has(conversation.id)
           ? `Claw · ${conversation.title}` : conversation.title;
         button.addEventListener("click", () => openSavedConversation(conversation.id));
+        const actions = document.createElement("details");
+        actions.className = "history-actions";
+        const more = document.createElement("summary");
+        more.className = "history-more";
+        const moreLabel = uiT("manage") + ": " + conversation.title;
+        more.setAttribute("aria-label", moreLabel);
+        more.title = moreLabel;
+        more.append(sidebarActionIcon("more"));
+        const menu = document.createElement("div");
+        menu.className = "history-actions-menu";
         const remove = document.createElement("button");
         remove.type = "button";
-        remove.className = "history-delete";
-        remove.textContent = uiT("delete");
+        remove.className = "history-delete history-menu-delete";
+        remove.append(sidebarActionIcon("trash"), document.createTextNode(uiT("delete")));
         remove.setAttribute("aria-label", uiT("conversation-delete-aria", { title: conversation.title }));
-        remove.addEventListener("click", () => deleteConversation(conversation.id, conversation.title));
-        row.append(button, remove);
+        remove.title = uiT("conversation-delete-aria", { title: conversation.title });
+        remove.addEventListener("click", async () => {
+          await deleteConversation(conversation.id, conversation.title);
+          // Dialog close must return focus to a visible action, not an item
+          // concealed inside a closed native details panel.
+          if (actions.isConnected) {
+            actions.open = false;
+            more.focus();
+          }
+        });
+        actions.addEventListener("toggle", () => {
+          if (!actions.open) return;
+          historyList.querySelectorAll(".history-actions[open]").forEach((other) => {
+            if (other !== actions) other.open = false;
+          });
+        });
+        menu.appendChild(remove);
+        actions.append(more, menu);
+        row.append(button, actions);
         historyList.appendChild(row);
       });
     } catch (_) {
       clearHistoryUI();
     }
   }
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest(".history-actions")) return;
+    historyList.querySelectorAll(".history-actions[open]").forEach((node) => { node.open = false; });
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    const expanded = historyList.querySelector(".history-actions[open]");
+    if (!expanded) return;
+    expanded.open = false;
+    expanded.querySelector("summary")?.focus();
+    event.stopPropagation();
+  });
   async function deleteConversation(id, title) {
     if (!authState.authenticated || inFlight) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
@@ -1345,7 +1493,7 @@
       if (activeProject) refreshActiveProjectFileCount();
       const isVerifiedClawThread = clawConversationIds.has(data.conversation.id);
       if (isVerifiedClawThread) openClawWorkspace();
-      showConversation({ preserveClaw: isVerifiedClawThread });
+      showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
       conversationArtifactContext?.show?.(data.conversation.id);
       data.conversation.messages.forEach((item) => {
         if (!item || typeof item.content !== "string") return;
@@ -1544,7 +1692,8 @@
             content.replaceChildren();
             paragraph = document.createElement("p");
             content.appendChild(paragraph);
-            article.querySelector("[data-runtime-label]").textContent = uiT("ai-response");
+            // The template's "answer-preparing" label stays during streaming;
+            // no repetitive runtime line is rendered on first delta.
           }
           answer += data.delta;
           paragraph.textContent = answer;
@@ -1632,9 +1781,22 @@
     setNote(uiT("answer-cancelled-note"), "error");
   }
 
+  // #4317: product-capabilities.js is loaded AFTER app.js. Initialise the
+  // browser's ordinary Chat tier to the universally available signed-in Free
+  // lane once all scripts are ready; preserve an explicit tier choice afterwards.
+  // This updates the visible mode selector but never sends a model request.
+  window.addEventListener("load", () => {
+    if (window.PadiemTierSelection?.get?.() === "plus") {
+      window.PadiemTierSelection.set("free");
+    }
+  }, { once: true });
+
   function selectedProductTier() {
+    // Both Chat and the shared Claw first-use composer honor the visible
+    // PADIEM FREE/PLUS choice. Never silently force Claw to Plus while its
+    // explicit Plus model chooser is hidden. The server validates entitlements.
     const tier = window.PadiemTierSelection?.get?.();
-    return "plus";
+    return ["free", "plus", "pro", "max"].includes(tier) ? tier : "free";
   }
 
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {
@@ -1674,9 +1836,13 @@
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
       if (contextSnapshot.project) payload.project_id = contextSnapshot.project.id;
       if (attachments) {
-        return await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
+        const completedOk = await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
+        if (completedOk) {
+          lastCompletedAnswerRequest = { outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest: Boolean(clawGeneralRequest), article };
+        }
+        return completedOk;
       }
-      return await requestStreamingAnswer(
+      const streamOk = await requestStreamingAnswer(
         article,
         payload,
         outboundMessages,
@@ -1685,6 +1851,10 @@
         controller.signal,
         clawGeneralRequest ? { clawGeneral: true } : null,
       );
+      if (streamOk) {
+        lastCompletedAnswerRequest = { outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest: Boolean(clawGeneralRequest), article };
+      }
+      return streamOk;
     } catch (error) {
       if (error && error.name === "AbortError") {
         if (activeRequestCancelReason === "user_cancel" && requestEpoch === conversationEpoch) {
@@ -1729,6 +1899,35 @@
     return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
   }
 
+  // One-click answer regenerate for the action bar (outputs.js). Only the
+  // latest completed answer may regenerate: the stored article, lifecycle
+  // state and DOM position are all re-verified, and requestAnswer's inFlight
+  // lock rejects any overlapping second call, so no duplicate or unintended
+  // paid model call can fire. No user bubble is added; the same outbound
+  // messages replay through the identical routing path.
+  function storedRegenerateRequest(article) {
+    const stored = lastCompletedAnswerRequest;
+    if (!stored || stored.article !== article) return null;
+    if (!article || !article.isConnected) return null;
+    if (!window.PadiemChatLifecycle || !window.PadiemChatLifecycle.isCompleted(article)) return null;
+    if (inFlight) return null;
+    const list = document.getElementById("messageList");
+    const items = list ? list.querySelectorAll(".assistant-message") : [];
+    if (!items.length || items[items.length - 1] !== article) return null;
+    return stored;
+  }
+  window.PadiemChatRegenerate = Object.freeze({
+    available(article) {
+      return storedRegenerateRequest(article) !== null;
+    },
+    regenerate(article) {
+      const stored = storedRegenerateRequest(article);
+      if (!stored) return false;
+      void requestAnswer(stored.outboundMessages, stored.skill, stored.attachment, stored.contextSnapshot, stored.clawGeneralRequest);
+      return true;
+    },
+  });
+
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
     if (!prompt || inFlight) return;
@@ -1740,12 +1939,9 @@
     // Neither UI state nor the selected model ID may authorize fallback.
     const clawGeneralRequest = clawGeneralRequestActive();
     contextSnapshot.selectedModelId =
-      clawGeneralRequest && selectedProductTier() === "plus" && typeof clawModelIdInput !== "undefined" && clawModelIdInput
+      clawGeneralRequest && ["free", "plus"].includes(selectedProductTier()) && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
-    if (clawGeneralRequest && !contextSnapshot.selectedModelId) {
-      setNote(uiT("claw-verified-model-required"), "error");
-      return false; // no quota/provider call without explicit model
-    }
+    // Grade-only Claw execution does not require a provider-specific model ID.
     showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
@@ -1789,6 +1985,9 @@
     profileToggle.setAttribute("aria-expanded", "false");
   }
 
+  window.addEventListener("padiem:tierchange", () => {
+    if (shell.dataset.state === "claw") shell.dataset.clawTier = selectedProductTier();
+  });
   input.addEventListener("input", updateComposer);
   // #3084: Korean IME regression protection. While a Hangul/IME composition is
   // active the browser still reports key === "Enter" for the candidate-confirm
@@ -1796,16 +1995,19 @@
   // is the shared pure decision (claw-local-handoff.js) plus an explicit
   // composition tracker for engines that omit event.isComposing.
   const localHandoffModule = window.PadiemClawLocalHandoff;
-  const composerComposition = localHandoffModule
-    ? localHandoffModule.createCompositionGuard()
+  // All three products load the canonical keyboard guard. The historic
+  // handoff guard remains for isolated older fixture/browser pages.
+  const composerInputModule = window.PadiemConversationComposer || localHandoffModule;
+  const composerComposition = composerInputModule
+    ? composerInputModule.createCompositionGuard()
     : null;
   input.addEventListener("compositionstart", () => composerComposition?.start());
   input.addEventListener("compositionupdate", () => composerComposition?.update());
   input.addEventListener("compositionend", () => composerComposition?.end());
   input.addEventListener("keydown", (event) => {
-    const shouldSubmit = localHandoffModule
-      ? localHandoffModule.shouldSubmitOnEnter(event, composerComposition)
-      : event.key === "Enter" && !event.shiftKey;
+    const shouldSubmit = composerInputModule
+      ? composerInputModule.shouldSubmitOnEnter(event, composerComposition)
+      : false; // Never submit Hangul IME text with an unavailable guard.
     if (!shouldSubmit) return;
     event.preventDefault();
     if (!sendButton.disabled) form.requestSubmit();
@@ -1821,6 +2023,20 @@
   cancelStreamButton.addEventListener("click", cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   documentStarterButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
+  const documentFormatsToggle = document.getElementById("documentFormatsToggle");
+  const documentFormatsPanel = document.getElementById("documentFormatsPanel");
+  if (documentFormatsToggle && documentFormatsPanel) {
+    documentFormatsToggle.addEventListener("click", () => {
+      const show = documentFormatsPanel.hidden;
+      documentFormatsPanel.hidden = !show;
+      documentFormatsToggle.setAttribute("aria-expanded", show ? "true" : "false");
+    });
+    document.addEventListener("click", (event) => {
+      if (documentFormatsPanel.hidden || (event.target.closest && event.target.closest(".document-starter-shell"))) return;
+      documentFormatsPanel.hidden = true;
+      documentFormatsToggle.setAttribute("aria-expanded", "false");
+    });
+  }
   attachmentFileInput.addEventListener("change", () => {
     const [file] = attachmentFileInput.files || [];
     selectAttachment(file);
@@ -2153,6 +2369,7 @@
 
   function syncComposerForClaw(isClaw) {
     if (!input) return;
+    if (isClaw) shell.dataset.clawTier = selectedProductTier();
     // #3531: the business-request prompt belongs to the explicit manual
     // workflow view only. The general Claw view shares the generic prompt
     // so placeholder parity with Chat Home holds.
@@ -3203,21 +3420,38 @@
     });
   }
 
+  // Standalone Automation page: the existing #clawAutomation section is moved
+  // once into #automationViewBody. Moving (not cloning) preserves every bound
+  // listener and all getElementById handles, so list/create/edit/toggle/
+  // status/alerts and the permission/workspace checks run against the same
+  // APIs and store. An enabled rule list never claims the scheduler itself
+  // is running; the existing scheduler note stays verbatim.
+  let automationViewMounted = false;
+  function mountAutomationView() {
+    if (automationViewMounted) return;
+    let body = null;
+    let panel = null;
+    try {
+      body = document.getElementById("automationViewBody");
+      panel = document.getElementById("clawAutomation");
+    } catch (_) {
+      return;
+    }
+    if (!body || !panel) return;
+    body.appendChild(panel);
+    automationViewMounted = true;
+  }
+
   function openClawAutomation() {
     if (!clawWorkspace || !clawAutomation || !authState.authenticated) return;
-    shell.dataset.state = "claw";
-    clawWorkspace.dataset.view = "automation";
-    delete clawWorkspace.dataset.inboxKind;
+    mountAutomationView();
+    const view = document.getElementById("automationView");
+    if (view) view.hidden = false;
+    shell.dataset.state = "automation";
     clawAutomation.hidden = false;
-    if (clawInbox) clawInbox.hidden = true;
-    if (clawManualForm) clawManualForm.hidden = true;
-    if (clawResultArea) clawResultArea.hidden = true;
-    clearClawRecovery({ syncControls: true });
     clearClawWait();
     setNavActive();
     closeSidebar();
-    syncApprovedMemoryVisibility();
-    syncClawRunHistoryVisibility();
     loadClawAutomationRules();
   }
 
@@ -3413,29 +3647,54 @@
   }
 
   function liveConnectorCards() {
-    if (!connectorsDialog) return [];
-    return Array.from(connectorsDialog.querySelectorAll("[data-connector-id]"));
+    const scope = connectorsScope();
+    if (!scope) return [];
+    try {
+      return Array.from(scope.querySelectorAll("[data-connector-id]"));
+    } catch (_) {
+      return [];
+    }
   }
 
   function googleCalendarConnectButton() {
-    if (!connectorsDialog) return null;
-    return connectorsDialog.querySelector(`[data-google-connector-connect="${GOOGLE_CALENDAR_CONNECTOR}"]`);
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-google-connector-connect="${GOOGLE_CALENDAR_CONNECTOR}"]`);
+    } catch (_) {
+      return null;
+    }
   }
 
   function googleCalendarCard() {
-    if (!connectorsDialog) return null;
-    return connectorsDialog.querySelector(`[data-connector-id="connector:google:calendar@1"]`);
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-connector-id="connector:google:calendar@1"]`);
+    } catch (_) {
+      return null;
+    }
   }
 
 
   function googleDriveConnectButton() {
-    if (!connectorsDialog) return null;
-    return connectorsDialog.querySelector(`[data-google-connector-connect="${GOOGLE_DRIVE_CONNECTOR}"]`);
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-google-connector-connect="${GOOGLE_DRIVE_CONNECTOR}"]`);
+    } catch (_) {
+      return null;
+    }
   }
 
   function googleDriveCard() {
-    if (!connectorsDialog) return null;
-    return connectorsDialog.querySelector(`[data-connector-id="connector:google:drive@1"]`);
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-connector-id="connector:google:drive@1"]`);
+    } catch (_) {
+      return null;
+    }
   }
 
   /** The whole Drive visibility rule as a pure predicate: an authenticated
@@ -3771,13 +4030,52 @@
     }
   }
 
-  function openConnectorsDialog() {
-    if (!connectorsDialog) return;
-    if (typeof connectorsDialog.showModal === "function") connectorsDialog.showModal();
-    else connectorsDialog.setAttribute("open", "");
-    if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "true");
+  // Standalone Connectors page: the card grid and the live-status block are
+  // moved once from #connectorsDialog into #connectorsViewBody. Moving (not
+  // cloning) preserves every directly bound listener, and all status queries
+  // below scope to the view body first with the dialog as fallback, so the
+  // existing fetch/render/connect/retry/OAuth logic is reused byte-for-byte.
+  // No endpoint, permission, login or connection state is reset by the move.
+  function connectorsScope() {
+    try {
+      const body = document.getElementById("connectorsViewBody");
+      if (body && body.querySelector("[data-connector-id]")) return body;
+    } catch (_) {}
+    return connectorsDialog;
+  }
+  let connectorsViewMounted = false;
+  function mountConnectorsView() {
+    if (connectorsViewMounted) return;
+    let body = null;
+    let grid = null;
+    let status = null;
+    try {
+      body = document.getElementById("connectorsViewBody");
+      grid = connectorsDialog ? connectorsDialog.querySelector(".capability-grid") : null;
+      status = document.getElementById("connectorsLiveStatus");
+    } catch (_) {
+      return;
+    }
+    if (!body || !grid) return;
+    if (status) body.appendChild(status);
+    body.appendChild(grid);
+    connectorsViewMounted = true;
+  }
+
+  function openConnectorsView() {
+    mountConnectorsView();
+    const view = document.getElementById("connectorsView");
+    if (view) view.hidden = false;
+    shell.dataset.state = "connectors";
+    setNavActive();
     closeSidebar();
+    if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "false");
     void loadConnectorStatus();
+  }
+  // Kept for existing callers (OAuth return, quick-connect fallback): the
+  // Connectors surface is now the standalone page, never a popup.
+  function openConnectorsDialog() {
+    openConnectorsView();
   }
   function closeConnectorsDialog() {
     if (!connectorsDialog) return;
@@ -3789,9 +4087,10 @@
       if (typeof connectorsNavButton.focus === "function") connectorsNavButton.focus();
     }
   }
-  if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsDialog);
+  if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsView);
   if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
   if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
+  document.addEventListener("padiem:refresh-connector-status", () => void loadConnectorStatus());
   const calendarConnectButton = googleCalendarConnectButton();
   if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => {
     if (calendarConnectButton.dataset.calendarAction === "activate-read") {
@@ -3804,6 +4103,18 @@
   const driveConnectButton = googleDriveConnectButton();
   if (driveConnectButton) driveConnectButton.addEventListener("click", () => {
     void beginGoogleDriveConnect();
+  });
+  document.addEventListener("padiem:drive-quick-connect", () => {
+    void (async () => {
+      // Existing server-trusted workspace truth, not a synthetic OFF.
+      await loadConnectorStatus();
+      const offered = googleDriveConnectButton();
+      if (offered && !offered.hidden && !offered.disabled) {
+        offered.click();
+      } else {
+        openConnectorsDialog();
+      }
+    })();
   });
   if (connectorsDialog) {
     connectorsDialog.addEventListener("cancel", (event) => {
@@ -3823,6 +4134,14 @@
     const cleanHash = String(window.location.hash || "");
     window.history.replaceState(null, "", cleanPath + (cleanQuery ? `?${cleanQuery}` : "") + cleanHash);
     openConnectorsDialog();
+  }
+
+  if (connectorReturnParts.some(part => part === "claw-github=connected")) {
+    const cleanQuery = connectorReturnParts.filter(part => !part.startsWith("claw-github=")).join("&");
+    const cleanPath = String(window.location.pathname || "/");
+    const cleanHash = String(window.location.hash || "");
+    window.history.replaceState(null, "", cleanPath + (cleanQuery ? "?" + cleanQuery : "") + cleanHash);
+    openClawWorkspace();
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
@@ -4550,9 +4869,12 @@
   function syncApprovedMemoryVisibility() {
     if (!clawApprovedMemory) return;
     // Owner-authenticated surface only: anonymous Phase A flow is unchanged.
+    const onLanding = clawWorkspace?.dataset.view === "general"
+      && !emptyState.hidden;
     const show = authState.authenticated === true
       && shell.dataset.state === "claw"
-      && clawWorkspace?.dataset.view !== "inbox";
+      && clawWorkspace?.dataset.view !== "inbox"
+      && !onLanding;
     clawApprovedMemory.hidden = !show;
     if (clawApprovedDisclosure) clawApprovedDisclosure.hidden = !show;
     if (show) loadApprovedMemoryList();

@@ -93,9 +93,8 @@ class TierRouteConsumerCoverageTests(unittest.TestCase):
             if route is not None and route.model_id is not None
         }
         self.assertEqual(set(PADIEM_EXECUTABLE_MODEL_IDS), expected)
-        # #3568: an explicit successor-pending HOLD may intentionally expose
-        # zero executable routes while keeping imports/non-model features alive.
-        self.assertEqual(expected, set())
+        # Owner-authorized four-grade routing has a shared Cat Jam primary.
+        self.assertEqual(expected, {"opencode-go/cat-jam-free"})
 
     def test_owner_policy_invariants_hold_while_consumers_derive(self):
         # Asserted rather than assumed, because this child makes Claw lean harder on them.

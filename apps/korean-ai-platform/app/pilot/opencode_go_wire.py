@@ -1,6 +1,6 @@
 """OpenCode Go fixed-model protocol boundary (coding-agent traffic only).
 
-The six exact owner-approved model IDs are routed by their *documented*
+The seven exact owner-approved model IDs are routed by their *documented*
 protocol; no attempt is made to send Responses or Anthropic Messages models
 through a generic chat-completions endpoint. Activation is independently gated
 by the canonical model/provider enabled flags. Never log secret values.
@@ -23,6 +23,7 @@ from .upstream_answer_contract import UpstreamEmptyAnswer
 
 # Owner-approved Go models; additions must keep their official wire protocol.
 _WIRE = {
+    "cat-jam-free": "chat/completions",
     "longcat-2.5-preview-free": "chat/completions",
     "step-5-preview-free": "chat/completions",
     "muse-spark-1.3-contributor": "responses",
@@ -31,11 +32,10 @@ _WIRE = {
     "claude-haiku-5-5": "messages",
 }
 _UA = "padiem-claw-coding-agent/1.0"
-# B54 conversation history mints chat_ + uuid4().hex after owner-scoped D1
-# readback. This grammar excludes request IDs (b14req_), P01 Claw run IDs,
-# and arbitrary user-provided session tokens. Grammar is NOT ownership proof:
-# the caller must still authenticate and revalidate the conversation in B54.
-_SESSION = re.compile(r"^chat_[0-9a-f]{32}$")
+# Go documents a stable x-opencode-session per conversation, NOT a chat_ UUID
+# format. This is a header-value safety check only, not identity authority.
+# The public B14 gateway must never promote user-supplied JSON/headers to trust.
+_SESSION_HEADER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 
 
 def prepare_go_request(
@@ -43,16 +43,21 @@ def prepare_go_request(
     session_id: str | None, max_tokens: int | None = None,
     temperature: float | None = None, streaming: bool = False,
 ) -> tuple[str, dict[str, Any], dict[str, str]]:
-    """Non-secret request shape. session_id must be an owner-revalidated B54 chat_ conversation ID.
+    """Provider-specific wire shape, not a B14-wide conversation requirement.
 
-    A B14 request ID is *not* a valid replacement for a stable conversation ID.
-    Refuse the request rather than make an apparently working but noncompliant
-    per-request session header or fake conversation.
+    An authorized caller can supply its existing stable conversation key.
+    For an independent one-shot B14 completion (no conversation key), mint one
+    request-scoped session key solely for OpenCode routing. It is NOT a login,
+    tenancy or ownership grant and cannot be reused as one.
     """
     if _WIRE.get(upstream_model) is None or model_id != "opencode-go/" + upstream_model:
         raise InvalidRequest("OpenCode Go model is not in the owner allowlist.")
-    if not isinstance(session_id, str) or not _SESSION.fullmatch(session_id):
-        raise InvalidRequest("OpenCode Go requires a trusted stable conversation session ID.")
+    if session_id is None:
+        # One POST without product conversation state is its own one-turn
+        # conversation. Keep a real, distinct provider session for this call.
+        session_id = "go_" + uuid.uuid4().hex
+    elif not isinstance(session_id, str) or not _SESSION_HEADER.fullmatch(session_id):
+        raise InvalidRequest("Invalid OpenCode Go session header value.")
     if not isinstance(messages, list) or not messages:
         raise InvalidRequest("OpenCode Go requires at least one chat message.")
     for m in messages:
@@ -196,7 +201,7 @@ async def _authenticated_headers(session_headers: dict[str, str], wire: str) -> 
 def _go_url(wire: str) -> str:
     from .platform import _require_spec
     spec = _require_spec("opencode-go")
-    if spec.base_origin != "https://opencode.ai/zen/go/v1":
+    if spec.base_origin != "https://opencode.ai/inference/go/v1":
         raise PilotNotConfigured("OpenCode Go origin does not match the owner approved endpoint.")
     return spec.base_origin + "/" + wire
 

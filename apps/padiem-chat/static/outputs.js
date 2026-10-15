@@ -91,6 +91,7 @@
   }
 
   function removeAnswerActions(article) {
+    stopArticleTts(article);
     article.querySelectorAll(".answer-actions").forEach((actions) => actions.remove());
     delete article.dataset.outputActions;
   }
@@ -177,11 +178,182 @@
     return paragraph && typeof paragraph.textContent === "string" ? paragraph.textContent.trim() : "";
   }
 
+  function localeText(key, fallback) {
+    try {
+      if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
+        const value = window.__padiemLocale.text(key);
+        if (value && value !== key) return value;
+      }
+    } catch (_) {}
+    return fallback;
+  }
+
   function feedbackButton(button, successText, originalText) {
     button.textContent = successText;
     window.setTimeout(() => {
       if (button.isConnected && button.dataset.saved !== "true") button.textContent = originalText;
     }, 1200);
+  }
+
+  function flashTitle(button, key, fallback) {
+    const original = button.title;
+    button.title = localeText(key, fallback);
+    window.setTimeout(() => {
+      if (button.isConnected) button.title = original;
+    }, 1200);
+  }
+
+  function iconButton(cls, glyph, labelKey, labelFallback) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = cls;
+    const label = localeText(labelKey, labelFallback);
+    button.setAttribute("aria-label", label);
+    button.title = label;
+    button.dataset.localeAriaLabel = labelKey;
+    button.dataset.localeTitle = labelKey;
+    const icon = document.createElement("span");
+    icon.className = "answer-action-glyph";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = glyph;
+    button.appendChild(icon);
+    return button;
+  }
+
+  function regenerateApi() {
+    const hook = window.PadiemChatRegenerate;
+    return hook && typeof hook.regenerate === "function" ? hook : null;
+  }
+
+  function ttsApi() {
+    const lib = window.PadiemVoiceTTSOutput;
+    if (!lib || typeof lib.create !== "function" || typeof lib.supported !== "function") return null;
+    try {
+      return lib.supported() ? lib : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function shareAvailable() {
+    try {
+      if (typeof navigator !== "undefined" && typeof navigator.share === "function") return true;
+      if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function") return true;
+    } catch (_) {}
+    return false;
+  }
+
+  function stopArticleTts(article) {
+    const waiting = article && article._ttsWaiting ? article._ttsWaiting : null;
+    if (waiting) {
+      waiting.active = false;
+      clearTimeout(waiting.timer);
+      try { window.speechSynthesis.removeEventListener("voiceschanged", waiting.onVoices); } catch (_) {}
+      article._ttsWaiting = null;
+    }
+    const player = article && article._ttsPlayer ? article._ttsPlayer : null;
+    if (player) {
+      try { player.stopOutput(); } catch (_) {}
+      article._ttsPlayer = null;
+    }
+    const button = article ? article.querySelector(".answer-action.answer-listen") : null;
+    if (button) {
+      button.setAttribute("aria-pressed", "false");
+      const label = localeText("answer-listen", "음성 듣기");
+      button.setAttribute("aria-label", label);
+      button.title = label;
+    }
+  }
+
+  function toggleArticleTts(article, button, text) {
+    if (article._ttsPlayer) {
+      stopArticleTts(article);
+      return;
+    }
+    const lib = ttsApi();
+    if (!lib) return;
+    const lang = (document.documentElement.lang || "ko").toLowerCase().startsWith("en") ? "en-US" : "ko-KR";
+    const player = lib.create({
+      lang,
+      onEnd: () => stopArticleTts(article),
+      onError: () => stopArticleTts(article),
+    });
+    article._ttsPlayer = player;
+    // A native user click is mandatory; voice-list readiness must not trigger
+    // speech unless the same explicit request is still active.
+    player.start();
+    function matchingVoiceReady() {
+      try {
+        return player.availableVoices().some((voice) =>
+          voice && String(voice.lang || "").toLowerCase().split("-")[0] === lang.toLowerCase().split("-")[0]);
+      } catch (_) { return false; }
+    }
+    function playWhenReady() {
+      if (article._ttsPlayer !== player) return;
+      if (!player.speakText(text)) {
+        stopArticleTts(article);
+        flashTitle(button, "answer-listen", "?? ?? ??");
+        return;
+      }
+      const label = localeText("answer-listen-stop", "?? ??");
+      button.setAttribute("aria-pressed", "true");
+      button.setAttribute("aria-label", label);
+      button.title = label;
+    }
+    if (matchingVoiceReady()) {
+      playWhenReady();
+      return;
+    }
+    // Chromium/Edge often populate getVoices() asynchronously after load.
+    // Retry the explicit click at most once when voiceschanged arrives. The
+    // pending request can always be cancelled by pressing the same button.
+    const synth = window.speechSynthesis;
+    if (!synth || typeof synth.addEventListener !== "function") {
+      stopArticleTts(article);
+      flashTitle(button, "answer-listen", "?? ?? ??");
+      return;
+    }
+    const wait = {active: true, timer: null, onVoices: null};
+    article._ttsWaiting = wait;
+    function clearWait() {
+      if (!wait.active) return false;
+      wait.active = false;
+      clearTimeout(wait.timer);
+      try { synth.removeEventListener("voiceschanged", wait.onVoices); } catch (_) {}
+      if (article._ttsWaiting === wait) article._ttsWaiting = null;
+      return article._ttsPlayer === player;
+    }
+    wait.onVoices = () => {
+      if (!wait.active || !matchingVoiceReady()) return;
+      if (clearWait()) playWhenReady();
+    };
+    synth.addEventListener("voiceschanged", wait.onVoices);
+    wait.timer = setTimeout(() => {
+      if (clearWait()) {
+        stopArticleTts(article);
+        flashTitle(button, "answer-listen", "?? ?? ??");
+      }
+    }, 3000);
+    button.setAttribute("aria-pressed", "false");
+    button.setAttribute("aria-label", "?? ?? ?, ?? ??? ??");
+    button.title = "?? ?? ?, ?? ??? ??";
+    // Close the race in which getVoices() becomes populated immediately
+    // before the voiceschanged handler was attached.
+    wait.onVoices();
+  }
+
+  async function shareArticleText(button, text, title) {
+    try {
+      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+        await navigator.share({ title, text });
+        flashTitle(button, "answer-shared", "공유했습니다");
+        return;
+      }
+    } catch (error) {
+      if (error && error.name === "AbortError") return;
+    }
+    const copied = await copyText(text);
+    flashTitle(button, copied ? "copied" : "copy-failed", copied ? "복사됨" : "복사 실패");
   }
 
   function enhanceAssistantMessage(article) {
@@ -198,25 +370,68 @@
 
     const actions = document.createElement("div");
     actions.className = "answer-actions";
-    actions.setAttribute("aria-label", "답변 작업");
+    actions.setAttribute("aria-label", localeText("answer-actions", "답변 작업"));
 
-    const copy = document.createElement("button");
-    copy.type = "button";
-    copy.className = "answer-action answer-copy";
-    copy.textContent = "복사";
+    // Exactly five functions in Glass icon style. No rating controls.
+    // A button is rendered only when its capability actually exists.
+    const copy = iconButton("answer-action answer-copy", "⧉", "answer-copy", "복사");
     copy.addEventListener("click", async () => {
       if (!lifecycleApi().isCompleted(article)) return;
       const copied = await copyText(text);
-      feedbackButton(copy, copied ? "복사됨" : "복사 실패", "복사");
+      flashTitle(copy, copied ? "copied" : "copy-failed", copied ? "복사됨" : "복사 실패");
     });
+    actions.appendChild(copy);
 
+    const regen = regenerateApi();
+    if (regen) {
+      const again = iconButton("answer-action answer-regenerate", "↻", "answer-regenerate", "다시 생성");
+      again.addEventListener("click", () => {
+        if (!lifecycleApi().isCompleted(article)) return;
+        if (!regen.regenerate(article)) {
+          flashTitle(again, "answer-regenerating", "답변 생성 중");
+        }
+      });
+      actions.appendChild(again);
+    }
+
+    if (ttsApi()) {
+      const listen = iconButton("answer-action answer-listen", "♪", "answer-listen", "음성 듣기");
+      listen.setAttribute("aria-pressed", "false");
+      listen.addEventListener("click", () => {
+        if (!lifecycleApi().isCompleted(article)) return;
+        toggleArticleTts(article, listen, text);
+      });
+      actions.appendChild(listen);
+    }
+
+    if (shareAvailable()) {
+      const share = iconButton("answer-action answer-share", "↗", "answer-share", "공유");
+      share.addEventListener("click", () => {
+        if (!lifecycleApi().isCompleted(article)) return;
+        void shareArticleText(share, text, titleFromText(text));
+      });
+      actions.appendChild(share);
+    }
+
+    const more = iconButton("answer-action answer-more", "···", "answer-more", "기타");
+    more.setAttribute("aria-expanded", "false");
+    const moreMenu = document.createElement("span");
+    moreMenu.className = "answer-more-menu";
+    moreMenu.hidden = true;
     const download = document.createElement("button");
     download.type = "button";
     download.className = "answer-action answer-download";
-    download.textContent = "다운로드";
+    download.textContent = localeText("answer-txt-download", "TXT 다운로드");
+    download.dataset.localeKey = "answer-txt-download";
     download.addEventListener("click", () => {
       if (lifecycleApi().isCompleted(article)) downloadText(text, titleFromText(text));
     });
+    moreMenu.appendChild(download);
+    more.addEventListener("click", () => {
+      moreMenu.hidden = !moreMenu.hidden;
+      more.setAttribute("aria-expanded", moreMenu.hidden ? "false" : "true");
+    });
+    actions.append(more, moreMenu);
 
     const save = document.createElement("button");
     save.type = "button";
@@ -248,7 +463,7 @@
       }
     });
 
-    actions.append(copy, download, save);
+    actions.appendChild(save);
     body.appendChild(actions);
     article.dataset.outputActions = "true";
   }

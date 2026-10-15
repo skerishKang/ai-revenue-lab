@@ -17,6 +17,8 @@ on:
       - "packages/padiem-control-plane/wrangler.identity-authority.jsonc"
       - "packages/padiem-control-plane/identity_authority_worker.py"
       - "packages/padiem-control-plane/tests/test_identity_production_redeploy_gate.py"
+      - ".github/scripts/connector_bundle_fingerprint.py"
+      - ".github/tests/test_connector_bundle_fingerprint.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -191,6 +193,10 @@ jobs:
           print('PRODUCTION_MUTATION=0')
           PY
 
+      - name: Verify Connector build fingerprint negative-only contract
+        shell: bash
+        run: python -m unittest discover -s .github/tests -p test_connector_bundle_fingerprint.py -q
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -232,8 +238,21 @@ jobs:
           PY
           uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --dry-run --outdir "${RUNNER_TEMP}/identity-redeploy-dry-run"
           rm -f "${temp_config}"
+          python ../../.github/scripts/connector_bundle_fingerprint.py \
+            --worker padiem-control-plane-identity \
+            --source-sha "$(git rev-parse HEAD)" \
+            --bundle-dir "${RUNNER_TEMP}/identity-redeploy-dry-run" \
+            --output "${RUNNER_TEMP}/identity-bundle-fingerprint.json"
           echo "IDENTITY_WORKER_PACKAGE_DRY_RUN=PASS"
           echo "SECRET_VALUES_OUTPUT=0"
+
+      - name: Retain redacted Identity dry-run fingerprint (not served attestation)
+        uses: actions/upload-artifact@v4
+        with:
+          name: connector-identity-bundle-fingerprint
+          path: ${{ runner.temp }}/identity-bundle-fingerprint.json
+          if-no-files-found: error
+          retention-days: 30
 
   cloudflare-readonly:
     needs: source-contract

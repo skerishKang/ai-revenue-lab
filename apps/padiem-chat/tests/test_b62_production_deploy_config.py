@@ -790,3 +790,150 @@ def test_hark_browser_workflow_requires_distinct_authorization_and_immutable_ser
     assert "HARK_BROWSER_QUICK_ACTION_CALLS=0" in workflow
     assert "B62_PRODUCTION_CODE_AUTO_ROLLBACK=EXECUTED" in workflow
     assert "FULL_SECRET_SET_EQUALITY=PASS" in workflow
+
+
+def test_broker_candidate_cli_adds_only_existing_broker_binding(tmp_path, capsys):
+    """The opt-in is source config generation, never a deployment or new Worker."""
+    import tomllib
+
+    module = _load_module()
+    settings = tmp_path / "live-settings.json"
+    settings.write_text(json.dumps(_settings_payload(_production_bindings())), encoding="utf-8")
+    repo = _write_repo_config(tmp_path)
+
+    def generate(output: Path, *flags: str) -> tuple[dict, str]:
+        args = [
+            "--settings", str(settings), "--repo-config", str(repo),
+            "--public-base-url", PUBLIC_URL, "--output", str(output), *flags,
+        ]
+        assert module.main(args) == 0
+        lines = capsys.readouterr().out
+        assert "CONNECTOR_BROKER_RELEASE_AUTHORIZED=NO" in lines
+        assert output.exists()
+        return tomllib.loads(output.read_text(encoding="utf-8")), lines
+
+    base, base_log = generate(tmp_path / "baseline.toml")
+    candidate, candidate_log = generate(
+        tmp_path / "candidate.toml", "--attach-existing-connector-broker",
+    )
+    assert "CONNECTOR_BROKER_BINDING_CANDIDATE=0" in base_log
+    assert "CONNECTOR_BROKER_BINDING_CANDIDATE=1" in candidate_log
+    previous_services = base["services"]
+    assert candidate["services"] == previous_services + [{
+        "binding": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+        "service": "padiem-local-agent-broker-state",
+    }]
+    candidate["services"] = previous_services
+    # #4719 LOCAL1: the candidate additionally carries exactly the
+    # allowlisted Connector vars; b14/live and all other settings stay verbatim.
+    expected_vars = dict(base["vars"])
+    expected_vars.update(module.CONNECTOR_EXPLICIT_VARS)
+    assert candidate["vars"] == expected_vars
+    candidate["vars"] = base["vars"]
+    assert candidate == base
+    assert 'PADIEM_CHAT_RUNTIME_MODE = "b14"' in (tmp_path / "candidate.toml").read_text()
+    assert 'PADIEM_CHAT_LIVE_ENABLED = "true"' in (tmp_path / "candidate.toml").read_text()
+    for key, value in module.CONNECTOR_EXPLICIT_VARS.items():
+        assert f'{key} = "{value}"' in (tmp_path / "candidate.toml").read_text()
+    assert not hasattr(module, "deploy")
+
+
+@pytest.mark.parametrize("conflict", [
+    ["--commission-hark-browser"],
+    ["--attach-existing-web-secrets-store"],
+    ["--owner-d1-database-id", "77777777-7777-4777-8777-777777777777"],
+])
+def test_broker_candidate_cli_refuses_multiple_additions(tmp_path, capsys, conflict):
+    module = _load_module()
+    settings = tmp_path / "live-settings.json"
+    settings.write_text(json.dumps(_settings_payload(_production_bindings())), encoding="utf-8")
+    repo = _write_repo_config(tmp_path)
+    output = tmp_path / "candidate.toml"
+    rc = module.main([
+        "--settings", str(settings), "--repo-config", str(repo),
+        "--public-base-url", PUBLIC_URL, "--output", str(output),
+        "--attach-existing-connector-broker", *conflict,
+    ])
+    assert rc == 1
+    assert not output.exists()
+    assert "only additive mode" in capsys.readouterr().err.lower()
+
+
+def test_broker_candidate_cli_reuses_identical_existing_binding(tmp_path, capsys):
+    """Retry after a rolled-back upload reuses the residue instead of duplicating."""
+    import tomllib
+
+    module = _load_module()
+    base = _production_bindings()
+    repo = _write_repo_config(tmp_path)
+    for index, extra in (
+        (0, {}),
+        (1, {"environment": "production"}),
+    ):
+        entries = [dict(x) for x in base]
+        entries.append({
+            "type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+            "service": "padiem-local-agent-broker-state", **extra,
+        })
+        settings = tmp_path / f"reuse-{index}.json"
+        settings.write_text(json.dumps(_settings_payload(entries)), encoding="utf-8")
+        output = tmp_path / f"reuse-{index}.toml"
+        assert module.main([
+            "--settings", str(settings), "--repo-config", str(repo),
+            "--public-base-url", PUBLIC_URL, "--output", str(output),
+            "--attach-existing-connector-broker",
+        ]) == 0
+        lines = capsys.readouterr().out
+        assert "CONNECTOR_BROKER_BINDING_REUSED=1" in lines
+        candidate = tomllib.loads(output.read_text(encoding="utf-8"))
+        matches = [s for s in candidate["services"]
+                   if s["binding"] == "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"]
+        assert len(matches) == 1
+        assert matches[0]["service"] == "padiem-local-agent-broker-state"
+
+
+@pytest.mark.parametrize("bad", [
+    {"service": "attacker-worker"},
+    {"environment": "staging"},
+    {"entrypoint": "Other"},
+    {"type": "plain_text", "text": "bad"},
+])
+def test_broker_candidate_cli_refuses_wrong_existing_binding(tmp_path, capsys, bad):
+    module = _load_module()
+    base = _production_bindings()
+    repo = _write_repo_config(tmp_path)
+    entry = {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+             "service": "padiem-local-agent-broker-state"}
+    entry.update(bad)
+    if bad.get("type") == "plain_text":
+        entry.pop("service", None)
+    entries = [dict(x) for x in base] + [entry]
+    settings = tmp_path / "bad.json"
+    settings.write_text(json.dumps(_settings_payload(entries)), encoding="utf-8")
+    output = tmp_path / "bad.toml"
+    assert module.main([
+        "--settings", str(settings), "--repo-config", str(repo),
+        "--public-base-url", PUBLIC_URL, "--output", str(output),
+        "--attach-existing-connector-broker",
+    ]) == 1
+    assert not output.exists()
+
+
+def test_broker_candidate_cli_refuses_wrong_identity(tmp_path, capsys):
+    module = _load_module()
+    base = _production_bindings()
+    repo = _write_repo_config(tmp_path)
+    entries = [dict(x) for x in base]
+    for entry in entries:
+        if entry.get("name") == "IDENTITY_AUTHORITY_SERVICE":
+            entry["service"] = "wrong-service"
+    settings = tmp_path / "wrong_identity.json"
+    settings.write_text(json.dumps(_settings_payload(entries)), encoding="utf-8")
+    output = tmp_path / "wrong_identity.toml"
+    assert module.main([
+        "--settings", str(settings), "--repo-config", str(repo),
+        "--public-base-url", PUBLIC_URL, "--output", str(output),
+        "--attach-existing-connector-broker",
+    ]) == 1
+    assert not output.exists()
+    assert "B62_PRODUCTION_CONFIG_GENERATED=FAIL" in capsys.readouterr().err

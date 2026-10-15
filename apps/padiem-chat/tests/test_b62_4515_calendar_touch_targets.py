@@ -137,7 +137,7 @@ def test_the_4501_stacking_fix_is_preserved() -> None:
     assert _declares(body, "position: relative")
     assert re.search(r"z-index:\s*2\s*;", body), "the #4501 lift must survive verbatim"
     # Exactly one z-index in the file: this slice adds geometry, not layers.
-    assert _css().count("z-index:") == 1
+    assert _css().count("z-index:") == 2 and "z-index: 50;" in _css()
 
 
 def test_the_change_stays_inside_calendar() -> None:

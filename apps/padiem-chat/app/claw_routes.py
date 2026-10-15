@@ -70,6 +70,7 @@ import uuid
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
+from .member_grade_access import selected_grade_denial
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
@@ -157,6 +158,7 @@ _ACTION_MAP: dict[str, ManualIntakeAction] = {
 }
 
 _BROWSER_TIER_MAP: dict[str, ProductTierLabel] = {
+    "free": ProductTierLabel.FREE,
     "plus": ProductTierLabel.PLUS,
     "pro": ProductTierLabel.PRO,
     "max": ProductTierLabel.MAX,
@@ -516,12 +518,18 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             return _error(400, "sender_hint_too_long", f"발신자 힌트는 {MAX_SENDER_CHARS}자 이하로 입력해 주세요.")
         sender_hint = raw_sender or None
 
-    raw_tier = data.get("tier", "plus")
+    raw_tier = data.get("tier", "free")
     if not isinstance(raw_tier, str):
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
     product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
     if product_tier is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    if "tier" in data:
+        tier_denial = await selected_grade_denial(
+            request, current_user_id(request) if auth_ready(request) else None, raw_tier.strip().lower()
+        )
+        if tier_denial is not None:
+            return tier_denial
     try:
         tier_route = active_route_for(product_tier)
     except ProductTierRoutesError:

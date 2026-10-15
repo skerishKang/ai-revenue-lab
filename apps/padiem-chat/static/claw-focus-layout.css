@@ -13,17 +13,17 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] {
   --claw-focus-muted: var(--muted, #53606c);
   --claw-focus-surface: var(--glass-card-surface, rgba(244, 247, 249, .72));
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .main-panel {
   /* Chat keeps the atmospheric body field; drop Claw's private blue wash so
    * both products sit on the same background. */
   background: none;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel::before {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .main-panel::before {
   /* Portrait art belongs to the cinematic chat landing view, not the workbench. */
   content: none;
   display: none;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
   /* #4488 Phase A: reuse the Chat lane contract (same 1200px cap and side
    * gutters). Claw has no portrait art, so Chat's portrait reservation is
    * reclaimed and the lane stays centred instead of left-anchored. */
@@ -127,7 +127,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation:has(
   /* After work begins, results and conversation take priority over examples. */
   display: none;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .composer-wrap {
   /* Chat's composer cap (1168px) on the same centred axis as the lane. */
   left: calc(var(--workspace-rail, 252px) + (100vw - var(--workspace-rail, 252px)) / 2);
   transform: translateX(-50%);
@@ -136,7 +136,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
   /* Chat removes the bottom wash; match it instead of a Claw-only blue fade. */
   background: transparent !important;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -150,10 +150,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm {
   backdrop-filter: blur(32px) saturate(104%);
   -webkit-backdrop-filter: blur(32px) saturate(104%);
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .attachment-tray {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm > .attachment-tray {
   flex: 1 1 100%;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .claw-model-choice {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm > .claw-model-choice {
   flex: 1 1 230px;
   min-width: 0;
   max-width: 440px;
@@ -174,7 +174,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawVerifiedModel
   font-size: 10px;
   color: var(--claw-focus-muted);
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .claw-model-advanced {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm > .claw-model-advanced {
   flex: 0 0 auto;
   align-self: center;
   padding: 0;
@@ -199,7 +199,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-model-advanc
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-model-advanced > .claw-model-choice {
   margin-top: 8px;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > #ownerModelPreviewOpen {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm > #ownerModelPreviewOpen {
   flex: 0 0 auto;
   min-height: 36px;
   margin: 0;
@@ -210,7 +210,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > #o
   color: var(--claw-focus-accent);
   font-size: 11px;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > #messageInput {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm > #messageInput {
   flex: 1 1 100%;
   min-width: 0;
   min-height: 42px;
@@ -220,11 +220,11 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > #m
   font-size: 16px;
   color: #17212a;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .composer-actions {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm > .composer-actions {
   flex: 1 1 100%;
   min-height: 39px;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm .send-button {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm .send-button {
   /* Match the shared Chat send affordance instead of a Claw-only accent fill. */
   background: rgba(255, 255, 255, .92);
   color: #08090b;
@@ -235,26 +235,26 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
   outline-offset: 2px;
 }
 @media (max-width: 1100px) {
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
     width: min(1200px, calc(100% - 32px));
     padding: 18px 18px calc(var(--claw-composer-clearance, 174px) + 26px);
   }
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .composer-wrap {
     width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - 48px));
   }
 }
 @media (max-width: 920px) {
   /* Same mobile ladder as Chat: opaque panel, 24px corners, solid composer. */
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
     width: min(760px, calc(100% - 28px));
     margin-inline: auto;
     background: rgba(242, 245, 247, .90);
     border-radius: 24px;
   }
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .composer-wrap {
     width: calc(100vw - 28px);
   }
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm {
     background: rgba(249, 251, 252, .94);
   }
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-grid {
@@ -278,7 +278,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option small {
     margin-top: 0;
   }
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .composer-wrap {
     left: 50%;
     width: calc(100vw - 24px);
   }
@@ -286,25 +286,25 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
    * "100% - 20px" step. Chat uses min(760px, 100% - 28px) down to 620px, then
    * calc(100% - 24px), so the measured lane becomes identical at every width
    * (the old rule left Claw 6px wider than Chat). */
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
     width: min(760px, calc(100% - 28px));
     padding: 14px 12px calc(var(--claw-composer-clearance, 132px) + 20px);
   }
   @media (max-width: 620px) {
-    html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+    html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
       width: calc(100% - 24px);
     }
   }
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub {
     padding: 13px;
   }
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .claw-model-choice {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm > .claw-model-choice {
     max-width: none;
   }
 }
 @media (max-width: 620px) {
   /* Chat tightens the panel to 20px corners on the smallest screens. */
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
     border-radius: 20px;
   }
 }
@@ -323,12 +323,12 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
  * The sidebar's actual rail token is 252px, not the old 264px constant.
  */
 @media (min-width: 921px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .conversation {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
     width: min(1200px, calc(100% - 48px)) !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .composer-wrap {
     left: calc(var(--workspace-rail, 252px) + (100vw - var(--workspace-rail, 252px)) / 2) !important;
     transform: translateX(-50%) !important;
     width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - 64px)) !important;
@@ -339,10 +339,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
 /* Chat widens its side gutter from 48px to 72px at >=1440px. Claw reuses the
  * same gutter contract while remaining centred on the same axis. */
 @media (min-width: 1440px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .conversation {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
     width: min(1200px, calc(100% - clamp(48px, 4vw, 72px) - 48px)) !important;
   }
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .composer-wrap {
     width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - clamp(48px, 4vw, 72px) - 80px)) !important;
   }
 }
@@ -369,7 +369,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawManualEntryBu
 /* The cinematic theme also injects separate live shell/fragment DOM nodes.
  * Suppress every visual art layer on Claw, not just main-panel::before.
  */
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] :is(.glass-shell-portrait, .glass-shell-field) {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) :is(.glass-shell-portrait, .glass-shell-field) {
   display: none !important;
 }
 /* These are duplicated, non-executable prompts in the general workflow. The
@@ -379,7 +379,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-workspace[da
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-disabled-controls {
   display: none;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .composer-actions {
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) #composerForm > .composer-actions {
   justify-content: flex-end;
 }
 /* Medium touch/tablet viewport: the original Glass theme keeps a desktop
@@ -387,7 +387,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .c
  * Center Claw's independent composer with its workbench, not that stale rail.
  */
 @media (min-width: 761px) and (max-width: 920px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .composer-wrap {
     left: 50% !important;
     width: calc(100vw - 28px) !important;
     transform: translateX(-50%) !important;
@@ -744,7 +744,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * remain the canonical components for typography, spacing and controls.
  */
 .claw-hero-line,
-.claw-workspace-starter {
+.claw-home-card {
   display: none !important;
 }
 .app-shell[data-state="claw"] .chat-hero-line {
@@ -753,18 +753,18 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-hero-line {
   display: inline !important;
 }
-.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-workspace-starter {
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
   display: flex !important;
 }
-.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .starter-grid > :not(.claw-workspace-starter) {
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .starter-grid > :not(.claw-home-card) {
   display: none !important;
 }
 /* Chat uses the same introductory block; only Claw's copy and four
  * destinations differ. Respect JS's hidden state after a real message.
  */
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) {
-  display: flex !important;
-  flex-direction: column;
+  /* Use Chat's grid: flex shrank the eyebrow and shifted the hero right. */
+  display: grid !important;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) ~ #clawTaskHub {
   display: none !important;
@@ -773,70 +773,44 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * on the first-use landing. Their underlying histories remain available
  * when the user enters the corresponding workflow, not deleted.
  */
-.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation:has(.empty-state:not([hidden])) :is(#clawApprovedMemory,#clawRunHistory) {
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation :is(#clawApprovedMemory,#clawRunHistory) {
   display: none !important;
 }
 /* Same model-free first-use composer as Chat. Existing advanced Claw model
  * controls remain present in manual mode and in their original workflow.
  * Don't duplicate input markup, send logic, file attach or provider state.
  */
-.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .composer-wrap #composerForm > :is(.claw-model-choice,.claw-model-advanced,#ownerModelPreviewOpen) {
+.app-shell[data-state="claw"]:not([data-claw-tier="plus"]) .claw-workspace[data-view="general"] ~ .composer-wrap #composerForm > .claw-model-advanced {
+  /* Free uses the verified selector; raw advanced model IDs stay Plus-only. */
   display: none !important;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .composer-wrap #composerForm > #messageInput {
-  flex: 1 1 100%;
-  min-height: 44px;
-  padding: 8px 5px 2px;
+  /* Canonical Chat #messageInput styles are shared without overrides. */
+}
+/* First-use Claw must show the SAME basic Chat composer tools, not an empty strip.
+ * The Claw workbench still owns its original model controls outside the landing. */
+.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .composer-tools {
+  display: flex !important;
+}
+/* Mobile Claw defaults to a collapsed workbench; the shared landing must
+ * still show the exact owner model-status control present in Chat. */
+@media (max-width: 600px) {
+  html body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) #composerForm > #ownerModelPreviewOpen {
+    display: inline-flex !important;
+  }
+}
+/* The manual shortcut is hidden only while the first-use hero is visible.
+ * Once that hero is dismissed, keep the existing manual workflow accessible
+ * without changing the general Chat/Claw composer layout or backend route. */
+.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden])) #clawManualEntryBar {
+  display: none !important;
 }
 @media (max-width: 640px) {
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .starter-grid {
     grid-template-columns: 1fr;
   }
 }
-/* Preserve the canonical Claw workbench contract: no decorative Chat
- * portrait in Claw. Its 4-card first-use hero reuses Chat controls and tokens,
- * not the unrelated cinematic portrait artwork. */
-html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"]) .conversation {
-  background: linear-gradient(155deg, rgba(248,250,251,.86), var(--glass-chat-surface));
-  border: 1px solid var(--glass-chat-border);
-  border-radius: 30px;
-  box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"]) #composerForm {
-  border-radius: var(--radius-md, 16px);
-  border-color: var(--glass-chat-border);
-  background: var(--card-bg);
-}
-html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"]) .composer-wrap {
-  background: linear-gradient(to bottom, transparent, rgba(187,195,202,.30) 26%, rgba(174,184,192,.58) 100%) !important;
-}
-@media (min-width: 1440px) {
-  /* Mirrors the same shared Glass reading-column constraints used by Chat. */
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"]) .conversation {
-    width: min(1200px, calc(100vw - var(--workspace-rail,252px) - clamp(48px,4vw,72px) - clamp(360px,32vw,560px) - 48px)) !important;
-    margin-left: clamp(48px,4vw,72px) !important;
-    margin-right: 0 !important;
-  }
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"]) .composer-wrap {
-    left: calc(var(--workspace-rail,252px) + clamp(48px,4vw,72px) + 16px) !important;
-    width: min(1168px, calc(100vw - var(--workspace-rail,252px) - clamp(48px,4vw,72px) - clamp(360px,32vw,560px) - 80px)) !important;
-    transform: none !important;
-  }
-}
-@media (min-width: 1024px) and (max-width: 1439px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"]) .conversation {
-    width: min(700px,calc(100vw - var(--workspace-rail,252px) - clamp(300px,32vw,380px) - 48px)) !important;
-    margin-left: 24px !important;
-    margin-right: 0 !important;
-  }
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"]) .composer-wrap {
-    left: calc(var(--workspace-rail,252px) + 38px) !important;
-    width: min(672px,calc(100vw - var(--workspace-rail,252px) - clamp(300px,32vw,380px) - 76px)) !important;
-    transform: none !important;
-  }
-}
+/* Shared first-use home inherits the original Chat portrait and composer. */
 /* Connector detail focus is visible and keyboard reachable from Claw's cards. */
 #connectorsDialog :is(#connectorComputerCard,#connectorGithubCard):focus-visible {
   outline: 3px solid var(--accent);
@@ -865,3 +839,108 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:has(.claw-wor
   color: var(--muted);
 }
 .claw-history-shortcut:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+
+/* Product copy and cards are the only special first-use Claw visuals.
+ * Chat's actual hero typography, portrait, sidebar and composer stay common.
+ */
+.claw-hero-eyebrow { display: none; }
+.app-shell[data-state="claw"] .claw-hero-eyebrow { display: inline; }
+.app-shell[data-state="claw"] .chat-hero-eyebrow { display: none; }
+.app-shell[data-state="claw"] #clawPreviousConversations,
+.app-shell[data-state="claw"] #clawPreviousConversationsFeedback { display: none !important; }
+.claw-home-card { display: none; min-width: 0; flex-direction: column; }
+.claw-home-card > .claw-workspace-starter {
+  display: flex !important; flex: 1 1 auto; width: 100%; height: 100%;
+  min-width: 0; text-align: left; border: none; background: transparent; box-shadow: none;
+}
+.claw-home-card > .claw-connection-toggle {
+  align-self: flex-end; margin: 0 10px 10px; min-width: 72px;
+  padding: 7px 11px; min-height: 34px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--card-bg); color: var(--text);
+  font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.claw-home-card > .claw-connection-toggle[data-connection-state="on"] {
+  border-color: var(--accent); color: var(--accent-strong, var(--accent));
+}
+/* An explicit, non-faked ON/OFF switch face. If the server cannot establish
+ * authority, both sides remain neutral and the status says "확인 불가". */
+.claw-home-card > .claw-connection-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: calc(100% - 20px);
+  min-height: 51px;
+  font-size: 11px;
+}
+.claw-connection-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.claw-connection-track > span {
+  padding: 3px 8px;
+  border-radius: 999px;
+  opacity: .6;
+  font-size: 10px;
+  line-height: 1.3;
+}
+.claw-connection-toggle[data-connection-state="on"] .claw-state-on,
+.claw-connection-toggle[data-connection-state="off"] .claw-state-off {
+  opacity: 1;
+  color: var(--text);
+  background: var(--card-bg);
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+.claw-connection-label { text-align: center; font-size: 10px; line-height: 1.3; }
+.claw-home-card > .claw-connection-toggle:focus-visible,
+.claw-home-card > .claw-workspace-starter:focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 2px;
+}
+.claw-card-icon { width: 26px; height: 26px; display: block; color: var(--text); }
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
+  display: flex !important; border-radius: var(--radius-md, 16px);
+  background: var(--card-bg); border: 1px solid var(--line); min-width: 0;
+}
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
+  display: flex !important;
+}
+.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) :is(#clawApprovedMemory,#clawRunHistory,#clawMemoryReview,#clawRunHistoryDisclosure) {
+  display: none !important;
+}
+
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-connection-feedback:not([hidden]) {
+  display: block; max-width: 620px; margin: 6px auto; text-align: center; color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  /* Mobile Claw landing uses the actual shared Chat width and composer,
+   * while manual/workbench retains its separate collapse controls. */
+  .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .claw-mobile-composer-toggle {
+    display: none !important;
+  }
+}
+
+
+/* Suppress the old Claw-only scroll canvas only for the first-use hero.
+   Chat and Claw use the same document-scrolling conversation lane.
+   Active Claw workbench still retains its existing bounded scroll canvas. */
+.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .conversation {
+  min-height: auto;
+  max-height: none;
+  overflow-y: visible;
+  overscroll-behavior-y: auto;
+  padding-bottom: 218px;
+}
+@media (max-width: 620px) {
+  /* Match Chat's shared cinematic mobile portrait (the original image asset). */
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .main-panel::before {
+    opacity: .16;
+  }
+}

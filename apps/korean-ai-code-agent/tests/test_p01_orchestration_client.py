@@ -268,6 +268,7 @@ class P01EngineOrchestrationClientTests(SyntheticPlusRouteTestCase):
             {
                 "model": active_route_for(ProductTierLabel.PLUS).model_id,
                 "max_retries": 0,
+                "product_tier": "plus",
             },
         )
         self.assertNotIn("provider", json.dumps(payload).lower())

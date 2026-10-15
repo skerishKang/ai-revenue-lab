@@ -52,7 +52,7 @@ def live_settings() -> Settings:
     )
 
 
-def test_live_completed_plus_hold_refunds_before_service_binding_dispatch():
+def test_live_completed_active_catjam_propagates_provider_error_and_refunds():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -73,18 +73,18 @@ def test_live_completed_plus_hold_refunds_before_service_binding_dispatch():
         with pytest.raises(ChatRuntimeError) as info:
             await client.complete(MESSAGES)
 
-        assert info.value.status_code == 503
-        assert info.value.code == "model_profile_unassigned"
-        assert DEFAULT_CHAT_PROFILE == "low"
-        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == PLUS_HOLD_MODEL_ID
-        assert calls == 0
-        assert len(store.refunds) == 3
+        assert info.value.status_code == 502
+        assert info.value.code == "provider_server_error"
+        assert DEFAULT_CHAT_PROFILE == "free"
+        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == "opencode-go/cat-jam-free"
+        assert calls == 1
+        assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False
 
     asyncio.run(scenario())
 
 
-def test_live_stream_plus_hold_refunds_before_stream_transport_dispatch():
+def test_live_stream_active_catjam_propagates_provider_error_and_refunds():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -105,16 +105,16 @@ def test_live_stream_plus_hold_refunds_before_stream_transport_dispatch():
             async for _ in client.stream_text_auto(MESSAGES):
                 pass
 
-        assert info.value.status_code == 503
-        assert info.value.code == "model_profile_unassigned"
+        assert info.value.status_code == 502
+        assert info.value.code == "upstream_unavailable"
         assert calls == 0
-        assert len(store.refunds) == 3
+        assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False
 
     asyncio.run(scenario())
 
 
-def test_non_live_b14_default_plus_still_fails_before_transport_while_held():
+def test_non_live_default_catjam_propagates_transport_failure():
     async def scenario():
         calls = 0
 
@@ -131,8 +131,8 @@ def test_non_live_b14_default_plus_still_fails_before_transport_while_held():
         )
         with pytest.raises(ChatRuntimeError) as info:
             await client.complete(MESSAGES)
-        assert info.value.code == "tier_unavailable"
-        assert calls == 0
+        assert info.value.code == "provider_server_error"
+        assert calls == 1
 
     asyncio.run(scenario())
 
@@ -152,12 +152,12 @@ def test_mock_chat_remains_available_without_provider_dispatch():
         )
         result = await client.complete(MESSAGES)
         assert result["runtime"] == "mock"
-        assert result["route"]["model"] == PLUS_HOLD_MODEL_ID
+        assert result["route"]["model"] == "opencode-go/cat-jam-free"
         assert calls == 0
 
     asyncio.run(scenario())
 
-def test_b66_current_product_default_is_hold_before_any_dispatch():
+def test_b66_current_product_default_is_catjam_and_propagates_transport_failure():
     """Real B62 HOLD, not the synthetic Plus used in unrelated tests."""
     from app.b66_quote_conversation import B66QuoteConversationInterpreter
     async def scenario():
@@ -174,7 +174,7 @@ def test_b66_current_product_default_is_hold_before_any_dispatch():
                 message="거래처 견적 100개",
                 skill={"variableSchema":{"recipient":True,"items":True},"fixedDefaults":{}},
             )
-        assert error.value.code=="model_profile_unassigned"
-        assert error.value.status_code==503
-        assert calls==[]
+        assert error.value.code in ("upstream_unavailable", "upstream_execution_failed", "provider_server_error")
+        assert error.value.status_code==502
+        assert calls==[True]
     asyncio.run(scenario())

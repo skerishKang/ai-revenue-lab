@@ -9,6 +9,7 @@ from starlette.responses import JSONResponse, StreamingResponse
 
 from .attachments import ImageAttachment
 from .auth_routes import auth_ready, current_user_id
+from .drive_general_grounding import DriveGroundingError, drive_general_grounding
 from .auto_grounding import AutoGroundingService
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
@@ -31,7 +32,8 @@ from .history import (
     build_project_context,
 )
 from .history import PRODUCT_SCOPE_CHAT
-from .model_policy import model_supports, request_tier_context
+from .model_policy import model_supports, request_tier_context, FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
+from .member_grade_access import selected_grade_denial
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
 from .request_contract import (
@@ -195,9 +197,13 @@ async def api_chat_stream(request: Request):
     try:
         raw = json.loads(body.decode("utf-8"))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
+        # No-tier browser clients are Free; validate legacy slash syntax
+        # separately so an unknown alias still fails before B14 dispatch.
+        if "tier" not in raw:
+            _apply_b62_model_policy(messages)
         selected_model, messages = _apply_b62_model_policy(
             messages,
-            tier_id=raw.get("tier"),
+            tier_id=raw.get("tier", "free"),
         )
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
@@ -210,6 +216,17 @@ async def api_chat_stream(request: Request):
         )
 
     uid = current_user_id(request) if auth_ready(request) else None
+    if "tier" in raw:
+        tier_denial = await selected_grade_denial(request, uid, raw["tier"])
+        if tier_denial is not None:
+            return tier_denial
+    # Free is available to every signed-in member; it is not an anonymous
+    # platform-key proxy. Never read tier/upgrade claims from browser state.
+    if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
+        return JSONResponse(
+            {"error": {"code": "unauthorized", "message": "?? AI? ????? ???? ???."}},
+            status_code=401,
+        )
     store: HistoryStore | None = request.app.state.history_store
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
@@ -266,6 +283,14 @@ async def api_chat_stream(request: Request):
 
     reference_context = combine_reference_context(project_context, project_files_context, None)
 
+    latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    try:
+        drive_context, drive_sources = await drive_general_grounding(request, latest_user_text)
+    except DriveGroundingError as exc:
+        return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
+    if drive_context:
+        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
+
     if request.app.state.usage_gate_enforced:
         usage_gate: UsageGate = request.app.state.usage_gate
         usage_decision = await usage_gate.authorize(
@@ -277,18 +302,18 @@ async def api_chat_stream(request: Request):
 
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
     try:
-        auto_plan = await auto_grounding.prepare(
+        auto_plan = None if drive_context else await auto_grounding.prepare(
             messages,
             skill=skill,
             additional_system_context=reference_context,
         )
     except GroundingError as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
-    if auto_plan.prepared is not None:
+    if auto_plan is not None and auto_plan.prepared is not None:
         reference_context = auto_plan.prepared.context
 
     client: B14Client = request.app.state.b14_client
-    with request_tier_context(raw.get("tier")):
+    with request_tier_context(raw.get("tier", "free")):
         stream = client.stream_text_auto(
             messages,
             skill=skill,
@@ -336,10 +361,17 @@ async def api_chat_stream(request: Request):
                     yield _public_sse("delta", {"delta": event.delta_content})
                 if event.done:
                     done_payload: dict[str, Any] = {"done": True}
-                    if auto_plan.prepared is not None:
+                    if auto_plan is not None and auto_plan.prepared is not None:
                         done_payload["answer_status"] = "answered_with_evidence"
                         done_payload["evidence"] = _public_evidence(auto_plan.prepared.evidence)
                         done_payload["tool"] = {"id": "web_search", "title": "웹 검색"}
+                    if drive_sources:
+                        done_payload["answer_status"] = "answered_with_evidence"
+                        done_payload["evidence"] = [
+                            {"id": f"drive-{i}", "title": src["title"], "url": src["url"],
+                             "retrieved_at": src["retrieved_at"], "source_type": "google_drive"}
+                            for i, src in enumerate(drive_sources, 1)
+                        ]
                     if uid is not None and store is not None and latest_user:
                         answer = "".join(answer_parts)
                         try:
@@ -422,15 +454,21 @@ async def api_chat(request: Request) -> JSONResponse:
     try:
         raw = json.loads(body.decode("utf-8"))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
+        # No-tier browser clients are Free; validate legacy slash syntax
+        # separately so an unknown alias still fails before B14 dispatch.
+        if "tier" not in raw:
+            _apply_b62_model_policy(messages)
         selected_model, messages = _apply_b62_model_policy(
             messages,
-            tier_id=raw.get("tier"),
+            tier_id=raw.get("tier", "free"),
         )
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
 
     settings: Settings = request.app.state.settings
+    if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments):
+        selected_model = FREE_FALLBACK_B14_MODEL_ID
     if settings.runtime_mode == "b14" and any(isinstance(item, ImageAttachment) for item in attachments):
         if not model_supports(selected_model, "image"):
             return JSONResponse(
@@ -451,6 +489,17 @@ async def api_chat(request: Request) -> JSONResponse:
             )
 
     uid = current_user_id(request) if auth_ready(request) else None
+    if "tier" in raw:
+        tier_denial = await selected_grade_denial(request, uid, raw["tier"])
+        if tier_denial is not None:
+            return tier_denial
+    # Free is available to every signed-in member; it is not an anonymous
+    # platform-key proxy. Never read tier/upgrade claims from browser state.
+    if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
+        return JSONResponse(
+            {"error": {"code": "unauthorized", "message": "?? AI? ????? ???? ???."}},
+            status_code=401,
+        )
     store: HistoryStore | None = request.app.state.history_store
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
@@ -510,6 +559,14 @@ async def api_chat(request: Request) -> JSONResponse:
     document_context = build_document_context(document_attachment) if document_attachment is not None else None
     reference_context = combine_reference_context(project_context, project_files_context, document_context)
 
+    latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    try:
+        drive_context, drive_sources = await drive_general_grounding(request, latest_user_text)
+    except DriveGroundingError as exc:
+        return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
+    if drive_context:
+        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
+
     if request.app.state.usage_gate_enforced:
         usage_gate: UsageGate = request.app.state.usage_gate
         usage_decision = await usage_gate.authorize(
@@ -520,10 +577,10 @@ async def api_chat(request: Request) -> JSONResponse:
             return _usage_denied_response(usage_decision)
 
     try:
-        with request_tier_context(raw.get("tier")):
+        with request_tier_context(raw.get("tier", "free")):
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
-                auto_decision = None if image_attachments else auto_grounding.decide(messages, skill=skill)
+                auto_decision = None if image_attachments or drive_context else auto_grounding.decide(messages, skill=skill)
                 if auto_decision is not None and auto_decision.requires_search:
                     grounded: GroundedChatService = request.app.state.grounded_chat
                     result = await grounded.complete(
@@ -554,6 +611,12 @@ async def api_chat(request: Request) -> JSONResponse:
     except (ChatRuntimeError, GroundingError, WebToolError) as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
 
+    if drive_sources:
+        result["evidence"] = [
+            {"id": f"drive-{i}", "title": src["title"], "url": src["url"],
+             "retrieved_at": src["retrieved_at"], "source_type": "google_drive"}
+            for i, src in enumerate(drive_sources, 1)
+        ]
     if document_attachment is not None:
         result["attachments"] = [document_attachment.public_dict()]
     if project_files_used:

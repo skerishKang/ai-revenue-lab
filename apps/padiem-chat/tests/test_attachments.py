@@ -61,7 +61,7 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
             "/api/chat",
             json={"messages": [{"role": "user", "content": "안녕"}], "mode": "auto"},
         )
-    if EXECUTABLE_B14_MODEL_IDS:
+    if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
         assert response.status_code == 200
         assert seen["body"]["model"] == DEFAULT_B14_MODEL_ID
         system_messages = [item for item in seen["body"]["messages"] if item["role"] == "system"]
@@ -117,7 +117,7 @@ async def test_valid_live_image_attachment_fails_closed_without_primary_model(
             },
         )
 
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset({"opencode-go/cat-jam-free"})
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "image_model_unavailable"
     assert calls == 0
@@ -214,8 +214,8 @@ def test_frontend_exposes_generic_file_control_without_losing_image_support():
         assert f'label: "{label}"' in capabilities
     assert 'id="attachmentButton"' in html
     assert "<span>파일</span>" in html
-    assert "문서와 대화" in html
-    assert "지원 문서 형식" in html
+    assert "파일 업로드" in html
+    assert "지원 형식" in html
     assert "const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;" in js
     assert "const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;" in js
     assert "ALLOWED_IMAGE_TYPES" in js

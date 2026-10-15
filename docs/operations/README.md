@@ -5,6 +5,14 @@
 
 This directory is the operating authority for AI Revenue Lab implementation and review. When historical documents conflict with the current canonical documents below, follow the current documents and preserve historical files only as evidence of the rules that applied at the time.
 
+## Current issue / PR reconciliation (2026-10-15)
+
+- [**ISSUE_DOCUMENT_RECONCILIATION_20261015.md**](ISSUE_DOCUMENT_RECONCILIATION_20261015.md) — snapshot of all open Issues / open PRs, canonical product-integration owners, resolved issue transfers, and the no-duplicate-document rule. This is an operational **index**, not a new product policy or a substitute for fresh GitHub/Production evidence.
+- Latest issue/PR state always wins over the date-scoped snapshot. Implementation merges, Worker deploys and owner-device acceptance remain different claims. Private local business/operating governance must be read separately on the authorized COM1 PC; its contents are not reproduced here.
+
+## Chat·Claw 회의/음성/Drive 기술 계약 (2026-10-15)
+
+- [**PADIEM_MEETING_RECORDING_STT_DRIVE_20261015.md**](PADIEM_MEETING_RECORDING_STT_DRIVE_20261015.md) — 한 개의 회의 엔진 + CLAW 대화/왼쪽 회의록 메뉴 2개 진입점, 녹음만/실시간 전사만/동시 실행 3개 모드, 고객 Google Drive 직접 저장, 브라우저 SpeechRecognition과 Google 모델 API/녹음 파일 배치 전사의 엄격한 구분. [기존 단일 제품 이슈 #4647](https://github.com/skerishKang/ai-revenue-lab/issues/4647)를 이어서 사용한다. **기술 설계이며 구현·운영 완료 아님.**
 ## Required reading order
 
 For a numbered internal user-facing web Business, read in this order:

@@ -101,6 +101,9 @@ async def test_b14_client_stream_upstream_rate_limited_maps_to_upstream_busy():
 
     client = B14Client(
         Settings(runtime_mode="b14", b14_base_url="https://b14.internal"),
+        # Free Cat Jam is served via Core *completion* with a bounded SSE
+        # projection; keep the streaming binding mock for admission as well.
+        transport=httpx.MockTransport(handler),
         stream_transport=httpx.MockTransport(handler),
         require_service_binding=True,
     )
@@ -136,6 +139,9 @@ async def test_api_chat_stream_preserves_error_status_and_avoids_fake_success():
             b14_base_url="https://b14.internal",
             quota_salt=VALID_SALT,
         ),
+        # Both transports mocked: Free completion route no longer consumes
+        # only the stream-preview mock after the owner Cat Jam selection.
+        transport=httpx.MockTransport(handler_429),
         stream_transport=httpx.MockTransport(handler_429),
     )
 
@@ -196,8 +202,11 @@ async def test_health_endpoint_metadata_is_non_secret_booleans_and_statuses():
             "identity_shadow_bound",
             # #1975: boolean-only telemetry channel presence flag.
             "request_telemetry_enabled",
+            # #4643: transport availability only, never plan/key or customer data.
+            "voice_stt_available",
         }
         assert set(payload.keys()) == allowed_keys
+        assert payload["voice_stt_available"] is False
 
         raw_text = response.text
         for secret in (

@@ -1,0 +1,76 @@
+"""#4139 source-controlled Cloudflare sandbox composition, never production."""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+import tomllib
+
+ROOT = Path(__file__).resolve().parents[3]
+CHAT = ROOT / "apps/padiem-chat"
+CP = ROOT / "packages/padiem-control-plane"
+
+def test_nonproduction_owner_gateway_has_only_isolated_private_services():
+    ordinary = tomllib.loads((CHAT / "wrangler.toml").read_text(encoding="utf-8"))
+    isolated = tomllib.loads((CHAT / "wrangler.connector-acceptance-4139.toml").read_text(encoding="utf-8"))
+    assert ordinary["name"] == "padiem-chat"
+    # Product and isolated-acceptance deployments both have connectors ON,
+    # but each binds to its own already-existing canonical services.
+    vars = ordinary["vars"]
+    assert vars["PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED"] == "enabled"
+    assert vars["PADIEM_CONNECTOR_PRODUCTION_ENABLED"] == "enabled"
+    assert vars["PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED"] == "enabled"
+    assert vars["PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED"] == "enabled"
+    assert vars["PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED"] == "enabled"
+    assert vars["PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED"] == "enabled"
+    assert vars["PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED"] == "enabled"
+    assert vars["PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE"] == "owner-controlled-production-4139"
+    assert {x["binding"]: x["service"] for x in ordinary["services"] if x["binding"] in (
+        "IDENTITY_AUTHORITY_SERVICE", "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+    )} == {
+        "IDENTITY_AUTHORITY_SERVICE": "padiem-control-plane-identity",
+        "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": "padiem-local-agent-broker-state",
+    }
+    assert isolated["name"] == "padiem-chat-connector-acceptance-4139"
+    assert isolated["main"] == ordinary["main"]
+    assert isolated["workers_dev"] is False
+    assert isolated["preview_urls"] is False
+    assert "routes" not in isolated
+    assert isolated["vars"]["PADIEM_CHAT_LIVE_ENABLED"] == "false"
+    assert isolated["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
+    assert isolated["vars"]["PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE"] == "isolated-operator-acceptance-4139"
+    assert isolated["vars"]["PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED"] == "enabled"
+    assert isolated["vars"]["PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED"] == "enabled"
+    assert isolated["vars"]["PADIEM_CONNECTOR_ACCEPTANCE_PUBLIC_ORIGIN"] == "https://connector-acceptance.padiem.net"
+    assert isolated["vars"]["PADIEM_CHAT_PUBLIC_BASE_URL"] == "https://connector-acceptance.padiem.net"
+    assert "d1_databases" not in isolated
+    assert isolated["vars"].get("PADIEM_CHAT_AUTH_MODE", "off") == "off"
+    assert {item["binding"] for item in isolated["services"]} == {
+        "IDENTITY_AUTHORITY_SERVICE", "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+    }
+    assert {item["binding"]:item["service"] for item in isolated["services"] if item["binding"] in {
+        "IDENTITY_AUTHORITY_SERVICE", "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+    }} == {
+        "IDENTITY_AUTHORITY_SERVICE": "padiem-control-plane-identity-acceptance-4139",
+        "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": "padiem-local-agent-broker-state-acceptance-4139",
+    }
+
+
+def test_nonprod_broker_and_identity_state_have_separate_durable_namespace():
+    for name, live_file, stage_file in (
+        ("padiem-local-agent-broker-state", "wrangler.local-agent-broker.jsonc",
+         "wrangler.local-agent-broker-acceptance-4139.jsonc"),
+        ("padiem-control-plane-identity", "wrangler.identity-authority.jsonc",
+         "wrangler.identity-authority-acceptance-4139.jsonc"),
+    ):
+        live = json.loads((CP / live_file).read_text(encoding="utf-8"))
+        stage = json.loads((CP / stage_file).read_text(encoding="utf-8"))
+        assert live["name"] == name
+        assert stage["name"] == name + "-acceptance-4139"
+        assert stage["workers_dev"] is False and stage["preview_urls"] is False
+        assert "routes" not in stage and "routes" not in live
+        assert stage["main"] == live["main"]
+        assert stage["durable_objects"] == live["durable_objects"]
+    broker = json.loads((CP / "wrangler.local-agent-broker-acceptance-4139.jsonc").read_text())
+    assert broker["vars"]["LOCAL_AGENT_BROKER_AUTHORITY_REF"] != json.loads(
+        (CP / "wrangler.local-agent-broker.jsonc").read_text()
+    )["vars"]["LOCAL_AGENT_BROKER_AUTHORITY_REF"]

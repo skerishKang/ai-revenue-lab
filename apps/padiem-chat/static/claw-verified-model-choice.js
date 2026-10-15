@@ -15,12 +15,13 @@
   &&Array.isArray(data.model_choices)&&data.model_choices.length<=256
   &&new Set(data.model_choices.map(x=>x?.model_id)).size===data.model_choices.length
   &&data.model_choices.every(x=>x&&typeof x.model_id==="string"&&EXACT_ID.test(x.model_id)
-    &&x.product_name_prefix==="파디엠플러스"
+    &&["파디엠프리","파디엠플러스"].includes(x.product_name_prefix)
     &&typeof x.individual_model_name==="string"
     &&x.individual_model_name.length>0&&x.individual_model_name.length<=100
     &&x.customer_selectable===true);}
  async function load(){const ticket=++seq;select.disabled=true;clear();status.textContent=tr("claw-verified-model-loading");
-  try{const r=await fetch("/api/claw/verified-model-choices",{credentials:"same-origin",cache:"no-store"});
+  try{const tier=window.PadiemTierSelection?.get?.()||"free";
+   const r=await fetch("/api/claw/verified-model-choices?tier="+encodeURIComponent(tier),{credentials:"same-origin",cache:"no-store"});
    if(!r.ok)throw Error("not_authenticated");const data=await r.json();
    if(!valid(data))throw Error("invalid_choices");if(ticket!==seq)return;
    for(const row of data.model_choices){const opt=document.createElement("option");opt.value=row.model_id;
@@ -46,6 +47,7 @@
   manual.value=""; // session revoked: never reuse stale explicit model
   status.textContent=tr("claw-verified-model-unavailable");
  });
+ window.addEventListener("padiem:tierchange",()=>{manual.value="";void load();});
  window.addEventListener("padiem:localechange",()=>void load());
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",load,{once:true});
  else void load();

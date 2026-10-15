@@ -81,6 +81,23 @@ for case in timeout web_transport r2_read p01_binding; do
   fi
   echo "B62_WORKER_CASE_${case}_END_MS=$(date +%s%3N)"
 done
+# #4139: same ONE nonproduction Workerd process, separate synthetic ASGI WSS
+# roundtrip after the original 4 probes. No live PADIEM device/credential
+# and no new Cloudflare Worker or public route is deployed.
+# A plain GET to the synthetic WS path must return 426, not 200/404/500.
+# This disambiguates route admission from actual WebSocket upgrade support.
+plain_code="$(curl -sS --max-time 5 -o /dev/null -w '%{http_code}' "http://127.0.0.1:8795/api/claw/connector/gateway/session" || true)"
+echo "PADIEM_CONNECTOR_WSS_NONUPGRADE_HTTP_STATUS=$plain_code"
+if [[ "$plain_code" != "426" ]]; then
+  failed=1
+  echo 'PADIEM_CONNECTOR_WSS_ROUTING_CONTRACT=FAIL' >&2
+fi
+if node "$SOURCE_DIR/b62_connector_wss_workerd_probe.mjs" "ws://127.0.0.1:8795/api/claw/connector/gateway/session"; then
+  echo 'PADIEM_CONNECTOR_ASGI_WSS_WORKER_PROBE=PASS'
+else
+  failed=1
+  echo 'PADIEM_CONNECTOR_ASGI_WSS_WORKER_PROBE=FAIL' >&2
+fi
 echo "B62_WORKER_PROBE_COUNT=$count"
 if [[ "$failed" -ne 0 || "$count" -ne 4 ]]; then
   echo 'B62_WORKER_PROBES=FAIL' >&2

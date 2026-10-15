@@ -1,0 +1,310 @@
+name: B62 Claw D1 Migration 008 Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-claw-d1-migration-008-gate.yml"
+      - ".github/scripts/b62_d1_migration_008_schema.py"
+      - ".github/tests/test_b62_d1_migration_008_gate.py"
+      - "apps/padiem-chat/migrations/008_claw_document_metadata.sql"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Migration 008 gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - apply_migration_008
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-claw-d1-migration-008-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  D1_BINDING: PADIEM_CHAT_DB
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run migration gate contract tests
+        run: python .github/tests/test_b62_d1_migration_008_gate.py
+
+      - name: Source-only evidence
+        run: |
+          echo 'B62_D1_MIGRATION_008_SOURCE_CONTRACT=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      schema_state: ${{ steps.schema.outputs.schema_state }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main before live readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READONLY_EXACT_MAIN_SHA=PASS'
+
+      - name: Resolve live PADIEM_CHAT_DB binding without emitting identifiers
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-d1-008.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+          DB_ID="$(python - "${settings}" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding='utf-8'))
+          if payload.get('success') is not True:
+              raise SystemExit('worker settings read failed')
+          bindings = payload.get('result', {}).get('bindings', [])
+          hits = [b for b in bindings if b.get('type') == 'd1' and b.get('name') == sys.argv[2]]
+          if len(hits) != 1:
+              raise SystemExit('expected exactly one live PADIEM_CHAT_DB binding')
+          database_id = hits[0].get('id')
+          if not isinstance(database_id, str) or not re.fullmatch(r'[0-9a-fA-F-]{32,36}', database_id):
+              raise SystemExit('live PADIEM_CHAT_DB binding has invalid database id')
+          print(database_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo 'LIVE_PADIEM_CHAT_DB_DERIVED=PASS'
+          echo 'D1_IDENTIFIER_OUTPUT=0'
+
+      - name: Read only migration 008 schema
+        id: schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          query="${RUNNER_TEMP}/b62-d1-008-schema-query.json"
+          python - "${query}" <<'PY'
+          import json, sys
+          sql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('claw_document_metadata','idx_claw_document_metadata_tenant_active') ORDER BY name;
+          PRAGMA table_info(claw_document_metadata);
+          PRAGMA index_info(idx_claw_document_metadata_tenant_active);"""
+          with open(sys.argv[1], 'w', encoding='utf-8') as handle:
+              json.dump({'sql': sql}, handle)
+          PY
+          response="${RUNNER_TEMP}/b62-d1-008-schema-before.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${response}"
+          evidence="$(python .github/scripts/b62_d1_migration_008_schema.py "${response}")"
+          echo "${evidence}"
+          state="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_D1_MIGRATION_008_SCHEMA=//p' | tr '[:upper:]' '[:lower:]')"
+          case "${state}" in exact|missing|drift) ;; *) echo 'invalid schema classifier state' >&2; exit 1;; esac
+          echo "schema_state=${state}" >> "${GITHUB_OUTPUT}"
+          echo 'D1_SCHEMA_QUERY=READ_ONLY'
+          echo 'ROW_DATA_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  apply-migration-008:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_migration_008' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      READONLY_SCHEMA_STATE: ${{ needs.cloudflare-readonly.outputs.schema_state }}
+    steps:
+      - name: Require explicit migration authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "APPLY_B62_CLAW_D1_MIGRATION_008_FROM_EXACT_MAIN"
+          case "${READONLY_SCHEMA_STATE}" in
+            exact|missing) ;;
+            drift)
+              echo 'Refusing mutation: existing migration 008 schema is structurally different.' >&2
+              exit 1
+              ;;
+            *)
+              echo 'Refusing mutation: no trustworthy readonly schema disposition.' >&2
+              exit 1
+              ;;
+          esac
+          echo 'B62_D1_MIGRATION_008_AUTHORIZATION=PASS'
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - name: Re-resolve the live D1 binding immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-d1-008-premutation.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+          DB_ID="$(python - "${settings}" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding='utf-8'))
+          bindings = payload.get('result', {}).get('bindings', []) if payload.get('success') is True else []
+          hits = [b for b in bindings if b.get('type') == 'd1' and b.get('name') == sys.argv[2]]
+          if len(hits) != 1:
+              raise SystemExit('expected exactly one live PADIEM_CHAT_DB binding')
+          database_id = hits[0].get('id')
+          if not isinstance(database_id, str) or not re.fullmatch(r'[0-9a-fA-F-]{32,36}', database_id):
+              raise SystemExit('live PADIEM_CHAT_DB binding has invalid database id')
+          print(database_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo 'PREMUTATION_LIVE_PADIEM_CHAT_DB_DERIVED=PASS'
+          echo 'D1_IDENTIFIER_OUTPUT=0'
+
+      - name: Apply only migration 008 when absent
+        if: ${{ env.READONLY_SCHEMA_STATE == 'missing' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          migration="apps/padiem-chat/migrations/008_claw_document_metadata.sql"
+          test -f "${migration}"
+          payload="${RUNNER_TEMP}/b62-d1-008-apply.json"
+          python - "${migration}" "${payload}" <<'PY'
+          import json, sys
+          sql = open(sys.argv[1], encoding='utf-8').read()
+          if 'CREATE TABLE IF NOT EXISTS claw_document_metadata' not in sql:
+              raise SystemExit('migration 008 table contract missing')
+          if 'CREATE INDEX IF NOT EXISTS idx_claw_document_metadata_tenant_active' not in sql:
+              raise SystemExit('migration 008 index contract missing')
+          with open(sys.argv[2], 'w', encoding='utf-8') as handle:
+              json.dump({'sql': sql}, handle)
+          PY
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          result="${RUNNER_TEMP}/b62-d1-008-apply-result.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${payload}" -o "${result}"
+          jq -e '.success == true and (.result | type == "array") and all(.result[]; .success == true)' "${result}" >/dev/null
+          echo 'B62_D1_MIGRATION_008=APPLIED'
+          echo 'PRODUCTION_MUTATION=1'
+
+      - name: Record no-op when migration 008 is already exact
+        if: ${{ env.READONLY_SCHEMA_STATE == 'exact' }}
+        run: |
+          echo 'B62_D1_MIGRATION_008=SKIPPED_ALREADY_APPLIED'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Read back exact migration 008 schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="${RUNNER_TEMP}/b62-d1-008-schema-query-after.json"
+          python - "${query}" <<'PY'
+          import json, sys
+          sql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('claw_document_metadata','idx_claw_document_metadata_tenant_active') ORDER BY name;
+          PRAGMA table_info(claw_document_metadata);
+          PRAGMA index_info(idx_claw_document_metadata_tenant_active);"""
+          with open(sys.argv[1], 'w', encoding='utf-8') as handle:
+              json.dump({'sql': sql}, handle)
+          PY
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          response="${RUNNER_TEMP}/b62-d1-008-schema-after.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${response}"
+          evidence="$(python .github/scripts/b62_d1_migration_008_schema.py "${response}")"
+          test "${evidence}" = 'B62_D1_MIGRATION_008_SCHEMA=EXACT'
+          echo "${evidence}"
+          echo 'B62_D1_MIGRATION_008_POST_READBACK=PASS'
+          echo 'WORKER_DEPLOYED=0'
+          echo 'BINDING_MUTATION=0'
+          echo 'UNRELATED_MIGRATION_APPLY=0'
+          echo 'ROW_DATA_READ=0'

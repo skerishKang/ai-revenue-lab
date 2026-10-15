@@ -56,9 +56,9 @@ CAPABILITY_MATRIX = (
         "production_active": "NOT_CLAIMED",
     },
     {
-        "surface": "tier_plus_only",
+        "surface": "tier_free_baseline",
         "presentation": "ACTIVE",
-        "default_tier": "plus",
+        "default_tier": "free",
         "browser_visible": ["free", "plus", "pro", "max"],
         "backend_active": "SERVER_RESOLVED_SHARED_TIER_CONTRACT",
         "production_active": "NOT_CLAIMED",
@@ -250,11 +250,12 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     options = panel.locator("[data-mode-value]")
     if await options.count() != 4:
         raise AssertionError(f"four-tier matrix incomplete at {label}")
+    free = panel.locator('[data-mode-value="free"]')
     plus = panel.locator('[data-mode-value="plus"]')
-    if await plus.is_disabled():
-        raise AssertionError(f"Plus must be selectable at {label}")
-    if await plus.get_attribute("aria-pressed") != "true":
-        raise AssertionError(f"Plus not selected by default at {label}")
+    if await free.is_disabled() or await plus.is_disabled():
+        raise AssertionError(f"Free and Plus must both be selectable at {label}")
+    if await free.get_attribute("aria-pressed") != "true":
+        raise AssertionError(f"Free not selected by default at {label}")
     for locked in ("pro", "max"):
         if not await panel.locator(f'[data-mode-value="{locked}"]').is_disabled():
             raise AssertionError(f"{locked} must be disabled (사용 불가) at {label}")

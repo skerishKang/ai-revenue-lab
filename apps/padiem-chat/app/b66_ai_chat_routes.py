@@ -81,8 +81,10 @@ from .b66_search_boundary import _envelope, plan_b66_search
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .history import HistoryContextIncomplete, validate_conversation_id
 from .request_contract import MAX_BROWSER_BODY_BYTES
+from .member_grade_access import verified_member_grade, GRADES
+from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 
-_ALLOWED_FIELDS = {"model_id", "messages", "reasoning_level", "conversation_id", "turn_token"}
+_ALLOWED_FIELDS = {"model_id", "tier", "messages", "reasoning_level", "conversation_id", "turn_token"}
 
 _TURN_TOKEN_RE = re.compile(r"^[0-9a-f]{32}$")
 
@@ -256,7 +258,17 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
         return data
     if set(data) - _ALLOWED_FIELDS:
         return _error(400, "unsupported_field", "지원하지 않는 대화 필드입니다.")
-    model_id = data.get("model_id")
+    model_id = data.get("model_id") or FREE_PRIMARY_B14_MODEL_ID
+    requested_tier = data.get("tier")
+    if requested_tier is not None:
+        tiers = ("free", "plus", "pro", "max")
+        if not isinstance(requested_tier, str) or requested_tier not in tiers:
+            return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+        known_member_tier = await verified_member_grade(request, uid, access)
+        if tiers.index(requested_tier) > tiers.index(known_member_tier):
+            return _error(403, "tier_not_available", "현재 이용 등급 이하의 AI 등급을 선택해 주세요.")
+        if model_id != FREE_PRIMARY_B14_MODEL_ID:
+            return _error(400, "invalid_model_id", "등급 선택은 Cat Jam 기본 모델을 사용합니다.")
     messages = data.get("messages")
     reasoning_level = data.get("reasoning_level")
     conversation_id = data.get("conversation_id")
@@ -456,10 +468,15 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
             # approval and privacy review have been recorded.
             allow_provider=getattr(request.app.state, "b66_public_fact_search_authorized", False) is True,
         )
+        # Server-owned B66 membership, never a browser-supplied paid tier.
+        product_tier = requested_tier
+        if product_tier is not None and product_tier not in ("free", "plus", "pro", "max"):
+            return _error(403, "invalid_membership_tier", "이용 등급을 확인해 주세요.")
         try:
             result = await complete(
                 model_messages,
                 model=route.model_id,
+                **({"product_tier": product_tier} if product_tier is not None else {}),
                 additional_system_context=_envelope(outcome),
                 model_parameters=parameters,
             )

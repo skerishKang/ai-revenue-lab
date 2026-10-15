@@ -1021,14 +1021,17 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 f"before={reading_before_scroll[key]!r}, after={reading_after_scroll[key]!r}"
             )
 
-    if reading_rest["portraitOpacity"] >= home_before_pointer["portraitOpacity"]:
+    # 2026-10-15 owner visual policy: the Chat first screen remains the
+    # source of truth after a first turn. Reading may change conversation
+    # semantics, never fade its portrait or background grid.
+    if abs(reading_rest["portraitOpacity"] - home_before_pointer["portraitOpacity"]) > .015:
         raise AssertionError(
-            "Glass reading mode must reduce portrait prominence: "
+            "Glass reading mode must preserve home portrait prominence: "
             f"home={home_before_pointer['portraitOpacity']}, reading={reading_rest['portraitOpacity']}"
         )
-    if reading_rest["bodyNoiseOpacity"] >= home_before_pointer["bodyNoiseOpacity"]:
+    if abs(reading_rest["bodyNoiseOpacity"] - home_before_pointer["bodyNoiseOpacity"]) > .015:
         raise AssertionError(
-            "Glass reading mode must reduce atmospheric grid noise: "
+            "Glass reading mode must preserve home atmospheric grid noise: "
             f"home={home_before_pointer['bodyNoiseOpacity']}, reading={reading_rest['bodyNoiseOpacity']}"
         )
 
@@ -1113,8 +1116,15 @@ async def _run_claw_intermediate(page: Page) -> dict[str, Any]:
         raise AssertionError("#clawManualForm must stay hidden until the manual workflow is explicitly entered")
 
     entry = page.locator("#clawManualEntryButton")
+    # First-use now shares Chat's clean composer. The legacy document shortcut
+    # remains available on the active general conversation, not on the hero.
+    first_use = page.locator("#emptyState")
+    if await first_use.is_visible():
+        if await entry.is_visible():
+            raise AssertionError("manual workflow shortcut must not crowd first-use composer")
+        await first_use.evaluate("(el) => { el.hidden = true; }")
     if not await entry.is_visible():
-        raise AssertionError("manual workflow entry control must be visible on the Claw general view")
+        raise AssertionError("manual workflow entry must remain available after first-use")
     await entry.click()
     await page.wait_for_function(
         "() => document.querySelector('#clawWorkspace')?.dataset.view === 'manual'",

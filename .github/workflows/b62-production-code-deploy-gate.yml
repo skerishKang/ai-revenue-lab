@@ -5,6 +5,22 @@ on:
     paths:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/scripts/b62_connector_broker_additive_preflight.py"
+      - ".github/tests/test_b62_connector_broker_additive_preflight.py"
+      - ".github/scripts/b62_connector_broker_served_version_readonly.py"
+      - ".github/scripts/connector_bundle_fingerprint.py"
+      - ".github/tests/test_connector_bundle_fingerprint.py"
+      - ".github/tests/test_b62_connector_broker_served_version_readonly.py"
+      - ".github/scripts/b62_connector_identity_served_version_readonly.py"
+      - ".github/tests/test_b62_connector_identity_served_version_readonly.py"
+      - ".github/scripts/b62_connector_identity_activation_readonly.py"
+      - ".github/tests/test_b62_connector_identity_activation_readonly.py"
+      - "packages/padiem-control-plane/local_agent_broker_worker.py"
+      - "packages/padiem-control-plane/canonical_broker_pairing_rpc.py"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc"
+      - "packages/padiem-control-plane/identity_authority_worker.py"
+      - "packages/padiem-control-plane/canonical_connector_enrollment_consent_rpc.py"
+      - "packages/padiem-control-plane/wrangler.identity-authority.jsonc"
       - ".github/scripts/b62_web_secrets_store_contract.py"
       - ".github/tests/test_b62_atomic_web_secrets_3523.py"
       - ".github/scripts/b62_cloudflare_rollback_deployment_request.py"
@@ -79,6 +95,16 @@ on:
         default: false
       attach_existing_web_secrets_store:
         description: "Atomically attach the two existing Charliekant TinyFish and Daum secret bindings with new main code"
+        required: false
+        type: boolean
+        default: false
+      attach_existing_connector_broker:
+        description: "Explicitly add the existing LOCAL_AGENT_BROKER Service Binding while preserving b14/live settings"
+        required: false
+        type: boolean
+        default: false
+      activate_claw_public_search:
+        description: "Owner-authorized one-variable Claw web-search ON addition; preserve all other live settings"
         required: false
         type: boolean
         default: false
@@ -242,10 +268,51 @@ jobs:
           echo "OWNER_D1_PROTECTED_RELEASE_SOURCE_CI=PASS"
           echo "PRODUCTION_MUTATION=0"
 
+      - name: Enforce Connector Broker state RPC and additive preservation regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s .github/tests -p test_b62_connector_broker_additive_preflight.py -q
+          echo "CONNECTOR_BROKER_PRESERVATION_SOURCE=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Enforce Broker served-version read-only evidence parser regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s .github/tests -p test_b62_connector_broker_served_version_readonly.py -q
+          echo "BROKER_SERVED_VERSION_PARSER=PASS_SOURCE_ONLY"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Enforce Identity Connector live activation parser (no network)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s .github/tests -p test_b62_connector_identity_activation_readonly.py -q
+          echo "IDENTITY_CONNECTOR_ACTIVATION_PARSER=PASS_SOURCE_ONLY"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Enforce Identity served-version readback parser contract (no network)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s .github/tests -p test_b62_connector_identity_served_version_readonly.py -q
+          echo "IDENTITY_SERVED_VERSION_PARSER=PASS_SOURCE_ONLY"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Verify Connector build fingerprint is local evidence only
+        shell: bash
+        run: |
+          python -m unittest discover -s .github/tests -p test_connector_bundle_fingerprint.py -q
+          echo "CONNECTOR_DRY_RUN_FINGERPRINT_TESTS=PASS"
+          echo "SERVED_SOURCE_PARITY_ATTESTED=NO"
+          echo "PRODUCTION_MUTATION=0"
+
       - name: Gate source contract
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/sync_shared_conversation_composer.py --check
           python - <<'PY'
           from pathlib import Path
 
@@ -410,6 +477,12 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      - name: Check canonical shared Chat/Claw/B66 composer bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/sync_shared_conversation_composer.py --check
+
       - name: Read-only deployed state audit
         id: audit
         shell: bash
@@ -548,6 +621,8 @@ jobs:
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
       ATTACH_WEB_SECRETS_STORE: ${{ inputs.attach_existing_web_secrets_store }}
+      ATTACH_EXISTING_CONNECTOR_BROKER: ${{ inputs.attach_existing_connector_broker }}
+      ACTIVATE_CLAW_PUBLIC_SEARCH: ${{ inputs.activate_claw_public_search }}
       PRESERVE_B66_MEMBERSHIP_SECRET: ${{ inputs.preserve_existing_b66_membership_secret }}
       COMMISSION_HARK_BROWSER: ${{ inputs.commission_hark_browser }}
     steps:
@@ -555,12 +630,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+            test "${P01_SSE_RECOVERY_OFF}" != "true"
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
+            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+          fi
           if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
             test "${CONFIRMATION}" = "RECOVER_B62_P01_SSE_OFF_FROM_PINNED_SNAPSHOT"
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
             test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
             test "${COMMISSION_HARK_BROWSER}" = "false"
             echo "SSE_RECOVERY_OFF_OWNER_AUTHORIZED=PASS"
+          elif [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+            test "${CONFIRMATION}" = "DEPLOY_B62_CLAW_PUBLIC_WEB_SEARCH_FROM_EXACT_MAIN"
+            echo "CLAW_PUBLIC_SEARCH_OWNER_AUTHORIZED=PASS"
           elif [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
             test "${CONFIRMATION}" = "DEPLOY_B62_WITH_EXACT_B66_MEMBERSHIP_SECRET"
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
@@ -584,6 +669,8 @@ jobs:
           echo "PUBLIC_BASE_URL_INJECTED_BY_DEPLOY=NO"
           if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
             echo "RECOVERY_MUTATES_ONLY_UNACCEPTED_SSE_FLAG=REMOVE"
+          elif [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+            echo "DEPLOY_ADDS_ONLY_EXPLICIT_CLAW_SEARCH_ON=YES"
           else
             echo "DEPLOY_MUTATES_LIVE_CONFIG=NO"
           fi
@@ -889,6 +976,18 @@ jobs:
           echo "D1_IDENTIFIER_OUTPUT=0"
           echo "PRODUCTION_MUTATION=0"
 
+      - name: Prove connector baseline between active version and settings
+        if: ${{ inputs.mode == 'deploy_production_code' && inputs.attach_existing_connector_broker }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_binding_state_guard.py \
+            --check-connector-baseline \
+            --before "${RUNNER_TEMP}/b62-version-before.json" \
+            --after "${RUNNER_TEMP}/b62-settings-before.json"
+          echo "CONNECTOR_BASELINE_PREDEPLOY=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
       - name: Generate exact production config from live settings
         shell: bash
         run: |
@@ -897,7 +996,19 @@ jobs:
           test ! -e "${generated}"
           extra_args=()
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" != "true"
             extra_args=(--attach-existing-web-secrets-store)
+          fi
+          if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
+            extra_args=(--activate-claw-public-search)
+          fi
+          if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
+            test "${COMMISSION_HARK_BROWSER}" != "true"
+            extra_args=(--attach-existing-connector-broker)
           fi
           if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             test "${ATTACH_WEB_SECRETS_STORE}" != "true"
@@ -1033,6 +1144,12 @@ jobs:
           if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             verify_args=(--expected-add-hark-browser)
           fi
+          if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
+            verify_args=(--expected-add-connector-broker)
+          fi
+          if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+            verify_args=(--expected-add-claw-public-search)
+          fi
           if [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
             verify_args=(--expected-add-b66-membership-secret)
           fi
@@ -1040,7 +1157,7 @@ jobs:
             "${verify_args[@]}" \
             --before "${normalized_before}" \
             --after "${settings}"
-          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
+          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ] || [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             echo "BINDINGS_PRESERVED_AND_APPROVED_ADDED=PASS"
           else
             echo "BINDINGS_PRESERVED_EXACTLY=PASS"
@@ -1073,6 +1190,14 @@ jobs:
             jq -e '.result.resources.bindings | any(.name == "BROWSER" and .type == "browser")' "${detail}" >/dev/null
             echo "HARK_BROWSER_SERVED_IMMUTABLE_BINDING=PASS"
             echo "HARK_BROWSER_QUICK_ACTION_CALLS=0"
+          fi
+          if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
+            python .github/scripts/b62_binding_state_guard.py \
+              --expected-add-connector-broker \
+              --before "${RUNNER_TEMP}/b62-version-before.json" \
+              --after "${detail}"
+            jq -e '.result.resources.bindings | any(.name == "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE" and .type == "service" and .service == "padiem-local-agent-broker-state")' "${detail}" >/dev/null
+            echo "CONNECTOR_BROKER_SERVED_IMMUTABLE_BINDING=PASS"
           fi
           etag_after="$(jq -er '.result.resources.script.etag' "${detail}")"
           test "${etag_after}" != "${PREVIOUS_SCRIPT_ETAG}"

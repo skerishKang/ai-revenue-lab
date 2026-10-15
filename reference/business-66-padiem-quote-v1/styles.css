@@ -779,6 +779,40 @@ textarea { min-height: 82px; resize: vertical; }
 }
 .easy-history-actions button:hover { background: var(--soft); }
 .easy-history-actions button.danger { color: var(--danger); }
+/* Guided-quote archives share the same aligned actions as saved quotations. */
+.easy-guided-card { align-items: center; }
+.easy-guided-card .easy-history-info { flex: 1 1 auto; }
+.easy-guided-card .easy-history-info strong { font-size: 15px; }
+.easy-guided-card .easy-history-actions { margin-left: auto; flex-wrap: nowrap; }
+.easy-guided-card .easy-history-actions button {
+  min-height: 38px;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+.easy-guided-card .easy-history-actions .easy-guided-open {
+  border-color: #294f69;
+  background: #294f69;
+  color: #fff;
+}
+.easy-guided-card .easy-history-actions .easy-guided-open:hover {
+  background: #1d3d54;
+}
+.easy-guided-card .easy-history-actions .easy-guided-delete {
+  border-color: #efc4c0;
+  color: #a4261c;
+  background: #fff;
+}
+.easy-guided-card .easy-history-actions .easy-guided-delete:hover {
+  background: #fff3f1;
+}
+.easy-guided-card .easy-history-actions button:focus-visible {
+  outline: 2px solid #294f69;
+  outline-offset: 2px;
+}
+@media (max-width: 640px) {
+  .easy-guided-card .easy-history-actions { margin-left: 0; justify-content: flex-end; }
+}
 .easy-history-empty {
   margin: 0;
   padding: 18px;
@@ -1840,3 +1874,28 @@ body.b66-three-pane #recentQuoteStarter { display: none !important; }
 @media print {
   body.b66-three-pane .shell-edit-heading { display: none !important; }
 }
+
+/* CGI new-quote confirmation: branded native dialog, never browser-origin confirm. */
+.b66-new-quote-dialog {
+  border: 1px solid #d0dfe9;
+  border-radius: 17px;
+  padding: 0;
+  width: min(92vw, 430px);
+  max-width: 430px;
+  background: #fff;
+  color: #254158;
+  box-shadow: 0 22px 64px rgba(17, 44, 65, .25);
+}
+.b66-new-quote-dialog::backdrop { background: rgba(22, 40, 57, .42); }
+.b66-new-quote-dialog form { padding: 25px; }
+.b66-new-quote-dialog h2 { margin: 0 0 12px; font-size: 18px; }
+.b66-new-quote-dialog p { margin: 0; font-size: 14px; line-height: 1.65; }
+.b66-new-quote-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 23px; }
+.b66-new-quote-actions button {
+  min-height: 40px; border-radius: 10px; border: 1px solid #c9d9e4;
+  padding: 0 15px; color: #28465c; background: #fff; font-weight: 700;
+}
+.b66-new-quote-actions .b66-new-quote-confirm {
+  color: #fff; background: #284e66; border-color: #284e66;
+}
+@media print { .b66-new-quote-dialog { display: none !important; } }

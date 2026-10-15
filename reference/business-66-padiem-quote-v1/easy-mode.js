@@ -14,6 +14,8 @@
   /* #4655: the reviewed assistant-only Markdown renderer. It is a DOM builder
      with no markup sink, so it can never turn model text into HTML. */
   const SafeMarkdown = window.B66SafeMarkdown || null;
+  // Shared Chat/Claw/B66 editor behavior; B66 owns submit/quote state.
+  const sharedComposer = window.SharedConversationComposer || null;
 
   if (!Core || !History || !FileIntake || !App) return;
 
@@ -38,6 +40,13 @@
   let restoringProductHistory = false;
   let interpretationInFlight = false;
   let modelChatTurns = [];
+  // #4803: server-owned B66 authoring revision (separate from saved free-chat IDs).
+  let quoteConversationRevision = null;
+  let quoteConversationEngaged = false;
+  let approvedConversationQuoteNo = null;
+  let approvedConversationDraftSnapshot = null;
+  let pendingQuoteReset = null;
+  const quoteArtifactUrls = [];
   let accountScopeRevision = 0;
   let guidedSaveQueue = Promise.resolve();
   let guidedSaveRevision = 0;
@@ -228,6 +237,12 @@
 
   function showHome(options) {
     clearConversation();
+    if (!options || options.history !== false) resetServerQuoteConversation();
+    quoteConversationRevision = null;
+    quoteConversationEngaged = false;
+    approvedConversationQuoteNo = null;
+    approvedConversationDraftSnapshot = null;
+    releaseQuoteArtifacts();
     /* A new chat never deletes stored dialogue: it only drops this screen's
        transcript, so the previous conversation stays in the rail. */
     currentDialogueId = null;
@@ -270,12 +285,26 @@
      the DOM-only renderer, which never assigns a markup sink. Status, error and
      prompt text keep plain textContent, so a non-answer string can never become
      markup and the existing look is unchanged. */
+  function companyBrand() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    const profile = bridge && typeof bridge.getCompanyProfile === "function"
+      ? bridge.getCompanyProfile() : null;
+    const raw = profile && typeof profile.company === "string" ? profile.company.trim() : "";
+    const name = raw.replace(/^(?:\(주\)|㈜|주식회사)\s*/u, "").trim();
+    return /^CGI$/i.test(name) ? "시지아이" : (name || "시지아이");
+  }
+
   function renderAssistantText(content, text, markdown) {
+    // The account-owned presentation adapter localizes legacy product greetings
+    // without changing the persisted provider response.
+    const adapter = window.B66AssistantBranding;
+    const shown = adapter && typeof adapter.renderIntro === "function"
+      ? adapter.renderIntro(text, companyBrand()) : String(text);
     if (markdown && SafeMarkdown && typeof SafeMarkdown.renderAssistantMarkdown === "function") {
-      const rendered = SafeMarkdown.renderAssistantMarkdown(content, text);
+      const rendered = SafeMarkdown.renderAssistantMarkdown(content, shown);
       if (rendered) return;
     }
-    content.textContent = text;
+    content.textContent = shown;
   }
 
   function addMessage(role, text, options) {
@@ -294,7 +323,7 @@
       body.className = "easy-message-body";
       const meta = document.createElement("div");
       meta.className = "easy-message-meta";
-      meta.textContent = "견적 도우미";
+      meta.textContent = companyBrand() + " 어시스턴트";
       const content = document.createElement("div");
       content.className = "easy-message-content";
       renderAssistantText(content, text, opts.markdown === true);
@@ -359,6 +388,7 @@
     const text = safeText(composer.value);
     if (!text || !inputHandler) return;
     composer.value = "";
+    sharedComposer?.resizeTextarea?.(composer, { maxHeight: 180 });
     inputHandler(text);
   }
 
@@ -531,6 +561,230 @@
     });
   }
 
+  /* #4803: CLAW-style conversational quote execution through the existing
+     #4412 authenticated state machine. Model classifies intent server-side;
+     QuoteCore and the approved template remain the only draft/PDF authorities.
+     This path never sends caller-owned facts, intent, owner or workspace. */
+  function resetServerQuoteConversation() {
+    if (!accountSignedIn) return;
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (!bridge || typeof bridge.quoteConversation !== "function") return;
+    const previous = pendingQuoteReset;
+    pendingQuoteReset = (async () => {
+      if (previous) await previous;
+      const current = await bridge.quoteConversation("state");
+      if (!current.ok) return current;
+      const revision = current.state && Number.isSafeInteger(current.state.revision)
+        ? current.state.revision : 0;
+      return bridge.quoteConversation("start_new", { revision });
+    })().catch(() => ({ ok: false, code: "conversation_state_unavailable" }));
+  }
+
+  function quoteConversationError(code) {
+    const messages = {
+      conversation_state_unavailable: "견적 대화 상태를 확인할 수 없습니다. 기존 내용은 그대로 보존됩니다.",
+      conversation_state_read_failed: "저장된 견적 대화를 불러오지 못했습니다.",
+      conversation_state_write_failed: "견적 대화 저장을 완료하지 못했습니다. 중복 전송하지 말고 상태를 확인해 주세요.",
+      revision_conflict: "다른 화면에서 대화가 변경됐습니다. 견적을 덮어쓰지 않았습니다. 다시 열어 주세요.",
+      ai_chat_unavailable: "선택한 AI 모델 실행 경로를 사용할 수 없습니다.",
+      conversation_invalid_answer: "AI의 견적 응답 형식을 확인하지 못했습니다. 기존 초안은 보존됩니다.",
+      conversation_execution_failed: "AI 실행 중 오류가 발생했습니다. 기존 초안은 보존됩니다.",
+      upstream_timeout: "AI 응답이 시간 초과됐습니다. 자동 재시도하지 않습니다.",
+      model_selection_required: "사용할 AI 모델을 선택해 주세요.",
+      conversation_transition_refused: "현재 단계에서 이 작업을 진행할 수 없습니다. 기존 내용은 보존됩니다."
+    };
+    return messages[code] || "견적 대화 요청을 완료하지 못했습니다. (" + String(code || "unknown") + ")";
+  }
+
+  function releaseQuoteArtifacts() {
+    while (quoteArtifactUrls.length) URL.revokeObjectURL(quoteArtifactUrls.pop());
+  }
+
+  // The only file offered in a chat result is the Blob actually returned by
+  // the existing authenticated/certified B66 PDF renderer after its guards pass.
+  function appendQuoteArtifact(blob, filename) {
+    if (!(blob instanceof Blob) || blob.type !== "application/pdf" ||
+        !Number.isFinite(blob.size) || blob.size < 5) return;
+    const article = addMessage("assistant", "견적서 PDF 파일이 생성되었습니다.");
+    const body = article && article.querySelector(".easy-message-body");
+    if (!body) return;
+    const url = URL.createObjectURL(blob);
+    quoteArtifactUrls.push(url);
+    const link = document.createElement("a");
+    link.className = "easy-file-card";
+    link.href = url;
+    link.download = String(filename || "견적서.pdf").replace(/[\\/]/g, "_");
+    link.textContent = "PDF 견적서 다운로드: " + link.download;
+    link.setAttribute("aria-label", "생성된 PDF 견적서 다운로드");
+    body.appendChild(link);
+  }
+
+  function applyApprovedConversationDraft(input) {
+    if (!input || input.sourceKind !== "b66.ai-conversation" ||
+        !Array.isArray(input.items) || !input.items.length || input.missing?.length) {
+      return { ok: false, code: "invalid_approved_draft" };
+    }
+    const active = App.getDraft();
+    const revising = Boolean(approvedConversationQuoteNo);
+    if (revising && (!active || active.meta.quoteNo !== approvedConversationQuoteNo ||
+        JSON.stringify(active) !== approvedConversationDraftSnapshot)) {
+      return { ok: false, code: "quote_changed_outside_conversation" };
+    }
+    // A new conversation may start while another quote is open. Do not
+    // substitute the target or overwrite it without an explicit customer choice.
+    if (!revising && History && History.isMeaningfulDraft(active) &&
+        !window.confirm("작성 중인 기존 견적이 있습니다. 새 견적 내용으로 교체하시겠습니까?")) {
+      return { ok: false, code: "existing_draft_preserved" };
+    }
+    const draft = revising ? active : App.createBlankNextDraft();
+    if (!draft) return { ok: false, code: "draft_not_ready" };
+    const rec = input.recipient || {};
+    draft.recipient = {
+      company: String(rec.company || ""),
+      person: String(rec.person || ""),
+      address: String(rec.address || ""),
+      email: String(rec.email || "")
+    };
+    draft.items = input.items.map((item, i) => ({
+      id: revising && active.items[i] ? active.items[i].id : "item-" + (i + 1),
+      name: item.name, qty: item.qty, unitPrice: item.unitPrice,
+      ...(item.unit ? { unit: item.unit } : {})
+    }));
+    draft.memo = String(input.memo || "");
+    if (input.projectName) draft.meta.projectName = String(input.projectName);
+    const taxKnown = typeof input.taxMode === "string" && input.taxMode !== "";
+    if (taxKnown) draft.tax.mode = input.taxMode;
+    const result = App.replaceDraft(draft, {
+      requireTaxReview: !taxKnown,
+      toast: revising ? "같은 견적서의 수량·단가를 수정했습니다." :
+        "견적 초안을 반영했습니다. 금액을 확인해 주세요."
+    });
+    if (!result || !result.ok) return { ok: false, code: "draft_apply_failed" };
+    approvedConversationQuoteNo = result.draft.meta.quoteNo;
+    approvedConversationDraftSnapshot = JSON.stringify(result.draft);
+    return { ok: true, draft: result.draft, revising };
+  }
+
+  function conversationQuoteChips(bridge, result, viewGeneration, autoPdf) {
+    const quote = result.quote || {};
+    const guardedAction = (action, options) => () => {
+      if (dialogueGeneration !== viewGeneration) return;
+      runQuoteConversation(null, action, options);
+    };
+    const chips = [];
+    if (quote.awaiting_method) {
+      chips.push({ label: "한 번에 말하기", action: guardedAction("choose_method", { method: "flexible" }) });
+      chips.push({ label: "질문받으며 작성", action: guardedAction("choose_method", { method: "guided" }) });
+    }
+    if (quote.staged) {
+      chips.push({ label: "변경 확인", action: guardedAction("confirm") });
+      chips.push({ label: "변경 취소", action: guardedAction("cancel_staged") });
+    }
+    if (quote.approval_required) {
+      chips.push({ label: "견적서 PDF 만들기", action: guardedAction("approve_draft") });
+    }
+    if (result.draft) {
+      const applied = applyApprovedConversationDraft(result.draft);
+      if (!applied.ok) {
+        addMessage("assistant", applied.code === "existing_draft_preserved"
+          ? "기존 견적을 보존했습니다. 새 견적 내용은 대화에 남아 있습니다."
+          : applied.code === "quote_changed_outside_conversation"
+            ? "다른 화면에서 견적 내용이 변경됐습니다. 임의로 덮어쓰지 않았습니다. 변경 대상을 확인해 주세요."
+            : "견적 초안 반영에 실패했습니다. PDF를 생성하지 않았습니다.");
+      } else {
+        addResultReview(applied.draft, !result.draft.taxMode);
+        // addResultReview disables the composer for the older guided flow.
+        // The new server-owned quote thread must stay interactive.
+        chips.push({
+          label: applied.revising ? "수정된 PDF 만들기" : "PDF 만들기",
+          action: () => {
+            const print = $("printPdf");
+            if (print && !print.disabled) print.click();
+            else addMessage("assistant", "인증된 PDF 출력이 준비되지 않았습니다. 양식·부가세 조건을 확인해 주세요.");
+          }
+        });
+        chips.push({ label: "견적서 보기", action: () => setWorkspaceMode("direct") });
+      }
+    }
+    if (!chips.length) chips.push({ label: "견적 상담 이어가기", action: () => composer.focus() });
+    setChips(chips);
+    if (autoPdf && result.draft && result.draft.taxMode &&
+        approvedConversationQuoteNo && dialogueGeneration === viewGeneration) {
+      const print = $("printPdf");
+      if (print && !print.disabled) print.click();
+      else addMessage("assistant", "인증된 PDF 출력이 준비되지 않았습니다. 양식과 부가세 조건을 확인해 주세요.");
+    }
+  }
+
+  async function runQuoteConversation(text, action, extra) {
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (!bridge || typeof bridge.quoteConversation !== "function" || interpretationInFlight) return;
+    const isMessage = !action || action === "message";
+    const currentText = isMessage ? String(text || "").trim() : "";
+    if (isMessage && !currentText) return;
+    if (lastEasyView === "home") {
+      lastEasyView = "free-form";
+      recordProductState("free-form");
+      startConversation();
+    }
+    const generation = dialogueGeneration;
+    const scope = accountScopeRevision;
+    const current = () => generation === dialogueGeneration && scope === accountScopeRevision;
+    interpretationInFlight = true;
+    if (isMessage) addMessage("user", currentText);
+    const pending = addMessage("assistant", "요청을 처리하고 있습니다…");
+    disableInput("AI 요청을 처리하는 중입니다.");
+    try {
+      if (pendingQuoteReset) {
+        const reset = await pendingQuoteReset;
+        if (!current()) return;
+        if (!reset || !reset.ok) {
+          addMessage("assistant", quoteConversationError(reset && reset.code));
+          return;
+        }
+        quoteConversationRevision = reset.revision;
+        pendingQuoteReset = null;
+      }
+      if (quoteConversationRevision === null) {
+        const loaded = await bridge.quoteConversation("state");
+        if (!current()) return;
+        if (!loaded.ok) {
+          addMessage("assistant", quoteConversationError(loaded.code));
+          return;
+        }
+        quoteConversationRevision = loaded.state && Number.isSafeInteger(loaded.state.revision)
+          ? loaded.state.revision : 0;
+      }
+      const args = Object.assign({}, extra || {}, {
+        revision: quoteConversationRevision,
+        ...(isMessage ? { message: currentText } : {})
+      });
+      const result = await bridge.quoteConversation(isMessage ? "message" : action, args);
+      if (!current()) return;
+      if (!result.ok) {
+        if (result.code === "revision_conflict") quoteConversationRevision = null;
+        addMessage("assistant", quoteConversationError(result.code));
+        return;
+      }
+      quoteConversationRevision = result.revision;
+      quoteConversationEngaged = true;
+      addMessage("assistant", result.answer, { markdown: result.answer_origin === "registered_model_completion" });
+      if (result.quote && result.quote.next_question &&
+          !result.answer.includes(result.quote.next_question)) {
+        addMessage("assistant", result.quote.next_question);
+      }
+      conversationQuoteChips(bridge, result, generation, action === "approve_draft");
+    } catch (_) {
+      if (current()) addMessage("assistant", quoteConversationError("conversation_unavailable"));
+    } finally {
+      pending.remove();
+      if (current()) {
+        interpretationInFlight = false;
+        setInput(submitFreeFormText, "견적 질문 또는 수정 사항을 이어서 입력하세요");
+      }
+    }
+  }
+
   function runPrimaryInterpretation(rawText) {
     // A second click/Enter must not launch a second B14 interpretation attempt.
     if (interpretationInFlight) return;
@@ -542,6 +796,15 @@
     // Real signed-in conversation is model-driven, independent of CGI assignment.
     // Quote creation/approval remains on the explicit Guided/Direct/CGI flow.
     const isGreeting = /^(?:hi|hey|hello|하이|안녕(?:하세요)?|반가워요|반갑습니다)[ .!?~]*$/iu.test(text);
+    // Route new signed-in conversations through the existing server-owned B66
+    // intent/authoring adapter. Previously saved general-chat threads keep
+    // their own server conversation IDs and existing read/continuation path.
+    if (readiness && readiness.authenticated &&
+        bridge && typeof bridge.quoteConversation === "function" &&
+        !currentDialogueId) {
+      runQuoteConversation(text, "message");
+      return;
+    }
     // Preserve the approved one-shot CGI quote interpretation from Home.
     // Explicit Chat, greetings and no-CGI accounts use real model conversation.
     if (readiness && readiness.authenticated && bridge && typeof bridge.chat === "function" &&
@@ -808,7 +1071,6 @@
     lastEasyView = "recent";
     if (!options || options.history !== false) recordProductState("recent");
     startConversation();
-    addMessage("assistant", "최근 견적을 불러오는 중...");
     renderHistoryPending();
     setChips([
       { label: "질문받으며 새로 만들기", action: startGuided },
@@ -819,18 +1081,8 @@
     sendButton.disabled = true;
     readRecentHistory().then((result) => {
       if (lastEasyView !== "recent") return;
-      addMessage("assistant", recentHistoryIntroText(result));
       renderHistory(result);
     });
-  }
-
-  function recentHistoryIntroText(result) {
-    if (!result || result.ok !== true) {
-      return "최근 견적을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
-    }
-    return result.authority === "server"
-      ? "계정에 저장된 최근 견적입니다. 불러오거나 복사해서 새 견적으로 사용할 수 있어요."
-      : "이 브라우저에 저장한 최근 견적입니다. 불러오거나 복사해서 새 견적으로 사용할 수 있어요.";
   }
 
   function renderHistoryPending() {
@@ -1202,7 +1454,7 @@
     lastEasyView = GUIDED_DIALOGUE_VIEW;
     if (!options || options.history !== false) recordProductState(GUIDED_DIALOGUE_VIEW);
     startConversation();
-    addMessage("assistant", "이전 질문형 견적 대화입니다. AI 일반 대화와 별도로 보관됩니다.");
+    addMessage("assistant", "저장된 견적 상담입니다. 확인할 기록을 선택하세요.");
     setChips([
       { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal },
       { label: "처음으로", action: showHome }
@@ -1239,14 +1491,28 @@
       result.conversations.forEach(row => {
         if (!row || !/^gdt_[a-f0-9]{32}$/.test(String(row.conversation_id || ""))) return;
         const card = document.createElement("article");
-        card.className = "easy-history-card";
-        const info = document.createElement("strong");
-        info.textContent = "질문형 견적 대화 · " + String(row.updated_at || "").slice(0, 16);
+        card.className = "easy-history-card easy-guided-card";
+        const info = document.createElement("div");
+        info.className = "easy-history-info";
+        const title = document.createElement("strong");
+        title.textContent = typeof row.title === "string" && row.title.trim()
+          ? row.title : "견적 상담";
+        const date = new Date(String(row.updated_at || ""));
+        const detail = document.createElement("span");
+        detail.textContent = Number.isNaN(date.getTime())
+          ? "작성 시각 정보 없음"
+          : new Intl.DateTimeFormat("ko-KR", {
+              year: "numeric", month: "numeric", day: "numeric",
+              hour: "2-digit", minute: "2-digit"
+            }).format(date);
+        info.append(title, detail);
+        const actions = document.createElement("div");
+        actions.className = "easy-history-actions";
         const open = document.createElement("button");
-        open.type = "button"; open.textContent = "대화 보기";
+        open.type = "button"; open.className = "easy-guided-open"; open.textContent = "대화 보기";
         open.addEventListener("click", () => openGuidedDialogue(row.conversation_id));
         const remove = document.createElement("button");
-        remove.type = "button"; remove.className = "danger"; remove.textContent = "삭제";
+        remove.type = "button"; remove.className = "danger easy-guided-delete"; remove.textContent = "삭제";
         remove.addEventListener("click", () => {
           if (!window.confirm("이전 질문형 대화 기록을 삭제할까요? 진행 중인 견적은 삭제할 수 없습니다.")) return;
           GuidedAPI.deleteConversation(row.conversation_id).then(outcome => {
@@ -1255,7 +1521,8 @@
             else App.toast("진행 중 기록이거나 삭제할 수 없는 대화입니다.");
           }).catch(() => App.toast("기록 삭제를 확인하지 못했습니다."));
         });
-        card.append(info, open, remove);
+        actions.append(open, remove);
+        card.append(info, actions);
         historyPanel.appendChild(card);
       });
     }).catch(() => {
@@ -1847,8 +2114,8 @@
     addMessage(
       "assistant",
       ready && ready.authenticated
-        ? "편하게 질문하거나 견적을 상담해 주세요. 선택하신 AI 모델과 대화할 수 있습니다. 견적서 저장과 발급은 별도의 확인 단계에서 진행합니다."
-        : "로그인하면 AI와 일반 대화 및 견적 상담을 할 수 있습니다. 로그인 전에도 질문형 견적 작성은 이용할 수 있습니다."
+        ? "안녕하세요! " + companyBrand() + " 어시스턴트입니다. " + companyBrand() + " 견적서 작성과 관련된 내용을 편하게 말씀해 주세요. 새 견적 작성과 기존 견적 수정도 도와드리겠습니다."
+        : "로그인하면 " + companyBrand() + " 어시스턴트와 견적 상담을 할 수 있습니다. 로그인 전에도 질문형 견적 작성은 이용할 수 있습니다."
     );
     setChips([
       { label: "질문받으며 만들기", action: startGuidedIfReady },
@@ -2038,15 +2305,19 @@
   fileInput.addEventListener("change", handleFileSelection);
 
   sendButton.addEventListener("click", submitComposer);
+  const compositionGuard = sharedComposer?.createCompositionGuard?.() || null;
+  composer.addEventListener("compositionstart", () => compositionGuard?.start());
+  composer.addEventListener("compositionupdate", () => compositionGuard?.update());
+  composer.addEventListener("compositionend", () => compositionGuard?.end());
   composer.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      submitComposer();
-    }
+    // Enter never submits an unfinished Korean IME candidate.
+    if (!sharedComposer?.shouldSubmitOnEnter?.(event, compositionGuard)) return;
+    event.preventDefault();
+    submitComposer();
   });
   composer.addEventListener("input", () => {
-    composer.style.height = "auto";
-    composer.style.height = Math.min(composer.scrollHeight, 160) + "px";
+    // Adopt Chat's 180px multiline limit; keep B66's guided quote routing.
+    sharedComposer?.resizeTextarea?.(composer, { maxHeight: 180 });
   });
 
   document.addEventListener("b66:account-scope-changed", (event) => {
@@ -2059,6 +2330,12 @@
     // In-flight interpretation belongs to the old owner and cannot complete into this scope.
     accountScopeRevision += 1;
     interpretationInFlight = false;
+    quoteConversationRevision = null;
+    quoteConversationEngaged = false;
+    approvedConversationQuoteNo = null;
+    approvedConversationDraftSnapshot = null;
+    pendingQuoteReset = null;
+    releaseQuoteArtifacts();
     /* #4657: the previous owner's dialogue id, list and pending restore are
        dropped with the rest of the private state, so a late answer cannot be
        saved into — or displayed under — the new account. */
@@ -2111,6 +2388,35 @@
 
   document.addEventListener("b66:open-easy-chat", () => {
     setWorkspaceMode("easy");
+  });
+  document.addEventListener("b66:quote-pdf-ready", (event) => {
+    if (!accountSignedIn || !quoteConversationEngaged || lastEasyView !== "free-form") return;
+    const detail = event.detail || {};
+    appendQuoteArtifact(detail.blob, detail.filename);
+  });
+
+  // An accepted new quote starts a new visible dialogue, not a continuation
+  // of the prior server-owned conversation. Saved history remains untouched.
+  document.addEventListener("b66:new-quote-started", () => {
+    approvedConversationQuoteNo = null;
+    approvedConversationDraftSnapshot = null;
+    releaseQuoteArtifacts();
+    guided = null;
+    guidedSnapshot = null;
+    selectedFile = null;
+    fileInput.value = "";
+    modelChatTurns = [];
+    currentDialogueId = null;
+    pendingRestoreDialogueId = null;
+    quoteConversationRevision = null;
+    quoteConversationEngaged = false;
+    resetServerQuoteConversation();
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (bridge && typeof bridge.clearPending === "function") bridge.clearPending();
+    setWorkspaceMode("easy", { history: false });
+    showHome({ history: false });
+    recordDialogueState(null);
+    recordProductState("home", { replace: true });
   });
 
   window.addEventListener("popstate", (event) => {

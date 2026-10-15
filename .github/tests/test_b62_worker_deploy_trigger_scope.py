@@ -17,7 +17,7 @@ mock-smoke steps. Every step consumes one of:
                            `apps/padiem-chat/static/*.js` against the live site
 * `wrangler.toml`        — read directly by `b62_cloudflare_mock_config_guard.py`
 * `pyproject.toml` / `uv.lock` / `pylock.toml` — consumed by `uvx pywrangler deploy`
-* the `.github/scripts/b62_cloudflare_*.py` guards and this workflow file
+* the `.github/scripts/b62_cloudflare_*.py` guards, connector additive preflight,\n  its regression test and canonical Broker State RPC source dependencies
 
 None of them reads `apps/padiem-chat/tests/**`, so a tests-only change cannot
 alter the preflight outcome or the deployed bundle.
@@ -53,6 +53,20 @@ BASE_PATTERNS = (
     "apps/padiem-chat/**",
     "!apps/padiem-chat/tests/**",
     ".github/scripts/b62_cloudflare_*.py",
+    ".github/scripts/b62_connector_broker_additive_preflight.py",
+    ".github/tests/test_b62_connector_broker_additive_preflight.py",
+    ".github/scripts/b62_connector_broker_served_version_readonly.py",
+    ".github/tests/test_b62_connector_broker_served_version_readonly.py",
+    ".github/scripts/b62_connector_identity_served_version_readonly.py",
+    ".github/tests/test_b62_connector_identity_served_version_readonly.py",
+    ".github/scripts/b62_connector_identity_activation_readonly.py",
+    ".github/tests/test_b62_connector_identity_activation_readonly.py",
+    "packages/padiem-control-plane/local_agent_broker_worker.py",
+    "packages/padiem-control-plane/canonical_broker_pairing_rpc.py",
+    "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc",
+    "packages/padiem-control-plane/identity_authority_worker.py",
+    "packages/padiem-control-plane/canonical_connector_enrollment_consent_rpc.py",
+    "packages/padiem-control-plane/wrangler.identity-authority.jsonc",
     ".github/workflows/b62-cloudflare-worker-deploy.yml",
 )
 
@@ -71,6 +85,20 @@ DEPENDENCY_PATHS = (
     "apps/padiem-chat/worker_runtime_timeout_probe.py",
     ".github/scripts/b62_cloudflare_preflight.py",
     ".github/scripts/b62_cloudflare_deployed_parity.py",
+    ".github/scripts/b62_connector_broker_additive_preflight.py",
+    ".github/tests/test_b62_connector_broker_additive_preflight.py",
+    ".github/scripts/b62_connector_broker_served_version_readonly.py",
+    ".github/tests/test_b62_connector_broker_served_version_readonly.py",
+    ".github/scripts/b62_connector_identity_served_version_readonly.py",
+    ".github/tests/test_b62_connector_identity_served_version_readonly.py",
+    ".github/scripts/b62_connector_identity_activation_readonly.py",
+    ".github/tests/test_b62_connector_identity_activation_readonly.py",
+    "packages/padiem-control-plane/local_agent_broker_worker.py",
+    "packages/padiem-control-plane/canonical_broker_pairing_rpc.py",
+    "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc",
+    "packages/padiem-control-plane/identity_authority_worker.py",
+    "packages/padiem-control-plane/canonical_connector_enrollment_consent_rpc.py",
+    "packages/padiem-control-plane/wrangler.identity-authority.jsonc",
     ".github/workflows/b62-cloudflare-worker-deploy.yml",
 )
 

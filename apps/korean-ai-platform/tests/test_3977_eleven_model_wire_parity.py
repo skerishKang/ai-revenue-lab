@@ -17,7 +17,8 @@ from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer
 _REGISTRY = read_registry()
 # Historical Chat Completions parity applies to executable provider routes.
 # Disabled multi-protocol OpenCode candidates have dedicated wire fixtures.
-REGISTERED = [m for m in _REGISTRY["models"] if m["enabled"] and _REGISTRY["providers"][m["provider_id"]]["enabled"]]
+REGISTERED = [m for m in _REGISTRY["models"] if m["enabled"] and _REGISTRY["providers"][m["provider_id"]]["enabled"]
+              and m["provider_id"] != "opencode-go"]
 assert len(REGISTERED) >= 11
 
 

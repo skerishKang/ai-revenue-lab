@@ -32,6 +32,22 @@ binding = "CF_VERSION_METADATA"
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
 
+# #4139: one existing PADIEM Identity and canonical Broker for Chat/Claw.
+# The Connector's product route is ON by default. Account/device ownership
+# still comes from the existing canonical authorities, not from the socket.
+[[services]]
+binding = "IDENTITY_AUTHORITY_SERVICE"
+service = "padiem-control-plane-identity"
+
+[[services]]
+binding = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+service = "padiem-local-agent-broker-state"
+
+# Private Mode 1: STT secrets are never bound to Chat.
+[[services]]
+binding = "VOICE_STT_SERVICE"
+service = "padiem-voice-stt"
+
 # B66-only one-model direct execution pilot; account-managed secret reference.
 # Never pass the key to the browser, B62 chat or Claw.
 [[secrets_store_secrets]]
@@ -45,8 +61,29 @@ binding = "PADIEM_EXLAB_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_EXLAB_API_KEY"
 
+# GitHub App user-to-server OAuth. Set the value in Cloudflare Secrets Store,
+# never commit it or expose it to the browser. Missing value => connector OFF.
+[[secrets_store_secrets]]
+binding = "PADIEM_GITHUB_APP_CLIENT_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GITHUB_APP_CLIENT_SECRET"
+
 [vars]
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
 PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
+# #4469 Claw public research: owner-approved opt-in. The Worker requires
+# live B14 + canonical identity/Engine client + a durable D1 quota in addition
+# to this flag; no unauthenticated or unmetered invocation can use it.
+PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED = "true"
+# Connector product availability defaults ON (not an opt-in/approval toggle).
+PADIEM_CHAT_PUBLIC_BASE_URL = "https://chat.padiem.net"
+PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE = "owner-controlled-production-4139"
+PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED = "enabled"
+PADIEM_CONNECTOR_PRODUCTION_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED = "enabled"

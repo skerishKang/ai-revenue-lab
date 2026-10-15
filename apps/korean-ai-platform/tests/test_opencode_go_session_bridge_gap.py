@@ -120,13 +120,15 @@ def test_forged_header_does_not_change_gateway_outcome(model_id: str) -> None:
         if isinstance(body.get("error"), dict):
             body["error"].pop("request_id", None)
     assert plain_body == forged_body
-    assert plain_body["error"]["reason_code"] == "model_disabled"
+    assert plain_body["error"]["reason_code"] == (
+        "provider_secret_missing" if "muse-spark" in model_id else "model_disabled"
+    )
 
 
 # --------------------------------------------------------------------------
-# 3. Adapter level: without a trusted session nothing reaches the network.
-#    With a forged grammar-valid session but OFF registry, the OFF gate
-#    fires before any transport POST.
+# 3. Go adapter supplies a per-request one-turn routing session if a
+#    canonical conversation key is absent. Original OFF routes still cannot
+#    reach the provider, regardless of session shape.
 # --------------------------------------------------------------------------
 
 
@@ -142,16 +144,20 @@ def _tripwire_transport(seen: list) -> httpx.MockTransport:
     ("opencode-go/longcat-2.5-preview-free", "longcat-2.5-preview-free"),
     ("opencode-go/step-5-preview-free", "step-5-preview-free"),
 ])
-def test_go_wire_missing_session_is_invalid_request(model_id, upstream) -> None:
-    """Missing session fails at the wire helper with the session semantic,
-    independent of the registry OFF gate."""
-    with pytest.raises(InvalidRequest, match="trusted stable conversation"):
-        go_wire.prepare_go_request(
-            model_id=model_id,
-            upstream_model=upstream,
-            messages=[{"role": "user", "content": "합성 세션 경계 점검"}],
-            session_id=None,
-        )
+def test_go_wire_missing_session_creates_one_turn_transport_key(model_id, upstream) -> None:
+    """An independent call gets a distinct Go-only routing key, not identity."""
+    _, _, first = go_wire.prepare_go_request(
+        model_id=model_id, upstream_model=upstream,
+        messages=[{"role": "user", "content": "합성 세션 경계 점검"}],
+        session_id=None,
+    )
+    _, _, second = go_wire.prepare_go_request(
+        model_id=model_id, upstream_model=upstream,
+        messages=[{"role": "user", "content": "합성 세션 경계 점검"}],
+        session_id=None,
+    )
+    assert first["x-opencode-session"].startswith("go_")
+    assert first["x-opencode-session"] != second["x-opencode-session"]
 
 
 @pytest.mark.asyncio
@@ -160,11 +166,10 @@ def test_go_wire_missing_session_is_invalid_request(model_id, upstream) -> None:
     ("opencode-go/step-5-preview-free", "step-5-preview-free"),
 ])
 async def test_go_adapter_without_session_never_posts(model_id, upstream, monkeypatch) -> None:
-    """End-to-end adapter path: missing session raises InvalidRequest
-    before the OFF gate is even reached, with zero transport POSTs."""
+    """Missing conversation does not bypass the unrelated model OFF gate."""
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     seen: list = []
-    with pytest.raises(InvalidRequest):
+    with pytest.raises(PilotNotConfigured):
         await plat.call_platform_chat_completions(
             model_id=model_id,
             upstream_model=upstream,
@@ -230,20 +235,21 @@ def test_distinct_forged_sessions_both_rejected_at_body() -> None:
 
 
 # --------------------------------------------------------------------------
-# 5. OFF pins: provider and all five models stay disabled (read-only).
+# 5. Only Cat Jam is enabled. Original Go models remain OFF (read-only).
 # --------------------------------------------------------------------------
 
 
-def test_go_provider_and_five_models_stay_off() -> None:
+def test_catjam_and_muse_registered_while_unselected_go_models_off() -> None:
     from app.pilot.model_registry_file import read_registry
 
     reg = read_registry()
-    assert reg["providers"]["opencode-go"]["enabled"] is False
+    assert reg["providers"]["opencode-go"]["enabled"] is True
+    assert next(m for m in reg["models"] if m["id"] == "opencode-go/cat-jam-free")["enabled"] is True
     ids = {m["id"] for m in reg["models"] if m["provider_id"] == "opencode-go"}
     assert set(GO_MODELS) <= ids
     for model_id in GO_MODELS:
         row = next(m for m in reg["models"] if m["id"] == model_id)
-        assert row["enabled"] is False
+        assert row["enabled"] is ("muse-spark" in model_id)
 
 
 # --------------------------------------------------------------------------

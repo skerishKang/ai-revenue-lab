@@ -9,10 +9,11 @@ from app.pilot.errors import InvalidRequest, PilotNotConfigured, MalformedUpstre
 
 SESSION = "chat_0123456789abcdef0123456789abcdef"
 TURNS = [{"role": "system", "content": "Code only"}, {"role": "user", "content": "Write a Python function."}]
-GO_IDS = ["longcat-2.5-preview-free", "step-5-preview-free", "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5"]
+GO_IDS = ["cat-jam-free", "longcat-2.5-preview-free", "step-5-preview-free", "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5"]
 
 
 @pytest.mark.parametrize("name,wire", [
+    ("cat-jam-free", "chat/completions"),
     ("longcat-2.5-preview-free", "chat/completions"),
     ("step-5-preview-free", "chat/completions"),
     ("muse-spark-1.3-contributor", "responses"),
@@ -37,11 +38,18 @@ def test_five_exact_wire_shapes(name, wire):
 
 
 @pytest.mark.parametrize("name", GO_IDS)
-def test_missing_or_untrusted_session_fails_closed(name):
-    with pytest.raises(InvalidRequest, match="stable conversation"):
-        go.prepare_go_request(model_id="opencode-go/" + name, upstream_model=name, messages=TURNS, session_id=None, max_tokens=20)
+def test_one_turn_without_product_session_generates_provider_session(name):
+    _, _, headers = go.prepare_go_request(
+        model_id="opencode-go/" + name, upstream_model=name,
+        messages=TURNS, session_id=None, max_tokens=20,
+    )
+    assert headers["x-opencode-session"].startswith("go_")
+    assert len(headers["x-opencode-session"]) == 35
     with pytest.raises(InvalidRequest):
-        go.prepare_go_request(model_id="zanslab/" + name, upstream_model=name, messages=TURNS, session_id=SESSION, max_tokens=20)
+        go.prepare_go_request(
+            model_id="zanslab/" + name, upstream_model=name,
+            messages=TURNS, session_id=SESSION, max_tokens=20,
+        )
 
 
 def test_claude_budget_is_required_not_invented():
@@ -84,7 +92,7 @@ async def test_completed_protocols_with_synthetic_headers(monkeypatch, name, rep
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("name", ["gpt-6-luna", "muse-spark-1.2-contributor"])
+@pytest.mark.parametrize("name", ["gpt-6-luna", "step-5-preview-free"])
 async def test_disabled_registry_never_sends_live_request(name):
     calls = []
     async def fail_if_called(h, wire):
@@ -149,21 +157,26 @@ async def test_upstream_auth_error_does_not_echo_body(monkeypatch):
     assert "private-provider-token-debug" not in str(exc.value)
 
 
-@pytest.mark.parametrize("untrusted", [
-    "run_0123456789abcdef0123456789abcdef",
-    "b14req_0123456789ab",
-    "conv_padiem_mock_00001",
-    "chat_not_a_real_uuid",
-    "chat_0123456789ABCDEF0123456789ABCDEF",
-    "chat_0123456789abcdef0123456789abcdef-extra",
+@pytest.mark.parametrize("malformed", [
+    "", " ", "\r\nAuthorization: Bearer injected", "contains space",
+    "a" * 129, "path/segment", "세션", "x\tvalue",
 ])
-def test_never_promote_execution_ids_or_noncanonical_values_to_go_sessions(untrusted):
-    with pytest.raises(InvalidRequest, match="trusted stable conversation"):
+def test_session_header_safety_without_imposing_b14_uuid_grammar(malformed):
+    with pytest.raises(InvalidRequest, match="Invalid OpenCode Go session header"):
         go.prepare_go_request(
             model_id="opencode-go/longcat-2.5-preview-free",
             upstream_model="longcat-2.5-preview-free",
-            messages=TURNS, session_id=untrusted,
+            messages=TURNS, session_id=malformed,
         )
+
+
+def test_external_provider_accepts_stable_non_chat_session_key():
+    _, _, headers = go.prepare_go_request(
+        model_id="opencode-go/cat-jam-free",
+        upstream_model="cat-jam-free", messages=TURNS,
+        session_id="canonical-conversation:example-1",
+    )
+    assert headers["x-opencode-session"] == "canonical-conversation:example-1"
 
 
 def test_canonical_conversation_remains_stable_across_turns_but_not_across_chats():

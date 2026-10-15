@@ -184,24 +184,27 @@ def test_disabled_provider_makes_its_registered_models_unavailable(tmp_path):
 
 
 
-def test_opencodego_and_zanslab_are_registered_disabled_without_credentials():
-    """Owner intake is metadata only until distinct credentials and transport are verified."""
+def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
+    """The owner-approved Cat Jam route is enabled; unrelated Go and ZansLab routes remain OFF."""
     reg = read_registry()
     providers = reg["providers"]
-    assert providers["opencode-go"]["base_origin"] == "https://opencode.ai/zen/go/v1"
+    assert providers["opencode-go"]["base_origin"] == "https://opencode.ai/inference/go/v1"
     assert providers["opencode-go"]["credential_binding_name"] == "PADIEM_OPENCODE_API_KEY"
     assert providers["zanslab"]["base_origin"] == "https://zanslab.id/v1"
     assert providers["zanslab"]["credential_binding_name"] == "PADIEM_ZANSLAB_API_KEY"
-    assert providers["opencode-go"]["enabled"] is False
+    assert providers["opencode-go"]["enabled"] is True
     assert providers["zanslab"]["enabled"] is False
-    # Six Go models remain inactive. A verified account-scoped ZansLab ID
-    # is now also registered but no generation/SSE proof or activation exists.
+    # Cat Jam is the only enabled Go route; other Go and ZansLab models stay disabled.
     rows = [row for row in reg["models"] if row["provider_id"] == "opencode-go"]
     assert {row["upstream_model"] for row in rows} == {
-        "longcat-2.5-preview-free", "step-5-preview-free",
+        "cat-jam-free", "longcat-2.5-preview-free", "step-5-preview-free",
         "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5",
     }
-    assert all(row["enabled"] is False for row in rows)
+    assert [row["id"] for row in rows if row["enabled"]] == [
+        "opencode-go/cat-jam-free",
+        "opencode-go/muse-spark-1.2-contributor",
+        "opencode-go/muse-spark-1.3-contributor",
+    ]
     zans_rows = [row for row in reg["models"] if row["provider_id"] == "zanslab"]
     assert len(zans_rows) == 1
     assert zans_rows[0]["id"] == "zanslab/gpt-6-luna"

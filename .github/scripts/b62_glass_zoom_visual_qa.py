@@ -376,15 +376,14 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "() => document.documentElement.getAttribute('data-glass-mode') === 'reading'",
         timeout=5_000,
     )
-    # The reading class can become observable before CSS opacity has settled.
-    # Require the real computed portrait opacity to move below the captured
-    # home value. Bounded convergence is not a bypass: a broken transition fails.
+    # CEO visual continuity policy: "reading" still identifies Chat content,
+    # but its portrait visual must match the first PADIEM Chat screen.
     await page.wait_for_function(
         """(homeOpacity) => {
           const panel = document.querySelector(".main-panel");
           if (!panel || document.documentElement.getAttribute("data-glass-mode") !== "reading") return false;
           const opacity = Number.parseFloat(getComputedStyle(panel, "::before").opacity);
-          return Number.isFinite(opacity) && opacity < homeOpacity - 0.01;
+          return Number.isFinite(opacity) && Math.abs(opacity - homeOpacity) < .015;
         }""",
         arg=portrait_home["opacity"],
         timeout=5_000,

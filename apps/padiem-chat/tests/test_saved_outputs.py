@@ -11,7 +11,7 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import PRODUCT_SCOPE_CHAT
 from app.main import create_app
-from app.model_policy import EXECUTABLE_B14_MODEL_IDS
+from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
 from app.saved_outputs import (
     D1SavedOutputStore,
     MAX_OUTPUT_CONTENT_CHARS,
@@ -279,7 +279,7 @@ async def test_saved_output_is_not_automatic_chat_context():
     )
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "새 질문"}], "mode": "auto"})
-    if EXECUTABLE_B14_MODEL_IDS:
+    if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
         assert response.status_code == 200
         assert secret not in json.dumps(seen["body"], ensure_ascii=False)
         assert seen["body"]["messages"][-1] == {"role": "user", "content": "새 질문"}

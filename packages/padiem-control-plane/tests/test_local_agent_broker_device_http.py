@@ -228,12 +228,18 @@ def test_device_service_rejects_transport_shape_before_credential_auth() -> None
 def test_device_service_boundary_truth() -> None:
     assert DEVICE_HTTP_ROUTES == (
         "/acknowledge",
+        "/execution-profile",
         "/heartbeat",
         "/material",
         "/office-part",
         "/poll",
         "/reconcile",
         "/session",
+        # #4139: the bounded verified TXT read result of an already-successful
+        # admitted command. It is one more authenticated result-only route on
+        # the same canonical surface; it grants no execution and adds no
+        # second credential verifier.
+        "/text-result",
     )
     assert PRIVATE_SERVICE_BOUNDARY is True
     assert CANONICAL_BINDING_AUTH_REUSED is True

@@ -123,7 +123,19 @@ def test_service_binding_target_is_fixed_in_repository_config():
         {
             "binding": "B14_SERVICE",
             "service": "ai-revenue-korean-ai-platform",
-        }
+        },
+        {
+            "binding": "IDENTITY_AUTHORITY_SERVICE",
+            "service": "padiem-control-plane-identity",
+        },
+        {
+            "binding": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+            "service": "padiem-local-agent-broker-state",
+        },
+        {
+            "binding": "VOICE_STT_SERVICE",
+            "service": "padiem-voice-stt",
+        },
     ]
     assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
     assert config["vars"]["PADIEM_CHAT_LIVE_ENABLED"] == "false"

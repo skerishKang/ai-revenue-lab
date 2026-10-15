@@ -45,6 +45,14 @@
     methods: { google: false, password: false }
   };
 
+  // Product-specific visual branding is an account UI concern, never QuoteCore logic.
+  window.B66AssistantBranding = Object.freeze({
+    renderIntro: (text, companyName) => String(text).replace(
+      /안녕하세요!\s*파디엠이 제공하는 AI 어시스턴트,?\s*PADIEM B66입니다\.?/gu,
+      "안녕하세요! " + String(companyName || "시지아이") + " 어시스턴트입니다."
+    )
+  });
+
   const byId = (id) => document.getElementById(id);
 
   function safeMessage(data, fallback) {
@@ -177,6 +185,7 @@
     state.user = null;
     state.skills = [];
     state.quoteModels = [];
+    state.quoteModelByTier = {};
     state.quoteReasoningByModel = {};
     const modelSelect = byId("padiemQuoteModelSelect");
     if (modelSelect) {
@@ -300,6 +309,7 @@
     const select = byId("padiemQuoteModelSelect");
     if (!select) return;
     state.quoteModels = [];
+    state.quoteModelByTier = {};
     select.replaceChildren();
     select.addEventListener("change", syncReasoningOptions);
     const placeholder = document.createElement("option");
@@ -310,22 +320,25 @@
     try {
       const result = await api("/b66/quote/models");
       if (!result.response.ok || !result.data || result.data.ok !== true ||
-          !Array.isArray(result.data.models)) return;
+          !Array.isArray(result.data.tiers)) return;
       const safeId = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
-      const records = result.data.models.filter((row) =>
-        row && typeof row.model_id === "string" && safeId.test(row.model_id) &&
+      const knownTiers = new Set(["free", "plus", "pro", "max"]);
+      const records = result.data.tiers.filter((row) =>
+        row && knownTiers.has(row.tier) &&
+        typeof row.model_id === "string" && safeId.test(row.model_id) &&
         typeof row.name === "string"
       );
       records.forEach((row) => {
         const option = document.createElement("option");
-        option.value = row.model_id;
+        option.value = row.tier;
         option.textContent = row.name;
         select.append(option);
       });
-      state.quoteModels = records.map((row) => row.model_id);
+      state.quoteModels = records.map((row) => row.tier);
+      state.quoteModelByTier = Object.fromEntries(records.map((row) => [row.tier, row.model_id]));
       state.quoteReasoningByModel = {};
       records.forEach((row) => {
-        state.quoteReasoningByModel[row.model_id] = Array.isArray(row.reasoning_levels)
+        state.quoteReasoningByModel[row.tier] = Array.isArray(row.reasoning_levels)
           ? row.reasoning_levels.filter((level) => level &&
               typeof level.value === "string" && /^[a-z0-9-]{1,32}$/.test(level.value) &&
               typeof level.label === "string")
@@ -333,12 +346,9 @@
       });
       // B66 owner-approved default; only choose when the authenticated server
       // actually registers this model. Never construct a synthetic model option.
-      const preferred = "google/gemini-3.5-flash-lite";
-      const configured = result.data.default_model_id;
-      select.value = state.quoteModels.includes(preferred)
-        ? preferred
-        : (typeof configured === "string" && state.quoteModels.includes(configured)
-          ? configured : "");
+      const configured = result.data.default_tier;
+      select.value = typeof configured === "string" && state.quoteModels.includes(configured)
+        ? configured : "";
       select.disabled = records.length === 0;
       syncReasoningOptions();
     } catch (_) {
@@ -789,20 +799,75 @@
     return pending;
   }
 
+  /* #4803: B66's existing #4412 server-owned quote dialogue, not a new model engine.
+     The server owns intent/fact transitions; only its approved draft projection
+     may be passed to the existing browser QuoteCore and certified PDF path. */
+  async function quoteConversation(action, options) {
+    if (!state.authenticated) return { ok: false, code: "unauthorized" };
+    const opts = options || {};
+    try {
+      const select = byId("padiemQuoteModelSelect");
+      const selectedTier = select && select.value;
+      const modelId = state.quoteModelByTier[selectedTier];
+      if (!modelId || !state.quoteModels.includes(selectedTier)) {
+        return { ok: false, code: "model_selection_required" };
+      }
+      if (action === "state") {
+        const result = await api("/b66/ai/conversation");
+        if (!result.response.ok || !result.data || result.data.ok !== true) {
+          return { ok: false, code: result.data && result.data.error && result.data.error.code || "conversation_state_unavailable" };
+        }
+        return { ok: true, state: result.data.state };
+      }
+      if (!Number.isSafeInteger(opts.revision) || opts.revision < 0) {
+        return { ok: false, code: "invalid_revision" };
+      }
+      const payload = {
+        model_id: modelId, tier: selectedTier,
+        action: action === "message" ? "message" : action,
+        revision: opts.revision
+      };
+      if (action === "message") payload.message = String(opts.message || "").trim();
+      if (action === "choose_method") payload.method = opts.method;
+      const reasoningLevel = selectedReasoningLevel(selectedTier);
+      if (reasoningLevel) payload.reasoning_level = reasoningLevel;
+      const response = await api("/b66/ai/conversation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = response.data || {};
+      if (!response.response.ok || data.ok !== true) {
+        return {
+          ok: false,
+          code: data.error && data.error.code || "conversation_unavailable",
+          revision: Number.isSafeInteger(data.revision) ? data.revision : null
+        };
+      }
+      if (!Number.isSafeInteger(data.revision) || !data.quote || typeof data.answer !== "string") {
+        return { ok: false, code: "invalid_conversation_response" };
+      }
+      return { ok: true, ...data };
+    } catch (_) {
+      return { ok: false, code: "conversation_unavailable" };
+    }
+  }
+
   /* #4466: real general conversation through B66's authenticated B14 route.
      This does not require an assigned CGI Skill and cannot mutate QuoteCore. */
   async function chatMessages(messages, options) {
     if (!state.authenticated) return { ok: false, code: "unauthorized" };
     const select = byId("padiemQuoteModelSelect");
-    const modelId = select && select.value;
-    if (!modelId || !state.quoteModels.includes(modelId)) {
+    const selectedTier = select && select.value;
+    const modelId = state.quoteModelByTier[selectedTier];
+    if (!modelId || !state.quoteModels.includes(selectedTier)) {
       return { ok: false, code: "model_selection_required" };
     }
     if (!Array.isArray(messages) || !messages.length) {
       return { ok: false, code: "invalid_messages" };
     }
-    const payload = { model_id: modelId, messages };
-    const reasoningLevel = selectedReasoningLevel(modelId);
+    const payload = { model_id: modelId, tier: selectedTier, messages };
+    const reasoningLevel = selectedReasoningLevel(selectedTier);
     if (reasoningLevel) payload.reasoning_level = reasoningLevel;
     /* #4657: continuing an existing B66 dialogue. The id is opaque to the
        browser and the server re-authorizes it against the signed-in owner and
@@ -925,8 +990,9 @@
 
     /* 진행 중인 견적이 있으면 원문과 합쳐 한 번에 다시 해석한다(서버는 stateless). */
     const modelSelect = byId("padiemQuoteModelSelect");
-    const modelId = modelSelect && modelSelect.value;
-    if (!modelId || !state.quoteModels.includes(modelId)) {
+    const selectedTier = modelSelect && modelSelect.value;
+    const modelId = state.quoteModelByTier[selectedTier];
+    if (!modelId || !state.quoteModels.includes(selectedTier)) {
       return { ok: false, code: "model_selection_required" };
     }
     let message = text;
@@ -952,9 +1018,10 @@
     const payload = {
       saved_skill_id: state.loadedSkill.savedSkillId,
       message,
-      model_id: modelId
+      model_id: modelId,
+      tier: selectedTier
     };
-    const reasoningLevel = selectedReasoningLevel(modelId);
+    const reasoningLevel = selectedReasoningLevel(selectedTier);
     if (reasoningLevel) payload.reasoning_level = reasoningLevel;
 
     try {
@@ -1124,7 +1191,8 @@
         }
         const filename = pdfFilename(null, renderModel.facts && renderModel.facts.meta &&
           renderModel.facts.meta.quoteNo);
-        const blobUrl = window.URL.createObjectURL(new window.Blob([bytes], { type: "application/pdf" }));
+        const pdfBlob = new window.Blob([bytes], { type: "application/pdf" });
+        const blobUrl = window.URL.createObjectURL(pdfBlob);
         const anchor = document.createElement("a");
         try {
           anchor.href = blobUrl;
@@ -1136,7 +1204,7 @@
           anchor.remove();
           window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
         }
-        return { ok: true, filename };
+        return { ok: true, filename, blob: pdfBlob };
       } catch (error) {
         if (error && error.code === "browser_pdf_unsupported_rows") {
           return pdfFailure("cgi_unsupported_rows",
@@ -1169,7 +1237,8 @@
         return pdfFailure("pdf_skill_changed", "내 견적서 선택과 현재 견적 내용을 확인한 뒤 다시 저장해 주세요.");
       }
       const filename = pdfFilename(response.headers.get("content-disposition"), renderModel.facts && renderModel.facts.meta && renderModel.facts.meta.quoteNo);
-      const blobUrl = window.URL.createObjectURL(new window.Blob([buffer], { type: "application/pdf" }));
+      const pdfBlob = new window.Blob([buffer], { type: "application/pdf" });
+      const blobUrl = window.URL.createObjectURL(pdfBlob);
       const anchor = document.createElement("a");
       try {
         anchor.href = blobUrl;
@@ -1181,7 +1250,7 @@
         anchor.remove();
         window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 0);
       }
-      return { ok: true, filename };
+      return { ok: true, filename, blob: pdfBlob };
     } catch (_) {
       return pdfFailure("pdf_unavailable");
     }
@@ -1191,6 +1260,7 @@
     readiness: runtimeReadiness,
     interpret: interpretRequest,
     chat: chatMessages,
+    quoteConversation,
     /* #4657: the owner's stored B66 AI dialogue. Owner and product scope are
        derived server-side; the browser only sends a bounded query or an opaque id. */
     listDialogues,

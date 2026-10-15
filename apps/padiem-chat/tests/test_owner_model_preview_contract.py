@@ -93,8 +93,8 @@ def test_model_status_button_cannot_hijack_existing_tier_picker():
     mode = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
     locale = (STATIC / "locale.js").read_text(encoding="utf-8")
     assert 'class="model-pill composer-tier-trigger" type="button"' in html
-    assert 'class="owner-model-preview-trigger" id="ownerModelPreviewOpen"' in html
-    assert html.count('id="ownerModelPreviewOpen"') == 1
+    assert 'id="ownerModelPreviewOpen"' not in html
+    assert html.count('class="model-pill composer-tier-trigger"') == 1
     assert 'const modePill = document.querySelector(".model-pill")' in mode
     assert '[".model-pill span:last-child", "mode"]' in locale
     assert "model-pill:not(#ownerModelPreviewOpen)" not in locale
@@ -102,10 +102,9 @@ def test_model_status_button_cannot_hijack_existing_tier_picker():
 
 def test_model_status_button_not_in_mobile_composer_tools_row():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
-    button_pos = html.index('id="ownerModelPreviewOpen"')
+    assert 'id="ownerModelPreviewOpen"' not in html
     tools_start = html.index('class="composer-tools"')
     tools_end = html.index('id="sendButton"', tools_start)
-    assert button_pos < tools_start
-    assert button_pos < html.index('for="messageInput"')
-    assert not (tools_start < button_pos < tools_end)
-    assert 'class="model-pill composer-tier-trigger"' in html
+    pill = html.index('class="model-pill composer-tier-trigger"')
+    assert tools_start < pill < tools_end
+    assert 'id="messageInput"' in html

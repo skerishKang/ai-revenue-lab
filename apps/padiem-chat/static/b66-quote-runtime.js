@@ -66,6 +66,7 @@
   let runtime = null;
   let skills = [];
   let modelIds = [];
+  let selectedModelByTier = {};
   let reasoningByModel = {};
   let initialized = false;
   let refreshPromise = null;
@@ -90,6 +91,9 @@
       const origin = new URL(data.origin);
       if (embed.protocol !== "https:" || origin.protocol !== "https:") return null;
       if (embed.origin !== origin.origin || data.origin !== origin.origin) return null;
+      // The embed must be a different origin. A same-origin iframe with
+      // allow-scripts + allow-same-origin can remove its own sandbox.
+      if (embed.origin === window.location.origin) return null;
       if (!embed.pathname.endsWith("/embed.html")) return null;
       // The canonical product permission gate must set this explicitly.
       // Existing B66 runtime-config does not issue it: default stays OFF.
@@ -239,7 +243,7 @@
     messageLabel.append(messageText, message);
 
     const modelLabel = el("label", "b66-quote-field");
-    const modelText = el("span", "", "AI model");
+    const modelText = el("span", "", document.documentElement.lang === "en" ? "AI tier" : "AI 등급");
     modelText.dataset.b66QuoteModelLabel = "true";
     const modelSelect = document.createElement("select");
     modelSelect.id = "b66QuoteModelSelect";
@@ -266,16 +270,10 @@
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
 
-    const frame = document.createElement("iframe");
-    frame.id = "b66QuoteFrame";
-    frame.className = "b66-quote-frame";
-    frame.hidden = true;
-    frame.title = copy().title;
-    frame.referrerPolicy = "no-referrer";
-    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
-
+    // Do not construct a hidden iframe on Chat startup. The cross-origin
+    // preview is created only after a successful, user-requested quote.
     form.append(selectLabel, modelLabel, reasoningLabel, messageLabel, submit, status);
-    panel.append(header, pcSection, form, frame);
+    panel.append(header, pcSection, form);
     dialog.append(panel);
     document.body.append(dialog);
 
@@ -440,6 +438,7 @@
     const select = document.getElementById("b66QuoteModelSelect");
     if (!select) return;
     modelIds = [];
+    selectedModelByTier = {};
     reasoningByModel = {};
     select.replaceChildren();
     const placeholder = document.createElement("option");
@@ -449,25 +448,27 @@
     select.append(placeholder);
     select.disabled = true;
     const response = await readJson("/api/b66/quote/models");
-    if (!response.response.ok || !response.data || !Array.isArray(response.data.models)) return;
+    if (!response.response.ok || !response.data || !Array.isArray(response.data.tiers)) return;
     const safe = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
-    response.data.models.forEach((record) => {
-      if (!record || typeof record.model_id !== "string" ||
-          !safe.test(record.model_id) || typeof record.name !== "string") return;
+    const grades = new Set(["free", "plus", "pro", "max"]);
+    response.data.tiers.forEach((record) => {
+      if (!record || !grades.has(record.tier) || modelIds.includes(record.tier) ||
+          typeof record.model_id !== "string" || !safe.test(record.model_id) ||
+          typeof record.name !== "string") return;
       const option = document.createElement("option");
-      option.value = record.model_id;
+      option.value = record.tier;
       option.textContent = record.name;
       select.append(option);
-      modelIds.push(record.model_id);
-      // #3906: keep only the levels this exact model advertises.
-      reasoningByModel[record.model_id] = Array.isArray(record.reasoning_levels)
+      modelIds.push(record.tier);
+      selectedModelByTier[record.tier] = record.model_id;
+      reasoningByModel[record.tier] = Array.isArray(record.reasoning_levels)
         ? record.reasoning_levels.filter((level) => level &&
             typeof level.value === "string" &&
             /^[a-z0-9-]{1,32}$/.test(level.value) &&
             typeof level.label === "string")
         : [];
     });
-    const configured = response.data.default_model_id;
+    const configured = response.data.default_tier;
     select.value = typeof configured === "string" && modelIds.includes(configured)
       ? configured : "";
     select.disabled = modelIds.length === 0;
@@ -643,6 +644,24 @@
     return "b66-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
   }
 
+  function ensurePreviewFrame() {
+    let frame = document.getElementById("b66QuoteFrame");
+    if (frame) return frame;
+    const panel = document.querySelector("#b66QuoteDialog .b66-quote-panel");
+    if (!panel) throw new Error("preview_panel_missing");
+    frame = document.createElement("iframe");
+    frame.id = "b66QuoteFrame";
+    frame.className = "b66-quote-frame";
+    frame.hidden = true;
+    frame.title = copy().title;
+    frame.referrerPolicy = "no-referrer";
+    // Retain the actual B66 embed origin for authenticated postMessage
+    // verification. validRuntime() rejects same-origin embeds above.
+    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
+    panel.append(frame);
+    return frame;
+  }
+
   function waitForFrame(frame, url) {
     if (frameLoadedUrl === url && frame.contentWindow) return Promise.resolve();
     return new Promise((resolve, reject) => {
@@ -662,27 +681,28 @@
     const select = document.getElementById("b66QuoteSkillSelect");
     const message = document.getElementById("b66QuoteRequest");
     const submit = document.getElementById("b66QuoteGenerate");
-    const frame = document.getElementById("b66QuoteFrame");
-    if (!runtime || !select || !message || !submit || !frame) return;
+    const existingFrame = document.getElementById("b66QuoteFrame");
+    if (!runtime || !select || !message || !submit) return;
     const savedSkillId = select.value;
     const modelSelect = document.getElementById("b66QuoteModelSelect");
-    const modelId = modelSelect && modelSelect.value;
+    const selectedTier = modelSelect && modelSelect.value;
+    const modelId = selectedModelByTier[selectedTier];
     const requestText = message.value.trim();
     if (!/^b66skill_[0-9a-f]{32}$/.test(savedSkillId) || !requestText ||
-        !modelId || !modelIds.includes(modelId)) {
+        !modelId || !modelIds.includes(selectedTier)) {
       setStatus(c.failed, "error");
       return;
     }
 
     submit.disabled = true;
-    frame.hidden = true;
+    if (existingFrame) existingFrame.hidden = true;
     setStatus(c.working, "working");
     try {
       // #3906: forward the explicit reasoning choice with the exact model. The
       // field is omitted when the control offers none, preserving the
       // pre-#3906 request shape.
-      const payload = { saved_skill_id: savedSkillId, message: requestText, model_id: modelId };
-      const reasoningLevel = selectedReasoningLevel(modelId);
+      const payload = { saved_skill_id: savedSkillId, message: requestText, tier: selectedTier, model_id: modelId };
+      const reasoningLevel = selectedReasoningLevel(selectedTier);
       if (reasoningLevel) payload.reasoning_level = reasoningLevel;
       const interpreted = await readJson("/api/b66/quote/interpret", {
         method: "POST",
@@ -713,6 +733,7 @@
       }
       const assets = await loadPrivateAssets(skill);
 
+      const frame = ensurePreviewFrame();
       await waitForFrame(frame, runtime.embedUrl);
       const id = requestId();
       currentRequestId = id;

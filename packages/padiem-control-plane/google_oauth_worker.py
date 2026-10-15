@@ -38,6 +38,8 @@ _WORKSPACE_CALENDAR_BINDING_KEYS = frozenset({"workspace_ref"})
 # #3193: private Drive binding-selection RPC. Same closed payload; the
 # connector is fixed in code to the reviewed Drive OAuth authority.
 _WORKSPACE_DRIVE_BINDING_KEYS = frozenset({"workspace_ref"})
+# Private server-to-server disconnect: never accept a browser binding_ref.
+_WORKSPACE_DRIVE_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 WORKSPACE_DRIVE_CONNECTOR_ID = "google-drive"
 
 
@@ -247,6 +249,23 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def disconnect_drive(self, payload: dict) -> dict:
+        """Revoke at most one selected workspace Drive credential."""
+        try:
+            payload = _closed_payload(payload, _WORKSPACE_DRIVE_DISCONNECT_KEYS, "Drive disconnect RPC")
+            now = datetime.now(timezone.utc)
+            selection = self._store.select_active_drive_binding(
+                workspace_ref=payload["workspace_ref"], now=now,
+            )
+            if selection.status.value == "not_connected":
+                return {"ok": True, "revoked": False}
+            if selection.status.value != "resolved" or not selection.binding_ref:
+                raise ControlPlaneContractError("invalid_drive_disconnect_selection", "No valid Drive credential")
+            self._store.revoke_credential(binding_ref=selection.binding_ref, revoked_at=now)
+            return {"ok": True, "revoked": True}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -286,6 +305,9 @@ class Default(WorkerEntrypoint):
 
     async def select_drive_binding(self, payload: dict) -> dict:
         return await self._stub().select_drive_binding(payload)
+
+    async def disconnect_drive(self, payload: dict) -> dict:
+        return await self._stub().disconnect_drive(payload)
 
     async def fetch(self, request):
         del request

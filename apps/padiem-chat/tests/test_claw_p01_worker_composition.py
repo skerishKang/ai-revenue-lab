@@ -214,6 +214,7 @@ def test_plus_production_composition_reaches_engine_service_binding_once() -> No
     assert payload["agent"]["model_policy"] == {
         "model": active_route_for(ProductTierLabel.PLUS).model_id,
         "max_retries": 0,
+        "product_tier": "plus",
     }
     assert payload["agent"]["task_type"] == "coding"
     assert payload["agent"]["required_capabilities"] == []

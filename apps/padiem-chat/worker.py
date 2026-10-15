@@ -63,6 +63,8 @@ from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from app.b66_kira_direct_pilot import B66KiraPilotExecutor
 from app.b66_experiential_direct_pilot import B66ExperientialPilotExecutor
 from app.config import ConfigError
+from app.connector_gateway_runtime_mount import maybe_dispatch_connector_gateway
+from app.connector_owner_runtime_mount import compose_owner_enrollment_from_worker
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
@@ -91,6 +93,7 @@ from app.worker_config import (
     GOOGLE_OAUTH_SERVICE_BINDING_NAME,
     IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
     WORKSPACE_R2_BINDING_NAME,
+    VOICE_STT_SERVICE_BINDING_NAME,
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
@@ -99,9 +102,11 @@ from app.worker_config import (
     p01_engine_config_from_worker_bindings,
 )
 from app.worker_orchestration import build_orchestration_bridge
+from app.voice_stt_routes import CloudflareVoiceSttServiceTransport
 from app.web_xlsx_p01_engine_client import build_web_xlsx_p01_engine_client
 from app.web_xlsx_quote_write_engine_client import build_web_quote_write_engine_client
 from app.claw_web_xlsx_quote_pdf import BrowserQuotePdfRenderer
+from app.claw_search_decision import trusted_claw_search_activation
 from kagent.claw_automation import ClawAutomationTickRuntime
 from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
@@ -743,6 +748,12 @@ class Default(WorkerEntrypoint):
         global _worker_app
         path = urlparse(request.url).path
 
+        connector_wss_response = await maybe_dispatch_connector_gateway(
+            request=request, worker_env=self.env, response_factory=Response,
+        )
+        if connector_wss_response is not None:
+            return connector_wss_response
+
         if _worker_app is None:
             try:
                 # Resolve Cloudflare same-account Secrets Store bindings only
@@ -755,6 +766,9 @@ class Default(WorkerEntrypoint):
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
                 b66_pdf_binding = binding_value(self.env, B66_PDF_RENDERER_SERVICE_BINDING_NAME)
+                # #4643: private STT Worker Service Binding. Absent until CENTRAL
+                # adds it, which keeps every /api/voice/* route fail-closed.
+                voice_stt_binding = binding_value(self.env, VOICE_STT_SERVICE_BINDING_NAME)
                 identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
                 google_oauth_binding = binding_value(self.env, GOOGLE_OAUTH_SERVICE_BINDING_NAME)
                 # Private Claw workspace bytes (#2266). Resolved from trusted
@@ -838,8 +852,42 @@ class Default(WorkerEntrypoint):
                     legacy_b66=binding_value(self.env, "B66_ADMIN_GOOGLE_EMAIL"),
                     legacy_central=binding_value(self.env, "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL"),
                 )
+                try:
+                    connector_owner_ports = compose_owner_enrollment_from_worker(self.env)
+                except ValueError:
+                    return _apply_headers(Response(
+                        "Connector owner enrollment unavailable.", status=503,
+                        headers={"Content-Type": "text/plain; charset=utf-8"},
+                    ), path)
+                github_secret_binding = binding_value(self.env, "PADIEM_GITHUB_APP_CLIENT_SECRET")
+                github_client_secret = None
+                if github_secret_binding is not None:
+                    try:
+                        if isinstance(github_secret_binding, str):
+                            github_client_secret = github_secret_binding
+                        else:
+                            getter = getattr(github_secret_binding, "get", None)
+                            if callable(getter):
+                                pending_secret = getter()
+                                if hasattr(pending_secret, "__await__"):
+                                    github_client_secret = await pending_secret
+                    except Exception:
+                        # No provider exception, binding material or secret enters logs.
+                        github_client_secret = None
+                github_store = None
+                github_provider = None
+                if (db_binding is not None and isinstance(github_client_secret, str)
+                        and github_client_secret and settings.session_secret):
+                    from app.github_oauth_store import D1GitHubOAuthStore
+                    from app.github_oauth_provider import GitHubAppOAuthProvider
+                    github_store = D1GitHubOAuthStore(db_binding, session_secret=settings.session_secret)
+                    github_provider = GitHubAppOAuthProvider(client_secret=github_client_secret,
+                                                               transport=CloudflareExternalHttpTransport())
                 _worker_app = create_app(
                     settings=settings,
+                    github_oauth_store=github_store,
+                    github_oauth_provider=github_provider,
+                    connector_owner_enrollment=connector_owner_ports,
                     history_store=history_store,
                     d1_binding=db_binding,
                     b66_admin_google_email=b66_operator_email,
@@ -961,6 +1009,11 @@ class Default(WorkerEntrypoint):
                     calendar_read_state_engine_client = None
                 _worker_app.state.calendar_read_state_engine_client = calendar_read_state_engine_client
                 _worker_app.state.project_file_store = project_file_store
+                _worker_app.state.voice_stt_transport = (
+                    CloudflareVoiceSttServiceTransport(voice_stt_binding, Request)
+                    if voice_stt_binding is not None
+                    else None
+                )
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
                 _worker_app.state.usage_gate_enforced = True
@@ -1020,6 +1073,18 @@ class Default(WorkerEntrypoint):
                 ) = build_claw_p01_lanes_with_diagnostic(
                     self.env,
                     request_factory=Request,
+                )
+                # #4469: Owner-requested Claw public web research. An explicit
+                # Worker flag is only a request to activate: the real B14
+                # runtime, canonical member/Engine lane and durable D1 quota
+                # must ALL be present. One accepted Claw turn is already
+                # reserved by _usage_gate_denial before its bounded single
+                # judgement and optional search; no browser input can arm it.
+                _worker_app.state.claw_web_search_enabled = trusted_claw_search_activation(
+                    flag=binding_value(self.env, "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"),
+                    runtime_mode=settings.runtime_mode,
+                    adapter=_worker_app.state.claw_p01_adapter,
+                    usage_gate=_worker_app.state.usage_gate,
                 )
                 # #3580 WEB-FIRST: fixed private Engine ToolRuntime endpoint,
                 # authenticated with the pre-existing P01 service caller.
@@ -1102,6 +1167,14 @@ class Default(WorkerEntrypoint):
                 device_directory_source = build_broker_device_directory_source(self.env)
                 if device_directory_source is not None:
                     _worker_app.state.claw_device_directory_source = device_directory_source
+                # #4139: TXT read request leg on the SAME trusted broker
+                # binding (device resolution + atomic command enqueue). Absent
+                # binding keeps the fail-closed unconfigured source: the route
+                # refuses rather than inventing approval material.
+                from app.connector_txt_read_routes import build_connector_txt_read_source
+                txt_read_source = build_connector_txt_read_source(self.env)
+                if txt_read_source is not None:
+                    _worker_app.state.connector_txt_read_source = txt_read_source
                 # #3436 B2c: compose the canonical device-session authority for
                 # the GET-only Desktop conversation surface from the same
                 # trusted broker binding. When the trusted runtime is absent

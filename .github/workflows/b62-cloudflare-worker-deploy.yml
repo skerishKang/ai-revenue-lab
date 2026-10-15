@@ -20,6 +20,20 @@ on:
       - "apps/padiem-chat/**"
       - "!apps/padiem-chat/tests/**"
       - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/scripts/b62_connector_broker_additive_preflight.py"
+      - ".github/tests/test_b62_connector_broker_additive_preflight.py"
+      - ".github/scripts/b62_connector_broker_served_version_readonly.py"
+      - ".github/tests/test_b62_connector_broker_served_version_readonly.py"
+      - ".github/scripts/b62_connector_identity_served_version_readonly.py"
+      - ".github/tests/test_b62_connector_identity_served_version_readonly.py"
+      - ".github/scripts/b62_connector_identity_activation_readonly.py"
+      - ".github/tests/test_b62_connector_identity_activation_readonly.py"
+      - "packages/padiem-control-plane/local_agent_broker_worker.py"
+      - "packages/padiem-control-plane/canonical_broker_pairing_rpc.py"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc"
+      - "packages/padiem-control-plane/identity_authority_worker.py"
+      - "packages/padiem-control-plane/canonical_connector_enrollment_consent_rpc.py"
+      - "packages/padiem-control-plane/wrangler.identity-authority.jsonc"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   push:
     branches: [main]
@@ -27,6 +41,20 @@ on:
       - "apps/padiem-chat/**"
       - "!apps/padiem-chat/tests/**"
       - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/scripts/b62_connector_broker_additive_preflight.py"
+      - ".github/tests/test_b62_connector_broker_additive_preflight.py"
+      - ".github/scripts/b62_connector_broker_served_version_readonly.py"
+      - ".github/tests/test_b62_connector_broker_served_version_readonly.py"
+      - ".github/scripts/b62_connector_identity_served_version_readonly.py"
+      - ".github/tests/test_b62_connector_identity_served_version_readonly.py"
+      - ".github/scripts/b62_connector_identity_activation_readonly.py"
+      - ".github/tests/test_b62_connector_identity_activation_readonly.py"
+      - "packages/padiem-control-plane/local_agent_broker_worker.py"
+      - "packages/padiem-control-plane/canonical_broker_pairing_rpc.py"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc"
+      - "packages/padiem-control-plane/identity_authority_worker.py"
+      - "packages/padiem-control-plane/canonical_connector_enrollment_consent_rpc.py"
+      - "packages/padiem-control-plane/wrangler.identity-authority.jsonc"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
     inputs:
@@ -84,6 +112,46 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: python .github/scripts/b62_cloudflare_live_readiness.py
+      - name: Inspect deployed Connector private Service Bindings (GET only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python -m unittest discover -s .github/tests -p test_b62_cloudflare_connector_binding_readonly.py -q
+          python .github/scripts/b62_cloudflare_connector_binding_readonly.py
+      - name: Read-only no-loss candidate for Connector Broker binding
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python -m unittest discover -s .github/tests -p test_b62_connector_broker_additive_preflight.py -q
+          python .github/scripts/b62_connector_broker_additive_preflight.py
+      - name: Validate Identity Connector activation parser contract (no network)
+        run: python -m unittest discover -s .github/tests -p test_b62_connector_identity_activation_readonly.py -q
+      - name: Audit production Identity Connector consent activation for initial mock only (GET only)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_initial_mock_deploy == true }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python .github/scripts/b62_connector_identity_activation_readonly.py
+
+      - name: Read-only Broker State and Edge served-version lineage (GET only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python -m unittest discover -s .github/tests -p test_b62_connector_broker_served_version_readonly.py -q
+          python .github/scripts/b62_connector_broker_served_version_readonly.py
+
+      - name: Read-only Identity active revision lineage and race guard (GET only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python -m unittest discover -s .github/tests -p test_b62_connector_identity_served_version_readonly.py -q
+          python .github/scripts/b62_connector_identity_served_version_readonly.py
+
       - name: Read-only deployed progressive-SSE chain parity
         env:
           B62_BASE_URL: https://padiem-chat.${{ steps.preflight.outputs.subdomain }}.workers.dev

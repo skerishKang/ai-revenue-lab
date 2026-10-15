@@ -66,12 +66,20 @@ def _digest(name: str, value: Any) -> str:
 def verify_broker_file_text(
     receipt: Any, *, origin: "LocalTaskOrigin",
     observation: "LocalRunnerTerminalObservation",
+    scope_proof: dict[str, Any] | None = None,
 ) -> tuple[str, str | None]:
     """Validate one private Broker file-read receipt before appending a message.
 
     Contract: non-file commands -> {ok:true, available:false, kind:"other"}.
     Pending text-file read -> {ok:true, available:false, kind:"file_read_text"}.
     Pending must not append a terminal-only message under the same stable ID.
+
+    When ``scope_proof`` (the server-stored command correlation) was used for
+    the Broker reads, the account scope was already derived from the Broker's
+    own records — the receipt's canonical account is NOT compared against the
+    product user id. Run, correlation and content checks still bind the receipt
+    to this exact run and command. Legacy callers omit the proof and keep the
+    exact comparison.
     """
     if type(receipt) is not dict or receipt.get("ok") is not True:
         raise LocalTaskResultError("file_text_unverified", "canonical file result unavailable")
@@ -97,8 +105,10 @@ def verify_broker_file_text(
         or observation.exit_code != 0
         or not isinstance(origin.workspace_id, str)
         or not origin.workspace_id
-        or receipt["account_ref"] != origin.user_id
-        or receipt["workspace_ref"] != origin.workspace_id
+        or (scope_proof is None and (
+            receipt["account_ref"] != origin.user_id
+            or receipt["workspace_ref"] != origin.workspace_id
+        ))
         or receipt["run_id"] != origin.run_id
         or any(receipt[k] != getattr(observation, k) for k in (
             "command_id", "tool_request_ref", "request_id", "revision_ref",
@@ -394,6 +404,7 @@ async def project_local_runner_terminal_result(
     run_id: str,
     command_id: str,
     expected_workspace_id: str | None = None,
+    scope_proof: dict[str, Any] | None = None,
 ) -> LocalTaskResultDecision:
     """Project one terminal Local Runner result into the run's own conversation.
 
@@ -402,6 +413,10 @@ async def project_local_runner_terminal_result(
     twice for the same terminal fact — after a lost response, a duplicate
     observation, or a restart reread — returns the second decision without
     appending a second message.
+
+    ``scope_proof`` (server-stored command correlation) lets the Broker derive
+    the account scope from its own records instead of the caller's product
+    user id. Callers without one keep the exact legacy passthrough.
     """
 
     if not isinstance(user_id, str) or not user_id:
@@ -422,12 +437,15 @@ async def project_local_runner_terminal_result(
         conversation_id=row.get("conversation_id"),
         workspace_id=workspace_id,
     )
-    observation = await result_port.command_result(
-        command_id=command_id,
-        run_id=run_id,
-        owner_id=user_id,
-        workspace_id=workspace_id,
-    )
+    observation_kwargs: dict[str, Any] = {
+        "command_id": command_id,
+        "run_id": run_id,
+        "owner_id": user_id,
+        "workspace_id": workspace_id,
+    }
+    if scope_proof is not None:
+        observation_kwargs["scope_proof"] = scope_proof
+    observation = await result_port.command_result(**observation_kwargs)
     if observation is None:
         return LocalTaskResultDecision(
             append=False,
@@ -469,13 +487,17 @@ async def project_local_runner_terminal_result(
         and observation.exit_code == 0):
         reader = getattr(result_port, "read_verified_file_text", None)
         if callable(reader):
-            receipt = await reader(
-                owner_id=user_id, workspace_id=workspace_id,
-                run_id=run_id, command_id=command_id,
-            )
+            reader_kwargs: dict[str, Any] = {
+                "owner_id": user_id, "workspace_id": workspace_id,
+                "run_id": run_id, "command_id": command_id,
+            }
+            if scope_proof is not None:
+                reader_kwargs["scope_proof"] = scope_proof
+            receipt = await reader(**reader_kwargs)
             if receipt is not None:
                 result_kind, verified_text = verify_broker_file_text(
                     receipt, origin=origin, observation=observation,
+                    scope_proof=scope_proof,
                 )
                 if result_kind == "pending":
                     return LocalTaskResultDecision(

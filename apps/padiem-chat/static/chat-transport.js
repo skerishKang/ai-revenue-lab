@@ -187,10 +187,16 @@
     const liveReady = await clawLiveEventsAvailable(signal);
     const headers = { "Content-Type": "application/json", "Accept": "text/event-stream" };
     if (liveReady) headers["X-Padiem-Claw-Live"] = "p01-events-v1";
+    // Reuse the existing owner-scoped PC chooser; no manual device ID input.
+    // The selected id is only a hint: canonical Identity/Broker decide authority.
+    const chosenDevice = typeof window.padiemClawSelectedDeviceId === "function"
+      ? window.padiemClawSelectedDeviceId() : null;
+    const wire = typeof chosenDevice === "string" && chosenDevice
+      ? { ...payload, device_id: chosenDevice } : payload;
     const response = await fetch("/api/claw/general", {
       method: "POST",
       headers,
-      body: JSON.stringify(payload),
+      body: JSON.stringify(wire),
       signal,
     });
     const contentType = (response.headers.get("content-type") || "").toLowerCase();

@@ -69,6 +69,8 @@ _HOLD_POLICY_MODULES = {
     "test_saved_outputs.py",
     "test_tier_route_consumer_coverage.py",
     "test_unassigned_profile_gate.py",
+    # Real owner-defined Free route test: synthetic Plus must not overwrite it.
+    "test_free_member_chat_4317.py",
 }
 
 
@@ -99,10 +101,12 @@ def _synthetic_plus_route_for_non_policy_contracts(
         evidence="test-only synthetic Plus route",
     )
 
+    real_active_route_for = tier_routes.active_route_for
+
     def _active_route_for(label: tier_routes.ProductTierLabel):
         if label is tier_routes.ProductTierLabel.PLUS:
             return synthetic_route
-        return None
+        return real_active_route_for(label)
 
     monkeypatch.setattr(
         model_policy_module,

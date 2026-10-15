@@ -75,11 +75,18 @@
   }
 
   function resizeComposerInput() {
-    input.style.height = "auto";
-    const contentHeight = Math.max(COMPOSER_MIN_HEIGHT, input.scrollHeight || COMPOSER_MIN_HEIGHT);
-    const nextHeight = Math.min(COMPOSER_MAX_HEIGHT, contentHeight);
-    input.style.height = `${nextHeight}px`;
-    input.style.overflowY = contentHeight > COMPOSER_MAX_HEIGHT ? "auto" : "hidden";
+    let nextHeight;
+    if (window.PadiemConversationComposer?.resizeTextarea) {
+      nextHeight = window.PadiemConversationComposer.resizeTextarea(input, {
+        minHeight: COMPOSER_MIN_HEIGHT, maxHeight: COMPOSER_MAX_HEIGHT
+      });
+    } else {
+      input.style.height = "auto";
+      const contentHeight = Math.max(COMPOSER_MIN_HEIGHT, input.scrollHeight || COMPOSER_MIN_HEIGHT);
+      nextHeight = Math.min(COMPOSER_MAX_HEIGHT, contentHeight);
+      input.style.height = `${nextHeight}px`;
+      input.style.overflowY = contentHeight > COMPOSER_MAX_HEIGHT ? "auto" : "hidden";
+    }
     form.dataset.composerExpanded = nextHeight > COMPOSER_MIN_HEIGHT + 4 ? "true" : "false";
     queueMicrotask(syncComposerClearance);
   }
@@ -138,7 +145,7 @@
     attachmentButton.disabled = requestBusy;
     if (documentStarter) documentStarter.disabled = requestBusy;
     if (removeAttachment) removeAttachment.disabled = requestBusy;
-    if (!requestBusy) sendButton.disabled = input.value.trim().length === 0;
+    if (!requestBusy) sendButton.disabled = false;
   }
 
   function guardAttachmentControls() {

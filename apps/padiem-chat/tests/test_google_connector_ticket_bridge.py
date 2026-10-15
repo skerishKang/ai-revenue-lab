@@ -581,8 +581,12 @@ def test_worker_supports_private_identity_binding_without_activating_mock_config
     assert "identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)" in worker
     assert "CloudflareControlPlaneIdentityAuthority(identity_binding)" in worker
     assert "D1IdentityShadowStore(db_binding)" in worker
-    assert 'binding = "IDENTITY_AUTHORITY_SERVICE"' not in wrangler
-    assert 'service = "padiem-control-plane-identity"' not in wrangler
+    # Identity is now bound for the default-ON B54 Connector without
+    # activating the unrelated mock B62 chat inference runtime.
+    assert 'binding = "IDENTITY_AUTHORITY_SERVICE"' in wrangler
+    assert 'service = "padiem-control-plane-identity"' in wrangler
+    assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler
+    assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
     assert 'set(payload) not in ({"connector_id"}, {"connector_id", "begin_oauth"})' in route
     assert "if begin_oauth and connector_id not in _OAUTH_START_REVIEWED_CONNECTORS:" in route
     assert "account_ref" not in route

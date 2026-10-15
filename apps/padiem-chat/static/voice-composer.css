@@ -1,46 +1,122 @@
-/* #4643 shared Chat/Claw microphone entry for the composer.
- *
- * Presentation only. The button sits in .composer-actions (not
- * .composer-tools) because the general Claw view hides .composer-tools;
- * margin-inline-start:auto keeps it grouped with the send cluster in both
- * Chat and Claw without moving existing controls.
+/* Shared Chat / Claw composer: icon-only microphone and blue send button.
+ * No change to Mode 1 recording, transcript, or manual-send behavior.
  */
-
 #voiceMicButton {
-  flex: 0 0 auto;
-  min-height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   margin-inline-start: auto;
-  padding: 0 11px;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: #55565f;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  position: relative;
+  border: 1px solid #bed0dd;
+  border-radius: 14px;
+  color: #587c97;
+  background: #eaf2f7;
+  box-shadow: 0 2px 8px rgba(36, 68, 92, .07);
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 650;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
 }
-
-#voiceMicButton:hover:not(:disabled) { background: #f5f5f8; }
-
-#voiceMicButton[aria-pressed="true"] {
-  background: var(--accent-soft);
-  color: var(--accent-strong);
+#voiceMicButton > span[aria-hidden="true"] {
+  display: block;
+  width: 23px;
+  height: 23px;
+  font-size: 0;
+  background: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%226%22%20height%3D%2212%22%20rx%3D%223%22%2F%3E%3Cpath%20d%3D%22M5%2010v2a7%207%200%200%200%2014%200v-2M12%2019v3M8%2022h8%22%2F%3E%3C%2Fsvg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%226%22%20height%3D%2212%22%20rx%3D%223%22%2F%3E%3Cpath%20d%3D%22M5%2010v2a7%207%200%200%200%2014%200v-2M12%2019v3M8%2022h8%22%2F%3E%3C%2Fsvg%3E");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
-
+/* Keep translated label for screen readers, hide only the visual text. */
+#voiceMicButton [data-locale-key="voice-mic"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+#voiceMicButton:hover:not(:disabled):not([aria-pressed="true"]) {
+  color: #355d79;
+  background: #deebf3;
+  border-color: #a7c0d2;
+}
+#voiceMicButton[aria-pressed="true"],
+#voiceMicButton[data-voice-state="active"] {
+  color: #fff;
+  background: #d94b43;
+  border-color: #c43d36;
+  box-shadow: 0 0 0 3px rgba(217, 75, 67, .16);
+}
+#voiceMicButton[aria-pressed="true"]:hover:not(:disabled) {
+  background: #c63d35;
+  border-color: #b9342f;
+}
 #voiceMicButton:disabled {
-  opacity: .45;
+  opacity: .5;
   cursor: not-allowed;
 }
-
 #voiceMicButton:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
+  outline: 3px solid #6a9abc;
+  outline-offset: 3px;
 }
-
+/* Unify Chat and Claw send affordances. */
+#composerForm .send-button {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid #294b64;
+  border-radius: 14px;
+  color: #fff;
+  background: #355977;
+  box-shadow: 0 3px 10px rgba(34, 72, 104, .15);
+  cursor: pointer;
+  transition: background-color .18s ease, box-shadow .18s ease;
+}
+#composerForm .send-button .send-arrow-icon {
+  width: 23px;
+  height: 23px;
+  display: block;
+}
+#composerForm .send-button:not(:disabled):hover {
+  color: #fff;
+  background: #2e4d67;
+  border-color: #23445d;
+  box-shadow: 0 4px 13px rgba(34, 72, 104, .22);
+  transform: none;
+}
+#composerForm .send-button:disabled {
+  background: #c9d3dc;
+  border-color: #b9c7d2;
+  color: #fff;
+  box-shadow: none;
+  cursor: default;
+}
+#composerForm .send-button:focus-visible {
+  outline: 3px solid #6a9abc;
+  outline-offset: 3px;
+}
+/* Override legacy Claw white-fill styling without changing shell layout. */
+#composerForm .send-button:not(:disabled) {
+  color: #fff !important;
+  background: #355977 !important;
+}
 .voice-interim-preview {
   margin: 2px 0 0;
   padding: 0 8px;
@@ -49,11 +125,143 @@
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
-
 @media (max-width: 620px) {
   #voiceMicButton {
     min-height: 44px;
-    padding: 0 9px;
     align-self: flex-end;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #voiceMicButton, #composerForm .send-button { transition: none; }
+}
+
+/* A disabled microphone route is still clickable: show an actionable notice
+ * only after an attempted click; idle and active statuses remain screen-reader-only.
+ */
+#composerForm .voice-status--notice {
+  display: block;
+  margin: 5px 8px 0;
+  color: #a04139;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Chat/Claw shared composer polish: messages overlay, never resize input. */
+#composerForm { position: relative; }
+#composerForm .composer-inline-hint {
+  position: absolute;
+  top: 34px;
+  right: 12px;
+  z-index: 4;
+  max-width: 52%;
+  margin: 0;
+  padding: 0;
+  color: #bd4a40;
+  background: transparent;
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: right;
+  pointer-events: none;
+}
+#composerForm .composer-inline-hint[hidden] { display: none !important; }
+/* Legacy mic status remains in live region, not in the visible flow. */
+#composerForm .voice-status--notice {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+/* +, web search, PADIEM FREE: ordering is visual only. */
+#composerForm .composer-tools #attachmentButton { order: 1; }
+#composerForm .composer-tools #webSearchButton { order: 2; }
+#composerForm .composer-tools .composer-tier-trigger { order: 3; }
+#composerForm .composer-tools #deepResearchButton { order: 4; }
+#composerForm .composer-tools #attachmentButton,
+#composerForm .composer-tools #webSearchButton {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+}
+#composerForm .composer-tools #attachmentButton span:last-child,
+#composerForm .composer-tools #webSearchButton span:last-child { display: none; }
+#composerForm .composer-tools #attachmentButton span:first-child,
+#composerForm .composer-tools #webSearchButton span:first-child {
+  font-size: 21px;
+  line-height: 1;
+}
+/* Keep all Chat cards at the existing visual height after shortening copy. */
+.app-shell[data-state="chat"] .starter-grid > .starter,
+.app-shell[data-state="chat"] .starter-grid > .document-starter-shell {
+  height: 145px;
+  min-height: 145px;
+  max-height: 145px;
+  box-sizing: border-box;
+}
+.app-shell[data-state="claw"] .starter-grid .document-starter-shell {
+  display: none !important;
+}
+.starter-grid .document-starter-shell {
+  position: relative;
+  min-width: 0;
+}
+.starter-grid .document-starter-shell > .starter {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 145px;
+  max-height: 145px;
+}
+.starter-grid .document-formats-toggle {
+  position: absolute;
+  min-height: 24px; /* Maintain the 145px card; meet the browser touch-target check. */
+  z-index: 2;
+  right: 11px;
+  top: 10px;
+  border: 1px solid #d9e1e8;
+  border-radius: 9px;
+  background: rgba(247,250,253,.94);
+  color: #596c7b;
+  padding: 3px 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+.starter-grid .document-formats-toggle:hover { background: #edf3f9; }
+.starter-grid .document-formats-toggle:focus-visible { outline: 2px solid #6a9abc; outline-offset: 2px; }
+.starter-grid .document-formats-panel {
+  position: absolute;
+  z-index: 30;
+  top: 38px;
+  right: 8px;
+  width: 210px;
+  max-width: 90vw;
+  background: #fff;
+  color: #293d50;
+  border: 1px solid #d2dfe7;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(29,48,64,.17);
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.starter-grid .document-formats-panel[hidden] { display: none !important; }
+.starter-grid .document-formats-panel p { margin: 5px 0 0; }
+@media (max-width: 620px) {
+  #composerForm .composer-inline-hint { top: 30px; right: 8px; font-size: 11px; }
+  .app-shell[data-state="chat"] .starter-grid > .starter,
+  .app-shell[data-state="chat"] .starter-grid > .document-starter-shell,
+  .starter-grid .document-starter-shell > .starter {
+    height: 145px;
+    min-height: 145px;
+    max-height: 145px;
   }
 }

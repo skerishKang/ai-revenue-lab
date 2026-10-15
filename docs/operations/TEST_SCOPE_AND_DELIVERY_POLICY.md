@@ -4,6 +4,19 @@
 - Applies to: every Business, app, package, Engine/Core/Control Plane, Chat, Claw, Desktop, operations and documentation change
 - Parent authority: `AI_DEVELOPMENT_OPERATING_POLICY.md`
 
+
+## 2026-10-14 #4139 fast-delivery test boundary
+
+For PADIEM Connector #4139, test against the **existing `chat.padiem.net` product** rather than making another isolated staging deployment a mandatory precondition. Previous stage Worker/D1/browser experiments and successful Windows self-tests are **reusable historical evidence**, not a reason to rebuild environments or re-run the same wide suites. Documentation corrections are **T0**: review changed lines and authority links, not a full product QA matrix. Source fixes need focused regression and existing exact-head CI; perform one bounded authenticated owner-PC registration/stop/reconnect acceptance in #3099 after approved real deployment.
+
+Do not dilute live security gates: verified owner consent/CSRF, server-backed ON/OFF, TLS/WSS, Broker, DPAPI, rollback, and no cross-product credential inheritance. A live Production route/binding/DB mutation still needs approval for that specific material operation; no staging infrastructure should be substituted for permission to deploy.
+
+<!-- OWNER_4139_DIRECT_LIVE_PRIORITY_20261014 -->
+
+## PADIEM 다국어 QA 적용 원칙 (2026-10-15, 계획 단계)
+
+후속 개발 이슈 [#4807](https://github.com/skerishKang/ai-revenue-lab/issues/4807)의 [i18n-lite 3-Track 설계](PADIEM_I18N_THREE_TRACK_VALIDATION_20261015.md)는 이 정책의 최소 충분 검증 원칙을 구체화한다. 공통 기능은 **한국어 기준으로 검증**하고, 타 언어의 **번역 의미·키 정확성(T)** 및 **화면 클리핑·구조(V)** 는 서로 독립된 변경 범위 검사를 사용한다. 언어별 동일 기능 E2E 반복 실행은 기본 요구사항이 아니다. 실제 언어별 동작 차이, 인증·권한·보안 경계나 GitHub 필수 검사가 있는 경우에는 해당 영향 범위를 검증한다. **명세 작성 상태이며 CI/제품 코드 변경은 별도 구현 대상이다.**
+
 ## 1. Decision
 
 AI Revenue Lab optimizes for **minimum sufficient validation that supports a decision**.

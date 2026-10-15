@@ -11,6 +11,7 @@ from padiem_control_plane.engine_entitlement_producer import (
 )
 from padiem_control_plane.voice_stt_entitlement_policy import (
     VoiceSttPolicy,
+    VoiceSttAllPlansMode1Policy,
     VoiceSttTenantScope,
     voice_stt_grants_for_session,
 )
@@ -132,3 +133,52 @@ def test_policy_cannot_admit_spoofed_product_or_subject_alias():
         policy(scope_product="b66")
     with pytest.raises(ControlPlaneContractError):
         policy(scope_tenant="b62")
+
+def all_plans_mode1():
+    return VoiceSttAllPlansMode1Policy(
+        revision="mode1_owner_all_plans_test",
+        effective_at=NOW - timedelta(hours=1),
+        expires_at=NOW + timedelta(hours=1),
+    )
+
+
+@pytest.mark.parametrize("product", ["b62", "b54-padiem-claw"])
+def test_all_plans_mode1_grants_authenticated_chat_and_claw_without_user_quota(product):
+    actor = session(product=product)
+    grants = voice_stt_grants_for_session(actor, policy=all_plans_mode1(), now=NOW)
+    assert [(g.key, g.allowed, g.limit) for g in grants] == [
+        ("voice.stt.transcribe", True, None),
+    ]
+    snap = produce_authenticated_user_engine_entitlement(
+        actor, now=NOW, voice_policy=all_plans_mode1(),
+    )
+    assert snap.resolve("voice.stt.transcribe").limit is None
+    assert snap.resolve("voice.stt.live_token") is None
+    assert snap.resolve("orchestration.run").allowed is True
+
+
+@pytest.mark.parametrize("actor", [
+    session(tenant=None),
+    session(product="b66"),
+    session(subject_type=SubjectType.ACCOUNT),
+    session(state=AuthSessionState.REVOKED),
+])
+def test_all_plans_mode1_never_waives_identity_or_tenant_scope(actor):
+    assert voice_stt_grants_for_session(
+        actor, policy=all_plans_mode1(), now=NOW,
+    ) == ()
+
+
+def test_all_plans_mode1_still_denies_expired_or_uninstalled_policy():
+    actor = session()
+    assert voice_stt_grants_for_session(actor, policy=None, now=NOW) == ()
+    assert voice_stt_grants_for_session(
+        actor, policy=all_plans_mode1(), now=NOW - timedelta(hours=3),
+    ) == ()
+
+
+def test_all_plans_mode1_cannot_extend_products_or_issue_live_token():
+    with pytest.raises(ControlPlaneContractError):
+        replace(all_plans_mode1(), products=frozenset({"b62", "b66"}))
+    with pytest.raises(ControlPlaneContractError):
+        replace(all_plans_mode1(), products=frozenset({"b62"}))

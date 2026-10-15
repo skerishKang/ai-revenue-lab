@@ -31,11 +31,12 @@ def test_kilo_nemotron_is_permanently_unregistered():
 def test_removed_free_models_not_in_public_or_exact_catalog():
     from app.pilot.catalog import CATALOG_BY_ID
     assert CATALOG_MODELS == []
-    # Historical Kilo promotional free routes remain retired. The only
-    # explicitly owner-approved free-tagged B14 registrations are TokenHarbor.
+    # Historical Kilo promotional free routes remain retired. Explicitly
+    # registered free-tagged B14 models include the owner-approved Cat Jam.
     assert {m.model_id for m in CATALOG_BY_ID.values() if "free" in m.capabilities and m.enabled} == {
         "tokenharbor/claude-haiku-5.5:free",
         "tokenharbor/deepseek-v4.1-flash:free",
+        "opencode-go/cat-jam-free",
     }
     assert all(m not in CATALOG_BY_ID for m in [
         "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",

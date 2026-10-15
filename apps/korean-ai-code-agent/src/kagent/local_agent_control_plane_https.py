@@ -5,6 +5,7 @@ import http.client
 import json
 import re
 import ssl
+import sys
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Protocol
@@ -136,11 +137,16 @@ def _binding_session_exact(binding: DeviceBinding, session: DeviceSession, *, no
 
 class ControlPlaneHttpsOperation(str, Enum):
     OPEN_SESSION = "session"
+    EXECUTION_PROFILE = "execution-profile"
     POLL = "poll"
     MATERIAL = "material"
     ACKNOWLEDGE = "acknowledge"
     RECONCILE = "reconcile"
     OFFICE_PART = "office-part"  # #3580 opt-in, authenticated byte staging only
+    # #4139: the ONE route a bounded verified TXT read result may travel on. It
+    # stages a read result for an already successful acknowledged command and
+    # grants nothing, so it is the canonical device surface, not a second path.
+    TEXT_RESULT = "text-result"
 
 
 class PinnedHttpsJsonRequestPort(Protocol):
@@ -250,6 +256,9 @@ class ControlPlaneHttpsLongPollTransport:
         if not hasattr(self._request_port, "post"):
             raise ContractError("request_port must implement post")
         self._polled: dict[str, tuple[str, ConformedControlPlaneBrokerCommand]] = {}
+        # For the installed Windows bundle only, the first poll is blocked
+        # until this exact successful device session has published its profile.
+        self._pending_installed_profiles: set[tuple[str, str]] = set()
 
     def _credential_b64(self, binding: DeviceBinding, *, now: datetime) -> str:
         credential = self._credential_store.load(binding=binding, now=_aware(now, "now"))
@@ -344,6 +353,8 @@ class ControlPlaneHttpsLongPollTransport:
         )
         if not (session.issued_at <= now < session.expires_at):
             raise ContractError("broker returned a non-current device session")
+        if sys.platform == "win32" and getattr(sys, "frozen", False):
+            self._pending_installed_profiles.add((session.session_id, binding.binding_ref))
         return session
 
     def poll(
@@ -357,6 +368,30 @@ class ControlPlaneHttpsLongPollTransport:
             raise ContractError("request must be OutboundPollRequest")
         now = request.requested_at
         _binding_session_exact(binding, request.session, now=now)
+        key = (request.session.session_id, binding.binding_ref)
+        if key in self._pending_installed_profiles:
+            # Same pinned authenticated transport, same canonical binding and
+            # device credential; never send raw credential to logs/argv. The
+            # execution profile comes from the resident actually installed.
+            from .local_agent_resident_process import (
+                EXECUTION_PROFILE_REF, trusted_executable_profile_path,
+            )
+            response = self._post(
+                config=config,
+                operation=ControlPlaneHttpsOperation.EXECUTION_PROFILE,
+                payload={
+                    "contract_version": "claw-local-installed-execution-profile.v1",
+                    "profile_ref": EXECUTION_PROFILE_REF,
+                    "executable_path": trusted_executable_profile_path(),
+                    "session_id": request.session.session_id,
+                    "binding_ref": binding.binding_ref,
+                    "credential_b64": self._credential_b64(binding, now=now),
+                },
+                timeout_seconds=min(config.poll_timeout_seconds, 30),
+            )
+            if type(response) is not dict or response.get("ok") is not True:
+                raise ContractError("installed_execution_profile_not_confirmed")
+            self._pending_installed_profiles.discard(key)
         response = self._post(
             config=config,
             operation=ControlPlaneHttpsOperation.POLL,

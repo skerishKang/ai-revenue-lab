@@ -94,7 +94,8 @@ jobs:
           identity = Path("packages/padiem-control-plane/identity_authority_worker.py").read_text(encoding="utf-8")
 
           assert "IDENTITY_AUTHORITY_SERVICE" in worker
-          assert "IDENTITY_AUTHORITY_SERVICE" not in config
+          assert 'binding = "IDENTITY_AUTHORITY_SERVICE"' in config
+          assert 'service = "padiem-control-plane-identity"' in config
           assert "PRODUCTION_IDENTITY_BINDING = False" in adapter
           assert "CLIENT_IDENTITY_AUTHORITY = False" in adapter
           assert "PUBLIC_FETCH = False" in identity

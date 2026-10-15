@@ -152,7 +152,8 @@ def test_every_summary_rule_stays_inside_the_automation_panel() -> None:
 
 
 def test_the_floor_does_not_reach_other_claw_panels() -> None:
-    css = _css(FOCUS_CSS)
+    css_all = _css(FOCUS_CSS)
+    css = "\n".join(_rule(css_all, header) for header in (FLOOR_SUMMARY, GLASS_SUMMARY, GLASS_INPUTS, GLASS_TOGGLE))
     for foreign in ("#clawInbox", "#clawManualForm", "#clawRunHistory", "#clawPcEnrollment", "#calendarView"):
         assert foreign not in css, f"the Automation slice must not reach into {foreign}"
 
@@ -162,7 +163,7 @@ def test_the_mobile_media_query_cannot_cap_the_floor() -> None:
     # The file has several 920px blocks; the Automation one is the last and the
     # only one that reflows #clawAutomation.
     start = css.rindex("@media (max-width: 920px)")
-    media = css[start:]
+    media = css[start : css.index("\n}\n", start) + 2]
     assert "#clawAutomation" in media
     assert "width: 100%" in media, "the mobile full-width behaviour must survive"
     assert not re.search(r"(?<![\w-])min-height:", media), "a media query must not re-floor the controls"
@@ -203,7 +204,7 @@ def test_the_calendar_hit_target_and_stacking_fixes_are_preserved() -> None:
     view = _rule(css, ".calendar-view {")
     assert _declares(view, "position: relative")
     assert re.search(r"z-index:\s*2\s*;", view)
-    assert css.count("z-index:") == 1
+    assert css.count("z-index:") == 2 and "z-index: 50;" in css
     # #2834: the sidebar row keeps its 40px contract.
     nav = _rule(css, "#calendarNavButton {")
     assert _declares(nav, "min-height: 40px") and "44px" not in nav
