@@ -93,3 +93,132 @@ def test_injected_factory_cannot_claim_live_host_proof_or_accept_foreign_owner()
     factory=B66HostCPSessionFactory(SimpleNamespace(resolve_verified_cp_drive_owner_link=lambda *a,**k: "bad"))
     with pytest.raises(ValueError,match="invalid_cp_owner_link"):
         factory.resolve_verified_cp_drive_owner_link(A)
+
+# STEP 2-B4: CP read-through host composition focused tests.
+import asyncio
+from app import b66_cp_host_session as b66_host
+from app.b66_cp_host_session import (
+    B66PadiemCPHostComposer,
+    resolve_b66_cp_drive_owner_from_padiem_session,
+)
+
+
+class _Shadow:
+    def __init__(self, subject="canon-1"):
+        self.auth_session_id = "sess-1"
+        self.canonical_subject_id = subject
+        self.session_revision = 1
+
+    async def load_projection(self, user_id):
+        return self
+
+
+class _Authority:
+    def __init__(self, sess):
+        self.sess = sess
+        self.reverse = A
+        self.calls = []
+
+    async def resolve_auth_session(self, *, session_id):
+        assert session_id == "sess-1"
+        return self.sess
+
+    async def resolve_product_user_for_subject(self, *, product_id, canonical_subject_id):
+        self.calls.append((product_id, canonical_subject_id))
+        return self.reverse
+
+
+class _ContextStore:
+    def __init__(self, subject="canon-1", product="b62"):
+        self.subject = subject
+        self.product = product
+        self.reads = 0
+
+    def resolve_existing(self, *, auth_session, now):
+        self.reads += 1
+        return SimpleNamespace(
+            product_id=self.product,
+            subject_id=self.subject,
+            workspace_ref="workspace-a",
+            actor_ref="actor-a",
+        )
+
+
+def _host_env(monkeypatch, *, owner=A, cp_subject="canon-1"):
+    monkeypatch.setattr(b66_host, "auth_ready", lambda request: True, raising=False)
+    from app import auth_routes
+    monkeypatch.setattr(auth_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(auth_routes, "current_user_id", lambda request: owner)
+    auth = _Authority(session(subject=cp_subject))
+    context_store = _ContextStore(subject=cp_subject)
+    return auth, context_store
+
+
+def test_b66_step2b4_signed_host_link_proves_cp_reverse_and_context(monkeypatch):
+    authority, contexts = _host_env(monkeypatch)
+    composer = B66PadiemCPHostComposer(
+        identity_shadow_store=_Shadow(),
+        current_canonical_session_authority=authority,
+        connector_context_store=contexts,
+    )
+    result = asyncio.run(composer.compose_owner_link(request=object()))
+    assert result == B66VerifiedCPDriveOwnerLink(A, "workspace-a", "actor-a")
+    assert authority.calls == [("b62", "canon-1")]
+    assert contexts.reads == 1
+    assert composer.production_host_composition_proven is False
+    assert composer.safe_dict()["production_runtime_wired"] is False
+
+
+@pytest.mark.parametrize("case", [
+    "foreign-owner", "shadow-mismatch", "expired", "revoked",
+    "foreign-context-subject", "foreign-context-product", "missing-reverse",
+    "missing-context", "missing-shadow", "missing-authority",
+])
+def test_b66_step2b4_denies_missing_or_cross_owner_authority(monkeypatch, case):
+    authority, contexts = _host_env(monkeypatch)
+    shadow = _Shadow()
+    if case == "foreign-owner":
+        authority.reverse = B
+    elif case == "shadow-mismatch":
+        shadow = _Shadow("other-canonical-subject")
+    elif case == "expired":
+        authority.sess = session(expired=True)
+    elif case == "revoked":
+        authority.sess = session(state=AuthSessionState.REVOKED)
+    elif case == "foreign-context-subject":
+        contexts.subject = "other-canonical-subject"
+    elif case == "foreign-context-product":
+        contexts.product = "b54-padiem-claw"
+    elif case == "missing-reverse":
+        authority.resolve_product_user_for_subject = None
+    elif case == "missing-context":
+        contexts.resolve_existing = None
+    elif case == "missing-shadow":
+        shadow = None
+    elif case == "missing-authority":
+        authority = None
+    with pytest.raises(ValueError):
+        asyncio.run(resolve_b66_cp_drive_owner_from_padiem_session(
+            request=object(), identity_shadow_store=shadow,
+            current_canonical_session_authority=authority,
+            connector_context_store=contexts,
+        ))
+
+
+def test_b66_step2b4_unsigned_owner_is_rejected(monkeypatch):
+    authority, contexts = _host_env(monkeypatch, owner=None)
+    with pytest.raises(ValueError, match="signed_padiem_session_required"):
+        asyncio.run(resolve_b66_cp_drive_owner_from_padiem_session(
+            request=object(), identity_shadow_store=_Shadow(),
+            current_canonical_session_authority=authority,
+            connector_context_store=contexts,
+        ))
+    assert contexts.reads == 0
+
+
+def test_b66_step2b4_absent_host_composition_does_not_claim_live(monkeypatch):
+    _host_env(monkeypatch)
+    composer = B66PadiemCPHostComposer()
+    with pytest.raises(ValueError, match="cp_host_authority_required"):
+        asyncio.run(composer.compose_owner_link(request=object()))
+    assert composer.safe_dict()["production_host_composition_proven"] is False

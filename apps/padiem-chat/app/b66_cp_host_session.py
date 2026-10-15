@@ -1,4 +1,4 @@
-"""B66 #4089 Step 2-B3: signed Padiem session to CP owner / workspace proof.
+"""B66 #4089 Step 2-B3/B4: signed Padiem session to CP owner / workspace proof.
 
 This module is a typed, server-only composition port. It deliberately does not
 activate an OAuth grant, mint a Google subject, or expose a public route. Host
@@ -142,5 +142,133 @@ class B66HostCPSessionFactory:
             "b66_owner_actor_workspace": "BLOCKED",
             "production_host_composition_proven": self.production_host_composition_proven,
             "server_verified_padiem_session_to_cp_link": False,
+            "production_runtime_wired": False,
+        }
+# STEP 2-B4: Source-only verified host composition, no runtime/OAuth activation.
+async def resolve_b66_cp_drive_owner_from_padiem_session(
+    *,
+    request: Any,
+    identity_shadow_store: Any,
+    current_canonical_session_authority: Any,
+    connector_context_store: Any,
+    now: datetime | None = None,
+) -> B66VerifiedCPDriveOwnerLink:
+    """Resolve one signed B66/PADIEM owner through existing read-only CP proofs.
+
+    The product ID comes from the authenticated cookie, not a caller's owner
+    parameter; the CP reverse lookup independently proves its ACTIVE link.
+    No shadow-only assertion or freshly created connector context is trusted.
+    """
+    import inspect
+    from padiem_control_plane.contracts import (
+        ProductIdentityLink, IdentityLinkState,
+    )
+    from .auth_routes import auth_ready, current_user_id
+    from .control_plane_identity_shadow import resolve_refreshed_session
+
+    if now is None:
+        now = datetime.now(timezone.utc)
+    if not _is_aware_datetime(now):
+        raise ValueError("trusted_time_required")
+    if not auth_ready(request):
+        raise ValueError("signed_padiem_session_required")
+    try:
+        uid = current_user_id(request)
+    except Exception as exc:
+        raise ValueError("signed_padiem_session_required") from exc
+    if not isinstance(uid, str) or _B66_USER_RE.fullmatch(uid) is None:
+        raise ValueError("signed_padiem_session_required")
+    if (
+        identity_shadow_store is None
+        or current_canonical_session_authority is None
+        or connector_context_store is None
+    ):
+        raise ValueError("cp_host_authority_required")
+
+    reverse_lookup = getattr(
+        current_canonical_session_authority, "resolve_product_user_for_subject", None
+    )
+    context_lookup = getattr(connector_context_store, "resolve_existing", None)
+    if not callable(reverse_lookup) or not callable(context_lookup):
+        raise ValueError("cp_host_read_authority_required")
+
+    # resolve_refreshed_session verifies the non-authoritative shadow against
+    # CURRENT CP session state, revision, product, subject, and expiry.
+    try:
+        session = await resolve_refreshed_session(
+            authority=current_canonical_session_authority,
+            store=identity_shadow_store,
+            product_user_id=uid,
+            now=now,
+        )
+        linked_uid = reverse_lookup(
+            product_id="b62", canonical_subject_id=session.subject.subject_id
+        )
+        if inspect.isawaitable(linked_uid):
+            linked_uid = await linked_uid
+        if linked_uid != uid:
+            raise ValueError("cp_product_owner_mismatch")
+
+        context = context_lookup(auth_session=session, now=now)
+        if inspect.isawaitable(context):
+            context = await context
+        if getattr(context, "product_id", None) != "b62":
+            raise ValueError("cp_context_product_mismatch")
+        if getattr(context, "subject_id", None) != session.subject.subject_id:
+            raise ValueError("cp_subject_mismatch")
+        trusted_link = ProductIdentityLink(
+            product_id="b62",
+            product_user_id=linked_uid,
+            canonical_subject_id=session.subject.subject_id,
+            state=IdentityLinkState.ACTIVE,
+        )
+        return validate_canonical_cp_drive_owner_link(
+            owner_b66_user_id=uid,
+            cp_auth_session=session,
+            cp_product_link=trusted_link,
+            cp_connector_context=context,
+            now=now,
+        )
+    except Exception as exc:
+        # Source-only boundary: never expose CP identity, tenant, or secrets
+        # in errors and never derive owner context from client-supplied fields.
+        raise ValueError("cp_host_owner_link_unavailable") from exc
+
+
+class B66PadiemCPHostComposer:
+    """Inject existing CP read authorities; does not prove live Worker wiring."""
+
+    def __init__(
+        self,
+        *,
+        identity_shadow_store: Any = None,
+        current_canonical_session_authority: Any = None,
+        connector_context_store: Any = None,
+    ) -> None:
+        self._identity_shadow_store = identity_shadow_store
+        self._current_canonical_session_authority = current_canonical_session_authority
+        self._connector_context_store = connector_context_store
+
+    @property
+    def production_host_composition_proven(self) -> bool:
+        # A Python object passed to a constructor is not a Production proof.
+        return False
+
+    async def compose_owner_link(self, *, request: Any, now: datetime | None = None):
+        return await resolve_b66_cp_drive_owner_from_padiem_session(
+            request=request,
+            identity_shadow_store=self._identity_shadow_store,
+            current_canonical_session_authority=self._current_canonical_session_authority,
+            connector_context_store=self._connector_context_store,
+            now=now,
+        )
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "auth_session_source": "signed_padiem_session",
+            "product_link_source": "cp_active_reverse_product_link",
+            "cp_context_source": "canonical_connector_context_resolve_existing",
+            "tenant_isolation": "refreshed_cp_session_and_private_owner_context",
+            "production_host_composition_proven": False,
             "production_runtime_wired": False,
         }
