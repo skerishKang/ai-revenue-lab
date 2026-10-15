@@ -1013,6 +1013,37 @@ def create_app(
         except Exception:
             _b66_saved_skill_candidate_store = None
     app.state.b66_saved_skill_candidate_store = _b66_saved_skill_candidate_store
+    # #3186 STEP 3-B: one server-side trusted grant and target boundary.
+    _b66_operator_authority_store = app.state.b66_member_admin_store
+    _b66_saved_skill_candidate_operator_authority = None
+    if _b66_operator_authority_store is not None and isinstance(
+            getattr(_b66_operator_authority_store, "admin_email", None), str
+    ) and _b66_operator_authority_store.admin_email.strip():
+        try:
+            from .b66_saved_skill_candidate_authority import (
+                D1B66SavedQuoteSkillCandidateOperatorAuthority,
+            )
+            _b66_saved_skill_candidate_operator_authority = (
+                D1B66SavedQuoteSkillCandidateOperatorAuthority(
+                    member_admin_store=_b66_operator_authority_store,
+                    candidate_store=_b66_saved_skill_candidate_store,
+                )
+            )
+        except Exception:
+            _b66_saved_skill_candidate_operator_authority = None
+    app.state.b66_saved_skill_candidate_operator_authority = (
+        _b66_saved_skill_candidate_operator_authority
+    )
+    if _b66_saved_skill_candidate_operator_authority is None:
+        app.state.b66_operator_grant_resolver = None
+        app.state.b66_operator_target_resolver = None
+    else:
+        app.state.b66_operator_grant_resolver = (
+            _b66_saved_skill_candidate_operator_authority.issue_operator_grant
+        )
+        app.state.b66_operator_target_resolver = (
+            _b66_saved_skill_candidate_operator_authority.resolve_operator_target
+        )
 
     # B66 #3406: canonical account/workspace company identity/defaults. This is
     # separate from Saved Quote Skill layout behavior and browser-local presets.
