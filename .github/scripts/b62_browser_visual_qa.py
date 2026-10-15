@@ -1021,14 +1021,17 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 f"before={reading_before_scroll[key]!r}, after={reading_after_scroll[key]!r}"
             )
 
-    if reading_rest["portraitOpacity"] >= home_before_pointer["portraitOpacity"]:
+    # 2026-10-15 owner visual policy: the Chat first screen remains the
+    # source of truth after a first turn. Reading may change conversation
+    # semantics, never fade its portrait or background grid.
+    if abs(reading_rest["portraitOpacity"] - home_before_pointer["portraitOpacity"]) > .015:
         raise AssertionError(
-            "Glass reading mode must reduce portrait prominence: "
+            "Glass reading mode must preserve home portrait prominence: "
             f"home={home_before_pointer['portraitOpacity']}, reading={reading_rest['portraitOpacity']}"
         )
-    if reading_rest["bodyNoiseOpacity"] >= home_before_pointer["bodyNoiseOpacity"]:
+    if abs(reading_rest["bodyNoiseOpacity"] - home_before_pointer["bodyNoiseOpacity"]) > .015:
         raise AssertionError(
-            "Glass reading mode must reduce atmospheric grid noise: "
+            "Glass reading mode must preserve home atmospheric grid noise: "
             f"home={home_before_pointer['bodyNoiseOpacity']}, reading={reading_rest['bodyNoiseOpacity']}"
         )
 

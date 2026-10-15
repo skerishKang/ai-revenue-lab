@@ -11,7 +11,8 @@ Owner policy encoded here (#2085):
 * AUTO_PROVIDER_SELECTION = NO
 * AUTO_MODEL_SELECTION = NO
 * USER_VISIBLE_AUTO_LABEL = NO
-* SILENT_FALLBACK = NO
+* UNRESTRICTED_SILENT_MODEL_SUBSTITUTION = NO
+* OWNER_PINNED_TIER_FALLBACK = YES, on recoverable provider failures only
 * USER_VISIBLE_LABELS = "Padiem Plus" / "Padiem Pro" / "Padiem Max"
 
 Separation of duties (#2099 ACT-0 decision):
@@ -54,6 +55,11 @@ TIER_FALLBACK_B14_MODELS = {
     "pro": "opencode-go/muse-spark-1.2-contributor",
     "max": "opencode-go/muse-spark-1.3-contributor",
 }
+
+# A declared grade's fallback is a specific owner choice, not b14/auto or
+# permission for an unrelated/paid model. B14 verifies live registration,
+# credentials and eligible 429/5xx/timeout before any failover.
+OWNER_PINNED_TIER_FALLBACK_ON_RECOVERABLE_ERROR = True
 
 class ProductTierLabel(str, Enum):
     FREE = "Padiem Free"
@@ -106,6 +112,8 @@ class ProductTierRoute:
 class ProductTierDefinition:
     label: ProductTierLabel
     routes: tuple[ProductTierRoute, ...]
+    # False forbids arbitrary/unlisted substitutions, NOT the separately
+    # owner-pinned per-grade provider-failure recovery roster below.
     silent_fallback_allowed: bool = False
     policy_version: str = PRODUCT_TIER_POLICY_VERSION
 

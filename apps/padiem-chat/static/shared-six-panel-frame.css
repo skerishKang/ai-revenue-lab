@@ -253,3 +253,25 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
     display: none !important;
   }
 }
+
+
+/* CENTRAL_CONTINUOUS_CHAT_CLAW_20261015
+ * The first Chat/Claw turn extends the original starter screen inside the
+ * same scrolling conversation frame. Intro + cards remain above the messages;
+ * older content scrolls up naturally as turns are appended. No overlay, portal,
+ * duplicate panel or model-API behavior. */
+html[data-theme="padiem-glass"] body .app-shell .conversation[data-continuous-thread="true"] .empty-state:not([hidden]) {
+  display: grid !important;
+}
+html[data-theme="padiem-glass"] body .app-shell .conversation[data-continuous-thread="true"] #messageList:not([hidden]) {
+  display: grid;
+  margin-top: clamp(28px, 3.2vh, 48px) !important;
+  padding-top: 0 !important;
+}
+html[data-theme="padiem-glass"] body .app-shell .conversation[data-continuous-thread="true"] {
+  /* Do not force CSS smooth scroll: browser QA and fail/retry affordances
+     require immediate scrollIntoView(auto) for an error card. */
+  scroll-behavior: auto;
+  overflow-anchor: none;
+  scroll-padding-top: 28px;
+}

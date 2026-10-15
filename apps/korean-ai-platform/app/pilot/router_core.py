@@ -177,10 +177,10 @@ def resolve_manual_route(
     Returns a RouteDecision. Does NOT make upstream calls.
     Raises NoSafeRoute if the model is not in the catalog or is disabled.
 
-    Manual routes default to ``allow_external_fallback=False``: no fallback
-    candidates, ``fallback_allowed=False``, ``max_attempts=1``.  Only when the
-    caller explicitly passes ``allow_external_fallback=True`` are fallback
-    candidates populated (subject to error-allow-list in the gateway).
+    Manual routes default to no arbitrary catalog substitutions. An owner-
+    selected Cat Jam primary with trusted product grade instead receives
+    exactly one preselected grade fallback on recoverable provider failure.
+    The generic allow_external_fallback flag does not disable this fixed pair.
     """
     request_id = _new_request_id()
     # Owner exclusions override historical B14 registration in live mode.
