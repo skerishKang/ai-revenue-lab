@@ -38,7 +38,7 @@ def _open_owner_approval_page(url: str) -> None:
     if not webbrowser.open(url, new=2):
         raise DeviceSessionRefused("pc_offer_owner_browser_unavailable")
 
-async def enroll_customer_pending_offer(*, enrollment: Any) -> Any:
+async def enroll_customer_pending_offer(*, enrollment: Any, on_stage: Any = None) -> Any:
     """Attempt a SINGLE live PC offer and normal canonical credential commit.
 
     Until LOCAL1 mounts its server-side verified-intent matcher, the server will
@@ -71,4 +71,5 @@ async def enroll_customer_pending_offer(*, enrollment: Any) -> Any:
             socket=socket, trusted_tls=VerifiedReviewTls(), enrollment=enrollment,
             receiver=receiver, binding_store=bindings,
             owner_approval_open=_open_owner_approval_page,
+            on_stage=on_stage,
         )
