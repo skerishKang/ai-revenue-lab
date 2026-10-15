@@ -214,8 +214,8 @@ def test_frontend_exposes_generic_file_control_without_losing_image_support():
         assert f'label: "{label}"' in capabilities
     assert 'id="attachmentButton"' in html
     assert "<span>파일</span>" in html
-    assert "문서와 대화" in html
-    assert "지원 문서 형식" in html
+    assert "파일 업로드" in html
+    assert "지원 형식" in html
     assert "const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;" in js
     assert "const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;" in js
     assert "ALLOWED_IMAGE_TYPES" in js

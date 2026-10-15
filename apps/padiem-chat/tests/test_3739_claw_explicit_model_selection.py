@@ -180,7 +180,7 @@ def test_claw_browser_keeps_explicit_id_in_submit_snapshot_only():
     assert 'id="clawModelIdInput"' in INDEX
     assert 'id="clawVerifiedModelSelect"' in INDEX
     assert 'id="clawModelIdInput" type="text" value=""' in INDEX
-    assert 'selectedProductTier() === "plus"' in FRONT
+    assert 'return ["free", "plus", "pro", "max"].includes(tier) ? tier : "free";' in FRONT
     assert 'placeholder="등록된 모델 ID를 입력하세요"' in INDEX
     assert "agnes-ai/agnes-3.0-flash" not in INDEX  # Do not suggest deferred providers as defaults.
     assert "clawGeneralRequestActive()" in FRONT
