@@ -660,14 +660,16 @@ def test_claw_free_greeting_sends_without_an_invisible_plus_model_choice() -> No
     assert _lane_only(result) == [GENERAL_ROUTE_PATH]
 
 
-def test_user_cleared_model_sends_no_model_id_field() -> None:
-    """Clearing the explicit model fails closed BEFORE sending any Claw request."""
+def test_cleared_explicit_model_uses_server_verified_grade_without_model_id() -> None:
+    """A grade-only Claw request delegates exact model resolution to the server."""
     _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP)
-    result = _run_client([{"name": "cleared-selection", "mode": "stream", "raw": raw, "modelId": ""}])[0]
-    # #3790: an empty choice is rejected on the client before quota/network.
+    result = _run_client([{"name": "cleared-selection", "mode": "stream", "raw": raw, "modelId": "", "tier": "plus"}])[0]
     general = _general_posts(result)
-    assert general == [], result["requests"]
-    assert _lane_only(result) == [], result["requests"]
+    assert len(general) == 1, result["requests"]
+    sent = json.loads(general[0]["body"])
+    assert sent["tier"] == "plus", sent
+    assert "model_id" not in sent, sent
+    assert _lane_only(result) == [GENERAL_ROUTE_PATH], result["requests"]
 
 
 def test_502_engine_failure_shows_bounded_error_and_never_dispatches_again() -> None:
