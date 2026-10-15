@@ -208,3 +208,68 @@ def test_setup_page_has_no_extra_consent_or_approve_control():
     assert '/api/claw/connector/enrollments/approve-link' not in setup._SCRIPT
     assert 'padiem-connector://start?' not in setup._SCRIPT
     assert 'localStorage.setItem' not in setup._SCRIPT
+
+def test_claw_original_click_approves_exactly_once_with_real_login_dom():
+    """The Claw CTA, not setup GET, owns the single authenticated owner POST."""
+    from pathlib import Path
+    import shutil
+    import subprocess
+    import pytest
+
+    if shutil.which("node") is None:
+        pytest.skip("Node unavailable")
+    source = (Path(__file__).parents[1] / "static" / "claw-home-choices.js").read_text(encoding="utf-8")
+    script = r"""
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const source=fs.readFileSync(0,'utf8');
+const listeners={};let opens=0,posts=[],channels=[];
+const node=(id)=>({dataset:{},hidden:false,disabled:false,
+  addEventListener(e,fn){listeners[id+':'+e]=fn;},
+  click(){},querySelector(){return null},focus(){},scrollIntoView(){},hasAttribute(){return true}});
+const nodes={
+  clawComputerWorkspace:node('clawComputerWorkspace'),
+  clawWorkspace:Object.assign(node('clawWorkspace'),{dataset:{view:'general'}}),
+  connectorsNavButton:node('connectorsNavButton'),
+  connectorsDialog:Object.assign(node('connectorsDialog'),{open:true}),
+  clawComputerLiveStatus:node('clawComputerLiveStatus'),
+  clawComputerDeviceStatusButton:Object.assign(node('clawComputerDeviceStatusButton'),{disabled:true}),
+};
+const shell={dataset:{state:'claw'}};
+const account={dataset:{accountState:'signed_in'}};
+globalThis.document={
+  readyState:'complete',documentElement:{lang:'en'},
+  getElementById(id){return nodes[id]||null;},
+  querySelector(s){return s==='.app-shell'?shell:s==='.sidebar-account'?account:
+    s==='[data-claw-connection="pc"]'?{dataset:{connectionState:'off'}}:null;}
+};
+globalThis.window={addEventListener(){},location:{assign(){opens++;}},
+  BroadcastChannel:class{constructor(n){assert.equal(n,'padiem-claw-pc-connect-v1');channels.push(this);}
+    close(){};}};
+globalThis.fetch=async (url,options)=>{
+  posts.push({url,options});
+  return {ok:true,text:async()=>JSON.stringify({ok:true,state:'awaiting_device_confirmation',
+    device_id:'pc.1',connected:false,registered:false,dispatch_authorized:false})};
+};
+eval(source);
+(async()=>{
+  const ref='link.'+'a'.repeat(32);
+  assert.equal(opens,0);assert.equal(posts.length,0);
+  listeners['clawComputerWorkspace:click']();
+  assert.equal(opens,1);assert.equal(channels.length,1);
+  channels[0].onmessage({data:{type:'pc_offer_ready',request_ref:ref}});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(posts.length,1);
+  assert.equal(posts[0].url,'/api/claw/connector/enrollments/approve-link');
+  assert.equal(posts[0].options.credentials,'same-origin');
+  assert.deepEqual(JSON.parse(posts[0].options.body),{request_ref:ref});
+  channels[0].onmessage({data:{type:'pc_offer_ready',request_ref:ref}});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(posts.length,1,'duplicate must not approve');
+  account.dataset.accountState='signed_out';
+  listeners['clawComputerWorkspace:click']();
+  assert.equal(opens,1,'signed out must not launch');
+})().catch(e=>{process.stderr.write(String(e.stack));process.exitCode=1});
+"""
+    result = subprocess.run(["node", "-e", script], input=source, capture_output=True,
+                            text=True, timeout=15, check=False)
+    assert result.returncode == 0, result.stderr
