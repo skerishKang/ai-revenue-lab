@@ -81,8 +81,15 @@ SourceFiles0=__STAGE__
     # the CAB/EXE is written and caused a false build failure + early temp
     # cleanup. Wait for the actual packager process to exit before checking.
     $Build = Start-Process -FilePath $IExpress -ArgumentList @('/N','/Q','/M', ('"' + $SedFile + '"')) -PassThru -Wait
-    if ($Build.ExitCode -ne 0 -or -not (Test-Path -LiteralPath $OutputExe -PathType Leaf)) {
-        throw 'IExpress did not produce a Windows customer setup EXE.'
+    # On some Windows images IExpress spawns the cabinet writer and returns
+    # before the output becomes visible. Do not delete its source SED/payload
+    # while the child writer still needs them.
+    for ($attempt = 0; $attempt -lt 60 -and
+         -not (Test-Path -LiteralPath $OutputExe -PathType Leaf); $attempt++) {
+        Start-Sleep -Seconds 1
+    }
+    if (-not (Test-Path -LiteralPath $OutputExe -PathType Leaf)) {
+        throw ("IExpress setup artifact absent (exit=" + $Build.ExitCode + ")")
     }
     $File = Get-Item -LiteralPath $OutputExe
     Write-Output (@{
