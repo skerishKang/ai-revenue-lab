@@ -37,6 +37,20 @@
     // Constant-only diagnostic stages. Never log IDs, refs, payloads, cookies.
     function pcStage(code) {
       console.info("PADIEM_4139_STAGE=" + code);
+      // Small per-tab, status-only readback when a live console has not been
+      // preserved. No request refs, account/device identifiers or payloads.
+      const safe = /^(?:receiver_js_loaded|receiver_ready|click_intent_created|native_uri_issued|pagehide_intent_cleared|offer_message_received|offer_intent_absent|offer_context_rejected|approve_post_dispatch|approve_fetch_rejected|approve_http_(?:[1-5][0-9]{2}|unknown)|approve_denied_[a-z_]{1,65}|approve_receipt_(?:valid|read_failed|too_large|json_invalid|contract_invalid)|approve_failed)$/;
+      if (!safe.test(code)) return;
+      try {
+        const key = "padiem_4139_approval_stages_v1";
+        const saved = JSON.parse(window.sessionStorage.getItem(key) || "[]");
+        const previous = Array.isArray(saved) ? saved.filter(
+          (entry) => typeof entry === "string" && safe.test(entry)).slice(-23) : [];
+        previous.push(code);
+        window.sessionStorage.setItem(key, JSON.stringify(previous));
+      } catch {
+        // Private storage may be disabled. Console logging remains sufficient.
+      }
     }
     pcStage("receiver_js_loaded");
 
@@ -70,23 +84,73 @@
       note.hidden = false;
     }
 
+    // Existing server-defined public denial enums only. Do not log arbitrary
+    // response data, tokens, refs, cookies, device IDs or exception messages.
+    const pcApprovalDenials = new Set([
+      "canonical_session_required", "connector_enrollment_csrf_denied",
+      "enrollment_server_dependency_unavailable",
+      "explicit_pc_consent_required", "invalid_pending_pc_request",
+      "pending_pc_unavailable", "pending_pc_not_authenticated",
+      "pending_pc_expired", "canonical_consent_unavailable",
+      "canonical_consent_unconfirmed", "canonical_challenge_unavailable",
+      "canonical_challenge_invalid", "pc_delivery_unconfirmed",
+    ]);
+
     async function approveReadyPc(requestRef) {
       try {
         // Existing authenticated, same-origin/CSRF-guarded owner POST contract.
-        const response = await fetch("/api/claw/connector/enrollments/approve-link", {
-          method: "POST", mode: "same-origin", credentials: "same-origin",
-          redirect: "error", referrerPolicy: "no-referrer", cache: "no-store",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ request_ref: requestRef }),
-        });
-        pcStage("approve_http_" + response.status);
-        if (!response.ok) throw new Error("owner_approval_refused");
-        const raw = await response.text();
-        if (raw.length > 8192) throw new Error("owner_receipt_too_large");
-        const reply = JSON.parse(raw);
+        let response;
+        try {
+          response = await fetch("/api/claw/connector/enrollments/approve-link", {
+            method: "POST", mode: "same-origin", credentials: "same-origin",
+            redirect: "error", referrerPolicy: "no-referrer", cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ request_ref: requestRef }),
+          });
+        } catch {
+          // Redirect disallowed by fetch, network/transport errors, etc.
+          pcStage("approve_fetch_rejected");
+          throw new Error("owner_approval_transport");
+        }
+        pcStage("approve_http_" + (Number.isInteger(response.status) &&
+          response.status >= 100 && response.status <= 599 ? response.status : "unknown"));
+        if (!response.ok) {
+          let safeCode = "unclassified";
+          try {
+            const denialBody = await response.text();
+            if (denialBody.length <= 2048) {
+              const denial = JSON.parse(denialBody);
+              const code = denial?.error?.code;
+              if (denial?.ok === false && pcApprovalDenials.has(code)) safeCode = code;
+            }
+          } catch {
+            // Diagnostic body unavailable; preserve the HTTP status and reject.
+          }
+          pcStage("approve_denied_" + safeCode);
+          throw new Error("owner_approval_refused");
+        }
+        let raw;
+        try {
+          raw = await response.text();
+        } catch {
+          pcStage("approve_receipt_read_failed");
+          throw new Error("owner_receipt_unreadable");
+        }
+        if (raw.length > 8192) {
+          pcStage("approve_receipt_too_large");
+          throw new Error("owner_receipt_too_large");
+        }
+        let reply;
+        try {
+          reply = JSON.parse(raw);
+        } catch {
+          pcStage("approve_receipt_json_invalid");
+          throw new Error("owner_receipt_json_invalid");
+        }
         if (reply?.ok !== true || reply.state !== "awaiting_device_confirmation" ||
             reply.connected !== false || reply.registered !== false ||
             reply.dispatch_authorized !== false) {
+          pcStage("approve_receipt_contract_invalid");
           throw new Error("owner_receipt_invalid");
         }
         pcStage("approve_receipt_valid");
