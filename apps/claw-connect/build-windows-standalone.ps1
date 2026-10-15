@@ -21,6 +21,7 @@ param(
 $ErrorActionPreference = "Stop"
 $Here = $PSScriptRoot
 $AgentSrc = Join-Path $Here "..\korean-ai-code-agent\src" -Resolve
+$CoreSrc = Join-Path $Here "..\..\packages\padiem-ai-core" -Resolve
 $VenvDir = Join-Path ([System.IO.Path]::GetTempPath()) "padiem-standalone-buildvenv"
 
 if (-not $Python) { throw "Python 3.11+ is required to create the build venv." }
@@ -35,9 +36,12 @@ $WorkDir = Join-Path $OutRoot "work"
     --noconfirm --clean --onedir --console --name padiem-connector `
     --paths (Join-Path $Here ".") `
     --paths $AgentSrc `
+    --paths $CoreSrc `
     --collect-submodules claw_connect `
     --collect-submodules padiem_connector `
     --exclude-module kagent `
+    --exclude-module padiem_ai_core `
+    --add-data "$CoreSrc\padiem_ai_core;padiem_ai_core" `
     --add-data "$AgentSrc\kagent;kagent" `
     --distpath $DistDir --workpath $WorkDir `
     (Join-Path $Here "padiem_connector\__main__.py")
