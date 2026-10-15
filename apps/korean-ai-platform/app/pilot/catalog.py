@@ -90,8 +90,9 @@ class CatalogModel:
         return round(usd * _KRW_PER_USD_CONFIGURED, 1)
 
 
-# Single provider & route under owner decision #1933: Kilo Gateway free route.
-# Rate limit: 200 requests/hour. Fails closed with 429 when exhausted.
+# The canonical B14 model registry installs entries from b14_models.json here.
+# The catalog supports multiple providers; availability and rate limits are
+# route/provider-specific, not a universal 200-requests-per-hour catalog rule.
 CATALOG_MODELS: list[CatalogModel] = []
 
 
