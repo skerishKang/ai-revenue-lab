@@ -103,6 +103,10 @@ _SECRET_IN_COMMAND = re.compile(
 
 def start_command() -> str:
     """Bound to the installed package root even at logon with a foreign cwd."""
+    if getattr(sys, "frozen", False):
+        # sys.executable is the installed Connector EXE; -c would be parsed
+        # as an invalid Connector CLI option and never start at logon.
+        return f'"{sys.executable}" start'
     root = Path(__file__).resolve().parent.parent
     encoded = base64.b64encode(str(root).encode("utf-8")).decode("ascii")
     code = (
