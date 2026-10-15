@@ -11,6 +11,8 @@ SOURCE_FORMAT_POLICY = #3586
 
 B66 is Padiem's standalone quotation product for businesses that already have quotation formats they use repeatedly.
 
+B66 운영 D1 접근 오류와 041·042·044 실제 적용·Worker/Pages 배포 절차는 [운영 런북](../../operations/B66_D1_ACCESS_AND_PRODUCTION_RELEASE_20261015.md)에 검증 기록과 함께 정리돼 있습니다.
+
 B66은 **PADIEM CLAW 실행 경험에 기반한 견적서 제작 전문 제품**입니다. 2026-10-15 대표 확정 방향과 현재 접합 단계/운영 수용 경계는 [CLAW_SPECIALIZED_QUOTE_INTEGRATION_2026-10-15.md](CLAW_SPECIALIZED_QUOTE_INTEGRATION_2026-10-15.md) 및 [#4803](https://github.com/skerishKang/ai-revenue-lab/issues/4803)를 참조하세요. 기존 인증 CGI PDF/QuoteCore/Saved Quote Skill 권위는 유지하며 이 문서가 운영 E2E 완료를 뜻하지 않습니다.
 
 > **2026-10-14 B66 AI 다중 턴 대화·표준 QuoteCore 초안 인계 개발 현황:** [AI_CONVERSATION_QUOTECORE_HANDOFF_STATUS_2026-10-14.md](AI_CONVERSATION_QUOTECORE_HANDOFF_STATUS_2026-10-14.md) — [#4466](https://github.com/skerishKang/ai-revenue-lab/issues/4466)/[#4412](https://github.com/skerishKang/ai-revenue-lab/issues/4412), [Draft PR #4658](https://github.com/skerishKang/ai-revenue-lab/pull/4658)의 수정·잔여 P0·CI 증거·미연결 UI·운영 수용 구분. 이 날짜 문서는 스냅샷이며 현재 상태는 해당 이슈와 PR이 우선합니다.
