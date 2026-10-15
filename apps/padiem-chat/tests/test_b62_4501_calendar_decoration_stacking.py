@@ -118,7 +118,7 @@ def test_the_fix_is_scoped_to_calendar_only() -> None:
     css = _css(CALENDAR_CSS)
     assert "z-index" in css
     # Exactly one rule carries the lift: the destination itself.
-    assert css.count("z-index:") == 1
+    assert css.count("z-index:") == 2 and "z-index: 50;" in css
     assert ".library-view" not in css
     assert ".claw-workspace" not in css
     assert ".main-panel::before" not in css
