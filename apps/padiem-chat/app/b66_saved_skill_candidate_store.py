@@ -284,6 +284,19 @@ class SavedQuoteSkillCandidateStore(Protocol):
         candidate_id: str,
     ) -> dict[str, Any] | None: ...
 
+    async def list_operator_candidates(
+        self,
+        *,
+        status: str = CANDIDATE_STATUS_PENDING,
+        limit: int = MAX_CANDIDATES,
+    ) -> list[dict[str, Any]]: ...
+
+    async def get_operator_candidate(
+        self,
+        *,
+        candidate_id: str,
+    ) -> dict[str, Any] | None: ...
+
     async def read_candidate_envelope(
         self,
         *,
@@ -431,6 +444,34 @@ class D1SavedQuoteSkillCandidateStore:
         )
         return [_public_projection(row, include_candidate=False) for row in rows]
 
+    async def list_operator_candidates(
+        self,
+        *,
+        status: str = CANDIDATE_STATUS_PENDING,
+        limit: int = MAX_CANDIDATES,
+    ) -> list[dict[str, Any]]:
+        if status not in CANDIDATE_STATUSES:
+            raise SavedQuoteSkillCandidateStoreError("candidate status is invalid")
+        bounded = max(1, min(int(limit), MAX_CANDIDATES))
+        rows = await self._all(
+            "SELECT " + self._COLUMNS + " FROM b66_saved_skill_candidate "
+            "WHERE status=? ORDER BY updated_at DESC LIMIT ?",
+            status, bounded,
+        )
+        return [_public_projection(row, include_candidate=False) for row in rows]
+
+    async def get_operator_candidate(
+        self,
+        *,
+        candidate_id: str,
+    ) -> dict[str, Any] | None:
+        row_id = validate_candidate_row_id(candidate_id)
+        row = await self._first(
+            "SELECT " + self._COLUMNS + " FROM b66_saved_skill_candidate WHERE id=?",
+            row_id,
+        )
+        return _public_projection(row, include_candidate=False) if row else None
+
     async def get_candidate(
         self,
         *,
@@ -443,6 +484,34 @@ class D1SavedQuoteSkillCandidateStore:
         row_id = validate_candidate_row_id(candidate_id)
         row = await self._read_row(owner=owner, workspace=workspace, candidate_id=row_id)
         return _public_projection(row, include_candidate=True) if row else None
+
+    async def list_operator_candidates(
+        self,
+        *,
+        status: str = CANDIDATE_STATUS_PENDING,
+        limit: int = MAX_CANDIDATES,
+    ) -> list[dict[str, Any]]:
+        if status not in CANDIDATE_STATUSES:
+            raise SavedQuoteSkillCandidateStoreError("candidate status is invalid")
+        bounded = max(1, min(int(limit), MAX_CANDIDATES))
+        rows = await self._all(
+            "SELECT " + self._COLUMNS + " FROM b66_saved_skill_candidate "
+            "WHERE status=? ORDER BY updated_at DESC LIMIT ?",
+            status, bounded,
+        )
+        return [_public_projection(row, include_candidate=False) for row in rows]
+
+    async def get_operator_candidate(
+        self,
+        *,
+        candidate_id: str,
+    ) -> dict[str, Any] | None:
+        row_id = validate_candidate_row_id(candidate_id)
+        row = await self._first(
+            "SELECT " + self._COLUMNS + " FROM b66_saved_skill_candidate WHERE id=?",
+            row_id,
+        )
+        return _public_projection(row, include_candidate=False) if row else None
 
     async def read_candidate_envelope(
         self,

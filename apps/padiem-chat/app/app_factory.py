@@ -74,6 +74,8 @@ from .b66_saved_quote_skill_store import (
 from .b66_saved_skill_candidate_routes import (
     b66_saved_skill_candidate_detail,
     b66_saved_skill_candidate_list,
+    b66_saved_skill_candidate_operator_detail,
+    b66_saved_skill_candidate_operator_list,
     b66_saved_skill_candidate_submit,
 )
 from .b66_saved_skill_candidate_store import (
@@ -482,6 +484,26 @@ def create_app(
         Route(
             "/api/b66/saved-skill-candidates/{candidate_id}",
             b66_saved_skill_candidate_detail,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/b66/saved-skill-candidates/operator",
+            b66_saved_skill_candidate_operator_list,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/b66/saved-skill-candidates/operator/{candidate_id}",
+            b66_saved_skill_candidate_operator_detail,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/b66/saved-skill-candidates/operator-pending",
+            b66_saved_skill_candidate_operator_list,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/b66/saved-skill-candidates/operator-pending/{candidate_id}",
+            b66_saved_skill_candidate_operator_detail,
             methods=["GET"],
         ),
         Route(
