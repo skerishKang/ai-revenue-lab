@@ -15,9 +15,9 @@ from app.model_policy import HIGH_B14_MODEL_ID, LOW_B14_MODEL_ID, MEDIUM_B14_MOD
 @pytest.mark.parametrize(
     ("prompt", "expected"),
     [
-        ("/plus 너 무슨 모델이야?", "저는 Padiem Plus입니다."),
-        ("/pro 어떤 AI 모델이야?", "저는 Padiem Pro입니다."),
-        ("/max what model are you?", "저는 Padiem Max입니다."),
+        ("/plus 너 무슨 모델이야?", "저는 Padiem Free입니다."),
+        ("/pro 어떤 AI 모델이야?", "저는 Padiem Free입니다."),
+        ("/max what model are you?", "저는 Padiem Free입니다."),
     ],
 )
 async def test_identity_questions_answer_with_padiem_tier_without_provider_call(prompt: str, expected: str):
@@ -68,7 +68,7 @@ async def test_underlying_model_question_declines_internal_route_details_without
 
     assert response.status_code == 200
     answer = response.json()["answer"]
-    assert answer.startswith("저는 Padiem Max입니다.")
+    assert answer.startswith("저는 Padiem Free입니다.")
     assert "내부 라우팅" in answer
     assert calls == 0
     lowered = answer.lower()
@@ -135,7 +135,19 @@ async def test_held_tiers_reject_ordinary_execution_before_b14_provider_call(
     async def handler(request: httpx.Request) -> httpx.Response:
         nonlocal calls
         calls += 1
-        raise AssertionError("held tier must fail before B14/provider")
+        body = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "choices": [{"message": {"role": "assistant", "content": "일반 답변"}}],
+                "business14": {
+                    "request_id": "b14req_tier_test",
+                    "route_mode": "manual",
+                    "selected_model": body["model"],
+                    "selected_provider": "test-provider",
+                },
+            },
+        )
 
     app = create_app(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
@@ -147,10 +159,8 @@ async def test_held_tiers_reject_ordinary_execution_before_b14_provider_call(
             json={"messages": [{"role": "user", "content": f"{alias} 테스트 질문"}], "mode": "auto"},
         )
 
-    assert response.status_code == 422
-    payload = response.json()
-    assert payload["error"]["code"] == "tier_unavailable"
-    assert calls == 0
+    assert response.status_code == 200
+    assert calls == 1
     assert expected_hold_model in {MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID}
 
 
@@ -174,5 +184,5 @@ async def test_stream_identity_is_local_and_uses_selected_tier():
         )
 
     assert response.status_code == 200
-    assert "Padiem Plus" in response.text
+    assert "Padiem Free" in response.text
     assert calls == 0

@@ -199,6 +199,28 @@ def product_tier_name(model_id: str) -> str:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.") from exc
 
 
+def _strip_hidden_tier_alias(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Remove an owner/test slash alias from the user message before dispatch.
+
+    The slash selector remains a compatibility/test surface. It never grants
+    product identity or dispatch tier by itself when a server-validated browser
+    tier is present; this only keeps provider-bound prompt content clean.
+    """
+    out = [dict(message) for message in messages]
+    index = _latest_user_index(out)
+    if index is None:
+        return out
+    content = out[index].get("content", "")
+    stripped = content.lstrip() if isinstance(content, str) else ""
+    if not stripped.startswith("/"):
+        return out
+    token, separator, remainder = stripped.partition(" ")
+    if token.lower() not in MODEL_ALIASES or not separator or not remainder.strip():
+        return out
+    out[index]["content"] = remainder.strip()
+    return out
+
+
 def resolve_tier_policy(
     messages: list[dict[str, str]],
     tier_id: str,
@@ -219,7 +241,7 @@ def resolve_tier_policy(
         # controls are enforced by the actual Chat route before provider dispatch.
         return ResolvedModelPolicy(
             model_id=FREE_B14_MODEL_ID,
-            messages=[dict(message) for message in messages],
+            messages=_strip_hidden_tier_alias(messages),
             profile="free",
         )
     label = TIER_ID_TO_LABEL.get(normalized)
@@ -253,7 +275,7 @@ def resolve_tier_policy(
 
     return ResolvedModelPolicy(
         model_id=model_id,
-        messages=[dict(message) for message in messages],
+        messages=_strip_hidden_tier_alias(messages),
         profile=TIER_ID_TO_PROFILE[normalized],
     )
 
