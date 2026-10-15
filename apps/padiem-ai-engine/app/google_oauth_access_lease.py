@@ -8,7 +8,7 @@ from typing import Any, Callable
 
 from padiem_ai_core.calendar_capability import GOOGLE_CALENDAR_READONLY_OAUTH_SCOPE
 from padiem_ai_core.connectors import GMAIL_READONLY_SCOPE
-from padiem_ai_core.drive_capability import DRIVE_READONLY_SCOPE
+from padiem_ai_core.drive_capability import DRIVE_FULL_SCOPE, DRIVE_READONLY_SCOPE
 
 from app.service import ServiceContractError
 
@@ -23,6 +23,9 @@ _REVIEWED_CONNECTOR_SCOPES: dict[str, tuple[str, ...]] = {
     # the readonly Calendar provider scope. No write/full scope is accepted.
     "google-calendar": (GOOGLE_CALENDAR_READONLY_OAUTH_SCOPE,),
 }
+
+# A full grant is accepted only when the trusted CP lease actually contains it.
+_GOOGLE_DRIVE_EXACT_SCOPES = frozenset({(DRIVE_READONLY_SCOPE,), (DRIVE_FULL_SCOPE,)})
 
 _LEASE_KEYS = frozenset(
     {
@@ -117,7 +120,7 @@ class CloudflareControlPlaneGoogleOAuthAccessLeaseClient:
         connector_id = _safe_ref(connector_id, "connector_id")
         expected_scopes = _REVIEWED_CONNECTOR_SCOPES.get(connector_id)
         if expected_scopes is None:
-            raise _unavailable("Only reviewed Google readonly connectors are accepted by this client.")
+            raise _unavailable("Only reviewed Google connectors are accepted by this client.")
 
         method = getattr(self._binding, "issue_access_lease", None)
         if not callable(method):
@@ -154,7 +157,13 @@ class CloudflareControlPlaneGoogleOAuthAccessLeaseClient:
             raise _unavailable("Control Plane Google OAuth access lease does not match the requested binding.")
 
         scopes = lease.get("scopes")
-        if not isinstance(scopes, list) or scopes != list(expected_scopes):
+        if not isinstance(scopes, list) or not all(isinstance(scope, str) for scope in scopes):
+            raise _unavailable("Control Plane Google OAuth access lease scope is invalid.")
+        verified_scopes = tuple(scopes)
+        if connector_id == "google-drive":
+            if verified_scopes not in _GOOGLE_DRIVE_EXACT_SCOPES:
+                raise _unavailable("Control Plane Google OAuth access lease scope is invalid.")
+        elif verified_scopes != expected_scopes:
             raise _unavailable("Control Plane Google OAuth access lease scope is invalid.")
 
         now = self._clock()
@@ -169,7 +178,7 @@ class CloudflareControlPlaneGoogleOAuthAccessLeaseClient:
             actor_ref=_safe_ref(lease.get("actor_ref"), "actor_ref"),
             account_ref=_safe_ref(lease.get("account_ref"), "account_ref"),
             workspace_ref=_safe_ref(lease.get("workspace_ref"), "workspace_ref"),
-            scopes=expected_scopes,
+            scopes=verified_scopes,
             expires_at=_expires_at(lease.get("expires_at"), now=now),
         )
 

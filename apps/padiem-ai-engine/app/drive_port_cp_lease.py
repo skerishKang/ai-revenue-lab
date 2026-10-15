@@ -6,6 +6,7 @@ from typing import Any, Awaitable
 import httpx
 
 from padiem_ai_core.drive_capability import (
+    DRIVE_FULL_SCOPE,
     DRIVE_READONLY_SCOPE,
     DriveReadPort,
 )
@@ -76,7 +77,7 @@ class ControlPlaneLeaseDriveReadPort(DriveReadPort):
             ) from None
         if lease.binding_ref != binding_ref or lease.actor_ref != actor_ref:
             raise _lease_mismatch("Google Drive access lease does not match the trusted grant.")
-        if lease.scopes != (DRIVE_READONLY_SCOPE,):
+        if lease.scopes not in ((DRIVE_READONLY_SCOPE,), (DRIVE_FULL_SCOPE,)):
             raise _lease_mismatch("Google Drive access lease scope mismatch.")
         return lease
 
