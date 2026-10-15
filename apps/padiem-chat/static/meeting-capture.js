@@ -186,33 +186,19 @@
     trigger.setAttribute("aria-controls", "meetingDialog");
     trigger.setAttribute("aria-haspopup", "dialog");
     trigger.disabled = true;
-    trigger.innerHTML = '<span class="side-icon" aria-hidden="true">◉</span><span>회의록</span>';
+    const icon = doc.createElement("span");
+    icon.className = "side-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = "◉";
+    const caption = doc.createElement("span");
+    caption.textContent = "회의록";
+    trigger.append(icon, caption);
     sidebar.appendChild(trigger);
     const css = doc.createElement("link");
     css.rel = "stylesheet"; css.href = "./meeting-capture.css";
     doc.head.appendChild(css);
-    const dialog = doc.createElement("dialog");
-    dialog.id = "meetingDialog";
-    dialog.className = "meeting-dialog";
-    dialog.setAttribute("aria-labelledby", "meetingTitle");
-    dialog.innerHTML = [
-      '<div class="meeting-panel">',
-      ' <header class="meeting-header"><div><p>PADIEM CLAW</p><h2 id="meetingTitle">회의록</h2></div><button type="button" id="meetingClose" aria-label="회의록 닫기">×</button></header>',
-      ' <p class="meeting-help">녹음·실시간 받아쓰기는 별도 기능입니다. 시작을 누르면 마이크 사용 권한을 요청합니다. 브라우저 음성 인식은 브라우저 제공자의 외부 서비스를 사용할 수 있습니다.</p>',
-      ' <fieldset class="meeting-modes"><legend>회의 방식 선택</legend>',
-      '  <label><input type="radio" name="meetingMode" value="record" checked> 녹음만</label>',
-      '  <label><input type="radio" name="meetingMode" value="transcribe"> 실시간 전사만</label>',
-      '  <label><input type="radio" name="meetingMode" value="both"> 녹음 + 실시간 전사</label>',
-      ' </fieldset>',
-      ' <div class="meeting-controls"><button type="button" id="meetingStart">회의 시작</button><button type="button" id="meetingStop" disabled>회의 종료</button></div>',
-      ' <p class="meeting-status" id="meetingStatus" role="status" aria-live="polite">대기 중 · 아직 녹음하지 않았습니다.</p>',
-      ' <label for="meetingTranscript">전사 원문 (편집 가능)</label><textarea id="meetingTranscript" rows="8" placeholder="실시간 전사 내용을 이곳에서 확인할 수 있습니다."></textarea>',
-      ' <p id="meetingInterim" role="status" class="meeting-interim"></p>',
-      ' <div class="meeting-exports"><button type="button" id="meetingDownloadAudio" disabled>녹음 파일 다운로드</button><button type="button" id="meetingDownloadText" disabled>전사 TXT 다운로드</button><button type="button" id="meetingDraftInClaw" disabled>Claw로 회의록 초안 만들기</button></div>',
-      ' <p class="meeting-storage-note">Google Drive 직접 저장은 쓰기 권한 연결이 필요합니다. 현재는 파일을 기기에 다운로드해 보관할 수 있습니다. 서버에 원본을 올리지 않으며 새로고침하면 임시 기록이 사라집니다.</p>',
-      '</div>',
-    ].join("");
-    doc.body.appendChild(dialog);
+    const dialog = doc.getElementById("meetingDialog");
+    if (!dialog) return null;
     const find = (id) => doc.getElementById(id);
     const status = find("meetingStatus"), text = find("meetingTranscript");
     const startButton = find("meetingStart"), stopButton = find("meetingStop");
