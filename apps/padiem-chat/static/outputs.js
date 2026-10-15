@@ -244,9 +244,16 @@
   }
 
   function stopArticleTts(article) {
+    const waiting = article && article._ttsWaiting ? article._ttsWaiting : null;
+    if (waiting) {
+      waiting.active = false;
+      clearTimeout(waiting.timer);
+      try { window.speechSynthesis.removeEventListener("voiceschanged", waiting.onVoices); } catch (_) {}
+      article._ttsWaiting = null;
+    }
     const player = article && article._ttsPlayer ? article._ttsPlayer : null;
     if (player) {
-      try { player.cancel(); } catch (_) {}
+      try { player.stopOutput(); } catch (_) {}
       article._ttsPlayer = null;
     }
     const button = article ? article.querySelector(".answer-action.answer-listen") : null;
@@ -272,16 +279,67 @@
       onError: () => stopArticleTts(article),
     });
     article._ttsPlayer = player;
+    // A native user click is mandatory; voice-list readiness must not trigger
+    // speech unless the same explicit request is still active.
     player.start();
-    if (!player.speakText(text)) {
-      stopArticleTts(article);
-      flashTitle(button, "answer-listen", "음성 듣기");
+    function matchingVoiceReady() {
+      try {
+        return player.availableVoices().some((voice) =>
+          voice && String(voice.lang || "").toLowerCase().split("-")[0] === lang.toLowerCase().split("-")[0]);
+      } catch (_) { return false; }
+    }
+    function playWhenReady() {
+      if (article._ttsPlayer !== player) return;
+      if (!player.speakText(text)) {
+        stopArticleTts(article);
+        flashTitle(button, "answer-listen", "?? ?? ??");
+        return;
+      }
+      const label = localeText("answer-listen-stop", "?? ??");
+      button.setAttribute("aria-pressed", "true");
+      button.setAttribute("aria-label", label);
+      button.title = label;
+    }
+    if (matchingVoiceReady()) {
+      playWhenReady();
       return;
     }
-    const label = localeText("answer-listen-stop", "음성 정지");
-    button.setAttribute("aria-pressed", "true");
-    button.setAttribute("aria-label", label);
-    button.title = label;
+    // Chromium/Edge often populate getVoices() asynchronously after load.
+    // Retry the explicit click at most once when voiceschanged arrives. The
+    // pending request can always be cancelled by pressing the same button.
+    const synth = window.speechSynthesis;
+    if (!synth || typeof synth.addEventListener !== "function") {
+      stopArticleTts(article);
+      flashTitle(button, "answer-listen", "?? ?? ??");
+      return;
+    }
+    const wait = {active: true, timer: null, onVoices: null};
+    article._ttsWaiting = wait;
+    function clearWait() {
+      if (!wait.active) return false;
+      wait.active = false;
+      clearTimeout(wait.timer);
+      try { synth.removeEventListener("voiceschanged", wait.onVoices); } catch (_) {}
+      if (article._ttsWaiting === wait) article._ttsWaiting = null;
+      return article._ttsPlayer === player;
+    }
+    wait.onVoices = () => {
+      if (!wait.active || !matchingVoiceReady()) return;
+      if (clearWait()) playWhenReady();
+    };
+    synth.addEventListener("voiceschanged", wait.onVoices);
+    wait.timer = setTimeout(() => {
+      if (clearWait()) {
+        stopArticleTts(article);
+        flashTitle(button, "answer-listen", "?? ?? ??");
+      }
+    }, 3000);
+    button.setAttribute("aria-pressed", "false");
+    button.setAttribute("aria-label", "?? ?? ?, ?? ??? ??");
+    button.title = "?? ?? ?, ?? ??? ??";
+    // Close the race in which getVoices() becomes populated immediately
+    // before the voiceschanged handler was attached.
+    wait.onVoices();
   }
 
   async function shareArticleText(button, text, title) {
