@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="padiem-account.css">
   <link rel="stylesheet" href="member-inquiry.css">
   <link rel="stylesheet" href="b66-surface-refresh.css?v=20261012-0646" media="screen">
+  <script src="b66-theme.js"></script>
+  <link rel="stylesheet" href="b66-dark-mode.css?v=20261016-1" media="screen">
   <script src="quote-core.js" defer></script>
   <script src="quote-extraction.js" defer></script>
   <script src="quote-history.js" defer></script>
@@ -97,6 +99,15 @@
         <button id="settingsPrivacyChoice" type="button" aria-controls="privacySettingsView" aria-expanded="false">개인정보 <span aria-hidden="true">›</span></button>
         <button id="settingsCompanyChoice" type="button" aria-controls="companySettingsView" aria-expanded="false">회사정보 <span aria-hidden="true">›</span></button>
         <button id="settingsDriveChoice" type="button" aria-controls="driveSettingsView" aria-expanded="false">Google Drive 저장 <span aria-hidden="true">›</span></button>
+        <button id="settingsThemeChoice" type="button" aria-controls="themeSettingsView" aria-expanded="false">화면 테마 <span aria-hidden="true">›</span></button>
+      </div>
+      <div id="themeSettingsView" class="b66-settings-detail" hidden>
+        <h3>화면 테마</h3>
+        <p class="settings-note">견적서 원본·인쇄 색상은 바뀌지 않습니다.</p>
+        <div class="b66-theme-choices" role="group" aria-label="화면 밝기">
+          <button type="button" data-b66-theme-choice="light" aria-pressed="true">라이트</button>
+          <button type="button" data-b66-theme-choice="dark" aria-pressed="false">다크</button>
+        </div>
       </div>
       <div id="privacySettingsView" class="b66-settings-detail" hidden>
         <h3>개인정보</h3>

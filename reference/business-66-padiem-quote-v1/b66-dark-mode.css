@@ -1,0 +1,124 @@
+/* B66 screen-only dark appearance: preserve certified #quotePaper and PDF bytes.
+ * PADIEM slate-blue palette, not the reference product's accent color. */
+@media screen {
+  html[data-b66-theme="dark"] { color-scheme: dark; }
+  html[data-b66-theme="dark"] body.b66-three-pane {
+    --bg: #101923; --paper: #1b2a36; --ink: #eaf3f9;
+    --muted: #b6c9d7; --line: #415b6c; --accent: #90c8ed;
+    --soft: #263b4d; --danger: #ffb4ad;
+    color: var(--ink);
+    background: radial-gradient(ellipse at 57% -20%, rgba(62,107,139,.21), transparent 66%), #101923;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .topbar .brand h1 { color: #f1f8ff; }
+  html[data-b66-theme="dark"] body.b66-three-pane .topbar .brand p,
+  html[data-b66-theme="dark"] body.b66-three-pane .shell-runtime-status { color: #bad0de; }
+  html[data-b66-theme="dark"] body.b66-three-pane .shell-rail {
+    background: linear-gradient(155deg, #223a4b 0%, #192c3b 100%);
+    border-color: #466173; color: #f3f9fd;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .shell-rail :is(.shell-rail-section h2,.shell-rail-item small,.shell-template-current small,.shell-picker-label) { color: #d0e3ef; }
+  html[data-b66-theme="dark"] body.b66-three-pane .shell-rail :is(.shell-rail-item,.shell-template-current,.shell-account-row button) {
+    color: #f0f7fc; border-color: #526d80; background: rgba(255,255,255,.07);
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.shell-rail-toggle,.workspace-mode,.shell-pane-button,.topbar-reset,.badge) {
+    background: #263b4d; border-color: #4a6578; color: #e4f3ff;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .workspace-mode.active {
+    background: #8ac4eb; border-color: #8ac4eb; color: #102536;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.easy-view,.direct-view,.panel,.preview-wrap,.settings-panel,.padiem-account-panel) {
+    color: #e9f3fa; background: #182834; border-color: #405b6d; box-shadow: none;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-view { background: linear-gradient(155deg, #1d303f, #152530); }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-empty::before {
+    background: radial-gradient(ellipse, rgba(78,139,180,.22), transparent 72%);
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-empty h2 { color: #f2f8fd; }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-empty > p:not(.easy-eyebrow),
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-eyebrow { color: #b5d3e7; }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.easy-starter,.easy-resume-hint,.easy-history-card,.easy-dialogue-card,.easy-guided-card) {
+    background: #233846; border-color: #476276; color: #eaf5fd;
+    box-shadow: 0 6px 20px rgba(0,0,0,.12);
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-starter:hover { background: #2d4555; border-color: #91c9ed; }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-starter strong,
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-history-info strong { color: #f1f8fd; }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-starter small,
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-history-info span,
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-resume-hint { color: #c1d6e4; }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-starter-icon { color: #c2e8ff; background: #304d61; }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-view .easy-composer-wrap {
+    background: linear-gradient(to top, #172733 38%, rgba(23,39,51,0));
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-composer {
+    border: 1px solid #59788c; border-radius: 23px; background: #263744;
+    box-shadow: 0 14px 36px rgba(0,0,0,.25);
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-composer:focus-within {
+    border-color: #9acdf0; box-shadow: 0 0 0 3px rgba(154,205,240,.2), 0 14px 36px rgba(0,0,0,.25);
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-composer textarea {
+    background: transparent; color: #f5f9fc; caret-color: #e9f4fc; border: 0;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-composer textarea::placeholder { color: #b6cbd8; opacity: 1; }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-composer :is(.b66-composer-icon,.b66-composer-model-toolbar select,.shell-picker-label select) {
+    background: #304655; color: #e6f5fd; border-color: #607c90;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-send {
+    color: #12293b; background: #98d2f5; border-color: #98d2f5;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.easy-chip,.easy-history-actions button,.easy-dialogue-search-input,.shell-picker-label select) {
+    background: #283f50; color: #e7f4fc; border-color: #58768a;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.easy-message-bubble,.easy-message-content,.easy-message-body,.easy-message-meta) {
+    color: #edf7fd;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-message-bubble { background: #253b4b; border: 1px solid #476478; }
+  html[data-b66-theme="dark"] body.b66-three-pane .easy-message-meta { color: #bbd0df; }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.settings-panel,.b66-account-menu,.padiem-account-panel,.b66-new-quote-dialog) {
+    background: #203443; color: #edf6fc; border-color: #577184;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.b66-settings-menu button,.b66-account-menu button,.b66-theme-choices button,.settings-reset,.btn,.icon-btn,.mode) {
+    background: #2a4050; color: #ecf7ff; border-color: #59788c;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.b66-settings-menu button,.b66-account-menu button):hover { background: #37576b; }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.b66-settings-detail,.preview-toolbar) { border-color: #486577; }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.settings-note,.b66-sender-load small,.b66-settings-detail p, label) { color: #c8dae7; }
+  html[data-b66-theme="dark"] body.b66-three-pane input:not([type="checkbox"]):not([type="radio"]),
+  html[data-b66-theme="dark"] body.b66-three-pane select,
+  html[data-b66-theme="dark"] body.b66-three-pane .direct-view textarea {
+    background: #243a49; color: #ecf6fc; border-color: #587184;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(input,textarea)::placeholder { color: #b7cddd; opacity: 1; }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(.tax-review-note,.tax-row.tax-review-required) {
+    color: #ffdea0; background: #483b27; border-color: #b9914c;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .b66-theme-choices { display: flex; gap: 8px; }
+  html[data-b66-theme="dark"] body.b66-three-pane .b66-theme-choices button[aria-pressed="true"] {
+    background: #95cdec; color: #14344a; border-color: #95cdec;
+  }
+  /* Certified quote-paper remains bright and retains precise print/PDF geometry. */
+  html[data-b66-theme="dark"] body.b66-three-pane :is(#quotePaper,.quote-detail-page) {
+    color-scheme: light; color: #17202a; background: #fff;
+    --bg: #f4f6f8; --paper: #fff; --ink: #17202a; --muted: #6b7280;
+    --line: #dfe4ea; --accent: #111827; --soft: #eef2f7;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane :is(#quotePaper,.quote-detail-page) :is(input,select,textarea) {
+    background: #fff; color: #17202a;
+  }
+  body.b66-three-pane .b66-theme-choices { display: flex; gap: 8px; }
+  body.b66-three-pane .b66-theme-choices button {
+    min-height: 44px; flex: 1; border: 1px solid #9db2c2; border-radius: 12px;
+    padding: 8px 12px; background: #f4f8fb; color: #244259; font-weight: 700;
+  }
+  body.b66-three-pane .b66-theme-choices button[aria-pressed="true"] {
+    background: #30566e; color: #fff; border-color: #30566e;
+  }
+  body.b66-three-pane .b66-theme-choices button:focus-visible { outline: 3px solid #9acdf0; outline-offset: 2px; }
+  @media (max-width: 560px) {
+    html[data-b66-theme="dark"] body.b66-three-pane .easy-composer :is(.b66-composer-icon,.easy-send) {
+      min-width: 40px; min-height: 40px;
+    }
+    html[data-b66-theme="dark"] body.b66-three-pane .b66-composer-model-toolbar select { max-width: 100px; }
+  }
+}
