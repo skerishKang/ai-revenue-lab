@@ -1,83 +1,95 @@
+"""#4089 STEP2B3: CP session and owner-link boundary, provider-free."""
+from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 import pytest
-from datetime import datetime, timezone
-
-from app.b66_cp_drive_boundary import (
-    B66VerifiedCPDriveOwnerLink,
-    B66_REQUIRED_DRIVE_SCOPE,
-)
+from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
+from padiem_control_plane.contracts import CanonicalSubjectRef, IdentityLinkState, ProductIdentityLink, SubjectType
+from app.b66_cp_drive_boundary import B66VerifiedCPDriveOwnerLink, B66_REQUIRED_DRIVE_SCOPE
 from app.b66_cp_host_session import (
-    UnconfiguredB66HostCPSessionPort,
-    B66HostCPSessionFactory,
-    validate_canonical_cp_drive_owner_link,
-    B66_CP_HOST_SESSION_PROVEN,
-    B66_CP_HOST_COMPOSITION_PROVEN,
-    B66_CP_AUTH_SESSION_TO_CP,
+    UnconfiguredB66HostCPSessionPort, B66HostCPSessionFactory,
+    validate_canonical_cp_drive_owner_link, B66_CP_HOST_SESSION_PROVEN,
+    B66_CP_HOST_COMPOSITION_PROVEN, B66_CP_AUTH_SESSION_TO_CP,
 )
-
-
-class Session:
-    def __init__(self, subject_id="canon-1", active=True):
-        self.subject_id = subject_id
-        self.active = active
-
-    def is_active(self, *, now):
-        return self.active
-
-
-class InactiveSession(Session):
-    def __init__(self):
-        super().__init__(active=False)
-
-
-class Context:
-    def __init__(self, subject_id="canon-1", workspace="ws-a", actor="actor-a"):
-        self.subject_id = subject_id
-        self.workspace_ref = workspace
-        self.actor_ref = actor
-
-
-A = "usr_" + "a" * 32
-
+A = "usr_" + "a"*32
+B = "usr_" + "b"*32
 
 def now():
     return datetime.now(timezone.utc)
 
+def session(*, subject="canon-1", product="b62", state=AuthSessionState.ACTIVE, expired=False):
+    t = now()
+    return AuthSessionSnapshot(
+        session_id="sess-1", product_id=product,
+        subject=CanonicalSubjectRef(SubjectType.USER, subject),
+        issued_at=t-timedelta(minutes=10),
+        expires_at=t-timedelta(seconds=1) if expired else t+timedelta(minutes=10),
+        state=state,
+    )
 
-def test_host_session_defaults_are_fail_closed():
-    port = UnconfiguredB66HostCPSessionPort()
-    with pytest.raises(ValueError):
-        port.resolve_verified_cp_drive_owner_link(A, now=now())
+def link(*, owner=A, subject="canon-1", product="b62", state=IdentityLinkState.ACTIVE):
+    return ProductIdentityLink(
+        product_id=product, product_user_id=owner, canonical_subject_id=subject, state=state,
+    )
+
+def context(*, subject="canon-1"):
+    return SimpleNamespace(subject_id=subject, workspace_ref="ws-a", actor_ref="actor-a")
+
+def valid(**changes):
+    args=dict(owner_b66_user_id=A, cp_auth_session=session(), cp_product_link=link(),
+              cp_connector_context=context(), now=now())
+    args.update(changes)
+    return validate_canonical_cp_drive_owner_link(**args)
+
+def test_default_unconfigured_port_denies():
+    port=UnconfiguredB66HostCPSessionPort()
+    with pytest.raises(ValueError,match="not_composed"):
+        port.resolve_verified_cp_drive_owner_link(A)
     assert B66_CP_HOST_SESSION_PROVEN is False
     assert B66_CP_HOST_COMPOSITION_PROVEN is False
     assert port.safe_dict()["production_host_composition_proven"] is False
 
+def test_current_canonical_session_owner_and_context_bound():
+    result=valid()
+    assert isinstance(result,B66VerifiedCPDriveOwnerLink)
+    assert (result.owner_b66_user_id,result.cp_workspace_ref,result.cp_actor_ref)==(A,"ws-a","actor-a")
+    for changes in [
+        dict(cp_auth_session=None),dict(cp_product_link=None),
+        dict(cp_auth_session=SimpleNamespace(subject_id="canon-1")),
+        dict(cp_auth_session=session(product="b54-padiem-claw")),
+        dict(cp_auth_session=session(state=AuthSessionState.REVOKED)),
+        dict(cp_auth_session=session(expired=True)),
+        dict(cp_product_link=link(owner=B)),
+        dict(cp_product_link=link(subject="different")),
+        dict(cp_product_link=link(product="b54-padiem-claw")),
+        dict(cp_product_link=link(state=IdentityLinkState.REVOKED)),
+        dict(cp_connector_context=context(subject="different")),
+        dict(cp_connector_context=SimpleNamespace(workspace_ref="ws-a",actor_ref="actor-a")),
+        dict(owner_b66_user_id=B),dict(now=datetime(2026,10,16)),
+    ]:
+        with pytest.raises(ValueError):
+            valid(**changes)
 
-def test_canonical_cp_validation_requires_server_authority():
-    with pytest.raises(ValueError):
-        validate_canonical_cp_drive_owner_link(owner_b66_user_id=A)
-    with pytest.raises(ValueError):
-        validate_canonical_cp_drive_owner_link(owner_b66_user_id=A, cp_auth_session=None, cp_connector_context=Context())
-    with pytest.raises(ValueError):
-        validate_canonical_cp_drive_owner_link(owner_b66_user_id=A, cp_auth_session=Session(), cp_connector_context=None)
-    derived = validate_canonical_cp_drive_owner_link(owner_b66_user_id=A, cp_auth_session=Session(), cp_connector_context=Context(), now=now())
-    assert isinstance(derived, B66VerifiedCPDriveOwnerLink)
-    assert derived.owner_b66_user_id == A
-    assert derived.cp_workspace_ref == "ws-a"
+def test_valid_other_canonical_subject_when_link_and_context_match():
+    assert isinstance(valid(cp_auth_session=session(subject="canon-2"),
+                            cp_product_link=link(subject="canon-2"),
+                            cp_connector_context=context(subject="canon-2")),
+                      B66VerifiedCPDriveOwnerLink)
 
-
-def test_inactive_subject_or_mismatch_is_denied():
-    with pytest.raises(ValueError):
-        validate_canonical_cp_drive_owner_link(owner_b66_user_id=A, cp_auth_session=InactiveSession(), cp_connector_context=Context(), now=now())
-    with pytest.raises(ValueError):
-        validate_canonical_cp_drive_owner_link(owner_b66_user_id=A, cp_auth_session=Session("canon-1"), cp_connector_context=Context("canon-2"), now=now())
-    with pytest.raises(ValueError):
-        validate_canonical_cp_drive_owner_link(owner_b66_user_id="forged-owner", cp_auth_session=Session(), cp_connector_context=Context())
-
-
-def test_factory_does_not_claim_production_wiring():
-    assert B66_CP_AUTH_SESSION_TO_CP == "IDENTIFIED_UNWIRED"
-    factory = B66HostCPSessionFactory(None)
-    assert factory.production_host_composition_proven is False
-    with pytest.raises(ValueError):
-        factory.resolve_verified_cp_drive_owner_link(A, now=now())
+def test_injected_factory_cannot_claim_live_host_proof_or_accept_foreign_owner():
+    assert B66_CP_AUTH_SESSION_TO_CP=="IDENTIFIED_UNWIRED"
+    factory=B66HostCPSessionFactory()
+    with pytest.raises(ValueError,match="not_composed"):
+        factory.resolve_verified_cp_drive_owner_link(A)
     assert B66_REQUIRED_DRIVE_SCOPE.endswith("/drive.file")
+    good=B66VerifiedCPDriveOwnerLink(A,"ws-a","actor-a")
+    factory=B66HostCPSessionFactory(SimpleNamespace(resolve_verified_cp_drive_owner_link=lambda *a,**k: good))
+    assert factory.resolve_verified_cp_drive_owner_link(A)==good
+    assert factory.production_host_composition_proven is False
+    assert factory.safe_dict()["server_verified_padiem_session_to_cp_link"] is False
+    bad=B66VerifiedCPDriveOwnerLink(B,"ws-b","actor-b")
+    factory=B66HostCPSessionFactory(SimpleNamespace(resolve_verified_cp_drive_owner_link=lambda *a,**k: bad))
+    with pytest.raises(ValueError,match="cp_owner_link_mismatch"):
+        factory.resolve_verified_cp_drive_owner_link(A)
+    factory=B66HostCPSessionFactory(SimpleNamespace(resolve_verified_cp_drive_owner_link=lambda *a,**k: "bad"))
+    with pytest.raises(ValueError,match="invalid_cp_owner_link"):
+        factory.resolve_verified_cp_drive_owner_link(A)

@@ -8,9 +8,13 @@ inject the underlying server-trusted Padiem->CP link.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Mapping
+from typing import Any
+
+from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+from padiem_control_plane.contracts import (
+    IdentityLinkState, ProductIdentityLink, SubjectType,
+)
 
 from .b66_cp_drive_boundary import (
     B66VerifiedCPDriveOwnerLink,
@@ -44,31 +48,45 @@ def validate_canonical_cp_drive_owner_link(
     owner_b66_user_id: Any,
     cp_auth_session: Any = None,
     cp_connector_context: Any = None,
-    now: Any = datetime.now(timezone.utc),
+    cp_product_link: Any = None,
+    now: Any = None,
 ) -> B66VerifiedCPDriveOwnerLink:
     """Build a boundary-safe link from already server-verified host inputs.
 
     No browser or product-local field may become the CP workspace or actor.
+    The host MUST refresh the existing canonical session and product link from
+    the Control Plane; this contract does not do that I/O.
     """
 
     if not isinstance(owner_b66_user_id, str) or _B66_USER_RE.fullmatch(owner_b66_user_id) is None:
         raise ValueError("invalid_b66_owner")
+    if now is None:
+        now = datetime.now(timezone.utc)
     if not _is_aware_datetime(now):
         raise ValueError("trusted_time_required")
-    if cp_auth_session is None or cp_connector_context is None:
+    # Host must supply the authority-refreshed canonical session and its
+    # authoritative product link; arbitrary shape-compatible objects do not count.
+    if (
+        not isinstance(cp_auth_session, AuthSessionSnapshot)
+        or not isinstance(cp_product_link, ProductIdentityLink)
+        or cp_connector_context is None
+    ):
         raise ValueError("cp_host_authority_required")
-    subject_id = getattr(cp_auth_session, "subject_id", None)
-    if subject_id is None and getattr(cp_auth_session, "subject", None) is not None:
-        subject_id = getattr(cp_auth_session.subject, "subject_id", None)
-    if not isinstance(subject_id, str) or not subject_id.strip():
-        raise ValueError("invalid_canonical_subject")
-    is_active = getattr(cp_auth_session, "is_active", None)
-    if callable(is_active) and not is_active(now=now):
+    subject = cp_auth_session.subject
+    if (
+        cp_auth_session.product_id != "b62"
+        or subject.subject_type is not SubjectType.USER
+        or cp_product_link.product_id != "b62"
+        or cp_product_link.state is not IdentityLinkState.ACTIVE
+        or cp_product_link.product_user_id != owner_b66_user_id
+        or cp_product_link.canonical_subject_id != subject.subject_id
+    ):
+        raise ValueError("cp_product_owner_mismatch")
+    if not cp_auth_session.is_active(now=now):
         raise ValueError("inactive_cp_auth_session")
     workspace_ref = _safe_ref(getattr(cp_connector_context, "workspace_ref", None))
     actor_ref = _safe_ref(getattr(cp_connector_context, "actor_ref", None))
-    context_subject_id = getattr(cp_connector_context, "subject_id", None)
-    if context_subject_id is not None and context_subject_id != subject_id:
+    if getattr(cp_connector_context, "subject_id", None) != subject.subject_id:
         raise ValueError("cp_subject_mismatch")
     return B66VerifiedCPDriveOwnerLink(
         owner_b66_user_id=owner_b66_user_id,
@@ -101,7 +119,8 @@ class B66HostCPSessionFactory:
 
     @property
     def production_host_composition_proven(self) -> bool:
-        return self._resolver is not None and hasattr(self._resolver, "resolve_verified_cp_drive_owner_link")
+        # Injected callable is not proof of deployed trusted host composition.
+        return False
 
     def resolve_verified_cp_drive_owner_link(self, owner_b66_user_id, *, now=None):
         if not isinstance(owner_b66_user_id, str) or _B66_USER_RE.fullmatch(owner_b66_user_id) is None:
@@ -110,13 +129,18 @@ class B66HostCPSessionFactory:
             now = datetime.now(timezone.utc)
         if self._resolver is None:
             raise ValueError("b66_host_cp_session_not_composed")
-        return self._resolver.resolve_verified_cp_drive_owner_link(owner_b66_user_id, now=now)
+        result = self._resolver.resolve_verified_cp_drive_owner_link(owner_b66_user_id, now=now)
+        if not isinstance(result, B66VerifiedCPDriveOwnerLink):
+            raise ValueError("invalid_cp_owner_link")
+        if result.owner_b66_user_id != owner_b66_user_id:
+            raise ValueError("cp_owner_link_mismatch")
+        return result
 
     def safe_dict(self) -> dict[str, Any]:
         return {
             "auth_session_to_cp": "IDENTIFIED_UNWIRED",
             "b66_owner_actor_workspace": "BLOCKED",
             "production_host_composition_proven": self.production_host_composition_proven,
-            "server_verified_padiem_session_to_cp_link": True,
+            "server_verified_padiem_session_to_cp_link": False,
             "production_runtime_wired": False,
         }
