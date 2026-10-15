@@ -135,6 +135,12 @@
     event.stopImmediatePropagation();
     const id = button.dataset.clawConnection;
     const state = button.dataset.connectionState;
+    if (signedIn() && id === "pc" && (state === "off" || state === "unknown")) {
+      // One authenticated owner gesture enters the existing Claw card flow.
+      // Do not turn an unregistered PC into a misleading reinstall dialog.
+      document.getElementById(cardIds.pc)?.click();
+      return;
+    }
     if (signedIn() && state === "off" && id === "drive") {
       document.dispatchEvent(new Event("padiem:drive-quick-connect"));
       return;

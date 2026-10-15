@@ -354,28 +354,31 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspa
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
   width: 100% !important;
   min-height: 0 !important;
-  height: 100% !important;
+  height: auto !important;
   flex: 1 1 auto !important;
   align-items: flex-start;
   justify-content: flex-start;
-  padding: 10px 11px 35px !important;
+  padding: 10px 11px 2px !important;
+  overflow: hidden !important; /* clip text within its own row, not over ON/OFF */
   border: 0 !important;
   border-radius: 11px !important;
   background: transparent !important;
   box-shadow: none !important;
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
-  position: absolute !important;
-  bottom: 6px;
-  right: 6px;
+  position: static !important;
+  bottom: auto;
+  right: auto;
   left: auto;
   top: auto;
-  z-index: 1;
+  z-index: auto;
+  align-self: flex-end;
+  flex: 0 0 26px;
   box-sizing: border-box;
   display: flex !important;
   flex-direction: row;
   gap: 4px;
-  margin: 0 !important;
+  margin: 0 8px 7px 0 !important;
   padding: 2px 5px !important;
   width: auto !important;
   max-width: calc(100% - 12px);
@@ -397,4 +400,14 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspa
    lists remain available in authorized Claw workbench surfaces. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) ~ :is(#clawApprovedDisclosure,#clawRunHistoryDisclosure,#clawApprovedMemory,#clawRunHistory) {
   display: none !important;
+}
+
+/* At short desktop heights the fixed Chat composer otherwise covers the
+   original Claw status buttons. Move the whole first-use group, not the
+   button alone, so all four cards remain directly clickable. */
+@media (min-width: 921px) and (max-height: 800px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]
+    .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) {
+    translate: 0 clamp(-150px, calc(100dvh - 850px), 0px);
+  }
 }

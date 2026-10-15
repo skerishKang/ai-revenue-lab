@@ -35,18 +35,25 @@ with sync_playwright() as p:
  writes=setup(ctx,"connected",{"ok":True,"available":True,"ownerScoped":True,"devices":[{"state":"CONNECTED","usable":True,"expired":False,"revoked":False}]})
  page=ctx.new_page()
  a=check(page,{"pc":"on","drive":"on","github":"unknown"})
- page.on("dialog",lambda dialog:dialog.accept())
+ # Drive ON is authorized but cannot be temporarily paused; never revoke
+ # the existing OAuth grant from this status chip. Show management guidance.
  page.locator('[data-claw-connection="drive"]').click()
- page.wait_for_function("() => document.querySelector('[data-claw-connection=\"drive\"]').dataset.connectionState === 'off'",timeout=7000)
+ assert page.locator("#clawConnectionGuide").evaluate("(e)=>e.open") is True
  after=page.locator('[data-claw-connection="drive"]').get_attribute("data-connection-state")
- assert after=="off" and len(writes)==1 and "/api/connectors/google/drive/disconnect" in writes[0],(after,writes)
- assert len(page.locator("#clawConnectionFeedback").inner_text().strip()) > 10
+ assert after=="on" and not writes,(after,writes)
  page.close();ctx.close()
  ctx=b.new_context();writes=setup(ctx,"not_connected",{"ok":True,"available":True,"ownerScoped":True,"devices":[]})
  page=ctx.new_page(); c=check(page,{"pc":"off","drive":"off","github":"unknown"})
+ # Drive OFF enters the existing trusted OAuth quick-connect path instead
+ # of showing the obsolete connectorsDialog (Connectors is now a view).
+ page.evaluate("""() => {
+   window.__driveQuickConnects = 0;
+   document.addEventListener("padiem:drive-quick-connect",
+     () => window.__driveQuickConnects++, {capture:true});
+ }""")
  page.locator('[data-claw-connection="drive"]').click()
- assert page.locator("#connectorsDialog").evaluate("(e)=>e.open") is True
- assert len(writes)==0,writes
+ page.wait_for_function("() => window.__driveQuickConnects === 1",timeout=3000)
+ assert not any("/api/connectors/google/drive/disconnect" in req for req in writes),writes
  page.close();ctx.close()
  ctx=b.new_context()
  ctx.route("**/api/connectors/status",lambda r:r.fulfill(status=503,content_type="application/json",body='{"error":"offline"}'))
@@ -54,7 +61,7 @@ with sync_playwright() as p:
  page=ctx.new_page(); d=check(page,{"pc":"unknown","drive":"unknown","github":"unknown"})
  page.close();ctx.close();b.close()
  print("CLAW_REAL_STATUS_CHIPS=PASS")
- print("DRIVE_ON_SERVER_REVOKE_CANONICAL_OFF=PASS")
- print("OFF_CANONICAL_CONNECT_DIALOG=PASS")
+ print("DRIVE_ON_GRANT_RETAINED_NO_SILENT_REVOKE=PASS")
+ print("DRIVE_OFF_CANONICAL_OAUTH_QUICK_CONNECT=PASS")
  print("UNKNOWN_FAIL_CLOSED=PASS")
  print("PRODUCTION_MUTATION=0")
