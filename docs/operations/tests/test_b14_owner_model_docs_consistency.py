@@ -57,13 +57,13 @@ class TestOwnerModelDocTruth(unittest.TestCase):
             with self.subTest(model_id=model_id):
                 self.assertIn('"google/' + model_id + '"', provider)
         self.assertIn('GOOGLE_BASE_ORIGIN = "https://generativelanguage.googleapis.com/v1beta/openai"', provider)
-        self.assertIn('GOOGLE_CREDENTIAL_BINDING = "PADIEM_GEMINI_API_KEY"', provider)
+        self.assertIn('GOOGLE_CREDENTIAL_BINDING = "PADIEM_B14_CREDENTIAL_05"', provider)
         # The current source of registration is one validated JSON registry,
         # not the historical provider function and its init-time side effects.
         registry = json.loads(read("apps/korean-ai-platform/app/pilot/b14_models.json"))
         google = registry["providers"]["google"]
         self.assertEqual(google["base_origin"], "https://generativelanguage.googleapis.com/v1beta/openai")
-        self.assertEqual(google["credential_binding_name"], "PADIEM_GEMINI_API_KEY")
+        self.assertEqual(google["credential_binding_name"], "PADIEM_B14_CREDENTIAL_05")
         model_rows={m["id"]:m for m in registry["models"]}
         for model_id in GOOGLE:
             with self.subTest(model_id=model_id):
