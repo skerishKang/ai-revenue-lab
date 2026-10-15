@@ -344,6 +344,8 @@ def create_app(
     b66_quote_interpreter=None,
     b66_member_admin_store=None,
     b66_admin_google_email: str = "",
+    b66_review_grant_issuer=None,
+    b66_canonical_candidate_target_resolver=None,
     central_model_admin_authorizer=None,
     central_model_admin_google_email: str = "",
     central_model_policy_store=None,
@@ -1013,6 +1015,32 @@ def create_app(
         except Exception:
             _b66_saved_skill_candidate_store = None
     app.state.b66_saved_skill_candidate_store = _b66_saved_skill_candidate_store
+    # #3186 STEP 3-B: staff status alone never issues review permission.
+    # Both inputs are separate server-injected authorities. Without either,
+    # the existing operator decision endpoint remains fail-closed (503).
+    _candidate_review_authority = None
+    if (isinstance(app.state.b66_member_admin_store, D1B66MemberAdminStore)
+            and _b66_saved_skill_candidate_store is not None
+            and callable(b66_review_grant_issuer)
+            and callable(b66_canonical_candidate_target_resolver)):
+        from .b66_saved_skill_candidate_authority import (
+            D1B66SavedQuoteSkillCandidateOperatorAuthority,
+        )
+        _candidate_review_authority = D1B66SavedQuoteSkillCandidateOperatorAuthority(
+            member_admin_store=app.state.b66_member_admin_store,
+            candidate_store=_b66_saved_skill_candidate_store,
+            trusted_review_grant_issuer=b66_review_grant_issuer,
+            canonical_target_resolver=b66_canonical_candidate_target_resolver,
+        )
+    app.state.b66_saved_skill_candidate_operator_authority = _candidate_review_authority
+    app.state.b66_operator_grant_resolver = (
+        _candidate_review_authority.issue_operator_grant
+        if _candidate_review_authority is not None else None
+    )
+    app.state.b66_operator_target_resolver = (
+        _candidate_review_authority.resolve_operator_target
+        if _candidate_review_authority is not None else None
+    )
 
     # B66 #3406: canonical account/workspace company identity/defaults. This is
     # separate from Saved Quote Skill layout behavior and browser-local presets.
