@@ -66,9 +66,22 @@ def _rows(cursor: Any) -> list[dict[str, Any]]:
         result = reader()
     except (RuntimeError, ValueError, TypeError) as exc:
         raise _error("connector_enrollment_durable_unavailable") from exc
-    if not isinstance(result, list) or any(type(row) is not dict for row in result):
-        raise _error("connector_enrollment_durable_corrupt")
-    return result
+    # Cloudflare DO / Pyodide may return JavaScript proxy rows. Use the
+    # canonical Identity authority's existing to_py()/dict() conversion order,
+    # while refusing malformed rows rather than silently filling fields.
+    try:
+        rows: list[dict[str, Any]] = []
+        for item in result:
+            if isinstance(item, dict):
+                row = dict(item)
+            else:
+                to_py = getattr(item, "to_py", None)
+                converted = to_py() if callable(to_py) else None
+                row = dict(converted) if isinstance(converted, dict) else dict(item)
+            rows.append(row)
+    except (TypeError, ValueError, RuntimeError, AttributeError) as exc:
+        raise _error("connector_enrollment_durable_corrupt") from exc
+    return rows
 
 
 class CurrentCanonicalIdentitySessionReader(Protocol):
@@ -130,12 +143,13 @@ class IdentityDurableConnectorEnrollmentRecords:
                 "PRAGMA table_info(canonical_connector_enrollment_consent)"
             )
             reader = getattr(info, "toArray", None)
-            columns = reader() if callable(reader) else []
+            if not callable(reader):
+                raise _error("connector_enrollment_durable_unavailable")
         except Exception as exc:
             raise _error("connector_enrollment_durable_unavailable") from exc
-        names = {
-            row.get("name") for row in columns if isinstance(row, dict)
-        }
+        # PRAGMA metadata follows the same DO row conversion contract as
+        # SELECT rows; proxy rows must not masquerade as missing columns.
+        names = {row.get("name") for row in _rows(info)}
         if "consent_id" not in names:
             raise _error("connector_enrollment_durable_unavailable")
         if "withdrawn_at" not in names:
@@ -150,12 +164,18 @@ class IdentityDurableConnectorEnrollmentRecords:
     @staticmethod
     def _consent(row: dict[str, Any]) -> ConnectorEnrollmentConsent:
         try:
+            # Do not transform NULL, numbers, or missing required fields into
+            # valid-looking string references (e.g. str(None) == "None").
+            references = ("consent_id", "owner_subject_id", "account_ref",
+                          "workspace_ref", "device_id")
+            if any(type(row[key]) is not str for key in references):
+                raise ValueError("invalid consent row reference type")
             return ConnectorEnrollmentConsent(
-                consent_id=str(row["consent_id"]),
-                owner_subject_id=str(row["owner_subject_id"]),
-                account_ref=str(row["account_ref"]),
-                workspace_ref=str(row["workspace_ref"]),
-                device_id=str(row["device_id"]),
+                consent_id=row["consent_id"],
+                owner_subject_id=row["owner_subject_id"],
+                account_ref=row["account_ref"],
+                workspace_ref=row["workspace_ref"],
+                device_id=row["device_id"],
                 granted_at=_parse(row["granted_at"]),
                 withdrawn_at=_parse(row["withdrawn_at"]) if row["withdrawn_at"] is not None else None,
             )
