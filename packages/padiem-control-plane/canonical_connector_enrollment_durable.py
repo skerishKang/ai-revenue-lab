@@ -107,6 +107,7 @@ class IdentityDurableConnectorEnrollmentRecords:
                 "account_ref TEXT NOT NULL, workspace_ref TEXT NOT NULL, "
                 "device_id TEXT NOT NULL, granted_at TEXT NOT NULL, withdrawn_at TEXT)"
             )
+            self._ensure_withdrawn_at_column()
             self._sql.exec(
                 "CREATE UNIQUE INDEX IF NOT EXISTS idx_connector_consent_one_active_device "
                 "ON canonical_connector_enrollment_consent(owner_subject_id,device_id) "
@@ -119,6 +120,32 @@ class IdentityDurableConnectorEnrollmentRecords:
                 "tenant_id TEXT NOT NULL, expires_at TEXT NOT NULL)"
             )
         self._storage.transactionSync(op)
+
+    def _ensure_withdrawn_at_column(self) -> None:
+        """Additive repair only: a consent table created before withdrawal
+        tracking keeps every existing row; the missing nullable column is
+        added and nothing else is altered, dropped, or backfilled."""
+        try:
+            info = self._sql.exec(
+                "PRAGMA table_info(canonical_connector_enrollment_consent)"
+            )
+            reader = getattr(info, "toArray", None)
+            columns = reader() if callable(reader) else []
+        except Exception as exc:
+            raise _error("connector_enrollment_durable_unavailable") from exc
+        names = {
+            row.get("name") for row in columns if isinstance(row, dict)
+        }
+        if "consent_id" not in names:
+            raise _error("connector_enrollment_durable_unavailable")
+        if "withdrawn_at" not in names:
+            try:
+                self._sql.exec(
+                    "ALTER TABLE canonical_connector_enrollment_consent "
+                    "ADD COLUMN withdrawn_at TEXT"
+                )
+            except Exception as exc:
+                raise _error("connector_enrollment_durable_unavailable") from exc
 
     @staticmethod
     def _consent(row: dict[str, Any]) -> ConnectorEnrollmentConsent:
