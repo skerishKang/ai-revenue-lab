@@ -852,6 +852,19 @@ class Default(WorkerEntrypoint):
                     legacy_b66=binding_value(self.env, "B66_ADMIN_GOOGLE_EMAIL"),
                     legacy_central=binding_value(self.env, "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL"),
                 )
+
+                from app.b66_saved_skill_candidate_authority import (
+                    B66ReviewedSuperAdminOperatorGrantIssuer,
+                )
+
+                b66_review_grant_issuer = None
+                if isinstance(b66_operator_email, str) and b66_operator_email:
+                    # Review grant authority is server-defined by the configured
+                    # super-admin Google subject. Candidate owner/workspace still
+                    # cannot synthesize or escalate any capability.
+                    b66_review_grant_issuer = B66ReviewedSuperAdminOperatorGrantIssuer(
+                        configured_operator_subject=b66_operator_email,
+                    ).issue
                 try:
                     connector_owner_ports = compose_owner_enrollment_from_worker(self.env)
                 except ValueError:
@@ -891,6 +904,7 @@ class Default(WorkerEntrypoint):
                     history_store=history_store,
                     d1_binding=db_binding,
                     b66_admin_google_email=b66_operator_email,
+                    b66_review_grant_issuer=b66_review_grant_issuer,
                     central_model_admin_google_email=central_operator_email,
                     central_model_policy_signing_key=(
                         binding_value(self.env, "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY") or ""
