@@ -27,7 +27,8 @@
     // intent. No URL/session storage, manual code, extra checkbox or retry.
     const pcChannelName = "padiem-claw-pc-connect-v1";
     const pcOfferRef = /^link\.[0-9a-f]{32}$/;
-    const pcIntentLifetimeMs = 120000;
+    // Install/run may take up to 30 minutes in this tab; Broker offer TTL is a separate 90 seconds.
+    const pcIntentLifetimeMs = 30 * 60 * 1000;
     let pcChannel = null;
     let pcIntent = null;
     let pcApprovalPending = false;
@@ -63,12 +64,12 @@
         }
         // Pending is NOT registered/connected. The original server-owned GET
         // remains the only source of actual PC status.
-        pcNote("PC ?? ??? ??????. ?? ?? ??? ?????.",
+        pcNote("PC 등록 요청을 전달했습니다. 실제 연결 상태를 확인합니다.",
                "PC registration was requested. Checking the actual status.");
         const check = document.getElementById("clawComputerDeviceStatusButton");
         if (check && !check.disabled) check.click();
       } catch {
-        pcNote("PC ?? ??? ???? ?????. ?? ????? ????.",
+        pcNote("PC 연결 요청이 완료되지 않았습니다. 자동 재시도하지 않습니다.",
                "The PC connection request did not complete. It will not retry automatically.");
       } finally {
         pcApprovalPending = false;
@@ -102,7 +103,7 @@
       if (pcIntent && !pcIntent.used &&
           Date.now() - pcIntent.at <= pcIntentLifetimeMs) return true;
       if (typeof window.BroadcastChannel !== "function") {
-        pcNote("?? ?????? PC ?? ??? ??? ? ????.",
+        pcNote("현재 브라우저에서 PC 연결 수신을 준비할 수 없습니다.",
                "This browser could not prepare the PC connection receiver.");
         return true;
       }
@@ -116,7 +117,7 @@
         window.location.assign("padiem-connector://start");
       } catch {
         pcIntent = null;
-        pcNote("??? ??? ???? ?????. ?? ??? ?????.",
+        pcNote("커넥터 실행을 요청하지 못했습니다. 설치 상태를 확인하세요.",
                "Could not start Connector. Check its installation.");
       }
       return true;
