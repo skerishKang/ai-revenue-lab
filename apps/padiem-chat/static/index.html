@@ -997,6 +997,23 @@
     <ul id="ownerModelPreviewList" class="owner-model-preview-list" aria-label="모델 현황"></ul>
     <p data-locale-key="owner-model-preview-no-activation">모델을 표시해도 자동 선택·호출·결제가 발생하지 않습니다.</p>
   </dialog>
+  <dialog id="meetingDialog" class="meeting-dialog" aria-labelledby="meetingTitle">
+    <div class="meeting-panel">
+     <header class="meeting-header"><div><p>PADIEM CLAW</p><h2 id="meetingTitle">회의록</h2></div><button type="button" id="meetingClose" aria-label="회의록 닫기">×</button></header>
+     <p class="meeting-help">녹음·실시간 받아쓰기는 별도 기능입니다. 시작을 누르면 마이크 사용 권한을 요청합니다. 브라우저 음성 인식은 브라우저 제공자의 외부 서비스를 사용할 수 있습니다.</p>
+     <fieldset class="meeting-modes"><legend>회의 방식 선택</legend>
+      <label><input type="radio" name="meetingMode" value="record" checked> 녹음만</label>
+      <label><input type="radio" name="meetingMode" value="transcribe"> 실시간 전사만</label>
+      <label><input type="radio" name="meetingMode" value="both"> 녹음 + 실시간 전사</label>
+     </fieldset>
+     <div class="meeting-controls"><button type="button" id="meetingStart">회의 시작</button><button type="button" id="meetingStop" disabled>회의 종료</button></div>
+     <p class="meeting-status" id="meetingStatus" role="status" aria-live="polite">대기 중 · 아직 녹음하지 않았습니다.</p>
+     <label for="meetingTranscript">전사 원문 (편집 가능)</label><textarea id="meetingTranscript" rows="8" placeholder="실시간 전사 내용을 이곳에서 확인할 수 있습니다."></textarea>
+     <p id="meetingInterim" role="status" class="meeting-interim"></p>
+     <div class="meeting-exports"><button type="button" id="meetingDownloadAudio" disabled>녹음 파일 다운로드</button><button type="button" id="meetingDownloadText" disabled>전사 TXT 다운로드</button><button type="button" id="meetingDraftInClaw" disabled>Claw로 회의록 초안 만들기</button></div>
+     <p class="meeting-storage-note">Google Drive 직접 저장은 쓰기 권한 연결이 필요합니다. 현재는 파일을 기기에 다운로드해 보관할 수 있습니다. 서버에 원본을 올리지 않으며 새로고침하면 임시 기록이 사라집니다.</p>
+    </div>
+  </dialog>
   <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div><span class="user-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"></circle><path d="M5 19.5c1.2-3.2 3.9-5 7-5s5.8 1.8 7 5"></path></svg></span></article></template>
   <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span data-assistant-product>Padiem Chat</span><span class="demo-label" data-runtime-label data-locale-key="answer-preparing">답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
   <script src="./theme.js"></script>
