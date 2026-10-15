@@ -137,16 +137,18 @@ def test_cloudflare_js_proxy_rows_use_canonical_conversion():
 
 
 def test_corrupt_consent_field_not_stringified_into_permission():
-    port, storage, _ = fixture()
-    port.install_schema()
-    storage.db.execute(
-        "INSERT INTO canonical_connector_enrollment_consent "
-        "(consent_id,owner_subject_id,account_ref,workspace_ref,device_id,granted_at) "
-        "VALUES (?,?,?,?,?,?)",
-        (CONSENT_ID, OWNER, None, "workspace.connector", DEVICE, NOW.isoformat()),
-    )
+    # Exercise the row decoder directly: SQLite NOT NULL correctly refuses an
+    # invalid stored row before the decoder ever sees it.
     assert error_code(
-        lambda: port.current_consent(consent_id=CONSENT_ID, now=NOW)
+        lambda: IdentityDurableConnectorEnrollmentRecords._consent({
+            "consent_id": CONSENT_ID,
+            "owner_subject_id": OWNER,
+            "account_ref": None,
+            "workspace_ref": "workspace.connector",
+            "device_id": DEVICE,
+            "granted_at": NOW.isoformat(),
+            "withdrawn_at": None,
+        })
     ) == "connector_enrollment_durable_corrupt"
 
 
