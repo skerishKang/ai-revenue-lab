@@ -25,13 +25,20 @@ if (!(Test-Path -LiteralPath $secretPath)) {
 }
 $script = Join-Path $PSScriptRoot 'grafana_com1_backup.py'
 if (!(Test-Path -LiteralPath $script)) { throw 'ARCHIVE_SCRIPT_NOT_FOUND' }
-$python = (Get-Command python -ErrorAction Stop).Source
-$action = New-ScheduledTaskAction -Execute $python -Argument ('"'+$script+'"') -WorkingDirectory $PSScriptRoot
-# Repeat every 15 min, refreshed daily. No Windows service/extra cloud compute.
-$trigger = New-ScheduledTaskTrigger -Daily -At 00:00
-$trigger.Repetition.Interval = 'PT15M'
-$trigger.Repetition.Duration = 'P1D'
-$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 3) -MultipleInstances IgnoreNew
-$principal = New-ScheduledTaskPrincipal -UserId ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) -LogonType Interactive -RunLevel Limited
-Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Force | Out-Null
-Write-Output ('COM1_BACKUP_SCHEDULED task='+$taskName+' interval=15m')
+$sourceRunner = Join-Path $PSScriptRoot 'run_grafana_com1_backup.ps1'
+if (!(Test-Path -LiteralPath $sourceRunner)) { throw 'BACKUP_RUNNER_NOT_FOUND' }
+# Install into a stable COM1 user directory. Deleting a Git worktree cannot
+# silently break an operating backup schedule.
+$installedDir = Join-Path $env:LOCALAPPDATA 'PADIEM\GrafanaLogs\bin'
+New-Item -ItemType Directory -Force -Path $installedDir | Out-Null
+Copy-Item -LiteralPath $script -Destination (Join-Path $installedDir 'grafana_com1_backup.py') -Force
+Copy-Item -LiteralPath $sourceRunner -Destination (Join-Path $installedDir 'run_grafana_com1_backup.ps1') -Force
+# A no-spaces powershell.exe launcher avoids quoting native executable paths.
+$runner = Join-Path $installedDir 'run_grafana_com1_backup.ps1'
+$taskCommand = 'powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File ' + $runner
+# Every 15 minutes without finite duration, current Windows interactive user.
+& schtasks.exe /Create /TN $taskName /TR $taskCommand /SC MINUTE /MO 15 /IT /F *> $null
+if ($LASTEXITCODE -ne 0) {
+    throw ('COM1_BACKUP_SCHEDULE_REGISTER_FAILED_' + $LASTEXITCODE)
+}
+Write-Output ('COM1_BACKUP_SCHEDULED task='+$taskName+' interval=15m mode=interactive-user')

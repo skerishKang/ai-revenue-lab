@@ -366,7 +366,9 @@ def test_worker_dispatches_the_route_before_the_default_fetch() -> None:
     service_source = SERVICE_PATH.read_text(encoding="utf-8")
 
     dispatch = worker_source.index("CALENDAR_CREDENTIAL_PRESENCE_PATH:")
-    fallback = worker_source.index("return await super().fetch(request)")
+    # Existing fallback remains exact; the wrapper captures the response
+    # first so the telemetry finally block can log the true status.
+    fallback = worker_source.index("response = await super().fetch(request)")
     assert dispatch < fallback
     assert "from app.calendar_credential_presence import" in worker_source
     assert "calendar_presence_response" in worker_source

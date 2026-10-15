@@ -18,23 +18,22 @@
 - Source now forwards diagnostic `X-Request-Id` over existing fixed B62->B14, B62->Engine and Engine->B14 Service Bindings. B14/Engine add independent metadata-only Worker emission and fixed code/latency for B14's canonical completed provider attempt. The original request ID is *never* used for authentication, tenant access, or account authority. A cross-service end-to-end trace remains pending until confirmed by an actual live request and correlated records from those services.
 - Do not claim real ingestion until one synthetic safe event can be queried by request ID in Grafana Explore. Do not transmit actual prompts, query strings, cookie values, request bodies, headers, IPs, customer identities, unredacted provider errors, or token values.
 
-## Provisioning — prerequisites not supplied by code
+## Provisioning — source and external activation
 The Grafana Cloud Portal access policy `padiem-prod-logs-write` already exists at https://grafana.com/orgs/zestypuma1700/access-policies . Its realm is the Japan `zestypuma1700` stack and **sole scope** is `logs:write`; a scoped `logs:write` token was created and stored in the existing B62 Cloudflare account-level Secrets Store; its value is never published.
 
-1. Create **one** token under that access policy. Do not paste its value into a chat, an Issue, a PR, a script, or command-line history. Provision it using the authorized operator UI into the server-side PADIEM Cloudflare Secrets Store under the name `PADIEM_GRAFANA_OTLP_TOKEN`. In the deployment config, bind that name to the B62 Worker after confirming it actually exists. Never put the value into `wrangler.toml` or `[vars]`.
+1. **DONE (account configuration):** `logs:write` token created in Grafana and registered as `PADIEM_GRAFANA_OTLP_TOKEN` in the existing Charliekant account-level Cloudflare Secrets Store (`f0b09ca04a7b43248154c773704a5616`). B62/B14/Engine Wrangler source declares the encrypted secret reference. No token values in source. Binding to the **served Workers** requires separately approved protected releases.
 2. The *public* OTLP URL and instance username are in `apps/padiem-chat/wrangler.toml`. They are not credentials. Activation requires all three trusted bindings (`PADIEM_GRAFANA_OTLP_ENDPOINT`, `PADIEM_GRAFANA_OTLP_USERNAME`, `PADIEM_GRAFANA_OTLP_TOKEN`).
 3. Use the existing protected B62 Worker Production workflow, not `wrangler deploy` or an ad hoc Dashboard deployment. Inspect relevant current-main drift, exact-head CI, destination and configured release/rollback requirements; do not claim deployed because a PR merged.
-4. Send exactly one non-sensitive synthetic safe event or one authorized production request. Verify a Grafana LogQL query such as `{service_name="padiem-chat"} | json | request_id="req_<validated id>"`. A 401/403 may mean incorrect OTLP username/token scope; keep customer execution independent.
-5. The dashboard source JSON is `apps/padiem-chat/observability/padiem-requests-grafana.json` (8 panels: request volume, failure count, failure rate, P95 latency, stage errors, service errors, request ID search and B62 product volumes). Import to the actual Grafana instance and resolve the Loki datasource. The dashboard URL is not considered created/operational until Grafana confirms saving it and panels find real data.
+4. **DONE (external ingest canary):** one content-blind OTLP request returned HTTP 204 and the matching LogQL request-ID lookup returned HTTP 200. This proves external Grafana ingestion but not served Worker ingestion. A 401/403 after Worker deployment may mean credential, scope or binding mismatch; keep customer execution independent.
+5. **DONE (Dashboard API):** the 8-panel JSON in `apps/padiem-chat/observability/padiem-requests-grafana.json` is saved at https://zestypuma1700.grafana.net/d/padiem-requests-logs/eb3f920 ; authenticated GET readback showed all eight panels. Live metrics for B14/Engine remain empty until their separate Workers are deployed.
 
-## Independent COM1 archive (does NOT happen automatically)
+## Independent COM1 archive (activated: 15-minute scheduled backup)
 - Pull architecture: Grafana Loki authenticated `logs:read` HTTP API -> Windows COM1 local SQLite `%LOCALAPPDATA%\PADIEM\GrafanaLogs\archive.sqlite3`, with WAL, request-ID index and dedup by event hash.
 - Archiver: `scripts/ops/grafana_com1_backup.py`. Scheduled installer: `scripts/ops/install_grafana_com1_backup.ps1`.
-- Create a **separate** access policy with only `logs:read` in the Japan Stack and its own token. Do not reuse the `logs:write` token and do not grant `logs:delete`. Store read token as current COM1 Windows user DPAPI secret via interactive operator PowerShell:
-  `powershell -NoProfile -File scripts/ops/install_grafana_com1_backup.ps1 -InitializeSecret`
-  This stores the token under `%LOCALAPPDATA%\PADIEM\secrets\grafana-loki-read.dpapi` and registers a task every 15 minutes, only after token entry.
+- **DONE:** separate `padiem-com1-loki-read` Grafana access policy scoped solely to Japan Stack `logs:read`; distinct token saved with COM1 Windows-user DPAPI at `%LOCALAPPDATA%\PADIEM\secrets\grafana-loki-read.dpapi`. Do not reuse `logs:write`, grant `logs:delete`, or publish the token.
+- The installer copies both archive code and task runner to the stable COM1 user location `%LOCALAPPDATA%\PADIEM\GrafanaLogs\bin` before registering the 15-minute Task Scheduler job. Therefore removing a Git worktree does not break the scheduled backup. A one-time installation command is `powershell -NoProfile -File scripts/ops/install_grafana_com1_backup.ps1`. `-InitializeSecret` is reserved for interactive token rotation; never send the secret to chat.
 - Scheduled task: `PADIEM-Grafana-Logs-COM1-Backup`. It runs only when this Windows user is logged in; it is **not** a guaranteed always-online offsite backup. If COM1 is offline, backlog is pulled in bounded chronological 24-hour batches when it comes online again. Do not assume Grafana retention guarantees retrieval after expiration.
-- No task or token was installed as part of preparing this source. After operator token authorization, confirm `Get-ScheduledTask`, test `python scripts/ops/grafana_com1_backup.py`, and query `archive.sqlite3` for the synthetic request ID. A silent failed task is not backup proof.
+- **DONE, COM1 acceptance:** task `PADIEM-Grafana-Logs-COM1-Backup` is Ready and its on-demand execution finished with `LastTaskResult=0`. A fresh synthetic Loki log was archived to SQLite and read back (1 record/1 request ID). The task is configured for every 15 minutes, interactive-user only; continuous offline operation is not claimed.
 - COM1 has finite disk and the SQLite archive currently has **no automated retention limit**. Check disk and archive size and decide a local retention/rotation policy before usage volume grows; never enable paid Grafana ingestion to compensate.
 
 ## Operations checklist
@@ -44,8 +43,8 @@ The Grafana Cloud Portal access policy `padiem-prod-logs-write` already exists a
 | Grafana policy | Actual access policy and logs:write scope | Policy and server-side Secret created; Worker binding pending deployment |
 | B62->Grafana ingestion | Actual Loki sample in Explore | Synthetic safe sample OTLP 204 / Loki query 200 PASS; B62 Worker runtime NOT VERIFIED |
 | B14/Engine/provider distributed trace | Same request ID in actual downstream services | NOT VERIFIED |
-| Grafana dashboard | Saved dashboard link + real query result | 7-panel version saved at https://zestypuma1700.grafana.net/d/padiem-requests-logs/4d10e80 ; expanded 8-panel version in source NOT YET IMPORTED |
-| COM1 archive | DPAPI read token, scheduled task, SQLite readback | Source only; NOT ACTIVE |
+| Grafana dashboard | Saved dashboard link + real query result | 8-panel Grafana API save and GET readback PASS: https://zestypuma1700.grafana.net/d/padiem-requests-logs/eb3f920 |
+| COM1 archive | DPAPI read token, scheduled task, SQLite readback | PASS: logs:read policy, COM1 DPAPI, 15-minute task Ready, executed LastTaskResult=0, 1 synthetic record readback |
 | Production | Protected B62 Worker release run and deployment SHA | NOT DEPLOYED |
 
 ## Query cardinality, cost and rollback
@@ -58,5 +57,5 @@ The Grafana Cloud Portal access policy `padiem-prod-logs-write` already exists a
 - Independent opt-in Worker wrappers: `apps/korean-ai-platform/{worker.py,app/stack_telemetry.py}` and `apps/padiem-ai-engine/{worker_identity.py,app/stack_telemetry.py}`; same no-request-body allowlist in both independently bundled Workers. Each service needs its own protected release; a B62 deploy does not deploy B14 or Engine.
 - B62 additionally exports static product buckets `chat`, `claw`, `b66`, `other` from route templates only. No raw URL, model identity or customer data reaches Loki.
 - Both independent Workers record only API/internal Worker response completion latency; **streaming full-body completion latency is not yet proven**. Provider-call stage instrumentation currently covers B14's canonical completed chat attempt; other streaming adapter branches require separate evidence before claiming full provider coverage.
-- COM1 backup query now includes service names `padiem-chat`, `korean-ai-platform`, `padiem-ai-engine`. The separate `logs:read` policy and DPAPI secret are NOT provisioned; COM1 scheduled backup is not active.
-- No new production mutations, plan upgrade or external token creation are implied by the source instrumentation.
+- COM1 backup query now includes service names `padiem-chat`, `korean-ai-platform`, `padiem-ai-engine`. The distinct `logs:read` policy and COM1 DPAPI secret are configured, 15-minute Task Scheduler job running; one independent synthetic readback confirmed.
+- Two Grafana scoped access policies and tokens were configured without upgrading plan. **No B62/B14/Engine Production Worker code deployments were executed by this observability change**; each release remains subject to exact-main CI and product-specific protected deployment workflows.

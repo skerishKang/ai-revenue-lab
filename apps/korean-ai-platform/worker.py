@@ -87,48 +87,46 @@ class Default(WorkerEntrypoint):
         if observed:
             from app.stack_telemetry import start_trace, finish_trace
             route = "/api/pilot/*" if path.startswith("/api/pilot/") else "/api/b66/*"
-            state, token = start_trace(request, "korean-ai-platform", route)
+            state, trace_token = start_trace(request, "korean-ai-platform", route)
         response = None
-        try:
-            import asgi
+        import asgi
 
-            # The public Worker root is a product entrypoint, not the legacy demo
-            # home page. Intercept it before ASGI so the production URL cannot fail
-            # while rendering the legacy template.
-            if urlparse(request.url).path == "/":
-                return Response(
-                    "",
-                    status=307,
-                    headers={
-                        "Location": "/workspace",
-                        **_SECURITY_HEADERS,
-                    },
-                )
-
-            from app.pilot.worker_env import (
-                bind_request_env,
-                collect_request_bindings,
-                reset_request_env,
+        # The public Worker root is a product entrypoint, not the legacy demo
+        # home page. Intercept it before ASGI so the production URL cannot fail
+        # while rendering the legacy template.
+        if urlparse(request.url).path == "/":
+            return Response(
+                "",
+                status=307,
+                headers={
+                    "Location": "/workspace",
+                    **_SECURITY_HEADERS,
+                },
             )
 
-            # Retain only handles; do not fetch every Provider secret on GET/POST.
-            env_overrides = collect_request_bindings(self.env, _ENV_KEYS)
+        from app.pilot.worker_env import (
+            bind_request_env,
+            collect_request_bindings,
+            reset_request_env,
+        )
 
-            # Deployment config remains bootstrapped once. Provider credentials
-            # are resolved lazily by the chosen route within this request, never
-            # written to os.environ or reused across concurrent requests.
-            if env_overrides:
-                _apply_env_once(env_overrides)
-            token = bind_request_env(env_overrides)
-            try:
-                native_resp = await asgi.fetch(app, request.js_object, self.env)
-                response = _apply_security_headers(native_resp)
-                return response
-            finally:
-                reset_request_env(token)
+        # Retain only handles; do not fetch every Provider secret on GET/POST.
+        env_overrides = collect_request_bindings(self.env, _ENV_KEYS)
+
+        # Deployment config remains bootstrapped once. Provider credentials
+        # are resolved lazily by the chosen route within this request, never
+        # written to os.environ or reused across concurrent requests.
+        if env_overrides:
+            _apply_env_once(env_overrides)
+        token = bind_request_env(env_overrides)
+        try:
+            native_resp = await asgi.fetch(app, request.js_object, self.env)
+            response = _apply_security_headers(native_resp)
+            return response
         finally:
+            reset_request_env(token)
             if observed:
-                finish_trace(state, token, response, getattr(self, "ctx", None), self.env)
+                finish_trace(state, trace_token, response, getattr(self, "ctx", None), self.env)
 
 
 # ---------------------------------------------------------------------------
