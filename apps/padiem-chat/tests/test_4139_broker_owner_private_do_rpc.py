@@ -205,3 +205,34 @@ def test_rpc_not_exposed_to_public_fetch_or_production_automatically():
     assert _PRIVATE_METHODS_PRODUCTION_ENABLED is False
     assert _OWNER_RPC_MOUNTED is False
     assert _PC_WSS_SAME_BROKER_DO_MOUNTED is False
+
+def test_reserve_failure_emits_only_fixed_first_stage_codes(monkeypatch):
+    from app import connector_pending_pc_owner_rpc as port_module
+    events = []
+    monkeypatch.setattr(port_module, "emit_stage_event",
+                        lambda **event: events.append(event))
+
+    class RefusingBroker:
+        async def reserve_pending_pc_owner_intent(self, _wire):
+            raise RuntimeError("sensitive upstream error must not be exported")
+        async def deliver_pending_pc_link(self, _wire):
+            raise RuntimeError("unreachable")
+
+    identity = Fixture()
+    port = CanonicalBrokerOwnerPendingPcPort(
+        signed_owner=session(), canonical_broker_binding=RefusingBroker(),
+        identity=identity,
+    )
+
+    async def run():
+        from app.connector_pending_pc_owner_rpc import OwnerPcPrivateRpcDenied
+        with pytest.raises(OwnerPcPrivateRpcDenied, match="pending_pc_reserve_unavailable"):
+            await port.reserve_once(request_ref=REF)
+    asyncio.run(run())
+    assert len(events) == 1
+    assert events[0] == {
+        "stage": "pc_owner.broker_reserve", "outcome": "error",
+        "duration_ms": 0, "code": "broker_reserve_unavailable",
+    }
+    assert REF not in str(events)
+    assert "sensitive upstream" not in str(events)

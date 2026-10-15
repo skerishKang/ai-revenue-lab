@@ -16,6 +16,7 @@ import re
 from typing import Any
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+from .request_telemetry import emit_stage_event
 
 OWNER_PENDING_BROKER_PRIVATE_RPC_EXPORTED = False
 OWNER_PENDING_BROKER_PRODUCTION_ENABLED = False
@@ -75,6 +76,7 @@ class CanonicalBrokerOwnerPendingPcPort:
     async def reserve_once(self, *, request_ref: str) -> dict[str, Any]:
         if type(request_ref) is not str or _REF.fullmatch(request_ref) is None:
             raise OwnerPcPrivateRpcDenied("pending_pc_ref_invalid")
+        phase = "owner_scope"
         try:
             if not callable(getattr(self._identity, "resolve_connector_owner_scope", None)):
                 raise OwnerPcPrivateRpcDenied("pending_pc_identity_scope_unavailable")
@@ -86,6 +88,7 @@ class CanonicalBrokerOwnerPendingPcPort:
                 or any(type(v) is not str or _DEVICE.fullmatch(v) is None for v in scope.values())
             ):
                 raise OwnerPcPrivateRpcDenied("pending_pc_identity_scope_invalid")
+            phase = "broker_reserve"
             raw_response = await self._broker.reserve_pending_pc_owner_intent({
                 "request_ref": request_ref,
                 "owner_subject_ref": self._owner.subject.subject_id,
@@ -93,8 +96,15 @@ class CanonicalBrokerOwnerPendingPcPort:
                 "workspace_ref": scope["workspace_ref"],
             })
         except Exception:
+            emit_stage_event(stage="pc_owner." + phase, outcome="error",
+                             duration_ms=0, code=phase + "_unavailable")
             raise OwnerPcPrivateRpcDenied("pending_pc_reserve_unavailable") from None
-        response = _reply(raw_response)
+        try:
+            response = _reply(raw_response)
+        except Exception:
+            emit_stage_event(stage="pc_owner.broker_receipt", outcome="error",
+                             duration_ms=0, code="reply_conversion_failed")
+            raise OwnerPcPrivateRpcDenied("pending_pc_reserve_invalid") from None
         if (
             type(response) is not dict
             or set(response) != {
@@ -109,6 +119,8 @@ class CanonicalBrokerOwnerPendingPcPort:
             or response["reserved_once"] is not True
             or type(response["expires_at"]) is not str
         ):
+            emit_stage_event(stage="pc_owner.broker_receipt", outcome="error",
+                             duration_ms=0, code="reply_contract_invalid")
             raise OwnerPcPrivateRpcDenied("pending_pc_reserve_invalid")
         return response
 
@@ -132,8 +144,15 @@ class CanonicalBrokerOwnerPendingPcPort:
             })
         except Exception:
             # One-time Broker slot may have been consumed; do not retry.
+            emit_stage_event(stage="pc_owner.broker_delivery", outcome="error",
+                             duration_ms=0, code="delivery_unconfirmed")
             raise OwnerPcPrivateRpcDenied("pending_pc_delivery_unconfirmed") from None
-        response = _reply(raw_response)
+        try:
+            response = _reply(raw_response)
+        except Exception:
+            emit_stage_event(stage="pc_owner.broker_delivery", outcome="error",
+                             duration_ms=0, code="delivery_reply_invalid")
+            raise OwnerPcPrivateRpcDenied("pending_pc_delivery_unconfirmed") from None
         if (
             type(response) is not dict
             or set(response) != {"ok", "sent_once", "registered", "connected"}
@@ -142,4 +161,6 @@ class CanonicalBrokerOwnerPendingPcPort:
             or response["registered"] is not False
             or response["connected"] is not False
         ):
+            emit_stage_event(stage="pc_owner.broker_delivery", outcome="error",
+                             duration_ms=0, code="delivery_contract_invalid")
             raise OwnerPcPrivateRpcDenied("pending_pc_delivery_unconfirmed")
