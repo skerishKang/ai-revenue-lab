@@ -105,6 +105,22 @@ class CanonicalBrokerOwnerPendingPcPort:
             emit_stage_event(stage="pc_owner.broker_receipt", outcome="error",
                              duration_ms=0, code="reply_conversion_failed")
             raise OwnerPcPrivateRpcDenied("pending_pc_reserve_invalid") from None
+        # Only exactly this private, single-field server-owned failure envelope
+        # may supply a diagnostic. Never relay arbitrary exception strings.
+        if type(response) is dict and set(response) == {"_pending_pc_owner_rpc_failure"}:
+            code = response["_pending_pc_owner_rpc_failure"]
+            allowed = frozenset({
+                "private_fields_invalid", "rpc_disabled", "storage_unavailable",
+                "live_socket_missing", "actor_unavailable", "actor_refused",
+                "owner_scope_invalid", "request_unavailable", "already_used",
+                "outbound_channel_unverified", "store_invalid", "store_unavailable",
+                "sql_reservation_unconfirmed", "receipt_invalid", "do_rpc_unavailable",
+            })
+            emit_stage_event(stage="pc_owner.broker_reserve", outcome="error",
+                             duration_ms=0,
+                             code=("broker_" + code) if type(code) is str and code in allowed
+                             else "broker_unclassified")
+            raise OwnerPcPrivateRpcDenied("pending_pc_reserve_unavailable")
         if (
             type(response) is not dict
             or set(response) != {
