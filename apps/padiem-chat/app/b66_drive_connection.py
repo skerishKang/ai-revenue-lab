@@ -31,7 +31,7 @@ _B66_USER_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{1,159}$")
 _GOOGLE_SUB_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{7,255}$")
 _B66_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 _RECONNECT_REASONS = frozenset(
-    {"revoked", "expired", "scope_changed", "invalid_grant", "manual_reconnect", "cp_reviewed_scope_mismatch"}
+    {"revoked", "expired", "scope_changed", "invalid_grant", "manual_reconnect"}
 )
 _SECRET_FIELD_SUBSTRINGS = ("token", "secret", "bearer", "credential", "private")
 
@@ -39,190 +39,6 @@ _SECRET_FIELD_SUBSTRINGS = ("token", "secret", "bearer", "credential", "private"
 # encrypted OAuth grant backend is not present in apps/padiem-chat for B66.
 B66_DRIVE_DURABLE_CREDENTIAL_BACKEND = "ABSENT_NOT_PROVEN"
 PROPERTY_LINKED_TO_B66_IDENTITY = False
-CP_GOOGLE_DRIVE_REVIEWED_CONNECTOR_ID = "google-drive"
-CP_GOOGLE_DRIVE_FILE_REVIEWED_SCOPE = None
-B66_REVIEWED_GOOGLE_DRIVE_FILE_CONNECTOR_ID = "b66-google-drive-file"
-B66_REVIEWED_GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
-
-
-class B66ReviewedDriveFileConsentPort:
-    """Host-side fail-closed seam for a distinct B66 reviewed drive.file consent.
-
-    CP's shared google-drive connector is intentionally preserved as
-    drive.readonly. A separate B66 connector ID is not enabled by default and
-    does not make CP's shared connector selectable for browser consent.
-    """
-
-    def __init__(self) -> None:
-        self._public_gate_enabled = False
-        self._host_verified = False
-        self._reviewed_connector_id = B66_REVIEWED_GOOGLE_DRIVE_FILE_CONNECTOR_ID
-        self._host_verified_owner = None
-        self._allowed_scope = B66_REVIEWED_GOOGLE_DRIVE_FILE_SCOPE
-
-    @property
-    def public_consent_gate(self) -> str:
-        return "DEFAULT_DENY"
-
-    def reviewed_connector_id(self) -> str:
-        return self._reviewed_connector_id
-
-    def allowed_scope(self) -> str:
-        return self._allowed_scope
-
-    def cp_google_drive_connector_id(self) -> str:
-        return CP_GOOGLE_DRIVE_REVIEWED_CONNECTOR_ID
-
-    def host_verified_owner(self) -> str | None:
-        return self._host_verified_owner
-
-    def host_trusted(self, owner_b66_user_id: str) -> None:
-        owner = trusted_owner(owner_b66_user_id)
-        self._host_verified_owner = owner
-        self._host_verified = True
-
-    def enable_public_consent_gate(self, *, host_verified: bool = False) -> None:
-        if host_verified is not True:
-            raise ValueError("host_verification_required")
-        self._host_verified = True
-        self._public_gate_enabled = False
-
-    def project_requested_consent(
-        self,
-        *,
-        owner_b66_user_id: str,
-        connector_id: Any,
-        requested_scope: Any,
-        trusted_host: bool = False,
-    ) -> dict[str, Any]:
-        owner = trusted_owner(owner_b66_user_id)
-        if connector_id != self._reviewed_connector_id:
-            raise ValueError("wrong_b66_drive_file_connector")
-        if requested_scope != self._allowed_scope:
-            raise ValueError("invalid_reviewed_b66_drive_file_scope")
-        if trusted_host is not True or self._host_verified is not True or self._host_verified_owner != owner:
-            raise ValueError("host_verified_owner_required")
-        if self._public_gate_enabled:
-            raise ValueError("public_consent_gate_must_remain_default_deny")
-        return {
-            "status": "host_only_reviewed_consent",
-            "verified_store_owner": owner,
-            "reviewed_connector_id": connector_id,
-            "reviewed_scope": requested_scope,
-            "cp_google_drive_scope": "https://www.googleapis.com/auth/drive.readonly",            "uses_cp_shared_connector": False,
-            "authority": "b66_host_only",
-            "production_consent_activated": False,
-        }
-
-
-
-GOOGLE_DRIVE_REVIEWED_CONNECTOR_ID = "google-drive"
-CP_DRIVE_SCOPE_VOCABULARY = frozenset(
-    {"https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/drive.file"}
-)
-B66_AUTHORITY_LINKAGE_REQUIRED = True
-
-
-GOOGLE_DRIVE_REVIEWED_READ_ONLY_SCOPE = (
-    "https://www.googleapis.com/auth/drive.readonly"
-)
-B66_DESIRED_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
-
-
-_SAFE_CP_REF_KEYS = frozenset({"status", "connector_id", "binding_ref", "actor_ref", "account_ref", "workspace_ref"})
-_NOT_CONNECTED_CP_KEYS = frozenset({"status", "connector_id", "workspace_ref"})
-_RESOLVED_CP_KEYS = frozenset(
-    {"status", "connector_id", "workspace_ref", "binding_ref", "actor_ref", "account_ref"}
-)
-
-
-class B66ControlPlaneDriveBindingAdapter:
-    """Fail-closed projection of a trusted, private CP Google Drive binding."""
-
-    CP_CONNECTOR_ID = "google-drive"
-    REVIEWED_SCOPE = GOOGLE_DRIVE_REVIEWED_READ_ONLY_SCOPE
-    REQUIRED_B66_SCOPE = B66_DESIRED_DRIVE_FILE_SCOPE
-
-    def __init__(self) -> None:
-        self._reconnect_reason = "cp_reviewed_scope_mismatch"
-
-    @property
-    def reviewed_cp_scope(self) -> str:
-        return self.REVIEWED_SCOPE
-
-    @property
-    def required_b66_scope(self) -> str:
-        return self.REQUIRED_B66_SCOPE
-
-    def project_trusted_binding(
-        self,
-        *,
-        owner_b66_user_id: str,
-        binding_proof: Mapping[Any, Any],
-    ) -> B66DriveConnectionRecord:
-        owner = trusted_owner(owner_b66_user_id)
-        if not isinstance(binding_proof, Mapping):
-            raise ValueError("invalid_control_plane_proof")
-        keys = frozenset(binding_proof.keys())
-        status = binding_proof.get("status")
-        if status is None:
-            raise ValueError("missing_control_plane_status")
-        if keys > _RESOLVED_CP_KEYS:
-            raise ValueError("unexpected_control_plane_proof_field")
-        connector_id = binding_proof.get("connector_id")
-        if connector_id != self.CP_CONNECTOR_ID:
-            raise ValueError("wrong_control_plane_connector")
-        workspace_ref = binding_proof.get("workspace_ref")
-        if _required_str(workspace_ref) is None:
-            raise ValueError("invalid_control_plane_workspace")
-        owner_ref = binding_proof.get("owner_b66_user_id")
-        if owner_ref is not None and owner_ref != owner:
-            raise ValueError("control_plane_owner_mismatch")
-        if status not in {"not_connected", "resolved"}:
-            raise ValueError("invalid_control_plane_status")
-        if status == "not_connected":
-            if keys != _NOT_CONNECTED_CP_KEYS:
-                raise ValueError("invalid_control_plane_keyset")
-            return None  # sentinel sentinel? We'll raise by special path
-        if keys != _RESOLVED_CP_KEYS:
-            raise ValueError("invalid_control_plane_keyset")
-        actor_ref = binding_proof.get("actor_ref")
-        account_ref = binding_proof.get("account_ref")
-        binding_ref = binding_proof.get("binding_ref")
-        workspace = _required_str(workspace_ref)
-        scopes = binding_proof.get("scopes", binding_proof.get("reviewed_scope"))
-        if scopes is not None and scopes != [self.REVIEWED_SCOPE] and scopes != (self.REVIEWED_SCOPE,):
-            raise ValueError("invalid_control_plane_scope")
-        # CP google-drive only verifies reviewed drive.readonly. B66 write needs drive.file.
-        destination_account = B66DriveConnectedAccount(
-            google_sub=_required_str(account_ref or binding_ref),
-            email=None,
-        )
-        # This adapter cannot authorize a writable B66 file destination until
-        # the dedicated drive.file consent stage is implemented. It therefore
-        # projects reconnect-required instead of connected.
-        return B66DriveConnectionRecord(
-            owner_b66_user_id=owner,
-            drive_account=destination_account,
-            google_grant_reference=_required_str(binding_ref),
-            scope=self.REVIEWED_SCOPE,
-            connected_at=None,
-            status=B66DriveConnectionStatus.RECONNECT_REQUIRED,
-            reconnect_reason="cp_reviewed_scope_mismatch",
-        )
-
-    def status_from_proof(self, owner_b66_user_id: str, binding_proof: Mapping[Any, Any] | None) -> dict[str, Any]:
-        if binding_proof is None:
-            authority = B66DriveDestinationAuthority()
-            authority._store.clear() if hasattr(authority._store, "clear") else None
-            return B66DriveDestinationAuthority().public_status(owner_b66_user_id)
-        try:
-            record = self.project_trusted_binding(owner_b66_user_id=owner_b66_user_id, binding_proof=binding_proof)
-        except (ValueError, RuntimeError, KeyError, TypeError, ConnectionError):
-            basis = B66DriveDestinationAuthority()
-            return basis.public_status(owner_b66_user_id)
-        return record.public_status() if record is not None else B66DriveDestinationAuthority().public_status(owner_b66_user_id)
-
 
 
 class B66DriveConnectionStatus(str, Enum):
@@ -271,7 +87,7 @@ class B66DriveConnectionRecord:
             raise ValueError("invalid_owner_user_id")
         if not isinstance(self.google_grant_reference, str) or not self.google_grant_reference:
             raise ValueError("missing_grant_reference")
-        if self.scope != _B66_DRIVE_SCOPE and self.scope != "https://www.googleapis.com/auth/drive.readonly":
+        if self.scope != _B66_DRIVE_SCOPE:
             raise ValueError("invalid_drive_scope")
         if self.status is B66DriveConnectionStatus.CONNECTED and self.reconnect_reason is not None:
             raise ValueError("inconsistent_connection_status")
@@ -382,12 +198,14 @@ class B66DriveDestinationAuthority:
     """Smallest server-side state transition seam for an independent Drive destination."""
 
     def __init__(self, store: B66DriveConnectionStore | None = None) -> None:
-        if store is None:
-            store = B66DriveFreezeDurableGrantBackend()
-        self._store = store
+        # Default runtime is explicitly unconfigured; only tests may inject
+        # a non-durable memory store. No successful default connection claim.
+        self._store = store if store is not None else B66DriveFreezeDurableGrantBackend()
 
     @property
     def durable_backend_proven(self) -> bool:
+        # Neither this step's in-memory seam nor an arbitrary injected store
+        # establishes verified encrypted, renewable OAuth grant durability.
         return False
 
     def load_connection(self, owner_b66_user_id: str) -> B66DriveConnectionRecord | None:
@@ -455,16 +273,6 @@ class B66DriveDestinationAuthority:
             }
         return record.public_status()
 
-    def cross_owner_sensitive_outputs_are_isolated(
-        self, owner_a: str, owner_b: str
-    ) -> bool:
-        status_a = self.public_status(trusted_owner(owner_a))
-        status_b = self.public_status(trusted_owner(owner_b))
-        if status_a.get("destination_sub") is None or status_b.get("destination_sub") is None:
-            return True
-        return status_a.get("destination_sub") != status_b.get("destination_sub")
-
-
 def trusted_owner(value: Any) -> str:
     if not isinstance(value, str) or not value.strip() or _B66_USER_ID_RE.fullmatch(value) is None:
         raise ValueError("untrusted_b66_owner_id")
@@ -487,7 +295,7 @@ def connection_record_from_trusted_result(result: dict[str, Any]) -> B66DriveCon
     if not isinstance(destination, Mapping):
         raise ValueError("invalid_drive_account")
     # A verified Google sub is a necessary destination identity field, NOT
-    # a browser authority. Reject all unexpected token-like nested fields.
+    # a browser authority. Reject all unexpected/token-like nested fields.
     if set(destination) - {"google_sub", "email"}:
         raise ValueError("spoofed_trusted_result")
     account = B66DriveConnectedAccount(
