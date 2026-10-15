@@ -1293,9 +1293,21 @@
   });
 
   /* ── 새 견적 (사용자 확인 후 현재 draft 초기화) ── */
+  function confirmFreshQuote() {
+    const dialog = $("b66NewQuoteDialog");
+    if (!dialog || typeof dialog.showModal !== "function") {
+      return Promise.resolve(window.confirm("현재 작성 중인 견적과 대화 내용을 초기화하고 새 견적을 작성하시겠습니까?"));
+    }
+    return new Promise((resolve) => {
+      const onClose = () => resolve(dialog.returnValue === "confirm");
+      dialog.addEventListener("close", onClose, { once: true });
+      dialog.returnValue = "cancel";
+      dialog.showModal();
+    });
+  }
 
-  $("newQuote").addEventListener("click", () => {
-    if (!window.confirm("현재 입력한 견적 내용을 모두 지우고 새로 시작할까요?")) return;
+  $("newQuote").addEventListener("click", async () => {
+    if (!await confirmFreshQuote()) return;
     const previousQuoteNo = String(draft.meta.quoteNo || "");
     const next = createBlankNextDraft();
     if (!next) {
@@ -1325,7 +1337,7 @@
     render();
     toast("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다.");
     // The shell must change views only after the reset was confirmed and committed.
-    document.dispatchEvent(new CustomEvent("b66:open-easy-chat"));
+    document.dispatchEvent(new CustomEvent("b66:new-quote-started"));
   });
 
   /* ── PDF: 배정된 Saved Skill 의 인증 renderer 를 통해 다운로드한다 ── */

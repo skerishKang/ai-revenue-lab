@@ -129,6 +129,7 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
 class Default(WorkerEntrypoint):
     """Private Service Binding gateway to the server-owned broker object."""
     reserve_pending_pc_link = CanonicalBrokerPendingPcBindingRPC.reserve_pending_pc_link
+    reserve_pending_pc_owner_intent = CanonicalBrokerPendingPcBindingRPC.reserve_pending_pc_owner_intent
     deliver_pending_pc_link = CanonicalBrokerPendingPcBindingRPC.deliver_pending_pc_link
     pending_pc_identity_status = CanonicalBrokerPendingPcBindingRPC.pending_pc_identity_status
     claim_pending_pc_identity_proof = CanonicalBrokerPendingPcBindingRPC.claim_pending_pc_identity_proof

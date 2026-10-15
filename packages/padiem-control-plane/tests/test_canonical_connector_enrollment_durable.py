@@ -106,6 +106,52 @@ def error_code(action):
     return exc.value.code
 
 
+
+def test_cloudflare_js_proxy_rows_use_canonical_conversion():
+    """Real DO row proxies are converted for PRAGMA and consent SELECT alike."""
+    class JsRow:
+        def __init__(self, payload):
+            self.payload = payload
+        def to_py(self):
+            return self.payload
+
+    class JsSql(Sql):
+        def exec(self, statement, *args):
+            cursor = super().exec(statement, *args)
+            return Cursor([JsRow(row) for row in cursor.toArray()])
+
+    storage = Storage()
+    storage.sql = JsSql(storage.db)
+    port = IdentityDurableConnectorEnrollmentRecords(
+        storage=storage, session_reader=CanonicalSessions(session())
+    )
+    port.install_schema()
+    port.persist_preverified_consent(consent=consent(), now=NOW)
+    assert port.current_consent(consent_id=CONSENT_ID, now=NOW) is not None
+    port.withdraw_preverified_consent(
+        consent_id=CONSENT_ID, owner_subject_id=OWNER, now=NOW
+    )
+    assert port.current_consent(
+        consent_id=CONSENT_ID, now=NOW + timedelta(seconds=1)
+    ).withdrawn_at == NOW
+
+
+def test_corrupt_consent_field_not_stringified_into_permission():
+    # Exercise the row decoder directly: SQLite NOT NULL correctly refuses an
+    # invalid stored row before the decoder ever sees it.
+    assert error_code(
+        lambda: IdentityDurableConnectorEnrollmentRecords._consent({
+            "consent_id": CONSENT_ID,
+            "owner_subject_id": OWNER,
+            "account_ref": None,
+            "workspace_ref": "workspace.connector",
+            "device_id": DEVICE,
+            "granted_at": NOW.isoformat(),
+            "withdrawn_at": None,
+        })
+    ) == "connector_enrollment_durable_corrupt"
+
+
 def test_no_automatic_schema_or_second_identity_store():
     port, storage, _ = fixture()
     assert CANONICAL_IDENTITY_DURABLE_OBJECT_REUSED

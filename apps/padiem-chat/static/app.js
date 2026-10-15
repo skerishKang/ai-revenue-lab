@@ -595,6 +595,45 @@
     });
     if (!selectedAttachment) setNote(idleNote());
   }
+  // Static, accessible sidebar actions: keep the translated button text
+  // and ARIA labels; only replace the low-contrast visual affordance.
+  function sidebarActionIcon(kind) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.9");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    if (kind === "more") {
+      for (const cy of [5, 12, 19]) {
+        const dot = document.createElementNS(ns, "circle");
+        dot.setAttribute("cx", "12");
+        dot.setAttribute("cy", String(cy));
+        dot.setAttribute("r", "1.65");
+        dot.setAttribute("fill", "currentColor");
+        dot.setAttribute("stroke", "none");
+        svg.appendChild(dot);
+      }
+      return svg;
+    }
+    const shape = document.createElementNS(ns, "path");
+    shape.setAttribute("d", kind === "settings"
+      ? "M12 2l1.5 2.4 2.8.5 1.9-1.2 2 3.5-1.9 1.9.1 2.9 1.8 1.9-2 3.5-2.8-.5-2.4 1.4L12 21l-3.1-2.7-2.4-1.4-2.8.5-2-3.5 1.8-1.9.1-2.9-1.9-1.9 2-3.5 1.9 1.2 2.8-.5L12 2Z"
+      : "M4 6h16M9 6V4h6v2M6 6l1 15h10l1-15M10 10v7M14 10v7");
+    svg.appendChild(shape);
+    if (kind === "settings") {
+      const center = document.createElementNS(ns, "circle");
+      center.setAttribute("cx", "12");
+      center.setAttribute("cy", "11.5");
+      center.setAttribute("r", "3.1");
+      svg.appendChild(center);
+    }
+    return svg;
+  }
   function renderProjects() {
     projectsList.replaceChildren();
     projectsSection.hidden = !projectsReady;
@@ -613,7 +652,9 @@
       manage.type = "button";
       manage.className = "project-manage";
       manage.textContent = uiT("manage");
+      manage.prepend(sidebarActionIcon("settings"));
       manage.setAttribute("aria-label", uiT("project-manage-aria", { name: project.name }));
+      manage.title = uiT("project-manage-aria", { name: project.name });
       manage.addEventListener("click", () => openProjectDialog(project));
       row.append(button, manage);
       projectsList.appendChild(row);
@@ -1311,19 +1352,58 @@
         button.textContent = clawConversationIds.has(conversation.id)
           ? `Claw · ${conversation.title}` : conversation.title;
         button.addEventListener("click", () => openSavedConversation(conversation.id));
+        const actions = document.createElement("details");
+        actions.className = "history-actions";
+        const more = document.createElement("summary");
+        more.className = "history-more";
+        const moreLabel = uiT("manage") + ": " + conversation.title;
+        more.setAttribute("aria-label", moreLabel);
+        more.title = moreLabel;
+        more.append(sidebarActionIcon("more"));
+        const menu = document.createElement("div");
+        menu.className = "history-actions-menu";
         const remove = document.createElement("button");
         remove.type = "button";
-        remove.className = "history-delete";
-        remove.textContent = uiT("delete");
+        remove.className = "history-delete history-menu-delete";
+        remove.append(sidebarActionIcon("trash"), document.createTextNode(uiT("delete")));
         remove.setAttribute("aria-label", uiT("conversation-delete-aria", { title: conversation.title }));
-        remove.addEventListener("click", () => deleteConversation(conversation.id, conversation.title));
-        row.append(button, remove);
+        remove.title = uiT("conversation-delete-aria", { title: conversation.title });
+        remove.addEventListener("click", async () => {
+          await deleteConversation(conversation.id, conversation.title);
+          // Dialog close must return focus to a visible action, not an item
+          // concealed inside a closed native details panel.
+          if (actions.isConnected) {
+            actions.open = false;
+            more.focus();
+          }
+        });
+        actions.addEventListener("toggle", () => {
+          if (!actions.open) return;
+          historyList.querySelectorAll(".history-actions[open]").forEach((other) => {
+            if (other !== actions) other.open = false;
+          });
+        });
+        menu.appendChild(remove);
+        actions.append(more, menu);
+        row.append(button, actions);
         historyList.appendChild(row);
       });
     } catch (_) {
       clearHistoryUI();
     }
   }
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest(".history-actions")) return;
+    historyList.querySelectorAll(".history-actions[open]").forEach((node) => { node.open = false; });
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    const expanded = historyList.querySelector(".history-actions[open]");
+    if (!expanded) return;
+    expanded.open = false;
+    expanded.querySelector("summary")?.focus();
+    event.stopPropagation();
+  });
   async function deleteConversation(id, title) {
     if (!authState.authenticated || inFlight) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({

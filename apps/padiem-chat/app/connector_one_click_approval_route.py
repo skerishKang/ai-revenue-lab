@@ -11,14 +11,14 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .claw_connector_enrollment_routes import (
-    _consent_payload, _error, _json, _verified_owner_request,
+    _payload, _error, _json, _verified_owner_request,
 )
 from .connector_one_click_approval import OneClickDenied, OneClickOwnerApproval
 from .connector_owner_one_click_factory import VerifiedOwnerOneClickFactory
 
 OWNER_APPROVE_LINK_PATH = "/api/claw/connector/enrollments/approve-link"
 OWNER_APPROVE_LINK_MOUNTED = False
-_REQUEST_KEYS = frozenset({"request_ref", "confirmed", "confirmation_version"})
+_REQUEST_KEYS = frozenset({"request_ref"})
 _REFUSAL_STATUSES = {
     "canonical_owner_session_required": 401,
     "explicit_pc_consent_required": 400,
@@ -52,18 +52,16 @@ async def owner_approve_pc_link(request: Request) -> JSONResponse:
     if type(port) is not OneClickOwnerApproval:
         return _error(503, "pending_pc_unavailable")
 
-    wire = await _consent_payload(request, _REQUEST_KEYS)
-    if (
-        wire is None
-        or wire.get("confirmed") is not True
-        or wire.get("confirmation_version") != "pc-enrollment-consent-v1"
-    ):
-        return _error(400, "explicit_pc_consent_required")
+    wire = await _payload(request, _REQUEST_KEYS)
+    if wire is None:
+        return _error(400, "invalid_pending_pc_request")
 
     try:
         result = await port.approve(
             owner_session=session,
             request_ref=wire["request_ref"],
+            # The verified POST connect action and same live PC proof,
+            # not a browser-provided boolean, authorize the canonical grant.
             confirmed=True,
         )
     except OneClickDenied as exc:

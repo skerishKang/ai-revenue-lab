@@ -5,6 +5,11 @@
 
 This directory is the operating authority for AI Revenue Lab implementation and review. When historical documents conflict with the current canonical documents below, follow the current documents and preserve historical files only as evidence of the rules that applied at the time.
 
+## Current issue / PR reconciliation (2026-10-15)
+
+- [**ISSUE_DOCUMENT_RECONCILIATION_20261015.md**](ISSUE_DOCUMENT_RECONCILIATION_20261015.md) — snapshot of all open Issues / open PRs, canonical product-integration owners, resolved issue transfers, and the no-duplicate-document rule. This is an operational **index**, not a new product policy or a substitute for fresh GitHub/Production evidence.
+- Latest issue/PR state always wins over the date-scoped snapshot. Implementation merges, Worker deploys and owner-device acceptance remain different claims. Private local business/operating governance must be read separately on the authorized COM1 PC; its contents are not reproduced here.
+
 ## Required reading order
 
 For a numbered internal user-facing web Business, read in this order:

@@ -52,24 +52,39 @@ class CanonicalBrokerOwnerPendingPcPort:
     """
 
     def __init__(
-        self, *, signed_owner: AuthSessionSnapshot, canonical_broker_binding: Any,
+        self, *, signed_owner: AuthSessionSnapshot, canonical_broker_binding: Any, identity: Any = None,
     ) -> None:
         if not _valid_owner(signed_owner):
             raise OwnerPcPrivateRpcDenied("pending_pc_owner_unverified")
         if any(
             not callable(getattr(canonical_broker_binding, method, None))
-            for method in ("reserve_pending_pc_link", "deliver_pending_pc_link")
+            for method in ("reserve_pending_pc_owner_intent", "deliver_pending_pc_link")
         ):
             raise OwnerPcPrivateRpcDenied("pending_pc_broker_binding_missing")
         self._broker = canonical_broker_binding
+        self._identity = identity
+        self._owner = signed_owner
 
     async def reserve_once(self, *, request_ref: str) -> dict[str, Any]:
         if type(request_ref) is not str or _REF.fullmatch(request_ref) is None:
             raise OwnerPcPrivateRpcDenied("pending_pc_ref_invalid")
         try:
-            response = await self._broker.reserve_pending_pc_link(
-                {"request_ref": request_ref}
+            if not callable(getattr(self._identity, "resolve_connector_owner_scope", None)):
+                raise OwnerPcPrivateRpcDenied("pending_pc_identity_scope_unavailable")
+            scope = await self._identity.resolve_connector_owner_scope(
+                session_id=self._owner.session_id,
             )
+            if (
+                type(scope) is not dict or set(scope) != {"account_ref", "workspace_ref"}
+                or any(type(v) is not str or _DEVICE.fullmatch(v) is None for v in scope.values())
+            ):
+                raise OwnerPcPrivateRpcDenied("pending_pc_identity_scope_invalid")
+            response = await self._broker.reserve_pending_pc_owner_intent({
+                "request_ref": request_ref,
+                "owner_subject_ref": self._owner.subject.subject_id,
+                "account_ref": scope["account_ref"],
+                "workspace_ref": scope["workspace_ref"],
+            })
         except Exception:
             raise OwnerPcPrivateRpcDenied("pending_pc_reserve_unavailable") from None
         if (

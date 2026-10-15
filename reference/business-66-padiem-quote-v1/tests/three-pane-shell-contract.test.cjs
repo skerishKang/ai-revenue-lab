@@ -75,12 +75,18 @@ check(html.match(/id="easyComposer"/g)?.length === 1, "exactly one chat composer
 
 check(html.includes('<link rel="stylesheet" href="b66-surface-refresh.css?v=20261012-0646" media="screen">'),
   "UI-only stylesheet is loaded for screen, never CGI PDF print geometry");
-const resetStart = app.indexOf('  $("newQuote").addEventListener("click", () => {');
-const resetConfirm = app.indexOf('if (!window.confirm(', resetStart);
+const resetStart = app.indexOf('  $("newQuote").addEventListener("click", async () => {');
+const resetConfirm = app.indexOf('if (!await confirmFreshQuote()) return;', resetStart);
 const resetCommitted = app.indexOf('    draft = next;', resetStart);
-const navigateAfterCommit = app.indexOf('document.dispatchEvent(new CustomEvent("b66:open-easy-chat"));', resetStart);
+const navigateAfterCommit = app.indexOf('document.dispatchEvent(new CustomEvent("b66:new-quote-started"));', resetStart);
 check(resetStart !== -1 && resetConfirm > resetStart && resetCommitted > resetConfirm &&
-  navigateAfterCommit > resetCommitted, "new quote navigates only after confirmed reset");
+  navigateAfterCommit > resetCommitted && html.includes('id="b66NewQuoteDialog"'),
+  "new quote navigates only after the custom confirmation and committed reset");
+const easy = fs.readFileSync(path.join(ROOT, "easy-mode.js"), "utf8");
+check(easy.includes('document.addEventListener("b66:new-quote-started"') &&
+  easy.includes('recordDialogueState(null);') &&
+  easy.includes('recordProductState("free-form", { replace: true });'),
+  "accepted new quote clears current conversation context and replaces active view");
 check(!/clickExisting\("newQuote"\);\s*document\.dispatchEvent/.test(shell),
   "cancelled new-quote action never navigates from the rail itself");
 check(shell.includes('세부 항목 편집 중') && shell.includes('shell-edit-return'),

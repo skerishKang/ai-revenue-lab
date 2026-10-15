@@ -1,0 +1,255 @@
+/* 2026-10-15: one visual frame for the six primary PADIEM destinations.
+ * Home and active Chat/Claw conversations occupy the same panel box.
+ * This is presentational only: view ownership, backend, auth and approvals stay.
+ */
+html[data-theme="padiem-glass"] body .app-shell {
+  --padiem-six-panel-left: clamp(48px, 4vw, 72px);
+  --padiem-six-panel-width: min(1200px,
+    calc(100vw - var(--workspace-rail, 252px) - var(--padiem-six-panel-left) - clamp(360px, 32vw, 560px) - 48px));
+  --padiem-six-panel-height: calc(100dvh - 100px);
+}
+@media (min-width: 1024px) and (max-width: 1439px) {
+  html[data-theme="padiem-glass"] body .app-shell {
+    --padiem-six-panel-left: 24px;
+    --padiem-six-panel-width: min(700px,
+      calc(100vw - var(--workspace-rail, 252px) - clamp(300px, 32vw, 380px) - 48px));
+  }
+}
+@media (min-width: 921px) and (max-width: 1023px) {
+  html[data-theme="padiem-glass"] body .app-shell {
+    --padiem-six-panel-left: 16px;
+    --padiem-six-panel-width: min(720px, calc(100vw - var(--workspace-rail, 252px) - 36px));
+  }
+}
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell :is(
+    .conversation, .calendar-view, .connectors-view,
+    .library-view, .automation-view
+  ) {
+    box-sizing: border-box !important;
+    width: var(--padiem-six-panel-width) !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: var(--padiem-six-panel-height) !important;
+    min-height: 0 !important;
+    max-height: var(--padiem-six-panel-height) !important;
+    margin: 16px 0 16px var(--padiem-six-panel-left) !important;
+    border: 1px solid rgba(255,255,255,.70) !important;
+    border-radius: 30px !important;
+    background: linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84)) !important;
+    box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
+    backdrop-filter: blur(30px) saturate(106%);
+    -webkit-backdrop-filter: blur(30px) saturate(106%);
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+  }
+  /* Calendar/Connectors/Library/Automation use the Chat/Claw eyebrow origin. */
+  html[data-theme="padiem-glass"] body .app-shell :is(
+    .calendar-view, .connectors-view, .library-view, .automation-view
+  ) {
+    padding: 78px clamp(18px, 2.4vw, 34px) 36px !important;
+  }
+  /* Keep the composer physically inside the frame at both first prompt and
+     subsequent turns; let Claw's own model selector set its internal height. */
+  html[data-theme="padiem-glass"] body .app-shell:not(.sidebar-collapsed):is(
+    [data-state="home"], [data-state="chat"], [data-state="claw"]
+  ) .composer-wrap {
+    left: calc(var(--workspace-rail, 252px) + var(--padiem-six-panel-left) + 14px) !important;
+    width: calc(var(--padiem-six-panel-width) - 28px) !important;
+    transform: none !important;
+  }
+  /* Collapsing the sidebar changes the shared frame location once, for all
+     destinations; it must not change between an empty and active conversation. */
+  html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed :is(
+    .conversation, .calendar-view, .connectors-view,
+    .library-view, .automation-view
+  ) {
+    width: min(920px, calc(100% - 48px)) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+/* Reserve the scrollbar track before the async project/history rows arrive.
+ * The sidebar itself stays fixed at the same width and can still scroll. */
+html body .app-shell .sidebar {
+  scrollbar-gutter: stable;
+  overflow-y: auto;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row) {
+  min-width: 0;
+}
+/* High contrast visual icons; original translations remain in the DOM and
+ * descriptive button aria-label/title are retained in app.js. */
+html[data-theme="padiem-glass"] body .sidebar :is(.project-manage, .history-delete) {
+  flex: 0 0 44px;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  font-size: 0 !important;
+  color: #f4f9fd !important;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 10px;
+  background: rgba(21,39,52,.32);
+  opacity: 1;
+  cursor: pointer;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-delete {
+  color: #ffdadb !important;
+}
+html[data-theme="padiem-glass"] body .sidebar :is(.project-manage, .history-delete) svg {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+  display: block;
+}
+html[data-theme="padiem-glass"] body .sidebar :is(.project-manage, .history-delete):is(:hover, :focus-visible) {
+  background: rgba(28,63,87,.78);
+  color: #fff !important;
+  border-color: rgba(255,255,255,.66);
+  outline-offset: 2px;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-delete:is(:hover, :focus-visible) {
+  background: rgba(126,41,48,.72);
+}
+@media (max-width: 920px) {
+  /* Native responsive sizing is preserved; only scrollbar/icon fixes apply. */
+  html body .app-shell .sidebar { scrollbar-gutter: stable; }
+}
+
+
+/* CENTRAL_FIRST_SCREEN_CONTINUITY_20261015
+ * A Chat send reuses the same DOM, but old active-only rules had
+ * padding 88->44px and composer height 161->222px. Keep first screen
+ * coordinates and colors while continuing messages inside this frame. */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
+    padding-top: clamp(52px,7.4vh,88px) !important;
+    background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84)) !important;
+    box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #composerForm {
+    min-height: 0 !important;
+    display: block !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #composerForm > .composer-actions {
+    margin-top: 0 !important;
+  }
+}
+/* History overflow menu: persistent dots, a temporary explicit Delete action. */
+html[data-theme="padiem-glass"] body .sidebar .history-actions {
+  position: relative;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions[open] { z-index: 8; }
+html[data-theme="padiem-glass"] body .sidebar .history-more {
+  display: grid;
+  place-items: center;
+  list-style: none;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 10px;
+  background: rgba(21,39,52,.32);
+  color: #f4f9fd;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-more::-webkit-details-marker { display: none; }
+html[data-theme="padiem-glass"] body .sidebar .history-more svg { width: 20px; height: 20px; }
+html[data-theme="padiem-glass"] body .sidebar .history-more:is(:hover,:focus-visible) {
+  background: rgba(28,63,87,.78);
+  border-color: rgba(255,255,255,.66);
+  outline-offset: 2px;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions-menu {
+  position: absolute;
+  right: 47px;
+  top: 2px;
+  min-width: 124px;
+  padding: 5px;
+  border: 1px solid rgba(53,69,82,.25);
+  border-radius: 11px;
+  background: rgba(248,250,252,.98);
+  box-shadow: 0 10px 26px rgba(13,21,28,.28);
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-delete {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  width: 100%;
+  height: 36px;
+  min-height: 36px;
+  min-width: 0;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #a12736 !important;
+  font: inherit;
+  font-size: 13px !important;
+  font-weight: 750;
+  cursor: pointer;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-delete svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-delete:is(:hover,:focus-visible) {
+  background: #f5e5e7;
+  color: #831a29 !important;
+  outline-offset: 0;
+}
+
+
+/* CENTRAL_OWNER_HOME_VISUAL_LOCK_20261015
+ * CEO decision: PADIEM Chat first screen is the visual authority for ALL
+ * product panels. Active Chat still retains the semantic "reading" state
+ * for safe message streaming/accessibility, but must never change the
+ * frame/portrait/composer aesthetics merely because a message was sent.
+ * Explicitly outrank the dynamically loaded padiem-glass-reading.css. */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation.conversation {
+    background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84)) !important;
+    border-color: rgba(255,255,255,.70) !important;
+    box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
+    backdrop-filter: blur(30px) saturate(106%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(106%) !important;
+  }
+  /* Do not let active-reading opacity, blur or answer activity fade/translate
+   * the approved portrait. The mask may still respond to pointer focus. */
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
+    opacity: var(--glass-art-opacity) !important;
+    filter: var(--glass-art-filter) !important;
+    transform: translate3d(0,0,0) scale(1) !important;
+  }
+  /* Background wash/accents must not change with data-glass-mode. */
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body::before {
+    background:
+      linear-gradient(90deg,rgba(17,24,31,.11),transparent 24%,transparent 72%,rgba(17,24,31,.08)),
+      linear-gradient(180deg,rgba(255,255,255,.08),transparent 38%,rgba(17,24,31,.10)) !important;
+    box-shadow: inset 0 0 180px 48px rgba(20,29,38,.12) !important;
+  }
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body::after {
+    opacity: .10 !important;
+  }
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"]::before {
+    opacity: .34 !important;
+  }
+  /* The composer keeps its original position even during stop/send swaps. */
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-wrap {
+    bottom: 16px !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-note {
+    display: none !important;
+  }
+}

@@ -152,6 +152,34 @@ class CanonicalBrokerPendingPcLiveRPC:
             raise BrokerPendingPcPrivateRefused("pending_pc_reservation_unconfirmed")
         return receipt
 
+    async def reserve_pending_pc_owner_intent(self, payload: dict) -> dict[str, Any]:
+        required = {"request_ref", "owner_subject_ref", "account_ref", "workspace_ref"}
+        if type(payload) is not dict or set(payload) != required or not _ref(payload["request_ref"]):
+            raise BrokerPendingPcPrivateRefused("pending_pc_private_fields_invalid")
+        for field in ("owner_subject_ref", "account_ref", "workspace_ref"):
+            value = payload[field]
+            if type(value) is not str or _DEVICE.fullmatch(value) is None:
+                raise BrokerPendingPcPrivateRefused("pending_pc_private_fields_invalid")
+        actor = self._pc_actor(payload["request_ref"])
+        try:
+            receipt = await actor.reserve_owner_intent_once(**payload)
+        except Exception:
+            raise BrokerPendingPcPrivateRefused("pending_pc_owner_intent_unconfirmed") from None
+        if (
+            type(receipt) is not dict
+            or set(receipt) != {
+                "request_ref", "device_id", "expires_at",
+                "device_possession_verified", "connected_to_outbound_channel",
+                "reserved_once",
+            }
+            or receipt["request_ref"] != payload["request_ref"]
+            or any(receipt.get(key) is not True for key in (
+                "device_possession_verified", "connected_to_outbound_channel", "reserved_once"
+            ))
+        ):
+            raise BrokerPendingPcPrivateRefused("pending_pc_owner_intent_unconfirmed")
+        return receipt
+
     async def deliver_pending_pc_link(self, payload: dict) -> dict[str, Any]:
         """No replays: consume Broker one-use CAS before same WSS send."""
         required = {"request_ref", "device_id", "challenge_id", "pairing_code"}
@@ -239,6 +267,9 @@ class CanonicalBrokerPendingPcBindingRPC:
 
     async def reserve_pending_pc_link(self, payload: dict) -> dict:
         return await self._stub().reserve_pending_pc_link(payload)
+
+    async def reserve_pending_pc_owner_intent(self, payload: dict) -> dict:
+        return await self._stub().reserve_pending_pc_owner_intent(payload)
 
     async def deliver_pending_pc_link(self, payload: dict) -> dict:
         return await self._stub().deliver_pending_pc_link(payload)

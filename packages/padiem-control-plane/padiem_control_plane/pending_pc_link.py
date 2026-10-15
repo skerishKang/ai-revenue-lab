@@ -8,7 +8,7 @@ Only the trusted server-side gateway can create a pending offer after it has
 verified an ephemeral PC possession proof on a live outbound TLS channel.
 The ledger NEVER decides whether a connection is live from a browser-supplied
 boolean: reserve/delivery require a server-injected same-channel verifier.
-No code, browser cookie, account/tenant, credential or private key is stored.
+Only post-proof canonical owner subject/account/workspace intent metadata is\nstored on the same offer row. No code, browser cookie, credential, or private key.
 """
 from __future__ import annotations
 
@@ -55,7 +55,10 @@ CREATE TABLE IF NOT EXISTS canonical_broker_pending_pc_link (
  expires_at TEXT NOT NULL,
  state TEXT NOT NULL CHECK(state IN ('pending','reserved','delivery_claimed')),
  reserved_at TEXT NULL,
- delivery_claimed_at TEXT NULL
+ delivery_claimed_at TEXT NULL,
+ owner_subject_ref TEXT NULL,
+ owner_account_ref TEXT NULL,
+ owner_workspace_ref TEXT NULL
 )
 """
 
@@ -113,7 +116,18 @@ def install_pending_pc_link_schema(
     if not callable(getattr(getattr(storage, "sql", None), "exec", None)):
         raise _denied("pending_pc_store_unavailable")
     try:
-        storage.transactionSync(lambda: storage.sql.exec(_SCHEMA))
+        def migrate():
+            storage.sql.exec(_SCHEMA)
+            cols = {row["name"] for row in _rows(storage.sql.exec(
+                "PRAGMA table_info(canonical_broker_pending_pc_link)"
+            ))}
+            for name in ("owner_subject_ref", "owner_account_ref", "owner_workspace_ref"):
+                if name not in cols:
+                    storage.sql.exec(
+                        "ALTER TABLE canonical_broker_pending_pc_link ADD COLUMN "
+                        + name + " TEXT NULL"
+                    )
+        storage.transactionSync(migrate)
     except Exception as exc:
         raise _denied("pending_pc_store_unavailable") from exc
 
@@ -227,6 +241,37 @@ class DurablePendingPcLink:
                 "SET state='reserved',reserved_at=? "
                 "WHERE request_ref=? AND state='pending'",
                 _iso(moment), request_ref,
+            )
+            return {
+                "request_ref": request_ref, "device_id": row["device_id"],
+                "device_possession_verified": True,
+                "connected_to_outbound_channel": True,
+                "reserved_once": True, "expires_at": row["expires_at"],
+            }
+        return self._tx(transaction)
+
+    def reserve_owner_intent_once(
+        self, *, request_ref: str, owner_subject_ref: str,
+        account_ref: str, workspace_ref: str, now: datetime,
+    ) -> dict[str, Any]:
+        for value in (owner_subject_ref, account_ref, workspace_ref):
+            if type(value) is not str or _DEVICE.fullmatch(value) is None:
+                raise _denied("pending_pc_owner_scope_invalid")
+        moment = _aware(now)
+
+        def transaction():
+            row = self._get(request_ref, now=moment)
+            if row["state"] != "pending":
+                raise _denied("pending_pc_request_already_used")
+            self._live(request_ref, row["device_id"], row["possession_key_sha256"])
+            # Real owner intent + same live-PC possession + one-use CAS.
+            self._store.sql.exec(
+                "UPDATE canonical_broker_pending_pc_link SET "
+                "state='reserved',reserved_at=?,owner_subject_ref=?,"
+                "owner_account_ref=?,owner_workspace_ref=? "
+                "WHERE request_ref=? AND state='pending'",
+                _iso(moment), owner_subject_ref, account_ref, workspace_ref,
+                request_ref,
             )
             return {
                 "request_ref": request_ref, "device_id": row["device_id"],

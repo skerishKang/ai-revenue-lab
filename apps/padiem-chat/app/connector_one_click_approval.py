@@ -16,6 +16,7 @@ import re
 from typing import Any, Protocol
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+from .control_plane_identity import IdentityBridgeError
 
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _PAIRING_CODE = re.compile(r"^[0-9a-f]{32}$")
@@ -134,12 +135,26 @@ class OneClickOwnerApproval:
 
         device_id = pending["device_id"]
         try:
-            consent = await self._identity.grant_connector_enrollment_consent(
-                session_id=owner_session.session_id,
-                device_id=device_id,
-                confirmed=True,
-                confirmation_version=_CONFIRM_VERSION,
-            )
+            # Reuse the existing still-active canonical grant on this owner/PC.
+            try:
+                current = await self._identity.resolve_connector_enrollment_consent_for_device(
+                    session_id=owner_session.session_id, device_id=device_id,
+                )
+            except IdentityBridgeError as exc:
+                if getattr(exc, "code", None) != "enrollment_consent_required":
+                    raise
+                current = None
+            reused = current is not None
+            if reused:
+                consent = current
+            else:
+                # Existing Identity confirmation-version contract is preserved
+                # internally AFTER owner POST + live WSS possession were proved.
+                consent = await self._identity.grant_connector_enrollment_consent(
+                    session_id=owner_session.session_id,
+                    device_id=device_id, confirmed=True,
+                    confirmation_version=_CONFIRM_VERSION,
+                )
         except Exception:
             raise OneClickDenied("canonical_consent_unavailable") from None
         if (
@@ -147,9 +162,10 @@ class OneClickOwnerApproval:
             or consent.get("device_id") != device_id
             or not _ref(consent.get("consent_id"))
             or consent.get("withdrawn_at") is not None
-            or any(consent.get(field) is not False for field in (
+            or (reused and consent.get("owner_subject_id") != owner_session.subject.subject_id)
+            or (not reused and any(consent.get(field) is not False for field in (
                 "dispatch_authorized", "grants_read", "grants_write",
-            ))
+            )))
         ):
             raise OneClickDenied("canonical_consent_unconfirmed")
 

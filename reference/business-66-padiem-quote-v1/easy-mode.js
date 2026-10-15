@@ -270,12 +270,26 @@
      the DOM-only renderer, which never assigns a markup sink. Status, error and
      prompt text keep plain textContent, so a non-answer string can never become
      markup and the existing look is unchanged. */
+  function companyBrand() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    const profile = bridge && typeof bridge.getCompanyProfile === "function"
+      ? bridge.getCompanyProfile() : null;
+    const raw = profile && typeof profile.company === "string" ? profile.company.trim() : "";
+    const name = raw.replace(/^(?:\(주\)|㈜|주식회사)\s*/u, "").trim();
+    return /^CGI$/i.test(name) ? "시지아이" : (name || "시지아이");
+  }
+
   function renderAssistantText(content, text, markdown) {
+    // The account-owned presentation adapter localizes legacy product greetings
+    // without changing the persisted provider response.
+    const adapter = window.B66AssistantBranding;
+    const shown = adapter && typeof adapter.renderIntro === "function"
+      ? adapter.renderIntro(text, companyBrand()) : String(text);
     if (markdown && SafeMarkdown && typeof SafeMarkdown.renderAssistantMarkdown === "function") {
-      const rendered = SafeMarkdown.renderAssistantMarkdown(content, text);
+      const rendered = SafeMarkdown.renderAssistantMarkdown(content, shown);
       if (rendered) return;
     }
-    content.textContent = text;
+    content.textContent = shown;
   }
 
   function addMessage(role, text, options) {
@@ -294,7 +308,7 @@
       body.className = "easy-message-body";
       const meta = document.createElement("div");
       meta.className = "easy-message-meta";
-      meta.textContent = "견적 도우미";
+      meta.textContent = companyBrand() + " 어시스턴트";
       const content = document.createElement("div");
       content.className = "easy-message-content";
       renderAssistantText(content, text, opts.markdown === true);
@@ -1851,8 +1865,8 @@
     addMessage(
       "assistant",
       ready && ready.authenticated
-        ? "편하게 질문하거나 견적을 상담해 주세요. 선택하신 AI 모델과 대화할 수 있습니다. 견적서 저장과 발급은 별도의 확인 단계에서 진행합니다."
-        : "로그인하면 AI와 일반 대화 및 견적 상담을 할 수 있습니다. 로그인 전에도 질문형 견적 작성은 이용할 수 있습니다."
+        ? "안녕하세요! " + companyBrand() + " 어시스턴트입니다. " + companyBrand() + " 견적서 작성과 관련된 내용을 편하게 말씀해 주세요. 새 견적 작성과 기존 견적 수정도 도와드리겠습니다."
+        : "로그인하면 " + companyBrand() + " 어시스턴트와 견적 상담을 할 수 있습니다. 로그인 전에도 질문형 견적 작성은 이용할 수 있습니다."
     );
     setChips([
       { label: "질문받으며 만들기", action: startGuidedIfReady },
@@ -2115,6 +2129,24 @@
 
   document.addEventListener("b66:open-easy-chat", () => {
     setWorkspaceMode("easy");
+  });
+
+  // An accepted new quote starts a new visible dialogue, not a continuation
+  // of the prior server-owned conversation. Saved history remains untouched.
+  document.addEventListener("b66:new-quote-started", () => {
+    guided = null;
+    guidedSnapshot = null;
+    selectedFile = null;
+    fileInput.value = "";
+    modelChatTurns = [];
+    currentDialogueId = null;
+    pendingRestoreDialogueId = null;
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (bridge && typeof bridge.clearPending === "function") bridge.clearPending();
+    setWorkspaceMode("easy", { history: false });
+    startFreeChat({ history: false });
+    recordDialogueState(null);
+    recordProductState("free-form", { replace: true });
   });
 
   window.addEventListener("popstate", (event) => {

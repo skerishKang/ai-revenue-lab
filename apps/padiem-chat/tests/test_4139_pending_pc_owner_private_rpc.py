@@ -35,11 +35,14 @@ class BrokerServiceBinding:
         self.corrupt_delivery=None
         self.fail_delivery=False
 
-    async def reserve_pending_pc_link(self, payload):
+    async def reserve_pending_pc_owner_intent(self, payload):
         self.calls.append(("reserve", dict(payload)))
         if self.corrupt_reservation is not None:
             return self.corrupt_reservation
-        assert payload == {"request_ref": REF}
+        assert payload == {
+            "request_ref": REF, "owner_subject_ref": "owner.1",
+            "account_ref": "account.1", "workspace_ref": "workspace.1",
+        }
         return await self.broker.reserve_once(request_ref=payload["request_ref"])
 
     async def deliver_pending_pc_link(self, payload):
@@ -61,10 +64,10 @@ class BrokerServiceBinding:
 def make(*, owner_session=None):
     signed=owner_session or session()
     private=BrokerServiceBinding()
-    port=CanonicalBrokerOwnerPendingPcPort(
-        signed_owner=signed, canonical_broker_binding=private,
-    )
     fixture=Fixture()
+    port=CanonicalBrokerOwnerPendingPcPort(
+        signed_owner=signed, canonical_broker_binding=private, identity=fixture,
+    )
     service=OneClickOwnerApproval(
         identity=fixture, host=fixture, pc_rendezvous=port,
     )
@@ -87,7 +90,10 @@ def test_owner_one_click_goes_only_to_same_broker_do_and_real_ledger():
         "challenge_id":CHALLENGE,"pairing_code":CODE,
     }]
     assert [method for method,_ in private.calls]==["reserve","deliver"]
-    assert private.calls[0][1]=={"request_ref":REF}
+    assert private.calls[0][1]=={
+        "request_ref": REF, "owner_subject_ref": "owner.1",
+        "account_ref": "account.1", "workspace_ref": "workspace.1",
+    }
     assert private.calls[1][1]=={
         "request_ref":REF,"device_id":DEVICE,
         "challenge_id":CHALLENGE,"pairing_code":CODE,

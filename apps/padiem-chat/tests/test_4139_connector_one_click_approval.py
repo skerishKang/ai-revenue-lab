@@ -16,6 +16,7 @@ from app.connector_one_click_approval import (
     OneClickDenied, OneClickOwnerApproval,
 )
 from app.app_factory import create_app
+from app.control_plane_identity import IdentityBridgeError
 from app.config import Settings
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
@@ -74,6 +75,13 @@ class Fixture:
         self.reserved = True
         return self.pending
 
+    async def resolve_connector_enrollment_consent_for_device(self, **kwargs):
+        raise IdentityBridgeError(403, "enrollment_consent_required", "No prior consent")
+
+    async def resolve_connector_owner_scope(self, *, session_id):
+        assert session_id == "canonical.session.1"
+        return {"account_ref": "account.1", "workspace_ref": "workspace.1"}
+
     async def grant_connector_enrollment_consent(self, **kwargs):
         self.calls.append(("consent", kwargs))
         return self.consent
@@ -103,6 +111,22 @@ def refused(fx, expected, **kwargs):
         fx.run(**kwargs)
     assert str(err.value) == expected
     assert CODE not in str(err.value)
+
+
+def test_current_identity_consent_is_reused_without_duplicate_grant():
+    fx = Fixture()
+    async def current(*, session_id, device_id):
+        assert session_id == "canonical.session.1" and device_id == DEVICE
+        return {
+            "consent_id": "consent.1", "device_id": DEVICE,
+            "owner_subject_id": "owner.1",
+            "account_ref": "account.1", "workspace_ref": "workspace.1",
+            "granted_at": datetime.now(timezone.utc).isoformat(),
+            "withdrawn_at": None,
+        }
+    fx.resolve_connector_enrollment_consent_for_device = current
+    assert fx.run()["state"] == "awaiting_device_confirmation"
+    assert [name for name, _ in fx.calls] == ["attest", "issue", "deliver"]
 
 
 def test_one_owner_click_delivers_code_only_on_attested_pc_channel():

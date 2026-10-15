@@ -55,6 +55,11 @@ def default_resident_command(
     supplied by the installer or the developer checkout, never guessed from a
     remote source.
     """
+    # PyInstaller sys.executable is the Connector EXE, not a Python runtime.
+    # Re-enter the same bundle via its dedicated internal Resident entry point.
+    # This preserves the one canonical kagent process with no host Python.
+    if getattr(sys, "frozen", False) and python is None:
+        return [sys.executable, "--resident-child"]
     interpreter = python or sys.executable
     command = [interpreter, "-m", RESIDENT_ENTRY_MODULE]
     if src_root:
