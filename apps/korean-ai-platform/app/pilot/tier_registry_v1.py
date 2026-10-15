@@ -79,6 +79,8 @@ class TierRoute:
 class TierDefinition:
     label: TierLabel
     routes: tuple[TierRoute, ...]
+    # Historical registry: False disallows unspecified/arbitrary fallback;
+    # it does not disable the LIVE B14 owner-designated tier fallback roster.
     silent_fallback_allowed: bool = False
 
 
