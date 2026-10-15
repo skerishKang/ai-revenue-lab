@@ -1364,7 +1364,7 @@
         menu.className = "history-actions-menu";
         const remove = document.createElement("button");
         remove.type = "button";
-        remove.className = "history-menu-delete";
+        remove.className = "history-delete history-menu-delete";
         remove.append(sidebarActionIcon("trash"), document.createTextNode(uiT("delete")));
         remove.setAttribute("aria-label", uiT("conversation-delete-aria", { title: conversation.title }));
         remove.title = uiT("conversation-delete-aria", { title: conversation.title });
