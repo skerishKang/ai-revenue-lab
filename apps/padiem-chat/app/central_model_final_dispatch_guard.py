@@ -9,9 +9,9 @@ request can leave the process:
 - ``authorize()`` returns an explicit ``FinalDispatchDecision`` and never
   raises, so a caller can surface a precise denial code instead of pretending
   the verification completed;
-- ``as_before_dispatch()`` / ``authorized_service_transport()`` /
-  ``authorized_http_transport()`` raise ``FinalDispatchDenied`` inside the
-  existing B14 execution path, so the provider POST count stays 0;
+- ``authorized_service_transport()`` / ``authorized_http_transport()``
+  both validate the outbound model payload and raise ``FinalDispatchDenied``
+  before B14 transport delegation, so rejected provider POST count stays 0;
 - the exact authorized model id is pinned: a payload that targets any other
   model (a fallback, ``b14/auto``, or a catalog swap) is rejected before
   delegation.
@@ -63,11 +63,11 @@ DENIAL_REASONS = (
 class DispatchSessionContext:
     """Live server-proven session facts; never built from client-supplied values.
 
-    The product host authenticates the request and derives every field from the
-    canonical session/entitlement authority immediately before dispatch. A
-    field that cannot be proven must not be guessed: the host passes
-    ``None`` as the session instead, and the guard denies with
-    ``missing_session_authority``.
+    Only a trusted host reader may return this object; its string fields are
+    not authentication evidence by themselves. The guard invokes the reader
+    again for each outbound attempt, so session revocation after selection
+    cannot be hidden behind an unchanged model-policy revision. A reader
+    must return None on expiry/revocation/unverified product-tier authority.
     """
 
     canonical_user_id: str
@@ -123,15 +123,16 @@ class FinalDispatchGuard:
 
     Fail-closed state machine, in order:
 
-    1. a verified selection and a complete server-proven session must exist;
+    1. a verified selection and a fresh trusted server session reader must exist;
     2. session identities must exactly equal the verified selection
        (user, workspace, product, tier) — a client-supplied tier or a foreign
        identity is a mismatch, never a repair;
     3. capability/P01 must be proven for the live session;
     4. the choice-time policy revision must be present and must still be the
        current D1 revision (fresh snapshot + B14 catalog re-read) at the
-       dispatch boundary — a changed revision (revoked session, policy edit,
-       signer expiry) denies with ``policy_revision_changed``;
+       dispatch boundary — a changed policy revision denies with
+       ``policy_revision_changed``; revocation/expiry of a user session is
+       independently detected by the live reader, never inferred from D1;
     5. the outbound payload must target exactly the authorized model id.
     """
 
@@ -139,13 +140,13 @@ class FinalDispatchGuard:
         self,
         *,
         selection: VerifiedProductModelSelection,
-        session: DispatchSessionContext | None,
+        current_session_reader: Callable[[], Awaitable[DispatchSessionContext | None]] | None,
         store: Any,
         b14_catalog_source: Any,
         authorized_revision: int | None,
     ) -> None:
         self._selection = selection
-        self._session = session
+        self._current_session_reader = current_session_reader
         self._store = store
         self._b14_catalog_source = b14_catalog_source
         self._authorized_revision = authorized_revision
@@ -166,9 +167,16 @@ class FinalDispatchGuard:
     async def _evaluate(self) -> FinalDispatchDecision:
         try:
             selection = self._selection
-            session = self._session
             if not isinstance(selection, VerifiedProductModelSelection):
                 return self._deny("missing_verified_selection")
+            if not callable(self._current_session_reader):
+                return self._deny("missing_session_authority")
+            try:
+                # Re-read the canonical server session at each actual dispatch;
+                # a cached login projection cannot prove a still-active owner.
+                session = await self._current_session_reader()
+            except Exception:
+                return self._deny("missing_session_authority")
             if not isinstance(session, DispatchSessionContext):
                 return self._deny("missing_session_authority")
             if session.canonical_user_id != selection.canonical_user_id:
@@ -195,10 +203,9 @@ class FinalDispatchGuard:
                     False, advice.reason, advice.revision, model_id, product_id, tier
                 )
             if advice.revision != self._authorized_revision:
-                # Revoked/rotated session, edited policy, expired signer, or a
-                # stale choice-time decision all land here: the current
-                # authoritative revision no longer matches the revision the
-                # earlier advice authorized against.
+                # This detects policy revision drift only. The trusted live
+                # session reader is separately responsible for revoked or
+                # expired session / product tier assertions.
                 return FinalDispatchDecision(
                     False, "policy_revision_changed", advice.revision,
                     model_id, product_id, tier,
@@ -231,16 +238,6 @@ class FinalDispatchGuard:
             self._last_decision = mismatch
             raise FinalDispatchDenied("dispatch_model_mismatch", decision=mismatch)
         return decision
-
-    def as_before_dispatch(self) -> Callable[[], Awaitable[None]]:
-        """Hook for ``B14Client``'s existing ``before_dispatch`` seam."""
-
-        async def _enforce() -> None:
-            decision = await self.authorize()
-            if not decision.allowed:
-                raise FinalDispatchDenied(decision.reason, decision=decision)
-
-        return _enforce
 
     def authorized_service_transport(self, inner: B14ServiceTransport) -> GuardedServiceTransport:
         """Wrap a Worker service-binding transport for the completion path."""

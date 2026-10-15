@@ -156,10 +156,13 @@ def session(*, user=USER, workspace=GLOBAL_WORKSPACE, product="chat", tier="PRO"
     )
 
 
-def make_guard(*, selection_value=None, session_value=..., policy=..., catalog=..., revision=1):
+def make_guard(*, selection_value=None, session_value=..., policy=..., catalog=..., revision=1, session_reader=...):
+    if session_reader is ...:
+        async def session_reader():
+            return session() if session_value is ... else session_value
     return FinalDispatchGuard(
         selection=selection_value if selection_value is not None else selection(),
-        session=session() if session_value is ... else session_value,
+        current_session_reader=session_reader,
         store=CanonicalPolicy() if policy is ... else policy,
         b14_catalog_source=B14Catalog() if catalog is ... else catalog,
         authorized_revision=revision,
@@ -238,7 +241,7 @@ def test_revision_changed_after_earlier_advice_denies_cas_drift():
     assert decision.revision == 2
 
 
-def test_revoked_session_surfaces_as_policy_revision_change():
+def test_policy_revision_changed_does_not_claim_session_revocation():
     policy = CanonicalPolicy(revision=7)
     guard = make_guard(policy=policy, revision=5)
     decision = authorize(guard)
@@ -320,6 +323,40 @@ def test_client_shaped_session_cannot_backfill_missing_authority(bad):
     values.update(bad)
     with pytest.raises(ValueError):
         DispatchSessionContext(**values)
+
+
+def test_session_reader_missing_or_unavailable_blocks_before_policy_read():
+    policy = CanonicalPolicy()
+    assert authorize(make_guard(session_reader=None, policy=policy)).reason == "missing_session_authority"
+
+    async def unavailable():
+        raise RuntimeError("canonical server session reader unavailable")
+
+    assert authorize(make_guard(session_reader=unavailable, policy=policy)).reason == "missing_session_authority"
+    assert policy.calls == []
+
+
+def test_revoked_session_with_unchanged_model_policy_never_reaches_provider():
+    # Genuine distinction from policy-revision drift: model revision remains 1
+    # while the authoritative session reader starts returning None.
+    latest = {"value": session()}
+    calls = []
+
+    async def read_fresh_session():
+        calls.append(True)
+        return latest["value"]
+
+    guard = make_guard(session_reader=read_fresh_session)
+    assert authorize(guard).allowed is True
+    latest["value"] = None  # trusted CP session authority reports revoked
+
+    binding = RecordingBinding()
+    client = B14Client(settings(), service_transport=guard.authorized_service_transport(binding))
+    with pytest.raises(ChatRuntimeError):
+        run_completion(client)
+    assert binding.calls == []
+    assert guard.last_decision.reason == "missing_session_authority"
+    assert len(calls) >= 2
 
 
 # --- transport wrappers --------------------------------------------------------
