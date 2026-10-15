@@ -8,7 +8,6 @@ neither. No user-controlled parameters can mint a grant or resolve a target.
 from __future__ import annotations
 
 import inspect
-from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
@@ -29,50 +28,6 @@ from .b66_saved_skill_candidate_store import (
 
 
 
-@dataclass(frozen=True)
-class B66ReviewedSuperAdminOperatorGrantIssuer:
-    """Server-configured reviewed operator grant issuer.
-
-    This does not convert an ordinary Google-admin session into authority; both
-    the independently configured super-admin Google subject and the verified
-    current session must match. It issues only a short-lived
-    ``REVIEW_CANDIDATE`` grant and depends on host composition.
-    """
-
-    configured_operator_subject: str
-    max_minutes: int = 15
-
-    def __call__(
-        self,
-        *,
-        request: Any = None,
-        operator_user_id: str,
-        action: B66ProvisioningAction,
-    ) -> TrustedB66ProvisioningGrant | None:
-        return self.issue(request=request, operator_user_id=operator_user_id, action=action)
-
-    def issue(
-        self,
-        *,
-        request: Any = None,
-        operator_user_id: str,
-        action: B66ProvisioningAction,
-    ) -> TrustedB66ProvisioningGrant | None:
-        if not isinstance(self.configured_operator_subject, str) or not self.configured_operator_subject:
-            return None
-        if operator_user_id != self.configured_operator_subject:
-            return None
-        if action is not B66ProvisioningAction.REVIEW_CANDIDATE:
-            return None
-        now = datetime.now(timezone.utc)
-        return TrustedB66ProvisioningGrant(
-            grant_ref="reviewed_super_admin_" + "r" * 28,
-            operator_subject=CanonicalSubjectRef(SubjectType.USER, operator_user_id),
-            authority_ref="padiem_super_admin_google_subject",
-            allowed_actions=(action,),
-            issued_at=now,
-            expires_at=now + timedelta(minutes=self.max_minutes),
-        )
 
 class D1B66SavedQuoteSkillCandidateOperatorAuthority:
     """Adapts real server authorities, never creates its own grants."""
