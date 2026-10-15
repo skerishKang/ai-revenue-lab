@@ -15,7 +15,7 @@ through the one existing supervised Windows Resident/Local Runner.
 from __future__ import annotations
 
 CONNECT_PRODUCT = "PADIEM Connector"
-CONNECT_VERSION = "0.1.0"
+CONNECT_VERSION = "0.1.1-rc1"
 #: One mutex name shared by the tray and every other Connect entry point so a
 #: double click, an npx run and an autostart run all collapse to one process.
 SINGLE_INSTANCE_MUTEX = "PadiemClawConnect.SingleInstance.v1"

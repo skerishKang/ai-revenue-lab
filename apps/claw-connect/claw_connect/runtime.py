@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import sys
 import threading
+import time
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
@@ -116,6 +117,8 @@ class ConnectApp:
         self._controller = ConnectionController(probe)
         self._enrollment = enrollment or ConnectorEnrollment()
         self._state_dir = self._enrollment.state_dir
+        from .pause_preference import is_paused
+        self._user_paused = is_paused(self._state_dir)
         # S2: the supervised process is the one existing kagent Resident, never a
         # placeholder. The deployment pins the source root (installer file or
         # CLAW_RESIDENT_SRC); when it does not, the canonical module name is used
@@ -133,6 +136,10 @@ class ConnectApp:
         )
         self._single = SingleInstance(SINGLE_INSTANCE_MUTEX)
         self._quit_signal = QuitSignal(QUIT_EVENT_NAME)
+        self._offer_signal = QuitSignal("PadiemClawConnect.CustomerOffer.v1")
+        self._offer_lock = threading.Lock()
+        self._offer_attempted = False
+        self._offer_failure: str | None = None
         self._tray: Any = None
         self._quit = threading.Event()
 
@@ -179,6 +186,15 @@ class ConnectApp:
             record = self._enrollment.committed_record()
         except Exception:
             return None, "enrollment_record_unreadable"
+        if getattr(sys, "frozen", False):
+            from .installed_runtime import installed_resident_environ
+            import os
+            return plan_resident_launch(
+                record=record,
+                environ=installed_resident_environ(
+                    state_dir=self._state_dir, environ=os.environ,
+                ),
+            )
         return plan_resident_launch(record=record)
 
     def resident_launch_reason(self) -> str:
@@ -215,7 +231,7 @@ class ConnectApp:
         reported as connecting or offline.
         """
         return self._enrollment.project_state(
-            paused=self._controller.state is ConnectionState.PAUSED,
+            paused=self._user_paused or self._controller.state is ConnectionState.PAUSED,
             connected=self._controller.state is ConnectionState.CONNECTED,
         )
 
@@ -246,21 +262,25 @@ class ConnectApp:
         return url  # type: ignore[return-value]
 
     def toggle_pause(self) -> None:
-        if self._controller.state is ConnectionState.CONNECTED:
-            self._controller.pause()
+        """Persist user pause separately from Windows logon-autostart OFF."""
+        from .pause_preference import set_paused
+
+        if self._user_paused:
+            set_paused(self._state_dir, False)
+            self._user_paused = False
+            if self._controller.state is ConnectionState.PAUSED:
+                self._controller.resume()
+            if self._can_start_resident():
+                try:
+                    self._supervisor.start()
+                except ResidentLaunchRefused:
+                    pass
+        else:
+            set_paused(self._state_dir, True)
+            self._user_paused = True
+            if self._controller.state is ConnectionState.CONNECTED:
+                self._controller.pause()
             self._supervisor.stop()
-        elif self._controller.state is ConnectionState.PAUSED:
-            if not self._can_start_resident():
-                self._refresh_tray()
-                return
-            self._controller.resume()
-            try:
-                self._supervisor.start()
-            except ResidentLaunchRefused:
-                # The provider declined between the gate above and the spawn, so
-                # no child was created. The tray still reports the truth:
-                # ``resident_running`` is read from the supervisor.
-                pass
         self._refresh_tray()
 
     def _can_start_resident(self) -> bool:
@@ -284,7 +304,7 @@ class ConnectApp:
         plan, reason = self.resident_launch_plan()
         if plan is None:
             return False
-        if self._controller.state is ConnectionState.PAUSED:
+        if self._user_paused or self._controller.state is ConnectionState.PAUSED:
             return False
         try:
             self._supervisor.start()
@@ -300,6 +320,10 @@ class ConnectApp:
         if not self._can_start_resident():
             self._refresh_tray()
             return
+        if self._user_paused:
+            from .pause_preference import set_paused
+            set_paused(self._state_dir, False)
+            self._user_paused = False
         if self._controller.state is ConnectionState.PAUSED:
             self._controller.resume()
         elif self._controller.state is ConnectionState.DISCONNECTED:
@@ -333,6 +357,9 @@ class ConnectApp:
         self._refresh_tray()
 
     def disconnect(self) -> None:
+        from .pause_preference import set_paused
+        set_paused(self._state_dir, True)
+        self._user_paused = True
         self._controller.disconnect()
         self._supervisor.stop()
         self._refresh_tray()
@@ -351,11 +378,76 @@ class ConnectApp:
             pass
 
     # -- process lifecycle --------------------------------------------------
+    def signal_customer_offer(self) -> bool:
+        """Existing web launch activates the already-running tray, no URL data."""
+        return self._offer_signal.signal()
+
+    def _start_customer_offer_once(self, *, explicit: bool = False) -> None:
+        """One enrollment attempt per tray lifetime; no blind credential retry."""
+        if self._quit.is_set() or self._offer_attempted:
+            return
+        try:
+            if self._enrollment.committed_record() is not None:
+                return
+        except Exception:
+            self._offer_failure = "enrollment_record_unreadable"
+            return
+        # An explicit owner OFF is never reverted by setup/re-install.
+        if (self._autostart.preference() == "off" or self._user_paused) and not explicit:
+            return
+        with self._offer_lock:
+            if explicit and self._offer_failure is not None:
+                # A new owner click is a NEW intent, never a hidden network
+                # retry of the prior consumed one-time request.
+                self._offer_attempted = False
+            if self._offer_attempted:
+                return
+            if explicit and self._user_paused:
+                from .pause_preference import set_paused
+                set_paused(self._state_dir, False)
+                self._user_paused = False
+            self._offer_attempted = True
+        thread = threading.Thread(
+            target=self._enroll_customer_in_thread,
+            name="padiem-customer-first-offer",
+            daemon=True,
+        )
+        thread.start()
+
+    def _enroll_customer_in_thread(self) -> None:
+        import asyncio
+        from .customer_enrollment import enroll_customer_pending_offer
+        from .device_wss_enrollment import DeviceSessionRefused
+
+        try:
+            asyncio.run(enroll_customer_pending_offer(enrollment=self._enrollment))
+            self.reconcile_autostart()
+            if not self._quit.is_set():
+                self.start_registered_resident()
+            self._offer_failure = None
+        except DeviceSessionRefused as exc:
+            self._offer_failure = str(exc)
+        except Exception:
+            # No socket data, code, credential, or owner identity in diagnostics.
+            self._offer_failure = "customer_offer_unavailable"
+        finally:
+            self._refresh_tray()
+
     def _watch_quit_event(self) -> None:
+        next_restart_at = time.monotonic() + 15.0
         while not self._quit.is_set():
             if self._quit_signal.wait(0.5):
                 self.quit()
                 return
+            if self._offer_signal.wait(0):
+                self._start_customer_offer_once(explicit=True)
+            # A lost Resident process is not a user OFF decision. A bounded
+            # supervisor restart reuses the committed DPAPI binding, never a
+            # second pairing or fabricated credential.
+            if time.monotonic() >= next_restart_at:
+                if not self._user_paused and not self._supervisor.is_running():
+                    self.start_registered_resident()
+                next_restart_at = time.monotonic() + 15.0
 
     def run(self) -> int:
         """Start the tray. Returns the process exit code.
@@ -365,6 +457,7 @@ class ConnectApp:
         if not self._single.acquire():
             return 3
         self._quit_signal.open()
+        self._offer_signal.open()
         try:
             self.reconcile_autostart()
             # #4139 STEP 3: a tray start must also bring the one supervised
@@ -372,6 +465,10 @@ class ConnectApp:
             # is reported through ``resident_launch_reason`` instead of a
             # silently absent Resident.
             self.start_registered_resident()
+            # Following the already selected web Computer Connect action,
+            # setup bootstraps its offer without an operator command or ID.
+            if sys.platform == "win32" and getattr(sys, "frozen", False):
+                self._start_customer_offer_once()
             if sys.platform == "win32":
                 from .tray import ConnectTray  # noqa: PLC0415
 
