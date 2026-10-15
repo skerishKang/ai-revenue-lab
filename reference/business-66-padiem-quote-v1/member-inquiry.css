@@ -34,3 +34,30 @@
     margin-right: 112px;
   }
 }
+
+/* Desktop collapsed preview: both top-right actions share the same baseline. */
+@media screen and (min-width: 901px) {
+  body.b66-three-pane.preview-collapsed #b66OpenInquiry {
+    position: fixed;
+    top: 20px;
+    right: 132px;
+    min-height: 40px;
+    height: 40px;
+    padding: 0 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 61;
+  }
+  body.b66-three-pane.preview-collapsed .shell-preview-reopen {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    min-height: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 61;
+  }
+}

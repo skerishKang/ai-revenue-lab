@@ -17,6 +17,21 @@
 
   function byId(id) { return document.getElementById(id); }
 
+  function syncCompanyBrand() {
+    var bridge = window.B66QuoteRuntimeBridge;
+    var profile = bridge && typeof bridge.getCompanyProfile === "function"
+      ? bridge.getCompanyProfile() : null;
+    var raw = profile && typeof profile.company === "string" ? profile.company.trim() : "";
+    var name = raw.replace(/^(?:\(주\)|㈜|주식회사)\s*/u, "").trim();
+    name = /^CGI$/i.test(name) ? "시지아이" : (name || "시지아이");
+    var title = name + " 견적서 만들기";
+    var brand = byId("brandHome");
+    if (brand) brand.textContent = title;
+    var dialogTitle = byId("b66NewQuoteTitle");
+    if (dialogTitle) dialogTitle.textContent = title;
+    document.title = title;
+  }
+
   function clickExisting(id) {
     var node = byId(id);
     if (node && typeof node.click === "function") node.click();
@@ -722,6 +737,9 @@
     });
     buildPreviewHost(shell);
     buildTopbarToggle();
+    syncCompanyBrand();
+    document.addEventListener("b66:runtime-changed", syncCompanyBrand);
+    document.addEventListener("b66:auth-changed", syncCompanyBrand);
     syncDirectMode();
     syncMobileDefault();
     // Resizing a desktop window must reflow immediately, with no horizontal
