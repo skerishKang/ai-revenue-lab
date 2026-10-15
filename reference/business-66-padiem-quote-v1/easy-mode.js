@@ -43,6 +43,7 @@
   let quoteConversationEngaged = false;
   let approvedConversationQuoteNo = null;
   let approvedConversationDraftSnapshot = null;
+  let pendingQuoteReset = null;
   const quoteArtifactUrls = [];
   let accountScopeRevision = 0;
   let guidedSaveQueue = Promise.resolve();
@@ -234,9 +235,12 @@
 
   function showHome(options) {
     clearConversation();
-    // Re-read the authenticated B66 authoring revision on next user input.
+    if (!options || options.history !== false) resetServerQuoteConversation();
     quoteConversationRevision = null;
     quoteConversationEngaged = false;
+    approvedConversationQuoteNo = null;
+    approvedConversationDraftSnapshot = null;
+    releaseQuoteArtifacts();
     /* A new chat never deletes stored dialogue: it only drops this screen's
        transcript, so the previous conversation stays in the rail. */
     currentDialogueId = null;
@@ -558,6 +562,21 @@
      #4412 authenticated state machine. Model classifies intent server-side;
      QuoteCore and the approved template remain the only draft/PDF authorities.
      This path never sends caller-owned facts, intent, owner or workspace. */
+  function resetServerQuoteConversation() {
+    if (!accountSignedIn) return;
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (!bridge || typeof bridge.quoteConversation !== "function") return;
+    const previous = pendingQuoteReset;
+    pendingQuoteReset = (async () => {
+      if (previous) await previous;
+      const current = await bridge.quoteConversation("state");
+      if (!current.ok) return current;
+      const revision = current.state && Number.isSafeInteger(current.state.revision)
+        ? current.state.revision : 0;
+      return bridge.quoteConversation("start_new", { revision });
+    })().catch(() => ({ ok: false, code: "conversation_state_unavailable" }));
+  }
+
   function quoteConversationError(code) {
     const messages = {
       conversation_state_unavailable: "견적 대화 상태를 확인할 수 없습니다. 기존 내용은 그대로 보존됩니다.",
@@ -643,7 +662,7 @@
     return { ok: true, draft: result.draft, revising };
   }
 
-  function conversationQuoteChips(bridge, result, viewGeneration) {
+  function conversationQuoteChips(bridge, result, viewGeneration, autoPdf) {
     const quote = result.quote || {};
     const guardedAction = (action, options) => () => {
       if (dialogueGeneration !== viewGeneration) return;
@@ -659,7 +678,7 @@
       chips.push({ label: "변경 취소", action: guardedAction("cancel_staged") });
     }
     if (quote.approval_required) {
-      chips.push({ label: "견적 초안에 반영", action: guardedAction("approve_draft") });
+      chips.push({ label: "견적서 PDF 만들기", action: guardedAction("approve_draft") });
     }
     if (result.draft) {
       const applied = applyApprovedConversationDraft(result.draft);
@@ -686,6 +705,12 @@
     }
     if (!chips.length) chips.push({ label: "견적 상담 이어가기", action: () => composer.focus() });
     setChips(chips);
+    if (autoPdf && result.draft && result.draft.taxMode &&
+        approvedConversationQuoteNo && dialogueGeneration === viewGeneration) {
+      const print = $("printPdf");
+      if (print && !print.disabled) print.click();
+      else addMessage("assistant", "인증된 PDF 출력이 준비되지 않았습니다. 양식과 부가세 조건을 확인해 주세요.");
+    }
   }
 
   async function runQuoteConversation(text, action, extra) {
@@ -707,6 +732,16 @@
     const pending = addMessage("assistant", "요청을 처리하고 있습니다…");
     disableInput("AI 요청을 처리하는 중입니다.");
     try {
+      if (pendingQuoteReset) {
+        const reset = await pendingQuoteReset;
+        if (!current()) return;
+        if (!reset || !reset.ok) {
+          addMessage("assistant", quoteConversationError(reset && reset.code));
+          return;
+        }
+        quoteConversationRevision = reset.revision;
+        pendingQuoteReset = null;
+      }
       if (quoteConversationRevision === null) {
         const loaded = await bridge.quoteConversation("state");
         if (!current()) return;
@@ -735,7 +770,7 @@
           !result.answer.includes(result.quote.next_question)) {
         addMessage("assistant", result.quote.next_question);
       }
-      conversationQuoteChips(bridge, result, generation);
+      conversationQuoteChips(bridge, result, generation, action === "approve_draft");
     } catch (_) {
       if (current()) addMessage("assistant", quoteConversationError("conversation_unavailable"));
     } finally {
@@ -2292,6 +2327,7 @@
     quoteConversationEngaged = false;
     approvedConversationQuoteNo = null;
     approvedConversationDraftSnapshot = null;
+    pendingQuoteReset = null;
     releaseQuoteArtifacts();
     /* #4657: the previous owner's dialogue id, list and pending restore are
        dropped with the rest of the private state, so a late answer cannot be
@@ -2367,12 +2403,13 @@
     pendingRestoreDialogueId = null;
     quoteConversationRevision = null;
     quoteConversationEngaged = false;
+    resetServerQuoteConversation();
     const bridge = window.B66QuoteRuntimeBridge;
     if (bridge && typeof bridge.clearPending === "function") bridge.clearPending();
     setWorkspaceMode("easy", { history: false });
-    startFreeChat({ history: false });
+    showHome({ history: false });
     recordDialogueState(null);
-    recordProductState("free-form", { replace: true });
+    recordProductState("home", { replace: true });
   });
 
   window.addEventListener("popstate", (event) => {
