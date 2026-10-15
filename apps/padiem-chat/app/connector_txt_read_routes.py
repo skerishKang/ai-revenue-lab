@@ -2,9 +2,10 @@
 
 This is the entry point that turns an actual user TXT request into a Broker
 command carrying real approval material. It creates no approval by itself:
-every material fact comes from an existing server authority, and the explicit
-per-read confirmation click mirrors the enrollment consent-grant pattern
-(signed session + CSRF + exact origin + explicit ``confirmed: true``).
+every material fact comes from an existing server authority. The original
+HTTP route retains its closed ``confirmed: true`` wire format; the general Claw
+composer derives this field internally from the authenticated owner's actual
+TXT READ request (no second confirmation UI).
 
 Order per request (each step server-derived, fail closed):
 
@@ -74,6 +75,8 @@ class BrokerTxtReadSource:
             raise TypeError("canonical broker TXT device resolution unavailable")
         if not callable(getattr(broker_client, "enqueue_txt_read_command", None)):
             raise TypeError("canonical broker TXT command enqueue unavailable")
+        if not callable(getattr(broker_client, "installed_txt_execution_profile", None)):
+            raise TypeError("canonical broker TXT execution profile unavailable")
         self._broker_client = broker_client
 
     async def resolve_device_binding(
@@ -82,6 +85,22 @@ class BrokerTxtReadSource:
         return await self._broker_client.owner_device_binding(
             account_ref=account_ref, workspace_ref=workspace_ref,
             device_id=device_id,
+        )
+
+    async def installed_txt_execution_profile(
+        self, *, account_ref: str, workspace_ref: str, device_id: str,
+        binding_ref: str,
+    ) -> str:
+        return await self._broker_client.installed_txt_execution_profile(
+            account_ref=account_ref, workspace_ref=workspace_ref,
+            device_id=device_id, binding_ref=binding_ref,
+        )
+
+    async def owner_device_directory(
+        self, *, account_ref: str, workspace_ref: str,
+    ) -> dict[str, Any]:
+        return await self._broker_client.owner_device_directory(
+            account_ref=account_ref, workspace_ref=workspace_ref,
         )
 
     async def enqueue_txt_read_command(
@@ -158,6 +177,77 @@ async def connector_txt_read_request(request: Request) -> JSONResponse:
     if wire is None:
         return _error(400, "txt_read_invalid_body")
 
+    return await dispatch_verified_txt_read(request, wire)
+
+
+async def choose_verified_txt_device(
+    request: Request, *, selected_device_id: str | None = None,
+) -> tuple[str | None, JSONResponse | None]:
+    """Select a usable canonical owner device, never from an asserted account."""
+    session, denial = await _verified_owner_request(request)
+    if denial is not None or session is None:
+        return None, denial or _error(401, "canonical_session_required")
+    identity = getattr(request.app.state, "control_plane_identity_authority", None)
+    broker = getattr(request.app.state, "connector_txt_read_source", None)
+    if (not callable(getattr(identity, "resolve_connector_owner_scope", None))
+            or not callable(getattr(broker, "owner_device_directory", None))):
+        return None, _error(503, "txt_read_device_directory_unavailable")
+    try:
+        scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
+        directory = await broker.owner_device_directory(
+            account_ref=scope["account_ref"], workspace_ref=scope["workspace_ref"],
+        )
+    except Exception:
+        return None, _error(503, "txt_read_device_directory_unavailable")
+    if (not isinstance(directory, dict) or directory.get("available") is not True
+            or not isinstance(directory.get("devices"), list)
+            or len(directory["devices"]) > 24):
+        return None, _error(409, "txt_read_no_usable_device")
+    usable = []
+    for item in directory["devices"]:
+        if not isinstance(item, dict) or not isinstance(item.get("binding"), dict):
+            return None, _error(503, "txt_read_device_directory_unavailable")
+        binding = item["binding"]
+        if (binding.get("account_ref") != scope["account_ref"]
+                or binding.get("workspace_ref") != scope["workspace_ref"]):
+            return None, _error(503, "txt_read_device_directory_unavailable")
+        # The Broker directory never claims ONLINE: paired_offline means an
+        # unrevoked registered device eligible for outbound queueing, not an
+        # assertion that the Resident is currently running.
+        if item.get("canonical_state") == "paired_offline":
+            if isinstance(binding.get("device_id"), str) and binding["device_id"]:
+                usable.append(binding["device_id"])
+    usable = sorted(set(usable))
+    candidate = selected_device_id or (usable[0] if len(usable) == 1 else None)
+    if candidate is not None:
+        if candidate not in usable:
+            return None, _error(403, "txt_read_device_not_usable")
+        # A missing LOCAL2-installed path MUST fail before any pending history
+        # row is written: only a true Resident profile permits this command.
+        try:
+            binding = await broker.resolve_device_binding(
+                account_ref=scope["account_ref"], workspace_ref=scope["workspace_ref"],
+                device_id=candidate,
+            )
+            await broker.installed_txt_execution_profile(
+                account_ref=scope["account_ref"], workspace_ref=scope["workspace_ref"],
+                device_id=candidate, binding_ref=binding["binding_ref"],
+            )
+        except Exception:
+            return None, _error(503, "txt_read_execution_profile_unavailable")
+        return candidate, None
+    if not usable:
+        return None, _error(409, "txt_read_no_usable_device")
+    # Existing owner-scoped multi-PC selection can consume this device list.
+    # It is not enrollment authority or an input requiring a device-ID text box.
+    return None, _response({
+        "ok": False, "error": {"code": "txt_read_device_selection_required"},
+        "devices": [{"device_id": value} for value in usable],
+    }, 409)
+
+
+async def dispatch_verified_txt_read(request: Request, wire: dict[str, Any]) -> JSONResponse:
+    """Trusted internal and existing POST dispatch share exactly one authority path."""
     session, denial = await _verified_owner_request(request)
     if denial is not None or session is None:
         return denial if denial is not None else _error(401, "canonical_session_required")
@@ -250,6 +340,14 @@ async def connector_txt_read_request(request: Request) -> JSONResponse:
         return _error(404, "txt_read_run_unavailable")
 
     try:
+        executable = await broker_source.installed_txt_execution_profile(
+            account_ref=account_ref, workspace_ref=connector_workspace_ref,
+            device_id=wire["device_id"], binding_ref=device["binding_ref"],
+        )
+    except Exception:
+        return _error(503, "txt_read_execution_profile_unavailable")
+
+    try:
         proof = OwnerTxtApprovalProof(
             owner_id=uid,
             workspace_id=connector_workspace_ref,
@@ -263,6 +361,7 @@ async def connector_txt_read_request(request: Request) -> JSONResponse:
             approval=proof,
             root_ref=wire["root_ref"],
             path_relative=wire["path_relative"],
+            executable_path=executable,
         )
     except TxtApprovalMaterialError:
         return _error(400, "txt_read_refused")

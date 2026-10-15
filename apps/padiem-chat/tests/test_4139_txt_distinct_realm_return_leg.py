@@ -123,6 +123,7 @@ def test_distinct_realms_from_request_to_conversation(tmp_path):
         ),
         root_ref="root.txt.1", path_relative="notes\\report.txt",
         now=BASE + timedelta(seconds=1),
+        executable_path=r"C:\Python313\python.exe",
     )
 
     class _Env:

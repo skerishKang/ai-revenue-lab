@@ -361,6 +361,11 @@
         if (opened && isClaw()) void load();
       });
     }
+    // Read-only selection for the existing Claw composer transport. This is
+    // UI state, not a device grant; the server rechecks Identity and Broker.
+    window.padiemClawSelectedDeviceId = () => (
+      isClaw() && lastDirectory?.canTarget ? selectedId : null
+    );
     new MutationObserver(sync).observe(shell, { attributes: true, attributeFilter: ["data-state"] });
     new MutationObserver(translations).observe(document.documentElement, {
       attributes: true, attributeFilter: ["lang"],

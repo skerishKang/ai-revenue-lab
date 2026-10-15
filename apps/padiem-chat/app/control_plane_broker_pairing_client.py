@@ -414,6 +414,43 @@ class CloudflareCanonicalBrokerPairingClient:
             "credential_generation": generation,
         }
 
+    async def installed_txt_execution_profile(
+        self, *, account_ref: str, workspace_ref: str, device_id: str,
+        binding_ref: str,
+    ) -> str:
+        """LOCAL2 handoff: Broker-attested installed Resident Python executable.
+
+        Requires a private broker operation backed by the enrolled Resident's
+        trusted local execution profile. No client path or server sys.executable
+        fallback is permitted. Absent metadata is a fail-closed 503.
+        """
+        method = getattr(self._binding, "installed_execution_profile", None)
+        if not callable(method):
+            raise IdentityBridgeError(503, "txt_execution_profile_unavailable",
+                                      "Installed Resident execution profile unavailable.")
+        expected = {
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+            "device_id": _safe_ref(device_id, "device_id"),
+            "binding_ref": _safe_ref(binding_ref, "binding_ref"),
+            "profile_ref": "profile.3140.python",
+        }
+        try:
+            result = _dict(await _await(method(expected)))
+        except Exception as exc:
+            raise IdentityBridgeError(503, "txt_execution_profile_unavailable",
+                                      "Resident profile evidence unavailable.") from exc
+        profile = _dict(result.get("profile")) if result is not None else None
+        if (result is None or set(result) != {"ok", "profile"}
+                or result.get("ok") is not True or profile is None
+                or set(profile) != set(expected) | {"executable_path", "server_verified"}
+                or any(profile.get(key) != value for key, value in expected.items())
+                or profile.get("server_verified") is not True
+                or not isinstance(profile.get("executable_path"), str)):
+            raise IdentityBridgeError(503, "txt_execution_profile_unavailable",
+                                      "Resident execution profile not verified.")
+        return profile["executable_path"]
+
     async def enqueue_txt_read_command(
         self, *, command: dict[str, Any], material: dict[str, Any],
     ) -> dict[str, Any]:

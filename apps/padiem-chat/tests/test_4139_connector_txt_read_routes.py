@@ -68,6 +68,9 @@ class FakeBrokerSource:
         if len(matches) != 1:
             raise IdentityBridgeError(404, "txt_device_unbound", "unbound")
         return dict(matches[0])
+    async def installed_txt_execution_profile(self, *, account_ref, workspace_ref, device_id, binding_ref):
+        self.calls.append(("profile", account_ref, workspace_ref, device_id, binding_ref))
+        return r"C:\Python313\python.exe"
     async def enqueue_txt_read_command(self, *, command, material):
         self.calls.append(("enqueue", command["command_id"]))
         if self._enqueue is None:

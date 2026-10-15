@@ -59,6 +59,7 @@ def _mint(**overrides):
         "root_ref": "root.docs",
         "path_relative": r"notes\report.txt",
         "now": NOW,
+        "executable_path": r"C:\Python313\python.exe",
     }
     args.update(overrides)
     return mint_txt_read_receipt(**args)
@@ -106,7 +107,7 @@ def test_mint_produces_closed_receipt_with_exact_constants():
     assert args["content_bytes"] == 0 and args["content_sha256"] is None
     assert issued["material"]["p01_approval_payload"] == receipt
     assert issued["enqueue"]["command_id"] == receipt["command_id"]
-    assert issued["material"]["argv"] == ["python", "-V"]
+    assert issued["material"]["argv"] == [r"C:\Python313\python.exe", "-V"]
     # Wire fits the durable bound with wide margin.
     wire = {"contract_version": "claw-local-command-material.v2",
             "command_id": "c", "binding_ref": "b", "sequence": 1,
@@ -173,3 +174,28 @@ def test_rejections_stay_fail_closed():
         _mint(device_id="")
     with pytest.raises(TxtApprovalMaterialError):
         _mint(now="not-a-datetime")
+
+def test_txt_execution_profile_exact_absolute_path_and_resident_fingerprint():
+    from kagent.local_agent import LocalCommandRequest
+    from kagent.windows_local_executor import command_request_fingerprint
+
+    for bad in (None, "python", "python.exe", "C:python.exe",
+                "../python.exe", r"\\server\share\python.exe",
+                r"C:\Python313\..\python.exe"):
+        with pytest.raises(TxtApprovalMaterialError):
+            _mint(executable_path=bad)
+
+    issued = _mint(executable_path=r"C:\Python313\python.exe")
+    material = issued["material"]
+    assert material["argv"] == [r"C:\Python313\python.exe", "-V"]
+    resident_request = LocalCommandRequest(
+        request_id=material["request_id"],
+        run_id=material["run_id"],
+        device_id=material["device_id"],
+        root_ref=material["root_ref"],
+        argv=tuple(material["argv"]),
+        cwd_relative=material["cwd_relative"],
+        requested_at=NOW,
+        timeout_seconds=material["timeout_seconds"],
+    )
+    assert issued["enqueue"]["request_fingerprint"] == command_request_fingerprint(resident_request)

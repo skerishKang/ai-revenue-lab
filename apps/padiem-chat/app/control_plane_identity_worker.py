@@ -339,6 +339,18 @@ class CloudflareControlPlaneIdentityAuthority:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity link is invalid.")
         return product_user_id
 
+    async def resolve_connector_owner_scope(self, *, session_id: str) -> dict[str, str]:
+        """Identity verified scope; no account or workspace supplied by Claw."""
+        if not isinstance(session_id, str) or not session_id:
+            raise IdentityBridgeError(401, "canonical_auth_session_not_found", "Canonical session unavailable.")
+        scope = _closed(
+            await self._rpc("resolve_connector_owner_scope", {"session_id": session_id}, "scope"),
+            frozenset({"account_ref", "workspace_ref"}), "canonical connector owner scope",
+        )
+        if any(not isinstance(scope[key], str) or not scope[key] for key in scope):
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical connector scope invalid.")
+        return scope
+
     async def resolve_connector_workspace(self, *, session_id: str) -> str | None:
         """#2830 B-1A read: canonical workspace_ref for one existing session.
 

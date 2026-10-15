@@ -20,10 +20,11 @@ a pinned cross-implementation test keeps it bit-identical.
 The receipt is bound to one command: ``command_id``/``run_id``/``device_id``
 are minted here and must be used for the atomic
 ``enqueue_command_with_material`` call that carries this material. The companion
-argv execution (``["python", "-V"]``) is a correlation vehicle only: it must
-exit 0 for the lane to proceed, but its stdout is never trusted as TXT content
-(the lane reads the approved file itself). It requires a ``python`` executable
-under one of the PC's allowlisted executable profiles.
+argv execution (installed Resident absolute Python path with ``-V``) is only a
+correlation vehicle. Its exit 0 is never trusted as TXT content; only the
+approved READ body counts. The per-device server-verified ``profile.3140.python``
+path must be provided by LOCAL2 through the existing Broker, never by the
+Worker interpreter, browser, or an expanded allowlist.
 
 Engine library vs Engine service: this module uses the Engine *shared library*
 only (``padiem_ai_core.agent_approval`` object model, ``tool_runtime``
@@ -47,6 +48,7 @@ import json
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from pathlib import PureWindowsPath
 from typing import Any
 from uuid import uuid4
 
@@ -64,7 +66,7 @@ TXT_READ_TOOL_ID = "local.filesystem.read"
 TXT_READ_APPROVAL_SCOPE = ("filesystem.read",)
 TXT_READ_AGENT_RUNTIME_ID = "claw_connector_txt_v1"
 TXT_READ_SUFFIX = ".txt"
-TXT_READ_VEHICULAR_ARGV: tuple[str, ...] = ("python", "-V")
+TXT_READ_EXECUTABLE_PROFILE_REF = "profile.3140.python"
 
 _APPROVAL_WINDOW = timedelta(minutes=5)
 _MAX_REF_CHARS = 512
@@ -185,6 +187,7 @@ def mint_txt_read_receipt(
     action_id: str | None = None,
     tool_request_ref: str | None = None,
     now: datetime | None = None,
+    executable_path: str | None = None,
 ) -> dict[str, Any]:
     """Mint the closed TXT approval receipt for one owner-named read.
 
@@ -196,6 +199,17 @@ def mint_txt_read_receipt(
     """
     if not isinstance(approval, OwnerTxtApprovalProof):
         raise TxtApprovalMaterialError("TXT approval requires a verified owner approval proof")
+    # Only a server-verified, per-device Resident profile can supply this path.
+    # The Worker Python interpreter and caller-provided paths are never defaults.
+    if not isinstance(executable_path, str) or not executable_path:
+        raise TxtApprovalMaterialError("trusted installed executable profile unavailable")
+    installed = PureWindowsPath(executable_path)
+    if (not installed.is_absolute() or not re.fullmatch(r"[A-Za-z]:", installed.drive)
+            or installed.suffix.lower() != ".exe"
+            or any(part in (".", "..") for part in executable_path.replace("/", "\\").split("\\"))
+            or any(ord(ch) < 32 for ch in executable_path)):
+        raise TxtApprovalMaterialError("trusted installed executable profile invalid")
+    argv = [str(installed), "-V"]
     owner_id = approval.owner_id
     workspace_id = approval.workspace_id
     device_id = approval.device_id
@@ -277,7 +291,7 @@ def mint_txt_read_receipt(
         "run_id": run_id,
         "device_id": device_id,
         "root_ref": root_ref,
-        "argv": list(TXT_READ_VEHICULAR_ARGV),
+        "argv": argv,
         "cwd_relative": ".",
         "requested_at": moment.isoformat().replace("+00:00", "Z"),
         "timeout_seconds": 30,
@@ -294,7 +308,7 @@ def mint_txt_read_receipt(
         "tool_request_ref": tool_request_ref,
         "request_fingerprint": command_material_fingerprint_for(
             request_id=request_id, run_id=run_id, device_id=device_id,
-            root_ref=root_ref, argv=list(TXT_READ_VEHICULAR_ARGV),
+            root_ref=root_ref, argv=argv,
             cwd_relative=".", requested_at=moment, timeout_seconds=30,
         ),
         "ttl_seconds": 300,
