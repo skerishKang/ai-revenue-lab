@@ -1,0 +1,51 @@
+/* #4647: local meeting capture, same Padiem semantic surface, no new theme. */
+.meeting-dialog {
+  width: min(760px, calc(100vw - 24px));
+  max-width: 760px;
+  max-height: calc(100dvh - 24px);
+  padding: 0;
+  border: 1px solid var(--border, rgba(128,128,128,.28));
+  border-radius: 18px;
+  color: var(--text, inherit);
+  background: var(--surface, #fff);
+  box-shadow: 0 24px 60px rgba(0,0,0,.23);
+  overflow: auto;
+}
+.meeting-dialog::backdrop { background: rgba(12,18,31,.55); }
+.meeting-panel { display: grid; gap: 18px; padding: clamp(16px, 3vw, 30px); }
+.meeting-header { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+.meeting-header p { font-size: 11px; letter-spacing: .13em; opacity: .72; margin: 0; }
+.meeting-header h2 { font-size: 26px; margin: 3px 0 0; }
+.meeting-header button {
+  font-size: 28px; border: 0; border-radius: 9px; background: transparent;
+  color: inherit; cursor: pointer; min-width: 42px; min-height: 42px;
+}
+.meeting-help, .meeting-storage-note { margin: 0; font-size: 14px; line-height: 1.55; opacity: .83; }
+.meeting-modes { display: grid; gap: 10px; padding: 14px; border: 1px solid currentColor; border-color: color-mix(in srgb, currentColor 17%, transparent); border-radius: 12px; }
+.meeting-modes legend { font-weight: 650; padding-inline: 6px; }
+.meeting-modes label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.meeting-modes input { accent-color: var(--accent, #3c70a5); width: 18px; height: 18px; }
+.meeting-controls, .meeting-exports { display: flex; gap: 10px; flex-wrap: wrap; }
+.meeting-controls button, .meeting-exports button {
+  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: 11px; padding: 10px 14px; min-height: 42px;
+  background: transparent; color: inherit; cursor: pointer; font: inherit;
+}
+.meeting-controls #meetingStart { background: var(--accent, #335e9d); color: white; }
+.meeting-dialog button:disabled { opacity: .45; cursor: not-allowed; }
+.meeting-status { font-size: 14px; margin: 0; font-weight: 550; }
+.meeting-panel > label { font-size: 14px; font-weight: 600; }
+.meeting-panel textarea {
+  width: 100%; min-height: 165px; padding: 12px; resize: vertical;
+  border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  border-radius: 10px; color: inherit; background: transparent;
+  font: inherit; line-height: 1.6;
+}
+.meeting-interim { margin: -10px 0 0; font-size: 13px; opacity: .72; min-height: 18px; }
+.meeting-storage-note { border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent); padding-top: 12px; }
+@media (max-width: 500px) {
+  .meeting-dialog { width: calc(100vw - 12px); max-height: calc(100dvh - 12px); }
+  .meeting-panel { gap: 14px; }
+  .meeting-header h2 { font-size: 23px; }
+  .meeting-controls button, .meeting-exports button { flex: 1 1 160px; }
+}

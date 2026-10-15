@@ -2011,6 +2011,9 @@
     // conversation, in every shell state. The quotation/document workflow
     // runs only via the manual form's own explicit draft submit button;
     // a generic request must never auto-enter it through the composer.
+    // #4647: an explicit meeting-preparation request opens the same session
+    // as the sidebar, without spending a model call or sending a conversation.
+    if (shell.dataset.state === "claw" && window.PadiemMeetingCapture?.tryOpenFromClaw?.(input.value)) return;
     submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", cancelActiveStream);

@@ -77,3 +77,25 @@ Drive 기술 근거: https://developers.google.com/workspace/drive/api/guides/ma
 - 이 문서는 **새 개발 방향 및 STT 혼동 방지 기준**을 기록한다. 제품 구현·최종 UX·Google API 무료 사용 무제한·현재 운영 서비스 완성 상태를 선언하지 않는다.
 - 로컬 비공개 사업방침·운영방침은 별도 COM1 Governance를 실제 열람한다. 본 공개 문서에 비공개 원문을 옮기지 않는다.
 - 제품 코드/CI/Cloudflare 운영 설정/실사용 Drive 파일에는 이 문서 작업만으로 변화를 주지 않는다.
+## 8. 2026-10-15 제1차 구현 — 브라우저 회의 캡처, Drive 미연결
+
+후속 코드 브랜치: `central/meeting-4647-261015` (#4647). 기본 음성인식 메시지 전송 #4643이나 공통 Calendar/Drive 인증 계약은 변경하지 않는다.
+
+- `apps/padiem-chat/static/meeting-capture.js`: 표준 브라우저 MediaRecorder와 Web Speech Recognition의 **분리된 회의 세션**. 녹음만 / 실시간 전사만 / 동시 실행. 녹음 오류와 STT 오류를 분리하고, 복수 번 전사 final 중복 방지, 로그인 상실 시 메모리 폐기, 명시적 녹음 종료, TXT/오디오 로컬 다운로드.
+- `meeting-capture.css`: 공통 PADIEM 클라이언트에 별도 회의 UI.
+- `static/index.html`, `static/app.js`: 메뉴 진입과 Claw에서 명시적 “회의록 준비해 줘” 명령을 같은 UI로 연결. 다른 대화는 기존 P01/Chat 경로로 전송. 기존 짧은 음성 입력 #4643/Mode1·Mode2 파일 미수정.
+- `tests/test_4647_meeting_capture_node.js`: 세 모드, STT 오류 시 녹음 유지, 중복 final 방지 및 중복 stop 범위의 단위 테스트.
+
+### 오픈소스·표준 재사용 판단
+
+- 저장소 자체의 `voice-stt-wiring.js` 및 Global Classroom은 현재 STT 논리 참고·기존 코드 재사용 기준. 장시간 회의 기록은 별도 세션으로 다루되 별도 AI/STT 유료 API를 만들지 않는다.
+- 표준 [MDN MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder) 및 [SpeechRecognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition) 활용. 불필요한 SDK·라이선스/업로드 종속성이 없다.
+- [RecordRTC](https://github.com/muaz-khan/RecordRTC) MIT 오픈소스: 기본 브라우저 녹음 기능과 중복되므로 지금은 새 패키지 미도입.
+- [wavesurfer.js Record Plugin](https://github.com/katspaugh/wavesurfer.js): 파형 표시 고도화에 유효하지만 녹음·전사 MVP의 필수조건이 아니므로 우선 도입하지 않는다.
+- [Google Drive resumable upload](https://developers.google.com/workspace/drive/api/guides/manage-uploads)는 향후 대용량 원본 직접 업로드의 공식 API 후보. **현재 일반 Google Drive 커넥터는 읽기 전용**이므로 `drive.file` 신규 동의·인증 계약 없이는 직접 업로드 미구현. 권한 없는 Drive WRITE를 가장하거나 기존 Drive READ 권한을 확대하지 않는다.
+
+### 수용 상태 / 후속
+
+- 브라우저 녹음·전사 UI 소스 및 로컬 다운로더: **구현 중/좁은 테스트만 완료**. 실제 고객 마이크·실시간 긴 회의·운영 배포를 검증했다는 뜻이 아니다.
+- Google Drive 직접 저장/과거 회의 목록/AI 회의록 요약/Padiem Calendar 실쓰기: **미구현**. 본인 Drive 연결이 읽기 전용인 한 녹음 원본은 PADIEM 서버에 업로드하지 않는다.
+- **다음 구현 1순위**: 기존 Google Connector 인증 권위와 조율하여 사용자 별도 계정 가입 없이 필요한 시점에 `drive.file` 점진적 권한을 받고, 서버는 오디오 본문을 보관하지 않는 **클라이언트 직접 resumable 업로드**를 연결한다. 이때 새로운 Provider Secret 또는 승인되지 않은 프런트 토큰 반출을 만들지 않는다.
