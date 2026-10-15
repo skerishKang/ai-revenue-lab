@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 import httpx
 import pytest
 
-from padiem_ai_core.drive_capability import DRIVE_READONLY_SCOPE
+from padiem_ai_core.drive_capability import DRIVE_FULL_SCOPE, DRIVE_READONLY_SCOPE
 from padiem_ai_core.tool_runtime import ToolHandlerError
 
 from app.drive_port_cp_lease import ControlPlaneLeaseDriveReadPort
@@ -27,7 +27,7 @@ def run(coro):
     return asyncio.run(coro)
 
 
-def lease(*, token: str = TOKEN, actor_ref: str = ACTOR_REF) -> EngineGoogleOAuthAccessLease:
+def lease(*, token: str = TOKEN, actor_ref: str = ACTOR_REF, scopes: tuple[str, ...] = (DRIVE_READONLY_SCOPE,)) -> EngineGoogleOAuthAccessLease:
     return EngineGoogleOAuthAccessLease(
         access_token=token,
         binding_ref=BINDING_REF,
@@ -35,7 +35,7 @@ def lease(*, token: str = TOKEN, actor_ref: str = ACTOR_REF) -> EngineGoogleOAut
         actor_ref=actor_ref,
         account_ref="account_1",
         workspace_ref="workspace_1",
-        scopes=(DRIVE_READONLY_SCOPE,),
+        scopes=scopes,
         expires_at=NOW + timedelta(hours=1),
     )
 
@@ -121,7 +121,8 @@ def test_private_client_rejects_refresh_token_or_extra_fields_in_rpc_response() 
 
 def test_private_client_rejects_wrong_scope_binding_and_expiry() -> None:
     variants = [
-        {"scopes": ["https://www.googleapis.com/auth/drive"]},
+        {"scopes": [DRIVE_READONLY_SCOPE, DRIVE_FULL_SCOPE]},
+        {"scopes": ["https://www.googleapis.com/auth/drive.file"]},
         {"binding_ref": "different-binding"},
         {"expires_at": (NOW - timedelta(seconds=1)).isoformat().replace("+00:00", "Z")},
         {"expires_at": (NOW + timedelta(seconds=7201)).isoformat().replace("+00:00", "Z")},
@@ -143,6 +144,57 @@ def test_private_client_rejects_unreviewed_connector_without_rpc_call() -> None:
     with pytest.raises(ServiceContractError):
         run(client.issue_access_lease(binding_ref=BINDING_REF, connector_id="google-slides"))
     assert binding.calls == []
+
+
+
+def test_full_drive_cp_lease_accepted_only_from_issuer() -> None:
+    wire = dict(FakeServiceBinding().result["lease"])
+    wire["scopes"] = [DRIVE_FULL_SCOPE]
+    binding = FakeServiceBinding(result={"ok": True, "lease": wire})
+    client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding, clock=lambda: NOW)
+    actual = run(client.issue_access_lease(binding_ref=BINDING_REF, connector_id="google-drive"))
+    assert actual.scopes == (DRIVE_FULL_SCOPE,)
+    assert binding.calls == [{"binding_ref": BINDING_REF, "connector_id": "google-drive"}]
+    assert TOKEN not in repr(actual)
+    assert actual.safe_dict()["raw_refresh_token"] is False
+
+
+def test_full_drive_cp_lease_works_for_existing_read_tool() -> None:
+    requests = []
+    def provider(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(200, json={"files": []})
+    port = ControlPlaneLeaseDriveReadPort(
+        lease_client=FakeLeaseClient(leases=[lease(scopes=(DRIVE_FULL_SCOPE,))]),
+        transport=httpx.MockTransport(provider),
+    )
+    assert run(port.get_json(
+        binding_ref=BINDING_REF, actor_ref=ACTOR_REF,
+        required_scopes=(DRIVE_READONLY_SCOPE,),
+        base_url="https://www.googleapis.com", path="/drive/v3/files", query={},
+        timeout_seconds=10, max_response_bytes=10000,
+    )) == {"files": []}
+    assert len(requests) == 1
+    assert requests[0].method == "GET"
+
+
+def test_read_grant_never_satisfies_full_drive_requirement() -> None:
+    calls = []
+    def provider(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(200, json={})
+    port = ControlPlaneLeaseDriveReadPort(
+        lease_client=FakeLeaseClient(leases=[lease()]), transport=httpx.MockTransport(provider),
+    )
+    with pytest.raises(ToolHandlerError) as error:
+        run(port.get_json(
+            binding_ref=BINDING_REF, actor_ref=ACTOR_REF,
+            required_scopes=(DRIVE_FULL_SCOPE,),
+            base_url="https://www.googleapis.com", path="/drive/v3/files", query={},
+            timeout_seconds=10, max_response_bytes=10000,
+        ))
+    assert error.value.code == "google_drive_access_lease_mismatch"
+    assert calls == []
 
 
 def test_lease_backed_drive_get_uses_server_binding_ref_actor_and_bearer_only() -> None:
