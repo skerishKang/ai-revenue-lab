@@ -55,3 +55,14 @@ def test_permissions_link_stays_user_accessible_with_no_secret():
     assert 'show(githubPermissions, known && linked)' in MANAGER
     assert 'PADIEM_GITHUB_APP_CLIENT_SECRET' not in HTML
     assert 'PADIEM_GITHUB_APP_CLIENT_SECRET' not in MANAGER
+
+
+def test_standalone_connectors_view_readback_survives_legacy_dialog_relocation():
+    # The visible Connectors page owns the moved cards; a closed legacy dialog
+    # must not suppress GitHub authority readback or the account controls.
+    assert 'document.getElementById("connectorsView")' in MANAGER
+    assert 'const drive = document.querySelector(' in MANAGER
+    assert 'const drive = dialog?.querySelector(' not in MANAGER
+    assert 'if (!connectorSurfaceOpen()) return;' in MANAGER
+    assert 'generation !== readGeneration || !connectorSurfaceOpen()' in MANAGER
+    assert 'attributeFilter:["data-state"]' in MANAGER
