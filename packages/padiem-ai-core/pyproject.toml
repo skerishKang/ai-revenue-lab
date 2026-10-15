@@ -15,8 +15,11 @@ dependencies = [
 tools = [
   "jsonschema>=4.23,<5",
 ]
+# 6.19.x is the patched line for CVE-2026-102998/102999/103000 and the release family
+# covered by PYPDF_6_19_0_* source audits. 6.20.x also adds stream/page-tree work limits,
+# but it widens accepted PDF input (Brotli filter, off-line %%EOF) and needs its own audit.
 documents = [
-  "pypdf>=6.16.2,<7",
+  "pypdf>=6.19.0,<6.20",
   "openpyxl>=3.1,<4",
 ]
 render = [
@@ -31,7 +34,7 @@ authoring = [
 dev = [
   "pytest>=8,<10",
   "jsonschema>=4.23,<5",
-  "pypdf>=6.16.2,<7",
+  "pypdf>=6.19.0,<6.20",
   "pypdfium2==5.13.0",
   "pdfplumber==0.11.10",
   "reportlab==5.0.1",
