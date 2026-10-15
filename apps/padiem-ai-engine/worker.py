@@ -518,6 +518,12 @@ async def _drive_case_pdf_rpc_for_env(env: Any, operation: str, payload: Any) ->
 class Default(WorkerEntrypoint):
     engine_services_factory = staticmethod(_engine_services_for_env)
 
+    async def drive_general_search(self, payload: Any) -> Any:
+        return await _drive_case_folder_rpc_for_env(self.env, "drive_general_search", payload)
+
+    async def drive_general_read(self, payload: Any) -> Any:
+        return await _drive_case_folder_rpc_for_env(self.env, "drive_general_read", payload)
+
     async def drive_case_folder_status(self, payload: Any) -> Any:
         return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_status", payload)
 

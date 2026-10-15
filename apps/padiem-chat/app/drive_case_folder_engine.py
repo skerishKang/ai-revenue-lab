@@ -30,6 +30,8 @@ STATUS_OPERATION = "drive_case_folder_status"
 FOLDERS_OPERATION = "drive_case_folder_folders"
 SELECT_OPERATION = "drive_case_folder_select"
 CLEAR_OPERATION = "drive_case_folder_clear"
+GENERAL_SEARCH_OPERATION = "drive_general_search"
+GENERAL_READ_OPERATION = "drive_general_read"
 PDF_CANDIDATES_OPERATION = "b67_case_pdf_candidates"
 PDF_READ_OPERATION = "b67_case_pdf_read"
 PDF_REVIEW_OPERATION = "b67_case_pdf_review_extraction"
@@ -94,6 +96,9 @@ _PDF_INTAKE_STATES = frozenset({"size_unverified", "execution_fallback_required"
 # Engine error code -> bounded Chat failure.
 _ERROR_TAXONOMY: dict[str, tuple[int, str]] = {
     "drive_not_connected": (409, "Google Drive is not connected for this workspace."),
+    "drive_provider_unavailable": (502, "Google Drive read is unavailable."),
+    "invalid_file_id": (400, "Google Drive file selection is invalid."),
+    "invalid_request": (400, "Invalid Drive request."),
     "drive_case_folder_unavailable": (503, "Drive case folder authority is unavailable."),
     "binding_authority_unavailable": (503, "Selected-folder authority is unavailable."),
     "drive_authority_unavailable": (503, "Drive authority is unavailable."),
@@ -228,6 +233,40 @@ class CloudflareDriveCaseFolderEngineClient:
         if not isinstance(result.get("more"), bool) or not isinstance(result.get("exhaustive"), bool):
             raise self._malformed(FOLDERS_OPERATION)
         return {"folders": folders, "more": result["more"], "exhaustive": result["exhaustive"]}
+
+    async def general_search(self, *, workspace_ref: str, query: str) -> dict[str, Any]:
+        if _bounded_text(workspace_ref, 200) is None or _bounded_text(query, 200) is None:
+            raise DriveCaseFolderEngineError("invalid_query", "Drive query is invalid.", status_code=400)
+        result = await self._call(GENERAL_SEARCH_OPERATION, {"workspace_ref": workspace_ref, "query": query})
+        self._require_exact_keys(result, frozenset({"ok", "files", "more", "contract_version"}), GENERAL_SEARCH_OPERATION)
+        raw = result.get("files")
+        if not isinstance(raw, list) or len(raw) > 8 or not isinstance(result.get("more"), bool):
+            raise self._malformed(GENERAL_SEARCH_OPERATION)
+        projected = []
+        for row in raw:
+            if not isinstance(row, Mapping) or set(row) != {"file_id", "name", "mime_type", "url"}:
+                raise self._malformed(GENERAL_SEARCH_OPERATION)
+            if any(_bounded_text(row.get(k), limit) is None for k,limit in
+                   (("file_id",200), ("name",512), ("mime_type",255))):
+                raise self._malformed(GENERAL_SEARCH_OPERATION)
+            url = row["url"]
+            if url is not None and (not isinstance(url,str) or not url.startswith("https://") or len(url)>2048):
+                raise self._malformed(GENERAL_SEARCH_OPERATION)
+            projected.append(dict(row))
+        return {"files": projected, "more": result["more"]}
+
+    async def general_read(self, *, workspace_ref: str, file_id: str) -> dict[str, Any]:
+        if _bounded_text(workspace_ref, 200) is None or _bounded_text(file_id, 200) is None:
+            raise DriveCaseFolderEngineError("invalid_file_id", "Invalid Drive file.", status_code=400)
+        result = await self._call(GENERAL_READ_OPERATION, {"workspace_ref": workspace_ref, "file_id": file_id})
+        self._require_exact_keys(result, frozenset({"ok", "file_id", "name", "content", "truncated", "contract_version"}), GENERAL_READ_OPERATION)
+        if (result.get("file_id") != file_id
+            or _bounded_text(result.get("name"), 512) is None
+            or not isinstance(result.get("content"), str)
+            or len(result["content"]) > 12000
+            or not isinstance(result.get("truncated"), bool)):
+            raise self._malformed(GENERAL_READ_OPERATION)
+        return {"name": result["name"], "content": result["content"], "truncated": result["truncated"]}
 
     async def select(self, *, workspace_ref: str, project_id: str, folder_id: object) -> dict[str, Any]:
         bounded = _bounded_text(folder_id, MAX_CANDIDATE_NAME_CHARS)
