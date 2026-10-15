@@ -608,7 +608,9 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   min-width: 0;
   min-height: calc(100vh - 98px);
   margin: 12px 0 28px 24px;
-  padding: 28px clamp(18px, 2.4vw, 34px) 36px;
+  /* Chat/Claw home label starts about 80px below its glass panel top.
+     Keep Calendar panel geometry; align its content origin to that baseline. */
+  padding: 78px clamp(18px, 2.4vw, 34px) 36px;
   border: 1px solid rgba(255,255,255,.70);
   border-radius: 28px;
   background: linear-gradient(155deg, rgba(248,250,251,.90), rgba(233,238,241,.87));

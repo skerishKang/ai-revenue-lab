@@ -260,3 +260,20 @@ html[data-theme="padiem-glass"] body .error-box .retry-button:hover:not(:disable
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .recent-section[aria-labelledby="recentTitle"] {
   display: none !important;
 }
+
+/* CENTRAL_CHAT_CLAW_COMPOSER_PARITY_20261015
+ * Chat and Claw share the same large glass input frame on desktop.
+ * Chat has no Claw-only model selector, so reserve the same frame height
+ * without moving the existing microphone, attachments or send controls.
+ * This is a layout-only rule; mobile and expanded content remain natural. */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #composerForm {
+    box-sizing: border-box;
+    min-height: 186px;
+    display: flex;
+    flex-direction: column;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #composerForm > .composer-actions {
+    margin-top: auto;
+  }
+}
