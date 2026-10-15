@@ -208,6 +208,7 @@ async def run_review_only_device_session(
     receiver: ProtectedCredentialReceiverPort, challenge_id: str,
     device_id: str, pairing_code: str, now: datetime | None = None,
     binding_factory: Callable[..., Any] = canonical_kagent_binding_factory,
+    on_stage: Callable[[str], Any] | None = None,
 ) -> DeviceSessionResult:
     """Exercise the exact server WSS contract; no production transport supplied.
 
@@ -295,6 +296,8 @@ async def run_review_only_device_session(
         if (not 16 <= len(credential) <= MAX_CREDENTIAL_BYTES
             or base64.b64encode(credential).decode("ascii") != encoded):
             raise DeviceSessionRefused("device_credential_encoding_invalid")
+        if on_stage is not None:
+            on_stage("credential_once_received")
         # This is the ONLY place the raw credential enters protected storage.
         # The receiver checks binding scope and reads back bytes from its store.
         if not callable(binding_factory):
@@ -312,6 +315,8 @@ async def run_review_only_device_session(
             or confirmation.credential_generation != binding["credential_generation"]
             or not _proof(confirmation.proof_hex)):
             raise DeviceSessionRefused("device_install_not_confirmed")
+        if on_stage is not None:
+            on_stage("dpapi_store_confirmed")
         safe = confirmation.safe_dict()
         body = _wire({key: safe[key] for key in (
             "challenge_id", "device_id", "binding_ref", "credential_generation",
@@ -326,6 +331,8 @@ async def run_review_only_device_session(
                 counter=2, body=body,
             ),
         })
+        if on_stage is not None:
+            on_stage("install_ack_sent")
         # This is a server-owned terminal result, not a new entitlement.
         terminal = await _receive(socket, frozenset({
             "type", "status", "can_retry_challenge",
@@ -333,6 +340,8 @@ async def run_review_only_device_session(
         if (terminal != {"type": "terminal", "status": "paired_offline",
                          "can_retry_challenge": False}):
             raise DeviceSessionRefused("device_terminal_security_hold")
+        if on_stage is not None:
+            on_stage("install_ack_accepted")
         return DeviceSessionResult(
             device_id=device_id, binding_ref=binding["binding_ref"],
             account_ref=binding["account_ref"], workspace_ref=binding["workspace_ref"],
@@ -430,6 +439,7 @@ async def run_and_stage_review_only_device_enrollment(
     challenge_id: str, pairing_code: str, now: datetime | None = None,
     binding_factory: Callable[..., Any] = canonical_kagent_binding_factory,
     binding_store: Any | None = None,
+    on_stage: Callable[[str], Any] | None = None,
 ) -> EnrollmentResult:
     """Preserve the existing stage-then-publish contract after WSS terminal.
 
@@ -455,6 +465,7 @@ async def run_and_stage_review_only_device_enrollment(
         socket=socket, trusted_tls=trusted_tls, receiver=receiver,
         challenge_id=challenge_id, pairing_code=pairing_code,
         device_id=current.device_id, now=moment, binding_factory=binding_factory,
+        on_stage=on_stage,
     )
     # Nothing from an unsigned JSON receipt can manufacture a new owner here:
     # the result is usable only after the *same socket* confirmed the keyed

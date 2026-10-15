@@ -31,7 +31,14 @@ def protected_credential_directory(state_dir: Path) -> Path:
     return target
 
 
-async def enroll_customer_pending_offer(*, enrollment: Any) -> Any:
+def _open_owner_approval_page(url: str) -> None:
+    """Use the existing signed-in PADIEM browser for this one-use PC offer."""
+    import webbrowser
+
+    if not webbrowser.open(url, new=2):
+        raise DeviceSessionRefused("pc_offer_owner_browser_unavailable")
+
+async def enroll_customer_pending_offer(*, enrollment: Any, on_stage: Any = None) -> Any:
     """Attempt a SINGLE live PC offer and normal canonical credential commit.
 
     Until LOCAL1 mounts its server-side verified-intent matcher, the server will
@@ -63,5 +70,6 @@ async def enroll_customer_pending_offer(*, enrollment: Any) -> Any:
         return await run_pending_pc_offer_and_enroll(
             socket=socket, trusted_tls=VerifiedReviewTls(), enrollment=enrollment,
             receiver=receiver, binding_store=bindings,
-            owner_approval_open=lambda _unused_url: None,
+            owner_approval_open=_open_owner_approval_page,
+            on_stage=on_stage,
         )
