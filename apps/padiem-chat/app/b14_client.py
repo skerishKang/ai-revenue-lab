@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
 from typing import Any, Protocol
+import time
 
 # Core completion transports use real httpx's type family, also on Workers.
 # Worker execution still uses the existing Service Binding transport.
@@ -35,6 +36,7 @@ from padiem_ai_core.dispatch_preinstruction import (
 )
 
 from .attachments import ImageAttachment
+from .request_telemetry import emit_stage_event
 from .config import Settings
 from .model_policy import ModelPolicyError, model_supports, resolve_request_model_policy
 from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
@@ -482,15 +484,27 @@ class B14Client:
             b14_stream_client=core_client,
         )
         core_stream = runtime.stream(request)
+        # PADIEM_CORRELATED_STAGE_TELEMETRY_261016: same request ID as B62
+        # response header, independent of B14's own internal attempt ID.
+        stream_started = time.perf_counter()
+        stream_completed = False
         try:
             async for event in core_stream:
                 if event.delta_content:
                     yield ChatStreamEvent(delta_content=event.delta_content)
                 if event.done:
+                    stream_completed = True
                     yield ChatStreamEvent(done=True)
         except ExecutionRuntimeError as exc:
+            emit_stage_event(stage="b14.stream", outcome="error",
+                             duration_ms=(time.perf_counter()-stream_started)*1000,
+                             code=exc.code)
             raise _translate_execution_error(exc) from exc
         finally:
+            if stream_completed:
+                emit_stage_event(stage="b14.stream", outcome="ok",
+                                 duration_ms=(time.perf_counter()-stream_started)*1000)
+
             try:
                 await core_stream.aclose()
             except Exception:
@@ -660,11 +674,19 @@ class B14Client:
             app_id="padiem-chat",
             b14_client=core_client,
         )
+        complete_started = time.perf_counter()
         try:
             execution = await runtime.run(request)
         except ExecutionRuntimeError as exc:
+            emit_stage_event(stage="b14.complete", outcome="error",
+                             duration_ms=(time.perf_counter()-complete_started)*1000,
+                             code=exc.code, model=model)
             raise _translate_execution_error(exc) from exc
-
+        emit_stage_event(stage="b14.complete", outcome="ok",
+                         duration_ms=(time.perf_counter()-complete_started)*1000,
+                         model=execution.route.selected_model,
+                         provider=execution.route.selected_provider,
+                         b14_request_id=execution.route.request_id)
         route_mode = execution.route.route_mode or "manual"
         return {
             "answer": execution.answer,

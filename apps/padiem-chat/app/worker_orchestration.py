@@ -114,10 +114,17 @@ class CloudflareEngineServiceTransport:
                 body_text = body.decode("utf-8")
             except UnicodeDecodeError as exc:
                 raise ValueError("Engine request body must be UTF-8 JSON") from exc
+        # Correlation only: preserve existing caller authentication headers.
+        # The ID has no authority or authorization role.
+        from app.request_telemetry import current_request_id, is_safe_request_id
+        forward_headers = dict(headers)
+        trace = current_request_id()
+        if is_safe_request_id(trace):
+            forward_headers["X-Request-Id"] = trace
         request = self._request_factory(
             url,
             method=normalized_method,
-            headers=dict(headers),
+            headers=forward_headers,
             body=body_text,
         )
         response = await self._binding.fetch(request.js_object)

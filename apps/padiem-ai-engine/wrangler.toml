@@ -8,6 +8,12 @@ compatibility_date = "2026-08-27"
 compatibility_flags = ["python_workers"]
 workers_dev = false
 
+# Grafana Cloud Japan content-blind telemetry; no token values in source.
+[[secrets_store_secrets]]
+binding = "PADIEM_GRAFANA_OTLP_TOKEN"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GRAFANA_OTLP_TOKEN"
+
 [[services]]
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
@@ -115,3 +121,4 @@ workers_dev = false
 [env.preview.vars]
 ENGINE_DEPLOY_ENV = "preview"
 ENGINE_AGENT_PREVIEW_ENABLED = "ENABLE_PREVIEW_AGENT_PILOT"
+

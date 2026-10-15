@@ -82,6 +82,13 @@ def _apply_security_headers(response: Any) -> Any:
 # ---------------------------------------------------------------------------
 class Default(WorkerEntrypoint):
     async def fetch(self, request: Any) -> Any:
+        path = urlparse(request.url).path
+        observed = path.startswith(("/api/pilot/", "/api/b66/"))
+        if observed:
+            from app.stack_telemetry import start_trace, finish_trace
+            route = "/api/pilot/*" if path.startswith("/api/pilot/") else "/api/b66/*"
+            state, trace_token = start_trace(request, "korean-ai-platform", route)
+        response = None
         import asgi
 
         # The public Worker root is a product entrypoint, not the legacy demo
@@ -114,9 +121,12 @@ class Default(WorkerEntrypoint):
         token = bind_request_env(env_overrides)
         try:
             native_resp = await asgi.fetch(app, request.js_object, self.env)
-            return _apply_security_headers(native_resp)
+            response = _apply_security_headers(native_resp)
+            return response
         finally:
             reset_request_env(token)
+            if observed:
+                finish_trace(state, trace_token, response, getattr(self, "ctx", None), self.env)
 
 
 # ---------------------------------------------------------------------------

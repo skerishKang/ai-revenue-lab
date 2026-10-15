@@ -808,7 +808,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         }
     ] + fallback_candidates
 
-    async def _invoke_upstream(current: dict[str, str]) -> dict[str, Any]:
+    async def _invoke_upstream_raw(current: dict[str, str]) -> dict[str, Any]:
         if decision.credential_source == "platform_secret":
             return await plat.call_platform_chat_completions(
                 model_id=current["model_id"],
@@ -824,6 +824,28 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         raise InvalidRequest(
             "non-platform route is not routable (OpenRouter retired, #1933 S2)"
         )
+
+    async def _invoke_upstream(current: dict[str, str]) -> dict[str, Any]:
+        # Bounded physical call evidence, not a model/provider identity log.
+        from app.stack_telemetry import record_stage
+        started = time.perf_counter()
+        try:
+            result = await _invoke_upstream_raw(current)
+        except Exception as exc:
+            code = "timeout" if isinstance(exc, TimeoutError) else "provider_error"
+            # Use only fixed buckets. Never emit provider exception messages.
+            try:
+                safe = getattr(exc, "code", "")
+                if safe in ("upstream_timeout", "gateway_timeout"):
+                    code = "timeout"
+                elif safe in ("upstream_rate_limited", "rate_limited"):
+                    code = "rate_limit"
+            except Exception:
+                pass
+            record_stage("provider.call", False, (time.perf_counter()-started)*1000, code)
+            raise
+        record_stage("provider.call", True, (time.perf_counter()-started)*1000)
+        return result
 
     budget_exhausted = False
     for idx in range(min(max_attempts, len(candidates))):

@@ -129,3 +129,9 @@ secret_name = "PADIEM_B14_CREDENTIAL_14"
 type = "Text"
 globs = ["app/pilot/b14_models.json"]
 fallthrough = true
+
+# Grafana Cloud Japan content-blind telemetry; no token values in source.
+[[secrets_store_secrets]]
+binding = "PADIEM_GRAFANA_OTLP_TOKEN"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GRAFANA_OTLP_TOKEN"
