@@ -33,9 +33,6 @@ _B66_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 _RECONNECT_REASONS = frozenset(
     {"revoked", "expired", "scope_changed", "invalid_grant", "manual_reconnect"}
 )
-_SPOOFED_AUTHORITY_KEYS = frozenset(
-    {"access_token", "refresh_token", "token", "google_sub", "google_email", "owner_id", "user_id"}
-)
 _SECRET_FIELD_SUBSTRINGS = ("token", "secret", "bearer", "credential", "private")
 
 # Step 2-A deliberately provides a memory seam only. A verified persistent,
@@ -201,15 +198,15 @@ class B66DriveDestinationAuthority:
     """Smallest server-side state transition seam for an independent Drive destination."""
 
     def __init__(self, store: B66DriveConnectionStore | None = None) -> None:
-        if store is None:
-            store = B66DriveInMemoryConnectionStore()
-        self._store = store
+        # Default runtime is explicitly unconfigured; only tests may inject
+        # a non-durable memory store. No successful default connection claim.
+        self._store = store if store is not None else B66DriveFreezeDurableGrantBackend()
 
     @property
     def durable_backend_proven(self) -> bool:
-        return isinstance(self._store, object) and not isinstance(
-            self._store, B66DriveFreezeDurableGrantBackend
-        )
+        # Neither this step's in-memory seam nor an arbitrary injected store
+        # establishes verified encrypted, renewable OAuth grant durability.
+        return False
 
     def load_connection(self, owner_b66_user_id: str) -> B66DriveConnectionRecord | None:
         owner = trusted_owner(owner_b66_user_id)
@@ -276,16 +273,6 @@ class B66DriveDestinationAuthority:
             }
         return record.public_status()
 
-    def cross_owner_sensitive_outputs_are_isolated(
-        self, owner_a: str, owner_b: str
-    ) -> bool:
-        status_a = self.public_status(trusted_owner(owner_a))
-        status_b = self.public_status(trusted_owner(owner_b))
-        if status_a.get("destination_sub") is None or status_b.get("destination_sub") is None:
-            return True
-        return status_a.get("destination_sub") != status_b.get("destination_sub")
-
-
 def trusted_owner(value: Any) -> str:
     if not isinstance(value, str) or not value.strip() or _B66_USER_ID_RE.fullmatch(value) is None:
         raise ValueError("untrusted_b66_owner_id")
@@ -300,16 +287,17 @@ def connection_record_from_trusted_result(result: dict[str, Any]) -> B66DriveCon
     """
     if not isinstance(result, Mapping):
         raise ValueError("invalid_trusted_result")
-    for forbidden in _SPOOFED_AUTHORITY_KEYS:
-        if forbidden in result:
-            raise ValueError("spoofed_trusted_result")
+    allowed_result = {"owner_b66_user_id", "drive_account", "google_grant_reference", "connected_at"}
+    if set(result) - allowed_result:
+        raise ValueError("spoofed_trusted_result")
     owner = trusted_owner(result.get("owner_b66_user_id"))
     destination = result.get("drive_account")
     if not isinstance(destination, Mapping):
         raise ValueError("invalid_drive_account")
-    for forbidden in _SPOOFED_AUTHORITY_KEYS:
-        if forbidden in destination:
-            raise ValueError("spoofed_trusted_result")
+    # A verified Google sub is a necessary destination identity field, NOT
+    # a browser authority. Reject all unexpected/token-like nested fields.
+    if set(destination) - {"google_sub", "email"}:
+        raise ValueError("spoofed_trusted_result")
     account = B66DriveConnectedAccount(
         google_sub=_required_str(destination.get("google_sub")),
         email=_optional_str(destination.get("email")),
