@@ -280,11 +280,11 @@
   }
 
   function renderAssistantText(content, text, markdown) {
-    // Keep the stored model answer unchanged; localize only the legacy B66 self-introduction.
-    const shown = String(text).replace(
-      /안녕하세요!\s*파디엠이 제공하는 AI 어시스턴트,?\s*PADIEM B66입니다\.?/gu,
-      "안녕하세요! " + companyBrand() + " 어시스턴트입니다."
-    );
+    // The account-owned presentation adapter localizes legacy product greetings
+    // without changing the persisted provider response.
+    const adapter = window.B66AssistantBranding;
+    const shown = adapter && typeof adapter.renderIntro === "function"
+      ? adapter.renderIntro(text, companyBrand()) : String(text);
     if (markdown && SafeMarkdown && typeof SafeMarkdown.renderAssistantMarkdown === "function") {
       const rendered = SafeMarkdown.renderAssistantMarkdown(content, shown);
       if (rendered) return;

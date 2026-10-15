@@ -45,6 +45,14 @@
     methods: { google: false, password: false }
   };
 
+  // Product-specific visual branding is an account UI concern, never QuoteCore logic.
+  window.B66AssistantBranding = Object.freeze({
+    renderIntro: (text, companyName) => String(text).replace(
+      /안녕하세요!\s*파디엠이 제공하는 AI 어시스턴트,?\s*PADIEM B66입니다\.?/gu,
+      "안녕하세요! " + String(companyName || "시지아이") + " 어시스턴트입니다."
+    )
+  });
+
   const byId = (id) => document.getElementById(id);
 
   function safeMessage(data, fallback) {
