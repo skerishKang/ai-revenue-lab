@@ -25,6 +25,14 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .b66_saved_skill_candidate_review import (
+    B66CandidateReviewError,
+    B66SavedQuoteSkillCandidateReviewer,
+)
+from .b66_quote_skill_provisioning import (
+    TrustedB66ProvisioningGrant,
+    ResolvedB66ProvisioningTarget,
+)
 from .b66_saved_skill_candidate_store import (
     CANDIDATE_STATUSES,
     MAX_CANDIDATES,
@@ -283,3 +291,137 @@ async def b66_saved_skill_candidate_operator_detail(request: Request) -> JSONRes
     if candidate is None:
         return _error(404, "candidate_not_found", "승인 요청을 찾을 수 없습니다.")
     return JSONResponse({"ok": True, "candidate": candidate}, headers=_NO_STORE)
+
+
+def _saved_skill_store(request: Request) -> Any | None:
+    return getattr(request.app.state, "b66_saved_quote_skill_store", None)
+
+
+def _reviewer(request: Request) -> Any | None:
+    reviewer = getattr(request.app.state, "b66_quote_skill_candidate_reviewer", None)
+    if reviewer is not None:
+        return reviewer
+    candidate_store = _store(request)
+    skill_store = _saved_skill_store(request)
+    if candidate_store is None or skill_store is None:
+        return None
+    try:
+        return B66SavedQuoteSkillCandidateReviewer(candidate_store, skill_store)
+    except Exception:
+        return None
+
+
+async def _trusted_grant(request: Request) -> TrustedB66ProvisioningGrant | None:
+    resolver = getattr(request.app.state, "b66_operator_grant_resolver", None)
+    if not callable(resolver):
+        resolver = getattr(request.app.state, "b66_provisioning_grant_resolver", None)
+    if not callable(resolver):
+        return None
+    try:
+        value = resolver(request)
+        if inspect.isawaitable(value):
+            value = await value
+    except Exception:
+        return None
+    return value if isinstance(value, TrustedB66ProvisioningGrant) else None
+
+
+async def _resolved_target(request: Request, candidate_id: str) -> ResolvedB66ProvisioningTarget | None:
+    resolver = getattr(request.app.state, "b66_operator_target_resolver", None)
+    if not callable(resolver):
+        resolver = getattr(request.app.state, "b66_provisioning_target_resolver", None)
+    if not callable(resolver):
+        return None
+    try:
+        value = resolver(request, candidate_id)
+        if inspect.isawaitable(value):
+            value = await value
+    except Exception:
+        return None
+    return value if isinstance(value, ResolvedB66ProvisioningTarget) else None
+
+
+async def b66_saved_skill_candidate_operator_decision(request: Request) -> JSONResponse:
+    if not auth_ready(request):
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    try:
+        uid = current_user_id(request)
+    except Exception:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    if not uid:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+
+    admin_store = getattr(request.app.state, "b66_member_admin_store", None)
+    admin_fn = getattr(admin_store, "is_google_admin", None) if admin_store is not None else None
+    if not callable(admin_fn):
+        return _error(503, "operator_unavailable", "운영자 권한을 확인할 수 없습니다.")
+    try:
+        admin_result = admin_fn(uid)
+        if inspect.isawaitable(admin_result):
+            admin_result = await admin_result
+        if admin_result is not True:
+            return _error(403, "operator_forbidden", "운영자 권한이 없습니다.")
+    except Exception:
+        return _error(503, "operator_unavailable", "운영자 권한을 확인할 수 없습니다.")
+
+    try:
+        body = await read_bounded_request_body(request, max_bytes=MAX_BODY_BYTES)
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
+    try:
+        data = json.loads(body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
+        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
+    if not isinstance(data, dict):
+        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
+    if set(data) - {"action", "rejection_reason"}:
+        return _error(400, "unsupported_field", "지원되지 않는 요청 필드가 있습니다.")
+    action = data.get("action")
+    if action not in {"approve", "reject"}:
+        return _error(400, "invalid_decision", "승인 action 형식이 올바르지 않습니다.")
+    rejection_raw = data.get("rejection_reason")
+    rejection_reason: str | None = None
+    if rejection_raw is not None:
+        if not isinstance(rejection_raw, str):
+            return _error(400, "invalid_rejection_reason", "거부 사유 형식이 올바르지 않습니다.")
+        rejection_reason = rejection_raw.strip()
+        if len(rejection_reason) > 200:
+            return _error(400, "invalid_rejection_reason", "거부 사유가 너무 깁니다.")
+
+    candidate_id = request.path_params.get("candidate_id", "")
+    grant = await _trusted_grant(request)
+    if not isinstance(grant, TrustedB66ProvisioningGrant):
+        return _error(503, "operator_grant_unavailable", "서버 신뢰 grant가 제공되지 않았습니다.")
+    target = await _resolved_target(request, candidate_id)
+    if not isinstance(target, ResolvedB66ProvisioningTarget):
+        return _error(503, "operator_target_unavailable", "서버 대상 계정을 확인할 수 없습니다.")
+
+    reviewer = _reviewer(request)
+    if reviewer is None:
+        return _error(503, "operator_reviewer_unavailable", "운영자 검토기를 사용할 수 없습니다.")
+
+    from datetime import datetime, timezone
+
+    try:
+        receipt = await reviewer.review(
+            grant=grant,
+            target=target,
+            candidate_id=candidate_id,
+            action=action,
+            now=datetime.now(timezone.utc),
+            rejection_reason=rejection_reason,
+        )
+    except B66CandidateReviewError:
+        return _error(409, "candidate_decision_conflict", "승인 요청 상태를 처리할 수 없습니다.")
+    except Exception:
+        return _error(503, "candidate_review_failed", "승인 요청을 처리하지 못했습니다.")
+
+    return JSONResponse(
+        {
+            "ok": True,
+            "candidate_id": candidate_id,
+            "decision": action,
+            "approval": receipt.safe_dict() if hasattr(receipt, "safe_dict") else {"action": action},
+        },
+        headers=_NO_STORE,
+    )

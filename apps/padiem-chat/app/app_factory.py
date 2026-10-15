@@ -74,6 +74,7 @@ from .b66_saved_quote_skill_store import (
 from .b66_saved_skill_candidate_routes import (
     b66_saved_skill_candidate_detail,
     b66_saved_skill_candidate_list,
+    b66_saved_skill_candidate_operator_decision,
     b66_saved_skill_candidate_operator_detail,
     b66_saved_skill_candidate_operator_list,
     b66_saved_skill_candidate_submit,
@@ -495,6 +496,11 @@ def create_app(
             "/api/b66/admin/saved-skill-candidates/{candidate_id}",
             b66_saved_skill_candidate_operator_detail,
             methods=["GET"],
+        ),
+        Route(
+            "/api/b66/admin/saved-skill-candidates/{candidate_id}/decision",
+            b66_saved_skill_candidate_operator_decision,
+            methods=["POST"],
         ),
         Route(
             "/api/b66/assets/{asset_id}",
