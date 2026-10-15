@@ -438,3 +438,24 @@ async def test_same_request_concurrent_loads_share_inflight_read():
         assert binding.calls == 1
     finally:
         reset_request_env(token)
+
+def test_every_neutral_wrangler_secret_is_collected_by_worker():
+    """Keep declared Secrets Store handles accessible in the request scope."""
+    import ast
+    import tomllib
+
+    root = Path(__file__).resolve().parents[1]
+    tree = ast.parse((root / "worker.py").read_text(encoding="utf-8"))
+    assignment = next(
+        node for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "_ENV_KEYS" for target in node.targets)
+    )
+    collected = set(ast.literal_eval(assignment.value.args[0]))
+    wrangler = tomllib.loads((root / "wrangler.toml").read_text(encoding="utf-8"))
+    declared = {
+        entry["binding"] for entry in wrangler["secrets_store_secrets"]
+        if entry["binding"].startswith("PADIEM_B14_CREDENTIAL_")
+    }
+    assert len(declared) == 14
+    assert declared <= collected
