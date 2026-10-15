@@ -35,6 +35,19 @@ with sync_playwright() as p:
  writes=setup(ctx,"connected",{"ok":True,"available":True,"ownerScoped":True,"devices":[{"state":"CONNECTED","usable":True,"expired":False,"revoked":False}]})
  page=ctx.new_page()
  a=check(page,{"pc":"on","drive":"on","github":"unknown"})
+ assert page.locator("#clawPcCardStatus").inner_text().strip()=="\uC5F0\uACB0\uB418\uC5C8\uC2B5\uB2C8\uB2E4"
+ # The two PC labels form ONE control. OFF must not bubble into the
+ # card's native launch path, and cannot light red without a Broker pause.
+ page.evaluate("""() => {
+   window.__pcLaunches=0;
+   document.getElementById("clawComputerWorkspace").addEventListener("click",
+     e=>{window.__pcLaunches++;e.stopImmediatePropagation()}, {capture:true});
+ }""")
+ page.locator('[data-claw-connection="pc"] .claw-state-off').click()
+ assert page.evaluate("window.__pcLaunches")==0
+ assert page.locator('[data-claw-connection="pc"]').get_attribute("data-connection-state")=="on"
+ assert page.locator('[data-claw-connection="pc"]').get_attribute("data-pc-paused")=="false"
+ assert page.locator(".claw-home-card[data-claw-card='computer'] .claw-connection-label").is_hidden()
  # Drive ON is authorized but cannot be temporarily paused; never revoke
  # the existing OAuth grant from this status chip. Show management guidance.
  page.locator('[data-claw-connection="drive"]').click()
@@ -44,6 +57,15 @@ with sync_playwright() as p:
  page.close();ctx.close()
  ctx=b.new_context();writes=setup(ctx,"not_connected",{"ok":True,"available":True,"ownerScoped":True,"devices":[]})
  page=ctx.new_page(); c=check(page,{"pc":"off","drive":"off","github":"unknown"})
+ assert page.locator("#clawPcCardStatus").inner_text().strip()=="\uC5F0\uACB0\uD558\uC138\uC694"
+ page.evaluate("""() => {
+   window.__pcLaunches=0;
+   document.getElementById("clawComputerWorkspace").addEventListener("click",
+     e=>{window.__pcLaunches++;e.stopImmediatePropagation()}, {capture:true});
+ }""")
+ page.locator('[data-claw-connection="pc"] .claw-state-off').click()
+ assert page.evaluate("window.__pcLaunches")==0
+ assert page.locator('[data-claw-connection="pc"]').get_attribute("data-pc-paused")=="false"
  # Drive OFF enters the existing trusted OAuth quick-connect path instead
  # of showing the obsolete connectorsDialog (Connectors is now a view).
  page.evaluate("""() => {
@@ -64,4 +86,5 @@ with sync_playwright() as p:
  print("DRIVE_ON_GRANT_RETAINED_NO_SILENT_REVOKE=PASS")
  print("DRIVE_OFF_CANONICAL_OAUTH_QUICK_CONNECT=PASS")
  print("UNKNOWN_FAIL_CLOSED=PASS")
+ print("PC_OFF_NO_CARD_RELAUNCH_OR_FAKE_PAUSE=PASS")
  print("PRODUCTION_MUTATION=0")

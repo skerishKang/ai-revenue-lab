@@ -11,17 +11,32 @@ const message=(ko,en)=>english()?en:ko;
 const home=()=>shell.dataset.state==="claw"&&document.getElementById("clawWorkspace")?.dataset.view==="general";
 const signedIn=()=>owner.dataset.accountState==="signed_in";
 const chip=id=>document.querySelector('[data-claw-connection="'+id+'"]');
+// PC's headline is separate from its single two-position switch. Neither
+// installation nor user OFF is inferred from a missing GET/heartbeat.
+const pcCard=document.querySelector('[data-claw-card="computer"]');
+const pcStatus=document.getElementById("clawPcCardStatus");
+const pcTruth=(phase,ko,en)=>{
+ if(!pcCard||!pcStatus)return;
+ pcCard.dataset.pcPhase=phase;
+ pcStatus.textContent=message(ko,en);
+};
+
 function set(id,value){
  if(!["on","off","unknown"].includes(value))value="unknown";
  values.set(id,value);
  const element=chip(id);if(!element)return;
+ if(id==="pc"){
+  // The OFF light requires a separately verified user pause. Mere absence
+  // of a heartbeat or an unenrolled device is never a red OFF selection.
+  element.dataset.pcPaused="false";
+ }
  const display=value==="on"?"ON":value==="off"?"OFF":message("확인 불가","Unavailable");
  const label=element.querySelector(".claw-connection-label");
  if(label)label.textContent=display;else element.textContent=display;
  element.dataset.connectionState=value;
  element.setAttribute("aria-label",(id==="pc"?message("컴퓨터","Computer"):id==="drive"?"Google Drive":"GitHub")+" "+display);
 }
-const reset=()=>{ids.forEach(id=>set(id,"unknown"));const gh=chip("github");if(gh)delete gh.dataset.connectionLinked;};
+const reset=()=>{ids.forEach(id=>set(id,"unknown"));pcTruth("unknown","연결 확인 필요","Connection needs checking");const gh=chip("github");if(gh)delete gh.dataset.connectionLinked;};
 const feedback=(ko,en)=>{const el=document.getElementById("clawConnectionFeedback");if(!el)return;el.textContent=message(ko,en);el.hidden=false;};
 async function read(url){
  const r=await fetch(url,{method:"GET",credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});
@@ -36,11 +51,18 @@ async function refresh(){
  if(result[0].status==="fulfilled"){
   const d=result[0].value;
   if(d?.ok===true&&d.available===true&&d.ownerScoped===true&&Array.isArray(d.devices)&&d.devices.length<=25){
-   if(!d.devices.length)set("pc","off");
-   else{
+   if(!d.devices.length){
+    set("pc","off");
+    pcTruth("unregistered","연결하세요","Connect your computer");
+   }else{
     const records=d.devices.map(x=>x?.projection&&typeof x.projection==="object"?x.projection:x);
-    if(records.some(x=>x?.state==="CONNECTED"&&x.usable===true&&x.revoked!==true&&x.expired!==true))set("pc","on");
-    else if(records.every(x=>x&&["PAIRING","OFFLINE","REVOKED","ACTION_REQUIRED"].includes(x.state)))set("pc","off");
+    if(records.some(x=>x?.state==="CONNECTED"&&x.usable===true&&x.revoked!==true&&x.expired!==true)){
+     set("pc","on");
+     pcTruth("online","연결되었습니다","Connected");
+    }else if(records.every(x=>x&&["PAIRING","OFFLINE","REVOKED","ACTION_REQUIRED"].includes(x.state))){
+     set("pc","off");
+     pcTruth("offline","연결 확인 필요","Connection needs checking");
+    }
    }
   }
  }
@@ -104,7 +126,37 @@ async function setGithubUsage(enabled){
   pendingDisconnect.delete("github");if(button)button.disabled=false;
  }
 }
-ids.forEach(id=>chip(id)?.addEventListener("click",()=>{
+ids.forEach(id=>chip(id)?.addEventListener("click",event=>{
+ // One PC switch, two visible labels. Its activation MUST NOT bubble to
+ // the enclosing card and accidentally reconnect immediately after OFF.
+ if(id==="pc"){
+  event.preventDefault();
+  event.stopPropagation();
+  if(!home())return;
+  if(!signedIn()){
+   document.getElementById("loginButton")?.click();
+   return;
+  }
+  const target=event.target?.closest?.(".claw-state-off")?"off":"on";
+  const state=values.get("pc");
+  if(target==="off"){
+   if(state!=="on"){
+    feedback("현재 연결된 PC가 없습니다. OFF를 선택하지 않았습니다.",
+      "No active PC connection to pause; OFF was not selected.");
+   }else{
+    // Server/Broker still lack a reversible pause RPC. Never fabricate OFF
+    // or send a task after a client-only flag; expose exact missing capability.
+    feedback("PC 중지 기능이 준비되지 않아 기존 연결을 유지합니다.",
+      "PC pause is not yet available. Connection remains active.");
+   }
+   return;
+  }
+  if(state==="on")return;
+  pcTruth("connecting","연결 중...","Connecting...");
+  document.getElementById("clawComputerWorkspace")?.click();
+  return;
+ }
+
  if(!home())return;
  const state=values.get(id);
  if(state==="on"&&id==="drive"){

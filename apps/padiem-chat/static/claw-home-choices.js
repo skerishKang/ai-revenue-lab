@@ -27,8 +27,10 @@
     // intent. No URL/session storage, manual code, extra checkbox or retry.
     const pcChannelName = "padiem-claw-pc-connect-v1";
     const pcOfferRef = /^link\.[0-9a-f]{32}$/;
-    // Install/run may take up to 30 minutes in this tab; Broker offer TTL is a separate 90 seconds.
+    // First-time install may take 30m, but an individual Broker offer expires
+    // in 90s. A new owner click after that TTL may retry the real native launch.
     const pcIntentLifetimeMs = 30 * 60 * 1000;
+    const pcOfferRetryIntervalMs = 90 * 1000;
     let pcChannel = null;
     let pcIntent = null;
     let pcApprovalPending = false;
@@ -101,7 +103,11 @@
       }
       if (pcApprovalPending) return true;
       if (pcIntent && !pcIntent.used &&
-          Date.now() - pcIntent.at <= pcIntentLifetimeMs) return true;
+          Date.now() - pcIntent.at <= pcOfferRetryIntervalMs) {
+        pcNote("\uC5F0\uACB0 \uC911... \uC2E4\uD589 \uD655\uC778 \uD6C4 \uC790\uB3D9\uC73C\uB85C \uC5F0\uACB0\uD569\uB2C8\uB2E4.",
+               "Connecting. Once the program is running, connection proceeds automatically.");
+        return true;
+      }
       if (typeof window.BroadcastChannel !== "function") {
         pcNote("현재 브라우저에서 PC 연결 수신을 준비할 수 없습니다.",
                "This browser could not prepare the PC connection receiver.");
