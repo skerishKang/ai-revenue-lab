@@ -1,10 +1,12 @@
 """#4089: private B66-to-Control-Plane Drive compatibility boundary.
 
 A reviewed CP google-drive authorization currently has *drive.readonly* scope.
-B66's independent customer-selected storage destination needs *drive.file*.
-No public route, OAuth execution, writable credential, or owner-to-CP mapping
-exists here. Only the authorized server host may supply both the private CP
-selection and the separately verified B66 owner/CP actor-workspace link.
+B66's independent customer-selected storage destination needs its own reviewed
+Google grant; the old source precursor used *drive.file* and the final B66 host
+uses the separate full-Drive connector. No public route, OAuth execution,
+writable credential, or owner-to-CP mapping exists here. Only the authorized
+server host may supply both the private CP selection and the separately
+verified B66 owner/CP actor-workspace link.
 """
 
 from __future__ import annotations

@@ -226,7 +226,7 @@ from .github_oauth_routes import (github_start, github_callback, github_status,
 from .connector_ticket_routes import google_connector_ticket
 from .b66_drive_routes import (
     b66_drive_connect,
-    b66_drive_connect_callback,
+    b66_drive_connect_callback_return,
     b66_drive_disconnect,
     b66_drive_status,
 )
@@ -403,7 +403,7 @@ def create_app(
         Route("/api/connectors/google/drive/disconnect", disconnect_google_drive, methods=["POST"]),
         Route("/api/b66/drive/status", b66_drive_status, methods=["GET"]),
         Route("/api/b66/drive/connect", b66_drive_connect, methods=["POST"]),
-        Route("/api/b66/drive/connect/callback", b66_drive_connect_callback, methods=["POST"]),
+        Route("/api/b66/drive/connect/callback", b66_drive_connect_callback_return, methods=["GET"]),
         Route("/api/b66/drive/disconnect", b66_drive_disconnect, methods=["POST"]),
         Route("/api/connectors/github/start", github_start, methods=["GET"]),
         Route("/api/connectors/github/callback", github_callback, methods=["GET"]),

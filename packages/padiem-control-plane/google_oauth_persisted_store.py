@@ -7,7 +7,7 @@ from typing import Any
 from padiem_control_plane.contracts import ControlPlaneContractError
 
 from google_oauth_durable_store import (
-    B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+    B66_GOOGLE_DRIVE_CONNECTORS,
     MAX_CONNECT_TICKET_RESIDUAL_LIFETIME_SECONDS,
     CloudflareDurableGoogleOAuthStore as _RowsWrittenGoogleOAuthStore,
     DurableGoogleOAuthAuthorizationState,
@@ -256,7 +256,7 @@ class CloudflareDurableGoogleOAuthStore(_RowsWrittenGoogleOAuthStore):
     ) -> None:
         if not isinstance(record, DurableGoogleOAuthCredential):
             raise ValueError("record must be DurableGoogleOAuthCredential")
-        if record.connector_id == B66_GOOGLE_DRIVE_FILE_CONNECTOR and record.provider_subject is None:
+        if record.connector_id in B66_GOOGLE_DRIVE_CONNECTORS and record.provider_subject is None:
             raise ControlPlaneContractError(
                 "invalid_google_oauth_durable_record",
                 "B66 Google Drive file binding requires a verified destination subject",

@@ -34,7 +34,9 @@ GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
 GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 GOOGLE_CALENDAR_READONLY_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"
+GOOGLE_DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive"
 B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
+B66_GOOGLE_DRIVE_FULL_CONNECTOR = "b66-google-drive-full"
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
 _REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
@@ -42,6 +44,7 @@ _REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
     B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,),
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,),
 }
 _REQUIRED_WIRE_KEYS = frozenset(
     {

@@ -27,6 +27,7 @@ _REVIEWED_CONNECTORS = frozenset({
     "google-drive",
     "google-calendar",
     "b66-google-drive-file",
+    "b66-google-drive-full",
 })
 
 

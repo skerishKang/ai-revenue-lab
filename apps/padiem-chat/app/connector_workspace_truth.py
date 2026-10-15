@@ -48,6 +48,13 @@ from .control_plane_identity import IdentityBridgeError
 _DEFAULT_WORKSPACE_TRUTH_CONNECTORS = frozenset({"gmail", "google-drive"})
 _CALENDAR_WORKSPACE_TRUTH_CONNECTORS = frozenset({"google-calendar"})
 _B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
+_B66_GOOGLE_DRIVE_FULL_CONNECTOR = "b66-google-drive-full"
+_B66_GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
+_B66_GOOGLE_DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive"
+_B66_DRIVE_SCOPES = {
+    _B66_GOOGLE_DRIVE_FILE_CONNECTOR: _B66_GOOGLE_DRIVE_FILE_SCOPE,
+    _B66_GOOGLE_DRIVE_FULL_CONNECTOR: _B66_GOOGLE_DRIVE_FULL_SCOPE,
+}
 _BEGIN_CONNECT_KEYS = frozenset({"connect_ticket"})
 _AUTHORIZATION_KEYS = frozenset({"authorization_url", "connector_id", "expires_at"})
 _B66_SELECTION_ABSENT_KEYS = frozenset({"status", "connector_id", "workspace_ref"})
@@ -332,9 +339,16 @@ class CloudflareGoogleOAuthWorkspaceTruth:
             raise _invalid()
         return result["revoked"]
 
-    async def begin_b66_drive_connect(self, *, connect_ticket: str) -> dict[str, Any]:
-        """Start only the server-issued B66 Drive-file ticket over private RPC."""
+    async def begin_b66_drive_connect(
+        self,
+        *,
+        connect_ticket: str,
+        connector_id: str = _B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+    ) -> dict[str, Any]:
+        """Start a server-issued B66 Drive-file ticket over private RPC."""
 
+        if connector_id not in _B66_DRIVE_SCOPES:
+            raise _invalid()
         if not isinstance(connect_ticket, str) or not connect_ticket or len(connect_ticket) > 24_576:
             raise _invalid()
         method = getattr(self._binding, "begin_connect", None)
@@ -357,7 +371,7 @@ class CloudflareGoogleOAuthWorkspaceTruth:
             raise _invalid()
         if any(not isinstance(authorization.get(key), str) or not authorization.get(key) for key in _AUTHORIZATION_KEYS):
             raise _invalid()
-        if authorization["connector_id"] != _B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+        if authorization["connector_id"] != connector_id:
             raise _invalid()
         return {
             "authorization_url": authorization["authorization_url"],
@@ -365,15 +379,26 @@ class CloudflareGoogleOAuthWorkspaceTruth:
             "expires_at": authorization["expires_at"],
         }
 
+    async def begin_b66_drive_full_connect(self, *, connect_ticket: str) -> dict[str, Any]:
+        """Start a server-issued B66 full-Drive ticket over private RPC."""
+
+        return await self.begin_b66_drive_connect(
+            connect_ticket=connect_ticket,
+            connector_id=_B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        )
+
     async def complete_b66_drive_callback(
         self,
         *,
         state_ref: str,
         authorization_code: str | None,
         provider_error: str | None,
+        connector_id: str = _B66_GOOGLE_DRIVE_FILE_CONNECTOR,
     ) -> dict[str, Any]:
-        """Complete one B66 Drive-file callback over private CP RPC."""
+        """Complete one B66 Drive callback over private CP RPC."""
 
+        if connector_id not in _B66_DRIVE_SCOPES:
+            raise _invalid()
         if not isinstance(state_ref, str) or not state_ref:
             raise _invalid()
         method = getattr(self._binding, "complete_callback", None)
@@ -400,9 +425,9 @@ class CloudflareGoogleOAuthWorkspaceTruth:
         connection = _as_dict(result.get("connection"))
         if connection is None or set(connection) != _B66_CONNECTION_KEYS:
             raise _invalid()
-        if connection.get("connector_id") != _B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+        if connection.get("connector_id") != connector_id:
             raise _invalid()
-        if connection.get("scopes") != ["https://www.googleapis.com/auth/drive.file"]:
+        if connection.get("scopes") != [_B66_DRIVE_SCOPES[connector_id]]:
             raise _invalid()
         if connection.get("refresh_token_persisted_sealed") is not True:
             raise _invalid()
@@ -416,12 +441,36 @@ class CloudflareGoogleOAuthWorkspaceTruth:
             raise _invalid()
         return dict(connection)
 
-    async def select_b66_drive_binding(self, *, workspace_ref: str) -> dict[str, Any]:
-        """Read the trusted workspace's B66 Drive-file binding selection."""
+    async def complete_b66_drive_full_callback(
+        self,
+        *,
+        state_ref: str,
+        authorization_code: str | None,
+        provider_error: str | None,
+    ) -> dict[str, Any]:
+        """Complete one B66 full-Drive callback over private CP RPC."""
 
+        return await self.complete_b66_drive_callback(
+            state_ref=state_ref,
+            authorization_code=authorization_code,
+            provider_error=provider_error,
+            connector_id=_B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        )
+
+    async def select_b66_drive_binding(
+        self,
+        *,
+        workspace_ref: str,
+        connector_id: str = _B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+        binding_method: str = "select_b66_drive_binding",
+    ) -> dict[str, Any]:
+        """Read a trusted workspace's B66 Drive binding selection."""
+
+        if connector_id not in _B66_DRIVE_SCOPES:
+            raise _invalid()
         if not isinstance(workspace_ref, str) or not workspace_ref:
             raise _invalid()
-        method = getattr(self._binding, "select_b66_drive_binding", None)
+        method = getattr(self._binding, binding_method, None)
         if not callable(method):
             raise _unavailable()
         try:
@@ -442,15 +491,19 @@ class CloudflareGoogleOAuthWorkspaceTruth:
         keys = set(selection)
         status = selection.get("status")
         if keys == _B66_SELECTION_ABSENT_KEYS:
-            if status != "not_connected" or selection.get("connector_id") != _B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+            if status != "not_connected" or selection.get("connector_id") != connector_id:
+                raise _invalid()
+            if selection.get("workspace_ref") != workspace_ref:
                 raise _invalid()
         elif keys == _B66_SELECTION_RESOLVED_KEYS:
-            if status != "resolved" or selection.get("connector_id") != _B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+            if status != "resolved" or selection.get("connector_id") != connector_id:
                 raise _invalid()
             if any(
                 not isinstance(selection.get(key), str) or not selection.get(key)
                 for key in ("workspace_ref", "binding_ref", "actor_ref", "provider_subject")
             ):
+                raise _invalid()
+            if selection.get("workspace_ref") != workspace_ref:
                 raise _invalid()
             provider_email = selection.get("provider_email")
             if provider_email is not None and (
@@ -461,12 +514,26 @@ class CloudflareGoogleOAuthWorkspaceTruth:
             raise _invalid()
         return selection
 
-    async def disconnect_b66_drive(self, *, workspace_ref: str) -> bool:
+    async def select_b66_drive_full_binding(self, *, workspace_ref: str) -> dict[str, Any]:
+        """Read a trusted workspace's B66 full-Drive binding selection."""
+
+        return await self.select_b66_drive_binding(
+            workspace_ref=workspace_ref,
+            connector_id=_B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+            binding_method="select_b66_drive_full_binding",
+        )
+
+    async def disconnect_b66_drive(
+        self,
+        *,
+        workspace_ref: str,
+        binding_method: str = "disconnect_b66_drive",
+    ) -> bool:
         """Revoke only the trusted workspace's B66 Drive-file credential."""
 
         if not isinstance(workspace_ref, str) or not workspace_ref:
             raise _invalid()
-        method = getattr(self._binding, "disconnect_b66_drive", None)
+        method = getattr(self._binding, binding_method, None)
         if not callable(method):
             raise _unavailable()
         try:
@@ -480,6 +547,14 @@ class CloudflareGoogleOAuthWorkspaceTruth:
         if set(result) != {"ok", "revoked"} or type(result["revoked"]) is not bool:
             raise _invalid()
         return result["revoked"]
+
+    async def disconnect_b66_drive_full(self, *, workspace_ref: str) -> bool:
+        """Revoke only the trusted workspace's B66 full-Drive credential."""
+
+        return await self.disconnect_b66_drive(
+            workspace_ref=workspace_ref,
+            binding_method="disconnect_b66_drive_full",
+        )
 
 
 def _no_workspace_result() -> dict[str, Any]:

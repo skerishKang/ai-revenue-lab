@@ -43,6 +43,7 @@ _WORKSPACE_DRIVE_BINDING_KEYS = frozenset({"workspace_ref"})
 _WORKSPACE_DRIVE_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 WORKSPACE_DRIVE_CONNECTOR_ID = "google-drive"
 B66_GOOGLE_DRIVE_FILE_CONNECTOR_ID = "b66-google-drive-file"
+B66_GOOGLE_DRIVE_FULL_CONNECTOR_ID = "b66-google-drive-full"
 _WORKSPACE_B66_DRIVE_BINDING_KEYS = frozenset({"workspace_ref"})
 _WORKSPACE_B66_DRIVE_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 
@@ -323,6 +324,52 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def select_b66_drive_full_binding(self, payload: dict) -> dict:
+        """Private B66 full-Drive binding selection for one trusted workspace."""
+
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_B66_DRIVE_BINDING_KEYS,
+                "B66 Drive full binding-selection RPC",
+            )
+            selection = self._store.select_active_b66_google_drive_full_binding(
+                workspace_ref=payload["workspace_ref"],
+                now=datetime.now(timezone.utc),
+            )
+            return {"ok": True, "selection": selection.to_private_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
+    async def disconnect_b66_drive_full(self, payload: dict) -> dict:
+        """Revoke at most one selected workspace B66 full-Drive credential."""
+
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_B66_DRIVE_DISCONNECT_KEYS,
+                "B66 Drive full disconnect RPC",
+            )
+            now = datetime.now(timezone.utc)
+            selection = self._store.select_active_b66_google_drive_full_binding(
+                workspace_ref=payload["workspace_ref"],
+                now=now,
+            )
+            if selection.status.value == "not_connected":
+                return {"ok": True, "revoked": False}
+            if selection.status.value != "resolved" or not selection.binding_ref:
+                raise ControlPlaneContractError(
+                    "invalid_b66_drive_disconnect_selection",
+                    "No valid B66 Drive credential",
+                )
+            self._store.revoke_credential(
+                binding_ref=selection.binding_ref,
+                revoked_at=now,
+            )
+            return {"ok": True, "revoked": True}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -372,6 +419,12 @@ class Default(WorkerEntrypoint):
     async def disconnect_b66_drive(self, payload: dict) -> dict:
         return await self._stub().disconnect_b66_drive(payload)
 
+    async def select_b66_drive_full_binding(self, payload: dict) -> dict:
+        return await self._stub().select_b66_drive_full_binding(payload)
+
+    async def disconnect_b66_drive_full(self, payload: dict) -> dict:
+        return await self._stub().disconnect_b66_drive_full(payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -392,7 +445,9 @@ ACCESS_TOKEN_PRIVATE_LEASE_RPC = True
 REFRESH_TOKEN_RAW_RPC_RESPONSE = False
 LOCAL_AGENT_INGRESS_CHANGED = False
 B66_GOOGLE_DRIVE_FILE_SCOPE_REVIEWED = True
+B66_GOOGLE_DRIVE_FULL_SCOPE_REVIEWED = True
 B66_GOOGLE_DRIVE_FILE_CONNECTOR_REVIEWED = True
+B66_GOOGLE_DRIVE_FULL_CONNECTOR_REVIEWED = True
 B66_DRIVE_FILE_VERIFIED_DESTINATION_REQUIRED = True
 SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False
 PRODUCTION_ROUTE_CONFIGURED = False

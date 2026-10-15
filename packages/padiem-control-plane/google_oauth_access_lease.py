@@ -11,9 +11,11 @@ from padiem_control_plane.contracts import ControlPlaneContractError
 
 from google_oauth_durable_store import (
     B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR,
     GMAIL_READONLY_SCOPE,
     GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_FILE_SCOPE,
+    GOOGLE_DRIVE_FULL_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     CloudflareDurableGoogleOAuthStore,
 )
@@ -40,6 +42,9 @@ _REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
     # #4089 B66 Drive FILE is a separate reviewed B66 connector only.
     B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,),
+    # #4089/#4871: B66 full-Drive connector is reviewed separately. Existing
+    # drive.file grants are not silently interpreted as the broader grant.
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,),
 }
 
 
@@ -313,6 +318,7 @@ class GoogleOAuthAccessLeaseRuntime:
             "private_rpc_only": True,
             "shared_google_drive_write_scope": False,
             "b66_google_drive_file_scope": True,
+            "b66_google_drive_full_scope": True,
             "google_write_scope": True,
             "refresh_port": refresh_safe() if callable(refresh_safe) else {"test_port": True},
         }
@@ -323,4 +329,5 @@ ACCESS_TOKEN_PERSISTED = False
 GOOGLE_WRITE_SCOPE = True
 SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False
 B66_GOOGLE_DRIVE_FILE_SCOPE = True
+B66_GOOGLE_DRIVE_FULL_SCOPE = True
 PRIVATE_ACCESS_LEASE_SOURCE_READY = True

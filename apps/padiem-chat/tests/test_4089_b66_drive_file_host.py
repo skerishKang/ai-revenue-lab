@@ -1,4 +1,4 @@
-"""B66 #4089 host wiring: signed owner, canonical context and private OAuth RPCs."""
+"""B66 #4089 full-Drive host wiring: signed owner, CP context, private OAuth."""
 
 from __future__ import annotations
 
@@ -24,17 +24,20 @@ from test_google_connector_ticket_bridge import (
 
 
 OWNER = "usr_" + "a" * 32
-CONNECTOR_ID = "b66-google-drive-file"
+OTHER = "usr_" + "b" * 32
+FILE_CONNECTOR_ID = "b66-google-drive-file"
+FULL_CONNECTOR_ID = "b66-google-drive-full"
+FULL_SCOPE = "https://www.googleapis.com/auth/drive"
+FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 
 
 class FakeControlPlaneBinding:
     def __init__(self) -> None:
         self.ticket_calls: list[dict] = []
+        self.issued_ticket = "private-b66-connect-ticket"
 
     async def resolve_auth_session(self, payload):
-        from datetime import datetime, timedelta, timezone
-
-        from padiem_control_plane import AuthSessionSnapshot, AuthSessionState, CanonicalSubjectRef, SubjectType
+        from datetime import datetime, timezone
 
         now = datetime.now(timezone.utc).replace(microsecond=0)
         return {
@@ -67,26 +70,26 @@ class FakeControlPlaneBinding:
 
     async def issue_google_connect_ticket(self, payload):
         self.ticket_calls.append(dict(payload))
-        if payload["connector_id"] != CONNECTOR_ID:
+        if payload["connector_id"] != FULL_CONNECTOR_ID:
             return {"ok": False, "error": {"code": "connector_not_reviewed", "message": "rejected"}}
         return {
             "ok": True,
             "ticket": {
-                "connect_ticket": "private-b66-connect-ticket",
-                "connector_id": CONNECTOR_ID,
+                "connect_ticket": self.issued_ticket,
+                "connector_id": FULL_CONNECTOR_ID,
                 "expires_at": (NOW + timedelta(minutes=3)).isoformat(),
             },
         }
 
 
-def connection_receipt(*, provider_subject="google-sub-12345678", provider_email="owner@drive.test"):
+def connection_receipt(*, scope: str = FULL_SCOPE, connector_id: str = FULL_CONNECTOR_ID):
     return {
         "binding_ref": "binding_a",
-        "connector_id": CONNECTOR_ID,
+        "connector_id": connector_id,
         "actor_ref": "actor_a",
         "account_ref": "account_a",
         "workspace_ref": "workspace_a",
-        "scopes": ["https://www.googleapis.com/auth/drive.file"],
+        "scopes": [scope],
         "connected_at": NOW.isoformat(),
         "expires_at": None,
         "refresh_token_persisted_sealed": True,
@@ -95,17 +98,18 @@ def connection_receipt(*, provider_subject="google-sub-12345678", provider_email
         "raw_access_token": False,
         "raw_refresh_token": False,
         "raw_client_secret": False,
-        "verified_destination_subject": provider_subject,
-        "verified_destination_account": provider_email or provider_subject,
+        "verified_destination_subject": "google-sub-12345678",
+        "verified_destination_account": "owner@drive.test",
     }
 
 
 class FakeGoogleOAuthBinding:
     def __init__(self) -> None:
         self.begin_calls: list[dict] = []
-        self.callback_calls: list[dict] = []
+        self.complete_calls: list[dict] = []
         self.revoked: list[dict] = []
-        self.status = "resolved"
+        self.full_status = "resolved"
+        self.file_status = "not_connected"
 
     async def begin_connect(self, payload):
         self.begin_calls.append(dict(payload))
@@ -113,25 +117,25 @@ class FakeGoogleOAuthBinding:
             "ok": True,
             "authorization": {
                 "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?state=state-a",
-                "connector_id": CONNECTOR_ID,
+                "connector_id": FULL_CONNECTOR_ID,
                 "expires_at": (NOW + timedelta(minutes=10)).isoformat(),
             },
         }
 
     async def complete_callback(self, payload):
-        self.callback_calls.append(dict(payload))
+        self.complete_calls.append(dict(payload))
         return {"ok": True, "connection": connection_receipt()}
 
-    async def select_b66_drive_binding(self, payload):
+    async def select_b66_drive_full_binding(self, payload):
         del payload
-        if self.status == "resolved":
+        if self.full_status == "resolved":
             return {
                 "ok": True,
                 "selection": {
                     "status": "resolved",
-                    "connector_id": CONNECTOR_ID,
+                    "connector_id": FULL_CONNECTOR_ID,
                     "workspace_ref": "workspace_a",
-                    "binding_ref": "binding_a",
+                    "binding_ref": "binding_full",
                     "actor_ref": "actor_a",
                     "provider_subject": "google-sub-12345678",
                     "provider_email": "owner@drive.test",
@@ -140,15 +144,48 @@ class FakeGoogleOAuthBinding:
         return {
             "ok": True,
             "selection": {
-                "status": self.status,
-                "connector_id": CONNECTOR_ID,
+                "status": self.full_status,
+                "connector_id": FULL_CONNECTOR_ID,
+                "workspace_ref": (
+                    "workspace_attacker"
+                    if self.full_status == "not_connected_wrong_workspace"
+                    else "workspace_a"
+                ),
+            },
+        }
+
+    async def select_b66_drive_binding(self, payload):
+        del payload
+        if self.file_status == "resolved":
+            return {
+                "ok": True,
+                "selection": {
+                    "status": "resolved",
+                    "connector_id": FILE_CONNECTOR_ID,
+                    "workspace_ref": "workspace_a",
+                    "binding_ref": "binding_file",
+                    "actor_ref": "actor_a",
+                    "provider_subject": "google-sub-12345678",
+                    "provider_email": "owner@drive.test",
+                },
+            }
+        return {
+            "ok": True,
+            "selection": {
+                "status": self.file_status,
+                "connector_id": FILE_CONNECTOR_ID,
                 "workspace_ref": "workspace_a",
             },
         }
 
+    async def disconnect_b66_drive_full(self, payload):
+        self.revoked.append({"full": dict(payload)})
+        self.full_status = "not_connected"
+        return {"ok": True, "revoked": True}
+
     async def disconnect_b66_drive(self, payload):
-        self.revoked.append(dict(payload))
-        self.status = "not_connected"
+        self.revoked.append({"file": dict(payload)})
+        self.file_status = "not_connected"
         return {"ok": True, "revoked": True}
 
 
@@ -170,7 +207,7 @@ def app_fixture():
 
 
 @pytest.mark.asyncio
-async def test_b66_drive_status_reads_only_signed_owners_verified_cp_binding():
+async def test_b66_status_reads_only_signed_owners_verified_full_drive_binding():
     app, history, _, google = app_fixture()
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
@@ -187,6 +224,7 @@ async def test_b66_drive_status_reads_only_signed_owners_verified_cp_binding():
     assert body["ok"] is True
     assert body["status"]["status"] == "connected"
     assert body["status"]["verified_store_owner"] == OWNER
+    assert body["status"]["scope"] == FULL_SCOPE
     assert body["status"]["destination_account"] == "owner@drive.test"
     assert body["status"]["destination_sub"] == "google-sub-12345678"
     assert body["status"]["durable_credential_backend"] == "CP_SEALED_DURABLE_OAUTH"
@@ -196,7 +234,7 @@ async def test_b66_drive_status_reads_only_signed_owners_verified_cp_binding():
 
 
 @pytest.mark.asyncio
-async def test_b66_drive_connect_uses_server_issued_b66_file_ticket_only():
+async def test_b66_connect_issues_full_drive_ticket_only():
     app, history, binding, google = app_fixture()
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
@@ -212,22 +250,78 @@ async def test_b66_drive_connect_uses_server_issued_b66_file_ticket_only():
     body = response.json()
     assert body["ok"] is True
     assert body["connect"]["status"] == "connect_started"
-    assert body["connect"]["authorization"]["authorization_url"].startswith("https://accounts.google.com/")
-    assert binding.ticket_calls == [{"session_id": "sess_test", "connector_id": CONNECTOR_ID}]
+    assert body["connect"]["authorization"]["connector_id"] == FULL_CONNECTOR_ID
+    assert binding.ticket_calls == [{"session_id": "sess_test", "connector_id": FULL_CONNECTOR_ID}]
     assert google.begin_calls == [{"connect_ticket": "private-b66-connect-ticket"}]
     assert "private-b66-connect-ticket" not in response.text
     assert "sess_test" not in response.text
 
 
 @pytest.mark.asyncio
-async def test_b66_drive_callback_completes_and_maps_verified_destination_privately():
+async def test_b66_old_file_only_grant_is_not_reported_as_full_connected():
     app, history, _, google = app_fixture()
+    google.full_status = "not_connected"
+    google.file_status = "resolved"
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
     ) as client:
         client.cookies.set(SESSION_COOKIE, cookie_for(OWNER), domain="chat.example.test", path="/")
-        response = await client.post(
+        response = await client.get(
+            "/api/b66/drive/status",
+            headers={"Origin": "https://chat.example.test"},
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"]["status"] == "reconnect_required"
+    assert body["status"]["scope"] == FULL_SCOPE
+    assert body["status"]["reconnect_reason"] == "scope_changed"
+    assert body["status"]["destination_sub"] == "google-sub-12345678"
+
+
+@pytest.mark.asyncio
+async def test_b66_not_connected_selection_requires_exact_canonical_workspace():
+    app, history, _, google = app_fixture()
+    google.full_status = "not_connected_wrong_workspace"
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(SESSION_COOKIE, cookie_for(OWNER), domain="chat.example.test", path="/")
+        response = await client.get(
+            "/api/b66/drive/status",
+            headers={"Origin": "https://chat.example.test"},
+        )
+
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "b66_drive_unavailable"
+
+
+@pytest.mark.asyncio
+async def test_b62_route_does_not_accept_provider_callback_state_or_code():
+    app, history, _, google = app_fixture()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(SESSION_COOKIE, cookie_for(OTHER), domain="chat.example.test", path="/")
+        rejected_foreign = await client.post(
+            "/api/b66/drive/connect/callback",
+            headers={"Origin": "https://chat.example.test"},
+            json={
+                "state_ref": "state-a",
+                "authorization_code": "authorization-code-private",
+                "provider_error": None,
+            },
+        )
+        client.cookies.set(
+            SESSION_COOKIE,
+            cookie_for(OTHER),
+            domain="chat.example.test",
+            path="/",
+        )
+        rejected = await client.post(
             "/api/b66/drive/connect/callback",
             headers={"Origin": "https://chat.example.test"},
             json={
@@ -237,17 +331,36 @@ async def test_b66_drive_callback_completes_and_maps_verified_destination_privat
             },
         )
 
-    assert response.status_code == 200
-    body = response.json()
-    assert body["status"]["status"] == "connected"
-    assert body["status"]["destination_sub"] == "google-sub-12345678"
-    assert google.callback_calls[0]["authorization_code"] == "authorization-code-private"
-    assert "authorization-code-private" not in response.text
+    assert rejected_foreign.status_code == 405
+    assert rejected.status_code == 405
+    assert google.complete_calls == []
+    assert google.begin_calls == []
 
 
 @pytest.mark.asyncio
-async def test_b66_drive_disconnect_revokes_only_this_owner_and_returns_status():
+async def test_b62_callback_return_is_status_only_get_without_state_or_code():
     app, history, _, google = app_fixture()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(SESSION_COOKIE, cookie_for(OWNER), domain="chat.example.test", path="/")
+        response = await client.get(
+            "/api/b66/drive/connect/callback",
+            headers={"Origin": "https://chat.example.test"},
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"]["status"] == "connected"
+    assert body["status"]["scope"] == FULL_SCOPE
+    assert google.complete_calls == []
+
+
+@pytest.mark.asyncio
+async def test_b66_disconnect_revokes_full_and_precursor_file_grants():
+    app, history, _, google = app_fixture()
+    google.file_status = "resolved"
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
@@ -263,7 +376,11 @@ async def test_b66_drive_disconnect_revokes_only_this_owner_and_returns_status()
     assert body["ok"] is True
     assert body["disconnect"]["revoked"] is True
     assert body["disconnect"]["status"]["status"] == "not_connected"
-    assert google.revoked == [{"workspace_ref": "workspace_a"}]
+    assert body["disconnect"]["status"]["scope"] == FULL_SCOPE
+    assert google.revoked == [
+        {"full": {"workspace_ref": "workspace_a"}},
+        {"file": {"workspace_ref": "workspace_a"}},
+    ]
 
 
 @pytest.mark.asyncio
@@ -285,29 +402,3 @@ async def test_b66_drive_status_rejects_unauthenticated_and_query_input():
 
     assert unauth.status_code == 401
     assert query.status_code == 400
-
-
-@pytest.mark.asyncio
-async def test_b66_drive_callback_state_replay_is_closed():
-    app, history, _, google = app_fixture()
-    async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app),
-        base_url="https://chat.example.test",
-    ) as client:
-        client.cookies.set(SESSION_COOKIE, cookie_for(OWNER), domain="chat.example.test", path="/")
-        first = await client.post(
-            "/api/b66/drive/connect/callback",
-            headers={"Origin": "https://chat.example.test"},
-            json={"state_ref": "state-a", "authorization_code": "code", "provider_error": None},
-        )
-        assert first.status_code == 200
-
-        google.callback_calls.clear()
-        google.status = "not_connected"
-        second = await client.post(
-            "/api/b66/drive/connect/callback",
-            headers={"Origin": "https://chat.example.test"},
-            json={"state_ref": "state-a", "authorization_code": "code", "provider_error": None},
-        )
-    assert second.status_code == 503
-    assert google.callback_calls

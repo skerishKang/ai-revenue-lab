@@ -1,9 +1,13 @@
-"""B66 #4089: server-owned host wiring for B66 Drive.file consent.
+"""B66 #4089: server-owned host wiring for B66 Google Drive consent.
 
 The B66 owner comes only from the signed PADIEM request. The canonical session,
-active product link, connector context and B66 Google Drive-file binding are
-re-read from the existing private Control Plane authorities. No browser owner,
-account, workspace, token, scope, grant reference or credential has authority.
+active product link, connector context and B66 Google Drive binding are re-read
+from existing private Control Plane authorities. No browser owner, account,
+workspace, token, scope, grant reference or credential has authority.
+
+The final B66 connector requests the full working ``https://www.googleapis.com/auth/drive``
+grant. A previously granted ``drive.file`` binding is a separate connector and
+is never silently reinterpreted as the broader grant.
 """
 from __future__ import annotations
 
@@ -12,21 +16,24 @@ from typing import Any
 
 from .auth_routes import auth_ready, current_user_id
 from .b66_cp_connector_context import B66CPConnectorContextStore
-from .b66_cp_drive_boundary import B66_REQUIRED_DRIVE_SCOPE, _REF_RE
+from .b66_cp_drive_boundary import _REF_RE
 from .b66_cp_host_session import (
     B66VerifiedCPDriveOwnerLink,
     resolve_b66_cp_drive_owner_from_padiem_session,
 )
-from .b66_drive_connection import (
-    B66DriveConnectedAccount,
-)
+from .b66_drive_connection import B66DriveConnectedAccount, B66DriveConnectionStatus
 from .control_plane_identity import IdentityBridgeError
 
 B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
+B66_GOOGLE_DRIVE_FULL_CONNECTOR = "b66-google-drive-full"
+B66_GOOGLE_DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive"
+B66_GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
+B66_REQUIRED_DRIVE_SCOPE = B66_GOOGLE_DRIVE_FULL_SCOPE
 B66_DRIVE_FILE_HOST_SOURCE_READY = True
 B66_DRIVE_FILE_HOST_PRODUCTION_WIRED = False
 B66_DRIVE_FILE_PROVIDER_HTTP_CONFIGURED = False
 B66_DRIVE_FILE_GOOGLE_CREDENTIALS_PERSISTED = "CP_SEALED_DURABLE_OAUTH"
+
 
 def _observed_now(now: datetime | None) -> datetime:
     observed_at = now if now is not None else datetime.now(timezone.utc)
@@ -50,10 +57,7 @@ async def _verified_owner_link(
         raise ValueError("signed_padiem_session_required") from exc
     if not isinstance(owner, str) or not owner:
         raise ValueError("signed_padiem_session_required")
-    if (
-        identity_shadow_store is None
-        or identity_authority is None
-    ):
+    if identity_shadow_store is None or identity_authority is None:
         raise ValueError("cp_host_authority_required")
 
     context_store = B66CPConnectorContextStore(identity_authority)
@@ -66,19 +70,33 @@ async def _verified_owner_link(
     )
 
 
-def _selected_binding_actor_matches(selection: dict[str, Any], link: B66VerifiedCPDriveOwnerLink) -> None:
+def _selected_binding_actor_matches(
+    selection: dict[str, Any],
+    link: B66VerifiedCPDriveOwnerLink,
+    *,
+    connector_id: str,
+) -> None:
     if not isinstance(selection, dict):
         raise ValueError("invalid_b66_drive_binding")
-    if selection.get("connector_id") != B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+    if selection.get("connector_id") != connector_id:
         raise ValueError("wrong_b66_connector")
     status = selection.get("status")
     if status == "not_connected":
         if set(selection) != {"status", "connector_id", "workspace_ref"}:
             raise ValueError("invalid_b66_drive_binding")
+        if (
+            not isinstance(selection.get("workspace_ref"), str)
+            or not _REF_RE.fullmatch(selection["workspace_ref"])
+            or selection["workspace_ref"] != link.cp_workspace_ref
+        ):
+            raise ValueError("b66_workspace_mismatch")
         return
     if status != "resolved":
         raise ValueError("invalid_b66_drive_binding")
-    if any(not isinstance(selection.get(key), str) or not selection.get(key) for key in ("binding_ref", "actor_ref", "provider_subject")):
+    if any(
+        not isinstance(selection.get(key), str) or not selection.get(key)
+        for key in ("binding_ref", "actor_ref", "provider_subject")
+    ):
         raise ValueError("invalid_b66_drive_binding")
     if not _REF_RE.fullmatch(selection["actor_ref"]):
         raise ValueError("invalid_b66_drive_binding")
@@ -93,27 +111,48 @@ def _selected_binding_actor_matches(selection: dict[str, Any], link: B66Verified
         raise ValueError("invalid_b66_drive_binding")
 
 
-def _public_status(owner: str, selection: dict[str, Any]) -> dict[str, Any]:
-    if selection.get("status") != "resolved":
+def _public_status(
+    owner: str,
+    full_selection: dict[str, Any] | None,
+    file_selection: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if full_selection is not None and full_selection.get("status") == "resolved":
+        account = B66DriveConnectedAccount(
+            google_sub=full_selection["provider_subject"],
+            email=full_selection.get("provider_email"),
+        )
         return {
-            "status": "not_connected",
+            "status": B66DriveConnectionStatus.CONNECTED.value,
             "verified_store_owner": owner,
-            "destination_account": None,
-            "destination_sub": None,
+            "destination_account": account.display_value,
+            "destination_sub": account.google_sub,
             "scope": B66_REQUIRED_DRIVE_SCOPE,
             "reconnect_reason": None,
             "connected_at": None,
             "durable_credential_backend": B66_DRIVE_FILE_GOOGLE_CREDENTIALS_PERSISTED,
         }
-    account = B66DriveConnectedAccount(
-        google_sub=selection["provider_subject"],
-        email=selection.get("provider_email"),
-    )
+
+    if file_selection is not None and file_selection.get("status") == "resolved":
+        file_account = B66DriveConnectedAccount(
+            google_sub=file_selection["provider_subject"],
+            email=file_selection.get("provider_email"),
+        )
+        return {
+            "status": B66DriveConnectionStatus.RECONNECT_REQUIRED.value,
+            "verified_store_owner": owner,
+            "destination_account": file_account.display_value,
+            "destination_sub": file_account.google_sub,
+            "scope": B66_REQUIRED_DRIVE_SCOPE,
+            "reconnect_reason": "scope_changed",
+            "connected_at": None,
+            "durable_credential_backend": B66_DRIVE_FILE_GOOGLE_CREDENTIALS_PERSISTED,
+        }
+
     return {
-        "status": "connected",
+        "status": B66DriveConnectionStatus.NOT_CONNECTED.value,
         "verified_store_owner": owner,
-        "destination_account": account.display_value,
-        "destination_sub": account.google_sub,
+        "destination_account": None,
+        "destination_sub": None,
         "scope": B66_REQUIRED_DRIVE_SCOPE,
         "reconnect_reason": None,
         "connected_at": None,
@@ -141,16 +180,15 @@ class B66DriveFileHost:
 
     async def start_connect(self, *, request: Any, now: datetime | None = None) -> dict[str, Any]:
         observed_at = _observed_now(now)
-        link = await _verified_owner_link(
-            request=request,
-            identity_shadow_store=self._identity_shadow_store,
-            identity_authority=self._identity_authority,
-            now=observed_at,
-        )
+        link = await self._owner_link(request=request, now=observed_at)
         if link.cp_session_id is None:
             raise ValueError("cp_session_unavailable")
-        issue_ticket = getattr(self._identity_authority, "issue_b66_google_drive_file_connect_ticket", None)
-        begin_connect = getattr(self._google_oauth_authority, "begin_b66_drive_connect", None)
+        issue_ticket = getattr(
+            self._identity_authority,
+            "issue_b66_google_drive_full_connect_ticket",
+            None,
+        )
+        begin_connect = getattr(self._google_oauth_authority, "begin_b66_drive_full_connect", None)
         if not callable(issue_ticket) or not callable(begin_connect):
             raise ValueError("b66_connect_authority_unavailable")
         try:
@@ -173,9 +211,15 @@ class B66DriveFileHost:
         provider_error: str | None,
         now: datetime | None = None,
     ) -> dict[str, Any]:
-        complete = getattr(self._google_oauth_authority, "complete_b66_drive_callback", None)
+        complete = getattr(
+            self._google_oauth_authority,
+            "complete_b66_drive_full_callback",
+            None,
+        )
         if not callable(complete):
             raise ValueError("b66_connect_authority_unavailable")
+        observed_at = _observed_now(now)
+        link = await self._owner_link(request=request, now=observed_at)
         try:
             connection = await complete(
                 state_ref=state_ref,
@@ -184,16 +228,15 @@ class B66DriveFileHost:
             )
         except Exception as exc:
             raise ValueError("b66_drive_connect_unavailable") from exc
-
-        observed_at = _observed_now(now)
-        link = await _verified_owner_link(
-            request=request,
-            identity_shadow_store=self._identity_shadow_store,
-            identity_authority=self._identity_authority,
-            now=observed_at,
+        selection = await self._select_binding(
+            link,
+            connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
         )
-        selection = await self._select_binding(link)
-        _selected_binding_actor_matches(selection, link)
+        _selected_binding_actor_matches(
+            selection,
+            link,
+            connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        )
         if selection["status"] != "resolved":
             raise ValueError("b66_drive_connect_not_usable")
         if connection.get("verified_destination_subject") != selection["provider_subject"]:
@@ -202,44 +245,116 @@ class B66DriveFileHost:
 
     async def status(self, *, request: Any, now: datetime | None = None) -> dict[str, Any]:
         observed_at = _observed_now(now)
-        link = await _verified_owner_link(
-            request=request,
-            identity_shadow_store=self._identity_shadow_store,
-            identity_authority=self._identity_authority,
-            now=observed_at,
+        link = await self._owner_link(request=request, now=observed_at)
+        full_selection = await self._select_binding(
+            link,
+            connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
         )
-        selection = await self._select_binding(link)
-        _selected_binding_actor_matches(selection, link)
-        return _public_status(link.owner_b66_user_id, selection)
+        _selected_binding_actor_matches(
+            full_selection,
+            link,
+            connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        )
+        if full_selection.get("status") == "resolved":
+            return _public_status(link.owner_b66_user_id, full_selection)
+
+        file_selection = await self._select_optional_file_binding(link)
+        if file_selection is not None:
+            _selected_binding_actor_matches(
+                file_selection,
+                link,
+                connector_id=B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+            )
+        return _public_status(link.owner_b66_user_id, full_selection, file_selection)
 
     async def disconnect(self, *, request: Any, now: datetime | None = None) -> dict[str, Any]:
         observed_at = _observed_now(now)
-        link = await _verified_owner_link(
+        link = await self._owner_link(request=request, now=observed_at)
+        full_selection = await self._select_binding(
+            link,
+            connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        )
+        _selected_binding_actor_matches(
+            full_selection,
+            link,
+            connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        )
+        file_selection = await self._select_optional_file_binding(link)
+        if file_selection is not None:
+            _selected_binding_actor_matches(
+                file_selection,
+                link,
+                connector_id=B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+            )
+
+        revoked = False
+        disconnect_full = getattr(
+            self._google_oauth_authority,
+            "disconnect_b66_drive_full",
+            None,
+        )
+        if callable(disconnect_full):
+            try:
+                revoked_full = await disconnect_full(workspace_ref=link.cp_workspace_ref)
+            except Exception as exc:
+                raise ValueError("b66_drive_disconnect_unavailable") from exc
+            if not isinstance(revoked_full, bool):
+                raise ValueError("invalid_b66_disconnect_result")
+            revoked = revoked or revoked_full
+
+        release_file = getattr(self._google_oauth_authority, "disconnect_b66_drive", None)
+        if callable(release_file):
+            try:
+                revoked_file = await release_file(workspace_ref=link.cp_workspace_ref)
+            except Exception as exc:
+                raise ValueError("b66_drive_disconnect_unavailable") from exc
+            if not isinstance(revoked_file, bool):
+                raise ValueError("invalid_b66_disconnect_result")
+            revoked = revoked or revoked_file
+
+        return {
+            "revoked": revoked,
+            "status": _public_status(link.owner_b66_user_id, None, None),
+        }
+
+    async def _owner_link(self, *, request: Any, now: datetime) -> B66VerifiedCPDriveOwnerLink:
+        return await _verified_owner_link(
             request=request,
             identity_shadow_store=self._identity_shadow_store,
             identity_authority=self._identity_authority,
-            now=observed_at,
+            now=now,
         )
-        selection = await self._select_binding(link)
-        _selected_binding_actor_matches(selection, link)
-        disconnect = getattr(self._google_oauth_authority, "disconnect_b66_drive", None)
-        if not callable(disconnect):
-            raise ValueError("b66_disconnect_authority_unavailable")
-        try:
-            revoked = await disconnect(workspace_ref=link.cp_workspace_ref)
-        except Exception as exc:
-            raise ValueError("b66_drive_disconnect_unavailable") from exc
-        if not isinstance(revoked, bool):
-            raise ValueError("invalid_b66_disconnect_result")
-        status = _public_status(link.owner_b66_user_id, selection if revoked is False else {
-            "status": "not_connected"
-        })
-        return {"revoked": revoked, "status": status}
 
-    async def _select_binding(self, link: B66VerifiedCPDriveOwnerLink) -> dict[str, Any]:
-        select_binding = getattr(self._google_oauth_authority, "select_b66_drive_binding", None)
+    async def _select_binding(
+        self,
+        link: B66VerifiedCPDriveOwnerLink,
+        *,
+        connector_id: str,
+    ) -> dict[str, Any]:
+        if connector_id == B66_GOOGLE_DRIVE_FULL_CONNECTOR:
+            binding_method = "select_b66_drive_full_binding"
+        elif connector_id == B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+            binding_method = "select_b66_drive_binding"
+        else:
+            raise ValueError("wrong_b66_connector")
+        select_binding = getattr(self._google_oauth_authority, binding_method, None)
         if not callable(select_binding):
             raise ValueError("b66_binding_authority_unavailable")
+        try:
+            selection = await select_binding(workspace_ref=link.cp_workspace_ref)
+        except Exception as exc:
+            raise ValueError("b66_drive_binding_unavailable") from exc
+        if not isinstance(selection, dict):
+            raise ValueError("invalid_b66_drive_binding")
+        return selection
+
+    async def _select_optional_file_binding(
+        self,
+        link: B66VerifiedCPDriveOwnerLink,
+    ) -> dict[str, Any] | None:
+        select_binding = getattr(self._google_oauth_authority, "select_b66_drive_binding", None)
+        if not callable(select_binding):
+            return None
         try:
             selection = await select_binding(workspace_ref=link.cp_workspace_ref)
         except Exception as exc:

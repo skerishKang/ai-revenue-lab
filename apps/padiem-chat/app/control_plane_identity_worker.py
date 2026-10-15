@@ -47,9 +47,10 @@ _MEMBERSHIP_RESOLVE_KEYS = frozenset(
     {"tenant_id", "canonical_subject_id", "state", "created_at", "role"}
 )
 _REVIEWED_CONNECTORS = frozenset({
-    "gmail", "google-drive", "google-calendar", "b66-google-drive-file",
+    "gmail", "google-drive", "google-calendar", "b66-google-drive-file", "b66-google-drive-full",
 })
 B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
+B66_GOOGLE_DRIVE_FULL_CONNECTOR = "b66-google-drive-full"
 _CONNECTOR_CONSENT_RPC_KEYS = frozenset({
     "consent_id", "device_id", "granted_at", "withdrawn_at",
     "dispatch_authorized", "grants_read", "grants_write",
@@ -781,6 +782,21 @@ class CloudflareControlPlaneIdentityAuthority:
         return await self.issue_google_connect_ticket(
             session_id=session_id,
             connector_id=B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+        )
+
+    async def issue_b66_google_drive_full_connect_ticket(
+        self, *, session_id: str
+    ) -> PrivateGoogleConnectTicket:
+        """Issue only the reviewed B66 full-Drive ticket for one session.
+
+        The connector is fixed in code, so a browser can never select the
+        shared ``google-drive`` connector, another connector, or a Google scope
+        of its choice. A prior ``drive.file`` grant is not reinterpreted.
+        """
+
+        return await self.issue_google_connect_ticket(
+            session_id=session_id,
+            connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
         )
 
     @staticmethod

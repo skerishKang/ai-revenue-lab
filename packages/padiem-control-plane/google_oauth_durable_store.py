@@ -20,11 +20,17 @@ MAX_CONNECT_TICKET_RESIDUAL_LIFETIME_SECONDS = 330
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
 GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
+GOOGLE_DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive"
 # #2010: the Control Plane owns the long-lived Google refresh credential and
 # issues short-lived read leases. Calendar joins the same reviewed OAuth
 # authority with exactly one readonly scope.
 GOOGLE_CALENDAR_READONLY_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"
 B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
+B66_GOOGLE_DRIVE_FULL_CONNECTOR = "b66-google-drive-full"
+B66_GOOGLE_DRIVE_CONNECTORS = frozenset({
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+})
 _GOOGLE_SUB_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{7,255}$")
 _MAX_PROVIDER_EMAIL_CHARS = 320
 # Internal OAuth-reviewed authority set. It is deliberately WIDER than the
@@ -35,6 +41,7 @@ _OAUTH_REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
     B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,),
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,),
 }
 # Backwards-compatible module-level map used by the Control Plane modules.
 _REVIEWED_SCOPES = _OAUTH_REVIEWED_SCOPES
@@ -264,11 +271,11 @@ class DurableGoogleOAuthCredential:
             "sealed_refresh_token",
             _sealed(self.sealed_refresh_token, "sealed_refresh_token"),
         )
-        if self.connector_id == B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+        if self.connector_id in B66_GOOGLE_DRIVE_CONNECTORS:
             if self.provider_subject is None:
                 raise ControlPlaneContractError(
                     "invalid_google_oauth_durable_record",
-                    "B66 Google Drive file binding requires a verified destination subject",
+                    "B66 Google Drive binding requires a verified destination subject",
                 )
             object.__setattr__(
                 self,
@@ -284,7 +291,7 @@ class DurableGoogleOAuthCredential:
         elif self.provider_subject is not None or self.provider_email is not None:
             raise ControlPlaneContractError(
                 "invalid_google_oauth_durable_record",
-                "only B66 Google Drive file bindings may carry a verified destination",
+                "only B66 Google Drive bindings may carry a verified destination",
             )
         issued_at = _utc(self.issued_at, "issued_at")
         expires_at = _utc(self.expires_at, "expires_at") if self.expires_at is not None else None
@@ -324,12 +331,12 @@ class DurableGoogleOAuthCredential:
             "raw_client_secret": False,
             "verified_destination_subject": (
                 self.provider_subject
-                if self.connector_id == B66_GOOGLE_DRIVE_FILE_CONNECTOR
+                if self.connector_id in B66_GOOGLE_DRIVE_CONNECTORS
                 else None
             ),
             "verified_destination_email": (
                 self.provider_email
-                if self.connector_id == B66_GOOGLE_DRIVE_FILE_CONNECTOR
+                if self.connector_id in B66_GOOGLE_DRIVE_CONNECTORS
                 else None
             ),
         }
@@ -374,11 +381,11 @@ class GoogleOAuthBindingSelection:
                 object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
             if self.account_ref is not None:
                 object.__setattr__(self, "account_ref", _safe_ref(self.account_ref, "account_ref"))
-            if self.connector_id == B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+            if self.connector_id in B66_GOOGLE_DRIVE_CONNECTORS:
                 if self.provider_subject is None:
                     raise ControlPlaneContractError(
                         "invalid_google_oauth_binding_selection",
-                        "B66 Drive file selection requires a verified provider destination",
+                        "B66 Drive selection requires a verified provider destination",
                     )
                 object.__setattr__(
                     self,
@@ -394,7 +401,7 @@ class GoogleOAuthBindingSelection:
             elif self.provider_subject is not None or self.provider_email is not None:
                 raise ControlPlaneContractError(
                     "invalid_google_oauth_binding_selection",
-                    "only B66 Drive file selections may carry a verified destination",
+                    "only B66 Drive selections may carry a verified destination",
                 )
         elif any(
             value is not None
@@ -719,10 +726,10 @@ class CloudflareDurableGoogleOAuthStore:
     ) -> None:
         if not isinstance(record, DurableGoogleOAuthCredential):
             raise ValueError("record must be DurableGoogleOAuthCredential")
-        if record.connector_id == B66_GOOGLE_DRIVE_FILE_CONNECTOR and record.provider_subject is None:
+        if record.connector_id in B66_GOOGLE_DRIVE_CONNECTORS and record.provider_subject is None:
             raise ControlPlaneContractError(
                 "invalid_google_oauth_durable_record",
-                "B66 Google Drive file binding requires a verified destination subject",
+                "B66 Google Drive binding requires a verified destination subject",
             )
         destination_verified_at = (
             _iso(_utc(verified_at, "verified_at")) if verified_at is not None else _iso(record.issued_at)
@@ -798,7 +805,7 @@ class CloudflareDurableGoogleOAuthStore:
         connector_id = _row_value(row, "connector_id")
         provider_subject: str | None = None
         provider_email: str | None = None
-        if connector_id == B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+        if connector_id in B66_GOOGLE_DRIVE_CONNECTORS:
             destinations = _rows(
                 self._sql.exec(
                     "SELECT provider_subject, provider_email FROM google_oauth_provider_destination "
@@ -809,7 +816,7 @@ class CloudflareDurableGoogleOAuthStore:
             )
             if len(destinations) != 1:
                 raise RuntimeError(
-                    "B66 Google Drive file credential destination is missing or ambiguous"
+                    "B66 Google Drive credential destination is missing or ambiguous"
                 )
             provider_subject = _provider_subject(
                 _row_value(destinations[0], "provider_subject"), "provider_subject"
@@ -1025,14 +1032,50 @@ class CloudflareDurableGoogleOAuthStore:
         workspace_ref: str,
         now: datetime,
     ) -> GoogleOAuthBindingSelection:
-        """Select one private B66 Drive-file identity for a trusted workspace.
+        """Select one private B66 Drive-file identity for a trusted workspace."""
 
-        This selector is connector-fixed in code to ``b66-google-drive-file``.
+        return self.select_active_b66_google_drive_binding(
+            connector_id=B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+            workspace_ref=workspace_ref,
+            now=now,
+        )
+
+    def select_active_b66_google_drive_full_binding(
+        self,
+        *,
+        workspace_ref: str,
+        now: datetime,
+    ) -> GoogleOAuthBindingSelection:
+        """Select one private B66 full-Drive identity for a trusted workspace."""
+
+        return self.select_active_b66_google_drive_binding(
+            connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+            workspace_ref=workspace_ref,
+            now=now,
+        )
+
+    def select_active_b66_google_drive_binding(
+        self,
+        *,
+        connector_id: str,
+        workspace_ref: str,
+        now: datetime,
+    ) -> GoogleOAuthBindingSelection:
+        """Select one private B66 Drive identity for a trusted workspace.
+
+        This selector is connector-fixed in code to one reviewed B66 connector.
         It reads only identity and validity metadata, never the sealed refresh
         token, requires the B66 verified provider destination, and fails closed
         when more than one usable B66 binding exists for the trusted workspace.
         """
 
+        connector_id = _safe_ref(connector_id, "connector_id")
+        if connector_id not in B66_GOOGLE_DRIVE_CONNECTORS:
+            raise ControlPlaneContractError(
+                "unreviewed_google_oauth_scope",
+                "B66 connector selector requires a reviewed B66 Drive connector",
+            )
+        expected_scope = _OAUTH_REVIEWED_SCOPES[connector_id]
         workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
         now = _utc(now, "now")
         rows = _rows(
@@ -1045,14 +1088,14 @@ class CloudflareDurableGoogleOAuthStore:
                 "ON credential.binding_ref = destination.binding_ref "
                 "WHERE credential.workspace_ref = ? AND credential.connector_id = ?",
                 workspace_ref,
-                B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+                connector_id,
             )
         )
         usable: list[dict[str, Any]] = []
         for row in rows:
             row_connector = _row_value(row, "connector_id")
             row_workspace = _row_value(row, "workspace_ref")
-            if row_connector != B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+            if row_connector != connector_id:
                 raise ControlPlaneContractError(
                     "google_oauth_connector_mismatch",
                     "B66 Drive binding selector returned a different connector",
@@ -1075,10 +1118,10 @@ class CloudflareDurableGoogleOAuthStore:
                     "google_oauth_scope_mismatch",
                     "B66 Drive binding scope metadata is invalid",
                 ) from exc
-            if not isinstance(scopes, list) or scopes != [GOOGLE_DRIVE_FILE_SCOPE]:
+            if not isinstance(scopes, list) or scopes != list(expected_scope):
                 raise ControlPlaneContractError(
                     "google_oauth_scope_mismatch",
-                    "B66 Drive binding must have exactly the reviewed drive.file scope",
+                    "B66 Drive binding must have exactly its reviewed scope",
                 )
             provider_subject = _row_value(row, "provider_subject")
             if not isinstance(provider_subject, str) or not provider_subject:
@@ -1105,7 +1148,7 @@ class CloudflareDurableGoogleOAuthStore:
         if not usable:
             return GoogleOAuthBindingSelection(
                 status=GoogleOAuthBindingSelectionStatus.NOT_CONNECTED,
-                connector_id=B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+                connector_id=connector_id,
                 workspace_ref=workspace_ref,
             )
         selected = usable[0]
@@ -1301,6 +1344,7 @@ REVIEWED_BINDING_SELECTION_CONNECTORS = frozenset(
         CALENDAR_OAUTH_REVIEWED_CONNECTOR,
         DRIVE_OAUTH_REVIEWED_CONNECTOR,
         B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+        B66_GOOGLE_DRIVE_FULL_CONNECTOR,
     }
 )
 CALENDAR_BINDING_SELECTION_PRIVATE_ONLY = True
@@ -1325,6 +1369,9 @@ WORKSPACE_READ_SCOPES_OUTPUT = False
 WORKSPACE_READ_SEALED_CREDENTIAL_OUTPUT = False
 WORKSPACE_READ_SCHEMA_UNIQUE_INDEX_ADDED = False
 B66_GOOGLE_DRIVE_FILE_SCOPE_REVIEWED = True
+B66_GOOGLE_DRIVE_FULL_SCOPE_REVIEWED = True
 B66_GOOGLE_DRIVE_FILE_CONNECTOR_REVIEWED = True
+B66_GOOGLE_DRIVE_FULL_CONNECTOR_REVIEWED = True
+B66_FULL_DRIVE_SCOPE = GOOGLE_DRIVE_FULL_SCOPE
 B66_GOOGLE_DRIVE_FILE_VERIFIED_DESTINATION_REQUIRED = True
 SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False

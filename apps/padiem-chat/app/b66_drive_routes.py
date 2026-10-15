@@ -1,4 +1,4 @@
-"""B66 #4089 owner-authenticated Drive.file host routes.
+"""B66 #4089 owner-authenticated Google Drive host routes.
 
 The browser supplies no owner, canonical workspace, actor, scope, credential,
 binding reference or provider token. The signed PADIEM cookie selects one B66
@@ -7,21 +7,17 @@ owner and the server composes the existing Control Plane authorities only.
 from __future__ import annotations
 
 import inspect
-import json
 from typing import Any
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
-from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b66_drive_file_host import B66DriveFileHost
 from .same_origin_guard import expected_browser_origin
 
 
 _HEADERS = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
-_MAX_CALLBACK_BODY_BYTES = 8_192
-_CALLBACK_KEYS = frozenset({"state_ref", "authorization_code", "provider_error"})
 
 
 def _reply(status: int, code: str) -> JSONResponse:
@@ -130,51 +126,23 @@ async def b66_drive_connect(request: Request) -> JSONResponse:
     )
 
 
-async def b66_drive_connect_callback(request: Request) -> JSONResponse:
-    """Complete one consumed B66 callback state without exposing raw tokens."""
+async def b66_drive_connect_callback_return(request: Request) -> JSONResponse:
+    """Return the authenticated owner to a status-only Drive URL.
 
-    if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
-        return _reply(400, "b66_drive_json_required")
-    try:
-        raw = await read_bounded_request_body(
-            request,
-            max_bytes=_MAX_CALLBACK_BODY_BYTES,
-        )
-    except RequestBodyTooLarge:
-        return _reply(400, "b66_drive_body_invalid")
-    try:
-        payload = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError):
-        return _reply(400, "b66_drive_body_invalid")
-    if not isinstance(payload, dict) or set(payload) != _CALLBACK_KEYS:
-        return _reply(400, "b66_drive_body_invalid")
-    state_ref = payload.get("state_ref")
-    authorization_code = payload.get("authorization_code")
-    provider_error = payload.get("provider_error")
-    if not isinstance(state_ref, str) or not state_ref or len(state_ref) > 256:
-        return _reply(400, "b66_drive_body_invalid")
-    if authorization_code is not None and (
-        not isinstance(authorization_code, str)
-        or not authorization_code
-        or len(authorization_code) > 4_096
-    ):
-        return _reply(400, "b66_drive_body_invalid")
-    if provider_error is not None and (
-        not isinstance(provider_error, str) or not provider_error or len(provider_error) > 1_024
-    ):
-        return _reply(400, "b66_drive_body_invalid")
+    The provider redirect is completed by the existing dedicated CP Google
+    OAuth GET edge. It never posts an authorization code, state, token or grant
+    into this B62 B66 route. This route only re-reads the signed owner's status.
+    """
 
+    body_error = _request_allows_no_input(request)
+    if body_error is not None:
+        return body_error
     composed = await _host(request)
     if isinstance(composed, JSONResponse):
         return composed
     _, host = composed
     try:
-        status = await host.complete_callback(
-            request=request,
-            state_ref=state_ref,
-            authorization_code=authorization_code,
-            provider_error=provider_error,
-        )
+        status = await host.status(request=request)
     except Exception as exc:
         return _failure(exc)
     return JSONResponse(
