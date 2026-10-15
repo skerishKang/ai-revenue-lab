@@ -28,6 +28,7 @@ from starlette.responses import JSONResponse
 from .b14_client import ChatRuntimeError
 from .b66_ai_conversation import (
     ACTION_APPROVE_DRAFT,
+    ACTION_START_NEW,
     ACTIONS,
     B66ConversationError,
     ConversationRevisionConflict,
@@ -274,12 +275,16 @@ async def conversation_turn(request: Request) -> JSONResponse:
         )
 
 
-    if action in ("choose_method", "confirm", "cancel_staged", ACTION_APPROVE_DRAFT):
+    if action in ("choose_method", "confirm", "cancel_staged", ACTION_APPROVE_DRAFT, ACTION_START_NEW):
         # Pure server-state transitions. No model call: a customer control can
         # never be classified by, or depend on, model availability.
         draft = None
         try:
-            if action == "choose_method":
+            if action == ACTION_START_NEW:
+                state = empty_state()
+                state["revision"] = expected_revision
+                answer = "새 견적을 시작합니다. 필요한 내용을 입력해 주세요."
+            elif action == "choose_method":
                 state = choose_method_transition(state, method)
                 answer = SERVER_METHOD_ANSWERS[method]
             elif action == "confirm":

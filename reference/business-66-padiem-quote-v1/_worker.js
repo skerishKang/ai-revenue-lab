@@ -53,6 +53,12 @@ function handleIntake() {
 
 function padiemTarget(url, method) {
   const path = url.pathname;
+  // #4803: reuse the server-authenticated #4412 conversation state machine.
+  // No browser-supplied owner/workspace/query or fallback to a generic agent.
+  if (path === "/api/padiem/b66/ai/conversation" &&
+      (method === "GET" || method === "POST") && !url.search) {
+    return "/api/b66/ai/conversation";
+  }
   const exact = new Map([
     ["/api/padiem/auth/status", ["GET", "/api/auth/status"]],
     ["/api/padiem/auth/password/login", ["POST", "/api/auth/password/login"]],
