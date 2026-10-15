@@ -51,9 +51,9 @@ def _contract_executable_ids() -> frozenset[str]:
 
 
 DEFAULT_CHAT_PROFILE = "free"
-# #4317: Owner's Free first-round choice is a B62 product-specific route.
-# The legacy neutral Plus/Pro/Max declaration is shared with Claw, and MUST
-# NOT be implicitly promoted by Chat's Free assignment.
+# The Free, Plus, Pro and Max primary model is declared per tier in the
+# shared Control Plane. A shared upstream model ID does not grant a higher
+# membership tier; the request's verified tier remains authoritative.
 FREE_B14_MODEL_ID = FREE_PRIMARY_B14_MODEL_ID
 PADIEM_FREE = "Padiem Free"
 AUTO_B14_MODEL_ID = "b14/auto"
@@ -92,9 +92,8 @@ MAX_HOLD_MODEL_ID = _contract_route_or_hold_id(ProductTierLabel.MAX, _CONTRACT_M
 # (#2094: the stale minimax default caused every Pro/default chat failure.
 # #2099 STEP-2: the set itself is declared once in the shared contract.)
 RETIRED_B14_MODEL_IDS = frozenset(RETIRED_PRODUCT_MODEL_IDS)
-# Compatibility name retained for consumers that reason in low/medium/high
-# profiles. High currently names the Max product tier but is deliberately not
-# an executable B14 route until #1397 approves a replacement.
+# Compatibility name retained for callers using low/medium/high profiles.
+# High resolves to Max's current active route, not its historical HOLD ID.
 HIGH_B14_MODEL_ID = MAX_HOLD_MODEL_ID
 
 PADIEM_PLUS = "Padiem Plus"
@@ -115,8 +114,8 @@ PROFILE_MODEL_IDS: dict[str, str] = {
     "high": HIGH_B14_MODEL_ID,
 }
 
-# Product identity and route executability are separate on purpose. A Padiem
-# tier may remain user-visible while its backing route is temporarily HOLD.
+# Product identity and route executability are separate. Retained HOLD
+# sentinels are historical identities; active grades resolve via their routes.
 PRODUCT_TIER_NAMES: dict[str, str] = {
     # Product identity cannot be recovered from a shared upstream model ID.
     FREE_B14_MODEL_ID: PADIEM_FREE,
@@ -124,29 +123,26 @@ PRODUCT_TIER_NAMES: dict[str, str] = {
     _CONTRACT_PRO_HOLD_MODEL_ID: PADIEM_PRO,
     _CONTRACT_MAX_HOLD_MODEL_ID: PADIEM_MAX,
 }
-# A signed-in Free caller may use the explicitly nominated live-proven Gemini
-# route. Other tiers remain separately governed by the shared HOLD contract.
+# All four grades have an active Cat Jam primary in the shared declaration.
+# Whether a caller may use a grade is decided by server-validated membership,
+# not by this model-ID set or by the upstream provider name.
 EXECUTABLE_B14_MODEL_IDS = _contract_executable_ids() | frozenset({FREE_B14_MODEL_ID})
 
-# Current source posture after owner decision #3568:
-#
-#   Padiem Plus -> HOLD while a successor model is selected.
-#   Padiem Pro  -> HOLD.
-#   Padiem Max  -> HOLD.
-#
-# Space Bunny is historical route metadata only. No provider lane becomes a
-# silent replacement. `b14/auto` and provider-side auto/fallback behavior
-# remain disabled for product routing.
+# The default Chat request uses the Free tier. Each grade currently selects
+# Cat Jam as its primary through the shared declaration. B14 may automatically
+# try the exact owner-pinned backup for the verified grade on recoverable
+# provider failures; arbitrary `b14/auto` selection remains disabled.
+# Retired Space Bunny metadata is not an executable fallback.
 DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 
-# Slash selectors are hidden/operator test controls. Normal UI can later expose
-# the product tier names without exposing provider/model identities. `/max`
-# resolves to the Max product identity but fails closed before B14 while HOLD.
+# Slash aliases remain compatibility/test inputs. The browser's tier picker
+# uses a separately validated server-side tier; an alias cannot grant that
+# entitlement. `/max` resolves to Max's active route when authorized.
 MODEL_ALIASES: dict[str, str] = {
     "/plus": LOW_B14_MODEL_ID,
     "/pro": MEDIUM_B14_MODEL_ID,
     "/max": HIGH_B14_MODEL_ID,
-    # Temporary compatibility selector from the earlier test lane.
+    # Legacy `/kilo` test alias; it now resolves through the Pro tier route.
     "/kilo": MEDIUM_B14_MODEL_ID,
     # There is deliberately no "/poolside" key. Poolside Laguna is HOLD_AS_DATA_ONLY in the
     # canonical shared declaration, so an alias naming it could only ever dispatch a
@@ -155,9 +151,8 @@ MODEL_ALIASES: dict[str, str] = {
     # executable tier route in that declaration — not by inventing a hold identity here.
 }
 
-# Product capability claims remain conservative. HOLD identities claim no
-# executable capabilities. The future Plus successor will add capabilities only
-# after its route is explicitly selected and proven.
+# These entries describe reported model capabilities, not tier entitlement or
+# provider availability. A fallback entry does not grant model execution.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
     FREE_B14_MODEL_ID: frozenset({"chat", "coding"}),
     FREE_FALLBACK_B14_MODEL_ID: frozenset({"chat", "image"}),
@@ -323,10 +318,10 @@ def resolve_model_policy(
 ) -> ResolvedModelPolicy:
     """Resolve ordinary B62 chat to a Padiem product tier.
 
-    Ordinary chat defaults to executable Padiem Plus. Hidden ``/plus``, ``/pro``
-    and ``/max`` selectors are owner/test controls. Callers that only need to
-    recognize product identity may set ``require_executable=False``; every path
-    that can reach B14 execution must retain the default fail-closed gate.
+    Ordinary chat defaults to the Free product tier. Hidden ``/plus``, ``/pro``
+    and ``/max`` selectors are compatibility/test controls and cannot grant
+    membership. Callers that only need to recognize a tier may set
+    ``require_executable=False``; dispatch retains the fail-closed route gate.
     """
     out = [dict(message) for message in messages]
     user_index = _latest_user_index(out)
