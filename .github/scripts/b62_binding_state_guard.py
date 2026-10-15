@@ -180,6 +180,13 @@ _ENGINE_4194_APPROVED_ADDITIONS = frozenset({
     ("d1", "WEB_XLSX_PRIVATE_B62_D1", "702bb62b-36f5-41a0-973f-c4f663ee01e6"),
     ("plain_text", "PADIEM_ENGINE_AGENT_DURABLE_ENABLED", "true"),
 })
+# The observability release adds one *existing* Grafana Secrets Store reference,
+# never a token value. Preserve every prior Engine binding and reject any other
+# new identity (including another store, secret name, or binding type).
+_ENGINE_GRAFANA_APPROVED_ADDITION = (
+    "secrets_store_secret", "PADIEM_GRAFANA_OTLP_TOKEN",
+    "f0b09ca04a7b43248154c773704a5616", "PADIEM_GRAFANA_OTLP_TOKEN",
+)
 
 
 def assert_exact_b66_membership_secret_only(before: object, after: object) -> None:
@@ -211,11 +218,12 @@ def assert_engine_4194_exact_rollout(before: object, after: object) -> None:
         raise BindingStateError("Engine #4194 required exact binding identities missing")
     removed = prior - current
     added = current - prior
-    if removed or not added.issubset(_ENGINE_4194_APPROVED_ADDITIONS):
+    allowed = _ENGINE_4194_APPROVED_ADDITIONS | {_ENGINE_GRAFANA_APPROVED_ADDITION}
+    if removed or not added.issubset(allowed):
         raise BindingStateError(
             "Engine #4194 binding authority drift detected; "
             f"removed_count={len(removed)} unexpected_added_count="
-            f"{len(added - _ENGINE_4194_APPROVED_ADDITIONS)}"
+            f"{len(added - allowed)}"
         )
 
 

@@ -664,3 +664,42 @@ def test_connector_baseline_cli_is_explicit(tmp_path, capsys):
     assert mod.main(base + [
         "--check-connector-baseline", "--expected-add-connector-broker",
     ]) == 1
+
+def test_engine_4194_grafana_secret_store_is_the_only_extra_authorized_addition():
+    """Preserve the already-served authority; admit exactly one metadata-only OTLP binding."""
+    required = [
+        {"type": "d1", "name": "WEB_XLSX_PRIVATE_B62_D1",
+         "database_id": "702bb62b-36f5-41a0-973f-c4f663ee01e6"},
+        {"type": "plain_text", "name": "PADIEM_ENGINE_AGENT_DURABLE_ENABLED",
+         "text": "true"},
+    ]
+    baseline = [*_engine_bindings(), *required]
+    grafana = {
+        "type": "secrets_store_secret", "name": "PADIEM_GRAFANA_OTLP_TOKEN",
+        "store_id": "f0b09ca04a7b43248154c773704a5616",
+        "secret_name": "PADIEM_GRAFANA_OTLP_TOKEN",
+    }
+    before = _version(*baseline, version_id="pre")
+    after = _version(*baseline, grafana, version_id="post")
+    mod.assert_engine_4194_exact_rollout(before, after)
+    mod.assert_engine_4194_exact_rollout(after, after)
+
+    # Other authorities and any altered Secret Store identity remain forbidden.
+    for field, value in (
+        ("store_id", "some-other-store"),
+        ("secret_name", "SOME_OTHER_SECRET"),
+        ("name", "OTHER_GRAFANA_BINDING"),
+        ("type", "secret_text"),
+    ):
+        incorrect = {**grafana, field: value}
+        with pytest.raises(mod.BindingStateError):
+            mod.assert_engine_4194_exact_rollout(
+                before, _version(*baseline, incorrect, version_id="post"))
+
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_engine_4194_exact_rollout(
+            before, _version(*baseline[1:], grafana, version_id="post"))
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_engine_4194_exact_rollout(
+            before, _version(*baseline, grafana,
+                             {"type": "secret_text", "name": "EXTRA"}, version_id="post"))
