@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "Gate mode; only reviewed bootstrap_private/redeploy_private mutates Cloudflare"
+        description: "Gate mode; only reviewed bootstrap_private/redeploy_private/redeploy_state_only mutates Cloudflare"
         required: true
         type: choice
         default: repository_preflight
@@ -13,12 +13,13 @@ on:
           - cloudflare_readonly
           - bootstrap_private
           - redeploy_private
+          - redeploy_state_only
       target_sha:
         description: "Exact current main SHA to validate or bootstrap"
         required: true
         type: string
       confirmation:
-        description: "Required only for bootstrap_private"
+        description: "Required only for mutation modes"
         required: false
         default: ""
         type: string
@@ -146,7 +147,7 @@ jobs:
 
   cloudflare-readonly:
     needs: repository-preflight
-    if: ${{ inputs.mode == 'cloudflare_readonly' || inputs.mode == 'bootstrap_private' || inputs.mode == 'redeploy_private' }}
+    if: ${{ inputs.mode == 'cloudflare_readonly' || inputs.mode == 'bootstrap_private' || inputs.mode == 'redeploy_private' || inputs.mode == 'redeploy_state_only' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
@@ -186,7 +187,7 @@ jobs:
 
   bootstrap-private:
     needs: [repository-preflight, cloudflare-readonly]
-    if: ${{ inputs.mode == 'bootstrap_private' || inputs.mode == 'redeploy_private' }}
+    if: ${{ inputs.mode == 'bootstrap_private' || inputs.mode == 'redeploy_private' || inputs.mode == 'redeploy_state_only' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     environment: production
@@ -208,8 +209,12 @@ jobs:
             test "${CONFIRMATION}" = "BOOTSTRAP_PADIEM_LOCAL_AGENT_BROKER_PRIVATE"
             test "${STATE_WORKER_STATE}" = "absent"
             test "${EDGE_WORKER_STATE}" = "absent"
-          elif [ "${DEPLOY_MODE}" = "redeploy_private" ]; then
-            test "${CONFIRMATION}" = "REDEPLOY_PADIEM_LOCAL_AGENT_BROKER_PRIVATE_EXACT_MAIN"
+          elif [ "${DEPLOY_MODE}" = "redeploy_private" ] || [ "${DEPLOY_MODE}" = "redeploy_state_only" ]; then
+            if [ "${DEPLOY_MODE}" = "redeploy_state_only" ]; then
+              test "${CONFIRMATION}" = "REDEPLOY_PADIEM_LOCAL_AGENT_BROKER_STATE_EXACT_MAIN"
+            else
+              test "${CONFIRMATION}" = "REDEPLOY_PADIEM_LOCAL_AGENT_BROKER_PRIVATE_EXACT_MAIN"
+            fi
             test "${STATE_WORKER_STATE}" = "present"
             test "${EDGE_WORKER_STATE}" = "present"
             # Existing SQLite DO identity is immutable during an in-place update.
@@ -295,6 +300,7 @@ jobs:
           echo "STATE_WORKER_PRIVATE_READBACK=PASS"
 
       - name: Deploy edge Worker second with private Service Binding
+        if: ${{ inputs.mode != 'redeploy_state_only' }}
         working-directory: packages/padiem-control-plane
         shell: bash
         env:
