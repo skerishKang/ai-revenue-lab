@@ -233,7 +233,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
             model_family="cat-jam", provider_id="opencode-go",
             model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
             credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-            credential_binding="PADIEM_OPENCODE_API_KEY",
+            credential_binding="PADIEM_B14_CREDENTIAL_11",
             evidence="B14 live Cat Jam response and owner Free model decision 2026-10-15.",
         ),),
     ),
@@ -245,7 +245,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_family="cat-jam", provider_id="opencode-go",
                 model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_OPENCODE_API_KEY",
+                credential_binding="PADIEM_B14_CREDENTIAL_11",
                 evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
             ),
             ProductTierRoute(
@@ -326,7 +326,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_family="cat-jam", provider_id="opencode-go",
                 model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_OPENCODE_API_KEY",
+                credential_binding="PADIEM_B14_CREDENTIAL_11",
                 evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
             ),
             ProductTierRoute(
@@ -402,7 +402,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_family="cat-jam", provider_id="opencode-go",
                 model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_OPENCODE_API_KEY",
+                credential_binding="PADIEM_B14_CREDENTIAL_11",
                 evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
             ),
             ProductTierRoute(
