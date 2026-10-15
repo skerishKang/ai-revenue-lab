@@ -238,12 +238,13 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _open_sidebar_if_mobile(page, mobile)
     for title in (ACTIVE_TITLE, OTHER_TITLE, FAIL_TITLE):
         await _wait_history_row(page, title)
-        delete_button = _history_row(page, title).locator(".history-delete")
+        row = _history_row(page, title)
+        delete_button = row.locator(".history-menu-delete")
         label = await delete_button.get_attribute("aria-label")
         if not label or title not in label or "삭제" not in label:
             raise AssertionError(f"delete button accessible name is not tied to title: {title!r} -> {label!r}")
         if mobile:
-            box = await delete_button.bounding_box()
+            box = await row.locator(".history-more").bounding_box()
             if box is None or box["width"] < 44 or box["height"] < 44:
                 raise AssertionError(f"mobile delete target under 44px: {title!r} -> {box!r}")
 
@@ -261,7 +262,9 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
 
     # Escape cancels product dialog, sends no DELETE, keeps row and returns focus.
     await _open_sidebar_if_mobile(page, mobile)
-    other_delete = _history_row(page, OTHER_TITLE).locator(".history-delete")
+    other_row = _history_row(page, OTHER_TITLE)
+    other_delete = other_row.locator(".history-menu-delete")
+    await other_row.locator(".history-more").click()
     await open_product_confirm(
         page,
         other_delete,
@@ -269,14 +272,18 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         message_contains=OTHER_TITLE,
     )
     await cancel_product_confirm(page, escape=True)
-    if not await other_delete.evaluate("node => document.activeElement === node"):
-        raise AssertionError("Escape cancel did not return focus to conversation delete trigger")
+    await other_row.locator(".history-more").wait_for(state="visible")
+    await page.wait_for_function(
+        "() => document.activeElement?.classList.contains('history-more')",
+        timeout=5_000,
+    )
     if state.delete_requests:
         raise AssertionError(f"cancel issued DELETE request(s): {state.delete_requests!r}")
     if await _history_row(page, OTHER_TITLE).count() != 1:
         raise AssertionError("cancel removed the conversation row")
 
     # Confirming another row deletes only that row and preserves active chat/project context.
+    await other_row.locator(".history-more").click()
     await open_product_confirm(page, other_delete, title_contains="대화를 삭제할까요?", message_contains="복구할 수 없습니다")
     await accept_product_confirm(page)
     await page.wait_for_function(
@@ -294,7 +301,9 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
 
     # Failed server deletion must keep the row and surface bounded feedback.
     await _open_sidebar_if_mobile(page, mobile)
-    fail_delete = _history_row(page, FAIL_TITLE).locator(".history-delete")
+    fail_delete_row = _history_row(page, FAIL_TITLE)
+    fail_delete = fail_delete_row.locator(".history-menu-delete")
+    await fail_delete_row.locator(".history-more").click()
     await open_product_confirm(page, fail_delete, title_contains="대화를 삭제할까요?", message_contains=FAIL_TITLE)
     await accept_product_confirm(page)
     await page.wait_for_function("() => document.getElementById('runtimeNote')?.dataset.state === 'error'", timeout=5_000)
@@ -306,7 +315,9 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         raise AssertionError("failed deletion did not show bounded Korean feedback")
 
     # Deleting active conversation resets chat state while preserving Project context.
-    active_delete = _history_row(page, ACTIVE_TITLE).locator(".history-delete")
+    active_delete_row = _history_row(page, ACTIVE_TITLE)
+    active_delete = active_delete_row.locator(".history-menu-delete")
+    await active_delete_row.locator(".history-more").click()
     await open_product_confirm(page, active_delete, title_contains="대화를 삭제할까요?", message_contains=ACTIVE_TITLE)
     await accept_product_confirm(page)
     await page.wait_for_function(
