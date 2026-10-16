@@ -9,6 +9,7 @@
   var messageList = null;
   var composerWrap = null;
   var shell = null;
+  var conversation = null;
   var messageObserver = null;
   var composerObserver = null;
 
@@ -37,6 +38,24 @@
     );
   }
 
+  // At >=921px shared-six-panel-frame.css turns `.conversation` into a
+  // self-contained scroll panel (overflow-y:auto + fixed height), so the
+  // document has nothing left to scroll and `window.scrollY` stays constant.
+  // Follow must drive whichever surface actually scrolls, otherwise it silently
+  // measures a no-op and the appended tail hides behind the fixed composer.
+  function scrollableConversation(){
+    if (conversation && conversation.scrollHeight > conversation.clientHeight + 1) {
+      return conversation;
+    }
+    return null;
+  }
+
+  function currentScrollTop(){
+    var conv = scrollableConversation();
+    if (conv) return conv.scrollTop;
+    return window.scrollY || document.documentElement.scrollTop || 0;
+  }
+
   function composerHeight(){
     if (!composerWrap) return 0;
     return Math.ceil(composerWrap.getBoundingClientRect().height || 0);
@@ -51,8 +70,13 @@
 
   function nearConversationEnd(){
     var clearance = syncComposerClearance();
+    var limit = Math.max(FOLLOW_THRESHOLD, Math.round(clearance * 0.72));
+    var conv = scrollableConversation();
+    if (conv) {
+      return (conv.scrollHeight - conv.scrollTop - conv.clientHeight) <= limit;
+    }
     var remaining = documentHeight() - ((window.scrollY || 0) + window.innerHeight);
-    return remaining <= Math.max(FOLLOW_THRESHOLD, Math.round(clearance * 0.72));
+    return remaining <= limit;
   }
 
   function syncFollowState(){
@@ -70,6 +94,11 @@
     if (!inChat()) return;
     syncComposerClearance();
     markProgrammaticScroll();
+    var conv = scrollableConversation();
+    if (conv) {
+      conv.scrollTo({ top: conv.scrollHeight, behavior: behavior || "auto" });
+      return;
+    }
     window.scrollTo({
       top: Math.max(0, documentHeight() - window.innerHeight),
       behavior: behavior || "auto"
@@ -154,7 +183,7 @@
   }
 
   function handleScroll(){
-    var currentY = window.scrollY || document.documentElement.scrollTop || 0;
+    var currentY = currentScrollTop();
     if (performance.now() > suppressDirectionUntil && currentY < lastScrollY - 6) {
       followLatest = false;
     } else if (nearConversationEnd()) {
@@ -175,14 +204,18 @@
     shell = document.querySelector(".app-shell");
     messageList = document.getElementById("messageList");
     composerWrap = document.querySelector(".composer-wrap");
+    conversation = document.querySelector(".conversation");
     if (!shell || !messageList || !composerWrap) return;
 
-    lastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    lastScrollY = currentScrollTop();
     syncFollowState();
     observeMessages();
     observeComposer();
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+    if (conversation) {
+      conversation.addEventListener("scroll", handleScroll, { passive: true });
+    }
     window.addEventListener("wheel", handlePointerWheel, { passive: true });
     window.addEventListener("resize", function(){
       syncComposerClearance();

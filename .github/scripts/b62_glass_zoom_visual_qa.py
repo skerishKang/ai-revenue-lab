@@ -21,10 +21,11 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 TIMING_EVIDENCE: list[dict[str, Any]] = []
 
-# Viewports where the pre-existing inner-scroller product gap (see
-# _assert_conversation_motion) prevented the appended tail from being revealed.
-# Recorded so the deviation is visible in the report rather than silently
-# absorbed; it is NOT a regression introduced by this branch.
+# Retained as an explicit, always-empty ledger. The inner-scroller product gap
+# it used to record (the appended tail never being revealed at >=921px) is fixed:
+# conversation-motion.js now drives whichever surface actually scrolls, so any
+# entry here would be a genuine regression and the assertions fail closed
+# instead of absorbing it. Kept so the report shape stays stable downstream.
 KNOWN_MOTION_GAP: list[str] = []
 
 # Viewports whose reading-mode portrait mask differed from home (animated with
@@ -82,12 +83,11 @@ _FOLLOW_STATE_EXPR = """
 async def _scroll_to_end(page: Page) -> None:
     """Scroll whichever surface the layout actually made scrollable.
 
-    When `.conversation` owns the scroll the app cannot self-detect the return
-    to the end (its scroll handler reads `window.scrollY`, which never moves),
-    so the panel is scrolled AND the app's own exposed resume entry point is
-    used to re-arm follow, then the panel is re-pinned to its end because the
-    app's window.scrollTo() cannot move it. The deviation is recorded in
-    KNOWN_MOTION_GAP.
+    `.conversation` owns the scroll at >=921px, and conversation-motion.js now
+    drives that panel directly, so this reproduces the same user gesture the app
+    follows: scroll the panel to its end and re-arm follow through the app's
+    exposed resume entry point. The trailing re-pin absorbs the one-frame delay
+    of the app's requestAnimationFrame follow without masking a real gap.
     """
     await page.evaluate(
         """
@@ -267,28 +267,16 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     )
     if not followed["following"]:
         raise AssertionError(f"latest-answer follow unexpectedly paused at {name}: {followed}")
-    # KNOWN PRODUCT GAP (pre-existing on main ebe5c4eb4c0, not a regression):
-    # conversation-motion.js follows the DOCUMENT via window.scrollTo, but at
-    # >=921px shared-six-panel-frame.css makes `.conversation` a self-contained
-    # scroll panel, so the document has nothing left to scroll and the appended
-    # tail is never revealed. The helper still reports following=True because
-    # its nearConversationEnd() check also reads the (already exhausted)
-    # document, which is why the old assertion passed vacuously and only the
-    # rendered geometry caught it. Measured here: scroller=conversation with
-    # 1046px still unscrolled. Assert the guarantee that actually holds at this
-    # breakpoint (bounded reveal, correct follow flag, no horizontal break) and
-    # surface the deviation in the report instead of silently dropping it.
-    if followed["scroller"] == "document":
-        if followed["remaining"] > 4:
-            raise AssertionError(f"latest-answer growth was not followed at {name}: {followed}")
-        if followed["latestBottom"] > followed["composerTop"] - 12:
-            raise AssertionError(f"latest answer is covered by the fixed composer at {name}: {followed}")
-    else:
-        # The inner panel owns the scroll. The tail must still be *inside* the
-        # panel's visible band; when the product gap is fixed this becomes the
-        # same strict check as the document case.
-        if followed["latestBottom"] > followed["composerTop"] - 12:
-            KNOWN_MOTION_GAP.append(name)
+    # At >=921px shared-six-panel-frame.css makes `.conversation` a self-contained
+    # scroll panel, so the document has nothing left to scroll. conversation-
+    # motion.js now drives whichever surface actually scrolls (see
+    # scrollableConversation()), so the appended tail must reach the panel end
+    # and clear the fixed composer at every breakpoint — the document and
+    # inner-scroller cases share one guarantee.
+    if followed["remaining"] > 4:
+        raise AssertionError(f"latest-answer growth was not followed at {name}: {followed}")
+    if followed["latestBottom"] > followed["composerTop"] - 12:
+        raise AssertionError(f"latest answer is covered by the fixed composer at {name}: {followed}")
     if not 0.15 <= float(followed["reveal"]) <= 1.0:
         raise AssertionError(
             f"Glass answer-driven reveal must be visible and bounded during active reading at {name}: {followed}"
@@ -454,11 +442,10 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     resumed_state = resume_growth_wait["state"]
     scroller_kind = (await _scroller_position(page))["kind"]
     if scroller_kind == "conversation":
-        # Inner-scroller mode: the panel is re-pinned to its end by
-        # _scroll_to_end, but the app's own follow/reveal machinery is
-        # document-driven, so `remaining`/`reveal` are not the right signals
-        # here. Require the follow flag plus a tail that is not buried behind
-        # the composer, and record the deviation for the report.
+        # Inner-scroller mode (>=921px): conversation-motion.js now drives the
+        # panel directly, so `remaining` is a real signal here — the appended
+        # tail must reach the panel end and stay clear of the fixed composer,
+        # exactly as in document mode.
         tail_gap = await page.evaluate(
             """() => {
               const tail = document.querySelector('#conversation-motion-test-tail');
@@ -466,16 +453,22 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
               return tail.getBoundingClientRect().bottom - comp.getBoundingClientRect().top;
             }"""
         )
-        if not resumed_state["following"]:
-            raise AssertionError(f"progressive follow did not resume at {name}: {resumed_state}")
-        if not 0.0 <= float(resumed_state["reveal"]) <= 1.0:
+        if not resume_growth_wait["done"]:
             raise AssertionError(
-                f"Glass answer-driven reveal left its bounded range at {name}: {resumed_state}"
+                f"progressive follow did not resume in the conversation scroller at {name}: {resumed_state} "
+                f"[condition-wait elapsed_ms={resume_growth_wait['elapsed_ms']:.0f}, "
+                f"fps={resume_growth_wait['fps']:.1f}]"
+            )
+        if not resumed_state["following"] or resumed_state["remaining"] > 4:
+            raise AssertionError(f"progressive follow did not resume at {name}: {resumed_state}")
+        if not 0.15 <= float(resumed_state["reveal"]) <= 1.0:
+            raise AssertionError(
+                f"Glass answer-driven reveal must remain visible and bounded after follow resumes at {name}: {resumed_state}"
             )
         if tail_gap > 0:
-            KNOWN_MOTION_GAP.append(f"{name}:progressive-follow")
-        if not resume_growth_wait["done"]:
-            KNOWN_MOTION_GAP.append(f"{name}:progressive-follow-timeout")
+            raise AssertionError(
+                f"progressive answer tail is covered by the fixed composer at {name}: tail_gap={tail_gap}"
+            )
     else:
         if not resume_growth_wait["done"]:
             raise AssertionError(
@@ -508,7 +501,7 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         "composer_clearance_px": round(float(clearance), 2),
         "composer_wrap_height_px": round(float(composer_wrap_height), 2),
         "scroll_owner": scroller_kind,
-        "known_motion_gap": scroller_kind == "conversation",
+        "known_motion_gap": False,
         "latest_growth_followed": True,
         "latest_answer_clears_composer": True,
         "user_scroll_up_pauses": True,
@@ -725,6 +718,7 @@ async def main() -> None:
             "OVERSHOOT-EXHAUSTED" if isinstance(exc, TimingOvershoot) else "FAIL"
         )
         report["error"] = str(exc)[:2000]
+        report["known_motion_gap"] = KNOWN_MOTION_GAP
         if TIMING_EVIDENCE:
             report["timing_evidence"] = TIMING_EVIDENCE
         report_path.write_text(
@@ -733,6 +727,7 @@ async def main() -> None:
         raise
 
     report["status"] = "PASS"
+    report["known_motion_gap"] = KNOWN_MOTION_GAP
     if TIMING_EVIDENCE:
         report["timing_evidence"] = TIMING_EVIDENCE
     report_path.write_text(

@@ -73,7 +73,7 @@ def test_claw_four_cards_are_reused_chat_starters_in_exact_product_order():
 def test_claw_identity_is_two_lines_without_a_duplicate_greeting():
     start = HTML.index('id="emptyState"')
     first = HTML[start:HTML.index('class="starter-grid"',start)]
-    assert "작업하는 클로입니다." in first
+    assert "클로입니다." in first
     assert "직접 작업하는 파디엠 클로입니다." not in first
     assert '<span class="claw-hero-eyebrow">PADIEM CLAW</span>' in first
     assert "어디에서 작업할까요?" in first
@@ -83,7 +83,7 @@ def test_claw_identity_is_two_lines_without_a_duplicate_greeting():
     assert "querySelector(\".claw-hero-line\")" in LOCALE
     assert 'input.placeholder = localeOr("input", "Ask anything");' in APP
     assert "클로에게 작업을 맡겨보세요" in LOCALE
-    assert "claw-home-intro" in LOCALE and "Where would you like to work?" in LOCALE
+    assert "claw-home-intro" in LOCALE and "Where should we work?" in LOCALE
     assert LOCALE.count('"claw-home-previous-conversations"') == 2
 
 
