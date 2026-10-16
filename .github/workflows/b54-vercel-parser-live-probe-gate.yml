@@ -1,8 +1,9 @@
 name: B54 Vercel Parser Live Probe Gate
 
-# #3283 — source-only gate for a future one-shot non-Production parser probe.
-# No Vercel SDK/client, credential, sandbox allocation, provider request, or
-# Production B14/B66 binding is implemented in this slice.
+# #3283 — source gate plus one explicitly owner-authorized non-Production probe.
+# Pull requests remain source-only. workflow_dispatch is still fail-closed until
+# a repository-owner comment on #3283 authorizes the exact immutable main SHA.
+# No Production B14/B66 binding or P4 action exists in this workflow.
 
 on:
   pull_request:
@@ -10,15 +11,21 @@ on:
       - ".github/workflows/b54-vercel-parser-live-probe-gate.yml"
       - ".github/tests/test_b54_vercel_parser_live_probe_gate.py"
       - "apps/korean-ai-code-agent/src/kagent/vercel_parser_live_gate.py"
+      - "apps/korean-ai-code-agent/src/kagent/vercel_parser_probe_runtime.py"
       - "apps/korean-ai-code-agent/tests/test_vercel_parser_live_gate.py"
+      - "apps/korean-ai-code-agent/tests/test_vercel_parser_probe_runtime.py"
   workflow_dispatch:
     inputs:
       target_sha:
-        description: "Exact current main SHA for a future parser live gate"
+        description: "Exact current main SHA approved for the one-shot probe"
         required: true
         type: string
       central_confirmation:
         description: "Exact CENTRAL confirmation marker"
+        required: true
+        type: string
+      owner_approval_comment_id:
+        description: "GitHub comment ID on #3283 containing exact owner approval"
         required: true
         type: string
       parser_deadline_seconds:
@@ -34,6 +41,7 @@ on:
 
 permissions:
   contents: read
+  issues: read
 
 concurrency:
   group: b54-vercel-parser-live-probe-gate
@@ -42,6 +50,7 @@ concurrency:
 env:
   TARGET_SHA: ${{ inputs.target_sha }}
   CENTRAL_CONFIRMATION: ${{ inputs.central_confirmation }}
+  OWNER_APPROVAL_COMMENT_ID: ${{ inputs.owner_approval_comment_id }}
   PARSER_DEADLINE_SECONDS: ${{ inputs.parser_deadline_seconds }}
   SANDBOX_TTL_SECONDS: ${{ inputs.sandbox_ttl_seconds }}
 
@@ -76,12 +85,14 @@ jobs:
           git fetch --no-tags --depth=1 origin main
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
           test "${CENTRAL_CONFIRMATION}" = "CENTRAL_VERCEL_PARSER_LIVE_PROBE=YES"
+          test "${OWNER_APPROVAL_COMMENT_ID}" -eq "${OWNER_APPROVAL_COMMENT_ID}" 2>/dev/null
           test "${PARSER_DEADLINE_SECONDS}" -eq 30
           test "${SANDBOX_TTL_SECONDS}" -ge 60
           test "${SANDBOX_TTL_SECONDS}" -le 300
           test "${SANDBOX_TTL_SECONDS}" -gt "${PARSER_DEADLINE_SECONDS}"
           echo 'EXACT_MAIN_GUARD=PASS'
           echo 'CENTRAL_CONFIRMATION=PASS'
+          echo 'OWNER_APPROVAL_COMMENT_ID_SHAPE=PASS'
           echo 'PARSER_HARD_DEADLINE_GUARD=PASS'
           echo 'SANDBOX_TTL_GUARD=PASS'
 
@@ -89,39 +100,118 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install canonical Core runtime dependencies
+        run: python -m pip install --disable-pip-version-check --no-input -e packages/padiem-ai-core
+
       - name: Run Vercel parser source-contract tests
         env:
-          PYTHONPATH: apps/korean-ai-code-agent/src
-        run: python -m unittest apps/korean-ai-code-agent/tests/test_vercel_parser_live_gate.py
+          PYTHONPATH: apps/korean-ai-code-agent/src:packages/padiem-ai-core
+        run: |
+          python -m unittest apps/korean-ai-code-agent/tests/test_vercel_parser_live_gate.py
+          python -m unittest apps/korean-ai-code-agent/tests/test_vercel_parser_probe_runtime.py
+          python .github/tests/test_b54_vercel_parser_live_probe_gate.py
 
       - name: Source-only evidence
         run: |
           echo 'VERCEL_PARSER_LIVE_PROBE_GATE_SOURCE=PASS'
           echo 'CANONICAL_CLOUD_M1_PROFILE_REUSED=YES'
           echo 'CANONICAL_PARSER_CLIENT_REUSED=YES'
+          echo 'LIVE_PROBE_EXECUTOR_SOURCE_READY=YES'
           echo 'LIVE_DISPATCH_EXECUTED=NO'
           echo 'PROVIDER_CALLS=0'
           echo 'SANDBOX_ALLOCATIONS=0'
-          echo 'CREDENTIAL_BINDING=0'
+          echo 'CREDENTIAL_VALUE_READS=0'
+          echo 'CREDENTIAL_MUTATIONS=0'
           echo 'PRODUCTION_MUTATION=0'
-          echo 'NETWORK_NEGATIVE_TEST_REQUIRED=YES'
-          echo 'METADATA_NEGATIVE_TEST_REQUIRED=YES'
-          echo 'PROCESS_TREE_DEATH_REQUIRED=YES'
-          echo 'NON_RESURRECTION_REQUIRED=YES'
-          echo 'RESOURCE_LIMIT_EVIDENCE_REQUIRED=YES'
+          echo 'P4=NO'
 
-  future-live-probe:
+  live-probe:
     needs: source-contract
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.central_confirmation == 'CENTRAL_VERCEL_PARSER_LIVE_PROBE=YES' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 1
+    timeout-minutes: 8
     steps:
-      - name: Future Vercel parser execution is not wired in source slice
+      - name: Checkout exact authorized main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact current main
+        shell: bash
         run: |
-          echo 'LIVE_PROVIDER_CALL=BLOCKED_NOT_IMPLEMENTED'
-          echo 'VERCEL_SANDBOX_CREATE=0'
-          echo 'PARSER_PROCESS_START=0'
-          echo 'CREDENTIAL_BINDING=0'
-          echo 'PROVIDER_CALLS=0'
-          echo 'PRODUCTION_BINDING=0'
-          echo 'STOP_FOR_CENTRAL=YES'
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'LIVE_EXACT_MAIN_GUARD=PASS'
+
+      - name: Validate exact repository-owner approval on issue 3283
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          comment="$(gh api "repos/${GITHUB_REPOSITORY}/issues/comments/${OWNER_APPROVAL_COMMENT_ID}")"
+          test "$(jq -r '.user.login' <<<"$comment")" = "${GITHUB_REPOSITORY_OWNER}"
+          test "$(jq -r '.issue_url' <<<"$comment")" = "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/3283"
+          body="$(jq -r '.body' <<<"$comment")"
+          grep -Fxq 'OWNER_VERCEL_PARSER_LIVE_PROBE_APPROVED=YES' <<<"$body"
+          grep -Fxq "AUTHORIZED_SHA=${TARGET_SHA}" <<<"$body"
+          grep -Fxq 'TARGET_ENVIRONMENT=non_production' <<<"$body"
+          grep -Fxq 'MAX_SANDBOX_ALLOCATIONS=1' <<<"$body"
+          grep -Fxq 'MAX_LOGICAL_PROVIDER_OPERATIONS=12' <<<"$body"
+          grep -Fxq 'PRODUCTION_BINDING=NO' <<<"$body"
+          grep -Fxq 'P4=NO' <<<"$body"
+          echo 'OWNER_APPROVAL_GATE=PASS'
+          echo "OWNER_APPROVAL_REF=issue:3283/comment:${OWNER_APPROVAL_COMMENT_ID}"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install canonical Core and pinned Vercel Sandbox SDK
+        run: |
+          python -m pip install --disable-pip-version-check --no-input -e packages/padiem-ai-core
+          python -m pip install --disable-pip-version-check --no-input "vercel-sandbox==0.7.0"
+
+      - name: Require host-side Vercel bindings without exposing values
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${VERCEL_TOKEN:-}"
+          test -n "${VERCEL_TEAM_ID:-}"
+          test -n "${VERCEL_PROJECT_ID:-}"
+          echo 'VERCEL_HOST_CREDENTIAL_BINDINGS=READY'
+          echo 'VERCEL_GUEST_CREDENTIAL_INJECTION=0'
+
+      - name: Run exactly one non-Production Vercel parser runtime probe
+        env:
+          PYTHONPATH: apps/korean-ai-code-agent/src:packages/padiem-ai-core
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m kagent.vercel_parser_probe_runtime \
+            --exact-main-sha "${TARGET_SHA}" \
+            --owner-approval-ref "issue:3283/comment:${OWNER_APPROVAL_COMMENT_ID}" \
+            --parser-deadline-seconds "${PARSER_DEADLINE_SECONDS}" \
+            --sandbox-ttl-seconds "${SANDBOX_TTL_SECONDS}"
+
+      - name: Boundary evidence
+        if: ${{ always() }}
+        run: |
+          echo 'TARGET_ENVIRONMENT=non_production'
+          echo 'MAX_SANDBOX_ALLOCATIONS=1'
+          echo 'MAX_LOGICAL_PROVIDER_OPERATIONS=12'
+          echo 'PRODUCTION_BINDING=NO'
+          echo 'B14_PRODUCTION_DEPLOY=NO'
+          echo 'B66_PRODUCTION_DEPLOY=NO'
+          echo 'P4=NO'
