@@ -280,4 +280,5 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # profile adds one thin store composition and two private RPC passthroughs;
     # the actual SQLite/auth implementation remains in separate modules.
     # Update the structural size budget (259 -> 274), preserving its margin.
-    assert len(source.splitlines()) < 278
+    # One required canonical native-PC private RPC delegate was added to this entrypoint.
+    assert len(source.splitlines()) < 279
