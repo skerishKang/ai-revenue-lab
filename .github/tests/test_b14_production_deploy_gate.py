@@ -48,7 +48,7 @@ def test_workflow_parses_and_is_dispatch_only() -> None:
         "never trigger a production mutation"
     )
     inputs = wf["triggers"]["workflow_dispatch"]["inputs"]
-    assert set(inputs) == {"target_sha", "confirmation", "rollback_version_id"}
+    assert set(inputs) == {"target_sha", "confirmation", "rollback_version_id", "candidate_version_id"}
     # #3704: the target is optional only at the schema level, so a deploy
     # dispatch is not forced to name one. The rollback branch itself refuses
     # without it, which is what test_rollback_refuses_an_unnamed_target_before_mutating
@@ -57,6 +57,8 @@ def test_workflow_parses_and_is_dispatch_only() -> None:
     assert inputs["confirmation"]["required"] is True
     assert inputs["rollback_version_id"]["required"] is False
     assert inputs["rollback_version_id"]["type"] == "string"
+    assert inputs["candidate_version_id"]["required"] is False
+    assert inputs["candidate_version_id"]["type"] == "string"
 
 
 def test_deploy_job_requires_exact_confirmation_phrase() -> None:
