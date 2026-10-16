@@ -574,16 +574,28 @@ def test_mesh_lane_proceeds_without_a_native_consent_and_refuses_withdrawal(monk
     assert result["error"]["code"] == "oracle_mesh_consent_required"
 
 
-def test_unpinned_operator_row_uses_the_mesh_node_as_the_device(monkeypatch):
-    """An operator-verified row without pins serves the authenticated owner."""
+def test_row_without_account_pin_is_rejected_at_composition(monkeypatch):
+    """An omitted account is never allow-all: the source stays unconfigured."""
     setup_auth(monkeypatch)
     unpinned = [{
         "node_ref": NODE, "root_ref": "meshcentral_private_trial",
         "path_relative": "meshcentral-padiem-trial.txt", "file_path": FILE_PATH,
     }]
+    assert routes.build_oracle_mesh_return_source(unpinned, SECRET) is None
+    source = routes.build_oracle_mesh_return_source(
+        _mapping(account=ACCOUNT, device=None, node=NODE), SECRET,
+        routes.EXECUTION_MODE_MESH,
+    )
+    assert source is not None and source.configured is True
+
+
+def test_pinned_account_with_unpinned_device_uses_the_mesh_node(monkeypatch):
+    """Exact account pin + no device pin: the Mesh node is the device."""
+    setup_auth(monkeypatch)
+    rows = _mapping(account=ACCOUNT, device=None, node=NODE)
+    rows[0].pop("device_id", None)
     history = History()
-    st = state(mesh=unpinned, history=history, identity=Identity(None))
-    # The resolver derives the canonical device from the map: the node itself.
+    st = state(mesh=rows, history=history, identity=Identity(None))
     target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
         Request(intent_body(), st), path_relative="meshcentral-padiem-trial.txt"))
     assert denial is None and target is not None
