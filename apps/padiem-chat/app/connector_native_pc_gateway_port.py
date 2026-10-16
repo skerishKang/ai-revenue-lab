@@ -33,6 +33,7 @@ _RPC = (
     "transfer_native_pc_credential_once",
     "receive_native_pc_install_ack",
     "authenticate_native_pc_install_ack",
+    "complete_native_pc_enrollment",
 )
 
 
@@ -141,6 +142,18 @@ class CanonicalNativePcTrustedGateway:
             )
         except Exception:
             return False
+
+    async def confirm_completed_installation(self) -> None:
+        """Release the waiting PC only after the canonical host succeeds."""
+        if self._lease is None or not self._used or self._receipt is None:
+            raise NativePcGatewayDenied("native_pc_terminal_not_ready")
+        result = _receipt(await self._call("complete_native_pc_enrollment", {
+            "request_ref": self._verified.request_ref,
+            "challenge_id": self._lease.challenge_id,
+            "device_id": self._lease.device_id, "lease_ref": self._lease.lease_ref,
+        }), {"sent_once", "connected"})
+        if result["sent_once"] is not True or result["connected"] is not False:
+            raise NativePcGatewayDenied("native_pc_terminal_unconfirmed")
 
     async def transfer_credential_once(
         self, *, lease: GatewayBootstrapLease, credential: bytes,

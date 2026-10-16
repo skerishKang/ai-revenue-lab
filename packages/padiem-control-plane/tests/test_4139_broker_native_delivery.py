@@ -47,7 +47,7 @@ async def transport(monkeypatch, *, enabled=True, rpc_wrapped=False):
             "pending_pc_identity_status", "claim_pending_pc_identity_proof",
             "reserve_native_pc_gateway", "authenticate_native_pc_gateway",
             "transfer_native_pc_credential_once", "receive_native_pc_install_ack",
-            "authenticate_native_pc_install_ack",
+            "authenticate_native_pc_install_ack", "complete_native_pc_enrollment",
         ):
             original = getattr(do, name)
             async def wrapped(payload, _original=original):
@@ -155,6 +155,8 @@ def test_same_native_pc_wss_delivers_exactly_one_secret_and_signed_ack(monkeypat
         assert receipt=={
             "ack":ack,"source_authenticated":True,"registered":False,
         }
+        with pytest.raises(NativePcDeliveryDenied):
+            await do.complete_native_pc_enrollment(lease_args(challenge,lease))
         sender=await do.authenticate_native_pc_install_ack({
             **lease_args(challenge,lease),"ack":ack,
         })
@@ -166,6 +168,14 @@ def test_same_native_pc_wss_delivers_exactly_one_secret_and_signed_ack(monkeypat
         # Broker challenge consumed, but neither socket send nor self-asserted
         # ACK is a final Windows DPAPI installation or online-state grant.
         assert not any(x.get("status")=="paired_offline" for x in sock.sent)
+        completed=await do.complete_native_pc_enrollment(lease_args(challenge,lease))
+        assert completed=={"sent_once":True,"connected":False}
+        assert sock.sent[-1]=={
+            "type":"terminal","status":"paired_offline","can_retry_challenge":False,
+        }
+        with pytest.raises(NativePcDeliveryDenied):
+            await do.complete_native_pc_enrollment(lease_args(challenge,lease))
+        assert len([x for x in sock.sent if x["type"]=="terminal"])==1
         assert len([x for x in sock.sent if x["type"]=="credential_once"])==1
     asyncio.run(main())
 

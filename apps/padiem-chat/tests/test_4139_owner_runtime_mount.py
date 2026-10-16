@@ -332,6 +332,7 @@ class PrivateNativeGatewayBroker(PrivateIdentityPcBroker):
             "reserve_native_pc_gateway", "authenticate_native_pc_gateway",
             "transfer_native_pc_credential_once",
             "receive_native_pc_install_ack", "authenticate_native_pc_install_ack",
+            "complete_native_pc_enrollment",
         ):
             async def no_network(payload):
                 raise RuntimeError("default-off reviewed synthetic transport")

@@ -89,4 +89,20 @@ class CanonicalOwnerNativePcCompletion:
                 503, "native_pc_canonical_result_invalid",
                 "Canonical PC result was not confirmed.",
             )
+        try:
+            await gateway.confirm_completed_installation()
+        except Exception:
+            # A lost completion frame must not leave an uncertain binding
+            # active or trigger another credential delivery attempt.
+            try:
+                await host._revoke_confirmed(binding_ref=result["binding_ref"])
+            except Exception:
+                raise IdentityBridgeError(
+                    503, "native_pc_terminal_revoke_unconfirmed",
+                    "PC completion and revocation could not be confirmed.",
+                ) from None
+            raise IdentityBridgeError(
+                503, "native_pc_terminal_unconfirmed",
+                "PC completion could not be confirmed.",
+            ) from None
         return result

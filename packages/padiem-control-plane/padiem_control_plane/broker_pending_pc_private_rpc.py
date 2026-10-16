@@ -330,6 +330,10 @@ class CanonicalBrokerPendingPcLiveRPC:
         from .broker_pending_pc_native_delivery import authenticate_native_pc_install_ack
         return await authenticate_native_pc_install_ack(self, _owner_rpc_payload_dict(payload))
 
+    async def complete_native_pc_enrollment(self, payload: dict) -> dict:
+        from .broker_pending_pc_native_delivery import complete_native_pc_enrollment
+        return await complete_native_pc_enrollment(self, _owner_rpc_payload_dict(payload))
+
     async def _pending_pc_wss_fetch(self, request):
         """Native PC upgrade exclusively on this existing canonical Broker DO."""
         from .broker_pending_pc_wss import fetch_broker_pending_pc_wss
@@ -391,3 +395,6 @@ class CanonicalBrokerPendingPcBindingRPC:
 
     async def authenticate_native_pc_install_ack(self, payload: dict) -> dict:
         return await self._stub().authenticate_native_pc_install_ack(payload)
+
+    async def complete_native_pc_enrollment(self, payload: dict) -> dict:
+        return await self._stub().complete_native_pc_enrollment(payload)

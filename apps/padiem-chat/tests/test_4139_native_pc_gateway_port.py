@@ -114,6 +114,15 @@ class PrivateNativeBroker:
             "registered":False,
         }
 
+    async def complete_native_pc_enrollment(self,payload):
+        self.calls.append(("terminal",payload))
+        assert payload=={
+            "request_ref":REQ,"challenge_id":ID,"device_id":DEVICE,"lease_ref":LEASE,
+        }
+        if getattr(self,"terminal_lost",False):
+            raise RuntimeError("terminal delivery not confirmed")
+        return {"sent_once":True,"connected":False}
+
 
 class OriginalBroker(Broker):
     async def redeem_enrollment(self, **kwargs):
@@ -255,8 +264,8 @@ class SamePcOwnerPrivateGateway(PrivateNativeBroker):
         }
 
 
-@pytest.mark.parametrize("delayed_fetch", [False, True])
-def test_one_existing_signed_B54_owner_proceeds_through_canonical_host_and_ack(delayed_fetch):
+@pytest.mark.parametrize("delayed_fetch,terminal_lost", [(False,False),(True,False),(False,True)])
+def test_one_existing_signed_B54_owner_proceeds_through_canonical_host_and_ack(delayed_fetch,terminal_lost):
     from dataclasses import replace
     from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
     from app.connector_owner_identity_pc_completion import CanonicalOwnerPcIdentityPreflight
@@ -267,6 +276,7 @@ def test_one_existing_signed_B54_owner_proceeds_through_canonical_host_and_ack(d
     broker=OriginalBroker()
     private=SamePcOwnerPrivateGateway()
     private.defer_status_once = delayed_fetch
+    private.terminal_lost = terminal_lost
     preflight=CanonicalOwnerPcIdentityPreflight(
         identity=ident,broker=broker,private_broker=private,
     )
@@ -280,9 +290,14 @@ def test_one_existing_signed_B54_owner_proceeds_through_canonical_host_and_ack(d
             subject_type=SubjectType.USER,subject_id=CONSENT["owner_subject_id"],
         ),
     )
-    result=asyncio.run(service.complete(
-        signed_owner=original_session,request_ref=REQ,
-    ))
+    if terminal_lost:
+        with pytest.raises(IdentityBridgeError) as exc:
+            asyncio.run(service.complete(signed_owner=original_session,request_ref=REQ))
+        assert exc.value.code=="native_pc_terminal_unconfirmed"
+        assert broker.calls[-1][0]=="revoke"
+        assert len([x for x in private.calls if x[0]=="terminal"])==1
+        return
+    result=asyncio.run(service.complete(signed_owner=original_session,request_ref=REQ))
     assert result["lifecycle"]=="paired_offline"
     assert result["credential_installed_by_canonical_handoff"] is True
     assert result["dispatch_authorized"] is False
@@ -291,7 +306,7 @@ def test_one_existing_signed_B54_owner_proceeds_through_canonical_host_and_ack(d
     assert len([c for c in broker.calls if c[0]=="redeem"])==1
     assert [c[0] for c in private.calls]==(["live_pc_status"] if delayed_fetch else [])+[
         "live_pc_status","identity_proof_claim",
-        "reserve","authenticate","send","ack","ack_sender",
+        "reserve","authenticate","send","ack","ack_sender","terminal",
     ]
     assert len([c for c in ident.calls if c[0]=="authorize"])>=4
     # A second owner attempt cannot mint a new credential: original
