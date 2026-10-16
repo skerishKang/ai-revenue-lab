@@ -75,10 +75,25 @@ binding = "PADIEM_GRAFANA_OTLP_TOKEN"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_GRAFANA_OTLP_TOKEN"
 
+# #4139 Oracle management-host MeshCentral read channel. The value is the
+# deployment channel secret shared with the Oracle executor; it stays
+# encrypted in the account-level Secrets Store and is never in [vars].
+[[secrets_store_secrets]]
+binding = "ORACLE_MESH_CHANNEL_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "ORACLE_MESH_CHANNEL_SECRET"
+
 # Public endpoint and numeric OTLP username. Never put token values in [vars].
 [vars]
 PADIEM_GRAFANA_OTLP_ENDPOINT = "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs"
 PADIEM_GRAFANA_OTLP_USERNAME = "1876517"
+
+# #4139 Oracle Mesh execution lane. "mesh" makes an ordinary Claw TXT request
+# run on the management host over the operator-verified ownership map below;
+# the map binds account/device pins (optional) plus the Mesh node, root/pair
+# and Windows path the operator verified against the real MeshCentral node.
+ORACLE_MESH_EXECUTION_MODE = "mesh"
+ORACLE_MESH_OWNERSHIP_MAP = "[{\"node_ref\":\"wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp\",\"root_ref\":\"meshcentral_private_trial\",\"path_relative\":\"meshcentral-padiem-trial.txt\",\"file_path\":\"C:\\\\Users\\\\limone\\\\AppData\\\\Local\\\\Padiem\\\\MeshCentralTrial\\\\meshcentral-padiem-trial.txt\"}]"
 
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"

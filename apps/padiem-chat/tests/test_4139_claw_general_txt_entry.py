@@ -386,10 +386,15 @@ def test_mesh_mode_still_refuses_withdrawn_consent_and_foreign_account(monkeypat
             return {"type": "http.request", "body": body, "more_body": False}
         return run(general.claw_general_execute(Request(scope, receive=receive)))
 
-    # OFF: Mesh execution disabled -> stays on the native lane, which then fails
+# OFF: Mesh execution disabled -> stays on the native lane, which then fails
     # closed here because no native source is configured (never a silent exec).
     assert _run(_app(mesh.EXECUTION_MODE_OFF)).status_code in (404, 409, 503)
     # native: explicitly pinned to the native lane, same fail-closed answer.
     assert _run(_app(mesh.EXECUTION_MODE_NATIVE)).status_code in (404, 409, 503)
-    # Mesh mode + another account: not this account's verified target -> refused.
-    assert _run(_app(mesh.EXECUTION_MODE_MESH, account="other.account")).status_code in (404, 409, 503)
+    # Mesh mode + another account: the file is mapped, but pinned to other
+    # accounts, so this is a hard 403 ownership refusal - never a fallback.
+    foreign = _run(_app(mesh.EXECUTION_MODE_MESH, account="other.account"))
+    assert foreign.status_code == 403
+    # A withdrawn consent is enforced as a hard refusal too.
+    withdrawn = _run(_app(mesh.EXECUTION_MODE_MESH, withdrawn=True))
+    assert withdrawn.status_code == 403
