@@ -69,6 +69,14 @@ P01_CALLER_VALUE = "b54-p01-overlay-20260914-a1"
 P01_CREDENTIAL_NAME = "P01_ENGINE_CREDENTIAL"
 P01_SSE_OPTIN_FLAG = "PADIEM_CLAW_P01_LIVE_SSE_ENABLED"
 
+# #4139: the single Oracle Mesh operating-mode variable. The Mesh lane is
+# switched by exactly this plain-text value and nothing else. Only the two
+# operating values the owner approved for this gate are admitted here; the
+# third runtime value ("native") stays out of scope, and a live binding that is
+# absent, retyped, or holds any other value is never silently overwritten.
+ORACLE_MESH_MODE_NAME = "ORACLE_MESH_EXECUTION_MODE"
+ORACLE_MESH_MODE_VALUES = ("off", "mesh")
+
 # Bounded source-credential replacement gate (#2428). These thresholds mirror
 # the runtime authority in apps/padiem-chat/app/worker_config.py
 # (_P01_CREDENTIAL_MIN_BYTES/_P01_CREDENTIAL_MAX_BYTES) and are validated
@@ -262,6 +270,99 @@ P01_TARGET_NAMES = (P01_SERVICE_NAME, P01_CALLER_NAME, P01_CREDENTIAL_NAME)
 WORKSPACE_R2_TARGET_NAMES = (R2_BINDING_NAME,)
 
 
+def oracle_mesh_mode_state(settings_payload: object) -> str:
+    """Bounded pre-mutation state of the single Oracle Mesh mode variable.
+
+    Returns one of ``absent``/``wrong_type``/``unexpected_value``/``off``/
+    ``mesh``. Nothing else about the live configuration is inspected, and no
+    secret value is read.
+    """
+    by_name = {binding["name"]: binding for binding in _raw_bindings(settings_payload)}
+    binding = by_name.get(ORACLE_MESH_MODE_NAME)
+    if binding is None:
+        return "absent"
+    if binding.get("type") != "plain_text":
+        return "wrong_type"
+    text = binding.get("text")
+    return text if text in ORACLE_MESH_MODE_VALUES else "unexpected_value"
+
+
+def build_oracle_mesh_mode_patch(
+    settings_payload: object, *, mode: str, target_sha: str
+) -> dict:
+    """Build the one-variable Oracle Mesh mode patch.
+
+    Every other live binding is carried as an ``inherit``/``latest`` reference,
+    so no binding, secret or unrelated plain-text value can be dropped, retyped,
+    or rewritten by this switch. A live binding that exists but is not one of
+    the two admitted operating values fails closed instead of being overwritten.
+    """
+    if mode not in ORACLE_MESH_MODE_VALUES:
+        raise ActivationPlanError(
+            "the Oracle Mesh execution mode must be one of: " + ", ".join(ORACLE_MESH_MODE_VALUES)
+        )
+    state = oracle_mesh_mode_state(settings_payload)
+    if state in {"wrong_type", "unexpected_value"}:
+        raise ActivationPlanError(
+            f"refusing to overwrite the live {ORACLE_MESH_MODE_NAME} binding ({state})"
+        )
+
+    bindings = _raw_bindings(settings_payload)
+    patch_bindings = [
+        _inherit(binding["name"])
+        for binding in bindings
+        if binding["name"] != ORACLE_MESH_MODE_NAME
+    ]
+    patch_bindings.append({"name": ORACLE_MESH_MODE_NAME, "type": "plain_text", "text": mode})
+
+    payload = {
+        "bindings": patch_bindings,
+        "annotations": {
+            "workers/message": f"B62 Claw Oracle Mesh execution mode {mode} {target_sha}",
+            "workers/triggered_by": "b62-claw-live-config-activation-gate",
+        },
+    }
+    return {
+        "payload": payload,
+        "mode": mode,
+        "previous_state": state,
+        "no_op": state == mode,
+        "changes": [] if state == mode else [f"ORACLE_MESH_EXECUTION_MODE_SET_{mode.upper()}"],
+        "preserved_bindings": sum(1 for b in patch_bindings if b["type"] == "inherit"),
+    }
+
+
+def verify_oracle_mesh_mode(
+    settings_payload: object, *, mode: str, pre_payload: object | None = None
+) -> None:
+    """Prove the requested mode is live and that nothing else moved.
+
+    When the pre-mutation settings are supplied, the canonical binding state is
+    compared and exactly one differing name is accepted: the mode variable
+    itself. Any other addition, removal, retype or value drift fails closed.
+    """
+    if mode not in ORACLE_MESH_MODE_VALUES:
+        raise ActivationPlanError(
+            "the Oracle Mesh execution mode must be one of: " + ", ".join(ORACLE_MESH_MODE_VALUES)
+        )
+    state = oracle_mesh_mode_state(settings_payload)
+    if state != mode:
+        raise ActivationPlanError(f"{ORACLE_MESH_MODE_NAME} is {state}, expected {mode}")
+    if pre_payload is None:
+        return
+    before = {binding["name"]: canonical_binding(binding) for binding in _raw_bindings(pre_payload)}
+    after = {
+        binding["name"]: canonical_binding(binding) for binding in _raw_bindings(settings_payload)
+    }
+    changed = sorted(
+        name for name in set(before) | set(after) if before.get(name) != after.get(name)
+    )
+    if changed != [ORACLE_MESH_MODE_NAME]:
+        raise ActivationPlanError(
+            "unexpected live configuration change: " + (", ".join(changed) or "none")
+        )
+
+
 def source_credential_quality(value: object) -> bool:
     """Bounded UTF-8 byte-quality gate for the replacement source credential.
 
@@ -451,6 +552,7 @@ def build_rollback_plan(
     credential_created_by_activation: bool,
     target_sha: str,
     sse_optin_rollback: bool = False,
+    oracle_mesh_mode_rollback: bool = False,
 ) -> dict:
     """Plan a settings restore bounded to the pre-activation snapshot.
 
@@ -459,6 +561,13 @@ def build_rollback_plan(
     reading or reconstructing a secret value fails closed with
     MANUAL_CONFIG_RECOVERY_REQUIRED instead of claiming a full config rollback.
     """
+    def _admitted(name: str) -> bool:
+        # Only the explicitly requested single-variable switches may be restored
+        # or removed; everything else must be unchanged since the snapshot.
+        return name in TARGET_NAMES or (
+            sse_optin_rollback and name == P01_SSE_OPTIN_FLAG
+        ) or (oracle_mesh_mode_rollback and name == ORACLE_MESH_MODE_NAME)
+
     snapshot_bindings = _raw_bindings(snapshot_payload)
     current_bindings = _raw_bindings(current_payload)
     snapshot_by_name = {binding["name"]: binding for binding in snapshot_bindings}
@@ -482,7 +591,7 @@ def build_rollback_plan(
             continue
         if current is not None and canonical_binding(snapshot) == canonical_binding(current):
             patch_bindings.append(_inherit(name))
-        elif name in TARGET_NAMES or (sse_optin_rollback and name == P01_SSE_OPTIN_FLAG):
+        elif _admitted(name):
             patch_bindings.append(_inline_binding(snapshot))
             changes.append(f"CONFIG_RESTORE_{name}")
         else:
@@ -501,7 +610,7 @@ def build_rollback_plan(
                     f"{name}: present live but absent from the pre-activation snapshot and this "
                     "rollback run does not attribute its creation to the recorded activation"
                 )
-        elif name in TARGET_NAMES or (sse_optin_rollback and name == P01_SSE_OPTIN_FLAG):
+        elif _admitted(name):
             changes.append(f"CONFIG_REMOVE_{name}")
         else:
             patch_bindings.append(_inherit(name))
@@ -543,6 +652,8 @@ def main(argv: list[str] | None = None) -> int:
             "replacement-verify",
             "replacement-served-version-read",
             "replacement-served-version-final",
+            "plan-oracle-mesh-mode",
+            "verify-oracle-mesh-mode",
         ),
     )
     parser.add_argument("--settings", type=Path)
@@ -554,6 +665,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pre-settings", type=Path)
     parser.add_argument("--credential-created-by-activation", default="false")
     parser.add_argument("--sse-optin-rollback", default="false")
+    parser.add_argument("--oracle-mesh-mode-rollback", default="false")
+    parser.add_argument("--mode", default="")
     parser.add_argument("--deployments", type=Path)
     parser.add_argument("--pre-version", default="")
     parser.add_argument("--observations-file", type=Path)
@@ -575,6 +688,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "rollback-plan":
         return _main_rollback_plan(args)
+    if args.command == "plan-oracle-mesh-mode":
+        return _main_plan_oracle_mesh_mode(args)
+    if args.command == "verify-oracle-mesh-mode":
+        return _main_verify_oracle_mesh_mode(args)
 
     if not args.engine_service or not args.r2_bucket:
         print(f"usage: {args.command} requires --engine-service and --r2-bucket", file=sys.stderr)
@@ -664,6 +781,9 @@ def _main_rollback_plan(args: argparse.Namespace) -> int:
     if args.sse_optin_rollback not in {"true", "false"}:
         print("--sse-optin-rollback must be true or false", file=sys.stderr)
         return 2
+    if args.oracle_mesh_mode_rollback not in {"true", "false"}:
+        print("--oracle-mesh-mode-rollback must be true or false", file=sys.stderr)
+        return 2
     try:
         current_payload = json.loads(args.settings.read_text(encoding="utf-8"))
         snapshot_payload = json.loads(args.snapshot.read_text(encoding="utf-8"))
@@ -677,6 +797,7 @@ def _main_rollback_plan(args: argparse.Namespace) -> int:
             credential_created_by_activation=args.credential_created_by_activation == "true",
             target_sha=args.target_sha,
             sse_optin_rollback=args.sse_optin_rollback == "true",
+            oracle_mesh_mode_rollback=args.oracle_mesh_mode_rollback == "true",
         )
     except ManualConfigRecoveryRequired as exc:
         print(
@@ -706,6 +827,70 @@ def _main_rollback_plan(args: argparse.Namespace) -> int:
     print("CODE_VERSION_ROLLBACK_DISTINGUISHED=YES")
     print("FULL_CONFIG_ROLLBACK_CLAIM=NO_UNTIL_READBACK")
     print("PIECEMEAL_SECRET_RESTORE=0")
+    print("SECRET_VALUES_READ=0")
+    print("SECRET_VALUES_EMITTED=0")
+    return 0
+
+
+def _main_plan_oracle_mesh_mode(args: argparse.Namespace) -> int:
+    if args.mode not in ORACLE_MESH_MODE_VALUES:
+        print(
+            "--mode must be one of: " + ", ".join(ORACLE_MESH_MODE_VALUES),
+            file=sys.stderr,
+        )
+        return 2
+    if not args.output or not args.target_sha:
+        print("usage: plan-oracle-mesh-mode requires --output and --target-sha", file=sys.stderr)
+        return 2
+    try:
+        payload = json.loads(args.settings.read_text(encoding="utf-8"))
+        plan = build_oracle_mesh_mode_patch(
+            payload, mode=args.mode, target_sha=args.target_sha
+        )
+    except (OSError, json.JSONDecodeError, ActivationPlanError, _deploy_config.ProductionConfigError) as exc:
+        print(f"B62_CLAW_ORACLE_MESH_MODE_PLAN=FAIL\nREASON={exc}", file=sys.stderr)
+        return 1
+    if args.output.exists():
+        print(
+            "B62_CLAW_ORACLE_MESH_MODE_PLAN=FAIL\nREASON=output path already exists",
+            file=sys.stderr,
+        )
+        return 1
+    args.output.write_text(json.dumps(plan["payload"], separators=(",", ":")), encoding="utf-8")
+    for change in plan["changes"]:
+        print(f"CONFIG_CHANGE {change}")
+    print("B62_CLAW_ORACLE_MESH_MODE_PLAN=PASS")
+    print(f"ORACLE_MESH_MODE_TARGET={plan['mode']}")
+    print(f"ORACLE_MESH_MODE_PREVIOUS={plan['previous_state']}")
+    print(f"B62_CLAW_ORACLE_MESH_MODE_NO_OP={'1' if plan['no_op'] else '0'}")
+    print(f"ORACLE_MESH_MODE_PRESERVED_BINDINGS={plan['preserved_bindings']}")
+    print("ORACLE_MESH_MODE_ONLY_VARIABLE_CHANGED=YES")
+    print("SECRET_VALUES_READ=0")
+    print("SECRET_VALUES_EMITTED=0")
+    return 0
+
+
+def _main_verify_oracle_mesh_mode(args: argparse.Namespace) -> int:
+    if args.mode not in ORACLE_MESH_MODE_VALUES:
+        print(
+            "--mode must be one of: " + ", ".join(ORACLE_MESH_MODE_VALUES),
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        payload = json.loads(args.settings.read_text(encoding="utf-8"))
+        pre_payload = (
+            json.loads(args.pre_settings.read_text(encoding="utf-8"))
+            if args.pre_settings
+            else None
+        )
+        verify_oracle_mesh_mode(payload, mode=args.mode, pre_payload=pre_payload)
+    except (OSError, json.JSONDecodeError, ActivationPlanError, _deploy_config.ProductionConfigError) as exc:
+        print(f"B62_CLAW_ORACLE_MESH_MODE_VERIFY=FAIL\nREASON={exc}", file=sys.stderr)
+        return 1
+    print("B62_CLAW_ORACLE_MESH_MODE_VERIFY=EXACT")
+    print(f"ORACLE_MESH_MODE_LIVE={args.mode}")
+    print("ORACLE_MESH_MODE_ONLY_VARIABLE_CHANGED=YES")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
     return 0
