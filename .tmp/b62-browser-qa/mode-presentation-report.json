@@ -1,0 +1,121 @@
+{
+  "base_url": "http://127.0.0.1:8792",
+  "views": {
+    "light-desktop": {
+      "default_tier": "free",
+      "selected_tier": "plus",
+      "plus": "available",
+      "pro": "unavailable",
+      "max": "unavailable",
+      "server_authority_copy": true,
+      "escape_focus_return": true,
+      "horizontal_overflow": false,
+      "status": "PASS"
+    },
+    "light-mobile": {
+      "default_tier": "free",
+      "selected_tier": "plus",
+      "plus": "available",
+      "pro": "unavailable",
+      "max": "unavailable",
+      "server_authority_copy": true,
+      "escape_focus_return": true,
+      "horizontal_overflow": false,
+      "status": "PASS"
+    },
+    "dark-desktop": {
+      "default_tier": "free",
+      "selected_tier": "plus",
+      "plus": "available",
+      "pro": "unavailable",
+      "max": "unavailable",
+      "server_authority_copy": true,
+      "escape_focus_return": true,
+      "horizontal_overflow": false,
+      "status": "PASS"
+    },
+    "dark-mobile": {
+      "default_tier": "free",
+      "selected_tier": "plus",
+      "plus": "available",
+      "pro": "unavailable",
+      "max": "unavailable",
+      "server_authority_copy": true,
+      "escape_focus_return": true,
+      "horizontal_overflow": false,
+      "status": "PASS"
+    },
+    "cinematic-desktop": {
+      "default_tier": "free",
+      "selected_tier": "plus",
+      "plus": "available",
+      "pro": "unavailable",
+      "max": "unavailable",
+      "server_authority_copy": true,
+      "escape_focus_return": true,
+      "horizontal_overflow": false,
+      "status": "PASS"
+    },
+    "cinematic-mobile": {
+      "default_tier": "free",
+      "selected_tier": "plus",
+      "plus": "available",
+      "pro": "unavailable",
+      "max": "unavailable",
+      "server_authority_copy": true,
+      "escape_focus_return": true,
+      "horizontal_overflow": false,
+      "status": "PASS"
+    },
+    "padiem-home-desktop": {
+      "default_tier": "free",
+      "selected_tier": "plus",
+      "plus": "available",
+      "pro": "unavailable",
+      "max": "unavailable",
+      "server_authority_copy": true,
+      "escape_focus_return": true,
+      "horizontal_overflow": false,
+      "status": "PASS"
+    },
+    "padiem-home-mobile": {
+      "default_tier": "free",
+      "selected_tier": "plus",
+      "plus": "available",
+      "pro": "unavailable",
+      "max": "unavailable",
+      "server_authority_copy": true,
+      "escape_focus_return": true,
+      "horizontal_overflow": false,
+      "status": "PASS"
+    },
+    "padiem-glass-desktop": {
+      "default_tier": "free",
+      "selected_tier": "plus",
+      "plus": "available",
+      "pro": "unavailable",
+      "max": "unavailable",
+      "server_authority_copy": true,
+      "escape_focus_return": true,
+      "horizontal_overflow": false,
+      "status": "PASS"
+    },
+    "padiem-glass-mobile": {
+      "default_tier": "free",
+      "selected_tier": "plus",
+      "plus": "available",
+      "pro": "unavailable",
+      "max": "unavailable",
+      "server_authority_copy": true,
+      "escape_focus_return": true,
+      "horizontal_overflow": false,
+      "status": "PASS"
+    }
+  },
+  "english": {
+    "locale": "en",
+    "default_tier": "free",
+    "status": "PASS"
+  },
+  "status": "PASS"
+}
