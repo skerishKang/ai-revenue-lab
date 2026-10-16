@@ -123,8 +123,11 @@ class CanonicalOwnerPcIdentityPreflight:
                 or binding.get("challenge_id") != challenge
                 or binding.get("device_id") != device
                 or not all(_ref(binding.get(x)) for x in (
-                    "consent_ref", "owner_ref", "account_ref", "workspace_ref",
+                    "consent_ref", "account_ref", "workspace_ref",
                 ))
+                # Owner is Identity's opaque canonical subject, not a device
+                # ref. Bind it to the already verified session unchanged.
+                or binding.get("owner_ref") != signed_owner.subject.subject_id
             ):
                 raise ValueError("wrong original challenge binding")
             consent = await self._identity.resolve_connector_enrollment_consent_for_device(
