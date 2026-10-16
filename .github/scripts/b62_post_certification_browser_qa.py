@@ -187,9 +187,27 @@ async def _desktop_long_answer_probe(browser: Browser) -> dict[str, Any]:
         if copied != LONG_ANSWER:
             raise AssertionError(f"copy source fidelity failed: {len(copied)} != {len(LONG_ANSWER)}")
 
+        # #4765 (5226e306b68) moved the download action into the collapsed
+        # "···" overflow menu: it renders inside `.answer-more-menu`, which the
+        # app keeps `hidden` until `.answer-more` is pressed. This suite still
+        # clicked `.answer-download` directly, so the click target was never
+        # visible and every run timed out after 30s. Expand the owner-facing
+        # menu exactly the way a user must, then click the download it exposes.
+        # The disclosure is the product contract; the probe follows it.
+        more = assistant.locator(".answer-more")
+        if await more.count() > 0:
+            more_menu = assistant.locator(".answer-more-menu")
+            if await more_menu.evaluate("node => node.hidden"):
+                await more.click()
+                await more_menu.wait_for(state="visible")
+                if await more.get_attribute("aria-expanded") != "true":
+                    raise AssertionError("download overflow menu did not report expanded")
+        download_button = assistant.locator(".answer-download")
+        await download_button.wait_for(state="visible")
+
         download_target = OUT_DIR / "long-answer-fidelity-download.txt"
         async with page.expect_download() as download_info:
-            await assistant.locator(".answer-download").click()
+            await download_button.click()
         download = await download_info.value
         await download.save_as(str(download_target))
         downloaded = download_target.read_text(encoding="utf-8")
