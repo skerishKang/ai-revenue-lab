@@ -393,6 +393,10 @@ class ConnectApp:
         stages = frozenset({
             "not_started", "offer_started", "ready_received",
             "owner_page_open_requested", "owner_link_confirmed",
+            "device_session_tls_verified", "device_session_begin_sent",
+            "device_session_nonce_verified", "device_session_finish_sent",
+            "device_session_bootstrap_verified",
+            "device_session_credential_fetch_sent",
             "credential_once_received", "dpapi_store_confirmed",
             "install_ack_sent", "install_ack_accepted", "enrollment_published",
         })

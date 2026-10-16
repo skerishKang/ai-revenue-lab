@@ -126,12 +126,12 @@ def _fake_binding(fields, *, now, expires_at):
     return SimpleNamespace(**fields)
 
 
-def run(sock, store=None, trusted=None):
+def run(sock, store=None, trusted=None, *, on_stage=None):
     return asyncio.run(run_review_only_device_session(
         socket=sock, trusted_tls=trusted or Trusted(),
         receiver=LocalStoreCredentialReceiver(store=store or Store(), now_factory=lambda: NOW),
         challenge_id=CID, device_id=DEVICE, pairing_code=CODE, now=NOW,
-        binding_factory=_fake_binding,
+        binding_factory=_fake_binding, on_stage=on_stage,
     ))
 
 
@@ -361,3 +361,86 @@ def test_exact_wss_delivery_drives_real_canonical_windows_dpapi_store(tmp_path):
     )
     assert CREDENTIAL not in persisted
     assert base64.b64encode(CREDENTIAL) not in persisted
+
+
+def test_device_wss_source_stage_codes_observe_canonical_success_without_secrets():
+    stages = []
+    sock = Socket()
+    result = run(sock, on_stage=stages.append)
+    assert result.lifecycle == "paired_offline"
+    assert stages == [
+        "device_session_tls_verified",
+        "device_session_begin_sent",
+        "device_session_nonce_verified",
+        "device_session_finish_sent",
+        "device_session_bootstrap_verified",
+        "device_session_credential_fetch_sent",
+        "credential_once_received",
+        "dpapi_store_confirmed",
+        "install_ack_sent",
+        "install_ack_accepted",
+    ]
+    emitted = " ".join(stages)
+    for private in (CODE, CID, DEVICE, LEASE, NONCE, CREDENTIAL.decode()):
+        assert private not in emitted
+
+
+def test_device_wss_source_stages_preserve_nonce_and_tls_fail_closed():
+    denied_tls_stages = []
+    tls_socket = Socket()
+    with pytest.raises(DeviceSessionRefused, match="trusted_tls_required"):
+        run(tls_socket, trusted=Trusted(ok=False), on_stage=denied_tls_stages.append)
+    assert denied_tls_stages == []
+    assert tls_socket.sent == []
+    assert tls_socket.closed is True
+
+    nonce_stages = []
+    nonce_socket = Socket(corrupted="nonce_swap")
+    with pytest.raises(DeviceSessionRefused, match="device_nonce_correlation_invalid"):
+        run(nonce_socket, on_stage=nonce_stages.append)
+    assert nonce_stages == [
+        "device_session_tls_verified", "device_session_begin_sent",
+    ]
+    assert nonce_socket.closed is True
+
+
+def test_device_wss_source_transport_error_remains_bounded_and_closes():
+    stages = []
+
+    class BrokenTransport(Socket):
+        async def receive_text(self):
+            raise OSError("private transport detail must not leak")
+
+    sock = BrokenTransport()
+    with pytest.raises(DeviceSessionRefused, match=r"^device_session_security_hold$"):
+        run(sock, on_stage=stages.append)
+    assert stages == [
+        "device_session_tls_verified", "device_session_begin_sent",
+    ]
+    assert sock.closed is True
+
+
+def test_installed_connector_persists_new_safe_device_session_stage(tmp_path):
+    from claw_connect.runtime import ConnectApp
+
+    holder = SimpleNamespace(_state_dir=str(tmp_path), _offer_stage="owner_link_confirmed")
+    ConnectApp._record_offer_stage(holder, "device_session_begin_sent")
+    state = json.loads((tmp_path / "customer-offer-stage.json").read_text())
+    assert state == {
+        "stage": "device_session_begin_sent",
+        "result": "in_progress",
+        "reason": None,
+    }
+    ConnectApp._record_offer_stage(
+        holder, "device_session_credential_fetch_sent",
+        failure="device_session_security_hold",
+    )
+    state = json.loads((tmp_path / "customer-offer-stage.json").read_text())
+    assert state == {
+        "stage": "device_session_credential_fetch_sent",
+        "result": "failed",
+        "reason": "device_session_security_hold",
+    }
+    # Unrecognized wire/private values cannot be persisted as stage text.
+    ConnectApp._record_offer_stage(holder, "credential_" + CREDENTIAL.decode())
+    assert json.loads((tmp_path / "customer-offer-stage.json").read_text()) == state
