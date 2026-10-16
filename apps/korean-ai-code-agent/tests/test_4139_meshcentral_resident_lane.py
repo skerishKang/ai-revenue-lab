@@ -8,7 +8,9 @@ authority. No live Broker, no MeshCentral server and no approval minted here.
 """
 from __future__ import annotations
 
+import base64
 import os
+import subprocess
 import sys
 import tempfile
 import types
@@ -49,6 +51,7 @@ from kagent.local_agent_meshcentral_resident_lane import (  # noqa: E402
     MeshCentralTrialTextMaterial,
     MeshCentralTrialTextTarget,
     SingleFileMeshCentralTrialTargetSource,
+    _dpapi_password_provider,
     compose_meshcentral_verified_text_delivery,
     make_meshcentral_trial_text_material,
 )
@@ -600,6 +603,81 @@ class FactoryAndResolverTests(unittest.TestCase):
         self.assertEqual(len(LIVE_TEXT), 113)
         self.assertEqual(sha256(LIVE_TEXT).hexdigest(), LIVE_SHA)
         self.assertEqual(LIVE_TEXT.count(b"\n"), 5)
+
+
+class DpapiPasswordProviderTests(unittest.TestCase):
+    def _blob(self):
+        blob = Path(tempfile.mkdtemp(prefix="padiem_mesh_dpapi_")) / "op.dpapi"
+        blob.write_bytes(b"00")
+        return blob
+
+    def test_provider_avoids_the_security_module_cmdlets(self):
+        seen: dict = {}
+
+        def fake_run(argv, **kwargs):
+            seen["argv"] = argv
+            encoded = base64.b64encode("s3cr3t".encode("utf-16-le"))
+            return subprocess.CompletedProcess(argv, 0, encoded, b"")
+
+        provider = _dpapi_password_provider(str(self._blob()))
+        with patch("subprocess.run", side_effect=fake_run):
+            self.assertEqual(provider(), "s3cr3t")
+        script = " ".join(seen["argv"])
+        self.assertIn("Add-Type -AssemblyName System.Security", script)
+        self.assertIn("ProtectedData", script)
+        self.assertNotIn("ConvertTo-SecureString", script)
+        self.assertNotIn("Import-Module", script)
+
+    def test_provider_decodes_base64_without_locale(self):
+        secret = "r3ad-s3cr3t-ünïcodé-한글"
+        encoded = base64.b64encode(secret.encode("utf-16-le"))
+        provider = _dpapi_password_provider(str(self._blob()))
+        with patch(
+            "subprocess.run",
+            return_value=subprocess.CompletedProcess([], 0, encoded, b""),
+        ):
+            self.assertEqual(provider(), secret)
+
+    def test_provider_refuses_failed_decrypt(self):
+        provider = _dpapi_password_provider(str(self._blob()))
+        with patch(
+            "subprocess.run",
+            return_value=subprocess.CompletedProcess([], 1, b"", b"boom"),
+        ):
+            with self.assertRaises(MeshCentralReadRefused):
+                provider()
+
+    def test_provider_refuses_malformed_output(self):
+        provider = _dpapi_password_provider(str(self._blob()))
+        with patch(
+            "subprocess.run",
+            return_value=subprocess.CompletedProcess([], 0, b"not-base64!!!", b""),
+        ):
+            with self.assertRaises(MeshCentralReadRefused):
+                provider()
+
+    @unittest.skipUnless(sys.platform == "win32", "requires Windows DPAPI")
+    def test_provider_round_trips_a_real_dpapi_blob(self):
+        secret = "r3al-dpap1-round-trip-ünïcodé"
+        blob = Path(tempfile.mkdtemp(prefix="padiem_mesh_dpapi_live_")) / "op.dpapi"
+        protect = (
+            "$ErrorActionPreference='Stop';"
+            "Add-Type -AssemblyName System.Security;"
+            "$plain=[Text.Encoding]::Unicode.GetBytes('"
+            + secret.replace("'", "''")
+            + "');"
+            "$p=[Security.Cryptography.ProtectedData]::Protect("
+            "$plain,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser);"
+            "(-join ($p | ForEach-Object { $_.ToString('x2') })) | "
+            f"Set-Content -LiteralPath '{blob}' -NoNewline -Encoding ascii"
+        )
+        encrypted = subprocess.run(
+            ["powershell", "-NoProfile", "-NonInteractive", "-Command", protect],
+            capture_output=True, timeout=120,
+        )
+        if encrypted.returncode != 0:
+            self.skipTest("DPAPI protect unavailable in this session")
+        self.assertEqual(_dpapi_password_provider(str(blob))(), secret)
 
 
 if __name__ == "__main__":

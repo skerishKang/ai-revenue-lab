@@ -36,6 +36,7 @@ in module state.
 
 from __future__ import annotations
 
+import base64
 import os
 import re
 import subprocess
@@ -464,7 +465,16 @@ def _default_command_runner(argv: list[str], *, input: str, timeout: int) -> Any
 
 
 def _dpapi_password_provider(blob_path: str) -> Callable[[], str]:
-    """Decrypt the operator credential from its DPAPI blob at call time only."""
+    """Decrypt the operator credential from its DPAPI blob at call time only.
+
+    The blob file holds the hex encoding of the DPAPI-protected credential, as
+    written by the deployment. Decryption uses only the ``System.Security``
+    assembly that ships with Windows: the PowerShell ``Security`` module is
+    deliberately *not* used, because under the stock ``-NoProfile
+    -NonInteractive`` host its autoload/import fails (module resolution, then a
+    type-table collision). The plaintext crosses the process boundary as
+    base64, so no console code page can mangle it; decoding happens here.
+    """
 
     if not isinstance(blob_path, str) or not blob_path.strip():
         raise ContractError("the protected operator credential location is required")
@@ -473,22 +483,33 @@ def _dpapi_password_provider(blob_path: str) -> Callable[[], str]:
     literal_path = os.path.abspath(blob_path).replace("'", "''")
     script = (
         "$ErrorActionPreference='Stop';"
-        f"$b=Get-Content -LiteralPath '{literal_path}' -Raw;"
-        "$s=ConvertTo-SecureString $b.Trim();"
-        "[System.Runtime.InteropServices.Marshal]::PtrToStringBSTR("
-        "[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($s))"
+        "Add-Type -AssemblyName System.Security;"
+        f"$h=(Get-Content -LiteralPath '{literal_path}' -Raw).Trim();"
+        "$n=$h.Length/2;$b=New-Object byte[] $n;"
+        "for($i=0;$i -lt $n;$i++){$b[$i]=[Convert]::ToByte($h.Substring($i*2,2),16)};"
+        "$p=[Security.Cryptography.ProtectedData]::Unprotect("
+        "$b,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser);"
+        "[Convert]::ToBase64String($p)"
     )
 
     def provider() -> str:
         completed = subprocess.run(
             ["powershell", "-NoProfile", "-NonInteractive", "-Command", script],
-            capture_output=True, text=True, timeout=60,
+            capture_output=True, timeout=60,
         )
         if getattr(completed, "returncode", None) != 0:
             raise MeshCentralReadRefused(
                 "the protected operator credential could not be decrypted"
             )
-        return completed.stdout.rstrip("\r\n")
+        try:
+            password = base64.b64decode(
+                completed.stdout.strip(), validate=True
+            ).decode("utf-16-le")
+        except (ValueError, UnicodeDecodeError) as exc:
+            raise MeshCentralReadRefused(
+                "the protected operator credential could not be decoded"
+            ) from exc
+        return password.rstrip("\r\n")
 
     return provider
 
