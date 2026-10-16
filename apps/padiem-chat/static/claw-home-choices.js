@@ -147,8 +147,10 @@
           pcStage("approve_receipt_json_invalid");
           throw new Error("owner_receipt_json_invalid");
         }
-        if (reply?.ok !== true || reply.state !== "awaiting_device_confirmation" ||
-            reply.connected !== false || reply.registered !== false ||
+        const pendingReceipt = reply?.state === "awaiting_device_confirmation" && reply.registered === false;
+        const installedReceipt = reply?.state === "paired_offline" && reply.registered === true;
+        if (reply?.ok !== true || (!pendingReceipt && !installedReceipt) ||
+            reply.connected !== false ||
             reply.dispatch_authorized !== false) {
           pcStage("approve_receipt_contract_invalid");
           throw new Error("owner_receipt_invalid");

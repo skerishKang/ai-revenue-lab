@@ -303,6 +303,7 @@ def test_native_pc_identity_preflight_requires_separate_one_click_gate():
     assert type(ports.identity_pc_preflight) is CanonicalOwnerPcIdentityPreflight
     assert ports.one_click_factory is not None
     application=create_app(settings=settings(),connector_owner_enrollment=ports)
+    assert application.state.connector_owner_native_pc_completion is ports.native_pc_completion
     assert OWNER_APPROVE_LINK_PATH in {r.path for r in application.routes}
     # The new proof is a private B54 Service Binding only, not a public
     # redeem/DPAPI completion endpoint or a browser-readable proof.
@@ -359,6 +360,7 @@ def test_canonical_native_gateway_completion_has_three_separate_server_gates():
     assert ports.identity_pc_preflight is not None
     assert ports.one_click_factory is not None
     application=create_app(settings=settings(),connector_owner_enrollment=ports)
+    assert application.state.connector_owner_native_pc_completion is ports.native_pc_completion
     assert OWNER_APPROVE_LINK_PATH in {r.path for r in application.routes}
     assert "/api/claw/connector/enrollments/redeem" not in {
         r.path for r in application.routes

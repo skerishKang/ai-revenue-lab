@@ -231,6 +231,9 @@ class SamePcOwnerPrivateGateway(PrivateNativeBroker):
     async def pending_pc_identity_status(self,payload):
         assert payload=={"request_ref":REQ}
         self.calls.append(("live_pc_status",payload))
+        if getattr(self, "defer_status_once", False):
+            self.defer_status_once = False
+            raise RuntimeError("signed PC fetch has not arrived yet")
         return {
             "request_ref":REQ,"challenge_id":ID,"device_id":DEVICE,
             "signed_fetch_verified":True,"identity_authorized":False,
@@ -252,7 +255,8 @@ class SamePcOwnerPrivateGateway(PrivateNativeBroker):
         }
 
 
-def test_one_existing_signed_B54_owner_proceeds_through_canonical_host_and_ack():
+@pytest.mark.parametrize("delayed_fetch", [False, True])
+def test_one_existing_signed_B54_owner_proceeds_through_canonical_host_and_ack(delayed_fetch):
     from dataclasses import replace
     from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
     from app.connector_owner_identity_pc_completion import CanonicalOwnerPcIdentityPreflight
@@ -262,6 +266,7 @@ def test_one_existing_signed_B54_owner_proceeds_through_canonical_host_and_ack()
     ident=SameOriginalOwnerIdentity()
     broker=OriginalBroker()
     private=SamePcOwnerPrivateGateway()
+    private.defer_status_once = delayed_fetch
     preflight=CanonicalOwnerPcIdentityPreflight(
         identity=ident,broker=broker,private_broker=private,
     )
@@ -284,7 +289,7 @@ def test_one_existing_signed_B54_owner_proceeds_through_canonical_host_and_ack()
     assert result["raw_device_credential"] is False
     assert private.claims==1
     assert len([c for c in broker.calls if c[0]=="redeem"])==1
-    assert [c[0] for c in private.calls]==[
+    assert [c[0] for c in private.calls]==(["live_pc_status"] if delayed_fetch else [])+[
         "live_pc_status","identity_proof_claim",
         "reserve","authenticate","send","ack","ack_sender",
     ]
