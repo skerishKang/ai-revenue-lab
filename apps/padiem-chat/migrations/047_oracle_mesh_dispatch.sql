@@ -29,6 +29,10 @@ CREATE TABLE IF NOT EXISTS oracle_mesh_dispatch (
     file_path TEXT NOT NULL,
     nonce_sha256 TEXT,
     state TEXT NOT NULL,
+    -- First accepted result fingerprint. A resend after a transient store
+    -- failure must match it byte-for-byte; the PC file is never re-read.
+    result_sha256 TEXT,
+    result_bytes INTEGER,
     expires_at TEXT NOT NULL,
     created_at TEXT NOT NULL,
     UNIQUE (user_id, run_id)

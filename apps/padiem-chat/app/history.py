@@ -342,20 +342,22 @@ def _title_from_user_text(text: str) -> str:
 def _changed_rows(result: Any) -> int:
     """How many rows one ``statement.run()`` actually changed.
 
-    ``0`` is the load-bearing value for every guarded state transition in this
-    module: an ``UPDATE`` whose ``WHERE`` matched nothing reports zero here,
-    which is how a conditional write refuses a losing concurrent writer instead
-    of silently reading back someone else's row.
+    ``meta.changes`` is the D1-sanctioned counter for "rows this statement
+    modified". ``rows_written`` is deliberately not used: it also counts index
+    writes, so a guarded single-row UPDATE can report more than one and a real
+    winner would be misread as a loser. ``0`` is the load-bearing value — a
+    conditional write that matched nothing refuses here, which is how a losing
+    concurrent writer never inherits someone else's row.
     """
     if result is None:
         return 0
     meta = result.get("meta") if isinstance(result, dict) else getattr(result, "meta", None)
     if meta is None:
         return 0
-    written = meta.get("rows_written") if isinstance(meta, dict) else getattr(meta, "rows_written", None)
-    if isinstance(written, bool) or not isinstance(written, int):
+    changed = meta.get("changes") if isinstance(meta, dict) else getattr(meta, "changes", None)
+    if isinstance(changed, bool) or not isinstance(changed, int):
         return 0
-    return max(0, written)
+    return max(0, changed)
 
 
 def _batch_returned_row(results: Any, index: int) -> dict[str, Any] | None:
@@ -1796,6 +1798,40 @@ class D1HistoryStore:
         if accepted is None or accepted.get("state") != "received":
             return None
         return {**dict(accepted), "claim": "first"}
+
+    async def record_oracle_mesh_first_result(
+        self, *, dispatch_id: str, content_sha256: str, content_bytes: int
+    ) -> bool:
+        """#4139 — pin the first accepted result fingerprint for one dispatch.
+
+        A resend after a transient store failure must be the *same* result: the
+        executor never re-reads the PC file, so the server pins what arrived
+        first and compares every retry against it. A mismatch is refused instead
+        of appending a second, different body to the same conversation.
+        """
+        for name, value in (("dispatch_id", dispatch_id),
+                            ("content_sha256", content_sha256)):
+            if not isinstance(value, str) or not value:
+                raise HistoryError(f"{name} is required")
+        if isinstance(content_bytes, bool) or not isinstance(content_bytes, int):
+            raise HistoryError("content_bytes must be an integer")
+        written = await self._run(
+            "UPDATE oracle_mesh_dispatch SET result_sha256=?, result_bytes=? "
+            "WHERE dispatch_id=? AND result_sha256 IS NULL",
+            content_sha256, content_bytes, dispatch_id,
+        )
+        if _changed_rows(written) != 1:
+            pinned = await self._first(
+                "SELECT result_sha256, result_bytes FROM oracle_mesh_dispatch "
+                "WHERE dispatch_id=?",
+                dispatch_id,
+            )
+            return (
+                pinned is not None
+                and pinned.get("result_sha256") == content_sha256
+                and pinned.get("result_bytes") == content_bytes
+            )
+        return True
 
     async def mark_oracle_mesh_store_failed(self, *, dispatch_id: str) -> bool:
         """#4139 — park a received dispatch so the same result can be resent.

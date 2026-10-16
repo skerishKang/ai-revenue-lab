@@ -63,6 +63,16 @@ ORACLE_MESH_READ_RESULT_PATH = "/api/claw/connector/mesh-reads/result"
 #: file_path}. Absent or invalid keeps the source unconfigured; the routes
 #: stay unmounted.
 ORACLE_MESH_OWNERSHIP_MAP_ENV = "ORACLE_MESH_OWNERSHIP_MAP"
+#: Which execution lane a TXT request takes:
+#:   "off"    — Mesh execution disabled; the request stays on the native lane.
+#:   "mesh"   — the request runs on the management host through the Mesh
+#:              ownership map, whether or not the PC has a native binding.
+#:   "native" — the request always stays on the native device lane.
+ORACLE_MESH_EXECUTION_MODE_ENV = "ORACLE_MESH_EXECUTION_MODE"
+EXECUTION_MODE_OFF = "off"
+EXECUTION_MODE_MESH = "mesh"
+EXECUTION_MODE_NATIVE = "native"
+_EXECUTION_MODES = (EXECUTION_MODE_OFF, EXECUTION_MODE_MESH, EXECUTION_MODE_NATIVE)
 #: Deployment channel secret for the Oracle executor (Worker env on Chat,
 #: operator-held file on Oracle). Compared constant-time, never logged.
 ORACLE_MESH_CHANNEL_SECRET_ENV = "ORACLE_MESH_CHANNEL_SECRET"
@@ -102,7 +112,9 @@ class OracleMeshReturnSource:
 
     configured = True
 
-    def __init__(self, mapping: Any, channel_secret: Any) -> None:
+    def __init__(
+        self, mapping: Any, channel_secret: Any, mode: Any = EXECUTION_MODE_OFF
+    ) -> None:
         if not isinstance(mapping, (list, tuple)) or not mapping:
             raise TypeError("oracle mesh ownership mapping is required")
         rows = []
@@ -134,6 +146,38 @@ class OracleMeshReturnSource:
             raise TypeError("oracle mesh channel secret invalid")
         self._rows = rows
         self._secret = channel_secret.encode("utf-8")
+        self._mode = mode if mode in _EXECUTION_MODES else EXECUTION_MODE_OFF
+
+    @property
+    def execution_mode(self) -> str:
+        """``off`` | ``mesh`` | ``native`` — which lane a TXT request takes."""
+        return self._mode
+
+    def owns(self, *, account_ref: str, path_relative: str) -> bool:
+        """Whether this account has a verified Mesh target for that file."""
+        return any(
+            row["account_ref"] == account_ref
+            and row["path_relative"] == path_relative
+            for row in self._rows
+        )
+
+    def target_for(
+        self, *, account_ref: str, path_relative: str,
+        device_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        """The single verified Mesh target for this account's requested file.
+
+        Device and node are always server-derived from the ownership map, so
+        an ordinary TXT request never names them. A browser-selected device
+        only narrows the choice; it can never introduce one.
+        """
+        matches = [
+            row for row in self._rows
+            if row["account_ref"] == account_ref
+            and row["path_relative"] == path_relative
+            and (device_id is None or row["device_id"] == device_id)
+        ]
+        return dict(matches[0]) if len(matches) == 1 else None
 
     def check_channel_secret(self, presented: Any) -> bool:
         """Constant-time proof check for the Oracle executor channel."""
@@ -147,22 +191,23 @@ class OracleMeshReturnSource:
 
 
 def build_oracle_mesh_return_source(
-    mapping: Any, channel_secret: Any = None
+    mapping: Any, channel_secret: Any = None, mode: Any = EXECUTION_MODE_OFF
 ) -> OracleMeshReturnSource | None:
     """Worker-root composition only; missing/invalid material is unconfigured."""
     try:
-        return OracleMeshReturnSource(mapping, channel_secret)
+        return OracleMeshReturnSource(mapping, channel_secret, mode)
     except Exception:
         return None
 
 
 def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturnSource | None:
-    """Read the deployment map and channel secret from Worker env. Fail-closed."""
+    """Read the deployment map, channel secret and execution mode from env."""
     from .worker_config import binding_value
 
     try:
         raw_map = binding_value(env, ORACLE_MESH_OWNERSHIP_MAP_ENV)
         raw_secret = binding_value(env, ORACLE_MESH_CHANNEL_SECRET_ENV)
+        raw_mode = binding_value(env, ORACLE_MESH_EXECUTION_MODE_ENV)
     except Exception:
         return None
     if not isinstance(raw_map, str) or not raw_map.strip():
@@ -171,7 +216,62 @@ def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturnSource
         mapping = json.loads(raw_map)
     except (ValueError, TypeError):
         return None
-    return build_oracle_mesh_return_source(mapping, raw_secret)
+    mode = raw_mode.strip().lower() if isinstance(raw_mode, str) else EXECUTION_MODE_OFF
+    return build_oracle_mesh_return_source(mapping, raw_secret, mode)
+
+
+async def resolve_oracle_mesh_execution(
+    request: Request, *, path_relative: str, selected_device_id: str | None = None,
+) -> tuple[dict[str, Any] | None, JSONResponse | None]:
+    """Decide whether one ordinary TXT request runs on the Mesh lane.
+
+    Returns ``(target, None)`` when the request should execute on the
+    management host, ``(None, None)`` when it must stay on the native lane, and
+    ``(None, response)`` for a refusal that the caller must surface.
+
+    Order matters: the ownership decision comes from the deployment map, so an
+    unregistered PC is never filtered out by the native device directory first.
+    Consent, consent withdrawal and the OFF switch are still enforced here —
+    only the *native binding* requirement is dropped, never the checks.
+    """
+    source = getattr(request.app.state, "oracle_mesh_return_source", None)
+    if getattr(source, "configured", False) is not True:
+        return None, None
+    mode = source.execution_mode
+    if mode == EXECUTION_MODE_OFF:
+        return None, None
+    if mode == EXECUTION_MODE_NATIVE:
+        return None, None
+
+    session, denial = await _verified_owner_request(request)
+    if denial is not None or session is None:
+        return None, denial or _error(401, "canonical_session_required")
+    identity = getattr(request.app.state, "control_plane_identity_authority", None)
+    if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
+        return None, _error(503, "oracle_mesh_unconfigured")
+    try:
+        scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
+    except Exception:
+        return None, _error(503, "oracle_mesh_device_directory_unavailable")
+    account_ref = scope.get("account_ref") if isinstance(scope, dict) else None
+    if not isinstance(account_ref, str) or not account_ref:
+        return None, _error(503, "oracle_mesh_device_directory_unavailable")
+    if not source.owns(account_ref=account_ref, path_relative=path_relative):
+        # This account has no verified Mesh target for the file: the request
+        # keeps the native lane rather than silently executing somewhere else.
+        return None, None
+    target = source.target_for(
+        account_ref=account_ref, path_relative=path_relative,
+        device_id=selected_device_id,
+    )
+    if target is None:
+        return None, _error(403, "oracle_mesh_ownership_unverified")
+    return {
+        "device_id": target["device_id"],
+        "root_ref": target["root_ref"],
+        "path_relative": target["path_relative"],
+        "account_ref": account_ref,
+    }, None
 
 
 _NO_STORE = {
@@ -268,7 +368,7 @@ async def dispatch_oracle_mesh_read_intent(
         return _error(503, "oracle_mesh_workspace_unavailable")
 
     mesh_source = _channel_source(request)
-    if mesh_source is None:
+    if mesh_source is None or mesh_source.execution_mode != EXECUTION_MODE_MESH:
         return _error(503, "oracle_mesh_unconfigured")
     identity = getattr(request.app.state, "control_plane_identity_authority", None)
     if not callable(getattr(identity, "resolve_connector_enrollment_consent_for_device", None)):
@@ -320,26 +420,30 @@ async def dispatch_oracle_mesh_read_intent(
         except IdentityBridgeError as exc:
             status = exc.status_code if isinstance(exc.status_code, int) else 503
             if status == 404:
-                # A revoked/removed binding stays a hard refusal; an
-                # unknown one is simply absent on this PC.
-                return _error(404, "oracle_mesh_device_unbound")
-            if status == 403:
+                # No binding for this PC: that is exactly the unregistered case
+                # this lane exists for. It is recorded as absent, not refused,
+                # and nothing is fabricated to replace it.
+                device = None
+            elif status == 403:
                 return _error(403, "oracle_mesh_device_not_usable")
-            return _error(503, "oracle_mesh_broker_unavailable")
+            else:
+                return _error(503, "oracle_mesh_broker_unavailable")
+            device = None
         except Exception:
             return _error(503, "oracle_mesh_broker_unavailable")
-        if (
-            not isinstance(device, dict)
-            or device.get("device_id") != wire["device_id"]
-            or ("account_ref" in device and device["account_ref"] != account_ref)
-            or ("workspace_ref" in device and device["workspace_ref"] != connector_workspace_ref)
-        ):
-            return _error(403, "oracle_mesh_device_not_usable")
-        device_binding_ref = device.get("binding_ref")
-        if device_binding_ref is not None and (
-            not isinstance(device_binding_ref, str) or not device_binding_ref
-        ):
-            return _error(503, "oracle_mesh_broker_unavailable")
+        if device is not None:
+            if (
+                not isinstance(device, dict)
+                or device.get("device_id") != wire["device_id"]
+                or ("account_ref" in device and device["account_ref"] != account_ref)
+                or ("workspace_ref" in device and device["workspace_ref"] != connector_workspace_ref)
+            ):
+                return _error(403, "oracle_mesh_device_not_usable")
+            device_binding_ref = device.get("binding_ref")
+            if device_binding_ref is not None and (
+                not isinstance(device_binding_ref, str) or not device_binding_ref
+            ):
+                return _error(503, "oracle_mesh_broker_unavailable")
 
     try:
         run_row = await history_store.get_claw_run(uid, wire["run_id"])
@@ -550,6 +654,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     history_store = getattr(request.app.state, "history_store", None)
     for method in ("consume_oracle_mesh_dispatch", "finish_oracle_mesh_dispatch",
                    "mark_oracle_mesh_store_failed",
+                   "record_oracle_mesh_first_result",
                    "get_claw_run", "append_local_task_result"):
         if not callable(getattr(history_store, method, None)):
             return _error(503, "oracle_mesh_unconfigured")
@@ -573,6 +678,8 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     content = ""
     summary = ""
     status = ""
+    result_digest = wire["content_sha256"] if wire["content_bytes"] else ""
+    result_size = wire["content_bytes"]
     if wire["termination"] == "exited" and wire["exit_code"] == 0:
         verified_text = _verified_result_text(dispatch, wire)
         if verified_text is None:
@@ -609,6 +716,28 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         )
     if len(content) > 1_000:
         return _error(400, "oracle_mesh_content_unverified")
+
+    # Pin the first accepted result. A resend after a transient store failure
+    # must be the identical bytes: the executor holds them and never re-reads
+    # the PC file, and a differing resend is refused rather than appended.
+    try:
+        same_result = await history_store.record_oracle_mesh_first_result(
+            dispatch_id=wire["dispatch_id"],
+            content_sha256=result_digest,
+            content_bytes=result_size,
+        )
+    except Exception:
+        return _error(503, "oracle_mesh_dispatch_unavailable")
+    if same_result is not True:
+        # Park the claim again: a rejected resend must not burn the retry the
+        # executor still legitimately owns for its identical bytes.
+        try:
+            await history_store.mark_oracle_mesh_store_failed(
+                dispatch_id=wire["dispatch_id"],
+            )
+        except Exception:
+            pass
+        return _error(409, "oracle_mesh_result_fingerprint_mismatch")
 
     run_row = None
     try:

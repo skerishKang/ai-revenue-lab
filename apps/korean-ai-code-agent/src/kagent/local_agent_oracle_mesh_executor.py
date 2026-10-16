@@ -32,6 +32,19 @@ class OracleMeshChannelRefused(RuntimeError):
     """Bounded refusal of one executor/server exchange. Never carries content."""
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Refuses 30x instead of following it.
+
+    ``urllib.request.urlopen`` builds a default opener that *follows* redirects.
+    An executor channel carrying the deployment secret must never be replayed to
+    another origin, so the redirect is surfaced as an ordinary refusal.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: D102
+        del req, fp, code, msg, headers, newurl
+        return None
+
+
 @dataclass(frozen=True, slots=True)
 class OracleMeshDispatch:
     """One claimed dispatch: exactly what the server authorized, nothing more."""
@@ -65,7 +78,8 @@ class OracleMeshExecutor:
     ``read_port`` is the merged private MeshCentral port: it owns the operator
     credential (call-time provider, stdin only, marker on argv) and runs the
     official client. ``transport`` is injected so the network boundary is
-    explicit and testable; the default performs a verified HTTPS request.
+    explicit and testable; the default performs a verified HTTPS request with
+    redirects explicitly refused.
     """
 
     def __init__(
@@ -94,10 +108,11 @@ class OracleMeshExecutor:
         self._read_port = read_port
         self._timeout = timeout_seconds
         self._transport = transport or self._https_post
+        self._pending: Optional[tuple[OracleMeshDispatch, OracleMeshExecutionOutcome]] = None
 
     # ---- channel -------------------------------------------------------
     def _https_post(self, path: str, payload: Optional[dict[str, Any]]) -> tuple[int, dict[str, Any]]:
-        """One verified HTTPS POST. No redirect, no plaintext fallback."""
+        """One verified HTTPS POST. Redirects are refused, not followed."""
         url = f"{self._origin}{path}"
         data = json.dumps(payload or {}).encode("utf-8")
         request = urllib.request.Request(
@@ -109,8 +124,11 @@ class OracleMeshExecutor:
             },
         )
         context = ssl.create_default_context()
+        # urllib follows 30x by default; an executor channel must never be
+        # silently moved to another origin, so redirects are refused outright.
+        opener = urllib.request.build_opener(_NoRedirect())
         try:
-            with urllib.request.urlopen(request, timeout=self._timeout, context=context) as response:
+            with opener.open(request, timeout=self._timeout) as response:
                 raw = response.read(65536)
                 status = int(getattr(response, "status", 0) or 0)
         except urllib.error.HTTPError as exc:
@@ -175,7 +193,13 @@ class OracleMeshExecutor:
     def submit(
         self, dispatch: OracleMeshDispatch, outcome: OracleMeshExecutionOutcome
     ) -> dict[str, Any]:
-        """Submit one outcome. Safe to repeat with the same bytes (no re-read)."""
+        """Submit one outcome, and keep it until the server accepts it.
+
+        A transient store failure answers 503. The exact bytes are then held in
+        memory and resent on the next pass — the PC file is never read a second
+        time. ``resend_pending`` reports that held outcome so the caller can
+        drive the retry without touching the read port again.
+        """
         try:
             text = outcome.body.decode("utf-8") if outcome.body else ""
         except UnicodeDecodeError:
@@ -189,17 +213,32 @@ class OracleMeshExecutor:
             "content_sha256": hashlib.sha256(outcome.body).hexdigest() if outcome.body else "",
             "content_bytes": len(outcome.body),
         }
+        self._pending = (dispatch, outcome)
         status, data = self._post(RESULT_PATH, payload)
         if status == 503:
-            # The server parked the verified result: resend the same bytes.
-            # No second PC read happens on this path.
-            return {"ok": False, "retryable": True}
+            # The server parked the verified result; keep the bytes for a resend.
+            return {"ok": False, "retryable": True, "resend_pending": True}
         if status != 200 or data.get("ok") is not True:
             raise OracleMeshChannelRefused("chat channel refused the result")
+        self._pending = None
         return data
 
+    @property
+    def resend_pending(self) -> bool:
+        """True while an accepted-by-execution result still awaits delivery."""
+        return self._pending is not None
+
+    def resend_pending_result(self) -> Optional[dict[str, Any]]:
+        """Deliver the already-executed result again, without re-reading."""
+        if self._pending is None:
+            return None
+        dispatch, outcome = self._pending
+        return self.submit(dispatch, outcome)
+
     def run_once(self) -> Optional[dict[str, Any]]:
-        """Poll, execute, submit. Returns None when there was nothing to do."""
+        """Retry a held result if any; otherwise poll, execute and submit."""
+        if self._pending is not None:
+            return self.resend_pending_result()
         dispatch = self.poll_once()
         if dispatch is None:
             return None
@@ -215,4 +254,66 @@ __all__ = [
     "OracleMeshDispatch",
     "OracleMeshExecutionOutcome",
     "OracleMeshExecutor",
+    "deployment_secret_password_provider",
+    "make_oracle_mesh_executor",
 ]
+
+def make_oracle_mesh_executor(
+    *,
+    chat_origin: str,
+    channel_secret: str,
+    meshctrl_js: str,
+    login_user: str,
+    password_provider: Callable[[], str],
+    mesh_url: str = "wss://127.0.0.1:4443",
+    work_dir: str | None = None,
+    timeout_seconds: int = 30,
+) -> OracleMeshExecutor:
+    """Build the executor with the REAL official meshctrl read port.
+
+    This is the operational composition: ``meshctrl_js`` is the official
+    ``meshctrl.js`` shipped with the MeshCentral server, ``password_provider``
+    yields the operator credential at call time (on this host it is the
+    mode-0600 deployment secret file), and every read runs that client. No
+    stand-in port is constructible from here.
+    """
+    from .local_agent_meshcentral_private_reader import MeshCentralCliFileReadPort
+
+    def _run(argv, **kwargs):
+        import subprocess
+
+        return subprocess.run(argv, capture_output=True, timeout=kwargs.get("timeout", 120))
+
+    read_port = MeshCentralCliFileReadPort(
+        command_runner=_run,
+        meshctrl_js=meshctrl_js,
+        login_user=login_user,
+        password_provider=password_provider,
+        url=mesh_url,
+        work_dir=work_dir,
+    )
+    return OracleMeshExecutor(
+        chat_origin=chat_origin,
+        channel_secret=channel_secret,
+        read_port=read_port,
+        timeout_seconds=timeout_seconds,
+    )
+
+
+def deployment_secret_password_provider(path: str) -> Callable[[], str]:
+    """Read the mode-restricted deployment secret file at call time only."""
+    import os
+
+    if not isinstance(path, str) or not path.strip():
+        raise ContractError("the deployment secret path is required")
+    if not os.path.isfile(path):
+        raise ContractError("the deployment secret file is missing")
+
+    def provider() -> str:
+        with open(path, "r", encoding="utf-8") as handle:
+            secret = handle.read().strip()
+        if not secret:
+            raise OracleMeshChannelRefused("the deployment secret file is empty")
+        return secret
+
+    return provider

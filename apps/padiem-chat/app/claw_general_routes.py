@@ -538,6 +538,58 @@ async def _dispatch_user_txt_request(
     selected = data.get("device_id")
     if selected is not None and (not isinstance(selected, str) or not selected):
         return _error(422, "txt_read_device_invalid", "선택한 PC를 확인할 수 없습니다.")
+
+    # #4139: an ordinary TXT request may execute on the management host over
+    # the verified Mesh ownership map. That decision is made BEFORE the native
+    # device directory lookup, so a PC without a native binding is not filtered
+    # out first; the native lane below is unchanged for everything else.
+    from .oracle_mesh_read_return_routes import (
+        dispatch_oracle_mesh_read_intent, resolve_oracle_mesh_execution,
+    )
+    mesh_target, mesh_error = await resolve_oracle_mesh_execution(
+        request, path_relative=path_relative, selected_device_id=selected,
+    )
+    if mesh_error is not None:
+        return mesh_error
+    if mesh_target is not None:
+        try:
+            workspace = await _resolve_memory_workspace(request, uid)
+        except Exception:
+            workspace = None
+        if not isinstance(workspace, str) or not workspace:
+            return _error(503, "txt_read_workspace_unavailable", "대화 범위를 확인할 수 없습니다.")
+        history = getattr(request.app.state, "history_store", None)
+        stage = getattr(history, "record_txt_pending_run", None)
+        if not callable(stage):
+            return _error(503, "txt_read_history_unavailable", "대화 저장소를 확인할 수 없습니다.")
+        run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+        try:
+            cid = await stage(
+                user_id=uid, run_id=run.run_id, workspace_id=workspace,
+                user_text=user_text, conversation_id=conversation_id,
+            )
+        except Exception:
+            return _error(503, "txt_read_history_unavailable", "대화 저장에 실패했습니다.")
+        staged = await dispatch_oracle_mesh_read_intent(request, {
+            "device_id": mesh_target["device_id"],
+            "run_id": run.run_id,
+            "root_ref": mesh_target["root_ref"],
+            "path_relative": mesh_target["path_relative"],
+            "confirmed": True,  # derived from this authenticated user's READ text
+        })
+        if staged.status_code != 200:
+            mark_failed = getattr(history, "update_claw_run_status", None)
+            if callable(mark_failed):
+                try:
+                    await mark_failed(uid, run.run_id, "failed")
+                except Exception:
+                    pass
+            return staged
+        return _claw_general_sse(
+            "PC의 TXT 파일을 읽는 중입니다. 실제 파일 내용은 작업 완료 후 이 대화에 표시됩니다.",
+            conversation_id=cid,
+        )
+
     device_id, error = await choose_verified_txt_device(
         request, selected_device_id=selected,
     )

@@ -128,7 +128,8 @@ class History:
         self._seq += 1
         dispatch_id = f"dsp-{self._seq}"
         row = {**fields, "dispatch_id": dispatch_id, "state": "pending",
-               "nonce_sha256": None, "created_at": NOW.isoformat()}
+               "nonce_sha256": None, "result_sha256": None, "result_bytes": None,
+               "created_at": NOW.isoformat()}
         self.rows[dispatch_id] = row
         return dict(row)
 
@@ -167,6 +168,17 @@ class History:
         row["state"] = "store_failed"
         return True
 
+    async def record_oracle_mesh_first_result(self, *, dispatch_id, content_sha256, content_bytes):
+        row = self.rows.get(dispatch_id)
+        if row is None:
+            return False
+        pinned = row.get("result_sha256")
+        if pinned is None:
+            row["result_sha256"] = content_sha256
+            row["result_bytes"] = content_bytes
+            return True
+        return pinned == content_sha256 and row["result_bytes"] == content_bytes
+
     async def finish_oracle_mesh_dispatch(self, *, dispatch_id, outcome):
         row = self.rows.get(dispatch_id)
         if row is None or row["state"] != "received":
@@ -184,8 +196,9 @@ class History:
 
 def state(*, mesh=None, history=None, identity=None, secret=SECRET):
     return SimpleNamespace(
-        oracle_mesh_return_source=routes.build_oracle_mesh_return_source(
+oracle_mesh_return_source=routes.build_oracle_mesh_return_source(
             mesh if mesh is not None else _mapping(), secret,
+            routes.EXECUTION_MODE_MESH,
         ),
         control_plane_identity_authority=identity or Identity(consent()),
         history_store=history or History(),
@@ -453,3 +466,81 @@ def test_history_requires_the_owner_run_and_refuses_foreign_ownership(monkeypatc
     )
     assert status == 404
     assert result["error"]["code"] == "oracle_mesh_run_unavailable"
+
+def test_resend_with_different_bytes_is_refused(monkeypatch):
+    """The pinned first result wins: a differing resend is never appended."""
+    setup_auth(monkeypatch)
+    history = History(append_fails=1)
+    dispatch_id = create_dispatch(history)
+    _, poll, _ = call(routes.oracle_mesh_read_poll,
+                      Request({}, state(history=history), secret=SECRET))
+    nonce = poll["dispatch"]["nonce"]
+
+    first_status, _, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body(dispatch_id, nonce), state(history=history), secret=SECRET),
+    )
+    assert first_status == 503  # transient store failure parked the result
+    other = TEXT + "second body\n"
+    status, result, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body(dispatch_id, nonce, content_utf8=other,
+                            content_sha256=hashlib.sha256(other.encode()).hexdigest(),
+                            content_bytes=len(other.encode())),
+                state(history=history), secret=SECRET),
+    )
+    assert status == 409
+    assert result["error"]["code"] == "oracle_mesh_result_fingerprint_mismatch"
+    assert history.appended == []
+
+    # The identical result still goes through, unchanged.
+    ok_status, ok, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body(dispatch_id, nonce), state(history=history), secret=SECRET),
+    )
+    assert ok_status == 200 and ok["claim"] == "retry"
+    assert history.appended[0]["content"] == "PC 파일 읽기 결과:\n" + TEXT
+
+
+def test_executor_holds_the_result_across_a_store_failure(monkeypatch):
+    """503 parks the result: the executor resends the same bytes, no re-read."""
+    setup_auth(monkeypatch)
+    from kagent.local_agent_oracle_mesh_executor import (
+        OracleMeshDispatch, OracleMeshExecutor,
+    )
+
+    history = History(append_fails=1)
+    dispatch_id = create_dispatch(history)
+    _, poll, _ = call(routes.oracle_mesh_read_poll,
+                      Request({}, state(history=history), secret=SECRET))
+    granted = poll["dispatch"]
+    reads = []
+
+    class ReadPort:
+        def read_bytes(self, *, node_ref, file_path, timeout_seconds):
+            reads.append(file_path)
+            return TEXT_BYTES
+
+    executor = OracleMeshExecutor(
+        chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+        read_port=ReadPort(),
+        transport=lambda path, payload: call(
+            routes.oracle_mesh_read_result,
+            Request(payload, state(history=history), secret=SECRET))[0:2],
+    )
+    dispatched = OracleMeshDispatch(
+        dispatch_id=granted["dispatch_id"], nonce=granted["nonce"],
+        node_ref=granted["node_ref"], file_path=granted["file_path"],
+        command_id=granted["command_id"], run_id=granted["run_id"],
+    )
+    outcome = executor.execute(dispatched)
+    parked = executor.submit(dispatched, outcome)
+    assert parked["retryable"] is True and parked["resend_pending"] is True
+    assert executor.resend_pending is True
+    assert reads == [FILE_PATH]  # exactly one PC read so far
+
+    delivered = executor.run_once()  # retries the held result, no new read
+    assert delivered["ok"] is True and delivered["status"] == "completed"
+    assert reads == [FILE_PATH]  # still one: the file was never read again
+    assert executor.resend_pending is False
+    assert history.appended[0]["content"] == "PC 파일 읽기 결과:\n" + TEXT

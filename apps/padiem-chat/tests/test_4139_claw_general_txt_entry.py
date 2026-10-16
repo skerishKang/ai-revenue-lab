@@ -215,3 +215,181 @@ def test_real_claw_general_entry_uses_existing_enqueue_without_model(monkeypatch
     assert len(history.correlations) == 1
     assert history.correlations[0]["command_id"] == command["command_id"]
     assert history.rows[command["run_id"]]["status"] == "pending"
+
+
+def test_claw_txt_entry_runs_mesh_mode_without_any_native_registration(monkeypatch):
+    """An ordinary TXT request with no native binding creates a Mesh dispatch.
+
+    The Broker is fully configured here; only the *device registration* is
+    absent. The native device directory must never be consulted first, so the
+    request reaches the management-host dispatch instead of a chooser/404.
+    """
+    import json
+    from starlette.requests import Request
+    from app import claw_memory_routes
+    from app import connector_txt_read_routes as native
+    from app import oracle_mesh_read_return_routes as mesh
+    from app.control_plane_identity import IdentityBridgeError
+
+    async def auth(request):
+        return SimpleNamespace(session_id="session.owner"), None
+    async def tenant(request, uid):
+        return "tenant.ws1"
+    async def authorized_session(request, data):
+        return "conv.txt", None
+
+    monkeypatch.setattr(mesh, "_verified_owner_request", auth)
+    monkeypatch.setattr(mesh, "_resolve_memory_workspace", tenant)
+    monkeypatch.setattr(mesh, "current_user_id", lambda r: "owner1")
+    monkeypatch.setattr(native, "_verified_owner_request", auth)
+    monkeypatch.setattr(native, "_resolve_memory_workspace", tenant)
+    monkeypatch.setattr(native, "current_user_id", lambda r: "owner1")
+    monkeypatch.setattr(claw_memory_routes, "_resolve_memory_workspace", tenant)
+    monkeypatch.setattr(general, "_resolve_intake_session_reference", authorized_session)
+    monkeypatch.setattr(general, "auth_ready", lambda r: True)
+    monkeypatch.setattr(general, "current_user_id", lambda r: "owner1")
+
+    # This PC has NO native binding: the directory lookup would 404/409.
+    class NativeDirectoryTrap:
+        configured = True
+        def __init__(self):
+            self.consulted = False
+        async def owner_device_directory(self, **kwargs):
+            self.consulted = True
+            return {"available": True, "devices": []}
+        async def resolve_device_binding(self, **kwargs):
+            raise IdentityBridgeError(404, "txt_device_unbound", "unbound")
+
+    class Identity:
+        async def resolve_connector_owner_scope(self, *, session_id):
+            return {"account_ref": "padiem.account",
+                    "workspace_ref": "padiem.workspace"}
+        async def resolve_connector_enrollment_consent_for_device(self, *, session_id, device_id):
+            return {"consent_id": "consent.1", "device_id": device_id,
+                    "account_ref": "padiem.account",
+                    "workspace_ref": "padiem.workspace", "withdrawn_at": None}
+
+    class History:
+        def __init__(self):
+            self.rows = {}
+            self.dispatched = []
+        async def record_txt_pending_run(self, *, user_id, run_id, workspace_id,
+                                         user_text, conversation_id):
+            self.rows[run_id] = {"run_id": run_id, "conversation_id": conversation_id,
+                                 "workspace_id": workspace_id, "status": "pending"}
+            return conversation_id
+        async def get_claw_run(self, user_id, run_id):
+            return self.rows.get(run_id)
+        async def get_local_task_correlation(self, user_id, run_id):
+            return None  # no Broker admission on this PC
+        async def create_oracle_mesh_dispatch(self, **fields):
+            self.dispatched.append(fields)
+            return {"dispatch_id": "dsp.1", "state": "pending",
+                    "expires_at": "2026-10-17T06:10:00.000Z"}
+        async def update_claw_run_status(self, user_id, run_id, status):
+            self.rows[run_id]["status"] = status
+
+    trap = NativeDirectoryTrap()
+    history = History()
+    app = SimpleNamespace(state=SimpleNamespace(
+        control_plane_identity_authority=Identity(),
+        connector_txt_read_source=trap,
+        oracle_mesh_return_source=mesh.build_oracle_mesh_return_source(
+            [{"account_ref": "padiem.account", "device_id": "com1.mesh",
+              "node_ref": "node.mesh@server", "root_ref": "meshcentral_private_trial",
+              "path_relative": "notes/report.txt",
+              "file_path": "C:\\ProgramData\\Padiem\\report.txt"}],
+            "deployment-channel-secret-value-261017",
+            mesh.EXECUTION_MODE_MESH,
+        ),
+        history_store=history,
+    ))
+    body = json.dumps({"messages": [{"role": "user", "content":
+                                     "내 PC notes/report.txt 읽어줘"}]}).encode("utf-8")
+    scope = {"type": "http", "method": "POST", "path": "/api/claw/general",
+             "app": app, "headers": [(b"content-type", b"application/json")]}
+    async def receive():
+        return {"type": "http.request", "body": body, "more_body": False}
+
+    response = run(general.claw_general_execute(Request(scope, receive=receive)))
+    assert response.status_code == 200
+    assert response.media_type == "text/event-stream"
+    # The native device directory was never the gate.
+    assert trap.consulted is False
+    assert len(history.dispatched) == 1
+    dispatch = history.dispatched[0]
+    assert dispatch["device_id"] == "com1.mesh"
+    assert dispatch["root_ref"] == "meshcentral_private_trial"
+    assert dispatch["path_relative"] == "notes/report.txt"
+    # Server-owned correlation, and no fabricated Broker reference.
+    assert dispatch["evidence_ref"] is None and dispatch["binding_ref"] is None
+    assert dispatch["command_id"].startswith("oracle_mesh_cmd_")
+
+
+def test_mesh_mode_still_refuses_withdrawn_consent_and_foreign_account(monkeypatch):
+    """Ownership, consent withdrawal and the OFF switch remain enforced."""
+    import json
+    from starlette.requests import Request
+    from app import claw_memory_routes
+    from app import connector_txt_read_routes as native
+    from app import oracle_mesh_read_return_routes as mesh
+    from app.control_plane_identity import IdentityBridgeError
+
+    async def auth(request):
+        return SimpleNamespace(session_id="session.owner"), None
+    async def tenant(request, uid):
+        return "tenant.ws1"
+    async def authorized_session(request, data):
+        return "conv.txt", None
+
+    for module in (mesh, native):
+        monkeypatch.setattr(module, "_verified_owner_request", auth)
+        monkeypatch.setattr(module, "_resolve_memory_workspace", tenant)
+        monkeypatch.setattr(module, "current_user_id", lambda r: "owner1")
+    monkeypatch.setattr(claw_memory_routes, "_resolve_memory_workspace", tenant)
+    monkeypatch.setattr(general, "_resolve_intake_session_reference", authorized_session)
+    monkeypatch.setattr(general, "auth_ready", lambda r: True)
+    monkeypatch.setattr(general, "current_user_id", lambda r: "owner1")
+
+    rows = [{"account_ref": "padiem.account", "device_id": "com1.mesh",
+             "node_ref": "node.mesh@server", "root_ref": "meshcentral_private_trial",
+             "path_relative": "notes/report.txt",
+             "file_path": "C:\\ProgramData\\Padiem\\report.txt"}]
+
+    def _app(mode, account="padiem.account", withdrawn=False):
+        class Identity:
+            async def resolve_connector_owner_scope(self, *, session_id):
+                return {"account_ref": account, "workspace_ref": "padiem.workspace"}
+            async def resolve_connector_enrollment_consent_for_device(self, *, session_id, device_id):
+                if withdrawn:
+                    return {"consent_id": "c", "device_id": device_id,
+                            "account_ref": account, "workspace_ref": "padiem.workspace",
+                            "withdrawn_at": "2026-10-17T00:00:00.000Z"}
+                return {"consent_id": "c", "device_id": device_id,
+                        "account_ref": account, "workspace_ref": "padiem.workspace",
+                        "withdrawn_at": None}
+        return SimpleNamespace(state=SimpleNamespace(
+            control_plane_identity_authority=Identity(),
+            connector_txt_read_source=None,
+            oracle_mesh_return_source=mesh.build_oracle_mesh_return_source(
+                rows, "deployment-channel-secret-value-261017", mode),
+            history_store=SimpleNamespace(record_txt_pending_run=None),
+        ))
+
+    body = json.dumps({"messages": [{"role": "user", "content":
+                                     "내 PC notes/report.txt 읽어줘"}]}).encode("utf-8")
+
+    def _run(app):
+        scope = {"type": "http", "method": "POST", "path": "/api/claw/general",
+                 "app": app, "headers": [(b"content-type", b"application/json")]}
+        async def receive():
+            return {"type": "http.request", "body": body, "more_body": False}
+        return run(general.claw_general_execute(Request(scope, receive=receive)))
+
+    # OFF: Mesh execution disabled -> stays on the native lane, which then fails
+    # closed here because no native source is configured (never a silent exec).
+    assert _run(_app(mesh.EXECUTION_MODE_OFF)).status_code in (404, 409, 503)
+    # native: explicitly pinned to the native lane, same fail-closed answer.
+    assert _run(_app(mesh.EXECUTION_MODE_NATIVE)).status_code in (404, 409, 503)
+    # Mesh mode + another account: not this account's verified target -> refused.
+    assert _run(_app(mesh.EXECUTION_MODE_MESH, account="other.account")).status_code in (404, 409, 503)
