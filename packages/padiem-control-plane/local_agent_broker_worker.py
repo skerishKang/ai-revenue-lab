@@ -12,9 +12,7 @@ from local_agent_broker_private_http_bridge import handle_private_device_fetch
 from padiem_control_plane.broker_pending_pc_wss import route_private_pc_wss_upgrade
 from local_agent_broker_office_chunks import compose_broker_office_chunks, read_broker_office_part_rpc
 from local_agent_broker_text_results import compose_broker_text_results, read_verified_file_text_rpc
-from local_agent_broker_installed_profile import (
-    BrokerInstalledExecutionProfileStore, installed_execution_profile_rpc,
-)
+from local_agent_broker_installed_profile import BrokerInstalledExecutionProfileStore, installed_execution_profile_rpc
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState, CloudflareDurableObjectSerializedStateBackend, safe_ref,
 )
@@ -140,6 +138,7 @@ class Default(WorkerEntrypoint):
     transfer_native_pc_credential_once = CanonicalBrokerPendingPcBindingRPC.transfer_native_pc_credential_once
     receive_native_pc_install_ack = CanonicalBrokerPendingPcBindingRPC.receive_native_pc_install_ack
     authenticate_native_pc_install_ack = CanonicalBrokerPendingPcBindingRPC.authenticate_native_pc_install_ack
+    complete_native_pc_enrollment = CanonicalBrokerPendingPcBindingRPC.complete_native_pc_enrollment
 
     def _authority_ref(self) -> str:
         return safe_ref(str(self.env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
