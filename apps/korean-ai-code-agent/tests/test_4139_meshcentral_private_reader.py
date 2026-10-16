@@ -253,9 +253,11 @@ class MeshCentralCliPortTests(unittest.TestCase):
         self.staged: bytes | None = None
         self.returncode = 0
         self.argv_seen: list[str] = []
+        self.input_seen: str | None = None
 
-        def runner(argv, *, timeout):
+        def runner(argv, *, timeout, input):
             self.argv_seen = list(argv)
+            self.input_seen = input
             target = argv[argv.index("--target") + 1]
             if self.returncode == 0 and self.staged is not None:
                 with open(target, "wb") as handle:
@@ -282,6 +284,11 @@ class MeshCentralCliPortTests(unittest.TestCase):
         self.assertEqual(raw, LIVE_TRIAL_TEXT.encode("utf-8"))
         self.assertEqual(sha256(raw).hexdigest(), LIVE_TRIAL_SHA)
         self.assertIn("download", self.argv_seen)
+        self.assertEqual(self.argv_seen[1], "-e")
+        self.assertNotIn("s3cret-at-call-time", self.argv_seen)
+        self.assertEqual(self.input_seen, "s3cret-at-call-time\n")
+        self.assertEqual(self.argv_seen[self.argv_seen.index("--loginpass") + 1],
+                         "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__")
         self.assertEqual(self.argv_seen[self.argv_seen.index("--id") + 1], NODE_REF)
         self.assertEqual(self.argv_seen[self.argv_seen.index("--file") + 1], FILE_PATH)
         self.assertEqual(self.argv_seen[self.argv_seen.index("--url") + 1],

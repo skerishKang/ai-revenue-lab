@@ -49,6 +49,22 @@ from .local_agent_verified_text_result import (
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _MAX_FILE_PATH_CHARS = 512
 
+# The official MeshCtrl CLI remains unchanged. Inject the password via stdin
+# inside a Node bootstrap, so the operating system argv never contains it.
+_PASSWORD_MARKER = "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__"
+_MESHCTRL_STDIN_BOOTSTRAP = (
+    "const fs=require('node:fs');"
+    "const marker='__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__';"
+    "const i=process.argv.indexOf(marker);"
+    "if(i<0)process.exit(2);"
+    "let secret=fs.readFileSync(0,'utf8');"
+    "secret=secret.replace(/\\r?\\n$/,'');"
+    "if(!secret)process.exit(3);"
+    "process.argv[i]=secret;"
+    "require(process.argv[1]);"
+)
+
+
 
 class MeshCentralReadRefused(ValueError):
     """Bounded refusal of one private read. Never carries content or secrets."""
@@ -102,11 +118,12 @@ class MeshCentralCliFileReadPort:
     """The concrete private read over the official ``meshctrl.js`` client.
 
     ``command_runner`` is injected, so the process boundary is explicit and
-    testable: it receives the exact argv and must return an object exposing
-    ``returncode`` (a ``subprocess.run`` result fits). The login password is
-    resolved at call time from ``password_provider`` and passed on the official
-    client's documented ``--loginpass`` argument; this module never stores,
-    logs or returns it, and a failed read is refused without any content.
+    testable: it receives argv and a one-use ``input`` string and must return
+    an object exposing ``returncode`` (a ``subprocess.run`` result fits).
+    The password comes from ``password_provider`` at invocation time, travels
+    over the child process's stdin, and is placed into the official MeshCtrl
+    argument parser by a Node bootstrap inside the child. The OS command line
+    carries only a public marker, never the password.
     """
 
     def __init__(
@@ -144,16 +161,28 @@ class MeshCentralCliFileReadPort:
             self._work_dir, f"padiem-mesh-read-{os.getpid()}-{uuid4().hex}.bin"
         )
         argv = [
-            "node", self._meshctrl_js, "download",
+            "node", "-e", _MESHCTRL_STDIN_BOOTSTRAP,
+            self._meshctrl_js, "download",
             "--url", self._url,
             "--loginuser", self._login_user,
-            "--loginpass", self._password_provider(),
+            "--loginpass", _PASSWORD_MARKER,
             "--id", request.node_ref,
             "--file", request.file_path,
             "--target", target,
         ]
         try:
-            completed = self._command_runner(argv, timeout=timeout_seconds)
+            password = self._password_provider()
+            if (not isinstance(password, str) or not password
+                    or "\n" in password or "\r" in password):
+                raise MeshCentralReadRefused(
+                    "the protected MeshCentral operator credential is invalid"
+                )
+            # The official CLI parses the credential only inside the child;
+            # neither the OS command line nor command logs contain it.
+            completed = self._command_runner(
+                argv, input=password + "\n",
+                timeout=timeout_seconds,
+            )
             if getattr(completed, "returncode", None) != 0:
                 raise MeshCentralReadRefused(
                     "the official meshcentral client refused the private read"
