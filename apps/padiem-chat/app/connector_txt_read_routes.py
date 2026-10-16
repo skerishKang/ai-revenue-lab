@@ -47,6 +47,7 @@ from .connector_txt_approval_material import (
 from .history import HistoryError, HistoryForbidden
 from .control_plane_broker_pairing_client import CloudflareCanonicalBrokerPairingClient
 from .control_plane_identity import IdentityBridgeError
+from .request_telemetry import emit_stage_event
 
 CONNECTOR_TXT_READ_REQUEST_PATH = "/api/claw/connector/text-reads/request"
 _MAX_BODY_BYTES = 4096
@@ -197,7 +198,14 @@ async def choose_verified_txt_device(
         directory = await broker.owner_device_directory(
             account_ref=scope["account_ref"], workspace_ref=scope["workspace_ref"],
         )
-    except Exception:
+    except Exception as exc:
+        # #4139: the native lane resolves the same canonical owner scope as the
+        # Mesh lane and hides the cause behind one fixed code. Retain only the
+        # bounded Identity code on the existing stage-telemetry channel.
+        emit_stage_event(
+            stage="txt_read.owner_scope", outcome="error", duration_ms=0,
+            code=getattr(exc, "code", None),
+        )
         return None, _error(503, "txt_read_device_directory_unavailable")
     if (not isinstance(directory, dict) or directory.get("available") is not True
             or not isinstance(directory.get("devices"), list)
