@@ -26,7 +26,10 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from b62_web_secrets_store_contract import expected_web_secret_bindings  # noqa: E402
+from b62_web_secrets_store_contract import (  # noqa: E402
+    expected_oracle_mesh_bindings,
+    expected_web_secret_bindings,
+)
 from cloudflare_served_version import (  # noqa: E402
     ServedVersionReason,
     ServedVersionResolutionError,
@@ -205,8 +208,10 @@ def verify_secret_set(
     allow_web_store_additions: bool = False,
     allow_b66_membership_secret: bool = False,
     allow_grafana_telemetry: bool = False,
+    allow_oracle_mesh: bool = False,
 ) -> None:
-    if sum((allow_web_store_additions, allow_b66_membership_secret, allow_grafana_telemetry)) > 1:
+    if sum((allow_web_store_additions, allow_b66_membership_secret, allow_grafana_telemetry,
+            allow_oracle_mesh)) > 1:
         raise ServedVersionGuardError("multiple additive secret modes prohibited")
     require_required_secrets(post_bindings, stage="post-deploy")
     post = secret_name_type_set(post_bindings)
@@ -235,6 +240,19 @@ def verify_secret_set(
             raise ServedVersionGuardError("Grafana served Secrets Store identity missing or drift")
         if approved["name"] not in originals:
             expected = tuple(sorted((*expected, (approved["name"], approved["type"]))))
+    if allow_oracle_mesh:
+        # #4139: exactly the two Oracle Mesh Secrets Store identities may be added.
+        originals = {name: kind for name, kind in expected}
+        additions: list[tuple[str, str]] = []
+        for name, identity in expected_oracle_mesh_bindings().items():
+            if name in originals and originals[name] != identity["type"]:
+                raise ServedVersionGuardError("Oracle Mesh original binding type drift")
+            matching = [x for x in post_bindings if x.get("name") == name]
+            if len(matching) != 1 or any(matching[0].get(k) != v for k, v in identity.items()):
+                raise ServedVersionGuardError("Oracle Mesh served Secrets Store identity missing or drift")
+            if name not in originals:
+                additions.append((name, identity["type"]))
+        expected = tuple(sorted((*expected, *additions)))
     if allow_b66_membership_secret:
         approved = ("B66_MEMBERSHIP_ENFORCED", "secret_text")
         if approved[0] in {name for name, _ in expected}:
@@ -302,11 +320,13 @@ def _run_verify(args: argparse.Namespace) -> int:
         allow_web_store_additions=args.allow_add_existing_web_secrets_store,
         allow_b66_membership_secret=args.allow_add_existing_b66_membership_secret,
         allow_grafana_telemetry=args.allow_add_existing_grafana_telemetry,
+        allow_oracle_mesh=args.allow_add_existing_oracle_mesh,
     )
     print(f"POSTDEPLOY_SERVED_VERSION_ID={version_id}")
     print(f"POSTDEPLOY_SERVED_SECRET_COUNT={len(secret_name_type_set(bindings))}")
     _emit_required_present(bindings)
-    if args.allow_add_existing_web_secrets_store or args.allow_add_existing_b66_membership_secret or args.allow_add_existing_grafana_telemetry:
+    if (args.allow_add_existing_web_secrets_store or args.allow_add_existing_b66_membership_secret
+            or args.allow_add_existing_grafana_telemetry or args.allow_add_existing_oracle_mesh):
         print("SERVED_VERSION_SECRET_SET_APPROVED_ADDITIONS=PASS")
     else:
         print("SERVED_VERSION_SECRET_SET_EQUALITY=PASS")
@@ -329,6 +349,7 @@ def main(argv: list[str] | None = None) -> int:
     verify.add_argument("--allow-add-existing-web-secrets-store", action="store_true")
     verify.add_argument("--allow-add-existing-b66-membership-secret", action="store_true")
     verify.add_argument("--allow-add-existing-grafana-telemetry", action="store_true")
+    verify.add_argument("--allow-add-existing-oracle-mesh", action="store_true")
     verify.add_argument("--deployments", required=True, type=Path)
     verify.add_argument("--version-detail", required=True, type=Path)
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
