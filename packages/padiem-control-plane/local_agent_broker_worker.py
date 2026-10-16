@@ -141,6 +141,9 @@ class Default(WorkerEntrypoint):
     receive_native_pc_install_ack = CanonicalBrokerPendingPcBindingRPC.receive_native_pc_install_ack
     authenticate_native_pc_install_ack = CanonicalBrokerPendingPcBindingRPC.authenticate_native_pc_install_ack
 
+    async def complete_native_pc_enrollment(self, payload: dict) -> dict:
+        return await self._stub().complete_native_pc_enrollment(payload)
+
     def _authority_ref(self) -> str:
         return safe_ref(str(self.env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
     def _stub(self):
