@@ -574,16 +574,28 @@ def test_mesh_lane_proceeds_without_a_native_consent_and_refuses_withdrawal(monk
     assert result["error"]["code"] == "oracle_mesh_consent_required"
 
 
-def test_unpinned_operator_row_uses_the_mesh_node_as_the_device(monkeypatch):
-    """An operator-verified row without pins serves the authenticated owner."""
+def test_row_without_account_pin_is_rejected_at_composition(monkeypatch):
+    """An omitted account is never allow-all: the source stays unconfigured."""
     setup_auth(monkeypatch)
     unpinned = [{
         "node_ref": NODE, "root_ref": "meshcentral_private_trial",
         "path_relative": "meshcentral-padiem-trial.txt", "file_path": FILE_PATH,
     }]
+    assert routes.build_oracle_mesh_return_source(unpinned, SECRET) is None
+    source = routes.build_oracle_mesh_return_source(
+        _mapping(account=ACCOUNT, device=None, node=NODE), SECRET,
+        routes.EXECUTION_MODE_MESH,
+    )
+    assert source is not None and source.configured is True
+
+
+def test_pinned_account_with_unpinned_device_uses_the_mesh_node(monkeypatch):
+    """Exact account pin + no device pin: the Mesh node is the device."""
+    setup_auth(monkeypatch)
+    rows = _mapping(account=ACCOUNT, device=None, node=NODE)
+    rows[0].pop("device_id", None)
     history = History()
-    st = state(mesh=unpinned, history=history, identity=Identity(None))
-    # The resolver derives the canonical device from the map: the node itself.
+    st = state(mesh=rows, history=history, identity=Identity(None))
     target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
         Request(intent_body(), st), path_relative="meshcentral-padiem-trial.txt"))
     assert denial is None and target is not None
@@ -654,3 +666,38 @@ def test_env_builder_resolves_the_secrets_store_binding():
     missing = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
         {routes.ORACLE_MESH_OWNERSHIP_MAP_ENV: json.dumps(_mapping())}))
     assert missing is None
+
+
+def test_env_builder_resolves_the_ownership_map_secrets_store_binding():
+    """The ownership map is a Secrets Store object too: resolve it via async get()."""
+    import asyncio
+    import json
+
+    class Store:
+        def __init__(self, value=None, fail=False):
+            self._value = value
+            self._fail = fail
+            self.calls = 0
+        async def get(self):
+            self.calls += 1
+            if self._fail:
+                raise RuntimeError("store unavailable")
+            return self._value
+
+    map_store = Store(json.dumps(_mapping()))
+    env = _deployment_env()
+    env[routes.ORACLE_MESH_OWNERSHIP_MAP_ENV] = map_store
+    source = asyncio.run(routes.build_oracle_mesh_return_source_from_env(env))
+    assert source is not None and source.configured is True
+    assert source.check_channel_secret(SECRET) is True
+    assert map_store.calls == 1
+
+    # An unreadable map store keeps the source unconfigured: routes unmounted.
+    dead_env = _deployment_env()
+    dead_env[routes.ORACLE_MESH_OWNERSHIP_MAP_ENV] = Store(fail=True)
+    assert asyncio.run(routes.build_oracle_mesh_return_source_from_env(dead_env)) is None
+
+    # An empty map value never configures the source.
+    empty_env = _deployment_env()
+    empty_env[routes.ORACLE_MESH_OWNERSHIP_MAP_ENV] = Store("   ")
+    assert asyncio.run(routes.build_oracle_mesh_return_source_from_env(empty_env)) is None

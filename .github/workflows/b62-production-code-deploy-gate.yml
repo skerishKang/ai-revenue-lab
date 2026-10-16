@@ -633,6 +633,42 @@ jobs:
             --custom-status "${custom_status}" --custom-body "${custom_health}"
           echo "B62_PUBLIC_ORIGIN=CHAT_PADIEM_NET"
 
+          # #4139: Oracle Mesh lane presence readback. Names, kinds and the
+          # non-secret execution mode only — the channel secret value and the
+          # raw ownership map are never printed. A missing account pin or a
+          # missing binding is reported as a state, never repaired here.
+          python3 - "${settings}" <<'PY'
+          import json
+          import sys
+
+          bindings = json.load(open(sys.argv[1], encoding="utf-8"))["result"]["bindings"]
+          texts = {b.get("name"): b.get("text") for b in bindings
+                   if isinstance(b, dict) and b.get("type") == "plain_text"}
+          mode = texts.get("ORACLE_MESH_EXECUTION_MODE")
+          print("ORACLE_MESH_EXECUTION_MODE=" + (mode if mode in ("mesh", "native", "off") else "absent"))
+          raw_map = texts.get("ORACLE_MESH_OWNERSHIP_MAP")
+          if not isinstance(raw_map, str) or not raw_map:
+              print("ORACLE_MESH_OWNERSHIP_MAP_PLAINTEXT=absent")
+          else:
+              try:
+                  rows = json.loads(raw_map)
+              except ValueError:
+                  rows = None
+              if not isinstance(rows, list) or not rows:
+                  print("ORACLE_MESH_OWNERSHIP_MAP=malformed")
+              else:
+                  pinned = sum(1 for r in rows
+                               if isinstance(r, dict) and isinstance(r.get("account_ref"), str)
+                               and bool(r["account_ref"]))
+                  print("ORACLE_MESH_OWNERSHIP_MAP=present rows=%d pinned=%d" % (len(rows), pinned))
+          secret = [b.get("type") for b in bindings
+                    if isinstance(b, dict) and b.get("name") == "ORACLE_MESH_CHANNEL_SECRET"]
+          print("ORACLE_MESH_CHANNEL_SECRET_BINDING=" + (secret[0] if len(secret) == 1 else "absent"))
+          owner_map = [b.get("type") for b in bindings
+                       if isinstance(b, dict) and b.get("name") == "ORACLE_MESH_OWNERSHIP_MAP"]
+          print("ORACLE_MESH_OWNERSHIP_MAP_BINDING=" + (owner_map[0] if len(owner_map) == 1 else "absent"))
+          PY
+
           echo "B62_CODE_DEPLOY_READONLY=PASS"
           echo "PRODUCTION_MUTATION=0"
 

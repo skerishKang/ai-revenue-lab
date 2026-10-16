@@ -130,12 +130,12 @@ class OracleMeshReturnSource:
             }
             for name, value in row.items():
                 if value is None:
-                    # ``account_ref``/``device_id`` are optional pins. The
-                    # canonical account ref is minted inside the Identity
-                    # store and cannot be read back by an operator, so a row
-                    # may omit it; the authenticated session still supplies
-                    # the account and a pinned row still matches exactly.
-                    if name not in ("account_ref", "device_id"):
+                    # Only ``device_id`` is an optional pin: when it is absent
+                    # the Mesh node itself is the canonical device identity.
+                    # ``account_ref`` is mandatory — a row without the verified
+                    # PADIEM account never authorizes anybody, and an omitted
+                    # account is never treated as permission for all accounts.
+                    if name != "device_id":
                         raise TypeError(f"oracle mesh ownership {name} invalid")
                     continue
                 if (
@@ -167,9 +167,9 @@ class OracleMeshReturnSource:
 
         ``none``  — the deployment maps no Mesh target for this file at all;
                     the caller keeps the native lane.
-        ``owned`` — a row applies: either it carries no account pin (the
-                    operator verified this file for this deployment) or its
-                    pin equals the authenticated account exactly.
+        ``owned`` — exactly one row pins this verified account for this file.
+                    Only the exact correspondence of verified account and
+                    real Mesh node authorizes execution.
         ``foreign`` — the file is mapped, but only to other pinned accounts:
                     a hard ownership refusal, never a fallback.
         """
@@ -179,8 +179,7 @@ class OracleMeshReturnSource:
         if not rows_for_path:
             return "none"
         for row in rows_for_path:
-            pinned = row.get("account_ref")
-            if pinned is None or pinned == account_ref:
+            if row["account_ref"] == account_ref:
                 return "owned"
         return "foreign"
 
@@ -198,7 +197,7 @@ class OracleMeshReturnSource:
         matches = [
             row for row in self._rows
             if row["path_relative"] == path_relative
-            and (row.get("account_ref") is None or row["account_ref"] == account_ref)
+            and row["account_ref"] == account_ref
             and (device_id is None or row.get("device_id") == device_id or row.get("device_id") is None)
         ]
         return dict(matches[0]) if len(matches) == 1 else None
@@ -236,6 +235,19 @@ class OracleMeshReturnSource:
         return hmac.compare_digest(candidate, self._secret)
 
 
+async def _resolve_oracle_store_text(raw: Any) -> Any:
+    """Plain strings pass through; Secrets Store bindings resolve via async .get()."""
+    if isinstance(raw, str):
+        return raw
+    getter = getattr(raw, "get", None)
+    if not callable(getter):
+        return None
+    resolved = getter()
+    if hasattr(resolved, "__await__"):
+        resolved = await resolved
+    return resolved
+
+
 def build_oracle_mesh_return_source(
     mapping: Any, channel_secret: Any = None, mode: Any = EXECUTION_MODE_OFF
 ) -> OracleMeshReturnSource | None:
@@ -258,7 +270,7 @@ async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturn
     from .worker_config import binding_value
 
     try:
-        raw_map = binding_value(env, ORACLE_MESH_OWNERSHIP_MAP_ENV)
+        raw_map = await _resolve_oracle_store_text(binding_value(env, ORACLE_MESH_OWNERSHIP_MAP_ENV))
         raw_secret = binding_value(env, ORACLE_MESH_CHANNEL_SECRET_ENV)
         raw_mode = binding_value(env, ORACLE_MESH_EXECUTION_MODE_ENV)
     except Exception:
@@ -667,14 +679,14 @@ def _deployment_target_for(
 
     The Mesh node is server-derived from the deployment map: the browser
     names the logical file (root/path) but never the node or the Windows
-    path. Exactly one row must own the file for this account. The account pin
-    and device pin are optional on the row; when present they must match
-    exactly, and an unpinned row contributes its Mesh node as the canonical
-    device identity (the resolver already substituted it on the wire).
+    path. Exactly one row must pin this verified account for this file; the
+    device pin stays optional and an unpinned row contributes its Mesh node
+    as the canonical device identity (the resolver already substituted it on
+    the wire).
     """
     matches = [
         row for row in source._rows
-        if (row.get("account_ref") is None or row["account_ref"] == account_ref)
+        if row["account_ref"] == account_ref
         and (row.get("device_id") is None
              or row["device_id"] == device_id
              or row["node_ref"] == device_id)

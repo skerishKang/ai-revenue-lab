@@ -111,5 +111,37 @@ class FactoryRunnerTests(unittest.TestCase):
         self.assertEqual(captured["encoding"], "utf-8")
 
 
+class EntrypointTests(unittest.TestCase):
+    def test_main_refuses_to_start_without_required_configuration(self):
+        from kagent.local_agent_oracle_mesh_executor import main
+
+        import io
+        import contextlib
+
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            code = main({"ORACLE_MESH_CHAT_ORIGIN": "https://chat.padiem.net"})
+        self.assertEqual(code, 2)
+        self.assertIn("refused to start", err.getvalue())
+        self.assertNotIn(SECRET, err.getvalue())
+
+    def test_main_refuses_a_non_https_origin_before_reading_anything(self):
+        from kagent.local_agent_oracle_mesh_executor import main
+
+        import io
+        import contextlib
+
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            code = main({
+                "ORACLE_MESH_CHAT_ORIGIN": "http://chat.padiem.net",
+                "ORACLE_MESH_CHANNEL_SECRET_FILE": "/nonexistent/secret",
+                "ORACLE_MESH_MESHCTRL_JS": "/nonexistent/meshctrl.js",
+                "ORACLE_MESH_LOGIN_USER": "padiemadmin",
+                "ORACLE_MESH_PASSWORD_FILE": "/nonexistent/password",
+            })
+        self.assertEqual(code, 2)
+
+
 if __name__ == "__main__":
     unittest.main()
