@@ -304,8 +304,7 @@ const tests=[
 ];
 (async()=>{
 for(const tc of tests) {
- const messages=[],listeners={},channels=[],calls=[],stored={};
- const sessionStorage={getItem:k=>stored[k]??null,setItem:(k,v)=>{stored[k]=v}};
+ const messages=[],listeners={},channels=[],calls=[];
  function el(id){return {dataset:id==='clawWorkspace'?{view:'general'}:{},hidden:false,
    disabled:id==='clawComputerDeviceStatusButton',click(){},
    addEventListener(event,fn){listeners[id+':'+event]=fn;}};}
@@ -325,8 +324,7 @@ for(const tc of tests) {
  };
  class Channel{constructor(){channels.push(this)}close(){}}
  const context=vm.createContext({document,console:{info:(line)=>messages.push(line)},
-    window:{addEventListener(){},location:{assign(){}},BroadcastChannel:Channel,
-      sessionStorage},
+    window:{addEventListener(){},location:{assign(){}},BroadcastChannel:Channel},
     fetch:async(url,opts)=>{
       calls.push({url,method:opts.method,credentials:opts.credentials});
       if(tc.failure==='fetch')throw Error('TOKEN_MUST_NOT_LOG');
@@ -350,10 +348,10 @@ for(const tc of tests) {
  for(const code of tc.expected)assert(actual.includes(code),tc.name+':'+JSON.stringify(actual));
  assert(!messages.join('').includes('SECRETS_MUST_NOT_LOG'),tc.name);
  assert(!messages.join('').includes('TOKEN_MUST_NOT_LOG'),tc.name);
- const saved=JSON.parse(stored.padiem_4139_approval_stages_v1);
+ const saved=context.window.__padiemPcConnectStages;
  for(const code of tc.expected)assert(saved.includes(code),tc.name+' buffer '+code);
- assert(!JSON.stringify(stored).includes('SECRETS_MUST_NOT_LOG'),tc.name);
- assert(!JSON.stringify(stored).includes('TOKEN_MUST_NOT_LOG'),tc.name);
+ assert(!JSON.stringify(saved).includes('SECRETS_MUST_NOT_LOG'),tc.name);
+ assert(!JSON.stringify(saved).includes('TOKEN_MUST_NOT_LOG'),tc.name);
 }
 })().catch(e=>{process.stderr.write(String(e.stack));process.exitCode=1});
 """
