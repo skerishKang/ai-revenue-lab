@@ -280,4 +280,44 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # profile adds one thin store composition and two private RPC passthroughs;
     # the actual SQLite/auth implementation remains in separate modules.
     # Update the structural size budget (259 -> 274), preserving its margin.
-    assert len(source.splitlines()) < 278
+    # One required canonical native-PC private RPC delegate was added to this entrypoint.
+    assert len(source.splitlines()) < 280
+
+
+def test_native_pc_terminal_completion_rpc_is_exported_by_the_existing_worker():
+    """The canonical native gateway needs this terminal ACK/complete relay too."""
+    import ast
+
+    root = Path(__file__).resolve().parents[3]
+    worker_path = root / "packages" / "padiem-control-plane" / "local_agent_broker_worker.py"
+    worker = ast.parse(worker_path.read_text(encoding="utf-8"))
+    classes = [node for node in worker.body if isinstance(node, ast.ClassDef)]
+    entry = next(node for node in classes if node.name == "Default")
+    durable = next(node for node in classes if node.name == "LocalAgentBrokerDurableObject")
+
+    exported = [
+        node for node in entry.body
+        if isinstance(node, ast.Assign)
+        and len(node.targets) == 1
+        and isinstance(node.targets[0], ast.Name)
+        and node.targets[0].id == "complete_native_pc_enrollment"
+    ]
+    assert len(exported) == 1
+    value = exported[0].value
+    assert isinstance(value, ast.Attribute)
+    assert value.attr == "complete_native_pc_enrollment"
+    assert isinstance(value.value, ast.Name)
+    assert value.value.id == "CanonicalBrokerPendingPcBindingRPC"
+
+    assert any(
+        isinstance(base, ast.Name) and base.id == "CanonicalBrokerPendingPcLiveRPC"
+        for base in durable.bases
+    )
+    canonical = root / "packages" / "padiem-control-plane" / "padiem_control_plane" / "broker_pending_pc_private_rpc.py"
+    native_mixin = ast.parse(canonical.read_text(encoding="utf-8"))
+    mixins = [node for node in native_mixin.body if isinstance(node, ast.ClassDef)
+              and node.name == "CanonicalBrokerPendingPcLiveRPC"]
+    assert len(mixins) == 1
+    assert sum(isinstance(node, ast.AsyncFunctionDef)
+               and node.name == "complete_native_pc_enrollment"
+               for node in mixins[0].body) == 1
