@@ -17,11 +17,20 @@ from typing import Any, Protocol
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot
 from .control_plane_identity import IdentityBridgeError
+from .request_telemetry import emit_stage_event
 
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _PAIRING_CODE = re.compile(r"^[0-9a-f]{32}$")
 _INTENT_REF = re.compile(r"^link\.[0-9a-f]{32}$")
 _CONFIRM_VERSION = "pc-enrollment-consent-v1"
+_CHALLENGE_FAILURES = frozenset({
+    "durable_pairing_store_unavailable", "durable_pairing_state_corrupt",
+    "durable_pairing_rpc_disabled", "durable_pairing_rate_limit_unconfigured",
+    "durable_pairing_secret_unconfigured", "pairing_issuance_rate_limited",
+    "invalid_durable_pairing_rpc", "canonical_broker_unavailable", "broker_rpc_invalid",
+    "control_plane_rpc_invalid", "control_plane_rpc_unavailable",
+    "enrollment_consent_required", "enrollment_consent_changed_during_issue",
+})
 
 # Intentionally not registered through app_factory or owner runtime mount.
 ONE_CLICK_ENROLLMENT_HTTP_MOUNTED = False
@@ -174,7 +183,10 @@ class OneClickOwnerApproval:
                 canonical_session_id=owner_session.session_id,
                 device_id=device_id,
             )
-        except Exception:
+        except Exception as exc:
+            code = getattr(exc, "code", None)
+            emit_stage_event(stage="pc_owner.challenge_issue", outcome="error", duration_ms=0,
+                             code=code if code in _CHALLENGE_FAILURES else "challenge_issue_unconfirmed")
             raise OneClickDenied("canonical_challenge_unavailable") from None
         if (
             type(issued) is not dict
