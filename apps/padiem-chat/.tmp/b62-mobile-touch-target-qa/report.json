@@ -1,10 +1,89 @@
 {
-  "status": "FAIL",
+  "status": "PASS",
   "scope": "B62 parent-generation mobile touch targets",
   "model_selection": "DEFERRED",
   "low_medium_high": "UNASSIGNED",
   "real_provider_calls": 0,
   "core_b14_change": 0,
   "production_mutation": false,
-  "error": "Error: Page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8784/\nCall log:\n  - navigating to \"http://127.0.0.1:8784/\", waiting until \"domcontentloaded\"\n"
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "target_floor_px": 44.0,
+    "first_view": [
+      {
+        "control": "mobileMenu",
+        "width": 44,
+        "height": 44,
+        "display": "grid",
+        "visibility": "visible",
+        "hidden": false,
+        "visible": true
+      },
+      {
+        "control": "loginButton",
+        "width": 0,
+        "height": 0,
+        "display": "none",
+        "visibility": "visible",
+        "hidden": true,
+        "visible": false
+      },
+      {
+        "control": "attachmentButton",
+        "width": 44,
+        "height": 44,
+        "display": "grid",
+        "visibility": "visible",
+        "hidden": false,
+        "visible": true
+      },
+      {
+        "control": "sendButton",
+        "width": 44,
+        "height": 44,
+        "display": "grid",
+        "visibility": "visible",
+        "hidden": false,
+        "visible": true
+      }
+    ],
+    "drawer": [
+      {
+        "control": "mobileClose",
+        "width": 44,
+        "height": 44,
+        "display": "grid",
+        "visibility": "visible",
+        "hidden": false,
+        "visible": true
+      },
+      {
+        "control": "newChatButton",
+        "width": 179,
+        "height": 44,
+        "display": "flex",
+        "visibility": "visible",
+        "hidden": false,
+        "visible": true
+      },
+      {
+        "control": "brandHome",
+        "width": 150.2,
+        "height": 44,
+        "display": "flex",
+        "visibility": "visible",
+        "hidden": false,
+        "visible": true
+      }
+    ],
+    "under_44_count": 0,
+    "stubbed_static_hosts": [
+      "cdn.jsdelivr.net",
+      "fonts.googleapis.com"
+    ],
+    "unexpected_external_hosts": []
+  }
 }
