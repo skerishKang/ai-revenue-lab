@@ -251,14 +251,19 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     if await options.count() != 4:
         raise AssertionError(f"four-tier matrix incomplete at {label}")
     free = panel.locator('[data-mode-value="free"]')
-    plus = panel.locator('[data-mode-value="plus"]')
-    if await free.is_disabled() or await plus.is_disabled():
-        raise AssertionError(f"Free and Plus must both be selectable at {label}")
+    if await free.is_disabled():
+        raise AssertionError(f"Free must be selectable at {label}")
     if await free.get_attribute("aria-pressed") != "true":
         raise AssertionError(f"Free not selected by default at {label}")
-    for locked in ("pro", "max"):
+    # Owner decision 2026-10-17. This suite certifies the SIGNED-OUT surface (it
+    # asserts the guest account truth above), and #4743 made tier availability
+    # derive from the server-verified member grade. A signed-out visitor
+    # therefore gets Free only; a paid tier unlocks after sign-in and the
+    # owner-assigned grade. Asserting a paid tier here would certify the member
+    # surface this suite does not exercise.
+    for locked in ("plus", "pro", "max"):
         if not await panel.locator(f'[data-mode-value="{locked}"]').is_disabled():
-            raise AssertionError(f"{locked} must be disabled (사용 불가) at {label}")
+            raise AssertionError(f"{locked} must be disabled for a signed-out visitor at {label}")
     await page.keyboard.press("Escape")
     if not await panel.is_hidden():
         raise AssertionError(f"tier panel did not close at {label}")

@@ -1,0 +1,10 @@
+{
+  "status": "FAIL",
+  "scope": "B62 parent-generation mobile touch targets",
+  "model_selection": "DEFERRED",
+  "low_medium_high": "UNASSIGNED",
+  "real_provider_calls": 0,
+  "core_b14_change": 0,
+  "production_mutation": false,
+  "error": "Error: Page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8784/\nCall log:\n  - navigating to \"http://127.0.0.1:8784/\", waiting until \"domcontentloaded\"\n"
+}
