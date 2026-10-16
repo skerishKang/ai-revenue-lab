@@ -29,7 +29,7 @@ def test_collapse_does_not_modify_auth_or_project_conversation_api_routes():
     assert "innerHTML" not in JS
     assert "classList.toggle" in JS
     assert "aria-expanded" in JS
-    assert "localStorage" in JS
+    assert "localStorage" not in JS
     assert "history-actions[open]" in JS
     assert 'row.append(button, manage)' in APP
     assert 'row.append(button, actions)' in APP

@@ -1,6 +1,6 @@
 /* #4890 follow-up: presentation-only collapse for Projects and Recent Chats.
  * No changes to server state, conversation/project handlers, or their contents.
- * Browser local storage retains only booleans; failures fall back to expanded.
+ * Collapsed/expanded booleans are runtime-only; refresh defaults to expanded.
  */
 (function (root, doc) {
   "use strict";
@@ -14,9 +14,7 @@
     const section = doc.getElementById(sectionId);
     const button = doc.getElementById(buttonId);
     if (!section || !button) return;
-    const key = "padiem.sidebar.section." + kind + ".collapsed.v1";
     let collapsed = false;
-    try { collapsed = root.localStorage?.getItem(key) === "1"; } catch (_) {}
     function apply() {
       section.classList.toggle("is-collapsed", collapsed);
       button.setAttribute("aria-expanded", collapsed ? "false" : "true");
@@ -36,7 +34,7 @@
         section.querySelectorAll(".history-actions[open]").forEach((node) => { node.open = false; });
       }
       apply();
-      try { root.localStorage?.setItem(key, collapsed ? "1" : "0"); } catch (_) {}
+      // PADIEM disallows browser persistence; keep state in memory only.
     });
     apply();
   }
