@@ -6,12 +6,49 @@ import os
 from pathlib import Path
 from typing import Any
 
-from playwright.async_api import Page, async_playwright
+from playwright.async_api import Page, Route, async_playwright
 
 
 BASE_URL = os.environ.get("B62_QA_BASE_URL", "http://127.0.0.1:8765")
 OUT_DIR = Path(os.environ.get("B62_QA_OUT_DIR", ".tmp/b62-browser-qa"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+# #4743 derives tier availability from the server-verified member grade, so an
+# anonymous page exposes only `free` by design (member_grade_access.py: missing
+# membership evidence never grants a paid tier). This suite certifies the tier
+# picker for a signed-in member — the case its assertions describe — exactly as
+# the other B62 browser QA suites stub /api/auth/status. Before this stub the
+# suite ran as a guest and asserted `plus` was selectable, so it failed on every
+# run after #4743 even though the page was behaving as designed.
+MEMBER_GRADE = os.environ.get("B62_MODE_QA_MEMBER_GRADE", "plus")
+
+
+async def _stub_member_session(page: Page) -> None:
+    async def auth_status(route: Route) -> None:
+        await route.fulfill(
+            status=200,
+            content_type="application/json; charset=utf-8",
+            body=json.dumps(
+                {
+                    "ready": True,
+                    "authenticated": True,
+                    "history_ready": True,
+                    "project_files_ready": False,
+                    "session_state": "signed_in",
+                    "member_grade": MEMBER_GRADE,
+                    "user": {
+                        "id": "usr_mode_presentation_fixture",
+                        "email": "mode-presentation@example.test",
+                        "name": "Mode Presentation QA",
+                        "picture": "",
+                    },
+                },
+                ensure_ascii=False,
+            ),
+        )
+
+    await page.route("**/api/auth/status", auth_status)
+
 
 THEMES = (
     ("light", "?theme=light"),
@@ -116,6 +153,7 @@ async def main() -> None:
                     page = await browser.new_page(viewport=viewport)
                     try:
                         name = f"{theme}-{viewport_name}"
+                        await _stub_member_session(page)
                         await page.goto(f"{BASE_URL}/{query}", wait_until="domcontentloaded", timeout=30_000)
                         await page.locator("#messageInput").wait_for(state="visible")
                         report["views"][name] = await _exercise(page, name=name)
@@ -142,6 +180,7 @@ async def _english_probe() -> dict[str, Any]:
         browser = await playwright.chromium.launch(headless=True)
         try:
             page = await browser.new_page(viewport={"width": 900, "height": 720})
+            await _stub_member_session(page)
             await page.goto(f"{BASE_URL}/?theme=light&lang=en", wait_until="domcontentloaded", timeout=30_000)
             await page.locator("#messageInput").wait_for(state="visible")
             await page.wait_for_function(
