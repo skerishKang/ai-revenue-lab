@@ -44,7 +44,7 @@ class NativePcDeliveryDenied(RuntimeError):
     """Sanitized; must never contain a raw credential or PC proof."""
 
 
-def _started(owner_do: Any, payload: Any, keys: set[str]):
+def _started(owner_do: Any, payload: Any, keys: set[str], *, completed_ack: bool = False):
     if type(payload) is not dict or set(payload) != keys:
         raise NativePcDeliveryDenied("native_pc_private_fields_invalid")
     if (
@@ -63,7 +63,7 @@ def _started(owner_do: Any, payload: Any, keys: set[str]):
             or datetime.now(timezone.utc) >= base._lease_expires_at
             or actor._socket.closed is not False
             or actor._disconnected is not False
-            or getattr(actor, "_native_delivery_complete", False) is True
+            or getattr(actor, "_native_delivery_complete", False) is not completed_ack
         ):
             raise ValueError("same WSS already lost or reserved")
         return actor
@@ -343,3 +343,27 @@ async def authenticate_native_pc_install_ack(owner_do: Any, payload: Any) -> dic
     # Identity consent after this receipt. No paired_online claim here.
     actor._native_delivery_complete = True
     return {"source_authenticated": True, "registered": False}
+
+
+async def complete_native_pc_enrollment(owner_do: Any, payload: Any) -> dict[str, Any]:
+    """Send the existing terminal frame AFTER B54 verifies ACK and Identity.
+
+    Private transport only: no new credential, grant or ONLINE projection.
+    The original host's final authorization must precede this call.
+    """
+    actor = _started(owner_do, payload, {
+        "request_ref", "challenge_id", "device_id", "lease_ref",
+    }, completed_ack=True)
+    _match(actor, payload)
+    if (getattr(actor, "_native_delivery_phase", None) != "ack_received"
+            or getattr(actor, "_native_terminal_attempted", False) is not False):
+        raise NativePcDeliveryDenied("native_pc_terminal_not_authorized")
+    actor._native_terminal_attempted = True
+    try:
+        await actor._socket.send_text(json.dumps({
+            "type": "terminal", "status": "paired_offline",
+            "can_retry_challenge": False,
+        }, separators=(",", ":"), sort_keys=True))
+    except Exception:
+        raise NativePcDeliveryDenied("native_pc_terminal_uncertain") from None
+    return {"sent_once": True, "connected": False}

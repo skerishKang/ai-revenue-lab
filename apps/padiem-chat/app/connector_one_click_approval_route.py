@@ -41,6 +41,7 @@ _NATIVE_FAILURE_CODES = frozenset({
     "pending_pc_claim_invalid", "pending_pc_identity_changed",
     "native_pc_protected_gateway_unavailable", "native_pc_canonical_result_invalid",
     "enrollment_credential_handoff_failed",
+    "native_pc_terminal_unconfirmed", "native_pc_terminal_revoke_unconfirmed",
 })
 
 
