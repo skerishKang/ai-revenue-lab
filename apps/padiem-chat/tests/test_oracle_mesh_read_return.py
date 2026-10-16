@@ -94,13 +94,21 @@ def consent(device: str = DEVICE, account: str = ACCOUNT) -> dict:
 
 
 class Identity:
-    def __init__(self, granted: dict):
+    def __init__(self, granted: dict | None):
         self._granted = granted
     async def resolve_connector_enrollment_consent_for_device(self, *, session_id, device_id):
         del session_id
+        if self._granted is None:
+            from app.control_plane_identity import IdentityBridgeError
+            raise IdentityBridgeError(
+                403, "enrollment_consent_required", "no consent established")
         if self._granted.get("device_id") != device_id:
-            raise RuntimeError("no consent for this device")
+            raise RuntimeError("consent names another device")
         return dict(self._granted)
+    async def resolve_connector_owner_scope(self, *, session_id):
+        del session_id
+        account = (self._granted or {}).get("account_ref", ACCOUNT)
+        return {"account_ref": account, "workspace_ref": WORKSPACE}
 
 
 class History:
@@ -544,3 +552,57 @@ def test_executor_holds_the_result_across_a_store_failure(monkeypatch):
     assert reads == [FILE_PATH]  # still one: the file was never read again
     assert executor.resend_pending is False
     assert history.appended[0]["content"] == "PC 파일 읽기 결과:\n" + TEXT
+
+def test_mesh_lane_proceeds_without_a_native_consent_and_refuses_withdrawal(monkeypatch):
+    """Consent existence is not a native precondition; withdrawal still is."""
+    setup_auth(monkeypatch)
+    # No consent record at all: the authenticated scope is the authority.
+    history = History()
+    st = state(history=history, identity=Identity(None))
+    status, result, _ = call(
+        routes.oracle_mesh_read_request, Request(intent_body(), st))
+    assert status == 200, result
+    assert history.rows[result["dispatch"]["dispatch_id"]]["state"] == "pending"
+
+    # A withdrawn consent is a hard refusal, never a silent proceed.
+    withdrawn = consent()
+    withdrawn["withdrawn_at"] = NOW.isoformat()
+    st = state(history=History(), identity=Identity(withdrawn))
+    status, result, _ = call(
+        routes.oracle_mesh_read_request, Request(intent_body(), st))
+    assert status == 403
+    assert result["error"]["code"] == "oracle_mesh_consent_required"
+
+
+def test_unpinned_operator_row_uses_the_mesh_node_as_the_device(monkeypatch):
+    """An operator-verified row without pins serves the authenticated owner."""
+    setup_auth(monkeypatch)
+    unpinned = [{
+        "node_ref": NODE, "root_ref": "meshcentral_private_trial",
+        "path_relative": "meshcentral-padiem-trial.txt", "file_path": FILE_PATH,
+    }]
+    history = History()
+    st = state(mesh=unpinned, history=history, identity=Identity(None))
+    # The resolver derives the canonical device from the map: the node itself.
+    target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
+        Request(intent_body(), st), path_relative="meshcentral-padiem-trial.txt"))
+    assert denial is None and target is not None
+    assert target["device_id"] == NODE
+    status, result, _ = call(
+        routes.oracle_mesh_read_request,
+        Request(intent_body(device_id=NODE), st))
+    assert status == 200, result
+    row = history.rows[result["dispatch"]["dispatch_id"]]
+    assert row["device_id"] == NODE and row["node_ref"] == NODE
+    assert row["evidence_ref"] is None and row["binding_ref"] is None
+
+
+def test_foreign_pinned_account_is_a_hard_ownership_refusal(monkeypatch):
+    """The file is mapped, but only to another account: refuse, never fall back."""
+    setup_auth(monkeypatch)
+    st = state(mesh=_mapping(account="account-other-9", device=DEVICE, node=NODE))
+    status, result, _ = call(
+        routes.oracle_mesh_read_request,
+        Request(intent_body(device_id=DEVICE), st))
+    assert status == 403
+    assert result["error"]["code"] == "oracle_mesh_ownership_unverified"

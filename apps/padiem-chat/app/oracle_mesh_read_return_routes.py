@@ -129,6 +129,15 @@ class OracleMeshReturnSource:
                 )
             }
             for name, value in row.items():
+                if value is None:
+                    # ``account_ref``/``device_id`` are optional pins. The
+                    # canonical account ref is minted inside the Identity
+                    # store and cannot be read back by an operator, so a row
+                    # may omit it; the authenticated session still supplies
+                    # the account and a pinned row still matches exactly.
+                    if name not in ("account_ref", "device_id"):
+                        raise TypeError(f"oracle mesh ownership {name} invalid")
+                    continue
                 if (
                     not isinstance(value, str) or not value
                     or len(value) > 1024
@@ -153,13 +162,27 @@ class OracleMeshReturnSource:
         """``off`` | ``mesh`` | ``native`` — which lane a TXT request takes."""
         return self._mode
 
-    def owns(self, *, account_ref: str, path_relative: str) -> bool:
-        """Whether this account has a verified Mesh target for that file."""
-        return any(
-            row["account_ref"] == account_ref
-            and row["path_relative"] == path_relative
-            for row in self._rows
-        )
+    def classify(self, *, account_ref: str, path_relative: str) -> str:
+        """``none`` | ``owned`` | ``foreign`` for one authenticated account.
+
+        ``none``  — the deployment maps no Mesh target for this file at all;
+                    the caller keeps the native lane.
+        ``owned`` — a row applies: either it carries no account pin (the
+                    operator verified this file for this deployment) or its
+                    pin equals the authenticated account exactly.
+        ``foreign`` — the file is mapped, but only to other pinned accounts:
+                    a hard ownership refusal, never a fallback.
+        """
+        rows_for_path = [
+            row for row in self._rows if row["path_relative"] == path_relative
+        ]
+        if not rows_for_path:
+            return "none"
+        for row in rows_for_path:
+            pinned = row.get("account_ref")
+            if pinned is None or pinned == account_ref:
+                return "owned"
+        return "foreign"
 
     def target_for(
         self, *, account_ref: str, path_relative: str,
@@ -169,15 +192,38 @@ class OracleMeshReturnSource:
 
         Device and node are always server-derived from the ownership map, so
         an ordinary TXT request never names them. A browser-selected device
-        only narrows the choice; it can never introduce one.
+        only narrows the choice; it can never introduce one. A row without a
+        device pin contributes its Mesh node as the canonical device identity.
         """
         matches = [
             row for row in self._rows
-            if row["account_ref"] == account_ref
-            and row["path_relative"] == path_relative
-            and (device_id is None or row["device_id"] == device_id)
+            if row["path_relative"] == path_relative
+            and (row.get("account_ref") is None or row["account_ref"] == account_ref)
+            and (device_id is None or row.get("device_id") == device_id or row.get("device_id") is None)
         ]
         return dict(matches[0]) if len(matches) == 1 else None
+
+    def device_hint_for(
+        self, *, account_ref: str, path_relative: str,
+        selected_device_id: str | None = None,
+    ) -> str:
+        """The server-derived device identity for consent lookups.
+
+        The canonical device for an unpinned row is its Mesh node; a pinned
+        row keeps its pin. A browser selection never widens this.
+        """
+        target = self.target_for(
+            account_ref=account_ref, path_relative=path_relative,
+            device_id=selected_device_id,
+        )
+        if target is not None:
+            return target.get("device_id") or target["node_ref"]
+        rows_for_path = [
+            row for row in self._rows if row["path_relative"] == path_relative
+        ]
+        if rows_for_path:
+            return rows_for_path[0].get("device_id") or rows_for_path[0]["node_ref"]
+        return selected_device_id or ""
 
     def check_channel_secret(self, presented: Any) -> bool:
         """Constant-time proof check for the Oracle executor channel."""
@@ -256,10 +302,36 @@ async def resolve_oracle_mesh_execution(
     account_ref = scope.get("account_ref") if isinstance(scope, dict) else None
     if not isinstance(account_ref, str) or not account_ref:
         return None, _error(503, "oracle_mesh_device_directory_unavailable")
-    if not source.owns(account_ref=account_ref, path_relative=path_relative):
-        # This account has no verified Mesh target for the file: the request
-        # keeps the native lane rather than silently executing somewhere else.
+    disposition = source.classify(account_ref=account_ref, path_relative=path_relative)
+    if disposition == "none":
+        # The deployment maps no Mesh target for this file: the request keeps
+        # the native lane rather than silently executing somewhere else.
         return None, None
+    if disposition == "foreign":
+        # The file IS mapped, but only to other accounts. That is a hard
+        # ownership refusal, never a lane fallback.
+        return None, _error(403, "oracle_mesh_ownership_unverified")
+    # Consent withdrawal is enforced HERE, before a run is staged: an owner
+    # who withdrew the connector consent must be refused up front. Absence of
+    # a consent record is not a precondition on this lane (no native
+    # enrollment is required); a backend failure still fails closed.
+    if callable(getattr(identity, "resolve_connector_enrollment_consent_for_device", None)):
+        try:
+            consent = await identity.resolve_connector_enrollment_consent_for_device(
+                session_id=session.session_id,
+                device_id=source.device_hint_for(
+                    account_ref=account_ref, path_relative=path_relative,
+                    selected_device_id=selected_device_id,
+                ),
+            )
+        except IdentityBridgeError as exc:
+            if getattr(exc, "code", None) != "enrollment_consent_required":
+                return None, _error(503, "oracle_mesh_unconfigured")
+        except Exception:
+            return None, _error(503, "oracle_mesh_unconfigured")
+        else:
+            if isinstance(consent, dict) and consent.get("withdrawn_at") is not None:
+                return None, _error(403, "oracle_mesh_consent_required")
     target = source.target_for(
         account_ref=account_ref, path_relative=path_relative,
         device_id=selected_device_id,
@@ -267,7 +339,7 @@ async def resolve_oracle_mesh_execution(
     if target is None:
         return None, _error(403, "oracle_mesh_ownership_unverified")
     return {
-        "device_id": target["device_id"],
+        "device_id": target.get("device_id") or target["node_ref"],
         "root_ref": target["root_ref"],
         "path_relative": target["path_relative"],
         "account_ref": account_ref,
@@ -385,20 +457,49 @@ async def dispatch_oracle_mesh_read_intent(
         consent = await identity.resolve_connector_enrollment_consent_for_device(
             session_id=session.session_id, device_id=wire["device_id"],
         )
+    except IdentityBridgeError as exc:
+        if getattr(exc, "code", None) == "enrollment_consent_required":
+            # Mesh mode deliberately does not require a native enrollment
+            # consent to exist: the authenticated session scope below is the
+            # account authority. A backend failure is still a failure.
+            consent = None
+        else:
+            return _error(503, "oracle_mesh_unconfigured")
     except Exception:
-        return _error(403, "oracle_mesh_consent_required")
-    if (
+        return _error(503, "oracle_mesh_unconfigured")
+    if consent is not None and (
         not isinstance(consent, dict)
         or consent.get("device_id") != wire["device_id"]
-        or not isinstance(consent.get("account_ref"), str)
-        or not consent["account_ref"]
-        or not isinstance(consent.get("workspace_ref"), str)
-        or not consent["workspace_ref"]
         or consent.get("withdrawn_at") is not None
     ):
+        # An existing consent that was withdrawn (or names another device) is
+        # a hard refusal: withdrawal is still enforced.
         return _error(403, "oracle_mesh_consent_required")
-    account_ref = consent["account_ref"]
-    connector_workspace_ref = consent["workspace_ref"]
+
+    # The authenticated Identity session scope supplies the canonical account
+    # and connector workspace. When a live consent exists it must agree with
+    # that same scope; agreement is checked, never assumed.
+    if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        scope = await identity.resolve_connector_owner_scope(
+            session_id=session.session_id,
+        )
+    except Exception:
+        return _error(503, "oracle_mesh_device_directory_unavailable")
+    if (
+        not isinstance(scope, dict)
+        or not isinstance(scope.get("account_ref"), str) or not scope["account_ref"]
+        or not isinstance(scope.get("workspace_ref"), str) or not scope["workspace_ref"]
+    ):
+        return _error(503, "oracle_mesh_device_directory_unavailable")
+    account_ref = scope["account_ref"]
+    connector_workspace_ref = scope["workspace_ref"]
+    if consent is not None and (
+        consent.get("account_ref") != account_ref
+        or consent.get("workspace_ref") != connector_workspace_ref
+    ):
+        return _error(403, "oracle_mesh_consent_required")
 
     # #4139 sovereignty authorization. There is no native PC offer on this PC,
     # so no Broker binding and no Broker-minted evidence exist yet. Execution
@@ -548,12 +649,17 @@ def _deployment_target_for(
 
     The Mesh node is server-derived from the deployment map: the browser
     names the logical file (root/path) but never the node or the Windows
-    path. Exactly one row must own the file for this account+device.
+    path. Exactly one row must own the file for this account. The account pin
+    and device pin are optional on the row; when present they must match
+    exactly, and an unpinned row contributes its Mesh node as the canonical
+    device identity (the resolver already substituted it on the wire).
     """
     matches = [
         row for row in source._rows
-        if row["account_ref"] == account_ref
-        and row["device_id"] == device_id
+        if (row.get("account_ref") is None or row["account_ref"] == account_ref)
+        and (row.get("device_id") is None
+             or row["device_id"] == device_id
+             or row["node_ref"] == device_id)
         and row["root_ref"] == root_ref
         and row["path_relative"] == path_relative
     ]
