@@ -1031,3 +1031,47 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   background: transparent;
   box-shadow: none;
 }
+
+/* #4647 owner request, two measured fixes on the Claw first-use cards.
+ * Every value below was measured on production (chat.padiem.net, theme
+ * padiem-glass) before and after; see the run evidence in the PR. */
+
+/* (1) Icon parity. Chat's .starter-icon resolves to a visible plate
+ * (rgba(34,46,57,.10) + white hairline) with a #2d4557 glyph, while the Claw
+ * cards resolved to the faint white-on-white plate and a near-black #17202a
+ * SVG stroke -- the "no square / heavier" the owner reported. Pin Chat's
+ * plate and glyph so both lanes paint the same first-use cell. */
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .starter-icon {
+  background: rgba(34, 46, 57, .10);
+  border: 1px solid rgba(255, 255, 255, .42);
+  color: #2d4557;
+}
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .claw-card-icon {
+  color: inherit;
+}
+
+/* (2) Composer position. Measured at 1440x900: the shared composer is
+ * [324,723,594,161] and #messageInput is [337,756,568,56] in BOTH lanes, so
+ * the "무엇이든 물어보세요" placeholder the owner asked about is already
+ * pixel-identical. What differs is the connector row: the two Claw hero lines
+ * make #emptyState 89px taller than Chat's (354 vs 265), so the row sits 88px
+ * lower and its bottom edge overlaps the fixed composer by 3px at 1440
+ * (cardBottom 726 vs composerTop 723). At 1920 and 820 the lanes are at parity
+ * or better, and at 390 the row is scroll-clear via the existing 218px
+ * conversation padding. Tightening the hero line-height was measured to make
+ * the block *taller*, so the 3px is reported rather than guessed at. */
+
+/* (3) Truthful ON/OFF colour on every connector card. The computer card already
+ * carried these tokens; drive/GitHub/web fell through to the neutral accent
+ * default, so the state was invisible. "unknown" is deliberately left neutral
+ * (it means "확인 불가", not "not connected"), and the PC-specific
+ * [data-pc-paused] rules above stay more specific so an unverified offline PC
+ * is never painted as an alarm. */
+.app-shell[data-state="claw"] .claw-home-card .claw-connection-toggle[data-connection-state="on"] .claw-state-on {
+  color: #147d42;
+  background: rgba(26, 163, 81, .19);
+}
+.app-shell[data-state="claw"] .claw-home-card .claw-connection-toggle[data-connection-state="off"] .claw-state-off {
+  color: #bd2727;
+  background: rgba(220, 38, 38, .18);
+}
