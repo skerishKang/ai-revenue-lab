@@ -14,13 +14,16 @@ from app.connector_one_click_approval import ONE_CLICK_ENROLLMENT_HTTP_MOUNTED
 from test_4139_connector_one_click_approval import Fixture, REQUEST, CODE, session
 
 
-def post(*, monkeypatch, payload=None, fixture=None, signed=True, configured=True):
+def post(*, monkeypatch, payload=None, fixture=None, signed=True, configured=True,
+         completion=None):
     fx = fixture or Fixture()
     application = Starlette(routes=[
         Route(page.OWNER_APPROVE_LINK_PATH, page.owner_approve_pc_link, methods=["POST"])
     ])
     if configured:
         application.state.connector_one_click_approval = fx.service()
+    if completion is not None:
+        application.state.connector_owner_native_pc_completion = completion
 
     async def owner(request):
         if signed:
@@ -70,6 +73,43 @@ def test_non_owner_denied_before_even_fetching_pending_pc(monkeypatch):
     response, fx = post(monkeypatch=monkeypatch, signed=False)
     assert response.status_code == 401
     assert fx.calls == []
+
+
+def test_configured_completion_reuses_original_owner_and_confirms_installation(monkeypatch):
+    from app.connector_owner_native_pc_completion import CanonicalOwnerNativePcCompletion
+    calls = []
+    async def complete(self, *, signed_owner, request_ref):
+        calls.append((signed_owner.session_id, request_ref))
+        return {
+            "device_id": "windows.device.1", "lifecycle": "paired_offline",
+            "credential_installed_by_canonical_handoff": True,
+        }
+    monkeypatch.setattr(CanonicalOwnerNativePcCompletion, "complete", complete)
+    completion = object.__new__(CanonicalOwnerNativePcCompletion)
+    response, fx = post(monkeypatch=monkeypatch, completion=completion)
+    assert response.status_code == 200
+    assert calls == [(session().session_id, REQUEST)]
+    assert response.json() == {
+        "ok": True, "state": "paired_offline", "device_id": "windows.device.1",
+        "registered": True, "connected": False, "dispatch_authorized": False,
+    }
+    assert [event[0] for event in fx.calls] == ["attest", "consent", "issue", "deliver"]
+    assert CODE not in response.text
+
+
+def test_failed_completion_never_claims_registered_or_exposes_credential(monkeypatch):
+    from app.connector_owner_native_pc_completion import CanonicalOwnerNativePcCompletion
+    from app.control_plane_identity import IdentityBridgeError
+    async def complete(self, **kwargs):
+        raise IdentityBridgeError(503, "enrollment_credential_handoff_failed", CODE)
+    monkeypatch.setattr(CanonicalOwnerNativePcCompletion, "complete", complete)
+    response, fx = post(
+        monkeypatch=monkeypatch, completion=object.__new__(CanonicalOwnerNativePcCompletion),
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "enrollment_credential_handoff_failed"
+    assert CODE not in response.text
+    assert '"registered":true' not in response.text
 
 
 def test_missing_transport_dependency_returns_503_before_pc_action(monkeypatch):

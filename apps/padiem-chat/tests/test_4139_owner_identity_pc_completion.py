@@ -104,9 +104,15 @@ def run(source, *, owner=None):
     ))
 
 
-def test_signed_b54_owner_existing_identity_checks_before_one_use_claim():
+@pytest.mark.parametrize("subject_id", ["owner.1", "oauth|google/user+1"])
+def test_signed_b54_owner_existing_identity_checks_before_one_use_claim(subject_id):
+    from dataclasses import replace
+    from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
     fake=Source()
-    value=run(fake)
+    fake.owner=subject_id
+    fake.binding["owner_ref"]=subject_id
+    owner=replace(session(),subject=CanonicalSubjectRef(SubjectType.USER,subject_id))
+    value=run(fake,owner=owner)
     assert type(value) is VerifiedCanonicalPcHandoff
     assert value.challenge_id==CHALLENGE
     assert value.device_id==DEVICE
@@ -122,7 +128,7 @@ def test_signed_b54_owner_existing_identity_checks_before_one_use_claim():
     assert all(name not in ("redeem","credential_once","paired_offline")
                for name,*_ in fake.calls)
     with pytest.raises(IdentityBridgeError,match="Current PC handoff"):
-        run(fake)
+        run(fake,owner=owner)
     assert len([x for x in fake.calls if x[0]=="claim"])==2
 
 

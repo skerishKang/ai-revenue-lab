@@ -11,6 +11,7 @@ owner/session/consent authorization. Neither substitutes for the other.
 """
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import re
@@ -69,6 +70,7 @@ class CanonicalOwnerPcIdentityPreflight:
 
     async def prepare(
         self, *, signed_owner: AuthSessionSnapshot, request_ref: str,
+        wait_for_fetch: bool = False,
     ) -> VerifiedCanonicalPcHandoff:
         now = datetime.now(timezone.utc)
         if (
@@ -82,14 +84,24 @@ class CanonicalOwnerPcIdentityPreflight:
                 403, "pending_pc_owner_required", "Current B54 owner approval is required.",
             )
 
-        try:
-            status = _private_rpc_dict(await self._private.pending_pc_identity_status({
-                "request_ref": request_ref,
-            }))
-        except Exception:
-            raise IdentityBridgeError(
-                503, "pending_pc_live_fetch_unavailable", "Current PC proof is unavailable.",
-            ) from None
+        # Approval delivery and the PC's signed credential_fetch cross the
+        # network independently. Only this read-only status may be retried;
+        # proof claims and credential redemption below remain one-shot.
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + (5.0 if wait_for_fetch else 0.0)
+        while True:
+            try:
+                status = _private_rpc_dict(await self._private.pending_pc_identity_status({
+                    "request_ref": request_ref,
+                }))
+                break
+            except Exception:
+                if wait_for_fetch and loop.time() < deadline:
+                    await asyncio.sleep(0.1)
+                    continue
+                raise IdentityBridgeError(
+                    503, "pending_pc_live_fetch_unavailable", "Current PC proof is unavailable.",
+                ) from None
         if (
             type(status) is not dict or set(status) != _STATUS
             or status["request_ref"] != request_ref
@@ -111,8 +123,11 @@ class CanonicalOwnerPcIdentityPreflight:
                 or binding.get("challenge_id") != challenge
                 or binding.get("device_id") != device
                 or not all(_ref(binding.get(x)) for x in (
-                    "consent_ref", "owner_ref", "account_ref", "workspace_ref",
+                    "consent_ref", "account_ref", "workspace_ref",
                 ))
+                # Owner is Identity's opaque canonical subject, not a device
+                # ref. Bind it to the already verified session unchanged.
+                or binding.get("owner_ref") != signed_owner.subject.subject_id
             ):
                 raise ValueError("wrong original challenge binding")
             consent = await self._identity.resolve_connector_enrollment_consent_for_device(

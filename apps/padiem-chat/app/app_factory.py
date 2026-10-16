@@ -789,6 +789,10 @@ def create_app(
         getattr(connector_owner_enrollment, "one_click_factory", None)
         if connector_owner_enrollment is not None else None
     )
+    app.state.connector_owner_native_pc_completion = (
+        getattr(connector_owner_enrollment, "native_pc_completion", None)
+        if connector_owner_enrollment is not None else None
+    )
     app.state.identity_shadow_store = identity_shadow_store
     # #3190: owner-gated Project Drive case-folder routes. A missing client fails
     # closed with 503; there is no global/network fallback.

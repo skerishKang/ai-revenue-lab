@@ -15,6 +15,8 @@ from .claw_connector_enrollment_routes import (
 )
 from .connector_one_click_approval import OneClickDenied, OneClickOwnerApproval
 from .connector_owner_one_click_factory import VerifiedOwnerOneClickFactory
+from .connector_owner_native_pc_completion import CanonicalOwnerNativePcCompletion
+from .control_plane_identity import IdentityBridgeError
 from .request_telemetry import emit_stage_event
 
 OWNER_APPROVE_LINK_PATH = "/api/claw/connector/enrollments/approve-link"
@@ -33,6 +35,13 @@ _REFUSAL_STATUSES = {
     "canonical_challenge_invalid": 503,
     "pc_delivery_unconfirmed": 503,
 }
+_NATIVE_FAILURE_CODES = frozenset({
+    "pending_pc_live_fetch_unavailable", "pending_pc_fetch_invalid",
+    "pending_pc_identity_unconfirmed", "pending_pc_claim_unconfirmed",
+    "pending_pc_claim_invalid", "pending_pc_identity_changed",
+    "native_pc_protected_gateway_unavailable", "native_pc_canonical_result_invalid",
+    "enrollment_credential_handoff_failed",
+})
 
 
 async def owner_approve_pc_link(request: Request) -> JSONResponse:
@@ -106,6 +115,33 @@ async def owner_approve_pc_link(request: Request) -> JSONResponse:
         return _error(503, "pending_pc_unavailable")
     emit_stage_event(stage="pc_owner.delivery_requested", outcome="ok",
                      duration_ms=0)
+    completion = getattr(request.app.state, "connector_owner_native_pc_completion", None)
+    if completion is not None:
+        if type(completion) is not CanonicalOwnerNativePcCompletion:
+            return _error(503, "native_pc_registration_unconfirmed")
+        try:
+            installed = await completion.complete(
+                signed_owner=session, request_ref=wire["request_ref"],
+            )
+            if (
+                type(installed) is not dict
+                or installed.get("device_id") != result["device_id"]
+                or installed.get("lifecycle") != "paired_offline"
+                or installed.get("credential_installed_by_canonical_handoff") is not True
+            ):
+                raise ValueError("canonical installation was not confirmed")
+        except Exception as exc:
+            code = getattr(exc, "code", None)
+            safe = code if code in _NATIVE_FAILURE_CODES else "native_pc_registration_unconfirmed"
+            emit_stage_event(stage="pc_owner.native_registration", outcome="error",
+                             duration_ms=0, code=safe)
+            status = exc.status_code if isinstance(exc, IdentityBridgeError) and exc.status_code in (401, 403, 409) else 503
+            return _error(status, safe)
+        emit_stage_event(stage="pc_owner.native_registration", outcome="ok", duration_ms=0)
+        return _json({
+            "ok": True, "state": "paired_offline", "device_id": result["device_id"],
+            "connected": False, "registered": True, "dispatch_authorized": False,
+        }, 200)
     return _json({
         "ok": True, "state": "awaiting_device_confirmation",
         "device_id": result["device_id"], "connected": False,

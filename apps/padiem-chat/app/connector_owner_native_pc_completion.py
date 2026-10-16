@@ -47,7 +47,7 @@ class CanonicalOwnerNativePcCompletion:
         self, *, signed_owner: AuthSessionSnapshot, request_ref: str,
     ) -> dict[str, Any]:
         verified = await self._preflight.prepare(
-            signed_owner=signed_owner, request_ref=request_ref,
+            signed_owner=signed_owner, request_ref=request_ref, wait_for_fetch=True,
         )
         # If any private native RPC is missing, refuse BEFORE consuming the
         # original canonical Broker challenge/issuing a credential.

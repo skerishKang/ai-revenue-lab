@@ -37,19 +37,18 @@
     // Constant-only diagnostic stages. Never log IDs, refs, payloads, cookies.
     function pcStage(code) {
       console.info("PADIEM_4139_STAGE=" + code);
-      // Small per-tab, status-only readback when a live console has not been
-      // preserved. No request refs, account/device identifiers or payloads.
+      // Bounded, in-memory readback only. No browser persistence, request
+      // refs, account/device identifiers or payloads.
       const safe = /^(?:receiver_js_loaded|receiver_ready|click_intent_created|native_uri_issued|pagehide_intent_cleared|offer_message_received|offer_intent_absent|offer_context_rejected|approve_post_dispatch|approve_fetch_rejected|approve_http_(?:[1-5][0-9]{2}|unknown)|approve_denied_[a-z_]{1,65}|approve_receipt_(?:valid|read_failed|too_large|json_invalid|contract_invalid)|approve_failed)$/;
       if (!safe.test(code)) return;
       try {
-        const key = "padiem_4139_approval_stages_v1";
-        const saved = JSON.parse(window.sessionStorage.getItem(key) || "[]");
+        const saved = window.__padiemPcConnectStages;
         const previous = Array.isArray(saved) ? saved.filter(
           (entry) => typeof entry === "string" && safe.test(entry)).slice(-23) : [];
         previous.push(code);
-        window.sessionStorage.setItem(key, JSON.stringify(previous));
+        window.__padiemPcConnectStages = previous;
       } catch {
-        // Private storage may be disabled. Console logging remains sufficient.
+        // Console logging remains sufficient if the page forbids readback.
       }
     }
     pcStage("receiver_js_loaded");
@@ -147,8 +146,10 @@
           pcStage("approve_receipt_json_invalid");
           throw new Error("owner_receipt_json_invalid");
         }
-        if (reply?.ok !== true || reply.state !== "awaiting_device_confirmation" ||
-            reply.connected !== false || reply.registered !== false ||
+        const pendingReceipt = reply?.state === "awaiting_device_confirmation" && reply.registered === false;
+        const installedReceipt = reply?.state === "paired_offline" && reply.registered === true;
+        if (reply?.ok !== true || (!pendingReceipt && !installedReceipt) ||
+            reply.connected !== false ||
             reply.dispatch_authorized !== false) {
           pcStage("approve_receipt_contract_invalid");
           throw new Error("owner_receipt_invalid");
