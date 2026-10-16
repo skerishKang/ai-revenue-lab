@@ -67,6 +67,12 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
         with:
           version: "0.12.5"
+      - name: Verify B66 3839 multipage planning (source-only, no assets)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s apps/b66-pdf-renderer/tests -p 'test_multipage_plan.py' -v
+          node reference/business-66-padiem-quote-v1/tests/quote-multipage-plan.test.cjs
       - name: Prove renderer source identity and private topology
         shell: bash
         run: |
