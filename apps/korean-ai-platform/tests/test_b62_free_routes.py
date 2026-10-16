@@ -16,6 +16,12 @@ from app.pilot.b14_runtime_config import runtime_config
 
 
 @pytest.fixture(autouse=True)
+def _enable_archived_auto_route_tests(monkeypatch):
+    """Archived fixed-chain tests explicitly opt in; live default stays deferred."""
+    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
+
+
+@pytest.fixture(autouse=True)
 def _restore_runtime_config():
     saved_mode = runtime_config.provider_mode
     yield

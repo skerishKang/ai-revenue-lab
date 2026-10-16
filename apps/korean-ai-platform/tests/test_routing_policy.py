@@ -23,6 +23,12 @@ POOLSIDE_KEY = "sk-chain-unit-poolside-0123456789"
 
 
 @pytest.fixture(autouse=True)
+def _enable_archived_auto_route_tests(monkeypatch):
+    """Archived fixed-chain tests explicitly opt in; live default stays deferred."""
+    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
+
+
+@pytest.fixture(autouse=True)
 def _deterministic_chain_env(monkeypatch):
     """Clear chain-affecting env; tests opt in to secrets explicitly."""
     monkeypatch.delenv("PADIEM_B14_CREDENTIAL_01", raising=False)
