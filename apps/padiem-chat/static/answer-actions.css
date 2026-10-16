@@ -2,25 +2,22 @@
  * share, more). The .answer-actions/.answer-action base classes and the
  * answer-copy/answer-download modifiers are preserved for contract tests. */
 
-/* User bubble avatar: small circle on the right of the bubble. Bubble color,
- * size and the row layout stay untouched; only a gap and the avatar are new. */
+/* User turn: the plate is shared with the answer's plate.
+ * The template renders `class="user-avatar assistant-avatar"`, so every
+ * `.assistant-avatar` rule (size, radius, fill, border, shadow) already applies
+ * and stays identical across themes, states and breakpoints. Only the glyph
+ * size and the flex basis belong here; sizing this class locally again would
+ * silently fork the user plate from the answer plate.
+ * Owner decision 2026-10-17: the dark cell and the small purple circle are
+ * gone; both turns read as one voice. */
 .user-message {
-  column-gap: 8px;
-  align-items: flex-end;
+  align-items: start;
 }
 .user-message .message-bubble {
   margin-right: 0;
 }
 .user-avatar {
   flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: rgba(101, 87, 232, 0.12);
-  color: #6557e8;
-  border: 1px solid rgba(101, 87, 232, 0.28);
 }
 .user-avatar svg {
   width: 16px;
@@ -92,9 +89,5 @@
   .answer-action {
     width: 36px;
     height: 36px;
-  }
-  .user-avatar {
-    width: 26px;
-    height: 26px;
   }
 }

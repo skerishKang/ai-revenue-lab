@@ -12,6 +12,8 @@ VISUAL_TAIL = (REPO_ROOT / ".github/scripts/b62_browser_qa_tail_parallel.py").re
 def test_1423_assistant_response_and_error_have_bounded_widths() -> None:
     assert "--padiem-chat-reading-measure: 76ch;" in ALIGNMENT_CSS
     assert ".assistant-content {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
+    # The user turn's text column is scoped to the same bounded lane.
+    assert ".user-message .message-bubble {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
     assert '.assistant-content > .rich-response {' in ALIGNMENT_CSS
     assert '.assistant-content > .error-box {' in ALIGNMENT_CSS
     assert "width: calc(100% - 32px - var(--padiem-chat-meta-gap)) !important;" in ALIGNMENT_CSS

@@ -257,7 +257,11 @@ button:disabled { opacity: .55; cursor: not-allowed; }
   background: #eae8f7;
   white-space: pre-wrap;
 }
-.assistant-message {
+/* The user's turn shares the answer's frame: one avatar plate plus text, so a
+ * Glass reader tells speakers apart by the glyph, not by a surface colour.
+ * Owner decision 2026-10-17 (previously a dark cell with white text). */
+.assistant-message,
+.user-message {
   display: grid;
   grid-template-columns: 36px minmax(0, 1fr);
   gap: 12px;
@@ -450,7 +454,8 @@ button:disabled { opacity: .55; cursor: not-allowed; }
   .send-button { width: 44px; height: 44px; flex-basis: 44px; }
   .composer-note { font-size: 10px; margin-inline: 2px; }
   .message-list { gap: 24px; }
-  .assistant-message { grid-template-columns: 34px minmax(0, 1fr); gap: 10px; }
+  .assistant-message,
+  .user-message { grid-template-columns: 34px minmax(0, 1fr); gap: 10px; }
   .message-bubble { max-width: 92%; }
 }
 

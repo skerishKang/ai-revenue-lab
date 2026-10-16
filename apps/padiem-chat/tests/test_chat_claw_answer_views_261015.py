@@ -85,7 +85,9 @@ def test_user_bubble_has_avatar_and_templates_keep_brand_meta() -> None:
     html = _read("index.html")
     user = re.search(r'<template id="userMessageTemplate">(.*?)</template>', html).group(1)
     assert 'class="message-bubble"' in user
-    assert 'class="user-avatar"' in user
+    # The user plate shares the answer's plate class, so one element carries
+    # both selectors and can never drift from the answer's avatar.
+    assert 'class="user-avatar assistant-avatar"' in user
     assert 'aria-hidden="true"' in user
     assistant = re.search(r'<template id="assistantMessageTemplate">(.*?)</template>', html).group(1)
     assert 'class="assistant-avatar"' in assistant

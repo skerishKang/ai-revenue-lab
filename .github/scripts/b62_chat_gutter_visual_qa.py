@@ -164,7 +164,9 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     user_message = await _box(page, ".user-message")
     user_bubble = await _box(page, ".user-message .message-bubble")
     assistant_message = await _box(page, ".assistant-message")
-    assistant_avatar = await _box(page, ".assistant-avatar")
+    # The user turn shares the `assistant-avatar` class (one plate, two glyphs),
+    # so the bare class resolves to two elements and strict mode rejects it.
+    assistant_avatar = await _box(page, ".assistant-message .assistant-avatar")
     assistant_body = await _box(page, ".assistant-body")
     rich_surface = await _box(page, "#shared-gutter-rich-fixture")
     prose = await _box(page, "#shared-gutter-rich-fixture .rich-response-paragraph")

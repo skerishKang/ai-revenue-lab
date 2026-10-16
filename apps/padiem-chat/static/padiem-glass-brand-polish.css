@@ -1,8 +1,10 @@
 /* Padiem Glass brand parity correction (#1369).
  * Reuse the top-left square P brand language while compensating for the
  * assistant mark's much brighter Glass surface so the mark remains visible.
- */
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-message .assistant-avatar {
+ * Owner (2026-10-17): the user's turn shares the answer's plate, so the same
+ * selector covers both — `.user-avatar` carries `assistant-avatar` in the class
+ * list precisely so this one block can never fork them. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message :is(.assistant-avatar, .user-avatar) {
   width: 32px !important;
   height: 32px !important;
   border: 1px solid rgba(255, 255, 255, .48) !important;

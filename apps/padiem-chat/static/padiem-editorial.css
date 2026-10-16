@@ -271,7 +271,8 @@
   letter-spacing: .025em;
 }
 
-.app-shell[data-state="chat"] .assistant-content {
+.app-shell[data-state="chat"] .assistant-content,
+.app-shell[data-state="chat"] .user-message .message-bubble {
   max-width: 770px;
   color: rgba(247, 249, 252, .93);
   font-size: 17px;
@@ -346,7 +347,8 @@
 }
 
 @media (max-width: 640px) {
-  .app-shell[data-state="chat"] .assistant-content {
+  .app-shell[data-state="chat"] .assistant-content,
+  .app-shell[data-state="chat"] .user-message .message-bubble {
     font-size: 16px;
     line-height: 1.72;
   }

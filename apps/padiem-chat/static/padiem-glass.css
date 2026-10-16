@@ -294,7 +294,8 @@ html[data-theme="padiem-glass"] .message-bubble {
   box-shadow: 0 14px 34px rgba(24, 33, 42, .14);
   backdrop-filter: blur(18px);
 }
-html[data-theme="padiem-glass"] .assistant-content { color: #17212a !important; }
+html[data-theme="padiem-glass"] .assistant-content,
+html[data-theme="padiem-glass"] .user-message .message-bubble { color: #17212a !important; }
 html[data-theme="padiem-glass"] .assistant-meta { color: #53606c !important; }
 
 html[data-theme="padiem-glass"] .source-card,

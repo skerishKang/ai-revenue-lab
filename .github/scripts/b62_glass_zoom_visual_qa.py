@@ -575,7 +575,12 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     conversation_chat = await _assert_horizontally_in_viewport(page, ".conversation")
     composer_chat = await _assert_in_viewport(page, "#composerForm")
     input_chat = await _assert_in_viewport(page, "#messageInput")
-    assistant_avatar = await _assert_horizontally_in_viewport(page, ".assistant-avatar")
+    # Scope to the answer's own plate: the user turn now shares the
+    # `assistant-avatar` class (one plate, two glyphs), so the bare class
+    # resolves to two elements and Playwright's strict mode rejects it.
+    assistant_avatar = await _assert_horizontally_in_viewport(
+        page, "#messageList .assistant-message .assistant-avatar"
+    )
 
     assistant_name = (await page.locator(".assistant-meta span").first.inner_text()).strip()
     if assistant_name != "Padiem Chat":

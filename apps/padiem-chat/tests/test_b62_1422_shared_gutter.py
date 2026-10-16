@@ -26,11 +26,13 @@ def test_desktop_conversation_and_composer_share_one_canonical_lane() -> None:
 def test_internal_message_rail_uses_full_outer_lane_but_keeps_avatar_grid() -> None:
     assert ".message-list {\n  width: 100% !important;\n  margin-inline: 0 !important;" in ALIGNMENT_CSS
     assert ".assistant-body," in ALIGNMENT_CSS
-    assert ".assistant-content {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
+    # The user turn's text column is scoped to the same lane, so a Glass reader
+    # sees one shared frame instead of two different widths.
+    assert ".user-message .message-bubble {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
     # Preserve the assistant grid and match its first track to the accepted
     # 32px Glass avatar so the visible avatar-to-content gap stays intentional.
     assert "grid-template-columns: 32px minmax(0, 1fr) !important;" in ALIGNMENT_CSS
-    assert "assistant-avatar" not in ALIGNMENT_CSS
+    assert ":is(.assistant-message, .user-message) {" in ALIGNMENT_CSS
     assert "display: none" not in ALIGNMENT_CSS
 
 

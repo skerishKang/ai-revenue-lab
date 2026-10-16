@@ -28,7 +28,17 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-co
   max-width: none !important;
 }
 
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-message {
+/* The user's turn shares the answer's frame on Glass, so its text column sits
+ * in the same lane instead of the bubble's old capped width. Owner decision
+ * 2026-10-17. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .message-bubble {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* The user's turn shares the answer's frame on Glass, so both turns sit in the
+ * same 32px rail and the same meta gap. Owner decision 2026-10-17. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] :is(.assistant-message, .user-message) {
   grid-template-columns: 32px minmax(0, 1fr) !important;
   gap: var(--padiem-chat-meta-gap) !important;
 }

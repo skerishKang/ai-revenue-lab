@@ -42,7 +42,8 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-
   -webkit-backdrop-filter: blur(22px) saturate(102%);
 }
 
-html[data-theme="padiem-glass"][data-glass-mode="reading"] .assistant-content {
+html[data-theme="padiem-glass"][data-glass-mode="reading"] .assistant-content,
+html[data-theme="padiem-glass"][data-glass-mode="reading"] .user-message .message-bubble {
   color: #111a22 !important;
 }
 

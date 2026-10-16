@@ -331,7 +331,8 @@
     font-size: 10px;
   }
 
-  .app-shell[data-state="chat"] .assistant-content {
+  .app-shell[data-state="chat"] .assistant-content,
+  .app-shell[data-state="chat"] .user-message .message-bubble {
     font-size: 16px;
     line-height: 1.72;
   }

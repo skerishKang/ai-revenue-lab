@@ -150,16 +150,63 @@ html[data-theme="padiem-glass"] .composer-wrap {
   background: linear-gradient(to bottom, transparent, rgba(187,195,202,.30) 26%, rgba(174,184,192,.58) 100%) !important;
 }
 
-html[data-theme="padiem-glass"] .message-bubble {
-  background: rgba(31, 40, 49, .84);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+/* Owner (2026-10-17): the user's turn reads like the assistant's turn.
+ * A user message and an answer share ONE typographic voice on Glass: no dark
+ * cell, no white-on-dark text, no separate bubble chrome. Both turns are an
+ * avatar plate plus text in the same grid, so the speaker is told apart by the
+ * glyph (person vs "P"), never by a surface colour. This supersedes the earlier
+ * "brighten the bubble one notch" request, which only softened the same cell.
+ *
+ * The plate itself is NOT redeclared here: the template carries
+ * `class="user-avatar assistant-avatar"`, so the user plate already inherits
+ * every `.assistant-avatar` rule in every theme, state and breakpoint and can
+ * never drift from the answer's own plate. Only the two things that genuinely
+ * differ are declared below: the DOM order (text precedes the avatar in the
+ * user template, the reverse of the answer's) and the removed bubble chrome. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message {
+  align-items: start;
+  width: auto;
+  padding-left: 0;
 }
-/* Owner: brighten the user's greeting bubble one notch, without moving or
- * resizing the right-aligned turn; keep readable contrast on glass. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar {
+  grid-column: 1;
+  grid-row: 1;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar svg {
+  width: 17px;
+  height: 17px;
+}
+/* The text keeps the DOM element (and its tests) but loses the cell. */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .message-bubble {
-  background: rgba(68, 79, 89, .90);
-  color: #f7f9fb;
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  font-weight: 400;
+  /* Same body colour the answer text uses on Glass. */
+  color: #17212a;
+}
+/* #1424 anchored the turn to the frame's right edge and capped it at ~88%.
+ * Left-aligned text needs neither, and the gutter sheet that carried them is
+ * not even loaded (verified: no gutter-alignment in document.styleSheets).
+ * Base caps for the other themes stay untouched. */
+
+/* The answer's own plate is 32px in the Chat state; the user turn's plate is
+ * the same element class, so scope it identically and the two can never drift.
+ * (The bare `.assistant-avatar` rule below is the shared default; this one is
+ * the state-specific override that actually wins.) */
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] :is(.assistant-avatar, .user-avatar) {
+  width: 32px;
+  height: 32px;
 }
 
 
@@ -328,7 +375,7 @@ html[data-theme="padiem-glass"] .home-link::before {
   transform: translateY(1px);
 }
 
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .assistant-avatar {
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] :is(.assistant-avatar, .user-avatar) {
   width: 36px;
   height: 36px;
   border: 1px solid rgba(255, 255, 255, .56) !important;
