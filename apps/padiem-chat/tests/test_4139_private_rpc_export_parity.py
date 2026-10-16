@@ -178,6 +178,10 @@ def test_native_pc_gateway_required_rpcs_are_exported_by_same_canonical_broker_w
     worker = CONTROL / "local_agent_broker_worker.py"
     entry = _klass(worker, "Default")
     durable = _klass(worker, "LocalAgentBrokerDurableObject")
+    binding_rpc = _klass(
+        CONTROL / "padiem_control_plane" / "broker_pending_pc_private_rpc.py",
+        "CanonicalBrokerPendingPcBindingRPC",
+    )
     live_rpc = _klass(
         CONTROL / "padiem_control_plane" / "broker_pending_pc_private_rpc.py",
         "CanonicalBrokerPendingPcLiveRPC",
@@ -186,8 +190,26 @@ def test_native_pc_gateway_required_rpcs_are_exported_by_same_canonical_broker_w
         isinstance(base, ast.Name) and base.id == "CanonicalBrokerPendingPcLiveRPC"
         for base in durable.bases
     )
-    entry_names = [node.name for node in entry.body if isinstance(node, ast.AsyncFunctionDef)]
+
     for method in required:
-        assert entry_names.count(method) == 1, f"Default.{method} missing/ambiguous"
-        _exact_private_delegate(_method(entry, method), method)
+        direct_methods = [
+            node for node in entry.body
+            if isinstance(node, ast.AsyncFunctionDef) and node.name == method
+        ]
+        aliases = [
+            node for node in entry.body
+            if isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance(node.targets[0], ast.Name)
+            and node.targets[0].id == method
+        ]
+        assert len(direct_methods) + len(aliases) == 1, f"Default.{method} missing/ambiguous"
+        if direct_methods:
+            _exact_private_delegate(direct_methods[0], method)
+        else:
+            value = aliases[0].value
+            assert isinstance(value, ast.Attribute) and value.attr == method
+            assert isinstance(value.value, ast.Name)
+            assert value.value.id == "CanonicalBrokerPendingPcBindingRPC"
+            _method(binding_rpc, method)
         _method(live_rpc, method)
