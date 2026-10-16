@@ -21,13 +21,17 @@ on:
         description: 'Exact main SHA to deploy'
         required: true
       confirmation:
-        description: 'Type DEPLOY_B14_FROM_EXACT_MAIN to deploy, ROLLBACK_B14_TO_PREVIOUS_VERSION to roll back, or RETIRE_B14_SECRET_OPENROUTER_API_KEY for the #1933 S2-c one-shot dead-secret removal'
+        description: 'Type DEPLOY_B14_FROM_EXACT_MAIN to deploy, PROMOTE_B14_VERIFIED_PRIVATE_CANDIDATE for a prevalidated uploaded version, ROLLBACK_B14_TO_PREVIOUS_VERSION to roll back, or RETIRE_B14_SECRET_OPENROUTER_API_KEY for the #1933 S2-c one-shot dead-secret removal'
         required: true
       # #3704: a rollback must name its own target, the contract the Engine gate
       # established in #2748. Optional at the schema level so a deploy dispatch is
       # not forced to supply it, but the rollback branch refuses to run without
       # it, so Wrangler can never implicitly select a "previous upload" version
       # that no evidence names.
+      candidate_version_id:
+        description: 'Exact uploaded B14 Worker version UUID (protected private-candidate promotion only)'
+        required: false
+        type: string
       rollback_version_id:
         description: 'Exact B14 Worker version id to roll back to (required for the rollback branch)'
         required: false
@@ -548,3 +552,110 @@ jobs:
           path: ${{ runner.temp }}/b14-rollback-evidence.txt
           if-no-files-found: error
           retention-days: 90
+
+  # #4891: promotion consumes a previously uploaded immutable version. Its
+  # private Secrets Store source mapping stays on COM1, never in Actions.
+  # No normal PR or generic source deployment can select this job.
+  promote-verified-private-candidate-b14:
+    if: github.event.inputs.confirmation == 'PROMOTE_B14_VERIFIED_PRIVATE_CANDIDATE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+      - name: Verify exact-main and target account
+        env:
+          B14_SHA: ${{ github.event.inputs.target_sha }}
+          B14_VERSION: ${{ github.event.inputs.candidate_version_id }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$B14_SHA"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "$B14_SHA"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          [[ "$B14_VERSION" =~ ^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$ ]]
+          echo 'B14_CANDIDATE_EXACT_MAIN_INPUT=PASS'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check candidate version, secret GET and real Free inference
+        working-directory: apps/korean-ai-platform
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          B14_SHA: ${{ github.event.inputs.target_sha }}
+          B14_VERSION: ${{ github.event.inputs.candidate_version_id }}
+        run: |
+          set -euo pipefail
+          work="${RUNNER_TEMP}/b14-private-candidate"
+          mkdir -p "$work"
+          npx wrangler@4 versions list --name ai-revenue-korean-ai-platform --json > "$work/versions.json"
+          preview="https://${B14_VERSION:0:8}-ai-revenue-korean-ai-platform.charliekant.workers.dev"
+          curl -fsS --max-time 20 "$preview/api/pilot/health" -o "$work/health.json"
+          curl -fsS --max-time 20 "$preview/api/pilot/models" -o "$work/models.json"
+          python3 ../../.github/scripts/b14_private_candidate_gate.py --version-id "$B14_VERSION" --main-sha "$B14_SHA" --versions-json "$work/versions.json" --health-json "$work/health.json" --models-json "$work/models.json"
+          python3 - "$preview" <<'PY_MODEL'
+          import json, sys, urllib.request, urllib.error
+          url = sys.argv[1].rstrip('/') + '/api/pilot/v1/chat/completions'
+          for model in ('opencode-go/cat-jam-free', 'google/gemini-3.1-flash-lite'):
+              body = json.dumps({'model': model, 'messages': [{'role': 'user', 'content': 'Synthetic release check: one word.'}], 'max_tokens': 48, 'business14': {'product_tier': 'free', 'allow_external_fallback': False, 'max_retries': 0}}).encode()
+              try:
+                  req = urllib.request.Request(url, data=body, headers={'Content-Type': 'application/json'}, method='POST')
+                  with urllib.request.urlopen(req, timeout=40) as response:
+                      if response.status != 200: raise ValueError('NON_200')
+                      result = json.load(response)
+                  answer = result['choices'][0]['message']['content']
+                  if not isinstance(answer, str) or not answer.strip(): raise ValueError('EMPTY')
+              except (urllib.error.HTTPError, urllib.error.URLError, ValueError, KeyError, TypeError, IndexError, OSError):
+                  raise SystemExit('B14_CANDIDATE_MODEL_E2E=FAIL')
+              print('B14_CANDIDATE_MODEL_E2E=PASS')
+          PY_MODEL
+          echo 'PREMUTATION_TWO_OWNER_ROUTES=PASS'
+      - name: Promote candidate with canonical rollback anchor and served verification
+        working-directory: apps/korean-ai-platform
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          B14_VERSION: ${{ github.event.inputs.candidate_version_id }}
+          B14_SERVED_VERSION_SCRIPTS: ${{ github.workspace }}/.github/scripts
+        run: |
+          set -euo pipefail
+          work="${RUNNER_TEMP}/b14-private-promotion"
+          mkdir -p "$work"
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/ai-revenue-korean-ai-platform"
+          curl -fsS --max-time 30 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "$base/deployments" -o "$work/previous.json"
+          old="$(python3 "${B14_SERVED_VERSION_SCRIPTS}/cloudflare_served_version_cli.py" resolve-active --deployments="$work/previous.json")"
+          test -n "$old"
+          echo 'B14_PRIVATE_CANDIDATE_ROLLBACK_ANCHOR=PASS'
+          restore() {
+            if npx wrangler@4 rollback "$old" --yes --name ai-revenue-korean-ai-platform --message 'B14 candidate automatic guarded rollback' > "$work/rollback.log" 2>&1; then
+              echo 'B14_CANDIDATE_ROLLBACK=EXECUTED'
+            else
+              echo 'B14_CANDIDATE_ROLLBACK=FAILED' >&2
+            fi
+          }
+          if ! npx wrangler@4 versions deploy "${B14_VERSION}@100%" --yes --name ai-revenue-korean-ai-platform --message 'B14 exact main protected private candidate' > "$work/deploy.log" 2>&1; then
+            restore
+            exit 1
+          fi
+          sleep 15
+          if ! curl -fsS --max-time 30 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "$base/deployments" -o "$work/served.json"; then
+            restore
+            exit 1
+          fi
+          if ! served="$(python3 "${B14_SERVED_VERSION_SCRIPTS}/cloudflare_served_version_cli.py" resolve-active --deployments="$work/served.json")"; then
+            restore
+            exit 1
+          fi
+          if [ "$served" != "$B14_VERSION" ]; then
+            restore
+            exit 1
+          fi
+          echo "B14_PRIVATE_CANDIDATE_SERVED_VERSION=$served"
+          echo 'B14_PRIVATE_CANDIDATE_SERVED_100_PERCENT=PASS'
