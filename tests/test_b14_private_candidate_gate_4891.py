@@ -36,3 +36,21 @@ def test_fail_closed(broken, reason):
     broken(arguments)
     with pytest.raises(ValueError, match=reason):
         mod.verify_candidate(ID, SHA, *arguments)
+
+
+def test_dispatch_only_and_promotion_after_live_preflight():
+    import yaml
+    workflow = Path(__file__).resolve().parents[1] / '.github/workflows/b14-production-deploy-gate.yml'
+    data = yaml.safe_load(workflow.read_text(encoding='utf-8'))
+    jobs = data['jobs']
+    promotion = jobs['promote-verified-private-candidate-b14']
+    assert promotion['environment'] == 'production'
+    assert promotion['if'] == "github.event.inputs.confirmation == 'PROMOTE_B14_VERIFIED_PRIVATE_CANDIDATE'"
+    steps = promotion['steps']
+    preflight = next(i for i, step in enumerate(steps) if step['name'].startswith('Check candidate'))
+    deploy = next(i for i, step in enumerate(steps) if step['name'].startswith('Promote candidate'))
+    assert preflight < deploy
+    assert 'B14_CANDIDATE_MODEL_E2E=FAIL' in steps[preflight]['run']
+    assert 'versions deploy' not in steps[preflight]['run']
+    assert 'rollback' in steps[deploy]['run']
+    assert "${{ github.event.inputs.candidate_version_id }}" in steps[deploy]['env'].values()
