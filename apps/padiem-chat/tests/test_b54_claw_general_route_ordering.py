@@ -65,8 +65,16 @@ const trace = [];
 const window = {}; // Browser global; optional #3930 event projection is absent here.
 const shell = { dataset: {} };
 const emptyState = { hidden: false };
-const messageList = { hidden: true };
+const messageList = { hidden: true, childElementCount: 0, closest: () => null };
 const setNavActive = () => {};
+// #4833 made showConversation hide the Claw disclosures through the DOM when it
+// leaves for Chat, so this harness needs the same minimal document surface.
+const document = {
+  getElementById: () => null,
+  createElement: () => ({ className: "", dataset: {}, appendChild() {}, setAttribute() {} }),
+  querySelector: () => null,
+  querySelectorAll: () => [],
+};
 const clawManualForm = { hidden: false };
 const input = { value: "", focus() {} };
 // #3790: simulate one EXPLICIT model choice before the Claw submit.
