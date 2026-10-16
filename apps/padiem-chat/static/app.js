@@ -238,6 +238,8 @@
     const state = shell.dataset.state;
     const workspace = document.getElementById("clawWorkspace");
     if (workspace) workspace.hidden = state !== "claw";
+    const meetingView = document.getElementById("meetingView");
+    if (meetingView) meetingView.hidden = state !== "meeting";
     const modeBar = document.getElementById("clawManualForm");
     if (modeBar) modeBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "manual");
     // #3531: the explicit manual-entry control lives in the fixed composer
@@ -256,8 +258,10 @@
     // New Chat no longer shows a mode hint: the redundant label was removed
     // when the sidebar actions row was rearranged (B62 split-search task).
     if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
-    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation") ? "false" : "page");
+    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation" || state === "meeting") ? "false" : "page");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
+    const meetingNav = document.getElementById("meetingNavButton");
+    if (meetingNav) meetingNav.setAttribute("aria-current", state === "meeting" ? "page" : "false");
     const connectorsNav = document.getElementById("connectorsNavButton");
     if (connectorsNav) connectorsNav.setAttribute("aria-current", state === "connectors" ? "page" : "false");
     const automationNav = document.getElementById("automationNavButton");
@@ -2037,6 +2041,9 @@
     // conversation, in every shell state. The quotation/document workflow
     // runs only via the manual form's own explicit draft submit button;
     // a generic request must never auto-enter it through the composer.
+    // #4647: the meeting workbench consumes its own explicit meeting-setup
+    // command from its own capture-phase listener on this same form, so this
+    // handler keeps no shell-state fork and every other prompt is unaffected.
     submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", cancelActiveStream);
@@ -4164,6 +4171,13 @@
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
+  // #4647 Same central workbench for menu entry and Claw natural language.
+  window.addEventListener("padiem:meeting-open", () => {
+    if (!authState.authenticated) return;
+    shell.dataset.state = "meeting";
+    setNavActive();
+    closeSidebar();
+  });
   const clawManualEntryButton = document.getElementById("clawManualEntryButton");
   if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));

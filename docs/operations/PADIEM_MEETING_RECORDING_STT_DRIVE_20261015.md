@@ -1,7 +1,7 @@
 # PADIEM 회의 녹음·실시간 전사·Google Drive 보관 — 공통 기능 운영 계약
 
 - 결정일: 2026-10-15 (대표의 제품 방향)
-- 상태: 설계·개발 백로그 / **아직 구현·배포 증거 없음**
+- 상태: 2026-10-16 회의록 3모드·중앙 페이지·메뉴 순서 소스 통합 및 집중 검증 완료. 운영 배포·실제 고객 마이크·Google Drive WRITE 업로드는 별도 실증 필요.
 - 단일 구현 추적: [#4647](https://github.com/skerishKang/ai-revenue-lab/issues/4647)
 - STT 기존 경계: [#4643](https://github.com/skerishKang/ai-revenue-lab/issues/4643) / Chat·Claw 공통 마이크 입력
 - Calendar 연결: [#2834](https://github.com/skerishKang/ai-revenue-lab/issues/2834)
@@ -77,3 +77,12 @@ Drive 기술 근거: https://developers.google.com/workspace/drive/api/guides/ma
 - 이 문서는 **새 개발 방향 및 STT 혼동 방지 기준**을 기록한다. 제품 구현·최종 UX·Google API 무료 사용 무제한·현재 운영 서비스 완성 상태를 선언하지 않는다.
 - 로컬 비공개 사업방침·운영방침은 별도 COM1 Governance를 실제 열람한다. 본 공개 문서에 비공개 원문을 옮기지 않는다.
 - 제품 코드/CI/Cloudflare 운영 설정/실사용 Drive 파일에는 이 문서 작업만으로 변화를 주지 않는다.
+
+## 8. 2026-10-16 기존 Draft PR #4813의 최신 main 선택 이식
+
+- 대표가 확정한 순서 **채팅·Claw / 회의록 → 자동화 → 라이브러리 → 캘린더 / Connectors → Skills**를 최신 B62 사이드바에 적용한다. 미구현 항목은 비활성 상태를 표시하며 권한 없는 기능을 새로 활성화하지 않는다.
+- 회의록은 별도 팝업이나 사이트가 아닌 동일 app-shell의 main-panel 안의 중앙 meetingView로 표시한다. 기존 Draft에는 main 외부에 있던 화면을 최신 main으로 이식하면서 수정했다.
+- 브라우저 표준 녹음(MediaRecorder), 전사(SpeechRecognition), 동시 진행과 로컬 원본/TXT 다운로드를 재사용한다. Claw 자연어 준비 요청과 사이드바 메뉴는 동일 화면을 연다.
+- 회의 장시간 내용은 메인 패널 내부만 스크롤한다. 기존 Chat/Claw 대화의 독립 최근 대화 스크롤과 계정 하단 고정은 보존한다.
+- Google Drive 저장 UI와 서버의 사용자별 resumable 세션 계약을 준비했다. **Control Plane 검증 WRITE 세션 포트가 없는 운영 환경에서는 HTTP 503**이 맞으며 로컬 다운로드 안내를 표시한다. 실제 파일 업로드·readback이 성공하기 전까지 Drive 저장 완료라고 말하지 않는다.
+- 이 이식은 #4647 이슈를 대체하거나 완료 처리하지 않는다. 실제 고객 Drive 업로드, 고객 기기 마이크 E2E, 영속 회의 목록·Calendar 후속 연결은 #4647 완료 조건으로 남긴다.

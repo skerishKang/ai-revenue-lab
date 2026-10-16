@@ -21,9 +21,16 @@ def test_new_scroll_rules_load_last_without_modifying_auth_or_handlers():
 
 def test_desktop_scrollport_and_pinned_account_are_explicit():
     assert '@media (min-width: 921px)' in CSS
-    assert 'overflow-y: hidden !important;' in CSS
+    # #4905: the owner-ordered menus plus the pinned account/home stack can exceed
+    # a short desktop viewport (measured 1280x800). `overflow-y: hidden` then let
+    # #historySection collapse and its rows paint under .sidebar-bottom, so every
+    # row click was intercepted by the pinned stack. Keep the pinned layout while
+    # it fits and let the sidebar scroll itself when it cannot.
+    assert 'overflow: hidden !important;' in CSS
+    assert 'overflow-y: auto !important;' in CSS
     assert '#historySection:not([hidden])' in CSS
-    assert 'flex: 1 1 0;' in CSS
+    assert 'flex: 1 1 auto;' in CSS
+    assert 'min-height: 156px;' in CSS
     assert '#historyList' in CSS
     assert 'overflow-y: auto;' in CSS
     assert '.sidebar-bottom' in CSS
