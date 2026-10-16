@@ -936,11 +936,22 @@ class Default(WorkerEntrypoint):
                         )
                     except (TypeError, ValueError):
                         _grafana_exporter = None
+                # #4139 Oracle management-host return leg: deployment-owned
+                # (account, device, Mesh node) map from Worker env. Absent or
+                # invalid keeps the fail-closed unconfigured source: the route
+                # stays unmounted and every return is refused.
+                from app.oracle_mesh_read_return_routes import (
+                    build_oracle_mesh_return_source_from_env,
+                )
+                _oracle_mesh_return_source = (
+                    build_oracle_mesh_return_source_from_env(self.env)
+                )
                 _worker_app = create_app(
                     settings=settings,
                     telemetry_exporter=_grafana_exporter,
                     github_oauth_store=github_store,
                     github_oauth_provider=github_provider,
+                    oracle_mesh_return_source=_oracle_mesh_return_source,
                     connector_owner_enrollment=connector_owner_ports,
                     history_store=history_store,
                     d1_binding=db_binding,
