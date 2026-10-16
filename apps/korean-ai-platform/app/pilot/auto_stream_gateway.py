@@ -342,7 +342,9 @@ async def pilot_auto_stream_preview(request: Request):
         except (ValueError, UnicodeDecodeError):
             return _invalid_json_response(gateway_request_id)
 
+        from .auto_availability import ensure_generic_auto_enabled
         if isinstance(raw, dict) and raw.get("model") == "b14/auto":
+            ensure_generic_auto_enabled("b14/auto")
             from app.pilot.platform_secrets import ensure_route_secrets
             options = raw.get("business14")
             opts = options if isinstance(options, dict) else {}

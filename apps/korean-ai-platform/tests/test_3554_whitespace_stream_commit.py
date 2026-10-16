@@ -20,6 +20,13 @@ URL = "/api/pilot/v1/chat/completions/auto-stream-preview"
 UPSTREAM = "agnes-3.0-flash"
 
 
+@pytest.fixture(autouse=True)
+def _enable_archived_auto_route_tests(monkeypatch):
+    """Historical protocol tests explicitly enable future generic auto in test only."""
+    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
+
+
+
 @pytest.fixture
 def live_fake_provider(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")

@@ -221,11 +221,13 @@ def run_desktop(p: Any) -> dict:
 
     # ── 9. Auto model selection ──
     def s9():
-        page.locator("#start_model").select_option("b14/auto")
+        assert page.locator('#start_model option[value="b14/auto"]').count() == 0
+        page.locator("#start_model").select_option("agnes-ai/agnes-3.0-flash")
         page.wait_for_timeout(200)
-        assert page.locator("#start_model").input_value() == "b14/auto"
+        assert page.locator("#start_model").input_value() == "agnes-ai/agnes-3.0-flash"
+        assert page.locator('input[name="start_route_mode"][value="manual"]').is_checked()
         assert page.locator("#start_route_preview").count() > 0
-    _step("9. auto model selected (b14/auto)", s9, results)
+    _step("9. deferred generic auto absent; explicit model selected", s9, results)
 
     # ── 10. optimize_for change ──
     def s10():
@@ -328,21 +330,16 @@ def run_desktop(p: Any) -> dict:
     # ── 21. Manual model default fallback OFF (fallback checkbox unchecked) ──
     def s21():
         _expand_advanced(page)
-        cb = page.locator("#start_external_fallback")
-        if cb.is_checked():
-            cb.uncheck()
-            page.wait_for_timeout(100)
-        assert not cb.is_checked(), "fallback checkbox should default OFF for manual"
-    _step("21. manual model default fallback OFF", s21, results)
+        assert page.locator("#start_external_fallback").count() == 0
+        assert page.locator('input[name="start_route_mode"][value="manual"]').is_checked()
+    _step("21. generic fallback option absent", s21, results)
 
     # ── 22. Fallback explicitly ON ──
     def s22():
         _expand_advanced(page)
-        cb = page.locator("#start_external_fallback")
-        cb.check()
-        page.wait_for_timeout(100)
-        assert cb.is_checked(), "fallback checkbox did not turn ON"
-    _step("22. fallback explicitly ON", s22, results)
+        assert page.locator('#start_model option[value="b14/auto"]').count() == 0
+        assert page.locator("#start_external_fallback").count() == 0
+    _step("22. deferred auto and generic fallback cannot be selected", s22, results)
 
     # ── 23. Request again ──
     def s23():
@@ -356,8 +353,8 @@ def run_desktop(p: Any) -> dict:
         assert biz.get("selected_model") == "agnes-ai/agnes-3.0-flash", (
             f"expected manual model, got {biz.get('selected_model')}"
         )
-        assert biz.get("fallback_allowed") is True, "fallback_allowed should be true when checkbox ON"
-    _step("23. second request with fallback ON", s23, results)
+        assert biz.get("fallback_allowed") is False, "manual generic fallback must remain OFF"
+    _step("23. second manual request without generic fallback", s23, results)
 
     # ── 25-29. General checks (desktop) ──
     def s25():

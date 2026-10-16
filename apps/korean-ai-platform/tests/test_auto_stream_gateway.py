@@ -35,6 +35,13 @@ class _ChunkStream(httpx.AsyncByteStream):
 
 
 @pytest.fixture(autouse=True)
+def _enable_archived_auto_route_tests(monkeypatch):
+    """Explicit opt-in: archived generic B14 auto tests, never production defaults."""
+    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
+
+
+
+@pytest.fixture(autouse=True)
 def _reset_runtime_config(monkeypatch):
     monkeypatch.delenv("KILO_API_KEY", raising=False)
     monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-stream-0123456789")

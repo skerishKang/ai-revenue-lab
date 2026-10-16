@@ -29,6 +29,19 @@ def multimodal_content(url: str | None = None):
 
 
 @pytest.fixture(autouse=True)
+def _enable_archived_auto_route_tests():
+    """Restore our own flag without sharing pytest monkeypatch cleanup order."""
+    import os
+    previous = os.environ.get("B14_ENABLE_FUTURE_AUTO")
+    os.environ["B14_ENABLE_FUTURE_AUTO"] = "1"
+    yield
+    if previous is None:
+        os.environ.pop("B14_ENABLE_FUTURE_AUTO", None)
+    else:
+        os.environ["B14_ENABLE_FUTURE_AUTO"] = previous
+
+
+@pytest.fixture(autouse=True)
 def _mock_openrouter_mode():
     import os
 

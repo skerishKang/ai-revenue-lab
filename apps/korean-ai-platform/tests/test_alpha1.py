@@ -41,6 +41,13 @@ KILO_PROVIDER = "Kilo Gateway / NVIDIA"
 # A synthetic test-only identity preserves those assertions without bypassing
 # the product's live owner-exclusion check or touching catalog source.
 @pytest.fixture(autouse=True)
+def _enable_archived_auto_route_tests(monkeypatch):
+    """Explicit opt-in: archived generic B14 auto tests, never production defaults."""
+    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
+
+
+
+@pytest.fixture(autouse=True)
 def _legacy_live_transport_synthetic_model(request, monkeypatch):
     cls=getattr(request.node.cls, "__name__", "")
     name=request.node.name.split("[")[0]

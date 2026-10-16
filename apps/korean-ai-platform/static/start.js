@@ -13,10 +13,10 @@
   var state = {
     messages: [],
     activeModel: null,
-    activeRouteMode: "auto",
+    activeRouteMode: "manual",
     preset: "general",
     optimizeFor: "balanced",
-    externalFallback: true,
+    externalFallback: false,
     isSending: false,
     lang: "ko-KR",
     config: null,
@@ -133,10 +133,10 @@
     DOM.latencyEl = $("start_latency");
 
     // Set initial values
-    state.activeModel = DOM.modelSelect ? DOM.modelSelect.value : "b14/auto";
-    state.activeRouteMode = "auto";
+    state.activeModel = DOM.modelSelect ? DOM.modelSelect.value : null;
+    state.activeRouteMode = "manual";
     state.optimizeFor = DOM.optimizeSelect ? DOM.optimizeSelect.value : "balanced";
-    state.externalFallback = DOM.externalFallback ? DOM.externalFallback.checked : true;
+    state.externalFallback = false;
 
     // Attach event listeners
     // Keep the owner-visible fallback switch authoritative after initialization.
@@ -368,12 +368,12 @@
       DOM.requestStatus.textContent = t("sending");
     }
 
-    var model = state.activeRouteMode === "auto" ? "b14/auto" : state.activeModel;
+    var model = state.activeModel;
     var b14_opts = {
       task_type: _getTaskType(),
       required_capabilities: ["chat"],
       optimize_for: state.optimizeFor,
-      allow_external_fallback: state.externalFallback,
+      allow_external_fallback: false,
     };
 
     try {

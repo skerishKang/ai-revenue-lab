@@ -580,6 +580,8 @@ async def pilot_router_resolve(
         body = _validate_body(raw_body)
 
         model_id = body["model"]
+        from .auto_availability import ensure_generic_auto_enabled
+        ensure_generic_auto_enabled(model_id)
         b14_opts = body.get("business14", {})
 
         if not _is_alpha_model(model_id):
@@ -1140,8 +1142,10 @@ async def pilot_chat_completions(
             return await pilot_stream_preview(request, parsed_body=raw_body)
 
         body = _validate_body(raw_body)
+        from .auto_availability import ensure_generic_auto_enabled
+        ensure_generic_auto_enabled(body["model"])
 
-        # Alpha mode: catalog model or b14/auto
+        # Alpha mode: catalog model or future b14/auto
         if _is_alpha_model(body["model"]):
             return await _handle_alpha_chat(request_id, body)
 
