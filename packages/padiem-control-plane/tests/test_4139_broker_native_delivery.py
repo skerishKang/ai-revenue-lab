@@ -33,11 +33,28 @@ BINDING = {
 }
 
 
-async def transport(monkeypatch, *, enabled=True):
+async def transport(monkeypatch, *, enabled=True, rpc_wrapped=False):
     do, broker, sock, challenge, code = await verified(monkeypatch)
     do.env.LOCAL_AGENT_BROKER_PENDING_PC_NATIVE_DELIVERY_ENABLED=(
         "enabled" if enabled else "off"
     )
+    if rpc_wrapped:
+        class RpcPayload:
+            def __init__(self, value): self.value = value
+            def to_py(self): return dict(self.value)
+
+        for name in (
+            "pending_pc_identity_status", "claim_pending_pc_identity_proof",
+            "reserve_native_pc_gateway", "authenticate_native_pc_gateway",
+            "transfer_native_pc_credential_once", "receive_native_pc_install_ack",
+            "authenticate_native_pc_install_ack",
+        ):
+            original = getattr(do, name)
+            async def wrapped(payload, _original=original):
+                return await _original(RpcPayload(payload))
+            setattr(do, name, wrapped)
+        status = await do.pending_pc_identity_status({"request_ref": REF})
+        assert status["signed_fetch_verified"] is True
     await do.claim_pending_pc_identity_proof({
         "request_ref":REF,"challenge_id":challenge,"device_id":DEVICE,
     })
@@ -93,9 +110,10 @@ def ack_frame(*, challenge, code, nonce, lease, credential=SECRET, binding=None)
             )},ack
 
 
-def test_same_native_pc_wss_delivers_exactly_one_secret_and_signed_ack(monkeypatch):
+@pytest.mark.parametrize("rpc_wrapped", [False, True])
+def test_same_native_pc_wss_delivers_exactly_one_secret_and_signed_ack(monkeypatch, rpc_wrapped):
     async def main():
-        do,broker,sock,challenge,code,nonce=await transport(monkeypatch)
+        do,broker,sock,challenge,code,nonce=await transport(monkeypatch, rpc_wrapped=rpc_wrapped)
         lease=await reserve(do,challenge)
         auth=await do.authenticate_native_pc_gateway(lease_args(challenge,lease))
         assert auth["authenticated"] is True
