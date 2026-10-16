@@ -565,6 +565,27 @@ def test_private_owner_reserve_accepts_bounded_rpc_mapping_wrapper(monkeypatch):
         receipt = await do.reserve_pending_pc_owner_intent(RpcWrapper(dict(payload)))
         assert receipt.get("reserved_once") is True, receipt
         assert rows(do._storage)[0]["state"] == "reserved"
+        delivery = {
+            "request_ref": REF, "device_id": DEVICE,
+            "challenge_id": "challenge.1", "pairing_code": CODE,
+        }
+        for invalid in (
+            RpcWrapper(list(delivery.items())),
+            RpcWrapper({**delivery, "extra": "rejected"}),
+            RpcWrapper({**delivery, "pairing_code": "invalid"}),
+        ):
+            with pytest.raises(BrokerPendingPcPrivateRefused):
+                await do.deliver_pending_pc_link(invalid)
+            assert rows(do._storage)[0]["state"] == "reserved"
+        sent = await do.deliver_pending_pc_link(RpcWrapper(delivery))
+        assert sent == {
+            "ok": True, "sent_once": True, "registered": False, "connected": False,
+        }
+        assert server.sent[-1]["type"] == "pc_offer_approved"
+        assert rows(do._storage)[0]["state"] == "delivery_claimed"
+        with pytest.raises(BrokerPendingPcPrivateRefused):
+            await do.deliver_pending_pc_link(RpcWrapper(delivery))
+        assert sum(frame["type"] == "pc_offer_approved" for frame in server.sent) == 1
     asyncio.run(main())
 
 

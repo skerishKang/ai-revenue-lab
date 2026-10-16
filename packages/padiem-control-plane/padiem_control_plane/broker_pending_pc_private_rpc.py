@@ -176,7 +176,8 @@ class CanonicalBrokerPendingPcLiveRPC:
 
     async def reserve_pending_pc_link(self, payload: dict) -> dict[str, Any]:
         """Private same-DO RPC: owner must already be verified by B54 Worker."""
-        if type(payload) is not dict or set(payload) != {"request_ref"}:
+        payload = _owner_rpc_payload_dict(payload)
+        if payload is None or set(payload) != {"request_ref"}:
             raise BrokerPendingPcPrivateRefused("pending_pc_private_fields_invalid")
         actor = self._pc_actor(payload["request_ref"])
         try:
@@ -273,8 +274,9 @@ class CanonicalBrokerPendingPcLiveRPC:
     async def deliver_pending_pc_link(self, payload: dict) -> dict[str, Any]:
         """No replays: consume Broker one-use CAS before same WSS send."""
         required = {"request_ref", "device_id", "challenge_id", "pairing_code"}
+        payload = _owner_rpc_payload_dict(payload)
         if (
-            type(payload) is not dict or set(payload) != required
+            payload is None or set(payload) != required
             or not _ref(payload["request_ref"])
             or type(payload["device_id"]) is not str
             or _DEVICE.fullmatch(payload["device_id"]) is None
@@ -302,31 +304,31 @@ class CanonicalBrokerPendingPcLiveRPC:
 
     async def pending_pc_identity_status(self, payload: dict) -> dict:
         from .broker_pending_pc_identity_handoff import identity_pc_status
-        return await identity_pc_status(self, payload)
+        return await identity_pc_status(self, _owner_rpc_payload_dict(payload))
 
     async def claim_pending_pc_identity_proof(self, payload: dict) -> dict:
         from .broker_pending_pc_identity_handoff import claim_identity_pc_proof
-        return await claim_identity_pc_proof(self, payload)
+        return await claim_identity_pc_proof(self, _owner_rpc_payload_dict(payload))
 
     async def reserve_native_pc_gateway(self, payload: dict) -> dict:
         from .broker_pending_pc_native_delivery import reserve_native_pc_gateway
-        return await reserve_native_pc_gateway(self, payload)
+        return await reserve_native_pc_gateway(self, _owner_rpc_payload_dict(payload))
 
     async def authenticate_native_pc_gateway(self, payload: dict) -> dict:
         from .broker_pending_pc_native_delivery import authenticate_native_pc_gateway
-        return await authenticate_native_pc_gateway(self, payload)
+        return await authenticate_native_pc_gateway(self, _owner_rpc_payload_dict(payload))
 
     async def transfer_native_pc_credential_once(self, payload: dict) -> dict:
         from .broker_pending_pc_native_delivery import transfer_native_pc_credential_once
-        return await transfer_native_pc_credential_once(self, payload)
+        return await transfer_native_pc_credential_once(self, _owner_rpc_payload_dict(payload))
 
     async def receive_native_pc_install_ack(self, payload: dict) -> dict:
         from .broker_pending_pc_native_delivery import receive_native_pc_install_ack
-        return await receive_native_pc_install_ack(self, payload)
+        return await receive_native_pc_install_ack(self, _owner_rpc_payload_dict(payload))
 
     async def authenticate_native_pc_install_ack(self, payload: dict) -> dict:
         from .broker_pending_pc_native_delivery import authenticate_native_pc_install_ack
-        return await authenticate_native_pc_install_ack(self, payload)
+        return await authenticate_native_pc_install_ack(self, _owner_rpc_payload_dict(payload))
 
     async def _pending_pc_wss_fetch(self, request):
         """Native PC upgrade exclusively on this existing canonical Broker DO."""
