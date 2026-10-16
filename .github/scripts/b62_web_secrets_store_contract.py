@@ -24,6 +24,24 @@ def expected_web_secret_bindings() -> dict[str, dict[str, str]]:
     }
 
 
+# #4139: the two Oracle Mesh Secrets Store identities, same account store as the
+# web secrets. Declared in wrangler.toml; attached to live bindings only by the
+# explicit Oracle attach mode. Never carries values.
+ORACLE_MESH_SECRET_NAMES = ("ORACLE_MESH_CHANNEL_SECRET", "ORACLE_MESH_OWNERSHIP_MAP")
+
+
+def expected_oracle_mesh_bindings() -> dict[str, dict[str, str]]:
+    return {
+        name: {
+            "type": "secrets_store_secret",
+            "name": name,
+            "store_id": WEB_SECRET_STORE_ID,
+            "secret_name": name,
+        }
+        for name in ORACLE_MESH_SECRET_NAMES
+    }
+
+
 def require_exact_web_secrets_store(
     current_bindings: list[dict], *, allow_absent: bool
 ) -> dict[str, dict[str, str]]:

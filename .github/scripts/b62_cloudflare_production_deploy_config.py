@@ -22,7 +22,11 @@ import tomllib
 _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
-from b62_web_secrets_store_contract import expected_web_secret_bindings, require_exact_web_secrets_store
+from b62_web_secrets_store_contract import (
+    expected_oracle_mesh_bindings,
+    expected_web_secret_bindings,
+    require_exact_web_secrets_store,
+)
 
 EXPECTED_WORKER = "padiem-chat"
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
@@ -174,6 +178,7 @@ def build_production_config(
     attach_connector_broker_service: bool = False,
     activate_claw_public_search: bool = False,
     attach_grafana_telemetry: bool = False,
+    attach_oracle_mesh: bool = False,
 ) -> str:
     try:
         repo = tomllib.loads(repo_config_path.read_text(encoding="utf-8"))
@@ -443,6 +448,39 @@ def build_production_config(
                 raise ProductionConfigError("Grafana live Secrets Store metadata drift")
         else:
             store_bindings.append(dict(GRAFANA_OTLP_BINDING))
+    if attach_oracle_mesh:
+        # #4139: both Oracle Secrets Store declarations must already be in the
+        # repository config exactly; the attach adds only these two references.
+        approved = expected_oracle_mesh_bindings()
+        declarations = repo.get("secrets_store_secrets")
+        declared = [
+            {"binding": d.get("binding"), "store_id": d.get("store_id"), "secret_name": d.get("secret_name")}
+            for d in (declarations if isinstance(declarations, list) else [])
+            if isinstance(d, dict) and d.get("binding") in approved
+        ]
+        expected_declared = [
+            {"binding": name, "store_id": item["store_id"], "secret_name": item["secret_name"]}
+            for name, item in approved.items()
+        ]
+        if sorted(declared, key=lambda x: x["binding"]) != sorted(expected_declared, key=lambda x: x["binding"]):
+            raise ProductionConfigError("Oracle source binding identity mismatch")
+        all_other_names = (
+            {i["name"] for key in ("assets", "services", "d1", "r2") for i in live[key]}
+            | set(live["vars"]) | set(live["secret_names"])
+        )
+        if live["version_metadata"] is not None:
+            all_other_names.add(live["version_metadata"]["name"])
+        if live["browser"] is not None:
+            all_other_names.add(live["browser"]["name"])
+        if all_other_names & set(approved):
+            raise ProductionConfigError("Oracle binding name collides with live authority")
+        for name, identity in approved.items():
+            existing = [item for item in store_bindings if item["name"] == name]
+            if existing:
+                if len(existing) != 1 or existing[0] != identity:
+                    raise ProductionConfigError("Oracle live Secrets Store metadata drift")
+            else:
+                store_bindings.append(dict(identity))
     for item in store_bindings:
         lines.append("[[secrets_store_secrets]]")
         lines.append(f"binding = {_toml_string(item['name'])}")
@@ -597,6 +635,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="generate a candidate with only the existing canonical Broker Service Binding; does not deploy")
     parser.add_argument("--attach-existing-grafana-telemetry", action="store_true",
                         help="only the existing exact Grafana Secrets Store reference")
+    parser.add_argument("--attach-existing-oracle-mesh", action="store_true",
+                        help="#4139: only the two existing exact Oracle Mesh Secrets Store references")
     parser.add_argument("--activate-claw-public-search", action="store_true",
                         help="owner-reviewed single exact Claw public search ON var, preserving every other live binding")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
@@ -607,9 +647,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.attach_existing_grafana_telemetry and (
             args.attach_existing_connector_broker or args.commission_hark_browser
             or args.attach_existing_web_secrets_store or args.owner_d1_database_id is not None
-            or args.activate_claw_public_search
+            or args.activate_claw_public_search or args.attach_existing_oracle_mesh
         ):
             raise ProductionConfigError("Grafana activation must be the only additive mode")
+        if args.attach_existing_oracle_mesh and (
+            args.attach_existing_connector_broker or args.commission_hark_browser
+            or args.attach_existing_web_secrets_store or args.owner_d1_database_id is not None
+            or args.activate_claw_public_search or args.attach_existing_grafana_telemetry
+        ):
+            raise ProductionConfigError("Oracle Mesh attach must be the only additive mode")
         if args.activate_claw_public_search and (
             args.attach_existing_connector_broker or args.commission_hark_browser
             or args.attach_existing_web_secrets_store or args.owner_d1_database_id is not None
@@ -640,6 +686,7 @@ def main(argv: list[str] | None = None) -> int:
             attach_connector_broker_service=args.attach_existing_connector_broker,
             activate_claw_public_search=args.activate_claw_public_search,
             attach_grafana_telemetry=args.attach_existing_grafana_telemetry,
+            attach_oracle_mesh=args.attach_existing_oracle_mesh,
         )
         verify_mutation_zero(
             config_text, live,
@@ -671,6 +718,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"SECRETS_STORE_BINDINGS_PRESERVED={len(live['secrets_store'])}")
     print(f"WEB_SECRETS_STORE_ATTACH_REQUESTED={int(args.attach_existing_web_secrets_store)}")
     print(f"GRAFANA_TELEMETRY_ATTACH_REQUESTED={int(args.attach_existing_grafana_telemetry)}")
+    print(f"ORACLE_MESH_ATTACH_REQUESTED={int(args.attach_existing_oracle_mesh)}")
     print(f"CONNECTOR_BROKER_BINDING_CANDIDATE={int(args.attach_existing_connector_broker)}")
     if args.attach_existing_connector_broker:
         assert isinstance(plain_vars, dict)

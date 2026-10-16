@@ -103,6 +103,11 @@ on:
         required: false
         type: boolean
         default: false
+      attach_existing_oracle_mesh:
+        description: "#4139: attach only the two existing Oracle Mesh Secrets Store references (no values, no other changes)"
+        required: false
+        type: boolean
+        default: false
       attach_existing_connector_broker:
         description: "Explicitly add the existing LOCAL_AGENT_BROKER Service Binding while preserving b14/live settings"
         required: false
@@ -691,6 +696,7 @@ jobs:
       CONFIRMATION: ${{ inputs.confirmation }}
       ATTACH_WEB_SECRETS_STORE: ${{ inputs.attach_existing_web_secrets_store }}
       ATTACH_GRAFANA_TELEMETRY: ${{ inputs.attach_existing_grafana_telemetry }}
+      ATTACH_ORACLE_MESH: ${{ inputs.attach_existing_oracle_mesh }}
       ATTACH_EXISTING_CONNECTOR_BROKER: ${{ inputs.attach_existing_connector_broker }}
       ACTIVATE_CLAW_PUBLIC_SEARCH: ${{ inputs.activate_claw_public_search }}
       PRESERVE_B66_MEMBERSHIP_SECRET: ${{ inputs.preserve_existing_b66_membership_secret }}
@@ -700,8 +706,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
+            test "${P01_SSE_RECOVERY_OFF}" != "true"
+            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
+            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
+          fi
           if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
             test "${P01_SSE_RECOVERY_OFF}" != "true"
+            test "${ATTACH_ORACLE_MESH}" = "false"
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
             test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
             test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
@@ -724,6 +740,9 @@ jobs:
           elif [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
             test "${CONFIRMATION}" = "DEPLOY_B62_GRAFANA_TELEMETRY_FROM_EXACT_MAIN"
             echo "GRAFANA_SECRET_STORE_EXACT_METADATA_OWNER_AUTHORIZED=PASS"
+          elif [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
+            test "${CONFIRMATION}" = "DEPLOY_B62_ORACLE_MESH_ATTACH_FROM_EXACT_MAIN"
+            echo "ORACLE_MESH_SECRET_STORE_EXACT_METADATA_OWNER_AUTHORIZED=PASS"
           elif [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             test "${CONFIRMATION}" = "DEPLOY_B62_CLAW_PUBLIC_WEB_SEARCH_FROM_EXACT_MAIN"
             echo "CLAW_PUBLIC_SEARCH_OWNER_AUTHORIZED=PASS"
@@ -1083,6 +1102,14 @@ jobs:
           if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
             extra_args=(--attach-existing-grafana-telemetry)
           fi
+          if [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
+            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
+            extra_args=(--attach-existing-oracle-mesh)
+          fi
           if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
             test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
@@ -1225,6 +1252,9 @@ jobs:
           if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
             verify_args=(--expected-add-grafana-telemetry)
           fi
+          if [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
+            verify_args=(--expected-add-oracle-mesh)
+          fi
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
             verify_args=(--expected-add-web-secrets-store)
           fi
@@ -1244,7 +1274,7 @@ jobs:
             "${verify_args[@]}" \
             --before "${normalized_before}" \
             --after "${settings}"
-          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ] || [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ] || [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ] || [ "${ATTACH_ORACLE_MESH}" = "true" ] || [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ] || [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             echo "BINDINGS_PRESERVED_AND_APPROVED_ADDED=PASS"
           else
             echo "BINDINGS_PRESERVED_EXACTLY=PASS"
@@ -1279,6 +1309,15 @@ jobs:
             jq -e '[.result.resources.bindings[] | select(.name == "PADIEM_GRAFANA_OTLP_USERNAME" and .type == "plain_text" and .text == "1876517")] | length == 1' "${detail}" >/dev/null
             echo "GRAFANA_SERVED_IMMUTABLE_BINDING=PASS"
             echo "GRAFANA_SERVED_PUBLIC_VARS=PASS"
+          fi
+          if [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
+            python .github/scripts/b62_binding_state_guard.py \
+              --expected-add-oracle-mesh \
+              --before "${RUNNER_TEMP}/b62-version-before.json" \
+              --after "${detail}"
+            jq -e '.result.resources.bindings | any(.name == "ORACLE_MESH_CHANNEL_SECRET" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "ORACLE_MESH_CHANNEL_SECRET")' "${detail}" >/dev/null
+            jq -e '.result.resources.bindings | any(.name == "ORACLE_MESH_OWNERSHIP_MAP" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "ORACLE_MESH_OWNERSHIP_MAP")' "${detail}" >/dev/null
+            echo "ORACLE_MESH_SERVED_IMMUTABLE_BINDINGS=PASS"
           fi
           if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             python .github/scripts/b62_binding_state_guard.py \
@@ -1331,6 +1370,9 @@ jobs:
           verify_args=()
           if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
             verify_args=(--allow-add-existing-grafana-telemetry)
+          fi
+          if [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
+            verify_args=(--allow-add-existing-oracle-mesh)
           fi
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
             verify_args=(--allow-add-existing-web-secrets-store)
