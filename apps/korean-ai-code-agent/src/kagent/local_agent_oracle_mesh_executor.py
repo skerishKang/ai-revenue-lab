@@ -24,6 +24,11 @@ POLL_PATH = "/api/claw/connector/mesh-reads/poll"
 RESULT_PATH = "/api/claw/connector/mesh-reads/result"
 #: Header carrying the deployment channel secret on both legs.
 CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
+#: Cloudflare's Browser Integrity Check blocks the default Python-urllib
+#: signature (error 1010) at the edge, before the channel secret is ever
+#: evaluated. This executor is a first-party product client, so it identifies
+#: itself with the same product token the kagent transport already sends.
+PRODUCT_USER_AGENT = "PadiemClaw/1.0 (kagent; oracle-mesh-executor)"
 #: meshctrl downloads are size-bounded by the same limit the server enforces.
 MAX_READ_BYTES = 768
 
@@ -121,6 +126,7 @@ class OracleMeshExecutor:
                 "Content-Type": "application/json",
                 CHANNEL_HEADER: self._secret,
                 "Accept": "application/json",
+                "User-Agent": PRODUCT_USER_AGENT,
             },
         )
         context = ssl.create_default_context()
@@ -249,6 +255,7 @@ __all__ = [
     "CHANNEL_HEADER",
     "MAX_READ_BYTES",
     "POLL_PATH",
+    "PRODUCT_USER_AGENT",
     "RESULT_PATH",
     "OracleMeshChannelRefused",
     "OracleMeshDispatch",

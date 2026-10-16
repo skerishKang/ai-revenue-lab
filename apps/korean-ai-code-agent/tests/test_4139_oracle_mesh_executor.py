@@ -16,6 +16,7 @@ from kagent.local_agent_meshcentral_private_reader import (
     MeshCentralCliFileReadPort, MeshCentralReadRefused, _PASSWORD_MARKER,
 )
 from kagent.local_agent_oracle_mesh_executor import (
+    CHANNEL_HEADER, POLL_PATH, PRODUCT_USER_AGENT,
     OracleMeshExecutor, make_oracle_mesh_executor,
 )
 
@@ -23,6 +24,66 @@ SECRET = "deployment-channel-secret-value-261017"
 PASSWORD = "op3rator-meshtr0ll-secret"
 NODE = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
 FILE_PATH = "C:\\ProgramData\\Padiem\\report.txt"
+
+
+class _StubPort:
+    """Stand-in read port; the channel transport is what is under test here."""
+
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds):  # noqa: D102
+        del node_ref, file_path, timeout_seconds
+        return b""
+
+
+class ChannelTransportHeaderTests(unittest.TestCase):
+    """Every channel leg must identify the product, never Python-urllib.
+
+    Cloudflare's Browser Integrity Check refuses the default urllib signature
+    with error 1010 *before* the channel secret is evaluated, so the first-party
+    product token has to ride on the request while the channel auth header and
+    the existing redirect refusal stay exactly as they were.
+    """
+
+    class _Response:
+        status = 200
+
+        def read(self, _n=-1):  # noqa: D102
+            return b'{"ok": true, "dispatch": null}'
+
+        def __enter__(self):  # noqa: D102
+            return self
+
+        def __exit__(self, *exc):  # noqa: D102
+            return False
+
+    def _executor(self) -> OracleMeshExecutor:
+        return OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net",
+            channel_secret=SECRET,
+            read_port=_StubPort(),
+        )
+
+    def test_poll_leg_sends_the_product_user_agent_and_keeps_channel_auth(self):
+        executor = self._executor()
+        sent: dict = {}
+
+        class _Opener:
+            def open(self, request, timeout=None):  # noqa: D102
+                del timeout
+                sent["headers"] = dict(request.header_items())
+                return ChannelTransportHeaderTests._Response()
+
+        with patch("urllib.request.build_opener", return_value=_Opener()):
+            status, data = executor._https_post(POLL_PATH, None)
+
+        self.assertEqual(status, 200)
+        self.assertTrue(data.get("ok"))
+        lowered = {name.lower(): value for name, value in sent["headers"].items()}
+        self.assertEqual(lowered["user-agent"], PRODUCT_USER_AGENT)
+        self.assertNotIn("python-urllib", lowered["user-agent"].lower())
+        # Channel auth and content negotiation are untouched by the fix.
+        self.assertEqual(lowered[CHANNEL_HEADER.lower()], SECRET)
+        self.assertEqual(lowered["content-type"], "application/json")
+        self.assertEqual(lowered["accept"], "application/json")
 
 
 class FactoryRunnerTests(unittest.TestCase):
