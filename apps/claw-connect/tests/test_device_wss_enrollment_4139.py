@@ -420,6 +420,31 @@ def test_device_wss_source_transport_error_remains_bounded_and_closes():
     assert sock.closed is True
 
 
+def test_credential_fetch_receive_timeout_is_bounded_and_never_acks():
+    stages = []
+    store = Store()
+
+    class MissingCredentialOnce(Socket):
+        async def receive_text(self):
+            if self.index == 2:
+                self.index += 1
+                raise asyncio.TimeoutError("private transport timing")
+            return await super().receive_text()
+
+    sock = MissingCredentialOnce()
+    with pytest.raises(
+        DeviceSessionRefused, match=r"^device_credential_response_timeout$"
+    ):
+        run(sock, store=store, on_stage=stages.append)
+    assert stages[-1] == "device_session_credential_fetch_sent"
+    assert "credential_once_received" not in stages
+    assert [item["type"] for item in sock.sent] == [
+        "begin", "finish", "credential_fetch",
+    ]
+    assert store.saved == []
+    assert sock.closed is True
+
+
 def test_installed_connector_persists_new_safe_device_session_stage(tmp_path):
     from claw_connect.runtime import ConnectApp
 
@@ -440,6 +465,17 @@ def test_installed_connector_persists_new_safe_device_session_stage(tmp_path):
         "stage": "device_session_credential_fetch_sent",
         "result": "failed",
         "reason": "device_session_security_hold",
+    }
+    # The exact response deadline is a fixed safe reason, not a secret frame.
+    ConnectApp._record_offer_stage(
+        holder, "device_session_credential_fetch_sent",
+        failure="device_credential_response_timeout",
+    )
+    state = json.loads((tmp_path / "customer-offer-stage.json").read_text())
+    assert state == {
+        "stage": "device_session_credential_fetch_sent",
+        "result": "failed",
+        "reason": "device_credential_response_timeout",
     }
     # Unrecognized wire/private values cannot be persisted as stage text.
     ConnectApp._record_offer_stage(holder, "credential_" + CREDENTIAL.decode())

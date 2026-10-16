@@ -278,10 +278,18 @@ async def run_review_only_device_session(
         })
         if on_stage is not None:
             on_stage("device_session_credential_fetch_sent")
-        delivery = await _receive(socket, frozenset({
-            "type", "challenge_id", "device_id", "lease_ref", "binding",
-            "credential_b64",
-        }))
+        try:
+            delivery = await _receive(socket, frozenset({
+                "type", "challenge_id", "device_id", "lease_ref", "binding",
+                "credential_b64",
+            }))
+        except asyncio.TimeoutError as exc:
+            # Only this exact post-fetch receive deadline has an independent
+            # diagnostic. No credential is installed or ACKed, and the common
+            # finally below still closes this same socket.
+            raise DeviceSessionRefused(
+                "device_credential_response_timeout"
+            ) from exc
         if (delivery["type"] != "credential_once"
             or delivery["challenge_id"] != challenge_id
             or delivery["device_id"] != device_id
