@@ -14,12 +14,15 @@ CREATE TABLE IF NOT EXISTS oracle_mesh_dispatch (
     tool_request_ref TEXT NOT NULL,
     request_id TEXT NOT NULL,
     revision_ref TEXT NOT NULL,
-    evidence_ref TEXT NOT NULL,
+    evidence_ref TEXT,
     request_fingerprint TEXT NOT NULL,
     account_ref TEXT NOT NULL,
     workspace_ref TEXT NOT NULL,
     device_id TEXT NOT NULL,
-    binding_ref TEXT NOT NULL,
+    -- Nullable on purpose. A PC that never completed the native PC offer has
+    -- no Broker binding and no Broker-minted evidence; both stay NULL so no
+    -- fabricated reference can ever read as a real one.
+    binding_ref TEXT,
     node_ref TEXT NOT NULL,
     root_ref TEXT NOT NULL,
     path_relative TEXT NOT NULL,

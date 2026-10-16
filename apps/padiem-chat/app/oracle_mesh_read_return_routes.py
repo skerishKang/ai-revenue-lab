@@ -41,6 +41,7 @@ import hashlib
 import hmac
 import json
 import secrets
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -239,6 +240,8 @@ def _channel_proof(request: Request, source: OracleMeshReturnSource) -> bool:
 
 async def oracle_mesh_read_request(request: Request) -> JSONResponse:
     """Owner intent: verify everything server-side, stage one dispatch."""
+    if _channel_source(request) is None:
+        return _error(503, "oracle_mesh_unconfigured")
     wire = await _read_body(request, _REQUEST_KEYS)
     if wire is None:
         return _error(400, "oracle_mesh_invalid_body")
@@ -266,9 +269,6 @@ async def dispatch_oracle_mesh_read_intent(
 
     mesh_source = _channel_source(request)
     if mesh_source is None:
-        return _error(503, "oracle_mesh_unconfigured")
-    broker_source = getattr(request.app.state, "connector_txt_read_source", None)
-    if getattr(broker_source, "configured", False) is not True:
         return _error(503, "oracle_mesh_unconfigured")
     identity = getattr(request.app.state, "control_plane_identity_authority", None)
     if not callable(getattr(identity, "resolve_connector_enrollment_consent_for_device", None)):
@@ -300,29 +300,46 @@ async def dispatch_oracle_mesh_read_intent(
     account_ref = consent["account_ref"]
     connector_workspace_ref = consent["workspace_ref"]
 
-    try:
-        device = await broker_source.resolve_device_binding(
-            account_ref=account_ref, workspace_ref=connector_workspace_ref,
-            device_id=wire["device_id"],
-        )
-    except IdentityBridgeError as exc:
-        status = exc.status_code if isinstance(exc.status_code, int) else 503
-        if status == 404:
-            return _error(404, "oracle_mesh_device_unbound")
-        if status == 403:
+    # #4139 sovereignty authorization. There is no native PC offer on this PC,
+    # so no Broker binding and no Broker-minted evidence exist yet. Execution
+    # authority is therefore the pair the platform can actually verify:
+    #   * the Identity authority's consent for this session/device, which is
+    #     what fixes the PADIEM account and connector workspace, and
+    #   * the deployment-owned ownership map, which the operator verified
+    #     against the real MeshCentral node (account <-> device <-> node <-> file).
+    # A Broker binding is still *checked* when one exists, but its absence is
+    # not a refusal and nothing is fabricated to stand in for it.
+    device_binding_ref = None
+    broker_source = getattr(request.app.state, "connector_txt_read_source", None)
+    if getattr(broker_source, "configured", False) is True:
+        try:
+            device = await broker_source.resolve_device_binding(
+                account_ref=account_ref, workspace_ref=connector_workspace_ref,
+                device_id=wire["device_id"],
+            )
+        except IdentityBridgeError as exc:
+            status = exc.status_code if isinstance(exc.status_code, int) else 503
+            if status == 404:
+                # A revoked/removed binding stays a hard refusal; an
+                # unknown one is simply absent on this PC.
+                return _error(404, "oracle_mesh_device_unbound")
+            if status == 403:
+                return _error(403, "oracle_mesh_device_not_usable")
+            return _error(503, "oracle_mesh_broker_unavailable")
+        except Exception:
+            return _error(503, "oracle_mesh_broker_unavailable")
+        if (
+            not isinstance(device, dict)
+            or device.get("device_id") != wire["device_id"]
+            or ("account_ref" in device and device["account_ref"] != account_ref)
+            or ("workspace_ref" in device and device["workspace_ref"] != connector_workspace_ref)
+        ):
             return _error(403, "oracle_mesh_device_not_usable")
-        return _error(503, "oracle_mesh_broker_unavailable")
-    except Exception:
-        return _error(503, "oracle_mesh_broker_unavailable")
-    if (
-        not isinstance(device, dict)
-        or device.get("device_id") != wire["device_id"]
-        or ("account_ref" in device and device["account_ref"] != account_ref)
-        or ("workspace_ref" in device and device["workspace_ref"] != connector_workspace_ref)
-        or not isinstance(device.get("binding_ref"), str)
-        or not device["binding_ref"]
-    ):
-        return _error(403, "oracle_mesh_device_not_usable")
+        device_binding_ref = device.get("binding_ref")
+        if device_binding_ref is not None and (
+            not isinstance(device_binding_ref, str) or not device_binding_ref
+        ):
+            return _error(503, "oracle_mesh_broker_unavailable")
 
     try:
         run_row = await history_store.get_claw_run(uid, wire["run_id"])
@@ -337,22 +354,6 @@ async def dispatch_oracle_mesh_read_intent(
     ):
         return _error(404, "oracle_mesh_run_unavailable")
 
-    try:
-        bound = await history_store.get_local_task_correlation(uid, wire["run_id"])
-    except Exception:
-        return _error(503, "oracle_mesh_correlation_unavailable")
-    if (
-        not isinstance(bound, dict)
-        or any(not isinstance(bound.get(name), str) or not bound[name] for name in (
-            "command_id", "tool_request_ref", "request_id", "revision_ref",
-            "evidence_ref", "request_fingerprint",
-        ))
-    ):
-        # No fully-admitted broker command is bound to this run yet. The
-        # Oracle return executes only broker-admitted commands — never ahead
-        # of admission, never on a fabricated correlation.
-        return _error(409, "oracle_mesh_correlation_unbound")
-
     target = _deployment_target_for(
         mesh_source,
         account_ref=account_ref,
@@ -363,27 +364,61 @@ async def dispatch_oracle_mesh_read_intent(
     if target is None:
         return _error(403, "oracle_mesh_ownership_unverified")
 
+    # Correlation: bind the Broker-admitted one when it exists, otherwise mint
+    # clearly server-owned refs. ``evidence_ref`` stays None when Broker has
+    # admitted nothing — a server execution never borrows a broker evidence.
+    try:
+        bound = await history_store.get_local_task_correlation(uid, wire["run_id"])
+    except Exception:
+        bound = None
+    broker_admitted = (
+        isinstance(bound, dict)
+        and all(isinstance(bound.get(name), str) and bound[name] for name in (
+            "command_id", "tool_request_ref", "request_id",
+            "revision_ref", "request_fingerprint",
+        ))
+    )
+    if broker_admitted:
+        cmd_id = bound["command_id"]
+        tool_request_ref = bound["tool_request_ref"]
+        request_id = bound["request_id"]
+        revision_ref = bound["revision_ref"]
+        evidence_ref = bound.get("evidence_ref")
+        request_fingerprint = bound["request_fingerprint"]
+    else:
+        suffix = uuid.uuid4().hex
+        cmd_id = f"oracle_mesh_cmd_{suffix}"
+        tool_request_ref = f"oracle_mesh_tool_{suffix}"
+        request_id = f"oracle_mesh_req_{suffix}"
+        revision_ref = f"oracle_mesh_rev_{suffix}"
+        evidence_ref = None
+        request_fingerprint = hashlib.sha256(
+            f"{account_ref}|{wire['device_id']}|{wire['root_ref']}|{wire['path_relative']}".encode("utf-8")
+        ).hexdigest()
+
     now = datetime.now(timezone.utc)
     try:
         dispatch = await history_store.create_oracle_mesh_dispatch(
             user_id=uid,
             run_id=wire["run_id"],
-            command_id=bound["command_id"],
-            tool_request_ref=bound["tool_request_ref"],
-            request_id=bound["request_id"],
-            revision_ref=bound["revision_ref"],
-            evidence_ref=bound["evidence_ref"],
-            request_fingerprint=bound["request_fingerprint"],
+            command_id=cmd_id,
+            tool_request_ref=tool_request_ref,
+            request_id=request_id,
+            revision_ref=revision_ref,
+            evidence_ref=evidence_ref,
+            request_fingerprint=request_fingerprint,
             account_ref=account_ref,
             workspace_ref=connector_workspace_ref,
             device_id=wire["device_id"],
-            binding_ref=device["binding_ref"],
+            binding_ref=device_binding_ref,
             node_ref=target["node_ref"],
             root_ref=wire["root_ref"],
             path_relative=wire["path_relative"],
             file_path=target["file_path"],
             expires_at=(now + _DISPATCH_TTL).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
         )
+    except HistoryForbidden:
+        return _error(404, "oracle_mesh_run_unavailable")
     except HistoryError:
         return _error(409, "oracle_mesh_dispatch_refused")
     except Exception:
@@ -395,6 +430,8 @@ async def dispatch_oracle_mesh_read_intent(
             "run_id": wire["run_id"],
             "state": dispatch["state"],
             "expires_at": dispatch["expires_at"],
+            "execution": "server_owned",
+            "broker_acknowledged": False,
         },
     })
 
@@ -512,6 +549,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         return _error(403, "oracle_mesh_channel_rejected")
     history_store = getattr(request.app.state, "history_store", None)
     for method in ("consume_oracle_mesh_dispatch", "finish_oracle_mesh_dispatch",
+                   "mark_oracle_mesh_store_failed",
                    "get_claw_run", "append_local_task_result"):
         if not callable(getattr(history_store, method, None)):
             return _error(503, "oracle_mesh_unconfigured")
@@ -523,9 +561,13 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     except Exception:
         return _error(503, "oracle_mesh_dispatch_unavailable")
     if dispatch is None:
-        # Unknown, expired, already-consumed or nonce-mismatched dispatch:
-        # replays and cross-dispatch submissions receive nothing.
+        # Unknown, expired, already-consumed or nonce-mismatched dispatch. A
+        # concurrent second submit of the same result loses the atomic update
+        # here and is refused, rather than looking like the accepted request.
         return _error(409, "oracle_mesh_dispatch_rejected")
+    claim = dispatch.get("claim")
+    if claim not in ("first", "retry"):
+        return _error(503, "oracle_mesh_dispatch_unavailable")
 
     outcome = "done"
     content = ""
@@ -602,20 +644,23 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             content=content,
             status=status,
         )
-    except HistoryError as exc:
+    except HistoryForbidden:
+        # Ownership refusal is final: retrying cannot change it.
         try:
             await history_store.finish_oracle_mesh_dispatch(
                 dispatch_id=wire["dispatch_id"], outcome="failed",
             )
         except Exception:
             pass
-        if isinstance(exc, HistoryForbidden):
-            return _error(403, "oracle_mesh_conversation_forbidden")
-        return _error(503, "oracle_mesh_append_unavailable")
+        return _error(403, "oracle_mesh_conversation_forbidden")
     except Exception:
+        # Transient conversation-store failure. The verified result is parked
+        # (claim and expiry intact) so the executor can resend the SAME result
+        # — the PC file is not read again, and the stable message id keeps the
+        # eventual append exactly-once.
         try:
-            await history_store.finish_oracle_mesh_dispatch(
-                dispatch_id=wire["dispatch_id"], outcome="failed",
+            await history_store.mark_oracle_mesh_store_failed(
+                dispatch_id=wire["dispatch_id"],
             )
         except Exception:
             pass
@@ -632,6 +677,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         "commandId": dispatch["command_id"],
         "appended": bool(appended),
         "status": status,
+        "claim": claim,
         "executor": _EXECUTOR,
         "brokerAcknowledged": False,
     })

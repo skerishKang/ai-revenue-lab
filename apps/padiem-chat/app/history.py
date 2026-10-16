@@ -339,6 +339,25 @@ def _title_from_user_text(text: str) -> str:
     return one_line[:MAX_HISTORY_TITLE_CHARS] or "새 대화"
 
 
+def _changed_rows(result: Any) -> int:
+    """How many rows one ``statement.run()`` actually changed.
+
+    ``0`` is the load-bearing value for every guarded state transition in this
+    module: an ``UPDATE`` whose ``WHERE`` matched nothing reports zero here,
+    which is how a conditional write refuses a losing concurrent writer instead
+    of silently reading back someone else's row.
+    """
+    if result is None:
+        return 0
+    meta = result.get("meta") if isinstance(result, dict) else getattr(result, "meta", None)
+    if meta is None:
+        return 0
+    written = meta.get("rows_written") if isinstance(meta, dict) else getattr(meta, "rows_written", None)
+    if isinstance(written, bool) or not isinstance(written, int):
+        return 0
+    return max(0, written)
+
+
 def _batch_returned_row(results: Any, index: int) -> dict[str, Any] | None:
     """Read one ``RETURNING`` row out of a ``db.batch()`` result.
 
@@ -1537,12 +1556,12 @@ class D1HistoryStore:
         tool_request_ref: str,
         request_id: str,
         revision_ref: str,
-        evidence_ref: str,
+        evidence_ref: str | None,
         request_fingerprint: str,
         account_ref: str,
         workspace_ref: str,
         device_id: str,
-        binding_ref: str,
+        binding_ref: str | None,
         node_ref: str,
         root_ref: str,
         path_relative: str,
@@ -1551,12 +1570,17 @@ class D1HistoryStore:
     ) -> dict[str, Any]:
         """#4139 — stage one Oracle management-host execution for one run.
 
-        The row snapshots the exact broker-bound correlation plus the
-        deployment-verified Mesh target. One dispatch per owner+run: an
-        identical pending row is reused, a terminal (done/failed) row refuses
-        any second execution for the run, and an expired pending row is
-        replaced. Every statement is owner-scoped; cross-owner existence is
-        never disclosed.
+        The row snapshots the broker-bound correlation when Broker admission
+        exists, plus the deployment-verified Mesh target. One dispatch per
+        owner+run: an identical pending row is reused, a terminal
+        (done/failed) row refuses any second execution for the run, and an
+        expired pending row is replaced. Every statement is owner-scoped;
+        cross-owner existence is never disclosed.
+
+        ``evidence_ref`` and ``binding_ref`` are nullable on purpose. A PC that
+        has never completed the native PC offer has no Broker binding and no
+        Broker-minted evidence, and this table stores NULL for both rather than
+        inventing a reference that would read as one.
         """
         fields = {
             "user_id": user_id, "run_id": run_id, "command_id": command_id,
@@ -1569,6 +1593,10 @@ class D1HistoryStore:
             "path_relative": path_relative, "file_path": file_path,
         }
         for name, value in fields.items():
+            if value is None:
+                if name not in ("evidence_ref", "binding_ref"):
+                    raise HistoryError(f"{name} must be a bounded reference")
+                continue
             if not isinstance(value, str) or not value or len(value) > 1024:
                 raise HistoryError(f"{name} must be a bounded reference")
         if not isinstance(expires_at, str) or not expires_at:
@@ -1678,29 +1706,34 @@ class D1HistoryStore:
         if not isinstance(nonce_sha256, str) or not nonce_sha256:
             raise HistoryError("nonce_sha256 is required")
         now = _now_iso()
-        await self._run(
+        written = await self._run(
             "UPDATE oracle_mesh_dispatch SET nonce_sha256=? "
             "WHERE dispatch_id=? AND state=? AND expires_at>? AND nonce_sha256 IS NULL",
             nonce_sha256, dispatch_id, "pending", now,
         )
-        claimed = await self._first(
-            "SELECT nonce_sha256 FROM oracle_mesh_dispatch WHERE dispatch_id=?",
-            dispatch_id,
-        )
-        return (
-            claimed is not None
-            and claimed.get("nonce_sha256") == nonce_sha256
-        )
+        return _changed_rows(written) == 1
 
     async def consume_oracle_mesh_dispatch(
         self, *, dispatch_id: str, nonce: str
     ) -> dict[str, Any] | None:
-        """#4139 — atomically accept one result submission for one dispatch.
+        """#4139 — accept one result submission for one dispatch, atomically.
 
-        The nonce presented over the secret channel must hash to the stored
-        claim; the dispatch must still be pending and unexpired. Acceptance
-        flips pending to received exactly once: replays find no pending row
-        and receive nothing.
+        Two clearly separated paths:
+
+        * **First submission.** A conditional ``pending -> received`` update
+          is the single-winner gate. Only the request whose update actually
+          changed the row is accepted; every concurrent loser updates nothing
+          and receives ``None`` (409), so a duplicate delivery can never look
+          like the winner.
+        * **Retry after a transient conversation-store failure.** A prior
+          attempt parked the row in ``store_failed`` with its claim intact.
+          That state is not a race — the winner already finished — so the same
+          nonce is accepted again as ``claim="retry"``. The append itself is
+          idempotent, so a retry can never add a second message, and the PC
+          file is never read again.
+
+        Anything else — unknown dispatch, expired claim, foreign nonce,
+        already ``done``/``failed`` — is refused.
         """
         import hashlib as _hashlib
         import hmac as _hmac
@@ -1722,7 +1755,6 @@ class D1HistoryStore:
         expected = row.get("nonce_sha256")
         if (
             not isinstance(expected, str) or not expected
-            or row.get("state") != "pending"
             or not isinstance(row.get("expires_at"), str)
             or row["expires_at"] <= _now_iso()
         ):
@@ -1730,11 +1762,29 @@ class D1HistoryStore:
         presented = _hashlib.sha256(nonce.encode("utf-8")).hexdigest()
         if not _hmac.compare_digest(presented, expected):
             return None
-        await self._run(
+        state = row.get("state")
+        if state == "store_failed":
+            # The winner already failed to store; this is its retry. Move the
+            # row back to received under a guarded update so the close below
+            # stays a single uniform transition.
+            written = await self._run(
+                "UPDATE oracle_mesh_dispatch SET state=? "
+                "WHERE dispatch_id=? AND state=? AND nonce_sha256=?",
+                "received", dispatch_id, "store_failed", expected,
+            )
+            if _changed_rows(written) != 1:
+                return None
+            return {**dict(row), "state": "received", "claim": "retry"}
+        if state != "pending":
+            return None
+        written = await self._run(
             "UPDATE oracle_mesh_dispatch SET state=? "
-            "WHERE dispatch_id=? AND state=?",
-            "received", dispatch_id, "pending",
+            "WHERE dispatch_id=? AND state=? AND nonce_sha256=?",
+            "received", dispatch_id, "pending", expected,
         )
+        if _changed_rows(written) != 1:
+            # A concurrent submission won this dispatch.
+            return None
         accepted = await self._first(
             "SELECT dispatch_id, user_id, run_id, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
@@ -1745,24 +1795,44 @@ class D1HistoryStore:
         )
         if accepted is None or accepted.get("state") != "received":
             return None
-        return dict(accepted)
+        return {**dict(accepted), "claim": "first"}
+
+    async def mark_oracle_mesh_store_failed(self, *, dispatch_id: str) -> bool:
+        """#4139 — park a received dispatch so the same result can be resent.
+
+        Only a transient conversation-store failure reaches here. The claim and
+        expiry stay intact, the PC file is not read again, and the retry is
+        still single-delivery because the append is idempotent.
+        """
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        await self._run(
+            "UPDATE oracle_mesh_dispatch SET state=? "
+            "WHERE dispatch_id=? AND state=?",
+            "store_failed", dispatch_id, "received",
+        )
+        parked = await self._first(
+            "SELECT state FROM oracle_mesh_dispatch WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        return parked is not None and parked.get("state") == "store_failed"
 
     async def finish_oracle_mesh_dispatch(
         self, *, dispatch_id: str, outcome: str
     ) -> bool:
-        """#4139 — close one received dispatch as done or failed, once."""
+        """#4139 — close one received (or retried) dispatch, once.
+
+        A retry submission parks the row back in ``received``, so both the
+        first and the retry path close through the same guarded transition.
+        """
         if outcome not in ("done", "failed"):
             raise HistoryError("outcome must be done or failed")
-        await self._run(
+        written = await self._run(
             "UPDATE oracle_mesh_dispatch SET state=? "
             "WHERE dispatch_id=? AND state=?",
             outcome, dispatch_id, "received",
         )
-        closed = await self._first(
-            "SELECT state FROM oracle_mesh_dispatch WHERE dispatch_id=?",
-            dispatch_id,
-        )
-        return closed is not None and closed.get("state") == outcome
+        return _changed_rows(written) == 1
 
     async def record_claw_approval_handoff(
         self,
