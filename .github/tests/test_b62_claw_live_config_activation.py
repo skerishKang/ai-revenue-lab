@@ -1521,6 +1521,237 @@ def test_3748_b62_pre_version_old_form_mutation_red_and_bytes_preserved() -> Non
         raise AssertionError("spaced form mutation survived")
     assert WORKFLOW.read_bytes() == original
 
+# ---- #4139 Oracle Mesh execution-mode switch (one variable, off/mesh) -------
+
+MESH_VAR = "ORACLE_MESH_EXECUTION_MODE"
+
+
+def _mesh_job_block() -> str:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    start = workflow.index("  activate-oracle-mesh-mode:")
+    rest = workflow[start + len("  activate-oracle-mesh-mode:") :]
+    match = re.search(r"\n  [A-Za-z0-9_-]+:", rest)
+    return rest if match is None else rest[: match.start()]
+
+
+def _mesh_bindings(mode=None):
+    bindings = _baseline_bindings()
+    if mode is not None:
+        bindings.append(_binding(MESH_VAR, "plain_text", text=mode))
+    return bindings
+
+
+def _mesh_bindings_without_mode():
+    return [b for b in _mesh_bindings() if b["name"] != MESH_VAR]
+
+
+def test_oracle_mesh_mode_names_and_values_are_bounded() -> None:
+    helper = _load_helper()
+    assert helper.ORACLE_MESH_MODE_NAME == MESH_VAR
+    assert helper.ORACLE_MESH_MODE_VALUES == ("off", "mesh")
+    assert "native" not in helper.ORACLE_MESH_MODE_VALUES
+
+
+def test_oracle_mesh_mode_plan_changes_only_the_one_variable() -> None:
+    helper = _load_helper()
+    plan = helper.build_oracle_mesh_mode_patch(
+        _settings(_mesh_bindings()), mode="mesh", target_sha="a" * 40
+    )
+    payload = plan["payload"]
+    names = [b["name"] for b in payload["bindings"]]
+    assert names.count(MESH_VAR) == 1
+    assert len(names) == len(set(names))
+    mesh = [b for b in payload["bindings"] if b["name"] == MESH_VAR][0]
+    assert mesh == {"name": MESH_VAR, "type": "plain_text", "text": "mesh"}
+    # Every other live binding — including the existing secret — is inherited
+    # verbatim, so nothing else can be dropped, retyped or rewired.
+    others = [b for b in payload["bindings"] if b["name"] != MESH_VAR]
+    assert {b["name"] for b in others} == {b["name"] for b in _mesh_bindings()}
+    assert all(b == {"name": b["name"], "type": "inherit", "version_id": "latest"} for b in others)
+    assert plan["previous_state"] == "absent"
+    assert plan["no_op"] is False
+    assert plan["changes"] == ["ORACLE_MESH_EXECUTION_MODE_SET_MESH"]
+
+
+def test_oracle_mesh_mode_plan_is_idempotent_when_already_exact() -> None:
+    helper = _load_helper()
+    plan = helper.build_oracle_mesh_mode_patch(
+        _settings(_mesh_bindings("mesh")), mode="mesh", target_sha="a" * 40
+    )
+    assert plan["previous_state"] == "mesh"
+    assert plan["no_op"] is True
+    assert plan["changes"] == []
+
+
+def test_oracle_mesh_mode_plan_refuses_unapproved_retyped_and_unexpected() -> None:
+    helper = _load_helper()
+    for mode in ("native", "ON", "", "Mesh", "mesh "):
+        try:
+            helper.build_oracle_mesh_mode_patch(
+                _settings(_mesh_bindings()), mode=mode, target_sha="a" * 40
+            )
+        except helper.ActivationPlanError:
+            pass
+        else:
+            raise AssertionError(f"mode {mode!r} must be refused")
+
+    retyped = _settings(_mesh_bindings_without_mode() + [_binding(MESH_VAR, "secret_text")])
+    try:
+        helper.build_oracle_mesh_mode_patch(retyped, mode="mesh", target_sha="a" * 40)
+    except helper.ActivationPlanError:
+        pass
+    else:
+        raise AssertionError("a retyped live mode binding must be refused")
+
+    unexpected = _settings(
+        _mesh_bindings_without_mode() + [_binding(MESH_VAR, "plain_text", text="native")]
+    )
+    try:
+        helper.build_oracle_mesh_mode_patch(unexpected, mode="mesh", target_sha="a" * 40)
+    except helper.ActivationPlanError:
+        pass
+    else:
+        raise AssertionError("an unexpected live mode value must be refused")
+
+
+def test_oracle_mesh_mode_verify_accepts_only_the_one_variable_change() -> None:
+    helper = _load_helper()
+    before = _settings(_mesh_bindings())
+    after = _settings(_mesh_bindings("mesh"))
+    helper.verify_oracle_mesh_mode(after, mode="mesh", pre_payload=before)
+    helper.verify_oracle_mesh_mode(after, mode="mesh")
+
+    drifted = _settings(
+        [b for b in _mesh_bindings() if b["name"] != "PADIEM_CHAT_RUNTIME_MODE"]
+        + [_binding("PADIEM_CHAT_RUNTIME_MODE", "plain_text", text="mock")]
+        + [_binding(MESH_VAR, "plain_text", text="mesh")]
+    )
+    try:
+        helper.verify_oracle_mesh_mode(drifted, mode="mesh", pre_payload=before)
+    except helper.ActivationPlanError:
+        pass
+    else:
+        raise AssertionError("an unrelated live change must fail the verify")
+
+    try:
+        helper.verify_oracle_mesh_mode(after, mode="off", pre_payload=before)
+    except helper.ActivationPlanError:
+        pass
+    else:
+        raise AssertionError("a mismatched live mode must fail the verify")
+
+    try:
+        helper.verify_oracle_mesh_mode(after, mode="native")
+    except helper.ActivationPlanError:
+        pass
+    else:
+        raise AssertionError("an unapproved mode must fail the verify")
+
+
+def test_oracle_mesh_mode_rollback_requires_the_explicit_flag() -> None:
+    helper = _load_helper()
+    snapshot = _settings(_mesh_bindings())
+    current = _settings(_mesh_bindings("mesh"))
+    admitted = helper.build_rollback_plan(
+        snapshot,
+        current,
+        credential_created_by_activation=False,
+        target_sha="a" * 40,
+        oracle_mesh_mode_rollback=True,
+    )
+    assert "CONFIG_REMOVE_ORACLE_MESH_EXECUTION_MODE" in admitted["changes"]
+    assert admitted["no_op"] is False
+
+    # Without the explicit opt-in the mode variable is never restored/removed.
+    default = helper.build_rollback_plan(
+        snapshot,
+        current,
+        credential_created_by_activation=False,
+        target_sha="a" * 40,
+    )
+    assert all(MESH_VAR not in change for change in default["changes"])
+    assert default["no_op"] is True
+
+
+def test_oracle_mesh_mode_cli_plan_and_verify_round_trip() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        before = tmp_path / "before.json"
+        before.write_text(json.dumps(_settings(_mesh_bindings())), encoding="utf-8")
+        after = tmp_path / "after.json"
+        after.write_text(json.dumps(_settings(_mesh_bindings("mesh"))), encoding="utf-8")
+        patch = tmp_path / "patch.json"
+
+        planned = subprocess.run(
+            [
+                sys.executable, str(HELPER), "plan-oracle-mesh-mode",
+                "--settings", str(before), "--mode", "mesh",
+                "--target-sha", "b" * 40, "--output", str(patch),
+            ],
+            capture_output=True, text=True, check=False,
+        )
+        assert planned.returncode == 0, planned.stderr
+        assert "B62_CLAW_ORACLE_MESH_MODE_PLAN=PASS" in planned.stdout
+        assert "ORACLE_MESH_MODE_ONLY_VARIABLE_CHANGED=YES" in planned.stdout
+        assert "SECRET_VALUES_READ=0" in planned.stdout
+        written = json.loads(patch.read_text(encoding="utf-8"))
+        assert [b["name"] for b in written["bindings"]].count(MESH_VAR) == 1
+
+        verified = subprocess.run(
+            [
+                sys.executable, str(HELPER), "verify-oracle-mesh-mode",
+                "--settings", str(after), "--mode", "mesh", "--pre-settings", str(before),
+            ],
+            capture_output=True, text=True, check=False,
+        )
+        assert verified.returncode == 0, verified.stderr
+        assert "B62_CLAW_ORACLE_MESH_MODE_VERIFY=EXACT" in verified.stdout
+
+        refused = subprocess.run(
+            [
+                sys.executable, str(HELPER), "plan-oracle-mesh-mode",
+                "--settings", str(before), "--mode", "native",
+                "--target-sha", "b" * 40, "--output", str(tmp_path / "nope.json"),
+            ],
+            capture_output=True, text=True, check=False,
+        )
+        assert refused.returncode == 2
+        assert not (tmp_path / "nope.json").exists()
+
+
+def test_oracle_mesh_mode_job_is_production_gated_and_single_variable() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "activate_oracle_mesh_mode" in workflow
+    block = _mesh_job_block()
+    assert "environment: production" in block
+    assert "needs: source-contract" in block
+    assert "CONFIRM_ACTIVATE_B62_ORACLE_MESH_MODE" in block
+    assert "off|mesh" in block
+    assert "plan-oracle-mesh-mode" in block
+    assert "verify-oracle-mesh-mode" in block
+    assert "--pre-settings" in block
+    assert "b62-claw-config-premutation-settings" in block
+    assert "b62_binding_state_guard.py" in block
+    # The switch must never redeploy code and must never emit a secret value.
+    assert "pywrangler" not in block
+    assert "wrangler deploy" not in block
+    assert "SECRET_VALUES_READ=0" in block
+    assert "SECRET_VALUE_READ_OR_REWRITTEN=NO" in block
+
+
+def test_oracle_mesh_mode_input_is_bounded_and_readonly_is_untouched() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "oracle_mesh_execution_mode:" in workflow
+    assert 'default: "off"' in workflow
+    assert "oracle_mesh_mode_rollback:" in workflow
+    assert "--oracle-mesh-mode-rollback" in workflow
+    readonly = _readonly_job_block()
+    assert "inputs.mode != 'activate_oracle_mesh_mode'" in readonly
+    # The existing Engine/R2 activation path keeps its own contract.
+    activate = _activate_job_block()
+    assert "ORACLE_MESH" not in activate
+
+
 if __name__ == "__main__":
     test_classify_full_activation_required_and_exact()
     test_classify_quota_drift_and_wrong_type()
@@ -1617,4 +1848,13 @@ if __name__ == "__main__":
     test_3748_b62_pre_version_real_cli_rejects_separate_hyphen_argv()
     test_3748_b62_pre_version_fail_closed_without_accepted_truth()
     test_3748_b62_pre_version_old_form_mutation_red_and_bytes_preserved()
+    test_oracle_mesh_mode_names_and_values_are_bounded()
+    test_oracle_mesh_mode_plan_changes_only_the_one_variable()
+    test_oracle_mesh_mode_plan_is_idempotent_when_already_exact()
+    test_oracle_mesh_mode_plan_refuses_unapproved_retyped_and_unexpected()
+    test_oracle_mesh_mode_verify_accepts_only_the_one_variable_change()
+    test_oracle_mesh_mode_rollback_requires_the_explicit_flag()
+    test_oracle_mesh_mode_cli_plan_and_verify_round_trip()
+    test_oracle_mesh_mode_job_is_production_gated_and_single_variable()
+    test_oracle_mesh_mode_input_is_bounded_and_readonly_is_untouched()
     print("B62_CLAW_LIVE_CONFIG_ACTIVATION_TESTS=PASS")
