@@ -235,6 +235,19 @@ class OracleMeshReturnSource:
         return hmac.compare_digest(candidate, self._secret)
 
 
+async def _resolve_oracle_store_text(raw: Any) -> Any:
+    """Plain strings pass through; Secrets Store bindings resolve via async .get()."""
+    if isinstance(raw, str):
+        return raw
+    getter = getattr(raw, "get", None)
+    if not callable(getter):
+        return None
+    resolved = getter()
+    if hasattr(resolved, "__await__"):
+        resolved = await resolved
+    return resolved
+
+
 def build_oracle_mesh_return_source(
     mapping: Any, channel_secret: Any = None, mode: Any = EXECUTION_MODE_OFF
 ) -> OracleMeshReturnSource | None:
@@ -257,7 +270,7 @@ async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturn
     from .worker_config import binding_value
 
     try:
-        raw_map = binding_value(env, ORACLE_MESH_OWNERSHIP_MAP_ENV)
+        raw_map = await _resolve_oracle_store_text(binding_value(env, ORACLE_MESH_OWNERSHIP_MAP_ENV))
         raw_secret = binding_value(env, ORACLE_MESH_CHANNEL_SECRET_ENV)
         raw_mode = binding_value(env, ORACLE_MESH_EXECUTION_MODE_ENV)
     except Exception:

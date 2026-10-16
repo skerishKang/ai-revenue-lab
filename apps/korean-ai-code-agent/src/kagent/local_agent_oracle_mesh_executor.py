@@ -331,3 +331,82 @@ def deployment_secret_password_provider(path: str) -> Callable[[], str]:
         return secret
 
     return provider
+
+
+def _read_secret_file(path: str, name: str) -> str:
+    import os
+
+    if not isinstance(path, str) or not path.strip() or not os.path.isfile(path):
+        raise ContractError(f"the {name} file is missing")
+    with open(path, "r", encoding="utf-8") as handle:
+        value = handle.read().strip()
+    if not value:
+        raise ContractError(f"the {name} file is empty")
+    return value
+
+
+def main(environ: Optional[dict[str, str]] = None) -> int:
+    """Startup entrypoint: one poll/execute/submit loop on the Oracle host.
+
+    Configuration is environment-only and bounded:
+      ORACLE_MESH_CHAT_ORIGIN       https origin of the Chat worker (bare)
+      ORACLE_MESH_CHANNEL_SECRET_FILE  mode-0600 file holding the channel secret
+      ORACLE_MESH_MESHCTRL_JS       path to the official meshctrl.js
+      ORACLE_MESH_LOGIN_USER        MeshCentral operator account
+      ORACLE_MESH_PASSWORD_FILE     mode-0600 file holding the operator password
+      ORACLE_MESH_URL               optional, default wss://127.0.0.1:4443
+      ORACLE_MESH_WORK_DIR          optional scratch directory
+      ORACLE_MESH_POLL_SECONDS      optional idle interval, default 5
+    Secrets are read from files at call time; they never appear on argv.
+    """
+    import os
+    import sys
+    import time
+
+    env = dict(os.environ if environ is None else environ)
+
+    def need(key: str) -> str:
+        value = env.get(key, "").strip()
+        if not value:
+            raise ContractError(f"{key} is required")
+        return value
+
+    try:
+        executor = make_oracle_mesh_executor(
+            chat_origin=need("ORACLE_MESH_CHAT_ORIGIN"),
+            channel_secret=_read_secret_file(
+                need("ORACLE_MESH_CHANNEL_SECRET_FILE"), "channel secret"
+            ),
+            meshctrl_js=need("ORACLE_MESH_MESHCTRL_JS"),
+            login_user=need("ORACLE_MESH_LOGIN_USER"),
+            password_provider=deployment_secret_password_provider(
+                need("ORACLE_MESH_PASSWORD_FILE")
+            ),
+            mesh_url=env.get("ORACLE_MESH_URL", "").strip() or "wss://127.0.0.1:4443",
+            work_dir=env.get("ORACLE_MESH_WORK_DIR", "").strip() or None,
+        )
+        idle = max(1, min(int(env.get("ORACLE_MESH_POLL_SECONDS", "5") or 5), 300))
+    except (ContractError, ValueError) as exc:
+        print(f"oracle-mesh-executor refused to start: {exc}", file=sys.stderr)
+        return 2
+
+    while True:
+        try:
+            result = executor.run_once()
+        except OracleMeshChannelRefused as exc:
+            # Bounded: the message never carries dispatch content or secrets.
+            print(f"oracle-mesh-executor channel refusal: {exc}", file=sys.stderr)
+            time.sleep(idle)
+            continue
+        if result is None:
+            time.sleep(idle)
+            continue
+        print(
+            f"oracle-mesh-executor result ok={result.get('ok')} "
+            f"retryable={result.get('retryable', False)}",
+            flush=True,
+        )
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

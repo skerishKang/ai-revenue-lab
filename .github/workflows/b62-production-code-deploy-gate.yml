@@ -648,7 +648,7 @@ jobs:
           print("ORACLE_MESH_EXECUTION_MODE=" + (mode if mode in ("mesh", "native", "off") else "absent"))
           raw_map = texts.get("ORACLE_MESH_OWNERSHIP_MAP")
           if not isinstance(raw_map, str) or not raw_map:
-              print("ORACLE_MESH_OWNERSHIP_MAP=absent")
+              print("ORACLE_MESH_OWNERSHIP_MAP_PLAINTEXT=absent")
           else:
               try:
                   rows = json.loads(raw_map)
@@ -664,6 +664,9 @@ jobs:
           secret = [b.get("type") for b in bindings
                     if isinstance(b, dict) and b.get("name") == "ORACLE_MESH_CHANNEL_SECRET"]
           print("ORACLE_MESH_CHANNEL_SECRET_BINDING=" + (secret[0] if len(secret) == 1 else "absent"))
+          owner_map = [b.get("type") for b in bindings
+                       if isinstance(b, dict) and b.get("name") == "ORACLE_MESH_OWNERSHIP_MAP"]
+          print("ORACLE_MESH_OWNERSHIP_MAP_BINDING=" + (owner_map[0] if len(owner_map) == 1 else "absent"))
           PY
 
           echo "B62_CODE_DEPLOY_READONLY=PASS"
