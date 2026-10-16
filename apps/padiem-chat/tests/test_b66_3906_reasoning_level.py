@@ -743,24 +743,35 @@ def test_b66_level_reaches_the_real_provider_request_json():
     import json
     import subprocess
     import sys
+    import tempfile
 
     emitted = reasoning_parameter_for_request(GEMINI_35, "low")
     assert emitted == {"reasoning_effort": "low"}
     platform = Path(__file__).resolve().parents[3] / "apps" / "korean-ai-platform"
-    driver = platform / "b66_reasoning_transport_probe.py"
-    try:
-        driver.write_text(_B14_DRIVER, encoding="utf-8")
-        completed = subprocess.run(
-            [sys.executable, driver.name, json.dumps(emitted)],
-            cwd=platform,
-            capture_output=True,
-            text=True,
-            timeout=120,
-        )
-    except (OSError, subprocess.SubprocessError) as exc:  # pragma: no cover
-        pytest.skip(f"B14 probe transport unavailable: {exc}")
-    finally:
-        driver.unlink(missing_ok=True)
+    # #4070 race fix: this driver used to be written INTO the repository tree
+    # (`apps/korean-ai-platform/b66_reasoning_transport_probe.py`) and deleted in
+    # `finally`. The Core suite runs concurrently on the same runner
+    # (`.github/scripts/b62_host_pytest_overlap_4070.sh`), and
+    # `test_package_root_consumer_inventory` walks the whole repo with
+    # `REPO_ROOT.rglob("*.py")` before reading each file. When the unlink landed
+    # between its listing pass and its read pass, that unrelated test died with
+    # `FileNotFoundError` and took `b62-test` (and therefore `main`) red.
+    # Writing the driver to a temp directory outside the repo removes the shared
+    # mutable path entirely. The subprocess still runs with `cwd=platform`,
+    # because the driver does `sys.path.insert(0, ".")` to import `app.pilot`.
+    with tempfile.TemporaryDirectory(prefix="b66-reasoning-probe-") as tmpdir:
+        driver = Path(tmpdir) / "b66_reasoning_transport_probe.py"
+        try:
+            driver.write_text(_B14_DRIVER, encoding="utf-8")
+            completed = subprocess.run(
+                [sys.executable, str(driver), json.dumps(emitted)],
+                cwd=platform,
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+        except (OSError, subprocess.SubprocessError) as exc:  # pragma: no cover
+            pytest.skip(f"B14 probe transport unavailable: {exc}")
     assert completed.returncode == 0, completed.stderr[-2000:]
     seen = json.loads(completed.stdout.strip().splitlines()[-1])
 
