@@ -943,7 +943,7 @@ class Default(WorkerEntrypoint):
                 from app.oracle_mesh_read_return_routes import (
                     build_oracle_mesh_return_source_from_env,
                 )
-                _oracle_mesh_return_source = (
+                _oracle_mesh_return_source = await (
                     build_oracle_mesh_return_source_from_env(self.env)
                 )
                 _worker_app = create_app(
