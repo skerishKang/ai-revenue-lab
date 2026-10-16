@@ -1,6 +1,6 @@
 # One-package PADIEM Connector installer. Per-user; no host Python.
 [CmdletBinding()]
-param([switch]$Uninstall, [string]$BundleRoot = $PSScriptRoot)
+param([switch]$Uninstall, [switch]$NoTrayStart, [string]$BundleRoot = $PSScriptRoot)
 $ErrorActionPreference = 'Stop'
 $Root = Join-Path $env:LOCALAPPDATA 'Padiem\ClawConnect'
 $App = Join-Path $Root 'app'
@@ -114,14 +114,19 @@ $Doctor = (& $Exe doctor | ConvertFrom-Json)
 if ($LASTEXITCODE -ne 0 -or $Doctor.agent_ready -ne $true) {
     throw 'The embedded canonical Resident preflight failed.'
 }
-$TrayProcess = Start-Process -FilePath $Exe -ArgumentList 'start' -WorkingDirectory $App -WindowStyle Hidden -PassThru
-Start-Sleep -Milliseconds 1200
-$TrayProcess.Refresh()
-if ($TrayProcess.HasExited) {
-    throw 'Installed Connector tray did not stay running.'
+# Maintenance reinstallation can preserve the user's explicit OFF and avoid
+# a new PC first-offer before the originating signed-in Claw click. Ordinary
+# customer installation continues to launch the existing tray as before.
+if (-not $NoTrayStart) {
+    $TrayProcess = Start-Process -FilePath $Exe -ArgumentList 'start' -WorkingDirectory $App -WindowStyle Hidden -PassThru
+    Start-Sleep -Milliseconds 1200
+    $TrayProcess.Refresh()
+    if ($TrayProcess.HasExited) {
+        throw 'Installed Connector tray did not stay running.'
+    }
 }
 # The tray writes HKCU Run only after durable enrollment. Explicit OFF stays OFF.
 Write-Output (@{ok=$true; action='install'; exe=$Exe; agent_ready=$true;
-               tray_launch_requested=$true; autostart='credential_gated';
+               tray_launch_requested=([bool](-not $NoTrayStart)); autostart='credential_gated';
                browser_protocol_registered=$true; connected=$false} |
               ConvertTo-Json -Compress)

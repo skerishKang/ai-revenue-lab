@@ -352,6 +352,19 @@ def test_planning_alone_never_spawns_a_process(monkeypatch, tmp_path):
     assert calls == []
 
 
+def test_installed_launch_supplies_canonical_text_material_source(tmp_path):
+    from claw_connect.installed_runtime import installed_resident_environ, VERIFIED_TEXT_PLAN_SOURCE
+
+    original={"PADIEM_AGENT_VERIFIED_TEXT_PLAN_SOURCE":"untrusted_module:factory"}
+    installed=installed_resident_environ(state_dir=tmp_path,environ=original)
+    plan,reason=plan_resident_launch(record=_record(),environ=installed)
+    assert reason=="planned"
+    assert plan is not None
+    assert plan.verified_text_plan_source==VERIFIED_TEXT_PLAN_SOURCE
+    assert plan.environment(base={})["PADIEM_AGENT_VERIFIED_TEXT_PLAN_SOURCE"]==VERIFIED_TEXT_PLAN_SOURCE
+    assert original["PADIEM_AGENT_VERIFIED_TEXT_PLAN_SOURCE"]=="untrusted_module:factory"
+
+
 def test_connect_app_never_spawns_once_the_registration_is_gone(
     monkeypatch, tmp_path
 ):

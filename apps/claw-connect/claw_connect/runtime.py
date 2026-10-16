@@ -414,8 +414,16 @@ class ConnectApp:
                             )
                         ),
                         "reason": (
-                            "offer_refused" if failure else None
-                        ),
+                            failure if (
+                                type(failure) is str and len(failure) <= 72
+                                and failure.isascii()
+                                and failure.replace("_", "").isalnum()
+                                and failure.startswith((
+                                    "pc_offer_", "device_", "review_wss_",
+                                    "customer_", "canonical_",
+                                ))
+                            ) else "offer_refused"
+                        ) if failure else None,
                     }, output)
                 os.replace(temporary, root / "customer-offer-stage.json")
             finally:
@@ -429,7 +437,8 @@ class ConnectApp:
         if self._quit.is_set():
             return
         try:
-            if self._enrollment.committed_record() is not None:
+            record = self._enrollment.committed_record()
+            if record is not None and record.is_enrolled():
                 return
         except Exception:
             self._offer_failure = "enrollment_record_unreadable"
@@ -472,9 +481,10 @@ class ConnectApp:
                 self.start_registered_resident()
         except DeviceSessionRefused as exc:
             failure = str(exc)
-        except Exception:
-            # No socket data, code, credential, or owner identity in diagnostics.
-            failure = "customer_offer_unavailable"
+        except Exception as exc:
+            # Only the Python exception class is recorded, not its message,
+            # socket data, credential, code, or owner identity.
+            failure = "customer_" + type(exc).__name__.lower()
         finally:
             with self._offer_lock:
                 self._offer_failure = failure
@@ -490,7 +500,8 @@ class ConnectApp:
                 self.quit()
                 return
             if self._offer_signal.wait(0):
-                if self._enrollment.committed_record() is not None:
+                record = self._enrollment.committed_record()
+                if record is not None and record.is_enrolled():
                     self.reconnect()
                 else:
                     self._start_customer_offer_once(explicit=True)
@@ -507,8 +518,15 @@ class ConnectApp:
 
         0 = clean quit, 3 = another instance already owns this PC.
         """
+        if explicit_connect:
+            from padiem_connector.native_launch_diagnostics import mark as _native_mark
+            _native_mark("single_instance_begin")
         if not self._single.acquire():
+            if explicit_connect:
+                _native_mark("single_instance_existing")
             return 3
+        if explicit_connect:
+            _native_mark("single_instance_owned")
         self._quit_signal.open()
         self._offer_signal.open()
         try:
@@ -526,6 +544,8 @@ class ConnectApp:
             if sys.platform == "win32":
                 from .tray import ConnectTray  # noqa: PLC0415
 
+                if explicit_connect:
+                    _native_mark("tray_begin")
                 self._tray = ConnectTray(
                     state_source=lambda: self.connector_status(),
                     actions=self.actions(),
@@ -533,11 +553,17 @@ class ConnectApp:
                     web_url=WEB_URL,
                 )
                 self._tray.create()
+                if explicit_connect:
+                    _native_mark("tray_created")
                 watcher = threading.Thread(
                     target=self._watch_quit_event, name="claw-connect-quit", daemon=True
                 )
                 watcher.start()
+                if explicit_connect:
+                    _native_mark("tray_run_enter")
                 self._tray.run()
+                if explicit_connect:
+                    _native_mark("tray_run_exit")
             else:
                 # Non-Windows developer/CI host: keep the process alive until
                 # a quit is requested so the offline lifecycle can be driven.

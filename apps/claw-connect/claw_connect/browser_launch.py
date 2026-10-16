@@ -11,4 +11,7 @@ BROWSER_START_URI = "padiem-connector://start"
 
 def accepts_browser_launch_uri(uri: object) -> bool:
     """No query, fragment, port, credentials, path, Unicode or aliases."""
-    return type(uri) is str and uri == BROWSER_START_URI
+    return type(uri) is str and uri in (
+        BROWSER_START_URI,
+        BROWSER_START_URI + "/",
+    )
