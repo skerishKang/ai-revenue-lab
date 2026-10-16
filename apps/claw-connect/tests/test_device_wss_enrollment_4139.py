@@ -420,6 +420,28 @@ def test_device_wss_source_transport_error_remains_bounded_and_closes():
     assert sock.closed is True
 
 
+def test_credential_fetch_timeout_is_bounded_and_does_not_store_or_ack():
+    stages = []
+    store = Store()
+
+    class CredentialTimeout(Socket):
+        async def receive_text(self):
+            if self.index == 2:
+                raise asyncio.TimeoutError("private upstream timeout message")
+            return await super().receive_text()
+
+    sock = CredentialTimeout()
+    with pytest.raises(DeviceSessionRefused, match=r"^device_credential_response_timeout$"):
+        run(sock, store=store, on_stage=stages.append)
+    assert sock.closed is True
+    assert store.saved == []
+    assert [entry["type"] for entry in sock.sent] == [
+        "begin", "finish", "credential_fetch",
+    ]
+    assert stages[-1] == "device_session_credential_fetch_sent"
+    assert "private upstream timeout message" not in " ".join(stages)
+
+
 def test_installed_connector_persists_new_safe_device_session_stage(tmp_path):
     from claw_connect.runtime import ConnectApp
 
