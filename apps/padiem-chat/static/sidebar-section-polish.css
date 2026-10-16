@@ -90,11 +90,11 @@ html body .app-shell .sidebar #projectCreateButton {
   .sidebar .sidebar-section-toggle > span { transition: none; }
 }
 
-/* Existing home cards were 96/145 at two columns and 76/145 on phones,
- * because the upload button's 145px height applied independently. One grid
- * track now owns the height of all four cards; do not change Chat messages. */
+/* Owner 2026-10-16: retain the original desktop 145px visual height on
+ * every viewport. Grid may change its columns, but never card height.
+ * The document-upload shell and its nested button use the same row height. */
 .app-shell[data-state="home"] .starter-grid {
-  grid-auto-rows: 116px;
+  grid-auto-rows: 145px;
   align-items: stretch;
 }
 .app-shell[data-state="home"] .starter-grid > .starter,
@@ -105,9 +105,4 @@ html body .app-shell .sidebar #projectCreateButton {
   min-height: 0;
   max-height: none;
 }
-@media (min-width: 1280px) {
-  .app-shell[data-state="home"] .starter-grid { grid-auto-rows: 145px; }
-}
-@media (max-width: 640px) {
-  .app-shell[data-state="home"] .starter-grid { grid-auto-rows: 88px; }
-}
+/* No narrower viewport override: 145px is fixed, including mobile. */
