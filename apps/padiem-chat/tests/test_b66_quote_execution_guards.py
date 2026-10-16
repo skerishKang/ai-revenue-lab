@@ -237,10 +237,16 @@ payload = json.loads(sys.stdin.read())
 # A synthetic route is registered ONLY inside this local subprocess.
 # It cannot turn a real excluded route into a positive customer fixture.
 # Copy the schema of a currently registered model, never a removed model.
-# Supply a dummy in-memory credential because the provider is always mocked
-# and must not trigger real upstream network calls.
-os.environ["PADIEM_AGNES_API_KEY"] = "sk-test-only-b66-quote-0123456789"
 approved = cat.CATALOG_BY_ID["agnes-ai/agnes-3.0-flash"]
+# Supply a dummy in-memory credential because the provider is always mocked
+# and must not trigger real upstream network calls. The binding name is owned
+# by the canonical b14_models.json registry, not by this test: read it from the
+# copied model's spec so a binding rotation can never silently turn this into a
+# provider_secret_missing failure.
+from app.pilot import platform_secrets as _ps
+_spec = _ps.get_platform_provider(approved.platform_provider_id)
+if _spec is not None:
+    os.environ[_spec.credential_binding_name] = "sk-test-only-b66-quote-0123456789"
 cat.CATALOG_BY_ID[payload["model"]] = replace(
     approved, model_id=payload["model"],
     upstream_model="test-fixture/b66-quote-response",

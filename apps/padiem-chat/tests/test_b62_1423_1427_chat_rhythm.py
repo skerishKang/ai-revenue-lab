@@ -46,7 +46,11 @@ def test_1427_responsive_qa_covers_desktop_tablet_and_mobile() -> None:
         '("mobile-390", 390, 844)',
     ):
         assert viewport in GUTTER_QA
-    assert "user bubble right" in GUTTER_QA
+    # #4783 (edbbe75811e) + #4726 (b9ade4b9ed9): the user row and the wide
+    # rich-answer surface share one right boundary, which is the contract this
+    # marker guards. The older "user bubble right" wording no longer exists in
+    # the corrected probe.
+    assert "user row and wide answer share one right boundary" in GUTTER_QA
     assert "assistant meta/content gap out of range" in GUTTER_QA
     assert "horizontal overflow" in GUTTER_QA
     # The #3989 unified workflow invokes the bounded visual-tail runner;
