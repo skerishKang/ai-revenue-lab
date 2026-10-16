@@ -606,3 +606,51 @@ def test_foreign_pinned_account_is_a_hard_ownership_refusal(monkeypatch):
         Request(intent_body(device_id=DEVICE), st))
     assert status == 403
     assert result["error"]["code"] == "oracle_mesh_ownership_unverified"
+
+def _deployment_env(mapping=None, secret=SECRET, mode="mesh"):
+    import json
+    return {
+        routes.ORACLE_MESH_OWNERSHIP_MAP_ENV: json.dumps(
+            mapping if mapping is not None else _mapping()),
+        routes.ORACLE_MESH_CHANNEL_SECRET_ENV: secret,
+        routes.ORACLE_MESH_EXECUTION_MODE_ENV: mode,
+    }
+
+
+def test_env_builder_resolves_the_secrets_store_binding():
+    """The channel secret arrives as a store object; the builder awaits it."""
+    import asyncio
+    import json
+
+    class Store:
+        def __init__(self, value=None, fail=False):
+            self._value = value
+            self._fail = fail
+            self.calls = 0
+        async def get(self):
+            self.calls += 1
+            if self._fail:
+                raise RuntimeError("store unavailable")
+            return self._value
+
+    store = Store(SECRET)
+    env = _deployment_env()
+    env[routes.ORACLE_MESH_CHANNEL_SECRET_ENV] = store
+    source = asyncio.run(routes.build_oracle_mesh_return_source_from_env(env))
+    assert source is not None and source.configured is True
+    assert source.execution_mode == "mesh"
+    assert source.check_channel_secret(SECRET) is True
+    assert store.calls == 1
+
+    # A plain string secret still works (local/dev parity).
+    plain = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        _deployment_env()))
+    assert plain is not None and plain.check_channel_secret(SECRET) is True
+
+    # An unreadable store keeps the source unconfigured: routes unmounted.
+    dead = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        _deployment_env(secret=Store(fail=True))))
+    assert dead is None
+    missing = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        {routes.ORACLE_MESH_OWNERSHIP_MAP_ENV: json.dumps(_mapping())}))
+    assert missing is None

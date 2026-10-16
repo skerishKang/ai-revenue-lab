@@ -246,8 +246,15 @@ def build_oracle_mesh_return_source(
         return None
 
 
-def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturnSource | None:
-    """Read the deployment map, channel secret and execution mode from env."""
+async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturnSource | None:
+    """Read the deployment map, channel secret and execution mode from env.
+
+    The channel secret is a Secrets Store binding, not a plain string: like
+    every other deployment secret in this Worker it is resolved through the
+    binding's async ``.get()`` and never read as a raw env value. A store
+    object that cannot be read keeps the source unconfigured, so the routes
+    stay unmounted instead of running with a broken proof.
+    """
     from .worker_config import binding_value
 
     try:
@@ -262,6 +269,17 @@ def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturnSource
         mapping = json.loads(raw_map)
     except (ValueError, TypeError):
         return None
+    if not isinstance(raw_secret, str):
+        getter = getattr(raw_secret, "get", None)
+        if not callable(getter):
+            return None
+        try:
+            resolved = getter()
+            if hasattr(resolved, "__await__"):
+                resolved = await resolved
+        except Exception:
+            return None
+        raw_secret = resolved
     mode = raw_mode.strip().lower() if isinstance(raw_mode, str) else EXECUTION_MODE_OFF
     return build_oracle_mesh_return_source(mapping, raw_secret, mode)
 
