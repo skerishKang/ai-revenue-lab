@@ -332,70 +332,26 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .mode-present
     bottom: 16px !important;
   }
 }
-/* Original starter structure is reused: only connector-specific labels/icons
-   differ. The three status buttons stay actionable, now within card bounds,
-   with visible truthful ON/OFF/unknown state instead of a second card row. */
-html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .starter-grid > .claw-home-card {
-  position: relative;
-  box-sizing: border-box;
-  display: flex !important;
-  flex-direction: column;
-  min-height: 0 !important;
-  height: 116px;
-  max-height: 116px;
-  overflow: hidden;
-  padding: 0 !important;
-  margin: 0;
-  border: 1px solid rgba(255,255,255,.7) !important;
-  border-radius: 12px !important;
-  background: rgba(252,253,254,.73) !important;
-  box-shadow: 0 14px 32px rgba(31,40,48,.1), inset 0 1px rgba(255,255,255,.86) !important;
-}
-html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
-  width: 100% !important;
-  min-height: 0 !important;
-  height: auto !important;
-  flex: 1 1 auto !important;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 10px 11px 2px !important;
-  overflow: hidden !important; /* clip text within its own row, not over ON/OFF */
-  border: 0 !important;
-  border-radius: 11px !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
-  position: static !important;
-  bottom: auto;
-  right: auto;
-  left: auto;
-  top: auto;
-  z-index: auto;
-  align-self: flex-end;
-  flex: 0 0 26px;
-  box-sizing: border-box;
-  display: flex !important;
-  flex-direction: row;
-  gap: 4px;
-  margin: 0 8px 7px 0 !important;
-  padding: 2px 5px !important;
-  width: auto !important;
-  max-width: calc(100% - 12px);
-  min-width: 0 !important;
-  height: 26px !important;
-  min-height: 26px !important;
-  border-radius: 8px;
-  font-size: 9px;
-  line-height: 1.1;
-}
+/* The card surface, its height and the ON/OFF switch placement are shared by
+ * every theme in claw-focus-layout.css, so the Claw connector cards match the
+ * Chat first-use cell instead of drawing a second surface on top of it (which
+ * also forced a 116px clamp that clipped the description). Only the compact
+ * switch text stays glass-specific. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .claw-connection-track > span {
   padding: 1px 4px;
   font-size: 9px;
 }
-html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .claw-connection-label {
-  font-size: 9px;
+
+/* Chat first-use cells and the Claw connector cards are the SAME surface, so
+ * the row must resolve to the same height in both. Measured on main: the Chat
+ * row settled at 145px (its longest label wraps to two lines) while the Claw
+ * row settled at 128px (its labels happen to wrap one line shorter), which is
+ * the "height changed" the owner saw. One shared floor keeps them equal and
+ * still lets a longer label grow the row on narrower viewports. */
+.starter-grid {
+  grid-auto-rows: minmax(145px, auto);
 }
+
 /* Intro memory/run disclosures are not first-use cards. Data, approvals and
    lists remain available in authorized Claw workbench surfaces. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) ~ :is(#clawApprovedDisclosure,#clawRunHistoryDisclosure,#clawApprovedMemory,#clawRunHistory) {

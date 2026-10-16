@@ -19,6 +19,7 @@ SOURCE = APP_JS.read_text(encoding="utf-8")
 ROUTING_FUNCTIONS = (
     "showConversation",
     "clawGeneralRequestActive",
+    "requireSessionForModelUse",
     "submitPrompt",
     "requestAnswer",
     "requestStreamingAnswer",
@@ -75,6 +76,12 @@ const document = {
   querySelector: () => null,
   querySelectorAll: () => [],
 };
+// The shared composer gates the model behind a session only when the deployment
+// asks for one (auth/status model_requires_session). This harness certifies
+// routing, so it runs signed in with the requirement off.
+const authState = { authenticated: true, model_requires_session: false };
+const loginButton = { hidden: false, disabled: false, click() {} };
+const setNote = () => {};
 const clawManualForm = { hidden: false };
 const input = { value: "", focus() {} };
 // #3790: simulate one EXPLICIT model choice before the Claw submit.

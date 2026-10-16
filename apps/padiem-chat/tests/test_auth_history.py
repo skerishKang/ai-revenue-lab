@@ -261,7 +261,16 @@ async def test_no_store_reports_not_ready_and_keeps_anonymous_chat():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         status = await client.get("/api/auth/status")
         chat = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "안녕"}], "mode": "auto"})
-    assert status.json() == {"ready": False, "authenticated": False, "history_ready": False, "user": None}
+    assert status.json() == {
+        "ready": False,
+        "authenticated": False,
+        "history_ready": False,
+        "user": None,
+        # Owner decision 2026-10-17: the model is not available to a signed-out
+        # visitor, but only in a deployment that can actually authenticate. An
+        # app with no store is not one, so the browser must never gate here.
+        "model_requires_session": False,
+    }
     assert chat.status_code == 200
     assert "conversation_id" not in chat.json()
 
