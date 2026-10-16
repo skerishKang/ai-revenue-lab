@@ -18,7 +18,24 @@ import re
 import secrets
 from typing import Any, Callable
 
-from padiem_control_plane.contracts import ControlPlaneContractError
+from padiem_control_plane.contracts import (
+    CanonicalSubjectRef, ControlPlaneContractError, SubjectType,
+)
+def _canonical_owner_subject_ref(value: Any) -> bool:
+    """Identity canonical subject contract, not the PC device ref grammar.
+
+    Only an already canonical, unchanged server-provided subject ID passes.
+    This does not create or normalize an identity or grant ownership.
+    """
+    if type(value) is not str:
+        return False
+    try:
+        canonical = CanonicalSubjectRef(SubjectType.USER, value)
+    except ControlPlaneContractError:
+        return False
+    return canonical.subject_id == value
+
+
 def _iso(value: datetime) -> str:
     return _aware(value).isoformat().replace("+00:00", "Z")
 
@@ -267,7 +284,9 @@ class DurablePendingPcLink:
         self, *, request_ref: str, owner_subject_ref: str,
         account_ref: str, workspace_ref: str, now: datetime,
     ) -> dict[str, Any]:
-        for value in (owner_subject_ref, account_ref, workspace_ref):
+        if not _canonical_owner_subject_ref(owner_subject_ref):
+            raise _denied("pending_pc_owner_scope_invalid")
+        for value in (account_ref, workspace_ref):
             if type(value) is not str or _DEVICE.fullmatch(value) is None:
                 raise _denied("pending_pc_owner_scope_invalid")
         moment = _aware(now)

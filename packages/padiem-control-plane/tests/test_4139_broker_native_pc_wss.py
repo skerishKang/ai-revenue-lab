@@ -502,3 +502,48 @@ def test_owner_intent_sql_error_is_returned_as_fixed_private_rpc_failure(monkeyp
         assert "NEVER_LOG_PRIVATE_SQL" not in repr(output)
         assert rows(do._storage)[0]["state"] == "pending"
     asyncio.run(main())
+
+def test_canonical_opaque_owner_subject_survives_live_offer_reservation(monkeypatch):
+    """Identity canonical subject is opaque; device-ref grammar must not reject it."""
+    from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+    subject = CanonicalSubjectRef(SubjectType.USER, "owner@example.com/path")
+    assert subject.subject_id == "owner@example.com/path"
+
+    async def main():
+        do, client, server, response = await handshake(monkeypatch)
+        assert server.sent[1]["type"] == "pc_offer_ready"
+        approved = await do.reserve_pending_pc_owner_intent({
+            "request_ref": REF,
+            "owner_subject_ref": subject.subject_id,
+            "account_ref": "account.test",
+            "workspace_ref": "workspace.test",
+        })
+        assert approved.get("reserved_once") is True, approved
+        assert rows(do._storage)[0]["state"] == "reserved"
+    asyncio.run(main())
+
+
+def test_broker_private_rejection_fields_distinct_without_identifier_leaks(monkeypatch):
+    payload = {
+        "request_ref": REF,
+        "owner_subject_ref": "owner.test",
+        "account_ref": "account.test",
+        "workspace_ref": "workspace.test",
+    }
+
+    async def main():
+        do, client, server, result = await handshake(monkeypatch)
+        cases = [
+            ("payload_type", list(payload.items()), "private_payload_type_invalid"),
+            ("payload_keys", {**payload, "unexpected": "secret"}, "private_keys_invalid"),
+            ("request_ref", {**payload, "request_ref": "bad"}, "private_request_ref_invalid"),
+            ("owner_subject_ref", {**payload, "owner_subject_ref": ""}, "private_owner_subject_invalid"),
+            ("account_ref", {**payload, "account_ref": "account/bad"}, "private_account_ref_invalid"),
+            ("workspace_ref", {**payload, "workspace_ref": "workspace/bad"}, "private_workspace_ref_invalid"),
+        ]
+        for name, bad, expected in cases:
+            outcome = await do.reserve_pending_pc_owner_intent(bad)
+            assert outcome == {"_pending_pc_owner_rpc_failure": expected}, name
+            assert repr(outcome).find("secret") == -1
+        assert rows(do._storage)[0]["state"] == "pending"
+    asyncio.run(main())
