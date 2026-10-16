@@ -45,9 +45,10 @@ def test_both_action_pairs_share_background_and_transparent_child_controls():
 
 
 def test_four_home_cards_equal_while_upload_button_remains_nested():
-    assert 'grid-auto-rows: 116px;' in CSS
-    assert 'grid-auto-rows: 145px;' in CSS
-    assert 'grid-auto-rows: 88px;' in CSS
+    assert CSS.count('grid-auto-rows: 145px;') == 1
+    assert 'grid-auto-rows: 116px;' not in CSS
+    assert 'grid-auto-rows: 88px;' not in CSS
+    assert 'No narrower viewport override' in CSS
     assert '.document-starter-shell > .starter' in CSS
     assert 'data-state="home"' in CSS
     assert 'href="./sidebar-section-polish.css"' in HTML
