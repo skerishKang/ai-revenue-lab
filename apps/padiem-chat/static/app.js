@@ -1947,9 +1947,28 @@
     },
   });
 
+  // Owner decision 2026-10-17: a guest may browse the product, but the model is
+  // not available without a session. The server already refuses an anonymous
+  // request (chat_routes -> 401 unauthorized, claw_general ->
+  // canonical_session_required), so this stops the request before it leaves the
+  // browser: the visitor gets the login gate instead of a raw error, and keeps
+  // the text they typed. Every screen stays browsable without a session.
+  function requireSessionForModelUse() {
+    if (authState.authenticated === true) return true;
+    // Only the server may decide that this deployment requires a session for the
+    // model (auth/status `model_requires_session`, which mirrors the anonymous
+    // rule the Chat and Claw routes already enforce). An isolated mock or preview
+    // deployment that cannot authenticate must never block the composer.
+    if (authState.model_requires_session !== true) return true;
+    setNote(uiT("model-requires-login"), "error");
+    if (loginButton && !loginButton.hidden && !loginButton.disabled) loginButton.click();
+    return false;
+  }
+
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
     if (!prompt || inFlight) return;
+    if (!requireSessionForModelUse()) return;
     if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachment;
     const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
