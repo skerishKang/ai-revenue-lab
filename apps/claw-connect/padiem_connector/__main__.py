@@ -1,7 +1,18 @@
 """PADIEM Connector command — no additional execution engine."""
 import sys
 
+# Python/frozen application entry. The PyInstaller OS bootloader is outside
+# Python; its failures are observable only via the OS process exit event.
+try:
+    from padiem_connector.native_launch_diagnostics import mark as _native_mark
+except BaseException:
+    def _native_mark(*args, **kwargs):
+        return
+
 if __name__ == "__main__":
+    _browser_link = sys.argv[1:2] == ["open-from-web"]
+    if _browser_link:
+        _native_mark("exe_entry")
     if getattr(sys, "frozen", False) and sys.argv[1:] in (["-V"], ["--python-version"]):
         # The installed profile's executable is this standalone EXE, not
         # a system-wide Python executable. Support the existing -V probe.
@@ -28,5 +39,17 @@ if __name__ == "__main__":
         from kagent.local_agent_resident_process import main as resident_main
         raise SystemExit(resident_main())
 
-    from claw_connect.__main__ import main
-    raise SystemExit(main())
+    if _browser_link:
+        _native_mark("import_begin")
+    try:
+        from claw_connect.__main__ import main
+        if _browser_link:
+            _native_mark("import_ok")
+        status = main()
+    except BaseException as error:
+        if _browser_link:
+            _native_mark("exception", exc=error)
+        raise
+    if _browser_link:
+        _native_mark("entry_exit", exit_code=status if type(status) is int else None)
+    raise SystemExit(status)

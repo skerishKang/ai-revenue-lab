@@ -26,6 +26,8 @@ PC_OFFER_AUTOSTART_ENABLED = False
 OFFER_PROTOCOL_VERSION = "padiem.connector-pending-pc.v1"
 OFFER_FRAME_TIMEOUT_SECONDS = 10.0
 OFFER_OWNER_APPROVAL_TIMEOUT_SECONDS = 95.0
+# Absorb sub-second server/PC clock skew; the Broker lease stays 90s.
+OFFER_CLOCK_SKEW_TOLERANCE_SECONDS = 2.0
 _OFFER = re.compile(r"^link\.[0-9a-f]{32}$")
 _HEX = re.compile(r"^[0-9a-f]{64}$")
 _DEVICE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
@@ -41,7 +43,7 @@ def _exp(value: Any, now: datetime) -> datetime:
         expiry = datetime.fromisoformat(value.replace("Z", "+00:00"))
         if (
             expiry.tzinfo is None or expiry.utcoffset() is None
-            or expiry <= now or expiry > now + timedelta(seconds=90)
+            or expiry <= now or expiry > now + timedelta(seconds=90 + OFFER_CLOCK_SKEW_TOLERANCE_SECONDS)
         ):
             raise ValueError("expiry outside bounded window")
         return expiry
@@ -179,7 +181,7 @@ async def run_pending_pc_offer(
             on_stage("owner_page_open_requested")
         # No retry after approval-frame loss: the broker offer might have been
         # reserved and challenge issued already. Wait only until expiry.
-        remaining = max(0.0, (expires_at - datetime.now(timezone.utc)).total_seconds())
+        remaining = min(90.0, max(0.0, (expires_at - datetime.now(timezone.utc)).total_seconds()))
         if remaining <= 0:
             raise DeviceSessionRefused("pc_offer_expired")
         result = _frame(
