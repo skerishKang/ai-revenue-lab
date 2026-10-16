@@ -233,3 +233,13 @@ html body .app-shell .sidebar .recent-section.is-collapsed .sidebar-section-togg
   background: transparent;
   transform: translateX(-2px) rotate(45deg);
 }
+
+/* 2026-10-16 owner screenshot: visually invisible backgrounds did not make
+ * cells seamless because the title buttons still inherited the global
+ * .recent-item backdrop blur(18px), unlike their right-hand controls.
+ * Put any glass processing on the shared row, never only on one half. */
+html[data-theme="padiem-glass"] body .app-shell .sidebar
+  :is(.project-row > .project-item, .history-row > .history-item) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
