@@ -666,3 +666,38 @@ def test_env_builder_resolves_the_secrets_store_binding():
     missing = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
         {routes.ORACLE_MESH_OWNERSHIP_MAP_ENV: json.dumps(_mapping())}))
     assert missing is None
+
+
+def test_env_builder_resolves_the_ownership_map_secrets_store_binding():
+    """The ownership map is a Secrets Store object too: resolve it via async get()."""
+    import asyncio
+    import json
+
+    class Store:
+        def __init__(self, value=None, fail=False):
+            self._value = value
+            self._fail = fail
+            self.calls = 0
+        async def get(self):
+            self.calls += 1
+            if self._fail:
+                raise RuntimeError("store unavailable")
+            return self._value
+
+    map_store = Store(json.dumps(_mapping()))
+    env = _deployment_env()
+    env[routes.ORACLE_MESH_OWNERSHIP_MAP_ENV] = map_store
+    source = asyncio.run(routes.build_oracle_mesh_return_source_from_env(env))
+    assert source is not None and source.configured is True
+    assert source.check_channel_secret(SECRET) is True
+    assert map_store.calls == 1
+
+    # An unreadable map store keeps the source unconfigured: routes unmounted.
+    dead_env = _deployment_env()
+    dead_env[routes.ORACLE_MESH_OWNERSHIP_MAP_ENV] = Store(fail=True)
+    assert asyncio.run(routes.build_oracle_mesh_return_source_from_env(dead_env)) is None
+
+    # An empty map value never configures the source.
+    empty_env = _deployment_env()
+    empty_env[routes.ORACLE_MESH_OWNERSHIP_MAP_ENV] = Store("   ")
+    assert asyncio.run(routes.build_oracle_mesh_return_source_from_env(empty_env)) is None
