@@ -222,16 +222,47 @@ async def _desktop_long_answer_probe(browser: Browser) -> dict[str, Any]:
         rich_box = await rich.bounding_box()
         if not conversation_box or not composer_box or not prose_box or not rich_box:
             raise AssertionError("desktop geometry unavailable")
-        if conversation_box["width"] < 1000 or conversation_box["width"] > 1100:
+
+        # #4783 (edbbe75811e, 2026-10-15) replaced the old fixed lane with a
+        # rail-aware clamp:
+        #   .conversation { width: min(1200px,
+        #       100vw - var(--workspace-rail,252px) - clamp(48px,4vw,72px)
+        #             - clamp(360px,32vw,560px) - 48px) }
+        #   .composer-wrap { left: calc(rail + clamp(48px,4vw,72px) + 16px);
+        #                    width: min(1168px, ... - 80px) }
+        # At 1920x1080 that resolves the lane to exactly 988px and insets the
+        # composer 16px inside it (988 - 28 == 960, x +14 after rounding). This
+        # probe runs at 1920x1080 only, so assert the design that actually ships:
+        # the composer is a deliberate inner inset of the reading lane, never a
+        # rival lane. Measured at 1280/1440/1920 the width delta is a constant
+        # 28px and the left gutter delta a constant -14px, so a fixed inset is
+        # the invariant; absolute lane bounds would just re-encode one viewport.
+        if abs(conversation_box["width"] - 988) > 1:
             raise AssertionError(f"large desktop active-chat lane out of target: {conversation_box}")
-        if abs(conversation_box["width"] - composer_box["width"]) > 1.5:
+
+        inset = conversation_box["width"] - composer_box["width"]
+        if not 20 <= inset <= 36:
             raise AssertionError(
-                f"conversation/composer width drift: {conversation_box['width']} vs {composer_box['width']}"
+                f"composer is not the designed inner inset of the lane: {conversation_box['width']} vs {composer_box['width']}"
             )
-        if abs(conversation_box["x"] - composer_box["x"]) > 1.5:
+        gutter = composer_box["x"] - conversation_box["x"]
+        if not 8 <= gutter <= 22:
             raise AssertionError(
-                f"conversation/composer left gutter drift: {conversation_box['x']} vs {composer_box['x']}"
+                f"conversation/composer left gutter is not the designed inset: {conversation_box['x']} vs {composer_box['x']}"
             )
+        # #4783 insets the composer inside the lane on both edges (measured: the
+        # composer is 16px narrower per side than the lane, i.e. the lane minus
+        # 28px of width and minus 14px of gutter after rounding). Assert the
+        # composer stays *inside* the lane on the right with the same designed
+        # inset, rather than the impossible "identical right edge".
+        lane_right = conversation_box["x"] + conversation_box["width"]
+        composer_right = composer_box["x"] + composer_box["width"]
+        right_inset = lane_right - composer_right
+        if not 8 <= right_inset <= 22:
+            raise AssertionError(
+                f"composer right inset left the designed frame: lane_right={lane_right} composer_right={composer_right}"
+            )
+
         if rich_box["width"] <= prose_box["width"] + 30:
             raise AssertionError(
                 f"wide rich surface did not exceed prose measure: {rich_box['width']} vs {prose_box['width']}"
