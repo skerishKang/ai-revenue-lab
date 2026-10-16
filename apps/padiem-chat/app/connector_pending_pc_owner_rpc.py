@@ -115,6 +115,9 @@ class CanonicalBrokerOwnerPendingPcPort:
                 "owner_scope_invalid", "request_unavailable", "already_used",
                 "outbound_channel_unverified", "store_invalid", "store_unavailable",
                 "sql_reservation_unconfirmed", "receipt_invalid", "do_rpc_unavailable",
+                "private_payload_type_invalid", "private_keys_invalid",
+                "private_request_ref_invalid", "private_owner_subject_invalid",
+                "private_account_ref_invalid", "private_workspace_ref_invalid",
             })
             emit_stage_event(stage="pc_owner.broker_reserve", outcome="error",
                              duration_ms=0,

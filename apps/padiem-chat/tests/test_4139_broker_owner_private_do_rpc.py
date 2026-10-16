@@ -264,7 +264,7 @@ def test_private_broker_failure_envelope_reaches_only_safe_chat_stage(monkeypatc
         })
         assert response == {"_pending_pc_owner_rpc_failure": "live_socket_missing"}
         bad = await other_do.reserve_pending_pc_owner_intent({"not_a_ref": "secret"})
-        assert bad == {"_pending_pc_owner_rpc_failure": "private_fields_invalid"}
+        assert bad == {"_pending_pc_owner_rpc_failure": "private_keys_invalid"}
         port = CanonicalBrokerOwnerPendingPcPort(
             signed_owner=session(), canonical_broker_binding=ProxyOnlyFailureBinding(),
             identity=Fixture(),

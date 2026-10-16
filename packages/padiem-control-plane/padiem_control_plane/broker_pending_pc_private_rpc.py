@@ -42,6 +42,9 @@ _OWNER_DIAGNOSTIC_CODES = frozenset({
     "owner_scope_invalid", "request_unavailable", "already_used",
     "outbound_channel_unverified", "store_invalid", "store_unavailable",
     "sql_reservation_unconfirmed", "receipt_invalid", "do_rpc_unavailable",
+    "private_payload_type_invalid", "private_keys_invalid",
+    "private_request_ref_invalid", "private_owner_subject_invalid",
+    "private_account_ref_invalid", "private_workspace_ref_invalid",
 })
 
 def _owner_rpc_failure(code: str) -> dict[str, str]:
@@ -178,12 +181,19 @@ class CanonicalBrokerPendingPcLiveRPC:
         required = {"request_ref", "owner_subject_ref", "account_ref", "workspace_ref"}
         # Cloudflare's Python RPC guarantees plain dict for supported objects.
         # Keep strict type and field checks; never trust browser-supplied scope.
-        if type(payload) is not dict or set(payload) != required or not _ref(payload["request_ref"]):
-            return _owner_rpc_failure("private_fields_invalid")
-        for field in ("owner_subject_ref", "account_ref", "workspace_ref"):
+        if type(payload) is not dict:
+            return _owner_rpc_failure("private_payload_type_invalid")
+        if set(payload) != required:
+            return _owner_rpc_failure("private_keys_invalid")
+        if not _ref(payload["request_ref"]):
+            return _owner_rpc_failure("private_request_ref_invalid")
+        from .pending_pc_link import _canonical_owner_subject_ref
+        if not _canonical_owner_subject_ref(payload["owner_subject_ref"]):
+            return _owner_rpc_failure("private_owner_subject_invalid")
+        for field in ("account_ref", "workspace_ref"):
             value = payload[field]
             if type(value) is not str or _DEVICE.fullmatch(value) is None:
-                return _owner_rpc_failure("private_fields_invalid")
+                return _owner_rpc_failure("private_" + field + "_invalid")
         try:
             actor = self._pc_actor(payload["request_ref"])
         except BrokerPendingPcPrivateRefused as exc:
