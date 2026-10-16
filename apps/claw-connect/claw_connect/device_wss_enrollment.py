@@ -231,12 +231,16 @@ async def run_review_only_device_session(
     try:
         if await asyncio.wait_for(trusted_tls.verify(socket), timeout=5.0) is not True:
             raise DeviceSessionRefused("trusted_tls_required")
+        if on_stage is not None:
+            on_stage("device_session_tls_verified")
         await _send(socket, {
             "type": "begin", "challenge_id": challenge_id,
             "device_id": device_id, "proof_ref": build_enrollment_proof_ref(
                 challenge_id=challenge_id, device_id=device_id, pairing_code=pairing_code,
             ),
         })
+        if on_stage is not None:
+            on_stage("device_session_begin_sent")
         first = await _receive(socket, frozenset({
             "type", "challenge_id", "device_id", "lease_ref", "nonce_hex", "expires_at",
         }))
@@ -247,6 +251,8 @@ async def run_review_only_device_session(
             or _LEASE.fullmatch(lease) is None or not _proof(nonce)):
             raise DeviceSessionRefused("device_nonce_correlation_invalid")
         _timestamp(first["expires_at"], clock)
+        if on_stage is not None:
+            on_stage("device_session_nonce_verified")
         await _send(socket, {
             "type": "finish", "lease_ref": lease,
             "proof_hex": _mac(
@@ -254,10 +260,14 @@ async def run_review_only_device_session(
                 nonce, lease,
             ),
         })
+        if on_stage is not None:
+            on_stage("device_session_finish_sent")
         verified = await _receive(socket, frozenset({"type", "lease_ref", "credential"}))
         if (verified != {"type": "bootstrap_verified", "lease_ref": lease,
                          "credential": False}):
             raise DeviceSessionRefused("device_bootstrap_not_verified")
+        if on_stage is not None:
+            on_stage("device_session_bootstrap_verified")
         await _send(socket, {
             "type": "credential_fetch", "counter": 1,
             "proof_hex": _action_mac(
@@ -266,6 +276,8 @@ async def run_review_only_device_session(
                 counter=1, body=b"",
             ),
         })
+        if on_stage is not None:
+            on_stage("device_session_credential_fetch_sent")
         delivery = await _receive(socket, frozenset({
             "type", "challenge_id", "device_id", "lease_ref", "binding",
             "credential_b64",
