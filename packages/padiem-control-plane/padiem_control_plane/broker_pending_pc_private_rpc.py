@@ -15,6 +15,7 @@ owner-approved B54 caller are verified through integration tests.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import datetime, timezone
 import re
 from typing import Any
@@ -51,6 +52,32 @@ def _owner_rpc_failure(code: str) -> dict[str, str]:
     return {_OWNER_DIAGNOSTIC_KEY: (
         code if code in _OWNER_DIAGNOSTIC_CODES else "actor_refused"
     )}
+
+
+def _owner_rpc_payload_dict(value: Any) -> dict[str, Any] | None:
+    """Canonical RPC bridge conversion, never iterable-pair coercion.
+
+    The private Worker/DO boundary may receive a Pyodide RPC wrapper even
+    when the sender used a plain dict. Normalize only a mapping or a
+    wrapper's to_py() result that is a mapping; exact keys and values are
+    validated independently by the caller.
+    """
+    if type(value) is dict:
+        return dict(value)
+    try:
+        convert = getattr(value, "to_py", None)
+        if callable(convert):
+            candidate = convert()
+        elif isinstance(value, Mapping):
+            candidate = value
+        else:
+            return None
+        if not isinstance(candidate, Mapping):
+            return None
+        return dict(candidate)
+    except Exception:
+        # Do not expose a remote exception message or object representation.
+        return None
 
 
 class BrokerPendingPcPrivateRefused(RuntimeError):
@@ -181,7 +208,8 @@ class CanonicalBrokerPendingPcLiveRPC:
         required = {"request_ref", "owner_subject_ref", "account_ref", "workspace_ref"}
         # Cloudflare's Python RPC guarantees plain dict for supported objects.
         # Keep strict type and field checks; never trust browser-supplied scope.
-        if type(payload) is not dict:
+        payload = _owner_rpc_payload_dict(payload)
+        if payload is None:
             return _owner_rpc_failure("private_payload_type_invalid")
         if set(payload) != required:
             return _owner_rpc_failure("private_keys_invalid")
