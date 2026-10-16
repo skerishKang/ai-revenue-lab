@@ -1,0 +1,113 @@
+/* #4890 follow-up. Exactly one shared visual cell for each project/history
+ * action pair; separate native controls retain keyboard, click and menu roles. */
+html body .app-shell .sidebar :is(.project-row, .history-row) {
+  background: rgba(255, 255, 255, .10) !important;
+  border: 1px solid var(--line, rgba(210, 220, 230, .25)) !important;
+  border-radius: 11px;
+  overflow: visible;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
+  background: rgba(255, 255, 255, .16) !important;
+}
+html body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]) {
+  background: rgba(255, 255, 255, .20) !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row)
+  > :is(.project-item, .history-item, .project-manage, .history-actions),
+html body .app-shell .sidebar .history-row .history-actions > .history-more {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html body .app-shell .sidebar .history-row .history-actions {
+  position: relative;
+}
+/* Keep the contextual delete menu above the row without painting the 3-dot
+ * trigger itself as a distinct permanently raised cell. */
+html body .app-shell .sidebar .history-row .history-actions-menu {
+  background: var(--sidebar, #384551);
+  z-index: 12;
+}
+
+/* The section chevrons share the same header geometry. Expand = down;
+ * collapsed = right. Project create (+) remains pinned to the far right. */
+html body .app-shell .sidebar :is(#projectsSection, #historySection) > .section-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  margin: 12px 10px 8px;
+  padding: 0;
+}
+html body .app-shell .sidebar :is(#projectsSection, #historySection) > .section-heading-row > h2 {
+  margin: 0;
+  padding: 0;
+}
+html body .app-shell .sidebar #projectCreateButton {
+  margin-left: auto;
+}
+.sidebar .sidebar-section-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  opacity: .88;
+  cursor: pointer;
+}
+.sidebar .sidebar-section-toggle > span {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .12s ease;
+}
+.sidebar .recent-section.is-collapsed .sidebar-section-toggle > span {
+  transform: translateX(-2px) rotate(-45deg);
+}
+.sidebar .sidebar-section-toggle:hover,
+.sidebar .sidebar-section-toggle:focus-visible {
+  background: rgba(255,255,255,.12);
+}
+.sidebar .sidebar-section-toggle:focus-visible {
+  outline: 2px solid var(--accent, #8fb7d5);
+  outline-offset: 1px;
+}
+/* State lives on each section; ajax rerenders only update the children, so
+ * collapse never interferes with existing list/empty/auth state handling. */
+.sidebar #projectsSection.is-collapsed :is(#projectsList, #projectsEmpty),
+.sidebar #historySection.is-collapsed :is(#historyList, #historyEmpty) {
+  display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar .sidebar-section-toggle > span { transition: none; }
+}
+
+/* Existing home cards were 96/145 at two columns and 76/145 on phones,
+ * because the upload button's 145px height applied independently. One grid
+ * track now owns the height of all four cards; do not change Chat messages. */
+.app-shell[data-state="home"] .starter-grid {
+  grid-auto-rows: 116px;
+  align-items: stretch;
+}
+.app-shell[data-state="home"] .starter-grid > .starter,
+.app-shell[data-state="home"] .starter-grid > .document-starter-shell,
+.app-shell[data-state="home"] .starter-grid .document-starter-shell > .starter {
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+}
+@media (min-width: 1280px) {
+  .app-shell[data-state="home"] .starter-grid { grid-auto-rows: 145px; }
+}
+@media (max-width: 640px) {
+  .app-shell[data-state="home"] .starter-grid { grid-auto-rows: 88px; }
+}

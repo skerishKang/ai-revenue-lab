@@ -48,6 +48,8 @@
   <link rel="stylesheet" href="./sidebar-unified.css" />
   <!-- Dark-mode readability finish: Chat and Claw share this composer and token set. -->
   <link rel="stylesheet" href="./padiem-dark-contrast.css" />
+  <!-- #4890 follow-up: seamless sidebar rows, collapse controls and responsive starter equality. -->
+  <link rel="stylesheet" href="./sidebar-section-polish.css" />
 </head>
 <body>
   <div class="app-shell" data-state="home">
@@ -76,13 +78,17 @@
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
           <h2 id="projectsTitle" data-locale-key="projects">프로젝트</h2>
+          <button class="sidebar-section-toggle" id="projectsToggleButton" type="button" aria-controls="projectsList projectsEmpty" aria-expanded="true" aria-label="프로젝트 접기" title="프로젝트 접기"><span aria-hidden="true"></span></button>
           <button class="section-add-button" id="projectCreateButton" type="button" data-locale-aria-label="create-project-aria" aria-label="새 프로젝트 만들기">＋</button>
         </div>
         <div id="projectsList"></div>
         <p class="history-empty" id="projectsEmpty" data-locale-key="projects-empty" hidden>아직 프로젝트가 없습니다.</p>
       </section>
       <section class="recent-section" id="historySection" aria-labelledby="historyTitle" hidden>
-        <h2 id="historyTitle" data-locale-key="history-title">최근 대화</h2>
+        <div class="section-heading-row">
+          <h2 id="historyTitle" data-locale-key="history-title">최근 대화</h2>
+          <button class="sidebar-section-toggle" id="historyToggleButton" type="button" aria-controls="historyList historyEmpty" aria-expanded="true" aria-label="최근 대화 접기" title="최근 대화 접기"><span aria-hidden="true"></span></button>
+        </div>
         <div id="historyList"></div>
         <p class="history-empty" id="historyEmpty" data-locale-key="history-empty" hidden>저장된 대화가 없습니다.</p>
       </section>
@@ -1029,6 +1035,7 @@
        endpoint or credentials; explicit user Start per playback. -->
   <script src="./voice-tts-output.js"></script>
   <script src="./app.js"></script>
+  <script src="./sidebar-section-collapse.js"></script>
   <script src="./claw-home-choices.js"></script>
   <script src="./claw-connection-chips.js"></script>
   <script src="./claw-connection-guide.js"></script>
