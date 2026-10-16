@@ -160,3 +160,34 @@ def test_source_rpc_shape_does_not_enable_public_connector_mount():
                  and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name)
                  and n.targets[0].id == symbol and isinstance(n.value, ast.Constant)]
         assert flags == [False], f"{file}: production connector must remain OFF"
+
+
+def test_native_pc_gateway_required_rpcs_are_exported_by_same_canonical_broker_worker():
+    port = _module(APP / "connector_native_pc_gateway_port.py")
+    values = [
+        ast.literal_eval(node.value)
+        for node in port.body
+        if isinstance(node, ast.Assign)
+        and len(node.targets) == 1
+        and isinstance(node.targets[0], ast.Name)
+        and node.targets[0].id == "_RPC"
+    ]
+    assert len(values) == 1 and type(values[0]) is tuple
+    required = values[0]
+
+    worker = CONTROL / "local_agent_broker_worker.py"
+    entry = _klass(worker, "Default")
+    durable = _klass(worker, "LocalAgentBrokerDurableObject")
+    live_rpc = _klass(
+        CONTROL / "padiem_control_plane" / "broker_pending_pc_private_rpc.py",
+        "CanonicalBrokerPendingPcLiveRPC",
+    )
+    assert any(
+        isinstance(base, ast.Name) and base.id == "CanonicalBrokerPendingPcLiveRPC"
+        for base in durable.bases
+    )
+    entry_names = [node.name for node in entry.body if isinstance(node, ast.AsyncFunctionDef)]
+    for method in required:
+        assert entry_names.count(method) == 1, f"Default.{method} missing/ambiguous"
+        _exact_private_delegate(_method(entry, method), method)
+        _method(live_rpc, method)
