@@ -1528,6 +1528,242 @@ class D1HistoryStore:
             user_id, run_id,
         )
 
+    async def create_oracle_mesh_dispatch(
+        self,
+        *,
+        user_id: str,
+        run_id: str,
+        command_id: str,
+        tool_request_ref: str,
+        request_id: str,
+        revision_ref: str,
+        evidence_ref: str,
+        request_fingerprint: str,
+        account_ref: str,
+        workspace_ref: str,
+        device_id: str,
+        binding_ref: str,
+        node_ref: str,
+        root_ref: str,
+        path_relative: str,
+        file_path: str,
+        expires_at: str,
+    ) -> dict[str, Any]:
+        """#4139 — stage one Oracle management-host execution for one run.
+
+        The row snapshots the exact broker-bound correlation plus the
+        deployment-verified Mesh target. One dispatch per owner+run: an
+        identical pending row is reused, a terminal (done/failed) row refuses
+        any second execution for the run, and an expired pending row is
+        replaced. Every statement is owner-scoped; cross-owner existence is
+        never disclosed.
+        """
+        fields = {
+            "user_id": user_id, "run_id": run_id, "command_id": command_id,
+            "tool_request_ref": tool_request_ref, "request_id": request_id,
+            "revision_ref": revision_ref, "evidence_ref": evidence_ref,
+            "request_fingerprint": request_fingerprint,
+            "account_ref": account_ref, "workspace_ref": workspace_ref,
+            "device_id": device_id, "binding_ref": binding_ref,
+            "node_ref": node_ref, "root_ref": root_ref,
+            "path_relative": path_relative, "file_path": file_path,
+        }
+        for name, value in fields.items():
+            if not isinstance(value, str) or not value or len(value) > 1024:
+                raise HistoryError(f"{name} must be a bounded reference")
+        if not isinstance(expires_at, str) or not expires_at:
+            raise HistoryError("expires_at must be a bounded timestamp")
+        owned = await self._first(
+            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if owned is None:
+            raise HistoryForbidden("claw run is not owned by current user")
+        existing = await self._first(
+            "SELECT dispatch_id, command_id, tool_request_ref, request_id, revision_ref, "
+            "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
+            "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
+            "state, expires_at FROM oracle_mesh_dispatch WHERE user_id=? AND run_id=?",
+            user_id, run_id,
+        )
+        now = _now_iso()
+        if existing is not None:
+            same = all(
+                existing.get(name) == value
+                for name, value in fields.items()
+                if name not in ("user_id", "run_id")
+            )
+            if same and existing.get("state") == "pending" and existing.get("expires_at", "") > now:
+                return dict(existing)
+            if same and existing.get("state") in ("done", "failed"):
+                raise HistoryError("oracle mesh run already executed")
+            if not (existing.get("state") == "pending" and existing.get("expires_at", "") <= now):
+                raise HistoryError("oracle mesh run already dispatched")
+            await self._run(
+                "UPDATE oracle_mesh_dispatch SET command_id=?, tool_request_ref=?, "
+                "request_id=?, revision_ref=?, evidence_ref=?, request_fingerprint=?, "
+                "account_ref=?, workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, "
+                "root_ref=?, path_relative=?, file_path=?, nonce_sha256=NULL, state=?, "
+                "expires_at=?, created_at=? WHERE user_id=? AND run_id=? AND state=? "
+                "AND expires_at<=?",
+                command_id, tool_request_ref, request_id, revision_ref,
+                evidence_ref, request_fingerprint, account_ref, workspace_ref,
+                device_id, binding_ref, node_ref, root_ref, path_relative,
+                file_path, "pending", expires_at, now,
+                user_id, run_id, "pending", now,
+            )
+            replaced = await self._first(
+                "SELECT dispatch_id, command_id, tool_request_ref, request_id, revision_ref, "
+                "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
+                "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
+                "state, expires_at FROM oracle_mesh_dispatch WHERE user_id=? AND run_id=?",
+                user_id, run_id,
+            )
+            if replaced is None:
+                raise HistoryError("oracle mesh dispatch unavailable")
+            return dict(replaced)
+        dispatch_id = "dsp_" + uuid.uuid4().hex
+        await self._run(
+            "INSERT INTO oracle_mesh_dispatch "
+            "(dispatch_id, user_id, run_id, command_id, tool_request_ref, request_id, "
+            "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
+            "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
+            "nonce_sha256, state, expires_at, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)",
+            dispatch_id, user_id, run_id, command_id, tool_request_ref,
+            request_id, revision_ref, evidence_ref, request_fingerprint,
+            account_ref, workspace_ref, device_id, binding_ref, node_ref,
+            root_ref, path_relative, file_path, "pending", expires_at, now,
+        )
+        created = await self._first(
+            "SELECT dispatch_id, command_id, tool_request_ref, request_id, revision_ref, "
+            "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
+            "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
+            "state, expires_at FROM oracle_mesh_dispatch WHERE user_id=? AND run_id=?",
+            user_id, run_id,
+        )
+        if created is None:
+            raise HistoryError("oracle mesh dispatch unavailable")
+        return dict(created)
+
+    async def oldest_pending_oracle_mesh_dispatch(self) -> dict[str, Any] | None:
+        """#4139 — the single oldest claimable Oracle execution, if any.
+
+        Claimable means pending, unexpired and never handed out (no nonce).
+        The caller (the poll route, under the channel secret) atomically claims
+        it before responding; this read alone hands out nothing.
+        """
+        row = await self._first(
+            "SELECT dispatch_id, user_id, run_id, command_id, tool_request_ref, "
+            "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
+            "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
+            "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
+            "WHERE state=? AND expires_at>? AND nonce_sha256 IS NULL "
+            "ORDER BY created_at ASC LIMIT 1",
+            "pending", _now_iso(),
+        )
+        return dict(row) if row is not None else None
+
+    async def claim_oracle_mesh_dispatch(
+        self, *, dispatch_id: str, nonce_sha256: str
+    ) -> bool:
+        """#4139 — atomically hand one pending dispatch to the executor.
+
+        The conditional update is the single-claim gate: exactly one poll wins
+        per dispatch. Returns False when another poll already claimed it, when
+        it expired, or when it left pending meanwhile.
+        """
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        if not isinstance(nonce_sha256, str) or not nonce_sha256:
+            raise HistoryError("nonce_sha256 is required")
+        now = _now_iso()
+        await self._run(
+            "UPDATE oracle_mesh_dispatch SET nonce_sha256=? "
+            "WHERE dispatch_id=? AND state=? AND expires_at>? AND nonce_sha256 IS NULL",
+            nonce_sha256, dispatch_id, "pending", now,
+        )
+        claimed = await self._first(
+            "SELECT nonce_sha256 FROM oracle_mesh_dispatch WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        return (
+            claimed is not None
+            and claimed.get("nonce_sha256") == nonce_sha256
+        )
+
+    async def consume_oracle_mesh_dispatch(
+        self, *, dispatch_id: str, nonce: str
+    ) -> dict[str, Any] | None:
+        """#4139 — atomically accept one result submission for one dispatch.
+
+        The nonce presented over the secret channel must hash to the stored
+        claim; the dispatch must still be pending and unexpired. Acceptance
+        flips pending to received exactly once: replays find no pending row
+        and receive nothing.
+        """
+        import hashlib as _hashlib
+        import hmac as _hmac
+
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        if not isinstance(nonce, str) or not nonce:
+            return None
+        row = await self._first(
+            "SELECT dispatch_id, user_id, run_id, command_id, tool_request_ref, "
+            "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
+            "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
+            "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        if row is None:
+            return None
+        expected = row.get("nonce_sha256")
+        if (
+            not isinstance(expected, str) or not expected
+            or row.get("state") != "pending"
+            or not isinstance(row.get("expires_at"), str)
+            or row["expires_at"] <= _now_iso()
+        ):
+            return None
+        presented = _hashlib.sha256(nonce.encode("utf-8")).hexdigest()
+        if not _hmac.compare_digest(presented, expected):
+            return None
+        await self._run(
+            "UPDATE oracle_mesh_dispatch SET state=? "
+            "WHERE dispatch_id=? AND state=?",
+            "received", dispatch_id, "pending",
+        )
+        accepted = await self._first(
+            "SELECT dispatch_id, user_id, run_id, command_id, tool_request_ref, "
+            "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
+            "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
+            "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        if accepted is None or accepted.get("state") != "received":
+            return None
+        return dict(accepted)
+
+    async def finish_oracle_mesh_dispatch(
+        self, *, dispatch_id: str, outcome: str
+    ) -> bool:
+        """#4139 — close one received dispatch as done or failed, once."""
+        if outcome not in ("done", "failed"):
+            raise HistoryError("outcome must be done or failed")
+        await self._run(
+            "UPDATE oracle_mesh_dispatch SET state=? "
+            "WHERE dispatch_id=? AND state=?",
+            outcome, dispatch_id, "received",
+        )
+        closed = await self._first(
+            "SELECT state FROM oracle_mesh_dispatch WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        return closed is not None and closed.get("state") == outcome
+
     async def record_claw_approval_handoff(
         self,
         user_id: str,

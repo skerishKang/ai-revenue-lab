@@ -695,17 +695,24 @@ def create_app(
         routes[-1:-1] = [
             Route(CONNECTOR_TXT_READ_REQUEST_PATH, connector_txt_read_request, methods=["POST"]),
         ]
-        # #4139 Oracle management-host return leg: the owner-carried result of
-        # an Oracle meshctrl execution, verified server-side and appended
-        # through the existing history authority. Mounted solely when the
-        # deployment composes the ownership map; the default app has no route.
+        # #4139 Oracle management-host return legs: owner intent, executor
+        # poll, executor submit. Verified server-side and appended through
+        # the existing history authority. Mounted solely when the deployment
+        # composes the ownership map plus channel secret; the default app has
+        # no such routes.
         if oracle_mesh_return_source is not None:
             from .oracle_mesh_read_return_routes import (
-                ORACLE_MESH_READ_RETURN_PATH,
-                oracle_mesh_read_return,
+                ORACLE_MESH_READ_POLL_PATH,
+                ORACLE_MESH_READ_REQUEST_PATH,
+                ORACLE_MESH_READ_RESULT_PATH,
+                oracle_mesh_read_poll,
+                oracle_mesh_read_request,
+                oracle_mesh_read_result,
             )
             routes[-1:-1] = [
-                Route(ORACLE_MESH_READ_RETURN_PATH, oracle_mesh_read_return, methods=["POST"]),
+                Route(ORACLE_MESH_READ_REQUEST_PATH, oracle_mesh_read_request, methods=["POST"]),
+                Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
+                Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
             ]
     app = Starlette(routes=routes)
     # #3476: added before telemetry deliberately — Starlette prepends each
