@@ -369,6 +369,7 @@ def create_app(
     claw_office_chooser_source=None,
     local_task_result_source=None,
     connector_txt_read_source=None,
+    oracle_mesh_return_source=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
     connector_owner_enrollment=None,
@@ -694,6 +695,25 @@ def create_app(
         routes[-1:-1] = [
             Route(CONNECTOR_TXT_READ_REQUEST_PATH, connector_txt_read_request, methods=["POST"]),
         ]
+        # #4139 Oracle management-host return legs: owner intent, executor
+        # poll, executor submit. Verified server-side and appended through
+        # the existing history authority. Mounted solely when the deployment
+        # composes the ownership map plus channel secret; the default app has
+        # no such routes.
+        if oracle_mesh_return_source is not None:
+            from .oracle_mesh_read_return_routes import (
+                ORACLE_MESH_READ_POLL_PATH,
+                ORACLE_MESH_READ_REQUEST_PATH,
+                ORACLE_MESH_READ_RESULT_PATH,
+                oracle_mesh_read_poll,
+                oracle_mesh_read_request,
+                oracle_mesh_read_result,
+            )
+            routes[-1:-1] = [
+                Route(ORACLE_MESH_READ_REQUEST_PATH, oracle_mesh_read_request, methods=["POST"]),
+                Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
+                Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
+            ]
     app = Starlette(routes=routes)
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
@@ -964,6 +984,15 @@ def create_app(
         connector_txt_read_source
         if connector_txt_read_source is not None
         else UnconfiguredTxtReadSource()
+    )
+    # #4139 Oracle return leg: the deployment-owned (account, device, Mesh
+    # node) map behind the management-host return route. None keeps the route
+    # unmounted and every return fail-closed until the Worker root composes it.
+    from .oracle_mesh_read_return_routes import UnconfiguredOracleMeshReturnSource
+    app.state.oracle_mesh_return_source = (
+        oracle_mesh_return_source
+        if oracle_mesh_return_source is not None
+        else UnconfiguredOracleMeshReturnSource()
     )
     # Office chooser is fail-closed until the real trusted Engine/Resident
     # operator supplies an owner-bound, pre-approved candidate/approval source.
