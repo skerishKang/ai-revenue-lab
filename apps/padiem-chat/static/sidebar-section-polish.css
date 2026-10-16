@@ -106,3 +106,130 @@ html body .app-shell .sidebar #projectCreateButton {
   max-height: none;
 }
 /* No narrower viewport override: 145px is fixed, including mobile. */
+
+/* 2026-10-16 Owner UI: New Chat is the single-cell reference.
+ * Each entire Project/Recent row paints ONE seamless surface; neither
+ * the primary title nor its settings/ellipsis control paints another cell. */
+html body .app-shell .sidebar :is(.project-row, .history-row) {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0 !important;
+  min-height: 44px;
+  padding: 0;
+  background: rgba(255,255,255,.10) !important;
+  border: 1px solid var(--line, rgba(210,220,230,.25)) !important;
+  border-radius: 11px;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row)
+  > :is(.project-item, .history-item, .project-manage, .history-actions),
+html body .app-shell .sidebar .history-row .history-actions > .history-more {
+  box-sizing: border-box;
+  align-self: center;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  outline-offset: -2px;
+  box-shadow: none !important;
+  transform: none !important;
+  margin: 0 !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item) {
+  flex: 1 1 0;
+  height: 42px;
+  min-height: 42px;
+  padding: 0 10px !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-manage, .history-actions) {
+  flex: 0 0 42px;
+  min-width: 42px;
+  width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0 !important;
+  border-radius: 0 10px 10px 0 !important;
+}
+html body .app-shell .sidebar .project-row > .project-manage {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-size: 0 !important;
+}
+html body .app-shell .sidebar .project-row > .project-manage svg {
+  display: block;
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+  margin: 0 !important;
+  transform: none !important;
+  vertical-align: middle;
+}
+html body .app-shell .sidebar .history-row .history-actions > .history-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0 !important;
+}
+html body .app-shell .sidebar .history-row .history-more svg {
+  display: block;
+  width: 19px;
+  height: 19px;
+  margin: 0 !important;
+  transform: none !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-manage, .history-actions),
+html body .app-shell .sidebar .history-row .history-more {
+  color: inherit !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row)
+  > :is(.project-item, .history-item, .project-manage, .history-actions):hover,
+html body .app-shell .sidebar .history-row .history-more:hover {
+  background: transparent !important;
+}
+
+/* Project (+): inline action at the far right, without the raised tile. */
+html body .app-shell .sidebar #projectsSection #projectCreateButton {
+  display: grid !important;
+  place-items: center !important;
+  align-self: center !important;
+  flex: 0 0 28px !important;
+  margin: 0 0 0 auto !important;
+  padding: 0 !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  height: 28px;
+  min-height: 28px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: inherit !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  line-height: 1 !important;
+}
+
+/* Expanded = minus (−), collapsed = right chevron (›). */
+html body .app-shell .sidebar .sidebar-section-toggle > span {
+  display: block;
+  box-sizing: border-box;
+  width: 12px;
+  height: 2px;
+  border: 0;
+  border-radius: 1px;
+  background: currentColor;
+  transform: none;
+}
+html body .app-shell .sidebar .recent-section.is-collapsed .sidebar-section-toggle > span {
+  width: 9px;
+  height: 9px;
+  border: 0;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  border-radius: 0;
+  background: transparent;
+  transform: translateX(-2px) rotate(45deg);
+}

@@ -54,3 +54,29 @@ def test_four_home_cards_equal_while_upload_button_remains_nested():
     assert 'href="./sidebar-section-polish.css"' in HTML
     assert HTML.index('href="./sidebar-section-polish.css"') > HTML.index('href="./sidebar-unified.css"')
     assert HTML.index('src="./sidebar-section-collapse.js"') > HTML.index('src="./app.js"')
+
+def test_owner_seamless_sidebar_cells_and_centered_secondary_controls():
+    """One visible row surface; gear/menu controls share its paint & center axis."""
+    assert "Owner UI: New Chat is the single-cell reference" in CSS
+    assert "background: transparent !important;" in CSS
+    assert "align-items: center !important;" in CSS
+    assert ".project-row > .project-manage svg" in CSS
+    assert ".history-row .history-more svg" in CSS
+    assert "transform: none !important;" in CSS
+    assert "#projectsSection #projectCreateButton" in CSS
+    assert "place-items: center !important;" in CSS
+    assert "width: 28px !important;" in CSS
+    assert "min-width: 28px !important;" in CSS
+
+
+def test_owner_expanded_minus_collapsed_chevron_icons_are_css_only():
+    """ARIA and independent collapse handlers stay from the existing module."""
+    assert "Expanded = minus" in CSS
+    assert ".sidebar-section-toggle > span" in CSS
+    assert "width: 12px;" in CSS
+    assert "height: 2px;" in CSS
+    assert ".recent-section.is-collapsed .sidebar-section-toggle > span" in CSS
+    assert "border-top: 2px solid currentColor;" in CSS
+    assert "border-right: 2px solid currentColor;" in CSS
+    assert "aria-expanded" in JS
+    assert "localStorage" not in JS
