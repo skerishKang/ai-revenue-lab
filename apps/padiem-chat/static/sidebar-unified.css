@@ -1,0 +1,172 @@
+/* PADIEM owner #4647 adjacent UI: unified single-surface sidebar actions.
+ * Keep native buttons/summaries separately focusable for keyboard and touch;
+ * no button-in-button, no loss of original project/history handlers.
+ * Applied after all previous six-panel, cinematic and glass stylesheets. */
+.sidebar .sidebar-actions-row.sidebar-unified-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  min-height: 44px;
+  min-width: 0;
+  border: 1px solid var(--line, rgba(127,127,127,.25));
+  border-radius: 11px;
+  background: rgba(255,255,255,.10);
+  overflow: hidden;
+}
+.sidebar .sidebar-actions-row.sidebar-unified-row > :is(.new-chat, .sidebar-search-item) {
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 11px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit;
+}
+.sidebar .sidebar-actions-row.sidebar-unified-row > .new-chat {
+  flex: 1 1 0;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  text-align: left;
+}
+.sidebar .sidebar-actions-row.sidebar-unified-row > .sidebar-search-item {
+  flex: 0 0 44px;
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+.sidebar .sidebar-actions-row.sidebar-unified-row > .sidebar-search-item > .side-icon {
+  display: block;
+  width: auto;
+}
+.sidebar .sidebar-actions-row.sidebar-unified-row > :is(.new-chat, .sidebar-search-item):not(:disabled):hover,
+.sidebar .sidebar-actions-row.sidebar-unified-row > :is(.new-chat, .sidebar-search-item).is-active {
+  background: rgba(127,127,127,.14) !important;
+}
+/* Original search module owns button availability; don't enable a guest
+ * or an unavailable server-side history capability through CSS. */
+.sidebar .sidebar-actions-row.sidebar-unified-row > .sidebar-search-item:disabled {
+  opacity: .5;
+}
+.sidebar .visually-hidden {
+  position: absolute !important;
+  height: 1px !important;
+  width: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+/* Projects and recent conversations: each pair of controls sits on one
+ * common cell background with a single row hover/current state. */
+html body .app-shell .sidebar :is(.project-row, .history-row) {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: rgba(127,127,127,.09);
+  position: relative;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row):hover,
+html body .app-shell .sidebar :is(.project-row, .history-row):focus-within {
+  background: rgba(127,127,127,.18);
+}
+html body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]) {
+  background: rgba(127,127,127,.22);
+}
+html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item) {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 10px !important;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 10px 0 0 10px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-manage, .history-actions) {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 !important;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 0 10px 10px 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}
+html body .app-shell .sidebar .project-row > .project-manage {
+  font-size: 0 !important;
+  display: grid !important;
+  place-items: center;
+}
+html body .app-shell .sidebar .project-row > .project-manage svg {
+  width: 19px;
+  height: 19px;
+  display: block;
+  flex: 0 0 19px;
+}
+html body .app-shell .sidebar .history-actions > .history-more {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 10px 10px 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  cursor: pointer;
+}
+html body .app-shell .sidebar :is(.project-manage, .history-more):is(:hover, :focus-visible) {
+  background: rgba(127,127,127,.15) !important;
+}
+html body .app-shell .sidebar .history-actions[open] { z-index: 10; }
+/* Original delete popup remains a distinct temporary menu, not a second
+ * permanent cell; anchor it directly to the integrated right-hand icon. */
+html body .app-shell .sidebar .history-actions-menu {
+  right: 0;
+  top: calc(100% + 4px);
+}
+html body .app-shell .sidebar :is(.project-row, .history-row) svg {
+  color: inherit;
+}
+/* Project and recent-section headings now share the same baseline.
+ * Preserve each section's plus-button and existing rendering. */
+html body .app-shell .sidebar #projectsSection .section-heading-row {
+  margin: 12px 10px 8px;
+  padding: 0;
+}
+html body .app-shell .sidebar #historySection > h2 {
+  margin: 12px 10px 8px;
+  padding: 0;
+}
+html body .app-shell .sidebar #projectsSection .section-heading-row h2 { margin: 0; }
+/* Keep focused action elements accessible without changing the theme. */
+.sidebar .sidebar-unified-row :is(button):focus-visible,
+.sidebar :is(.project-row, .history-row) :is(button, summary):focus-visible {
+  outline: 2px solid var(--accent, #6557e8);
+  outline-offset: -2px;
+}

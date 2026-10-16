@@ -45,6 +45,7 @@
        recognizer is registered and a signed-in session exists. -->
   <link rel="stylesheet" href="./voice-composer.css" />
   <link rel="stylesheet" href="./shared-six-panel-frame.css" />
+  <link rel="stylesheet" href="./sidebar-unified.css" />
   <!-- Dark-mode readability finish: Chat and Claw share this composer and token set. -->
   <link rel="stylesheet" href="./padiem-dark-contrast.css" />
 </head>
@@ -56,9 +57,11 @@
         <a class="brand" href="./" data-locale-aria-label="home-aria" aria-label="Padiem Chat 홈"><span class="brand-mark" aria-hidden="true">P</span><span>Padiem Chat</span></a>
         <button class="sidebar-collapse-button" id="sidebarCollapseButton" type="button" aria-controls="sidebar" aria-expanded="true" data-locale-aria-label="sidebar-collapse" aria-label="사이드바 접기" data-locale-title="sidebar-collapse" title="사이드바 접기"><span aria-hidden="true">⇤</span></button>
       </div>
-      <div class="sidebar-actions-row">
+      <!-- One visual row, two separate focusable actions. No nested buttons:
+           empty/text area starts a chat; the right icon invokes existing #4471 Search. -->
+      <div class="sidebar-actions-row sidebar-unified-row" role="group" aria-label="새 채팅과 대화 검색">
         <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span data-locale-key="new-chat">새 채팅</span></button>
-        <button class="side-item sidebar-search-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" data-locale-aria-label="search-conversation-hold" aria-label="대화 검색 준비 중" data-locale-title="search-conversation-hold" title="대화 검색 준비 중"><span class="side-icon" aria-hidden="true">⌕</span><span data-locale-key="search">검색</span></button>
+        <button class="side-item sidebar-search-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" data-locale-aria-label="search-conversation-hold" aria-label="대화 검색 준비 중" data-locale-title="search-conversation-hold" title="대화 검색 준비 중"><span class="side-icon" aria-hidden="true">⌕</span><span class="visually-hidden" data-locale-key="search">검색</span></button>
       </div>
       <nav class="side-nav" data-locale-aria-label="chat-menu" aria-label="채팅 메뉴">
         <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
