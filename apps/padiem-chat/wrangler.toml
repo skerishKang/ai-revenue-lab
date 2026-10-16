@@ -92,7 +92,7 @@ PADIEM_GRAFANA_OTLP_USERNAME = "1876517"
 # run on the management host over the operator-verified ownership map below;
 # the map binds account/device pins (optional) plus the Mesh node, root/pair
 # and Windows path the operator verified against the real MeshCentral node.
-ORACLE_MESH_EXECUTION_MODE = "mesh"
+ORACLE_MESH_EXECUTION_MODE = "off"
 ORACLE_MESH_OWNERSHIP_MAP = "[{\"node_ref\":\"wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp\",\"root_ref\":\"meshcentral_private_trial\",\"path_relative\":\"meshcentral-padiem-trial.txt\",\"file_path\":\"C:\\\\Users\\\\limone\\\\AppData\\\\Local\\\\Padiem\\\\MeshCentralTrial\\\\meshcentral-padiem-trial.txt\"}]"
 
 PADIEM_CHAT_RUNTIME_MODE = "mock"
