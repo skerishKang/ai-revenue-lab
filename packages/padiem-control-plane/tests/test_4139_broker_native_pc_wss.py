@@ -547,3 +547,54 @@ def test_broker_private_rejection_fields_distinct_without_identifier_leaks(monke
             assert repr(outcome).find("secret") == -1
         assert rows(do._storage)[0]["state"] == "pending"
     asyncio.run(main())
+
+
+def test_private_owner_reserve_accepts_bounded_rpc_mapping_wrapper(monkeypatch):
+    """Real native offer survives RPC object conversion, still exact-key CAS."""
+    payload = {
+        "request_ref": REF, "owner_subject_ref": "owner@example.com/path",
+        "account_ref": "account.test", "workspace_ref": "workspace.test",
+    }
+
+    class RpcWrapper:
+        def __init__(self, inner): self.inner = inner
+        def to_py(self): return self.inner
+
+    async def main():
+        do, client, server, result = await handshake(monkeypatch)
+        receipt = await do.reserve_pending_pc_owner_intent(RpcWrapper(dict(payload)))
+        assert receipt.get("reserved_once") is True, receipt
+        assert rows(do._storage)[0]["state"] == "reserved"
+    asyncio.run(main())
+
+
+def test_private_owner_rpc_wrapper_invalid_payload_fails_closed(monkeypatch):
+    """No raw exception or arbitrary iterable acceptance from RPC wrapper."""
+    payload = {
+        "request_ref": REF, "owner_subject_ref": "owner@example.com/path",
+        "account_ref": "account.test", "workspace_ref": "workspace.test",
+    }
+    class RpcWrapper:
+        def __init__(self, inner): self.inner = inner
+        def to_py(self): return self.inner
+    class ExplodingWrapper:
+        def to_py(self): raise RuntimeError("CREDENTIAL_MUST_NOT_LEAK")
+
+    async def main():
+        do, client, server, result = await handshake(monkeypatch)
+        cases = [
+            (list(payload.items()), "private_payload_type_invalid"),
+            (RpcWrapper(list(payload.items())), "private_payload_type_invalid"),
+            (RpcWrapper({**payload, "extra": "secret"}), "private_keys_invalid"),
+            (RpcWrapper({**payload, "request_ref": "bad"}), "private_request_ref_invalid"),
+            (RpcWrapper({**payload, "owner_subject_ref": ""}), "private_owner_subject_invalid"),
+            (RpcWrapper({**payload, "account_ref": "bad/name"}), "private_account_ref_invalid"),
+            (RpcWrapper({**payload, "workspace_ref": "bad/name"}), "private_workspace_ref_invalid"),
+            (ExplodingWrapper(), "private_payload_type_invalid"),
+        ]
+        for data, code in cases:
+            result = await do.reserve_pending_pc_owner_intent(data)
+            assert result == {"_pending_pc_owner_rpc_failure": code}
+            assert "CREDENTIAL_MUST_NOT_LEAK" not in repr(result)
+        assert rows(do._storage)[0]["state"] == "pending"
+    asyncio.run(main())
