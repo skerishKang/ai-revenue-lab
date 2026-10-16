@@ -116,6 +116,15 @@ async def auth_status(request: Request) -> JSONResponse:
         "history_ready": ready and store is not None,
         "user": user,
     }
+    # Owner decision 2026-10-17: a guest may browse the product, but the model is
+    # not available without a session. This is the server-authoritative condition
+    # the browser is allowed to act on, and it mirrors the anonymous-request rule
+    # the Chat and Claw routes already enforce (`runtime_mode != "mock"`). An
+    # isolated mock app — the CI browser QA target — never advertises it, so no
+    # browser lane can silently change what Production does.
+    payload["model_requires_session"] = bool(
+        ready and request.app.state.settings.runtime_mode != "mock"
+    )
     if authenticated:
         payload["member_grade"] = await verified_member_grade(request, uid)
     # Keep the legacy unavailable payload stable. Once auth is actually ready,

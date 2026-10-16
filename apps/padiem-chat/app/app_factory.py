@@ -224,6 +224,7 @@ from .github_oauth_routes import (github_start, github_callback, github_status,
                                   github_repositories, github_disconnect, github_pause, github_resume,
                                   github_installation_settings)
 from .connector_ticket_routes import google_connector_ticket
+from .meeting_drive_upload_routes import MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session
 from .b66_drive_routes import (
     b66_drive_connect,
     b66_drive_connect_callback_return,
@@ -328,6 +329,7 @@ def create_app(
     r2_binding=None,
     claw_p01_adapter=None,
     claw_drive_artifact_uploader=None,
+    meeting_drive_upload_session_port=None,
     claw_drive_artifact_reader=None,
     claw_telegram_authority=None,
     claw_telegram_artifact_delivery=None,
@@ -400,6 +402,7 @@ def create_app(
         Route("/api/auth/password/login", password_login, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
+        Route(MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session, methods=["POST"]),
         Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/connectors/google/drive/disconnect", disconnect_google_drive, methods=["POST"]),
@@ -835,6 +838,8 @@ def create_app(
     # (transport=None) always enforces the gate; quota-specific integration tests also
     # enforce it by supplying a usage store.
     app.state.usage_gate_enforced = not (transport is not None and usage_store is None)
+    # Fail closed until CP supplies verified user Drive WRITE grant and owner-scoped upload session.
+    app.state.meeting_drive_upload_session_port = meeting_drive_upload_session_port
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = PadiemTierB14Client(resolved, transport=transport)
     # Public, non-secret browser render origin. Unset means B66 account runtime

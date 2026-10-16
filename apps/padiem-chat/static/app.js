@@ -238,6 +238,8 @@
     const state = shell.dataset.state;
     const workspace = document.getElementById("clawWorkspace");
     if (workspace) workspace.hidden = state !== "claw";
+    const meetingView = document.getElementById("meetingView");
+    if (meetingView) meetingView.hidden = state !== "meeting";
     const modeBar = document.getElementById("clawManualForm");
     if (modeBar) modeBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "manual");
     // #3531: the explicit manual-entry control lives in the fixed composer
@@ -256,8 +258,10 @@
     // New Chat no longer shows a mode hint: the redundant label was removed
     // when the sidebar actions row was rearranged (B62 split-search task).
     if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
-    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation") ? "false" : "page");
+    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation" || state === "meeting") ? "false" : "page");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
+    const meetingNav = document.getElementById("meetingNavButton");
+    if (meetingNav) meetingNav.setAttribute("aria-current", state === "meeting" ? "page" : "false");
     const connectorsNav = document.getElementById("connectorsNavButton");
     if (connectorsNav) connectorsNav.setAttribute("aria-current", state === "connectors" ? "page" : "false");
     const automationNav = document.getElementById("automationNavButton");
@@ -1947,9 +1951,28 @@
     },
   });
 
+  // Owner decision 2026-10-17: a guest may browse the product, but the model is
+  // not available without a session. The server already refuses an anonymous
+  // request (chat_routes -> 401 unauthorized, claw_general ->
+  // canonical_session_required), so this stops the request before it leaves the
+  // browser: the visitor gets the login gate instead of a raw error, and keeps
+  // the text they typed. Every screen stays browsable without a session.
+  function requireSessionForModelUse() {
+    if (authState.authenticated === true) return true;
+    // Only the server may decide that this deployment requires a session for the
+    // model (auth/status `model_requires_session`, which mirrors the anonymous
+    // rule the Chat and Claw routes already enforce). An isolated mock or preview
+    // deployment that cannot authenticate must never block the composer.
+    if (authState.model_requires_session !== true) return true;
+    setNote(uiT("model-requires-login"), "error");
+    if (loginButton && !loginButton.hidden && !loginButton.disabled) loginButton.click();
+    return false;
+  }
+
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
     if (!prompt || inFlight) return;
+    if (!requireSessionForModelUse()) return;
     if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachment;
     const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
@@ -2037,6 +2060,9 @@
     // conversation, in every shell state. The quotation/document workflow
     // runs only via the manual form's own explicit draft submit button;
     // a generic request must never auto-enter it through the composer.
+    // #4647: the meeting workbench consumes its own explicit meeting-setup
+    // command from its own capture-phase listener on this same form, so this
+    // handler keeps no shell-state fork and every other prompt is unaffected.
     submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", cancelActiveStream);
@@ -4164,6 +4190,13 @@
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
+  // #4647 Same central workbench for menu entry and Claw natural language.
+  window.addEventListener("padiem:meeting-open", () => {
+    if (!authState.authenticated) return;
+    shell.dataset.state = "meeting";
+    setNavActive();
+    closeSidebar();
+  });
   const clawManualEntryButton = document.getElementById("clawManualEntryButton");
   if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));

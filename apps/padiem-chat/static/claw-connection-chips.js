@@ -20,6 +20,16 @@ const pcTruth=(phase,ko,en)=>{
  pcCard.dataset.pcPhase=phase;
  pcStatus.textContent=message(ko,en);
 };
+// Every connector card carries its truthful headline in the card's top-right
+// corner, exactly like the PC card. The bottom-right keeps only the ON/OFF
+// switch, so Drive/GitHub no longer stretch an "확인 불가" label under it.
+const cardStatus={pc:pcStatus,drive:document.getElementById("clawDriveCardStatus"),github:document.getElementById("clawGithubCardStatus")};
+const cardEl=id=>document.querySelector('[data-claw-card="'+(id==="pc"?"computer":id)+'"]');
+const truthText=value=>value==="on"?message("연결되었습니다","Connected"):value==="off"?message("연결 끔","Off"):message("연결 확인 필요","Connection needs checking");
+const cardTruth=(id,value)=>{
+ const card=cardEl(id);if(card)card.dataset.connectionPhase=value;
+ const el=cardStatus[id];if(el)el.textContent=truthText(value);
+};
 
 function set(id,value){
  if(!["on","off","unknown"].includes(value))value="unknown";
@@ -35,9 +45,14 @@ function set(id,value){
  if(label)label.textContent=display;else element.textContent=display;
  element.dataset.connectionState=value;
  element.setAttribute("aria-label",(id==="pc"?message("컴퓨터","Computer"):id==="drive"?"Google Drive":"GitHub")+" "+display);
+ cardTruth(id,value);
 }
 const reset=()=>{ids.forEach(id=>set(id,"unknown"));pcTruth("unknown","\uC5F0\uACB0 \uD655\uC778 \uD544\uC694","Connection needs checking");const gh=chip("github");if(gh)delete gh.dataset.connectionLinked;};
-const guestHint=()=>{if(home()&&!signedIn())pcTruth("login_required","\uB85C\uADF8\uC778\uD558\uC138\uC694","Sign in first");};
+const guestHint=()=>{
+ if(!home()||signedIn())return;
+ pcTruth("login_required","\uB85C\uADF8\uC778\uD558\uC138\uC694","Sign in first");
+ ["drive","github"].forEach(id=>{const el=cardStatus[id];if(el)el.textContent=message("\uB85C\uADF8\uC778\uD558\uC138\uC694","Sign in first");});
+};
 const feedback=(ko,en)=>{const el=document.getElementById("clawConnectionFeedback");if(!el)return;el.textContent=message(ko,en);el.hidden=false;};
 async function read(url){
  const r=await fetch(url,{method:"GET",credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});

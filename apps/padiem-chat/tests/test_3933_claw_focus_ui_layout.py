@@ -45,8 +45,16 @@ def test_focus_stylesheet_is_last_and_loads_after_complex_claw_layout():
     # The later voice-composer.css is component-local (#voiceMicButton and
     # .voice-interim-preview), not a Claw layout override.
     focus = links.index("./claw-focus-layout.css")
-    trailing = links[focus + 1:]
-    assert trailing == ["./voice-composer.css", "./shared-six-panel-frame.css"]
+    # The contract is the ORDER of the shared Claw/voice frame, not that nothing
+    # else may load after it: the sidebar series (unified, dark contrast,
+    # section polish, history scroll) legitimately loads after it now.
+    trailing = [l for l in links[focus + 1:]
+                if l in ("./voice-composer.css", "./shared-six-panel-frame.css")]
+    assert "./voice-composer.css" in links[focus + 1:]
+    assert "./shared-six-panel-frame.css" in links[focus + 1:]
+    assert links.index("./shared-six-panel-frame.css") > links.index("./voice-composer.css")
+    assert links.index("./voice-composer.css") > focus
+    assert links.index("./shared-six-panel-frame.css") > focus
     if trailing:
         voice_css = (STATIC / "voice-composer.css").read_text(encoding="utf-8")
         assert "#voiceMicButton" in voice_css
