@@ -115,7 +115,7 @@ html body .app-shell .sidebar :is(.project-row, .history-row) {
   display: flex;
   align-items: center;
   gap: 0 !important;
-  min-height: 44px;
+  min-height: 46px;
   padding: 0;
   background: rgba(255,255,255,.10) !important;
   border: 1px solid var(--line, rgba(210,220,230,.25)) !important;
@@ -136,16 +136,16 @@ html body .app-shell .sidebar .history-row .history-actions > .history-more {
 }
 html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item) {
   flex: 1 1 0;
-  height: 42px;
-  min-height: 42px;
+  height: 44px;
+  min-height: 44px;
   padding: 0 10px !important;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-manage, .history-actions) {
-  flex: 0 0 42px;
-  min-width: 42px;
-  width: 42px;
-  height: 42px;
-  min-height: 42px;
+  flex: 0 0 44px;
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
   padding: 0 !important;
   border-radius: 0 10px 10px 0 !important;
 }
@@ -169,9 +169,9 @@ html body .app-shell .sidebar .history-row .history-actions > .history-more {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  min-height: 42px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
   padding: 0 !important;
 }
 html body .app-shell .sidebar .history-row .history-more svg {

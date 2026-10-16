@@ -67,6 +67,9 @@ def test_owner_seamless_sidebar_cells_and_centered_secondary_controls():
     assert "place-items: center !important;" in CSS
     assert "width: 28px !important;" in CSS
     assert "min-width: 28px !important;" in CSS
+    assert "flex: 0 0 44px;" in CSS  # minimum touch target
+    assert "min-width: 44px;" in CSS
+    assert "min-height: 44px;" in CSS
 
 
 def test_owner_expanded_minus_collapsed_chevron_icons_are_css_only():
