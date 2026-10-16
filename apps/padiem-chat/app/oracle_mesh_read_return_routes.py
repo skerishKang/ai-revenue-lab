@@ -54,6 +54,7 @@ from .claw_memory_routes import _resolve_memory_workspace
 from .claw_local_task_result_projection import result_message_id
 from .control_plane_identity import IdentityBridgeError
 from .history import HistoryError, HistoryForbidden, validate_conversation_id
+from .request_telemetry import emit_stage_event
 
 ORACLE_MESH_READ_REQUEST_PATH = "/api/claw/connector/mesh-reads/request"
 ORACLE_MESH_READ_POLL_PATH = "/api/claw/connector/mesh-reads/poll"
@@ -327,7 +328,16 @@ async def resolve_oracle_mesh_execution(
         return None, _error(503, "oracle_mesh_unconfigured")
     try:
         scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
-    except Exception:
+    except Exception as exc:
+        # #4139: this is the only place the canonical owner-scope refusal is
+        # observed. The public projection is one fixed code, so the Identity
+        # code is retained on the existing bounded stage-telemetry channel
+        # (code + stage + request-scoped id only; build_stage_event sanitizes
+        # the value and never carries a message).
+        emit_stage_event(
+            stage="mesh.owner_scope", outcome="error", duration_ms=0,
+            code=getattr(exc, "code", None),
+        )
         return None, _error(503, "oracle_mesh_device_directory_unavailable")
     account_ref = scope.get("account_ref") if isinstance(scope, dict) else None
     if not isinstance(account_ref, str) or not account_ref:

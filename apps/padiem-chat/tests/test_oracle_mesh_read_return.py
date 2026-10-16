@@ -701,3 +701,90 @@ def test_env_builder_resolves_the_ownership_map_secrets_store_binding():
     empty_env = _deployment_env()
     empty_env[routes.ORACLE_MESH_OWNERSHIP_MAP_ENV] = Store("   ")
     assert asyncio.run(routes.build_oracle_mesh_return_source_from_env(empty_env)) is None
+
+
+class TestScopeRefusalTelemetry:
+    """#4139: the Identity refusal code must survive the fixed public projection.
+
+    The public error is one bounded code, so without the stage event the real
+    Identity cause is unobservable. Only the code travels; no message, subject,
+    account or workspace value is projected.
+    """
+
+    def test_owner_scope_refusal_keeps_the_identity_code(self, monkeypatch):
+        from app.control_plane_identity import IdentityBridgeError
+
+        emitted: list[dict] = []
+        monkeypatch.setattr(
+            routes, "emit_stage_event", lambda **entry: emitted.append(entry)
+        )
+
+        class _RefusingIdentity:
+            async def resolve_connector_owner_scope(self, *, session_id):
+                del session_id
+                raise IdentityBridgeError(
+                    503, "canonical_scope_not_established",
+                    "one established connector context required",
+                )
+
+        monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+        monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+
+        target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
+            Request({}, state(identity=_RefusingIdentity())),
+            path_relative="meshcentral-padiem-trial.txt",
+        ))
+
+        assert target is None
+        assert denial.status_code == 503
+        assert json.loads(denial.body)["error"]["code"] == (
+            "oracle_mesh_device_directory_unavailable"
+        )
+        assert emitted == [{
+            "stage": "mesh.owner_scope", "outcome": "error", "duration_ms": 0,
+            "code": "canonical_scope_not_established",
+        }]
+
+    def test_owner_scope_refusal_without_a_bounded_code_projects_no_code(self, monkeypatch):
+        emitted: list[dict] = []
+        monkeypatch.setattr(
+            routes, "emit_stage_event", lambda **entry: emitted.append(entry)
+        )
+
+        class _OpaqueIdentity:
+            async def resolve_connector_owner_scope(self, *, session_id):
+                del session_id
+                raise RuntimeError("raw backend text must never be projected")
+
+        monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+        monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+
+        target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
+            Request({}, state(identity=_OpaqueIdentity())),
+            path_relative="meshcentral-padiem-trial.txt",
+        ))
+
+        assert target is None
+        assert denial.status_code == 503
+        assert emitted == [{
+            "stage": "mesh.owner_scope", "outcome": "error", "duration_ms": 0,
+            "code": None,
+        }]
+        assert "raw backend text" not in json.dumps(emitted)
+
+    def test_successful_scope_resolution_emits_nothing(self, monkeypatch):
+        emitted: list[dict] = []
+        monkeypatch.setattr(
+            routes, "emit_stage_event", lambda **entry: emitted.append(entry)
+        )
+        monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+        monkeypatch.setattr(routes, "_verified_owner_request", _verified)
+
+        target, denial = asyncio.run(routes.resolve_oracle_mesh_execution(
+            Request({}, state(identity=Identity(consent(account=ACCOUNT)))),
+            path_relative="meshcentral-padiem-trial.txt",
+        ))
+
+        assert denial is None
+        assert target is not None
+        assert emitted == []

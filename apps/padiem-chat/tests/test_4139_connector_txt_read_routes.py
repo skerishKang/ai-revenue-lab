@@ -221,3 +221,63 @@ def test_unconfigured_source_fails_closed(monkeypatch):
     st = state()
     st.connector_txt_read_source = routes.UnconfiguredTxtReadSource()
     assert run(routes.connector_txt_read_request, Request(body(), st))[0] == 503
+
+
+class _DirectoryBroker(FakeBrokerSource):
+    """Broker stub that only proves the owner-scope read happens first."""
+
+    async def owner_device_directory(self, *, account_ref, workspace_ref):
+        del account_ref, workspace_ref
+        raise AssertionError("the owner-scope refusal must precede the directory")
+
+
+def test_native_owner_scope_refusal_keeps_the_identity_code(monkeypatch):
+    """#4139: the native lane hides the same Identity cause behind one code."""
+    emitted: list[dict] = []
+    monkeypatch.setattr(routes, "emit_stage_event", lambda **entry: emitted.append(entry))
+    setup_auth(monkeypatch)
+
+    class _RefusingIdentity:
+        async def resolve_connector_owner_scope(self, *, session_id):
+            del session_id
+            raise IdentityBridgeError(
+                503, "canonical_scope_not_established",
+                "one established connector context required",
+            )
+
+    st = state(broker=_DirectoryBroker(), identity=_RefusingIdentity())
+    device, denial = asyncio.run(
+        routes.choose_verified_txt_device(Request(body(), st))
+    )
+
+    assert device is None
+    assert denial.status_code == 503
+    assert json.loads(denial.body)["error"]["code"] == "txt_read_device_directory_unavailable"
+    assert emitted == [{
+        "stage": "txt_read.owner_scope", "outcome": "error", "duration_ms": 0,
+        "code": "canonical_scope_not_established",
+    }]
+
+
+def test_native_owner_scope_refusal_without_code_projects_no_code(monkeypatch):
+    emitted: list[dict] = []
+    monkeypatch.setattr(routes, "emit_stage_event", lambda **entry: emitted.append(entry))
+    setup_auth(monkeypatch)
+
+    class _OpaqueIdentity:
+        async def resolve_connector_owner_scope(self, *, session_id):
+            del session_id
+            raise RuntimeError("raw backend text must never be projected")
+
+    st = state(broker=_DirectoryBroker(), identity=_OpaqueIdentity())
+    device, denial = asyncio.run(
+        routes.choose_verified_txt_device(Request(body(), st))
+    )
+
+    assert device is None
+    assert denial.status_code == 503
+    assert emitted == [{
+        "stage": "txt_read.owner_scope", "outcome": "error", "duration_ms": 0,
+        "code": None,
+    }]
+    assert "raw backend text" not in json.dumps(emitted)
