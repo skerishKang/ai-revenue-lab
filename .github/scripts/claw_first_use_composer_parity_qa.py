@@ -22,6 +22,17 @@ with sync_playwright() as p:
         ? getComputedStyle(document.querySelector('#clawManualEntryBar')).display : 'missing',
       cards:[...document.querySelectorAll('.claw-home-card')].filter(e=>getComputedStyle(e).display!=='none').length,
       tracks:document.querySelectorAll('.claw-connection-track').length,
+      cellH:(()=>{const n=document.querySelector('.starter-grid > .starter');return n&&n.getClientRects().length?Math.round(n.getBoundingClientRect().height):null})(),
+      cardH:(()=>{const n=[...document.querySelectorAll('.claw-home-card')].find(e=>e.getClientRects().length);return n?Math.round(n.getBoundingClientRect().height):null})(),
+      inlineLabels:[...document.querySelectorAll('.claw-home-card .claw-connection-label')].filter(e=>getComputedStyle(e).display!=='none').length,
+      statusTopRight:[...document.querySelectorAll('.claw-home-card')].filter(c=>{
+        const s=c.querySelector('.claw-card-status');if(!s||!c.getClientRects().length)return false;
+        const cr=c.getBoundingClientRect(),sr=s.getBoundingClientRect();
+        return sr.top-cr.top<26 && cr.right-sr.right<26}).length,
+      toggleBottomRight:[...document.querySelectorAll('.claw-home-card .claw-connection-toggle')].filter(t=>{
+        const card=t.closest('.claw-home-card');if(!card||!t.getClientRects().length)return false;
+        const cr=card.getBoundingClientRect(),tr=t.getBoundingClientRect();
+        return cr.bottom-tr.bottom<26 && cr.right-tr.right<26}).length,
       title:document.querySelector('#emptyState h1').innerText}
    }""")
   chat=metrics()
@@ -39,6 +50,15 @@ with sync_playwright() as p:
   assert claw["ownerStatus"] and chat["ownerStatus"],(width,"model-status",chat,claw)
   assert claw["fileTool"] and claw["modelPill"],(width,"shared-tools",claw)
   assert claw["cards"]==4 and claw["tracks"]==3,(width,claw)
+  # The Claw connector cards and the Chat first-use cells are one surface: the
+  # row must resolve to the same height in both, the truthful headline sits in
+  # the top-right of every card, and the bottom-right holds the ON/OFF switch
+  # alone (no inline "확인 불가" row stretching the card).
+  assert chat["cellH"] is not None and claw["cardH"] is not None,(width,"row-height",chat,claw)
+  assert abs(chat["cellH"]-claw["cardH"])<=2,(width,"row-height",chat["cellH"],claw["cardH"])
+  assert claw["inlineLabels"]==0,(width,"inline-label",claw)
+  assert claw["statusTopRight"]==3,(width,"status-placement",claw)
+  assert claw["toggleBottomRight"]==3,(width,"toggle-placement",claw)
   assert "\uD074\uB85C" in claw["title"],(width,claw["title"])
   print(f"CLAW_FIRST_USE_COMPOSER_PARITY_{width}=PASS",flush=True)
   page.close()

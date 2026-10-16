@@ -903,12 +903,69 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   outline: 3px solid var(--accent); outline-offset: 2px;
 }
 .claw-card-icon { width: 26px; height: 26px; display: block; color: var(--text); }
+/* The Claw card is a positioning wrapper ONLY. The visible surface is the inner
+ * .starter, which already carries the Chat first-use cell's exact box and paint
+ * in every theme. Drawing a second card surface here was what made Claw look
+ * heavier ("찐한") than Chat and forced the 116px clamp that clipped the
+ * description text. */
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
-  display: flex !important; border-radius: var(--radius-md, 16px);
-  background: var(--card-bg); border: 1px solid var(--line); min-width: 0;
+  display: block !important;
+  position: relative;
+  min-width: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  overflow: visible !important;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
   display: flex !important;
+  width: 100% !important;
+  min-height: 0 !important;
+}
+/* Truthful connection headline: always top-right, on every connector card. */
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-card-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  max-width: 76px;
+  text-align: right;
+  font-size: 9px;
+  line-height: 1.2;
+  font-weight: 600;
+  pointer-events: none;
+}
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card:not([data-claw-card="computer"]) > .claw-card-status {
+  color: var(--muted);
+}
+/* Bottom-right carries the ON/OFF switch alone. The state already lives in the
+ * button's aria-label and in the top-right headline, so the inline label is
+ * removed rather than stretching the switch across the card. */
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .claw-connection-label {
+  display: none !important;
+}
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  align-self: auto;
+  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: row;
+  gap: 4px;
+  margin: 0 !important;
+  padding: 2px 5px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  max-width: calc(100% - 24px);
+  border-radius: 8px;
+  font-size: 9px;
+  line-height: 1.1;
 }
 .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) :is(#clawApprovedMemory,#clawRunHistory,#clawMemoryReview,#clawRunHistoryDisclosure) {
   display: none !important;
@@ -950,30 +1007,14 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
 .app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] {
   position: relative;
 }
+/* Only the PC headline colour is PC-specific. Its position, the ON/OFF switch
+ * placement and the inline-label removal are now shared by every connector card
+ * (see the generic rules above), so Claw cards read like the Chat cells. */
 .app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] .claw-pc-status {
-  position: absolute;
-  top: 6px;
-  right: 7px;
-  z-index: 1;
-  max-width: 70px;
-  font-size: 9px;
-  line-height: 1.2;
-  font-weight: 600;
-  text-align: right;
   color: var(--text);
-  pointer-events: none;
 }
 .app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"][data-pc-phase="online"] .claw-pc-status {
   color: #168044;
-}
-.app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] .claw-connection-label {
-  display: none !important;
-}
-.app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] .claw-connection-toggle {
-  width: auto;
-  min-height: 26px;
-  flex-direction: row;
-  padding: 2px 5px;
 }
 .app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] .claw-connection-toggle[data-connection-state="on"] .claw-state-on {
   color: #147d42;
