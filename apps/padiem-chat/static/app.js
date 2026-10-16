@@ -2041,7 +2041,9 @@
     // conversation, in every shell state. The quotation/document workflow
     // runs only via the manual form's own explicit draft submit button;
     // a generic request must never auto-enter it through the composer.
-    if (shell.dataset.state === "claw" && window.PadiemMeetingCapture?.tryOpenFromClaw?.(input.value)) return;
+    // #4647: the meeting workbench consumes its own explicit meeting-setup
+    // command from its own capture-phase listener on this same form, so this
+    // handler keeps no shell-state fork and every other prompt is unaffected.
     submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", cancelActiveStream);

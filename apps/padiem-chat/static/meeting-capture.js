@@ -395,6 +395,28 @@
       if (!signedIn || shell?.dataset.state !== "claw" || !isMeetingIntent(value)) return false;
       return open();
     }
+    /* #4647/#3531: this module owns its own composer interception instead of
+       forking the shared submit handler in app.js, which must stay a plain
+       general-chat submit with no shell-state branch (#3531). A capture-phase
+       listener runs before that handler on the same form: an explicit
+       meeting-setup intent in the Claw shell opens the workbench and consumes
+       the submit, and every other prompt reaches the general conversation
+       exactly as before. */
+    let composerSubmitHookInstalled = false;
+    function interceptComposerSubmit() {
+      if (composerSubmitHookInstalled) return;
+      const form = doc.getElementById("composerForm");
+      if (!form) return;
+      composerSubmitHookInstalled = true;
+      form.addEventListener("submit", (event) => {
+        const field = doc.getElementById("messageInput");
+        if (!field || !tryOpenFromClaw(field.value)) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        field.value = "";
+      }, true);
+    }
+    interceptComposerSubmit();
     return Object.freeze({ open, tryOpenFromClaw, controller });
   }
   return Object.freeze({ MODES, isMeetingIntent, chooseMime, createController, mount });

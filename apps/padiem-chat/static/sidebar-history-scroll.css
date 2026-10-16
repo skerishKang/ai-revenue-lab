@@ -4,8 +4,16 @@
    Keep primary and secondary click handlers, permissions, and menu semantics. */
 @media (min-width: 921px) {
   html body .app-shell .sidebar {
+    /* #4905 regression guard. The pinned stacks (brand, Chat/Claw group, the
+       workspace + tools menus, projects) plus the pinned account/home stack can
+       together exceed a short desktop viewport (measured: 1280x800 with the
+       owner-ordered menu). With `overflow-y: hidden` the recent-conversation
+       section collapsed to ~34px and its rows were painted *underneath*
+       .sidebar-bottom, so every row click was intercepted by the account stack.
+       Keep the pinned layout while the content fits, and let the sidebar itself
+       scroll when it cannot, so no row can ever sit under the pinned stack. */
     overflow: hidden !important;
-    overflow-y: hidden !important;
+    overflow-y: auto !important;
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -23,11 +31,18 @@
     overflow-x: hidden;
   }
   html body .app-shell .sidebar #historySection:not([hidden]) {
-    flex: 1 1 0;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow: visible;
+    /* #4905: heading row + at least two conversation rows. Without a floor the
+       section is squeezed to a few pixels on a short viewport and its rows are
+       laid out past the section, under the pinned account/home stack. */
+    min-height: 156px;
+    /* Must never be `visible`. Rows that escape this box are painted below
+       .sidebar-bottom and then intercept every pointer event aimed at the row.
+       #historyList below stays the single scrollport for the conversation list. */
+    overflow: hidden;
   }
   html body .app-shell .sidebar #historySection.is-collapsed:not([hidden]) {
     flex: 0 0 auto;
