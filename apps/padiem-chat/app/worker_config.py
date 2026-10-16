@@ -98,7 +98,7 @@ CONTENT_SECURITY_POLICY = (
     "frame-src blob:; "
     "frame-ancestors 'none'; "
     "script-src 'self'; "
-    "connect-src 'self'; "
+    "connect-src 'self' https://www.googleapis.com; "
     "img-src 'self' data: blob:; "
     "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
     "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; "

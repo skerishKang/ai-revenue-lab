@@ -46,8 +46,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .topbar {
   border-bottom: 1px solid rgba(255, 255, 255, .22);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #workspaceNav .side-item:disabled {
-  /* Hide only unavailable navigation in Claw; never conceal enabled features. */
-  display: none;
+  display: flex;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub {
   /* #4488 Phase A: the Claw entry reads as a compact suggestion area on the

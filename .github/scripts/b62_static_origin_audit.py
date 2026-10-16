@@ -16,6 +16,12 @@ ALLOWED_LITERAL_HTTP_HOSTS = frozenset({
 # XML namespace text inside the existing inline data:image SVG. It is an
 # identifier, not a network dependency and must not widen the host allowlist.
 NON_NETWORK_LITERAL_URLS = frozenset({"http://www.w3.org/2000/svg"})
+# Limited to reviewed #4647 media upload code, not a global provider allowlist.
+MEETING_DIRECT_DRIVE_HOSTS = {
+    "apps/padiem-chat/static/meeting-drive-upload.js": frozenset({"www.googleapis.com"}),
+    "apps/padiem-chat/static/meeting-capture.js": frozenset({"drive.google.com"}),
+}
+
 
 URL_RE = re.compile(r"https?://[^\s\"'<>)}]+", re.IGNORECASE)
 
@@ -56,7 +62,8 @@ def main() -> None:
                 violations.append(f"{relative}: malformed absolute URL: {url}")
                 continue
             seen_hosts.add(host)
-            if host not in ALLOWED_LITERAL_HTTP_HOSTS:
+            feature_hosts = MEETING_DIRECT_DRIVE_HOSTS.get(relative.as_posix(), frozenset())
+            if host not in ALLOWED_LITERAL_HTTP_HOSTS and host not in feature_hosts:
                 violations.append(f"{relative}: unapproved external host {host}: {url}")
 
     if violations:

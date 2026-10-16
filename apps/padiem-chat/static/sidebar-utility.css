@@ -342,3 +342,9 @@ html[data-theme="padiem-glass"] .brand-row {
   grid-row: 1;
   z-index: 3;
 }
+/* #4647: Chat/New Chat and Claw share one sidebar group. */
+.sidebar-chat-claw-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

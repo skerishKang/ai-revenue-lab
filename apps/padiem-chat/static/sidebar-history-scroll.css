@@ -117,3 +117,29 @@ html body .app-shell .sidebar .history-actions-menu {
     margin-top: 0;
   }
 }
+
+/* Owner-approved: one restrained separator between Projects and Recent only. */
+html body .app-shell .sidebar #historySection:not([hidden]) {
+  border-top: 1px solid rgba(230, 240, 250, .20);
+  margin-top: 8px;
+  padding-top: 7px;
+}
+/* Space between the primary Chat/Claw group and workspace tools without
+ * introducing full-width group cards or disrupting single-cell new chat. */
+html body .app-shell .sidebar .sidebar-chat-claw-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+/* Text-only muted items in Claw still visible; unavailable actions remain disabled. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] #workspaceNav .side-item:disabled {
+  display: flex;
+}
+
+/* Owner-confirmed workspace menu order is visible even where individual
+ * features are still gated; disabled entries remain genuinely non-clickable. */
+html body .app-shell #workspaceNav .side-item:disabled {
+  display: flex;
+  opacity: .72;
+}
