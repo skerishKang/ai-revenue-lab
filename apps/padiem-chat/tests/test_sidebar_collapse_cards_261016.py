@@ -83,3 +83,14 @@ def test_owner_expanded_minus_collapsed_chevron_icons_are_css_only():
     assert "border-right: 2px solid currentColor;" in CSS
     assert "aria-expanded" in JS
     assert "localStorage" not in JS
+
+def test_project_and_history_title_do_not_blur_half_of_single_cell():
+    """Owner screenshot regression: both halves must share one paint surface."""
+    theme = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
+    assert "backdrop-filter: blur(" in theme
+    # A transparent title button still creates a separate backdrop-blur region.
+    # Disable the effect on the two titles, not on the entire sidebar.
+    assert ":is(.project-row > .project-item, .history-row > .history-item)" in CSS
+    assert "-webkit-backdrop-filter: none !important;" in CSS
+    assert "backdrop-filter: none !important;" in CSS
+    assert "backdrop-filter: none" not in JS
