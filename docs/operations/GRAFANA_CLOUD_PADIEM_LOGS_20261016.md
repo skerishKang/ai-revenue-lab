@@ -7,7 +7,16 @@
 - OTLP authentication username: `1876517`; Loki query authentication username: `1834293`. They are different instance IDs.
 - Cloud subscription on 2026-10-16: Free trial, on-screen end date 2026-10-30. No new payment or upgrade authorized.
 - Existing B62 `request_telemetry.py` is authoritative for safe event projections; no raw customer request data is exported.
-- Cloudflare remains only the existing B62 application runtime. Do not configure R2, Workers Logs, Logpush, Queues, or GitHub full-CI log collection for this pipeline.
+- Cloudflare remains the existing application runtime (B62/B14/Engine), not an additional long-term log archive. Do not configure R2, Workers Logs, Logpush, Queues, or GitHub full-CI log collection for this pipeline.
+
+## Actual production acceptance — 2026-10-16
+
+- **Source merge:** PR #4852 at `33f391a81116f6b2ce94104f19c10b83f5ae4100`; follow-up protected Engine fix #4868 and B62 exact Grafana runtime activation #4870, #4877, #4878. Grafana-related Worker CI, secret-binding source tests, protection gates, and GitGuardian passed at their documented exact heads. A separate full B62 Chat/Claw UI regression continued to have pre-existing failures, not counted as a Grafana PASS.
+- **B14:** protected deployment run [#38798169390](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38798169390), served-version/smoke PASS. No provider call was requested for the acceptance probe. Real request ID `padiem-grafana-b14-261016-probe-01` returned one Loki event and one COM1 SQLite row.
+- **Engine:** initial post-deploy binding guard failure followed by **successful protected rollback** to `99b7dddb-a0f4-4ee1-8830-51323d808285`. Narrow binding-guard repair PR #4868 merged; protected redeployment [#38800199159](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38800199159) served version `59beccaf-3a1e-413e-a78f-0bbd3d56d920`. Live request ID `padiem-grafana-engine-261016-probe-01` is present once in Loki and once in COM1 SQLite. Engine smoke ultimately PASS after one isolated network-related retry.
+- **B62 (Chat, Claw, B66 shared Worker):** first protected release [#38810262265](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38810262265) attached the canonical Secrets Store reference; a read-only check identified the two public OTLP variables as missing. Exact public-variable fix #4878 merged; final protected production release [#38812641351](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38812641351) deployed source commit `8c6ef547ebfd78cf77249953fd4fbdb38e3af05e`, served version `316ac1ee-f2de-4f12-8628-719a9ff15916`. `GRAFANA_SERVED_IMMUTABLE_BINDING=PASS`, `GRAFANA_SERVED_PUBLIC_VARS=PASS`, D1 migrations 008/040 exact, `B62_PRODUCTION_SMOKE=PASS`. A safe, unauthenticated GET to `/api/b66/runtime-config` returned 401 with echoed request ID `padiem-grafana-b62-261016-final-probe`; one corresponding Grafana Loki event reached COM1 SQLite.
+- **COM1 automatic backup:** a manual immediate run of the already-installed 15-minute Scheduled Task completed with `LastTaskResult=0`. SQLite direct read confirmed one archived row per B62, B14 and Engine live request ID (three services independently verified).
+- **Unverified acceptance boundary:** a **single authenticated end-to-end request** joining B62→B14/Engine→completed provider call under the **same** `X-Request-Id` has not been observed. Distinct independent service probes are not an inter-service trace. Do not mark full cross-service or all provider adapters as operational E2E PASS.
 
 ## Shipped source integration and limits
 - B62 HTTP middleware assigns/echoes a validated `X-Request-Id`, records status, route template and latency, and emits bounded stage events for B14 operations with the same request ID.
@@ -21,11 +30,11 @@
 ## Provisioning — source and external activation
 The Grafana Cloud Portal access policy `padiem-prod-logs-write` already exists at https://grafana.com/orgs/zestypuma1700/access-policies . Its realm is the Japan `zestypuma1700` stack and **sole scope** is `logs:write`; a scoped `logs:write` token was created and stored in the existing B62 Cloudflare account-level Secrets Store; its value is never published.
 
-1. **DONE (account configuration):** `logs:write` token created in Grafana and registered as `PADIEM_GRAFANA_OTLP_TOKEN` in the existing Charliekant account-level Cloudflare Secrets Store (`f0b09ca04a7b43248154c773704a5616`). B62/B14/Engine Wrangler source declares the encrypted secret reference. No token values in source. Binding to the **served Workers** requires separately approved protected releases.
+1. **DONE (account configuration):** `logs:write` token created in Grafana and registered as `PADIEM_GRAFANA_OTLP_TOKEN` in the existing Charliekant account-level Cloudflare Secrets Store (`f0b09ca04a7b43248154c773704a5616`). B62/B14/Engine Wrangler source declares the encrypted secret reference. No token values in source. The three **served Workers** were subsequently activated through existing protected workflows; actual request-ID Loki/COM1 acceptance is recorded below.
 2. The *public* OTLP URL and instance username are in `apps/padiem-chat/wrangler.toml`. They are not credentials. Activation requires all three trusted bindings (`PADIEM_GRAFANA_OTLP_ENDPOINT`, `PADIEM_GRAFANA_OTLP_USERNAME`, `PADIEM_GRAFANA_OTLP_TOKEN`).
 3. Use the existing protected B62 Worker Production workflow, not `wrangler deploy` or an ad hoc Dashboard deployment. Inspect relevant current-main drift, exact-head CI, destination and configured release/rollback requirements; do not claim deployed because a PR merged.
-4. **DONE (external ingest canary):** one content-blind OTLP request returned HTTP 204 and the matching LogQL request-ID lookup returned HTTP 200. This proves external Grafana ingestion but not served Worker ingestion. A 401/403 after Worker deployment may mean credential, scope or binding mismatch; keep customer execution independent.
-5. **DONE (Dashboard API):** the 8-panel JSON in `apps/padiem-chat/observability/padiem-requests-grafana.json` is saved at https://zestypuma1700.grafana.net/d/padiem-requests-logs/eb3f920 ; authenticated GET readback showed all eight panels. Live metrics for B14/Engine remain empty until their separate Workers are deployed.
+4. **DONE (external ingest canary):** one content-blind OTLP request returned HTTP 204 and the matching LogQL request-ID lookup returned HTTP 200. This was the original external ingest canary. Subsequent real served-Worker ingestion is independently proven below. A 401/403 after Worker deployment may mean credential, scope or binding mismatch; keep customer execution independent.
+5. **DONE (Dashboard API):** the 8-panel JSON in `apps/padiem-chat/observability/padiem-requests-grafana.json` is saved at https://zestypuma1700.grafana.net/d/padiem-requests-logs/eb3f920 ; authenticated GET readback showed all eight panels. The separate B14/Engine Worker deployments have since completed, with actual request-ID evidence archived below.
 
 ## Independent COM1 archive (activated: 15-minute scheduled backup)
 - Pull architecture: Grafana Loki authenticated `logs:read` HTTP API -> Windows COM1 local SQLite `%LOCALAPPDATA%\PADIEM\GrafanaLogs\archive.sqlite3`, with WAL, request-ID index and dedup by event hash.
@@ -39,13 +48,13 @@ The Grafana Cloud Portal access policy `padiem-prod-logs-write` already exists a
 ## Operations checklist
 | Boundary | Evidence required | Present on 2026-10-16 |
 | --- | --- | --- |
-| B62 request/stage projection | Focused tests + exact source SHA | Code in PR worktree; focused tests run |
-| Grafana policy | Actual access policy and logs:write scope | Policy and server-side Secret created; Worker binding pending deployment |
-| B62->Grafana ingestion | Actual Loki sample in Explore | Synthetic safe sample OTLP 204 / Loki query 200 PASS; B62 Worker runtime NOT VERIFIED |
-| B14/Engine/provider distributed trace | Same request ID in actual downstream services | NOT VERIFIED |
+| B62 request/stage projection | Focused tests + exact source SHA | Source merged in #4852; real B62 request-ID readback PASS |
+| Grafana policy | Actual access policy and logs:write scope | logs:write and independent COM1 logs:read policies; served bindings for all three Workers VERIFIED |
+| B62->Grafana ingestion | Actual Loki sample and COM1 SQLite readback | PASS: served B62 request `padiem-grafana-b62-261016-final-probe`, GET `/api/b66/runtime-config` returned 401 and echoed the same X-Request-Id; COM1 archive 1 row from Loki |
+| B14/Engine/provider distributed trace | Same request ID across B62→B14→Engine and an actual provider attempt | Each independent Worker PASS (three request IDs archived); **single cross-service request ID and live provider-call stage NOT VERIFIED** |
 | Grafana dashboard | Saved dashboard link + real query result | 8-panel Grafana API save and GET readback PASS: https://zestypuma1700.grafana.net/d/padiem-requests-logs/eb3f920 |
-| COM1 archive | DPAPI read token, scheduled task, SQLite readback | PASS: logs:read policy, COM1 DPAPI, 15-minute task Ready, executed LastTaskResult=0, 1 synthetic record readback |
-| Production | Protected B62 Worker release run and deployment SHA | NOT DEPLOYED |
+| COM1 archive | DPAPI read token, scheduled task, SQLite readback | PASS: 15-minute task, LastTaskResult=0; live B62/B14/Engine request IDs each archived as exactly one row |
+| Production | Protected B62/B14/Engine releases and exact served versions | PASS: B62 #38812641351 served version `316ac1ee-f2de-4f12-8628-719a9ff15916`; Engine #38800199159 served version `59beccaf-3a1e-413e-a78f-0bbd3d56d920`; B14 #38798169390 protected deploy/smoke PASS |
 
 ## Query cardinality, cost and rollback
 - Keep tenant IDs, user identities, message content, full URLs, raw error strings, and raw provider headers out of payload.
@@ -53,9 +62,9 @@ The Grafana Cloud Portal access policy `padiem-prod-logs-write` already exists a
 - Cloud Free usage is bounded by upstream plan terms, not the 14-day trial banner. Review ingestion/retention/usage before the trial ends on 2026-10-30. Disable B62 `PADIEM_GRAFANA_OTLP_TOKEN` binding to stop external export without affecting API responses.
 - If the archiver fails, do not retry indefinitely, reset its cursor, or equate Grafana's stored data with a completed COM1 backup. Check for 401/403 (read scope) or transport error and repair once.
 
-## Expanded multi-service release and evidence (source only)
+## Expanded multi-service release and evidence
 - Independent opt-in Worker wrappers: `apps/korean-ai-platform/{worker.py,app/stack_telemetry.py}` and `apps/padiem-ai-engine/{worker_identity.py,app/stack_telemetry.py}`; same no-request-body allowlist in both independently bundled Workers. Each service needs its own protected release; a B62 deploy does not deploy B14 or Engine.
 - B62 additionally exports static product buckets `chat`, `claw`, `b66`, `other` from route templates only. No raw URL, model identity or customer data reaches Loki.
 - Both independent Workers record only API/internal Worker response completion latency; **streaming full-body completion latency is not yet proven**. Provider-call stage instrumentation currently covers B14's canonical completed chat attempt; other streaming adapter branches require separate evidence before claiming full provider coverage.
 - COM1 backup query now includes service names `padiem-chat`, `korean-ai-platform`, `padiem-ai-engine`. The distinct `logs:read` policy and COM1 DPAPI secret are configured, 15-minute Task Scheduler job running; one independent synthetic readback confirmed.
-- Two Grafana scoped access policies and tokens were configured without upgrading plan. **No B62/B14/Engine Production Worker code deployments were executed by this observability change**; each release remains subject to exact-main CI and product-specific protected deployment workflows.
+- Two Grafana scoped access policies and tokens were configured without upgrading the plan. The B62, B14 and Engine production Workers were deployed through their separate protected release workflows and their real log archive observations are documented above. These releases do not prove a single end-to-end provider trace.
