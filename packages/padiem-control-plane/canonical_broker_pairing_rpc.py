@@ -7,6 +7,7 @@ import hashlib
 from datetime import datetime, timezone
 
 from padiem_control_plane.contracts import ControlPlaneContractError
+from padiem_control_plane.broker_pending_pc_private_rpc import _owner_rpc_payload_dict
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority
 from local_agent_broker_pairing_durable import (
     DurableBrokerPairingAuthority,
@@ -16,6 +17,13 @@ from canonical_broker_gateway_bootstrap import (
     DurableBrokerGatewayBootstrap,
     install_gateway_bootstrap_schema,
 )
+
+
+def _rpc_payload(value, *, code="invalid_durable_pairing_rpc") -> dict:
+    payload = _owner_rpc_payload_dict(value)
+    if payload is None:
+        raise ControlPlaneContractError(code, "private RPC object is invalid")
+    return payload
 
 
 class CanonicalBrokerPairingRPC:
@@ -59,6 +67,7 @@ class CanonicalBrokerPairingRPC:
     async def install_pairing_schema(self, payload: dict) -> dict:
         """Private Service Binding only. No schema changes on DO startup."""
         try:
+            payload = _rpc_payload(payload)
             if set(payload) != {"migration_id"}:
                 raise ControlPlaneContractError("invalid_durable_pairing_rpc", "pairing schema request fields are invalid")
             if str(getattr(self.env, "LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALL_ENABLED", "")).lower() != "true":
@@ -75,6 +84,7 @@ class CanonicalBrokerPairingRPC:
     async def issue_enrollment_challenge(self, payload: dict) -> dict:
         """Private identity-host RPC; the timestamp is always server-owned."""
         try:
+            payload = _rpc_payload(payload)
             expected = {"account_ref", "workspace_ref", "consent_ref", "owner_ref", "device_id"}
             if set(payload) != expected:
                 raise ControlPlaneContractError("invalid_durable_pairing_rpc", "enrollment issue fields are invalid")
@@ -92,6 +102,7 @@ class CanonicalBrokerPairingRPC:
 
     async def get_enrollment_binding(self, payload: dict) -> dict:
         try:
+            payload = _rpc_payload(payload)
             if set(payload) != {"challenge_id"}:
                 raise ControlPlaneContractError("invalid_durable_pairing_rpc", "enrollment binding fields are invalid")
             binding = self._durable_pairing().enrollment_binding(
@@ -106,6 +117,7 @@ class CanonicalBrokerPairingRPC:
     async def verify_enrollment_bootstrap(self, payload: dict) -> dict:
         """Private, fail-closed nonconsuming proof-possession preflight."""
         try:
+            payload = _rpc_payload(payload)
             expected = {
                 "challenge_id", "device_id", "proof_ref", "consent_ref",
                 "owner_ref", "account_ref", "workspace_ref",
@@ -147,11 +159,14 @@ class CanonicalBrokerPairingRPC:
     async def gateway_bootstrap_rpc(self, payload: dict) -> dict:
         """One private Service Binding RPC. Never expose as public HTTP JSON."""
         try:
+            payload = _rpc_payload(payload, code="invalid_gateway_bootstrap_rpc")
             if type(payload) is not dict or set(payload) != {"operation", "args"}:
                 raise ControlPlaneContractError(
                     "invalid_gateway_bootstrap_rpc", "private payload shape invalid"
                 )
-            operation, args = payload["operation"], payload["args"]
+            operation, args = payload["operation"], _rpc_payload(
+                payload["args"], code="invalid_gateway_bootstrap_rpc",
+            )
             if type(args) is not dict:
                 raise ControlPlaneContractError(
                     "invalid_gateway_bootstrap_rpc", "private args shape invalid"
@@ -229,6 +244,7 @@ class CanonicalBrokerPairingRPC:
     async def recovery_verdict(self, payload: dict) -> dict:
         """Private OWNER-authorized host ONLY; returns no credentials or retry grant."""
         try:
+            payload = _rpc_payload(payload)
             expected = {
                 "challenge_id", "device_id", "consent_ref", "owner_ref",
                 "account_ref", "workspace_ref", "binding_ref",
@@ -253,6 +269,7 @@ class CanonicalBrokerPairingRPC:
     async def redeem_enrollment(self, payload: dict) -> dict:
         """Private caller only; raw credential is returned to the private host once."""
         try:
+            payload = _rpc_payload(payload)
             expected = {"challenge_id", "device_id", "proof_ref", "consent_ref", "owner_ref", "account_ref", "workspace_ref"}
             if set(payload) != expected:
                 raise ControlPlaneContractError("invalid_durable_pairing_rpc", "enrollment redeem fields are invalid")

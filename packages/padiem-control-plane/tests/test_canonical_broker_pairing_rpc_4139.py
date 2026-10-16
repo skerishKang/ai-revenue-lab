@@ -114,7 +114,30 @@ def test_schema_and_pairing_rpc_are_separately_gated_off_by_default():
     ).toArray() == []
 
 
-def test_install_issue_reconstruct_binding_and_redeem_using_persisted_challenge():
+@pytest.mark.parametrize("worker_wrapped", ["plain", "rpc", "sql", "both"])
+def test_install_issue_reconstruct_binding_and_redeem_using_persisted_challenge(monkeypatch, worker_wrapped):
+    if worker_wrapped != "plain":
+        class WorkerObject:
+            def __init__(self, value): self.value=value
+            def to_py(self): return dict(self.value)
+            def __getattr__(self, key):
+                try: return self.value[key]
+                except KeyError: raise AttributeError(key) from None
+
+        class WorkerArray:
+            def __init__(self, values): self.values=values
+            def __iter__(self): return iter(WorkerObject(row) for row in self.values)
+
+        original_rows=Cursor.toArray
+        if worker_wrapped in ("sql","both"):
+            monkeypatch.setattr(Cursor,"toArray",lambda self:WorkerArray(original_rows(self)))
+        for name in (("issue_enrollment_challenge",
+                     "get_enrollment_binding","redeem_enrollment")
+                     if worker_wrapped in ("rpc","both") else ()):
+            original=getattr(CanonicalBrokerPairingRPC,name)
+            async def wrapped(self,payload,_original=original):
+                return await _original(self,WorkerObject(payload))
+            monkeypatch.setattr(Harness,name,wrapped)
     h = Harness()
     installed = h.install()
     assert installed == {"ok": True, "schema": "canonical-broker-pairing-v1", "installed_by_default": False}

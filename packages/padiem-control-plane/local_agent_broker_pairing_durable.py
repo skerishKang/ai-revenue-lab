@@ -109,9 +109,17 @@ def _rows(cursor: Any) -> list[dict[str, Any]]:
         result = reader()
     except Exception as exc:
         raise _err("durable_pairing_store_unavailable", "canonical Broker SQL query failed") from exc
-    if not isinstance(result, list) or any(type(x) is not dict for x in result):
-        raise _err("durable_pairing_state_corrupt", "canonical Broker SQL result is invalid")
-    return result
+    # The existing DO cursor can return a JavaScript array and row proxies.
+    # Reuse the strict RPC object conversion; row fields remain validated by
+    # the canonical pairing and gateway models after representation conversion.
+    from padiem_control_plane.broker_pending_pc_private_rpc import _owner_rpc_payload_dict
+    try:
+        rows = [_owner_rpc_payload_dict(row) for row in result]
+        if any(row is None for row in rows):
+            raise ValueError("invalid SQL row")
+        return rows
+    except Exception:
+        raise _err("durable_pairing_state_corrupt", "canonical Broker SQL result is invalid") from None
 
 
 class DurableBrokerPairingAuthority:
