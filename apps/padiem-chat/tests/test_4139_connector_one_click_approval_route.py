@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 
 import httpx
+import pytest
 from starlette.applications import Starlette
 from starlette.routing import Route
 
@@ -97,17 +98,24 @@ def test_configured_completion_reuses_original_owner_and_confirms_installation(m
     assert CODE not in response.text
 
 
-def test_failed_completion_never_claims_registered_or_exposes_credential(monkeypatch):
+@pytest.mark.parametrize("failure", [
+    "enrollment_credential_handoff_failed", "credential_handoff_unavailable",
+    "broker_rpc_invalid", "durable_pairing_store_unavailable",
+    "not_a_public_error_" + CODE,
+])
+def test_failed_completion_never_claims_registered_or_exposes_credential(monkeypatch, failure):
     from app.connector_owner_native_pc_completion import CanonicalOwnerNativePcCompletion
     from app.control_plane_identity import IdentityBridgeError
     async def complete(self, **kwargs):
-        raise IdentityBridgeError(503, "enrollment_credential_handoff_failed", CODE)
+        raise IdentityBridgeError(503, failure, CODE)
     monkeypatch.setattr(CanonicalOwnerNativePcCompletion, "complete", complete)
     response, fx = post(
         monkeypatch=monkeypatch, completion=object.__new__(CanonicalOwnerNativePcCompletion),
     )
     assert response.status_code == 503
-    assert response.json()["error"]["code"] == "enrollment_credential_handoff_failed"
+    assert response.json()["error"]["code"] == (
+        failure if failure in page._NATIVE_FAILURE_CODES else "native_pc_registration_unconfirmed"
+    )
     assert CODE not in response.text
     assert '"registered":true' not in response.text
 

@@ -42,6 +42,12 @@ _NATIVE_FAILURE_CODES = frozenset({
     "native_pc_protected_gateway_unavailable", "native_pc_canonical_result_invalid",
     "enrollment_credential_handoff_failed",
     "native_pc_terminal_unconfirmed", "native_pc_terminal_revoke_unconfirmed",
+    "canonical_broker_unavailable", "broker_rpc_invalid",
+    "durable_pairing_store_unavailable", "durable_pairing_state_corrupt",
+    "invalid_durable_pairing_rpc", "broker_bootstrap_proof_unconfirmed",
+    "credential_handoff_unavailable", "enrollment_device_swap_denied",
+    "enrollment_handoff_revoke_unconfirmed", "enrollment_consent_race_revoke_unconfirmed",
+    "enrollment_consent_changed_during_redeem",
 })
 
 
