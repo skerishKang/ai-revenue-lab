@@ -329,7 +329,11 @@ def test_browser_history_bridge_requires_owner_run_link_not_title():
     assert 'run?.action === "general"' in app
     assert "run?.session?.conversation_id" in app
     assert "openClawWorkspace();" in app
-    assert "showConversation({ preserveClaw: isVerifiedClawThread });" in app
+    # #4806 made the resumed turn continue below the original home content, so
+    # the owner-verified Claw bridge now also restores the saved transcript.
+    # The contract asserted here is unchanged: the bridge keys on the owner run
+    # link, never on a title, and it must preserve the Claw surface.
+    assert "showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });" in app
 
 
 def test_real_d1_owner_conversation_created_only_after_completed_claw():
