@@ -13,9 +13,10 @@ from pathlib import Path
 
 _VERSION = re.compile(r"^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$")
 _SHA = re.compile(r"^[a-f0-9]{40}$")
+_ALIAS = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$")
 
 
-def verify_candidate(version_id: str, main_sha: str, versions: object, health: object, models: object) -> None:
+def resolve_preview_alias(version_id: str, main_sha: str, versions: object) -> str:
     if not _VERSION.fullmatch(version_id) or not _SHA.fullmatch(main_sha):
         raise ValueError("INVALID_ID_OR_SHA")
     if not isinstance(versions, list):
@@ -26,6 +27,14 @@ def verify_candidate(version_id: str, main_sha: str, versions: object, health: o
     annotation = matched[0].get("annotations")
     if not isinstance(annotation, dict) or annotation.get("workers/tag") != f"padiem-main-{main_sha}":
         raise ValueError("CANDIDATE_MAIN_ATTESTATION_MISSING")
+    alias = annotation.get("workers/alias")
+    if not isinstance(alias, str) or not _ALIAS.fullmatch(alias):
+        raise ValueError("CANDIDATE_PREVIEW_ALIAS_UNAVAILABLE")
+    return alias
+
+
+def verify_candidate(version_id: str, main_sha: str, versions: object, health: object, models: object) -> None:
+    resolve_preview_alias(version_id, main_sha, versions)
     if not isinstance(health, dict) or health.get("status") != "ok":
         raise ValueError("CANDIDATE_HEALTH_NOT_OK")
     b14 = health.get("business14")
@@ -43,14 +52,19 @@ def main() -> int:
     parser.add_argument("--version-id", required=True)
     parser.add_argument("--main-sha", required=True)
     parser.add_argument("--versions-json", type=Path, required=True)
-    parser.add_argument("--health-json", type=Path, required=True)
-    parser.add_argument("--models-json", type=Path, required=True)
+    parser.add_argument("--health-json", type=Path)
+    parser.add_argument("--models-json", type=Path)
+    parser.add_argument("--preview-alias-only", action="store_true")
     args = parser.parse_args()
     try:
+        versions = json.loads(args.versions_json.read_text(encoding="utf-8"))
+        if args.preview_alias_only:
+            print(resolve_preview_alias(args.version_id, args.main_sha, versions))
+            return 0
+        if args.health_json is None or args.models_json is None:
+            raise ValueError("CANDIDATE_HEALTH_AND_CATALOG_REQUIRED")
         verify_candidate(
-            args.version_id,
-            args.main_sha,
-            json.loads(args.versions_json.read_text(encoding="utf-8")),
+            args.version_id, args.main_sha, versions,
             json.loads(args.health_json.read_text(encoding="utf-8")),
             json.loads(args.models_json.read_text(encoding="utf-8")),
         )

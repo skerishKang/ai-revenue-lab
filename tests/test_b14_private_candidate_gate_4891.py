@@ -14,7 +14,7 @@ SHA = "e23408873a53c2c1f13de2f2815c07801412012f"
 
 def good():
     return (
-        [{"id": ID, "annotations": {"workers/tag": "padiem-main-" + SHA}}],
+        [{"id": ID, "annotations": {"workers/tag": "padiem-main-" + SHA, "workers/alias": "b14-4891-source"}}],
         {"status": "ok", "business14": {"providers": [{"has_key": True} for _ in range(11)]}},
         {"catalog": [{"id": "opaque"}]},
     )
@@ -22,11 +22,14 @@ def good():
 
 def test_good_receipt_only():
     mod.verify_candidate(ID, SHA, *good())
+    assert mod.resolve_preview_alias(ID, SHA, good()[0]) == "b14-4891-source"
 
 
 @pytest.mark.parametrize("broken,reason", [
     (lambda a: a[0][0]["annotations"].update({"workers/tag": "padiem-main-" + "0" * 40}), "CANDIDATE_MAIN_ATTESTATION_MISSING"),
     (lambda a: a[0].clear(), "CANDIDATE_VERSION_NOT_UNIQUE_OR_ABSENT"),
+    (lambda a: a[0][0]["annotations"].update({"workers/alias": "invalid/path"}), "CANDIDATE_PREVIEW_ALIAS_UNAVAILABLE"),
+    (lambda a: a[0][0]["annotations"].pop("workers/alias"), "CANDIDATE_PREVIEW_ALIAS_UNAVAILABLE"),
     (lambda a: a[1]["business14"]["providers"].pop(), "CANDIDATE_PROVIDER_COUNT_UNEXPECTED"),
     (lambda a: a[1]["business14"]["providers"][0].update({"has_key": False}), "CANDIDATE_CREDENTIAL_GETTER_NOT_READY"),
     (lambda a: a[2]["catalog"].clear(), "CANDIDATE_CATALOG_NOT_AVAILABLE"),
