@@ -280,9 +280,23 @@ def make_oracle_mesh_executor(
     from .local_agent_meshcentral_private_reader import MeshCentralCliFileReadPort
 
     def _run(argv, **kwargs):
+        # The merged private read port hands the operator credential to the
+        # child on STDIN ("<password>\n"); the OS argv carries only the public
+        # marker. Dropping that input here would leave the official client
+        # waiting on a prompt it can never answer, so it is passed through
+        # verbatim as UTF-8 text.
         import subprocess
 
-        return subprocess.run(argv, capture_output=True, timeout=kwargs.get("timeout", 120))
+        supplied = kwargs.get("input")
+        call: dict = {
+            "capture_output": True,
+            "text": True,
+            "encoding": "utf-8",
+            "timeout": kwargs.get("timeout", 120),
+        }
+        if supplied is not None:
+            call["input"] = supplied
+        return subprocess.run(argv, **call)
 
     read_port = MeshCentralCliFileReadPort(
         command_runner=_run,
