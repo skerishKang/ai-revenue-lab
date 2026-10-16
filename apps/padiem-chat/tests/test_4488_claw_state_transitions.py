@@ -236,6 +236,15 @@ function makeEl(tag) {
   el.prepend = (...cs) => cs.forEach((c) => { el.children.unshift(c); c.parentNode = el; });
   el.append = (...cs) => cs.forEach((c) => el.appendChild(c));
   el.replaceChildren = (...cs) => { el.children = []; cs.forEach((c) => el.appendChild(c)); };
+  // #4806 inserts the artifact context relative to #messageList, so the shim
+  // needs the same child-insertion API the real Element exposes.
+  el.insertBefore = (node, ref) => {
+    const at = el.children.indexOf(ref);
+    if (at < 0) el.children.push(node); else el.children.splice(at, 0, node);
+    node.parentNode = el;
+    return node;
+  };
+  el.removeChild = (node) => { el.children = el.children.filter((c) => c !== node); return node; };
   el.hasChildNodes = () => el.children.length > 0;
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
@@ -247,6 +256,18 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // #4806 added `messageList.closest(".conversation")` to the real app.js.
+  // This minimal DOM shim must expose the same Element API instead of
+  // crashing every behavioral harness that runs the real source.
+  el.closest = (sel) => {
+    const want = String(sel).replace(/^\./, "");
+    let node = el;
+    while (node) {
+      if (node.className && String(node.className).includes(want)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  };
   return el;
 }
 
@@ -263,7 +284,7 @@ function makeDom() {
     "editProjectButton","exitProjectButton","projectDialog","projectForm","projectDialogTitle","projectDialogClose",
     "projectDialogCancel","projectNameInput","projectInstructionsInput","projectFormError","projectSaveButton",
     "projectFilesPanel","projectFileInput","projectFilesList","projectFilesEmpty","clawNavButton","clawWorkspace",
-    "clawManualForm","clawChannel","clawAction","clawSender","clawResultArea","clawResultPreview",
+    "clawManualForm","clawManualEntryButton","clawChannel","clawAction","clawSender","clawResultArea","clawResultPreview",
     "clawResultCard","clawResultEmpty","clawResultKind","clawGenerateBtn","clawExecuteButton","clawResultBadge",
     "clawResultDocx","clawStatus","clawWait","clawArtifactMeta","clawArtifactName","clawArtifactSize",
     "clawResultSuccessNote","clawResultHint","clawExecuteHint","clawApprovedMemory","clawApprovedDisclosure",
@@ -276,6 +297,14 @@ function makeDom() {
     "authDialog","authDialogClose","passwordLoginForm","passwordLoginIdentifier","passwordLoginPassword",
     "passwordLoginError","passwordLoginSubmit","googleLoginButton",
   ].forEach((id) => add(id, "div"));
+// index.html nests #messageList inside <section class="conversation">, and the
+// real app.js reads that ancestor to decide whether the first turn continues
+// the landing panel (#4806). Model the same nesting instead of returning null.
+if (byId.messageList) {
+  const conversationSection = makeEl("section");
+  conversationSection.className = "conversation";
+  conversationSection.appendChild(byId.messageList);
+}
   // Shipped markup defaults this file depends on.
   byId.clawApprovedDisclosure.tagName = "DETAILS";
   byId.clawApprovedDisclosure.hidden = true;
@@ -423,6 +452,15 @@ function decisionPosts(requests) {
   A.fixture.memories = [{ memory_id: FIX.memoryId, memory_type: "preference", name: FIX.memoryName, note: "synthetic", status: "approved", created_at: "2026-01-01T00:00:00Z", updated_at: "2026-01-01T00:00:00Z" }];
   A.fixture.memoryDetail = { memory_id: FIX.memoryId, memory_type: "preference", name: FIX.memoryName, note: "synthetic", source_channel: "kakao", status: "approved", created_at: "2026-01-01T00:00:00Z", updated_at: "2026-01-01T00:00:00Z" };
   A.byId.clawNavButton.click();
+  await tick(80);
+  // #4812 owner contract (asserted by test_claw_chat_first_use_parity_261015):
+  // approved memory stays OUT of the Claw first screen. Entering Claw lands on
+  // the general view with the shared hero, so the panel must be hidden here.
+  checks.MEMORY_PANEL_OUT_OF_FIRST_SCREEN =
+    A.byId.clawApprovedMemory.hidden === true && A.byId.clawApprovedDisclosure.hidden === true;
+  if (!checks.MEMORY_PANEL_OUT_OF_FIRST_SCREEN) fail("MEMORY_PANEL_OUT_OF_FIRST_SCREEN");
+  // It appears once the owner leaves the landing for the Claw workbench.
+  A.byId.clawManualEntryButton.click();
   await tick(80);
   checks.MEMORY_PANEL_SHOWN_IN_CLAW =
     A.byId.clawApprovedMemory.hidden === false && A.byId.clawApprovedDisclosure.hidden === false;
@@ -702,6 +740,7 @@ def test_behavioural_memory_state_transitions() -> None:
     assert payload.get("ok") is True, payload
     checks = payload["checks"]
     for name in (
+        "MEMORY_PANEL_OUT_OF_FIRST_SCREEN",
         "MEMORY_PANEL_SHOWN_IN_CLAW",
         "MEMORY_LIST_RENDERED",
         "MEMORY_DISCLOSURE_CLOSED_BEFORE",

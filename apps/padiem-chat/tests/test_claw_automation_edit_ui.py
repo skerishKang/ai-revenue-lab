@@ -164,6 +164,15 @@ function makeEl(tag) {
   el.prepend = (...cs) => cs.forEach((c) => { el.children.unshift(c); c.parentNode = el; });
   el.append = (...cs) => cs.forEach((c) => el.appendChild(c));
   el.replaceChildren = (...cs) => { el.children = []; cs.forEach((c) => el.appendChild(c)); };
+  // #4806 inserts the artifact context relative to #messageList, so the shim
+  // needs the same child-insertion API the real Element exposes.
+  el.insertBefore = (node, ref) => {
+    const at = el.children.indexOf(ref);
+    if (at < 0) el.children.push(node); else el.children.splice(at, 0, node);
+    node.parentNode = el;
+    return node;
+  };
+  el.removeChild = (node) => { el.children = el.children.filter((c) => c !== node); return node; };
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
   el.querySelector = () => makeEl("div");
@@ -176,6 +185,18 @@ function makeEl(tag) {
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.reset = () => { el.__resetCalled = (el.__resetCalled || 0) + 1; };
   el.matches = () => false;
+  // #4806 added `messageList.closest(".conversation")` to the real app.js.
+  // This minimal DOM shim must expose the same Element API instead of
+  // crashing every behavioral harness that runs the real source.
+  el.closest = (sel) => {
+    const want = String(sel).replace(/^\./, "");
+    let node = el;
+    while (node) {
+      if (node.className && String(node.className).includes(want)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  };
   return el;
 }
 
@@ -213,6 +234,14 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawAutomationEditInterval","clawAutomationEditCronField","clawAutomationEditCron",
   "clawAutomationEditTimezone","clawAutomationEditStatus","clawAutomationEditSubmit","clawAutomationEditCancel",
 ].forEach((id) => add(id, "div"));
+// index.html nests #messageList inside <section class="conversation">, and the
+// real app.js reads that ancestor to decide whether the first turn continues
+// the landing panel (#4806). Model the same nesting instead of returning null.
+if (byId.messageList) {
+  const conversationSection = makeEl("section");
+  conversationSection.className = "conversation";
+  conversationSection.appendChild(byId.messageList);
+}
 
 byId.clawAutomation.hidden = true;
 byId.clawAutomationToggleStatus.hidden = true;
