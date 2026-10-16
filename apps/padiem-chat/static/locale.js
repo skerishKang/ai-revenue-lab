@@ -200,7 +200,7 @@
       "auth-create-account": "새 계정 만들기", "auth-username": "아이디", "auth-email": "이메일", "auth-name": "이름", "auth-register": "회원가입",
       "auth-password-rule": "12자 이상, 아이디 전체를 포함하지 않도록 설정해 주세요.", "auth-error-generic": "로그인 처리에 실패했습니다. 다시 시도해 주세요.",
       "hello": "안녕하세요.", "ask": "무엇을 도와드릴까요?", "copy": "궁금한 것을 평소 말하듯 편하게 물어보세요.",
-      "easy-title": "쉽게 설명해줘", "easy-copy": "어려운 내용도 쉬운 말로", "life-title": "생활 도움", "life-copy": "일상 질문과 계획 세우기", "document-title": "문서와 대화", "document-upload-title": "파일 업로드", "document-upload-copy": "파일을 첨부하여 질문하기", "document-formats": "지원 형식", "document-formats-soon": "지원 형식은 추후 안내합니다.", "composer-empty-message": "글자를 입력하세요", "voice-login-click": "로그인하세요", "model-select-tooltip": "모델 선택", "send-tooltip": "메시지 전송",
+      "easy-title": "쉽게 설명해줘", "easy-copy": "어려운 내용도 쉬운 말로", "life-title": "생활 도움", "life-copy": "일상 질문과 계획 세우기", "document-title": "문서와 대화", "document-upload-title": "파일 업로드", "document-upload-copy": "파일을 첨부하여 질문하기", "document-formats": "지원 형식", "document-formats-soon": "지원 형식은 추후 안내합니다.", "composer-empty-message": "글자를 입력하세요", "model-requires-login": "대화를 시작하려면 로그인해 주세요. 로그인 후 등급에 따라 AI를 사용할 수 있습니다.", "voice-login-click": "로그인하세요", "model-select-tooltip": "모델 선택", "send-tooltip": "메시지 전송",
       "input": "무엇이든 물어보세요", "file": "파일", "web": "웹 검색", "research": "심층 리서치", "footer": "편하게 질문해 보세요",
       "main-menu": "주요 메뉴", "chat-menu": "채팅 메뉴", "account-settings": "계정 및 설정", "home-aria": "Padiem Chat 홈", "home-open": "Padiem Home 열기",
       "coming-soon": "준비 중", "login-after": "로그인 후", "checking": "확인 중", "setup-needed": "설정 필요", "empty": "비어 있음", "create-new": "새로 만들기",
@@ -246,7 +246,7 @@
       "claw-verified-model-required": "Select an exact model first.",
       "claw-model-advanced": "Enter exact model ID (advanced)",
 
-      "document-upload-title": "File upload", "document-upload-copy": "Attach a file and ask", "document-formats": "Supported formats", "document-formats-soon": "Supported formats will be listed here.", "composer-empty-message": "Enter a message", "voice-login-click": "Please sign in", "model-select-tooltip": "Choose model", "send-tooltip": "Send message",
+      "document-upload-title": "File upload", "document-upload-copy": "Attach a file and ask", "document-formats": "Supported formats", "document-formats-soon": "Supported formats will be listed here.", "composer-empty-message": "Enter a message", "model-requires-login": "Sign in to start a conversation. Your tier is enabled after sign-in.", "voice-login-click": "Please sign in", "model-select-tooltip": "Choose model", "send-tooltip": "Send message",
       "owner-model-preview-open": "Padiem Plus model status",
       "owner-model-preview-title": "Padiem Plus model status",
       "owner-model-preview-close": "Close model status",
