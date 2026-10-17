@@ -186,7 +186,7 @@
     const status = find("meetingStatus"), text = find("meetingTranscript");
     const startButton = find("meetingStart"), stopButton = find("meetingStop");
     const downloadAudio = find("meetingDownloadAudio"), downloadText = find("meetingDownloadText");
-    const closeButton = find("meetingClose"), interim = find("meetingInterim");
+    const interim = find("meetingInterim");
     const draftInClaw = find("meetingDraftInClaw");
     const driveAudio = find("meetingSaveAudioDrive"), driveText = find("meetingSaveTextDrive");
     let uploadInFlight = false;
@@ -285,13 +285,6 @@
         else discard();
         say("로그아웃되어 회의 데이터를 지웠습니다.");
       }
-    });
-    closeButton.addEventListener("click", () => {
-      if (controller.snapshot().active || uploadInFlight) {
-        say("회의 녹음이나 저장을 종료한 뒤 Claw로 돌아갈 수 있습니다.");
-        return;
-      }
-      find("clawNavButton")?.click();
     });
     startButton.addEventListener("click", async () => {
       if (!signedIn || uploadInFlight) return;
