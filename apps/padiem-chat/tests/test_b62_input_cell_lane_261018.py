@@ -102,3 +102,19 @@ def test_no_page_rule_fights_the_shared_cell_skin() -> None:
     themes, but no glass rule may restate a second radius for these cells."""
     glass_pages = GLASS.split("One Glass input cell", 1)[1].split("html[data-theme=\"padiem-glass\"] .tool-button", 1)[0]
     assert glass_pages.count("border-radius: 17px") == 1, "one surface authority for page cells"
+
+
+def test_the_claw_conversation_clearance_tracks_the_measured_composer() -> None:
+    """The bottom inset must come from the composer's measured height.
+
+    The composer grows with the attachment tray (+74px measured) and the
+    status/cancel row (+25px). Chat already reads the runtime
+    `--padiem-composer-clearance`; the Claw workbench rule pinned 218px, so a
+    grown composer left the user's last turn sitting under the glass input.
+    """
+    rule = _body(
+        CLAW,
+        '.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .conversation',
+    )
+    assert "padding-bottom: var(--padiem-composer-clearance" in rule, rule
+    assert "padding-bottom: 218px" not in rule, "a constant inset cannot track a growing composer"
