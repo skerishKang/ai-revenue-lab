@@ -81,14 +81,29 @@
   margin-bottom: 4px;
 }
 
-html[data-theme="padiem-glass"] body .app-shell:is([data-state="connectors"], [data-state="automation"], [data-state="meeting"]) .standalone-view-kicker {
+/* One Glass page eyebrow for every destination, taken from the Chat/Claw landing
+ * authority (#2532 continuity, #1369 brand parity). Per-page sheets must not
+ * restate the type, the ink or the dot: that is how five pages grew five
+ * different brand lines. */
+html[data-theme="padiem-glass"] body .app-shell:is(
+  [data-state="claw"], [data-state="connectors"], [data-state="automation"],
+  [data-state="meeting"], [data-state="calendar"], [data-state="library"]
+) :is(.standalone-view-kicker, .calendar-view-kicker, .library-kicker, .claw-workspace-kicker) {
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 0.16em;
+  opacity: 1;
+  text-transform: uppercase;
   color: #334a5b;
 }
-html[data-theme="padiem-glass"] body .app-shell:is([data-state="connectors"], [data-state="automation"], [data-state="meeting"]) .standalone-view-kicker::before {
+html[data-theme="padiem-glass"] body .app-shell:is(
+  [data-state="claw"], [data-state="connectors"], [data-state="automation"],
+  [data-state="meeting"], [data-state="calendar"], [data-state="library"]
+) :is(.standalone-view-kicker, .calendar-view-kicker, .library-kicker, .claw-workspace-kicker)::before {
   content: "";
   display: inline-block;
   flex: 0 0 6px;

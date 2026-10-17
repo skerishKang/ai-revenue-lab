@@ -89,8 +89,12 @@ test("meeting first screen rises on the shared Chat/Claw curve", () => {
 });
 
 test("meeting view joins the shared glass frame instead of drawing its own surface", () => {
-  assert.match(views, /html\[data-theme="padiem-glass"\][^\n]*\[data-state="meeting"\][^\n]*\.standalone-view-kicker \{/);
-  assert.match(views, /html\[data-theme="padiem-glass"\][^\n]*\[data-state="meeting"\][^\n]*\.standalone-view-kicker::before/);
+  const unified = views.slice(views.indexOf("One Glass page eyebrow"));
+  assert.ok(unified.length > views.indexOf("One Glass page eyebrow") && unified.includes("padiem-glass"),
+    "the shared Glass eyebrow block must exist");
+  assert.match(unified, /\[data-state="meeting"\]/);
+  assert.match(unified, /\.standalone-view-kicker, \.calendar-view-kicker, \.library-kicker, \.claw-workspace-kicker\) \{/);
+  assert.match(unified, /\.standalone-view-kicker, \.calendar-view-kicker, \.library-kicker, \.claw-workspace-kicker\)::before \{/);
   assert.equal((frame.match(/\.automation-view, \.meeting-view/g) || []).length, 3,
     "meeting must be in all three six-panel frame lists");
   assert.ok(frame.includes(".calendar-view, .connectors-view"), "the owner visual-lock frame literal stays intact");

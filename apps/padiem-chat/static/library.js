@@ -63,7 +63,7 @@
 
   const TEXT = {
     title: () => copy("라이브러리", "Library"),
-    kicker: () => copy("PADIEM CHAT", "PADIEM CHAT"),
+    kicker: () => copy("PADIEM LIBRARY", "PADIEM LIBRARY"),
     subtitle: () => copy(
       "이 계정에 실제로 저장된 파일만 표시됩니다.",
       "Only files actually stored for this account are listed.",

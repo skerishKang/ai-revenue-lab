@@ -630,11 +630,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   opacity: 1;
   line-height: 1.55;
 }
-html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view-kicker {
-  color: #6087a4;
-  opacity: 1;
-  font-weight: 750;
-}
 html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-record {
   border: 1px solid rgba(153,176,193,.38);
   border-radius: 13px;
@@ -810,23 +805,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
 
 
 /* Calendar B62 usability: shared Chat eyebrow, stable viewport, date-triggered editor. */
-html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  letter-spacing: .16em;
-  color: #334a5b;
-}
-html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view-kicker::before {
-  content: "";
-  display: inline-block;
-  flex: 0 0 6px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(121,188,231,.95);
-  box-shadow: 0 0 12px rgba(121,188,231,.32);
-}
 .app-shell[data-state="calendar"] .calendar-view-help { display: none !important; }
 /* Forms are launched by date/time or native event rather than top-of-page accordions. */
 .app-shell[data-state="calendar"] .calendar-record {
