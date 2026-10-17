@@ -78,7 +78,7 @@ def test_four_product_grades_share_one_executable_catjam_primary() -> None:
     policy=resolve_model_policy([{"role":"user","content":"안녕하세요"}])
     assert DEFAULT_CHAT_PROFILE=="free"
     assert policy.profile=="free"
-    assert policy.model_id==DEFAULT_B14_MODEL_ID==FREE_B14_MODEL_ID=="opencode-go/cat-jam-free"
+    assert policy.model_id==DEFAULT_B14_MODEL_ID==FREE_B14_MODEL_ID=="opencode-go/beam-free"
     assert {LOW_B14_MODEL_ID,MEDIUM_B14_MODEL_ID,HIGH_B14_MODEL_ID}=={FREE_B14_MODEL_ID}
     assert model_policy_is_executable(policy.model_id)
     assert EXECUTABLE_B14_MODEL_IDS==_declared_executable_model_ids() | {FREE_B14_MODEL_ID}
@@ -284,7 +284,7 @@ def test_request_tier_context_is_scoped_to_the_selected_grade() -> None:
 def test_b62_free_is_the_catjam_primary_and_has_independent_fallback() -> None:
     msgs=[{"role":"user","content":"질문"}]
     free=resolve_tier_policy(msgs,"free")
-    assert free.model_id==FREE_B14_MODEL_ID=="opencode-go/cat-jam-free"
+    assert free.model_id==FREE_B14_MODEL_ID=="opencode-go/beam-free"
     assert free.profile=="free"
     assert model_policy_is_executable(free.model_id)
     assert all(active_route_for(t).model_id==FREE_B14_MODEL_ID for t in (ProductTierLabel.PLUS,ProductTierLabel.PRO,ProductTierLabel.MAX))
