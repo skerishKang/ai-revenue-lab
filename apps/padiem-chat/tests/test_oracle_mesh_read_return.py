@@ -16,7 +16,7 @@ from types import SimpleNamespace
 import pytest
 
 from app import oracle_mesh_read_return_routes as routes
-from app.history import HistoryError
+from app.history import HistoryError, HistoryForbidden
 from app.claw_local_task_result_projection import result_message_id
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
@@ -120,6 +120,7 @@ class History:
         self.rows: dict[str, dict] = {}
         self.appended: list[dict] = []
         self.consume_calls: list[str] = []
+        self.originals: dict[str, bytes] = {}
         self._append_fails = append_fails
         self._record_fails = record_fails
         self._correlation = broker_correlation
@@ -213,6 +214,41 @@ class History:
             raise RuntimeError("conversation store temporarily unavailable")
         self.appended.append(dict(fields))
         return True
+
+    async def store_oracle_mesh_original(self, *, user_id, dispatch_id,
+                                         conversation_id, message_id,
+                                         raw, expected_sha256, expected_bytes):
+        row = self.rows.get(dispatch_id)
+        if row is None or row.get("user_id") != user_id:
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if (row.get("result_sha256") != expected_sha256
+                or row.get("result_bytes") != expected_bytes):
+            raise HistoryError("mesh original does not match the pinned result")
+        data = raw.encode("utf-8")
+        if (len(data) != expected_bytes
+                or hashlib.sha256(data).hexdigest() != expected_sha256):
+            raise HistoryError("mesh original bytes do not match the pinned result")
+        self.originals[dispatch_id] = data
+        return "claw-model-context/v1/%s/%s.utf8" % (conversation_id, message_id)
+
+    async def read_oracle_mesh_original(self, *, user_id, dispatch_id,
+                                        conversation_id, message_id):
+        del conversation_id, message_id
+        row = self.rows.get(dispatch_id)
+        if row is None or row.get("user_id") != user_id:
+            return None
+        data = self.originals.get(dispatch_id)
+        if data is None:
+            if row.get("result_sha256"):
+                raise HistoryError("mesh original missing from store")
+            return None
+        return data, row["result_sha256"]
+
+    async def get_oracle_mesh_dispatch_for_owner(self, *, user_id, dispatch_id):
+        row = self.rows.get(dispatch_id)
+        if row is None or row.get("user_id") != user_id:
+            return None
+        return dict(row)
 
 
 def state(*, mesh=None, history=None, identity=None, secret=SECRET):

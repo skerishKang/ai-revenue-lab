@@ -15,7 +15,7 @@ from types import SimpleNamespace
 import pytest
 
 from app import oracle_mesh_read_return_routes as routes
-from app.history import HistoryError
+from app.history import HistoryError, HistoryForbidden
 
 NOW = datetime(2026, 10, 17, 9, 0, tzinfo=timezone.utc)
 NODE = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
@@ -89,6 +89,8 @@ class History:
         self.rows: dict[str, dict] = {}
         self.appended: list[dict] = []
         self.finished: list[tuple[str, str]] = []
+        self.originals: dict[str, bytes] = {}
+        self.fail_store = False
         self._seq = 0
 
     async def get_claw_run(self, user_id, run_id):
@@ -129,6 +131,9 @@ class History:
             return None
         if hashlib.sha256(nonce.encode("utf-8")).hexdigest() != row["nonce_sha256"]:
             return None
+        if row["state"] == "store_failed":
+            row["state"] = "received"
+            return {**dict(row), "claim": "retry"}
         if row["state"] != "pending":
             return None
         row["state"] = "received"
@@ -160,7 +165,46 @@ class History:
             row["state"] = outcome
         return True
 
+    async def store_oracle_mesh_original(self, *, user_id, dispatch_id,
+                                         conversation_id, message_id,
+                                         raw, expected_sha256, expected_bytes):
+        if self.fail_store:
+            raise HistoryError("private store unavailable")
+        row = self.rows.get(dispatch_id)
+        if row is None or row.get("user_id") != user_id:
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if (row.get("result_sha256") != expected_sha256
+                or row.get("result_bytes") != expected_bytes):
+            raise HistoryError("mesh original does not match the pinned result")
+        data = raw.encode("utf-8")
+        if (len(data) != expected_bytes
+                or hashlib.sha256(data).hexdigest() != expected_sha256):
+            raise HistoryError("mesh original bytes do not match the pinned result")
+        self.originals[dispatch_id] = data
+        return "claw-model-context/v1/%s/%s.utf8" % (conversation_id, message_id)
+
+    async def read_oracle_mesh_original(self, *, user_id, dispatch_id,
+                                        conversation_id, message_id):
+        del conversation_id, message_id
+        row = self.rows.get(dispatch_id)
+        if row is None or row.get("user_id") != user_id:
+            return None
+        data = self.originals.get(dispatch_id)
+        if data is None:
+            if row.get("result_sha256"):
+                raise HistoryError("mesh original missing from store")
+            return None
+        return data, row["result_sha256"]
+
+    async def get_oracle_mesh_dispatch_for_owner(self, *, user_id, dispatch_id):
+        row = self.rows.get(dispatch_id)
+        if row is None or row.get("user_id") != user_id:
+            return None
+        return dict(row)
+
     async def append_local_task_result(self, **fields):
+        if any(m["message_id"] == fields["message_id"] for m in self.appended):
+            return False
         self.appended.append(fields)
         return True
 
@@ -434,6 +478,119 @@ def test_a_duplicate_submit_still_appends_nothing(monkeypatch):
     status, body, _ = _submit(state, row, termination="exited", exit_code=0, body=big)
     assert status in (200, 409)
     assert len(state.history_store.appended) == first
+
+
+def _big_body(parts=300, width=7380):
+    lines = []
+    for index in range(parts):
+        lines.append("LINE-%06d-" % index + "x" * width)
+    return ("\n".join(lines) + "\n").encode("utf-8")
+
+
+def _retrieve(state, dispatch_id):
+    req = Request({}, state)
+    req.path_params = {"dispatch_id": dispatch_id}
+    response = asyncio.run(routes.oracle_mesh_read_original(req))
+    return response.status_code, response.body, dict(response.headers)
+
+
+def test_over_budget_output_is_stored_with_preview_and_retrievable(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    body = _big_body()
+    digest = hashlib.sha256(body).hexdigest()
+    status, payload, _ = _submit(state, row, termination="exited", exit_code=0, body=body)
+    assert status == 200, payload
+    # The original is stored before any completion is reported.
+    assert state.history_store.originals.get(row["dispatch_id"]) == body
+    assert state.history_store.finished[-1] == (row["dispatch_id"], "done")
+    # The conversation carries one preview message with the retrieval ref.
+    assert len(state.history_store.appended) == 1
+    notice = state.history_store.appended[0]
+    assert notice["status"] == "completed"
+    assert notice["message_id"].startswith("msg_ltr_")
+    assert "_p" not in notice["message_id"]
+    assert "미리보기" in notice["content"]
+    assert digest in notice["content"]
+    assert str(len(body)) in notice["content"]
+    assert ("/api/claw/connector/mesh-results/" + row["dispatch_id"]) in notice["content"]
+    assert "dispatch에 그대로 보관" not in notice["content"]
+    # The owner reads the whole original back: full bytes and digest match.
+    status, raw, headers = _retrieve(state, row["dispatch_id"])
+    assert status == 200
+    assert raw == body
+    assert headers.get("x-oracle-mesh-content-sha256") == digest
+    assert headers.get("content-type", "").startswith("text/plain")
+
+
+def test_original_retrieval_refuses_foreign_and_unknown_ids(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    body = _big_body()
+    status, payload, _ = _submit(state, row, termination="exited", exit_code=0, body=body)
+    assert status == 200, payload
+    monkeypatch.setattr(routes, "current_user_id", lambda request: "foreign-user")
+    status, _, _ = _retrieve(state, row["dispatch_id"])
+    assert status == 404
+    monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    status, _, _ = _retrieve(state, "dsp-unknown")
+    assert status == 404
+
+
+def test_original_store_failure_parks_and_retry_recovers(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    body = _big_body()
+    state.history_store.fail_store = True
+    status, payload, _ = _submit(state, row, termination="exited", exit_code=0, body=body)
+    assert status == 503
+    assert payload["error"]["code"] == "oracle_mesh_original_unavailable"
+    assert row["state"] == "store_failed"
+    assert state.history_store.appended == []
+    assert state.history_store.finished == []
+    # The resend carries the SAME bytes; the PC command is not re-run and no
+    # completion was ever reported for the parked attempt.
+    state.history_store.fail_store = False
+    status, payload, _ = _submit(state, row, termination="exited", exit_code=0, body=body)
+    assert status == 200, payload
+    assert state.history_store.finished[-1] == (row["dispatch_id"], "done")
+    assert state.history_store.originals[row["dispatch_id"]] == body
+    assert len(state.history_store.appended) == 1
+
+
+def test_withheld_output_states_non_delivery(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    status, payload, _ = _submit(state, row, termination="output_too_large", exit_code=0,
+                                body=b"")
+    assert status == 200, payload
+    appended = state.history_store.appended[0]
+    assert appended["status"] == "completed"
+    assert "전송 한도를 초과" in appended["content"]
+    assert "다시 조회할 수 없습니다" in appended["content"]
+    assert "출력 시작" not in appended["content"]
+    assert row["dispatch_id"] not in state.history_store.originals
+
+
+def test_duplicate_over_budget_submit_appends_nothing(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    body = _big_body()
+    status, payload, _ = _submit(state, row, termination="exited", exit_code=0, body=body)
+    assert status == 200, payload
+    status, payload, _ = _submit(state, row, termination="exited", exit_code=0, body=body)
+    assert status == 409
+    assert len(state.history_store.appended) == 1
 
 
 if __name__ == "__main__":

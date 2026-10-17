@@ -28,6 +28,17 @@ MAX_CLAW_RUNS = 30
 MAX_RUN_RESULT_SUMMARY_CHARS = 200
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 
+#: #4139 mesh result originals share the private full-context R2 store with
+#: chat/model full texts. The bound is the result wire envelope the server
+#: already accepted and verified (6 MB), not a new trial number: the bytes are
+#: already in memory, so storing adds no second buffer beyond the one UTF-8
+#: encode. R2 keys stay server-derived (conversation + deterministic result
+#: id); a browser can never choose an object key.
+ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
+#: #4139 terminal/file result ids: the deterministic `msg_ltr_<40hex>` base
+#: from the result projection, plus the conversation splitter suffix.
+_MESH_RESULT_MESSAGE_ID_RE = re.compile(r"msg_ltr_[0-9a-f]{40}(_p[0-9]+)?")
+
 # #4657 product isolation. One account owns conversations for more than one
 # product, so owner scoping alone is not visibility scoping: a B66 request would
 # otherwise list, read or delete the same account's Chat/Claw dialogue.
@@ -498,18 +509,26 @@ class D1HistoryStore:
 
     @staticmethod
     def _context_key(conversation_id: str, message_id: str) -> str:
-        if validate_conversation_id(conversation_id) is None or not (
-            isinstance(message_id, str) and re.fullmatch(r"msg_[0-9a-f]{32}", message_id)
+        try:
+            valid_conversation = validate_conversation_id(conversation_id)
+        except ValueError:
+            raise HistoryError("invalid canonical history object identity")
+        if valid_conversation is None or not (
+            isinstance(message_id, str)
+            and (
+                re.fullmatch(r"msg_[0-9a-f]{32}", message_id)
+                or _MESH_RESULT_MESSAGE_ID_RE.fullmatch(message_id)
+            )
         ):
             raise HistoryError("invalid canonical history object identity")
         return f"claw-model-context/v1/{conversation_id}/{message_id}.utf8"
 
-    async def _put_full_message(self, conversation_id: str, message_id: str, raw: str) -> str | None:
+    async def _put_full_message(self, conversation_id: str, message_id: str, raw: str, *, max_bytes: int = MAX_MODEL_CONTEXT_BYTES) -> str | None:
         if len(raw) <= MAX_HISTORY_MESSAGE_CHARS:
             return None
         data = raw.encode("utf-8")
-        if len(data) > MAX_MODEL_CONTEXT_BYTES:
-            raise HistoryError("model context exceeds the bounded 5.5MB transport envelope")
+        if len(data) > max_bytes:
+            raise HistoryError("full text exceeds the bounded storage envelope")
         bucket = self.full_context_bucket
         if bucket is None or not callable(getattr(bucket, "put", None)):
             raise HistoryError("private full model-context storage is unavailable")
@@ -1904,6 +1923,117 @@ class D1HistoryStore:
             outcome, dispatch_id, "received",
         )
         return _changed_rows(written) == 1
+
+    async def store_oracle_mesh_original(
+        self, *, user_id: str, dispatch_id: str, conversation_id: str,
+        message_id: str, raw: str, expected_sha256: str, expected_bytes: int,
+    ) -> str:
+        """#4139 — keep one over-budget command output in the private R2
+        original store under a server-derived key.
+
+        The dispatch row is owner-scoped and its pin (SHA + byte length, set
+        before this call) must match the presented bytes: a stored original
+        that disagrees with the pin is a corruption signal, not a second
+        truth. The key reuses the existing full-context layout
+        (conversation + deterministic result id), so no browser-supplied key
+        or foreign-account result can address it. Bytes are verified again on
+        every read against the same pin.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(raw, str) or not raw:
+            raise HistoryError("original text is required")
+        if not isinstance(expected_sha256, str) or not expected_sha256:
+            raise HistoryError("expected digest is required")
+        row = await self._first(
+            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        if row is None or row.get("user_id") != user_id:
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
+            raise HistoryError("mesh original does not match the pinned result")
+        data = raw.encode("utf-8")
+        if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
+            raise HistoryError("mesh original bytes do not match the pinned result")
+        key = await self._put_full_message(
+            conversation_id, message_id, raw, max_bytes=ORACLE_MESH_ORIGINAL_MAX_BYTES,
+        )
+        if key is None:
+            # _put_full_message only skips short texts; an over-budget output
+            # always exceeds one message, so a skip here means the caller
+            # passed the wrong body rather than a stored one.
+            raise HistoryError("mesh original was not stored")
+        return key
+
+    async def read_oracle_mesh_original(
+        self, *, user_id: str, dispatch_id: str, conversation_id: str,
+        message_id: str,
+    ) -> tuple[bytes, str] | None:
+        """#4139 — read one stored command original for its owning account.
+
+        Unknown ids and foreign accounts return None so the route answers
+        404 without disclosing which part failed. A pin with no stored
+        object, or stored bytes that disagree with the dispatch pin, raises
+        instead of serving missing or corrupt bytes.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        row = await self._first(
+            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        if row is None or row.get("user_id") != user_id:
+            return None
+        pinned_sha = row.get("result_sha256")
+        pinned_bytes = row.get("result_bytes")
+        if not isinstance(pinned_sha, str) or not pinned_sha:
+            return None
+        try:
+            key = self._context_key(conversation_id, message_id)
+        except HistoryError:
+            return None
+        bucket = self.full_context_bucket
+        if bucket is None or not callable(getattr(bucket, "get", None)):
+            raise HistoryError("private full model-context storage is unavailable")
+        try:
+            obj = bucket.get(key)
+            if inspect.isawaitable(obj):
+                obj = await obj
+            if obj is None:
+                raise HistoryError("mesh original missing from store")
+            from .workspace_storage import _read_r2_object_bytes
+            payload = await _read_r2_object_bytes(obj)
+        except HistoryError:
+            raise
+        except Exception as exc:
+            raise HistoryError("mesh original read failed") from exc
+        if len(payload) != pinned_bytes or hashlib.sha256(payload).hexdigest() != pinned_sha:
+            raise HistoryError("mesh original does not match the pinned result")
+        return payload, pinned_sha
+
+    async def get_oracle_mesh_dispatch_for_owner(
+        self, *, user_id: str, dispatch_id: str
+    ) -> dict[str, Any] | None:
+        """#4139 — one dispatch row for its owning account, or None.
+
+        The retrieval route re-derives the conversation and the result id
+        from this row; an unknown id or a foreign account both return None
+        so the route answers 404 without disclosing which part failed.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            return None
+        row = await self._first(
+            "SELECT dispatch_id, user_id, run_id, kind, command_id, revision_ref, "
+            "result_sha256, result_bytes FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=? AND user_id=?",
+            dispatch_id, user_id,
+        )
+        return dict(row) if row is not None else None
 
     async def record_claw_approval_handoff(
         self,
