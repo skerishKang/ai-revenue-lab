@@ -1,6 +1,6 @@
 /* #4647: first-class meeting workspace. Reuses Chat/Claw standalone view,
    navigation, light/dark theme variables; no dialog, overlay, or duplicate rail. */
-.meeting-view { max-width: 1080px; min-width: 0; }
+.meeting-view { min-width: 0; }
 .meeting-panel {
   display: grid;
   gap: clamp(14px, 2vw, 20px);
@@ -15,8 +15,6 @@
   box-shadow: var(--card-shadow, 0 14px 45px rgba(20,30,44,.10));
 }
 .meeting-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.meeting-header p { font-size: 11px; letter-spacing: .13em; opacity: .72; margin: 0; }
-.meeting-header h2 { font-size: clamp(24px, 3vw, 32px); margin: 3px 0 0; }
 .meeting-header button {
   font-size: 13px; border: 1px solid currentColor; border-color: color-mix(in srgb, currentColor 25%, transparent);
   border-radius: 9px; background: transparent; color: inherit; padding: 9px 13px;
@@ -50,18 +48,33 @@
 @media (max-width: 600px) {
   .meeting-view { padding: 12px 10px 28px; }
   .meeting-panel { gap: 14px; padding: 18px 14px; border-radius: 16px; }
-  .meeting-header h2 { font-size: 24px; }
   .meeting-controls button, .meeting-exports button { flex: 1 1 150px; }
   .meeting-modes { grid-template-columns: 1fr; }
 }
 
-/* Long meeting records scroll inside the common central workbench, leaving the
-   fixed sidebar and its account/home controls at their current positions. */
-html body .app-shell[data-state="meeting"] .main-panel {
-  height: 100dvh;
-  max-height: 100dvh;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
+/* Below the shared frame breakpoint the meeting workspace keeps its own card and
+   scrolls in the common central workbench, leaving the fixed sidebar and its
+   account/home controls at their current positions. At >=921px the shared
+   six-panel frame is the panel, so the section scrolls like the other
+   destinations instead of the workbench. */
+@media (max-width: 920px) {
+  html body .app-shell[data-state="meeting"] .main-panel {
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+}
+@media (min-width: 921px) {
+  /* Inside the glass frame, .meeting-view is already the bordered glass panel with
+     its own padding; a second surface here is what made this page look foreign. */
+  html[data-theme="padiem-glass"] body .app-shell[data-state="meeting"] .meeting-panel {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
 }

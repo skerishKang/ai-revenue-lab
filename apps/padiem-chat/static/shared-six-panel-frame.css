@@ -24,7 +24,7 @@ html[data-theme="padiem-glass"] body .app-shell {
 @media (min-width: 921px) {
   html[data-theme="padiem-glass"] body .app-shell :is(
     .conversation, .calendar-view, .connectors-view,
-    .library-view, .automation-view
+    .library-view, .automation-view, .meeting-view
   ) {
     box-sizing: border-box !important;
     width: var(--padiem-six-panel-width) !important;
@@ -44,9 +44,9 @@ html[data-theme="padiem-glass"] body .app-shell {
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
   }
-  /* Calendar/Connectors/Library/Automation use the Chat/Claw eyebrow origin. */
+  /* Calendar/Connectors/Library/Automation/Meeting use the Chat/Claw eyebrow origin. */
   html[data-theme="padiem-glass"] body .app-shell :is(
-    .calendar-view, .connectors-view, .library-view, .automation-view
+    .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view
   ) {
     padding: 78px clamp(18px, 2.4vw, 34px) 36px !important;
   }
@@ -63,7 +63,7 @@ html[data-theme="padiem-glass"] body .app-shell {
      destinations; it must not change between an empty and active conversation. */
   html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed :is(
     .conversation, .calendar-view, .connectors-view,
-    .library-view, .automation-view
+    .library-view, .automation-view, .meeting-view
   ) {
     width: min(920px, calc(100% - 48px)) !important;
     margin-left: auto !important;

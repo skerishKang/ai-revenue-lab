@@ -81,14 +81,14 @@
   margin-bottom: 4px;
 }
 
-html[data-theme="padiem-glass"] body .app-shell:is([data-state="connectors"], [data-state="automation"]) .standalone-view-kicker {
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="connectors"], [data-state="automation"], [data-state="meeting"]) .standalone-view-kicker {
   display: inline-flex;
   align-items: center;
   gap: 9px;
   letter-spacing: 0.16em;
   color: #334a5b;
 }
-html[data-theme="padiem-glass"] body .app-shell:is([data-state="connectors"], [data-state="automation"]) .standalone-view-kicker::before {
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="connectors"], [data-state="automation"], [data-state="meeting"]) .standalone-view-kicker::before {
   content: "";
   display: inline-block;
   flex: 0 0 6px;
