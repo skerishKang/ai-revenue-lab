@@ -48,13 +48,13 @@ _FORBIDDEN_VISIBLE_TOKENS = ("auto", "fallback")
 class ProductTierRoutesError(ValueError):
     """Raised when the contract violates the #2085/#2099 policy (fail closed)."""
 
-FREE_PRIMARY_B14_MODEL_ID = "opencode-go/cat-jam-free"
-FREE_FALLBACK_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
+FREE_PRIMARY_B14_MODEL_ID = "opencode-go/beam-free"
+FREE_FALLBACK_B14_MODEL_ID = "opencode-go/longcat-2.5-preview-free"
 TIER_FALLBACK_B14_MODELS = {
-    "free": FREE_FALLBACK_B14_MODEL_ID,
-    "plus": "google/gemini-3.5-flash-lite",
-    "pro": "opencode-go/muse-spark-1.2-contributor",
-    "max": "opencode-go/muse-spark-1.3-contributor",
+    "max": ("opencode-go/longcat-2.5-preview-free", "opencode-go/muse-spark-1.3-contributor"),
+    "pro": ("opencode-go/longcat-2.5-preview-free", "google/gemma-4-31b-it"),
+    "plus": ("opencode-go/longcat-2.5-preview-free", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
+    "free": ("opencode-go/longcat-2.5-preview-free", "google/gemini-3.1-flash-lite", "google/gemma-4-26b-a4b-it"),
 }
 
 # A declared grade's fallback is a specific owner choice, not b14/auto or
@@ -78,7 +78,7 @@ class ProductCredentialMode(str, Enum):
     PLATFORM_SECRET_BINDING = "platform_secret_binding"
 
 # Historical HOLD sentinels are identity markers, not active B14 model IDs.
-# The active Free/Plus/Pro/Max primary routes below use Cat Jam. Retaining old
+# The active Free/Plus/Pro/Max primary routes below use Beam. Retaining old
 # HOLD entries documents retired choices; it does not disable a current grade.
 PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"
 PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
@@ -206,7 +206,7 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
                 "Padiem Plus without an executable route must expose the Plus hold identity",
             )
         if tier.label is ProductTierLabel.MAX:
-            # Owner replaced Max HOLD with Cat Jam; preserve historic HOLD entries.
+            # Owner replaced Max HOLD with Beam; preserve historic HOLD entries.
             held = {
                 route.model_family
                 for route in tier.routes
@@ -229,24 +229,24 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
     ProductTierDefinition(
         label=ProductTierLabel.FREE,
         routes=(ProductTierRoute(
-            route_id="free.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
-            model_family="cat-jam", provider_id="opencode-go",
-            model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+            route_id="free.beam.v1", status=ProductRouteStatus.EXECUTABLE,
+            model_family="beam", provider_id="opencode-go",
+            model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
             credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
             credential_binding="PADIEM_B14_CREDENTIAL_11",
-            evidence="B14 live Cat Jam response and owner Free model decision 2026-10-15.",
+            evidence="Owner Free Beam primary decision 2026-10-18; provider Go live call pending.",
         ),),
     ),
     ProductTierDefinition(
         label=ProductTierLabel.PLUS,
         routes=(
             ProductTierRoute(
-                route_id="plus.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
-                model_family="cat-jam", provider_id="opencode-go",
-                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+                route_id="plus.beam.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="beam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_B14_CREDENTIAL_11",
-                evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
+                evidence="Owner four-tier Beam primary decision, 2026-10-18.",
             ),
             ProductTierRoute(
                 route_id="plus.hold.v1",
@@ -256,7 +256,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 hold_reason=(
                     "Historical #3568: the Space Bunny free route ended, so Plus was held "
                     "pending another primary at that time. This retained HOLD identity "
-                    "does not block the currently executable Plus Cat Jam route."
+                    "does not block the currently executable Plus Beam route."
                 ),
                 evidence="#3568 model-independent successor-pending hold.",
             ),
@@ -322,12 +322,12 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PRO,
         routes=(
             ProductTierRoute(
-                route_id="pro.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
-                model_family="cat-jam", provider_id="opencode-go",
-                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+                route_id="pro.beam.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="beam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_B14_CREDENTIAL_11",
-                evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
+                evidence="Owner four-tier Beam primary decision, 2026-10-18.",
             ),
             ProductTierRoute(
                 route_id="pro.hold.v1",
@@ -337,7 +337,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 hold_reason=(
                     "Historical #2601: the prior B.AI-backed Pro route was disabled "
                     "pending a replacement. This retained HOLD identity does not "
-                    "block the currently executable Pro Cat Jam route."
+                    "block the currently executable Pro Beam route."
                 ),
                 evidence="#2601 temporary Plus-only product posture.",
             ),
@@ -398,12 +398,12 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.MAX,
         routes=(
             ProductTierRoute(
-                route_id="max.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
-                model_family="cat-jam", provider_id="opencode-go",
-                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+                route_id="max.beam.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="beam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_B14_CREDENTIAL_11",
-                evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
+                evidence="Owner four-tier Beam primary decision, 2026-10-18.",
             ),
             ProductTierRoute(
                 route_id="max.hold.qwen.v1",
@@ -413,7 +413,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 hold_reason=(
                     "Historical Max Qwen HOLD placeholder: the older B.AI Pro route was "
                     "not a Max selection. Max now has a separately executable "
-                    "Cat Jam primary; this Qwen entry remains inactive history."
+                    "Beam primary; this Qwen entry remains inactive history."
                 ),
             ),
             ProductTierRoute(
@@ -423,7 +423,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 hold_reason=(
                     "Historical Max GLM HOLD placeholder: zai/glm-5.2 appears only "
                     "in the B60 reference registry, not the executable Max route. "
-                    "Max now uses its separately declared Cat Jam primary."
+                    "Max now uses its separately declared Beam primary."
                 ),
             ),
         ),
