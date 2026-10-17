@@ -12,7 +12,13 @@ APP = (STATIC / "app.js").read_text(encoding="utf-8")
 
 
 def test_glass_mode_is_projected_from_explicit_app_conversation_state() -> None:
-    assert 'shell.dataset.state==="chat" ? "reading" : "home"' in THEME
+    # Reading must stay derived from the explicit shell state — never from a
+    # scroll or pointer heuristic. It now covers a live Claw thread as well,
+    # because a Claw turn is stored in the same conversation as a Chat turn.
+    assert 'if(shell.dataset.state==="chat") return "reading";' in THEME
+    assert '.claw-workspace[data-view="general"] ~ .conversation' in THEME
+    assert 'conv.querySelector("#messageList .message")' in THEME
+    assert 'return "home";' in THEME
     assert 'root.setAttribute("data-glass-mode",mode);' in THEME
     assert 'attributeFilter:["data-state"]' in THEME
     assert 'shell.dataset.state = "chat";' in APP

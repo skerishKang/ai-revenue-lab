@@ -7,9 +7,15 @@
  * readable measure without shrinking the wide structured answer surface.
  */
 
+/* The identity token is shared: an avatar-to-text gap is part of a turn, not of
+ * a lane. The lane tokens stay Chat-only, because the 2026-10-14 decision keeps
+ * Claw's body centred instead of copying Chat's portrait gutter. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) {
+  --padiem-chat-meta-gap: 12px;
+}
+
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
   --padiem-chat-reading-measure: 76ch;
-  --padiem-chat-meta-gap: 12px;
   --padiem-chat-inner-gutter: clamp(24px, 2.5vw, 35px);
 }
 
@@ -28,12 +34,12 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-co
   max-width: none !important;
 }
 
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-message {
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-message {
   grid-template-columns: 32px minmax(0, 1fr) !important;
   gap: var(--padiem-chat-meta-gap) !important;
 }
 
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-meta {
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-meta {
   margin-bottom: 6px !important;
 }
 
@@ -93,8 +99,11 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
 /* Tablet/mobile: follow the actual fixed composer viewport gutter while the
  * inner content gutter collapses independently. */
 @media (max-width: 920px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) {
     --padiem-chat-meta-gap: 10px;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
     --padiem-chat-inner-gutter: clamp(14px, 4vw, 24px);
   }
 

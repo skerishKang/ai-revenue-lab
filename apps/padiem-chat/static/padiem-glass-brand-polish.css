@@ -2,7 +2,7 @@
  * Reuse the top-left square P brand language while compensating for the
  * assistant mark's much brighter Glass surface so the mark remains visible.
  */
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-message .assistant-avatar {
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-message .assistant-avatar {
   width: 32px !important;
   height: 32px !important;
   border: 1px solid rgba(255, 255, 255, .48) !important;
@@ -142,7 +142,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation
     inset 0 1px 0 rgba(255, 255, 255, .64) !important;
 }
 
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .message-list {
   gap: 22px !important;
   padding-top: 2px !important;
 }
