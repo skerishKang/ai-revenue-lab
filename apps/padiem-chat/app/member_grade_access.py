@@ -16,6 +16,16 @@ def _known_grade(access):
 async def verified_member_grade(request, user_id, access=None):
     # Reuse the authenticated account's existing server-side member record.
     # Missing/unreadable membership evidence never grants a paid tier.
+    # The Google-verified owner has the maximum model grade independently
+    # of customer membership. Never trust a client-supplied admin flag.
+    store = getattr(request.app.state, "b66_member_admin_store", None)
+    is_admin = getattr(store, "is_google_admin", None) if store is not None else None
+    if callable(is_admin) and isinstance(user_id, str) and user_id:
+        try:
+            if await is_admin(user_id):
+                return "max"
+        except Exception:
+            pass  # Continue with server-verified membership, never elevate.
     known = _known_grade(access)
     if known is not None:
         return known
