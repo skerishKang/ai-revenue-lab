@@ -172,6 +172,7 @@ from .claw_routes import (
     claw_manual_intake_execute,
     claw_manual_intake_quote_compare,
     claw_runs_history,
+    claw_pending_result,
 )
 from .claw_telegram_routes import claw_telegram_ingest
 from .approved_memory import ApprovedMemoryStore, D1ApprovedMemoryStore
@@ -627,6 +628,7 @@ def create_app(
         # exists at all.
         Route(TELEGRAM_DELIVERY_PATH, _claw_telegram_delivery_route, methods=["POST"]),
         Route("/api/claw/runs", claw_runs_history, methods=["GET"]),
+        Route("/api/claw/runs/{run_id}/pending-result", claw_pending_result, methods=["GET"]),
         Route("/api/claw/approvals/decision", claw_approval_decision, methods=["POST"]),
         Route("/api/claw/memory/approve", claw_memory_approve, methods=["POST"]),
         Route("/api/claw/memory/reject", claw_memory_reject, methods=["POST"]),

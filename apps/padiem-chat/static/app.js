@@ -1669,6 +1669,48 @@
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
+  // Transport completion does not imply a completed durable PC run.
+  const resolvedPcRuns = new Set();
+  async function waitForAcceptedPcRun(article, handle, outboundMessages, signal) {
+    const { run_id: runId, conversation_id: conversationId } = handle;
+    const owner = authState.user;
+    if (!runId || !conversationId) return;
+    for (;;) {
+      if (signal.aborted || !article.isConnected || authState.authenticated !== true
+          || authState.user !== owner
+          || conversationState.getConversationId?.() !== conversationId) return;
+      await new Promise((resolve) => window.setTimeout(resolve, 2000));
+      if (signal.aborted || !article.isConnected || authState.user !== owner
+          || conversationState.getConversationId?.() !== conversationId) return;
+      const response = await fetch(
+        "/api/claw/runs/" + encodeURIComponent(runId) + "/pending-result",
+        { headers: { Accept: "application/json" }, cache: "no-store", signal }
+      );
+      if (!response.ok) return;
+      const data = await response.json();
+      const result = data?.result;
+      if (!result || result.run_id !== runId || result.conversation_id !== conversationId) return;
+      if (authState.user !== owner || conversationState.getConversationId?.() !== conversationId
+          || !article.isConnected || signal.aborted) return;
+      if (result.status === "pending" || result.status === "running") continue;
+      if (result.status !== "completed" || typeof result.answer !== "string") {
+        PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
+        return;
+      }
+      if (resolvedPcRuns.has(runId)) return;
+      resolvedPcRuns.add(runId);
+      const content = article.querySelector(".assistant-content");
+      content.replaceChildren();
+      const paragraph = document.createElement("p");
+      paragraph.textContent = result.answer;
+      content.appendChild(paragraph);
+      conversationState.commitAssistant(outboundMessages, result.answer);
+      PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
+      if (authState.authenticated) loadRecentConversations();
+      return;
+    }
+  }
+
   async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal, route) {
     // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
     // canonical P01 Engine lane; the standalone Padiem Chat path keeps the
@@ -1782,6 +1824,17 @@
         if (!data || data.done !== true || !paragraph || !answer) throw new Error(uiT("stream-complete-invalid"));
         if (done) throw new Error(uiT("stream-done-duplicate"));
         done = true;
+        if (clawGeneralRequest && data.pc_pending === true
+            && typeof data.run_id === "string"
+            && typeof data.conversation_id === "string") {
+          conversationState.setConversationId(data.conversation_id);
+          PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
+          void waitForAcceptedPcRun(article, data, outboundMessages, signal)
+            .catch(() => { if (article.isConnected && !signal.aborted) {
+              PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
+            } });
+          return true;
+        }
         applyStreamDone(article, data, answer, outboundMessages, contextSnapshot);
         if (historicalStages.length) {
           const details = document.createElement("details");

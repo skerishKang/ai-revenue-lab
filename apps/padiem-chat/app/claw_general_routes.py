@@ -176,6 +176,7 @@ def _claw_general_sse(
     history: tuple[dict[str, object], ...] = (),
     conversation_id: str | None = None,
     sources: tuple[dict[str, str], ...] = (),
+    pending_run_id: str | None = None,
 ) -> Response:
     """Bounded terminal SSE, optionally preceded by real *post-execution* history.
 
@@ -198,6 +199,8 @@ def _claw_general_sse(
                 **{key: event[key] for key in keys}, "delivery": "post_execution",
             })
     terminal = {"done": True}
+    if pending_run_id is not None:
+        terminal.update({"pc_pending": True, "run_id": pending_run_id})
     if conversation_id is not None:
         terminal["conversation_id"] = conversation_id
     if sources:
@@ -735,7 +738,7 @@ async def _dispatch_user_desktop_request(
         return dispatched
     return _claw_general_sse(
         "COM1 데스크톱을 조작하는 중입니다. 실제 화면·결과는 작업 완료 후 이 대화에 표시됩니다.",
-        conversation_id=cid,
+        conversation_id=cid, pending_run_id=run.run_id,
     )
 
 
@@ -795,7 +798,7 @@ async def _dispatch_user_command_request(
         return dispatched
     return _claw_general_sse(
         "COM1에서 명령을 실행하는 중입니다. 실제 출력은 작업 완료 후 이 대화에 표시됩니다.",
-        conversation_id=cid,
+        conversation_id=cid, pending_run_id=run.run_id,
     )
 
 
@@ -867,7 +870,7 @@ async def _dispatch_user_txt_request(
             return staged
         return _claw_general_sse(
             "PC의 TXT 파일을 읽는 중입니다. 실제 파일 내용은 작업 완료 후 이 대화에 표시됩니다.",
-            conversation_id=cid,
+            conversation_id=cid, pending_run_id=run.run_id,
         )
 
     device_id, error = await choose_verified_txt_device(
@@ -910,7 +913,7 @@ async def _dispatch_user_txt_request(
     # asynchronously on existing run-history/local-result reconciliation.
     return _claw_general_sse(
         "PC의 TXT 파일을 읽는 중입니다. 실제 파일 내용은 작업 완료 후 이 대화에 표시됩니다.",
-        conversation_id=cid,
+        conversation_id=cid, pending_run_id=run.run_id,
     )
 
 

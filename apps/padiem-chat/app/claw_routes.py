@@ -1264,6 +1264,39 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
     return JSONResponse({"ok": True, "result": result}, status_code=200, headers=_NO_STORE_HEADERS)
 
 
+async def claw_pending_result(request: Request) -> JSONResponse:
+    """Only one session-owned pending run; never enumerate runs or dispatch PC."""
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not uid:
+        return _error(401, "unauthorized", "Authentication required")
+    run_id = request.path_params.get("run_id", "")
+    if not isinstance(run_id, str) or not re.fullmatch(r"run_[a-zA-Z0-9]{12,80}", run_id):
+        return _error(404, "run_not_found", "Run not found")
+    history = getattr(request.app.state, "history_store", None)
+    if history is None:
+        return _error(503, "run_history_unavailable", "Run history unavailable")
+    try:
+        row = await history.get_claw_run(uid, run_id)
+        if not isinstance(row, dict) or not row.get("conversation_id"):
+            return _error(404, "run_not_found", "Run not found")
+        cid = row["conversation_id"]
+        status = row.get("status")
+        if status in ("pending", "running"):
+            await _reconcile_local_runner_runs(request, uid, [row])
+            row = await history.get_claw_run(uid, run_id)
+            status = row.get("status")
+        result = {"run_id": run_id, "conversation_id": cid, "status": status}
+        if status == "completed":
+            answer = await history.get_claw_run_result_message(uid, run_id, cid)
+            if not isinstance(answer, str):
+                return _error(503, "run_result_unavailable", "Result unavailable")
+            result["answer"] = answer
+        return JSONResponse({"ok": True, "result": result},
+                            headers=_NO_STORE_HEADERS)
+    except Exception:
+        return _error(503, "run_result_unavailable", "Result unavailable")
+
+
 async def claw_runs_history(request: Request) -> JSONResponse:
     """Owner-scoped bounded recent run history (#2317).
 

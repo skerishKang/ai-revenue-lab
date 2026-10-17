@@ -1391,6 +1391,30 @@ class D1HistoryStore:
             run_id, user_id,
         )
 
+    async def get_claw_run_result_message(
+        self, user_id: str, run_id: str, conversation_id: str,
+    ) -> str | None:
+        """Return only the correlated terminal message, never a later run's text."""
+        from .claw_local_task_result_projection import result_message_id
+        correlation = await self.get_local_task_correlation(user_id, run_id)
+        if not isinstance(correlation, dict):
+            return None
+        command_id = correlation.get("command_id")
+        revision_ref = correlation.get("revision_ref")
+        if not isinstance(command_id, str) or not isinstance(revision_ref, str):
+            return None
+        message_id = result_message_id(
+            conversation_id=conversation_id,
+            command_id=command_id, revision_ref=revision_ref,
+        )
+        row = await self._first(
+            "SELECT m.content FROM messages m JOIN conversations c "
+            "ON c.id=m.conversation_id WHERE m.id=? AND m.role='assistant' "
+            "AND m.conversation_id=? AND c.user_id=? AND c.product_scope=?",
+            message_id, conversation_id, user_id, PRODUCT_SCOPE_CHAT,
+        )
+        return row.get("content") if isinstance(row, dict) else None
+
     async def append_local_task_result(
         self,
         *,
