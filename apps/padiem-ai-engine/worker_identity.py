@@ -1071,7 +1071,25 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         build_live_desktop_driver,
     )
     chat_service = legacy_worker._binding_value(env, "PADIEM_CHAT_SERVICE")
-    desktop_secret = legacy_worker._binding_value(env, "CLAW_ENGINE_DESKTOP_SECRET")
+    # Secrets Store bindings resolve to an object with an async .get(); a
+    # plain Worker secret is already a string. Never log or persist the value.
+    desktop_secret_binding = legacy_worker._binding_value(
+        env, "CLAW_ENGINE_DESKTOP_SECRET"
+    )
+    desktop_secret: str | None = None
+    if isinstance(desktop_secret_binding, str):
+        desktop_secret = desktop_secret_binding
+    elif desktop_secret_binding is not None:
+        secret_getter = getattr(desktop_secret_binding, "get", None)
+        if callable(secret_getter):
+            try:
+                resolved_secret = secret_getter()
+                if hasattr(resolved_secret, "__await__"):
+                    resolved_secret = await resolved_secret
+            except Exception:
+                resolved_secret = None
+            if isinstance(resolved_secret, str):
+                desktop_secret = resolved_secret
     if chat_service is not None and isinstance(desktop_secret, str) and len(desktop_secret) >= 32:
         desktop_binding = build_claw_desktop_tool_binding(
             service=chat_service, request_factory=Request, secret=desktop_secret,
