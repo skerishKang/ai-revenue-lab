@@ -112,8 +112,73 @@ def test_deploy_workflow_wires_explicit_exact_rollout_without_disabling_smoke():
     text = (ROOT / "workflows" / "b54-engine-production-deploy-gate.yml").read_text(
         encoding="utf-8"
     )
-    assert "--expected-engine-4194-rollout" in text
+    assert "--expected-engine-4139-desktop-rollout" in text
     assert "b62_binding_state_guard.py" in text
     assert "B54_ENGINE_FULL_BINDING_SET_PRESERVED=PASS" in text
     assert "Post-deploy smoke" in text
     assert "ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION" in text
+
+
+DESKTOP_ADDITIONS = [
+    {"type": "service", "name": "PADIEM_CHAT_SERVICE",
+     "service": "padiem-chat", "environment": "production"},
+    {"type": "secrets_store_secret", "name": "CLAW_ENGINE_DESKTOP_SECRET",
+     "store_id": "f0b09ca04a7b43248154c773704a5616",
+     "secret_name": "CLAW_ENGINE_DESKTOP_SECRET"},
+]
+
+
+def test_4139_desktop_rollout_accepts_exact_additions_and_is_idempotent():
+    old = version(*original(), *ADDITIONS)
+    new = version(*original(), *ADDITIONS, *DESKTOP_ADDITIONS, id="post")
+    guard.assert_engine_4194_exact_rollout(
+        old, new, allow_4139_desktop_bindings=True
+    )
+    guard.assert_engine_4194_exact_rollout(
+        new, new, allow_4139_desktop_bindings=True
+    )
+    with pytest.raises(guard.BindingStateError):
+        guard.assert_engine_4194_exact_rollout(old, new)
+
+
+@pytest.mark.parametrize("change", [
+    "missing_service", "wrong_service", "wrong_store", "wrong_secret_name",
+    "unrelated_add", "removed_binding",
+])
+def test_4139_desktop_rollout_rejects_unreviewed_mutations(change):
+    old = version(*original(), *ADDITIONS)
+    bindings = [dict(x) for x in original() + ADDITIONS + DESKTOP_ADDITIONS]
+    if change == "missing_service":
+        bindings = [x for x in bindings if x["name"] != "PADIEM_CHAT_SERVICE"]
+    elif change == "wrong_service":
+        bindings[-2]["service"] = "malicious-service"
+    elif change == "wrong_store":
+        bindings[-1]["store_id"] = "00000000000000000000000000000000"
+    elif change == "wrong_secret_name":
+        bindings[-1]["secret_name"] = "OTHER"
+    elif change == "unrelated_add":
+        bindings.append({"type": "secret_text", "name": "ADDED_SECRET"})
+    elif change == "removed_binding":
+        bindings = [x for x in bindings if x["name"] != "LEGACY_ENGINE_CREDENTIAL"]
+    with pytest.raises(guard.BindingStateError):
+        guard.assert_engine_4194_exact_rollout(
+            old, version(*bindings, id="post"), allow_4139_desktop_bindings=True
+        )
+
+
+def test_4139_desktop_cli_mode_and_exclusivity(tmp_path, capsys):
+    old = tmp_path / "old.json"
+    new = tmp_path / "new.json"
+    old.write_text(
+        json.dumps(version(*original(), *ADDITIONS)), encoding="utf-8"
+    )
+    new.write_text(
+        json.dumps(version(*original(), *ADDITIONS, *DESKTOP_ADDITIONS, id="post")),
+        encoding="utf-8",
+    )
+    args = ["--before", str(old), "--after", str(new),
+            "--expected-engine-4139-desktop-rollout"]
+    assert guard.main(args) == 0
+    output = capsys.readouterr().out
+    assert "ENGINE_4139_DESKTOP_EXACT_ADDITIONS_AND_PREEXISTING_BINDINGS_PRESERVED=PASS" in output
+    assert guard.main(args + ["--expected-add-oracle-mesh"]) == 1
