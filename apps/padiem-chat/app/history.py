@@ -1396,15 +1396,16 @@ class D1HistoryStore:
     ) -> str | None:
         """Return only the correlated terminal message, never a later run's text."""
         from .claw_local_task_result_projection import result_message_id
-        correlation = await self.get_local_task_correlation(user_id, run_id)
+        # Prefer the actual Oracle receipt. Claw may also have a preliminary
+        # local correlation under the same run; it is not the completed Mesh
+        # command/revision that minted the persisted assistant message.
+        correlation = await self._first(
+            "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state='done'",
+            user_id, run_id,
+        )
         if not isinstance(correlation, dict):
-            # Oracle's own durable dispatch correlation is the source of truth
-            # for the Mesh command lane; do not forge a Local Runner binding.
-            correlation = await self._first(
-                "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
-                "WHERE user_id=? AND run_id=? AND state='done'",
-                user_id, run_id,
-            )
+            correlation = await self.get_local_task_correlation(user_id, run_id)
         if not isinstance(correlation, dict):
             return None
         command_id = correlation.get("command_id")
