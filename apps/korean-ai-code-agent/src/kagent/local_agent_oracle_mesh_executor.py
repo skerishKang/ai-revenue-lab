@@ -104,6 +104,9 @@ class OracleMeshExecutionOutcome:
     termination: str
     exit_code: int | None
     body: bytes = b""
+    #: Human-readable observation for lanes whose evidence is not the body
+    #: itself (desktop notes and screenshot descriptions). Always text-safe.
+    note: str = ""
 
 
 def _require_text(value: Any, name: str) -> str:
@@ -129,6 +132,7 @@ class OracleMeshExecutor:
         channel_secret: str,
         read_port: Any,
         command_port: Any = None,
+        desktop_port: Any = None,
         timeout_seconds: int = 30,
         transport: Optional[Callable[..., tuple[int, dict[str, Any]]]] = None,
         pending_dir: Optional[str] = None,
@@ -149,10 +153,15 @@ class OracleMeshExecutor:
             getattr(command_port, "run_command", None)
         ):
             raise ContractError("a MeshCentral command port must expose run_command")
+        if desktop_port is not None and not callable(
+            getattr(desktop_port, "run_desktop_op", None)
+        ):
+            raise ContractError("a MeshCentral desktop port must expose run_desktop_op")
         self._origin = chat_origin
         self._secret = channel_secret
         self._read_port = read_port
         self._command_port = command_port
+        self._desktop_port = desktop_port
         self._timeout = timeout_seconds
         self._transport = transport or self._https_post
         self._pending: Optional[tuple[OracleMeshDispatch, OracleMeshExecutionOutcome]] = None
@@ -231,10 +240,10 @@ class OracleMeshExecutor:
         if not isinstance(dispatch, dict):
             raise OracleMeshChannelRefused("chat channel returned a malformed dispatch")
         kind = dispatch.get("kind") or "read"
-        if kind not in ("read", "command"):
+        if kind not in ("read", "command", "desktop"):
             raise OracleMeshChannelRefused("chat channel returned an unknown dispatch kind")
         command_text = dispatch.get("command_text")
-        if kind == "command":
+        if kind in ("command", "desktop"):
             # The server owns the command; the executor never invents one and
             # never falls back to the file lane when it is missing.
             if not isinstance(command_text, str) or not command_text.strip():
@@ -256,6 +265,8 @@ class OracleMeshExecutor:
         """One real official-client execution. Failures are outcomes, not exceptions."""
         if dispatch.kind == "command":
             return self._execute_command(dispatch)
+        if dispatch.kind == "desktop":
+            return self._execute_desktop(dispatch)
         try:
             body = self._read_port.read_bytes(
                 node_ref=dispatch.node_ref,
@@ -327,6 +338,74 @@ class OracleMeshExecutor:
             )
         return OracleMeshExecutionOutcome(
             termination=termination, exit_code=exit_code, body=raw,
+        )
+
+    def _execute_desktop(
+        self, dispatch: OracleMeshDispatch
+    ) -> OracleMeshExecutionOutcome:
+        """#4139 desktop lane: one relay observation or input on the PC.
+
+        The op grammar is parsed before the PC is asked: an unknown op is
+        ``not_executed``, never a guessed click. A capture returns the JPEG
+        bytes as the body with the observation as the note; an input op
+        returns an empty body with its note. Oversize bodies are withheld,
+        never truncated.
+        """
+        from .local_agent_meshcentral_desktop_port import parse_desktop_op
+
+        if self._desktop_port is None:
+            raise OracleMeshChannelRefused("desktop execution is not configured")
+        try:
+            op, arg = parse_desktop_op(dispatch.command_text or "")
+        except Exception:
+            return OracleMeshExecutionOutcome(
+                termination="not_executed", exit_code=None, body=b"",
+                note="the desktop op was refused before the PC was asked",
+            )
+        try:
+            observed = self._desktop_port.run_desktop_op(
+                node_ref=dispatch.node_ref,
+                op=op,
+                arg=arg,
+                # A full multi-monitor redraw moves megabytes of tiles; the
+                # read lane already waits timeout*4 for the same reason.
+                timeout_seconds=max(1, self._timeout * 4),
+            )
+        except Exception as exc:
+            if type(exc).__name__ == "MeshCentralDesktopRefused":
+                return OracleMeshExecutionOutcome(
+                    termination="not_executed", exit_code=None, body=b"",
+                    note="the desktop relay was refused before the PC was asked",
+                )
+            return OracleMeshExecutionOutcome(
+                termination="desktop_unavailable", exit_code=None, body=b"",
+                note="the desktop session did not answer",
+            )
+        termination = getattr(observed, "termination", "desktop_unavailable")
+        if termination not in (
+            "captured", "acted", "desktop_unavailable", "timed_out",
+            "not_executed", "output_too_large",
+        ):
+            termination = "desktop_unavailable"
+        note = getattr(observed, "note", "")
+        if not isinstance(note, str):
+            note = ""
+        body = getattr(observed, "image", b"")
+        if not isinstance(body, (bytes, bytearray)):
+            body = b""
+        raw = bytes(body)
+        if termination == "captured" and not raw:
+            termination = "desktop_unavailable"
+            note = (note + "; no image bytes" if note else "no image bytes")
+        if len(raw) > MAX_COMMAND_BYTES:
+            # Oversize evidence is never truncated; the observation note is
+            # still carried so the turn is not silent.
+            return OracleMeshExecutionOutcome(
+                termination="output_too_large", exit_code=None, body=b"",
+                note=note,
+            )
+        return OracleMeshExecutionOutcome(
+            termination=termination, exit_code=None, body=raw, note=note,
         )
 
     # ---- held-result persistence -------------------------------------
@@ -425,6 +504,7 @@ class OracleMeshExecutor:
             "command_text": dispatch.command_text,
             "termination": outcome.termination,
             "exit_code": outcome.exit_code,
+            "note": outcome.note if isinstance(outcome.note, str) else "",
             "content_sha256": digest,
             "content_bytes": len(outcome.body),
             "body_name": body_name,
@@ -546,6 +626,7 @@ class OracleMeshExecutor:
                 "kind": dispatch.kind,
                 "termination": outcome.termination,
                 "exit_code": outcome.exit_code,
+                "note": outcome.note if isinstance(outcome.note, str) else "",
                 "content_sha256": hashlib.sha256(body).hexdigest(),
                 "content_bytes": len(body),
             })
@@ -644,9 +725,9 @@ class OracleMeshExecutor:
                 kind=meta.get("kind") or "read",
                 command_text=meta.get("command_text"),
             )
-            if dispatch.kind not in ("read", "command"):
+            if dispatch.kind not in ("read", "command", "desktop"):
                 raise ValueError("pending kind is unknown")
-            if dispatch.kind == "command" and (
+            if dispatch.kind in ("command", "desktop") and (
                 not isinstance(dispatch.command_text, str) or not dispatch.command_text.strip()
             ):
                 raise ValueError("pending command has no command")
@@ -654,6 +735,7 @@ class OracleMeshExecutor:
             if termination not in (
                 "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
                 "not_executed", "output_too_large",
+                "captured", "acted", "desktop_unavailable",
             ):
                 raise ValueError("pending termination is unknown")
             exit_code = meta.get("exit_code")
@@ -663,8 +745,12 @@ class OracleMeshExecutor:
                 raise ValueError("pending exit code is not an integer")
             if len(body) > MAX_COMMAND_BYTES:
                 raise ValueError("pending body exceeds the wire envelope")
+            note = meta.get("note", "")
+            if not isinstance(note, str):
+                raise ValueError("pending note is not text")
             outcome = OracleMeshExecutionOutcome(
                 termination=termination, exit_code=exit_code, body=body,
+                note=note,
             )
         except (ValueError, OracleMeshChannelRefused, ContractError):
             stem = "corrupt-" + str(os.getpid())
@@ -688,6 +774,111 @@ class OracleMeshExecutor:
         wait = _BACKOFF_FIRST_SECONDS * (2 ** min(self._transients, 4))
         return max(1, min(_BACKOFF_MAX_SECONDS, wait))
 
+    def _submit_desktop(
+        self, dispatch: OracleMeshDispatch, outcome: OracleMeshExecutionOutcome
+    ) -> dict[str, Any]:
+        """Submit one desktop observation or input.
+
+        The note travels as the UTF-8 text; a screenshot travels beside it
+        as base64 JPEG evidence with its own digest. The dispatch pin covers
+        the JPEG when one is present, else the note — so a resend is compared
+        against the same bytes the server pinned first.
+        """
+        import base64
+
+        note = outcome.note if isinstance(outcome.note, str) else ""
+        try:
+            note_raw = note.encode("utf-8")
+        except (UnicodeEncodeError, ValueError):
+            note_raw = b""
+        if (
+            len(note_raw) > MAX_COMMAND_BYTES
+            or any(ord(ch) < 32 and ch not in "\n\r\t" for ch in note)
+            or "\x7f" in note
+        ):
+            self._pending = (dispatch, outcome)
+            self._persist_pending()
+            return self._quarantine_pending(reason="desktop_note_invalid")
+        body = bytes(outcome.body) if isinstance(outcome.body, (bytes, bytearray)) else b""
+        payload = {
+            "dispatch_id": dispatch.dispatch_id,
+            "nonce": dispatch.nonce,
+            "termination": outcome.termination,
+            "exit_code": outcome.exit_code,
+            "content_utf8": note,
+            "content_sha256": hashlib.sha256(body).hexdigest() if body else hashlib.sha256(note_raw).hexdigest(),
+            "content_bytes": len(body) if body else len(note_raw),
+        }
+        if body:
+            payload["content_blob_base64"] = base64.b64encode(body).decode("ascii")
+            payload["content_blob_sha256"] = hashlib.sha256(body).hexdigest()
+            payload["content_blob_bytes"] = len(body)
+            payload["content_blob_media_type"] = "image/jpeg"
+        # The channel envelope limits the serialized UTF-8 JSON, not raw JPEG.
+        # Persist the immutable screenshot before reporting an unshippable outcome.
+        wire_bytes = len(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
+        if wire_bytes > MAX_COMMAND_BYTES:
+            self._pending = (dispatch, outcome)
+            persist_error = self._persist_pending()
+            return self._with_persist_warning(
+                {"ok": False, "retryable": False, "resend_pending": False,
+                 "reason": "desktop_result_wire_envelope_exceeded",
+                 "serialized_bytes": wire_bytes,
+                 "envelope_bytes": MAX_COMMAND_BYTES,
+                 "outcome_preserved": True}, persist_error)
+        self._pending = (dispatch, outcome)
+        persist_error = self._persist_pending()
+        try:
+            status, data = self._post(RESULT_PATH, payload)
+        except OracleMeshChannelRefused:
+            wait = self._transient_wait_seconds()
+            self._transients += 1
+            return self._with_persist_warning(
+                {"ok": False, "retryable": True, "resend_pending": True,
+                 "wait_seconds": wait}, persist_error)
+        if status == 200 and data.get("ok") is True:
+            self._pending = None
+            self._rejections = 0
+            self._transients = 0
+            self._clear_persisted_pending()
+            return data
+        return self._submit_refused(status, data, persist_error)
+
+    def _submit_refused(
+        self, status: Any, data: dict[str, Any], persist_error: Optional[str]
+    ) -> dict[str, Any]:
+        """Share one refusal policy between the text and desktop submit legs.
+
+        A transient store/channel failure keeps the exact bytes for a resend;
+        an ambiguous 409 is retried boundedly, then quarantined; ownership and
+        malformed-body refusals quarantine at once. Nothing is re-executed and
+        nothing is dropped silently on any leg.
+        """
+        error = data.get("error")
+        code = error.get("code") if isinstance(error, dict) else None
+        if status == 503 or status == 429 or status >= 500:
+            self._rejections = 0
+            wait = self._transient_wait_seconds()
+            self._transients += 1
+            return self._with_persist_warning(
+                {"ok": False, "retryable": True, "resend_pending": True,
+                 "status": status, "code": code, "wait_seconds": wait}, persist_error)
+        if status == 409 and code == "oracle_mesh_result_fingerprint_mismatch":
+            return self._quarantine_pending(
+                reason="result_fingerprint_mismatch", status=status, code=code)
+        if status in (400, 403):
+            return self._quarantine_pending(
+                reason="result_refused", status=status, code=code)
+        self._rejections += 1
+        if self._rejections < MAX_RESULT_REJECTIONS:
+            wait = self._transient_wait_seconds()
+            self._transients += 1
+            return self._with_persist_warning(
+                {"ok": False, "retryable": True, "resend_pending": True,
+                 "status": status, "code": code, "wait_seconds": wait}, persist_error)
+        return self._quarantine_pending(
+            reason="dispatch_rejected", status=status, code=code)
+
     def submit(
         self, dispatch: OracleMeshDispatch, outcome: OracleMeshExecutionOutcome
     ) -> dict[str, Any]:
@@ -699,6 +890,8 @@ class OracleMeshExecutor:
         held outcome so the caller can drive the retry without touching
         either port.
         """
+        if dispatch.kind == "desktop":
+            return self._submit_desktop(dispatch, outcome)
         try:
             text = outcome.body.decode("utf-8") if outcome.body else ""
         except UnicodeDecodeError:
@@ -736,40 +929,7 @@ class OracleMeshExecutor:
             self._transients = 0
             self._clear_persisted_pending()
             return data
-        error = data.get("error")
-        code = error.get("code") if isinstance(error, dict) else None
-        if status == 503 or status == 429 or status >= 500:
-            # Transient store/channel failure. The server parks the verified
-            # result (503) or never saw it; either way the exact bytes are
-            # kept and resent after a backoff — never re-read, never re-run.
-            self._rejections = 0
-            wait = self._transient_wait_seconds()
-            self._transients += 1
-            return self._with_persist_warning(
-                {"ok": False, "retryable": True, "resend_pending": True,
-                 "status": status, "code": code, "wait_seconds": wait}, persist_error)
-        if status == 409 and code == "oracle_mesh_result_fingerprint_mismatch":
-            # Permanent for this payload: the held bytes differ from what the
-            # server pinned first. Resending cannot change that; preserve the
-            # bytes with the cause instead of looping or dropping silently.
-            return self._quarantine_pending(
-                reason="result_fingerprint_mismatch", status=status, code=code)
-        if status in (400, 403):
-            # Ownership refusal is final and a malformed body stays malformed.
-            return self._quarantine_pending(
-                reason="result_refused", status=status, code=code)
-        # An ambiguous 409 (unknown, expired, already-consumed dispatch) is
-        # retried a bounded number of times, then quarantined — never resent
-        # forever, never dropped silently.
-        self._rejections += 1
-        if self._rejections < MAX_RESULT_REJECTIONS:
-            wait = self._transient_wait_seconds()
-            self._transients += 1
-            return self._with_persist_warning(
-                {"ok": False, "retryable": True, "resend_pending": True,
-                 "status": status, "code": code, "wait_seconds": wait}, persist_error)
-        return self._quarantine_pending(
-            reason="dispatch_rejected", status=status, code=code)
+        return self._submit_refused(status, data, persist_error)
 
     @staticmethod
     def _with_persist_warning(report: dict[str, Any], persist_error: Optional[str]):
@@ -834,6 +994,7 @@ def make_oracle_mesh_executor(
     stand-in port is constructible from here.
     """
     from .local_agent_meshcentral_command_port import MeshCentralCliCommandPort
+    from .local_agent_meshcentral_desktop_port import MeshCentralDesktopPort
     from .local_agent_meshcentral_private_reader import MeshCentralCliFileReadPort
 
     def _popen(argv, **kwargs):
@@ -881,11 +1042,20 @@ def make_oracle_mesh_executor(
         # command can never be buffered whole before it is size-checked.
         popen_factory=_popen,
     )
+    # The desktop lane reuses the SAME operator credential and private tunnel
+    # over the official relay protocol; only the wire changes (MSC frames),
+    # never the trust basis.
+    desktop_port = MeshCentralDesktopPort(
+        login_user=login_user,
+        password_provider=password_provider,
+        url=mesh_url,
+    )
     return OracleMeshExecutor(
         chat_origin=chat_origin,
         channel_secret=channel_secret,
         read_port=read_port,
         command_port=command_port,
+        desktop_port=desktop_port,
         timeout_seconds=timeout_seconds,
         pending_dir=work_dir,
     )

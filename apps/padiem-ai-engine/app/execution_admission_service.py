@@ -385,6 +385,15 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                 retryable=exc.status_code >= 500,
             )
 
+        # Subject is trusted Control Plane admission, run id belongs to its
+        # admission-bound logical request. Neither comes from model arguments.
+        from app.claw_desktop_step_driver import CLAW_APP_ID, _ENGINE_DESKTOP_OWNER
+        desktop_owner = None
+        if binding.app_id == CLAW_APP_ID and binding.subject_id is not None:
+            run_id = payload.get("session_id") if isinstance(payload, dict) else None
+            if isinstance(run_id, str) and run_id:
+                desktop_owner = (binding.subject_id, run_id)
+        desktop_scope_token = _ENGINE_DESKTOP_OWNER.set(desktop_owner)
         original_token: Token[OriginalAdmissionBinding | None] = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
         result_token = _ACTIVE_TERMINAL_RESULT.set(None)
         dispatch_evidence = ExecutionDispatchEvidence()
@@ -426,6 +435,7 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
             reset_execution_dispatch_evidence(dispatch_token)
             _ACTIVE_TERMINAL_RESULT.reset(result_token)
             _ACTIVE_ORIGINAL_ADMISSION.reset(original_token)
+            _ENGINE_DESKTOP_OWNER.reset(desktop_scope_token)
 
     async def resume_payload(self, payload: Any):  # noqa: C901 - lifecycle gate must stay linear
         """Resume only with fresh non-widening trusted admission before claim."""

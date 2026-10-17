@@ -14,6 +14,11 @@ binding = "PADIEM_GRAFANA_OTLP_TOKEN"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_GRAFANA_OTLP_TOKEN"
 
+# Private authenticated Engine -> Chat desktop dispatch, fail-closed without shared secret.
+[[services]]
+binding = "PADIEM_CHAT_SERVICE"
+service = "padiem-chat"
+
 [[services]]
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"

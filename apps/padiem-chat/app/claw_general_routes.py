@@ -563,6 +563,116 @@ def _requested_local_command(user_text: str) -> tuple[bool, str | None]:
     return True, command
 
 
+_DESKTOP_PC_MARKERS = (
+    "내pc", "내컴퓨터", "로컬pc", "로컬컴퓨터", "com1", "mypc", "mycomputer",
+)
+#: Desktop verbs only: a description of the screen must not operate it.
+_DESKTOP_VERBS = (
+    "캡처", "스크린샷", "화면", "클릭", "입력", "타이핑",
+    "키보드", "마우스", "메모장", "눌러", "보여",
+)
+
+
+def _requested_local_desktop(user_text: str) -> tuple[bool, str | None]:
+    """Explicit, delimited desktop op for the verified owner PC.
+
+    #4139 desktop lane. The turn must be BOTH named as a PC desktop action
+    and written in exactly one backtick span holding one op
+    (``capture`` | ``type:<text>`` | ``keys:<combo>`` | ``click:<x>,<y>``),
+    so ordinary prose never becomes remote input. Anything ambiguous is not
+    this lane and falls through to the model. The span is converted to the
+    canonical ``desktop:<op>`` dispatch body and validated with the same
+    grammar the executor enforces.
+    """
+    if not isinstance(user_text, str) or not user_text:
+        return False, None
+    lowered = user_text.lower()
+    compact = "".join(lowered.split())
+    if not any(marker in compact for marker in _DESKTOP_PC_MARKERS):
+        return False, None
+    if not any(verb in lowered for verb in _DESKTOP_VERBS):
+        return False, None
+    matches = re.findall(r"`([^`\x00\r]*)`", user_text)
+    if len(matches) != 1:
+        return False, None
+    span = matches[0].strip()
+    head, sep, tail = span.partition(":")
+    op = head.strip().lower()
+    if op == "capture":
+        canonical = "desktop:capture" if not sep else None
+    elif op in ("type", "keys", "click"):
+        canonical = "desktop:" + op + "\n" + tail.strip(" \t\n") if sep else None
+    else:
+        canonical = None
+    if canonical is None:
+        return False, None
+    from .oracle_mesh_read_return_routes import _parse_desktop_op_text
+    if _parse_desktop_op_text(canonical) is None:
+        return False, None
+    return True, canonical
+
+
+async def _dispatch_user_desktop_request(
+    request: Request, *, user_text: str, desktop_op: str, data: dict[str, Any],
+) -> JSONResponse | Response:
+    """Claw composer -> one desktop dispatch on the pinned PC.
+
+    The run row is staged first so the result has a conversation to land in;
+    the dispatch itself re-verifies the owner session, the canonical account
+    and the deployment's command grant (a desktop input drives the PC, so
+    the TXT read grant is never enough).
+    """
+    from .claw_memory_routes import _resolve_memory_workspace
+    from .oracle_mesh_read_return_routes import dispatch_oracle_mesh_desktop_intent
+
+    conversation_id, denial = await _resolve_intake_session_reference(request, data)
+    if denial is not None:
+        return denial
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not isinstance(uid, str) or not uid:
+        return _error(401, "canonical_session_required", "로그인이 필요합니다.")
+    history = getattr(request.app.state, "history_store", None)
+    stage = getattr(history, "record_txt_pending_run", None)
+    if not callable(stage):
+        return _error(503, "command_history_unavailable", "대화 저장소를 확인할 수 없습니다.")
+    try:
+        workspace = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace = None
+    if not isinstance(workspace, str) or not workspace:
+        return _error(503, "command_workspace_unavailable", "대화 범위를 확인할 수 없습니다.")
+    run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+    try:
+        cid = await stage(
+            user_id=uid, run_id=run.run_id, workspace_id=workspace,
+            user_text=user_text, conversation_id=conversation_id,
+        )
+    except Exception:
+        return _error(503, "command_history_unavailable", "대화 저장에 실패했습니다.")
+    selected = data.get("device_id")
+    dispatched = await dispatch_oracle_mesh_desktop_intent(
+        request,
+        desktop_op=desktop_op,
+        wire={
+            "run_id": run.run_id,
+            "device_id": selected if isinstance(selected, str) and selected else None,
+            "confirmed": True,  # derived from this authenticated user's own text
+        },
+    )
+    if dispatched.status_code != 200:
+        mark_failed = getattr(history, "update_claw_run_status", None)
+        if callable(mark_failed):
+            try:
+                await mark_failed(uid, run.run_id, "failed")
+            except Exception:
+                pass
+        return dispatched
+    return _claw_general_sse(
+        "COM1 데스크톱을 조작하는 중입니다. 실제 화면·결과는 작업 완료 후 이 대화에 표시됩니다.",
+        conversation_id=cid,
+    )
+
+
 async def _dispatch_user_command_request(
     request: Request, *, user_text: str, command: str, data: dict[str, Any],
 ) -> JSONResponse | Response:
@@ -778,6 +888,32 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     user_text, text_error = _claw_general_user_text(data)
     if text_error is not None:
         return text_error
+
+    # The desktop grammar is narrower than a shell command, so it is checked
+    # first: a span that parses as a desktop op is never executed as one.
+    desktop_requested, desktop_op = _requested_local_desktop(user_text)
+    if desktop_requested:
+        if desktop_op is None:
+            return _error(422, "desktop_op_required",
+                          "수행할 데스크톱 동작을 백틱으로 하나만 지정해 주세요.")
+        return await _dispatch_user_desktop_request(
+            request, user_text=user_text, desktop_op=desktop_op, data=data,
+        )
+
+    # One owner-requested initial observation runs through P01/Engine ToolRuntime
+    # rather than the manual backtick diagnostic lane above.
+    initial_pc_capture = bool(re.search(
+        r"(?:내|우리|PC|pc|컴퓨터|COM1|com1).{0,40}"
+        r"(?:화면|스크린|screen).{0,40}"
+        r"(?:캡처|찍|보여|봐|capture|observe)",
+        user_text, re.I,
+    ))
+    desktop_device_id = data.get("device_id") if initial_pc_capture else None
+    if initial_pc_capture and desktop_device_id is not None and (
+        not isinstance(desktop_device_id, str)
+        or not 0 < len(desktop_device_id) <= 128
+    ):
+        return _error(422, "oracle_mesh_device_invalid", "PC 장치 선택이 유효하지 않습니다.")
 
     command_requested, command_text = _requested_local_command(user_text)
     if command_requested:
@@ -1090,6 +1226,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if live_requested:
         from .claw_live_events import live_claw_sse
         live_args = {"product_tier": product_tier, "subject_id": subject_id}
+        if initial_pc_capture:
+            live_args["desktop_capture"] = True
+            live_args["desktop_device_id"] = desktop_device_id
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
         if grounding_context is not None:
@@ -1112,6 +1251,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
 
     try:
         dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
+        if initial_pc_capture:
+            dispatch_args["desktop_capture"] = True
+            dispatch_args["desktop_device_id"] = desktop_device_id
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
         if grounding_context is not None:

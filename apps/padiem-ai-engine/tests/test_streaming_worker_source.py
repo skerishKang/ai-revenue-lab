@@ -59,6 +59,10 @@ def test_wrangler_remains_internal_service_binding_only() -> None:
     assert "routes" not in config
     assert config["services"] == [
         {
+            "binding": "PADIEM_CHAT_SERVICE",
+            "service": "padiem-chat",
+        },
+        {
             "binding": "B14_SERVICE",
             "service": "ai-revenue-korean-ai-platform",
         },

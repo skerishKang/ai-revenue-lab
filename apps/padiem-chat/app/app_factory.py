@@ -372,6 +372,7 @@ def create_app(
     local_task_result_source=None,
     connector_txt_read_source=None,
     oracle_mesh_return_source=None,
+    claw_engine_desktop_secret=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
     connector_owner_enrollment=None,
@@ -712,10 +713,12 @@ def create_app(
                 oracle_mesh_read_original,
                 oracle_mesh_read_poll,
                 oracle_mesh_read_request,
+                oracle_mesh_engine_desktop_call,
                 oracle_mesh_read_result,
             )
             routes[-1:-1] = [
                 Route(ORACLE_MESH_READ_REQUEST_PATH, oracle_mesh_read_request, methods=["POST"]),
+                Route("/internal/claw/engine-desktop", oracle_mesh_engine_desktop_call, methods=["POST"]),
                 Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
@@ -997,6 +1000,7 @@ def create_app(
     # node) map behind the management-host return route. None keeps the route
     # unmounted and every return fail-closed until the Worker root composes it.
     from .oracle_mesh_read_return_routes import UnconfiguredOracleMeshReturnSource
+    app.state.claw_engine_desktop_secret = claw_engine_desktop_secret
     app.state.oracle_mesh_return_source = (
         oracle_mesh_return_source
         if oracle_mesh_return_source is not None

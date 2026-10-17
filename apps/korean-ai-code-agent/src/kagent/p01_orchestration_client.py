@@ -182,6 +182,7 @@ _NULLABLE_AUTHORITY_FIELDS = (
     "agent_definition",
     "agent_planner",
     "agent_plan",
+    "agent_step_driver",
     "compiled_agent_profile",
     "skill_id",
     "skill_registry",
@@ -500,9 +501,41 @@ class P01EngineOrchestrationClient:
         # subject shape and revalidates it against Control Plane Identity.
         if request.subject_id is not None:
             payload["subject_id"] = request.subject_id
+        if self._is_trusted_capture_request(request):
+            payload["agent_plan"] = request.agent_plan.to_public_dict()
+            payload["tool_arguments"] = {
+                step: dict(arguments)
+                for step, arguments in request.tool_arguments.items()
+            }
         return payload
 
+    def _is_trusted_capture_request(self, request: OrchestrationRequest) -> bool:
+        """Exact Claw-owned, one-capture plan only; never general tool authority."""
+        plan = request.agent_plan
+        arguments = request.tool_arguments
+        if (not self._allow_subject_identity
+            or request.app_id != "b54-padiem-claw"
+            or not request.subject_id
+            or not request.execution_request.session_id
+            or plan is None
+            or plan.agent_id != "agent:padiem:claw-desktop@1"
+            or len(plan.steps) != 1
+            or plan.steps[0].step_id != "capture"
+            or plan.steps[0].tool_id != "claw.desktop.capture"
+            or not isinstance(arguments, dict)
+            or set(arguments) != {"capture"}
+            or not isinstance(arguments["capture"], dict)
+            or set(arguments["capture"]) - {"device_id", "use_pinned_device"}):
+            return False
+        args = arguments["capture"]
+        if args == {"use_pinned_device": True}:
+            return True
+        return set(args) == {"device_id"} and (
+            isinstance(args["device_id"], str) and 0 < len(args["device_id"]) <= 128
+        )
+
     def _reject_unsupported_authority(self, request: OrchestrationRequest) -> None:
+        trusted_capture = self._is_trusted_capture_request(request)
         if request.subject_id is not None and not self._allow_subject_identity:
             raise P01AdapterError(
                 "p01_authority_field_unsupported",
@@ -517,6 +550,8 @@ class P01EngineOrchestrationClient:
 
             validate_canonical_subject_id(request.subject_id)
         for name in _NULLABLE_AUTHORITY_FIELDS:
+            if trusted_capture and name in ("agent_plan", "tool_arguments"):
+                continue
             if getattr(request, name) is not None:
                 raise P01AdapterError(
                     "p01_authority_field_unsupported",

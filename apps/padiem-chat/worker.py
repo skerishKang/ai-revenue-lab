@@ -952,6 +952,7 @@ class Default(WorkerEntrypoint):
                     github_oauth_store=github_store,
                     github_oauth_provider=github_provider,
                     oracle_mesh_return_source=_oracle_mesh_return_source,
+                    claw_engine_desktop_secret=binding_value(self.env, "CLAW_ENGINE_DESKTOP_SECRET"),
                     connector_owner_enrollment=connector_owner_ports,
                     history_store=history_store,
                     d1_binding=db_binding,
