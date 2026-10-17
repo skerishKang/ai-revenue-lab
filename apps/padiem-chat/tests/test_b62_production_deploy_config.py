@@ -937,3 +937,84 @@ def test_broker_candidate_cli_refuses_wrong_identity(tmp_path, capsys):
     ]) == 1
     assert not output.exists()
     assert "B62_PRODUCTION_CONFIG_GENERATED=FAIL" in capsys.readouterr().err
+
+
+CLAW_DESKTOP_SECRET_BINDING = {
+    "type": "secrets_store_secret",
+    "name": "CLAW_ENGINE_DESKTOP_SECRET",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "secret_name": "CLAW_ENGINE_DESKTOP_SECRET",
+}
+
+
+def _write_repo_config_with_claw_desktop(tmp_path, *, store_id=None, secret_name=None):
+    path = _write_repo_config(tmp_path)
+    path.write_text(
+        path.read_text(encoding="utf-8")
+        + "\n[[secrets_store_secrets]]\n"
+        'binding = "CLAW_ENGINE_DESKTOP_SECRET"\n'
+        f'store_id = "{store_id or CLAW_DESKTOP_SECRET_BINDING["store_id"]}"\n'
+        f'secret_name = "{secret_name or CLAW_DESKTOP_SECRET_BINDING["secret_name"]}"\n',
+        encoding="utf-8",
+    )
+    return path
+
+
+def test_claw_desktop_secret_attach_adds_exactly_one_existing_reference(tmp_path):
+    import tomllib
+
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    output = module.build_production_config(
+        live, _write_repo_config_with_claw_desktop(tmp_path), PUBLIC_URL,
+        attach_claw_desktop_secret=True,
+    )
+    module.verify_mutation_zero(output, live)
+    assert tomllib.loads(output)["secrets_store_secrets"] == [{
+        "binding": "CLAW_ENGINE_DESKTOP_SECRET",
+        "store_id": "f0b09ca04a7b43248154c773704a5616",
+        "secret_name": "CLAW_ENGINE_DESKTOP_SECRET",
+    }]
+
+
+def test_claw_desktop_secret_already_served_reference_is_preserved_once(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(
+        _settings_payload(_production_bindings() + [CLAW_DESKTOP_SECRET_BINDING])
+    )
+    output = module.build_production_config(
+        live, _write_repo_config_with_claw_desktop(tmp_path), PUBLIC_URL,
+        attach_claw_desktop_secret=True,
+    )
+    assert output.count("[[secrets_store_secrets]]") == 1
+
+
+@pytest.mark.parametrize("store_id,secret_name", [
+    ("00000000000000000000000000000000", "CLAW_ENGINE_DESKTOP_SECRET"),
+    ("f0b09ca04a7b43248154c773704a5616", "OTHER_SECRET"),
+])
+def test_claw_desktop_secret_repo_identity_drift_fails_closed(tmp_path, store_id, secret_name):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    with pytest.raises(module.ProductionConfigError):
+        module.build_production_config(
+            live,
+            _write_repo_config_with_claw_desktop(
+                tmp_path, store_id=store_id, secret_name=secret_name
+            ),
+            PUBLIC_URL,
+            attach_claw_desktop_secret=True,
+        )
+
+
+def test_claw_desktop_secret_name_collision_with_live_authority_fails_closed(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(
+        _production_bindings()
+        + [{"type": "secret_text", "name": "CLAW_ENGINE_DESKTOP_SECRET"}]
+    ))
+    with pytest.raises(module.ProductionConfigError):
+        module.build_production_config(
+            live, _write_repo_config_with_claw_desktop(tmp_path), PUBLIC_URL,
+            attach_claw_desktop_secret=True,
+        )
