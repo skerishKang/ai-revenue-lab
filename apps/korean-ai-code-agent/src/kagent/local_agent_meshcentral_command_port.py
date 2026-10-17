@@ -30,11 +30,21 @@ from .local_agent_meshcentral_private_reader import _MESHCTRL_STDIN_BOOTSTRAP
 
 #: Marker appended to the requested command so the PC reports its own exit code.
 EXIT_SENTINEL = "__PADIEM_EXIT__"
-_MAX_COMMAND_CHARS = 512
-#: Printable ASCII only: a single-line command, no control characters.
-_COMMAND_BODY = re.compile(r"[\x20-\x7e]{1,512}")
+#: #4139: a command is ordinary text. Korean, quotes and any printable
+#: character are allowed; the former ASCII-only, 512-character rule was a trial
+#: limit that blocked normal work. A command may also span several lines — only
+#: NUL and CR are refused (CR would break the line-based transcript parsing).
+_MAX_COMMAND_CHARS = 8192
+_COMMAND_BODY = re.compile(r"[^\x00\r]{1," + str(_MAX_COMMAND_CHARS) + "}")
 _SENTINEL_LINE = re.compile(rb"__PADIEM_EXIT__(-?\d+)?")
 METHOD_LABEL = "powershell_runcommand_reply"
+#: stdout and stderr travel merged (trailing ``2>&1``); the conversation says so.
+MERGED_STREAMS = True
+#: Wire envelope for one output body: the same 6 MB the Claw request route
+#: already accepts for one user message. Above it the child is killed and the
+#: outcome reports ``output_too_large`` — nothing is truncated and nothing is
+#: buffered past this bound.
+MAX_COMMAND_BYTES = 6_000_000
 
 
 class MeshCentralCommandRefused(ValueError):
@@ -45,32 +55,78 @@ class MeshCentralCommandRefused(ValueError):
 class MeshCentralCommandOutcome:
     """What one real command run produced, exactly as observed."""
 
-    termination: str  # "exited" | "timed_out" | "no_reply"
+    termination: str  # "exited" | "timed_out" | "no_reply" | "output_too_large"
     exit_code: int | None
     output: bytes
     method: str = METHOD_LABEL
+    merged_streams: bool = MERGED_STREAMS
 
 
 def _bounded_command(value: Any) -> str:
     if not isinstance(value, str):
         raise MeshCentralCommandRefused("command must be text")
-    text = value.strip()
-    if not text or len(text) > _MAX_COMMAND_CHARS:
-        raise MeshCentralCommandRefused("command must be 1..512 characters")
-    if _COMMAND_BODY.fullmatch(text) is None:
+    if not value or len(value) > _MAX_COMMAND_CHARS:
         raise MeshCentralCommandRefused(
-            "command must be a single printable-ASCII line"
+            "command must be 1.." + str(_MAX_COMMAND_CHARS) + " characters"
         )
-    return text
+    if _COMMAND_BODY.fullmatch(value) is None:
+        raise MeshCentralCommandRefused(
+            "command must not contain NUL or carriage return"
+        )
+    # Trailing whitespace is dropped so the appended sentinel statement can
+    # never be swallowed by an unterminated line; interior lines are untouched.
+    return value.rstrip(" \t\r\n")
 
 
 def _wrap(command: str) -> str:
-    """Append the exit-code sentinel as a separate statement.
+    """Merge the error stream, then append the exit-code sentinel.
 
-    PowerShell keeps ``$LASTEXITCODE`` from the last native command, so the
+    Measured on the real PC: without the merge, a command that writes to stderr
+    either loses that text or never returns a transcript at all; with a trailing
+    ``2>&1`` the same command returns its error text through the console. The
+    merge is applied to the *whole* trailing statement only — a multi-statement
+    command keeps its own stream wiring for the earlier statements, and the
+    conversation states that the streams are merged.
+
+    ``$LASTEXITCODE`` is PowerShell's record of the last native command, so the
     sentinel reports the real remote exit code instead of the shell's own.
     """
-    return command + '; Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
+    return (
+        command + " 2>&1; Write-Output (\""
+        + EXIT_SENTINEL + "\" + $LASTEXITCODE)"
+    )
+
+
+def _read_some(process: Any, timeout_seconds: float) -> bytes:
+    """One bounded read from a child's stdout, empty when nothing is ready."""
+
+    import selectors
+    import time
+
+    stdout = getattr(process, "stdout", None)
+    if stdout is None:
+        return b""
+    try:
+        stdout.fileno()
+    except Exception:
+        # Not an OS pipe (a test double, or an already-buffered stream): a
+        # plain read is the only option and returns whatever is available.
+        return stdout.read(65536) or b""
+    deadline = time.monotonic() + timeout_seconds
+    selector = selectors.DefaultSelector()
+    try:
+        selector.register(stdout, selectors.EVENT_READ)
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return b""
+            events = selector.select(remaining)
+            if not events:
+                return b""
+            chunk = stdout.read(65536)
+            return chunk or b""
+    finally:
+        selector.close()
 
 
 def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
@@ -125,9 +181,14 @@ class MeshCentralCliCommandPort:
         password_provider: Callable[[], str],
         url: str = "wss://127.0.0.1:4443",
         work_dir: str | None = None,
+        popen_factory: Callable[..., Any] | None = None,
     ) -> None:
         if not callable(command_runner):
             raise ContractError("meshcentral command requires an injected command runner")
+        # #4139: the streaming path is what actually bounds memory. The child is
+        # read in chunks and killed the moment the transcript passes the wire
+        # envelope, so a runaway command can never be buffered whole first.
+        self._popen_factory = popen_factory
         if not isinstance(meshctrl_js, str) or not meshctrl_js.strip():
             raise ContractError("the official meshctrl.js path is required")
         if not isinstance(login_user, str) or not login_user.strip():
@@ -169,30 +230,101 @@ class MeshCentralCliCommandPort:
             raise MeshCentralCommandRefused(
                 "the protected MeshCentral operator credential is invalid"
             )
-        try:
-            completed = self._run(
-                argv, input=password + "\n", timeout=timeout_seconds,
-            )
-        except Exception as exc:
-            # A timeout (or any transport failure) is an observed outcome with
-            # NO exit code: the remote process may still be running.
-            if type(exc).__name__ == "TimeoutExpired":
-                partial = getattr(exc, "output", None) or getattr(exc, "stdout", None) or b""
-                if isinstance(partial, str):
-                    partial = partial.encode("utf-8", errors="replace")
-                return MeshCentralCommandOutcome(
-                    termination="timed_out", exit_code=None,
-                    output=bytes(partial),
+        if self._popen_factory is None:
+            # Buffered fallback for callers that only inject a command runner.
+            try:
+                completed = self._run(
+                    argv, input=password + "\n", timeout=timeout_seconds,
                 )
-            raise MeshCentralCommandRefused("the official meshcentral client failed") from exc
-        if getattr(completed, "returncode", None) != 0:
-            # meshctrl itself failed: no transcript, so no exit code is claimed.
+            except Exception as exc:
+                if type(exc).__name__ == "TimeoutExpired":
+                    return MeshCentralCommandOutcome(
+                        termination="timed_out", exit_code=None, output=b"",
+                    )
+                raise MeshCentralCommandRefused(
+                    "the official meshcentral client failed"
+                ) from exc
+            if getattr(completed, "returncode", None) != 0:
+                return MeshCentralCommandOutcome(
+                    termination="no_reply", exit_code=None, output=b"",
+                )
+            raw = getattr(completed, "stdout", b"") or b""
+            if isinstance(raw, str):
+                raw = raw.encode("utf-8", errors="replace")
+            return self._from_transcript(raw)
+        return self._run_streaming(argv, password, timeout_seconds)
+
+    # ---- streaming execution -------------------------------------------
+    def _run_streaming(
+        self, argv: list[str], password: str, timeout_seconds: int
+    ) -> MeshCentralCommandOutcome:
+        """Read the child's transcript in bounded chunks.
+
+        Memory is bounded by the wire envelope plus one chunk: the moment the
+        transcript passes it, the child is killed and the outcome reports
+        ``output_too_large``. A command that never answers is killed at the
+        deadline and reported as ``timed_out`` — the remote process may still be
+        running, so no exit code is claimed.
+        """
+        import subprocess
+        import time
+
+        process = self._popen_factory(
+            argv,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        chunks: list[bytes] = []
+        total = 0
+        oversize = False
+        try:
+            if process.stdin is not None:
+                process.stdin.write((password + "\n").encode("utf-8"))
+                process.stdin.flush()
+                process.stdin.close()
+            deadline = time.monotonic() + timeout_seconds
+            while True:
+                if time.monotonic() > deadline:
+                    process.kill()
+                    return MeshCentralCommandOutcome(
+                        termination="timed_out", exit_code=None, output=b"",
+                    )
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    process.kill()
+                    return MeshCentralCommandOutcome(
+                        termination="timed_out", exit_code=None, output=b"",
+                    )
+                chunk = _read_some(process, max(0.05, min(1.0, remaining)))
+                if not chunk:
+                    if process.poll() is not None:
+                        break
+                    continue
+                chunks.append(chunk)
+                total += len(chunk)
+                if total > MAX_COMMAND_BYTES:
+                    oversize = True
+                    process.kill()
+                    break
+        except Exception:
+            try:
+                process.kill()
+            except Exception:
+                pass
+            raise MeshCentralCommandRefused("the official meshcentral client failed") from None
+        raw = b"".join(chunks)
+        if oversize:
+            return MeshCentralCommandOutcome(
+                termination="output_too_large", exit_code=None, output=b"",
+            )
+        return self._from_transcript(raw)
+
+    def _from_transcript(self, raw: bytes) -> MeshCentralCommandOutcome:
+        if not raw:
             return MeshCentralCommandOutcome(
                 termination="no_reply", exit_code=None, output=b"",
             )
-        raw = getattr(completed, "stdout", b"") or b""
-        if isinstance(raw, str):
-            raw = raw.encode("utf-8", errors="replace")
         termination, exit_code, output = parse_transcript(raw)
         try:
             output.decode("utf-8")
@@ -207,6 +339,8 @@ class MeshCentralCliCommandPort:
 
 __all__ = [
     "EXIT_SENTINEL",
+    "MAX_COMMAND_BYTES",
+    "MERGED_STREAMS",
     "METHOD_LABEL",
     "MeshCentralCliCommandPort",
     "MeshCentralCommandOutcome",

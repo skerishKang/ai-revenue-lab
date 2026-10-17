@@ -1606,12 +1606,14 @@ class D1HistoryStore:
             raise HistoryError("kind must be read or command")
         if kind == "command":
             # #4139 terminal lane: the command is the execution target, so it is
-            # mandatory, single-line and bounded; the file columns carry the
-            # documented sentinel instead of a bogus Windows path.
+            # mandatory, single-line and bounded. Korean and any printable
+            # character are ordinary input; only control characters are refused.
             if not isinstance(command_text, str) or not command_text.strip():
                 raise HistoryError("command_text is required for a command dispatch")
-            if len(command_text) > 512 or any(ord(ch) < 32 for ch in command_text):
-                raise HistoryError("command_text must be a bounded single-line command")
+            if len(command_text) > 8192 or any(ord(ch) < 32 for ch in command_text):
+                raise HistoryError(
+                    "command_text must be a bounded single-line command"
+                )
         elif command_text is not None:
             raise HistoryError("command_text is only valid for a command dispatch")
         for name, value in fields.items():
@@ -1649,6 +1651,16 @@ class D1HistoryStore:
                 raise HistoryError("oracle mesh run already executed")
             if not (existing.get("state") == "pending" and existing.get("expires_at", "") <= now):
                 raise HistoryError("oracle mesh run already dispatched")
+            if kind == "command" and (
+                existing.get("nonce_sha256") is not None
+                or existing.get("state") in ("received", "store_failed")
+            ):
+                # A terminal command may ALREADY have run on the PC: the row was
+                # handed to the executor (a nonce was minted) or its result was
+                # received but never stored. Re-staging it would let a restart
+                # execute the same command again, so the row is left exactly as
+                # it is — an uncertain state, never a silent second execution.
+                raise HistoryError("oracle mesh command execution is uncertain")
             await self._run(
                 "UPDATE oracle_mesh_dispatch SET command_id=?, tool_request_ref=?, "
                 "request_id=?, revision_ref=?, evidence_ref=?, request_fingerprint=?, "

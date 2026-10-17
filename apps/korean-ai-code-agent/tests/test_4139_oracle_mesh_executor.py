@@ -19,7 +19,7 @@ from kagent.local_agent_meshcentral_private_reader import (
 from kagent.local_agent_oracle_mesh_executor import (
     CHANNEL_HEADER, POLL_PATH, PRODUCT_USER_AGENT, RESULT_PATH,
     OracleMeshChannelRefused, OracleMeshDispatch, OracleMeshExecutor,
-    OracleMeshExecutionOutcome, make_oracle_mesh_executor,
+    MAX_RESULT_REJECTIONS, OracleMeshExecutionOutcome, make_oracle_mesh_executor,
 )
 
 SECRET = "deployment-channel-secret-value-261017"
@@ -242,19 +242,33 @@ class ResultSubmitTests(unittest.TestCase):
             seen["payload"]["content_sha256"], hashlib.sha256(b"").hexdigest()
         )
 
-    def test_dispatch_rejection_keeps_the_held_result(self):
+    def test_dispatch_rejection_is_retried_bounded_then_dropped(self):
         # The same 409 code is also answered while the row is still an
-        # unfinished received row, so the held outcome must be kept.
+        # unfinished received row, so the held outcome is kept for a few
+        # attempts — but never resent forever.
+        attempts = []
+
         def transport(path, payload):
+            attempts.append(path)
             return 409, {"ok": False, "error": {"code": "oracle_mesh_dispatch_rejected"}}
 
         executor = self._executor(transport)
         outcome = OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=b"")
-        with self.assertRaises(OracleMeshChannelRefused):
-            executor.submit(self._dispatch(), outcome)
+        first = executor.submit(self._dispatch(), outcome)
+        self.assertFalse(first.get("ok"))
+        self.assertTrue(first.get("retryable"))
         self.assertTrue(executor.resend_pending)
+        final = None
+        for _ in range(MAX_RESULT_REJECTIONS + 1):
+            if not executor.resend_pending:
+                break
+            final = executor.resend_pending_result()
+        self.assertTrue(final.get("dropped"))
+        self.assertEqual(final.get("status"), 409)
+        self.assertFalse(executor.resend_pending)
+        self.assertEqual(len(attempts), MAX_RESULT_REJECTIONS)
 
-    def test_fingerprint_mismatch_keeps_the_held_result(self):
+    def test_fingerprint_mismatch_is_retried_bounded_then_dropped(self):
         def transport(path, payload):
             return 409, {
                 "ok": False, "error": {"code": "oracle_mesh_result_fingerprint_mismatch"}
@@ -262,9 +276,16 @@ class ResultSubmitTests(unittest.TestCase):
 
         executor = self._executor(transport)
         outcome = OracleMeshExecutionOutcome(termination="exited", exit_code=0, body=b"abc")
-        with self.assertRaises(OracleMeshChannelRefused):
-            executor.submit(self._dispatch(), outcome)
+        first = executor.submit(self._dispatch(), outcome)
+        self.assertTrue(first.get("retryable"))
         self.assertTrue(executor.resend_pending)
+        final = None
+        for _ in range(MAX_RESULT_REJECTIONS + 1):
+            if not executor.resend_pending:
+                break
+            final = executor.resend_pending_result()
+        self.assertTrue(final.get("dropped"))
+        self.assertFalse(executor.resend_pending)
 
 
 if __name__ == "__main__":

@@ -317,7 +317,11 @@ def test_read_lane_projection_is_unchanged(monkeypatch):
     assert status == 200, body
     appended = state.history_store.appended[0]
     assert appended["status"] == "completed"
-    assert appended["content"] == "PC 파일 읽기 결과:\n" + text
+    # The read lane is wrapped in the same markers as a command result so its
+    # own edges survive the shared history projection.
+    assert appended["content"] == (
+        "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n" + text + "\n--- 출력 끝 ---"
+    )
     assert appended["preserve_edges"] is False
 
 
@@ -332,9 +336,104 @@ def test_intent_requires_an_explicit_delimited_command():
     assert _requested_local_command("내 PC에서 hostname.exe 실행해줘") == (False, None)
     assert _requested_local_command("내 PC에서 `a.exe` `b.exe` 실행해줘") == (False, None)
     assert _requested_local_command("`hostname.exe` 실행해줘") == (False, None)
-    # Control characters and non-ASCII never reach the PC.
-    assert _requested_local_command("내 PC에서 `host\nname` 실행해줘") == (False, None)
-    assert _requested_local_command("내 PC에서 `호스트` 실행해줘") == (False, None)
+    # A command is ordinary text: Korean, spaces and quotes are allowed.
+    assert _requested_local_command("내 PC에서 `type 보고서.txt` 실행해줘") == (True, "type 보고서.txt")
+    assert _requested_local_command('내 PC에서 `echo "한글 경로 테스트"` 실행해줘') == (
+        True, 'echo "한글 경로 테스트"',
+    )
+    # NUL and carriage return never reach the PC.
+    assert _requested_local_command("내 PC에서 `host\x00name` 실행해줘") == (False, None)
+    assert _requested_local_command("내 PC에서 `host\rname` 실행해줘") == (False, None)
+
+
+def test_timeout_is_stored_without_an_exit_code(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    status, body, _ = _submit(state, row, termination="timed_out", exit_code=None,
+                              body=b"partial output")
+    assert status == 200, body
+    appended = state.history_store.appended[0]
+    assert appended["status"] == "failed"
+    assert "대기 시간 초과" in appended["content"]
+    assert "확인되지 않음" in appended["content"]
+    assert "종료 코드: 0" not in appended["content"]
+    assert state.history_store.finished[-1][1] == "failed"
+
+
+def test_output_too_large_is_an_explicit_result(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    status, body, _ = _submit(state, row, termination="output_too_large", exit_code=0,
+                              body=b"")
+    assert status == 200, body
+    appended = state.history_store.appended[0]
+    assert appended["status"] == "completed"
+    assert "전송 한도를 초과" in appended["content"]
+    assert "종료 코드: 0" in appended["content"]
+    assert "출력 시작" not in appended["content"]
+
+
+def test_a_large_output_is_split_into_several_messages(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    lines = []
+    for index in range(1500):
+        lines.append("line-%04d" % index + "x" * 12)
+    big = ("\n".join(lines) + "\n").encode("utf-8")
+    status, body, _ = _submit(state, row, termination="exited", exit_code=0, body=big)
+    assert status == 200, body
+    appended = state.history_store.appended
+    assert len(appended) > 1
+    ids = [item["message_id"] for item in appended]
+    assert len(set(ids)) == len(ids)
+    assert all(item["message_id"].startswith("msg_ltr_") for item in appended)
+    assert all(len(item["content"]) <= 8000 for item in appended)
+    rebuilt = "\n".join(
+        item["content"].split(" 시작 ---\n", 1)[1].rsplit("\n--- 출력 끝 ---", 1)[0]
+        for item in appended
+    )
+    # Nothing is dropped or truncated: the parts rebuild the whole output.
+    assert rebuilt == big.decode("utf-8")
+
+
+def test_a_long_txt_read_is_split_and_preserved(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    row = asyncio.run(state.history_store.create_oracle_mesh_dispatch(
+        user_id=OWNER, run_id=RUN, command_id="c", tool_request_ref="t",
+        request_id="r", revision_ref="rev", evidence_ref=None,
+        request_fingerprint="f", account_ref=ACCOUNT, workspace_ref=WORKSPACE,
+        device_id=DEVICE, binding_ref=None, node_ref=NODE,
+        root_ref="meshcentral_private_trial",
+        path_relative="보고서.txt", file_path="C:\\사용자\\보고서.txt",
+        expires_at="2099-01-01T00:00:00.000Z",
+    ))
+    text = ("한글 문서 라인 " * 900 + "\n")
+    status, body, _ = _submit(state, row, termination="exited", exit_code=0,
+                              body=text.encode("utf-8"))
+    assert status == 200, body
+    appended = state.history_store.appended
+    assert len(appended) > 1
+    assert all(item["content"].startswith("PC 파일 읽기 결과") for item in appended)
+
+
+def test_a_duplicate_submit_still_appends_nothing(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    big = ("y" * 9000 + "\n").encode("utf-8")
+    _submit(state, row, termination="exited", exit_code=0, body=big)
+    first = len(state.history_store.appended)
+    status, body, _ = _submit(state, row, termination="exited", exit_code=0, body=big)
+    assert status in (200, 409)
+    assert len(state.history_store.appended) == first
 
 
 if __name__ == "__main__":

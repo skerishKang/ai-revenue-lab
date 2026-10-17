@@ -107,18 +107,19 @@ class FakeMeshPort:
         self.payload = payload
         self.calls: list[dict] = []
 
-    def read_bytes(self, *, node_ref, file_path, timeout_seconds):
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds, max_bytes=None):
         self.calls.append({
             "node_ref": node_ref, "file_path": file_path,
-            "timeout_seconds": timeout_seconds,
+            "timeout_seconds": timeout_seconds, "max_bytes": max_bytes,
         })
         return self.payload
 
 
 class ReaderFixture:
-    def __init__(self, *, port=None, transport=None) -> None:
+    def __init__(self, *, port=None, transport=None, max_bytes=None) -> None:
         self.transport = transport if transport is not None else RecordingTransport()
         self.port = port if port is not None else FakeMeshPort()
+        self.max_bytes = max_bytes
         self.reader = MeshCentralVerifiedTextReader(
             publisher=LocalAgentTextResultPublisher(
                 transport=self.transport, config=config(),
@@ -127,11 +128,13 @@ class ReaderFixture:
         )
 
     def run(self):
+        extra = {} if self.max_bytes is None else {"max_bytes": self.max_bytes}
         stored, result = self.reader.execute_verified_read(
             binding_ref=BINDING_REF, credential=CREDENTIAL,
             command_id=COMMAND_ID, run_id=RUN_ID,
             request_fingerprint=REQUEST_FINGERPRINT,
             node_ref=NODE_REF, file_path=FILE_PATH,
+            **extra,
         )
         delivered = self.reader.deliver(
             binding_ref=BINDING_REF, credential=CREDENTIAL, result=result,
@@ -176,7 +179,10 @@ class MeshCentralPrivateReaderTests(unittest.TestCase):
         self.assertEqual(fixture.port.calls[0]["file_path"], FILE_PATH)
 
     def test_oversize_read_is_refused_and_never_delivered(self):
-        fixture = ReaderFixture(port=FakeMeshPort(("가" * 300).encode("utf-8")))
+        # An explicit caller bound is still enforced, never truncated.
+        fixture = ReaderFixture(
+            port=FakeMeshPort(("가" * 300).encode("utf-8")), max_bytes=768,
+        )
         with self.assertRaises(VerifiedTextResultRefused):
             fixture.run()
         self.assertEqual(
@@ -310,6 +316,7 @@ class MeshCentralCliPortTests(unittest.TestCase):
         with self.assertRaises(MeshCentralReadRefused):
             self.port.read_bytes(
                 node_ref=NODE_REF, file_path=FILE_PATH, timeout_seconds=45,
+                max_bytes=768,
             )
         self.assertEqual(os.listdir(self.temp.name), [])
 
