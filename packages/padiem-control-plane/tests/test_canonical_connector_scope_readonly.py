@@ -133,3 +133,116 @@ def test_invalid_clock_refuses_before_any_authority_read():
     with pytest.raises(ControlPlaneContractError):
         resolver_port.resolve_scope(subject_id=SUBJECT, tenant_ref=TENANT, now=datetime(2026,10,12))
     assert not storage.sql.calls and not members.called
+
+
+class ProxyRow:
+    """A deployed-Worker JS proxy row: only to_py() exposes the mapping."""
+
+    def __init__(self, values):
+        self._values = values
+
+    def to_py(self):
+        return dict(self._values)
+
+    def __iter__(self):
+        raise TypeError("proxy rows are not directly mapping-convertible")
+
+
+class ProxyCursor:
+    """A proxy container: toArray() returns a proxy list of proxy rows."""
+
+    def __init__(self, rows):
+        self._rows = [ProxyRow(row) for row in rows]
+
+    def toArray(self):
+        return ProxyList(self._rows)
+
+
+class ProxyList:
+    def __init__(self, items):
+        self._items = items
+
+    def __iter__(self):
+        return iter(self._items)
+
+    def __len__(self):
+        return len(self._items)
+
+    def __getitem__(self, index):
+        return self._items[index]
+
+
+class ProxySql(Sql):
+    def exec(self, statement, *params):
+        self.calls.append((statement, params))
+        raw = self.connection.execute(statement, params)
+        cols = [x[0] for x in raw.description] if raw.description else []
+        rows = [dict(zip(cols, row, strict=True)) for row in raw.fetchall()]
+        return ProxyCursor(rows)
+
+
+def proxy_resolver():
+    storage = Storage()
+    storage.sql = ProxySql(storage.db)
+    members = Members()
+    return (
+        ReadOnlyExistingConnectorScope(identity_do_storage=storage, membership_authority=members),
+        storage,
+        members,
+    )
+
+
+def test_proxy_container_row_resolves_the_same_established_scope():
+    """The SAME healthy single row must resolve whether it is plain or proxied.
+
+    Reproduced live: the deployed Identity Worker returns proxy rows, so the
+    plain isinstance() check reported one established row as not established.
+    """
+    resolver_port, storage, members = proxy_resolver()
+    storage.add()
+
+    scope = resolver_port.resolve_scope(subject_id=SUBJECT, tenant_ref=TENANT, now=NOW)
+
+    assert scope.account_ref == "account_canonical_1"
+    assert scope.workspace_ref == "workspace_canonical_1"
+    assert scope.owner_subject_id == SUBJECT
+    assert members.called == [(TENANT, SUBJECT, NOW)]
+
+
+def test_proxy_shape_never_widens_the_exactly_one_row_requirement():
+    resolver_port, storage, _ = proxy_resolver()
+    storage.add()
+    storage.add()
+
+    with pytest.raises(ControlPlaneContractError) as exc:
+        resolver_port.resolve_scope(subject_id=SUBJECT, tenant_ref=TENANT, now=NOW)
+    assert exc.value.code == "canonical_scope_not_established"
+
+
+def test_proxy_shape_with_a_malformed_row_is_refused():
+    storage = Storage()
+
+    class _BrokenRow:
+        def to_py(self):
+            return "not a mapping"
+
+        def __iter__(self):
+            raise TypeError("unconvertible proxy row")
+
+    class _BrokenCursor:
+        def toArray(self):
+            return ProxyList([_BrokenRow()])
+
+    class _BrokenSql(Sql):
+        def exec(self, statement, *params):
+            del statement, params
+            return _BrokenCursor()
+
+    storage.sql = _BrokenSql(storage.db)
+    # The port reads sql at construction time, so build it against the broken one.
+    resolver_port = ReadOnlyExistingConnectorScope(
+        identity_do_storage=storage, membership_authority=Members()
+    )
+    with pytest.raises(ControlPlaneContractError) as exc:
+        resolver_port.resolve_scope(subject_id=SUBJECT, tenant_ref=TENANT, now=NOW)
+    assert exc.value.code == "canonical_scope_unavailable"

@@ -30,6 +30,42 @@ class CanonicalMembershipReader(Protocol):
     ) -> Any: ...
 
 
+def _rows(cursor: Any) -> list[dict[str, Any]]:
+    """Normalize Durable Object / Pyodide JavaScript proxy rows.
+
+    The same established row is a plain ``list``/``dict`` in a normal Durable
+    Object run and an opaque proxy container with proxy rows in the deployed
+    Worker, so an ``isinstance`` check alone reports a healthy single row as
+    "not established". This reuses the canonical Identity authority's existing
+    ``to_py()``/``dict()`` conversion order — exactly as the sibling
+    ``canonical_connector_enrollment_durable._rows`` already does — while still
+    refusing a malformed row rather than silently filling fields.
+    """
+    to_array = getattr(cursor, "toArray", None)
+    if not callable(to_array):
+        raise ControlPlaneContractError(
+            "canonical_scope_unavailable", "canonical context lookup unavailable"
+        )
+    raw = to_array()
+    output: list[dict[str, Any]] = []
+    for item in raw:
+        if isinstance(item, dict):
+            output.append(dict(item))
+            continue
+        to_py = getattr(item, "to_py", None)
+        converted = to_py() if callable(to_py) else None
+        if isinstance(converted, dict):
+            output.append(dict(converted))
+            continue
+        try:
+            output.append(dict(item))
+        except (TypeError, ValueError) as exc:
+            raise ControlPlaneContractError(
+                "canonical_scope_unavailable", "canonical context row is invalid"
+            ) from exc
+    return output
+
+
 class ReadOnlyExistingConnectorScope:
     def __init__(self, *, identity_do_storage: Any, membership_authority: CanonicalMembershipReader):
         sql = getattr(identity_do_storage, "sql", None)
@@ -53,18 +89,20 @@ class ReadOnlyExistingConnectorScope:
             tenant_id=tenant_ref, canonical_subject_id=subject_id, now=now.astimezone(timezone.utc)
         )
         try:
-            cursor = self._sql.exec(
-                "SELECT account_ref,workspace_ref FROM canonical_connector_context "
-                "WHERE product_id=? AND subject_id=?",
-                LEGACY_CONTEXT_PRODUCT, subject_id,
+            rows = _rows(
+                self._sql.exec(
+                    "SELECT account_ref,workspace_ref FROM canonical_connector_context "
+                    "WHERE product_id=? AND subject_id=?",
+                    LEGACY_CONTEXT_PRODUCT, subject_id,
+                )
             )
-            read = getattr(cursor, "toArray", None)
-            if not callable(read):
-                raise ValueError("invalid canonical context cursor")
-            rows = read()
+        except ControlPlaneContractError:
+            raise
         except Exception as exc:
             raise ControlPlaneContractError("canonical_scope_unavailable", "canonical context lookup unavailable") from exc
-        if not isinstance(rows, list) or len(rows) != 1 or not isinstance(rows[0], dict):
+        # Exactly one established row is still required. Normalizing the row
+        # shape must never widen the count, the product pin or the subject pin.
+        if len(rows) != 1:
             raise ControlPlaneContractError("canonical_scope_not_established", "one established connector context required")
         try:
             return ConnectorEnrollmentScope(
