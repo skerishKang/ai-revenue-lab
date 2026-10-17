@@ -357,7 +357,8 @@ def verify_oracle_mesh_mode(
     changed = sorted(
         name for name in set(before) | set(after) if before.get(name) != after.get(name)
     )
-    if changed != [ORACLE_MESH_MODE_NAME]:
+    expected_changed = [] if before.get(ORACLE_MESH_MODE_NAME) == after.get(ORACLE_MESH_MODE_NAME) else [ORACLE_MESH_MODE_NAME]
+    if changed != expected_changed:
         raise ActivationPlanError(
             "unexpected live configuration change: " + (", ".join(changed) or "none")
         )
