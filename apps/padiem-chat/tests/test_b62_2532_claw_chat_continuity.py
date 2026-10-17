@@ -114,6 +114,21 @@ def test_glass_kicker_uses_chat_eyebrow_ink() -> None:
         assert declaration in unified, declaration
 
 
+def test_page_eyebrow_shares_the_hero_vertical_origin() -> None:
+    """The brand line must land on the Chat/Claw row at any viewport height."""
+    frame = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
+    decl = frame.split("use the Chat/Claw eyebrow origin", 1)[1].split("!important", 1)[0]
+    padding = [line for line in decl.splitlines() if line.strip().startswith("padding:")][0]
+    assert "calc(clamp(52px, 7.4vh, 88px) - 7px)" in padding
+    assert "78px" not in padding, "a fixed inset cannot track the height-relative hero inset"
+    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    assert locale.count('"connectors-kicker": "PADIEM CONNECTORS"') == 2
+    assert locale.count('"automation-view-kicker": "PADIEM AUTOMATION"') == 2
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    assert ">Padiem Chat</span>" in html
+    assert ">PADIEM CLAW</span>" in html
+
+
 def test_every_destination_shares_one_glass_eyebrow() -> None:
     """The Chat/Claw landing is the visual authority for all product panels."""
     states = [s for s in ("claw", "connectors", "automation", "meeting", "calendar", "library")
