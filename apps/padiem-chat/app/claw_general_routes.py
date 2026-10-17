@@ -318,21 +318,82 @@ async def _save_claw_exchange(
         return None
 
 
+async def _append_staged_claw_answer(
+    request: Request, *, run_id: str, conversation_id: str, answer: str,
+) -> bool:
+    """Append only the verified answer to an already-staged owner run.
+
+    The owner turn was persisted before Engine dispatch, so the completion
+    step owns the assistant message alone. ``append_local_task_result`` keeps
+    the exactly-once and terminal-immutability guards of the existing store.
+    """
+    if not isinstance(answer, str) or not answer.strip():
+        return False
+    uid = current_user_id(request) if auth_ready(request) else None
+    store = getattr(request.app.state, "history_store", None)
+    append = getattr(store, "append_local_task_result", None)
+    if not uid or not callable(append):
+        return False
+    from .claw_local_task_result_projection import result_message_id
+    try:
+        appended = append(
+            user_id=uid, run_id=run_id,
+            message_id=result_message_id(
+                conversation_id=conversation_id, command_id=run_id,
+                revision_ref="general_answer",
+            ),
+            summary=answer, content=answer, status="completed",
+        )
+        if inspect.isawaitable(appended):
+            appended = await appended
+        return bool(appended)
+    except Exception:
+        return False
+
+
+async def _mark_staged_run_failed(request: Request, run_id: str) -> None:
+    """Best-effort truthful terminal state for a staged run with no answer."""
+    uid = current_user_id(request) if auth_ready(request) else None
+    store = getattr(request.app.state, "history_store", None)
+    mark = getattr(store, "update_claw_run_status", None)
+    if not isinstance(uid, str) or not uid or not callable(mark):
+        return
+    try:
+        result = mark(uid, run_id, "failed")
+        if inspect.isawaitable(result):
+            await result
+    except Exception:
+        pass
+
+
 async def _record_completed_claw_result(
     request: Request, *, run_id: str, conversation_id: str | None,
     user_text: str, answer: str, authorized_workspace_id: str | None,
     first_turn_grant: B54VerifiedCodingContextV1 | None = None,
+    staged_conversation_id: str | None = None,
 ) -> str | None:
     """Persist only a verified completed Claw result; never replay Engine.
 
     Conversation saving and completed-run history are both optional read-model
     projections. Failure to save must not conceal an already-completed answer
     or advertise a server conversation ID that was not actually stored.
+
+    A #4139 desktop run is staged before dispatch, so its verified answer is
+    appended to that same conversation instead of re-inserting the user turn.
     """
-    saved_conversation_id = await _save_claw_exchange(
-        request, conversation_id=conversation_id,
-        user_text=user_text, answer=answer,
-    )
+    saved_conversation_id: str | None
+    staged_answer_saved = True
+    if staged_conversation_id is not None:
+        saved_conversation_id = staged_conversation_id
+        staged_answer_saved = await _append_staged_claw_answer(
+            request, run_id=run_id, conversation_id=staged_conversation_id,
+            answer=answer,
+        )
+    else:
+        saved_conversation_id = await _save_claw_exchange(
+            request, conversation_id=conversation_id,
+            user_text=user_text, answer=answer,
+        )
     # #3933 S1: link the reserved first-turn grant to its verified outcome.
     # Best-effort provenance only: a grant-store failure must never conceal
     # an already-completed answer.
@@ -340,6 +401,11 @@ async def _record_completed_claw_result(
         request, first_turn_grant, run_ref=run_id,
         saved_conversation_id=saved_conversation_id,
     )
+    if staged_conversation_id is not None:
+        if not staged_answer_saved:
+            # The answer reached the caller, but its run must not stay pending.
+            await _mark_staged_run_failed(request, run_id)
+        return staged_conversation_id
     projected_conversation_id = saved_conversation_id or conversation_id
     if projected_conversation_id is None:
         await project_completed_general_run(
@@ -1223,6 +1289,44 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     else:
         grounding_context, search_sources = drive_context, drive_sources
 
+    # #4139: a model-driven desktop run must have an owner-bound run row
+    # BEFORE Engine dispatch. The signed internal desktop route resolves the
+    # target conversation, workspace and owner session from that row, so an
+    # unstaged run can only fail after the model has already started.
+    staged_conversation_id: str | None = None
+    if initial_pc_capture:
+        from .claw_memory_routes import _resolve_memory_workspace
+        stage_uid = current_user_id(request) if auth_ready(request) else None
+        stage = getattr(
+            getattr(request.app.state, "history_store", None),
+            "record_txt_pending_run", None,
+        )
+        if not isinstance(stage_uid, str) or not stage_uid or not callable(stage):
+            await _refund_active_reservation()
+            await fail_first_turn_grant(request, first_turn_context)
+            return _error(503, "desktop_history_unavailable",
+                          "대화 저장소를 확인할 수 없습니다.")
+        try:
+            stage_workspace = await _resolve_memory_workspace(request, stage_uid)
+        except Exception:
+            stage_workspace = None
+        if not isinstance(stage_workspace, str) or not stage_workspace:
+            await _refund_active_reservation()
+            await fail_first_turn_grant(request, first_turn_context)
+            return _error(503, "desktop_workspace_unavailable",
+                          "대화 범위를 확인할 수 없습니다.")
+        try:
+            staged_conversation_id = await stage(
+                user_id=stage_uid, run_id=run.run_id,
+                workspace_id=stage_workspace, user_text=user_text,
+                conversation_id=conversation_id,
+            )
+        except Exception:
+            await _refund_active_reservation()
+            await fail_first_turn_grant(request, first_turn_context)
+            return _error(503, "desktop_history_unavailable",
+                          "대화 저장에 실패했습니다.")
+
     if live_requested:
         from .claw_live_events import live_claw_sse
         live_args = {"product_tier": product_tier, "subject_id": subject_id}
@@ -1241,6 +1345,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 user_text=user_text, answer=answer,
                 authorized_workspace_id=authorized_workspace_id,
                 first_turn_grant=first_turn_context,
+                staged_conversation_id=staged_conversation_id,
             )
 
         return live_claw_sse(
@@ -1260,6 +1365,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             dispatch_args["additional_system_context"] = grounding_context
         outcome = await adapter.execute(run, **dispatch_args)
     except P01AdapterError as exc:
+        if staged_conversation_id is not None:
+            await _mark_staged_run_failed(request, run.run_id)
         if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
             await _refund_active_reservation()
             # Proven non-dispatch: the claimed grant may terminally fail.
@@ -1310,6 +1417,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         )
     except Exception:
         _clear_reservation()
+        if staged_conversation_id is not None:
+            await _mark_staged_run_failed(request, run.run_id)
         return JSONResponse(
             {
                 "ok": False,
@@ -1334,6 +1443,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             "승인이 필요한 요청입니다. Claw 업무 화면에서 진행해 주세요.",
         )
     if status_value != "completed" or not outcome.answer:
+        if staged_conversation_id is not None:
+            await _mark_staged_run_failed(request, run.run_id)
         return JSONResponse(
             {
                 "ok": False,
@@ -1354,6 +1465,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         user_text=user_text, answer=outcome.answer,
         authorized_workspace_id=authorized_workspace_id,
         first_turn_grant=first_turn_context,
+        staged_conversation_id=staged_conversation_id,
     )
     return _claw_general_sse(
         outcome.answer,
