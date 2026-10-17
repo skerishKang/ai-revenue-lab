@@ -76,7 +76,7 @@ def test_live_completed_active_catjam_propagates_provider_error_and_refunds():
         assert info.value.status_code == 502
         assert info.value.code == "provider_server_error"
         assert DEFAULT_CHAT_PROFILE == "free"
-        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == "opencode-go/cat-jam-free"
+        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == "opencode-go/beam-free"
         assert calls == 1
         assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False
@@ -152,7 +152,7 @@ def test_mock_chat_remains_available_without_provider_dispatch():
         )
         result = await client.complete(MESSAGES)
         assert result["runtime"] == "mock"
-        assert result["route"]["model"] == "opencode-go/cat-jam-free"
+        assert result["route"]["model"] == "opencode-go/beam-free"
         assert calls == 0
 
     asyncio.run(scenario())
