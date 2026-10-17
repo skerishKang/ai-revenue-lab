@@ -1095,7 +1095,12 @@ def create_app(
     )
     app.state.b66_operator_target_resolver = (
         _candidate_review_authority.resolve_operator_target
-        if _candidate_review_authority is not None else None
+        if _candidate_review_authority is not None
+        else (
+            b66_canonical_candidate_target_resolver
+            if callable(b66_canonical_candidate_target_resolver)
+            else None
+        )
     )
 
     # B66 #3406: canonical account/workspace company identity/defaults. This is

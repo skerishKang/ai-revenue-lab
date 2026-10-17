@@ -318,6 +318,12 @@ class SavedQuoteSkillCandidateStore(Protocol):
         candidate_id: str,
     ) -> dict[str, Any] | None: ...
 
+    async def read_private_candidate_owner(
+        self,
+        *,
+        candidate_id: str,
+    ) -> dict[str, Any] | None: ...
+
     async def record_decision(
         self,
         *,
@@ -527,6 +533,31 @@ class D1SavedQuoteSkillCandidateStore:
             "candidate_digest": str(row.get("candidate_digest", "")),
             "candidate_json": row.get("candidate_json"),
             "saved_skill_id": str(row.get("saved_skill_id") or ""),
+        }
+
+    async def read_private_candidate_owner(
+        self,
+        candidate_id: str,
+    ) -> dict[str, Any] | None:
+        """Server-private exact-candidate owner/workspace lookup.
+
+        This is the first required real lookup. It is never returned to a
+        customer-facing projection; caller must independently resolve canonical
+        tenant and permission before using the returned values.
+        """
+        row_id = validate_candidate_row_id(candidate_id)
+        row = await self._first(
+            "SELECT id, user_id, workspace_id, status "
+            "FROM b66_saved_skill_candidate WHERE id=?",
+            row_id,
+        )
+        if not row:
+            return None
+        return {
+            "candidate_id": str(row.get("id", "")),
+            "user_id": str(row.get("user_id", "")),
+            "workspace_id": str(row.get("workspace_id", "")),
+            "status": str(row.get("status", "")),
         }
 
     async def record_decision(
