@@ -191,6 +191,13 @@ _ENGINE_GRAFANA_APPROVED_ADDITION = (
     "secrets_store_secret", "PADIEM_GRAFANA_OTLP_TOKEN",
     "f0b09ca04a7b43248154c773704a5616", "PADIEM_GRAFANA_OTLP_TOKEN",
 )
+# #4139: the Engine->Chat desktop dispatch service and the one shared proof
+# reference. Both come from the reviewed Engine source; no value is ever read.
+_ENGINE_4139_DESKTOP_ADDITIONS = frozenset({
+    ("service", "PADIEM_CHAT_SERVICE", "padiem-chat", "production", None),
+    ("secrets_store_secret", "CLAW_ENGINE_DESKTOP_SECRET",
+     "f0b09ca04a7b43248154c773704a5616", "CLAW_ENGINE_DESKTOP_SECRET"),
+})
 _B62_GRAFANA_PUBLIC_ADDITIONS = frozenset({
     ("plain_text", "PADIEM_GRAFANA_OTLP_ENDPOINT",
      "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs"),
@@ -283,19 +290,25 @@ def assert_exact_claw_desktop_added_only(before: object, after: object) -> None:
         )
 
 
-def assert_engine_4194_exact_rollout(before: object, after: object) -> None:
-    """Preserve ALL previous bindings; permit only two exact reviewed additions.
+def assert_engine_4194_exact_rollout(
+    before: object, after: object, *, allow_4139_desktop_bindings: bool = False
+) -> None:
+    """Preserve ALL previous bindings; permit only exact reviewed additions.
 
     Already-commissioned bindings may be present in the before version, to
     keep later no-drift code redeploys valid. The after version MUST contain
-    both approved identities and no unreviewed changes.
+    every approved identity for the selected rollout and no unreviewed changes.
     """
     prior, current = set(canonical_state(before)), set(canonical_state(after))
-    if not _ENGINE_4194_APPROVED_ADDITIONS.issubset(current):
+    required = _ENGINE_4194_APPROVED_ADDITIONS
+    allowed = _ENGINE_4194_APPROVED_ADDITIONS | {_ENGINE_GRAFANA_APPROVED_ADDITION}
+    if allow_4139_desktop_bindings:
+        required = required | _ENGINE_4139_DESKTOP_ADDITIONS
+        allowed = allowed | _ENGINE_4139_DESKTOP_ADDITIONS
+    if not required.issubset(current):
         raise BindingStateError("Engine #4194 required exact binding identities missing")
     removed = prior - current
     added = current - prior
-    allowed = _ENGINE_4194_APPROVED_ADDITIONS | {_ENGINE_GRAFANA_APPROVED_ADDITION}
     if removed or not added.issubset(allowed):
         raise BindingStateError(
             "Engine #4194 binding authority drift detected; "
@@ -565,6 +578,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-add-owner-d1", action="store_true")
     parser.add_argument("--expected-add-web-secrets-store", action="store_true")
     parser.add_argument("--expected-engine-4194-rollout", action="store_true")
+    parser.add_argument("--expected-engine-4139-desktop-rollout", action="store_true",
+                        help="#4139: #4194 identities plus the exact Engine->Chat desktop service and secret reference")
     parser.add_argument("--expected-add-grafana-telemetry", action="store_true",
                         help="only one canonical Grafana Secrets Store binding, no values")
     parser.add_argument("--expected-add-oracle-mesh", action="store_true",
@@ -587,6 +602,7 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_owner_d1,
             args.expected_add_web_secrets_store,
             args.expected_engine_4194_rollout,
+            args.expected_engine_4139_desktop_rollout,
             args.expected_add_grafana_telemetry,
             args.expected_add_oracle_mesh,
             args.expected_add_claw_desktop_secret,
@@ -597,7 +613,13 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_b66_membership_secret,
         )) > 1:
             raise BindingStateError("multiple additive authority modes prohibited")
-        if args.expected_engine_4194_rollout:
+        if args.expected_engine_4139_desktop_rollout:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("Engine #4139 mode refuses unrelated authorization arguments")
+            assert_engine_4194_exact_rollout(
+                _load(args.before), _load(args.after), allow_4139_desktop_bindings=True
+            )
+        elif args.expected_engine_4194_rollout:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Engine #4194 mode refuses unrelated authorization arguments")
             assert_engine_4194_exact_rollout(_load(args.before), _load(args.after))
@@ -669,7 +691,9 @@ def main(argv: list[str] | None = None) -> int:
         print("B62_BINDING_AUTHORITY_PRESERVED=FAIL", file=sys.stderr)
         print(f"REASON={exc}", file=sys.stderr)
         return 1
-    if args.expected_engine_4194_rollout:
+    if args.expected_engine_4139_desktop_rollout:
+        print("ENGINE_4139_DESKTOP_EXACT_ADDITIONS_AND_PREEXISTING_BINDINGS_PRESERVED=PASS")
+    elif args.expected_engine_4194_rollout:
         print("ENGINE_4194_EXACT_ADDITIONS_AND_PREEXISTING_BINDINGS_PRESERVED=PASS")
     elif args.check_connector_baseline:
         print("CONNECTOR_BASELINE_CONSISTENT=PASS")
