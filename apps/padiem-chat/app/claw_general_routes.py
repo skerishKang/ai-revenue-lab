@@ -524,12 +524,15 @@ _COMMAND_PC_MARKERS = (
 )
 #: Imperative forms only: a description of a command must not execute it.
 _COMMAND_VERBS = ("실행해", "실행하", "run ", "execute ")
-#: #4139: a command is ordinary text — Korean, quotes and any printable
-#: character are allowed. The only forbidden characters are control characters,
-#: and the length bound is the dispatch/poll envelope, far above any real
-#: command line. The former ASCII-only, 512-character rule was a trial limit.
-_MAX_COMMAND_TEXT_CHARS = 8192
-_COMMAND_BODY = re.compile(r"[^\x00-\x1f\x7f]{1,%d}" % _MAX_COMMAND_TEXT_CHARS)
+#: #4139: a command is ordinary text — Korean, quotes, tabs and several lines
+#: are allowed, and there is no product length rule. The former 512-character
+#: and then 8,192-character caps were trial limits that rejected normal work, so
+#: the size of a command is bounded by the transport it arrives on
+#: (MAX_CLAW_GENERAL_BODY_BYTES) and by the row it is stored in, both checked at
+#: their own boundary. Here only the characters that break the lane are refused:
+#: NUL and CR (neither survives the exec/transcript path) and the other C0
+#: controls and DEL.
+_COMMAND_BODY = re.compile(r"[^\x00-\x08\x0b-\x1f\x7f]+")
 
 
 def _requested_local_command(user_text: str) -> tuple[bool, str | None]:
@@ -548,11 +551,10 @@ def _requested_local_command(user_text: str) -> tuple[bool, str | None]:
         return False, None
     if not any(verb in lowered for verb in _COMMAND_VERBS):
         return False, None
-    # A delimited command may span several lines; only backticks, NUL and CR
-    # end the span, so a multi-line script is ordinary input.
-    matches = re.findall(
-        r"`([^`\x00\r]{1,%d})`" % _MAX_COMMAND_TEXT_CHARS, user_text,
-    )
+    # A delimited command may span several lines; only a backtick, NUL or CR
+    # ends the span, so a multi-line script is ordinary input. The span itself
+    # carries no length rule — the request envelope bounds it.
+    matches = re.findall(r"`([^`\x00\r]*)`", user_text)
     if len(matches) != 1:
         return False, None
     command = matches[0].strip()

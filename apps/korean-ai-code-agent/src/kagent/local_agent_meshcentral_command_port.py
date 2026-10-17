@@ -30,12 +30,21 @@ from .local_agent_meshcentral_private_reader import _MESHCTRL_STDIN_BOOTSTRAP
 
 #: Marker appended to the requested command so the PC reports its own exit code.
 EXIT_SENTINEL = "__PADIEM_EXIT__"
-#: #4139: a command is ordinary text. Korean, quotes and any printable
-#: character are allowed; the former ASCII-only, 512-character rule was a trial
-#: limit that blocked normal work. A command may also span several lines — only
-#: NUL and CR are refused (CR would break the line-based transcript parsing).
-_MAX_COMMAND_CHARS = 8192
-_COMMAND_BODY = re.compile(r"[^\x00\r]{1," + str(_MAX_COMMAND_CHARS) + "}")
+#: #4139: a command is ordinary text. Korean, quotes, tabs and several lines are
+#: allowed, and there is no product length rule — the former 512- and
+#: 8,192-character caps were trial limits. Only NUL and CR are refused, because
+#: both break the transport they travel on: NUL cannot exist in an OS argv
+#: string, and CR ends the transcript line the exit sentinel is parsed from.
+_COMMAND_BODY = re.compile(r"[^\x00\r]+")
+#: Linux fixes one argv element at MAX_ARG_STRLEN = PAGE_SIZE * 32 = 131,072
+#: bytes (``include/uapi/linux/binfmts.h``, the limit ``execve(2)`` documents);
+#: the kernel counts the string together with its terminating NUL. The wrapped
+#: command is exactly one ``--run`` argument on the Oracle host, so a command
+#: that cannot be exec'd is refused here with its cause instead of dying as an
+#: opaque E2BIG. The aggregate argv-plus-environment ceiling depends on that
+#: host's stack rlimit and is not guessed at here; it sits far above anything a
+#: dispatch row can carry.
+_MAX_ARGV_ELEMENT_BYTES = 131_072
 _SENTINEL_LINE = re.compile(rb"__PADIEM_EXIT__(-?\d+)?")
 METHOD_LABEL = "powershell_runcommand_reply"
 #: stdout and stderr travel merged (trailing ``2>&1``); the conversation says so.
@@ -65,10 +74,8 @@ class MeshCentralCommandOutcome:
 def _bounded_command(value: Any) -> str:
     if not isinstance(value, str):
         raise MeshCentralCommandRefused("command must be text")
-    if not value or len(value) > _MAX_COMMAND_CHARS:
-        raise MeshCentralCommandRefused(
-            "command must be 1.." + str(_MAX_COMMAND_CHARS) + " characters"
-        )
+    if not value:
+        raise MeshCentralCommandRefused("command must not be empty")
     if _COMMAND_BODY.fullmatch(value) is None:
         raise MeshCentralCommandRefused(
             "command must not contain NUL or carriage return"
@@ -214,6 +221,15 @@ class MeshCentralCliCommandPort:
         if timeout_seconds < 1 or timeout_seconds > 300:
             raise MeshCentralCommandRefused("timeout_seconds is out of range")
         body = _bounded_command(command)
+        wrapped = _wrap(body)
+        # The NUL the C execve boundary appends is counted, so a refusal here
+        # is the kernel's own limit, not a product rule. The aggregate argv and
+        # environment ceiling depends on this host's stack rlimit and is not
+        # guessed at; it is far above the row a dispatch can ever carry.
+        if len(wrapped.encode("utf-8")) + 1 > _MAX_ARGV_ELEMENT_BYTES:
+            raise MeshCentralCommandRefused(
+                "the wrapped command exceeds the OS single-argument limit"
+            )
         argv = [
             "node", "-e", _MESHCTRL_STDIN_BOOTSTRAP,
             self._meshctrl_js, "runcommand",
@@ -222,7 +238,7 @@ class MeshCentralCliCommandPort:
             "--loginpass", "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__",
             "--id", node_ref.strip(),
             "--powershell",
-            "--run", _wrap(body),
+            "--run", wrapped,
             "--reply",
         ]
         password = self._password_provider()

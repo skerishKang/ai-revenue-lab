@@ -49,10 +49,14 @@ MAX_RESULT_REJECTIONS = 3
 #: flapping channel is not hammered at the poll cadence.
 _BACKOFF_FIRST_SECONDS = 5
 _BACKOFF_MAX_SECONDS = 60
-#: Pending-result file names under the pending dir. The body travels as raw
-#: bytes beside the JSON meta so no hex/base64 copy inflates a large output.
+#: Pending-result files under the pending dir. The body travels as raw bytes
+#: beside the JSON meta so no hex/base64 copy inflates a large output. A body
+#: written by this revision is named after its own digest, so a new result
+#: never truncates the body an existing manifest still points at.
 _PENDING_META_NAME = "pending-result.json"
 _PENDING_BODY_NAME = "pending-result.body"
+_PENDING_BODY_PREFIX = "pending-result-"
+_PENDING_BODY_SUFFIX = ".body"
 
 
 class OracleMeshChannelRefused(RuntimeError):
@@ -155,12 +159,17 @@ class OracleMeshExecutor:
         self._rejections = 0
         self._transients = 0
         self._pending_dir = pending_dir
+        #: The body file the current manifest points at, once durable.
+        self._pending_body: Optional[str] = None
 
     # ---- channel -------------------------------------------------------
     def _https_post(self, path: str, payload: Optional[dict[str, Any]]) -> tuple[int, dict[str, Any]]:
         """One verified HTTPS POST. Redirects are refused, not followed."""
         url = f"{self._origin}{path}"
-        data = json.dumps(payload or {}).encode("utf-8")
+        # UTF-8 as JSON permits: escaping every non-ASCII byte would inflate a
+        # Korean command output about six times, so a body far below the wire
+        # envelope would still be refused as too large and quarantined.
+        data = json.dumps(payload or {}, ensure_ascii=False).encode("utf-8")
         request = urllib.request.Request(
             url, data=data, method="POST",
             headers={
@@ -176,11 +185,22 @@ class OracleMeshExecutor:
         opener = urllib.request.build_opener(_NoRedirect())
         try:
             with opener.open(request, timeout=self._timeout) as response:
-                raw = response.read(65536)
+                # One extra byte is the overflow detector, never content: a
+                # poll response carries the command it wants run, so reading a
+                # fixed 64 KiB used to truncate a long command's JSON and make
+                # the dispatch look absent. The bound is the same wire envelope
+                # the submit leg is held to.
+                raw = response.read(MAX_COMMAND_BYTES + 1)
                 status = int(getattr(response, "status", 0) or 0)
+                if len(raw) > MAX_COMMAND_BYTES:
+                    raise OracleMeshChannelRefused(
+                        "chat channel response exceeds the wire envelope"
+                    )
         except urllib.error.HTTPError as exc:
             raw = exc.read(4096)
             status = int(exc.code)
+        except OracleMeshChannelRefused:
+            raise
         except Exception as exc:  # transport refused/unreachable
             raise OracleMeshChannelRefused("chat channel transport refused") from exc
         try:
@@ -298,16 +318,146 @@ class OracleMeshExecutor:
         )
 
     # ---- held-result persistence -------------------------------------
-    def _pending_paths(self) -> Optional[tuple[str, str]]:
-        """Meta/body paths for the held result, or None (memory-only mode)."""
+    def _pending_dir_path(self) -> Optional[str]:
         import os
 
         if not isinstance(self._pending_dir, str) or not self._pending_dir:
             return None
-        return (
-            os.path.join(self._pending_dir, _PENDING_META_NAME),
-            os.path.join(self._pending_dir, _PENDING_BODY_NAME),
-        )
+        return self._pending_dir
+
+    def _pending_meta_path(self) -> Optional[str]:
+        import os
+
+        directory = self._pending_dir_path()
+        if directory is None:
+            return None
+        return os.path.join(directory, _PENDING_META_NAME)
+
+    @staticmethod
+    def _pending_body_name(digest: str) -> str:
+        """The body file is named after its own digest.
+
+        A new held result therefore lands in a new file instead of truncating
+        the body an existing manifest still points at, which is what makes the
+        two-step commit below safe.
+        """
+        return _PENDING_BODY_PREFIX + digest[:32] + _PENDING_BODY_SUFFIX
+
+    @staticmethod
+    def _atomic_write(directory: str, name: str, payload: bytes) -> None:
+        """Create-or-replace one file, fully written, or leave the old one alone.
+
+        Node/POSIX guarantee ``os.replace`` is atomic within a directory, and
+        the fsyncs put both the bytes and the rename on disk before the executor
+        posts. The previous code opened the live file with ``O_TRUNC`` and
+        ignored the error, so a full disk or a crash mid-write destroyed the
+        only copy of an execution the PC had already performed.
+        """
+        import os
+        import tempfile
+
+        fd, temp = tempfile.mkstemp(dir=directory, prefix=".tmp-", suffix=".part")
+        try:
+            with os.fdopen(fd, "wb") as handle:
+                handle.write(payload)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temp, os.path.join(directory, name))
+        except BaseException:
+            try:
+                os.unlink(temp)
+            except OSError:
+                pass
+            raise
+        try:
+            dir_fd = os.open(directory, os.O_RDONLY)
+        except OSError:
+            return  # not every platform lets a directory be fsynced
+        try:
+            os.fsync(dir_fd)
+        except OSError:
+            pass
+        finally:
+            os.close(dir_fd)
+
+    def _persist_pending(self) -> Optional[str]:
+        """Make the held result durable before submitting it.
+
+        Returns ``None`` when the result is durable (or already was), and the
+        OSError name when it is not — the caller reports that instead of
+        pretending a write that failed happened. A crash between a real
+        execution and the server's acceptance must never re-execute the PC
+        command on restart, so recovery only resends these exact bytes.
+
+        Commit order: the content-addressed body first, then the manifest that
+        names it. A crash between the two leaves the previous complete pair
+        readable and the new body unreferenced, never a manifest whose bytes
+        are gone.
+        """
+        import os
+
+        directory = self._pending_dir_path()
+        if directory is None or self._pending is None:
+            return None
+        dispatch, outcome = self._pending
+        digest = hashlib.sha256(outcome.body).hexdigest()
+        body_name = self._pending_body_name(digest)
+        meta = {
+            "dispatch_id": dispatch.dispatch_id,
+            "nonce": dispatch.nonce,
+            "node_ref": dispatch.node_ref,
+            "file_path": dispatch.file_path,
+            "command_id": dispatch.command_id,
+            "run_id": dispatch.run_id,
+            "kind": dispatch.kind,
+            "command_text": dispatch.command_text,
+            "termination": outcome.termination,
+            "exit_code": outcome.exit_code,
+            "content_sha256": digest,
+            "content_bytes": len(outcome.body),
+            "body_name": body_name,
+        }
+        encoded = json.dumps(meta).encode("utf-8")
+        meta_path = os.path.join(directory, _PENDING_META_NAME)
+        if self._pending_body_name_matches(meta_path, encoded):
+            # The exact same held result is already durable. A plain resend
+            # rewrites nothing, so the good copy is never exposed to a write
+            # that cannot change it.
+            self._pending_body = body_name
+            return None
+        try:
+            if not os.path.exists(os.path.join(directory, body_name)):
+                self._atomic_write(directory, body_name, outcome.body)
+            self._atomic_write(directory, _PENDING_META_NAME, encoded)
+        except OSError as exc:
+            return type(exc).__name__
+        previous = self._pending_body
+        if previous is not None and previous != body_name:
+            try:
+                os.remove(os.path.join(directory, previous))
+            except OSError:
+                pass  # an unreferenced body is harmless; the manifest is current
+        self._pending_body = body_name
+        return None
+
+    def _pending_body_name_matches(self, meta_path: str, encoded: bytes) -> bool:
+        import os
+
+        try:
+            with open(meta_path, "rb") as handle:
+                current = handle.read()
+        except OSError:
+            return False
+        if current != encoded:
+            return False
+        try:
+            manifest = json.loads(current.decode("utf-8"))
+        except (ValueError, UnicodeDecodeError):
+            return False
+        name = manifest.get("body_name") if isinstance(manifest, dict) else None
+        if not isinstance(name, str) or not name:
+            return False
+        return os.path.exists(os.path.join(os.path.dirname(meta_path), name))
 
     @staticmethod
     def _safe_quarantine_stem(dispatch_id: str) -> str:
@@ -322,66 +472,35 @@ class OracleMeshExecutor:
             return dispatch_id
         return "id-" + _hashlib.sha256(str(dispatch_id).encode("utf-8")).hexdigest()[:16]
 
-    def _persist_pending(self) -> None:
-        """Write the held result beside the executor before submitting it.
-
-        A crash between a real execution and the server's acceptance must
-        never re-execute the PC command on restart: the outcome is durable
-        first, so recovery only resends these exact bytes.
-        """
-        paths = self._pending_paths()
-        if paths is None or self._pending is None:
-            return
-        import os
-
-        meta_path, body_path = paths
-        dispatch, outcome = self._pending
-        meta = json.dumps({
-            "dispatch_id": dispatch.dispatch_id,
-            "nonce": dispatch.nonce,
-            "node_ref": dispatch.node_ref,
-            "file_path": dispatch.file_path,
-            "command_id": dispatch.command_id,
-            "run_id": dispatch.run_id,
-            "kind": dispatch.kind,
-            "command_text": dispatch.command_text,
-            "termination": outcome.termination,
-            "exit_code": outcome.exit_code,
-            "content_sha256": hashlib.sha256(outcome.body).hexdigest(),
-            "content_bytes": len(outcome.body),
-        })
-        body_fd = os.open(body_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        try:
-            with os.fdopen(body_fd, "wb") as handle:
-                handle.write(outcome.body)
-        except BaseException:
-            try:
-                os.close(body_fd)
-            except OSError:
-                pass
-            raise
-        meta_fd = os.open(meta_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        try:
-            with os.fdopen(meta_fd, "w", encoding="utf-8") as handle:
-                handle.write(meta)
-        except BaseException:
-            try:
-                os.close(meta_fd)
-            except OSError:
-                pass
-            raise
-
     def _clear_persisted_pending(self) -> None:
-        paths = self._pending_paths()
-        if paths is None:
-            return
+        """Drop the accepted manifest and the body it names, nothing newer.
+
+        Bodies are removed through the manifest that references them, so an
+        accepted result cannot delete a body another result still points at.
+        """
         import os
 
-        for path in paths:
+        directory = self._pending_dir_path()
+        if directory is None:
+            return
+        meta_path = os.path.join(directory, _PENDING_META_NAME)
+        names = [_PENDING_META_NAME]
+        try:
+            with open(meta_path, "rb") as handle:
+                manifest = json.loads(handle.read().decode("utf-8"))
+            if isinstance(manifest, dict) and isinstance(manifest.get("body_name"), str):
+                names.append(manifest["body_name"])
+        except (OSError, ValueError, UnicodeDecodeError):
+            pass
+        if self._pending_body:
+            names.append(self._pending_body)
+        names.append(_PENDING_BODY_NAME)  # pre-content-addressed layout
+        for name in dict.fromkeys(names):
             try:
-                os.remove(path)
+                os.remove(os.path.join(directory, name))
             except OSError:
                 pass
+        self._pending_body = None
 
     def _quarantine_pending(self, *, reason: str, status: Any = None, code: Any = None) -> dict[str, Any]:
         """Preserve a permanently refused result and release the queue.
@@ -404,6 +523,7 @@ class OracleMeshExecutor:
             "quarantined_at": int(time.time()),
         }
         quarantine_path: Any = None
+        persist_error: Any = None
         if self._pending is not None and self._pending_dir:
             body = outcome.body if outcome is not None else b""
             record.update({
@@ -419,28 +539,41 @@ class OracleMeshExecutor:
             })
             base = os.path.join(self._pending_dir, "quarantine-" + stem)
             quarantine_path = base + ".json"
-            body_fd = os.open(base + ".body", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+            body_name = os.path.basename(base) + ".body"
+            record["body_name"] = body_name
+            persist_error: Any = None
             try:
-                with os.fdopen(body_fd, "wb") as handle:
-                    handle.write(body)
-            except BaseException:
+                if not os.path.exists(base + ".body"):
+                    self._atomic_write(self._pending_dir, body_name, body)
+                if not os.path.exists(quarantine_path):
+                    self._atomic_write(
+                        self._pending_dir, os.path.basename(quarantine_path),
+                        json.dumps(record).encode("utf-8"),
+                    )
+            except OSError as exc:
+                # The cause is reported instead of swallowed: a quarantine that
+                # could not be written must not look like preserved evidence.
+                persist_error = type(exc).__name__
+                record["persist_error"] = persist_error
                 try:
-                    os.close(body_fd)
+                    self._atomic_write(
+                        self._pending_dir, os.path.basename(quarantine_path),
+                        json.dumps(record).encode("utf-8"),
+                    )
                 except OSError:
-                    pass
-                raise
-            meta_fd = os.open(quarantine_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-            with os.fdopen(meta_fd, "w", encoding="utf-8") as handle:
-                handle.write(json.dumps(record))
+                    quarantine_path = None
         self._pending = None
         self._rejections = 0
         self._transients = 0
         self._clear_persisted_pending()
-        return {
+        report: dict[str, Any] = {
             "ok": False, "dropped": True, "quarantined": True,
             "quarantine_path": quarantine_path, "status": status, "code": code,
             "reason": reason,
         }
+        if persist_error is not None:
+            report["persist_error"] = persist_error
+        return report
 
     def load_pending(self) -> bool:
         """Recover a result held across a restart: resend-only, never re-run.
@@ -451,24 +584,38 @@ class OracleMeshExecutor:
         """
         import os
 
-        paths = self._pending_paths()
-        if paths is None:
+        directory = self._pending_dir_path()
+        if directory is None:
             return False
-        meta_path, body_path = paths
+        meta_path = os.path.join(directory, _PENDING_META_NAME)
+        if not os.path.exists(meta_path):
+            return False
         try:
             with open(meta_path, "r", encoding="utf-8") as handle:
                 meta = json.load(handle)
-            with open(body_path, "rb") as handle:
-                body = handle.read()
         except OSError:
             return False
         except (ValueError, UnicodeDecodeError):
             stem = "corrupt-" + str(os.getpid())
             try:
-                os.replace(meta_path, os.path.join(self._pending_dir, "quarantine-" + stem + ".json"))
+                os.replace(meta_path, os.path.join(directory, "quarantine-" + stem + ".json"))
             except OSError:
                 pass
             return False
+        # The manifest names its own body, so a body is only ever read through
+        # the manifest that describes it. The fixed legacy name is still
+        # accepted: a result held by the previous executor revision must not be
+        # lost across this upgrade.
+        name = meta.get("body_name") if isinstance(meta, dict) else None
+        if not isinstance(name, str) or not name or os.path.dirname(name):
+            name = _PENDING_BODY_NAME
+        body_path = os.path.join(directory, name)
+        try:
+            with open(body_path, "rb") as handle:
+                body = handle.read()
+        except OSError:
+            return False
+        self._pending_body = name
         try:
             if not isinstance(meta, dict):
                 raise ValueError("pending meta is not an object")
@@ -506,12 +653,16 @@ class OracleMeshExecutor:
             )
         except (ValueError, OracleMeshChannelRefused, ContractError):
             stem = "corrupt-" + str(os.getpid())
-            try:
-                os.replace(meta_path, os.path.join(self._pending_dir, "quarantine-" + stem + ".json"))
-                os.replace(body_path, os.path.join(self._pending_dir, "quarantine-" + stem + ".body"))
-            except OSError:
-                pass
+            # Both halves move together, so a restart cannot re-quarantine the
+            # same unreadable pair over and over. A missing half is not an
+            # error: only the manifest is a commit marker.
+            for source, suffix in ((meta_path, ".json"), (body_path, ".body")):
+                try:
+                    os.replace(source, os.path.join(directory, "quarantine-" + stem + suffix))
+                except OSError:
+                    pass
             self._pending = None
+            self._pending_body = None
             return False
         self._pending = (dispatch, outcome)
         self._rejections = 0
@@ -539,10 +690,7 @@ class OracleMeshExecutor:
             # Not submittable on the UTF-8 wire, but still a real outcome:
             # preserve it instead of dropping it on the floor.
             self._pending = (dispatch, outcome)
-            try:
-                self._persist_pending()
-            except OSError:
-                pass
+            self._persist_pending()
             return self._quarantine_pending(reason="result_not_utf8")
         payload = {
             "dispatch_id": dispatch.dispatch_id,
@@ -554,18 +702,19 @@ class OracleMeshExecutor:
             "content_bytes": len(outcome.body),
         }
         self._pending = (dispatch, outcome)
-        try:
-            self._persist_pending()
-        except OSError:
-            pass
+        # A persistence failure is reported, never hidden: the bytes stay in
+        # memory and are still submitted, but the operator must be able to see
+        # that this result is not durable across a restart.
+        persist_error = self._persist_pending()
         try:
             status, data = self._post(RESULT_PATH, payload)
         except OracleMeshChannelRefused:
             # Transport down: same bytes, backed off, never re-executed.
             wait = self._transient_wait_seconds()
             self._transients += 1
-            return {"ok": False, "retryable": True, "resend_pending": True,
-                    "wait_seconds": wait}
+            return self._with_persist_warning(
+                {"ok": False, "retryable": True, "resend_pending": True,
+                 "wait_seconds": wait}, persist_error)
         if status == 200 and data.get("ok") is True:
             self._pending = None
             self._rejections = 0
@@ -581,8 +730,9 @@ class OracleMeshExecutor:
             self._rejections = 0
             wait = self._transient_wait_seconds()
             self._transients += 1
-            return {"ok": False, "retryable": True, "resend_pending": True,
-                    "status": status, "code": code, "wait_seconds": wait}
+            return self._with_persist_warning(
+                {"ok": False, "retryable": True, "resend_pending": True,
+                 "status": status, "code": code, "wait_seconds": wait}, persist_error)
         if status == 409 and code == "oracle_mesh_result_fingerprint_mismatch":
             # Permanent for this payload: the held bytes differ from what the
             # server pinned first. Resending cannot change that; preserve the
@@ -600,12 +750,17 @@ class OracleMeshExecutor:
         if self._rejections < MAX_RESULT_REJECTIONS:
             wait = self._transient_wait_seconds()
             self._transients += 1
-            return {
-                "ok": False, "retryable": True, "resend_pending": True,
-                "status": status, "code": code, "wait_seconds": wait,
-            }
+            return self._with_persist_warning(
+                {"ok": False, "retryable": True, "resend_pending": True,
+                 "status": status, "code": code, "wait_seconds": wait}, persist_error)
         return self._quarantine_pending(
             reason="dispatch_rejected", status=status, code=code)
+
+    @staticmethod
+    def _with_persist_warning(report: dict[str, Any], persist_error: Optional[str]):
+        if persist_error is not None:
+            report["persist_error"] = persist_error
+        return report
 
     @property
     def resend_pending(self) -> bool:

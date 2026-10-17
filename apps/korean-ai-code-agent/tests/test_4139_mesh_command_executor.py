@@ -161,9 +161,54 @@ class CommandPortTests(unittest.TestCase):
 
     def test_command_refuses_nul_and_carriage_return_only(self):
         port = _port(_Completed(0, b""))
-        for bad in ("", "a\x00b", "a\rb", "x" * 8193):
+        # Only what breaks the transport is refused. A long command used to be
+        # rejected here by a trial character cap; ordinary text of any length is
+        # input, and the OS exec boundary has its own named guard below.
+        for bad in ("", "a\x00b", "a\rb"):
             with self.assertRaises(MeshCentralCommandRefused):
                 port.run_command(node_ref=NODE, command=bad, timeout_seconds=45)
+
+    def test_long_multiline_utf8_command_reaches_the_client_verbatim(self):
+        calls = []
+        port = _port(
+            _Completed(0, ("ok\n" + EXIT_SENTINEL + "0\n").encode()), calls=calls,
+        )
+        command = "Write-Output '보고서'\n" + ("Get-Item 'C:\\temp\\a.txt'\n" * 4000)
+        port.run_command(node_ref=NODE, command=command, timeout_seconds=45)
+        argv = calls[0][0]
+        sent = argv[argv.index("--run") + 1]
+        # Only the trailing whitespace is dropped (so the appended sentinel
+        # statement cannot be swallowed by an unterminated line); every
+        # interior line of the script travels to the client unchanged.
+        expected = command.rstrip(" \t\r\n")
+        self.assertTrue(sent.startswith(expected))
+        self.assertEqual(sent.count("\n"), expected.count("\n"))
+        self.assertIn(EXIT_SENTINEL, sent)
+
+    def test_command_over_the_os_argument_limit_is_refused_by_name(self):
+        calls = []
+        port = _port(_Completed(0, b""), calls=calls)
+        # Linux caps one argv element at MAX_ARG_STRLEN = PAGE_SIZE * 32 =
+        # 131,072 bytes including its NUL terminator. The wrapped command
+        # (command + stream merge + exit sentinel) is what travels as one
+        # argument, so the refusal names that boundary instead of letting
+        # execve fail as an opaque E2BIG.
+        with self.assertRaises(MeshCentralCommandRefused) as caught:
+            port.run_command(node_ref=NODE, command="x" * 131_072, timeout_seconds=45)
+        self.assertIn("argument", str(caught.exception))
+        self.assertEqual(calls, [])
+
+    def test_command_far_above_the_old_trial_cap_still_runs(self):
+        calls = []
+        port = _port(
+            _Completed(0, ("done\n" + EXIT_SENTINEL + "0\n").encode()), calls=calls,
+        )
+        outcome = port.run_command(
+            node_ref=NODE, command="Get-Content 'C:\\a.txt'\n" * 5_000,
+            timeout_seconds=45,
+        )
+        self.assertEqual(outcome.termination, "exited")
+        self.assertEqual(len(calls), 1)
 
     def test_missing_credential_never_runs_the_client(self):
         calls = []
