@@ -437,6 +437,46 @@ async def test_orchestrate_stream_emits_error_line_when_run_fails() -> None:
     assert "run_failed" in [line.get("event", {}).get("kind") for line in lines]
 
 
+
+@pytest.mark.parametrize(
+    ("path", "preparer"),
+    [
+        (ORCHESTRATION_STREAM_PATH, "prepare_stream"),
+        (ORCHESTRATE_PATH, "handle"),
+        (ORCHESTRATE_RESUME_PATH, "handle"),
+    ],
+)
+async def test_inner_request_bound_is_the_model_budget_not_128_kib(path, preparer) -> None:
+    """#4139: worker.py admits these model routes at 6,000,000 bytes.
+
+    The service re-checked the non-model 128 KiB guard, so a request between the
+    two was read whole by the Worker and then refused here: the outer budget was
+    fictional. A body just over 128 KiB must now reach the parser, and a body
+    over the model budget must still be refused by name.
+    """
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    from app.service import MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES, MAX_REQUEST_BODY_BYTES
+
+    inside = await getattr(service, preparer)(
+        method="POST", path=path, content_type="application/json",
+        body=b"x" * (MAX_REQUEST_BODY_BYTES + 1),
+    )
+    assert isinstance(inside, ServiceResponse)
+    assert inside.status_code == 400, inside.body
+    assert inside.body["error"]["code"] == "invalid_json"
+
+    outside = await getattr(service, preparer)(
+        method="POST", path=path, content_type="application/json",
+        body=b"x" * (MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES + 1),
+    )
+    assert isinstance(outside, ServiceResponse)
+    assert outside.status_code == 413, outside.body
+    assert outside.body["error"]["code"] == "request_too_large"
+
+
 async def test_orchestrate_stream_rejects_method_not_allowed() -> None:
     service = OrchestrationEngineService(
         runtime_factory=lambda app_id: MockEngineRuntime(),
