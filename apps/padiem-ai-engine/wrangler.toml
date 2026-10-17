@@ -19,6 +19,13 @@ secret_name = "PADIEM_GRAFANA_OTLP_TOKEN"
 binding = "PADIEM_CHAT_SERVICE"
 service = "padiem-chat"
 
+# Shared Engine/Chat desktop proof; the value lives only in Cloudflare
+# Secrets Store. Deploy references this stable object and never rotates it.
+[[secrets_store_secrets]]
+binding = "CLAW_ENGINE_DESKTOP_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "CLAW_ENGINE_DESKTOP_SECRET"
+
 [[services]]
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"

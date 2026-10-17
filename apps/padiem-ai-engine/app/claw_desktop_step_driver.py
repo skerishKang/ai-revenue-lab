@@ -37,7 +37,7 @@ class StructuredDesktopStepDriver:
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
         observations = []
-        for result in context.tool_results:
+        for index, result in enumerate(context.tool_results):
             output = result.output_copy()
             if not isinstance(output, dict):
                 raise DesktopStepContractError("desktop result must be an object")
@@ -46,13 +46,14 @@ class StructuredDesktopStepDriver:
             if receipt is not None:
                 if not isinstance(receipt, str) or not receipt:
                     raise DesktopStepContractError("invalid capture receipt")
-                # The loader enforces the account / PC / conversation / run /
-                # invocation / dispatch relation before it releases bytes.
-                image = await self._read_capture(
-                    context=context, result=result, receipt=receipt
-                )
-                if not isinstance(image, bytes) or not image.startswith(b"\xff\xd8\xff"):
-                    raise DesktopStepContractError("JPEG observation unavailable")
+                if index == len(context.tool_results) - 1:
+                    # The latest capture is authoritative for the next decision.
+                    # Earlier snapshots stay as audit metadata, not R2 re-reads.
+                    image = await self._read_capture(
+                        context=context, result=result, receipt=receipt
+                    )
+                    if not isinstance(image, bytes) or not image.startswith(b"\xff\xd8\xff"):
+                        raise DesktopStepContractError("JPEG observation unavailable")
             observations.append({
                 "tool_id": result.tool_id,
                 "event": result.event.to_public_dict(),
@@ -107,12 +108,12 @@ DESKTOP_CAPTURE_SCOPE = "claw.desktop.capture"
 _ENGINE_DESKTOP_OWNER = ContextVar("claw_engine_desktop_owner", default=None)
 
 
-async def _signed_desktop_capture(*, service, request_factory, secret, subject_id, run_id, device_id):
+async def _signed_desktop_capture(*, service, request_factory, secret, subject_id, run_id, device_id, desktop_op="desktop:capture"):
     if not isinstance(secret, str) or len(secret) < 32:
         raise ToolHandlerError("desktop_secret_missing", "Engine desktop authorization unavailable")
     body = json.dumps({
         "subject_id": subject_id, "run_id": run_id,
-        "device_id": device_id, "desktop_op": "desktop:capture",
+        "device_id": device_id, "desktop_op": desktop_op,
     }, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode("utf-8")
     timestamp = str(int(time.time()))
     proof = hmac.new(
@@ -208,11 +209,11 @@ async def _signed_desktop_capture(*, service, request_factory, secret, subject_i
             digest = observed.get("result_sha256")
             if not isinstance(digest, str) or len(digest) != 64:
                 raise ToolHandlerError(
-                    "desktop_capture_missing", "Desktop capture bytes not verified",
+                    "desktop_result_missing", "Desktop output fingerprint not verified",
                 )
             return {
                 "dispatch_id": dispatch_id, "run_id": run_id, "state": state,
-                "capture_receipt": dispatch_id,
+                "capture_receipt": dispatch_id if desktop_op == "desktop:capture" else None,
                 "result_sha256": digest, "execution_confirmed": True,
             }
         if state == "failed":
@@ -257,30 +258,86 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
         )
 
     runtime.register(spec, capture)
+    # All PC inputs pass through the same signed Chat owner/run authorization and
+    # Oracle executor grammar. Never replay a dispatch on uncertain outcome.
+    input_specs = {}
+    for name, schema in (
+        ("click", {"x": {"type": "integer", "minimum": 0, "maximum": 65535},
+                   "y": {"type": "integer", "minimum": 0, "maximum": 65535}}),
+        ("type", {"text": {"type": "string", "minLength": 1, "maxLength": 4096}}),
+        ("keys", {"combo": {"type": "string", "enum": [
+            "enter", "esc", "tab", "backspace", "delete",
+            "ctrl+s", "ctrl+c", "ctrl+v", "ctrl+a", "alt+f4",
+            "win+r", "win",
+        ]}}),
+    ):
+        required = ["x", "y"] if name == "click" else ["text" if name == "type" else "combo"]
+        input_specs[name] = ToolSpec(
+            id="claw.desktop." + name, title="Owner PC " + name,
+            description="Run one owner-authorized desktop " + name + " operation",
+            owner="core", side_effect=ToolSideEffect.WRITE,
+            approval_policy=ApprovalPolicy.EXTERNAL_AUTHORIZATION,
+            auth_scope=(DESKTOP_CAPTURE_SCOPE,),
+            input_schema={"type": "object", "properties": schema,
+                          "required": required, "additionalProperties": False},
+            output_contract={"type": "object"}, timeout_seconds=300.0,
+        )
+    for name, input_spec in input_specs.items():
+        async def perform(arguments, _name=name):
+            owner = _ENGINE_DESKTOP_OWNER.get()
+            if (not isinstance(owner, tuple) or len(owner) != 2
+                or not all(isinstance(v, str) and v for v in owner)):
+                raise ToolHandlerError("desktop_admission_required", "Verified run required")
+            if _name == "click":
+                op = f"desktop:click\n{arguments['x']},{arguments['y']}"
+            elif _name == "type":
+                op = "desktop:type\n" + arguments["text"]
+            else:
+                op = "desktop:keys\n" + arguments["combo"]
+            return await _signed_desktop_capture(
+                service=service, request_factory=request_factory, secret=secret,
+                subject_id=owner[0], run_id=owner[1], device_id=None,
+                desktop_op=op,
+            )
+        runtime.register(input_spec, perform)
+    canonical_input_ids = tuple(
+        "tool:padiem:claw-desktop-" + name + "@1" for name in input_specs
+    )
     definition = BoundedAgentDefinition(
         agent_id=DESKTOP_AGENT_ID, publisher_id="padiem",
         title="PADIEM Claw screen observation",
         description="Owner-bound desktop screen observation through Chat",
         instruction="Observe only the currently authorized desktop",
         output_contract_ref="output:text@1",
-        allowed_tool_ids=(DESKTOP_CANONICAL_CAPTURE,),
+        allowed_tool_ids=(DESKTOP_CANONICAL_CAPTURE,) + canonical_input_ids,
         execution_budget=AgentExecutionBudget(),
     )
     policy = TrustedAgentRuntimePolicy(
         context_policy_ref="context:default", model_policy_ref="model:auto",
         output_contract_ref="output:text@1",
-        task_type="general", optimize_for="balanced", max_tokens=128,
+        task_type="general", optimize_for="balanced", max_tokens=None,
         max_steps_cap=definition.execution_budget.max_steps,
         context_policy={}, model_policy={}, output_contract={},
         tool_bindings=(ToolRuntimeBinding(
             canonical_tool_id=DESKTOP_CANONICAL_CAPTURE,
             runtime_tool_id=DESKTOP_CAPTURE_ID,
-        ),),
+        ),) + tuple(
+            ToolRuntimeBinding(canonical_tool_id=canonical,
+                               runtime_tool_id="claw.desktop." + name)
+            for name, canonical in zip(input_specs, canonical_input_ids)
+        ),
     )
     compiled = compile_agent_profile(definition, policy)
     authorization = ToolAuthorizationContext(
         app_id=CLAW_APP_ID, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(DESKTOP_CAPTURE_SCOPE,),
+        # ToolRuntime's external authorization lane is this signed Chat
+        # transport: each invocation is independently re-authorized against
+        # the canonical subject, live session, device and command_exec grant
+        # before Oracle creates a dispatch. No direct PC handler exists here.
+        externally_authorized_tools=frozenset(
+            "claw.desktop." + name for name in input_specs
+        ),
     )
     return EngineToolBinding(
         app_id=CLAW_APP_ID, tool_runtime=runtime,
@@ -289,10 +346,112 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
                 canonical_tool_id=DESKTOP_CANONICAL_CAPTURE,
                 runtime_spec=spec,
             ),
+        ) + tuple(
+            RegisteredTool.from_spec(canonical_tool_id=canonical,
+                                     runtime_spec=input_specs[name])
+            for name, canonical in zip(input_specs, canonical_input_ids)
         )),
         authorities={DESKTOP_AGENT_ID: TrustedToolAuthority(
             canonical_agent_id=DESKTOP_AGENT_ID, definition=definition,
             compiled=compiled, authorization=authorization,
         )},
         authorization_provider=None, resource_policy=ToolResourcePolicy(),
+    )
+
+def build_live_desktop_driver(*, b14_client, chat_service, request_factory,
+                              secret, model_id, model_policy=None,
+                              task_type=None, optimize_for=None):
+    """Server-composed Core driver; model chooses GUI actions from JPEG."""
+    import base64
+
+    async def read_capture(*, context, result, receipt):
+        owner = _ENGINE_DESKTOP_OWNER.get()
+        output = result.output_copy()
+        if (not isinstance(owner, tuple) or len(owner) != 2
+            or receipt != output.get("dispatch_id")
+            or output.get("run_id") != owner[1]
+            or output.get("execution_confirmed") is not True):
+            raise DesktopStepContractError("capture owner/run correlation failed")
+        body = json.dumps({
+            "subject_id": owner[0], "run_id": owner[1],
+            "dispatch_id": receipt, "mode": "image",
+        }, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        now = str(int(time.time()))
+        proof = hmac.new(secret.encode(), now.encode("ascii") + b"." + body,
+                         hashlib.sha256).hexdigest()
+        request = request_factory(
+            "https://padiem-chat.internal/internal/claw/engine-desktop",
+            method="POST", headers={
+                "Content-Type": "application/json",
+                "X-Claw-Engine-Time": now, "X-Claw-Engine-Proof": proof,
+            }, body=body.decode("utf-8"),
+        )
+        response = await chat_service.fetch(request.js_object)
+        if int(response.status) != 200:
+            raise DesktopStepContractError("owned capture JPEG unavailable")
+        image_buffer = await response.arrayBuffer()
+        image = bytes(image_buffer.to_py())
+        if (not image.startswith(b"\xff\xd8\xff")
+            or hashlib.sha256(image).hexdigest() != output.get("result_sha256")):
+            raise DesktopStepContractError("JPEG digest or format mismatch")
+        return image
+
+    async def select_step(*, context, compiled_profile, observations):
+        if not observations or observations[-1]["tool_id"] != DESKTOP_CAPTURE_ID:
+            # After a PC input, get a fresh independent screenshot before any
+            # further model-selected input. Never reuse stale screenshot pixels.
+            return {"action": "tool", "tool_id": DESKTOP_CAPTURE_ID,
+                    "arguments": {"use_pinned_device": True}}
+        from padiem_ai_core.b14_multimodal import B14MultimodalChatRequest
+        from padiem_ai_core.b14_execution import B14RoutingOptions
+        parts = [{
+            "type": "text",
+            "text": (
+                "Return exactly one JSON object. Choose from "
+                "claw.desktop.click (x,y), claw.desktop.type (text), "
+                "claw.desktop.keys (combo), claw.desktop.capture "
+                "(use_pinned_device=true), or complete (answer). "
+                'Tool format: {"action":"tool","tool_id":"...","arguments":{}}. '
+                'Completion format: {"action":"complete","answer":"..."}. '
+                "Examine the screenshot and prior outcomes, do not guess coordinates. "
+                "Task: " + context.input_text
+                + "\nPrior verified results: " + json.dumps(
+                    [{"tool_id": o["tool_id"], "output": o["output"]}
+                     for o in observations], ensure_ascii=False)
+            ),
+        }]
+        # B14 multimodal contract consumes the most recent screenshot image;
+        # earlier action outcomes remain in text, never duplicate stale images.
+        jpeg = observations[-1]["image_jpeg"]
+        if jpeg is not None:
+            parts.append({
+                "type": "image_url",
+                "image_url": {"url": "data:image/jpeg;base64,"
+                              + base64.b64encode(jpeg).decode("ascii")},
+            })
+        if len(parts) == 1:
+            raise DesktopStepContractError("No verified screenshot for GUI choice")
+        request = B14MultimodalChatRequest(
+            model=model_id, messages=({"role": "user", "content": parts},),
+            max_tokens=None,
+            routing=B14RoutingOptions(
+                product_tier=model_policy.get("product_tier")
+                if model_policy is not None else None,
+                max_retries=model_policy.get("max_retries")
+                if model_policy is not None else None,
+                task_type=task_type, optimize_for=optimize_for,
+            ),
+        )
+        response = await b14_client.execute(request)
+        try:
+            return json.loads(response.answer.strip())
+        except (TypeError, ValueError) as exc:
+            raise DesktopStepContractError("Model step is not valid JSON") from exc
+
+    return StructuredDesktopStepDriver(
+        select_step=select_step, read_capture=read_capture,
+        allowed_tool_ids=frozenset({
+            "claw.desktop.capture", "claw.desktop.click",
+            "claw.desktop.type", "claw.desktop.keys",
+        }),
     )

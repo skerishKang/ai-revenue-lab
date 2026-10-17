@@ -633,3 +633,45 @@ def test_signed_engine_status_returns_owner_pinned_result():
     assert data["dispatch"]["state"] == "done"
     assert data["dispatch"]["result_sha256"] == "a" * 64
     assert data["dispatch"]["run_id"] == RUN
+
+
+
+def test_signed_engine_image_fetch_returns_actual_pinned_jpeg():
+    """Only the canonical owner/run/dispatch can retrieve real JPEG bytes."""
+    import hmac
+    import time
+
+    state = _state()
+    state.control_plane_identity_authority = EngineIdentity()
+    dispatched = asyncio.run(routes.oracle_mesh_engine_desktop_call(
+        _signed_engine_request(state)
+    ))
+    assert dispatched.status_code == 200
+    dispatch_id = json.loads(dispatched.body)["dispatch"]["dispatch_id"]
+    digest = hashlib.sha256(JPEG).hexdigest()
+    row = state.history_store.rows[dispatch_id]
+    row["state"] = "done"
+    row["result_sha256"] = digest
+    row["result_bytes"] = len(JPEG)
+    state.history_store.originals[dispatch_id] = JPEG
+
+    def signed_image(subject, run=RUN):
+        request = Request({
+            "subject_id": subject, "run_id": run,
+            "dispatch_id": dispatch_id, "mode": "image",
+        }, state)
+        stamp = str(int(time.time()))
+        request.headers["X-Claw-Engine-Time"] = stamp
+        request.headers["X-Claw-Engine-Proof"] = hmac.new(
+            ("s" * 32).encode(),
+            stamp.encode() + b"." + request._data,
+            hashlib.sha256,
+        ).hexdigest()
+        return asyncio.run(routes.oracle_mesh_engine_desktop_call(request))
+
+    original = signed_image("sub_verified")
+    assert original.status_code == 200
+    assert original.body == JPEG
+    assert original.headers["X-Oracle-Mesh-Content-SHA256"] == digest
+    assert signed_image("sub_foreign").status_code == 401
+    assert signed_image("sub_verified", "run_foreign").status_code == 404

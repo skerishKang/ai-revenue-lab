@@ -946,13 +946,28 @@ class Default(WorkerEntrypoint):
                 _oracle_mesh_return_source = await (
                     build_oracle_mesh_return_source_from_env(self.env)
                 )
+                _claw_desktop_secret = binding_value(
+                    self.env, "CLAW_ENGINE_DESKTOP_SECRET"
+                )
+                if _claw_desktop_secret is not None and not isinstance(_claw_desktop_secret, str):
+                    _secret_get = getattr(_claw_desktop_secret, "get", None)
+                    if callable(_secret_get):
+                        try:
+                            _claw_desktop_secret = _secret_get()
+                            if hasattr(_claw_desktop_secret, "__await__"):
+                                _claw_desktop_secret = await _claw_desktop_secret
+                        except Exception:
+                            _claw_desktop_secret = None
                 _worker_app = create_app(
                     settings=settings,
                     telemetry_exporter=_grafana_exporter,
                     github_oauth_store=github_store,
                     github_oauth_provider=github_provider,
                     oracle_mesh_return_source=_oracle_mesh_return_source,
-                    claw_engine_desktop_secret=binding_value(self.env, "CLAW_ENGINE_DESKTOP_SECRET"),
+                    claw_engine_desktop_secret=(
+                        _claw_desktop_secret if isinstance(_claw_desktop_secret, str)
+                        and len(_claw_desktop_secret) >= 32 else None
+                    ),
                     connector_owner_enrollment=connector_owner_ports,
                     history_store=history_store,
                     d1_binding=db_binding,

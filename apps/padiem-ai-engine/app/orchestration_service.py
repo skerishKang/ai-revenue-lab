@@ -372,6 +372,7 @@ class OrchestrationEngineService:
         continuation_store: ContinuationStore | None = None,
         tool_binding_resolver: Callable[[str], EngineToolBinding | None] | None = None,
         approved_office_read_sink: ApprovedOfficeReadReceiptSink | None = None,
+        desktop_step_driver_factory: Callable[[str], Any] | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
@@ -405,6 +406,7 @@ class OrchestrationEngineService:
         self._continuation_store = continuation_store or _DEFAULT_CONTINUATION_STORE
         self._continuation_store_is_explicit = continuation_store is not None
         self._tool_binding_resolver = tool_binding_resolver
+        self._desktop_step_driver_factory = desktop_step_driver_factory
         # Never composed by the shipping Engine Worker unless an explicitly
         # trusted private durable sink is provided. No browser-facing endpoint.
         self._approved_office_read_sink = approved_office_read_sink
@@ -833,6 +835,30 @@ class OrchestrationEngineService:
         if isinstance(built, ServiceResponse):
             return built
         app_id, orch_req, exec_req, request_fingerprint_value = built
+        if (app_id == "b54-padiem-claw"
+            and orch_req.agent_plan is not None
+            and orch_req.agent_plan.agent_id == "agent:padiem:claw-desktop@1"):
+            if (self._desktop_step_driver_factory is None
+                or not orch_req.subject_id):
+                return _service_error(
+                    "desktop_model_unavailable",
+                    "Owner-bound desktop model runtime unavailable.",
+                    status_code=503,
+                )
+            model_id = exec_req.agent.model_policy.get("model")
+            if not isinstance(model_id, str) or not model_id:
+                return _service_error(
+                    "desktop_model_unavailable",
+                    "Resolved Claw model is unavailable.",
+                    status_code=503,
+                )
+            orch_req = replace(
+                orch_req,
+                agent_step_driver=self._desktop_step_driver_factory(
+                    model_id, exec_req.agent.model_policy,
+                    exec_req.agent.task_type, exec_req.agent.optimize_for,
+                ),
+            )
         if trusted_office_run_id is not None:
             # No ordinary app may select the Core Agent pause run id. The
             # first-party owner/Broker authority must provide this exact

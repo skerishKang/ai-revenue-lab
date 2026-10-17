@@ -2349,7 +2349,7 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
         payload = json.loads(raw)
     except (ValueError, TypeError):
         return _error(400, "claw_engine_desktop_invalid_body")
-    status_query = isinstance(payload, dict) and payload.get("mode") == "status"
+    status_query = isinstance(payload, dict) and payload.get("mode") in ("status", "image")
     expected_keys = (
         {"subject_id", "run_id", "dispatch_id", "mode"} if status_query
         else {"subject_id", "run_id", "device_id", "desktop_op"}
@@ -2405,6 +2405,37 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             or dispatch.get("kind") != "desktop"):
             return _error(404, "oracle_mesh_run_unavailable")
         state = dispatch.get("state")
+        if payload["mode"] == "image":
+            if state != "done" or not isinstance(dispatch.get("result_sha256"), str):
+                return _error(409, "oracle_mesh_capture_not_ready")
+            try:
+                run = await history_store.get_claw_run(uid, payload["run_id"])
+                conversation_id = validate_conversation_id(
+                    (run or {}).get("conversation_id")
+                )
+                if not conversation_id:
+                    return _error(404, "oracle_mesh_run_unavailable")
+                message_id = result_message_id(
+                    conversation_id=conversation_id,
+                    command_id=dispatch["command_id"],
+                    revision_ref=dispatch["revision_ref"],
+                )
+                stored = await history_store.read_oracle_mesh_original(
+                    user_id=uid, dispatch_id=dispatch["dispatch_id"],
+                    conversation_id=conversation_id, message_id=message_id,
+                )
+            except Exception:
+                return _error(503, "oracle_mesh_original_unavailable")
+            if stored is None:
+                return _error(404, "oracle_mesh_original_unavailable")
+            raw, digest = stored
+            if (not isinstance(raw, bytes) or not raw.startswith(b"\xff\xd8\xff")
+                or digest != dispatch["result_sha256"]):
+                return _error(503, "oracle_mesh_original_unavailable")
+            return Response(
+                raw, media_type="image/jpeg",
+                headers={**_NO_STORE, "X-Oracle-Mesh-Content-SHA256": digest},
+            )
         if state not in {"pending", "received", "store_failed", "done", "failed"}:
             return _error(503, "oracle_mesh_dispatch_unavailable")
         return _response({
