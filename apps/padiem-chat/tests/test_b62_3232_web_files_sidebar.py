@@ -5,6 +5,10 @@ unless project-file storage was provisioned. #4489 supersedes that routing: the
 entry is now a real destination owned by ``static/library.js`` and stays
 navigable for any signed-in owner, while every project-file read and open still
 goes through the canonical #2319/#2342 authority.
+2026-10-17 supersedes the signed-out part of that contract: the entry is no
+longer inert for a visitor, because the owner decision is that every screen
+stays browsable without a session. The data guard moved from ``disabled`` to
+``loadFiles()``, which still issues no read when unauthenticated.
 
 What this file still guarantees:
 
@@ -54,11 +58,10 @@ def test_sidebar_still_renders_the_library_entry() -> None:
     html = INDEX_HTML.read_text(encoding="utf-8")
     assert 'id="filesNavButton"' in html
     assert 'data-locale-key="nav-files"' in html
-    # Fail-closed in markup: the entry starts disabled and library.js enables it
-    # only for a projected signed-in owner.
+    # Owner decision: the entry stays reachable for a visitor. The data guard
+    # lives in library.js (no read without a session), not in an inert button.
     button = html[html.index('id="filesNavButton"') - 200 : html.index('id="filesNavButton"') + 200]
-    assert "disabled" in button
-    assert 'aria-disabled="true"' in button
+    assert "disabled" not in button
     assert 'aria-current="false"' in button
 
 
@@ -513,13 +516,14 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     dispatchAuth({ loaded: true, authenticated: false, historyReady: false, projectFilesReady: false });
     await tick(30);
     let s = snapshot();
-    if (s.disabled !== true) fail("SIGNED_OUT_MUST_DISABLE");
-    if (s.ariaDisabled !== "true") fail("SIGNED_OUT_ARIA_DISABLED");
+    if (s.disabled !== false) fail("SIGNED_OUT_ENTRY_MUST_BE_CLICKABLE");
     clickEntry();
     await tick(30);
     s = snapshot();
-    if (!s.viewHidden) fail("SIGNED_OUT_MUST_NOT_OPEN_VIEW");
-    if (s.state === "library") fail("SIGNED_OUT_MUST_NOT_CHANGE_SURFACE");
+    if (s.viewHidden) fail("SIGNED_OUT_MUST_OPEN_VIEW");
+    if (s.state !== "library") fail("SIGNED_OUT_MUST_CHANGE_SURFACE");
+    if (s.note.indexOf("로그인") < 0) fail("SIGNED_OUT_NOTE_MISSING:" + s.note);
+    if (s.rows.length !== 0) fail("SIGNED_OUT_MUST_RENDER_NO_ROWS:" + JSON.stringify(s.rows));
     if (s.projectApiCalls !== 0 || s.fileApiCalls !== 0 || s.ownerFileApiCalls !== 0) {
       fail("SIGNED_OUT_MUST_ISSUE_NO_PROJECT_REQUESTS");
     }
@@ -529,7 +533,6 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     let s = snapshot();
     // #4489: missing project-file storage must NOT make the entry inert.
     if (s.disabled !== false) fail("STORAGE_OFF_MUST_STILL_ALLOW_NAVIGATION");
-    if (s.ariaDisabled !== "false") fail("STORAGE_OFF_ARIA_ENABLED");
     clickEntry();
     await tick(30);
     s = snapshot();
@@ -682,7 +685,22 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     s = snapshot();
     if (s.rows.length !== 0) fail("LOGOUT_MUST_DROP_ROWS:" + JSON.stringify(s.rows));
     if (!s.viewHidden) fail("LOGOUT_MUST_CLOSE_VIEW");
-    if (s.disabled !== true) fail("LOGOUT_MUST_DISABLE_ENTRY");
+    if (s.disabled !== false) fail("LOGOUT_MUST_NOT_DISABLE_ENTRY");
+    // A visitor can still open the page after logout, and that open must not
+    // re-read anything: the row set and every endpoint counter stay where they were.
+    const readsBefore = { file: s.fileApiCalls, owner: s.ownerFileApiCalls, project: s.projectApiCalls };
+    clickEntry();
+    await tick(30);
+    s = snapshot();
+    if (s.viewHidden) fail("LOGOUT_PAGE_MUST_STAY_BROWSABLE");
+    if (s.rows.length !== 0) fail("LOGOUT_REOPEN_MUST_SHOW_NO_ROWS:" + JSON.stringify(s.rows));
+    if (s.note.indexOf("로그인") < 0) fail("LOGOUT_REOPEN_NOTE_MISSING:" + s.note);
+    if (s.fileApiCalls !== readsBefore.file || s.ownerFileApiCalls !== readsBefore.owner
+      || s.projectApiCalls !== readsBefore.project) fail("LOGOUT_REOPEN_ISSUED_READS");
+    // Leave the page again so the next owner's step still starts from a closed view.
+    (byId.libraryCloseButton.listeners.click || []).forEach((fn) => fn({ preventDefault() {} }));
+    await tick(30);
+    if (!snapshot().viewHidden) fail("CLOSE_BUTTON_DID_NOT_LEAVE_LIBRARY");
     // A different owner signs in: nothing from A may still be reachable.
     dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
     await tick(30);
