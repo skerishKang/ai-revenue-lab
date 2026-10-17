@@ -11,6 +11,7 @@ a later Production activation gate.
 from __future__ import annotations
 
 import asyncio
+import inspect
 
 from typing import Any
 from urllib.parse import urlparse
@@ -1063,6 +1064,26 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         )
 
     tool_binding_resolver = await _tool_binding_resolver_for_env(env)
+    # Only the admitted Claw Agent may reach the signed Chat desktop transport.
+    # All other app tool registrations remain unchanged.
+    from app.claw_desktop_step_driver import (
+        CLAW_APP_ID, build_claw_desktop_tool_binding,
+        build_live_desktop_driver,
+    )
+    chat_service = legacy_worker._binding_value(env, "PADIEM_CHAT_SERVICE")
+    desktop_secret = legacy_worker._binding_value(env, "CLAW_ENGINE_DESKTOP_SECRET")
+    if chat_service is not None and isinstance(desktop_secret, str) and len(desktop_secret) >= 32:
+        desktop_binding = build_claw_desktop_tool_binding(
+            service=chat_service, request_factory=Request, secret=desktop_secret,
+        )
+        previous_resolver = tool_binding_resolver
+
+        def resolve_with_desktop(app_id: str):
+            if app_id == CLAW_APP_ID:
+                return desktop_binding
+            return previous_resolver(app_id) if previous_resolver is not None else None
+
+        tool_binding_resolver = resolve_with_desktop
     # #3317: source-only approval smoke fixture. The wrapper returns the exact
     # original resolver object while the deployment-owned enable flag is absent
     # (the default/current Production state), so no ordinary product/connector
@@ -1142,6 +1163,18 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
             tool_binding_resolver=tool_binding_resolver,
             admission_adapter=admission_adapter,
+            desktop_step_driver_factory=(
+                (lambda model_id, model_policy, task_type, optimize_for:
+                    build_live_desktop_driver(
+                        b14_client=b14_client, chat_service=chat_service,
+                        request_factory=Request, secret=desktop_secret,
+                        model_id=model_id, model_policy=model_policy,
+                        task_type=task_type, optimize_for=optimize_for,
+                    ))
+                if chat_service is not None
+                and isinstance(desktop_secret, str)
+                and len(desktop_secret) >= 32 else None
+            ),
         ),
         research=_research_service_for_env(
             env,
