@@ -1,7 +1,21 @@
 const EXECUTE_PATH = "/internal/v1/execute";
-const MAX_REQUEST_BODY_BYTES = 128 * 1024;
+// This ingress fronts exactly one Engine route: the model /execute path. Its
+// request budget is therefore the Engine's own existing model budget
+// (app/service.py MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES, published in
+// openapi.json as x-engine-max-body-bytes), not the 128 KiB guard that the
+// non-model Engine routes keep. At 128 KiB a first-party model request between
+// the two values was refused here, before the Engine could ever admit it.
+// tests/test_ingress_budget_source_contract.py pins these literals to the
+// Python constants, so the two sides cannot drift apart again.
+const MAX_REQUEST_BODY_BYTES = 6_000_000;
 const MAX_INGRESS_CREDENTIAL_CHARS = 512;
-const MAX_RESPONSE_BYTES = 1024 * 1024;
+// One completed Engine answer is collected under the same finite Worker memory
+// budget as the B14/Core completed-JSON contract
+// (padiem_ai_core.b14_execution.MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 MiB). The
+// former 1 MiB default rejected healthy large answers as
+// engine_response_too_large before the caller could read them. This is not a
+// model token or output limit, and streaming is not collected here.
+const MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
 // Hard ceiling on Engine attempts per ingress request: the initial attempt
 // plus, during the dual-credential migration window only, exactly one
 // CURRENT-credential retry. Never raised, never looped.

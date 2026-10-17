@@ -59,7 +59,7 @@ from app.tool_projection import (
     json_size,
 )
 from app.service import (
-    MAX_REQUEST_BODY_BYTES,
+    MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES,
     ServiceContractError,
     ServiceResponse,
     _require_exact_object,
@@ -1359,7 +1359,12 @@ class OrchestrationEngineService:
         if not isinstance(body, (bytes, bytearray, memoryview)):
             return _service_error("invalid_request", "Request body is invalid.", status_code=400)
         raw = bytes(body)
-        if len(raw) > MAX_REQUEST_BODY_BYTES:
+        # #4139: worker.py already admits these two model routes at the
+        # Engine's existing model request budget, so the inner guard has to
+        # be the same budget. At 128 KiB a model request between the two was
+        # read whole and then refused here, which made the outer budget
+        # fictional. Non-model routes keep MAX_REQUEST_BODY_BYTES.
+        if len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES:
             return _service_error("request_too_large", "Request body exceeds the safety limit.", status_code=413)
         try:
             payload = json.loads(raw.decode("utf-8"))
@@ -1516,7 +1521,12 @@ class OrchestrationEngineService:
         if not isinstance(body, (bytes, bytearray, memoryview)):
             return _service_error("invalid_request", "Request body is invalid.", status_code=400)
         raw = bytes(body)
-        if len(raw) > MAX_REQUEST_BODY_BYTES:
+        # #4139: worker.py already admits these two model routes at the
+        # Engine's existing model request budget, so the inner guard has to
+        # be the same budget. At 128 KiB a model request between the two was
+        # read whole and then refused here, which made the outer budget
+        # fictional. Non-model routes keep MAX_REQUEST_BODY_BYTES.
+        if len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES:
             return _service_error("request_too_large", "Request body exceeds the safety limit.", status_code=413)
         try:
             payload = json.loads(raw.decode("utf-8"))
