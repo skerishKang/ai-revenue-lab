@@ -312,9 +312,32 @@ jobs:
             printf 'DEPLOY_EXECUTED=YES\n' >> "${RUNNER_TEMP}/b54-engine-deploy-evidence.txt"
             echo 'B54_ENGINE_DEPLOY_COMMAND=EXIT_ZERO'
           else
+            deploy_rc=$?
             printf 'DEPLOY_EXECUTED=UNKNOWN\n' >> "${RUNNER_TEMP}/b54-engine-deploy-evidence.txt"
             echo 'DEPLOY_EXECUTED=UNKNOWN'
             echo 'B54_ENGINE_DEPLOY_COMMAND=FAIL' >&2
+            echo "B54_ENGINE_DEPLOY_EXIT_CODE=${deploy_rc}" >&2
+            python3 - "${RUNNER_TEMP}/b54-engine-deploy.log" <<'PY'
+          import pathlib
+          import re
+          import sys
+          raw = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")[-1000000:]
+          codes = sorted(set(re.findall(
+              r"(?i)(?:\berror\s+code\b|\bcode\b)\s*[:=#\[ ]\s*(\d{4,6})\b",
+              raw,
+          )))
+          categories = (
+              ("AUTH", r"(?i)unauthorized|invalid api token|authentication failed|permission denied|forbidden"),
+              ("SECRET_STORE", r"(?i)(?:secret.?store.{0,120}(?:missing|not found|does not exist|invalid))|(?:(?:missing|not found).{0,120}secret.?store)"),
+              ("BINDING", r"(?i)(?:binding.{0,120}(?:missing|not found|invalid))|(?:service.{0,100}not found)"),
+              ("CONFIG", r"(?i)invalid configuration|compatibility flag|configuration file"),
+              ("NETWORK", r"(?i)timed out|ETIMEDOUT|ECONNRESET|network error"),
+          )
+          category = next((name for name, pattern in categories if re.search(pattern, raw)), "UNCLASSIFIED")
+          print("B54_ENGINE_DEPLOY_ERROR_CLASS=" + category)
+          print("B54_ENGINE_DEPLOY_UPSTREAM_CODES=" + (",".join(codes[:5]) or "UNAVAILABLE"))
+          print("B54_ENGINE_DEPLOY_RAW_LOG_EXPORTED=NO")
+          PY
             exit 1
           fi
 
