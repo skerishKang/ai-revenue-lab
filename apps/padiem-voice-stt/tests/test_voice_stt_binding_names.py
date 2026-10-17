@@ -106,7 +106,11 @@ def test_binding_report_matches_expected_state():
     assert report == {
         "voice_worker_secret_bindings": ["PADIEM_GEMINI_API_KEY", "PADIEM_GROQ_API_KEY"],
         # Chat uses its own OAuth and Grafana secret bindings, not STT provider keys.
+        # #4139: the two Oracle Mesh Secrets Store references are Chat's own
+        # (names only, same store); they add no provider key to this Worker.
         "chat_worker_secret_bindings": [
+            "ORACLE_MESH_CHANNEL_SECRET",
+            "ORACLE_MESH_OWNERSHIP_MAP",
             "PADIEM_EXLAB_API_KEY",
             "PADIEM_GITHUB_APP_CLIENT_SECRET",
             "PADIEM_GRAFANA_OTLP_TOKEN",
