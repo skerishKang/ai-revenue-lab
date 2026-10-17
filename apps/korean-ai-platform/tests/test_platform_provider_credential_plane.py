@@ -616,3 +616,38 @@ def test_stream_preview_retired_kilo_is_rejected_without_dispatch(monkeypatch):
     assert response.json()["error"]["code"] == "unsupported_model"
     assert TEST_BINDING not in response.text
     assert _SYNTH_KEY not in response.text
+
+
+@pytest.mark.asyncio
+async def test_manual_route_missing_secret_reports_value_free_reason():
+    """A binding fetch failure is diagnosable without exposing secret material."""
+    from types import SimpleNamespace
+
+    from app.pilot.worker_env import (
+        bind_request_env,
+        collect_request_bindings,
+        load_request_secret,
+        reset_request_env,
+    )
+
+    _ensure_test_provider()
+
+    class JsLikeError(Exception):
+        name = "Error"
+
+    class RaisingSecret:
+        async def get(self):
+            raise JsLikeError('Secret "synthetic-value-canary" not found')
+
+    token = bind_request_env(collect_request_bindings(
+        SimpleNamespace(**{TEST_BINDING: RaisingSecret()}), (TEST_BINDING,)
+    ))
+    try:
+        await load_request_secret(TEST_BINDING)
+        with pytest.raises(NoSafeRoute) as info:
+            resolve_manual_route(TEST_MODEL_ID)
+        assert info.value.reason_code == "provider_secret_missing"
+        assert info.value.credential_reason == "error:not_found"
+        assert "synthetic-value-canary" not in info.value.credential_reason
+    finally:
+        reset_request_env(token)

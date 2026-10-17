@@ -355,10 +355,11 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
         if iterator is not None:
             await _close_iterator(iterator)
         logger.warning(
-            "stream_preview_pre_start_error request_id=%s code=%s status=%d",
+            "stream_preview_pre_start_error request_id=%s code=%s status=%d credential_reason=%s",
             request_id,
             exc.code,
             exc.status_code,
+            getattr(exc, "credential_reason", ""),
         )
         return _error_response(exc, request_id)
     except Exception:
