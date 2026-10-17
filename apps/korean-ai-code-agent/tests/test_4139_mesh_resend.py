@@ -218,8 +218,13 @@ class RestartPersistenceTests(unittest.TestCase):
 
         first = self._executor(failing, work)
         first.submit(_dispatch(), _outcome(body))
-        self.assertTrue((work / "pending-result.json").exists())
-        self.assertTrue((work / "pending-result.body").exists())
+        manifest = json.loads((work / "pending-result.json").read_text(encoding="utf-8"))
+        # The body file is named after its own digest, so writing a new result
+        # can never truncate the body an existing manifest points at.
+        held_body = work / manifest["body_name"]
+        self.assertTrue(held_body.exists())
+        self.assertEqual(manifest["content_sha256"], hashlib.sha256(body).hexdigest())
+        self.assertEqual(held_body.read_bytes(), body)
 
         delivered = []
 
@@ -236,7 +241,68 @@ class RestartPersistenceTests(unittest.TestCase):
         self.assertEqual(delivered[0]["content_sha256"], hashlib.sha256(body).hexdigest())
         self.assertEqual(delivered[0]["content_bytes"], len(body))
         self.assertFalse((work / "pending-result.json").exists())
-        self.assertFalse((work / "pending-result.body").exists())
+        self.assertFalse(held_body.exists())
+
+    def test_legacy_fixed_name_pending_is_still_recovered(self):
+        """A result held by the previous executor revision is not orphaned."""
+        import tempfile
+
+        work = Path(tempfile.mkdtemp(prefix="oracle_pending_legacy_4139_"))
+        body = "구 버전이 보관한 결과\r\n".encode("utf-8")
+        (work / "pending-result.json").write_text(
+            json.dumps({
+                "dispatch_id": "dsp-1", "nonce": "n" * 32, "node_ref": NODE,
+                "file_path": FILE_PATH, "command_id": "cmd-1", "run_id": "run-1",
+                "kind": "read", "command_text": None,
+                "termination": "exited", "exit_code": 0,
+                "content_sha256": hashlib.sha256(body).hexdigest(),
+                "content_bytes": len(body),
+            }),
+            encoding="utf-8",
+        )
+        (work / "pending-result.body").write_bytes(body)
+
+        delivered = []
+
+        def succeeding(path, payload):
+            delivered.append(dict(payload))
+            return 200, {"ok": True}
+
+        executor = self._executor(succeeding, work)
+        self.assertTrue(executor.load_pending())
+        self.assertTrue(executor.resend_pending_result().get("ok"))
+        self.assertEqual(delivered[0]["content_bytes"], len(body))
+
+    def test_plain_resend_rewrites_nothing(self):
+        """An identical resend must not expose the good copy to a new write."""
+        import tempfile
+        import time
+
+        work = Path(tempfile.mkdtemp(prefix="oracle_pending_noop_4139_"))
+        body = "동일 재전송\r\n".encode("utf-8")
+
+        def failing(path, payload):
+            return 503, {"ok": False}
+
+        executor = self._executor(failing, work)
+        executor.submit(_dispatch(), _outcome(body))
+        manifest_path = work / "pending-result.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        held_body = work / manifest["body_name"]
+        before = (
+            manifest_path.stat().st_mtime_ns,
+            held_body.stat().st_mtime_ns,
+        )
+
+        time.sleep(0.01)
+        executor.resend_pending_result()
+        executor.resend_pending_result()
+        after = (
+            manifest_path.stat().st_mtime_ns,
+            held_body.stat().st_mtime_ns,
+        )
+        self.assertEqual(after, before, "a plain resend rewrote the held result")
+        self.assertEqual(list(work.glob(".tmp-*")), [], "a temp file was left behind")
 
     def test_quarantine_preserves_bytes_and_cause_on_disk(self):
         import tempfile

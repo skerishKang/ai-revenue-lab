@@ -52,13 +52,38 @@ MAX_READ_ENVELOPE_BYTES = 6_000_000
 
 #: Byte-identical to the producer's own ``safe_ref`` pattern.
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
-_MAX_FILE_PATH_CHARS = 512
+#: A Windows path is ordinary text, Korean included. The ceiling is the
+#: documented extended-length path maximum of 32,767 characters (Microsoft,
+#: "Maximum Path Length Limitation"); the former 512-character bound was a
+#: trial number that rejected a legal long path on the PC this lane reads.
+_MAX_FILE_PATH_CHARS = 32_767
 
 # The official MeshCtrl CLI remains unchanged. Inject the password via stdin
 # inside a Node bootstrap, so the operating system argv never contains it.
 _PASSWORD_MARKER = "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__"
+#: MeshCtrl prints a device reply with ``console.log`` and then calls
+#: ``process.exit`` in the same tick. Node documents stdout/stderr writes as
+#: possibly asynchronous over a pipe, and ``process.exit`` "will force the
+#: process to exit as quickly as possible even if there are still asynchronous
+#: operations pending", so the tail of a large transcript dies in the pipe
+#: buffer. The bootstrap therefore installs a flush barrier: the exit happens
+#: only after both streams report the queued writes complete. It caps nothing
+#: and truncates nothing; it waits for the bytes MeshCtrl already printed.
+_MESHCTRL_FLUSH_BARRIER = (
+    "const realExit=process.exit.bind(process);"
+    "let exiting=false;"
+    "const finish=()=>{if(exiting)return;exiting=true;realExit(process.exitCode|0);};"
+    "const drained=(stream,next)=>{stream.on('error',next);"
+    "try{stream.write('',next);}catch(_){next();}};"
+    "process.exit=function(code){"
+    "if(code!==undefined){process.exitCode=code;}"
+    "if(exiting)return;"
+    "drained(process.stdout,()=>drained(process.stderr,finish));"
+    "};"
+)
 _MESHCTRL_STDIN_BOOTSTRAP = (
-    "const fs=require('node:fs');"
+    _MESHCTRL_FLUSH_BARRIER
+    + "const fs=require('node:fs');"
     "const marker='__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__';"
     "const i=process.argv.indexOf(marker);"
     "if(i<0)process.exit(2);"

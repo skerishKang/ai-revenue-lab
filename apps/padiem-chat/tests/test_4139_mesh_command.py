@@ -438,12 +438,18 @@ def test_a_large_output_is_split_into_several_messages(monkeypatch):
     assert len(set(ids)) == len(ids)
     assert all(item["message_id"].startswith("msg_ltr_") for item in appended)
     assert all(len(item["content"]) <= 8000 for item in appended)
-    rebuilt = "\n".join(
+    rebuilt = "".join(
         item["content"].split(" 시작 ---\n", 1)[1].rsplit("\n--- 출력 끝 ---", 1)[0]
         for item in appended
     )
-    # Nothing is dropped or truncated: the parts rebuild the whole output.
+    # The parts are a byte-exact partition, not a line-rejoined approximation:
+    # concatenating them reproduces the output including every terminator, and
+    # the digest the server pinned belongs to those same bytes.
     assert rebuilt == big.decode("utf-8")
+    assert len(rebuilt.encode("utf-8")) == len(big)
+    assert hashlib.sha256(rebuilt.encode("utf-8")).hexdigest() == (
+        state.history_store.rows[row["dispatch_id"]]["result_sha256"]
+    )
 
 
 def test_a_long_txt_read_is_split_and_preserved(monkeypatch):

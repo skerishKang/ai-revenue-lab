@@ -35,6 +35,20 @@ MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 #: encode. R2 keys stay server-derived (conversation + deterministic result
 #: id); a browser can never choose an object key.
 ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
+#: #4139 dispatch row field bounds. Each number is the ceiling of the thing it
+#: describes, not a safety guess:
+#: * a reference keeps the bound this table has always used;
+#: * a Windows path is bounded by the documented maximum path length
+#:   (32,767 characters with the extended-length prefix; Microsoft, "Maximum
+#:   Path Length Limitation"), because a Korean or long PC path is ordinary
+#:   input and the former 1,024-character bound rejected it;
+#: * a command is bounded by the documented Cloudflare D1 ceiling of 100,000
+#:   bytes per statement, because the command text is written into this row and
+#:   the row is the command's only durable home.
+MAX_MESH_REFERENCE_CHARS = 1024
+MAX_MESH_PATH_CHARS = 32_767
+MAX_MESH_COMMAND_BYTES = 100_000
+_MESH_PATH_FIELDS = frozenset({"path_relative", "file_path"})
 #: #4139 terminal/file result ids: the deterministic `msg_ltr_<40hex>` base
 #: from the result projection, plus the conversation splitter suffix.
 _MESH_RESULT_MESSAGE_ID_RE = re.compile(r"msg_ltr_[0-9a-f]{40}(_p[0-9]+)?")
@@ -1625,14 +1639,19 @@ class D1HistoryStore:
             raise HistoryError("kind must be read or command")
         if kind == "command":
             # #4139 terminal lane: the command is the execution target, so it is
-            # mandatory, single-line and bounded. Korean and any printable
-            # character are ordinary input; only control characters are refused.
+            # mandatory and it is ordinary text — Korean, quotes, tabs and
+            # several lines. There is no product length rule; the bound is the
+            # row it is written into. Only the characters that break the lane
+            # are refused: NUL and the other C0 controls except tab and LF
+            # (CR is refused because the exit-code sentinel is parsed per line).
             if not isinstance(command_text, str) or not command_text.strip():
                 raise HistoryError("command_text is required for a command dispatch")
-            if len(command_text) > 8192 or any(ord(ch) < 32 for ch in command_text):
-                raise HistoryError(
-                    "command_text must be a bounded single-line command"
-                )
+            if len(command_text.encode("utf-8")) > MAX_MESH_COMMAND_BYTES:
+                raise HistoryError("command_text exceeds the dispatch row bound")
+            if any(
+                ord(ch) < 32 and ch not in "\t\n" for ch in command_text
+            ) or "\x7f" in command_text:
+                raise HistoryError("command_text carries a control character")
         elif command_text is not None:
             raise HistoryError("command_text is only valid for a command dispatch")
         for name, value in fields.items():
@@ -1640,7 +1659,17 @@ class D1HistoryStore:
                 if name not in ("evidence_ref", "binding_ref", "command_text"):
                     raise HistoryError(f"{name} must be a bounded reference")
                 continue
-            if not isinstance(value, str) or not value or len(value) > 1024:
+            if not isinstance(value, str) or not value:
+                raise HistoryError(f"{name} must be a bounded reference")
+            if name in _MESH_PATH_FIELDS:
+                if len(value) > MAX_MESH_PATH_CHARS:
+                    raise HistoryError(f"{name} exceeds the Windows path bound")
+                if any(ord(ch) < 32 for ch in value):
+                    raise HistoryError(f"{name} carries a control character")
+                continue
+            if name == "command_text":
+                continue  # already bounded above, in bytes
+            if len(value) > MAX_MESH_REFERENCE_CHARS:
                 raise HistoryError(f"{name} must be a bounded reference")
         if not isinstance(expires_at, str) or not expires_at:
             raise HistoryError("expires_at must be a bounded timestamp")
