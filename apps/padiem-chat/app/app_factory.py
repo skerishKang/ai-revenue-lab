@@ -112,6 +112,7 @@ from .claw_web_xlsx_selection_routes import (
     web_xlsx_selections, web_xlsx_selection_detail,
 )
 from .claw_web_xlsx_selection_store import D1WebXlsxSelectionStore
+from .claw_meeting_store import D1ClawMeetingStore
 from .claw_web_xlsx_p01_request import D1WebXlsxP01RequestStore
 from .claw_web_xlsx_p01_owner_decision import D1WebXlsxP01OwnerDecisionStore
 from .claw_web_xlsx_p01_owner_decision_routes import (
@@ -225,6 +226,12 @@ from .github_oauth_routes import (github_start, github_callback, github_status,
                                   github_installation_settings)
 from .connector_ticket_routes import google_connector_ticket
 from .meeting_drive_upload_routes import MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session
+from .claw_meeting_routes import (
+    MEETING_ACTION_PATH, MEETING_ACTIONS_PATH, MEETING_ARTIFACT_PATH, MEETING_END_PATH,
+    MEETING_PATH, MEETINGS_PATH,
+    claw_meeting_action, claw_meeting_action_create, claw_meeting_artifact,
+    claw_meeting_detail, claw_meeting_end, claw_meetings,
+)
 from .b66_drive_routes import (
     b66_drive_connect,
     b66_drive_connect_callback_return,
@@ -404,6 +411,12 @@ def create_app(
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route(MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session, methods=["POST"]),
+        Route(MEETINGS_PATH, claw_meetings, methods=["GET", "POST"]),
+        Route(MEETING_PATH, claw_meeting_detail, methods=["GET", "PATCH", "DELETE"]),
+        Route(MEETING_END_PATH, claw_meeting_end, methods=["POST"]),
+        Route(MEETING_ARTIFACT_PATH, claw_meeting_artifact, methods=["POST"]),
+        Route(MEETING_ACTIONS_PATH, claw_meeting_action_create, methods=["POST"]),
+        Route(MEETING_ACTION_PATH, claw_meeting_action, methods=["PATCH", "DELETE"]),
         Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/connectors/google/drive/disconnect", disconnect_google_drive, methods=["POST"]),
@@ -884,6 +897,12 @@ def create_app(
     app.state.claw_web_xlsx_selection_store = (
         D1WebXlsxSelectionStore(d1_binding)
         if _workspace_store is not None and d1_binding is not None else None
+    )
+    # #4647: the meeting ledger reuses this same PADIEM_CHAT_DB D1 binding and the
+    # existing signed owner + resolved workspace authority. Migrations 049-051 own
+    # the schema; no second database, no media bytes and no Drive capability here.
+    app.state.claw_meeting_store = (
+        D1ClawMeetingStore(d1_binding) if d1_binding is not None else None
     )
     # Engine adapter requires separately authenticated, private composition.
     # No default service calls, fake approval or in-memory fallback.

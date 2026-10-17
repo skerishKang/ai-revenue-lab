@@ -251,6 +251,7 @@
       shell?.classList.remove("sidebar-open");
       find("mobileMenu")?.setAttribute("aria-expanded", "false");
       if (find("sidebarScrim")) find("sidebarScrim").hidden = true;
+      void loadRecords();
       return true;
     }
     trigger.addEventListener("click", open);
@@ -281,6 +282,13 @@
           audio = null; text.value = ""; downloadAudio.disabled = true; downloadText.disabled = true;
           draftInClaw.disabled = true;
           driveAudio.disabled = true; driveText.disabled = true;
+          // The ledger is server-side owner data; leaving the browser session must
+          // drop the in-page handle so the next sign-in cannot address it.
+          meetingRef = "";
+          if (recordsList) recordsList.replaceChildren();
+          if (recordsDetail) recordsDetail.replaceChildren();
+          if (recordsStatus) recordsStatus.textContent = "";
+          if (saveTitleButton) saveTitleButton.disabled = true;
           controller.discard();
         };
         if (controller.snapshot().active) void controller.stop().then(discard);
@@ -295,7 +303,7 @@
       audio = null; text.value = ""; downloadAudio.disabled = true; downloadText.disabled = true;
       const selected = dialog.querySelector('input[name="meetingMode"]:checked')?.value;
       startButton.disabled = true;
-      try { await controller.start(selected); }
+      try { await controller.start(selected); void startLedger(selected); }
       catch (error) { say(error.message === "live_transcription_not_supported" ? "이 브라우저는 실시간 받아쓰기를 지원하지 않습니다." : statuses.meeting_start_failed); }
       finally { if (!controller.snapshot().active) startButton.disabled = !signedIn; }
     });
@@ -309,6 +317,7 @@
       draftInClaw.disabled = !text.value.trim();
       driveAudio.disabled = !audio;
       driveText.disabled = !text.value.trim();
+      void closeLedger();
     });
     text.addEventListener("input", () => {
       const unavailable = controller.snapshot().active || !text.value.trim();
@@ -332,6 +341,190 @@
       // setNavActive() from the Claw navigation hides the meeting workbench.
       composer.focus?.();
       // Human chooses Send through the existing authorized composer form, never automatic.
+    });
+    // #4647 meeting ledger. PADIEM stores only the record index (title, mode,
+    // times, Drive file id); audio and transcript bytes stay in the browser and in
+    // the user's own Drive. A ledger failure must never stop, discard or falsely
+    // complete a recording, so every call below degrades to a truthful note.
+    const LEDGER = "/api/claw/meetings";
+    const MODE_LABEL = { record: "녹음만", transcribe: "실시간 전사만", both: "녹음 + 전사" };
+    const recordsList = find("meetingRecordsList"), recordsEmpty = find("meetingRecordsEmpty");
+    const recordsStatus = find("meetingRecordsStatus"), recordsDetail = find("meetingRecordsDetail");
+    const titleInput = find("meetingTitleInput"), saveTitleButton = find("meetingSaveTitle");
+    let meetingRef = "", recordsInFlight = false;
+    const note = (value) => { if (recordsStatus) recordsStatus.textContent = value; };
+    async function ledger(method, path, payload) {
+      const response = await win.fetch(path, {
+        method, credentials: "same-origin", cache: "no-store", redirect: "error",
+        headers: payload === undefined
+          ? { "Accept": "application/json" }
+          : { "Accept": "application/json", "Content-Type": "application/json" },
+        body: payload === undefined ? undefined : JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true) {
+        throw new Error((data && data.error && data.error.code) || "ledger_unavailable");
+      }
+      return data;
+    }
+    function renderRecords(rows) {
+      if (!recordsList) return;
+      recordsList.replaceChildren();
+      if (recordsEmpty) recordsEmpty.hidden = rows.length > 0;
+      rows.forEach((row) => {
+        const item = doc.createElement("div");
+        item.className = "meeting-record";
+        const open = doc.createElement("button");
+        open.type = "button"; open.className = "meeting-record-open";
+        open.textContent = row.title + " · " + (MODE_LABEL[row.mode] || row.mode)
+          + " · " + (row.status === "active" ? "진행 중" : "종료");
+        open.addEventListener("click", () => { void openRecord(row.meeting_ref); });
+        const remove = doc.createElement("button");
+        remove.type = "button"; remove.className = "meeting-record-delete";
+        remove.textContent = "삭제";
+        remove.addEventListener("click", () => { void removeRecord(row.meeting_ref); });
+        item.append(open, remove);
+        recordsList.appendChild(item);
+      });
+    }
+    async function loadRecords() {
+      if (!signedIn || !recordsList || recordsInFlight) return;
+      recordsInFlight = true;
+      try {
+        // A refresh must not erase the verdict the user just acted on (delete,
+        // title saved), so the note is left standing unless this call failed.
+        renderRecords((await ledger("GET", LEDGER)).meetings || []);
+      } catch (_) {
+        renderRecords([]);
+        note("회의 기록을 불러오지 못했습니다. 녹음과 다운로드는 계속 사용할 수 있습니다.");
+      } finally {
+        recordsInFlight = false;
+      }
+    }
+    function renderDetail(data) {
+      if (!recordsDetail) return;
+      recordsDetail.replaceChildren();
+      const heading = doc.createElement("p");
+      heading.className = "meeting-record-heading";
+      heading.textContent = data.meeting.title + " · "
+        + (data.meeting.ended_at ? "종료" : "진행 중");
+      recordsDetail.appendChild(heading);
+      (data.artifacts || []).forEach((artifact) => {
+        const line = doc.createElement("p");
+        line.className = "meeting-record-artifact";
+        if (artifact.state === "drive_saved" && artifact.drive_file_id) {
+          // Only a real Drive receipt becomes a link; nothing is claimed for the
+          // file when the upload itself never completed.
+          const link = doc.createElement("a");
+          link.href = "https://drive.google.com/file/d/"
+            + encodeURIComponent(artifact.drive_file_id) + "/view";
+          link.target = "_blank"; link.rel = "noopener noreferrer";
+          link.textContent = artifact.filename || artifact.kind;
+          line.append((artifact.kind === "audio" ? "녹음 원본: "
+            : artifact.kind === "transcript" ? "전사문: " : "회의록: "), link);
+        } else {
+          line.textContent = (artifact.kind === "audio" ? "녹음 원본: "
+            : artifact.kind === "transcript" ? "전사문: " : "회의록: ")
+            + (artifact.state === "local_only" ? "이 기기에만 있음 (Drive 미저장)"
+               : "Drive 저장 실패");
+        }
+        recordsDetail.appendChild(line);
+      });
+      (data.actions || []).forEach((action) => {
+        const line = doc.createElement("p");
+        line.className = "meeting-record-action";
+        line.textContent = (action.kind === "decision" ? "결정: " : "후속: ") + action.summary
+          + (action.owner_label ? " · " + action.owner_label : "")
+          + (action.due_date ? " · " + action.due_date : "")
+          + " · " + (action.status === "candidate" ? "후보"
+            : action.status === "confirmed" ? "확정"
+              : action.status === "dismissed" ? "보류 취소" : "일정 등록됨");
+        recordsDetail.appendChild(line);
+      });
+    }
+    async function openRecord(ref) {
+      meetingRef = ref;
+      if (saveTitleButton) saveTitleButton.disabled = true;
+      try {
+        const data = await ledger("GET", LEDGER + "/" + encodeURIComponent(ref));
+        renderDetail(data);
+        if (titleInput) titleInput.value = data.meeting.title;
+        if (saveTitleButton) saveTitleButton.disabled = false;
+        note("");
+      } catch (_) {
+        note("회의 기록을 확인하지 못했습니다.");
+      }
+    }
+    async function removeRecord(ref) {
+      // Deletion is ledger-only by contract; the customer's Drive object is a
+      // separate boundary that this page never touches.
+      if (typeof win.confirm === "function" && !win.confirm(
+          "PADIEM 회의 기록만 삭제합니다. Google Drive에 저장된 파일은 삭제되지 않습니다.")) return;
+      try {
+        const data = await ledger("DELETE", LEDGER + "/" + encodeURIComponent(ref));
+        if (data.record_deleted !== true || data.drive_files_deleted !== false) {
+          throw new Error("ledger_delete_unverified");
+        }
+        if (meetingRef === ref) {
+          meetingRef = "";
+          if (recordsDetail) recordsDetail.replaceChildren();
+          if (saveTitleButton) saveTitleButton.disabled = true;
+        }
+        note("회의 기록을 삭제했습니다. Google Drive 파일은 사용자 Drive에 남아 있습니다.");
+        await loadRecords();
+      } catch (_) {
+        note("회의 기록을 삭제하지 못했습니다.");
+      }
+    }
+    async function startLedger(mode) {
+      if (!signedIn) return;
+      meetingRef = "";
+      const title = (titleInput && titleInput.value.trim())
+        || ("회의 " + new Date().toISOString().slice(0, 10));
+      try {
+        const data = await ledger("POST", LEDGER, { title, mode });
+        meetingRef = data.meeting.meeting_ref;
+      } catch (_) {
+        meetingRef = "";
+        note("회의 기록을 시작하지 못했습니다. 녹음 자체는 계속됩니다.");
+      }
+    }
+    async function closeLedger() {
+      if (!meetingRef) return;
+      // The reference stays live after ending: the Drive save for this meeting
+      // happens once the recording has stopped, and must still be attached.
+      try {
+        await ledger("POST", LEDGER + "/" + encodeURIComponent(meetingRef) + "/end", {});
+      } catch (_) {
+        note("회의 종료 상태를 기록하지 못했습니다. 결과는 그대로 남아 있습니다.");
+      }
+      await loadRecords();
+    }
+    async function recordArtifact(kind, receipt, blob) {
+      if (!meetingRef) return;
+      try {
+        await ledger("POST", LEDGER + "/" + encodeURIComponent(meetingRef) + "/artifacts", {
+          kind, state: "drive_saved", drive_file_id: receipt.fileId,
+          filename: receipt.name || ("padiem-meeting-" + kind),
+          mime_type: blob.type, byte_size: blob.size,
+        });
+      } catch (_) {
+        note("Google Drive 파일은 저장됐지만 회의 기록에 참조를 남기지 못했습니다.");
+      }
+    }
+    if (saveTitleButton) saveTitleButton.addEventListener("click", async () => {
+      if (!meetingRef || !titleInput) return;
+      saveTitleButton.disabled = true;
+      try {
+        await ledger("PATCH", LEDGER + "/" + encodeURIComponent(meetingRef),
+                     { title: titleInput.value.trim() });
+        note("회의 제목을 기록에 저장했습니다.");
+        await loadRecords();
+      } catch (_) {
+        note("회의 제목을 저장하지 못했습니다.");
+      } finally {
+        saveTitleButton.disabled = !meetingRef;
+      }
     });
     async function storeInDrive(kind) {
       if (!signedIn || uploadInFlight || controller.snapshot().active) return;
@@ -357,6 +550,7 @@
         link.target = "_blank"; link.rel = "noopener noreferrer";
         link.textContent = "Google Drive에서 열기";
         status.append(link);
+        void recordArtifact(kind === "text" ? "transcript" : kind, result, blob);
       } catch (error) {
         if (!signedIn) return;
         const code = error?.code || "";

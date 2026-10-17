@@ -948,6 +948,14 @@
        <p id="meetingInterim" role="status" class="meeting-interim"></p>
        <div class="meeting-exports"><button type="button" id="meetingDownloadAudio" disabled>녹음 파일 다운로드</button><button type="button" id="meetingDownloadText" disabled>전사 TXT 다운로드</button><button type="button" id="meetingSaveAudioDrive" disabled>녹음 Google Drive 저장</button><button type="button" id="meetingSaveTextDrive" disabled>전사 Google Drive 저장</button><button type="button" id="meetingDraftInClaw" disabled>Claw로 회의록 초안 만들기</button></div>
        <p class="meeting-storage-note">Google Drive 직접 저장은 쓰기 권한 연결이 필요합니다. 현재는 파일을 기기에 다운로드해 보관할 수 있습니다. 서버에 원본을 올리지 않으며 새로고침하면 임시 기록이 사라집니다.</p>
+       <section class="meeting-records" aria-labelledby="meetingRecordsTitle">
+        <h3 id="meetingRecordsTitle" data-locale-key="meeting-records-title">회의 기록</h3>
+        <div class="meeting-records-new"><label for="meetingTitleInput" data-locale-key="meeting-record-title-label">회의 제목</label><input id="meetingTitleInput" type="text" maxlength="80" autocomplete="off" placeholder="예: 10월 운영 회의" /><button type="button" id="meetingSaveTitle" disabled>제목 저장</button></div>
+        <div class="meeting-records-list" id="meetingRecordsList"></div>
+        <p class="meeting-records-empty" id="meetingRecordsEmpty" hidden data-locale-key="meeting-records-empty">저장된 회의 기록이 없습니다.</p>
+        <p class="meeting-records-status" id="meetingRecordsStatus" role="status" aria-live="polite"></p>
+        <div class="meeting-records-detail" id="meetingRecordsDetail"></div>
+       </section>
       </div>
     </section>
     </main>
