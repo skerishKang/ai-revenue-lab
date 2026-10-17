@@ -126,8 +126,14 @@ def test_automation_nav_opens_standalone_page_reusing_panel() -> None:
     assert 'shell.dataset.state = "automation"' in app
     assert "mountAutomationView" in app
     assert "loadClawAutomationRules();" in app
-    # Signed-in gate and session scoping are preserved.
-    assert "if (!clawWorkspace || !clawAutomation || !authState.authenticated) return;" in app
+    # Owner decision 2026-10-17: the page stays browsable without a session, so
+    # the signed-in gate moved from opening the page to reading the rules. The
+    # visitor branch returns before the loader, and the loader still refuses an
+    # unauthenticated call, so no rule request can leave the browser.
+    assert "if (!clawWorkspace || !clawAutomation) return;" in app
+    assert 'if (signedOut) signedOut.hidden = false;\n      return;' in app
+    assert "if (!clawAutomation || !authState.authenticated) return;" in app
+    assert 'id="automationViewSignedOut"' in html
     assert "clawAutomationSchedulerNote" in html
     # The scheduler note still refuses to claim the scheduler is running.
     assert "자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다" in html

@@ -31,9 +31,9 @@ test("Chat and Claw share a group; meeting, automation, library, calendar follow
   assert.match(sidebarCss, /\.sidebar-chat-claw-group\s*\{[\s\S]*?display:\s*flex;/);
   assert.match(clawCss, /#workspaceNav \.side-item:disabled\s*\{[\s\S]*?display:\s*flex;/);
   assert.equal((html.match(/id="meetingNavButton"/g) || []).length, 1);
-  assert.match(html, /id="automationNavButton"[^>]*disabled/);
-  assert.match(html, /id="filesNavButton"[^>]*disabled/);
-  assert.match(html, /id="meetingNavButton"[^>]+aria-controls="meetingView"[^>]+disabled/);
+  assert.doesNotMatch(html, /id="automationNavButton"[^>]*disabled/);
+  assert.doesNotMatch(html, /id="filesNavButton"[^>]*disabled/);
+  assert.doesNotMatch(html, /id="meetingNavButton"[^>]*disabled/);
   assert.match(html, /data-locale-key="nav-meeting"/);
   assert.match(locale, /"nav-meeting": "Meeting notes"/);
   assert.match(locale, /"nav-meeting": "회의록"/);
@@ -104,4 +104,16 @@ test("meeting nav carries the horizontal note glyph and no square-grid glyph rem
   const nav = html.slice(html.indexOf('id="meetingNavButton"'), html.indexOf("</button>", html.indexOf('id="meetingNavButton"')));
   assert.match(nav, /class="side-icon" aria-hidden="true">▥/);
   assert.equal((html.match(/▦/g) || []).length, 0);
+});
+
+test("a visitor may open the meeting page while the session guard stays on the controls", () => {
+  // The entry is no longer inert: the owner decision is that every screen is
+  // browsable without a session, so the guard moved from the nav to the actions.
+  assert.doesNotMatch(capture, /trigger\.disabled/);
+  assert.match(capture, /shell\.dataset\.state = "meeting";/);
+  assert.match(capture, /if \(!signedIn\) say\("PADIEM 로그인 후 회의록을 이용할 수 있습니다\."\);/);
+  assert.match(capture, /startButton\.disabled = state\.active \|\| state\.pending \|\| !signedIn/);
+  assert.match(capture, /draftInClaw\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn/);
+  assert.match(capture, /driveText\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn \|\| uploadInFlight/);
+  assert.match(capture, /startButton\.disabled = !signedIn \|\| controller\.snapshot\(\)\.active/);
 });

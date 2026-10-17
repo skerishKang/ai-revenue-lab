@@ -1127,10 +1127,6 @@
       // and the automation-view alerts entry reuse the same signed-in gate.
       document.getElementById("clawTasksButton"),
       document.getElementById("automationAlertsButton"),
-      // #3237: Automation reuses the same signed-in gate. The server still
-      // owns the canonical tenant, so an enabled button never implies the
-      // caller may read any particular workspace.
-      document.getElementById("automationNavButton"),
     ].filter(Boolean);
     inboxNavButtons.forEach((button) => {
       button.disabled = !authenticated;
@@ -3145,6 +3141,8 @@
 
   async function loadClawAutomationRules() {
     if (!clawAutomation || !authState.authenticated) return;
+    const signedOutNote = document.getElementById("automationViewSignedOut");
+    if (signedOutNote) signedOutNote.hidden = true;
     setClawAutomationLoading();
     try {
       const response = await fetch("/api/claw/automation/rules", {
@@ -3533,15 +3531,25 @@
   }
 
   function openClawAutomation() {
-    if (!clawWorkspace || !clawAutomation || !authState.authenticated) return;
+    if (!clawWorkspace || !clawAutomation) return;
     mountAutomationView();
     const view = document.getElementById("automationView");
     if (view) view.hidden = false;
     shell.dataset.state = "automation";
-    clawAutomation.hidden = false;
     clearClawWait();
     setNavActive();
     closeSidebar();
+    // Owner decision: every screen stays browsable without a session. The page
+    // opens for a visitor, but the rule list is still never requested — the
+    // server owns the tenant, and the signed-out note replaces the rows.
+    const signedOut = document.getElementById("automationViewSignedOut");
+    if (!authState.authenticated) {
+      clawAutomation.hidden = true;
+      if (signedOut) signedOut.hidden = false;
+      return;
+    }
+    if (signedOut) signedOut.hidden = true;
+    clawAutomation.hidden = false;
     loadClawAutomationRules();
   }
 
