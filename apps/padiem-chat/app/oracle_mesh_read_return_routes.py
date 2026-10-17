@@ -53,7 +53,12 @@ from .claw_connector_enrollment_routes import _verified_owner_request
 from .claw_memory_routes import _resolve_memory_workspace
 from .claw_local_task_result_projection import result_message_id
 from .control_plane_identity import IdentityBridgeError
-from .history import HistoryError, HistoryForbidden, validate_conversation_id
+from .history import (
+    HistoryError,
+    HistoryForbidden,
+    MAX_HISTORY_MESSAGE_CHARS,
+    validate_conversation_id,
+)
 from .request_telemetry import emit_stage_event
 
 ORACLE_MESH_READ_REQUEST_PATH = "/api/claw/connector/mesh-reads/request"
@@ -86,36 +91,36 @@ ORACLE_MESH_CHANNEL_SECRET_ENV = "ORACLE_MESH_CHANNEL_SECRET"
 ORACLE_MESH_CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: How long one dispatch stays claimable/submittable.
 _DISPATCH_TTL = timedelta(seconds=600)
-_MAX_BODY_BYTES = 8192
-#: #4139 result envelope. The Claw request route already accepts a 6 MB
-#: body for one user message, so a command result is bounded by the same
-#: proven limit instead of a trial-era 8 KB.
+#: #4139 wire envelope for one body on this connector, in both directions: the
+#: same 6 MB the Claw request route already accepts for one user message
+#: (``claw_general_routes.MAX_CLAW_GENERAL_BODY_BYTES``). The former 8 KiB and
+#: 768 B trial caps could not carry a normal document or a Windows-bounded path.
 _MAX_RESULT_BODY_BYTES = 6_000_000
-#: One stored conversation message. Existing product bound
-#: (history.HistoryStore.MAX_HISTORY_MESSAGE_CHARS): a larger output is
-#: split across several messages, never truncated.
-_MAX_COMMAND_MESSAGE_CHARS = 8000
-#: Storage guard for one command result: 256 parts of 8 000 characters is
-#: ~2 MB of stored text. Beyond it the output is withheld with an explicit
-#: message instead of filling a conversation.
+_MAX_BODY_BYTES = _MAX_RESULT_BODY_BYTES
+#: One stored conversation message. Reuses the existing product bound
+#: (``history.MAX_HISTORY_MESSAGE_CHARS``); a larger output is split across
+#: several messages, never truncated.
+_MAX_COMMAND_MESSAGE_CHARS = MAX_HISTORY_MESSAGE_CHARS
+#: Resource guard, not a data limit: how many message rows one run may create.
+#: Above it the verified original goes to the private store and the
+#: conversation carries one preview plus the owner-scoped retrieval reference,
+#: so the bytes are never lost — only the row count is bounded.
 _MAX_COMMAND_MESSAGE_PARTS = 256
-#: Headroom the message head (command, method, stream, exit state, markers)
-#: needs on top of an output chunk, so a stored message never exceeds the
-#: shared per-message bound.
-_COMMAND_HEADER_CHARS = 600
-#: A path or a command may contain Korean (or any non-ASCII) characters.
-#: The only forbidden characters are control characters.
-_MAX_PATH_VALUE_CHARS = 1024
+#: A Windows path is ordinary input: Korean, spaces and any printable character
+#: are allowed. The ceiling is the documented extended-length path maximum
+#: (32,767 characters, Microsoft "Maximum Path Length Limitation"); the former
+#: 1,024-character trial bound rejected a legal long path. Only control
+#: characters are refused.
+_MAX_PATH_VALUE_CHARS = 32_767
 _SAFE_REF_CHARS = frozenset(
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:@+-"
 )
 #: #4139 read lane envelope, shared with the command lane and the executor.
-#: The former 768-byte trial cap could not read a normal document; a larger
-#: body is split across conversation messages, never truncated.
 _MAX_FILE_TEXT_BYTES = _MAX_RESULT_BODY_BYTES
-#: #4139 command lane display limit is gone: an output larger than one
-#: conversation message is split, and an output larger than the wire
-#: envelope is reported as oversize. Nothing is silently dropped.
+#: A dispatch row is written through D1, whose documented per-statement ceiling
+#: is 100,000 bytes (Cloudflare D1 platform limits). A command longer than the
+#: row it lives in is refused with a named cause instead of a storage error.
+_MAX_COMMAND_TEXT_BYTES = 100_000
 _EXECUTOR = "oracle_management_host"
 #: #4139 terminal lane. A command dispatch has no file, so the 047 file
 #: columns carry these fixed, self-describing sentinels instead of a bogus
@@ -127,7 +132,12 @@ _COMMAND_FILE_SENTINEL = "command"
 #: method is recorded verbatim because MeshCentral runs it through the
 #: device shell (PowerShell here), not through this server.
 _COMMAND_SHELL_LABEL = "PowerShell (MeshCentral runcommand --reply)"
-_MAX_COMMAND_OUTPUT_BYTES = 3000
+#: The result message echoes the command that ran. When that echo cannot fit
+#: beside at least one output character, it is marked instead of pushing the
+#: output out of the message: the full command stays in the user's own turn and
+#: in the dispatch row, so the mark discloses nothing but a display bound.
+_COMMAND_ECHO_MARK = "…(전체 명령은 보낸 메시지와 dispatch에 보존)"
+_COMMAND_ECHO_PREFIX = "명령: "
 
 _REQUEST_KEYS = frozenset({"device_id", "run_id", "root_ref", "path_relative", "confirmed"})
 _RESULT_KEYS = frozenset({
@@ -501,12 +511,13 @@ def _read_json(raw: bytes, keys: frozenset, limit: int = _MAX_BODY_BYTES) -> dic
     return value
 
 
-def _text_value(value: Any, limit: int = 1024) -> str | None:
+def _text_value(value: Any, limit: int = _MAX_PATH_VALUE_CHARS) -> str | None:
     """A path, a file name or a command: any language, no control characters.
 
     Windows paths, Korean file names and UTF-8 commands are ordinary input, so
-    the ASCII-only reference alphabet does not apply here. The bound is length
-    plus "no control characters"; nothing else is restricted.
+    the ASCII-only reference alphabet does not apply here. The bound is the
+    documented maximum path length plus "no control characters"; nothing else
+    is restricted.
     """
     if (
         not isinstance(value, str) or not value or len(value) > limit
@@ -829,6 +840,13 @@ async def dispatch_oracle_mesh_command_intent(
     selected = wire.get("device_id")
     if selected is not None and (not isinstance(selected, str) or not selected):
         return _error(422, "oracle_mesh_device_invalid")
+    if not isinstance(command, str) or not command.strip():
+        return _error(422, "oracle_mesh_command_invalid")
+    if len(command.encode("utf-8")) > _MAX_COMMAND_TEXT_BYTES:
+        # The command is written into one D1 statement, whose documented
+        # ceiling is 100,000 bytes. Refused here, by name, instead of failing
+        # later as an opaque storage error.
+        return _error(413, "oracle_mesh_command_too_large")
 
     try:
         scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
@@ -1122,60 +1140,195 @@ def _command_output_withheld_content(
 
 
 def _command_original_stored_content(
-    dispatch: dict[str, Any], wire: dict[str, Any], preview: str,
+    dispatch: dict[str, Any], wire: dict[str, Any], output: str,
 ) -> str:
     """One notice for an output larger than the conversation budget.
 
     The full output passed verification (bytes and digest are pinned on the
     dispatch row) and the private original store accepted it before this
     message was built, so "stored" is only claimed after the put succeeds.
-    The conversation carries a head preview; the whole original is fetched
-    through the owner-scoped retrieval reference below.
+    The conversation carries a head preview sized to this message's own frame —
+    a preview taken from another shape could overflow the shared per-message
+    limit and strand the result — and the whole original is fetched through the
+    owner-scoped retrieval reference below.
     """
-    lines = _command_header(dispatch, wire)
-    lines.append(
+    head = _command_head(dispatch, wire)
+    opening = head + [
         "출력 " + str(wire["content_bytes"]) + "바이트 전체는 비공개 원문 저장소에 "
-        "보관되었습니다. 아래는 앞부분 미리보기입니다."
-    )
-    lines.append("--- 출력 미리보기 시작 ---")
-    lines.append(preview)
-    lines.append("--- 출력 미리보기 끝 ---")
-    lines.append("SHA-256: " + str(wire["content_sha256"]))
-    lines.append(
+        "보관되었습니다. 아래는 앞부분 미리보기입니다.",
+        "--- 출력 미리보기 시작 ---",
+    ]
+    closing = [
+        "--- 출력 미리보기 끝 ---",
+        "SHA-256: " + str(wire["content_sha256"]),
         "원문 전체 조회: GET "
-        + "/api/claw/connector/mesh-results/" + str(dispatch["dispatch_id"])
+        + "/api/claw/connector/mesh-results/" + str(dispatch["dispatch_id"]),
+    ]
+    room = (
+        _MAX_COMMAND_MESSAGE_CHARS
+        - sum(len(line) for line in opening + closing)
+        - (len(opening) + len(closing))
     )
-    return "\n".join(lines)
+    return "\n".join(opening + [output[:max(room, 0)]] + closing)
 
 
-def _command_output_parts(output: str, limit: int = 8000) -> list[str]:
-    """Split one output into conversation-sized parts on line boundaries.
+def _command_part_messages(head: list[str], parts: list[str]) -> list[str]:
+    """Wrap each output part in the shared frame, in order.
 
-    A larger result is stored as several messages through the existing message
-    append path; no part is ever truncated, and line boundaries are preserved
-    because a shell output is read line by line.
+    ``"".join(parts)`` is the output verbatim, so the conversation carries every
+    byte across its messages; the frame lines are display furniture and the
+    pinned digest belongs to the unwrapped body.
     """
+    total = str(len(parts))
+    messages = []
+    for index, part in enumerate(parts):
+        lines = list(head)
+        lines.append("--- 출력 " + str(index + 1) + "/" + total + " 시작 ---")
+        lines.append(part)
+        lines.append("--- 출력 끝 ---")
+        messages.append("\n".join(lines))
+    return messages
+
+
+def _file_read_part_messages(parts: list[str]) -> list[str]:
+    total = str(len(parts))
+    messages = []
+    for index, part in enumerate(parts):
+        lines = ["PC 파일 읽기 결과"]
+        lines.append("--- 출력 " + str(index + 1) + "/" + total + " 시작 ---")
+        lines.append(part)
+        lines.append("--- 출력 끝 ---")
+        messages.append("\n".join(lines))
+    return messages
+
+
+def _file_read_stored_content(
+    dispatch: dict[str, Any], wire: dict[str, Any], output: str,
+) -> str:
+    """Read-lane twin of the stored-original notice, sized to its own frame."""
+    opening = [
+        "PC 파일 읽기 결과",
+        "출력 " + str(wire["content_bytes"]) + "바이트 전체는 비공개 원문 저장소에 "
+        "보관되었습니다. 아래는 앞부분 미리보기입니다.",
+        "--- 출력 미리보기 시작 ---",
+    ]
+    closing = [
+        "--- 출력 미리보기 끝 ---",
+        "SHA-256: " + str(wire["content_sha256"]),
+        "원문 전체 조회: GET "
+        + "/api/claw/connector/mesh-results/" + str(dispatch["dispatch_id"]),
+    ]
+    room = (
+        _MAX_COMMAND_MESSAGE_CHARS
+        - sum(len(line) for line in opening + closing)
+        - (len(opening) + len(closing))
+    )
+    return "\n".join(opening + [output[:max(room, 0)]] + closing)
+
+
+def _command_markers() -> tuple[str, str]:
+    """The widest part-marker pair one message can carry.
+
+    The digit count comes from the part guard, so the widest index/total pair
+    the caller can ever print is already paid for.
+    """
+    digits = len(str(_MAX_COMMAND_MESSAGE_PARTS + 1))
+    return (
+        "--- 출력 " + "9" * digits + "/" + "9" * digits + " 시작 ---",
+        "--- 출력 끝 ---",
+    )
+
+
+def _command_part_budget(head: list[str]) -> int:
+    """How many characters one output part may use in this message shape.
+
+    Derived, never estimated: the shared per-message bound minus the message
+    head minus the marker frame around the part.
+    """
+    start, end = _command_markers()
+    return _MAX_COMMAND_MESSAGE_CHARS - len("\n".join(head)) - len(start) - len(end) - 3
+
+
+def _command_head(dispatch: dict[str, Any], wire: dict[str, Any]) -> list[str]:
+    """The message head, fitted so an output part always has room.
+
+    A command can now be as long as its dispatch row allows, and the head
+    echoes it. Left unbounded, every part of a large output would overflow the
+    shared per-message limit and the whole result would strand on a storage
+    refusal. The echo is a label and the output is the payload, so when the head
+    does not fit the label keeps at most half of what the fixed header lines and
+    the marker frame leave over; the full command stays in the user's own turn
+    and in the dispatch row, and the mark says so.
+    """
+    head = _command_header(dispatch, wire)
+    if _command_part_budget(head) >= 1:
+        return head
+    index = next(
+        (position for position, line in enumerate(head)
+         if line.startswith(_COMMAND_ECHO_PREFIX)),
+        None,
+    )
+    if index is None:
+        return head
+    start, end = _command_markers()
+    others = len("\n".join(
+        line for position, line in enumerate(head) if position != index
+    ))
+    room = max(
+        0,
+        (
+            _MAX_COMMAND_MESSAGE_CHARS
+            - others
+            - len(start)
+            - len(end)
+            - 4
+            - len(_COMMAND_ECHO_MARK)
+        ) // 2,
+    )
+    bounded = list(head)
+    bounded[index] = bounded[index][:room] + _COMMAND_ECHO_MARK
+    if _command_part_budget(bounded) >= 1:
+        return bounded
+    # No label fits beside the output at all: drop it rather than let the
+    # message carry no result. The dispatch row still holds the whole command.
+    del bounded[index]
+    return bounded
+
+
+def _command_output_parts(output: str, limit: int) -> list[str]:
+    """Partition one output so that ``"".join(parts)`` is the output verbatim.
+
+    #4139: the former splitter kept the pending part as a joined string, so an
+    empty line was indistinguishable from "nothing buffered" and every line
+    boundary it crossed was swallowed — ``"\\n" + "a"*7401`` came back 7401
+    characters. Each terminator now travels with its own line
+    (``splitlines(keepends=True)``), so blank lines, consecutive newlines, CRLF
+    and one long line reassemble byte for byte. A line longer than the limit is
+    sliced, never cut, and no part is ever dropped.
+    """
+    if limit < 1:
+        # Fail fast instead of looping: a head that leaves no room is a caller
+        # bug, and slicing against a zero or negative bound would never finish.
+        raise ValueError("output part limit must be at least one character")
     if len(output) <= limit:
         return [output]
     parts: list[str] = []
-    current = ""
-    for line in output.split("\n"):
-        # A single line may itself exceed the bound (one long JSON dump, one
-        # base64 blob): it is split on characters so nothing is dropped.
+    buffer = ""
+    for line in output.splitlines(keepends=True):
         while len(line) > limit:
-            if current:
-                parts.append(current)
-                current = ""
-            parts.append(line[:limit])
-            line = line[limit:]
-        candidate = line if not current else current + "\n" + line
-        if len(candidate) > limit and current:
-            parts.append(current)
-            current = line
+            room = limit - len(buffer)
+            if room > 0:
+                buffer += line[:room]
+                line = line[room:]
+            parts.append(buffer)
+            buffer = ""
+        if len(buffer) + len(line) > limit:
+            parts.append(buffer)
+            buffer = line
         else:
-            current = candidate
-    if current or not parts:
-        parts.append(current)
+            buffer += line
+    if buffer:
+        parts.append(buffer)
     return parts
 
 
@@ -1384,14 +1537,15 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             # exit code is delivered with an explicit non-delivery notice.
             messages = [_command_output_withheld_content(dispatch, wire)]
         else:
+            head = _command_head(dispatch, wire)
             output_parts = _command_output_parts(
-                command_output, _MAX_COMMAND_MESSAGE_CHARS - _COMMAND_HEADER_CHARS,
+                command_output, _command_part_budget(head),
             )
             if len(output_parts) > _MAX_COMMAND_MESSAGE_PARTS:
-                # Over-budget output: the verified original is kept in the
-                # private store first. The conversation carries a head
-                # preview plus the owner-scoped retrieval reference; "stored"
-                # is claimed only after the put succeeds, never before.
+                # Over the per-run message-row guard: the verified original is
+                # kept in the private store first. The conversation carries a
+                # head preview plus the owner-scoped retrieval reference;
+                # "stored" is claimed only after the put succeeds, never before.
                 try:
                     await history_store.store_oracle_mesh_original(
                         user_id=dispatch["user_id"],
@@ -1423,30 +1577,49 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                         pass
                     return _error(503, "oracle_mesh_original_unavailable")
                 messages = [_command_original_stored_content(
-                    dispatch, wire, output_parts[0],
+                    dispatch, wire, command_output,
                 )]
             else:
-                total = str(len(output_parts))
-                head = _command_header(dispatch, wire)
-                messages = []
-                for index, part in enumerate(output_parts):
-                    lines = list(head)
-                    lines.append("--- 출력 " + str(index + 1) + "/" + total + " 시작 ---")
-                    lines.append(part)
-                    lines.append("--- 출력 끝 ---")
-                    messages.append("\n".join(lines))
+                messages = _command_part_messages(head, output_parts)
     elif read_output is not None:
+        head = ["PC 파일 읽기 결과"]
         output_parts = _command_output_parts(
-            read_output, _MAX_COMMAND_MESSAGE_CHARS - _COMMAND_HEADER_CHARS,
+            read_output, _command_part_budget(head),
         )
-        total = str(len(output_parts))
-        messages = []
-        for index, part in enumerate(output_parts):
-            lines = ["PC 파일 읽기 결과"]
-            lines.append("--- 출력 " + str(index + 1) + "/" + total + " 시작 ---")
-            lines.append(part)
-            lines.append("--- 출력 끝 ---")
-            messages.append("\n".join(lines))
+        if len(output_parts) > _MAX_COMMAND_MESSAGE_PARTS:
+            # The read lane carries the same guard as the command lane. The
+            # verified file body is stored whole first, so a large document
+            # becomes a preview plus a retrieval reference instead of either
+            # hundreds of messages or a silent refusal.
+            try:
+                await history_store.store_oracle_mesh_original(
+                    user_id=dispatch["user_id"],
+                    dispatch_id=wire["dispatch_id"],
+                    conversation_id=conversation_id,
+                    message_id=base_message_id,
+                    raw=read_output,
+                    expected_sha256=result_digest,
+                    expected_bytes=result_size,
+                )
+            except HistoryForbidden:
+                try:
+                    await history_store.finish_oracle_mesh_dispatch(
+                        dispatch_id=wire["dispatch_id"], outcome="failed",
+                    )
+                except Exception:
+                    pass
+                return _error(403, "oracle_mesh_conversation_forbidden")
+            except Exception:
+                try:
+                    await history_store.mark_oracle_mesh_store_failed(
+                        dispatch_id=wire["dispatch_id"],
+                    )
+                except Exception:
+                    pass
+                return _error(503, "oracle_mesh_original_unavailable")
+            messages = [_file_read_stored_content(dispatch, wire, read_output)]
+        else:
+            messages = _file_read_part_messages(output_parts)
     else:
         messages = [content]
     appended = False
