@@ -316,9 +316,13 @@ def build_project_context(project: ProjectProfile) -> str:
 HISTORY_PREVIEW_SUFFIX = "\n[저장 미리보기: 전체 내용 중 일부만 저장되었습니다.]"
 
 
-def _bounded_text(value: str, label: str) -> str:
-    text = value.strip()
-    if not text:
+def _bounded_text(value: str, label: str, preserve_edges: bool = False) -> str:
+    # #4139: the stored preview is edge-trimmed by default. A terminal command
+    # result is the one caller that must keep the exact leading/trailing
+    # whitespace the PC produced, so it opts in explicitly instead of changing
+    # the shared default for every other message.
+    text = value if preserve_edges else value.strip()
+    if not text.strip():
         raise HistoryError(f"{label} is empty")
     # Persistence is a bounded display preview, never a model-input ceiling.
     # Mark incomplete previews explicitly so users do not mistake saved history
@@ -1359,6 +1363,7 @@ class D1HistoryStore:
         summary: str,
         content: str,
         status: str,
+        preserve_edges: bool = False,
     ) -> bool:
         """#3139 — append one bounded Local Runner result to the run's conversation.
 
@@ -1386,7 +1391,7 @@ class D1HistoryStore:
             raise HistoryError("run_id is required")
         if not isinstance(message_id, str) or not message_id or len(message_id) > 128:
             raise HistoryError("message_id must be a bounded safe reference")
-        body = _bounded_text(content, "local_task_result")
+        body = _bounded_text(content, "local_task_result", preserve_edges=preserve_edges)
         if len(body) > MAX_HISTORY_MESSAGE_CHARS:
             raise HistoryError("local_task_result is not bounded")
         owned = await self._first(
@@ -1569,6 +1574,8 @@ class D1HistoryStore:
         path_relative: str,
         file_path: str,
         expires_at: str,
+        kind: str = "read",
+        command_text: str | None = None,
     ) -> dict[str, Any]:
         """#4139 — stage one Oracle management-host execution for one run.
 
@@ -1593,10 +1600,23 @@ class D1HistoryStore:
             "device_id": device_id, "binding_ref": binding_ref,
             "node_ref": node_ref, "root_ref": root_ref,
             "path_relative": path_relative, "file_path": file_path,
+            "kind": kind, "command_text": command_text,
         }
+        if kind not in ("read", "command"):
+            raise HistoryError("kind must be read or command")
+        if kind == "command":
+            # #4139 terminal lane: the command is the execution target, so it is
+            # mandatory, single-line and bounded; the file columns carry the
+            # documented sentinel instead of a bogus Windows path.
+            if not isinstance(command_text, str) or not command_text.strip():
+                raise HistoryError("command_text is required for a command dispatch")
+            if len(command_text) > 512 or any(ord(ch) < 32 for ch in command_text):
+                raise HistoryError("command_text must be a bounded single-line command")
+        elif command_text is not None:
+            raise HistoryError("command_text is only valid for a command dispatch")
         for name, value in fields.items():
             if value is None:
-                if name not in ("evidence_ref", "binding_ref"):
+                if name not in ("evidence_ref", "binding_ref", "command_text"):
                     raise HistoryError(f"{name} must be a bounded reference")
                 continue
             if not isinstance(value, str) or not value or len(value) > 1024:
@@ -1610,7 +1630,7 @@ class D1HistoryStore:
         if owned is None:
             raise HistoryForbidden("claw run is not owned by current user")
         existing = await self._first(
-            "SELECT dispatch_id, command_id, tool_request_ref, request_id, revision_ref, "
+            "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
             "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
             "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
             "state, expires_at FROM oracle_mesh_dispatch WHERE user_id=? AND run_id=?",
@@ -1633,17 +1653,18 @@ class D1HistoryStore:
                 "UPDATE oracle_mesh_dispatch SET command_id=?, tool_request_ref=?, "
                 "request_id=?, revision_ref=?, evidence_ref=?, request_fingerprint=?, "
                 "account_ref=?, workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, "
-                "root_ref=?, path_relative=?, file_path=?, nonce_sha256=NULL, state=?, "
+                "root_ref=?, path_relative=?, file_path=?, kind=?, command_text=?, "
+                "nonce_sha256=NULL, state=?, "
                 "expires_at=?, created_at=? WHERE user_id=? AND run_id=? AND state=? "
                 "AND expires_at<=?",
                 command_id, tool_request_ref, request_id, revision_ref,
                 evidence_ref, request_fingerprint, account_ref, workspace_ref,
                 device_id, binding_ref, node_ref, root_ref, path_relative,
-                file_path, "pending", expires_at, now,
+                file_path, kind, command_text, "pending", expires_at, now,
                 user_id, run_id, "pending", now,
             )
             replaced = await self._first(
-                "SELECT dispatch_id, command_id, tool_request_ref, request_id, revision_ref, "
+                "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
                 "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
                 "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
                 "state, expires_at FROM oracle_mesh_dispatch WHERE user_id=? AND run_id=?",
@@ -1658,15 +1679,17 @@ class D1HistoryStore:
             "(dispatch_id, user_id, run_id, command_id, tool_request_ref, request_id, "
             "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
             "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
+            "kind, command_text, "
             "nonce_sha256, state, expires_at, created_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)",
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)",
             dispatch_id, user_id, run_id, command_id, tool_request_ref,
             request_id, revision_ref, evidence_ref, request_fingerprint,
             account_ref, workspace_ref, device_id, binding_ref, node_ref,
-            root_ref, path_relative, file_path, "pending", expires_at, now,
+            root_ref, path_relative, file_path, kind, command_text,
+            "pending", expires_at, now,
         )
         created = await self._first(
-            "SELECT dispatch_id, command_id, tool_request_ref, request_id, revision_ref, "
+            "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
             "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
             "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
             "state, expires_at FROM oracle_mesh_dispatch WHERE user_id=? AND run_id=?",
@@ -1684,7 +1707,7 @@ class D1HistoryStore:
         it before responding; this read alone hands out nothing.
         """
         row = await self._first(
-            "SELECT dispatch_id, user_id, run_id, command_id, tool_request_ref, "
+            "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
             "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
@@ -1745,7 +1768,7 @@ class D1HistoryStore:
         if not isinstance(nonce, str) or not nonce:
             return None
         row = await self._first(
-            "SELECT dispatch_id, user_id, run_id, command_id, tool_request_ref, "
+            "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
             "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
@@ -1788,7 +1811,7 @@ class D1HistoryStore:
             # A concurrent submission won this dispatch.
             return None
         accepted = await self._first(
-            "SELECT dispatch_id, user_id, run_id, command_id, tool_request_ref, "
+            "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
             "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "

@@ -54,6 +54,11 @@ on:
       - ".github/scripts/b62_d1_migration_044_schema.py"
       - ".github/tests/test_b62_d1_migration_044_gate.py"
       - "apps/padiem-chat/migrations/044_b66_ai_turn_attempt.sql"
+      # #4139: the terminal lane writes kind/command_text, so 048 must be live
+      # before this code is uploaded.
+      - ".github/scripts/b62_d1_migration_048_schema.py"
+      - ".github/tests/test_b62_d1_migration_048_gate.py"
+      - "apps/padiem-chat/migrations/048_oracle_mesh_command.sql"
       - ".github/tests/test_b62_binding_state_guard.py"
       - ".github/scripts/b62_owner_d1_release_preflight.py"
       - ".github/tests/test_b62_owner_d1_release_preflight.py"
@@ -264,6 +269,14 @@ jobs:
           echo "MIGRATION_044_PREDEPLOY_GUARD_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
+      - name: Validate #4139 048 command dispatch production D1 predeploy schema guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest .github/tests/test_b62_d1_migration_048_gate.py -q
+          echo "MIGRATION_048_PREDEPLOY_GUARD_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
       # PR-only CI: this contract tests the separate manual Owner D1 release.
       # It NEVER dispatches apply/rollback or reads production credentials.
       - name: Owner D1 protected release contract regressions
@@ -369,6 +382,11 @@ jobs:
           assert "B62_D1_SCHEMA_044=EXACT" in workflow
           assert "MIGRATION_044_PREDEPLOY=EXACT" in workflow
           assert "b62_d1_migration_044_schema.py" in workflow
+          # #4139: the terminal lane's additive columns are a hard predeploy
+          # prerequisite too; the upload must stop on a 048-less database.
+          assert "B62_D1_MIGRATION_048_SCHEMA=EXACT" in workflow
+          assert "MIGRATION_048_PREDEPLOY=EXACT" in workflow
+          assert "b62_d1_migration_048_schema.py" in workflow
           assert "PRAGMA table_info(claw_web_xlsx_p01_decision_receipts)" in workflow
           assert "APPLICATION_ROW_READ=0" in workflow
           assert "STATE_ADOPTION_REQUIRED" in workflow
@@ -1071,6 +1089,46 @@ jobs:
             | tee "${RUNNER_TEMP}/b62-d1-044-schema-verdict.txt"
           grep -qx 'B62_D1_SCHEMA_044=EXACT' "${RUNNER_TEMP}/b62-d1-044-schema-verdict.txt"
           grep -qx 'MIGRATION_044_PREDEPLOY=EXACT' "${RUNNER_TEMP}/b62-d1-044-schema-verdict.txt"
+          echo "D1_SCHEMA_QUERY=READ_ONLY"
+          echo "APPLICATION_ROW_READ=0"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+          echo "PRODUCTION_MUTATION=0"
+
+      # #4139: the terminal lane inserts kind/command_text, so a 048-less
+      # database must stop the upload instead of failing on first use. Schema
+      # metadata only: no D1 write, no application row read.
+      - name: Prove migration 048 Oracle Mesh command columns live schema before deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          from pathlib import Path
+          payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+          bindings=payload.get("result",{}).get("bindings",[]) if payload.get("success") is True else []
+          matching=[b for b in bindings if isinstance(b,dict)
+                    and b.get("name")==sys.argv[2] and b.get("type")=="d1"]
+          if len(matching)!=1:
+              raise SystemExit("MESH_D1_048_BINDING_INVALID")
+          value=matching[0].get("id")
+          if not isinstance(value,str) or re.fullmatch(r"[0-9a-fA-F-]{32,36}",value) is None:
+              raise SystemExit("MESH_D1_048_BINDING_INVALID")
+          print(value)
+          PY
+          )"
+          test -n "${db_id}"
+          echo "::add-mask::${db_id}"
+          query="${RUNNER_TEMP}/b62-d1-048-schema-query.json"
+          response="${RUNNER_TEMP}/b62-d1-048-schema-response.json"
+          python3 .github/scripts/b62_d1_migration_048_schema.py query "${query}"
+          curl -fsS --max-time 30 -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${db_id}/query" \
+            --data-binary "@${query}" -o "${response}"
+          python3 .github/scripts/b62_d1_migration_048_schema.py classify "${response}" \
+            | tee "${RUNNER_TEMP}/b62-d1-048-schema-verdict.txt"
+          grep -qx 'B62_D1_MIGRATION_048_SCHEMA=EXACT' "${RUNNER_TEMP}/b62-d1-048-schema-verdict.txt"
+          echo 'MIGRATION_048_PREDEPLOY=EXACT'
           echo "D1_SCHEMA_QUERY=READ_ONLY"
           echo "APPLICATION_ROW_READ=0"
           echo "D1_IDENTIFIER_OUTPUT=0"

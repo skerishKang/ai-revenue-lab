@@ -31,6 +31,9 @@ CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 PRODUCT_USER_AGENT = "PadiemClaw/1.0 (kagent; oracle-mesh-executor)"
 #: meshctrl downloads are size-bounded by the same limit the server enforces.
 MAX_READ_BYTES = 768
+#: #4139 terminal lane: the same bounded contract as the server's command
+#: projection. Oversize output is refused, never truncated.
+MAX_COMMAND_BYTES = 3000
 
 
 class OracleMeshChannelRefused(RuntimeError):
@@ -60,14 +63,23 @@ class OracleMeshDispatch:
     file_path: str
     command_id: str
     run_id: str
+    #: #4139: "read" (the 047 file lane) or "command" (the 048 terminal lane).
+    kind: str = "read"
+    #: The exact single-line command for kind="command"; never used for a read.
+    command_text: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class OracleMeshExecutionOutcome:
-    """What one real execution produced, already size-bounded and hashed."""
+    """What one real execution produced, already size-bounded and hashed.
+
+    ``exit_code`` is ``None`` only when the PC never reported one (a console
+    that never answered, or a run that hit the time limit). It is never
+    defaulted to 0: an unobserved exit code is not a successful one.
+    """
 
     termination: str
-    exit_code: int
+    exit_code: int | None
     body: bytes = b""
 
 
@@ -93,6 +105,7 @@ class OracleMeshExecutor:
         chat_origin: str,
         channel_secret: str,
         read_port: Any,
+        command_port: Any = None,
         timeout_seconds: int = 30,
         transport: Optional[Callable[..., tuple[int, dict[str, Any]]]] = None,
     ) -> None:
@@ -108,9 +121,14 @@ class OracleMeshExecutor:
             raise ContractError("the deployment channel secret is required")
         if not callable(getattr(read_port, "read_bytes", None)):
             raise ContractError("a private MeshCentral file read port is required")
+        if command_port is not None and not callable(
+            getattr(command_port, "run_command", None)
+        ):
+            raise ContractError("a MeshCentral command port must expose run_command")
         self._origin = chat_origin
         self._secret = channel_secret
         self._read_port = read_port
+        self._command_port = command_port
         self._timeout = timeout_seconds
         self._transport = transport or self._https_post
         self._pending: Optional[tuple[OracleMeshDispatch, OracleMeshExecutionOutcome]] = None
@@ -169,6 +187,17 @@ class OracleMeshExecutor:
             return None
         if not isinstance(dispatch, dict):
             raise OracleMeshChannelRefused("chat channel returned a malformed dispatch")
+        kind = dispatch.get("kind") or "read"
+        if kind not in ("read", "command"):
+            raise OracleMeshChannelRefused("chat channel returned an unknown dispatch kind")
+        command_text = dispatch.get("command_text")
+        if kind == "command":
+            # The server owns the command; the executor never invents one and
+            # never falls back to the file lane when it is missing.
+            if not isinstance(command_text, str) or not command_text.strip():
+                raise OracleMeshChannelRefused("chat channel returned a command dispatch without a command")
+        else:
+            command_text = None
         return OracleMeshDispatch(
             dispatch_id=_require_text(dispatch.get("dispatch_id"), "dispatch_id"),
             nonce=_require_text(dispatch.get("nonce"), "nonce"),
@@ -176,10 +205,14 @@ class OracleMeshExecutor:
             file_path=_require_text(dispatch.get("file_path"), "file_path"),
             command_id=_require_text(dispatch.get("command_id"), "command_id"),
             run_id=_require_text(dispatch.get("run_id"), "run_id"),
+            kind=kind,
+            command_text=command_text,
         )
 
     def execute(self, dispatch: OracleMeshDispatch) -> OracleMeshExecutionOutcome:
-        """One real official-client read. Failures are outcomes, not exceptions."""
+        """One real official-client execution. Failures are outcomes, not exceptions."""
+        if dispatch.kind == "command":
+            return self._execute_command(dispatch)
         try:
             body = self._read_port.read_bytes(
                 node_ref=dispatch.node_ref,
@@ -195,6 +228,48 @@ class OracleMeshExecutor:
             # Oversize is refused, never truncated.
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=b"")
         return OracleMeshExecutionOutcome(termination="exited", exit_code=0, body=raw)
+
+    def _execute_command(
+        self, dispatch: OracleMeshDispatch
+    ) -> OracleMeshExecutionOutcome:
+        """#4139 terminal lane: run the command the server put in the dispatch.
+
+        The exit code is whatever the PC reported through the sentinel. When no
+        code was observed the outcome says so (``no_reply`` / ``timed_out``)
+        instead of borrowing the shell's own success.
+        """
+        if self._command_port is None:
+            # A command dispatch on an executor that was not composed with a
+            # command port is a misconfiguration, not a silent no-op.
+            raise OracleMeshChannelRefused("command execution is not configured")
+        try:
+            observed = self._command_port.run_command(
+                node_ref=dispatch.node_ref,
+                command=dispatch.command_text or "",
+                timeout_seconds=max(1, self._timeout * 2),
+            )
+        except Exception:
+            return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
+        termination = getattr(observed, "termination", "no_reply")
+        if termination not in ("exited", "timed_out", "no_reply"):
+            termination = "no_reply"
+        exit_code = getattr(observed, "exit_code", None)
+        if isinstance(exit_code, bool) or not isinstance(exit_code, int):
+            exit_code = None
+        if termination == "exited" and exit_code is None:
+            # The sentinel line arrived without a number: the exit code is not
+            # observed, so the run cannot claim a clean exit.
+            termination = "no_reply"
+        body = getattr(observed, "output", b"")
+        if not isinstance(body, (bytes, bytearray)):
+            body = b""
+        raw = bytes(body)
+        if len(raw) > MAX_COMMAND_BYTES:
+            # Oversize output is refused, never truncated.
+            return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
+        return OracleMeshExecutionOutcome(
+            termination=termination, exit_code=exit_code, body=raw,
+        )
 
     def submit(
         self, dispatch: OracleMeshDispatch, outcome: OracleMeshExecutionOutcome
@@ -256,6 +331,7 @@ class OracleMeshExecutor:
 
 __all__ = [
     "CHANNEL_HEADER",
+    "MAX_COMMAND_BYTES",
     "MAX_READ_BYTES",
     "POLL_PATH",
     "PRODUCT_USER_AGENT",
@@ -287,6 +363,7 @@ def make_oracle_mesh_executor(
     mode-0600 deployment secret file), and every read runs that client. No
     stand-in port is constructible from here.
     """
+    from .local_agent_meshcentral_command_port import MeshCentralCliCommandPort
     from .local_agent_meshcentral_private_reader import MeshCentralCliFileReadPort
 
     def _run(argv, **kwargs):
@@ -316,10 +393,21 @@ def make_oracle_mesh_executor(
         url=mesh_url,
         work_dir=work_dir,
     )
+    # The terminal lane reuses the SAME official client, operator credential and
+    # private tunnel; nothing new is opened for commands.
+    command_port = MeshCentralCliCommandPort(
+        command_runner=_run,
+        meshctrl_js=meshctrl_js,
+        login_user=login_user,
+        password_provider=password_provider,
+        url=mesh_url,
+        work_dir=work_dir,
+    )
     return OracleMeshExecutor(
         chat_origin=chat_origin,
         channel_secret=channel_secret,
         read_port=read_port,
+        command_port=command_port,
         timeout_seconds=timeout_seconds,
     )
 

@@ -87,6 +87,17 @@ _SAFE_REF_CHARS = frozenset(
 )
 _MAX_FILE_TEXT_BYTES = 768
 _EXECUTOR = "oracle_management_host"
+#: #4139 terminal lane. A command dispatch has no file, so the 047 file
+#: columns carry these fixed, self-describing sentinels instead of a bogus
+#: Windows path; a read-lane use of a command row therefore fails loudly.
+_COMMAND_ROOT_REF = "mesh_terminal"
+_COMMAND_PATH_RELATIVE = "command"
+_COMMAND_FILE_SENTINEL = "command"
+#: How a command result is labelled in the conversation. The execution
+#: method is recorded verbatim because MeshCentral runs it through the
+#: device shell (PowerShell here), not through this server.
+_COMMAND_SHELL_LABEL = "PowerShell (MeshCentral runcommand --reply)"
+_MAX_COMMAND_OUTPUT_BYTES = 3000
 
 _REQUEST_KEYS = frozenset({"device_id", "run_id", "root_ref", "path_relative", "confirmed"})
 _RESULT_KEYS = frozenset({
@@ -132,10 +143,21 @@ class OracleMeshReturnSource:
                 name: entry.get(name)
                 for name in (
                     "account_ref", "device_id", "node_ref", "root_ref",
-                    "path_relative", "file_path",
+                    "path_relative", "file_path", "command_exec",
                 )
             }
+            # #4139 terminal lane: command execution is a SEPARATE deployment
+            # grant. A row that authorizes a TXT read never authorizes running a
+            # command unless the operator marked it explicitly.
+            command_exec = row.pop("command_exec")
+            if command_exec is None:
+                command_exec = False
+            if not isinstance(command_exec, bool):
+                raise TypeError("oracle mesh ownership command_exec must be boolean")
+            row["command_exec"] = command_exec
             for name, value in row.items():
+                if name == "command_exec":
+                    continue
                 if value is None:
                     # Only ``device_id`` is an optional pin: when it is absent
                     # the Mesh node itself is the canonical device identity.
@@ -206,6 +228,30 @@ class OracleMeshReturnSource:
             if row["path_relative"] == path_relative
             and row["account_ref"] == account_ref
             and (device_id is None or row.get("device_id") == device_id or row.get("device_id") is None)
+        ]
+        return dict(matches[0]) if len(matches) == 1 else None
+
+    def command_target(
+        self, *, account_ref: str, device_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        """The single command-capable Mesh target for this verified account.
+
+        #4139 terminal lane. A command has no file, so the row is selected by
+        the account (and the optional device pin) alone — and only when the
+        operator explicitly marked that row ``command_exec``. A TXT read grant
+        is therefore never a command grant, and two competing rows stay a
+        refusal rather than an arbitrary pick.
+        """
+        matches = [
+            row for row in self._rows
+            if row["command_exec"] is True
+            and row["account_ref"] == account_ref
+            and (
+                device_id is None
+                or row.get("device_id") == device_id
+                or row.get("device_id") is None
+                or row["node_ref"] == device_id
+            )
         ]
         return dict(matches[0]) if len(matches) == 1 else None
 
@@ -687,6 +733,154 @@ async def dispatch_oracle_mesh_read_intent(
     })
 
 
+async def dispatch_oracle_mesh_command_intent(
+    request: Request, *, command: str, wire: dict[str, Any],
+) -> JSONResponse:
+    """Owner intent for ONE terminal command on the pinned management PC.
+
+    #4139 terminal lane. Every authority check of the read lane is reused
+    (verified owner session, canonical account scope, origin run, deployment
+    ownership), and the command travels inside the dispatch itself. Two things
+    are deliberately different:
+
+    * the deployment row must be explicitly marked ``command_exec`` -- a TXT
+      read grant is never a command grant;
+    * no file/root/path is accepted from the browser, so this route cannot
+      retarget the read lane's file authority.
+    """
+    session, denial = await _verified_owner_request(request)
+    if denial is not None or session is None:
+        return denial if denial is not None else _error(401, "canonical_session_required")
+    uid = current_user_id(request)
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        return _error(503, "oracle_mesh_workspace_unavailable")
+    if not workspace_id:
+        return _error(503, "oracle_mesh_workspace_unavailable")
+
+    mesh_source = _channel_source(request)
+    if mesh_source is None or mesh_source.execution_mode != EXECUTION_MODE_MESH:
+        return _error(503, "oracle_mesh_unconfigured")
+    identity = getattr(request.app.state, "control_plane_identity_authority", None)
+    history_store = getattr(request.app.state, "history_store", None)
+    for method in ("get_claw_run", "get_local_task_correlation", "create_oracle_mesh_dispatch"):
+        if not callable(getattr(history_store, method, None)):
+            return _error(503, "oracle_mesh_unconfigured")
+    if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
+        return _error(503, "oracle_mesh_unconfigured")
+
+    selected = wire.get("device_id")
+    if selected is not None and (not isinstance(selected, str) or not selected):
+        return _error(422, "oracle_mesh_device_invalid")
+
+    try:
+        scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
+    except Exception as exc:
+        emit_stage_event(
+            stage="mesh.command_owner_scope", outcome="error", duration_ms=0,
+            code=getattr(exc, "code", None),
+        )
+        return _error(503, "oracle_mesh_device_directory_unavailable")
+    account_ref = scope.get("account_ref") if isinstance(scope, dict) else None
+    connector_workspace_ref = scope.get("workspace_ref") if isinstance(scope, dict) else None
+    if (
+        not isinstance(account_ref, str) or not account_ref
+        or not isinstance(connector_workspace_ref, str) or not connector_workspace_ref
+    ):
+        return _error(503, "oracle_mesh_device_directory_unavailable")
+
+    try:
+        run_row = await history_store.get_claw_run(uid, wire["run_id"])
+    except Exception:
+        return _error(503, "oracle_mesh_run_unavailable")
+    if (
+        not isinstance(run_row, dict)
+        or run_row.get("run_id") != wire["run_id"]
+        or run_row.get("workspace_id") != workspace_id
+        or not isinstance(run_row.get("conversation_id"), str)
+        or not run_row["conversation_id"]
+    ):
+        return _error(404, "oracle_mesh_run_unavailable")
+
+    target = mesh_source.command_target(account_ref=account_ref, device_id=selected)
+    if target is None:
+        return _error(403, "oracle_mesh_command_unverified")
+
+    try:
+        bound = await history_store.get_local_task_correlation(uid, wire["run_id"])
+    except Exception:
+        bound = None
+    broker_admitted = (
+        isinstance(bound, dict)
+        and all(isinstance(bound.get(name), str) and bound[name] for name in (
+            "command_id", "tool_request_ref", "request_id",
+            "revision_ref", "request_fingerprint",
+        ))
+    )
+    if broker_admitted:
+        cmd_id = bound["command_id"]
+        tool_request_ref = bound["tool_request_ref"]
+        request_id = bound["request_id"]
+        revision_ref = bound["revision_ref"]
+        evidence_ref = bound.get("evidence_ref")
+        request_fingerprint = bound["request_fingerprint"]
+    else:
+        suffix = uuid.uuid4().hex
+        cmd_id = "oracle_mesh_cmd_" + suffix
+        tool_request_ref = "oracle_mesh_tool_" + suffix
+        request_id = "oracle_mesh_req_" + suffix
+        revision_ref = "oracle_mesh_rev_" + suffix
+        evidence_ref = None
+        # The command is part of the correlation: a different command for the
+        # same run is a different request, never a silent retarget.
+        request_fingerprint = hashlib.sha256(
+            (account_ref + "|" + target["node_ref"] + "|" + command).encode("utf-8")
+        ).hexdigest()
+
+    now = datetime.now(timezone.utc)
+    try:
+        dispatch = await history_store.create_oracle_mesh_dispatch(
+            user_id=uid,
+            run_id=wire["run_id"],
+            command_id=cmd_id,
+            tool_request_ref=tool_request_ref,
+            request_id=request_id,
+            revision_ref=revision_ref,
+            evidence_ref=evidence_ref,
+            request_fingerprint=request_fingerprint,
+            account_ref=account_ref,
+            workspace_ref=connector_workspace_ref,
+            device_id=target.get("device_id") or target["node_ref"],
+            binding_ref=None,
+            node_ref=target["node_ref"],
+            root_ref=_COMMAND_ROOT_REF,
+            path_relative=_COMMAND_PATH_RELATIVE,
+            file_path=_COMMAND_FILE_SENTINEL,
+            expires_at=(now + _DISPATCH_TTL).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
+            kind="command",
+            command_text=command,
+        )
+    except HistoryForbidden:
+        return _error(404, "oracle_mesh_run_unavailable")
+    except HistoryError:
+        return _error(409, "oracle_mesh_dispatch_refused")
+    except Exception:
+        return _error(503, "oracle_mesh_dispatch_unavailable")
+    return _response({
+        "ok": True,
+        "dispatch": {
+            "dispatch_id": dispatch["dispatch_id"],
+            "run_id": wire["run_id"],
+            "state": dispatch["state"],
+            "expires_at": dispatch["expires_at"],
+            "kind": "command",
+            "execution": "server_owned",
+            "broker_acknowledged": False,
+        },
+    })
+
+
 def _deployment_target_for(
     source: OracleMeshReturnSource, *, account_ref: str, device_id: str,
     root_ref: str, path_relative: str,
@@ -760,11 +954,16 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "revision_ref": pending["revision_ref"],
             "evidence_ref": pending["evidence_ref"],
             "request_fingerprint": pending["request_fingerprint"],
+            "kind": pending.get("kind") or "read",
+            "command_text": pending.get("command_text"),
         },
     })
 
 
-def _verified_result_text(dispatch: dict[str, Any], wire: dict[str, Any]) -> str | None:
+def _verified_result_text(
+    dispatch: dict[str, Any], wire: dict[str, Any],
+    max_bytes: int = _MAX_FILE_TEXT_BYTES,
+) -> str | None:
     """Revalidate a submission against the claimed dispatch; return the text."""
     text = wire["content_utf8"]
     if not isinstance(text, str):
@@ -774,7 +973,7 @@ def _verified_result_text(dispatch: dict[str, Any], wire: dict[str, Any]) -> str
     except UnicodeEncodeError:
         return None
     if (
-        len(raw) > _MAX_FILE_TEXT_BYTES
+        len(raw) > max_bytes
         or wire["content_bytes"] != len(raw)
         or any(ord(ch) < 32 and ch not in "\n\r\t" for ch in text)
         or not isinstance(wire["content_sha256"], str)
@@ -782,6 +981,34 @@ def _verified_result_text(dispatch: dict[str, Any], wire: dict[str, Any]) -> str
     ):
         return None
     return text
+
+
+def _command_result_content(
+    dispatch: dict[str, Any], wire: dict[str, Any], output: str,
+) -> str:
+    """One conversation message for one real command execution.
+
+    The output is delimited by explicit markers so its own leading/trailing
+    whitespace and newlines survive the shared history projection unchanged:
+    the markers, not the output, are the message edges. The execution method is
+    stated because MeshCentral runs it through the device shell; an exit code
+    is printed only when the PC actually reported one.
+    """
+    lines = [
+        "COM1 명령 실행 결과",
+        "명령: " + str(dispatch.get("command_text") or ""),
+        "실행 방식: " + _COMMAND_SHELL_LABEL,
+    ]
+    if wire["termination"] == "no_reply":
+        lines.append("종료 상태: 콘솔 응답 없음")
+        lines.append("종료 코드: 확인되지 않음")
+    else:
+        lines.append("종료 상태: " + str(wire["termination"]))
+        lines.append("종료 코드: " + str(wire["exit_code"]))
+    lines.append("--- 출력 시작 ---")
+    lines.append(output)
+    lines.append("--- 출력 끝 ---")
+    return "\n".join(lines)
 
 
 async def oracle_mesh_read_result(request: Request) -> JSONResponse:
@@ -793,9 +1020,15 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         return _error(400, "oracle_mesh_invalid_body")
     if _ref(wire.get("nonce"), 128) is None:
         return _error(400, "oracle_mesh_invalid_body")
-    if wire.get("termination") not in ("exited", "cancelled", "timed_out"):
+    if wire.get("termination") not in ("exited", "cancelled", "timed_out", "no_reply"):
         return _error(400, "oracle_mesh_invalid_body")
-    if isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
+    # #4139: a command whose console never answered has NO observed exit
+    # code. That is carried as null, never invented as 0; every other
+    # termination still requires a real integer.
+    if wire.get("exit_code") is None:
+        if wire.get("termination") != "no_reply":
+            return _error(400, "oracle_mesh_invalid_body")
+    elif isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
         return _error(400, "oracle_mesh_invalid_body")
     if wire.get("content_bytes") == 0 and wire.get("content_sha256") == "":
         # Legacy empty-read shape: canonicalize before verification and
@@ -836,7 +1069,40 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     status = ""
     result_digest = wire["content_sha256"] if wire["content_bytes"] else _EMPTY_RESULT_SHA256
     result_size = wire["content_bytes"]
-    if wire["termination"] == "exited" and wire["exit_code"] == 0:
+    if dispatch.get("kind") == "command":
+        # #4139 terminal lane. The body is the command's stdout, verified with
+        # the same UTF-8/size/SHA rules; the exit code is whatever the PC
+        # reported, and a console that never answered stays "확인되지 않음".
+        verified_output = _verified_result_text(
+            dispatch, wire, max_bytes=_MAX_COMMAND_OUTPUT_BYTES,
+        )
+        command_text = dispatch.get("command_text")
+        if (
+            verified_output is None
+            or not isinstance(command_text, str) or not command_text
+        ):
+            outcome = "failed"
+            summary = "untrusted-result"
+            status = "failed"
+            content = (
+                "명령 실행 결과를 검증하지 못했습니다. "
+                "사유: 결과 무결성 불일치."
+            )
+        else:
+            content = _command_result_content(dispatch, wire, verified_output)
+            if wire["termination"] == "exited" and wire["exit_code"] == 0:
+                outcome, summary, status = "done", "exited/0", "completed"
+            elif wire["termination"] == "exited":
+                outcome = "failed"
+                summary = "exited/" + str(wire["exit_code"])
+                status = "failed"
+            else:
+                outcome = "failed"
+                summary = str(wire["termination"])
+                status = "failed"
+        if len(content) > _MAX_COMMAND_OUTPUT_BYTES + 2000:
+            return _error(400, "oracle_mesh_content_unverified")
+    elif wire["termination"] == "exited" and wire["exit_code"] == 0:
         verified_text = _verified_result_text(dispatch, wire)
         if verified_text is None:
             # A clean execution claim with tampered body+hash is refused, and
@@ -938,6 +1204,9 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             summary=summary,
             content=content,
             status=status,
+            # A terminal result is the only caller that opts out of the
+            # shared edge trim; every other message keeps today's behavior.
+            preserve_edges=(dispatch.get("kind") == "command"),
         )
     except HistoryForbidden:
         # Ownership refusal is final: retrying cannot change it.

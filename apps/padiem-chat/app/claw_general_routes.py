@@ -519,6 +519,99 @@ def _requested_local_txt_path(user_text: str) -> tuple[bool, str | None]:
     return True, matches[0] if len(matches) == 1 else None
 
 
+_COMMAND_PC_MARKERS = (
+    "내pc", "내컴퓨터", "로컬pc", "로컬컴퓨터", "com1", "mypc", "mycomputer",
+)
+#: Imperative forms only: a description of a command must not execute it.
+_COMMAND_VERBS = ("실행해", "실행하", "run ", "execute ")
+_COMMAND_BODY = re.compile(r"[\x20-\x7e]{1,512}")
+
+
+def _requested_local_command(user_text: str) -> tuple[bool, str | None]:
+    """Explicit, delimited terminal command for the verified owner PC.
+
+    #4139 terminal lane. The command must be BOTH named as a PC action and
+    written in exactly one backtick span, so ordinary prose ("내 PC에서 실행
+    계획을 알려줘") never becomes a remote execution. Anything ambiguous is not
+    this lane and falls through to the model.
+    """
+    if not isinstance(user_text, str) or not user_text:
+        return False, None
+    lowered = user_text.lower()
+    compact = "".join(lowered.split())
+    if not any(marker in compact for marker in _COMMAND_PC_MARKERS):
+        return False, None
+    if not any(verb in lowered for verb in _COMMAND_VERBS):
+        return False, None
+    matches = re.findall(r"`([^`\r\n]{1,512})`", user_text)
+    if len(matches) != 1:
+        return False, None
+    command = matches[0].strip()
+    if _COMMAND_BODY.fullmatch(command) is None:
+        return False, None
+    return True, command
+
+
+async def _dispatch_user_command_request(
+    request: Request, *, user_text: str, command: str, data: dict[str, Any],
+) -> JSONResponse | Response:
+    """Claw composer -> one terminal dispatch on the pinned PC.
+
+    The run row is staged first so the result has a conversation to land in;
+    the dispatch itself re-verifies the owner session, the canonical account
+    and the deployment's separate command grant.
+    """
+    from .claw_memory_routes import _resolve_memory_workspace
+    from .oracle_mesh_read_return_routes import dispatch_oracle_mesh_command_intent
+
+    conversation_id, denial = await _resolve_intake_session_reference(request, data)
+    if denial is not None:
+        return denial
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not isinstance(uid, str) or not uid:
+        return _error(401, "canonical_session_required", "로그인이 필요합니다.")
+    history = getattr(request.app.state, "history_store", None)
+    stage = getattr(history, "record_txt_pending_run", None)
+    if not callable(stage):
+        return _error(503, "command_history_unavailable", "대화 저장소를 확인할 수 없습니다.")
+    try:
+        workspace = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace = None
+    if not isinstance(workspace, str) or not workspace:
+        return _error(503, "command_workspace_unavailable", "대화 범위를 확인할 수 없습니다.")
+    run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+    try:
+        cid = await stage(
+            user_id=uid, run_id=run.run_id, workspace_id=workspace,
+            user_text=user_text, conversation_id=conversation_id,
+        )
+    except Exception:
+        return _error(503, "command_history_unavailable", "대화 저장에 실패했습니다.")
+    selected = data.get("device_id")
+    dispatched = await dispatch_oracle_mesh_command_intent(
+        request,
+        command=command,
+        wire={
+            "run_id": run.run_id,
+            "device_id": selected if isinstance(selected, str) and selected else None,
+            "confirmed": True,  # derived from this authenticated user's own text
+        },
+    )
+    if dispatched.status_code != 200:
+        mark_failed = getattr(history, "update_claw_run_status", None)
+        if callable(mark_failed):
+            try:
+                await mark_failed(uid, run.run_id, "failed")
+            except Exception:
+                pass
+        return dispatched
+    return _claw_general_sse(
+        "COM1에서 명령을 실행하는 중입니다. 실제 출력은 작업 완료 후 이 대화에 표시됩니다.",
+        conversation_id=cid,
+    )
+
+
 async def _dispatch_user_txt_request(
     request: Request, *, user_text: str, path_relative: str,
     data: dict[str, Any],
@@ -674,6 +767,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     user_text, text_error = _claw_general_user_text(data)
     if text_error is not None:
         return text_error
+
+    command_requested, command_text = _requested_local_command(user_text)
+    if command_requested:
+        if command_text is None:
+            return _error(422, "command_text_required",
+                          "실행할 명령을 백틱으로 하나만 지정해 주세요.")
+        return await _dispatch_user_command_request(
+            request, user_text=user_text, command=command_text, data=data,
+        )
 
     txt_requested, txt_path = _requested_local_txt_path(user_text)
     if txt_requested:
