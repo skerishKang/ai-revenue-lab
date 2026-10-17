@@ -16,6 +16,7 @@ from types import SimpleNamespace
 import pytest
 
 from app import oracle_mesh_read_return_routes as routes
+from app.history import HistoryError
 from app.claw_local_task_result_projection import result_message_id
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
@@ -114,11 +115,13 @@ class Identity:
 class History:
     """The dispatch state machine under test, backed by real guard semantics."""
 
-    def __init__(self, *, broker_correlation: dict | None = None, append_fails: int = 0):
+    def __init__(self, *, broker_correlation: dict | None = None, append_fails: int = 0,
+                 record_fails: int = 0):
         self.rows: dict[str, dict] = {}
         self.appended: list[dict] = []
         self.consume_calls: list[str] = []
         self._append_fails = append_fails
+        self._record_fails = record_fails
         self._correlation = broker_correlation
         self._seq = 0
 
@@ -177,6 +180,16 @@ class History:
         return True
 
     async def record_oracle_mesh_first_result(self, *, dispatch_id, content_sha256, content_bytes):
+        if self._record_fails > 0:
+            self._record_fails -= 1
+            raise RuntimeError("result pin store temporarily unavailable")
+        # Mirror the production pin guard: an empty digest is rejected.
+        for name, value in (("dispatch_id", dispatch_id),
+                            ("content_sha256", content_sha256)):
+            if not isinstance(value, str) or not value:
+                raise HistoryError(f"{name} is required")
+        if isinstance(content_bytes, bool) or not isinstance(content_bytes, int):
+            raise HistoryError("content_bytes must be an integer")
         row = self.rows.get(dispatch_id)
         if row is None:
             return False
@@ -788,3 +801,71 @@ class TestScopeRefusalTelemetry:
         assert denial is None
         assert target is not None
         assert emitted == []
+
+
+# ---------------------------------------------------------------- 0-byte results
+def test_legacy_empty_failed_result_is_pinned_with_canonical_empty_digest(monkeypatch):
+    """A 0-byte failed read with a legacy empty digest must be delivered.
+
+    Regression: production pins reject an empty digest, so the pre-fix
+    server answered 503 without parking and every resend died on 409.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+    _, poll, _ = call(routes.oracle_mesh_read_poll,
+                      Request({}, state(history=history), secret=SECRET))
+    nonce = poll["dispatch"]["nonce"]
+    status, result, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body(dispatch_id, nonce, termination="exited", exit_code=1,
+                            content_utf8="", content_sha256="", content_bytes=0),
+                state(history=history), secret=SECRET),
+    )
+    assert status == 200 and result["status"] == "failed"
+    assert history.rows[dispatch_id]["result_sha256"] == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    assert history.rows[dispatch_id]["result_bytes"] == 0
+    assert history.rows[dispatch_id]["state"] == "failed"
+    assert "종료 코드: 1" in history.appended[0]["content"]
+
+
+def test_legacy_empty_success_is_reported_as_an_empty_file(monkeypatch):
+    """A 0-byte successful read is an empty file, never an integrity refusal."""
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+    _, poll, _ = call(routes.oracle_mesh_read_poll,
+                      Request({}, state(history=history), secret=SECRET))
+    nonce = poll["dispatch"]["nonce"]
+    status, result, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body(dispatch_id, nonce, termination="exited", exit_code=0,
+                            content_utf8="", content_sha256="", content_bytes=0),
+                state(history=history), secret=SECRET),
+    )
+    assert status == 200 and result["status"] == "completed"
+    assert history.appended[0]["content"] == "PC \ud30c\uc77c \uc77d\uae30 \uacb0\uacfc:\n(\ube48 \ud30c\uc77c)"
+
+
+def test_pin_store_error_parks_and_identical_resend_succeeds(monkeypatch):
+    """A transient pin failure must stay retryable instead of 409-stranding."""
+    setup_auth(monkeypatch)
+    history = History(record_fails=1)
+    dispatch_id = create_dispatch(history)
+    _, poll, _ = call(routes.oracle_mesh_read_poll,
+                      Request({}, state(history=history), secret=SECRET))
+    nonce = poll["dispatch"]["nonce"]
+    fail_status, fail_result, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body(dispatch_id, nonce), state(history=history), secret=SECRET),
+    )
+    assert fail_status == 503
+    assert fail_result["error"]["code"] == "oracle_mesh_dispatch_unavailable"
+    assert history.rows[dispatch_id]["state"] == "store_failed"
+    ok_status, ok, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body(dispatch_id, nonce), state(history=history), secret=SECRET),
+    )
+    assert ok_status == 200 and ok["claim"] == "retry"
+    assert len(history.appended) == 1
+    assert history.appended[0]["content"] == "PC \ud30c\uc77c \uc77d\uae30 \uacb0\uacfc:\n" + TEXT

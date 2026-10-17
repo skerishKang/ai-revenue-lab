@@ -94,6 +94,12 @@ _RESULT_KEYS = frozenset({
     "content_utf8", "content_sha256", "content_bytes",
 })
 
+#: Canonical fingerprint of zero bytes. Earlier executors pin an empty
+#: string for an empty read, but the pin column requires a value; the
+#: result route normalizes that exact legacy shape below instead of
+#: stranding every resend on 409.
+_EMPTY_RESULT_SHA256 = hashlib.sha256(b"").hexdigest()
+
 
 class UnconfiguredOracleMeshReturnSource:
     """Fail-closed until the Worker root composes the deployment map+secret."""
@@ -791,6 +797,10 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         return _error(400, "oracle_mesh_invalid_body")
     if isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
         return _error(400, "oracle_mesh_invalid_body")
+    if wire.get("content_bytes") == 0 and wire.get("content_sha256") == "":
+        # Legacy empty-read shape: canonicalize before verification and
+        # pinning so a 0-byte outcome is delivered instead of stranding.
+        wire = {**wire, "content_sha256": _EMPTY_RESULT_SHA256}
 
     mesh_source = _channel_source(request)
     if mesh_source is None:
@@ -824,7 +834,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     content = ""
     summary = ""
     status = ""
-    result_digest = wire["content_sha256"] if wire["content_bytes"] else ""
+    result_digest = wire["content_sha256"] if wire["content_bytes"] else _EMPTY_RESULT_SHA256
     result_size = wire["content_bytes"]
     if wire["termination"] == "exited" and wire["exit_code"] == 0:
         verified_text = _verified_result_text(dispatch, wire)
@@ -873,6 +883,16 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             content_bytes=result_size,
         )
     except Exception:
+        # A pin failure must stay retryable: park the received row so the
+        # identical resend is accepted as claim="retry" instead of dying
+        # on 409. Pin comparison and idempotent append still prevent any
+        # second delivery.
+        try:
+            await history_store.mark_oracle_mesh_store_failed(
+                dispatch_id=wire["dispatch_id"],
+            )
+        except Exception:
+            pass
         return _error(503, "oracle_mesh_dispatch_unavailable")
     if same_result is not True:
         # Park the claim again: a rejected resend must not burn the retry the

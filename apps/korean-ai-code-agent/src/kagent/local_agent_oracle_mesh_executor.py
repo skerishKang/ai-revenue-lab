@@ -216,7 +216,7 @@ class OracleMeshExecutor:
             "termination": outcome.termination,
             "exit_code": outcome.exit_code,
             "content_utf8": text,
-            "content_sha256": hashlib.sha256(outcome.body).hexdigest() if outcome.body else "",
+            "content_sha256": hashlib.sha256(outcome.body).hexdigest(),
             "content_bytes": len(outcome.body),
         }
         self._pending = (dispatch, outcome)
@@ -225,6 +225,9 @@ class OracleMeshExecutor:
             # The server parked the verified result; keep the bytes for a resend.
             return {"ok": False, "retryable": True, "resend_pending": True}
         if status != 200 or data.get("ok") is not True:
+            # Any refusal keeps the held result: the same dispatch code is
+            # also answered while the row is still an unfinished received
+            # row, so dropping here could discard an undelivered outcome.
             raise OracleMeshChannelRefused("chat channel refused the result")
         self._pending = None
         return data

@@ -7,6 +7,7 @@ UTF-8 text. No MeshCentral server and no live credential are involved.
 """
 from __future__ import annotations
 
+import hashlib
 import subprocess
 import unittest
 from pathlib import Path
@@ -16,8 +17,9 @@ from kagent.local_agent_meshcentral_private_reader import (
     MeshCentralCliFileReadPort, MeshCentralReadRefused, _PASSWORD_MARKER,
 )
 from kagent.local_agent_oracle_mesh_executor import (
-    CHANNEL_HEADER, POLL_PATH, PRODUCT_USER_AGENT,
-    OracleMeshExecutor, make_oracle_mesh_executor,
+    CHANNEL_HEADER, POLL_PATH, PRODUCT_USER_AGENT, RESULT_PATH,
+    OracleMeshChannelRefused, OracleMeshDispatch, OracleMeshExecutor,
+    OracleMeshExecutionOutcome, make_oracle_mesh_executor,
 )
 
 SECRET = "deployment-channel-secret-value-261017"
@@ -202,6 +204,67 @@ class EntrypointTests(unittest.TestCase):
                 "ORACLE_MESH_PASSWORD_FILE": "/nonexistent/password",
             })
         self.assertEqual(code, 2)
+
+
+class ResultSubmitTests(unittest.TestCase):
+    """0-byte outcomes carry the canonical empty digest; refusals keep the hold."""
+
+    def _executor(self, transport) -> OracleMeshExecutor:
+        return OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net",
+            channel_secret=SECRET,
+            read_port=_StubPort(),
+            transport=transport,
+        )
+
+    def _dispatch(self) -> OracleMeshDispatch:
+        return OracleMeshDispatch(
+            dispatch_id="dsp-1", nonce="n" * 32, node_ref=NODE,
+            file_path=FILE_PATH, command_id="cmd-1", run_id="run-1",
+        )
+
+    def test_empty_body_submits_the_canonical_empty_digest(self):
+        seen: dict = {}
+
+        def transport(path, payload):
+            seen["path"] = path
+            seen["payload"] = dict(payload)
+            return 200, {"ok": True, "status": "failed"}
+
+        executor = self._executor(transport)
+        outcome = OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=b"")
+        result = executor.submit(self._dispatch(), outcome)
+
+        self.assertTrue(result.get("ok"))
+        self.assertEqual(seen["path"], RESULT_PATH)
+        self.assertEqual(seen["payload"]["content_bytes"], 0)
+        self.assertEqual(
+            seen["payload"]["content_sha256"], hashlib.sha256(b"").hexdigest()
+        )
+
+    def test_dispatch_rejection_keeps_the_held_result(self):
+        # The same 409 code is also answered while the row is still an
+        # unfinished received row, so the held outcome must be kept.
+        def transport(path, payload):
+            return 409, {"ok": False, "error": {"code": "oracle_mesh_dispatch_rejected"}}
+
+        executor = self._executor(transport)
+        outcome = OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=b"")
+        with self.assertRaises(OracleMeshChannelRefused):
+            executor.submit(self._dispatch(), outcome)
+        self.assertTrue(executor.resend_pending)
+
+    def test_fingerprint_mismatch_keeps_the_held_result(self):
+        def transport(path, payload):
+            return 409, {
+                "ok": False, "error": {"code": "oracle_mesh_result_fingerprint_mismatch"}
+            }
+
+        executor = self._executor(transport)
+        outcome = OracleMeshExecutionOutcome(termination="exited", exit_code=0, body=b"abc")
+        with self.assertRaises(OracleMeshChannelRefused):
+            executor.submit(self._dispatch(), outcome)
+        self.assertTrue(executor.resend_pending)
 
 
 if __name__ == "__main__":
