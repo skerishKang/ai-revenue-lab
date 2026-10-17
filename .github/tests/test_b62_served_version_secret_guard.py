@@ -523,3 +523,59 @@ def test_b66_membership_secret_preserves_already_served_exact_set():
     bad = {**existing, "UNEXPECTED": secret("UNEXPECTED")}
     with pytest.raises(mod.ServedVersionGuardError):
         mod.verify_secret_set(captured, _entries(bad), allow_b66_membership_secret=True)
+
+
+CLAW_DESKTOP_SECRET_BINDING = {
+    "type": "secrets_store_secret",
+    "name": "CLAW_ENGINE_DESKTOP_SECRET",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "secret_name": "CLAW_ENGINE_DESKTOP_SECRET",
+}
+
+
+def test_claw_desktop_secret_is_exact_one_addition_to_served_set():
+    before = mod.load_capture(expected_capture())
+    actual = base_bindings_map()
+    actual["CLAW_ENGINE_DESKTOP_SECRET"] = {
+        key: value for key, value in CLAW_DESKTOP_SECRET_BINDING.items() if key != "name"
+    }
+    mod.verify_secret_set(before, _entries(actual), allow_claw_desktop_secret=True)
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(before, _entries(actual))
+
+
+@pytest.mark.parametrize("mutation", [
+    {"store_id": "00000000000000000000000000000000"},
+    {"secret_name": "OTHER_SECRET"},
+    {"type": "secret_text"},
+])
+def test_claw_desktop_secret_rejects_served_identity_drift(mutation):
+    before = mod.load_capture(expected_capture())
+    actual = base_bindings_map()
+    entry = {**CLAW_DESKTOP_SECRET_BINDING, **mutation}
+    actual["CLAW_ENGINE_DESKTOP_SECRET"] = {
+        key: value for key, value in entry.items() if key != "name"
+    }
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(before, _entries(actual), allow_claw_desktop_secret=True)
+
+
+def test_claw_desktop_secret_rejects_unrelated_addition():
+    before = mod.load_capture(expected_capture())
+    actual = base_bindings_map()
+    actual["CLAW_ENGINE_DESKTOP_SECRET"] = {
+        key: value for key, value in CLAW_DESKTOP_SECRET_BINDING.items() if key != "name"
+    }
+    actual["UNRELATED"] = secret("UNRELATED")
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(before, _entries(actual), allow_claw_desktop_secret=True)
+
+
+def test_claw_desktop_secret_mode_is_exclusive():
+    before = mod.load_capture(expected_capture())
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(
+            before, _entries(base_bindings_map()),
+            allow_oracle_mesh=True,
+            allow_claw_desktop_secret=True,
+        )

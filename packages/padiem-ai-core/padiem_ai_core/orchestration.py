@@ -44,6 +44,7 @@ from .execution_state_machine import (
 )
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
 from .agent_execution_bridge import AgentPlanExecutor, PlanBackedStepDriver
+from .agent_runtime import AgentStepDriver
 from .agent_progress import (
     AgentIdleTimeoutError,
     AgentProgressTracker,
@@ -149,6 +150,8 @@ class OrchestrationRequest:
     tool_authorization: ToolAuthorizationContext | None = None
     tool_runtime: ToolRuntime | None = None
     tool_arguments: Mapping[str, Mapping[str, Any]] | None = None
+    # Trusted in-process driver; never sourced from public Engine JSON.
+    agent_step_driver: AgentStepDriver | None = None
 
     # Evidence & Verification (Optional)
     evidence_sources: tuple[Evidence, ...] = ()
@@ -999,6 +1002,7 @@ class OrchestrationRunner:
                         run_id=(request.trusted_agent_bridge_run_id
                                 or f"bridge_run_{uuid.uuid4().hex[:12]}"),
                         tool_arguments=request.tool_arguments,
+                        step_driver=request.agent_step_driver,
                         run_guard=self._agent_run_guard,
                         checkpoint_hook=self._agent_checkpoint_hook,
                         progress=agent_progress,
@@ -1519,6 +1523,7 @@ class OrchestrationRunner:
                         input_text=prompt_input or "Resume agent plan",
                         run_id=pause.run_id,
                         tool_arguments=request.tool_arguments,
+                        step_driver=getattr(request, "agent_step_driver", None),
                         initial_step_index=pause.step_index,
                         initial_tool_results=request.initial_tool_results,
                         initial_tool_events=request.initial_tool_events,

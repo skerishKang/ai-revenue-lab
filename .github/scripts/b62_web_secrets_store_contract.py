@@ -42,6 +42,22 @@ def expected_oracle_mesh_bindings() -> dict[str, dict[str, str]]:
     }
 
 
+# #4139: one shared Engine -> Chat desktop proof identity. Engine and Chat
+# reference the same store object; the value is never read by a deploy.
+CLAW_DESKTOP_SECRET_NAME = "CLAW_ENGINE_DESKTOP_SECRET"
+
+
+def expected_claw_desktop_bindings() -> dict[str, dict[str, str]]:
+    return {
+        CLAW_DESKTOP_SECRET_NAME: {
+            "type": "secrets_store_secret",
+            "name": CLAW_DESKTOP_SECRET_NAME,
+            "store_id": WEB_SECRET_STORE_ID,
+            "secret_name": CLAW_DESKTOP_SECRET_NAME,
+        }
+    }
+
+
 def require_exact_web_secrets_store(
     current_bindings: list[dict], *, allow_absent: bool
 ) -> dict[str, dict[str, str]]:

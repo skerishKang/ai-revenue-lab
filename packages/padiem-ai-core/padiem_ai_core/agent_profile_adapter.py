@@ -43,7 +43,7 @@ class TrustedAgentRuntimePolicy:
     output_contract_ref: str
     task_type: str
     optimize_for: str
-    max_tokens: int
+    max_tokens: int | None
     max_steps_cap: int
     context_policy: Mapping[str, Any]
     model_policy: Mapping[str, Any]
@@ -55,8 +55,12 @@ class TrustedAgentRuntimePolicy:
     satisfied_entitlement_refs: frozenset[str] = frozenset()
 
     def __post_init__(self) -> None:
-        if isinstance(self.max_tokens, bool) or not isinstance(self.max_tokens, int) or self.max_tokens <= 0:
-            raise AgentProfileCompilationError("max_tokens must be a positive integer")
+        if self.max_tokens is not None and (
+            isinstance(self.max_tokens, bool)
+            or not isinstance(self.max_tokens, int)
+            or self.max_tokens <= 0
+        ):
+            raise AgentProfileCompilationError("max_tokens must be positive or None")
         if isinstance(self.max_steps_cap, bool) or not isinstance(self.max_steps_cap, int) or not 1 <= self.max_steps_cap <= 100:
             raise AgentProfileCompilationError("max_steps_cap must be between 1 and 100")
         if not isinstance(self.tool_bindings, tuple):

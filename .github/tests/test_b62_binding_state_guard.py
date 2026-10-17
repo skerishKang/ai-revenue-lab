@@ -703,3 +703,43 @@ def test_engine_4194_grafana_secret_store_is_the_only_extra_authorized_addition(
         mod.assert_engine_4194_exact_rollout(
             before, _version(*baseline, grafana,
                              {"type": "secret_text", "name": "EXTRA"}, version_id="post"))
+
+
+CLAW_DESKTOP_SECRET_BINDING = {
+    "type": "secrets_store_secret",
+    "name": "CLAW_ENGINE_DESKTOP_SECRET",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "secret_name": "CLAW_ENGINE_DESKTOP_SECRET",
+}
+
+
+def test_claw_desktop_secret_is_exact_one_addition():
+    before = settings(*base_bindings())
+    after = settings(*base_bindings(), CLAW_DESKTOP_SECRET_BINDING)
+    mod.assert_exact_claw_desktop_added_only(before, after)
+
+
+def test_claw_desktop_secret_idempotent_when_already_served():
+    served = settings(*base_bindings(), CLAW_DESKTOP_SECRET_BINDING)
+    mod.assert_exact_claw_desktop_added_only(served, served)
+
+
+@pytest.mark.parametrize("entry", [
+    {**CLAW_DESKTOP_SECRET_BINDING, "store_id": "00000000000000000000000000000000"},
+    {**CLAW_DESKTOP_SECRET_BINDING, "secret_name": "OTHER_SECRET"},
+    {**CLAW_DESKTOP_SECRET_BINDING, "type": "secret_text"},
+    {"type": "secret_text", "name": "UNRELATED"},
+])
+def test_claw_desktop_secret_rejects_identity_drift_or_unrelated_addition(entry):
+    before = settings(*base_bindings())
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_exact_claw_desktop_added_only(
+            before, settings(*base_bindings(), entry)
+        )
+
+
+def test_claw_desktop_secret_rejects_removing_a_served_binding():
+    before = settings(*base_bindings())
+    after = settings(*base_bindings()[1:], CLAW_DESKTOP_SECRET_BINDING)
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_exact_claw_desktop_added_only(before, after)

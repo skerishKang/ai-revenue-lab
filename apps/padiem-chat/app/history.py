@@ -1639,15 +1639,18 @@ class D1HistoryStore:
             "path_relative": path_relative, "file_path": file_path,
             "kind": kind, "command_text": command_text,
         }
-        if kind not in ("read", "command"):
-            raise HistoryError("kind must be read or command")
-        if kind == "command":
+        if kind not in ("read", "command", "desktop"):
+            raise HistoryError("kind must be read, command or desktop")
+        if kind in ("command", "desktop"):
             # #4139 terminal lane: the command is the execution target, so it is
             # mandatory and it is ordinary text — Korean, quotes, tabs and
             # several lines. There is no product length rule; the bound is the
             # row it is written into. Only the characters that break the lane
             # are refused: NUL and the other C0 controls except tab and LF
             # (CR is refused because the exit-code sentinel is parsed per line).
+            # The desktop lane carries its op in the same field
+            # (``desktop:<op>`` plus an optional argument line) under the same
+            # text rules, verified again by the executor before the PC acts.
             if not isinstance(command_text, str) or not command_text.strip():
                 raise HistoryError("command_text is required for a command dispatch")
             if any(
@@ -1707,15 +1710,16 @@ class D1HistoryStore:
                 raise HistoryError("oracle mesh run already executed")
             if not (existing.get("state") == "pending" and existing.get("expires_at", "") <= now):
                 raise HistoryError("oracle mesh run already dispatched")
-            if kind == "command" and (
+            if kind in ("command", "desktop") and (
                 existing.get("nonce_sha256") is not None
                 or existing.get("state") in ("received", "store_failed")
             ):
-                # A terminal command may ALREADY have run on the PC: the row was
-                # handed to the executor (a nonce was minted) or its result was
-                # received but never stored. Re-staging it would let a restart
-                # execute the same command again, so the row is left exactly as
-                # it is — an uncertain state, never a silent second execution.
+                # A terminal command — or a desktop input, which also mutates
+                # the PC — may ALREADY have run: the row was handed to the
+                # executor (a nonce was minted) or its result was received but
+                # never stored. Re-staging it would let a restart execute the
+                # same action again, so the row is left exactly as it is — an
+                # uncertain state, never a silent second execution.
                 raise HistoryError("oracle mesh command execution is uncertain")
             await self._run(
                 "UPDATE oracle_mesh_dispatch SET command_id=?, tool_request_ref=?, "
@@ -2004,6 +2008,52 @@ class D1HistoryStore:
             raise HistoryError("mesh original was not stored")
         return key
 
+    async def store_oracle_mesh_original_bytes(
+        self, *, user_id: str, dispatch_id: str, conversation_id: str,
+        message_id: str, raw: bytes, media_type: str,
+        expected_sha256: str, expected_bytes: int,
+    ) -> str:
+        """#4139 — keep one desktop screenshot in the private R2 original store.
+
+        The binary twin of :meth:`store_oracle_mesh_original`: same
+        server-derived key layout, same dispatch-pin verification before the
+        put and the same pin check on every read. The only blob type this
+        lane produces is the composited screenshot JPEG; anything else is
+        refused rather than stored under an evidence key.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(raw, (bytes, bytearray)) or not raw:
+            raise HistoryError("original bytes are required")
+        if media_type != "image/jpeg":
+            raise HistoryError("unsupported mesh original media type")
+        if not isinstance(expected_sha256, str) or not expected_sha256:
+            raise HistoryError("expected digest is required")
+        row = await self._first(
+            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        if row is None or row.get("user_id") != user_id:
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
+            raise HistoryError("mesh original does not match the pinned result")
+        data = bytes(raw)
+        if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
+            raise HistoryError("mesh original bytes do not match the pinned result")
+        if len(data) > ORACLE_MESH_ORIGINAL_MAX_BYTES:
+            raise HistoryError("mesh original exceeds the bounded storage envelope")
+        if not data.startswith(b"\xff\xd8\xff"):
+            raise HistoryError("mesh original is not a JPEG screenshot")
+        bucket = self.full_context_bucket
+        if bucket is None or not callable(getattr(bucket, "put", None)):
+            raise HistoryError("private full model-context storage is unavailable")
+        key = self._context_key(conversation_id, message_id)
+        result = bucket.put(key, data, httpMetadata={"contentType": "image/jpeg"})
+        if inspect.isawaitable(result):
+            await result
+        return key
+
     async def read_oracle_mesh_original(
         self, *, user_id: str, dispatch_id: str, conversation_id: str,
         message_id: str,
@@ -2066,7 +2116,7 @@ class D1HistoryStore:
             return None
         row = await self._first(
             "SELECT dispatch_id, user_id, run_id, kind, command_id, revision_ref, "
-            "result_sha256, result_bytes FROM oracle_mesh_dispatch "
+            "result_sha256, result_bytes, state FROM oracle_mesh_dispatch "
             "WHERE dispatch_id=? AND user_id=?",
             dispatch_id, user_id,
         )
