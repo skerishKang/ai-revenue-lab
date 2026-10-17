@@ -52,6 +52,11 @@
   .meeting-modes { grid-template-columns: 1fr; }
 }
 
+/* Same first-screen rhythm the Chat/Claw landing uses (padiem-surfaces.css):
+   the heading rises first, the work surface follows 80ms later. */
+.meeting-header { animation: padiem-rise .72s cubic-bezier(.2, .75, .2, 1) both; }
+.meeting-panel { animation: padiem-rise .82s .08s cubic-bezier(.2, .75, .2, 1) both; }
+
 /* Below the shared frame breakpoint the meeting workspace keeps its own card and
    scrolls in the common central workbench, leaving the fixed sidebar and its
    account/home controls at their current positions. At >=921px the shared
