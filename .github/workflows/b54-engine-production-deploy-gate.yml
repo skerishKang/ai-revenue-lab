@@ -412,13 +412,16 @@ jobs:
           # additions are the exact Hark WEB_XLSX_PRIVATE_B62_D1 id and
           # PADIEM_ENGINE_AGENT_DURABLE_ENABLED=true. No arbitrary additions,
           # removals, aliases, secret drift, or generic bypass are permitted.
-          # This compares immutable served versions, not mutable /settings.
+          # #4139 additionally permits exactly the reviewed Engine->Chat
+          # desktop service and the shared desktop proof reference (metadata
+          # only, never the value). This compares immutable served versions,
+          # not mutable /settings.
           grep -Fxq 'PADIEM_ENGINE_AGENT_DURABLE_ENABLED = "true"' apps/padiem-ai-engine/wrangler.toml
           grep -Fxq 'binding = "WEB_XLSX_PRIVATE_B62_D1"' apps/padiem-ai-engine/wrangler.toml
           python3 .github/scripts/b62_binding_state_guard.py \
             --before "${RUNNER_TEMP}/version-pre.json" \
             --after "${version_detail}" \
-            --expected-engine-4194-rollout
+            --expected-engine-4139-desktop-rollout
           echo 'B54_ENGINE_FULL_BINDING_SET_PRESERVED=PASS'
           overlay_args=()
           if [ "${B54_ENGINE_OVERLAY_EXPECTED}" = 'YES' ]; then
