@@ -38,10 +38,21 @@ MAX_READ_BYTES_ENVELOPE = 6_000_000
 #: Legacy alias for callers that still import it; the read port now takes its
 #: bound from the shared envelope instead of a trial-era byte count.
 MAX_READ_BYTES = MAX_READ_BYTES_ENVELOPE
-#: A result the server refuses for a non-retryable reason is not resent
-#: forever. After this many identical refusals the executor drops the held
-#: result and reports it, rather than blocking the queue behind it.
+#: A result the server refuses for a non-retryable reason is quarantined to
+#: the pending dir instead of dropped: the bytes survive a restart, the cause
+#: is recorded next to them, and the queue moves on. Retrying forever would
+#: block the whole queue behind one dead result; dropping silently would lose
+#: the only copy of an execution.
 MAX_RESULT_REJECTIONS = 3
+#: First resend wait and cap for transient failures. The wait grows per
+#: consecutive transient refusal and resets on any decisive answer, so a
+#: flapping channel is not hammered at the poll cadence.
+_BACKOFF_FIRST_SECONDS = 5
+_BACKOFF_MAX_SECONDS = 60
+#: Pending-result file names under the pending dir. The body travels as raw
+#: bytes beside the JSON meta so no hex/base64 copy inflates a large output.
+_PENDING_META_NAME = "pending-result.json"
+_PENDING_BODY_NAME = "pending-result.body"
 
 
 class OracleMeshChannelRefused(RuntimeError):
@@ -116,6 +127,7 @@ class OracleMeshExecutor:
         command_port: Any = None,
         timeout_seconds: int = 30,
         transport: Optional[Callable[..., tuple[int, dict[str, Any]]]] = None,
+        pending_dir: Optional[str] = None,
     ) -> None:
         if not isinstance(chat_origin, str) or not chat_origin.startswith("https://"):
             raise ContractError("the chat channel must be an https origin")
@@ -141,6 +153,8 @@ class OracleMeshExecutor:
         self._transport = transport or self._https_post
         self._pending: Optional[tuple[OracleMeshDispatch, OracleMeshExecutionOutcome]] = None
         self._rejections = 0
+        self._transients = 0
+        self._pending_dir = pending_dir
 
     # ---- channel -------------------------------------------------------
     def _https_post(self, path: str, payload: Optional[dict[str, Any]]) -> tuple[int, dict[str, Any]]:
@@ -283,20 +297,253 @@ class OracleMeshExecutor:
             termination=termination, exit_code=exit_code, body=raw,
         )
 
+    # ---- held-result persistence -------------------------------------
+    def _pending_paths(self) -> Optional[tuple[str, str]]:
+        """Meta/body paths for the held result, or None (memory-only mode)."""
+        import os
+
+        if not isinstance(self._pending_dir, str) or not self._pending_dir:
+            return None
+        return (
+            os.path.join(self._pending_dir, _PENDING_META_NAME),
+            os.path.join(self._pending_dir, _PENDING_BODY_NAME),
+        )
+
+    @staticmethod
+    def _safe_quarantine_stem(dispatch_id: str) -> str:
+        import hashlib as _hashlib
+
+        if (
+            isinstance(dispatch_id, str)
+            and dispatch_id
+            and len(dispatch_id) <= 128
+            and all(ch.isalnum() or ch in "-_." for ch in dispatch_id)
+        ):
+            return dispatch_id
+        return "id-" + _hashlib.sha256(str(dispatch_id).encode("utf-8")).hexdigest()[:16]
+
+    def _persist_pending(self) -> None:
+        """Write the held result beside the executor before submitting it.
+
+        A crash between a real execution and the server's acceptance must
+        never re-execute the PC command on restart: the outcome is durable
+        first, so recovery only resends these exact bytes.
+        """
+        paths = self._pending_paths()
+        if paths is None or self._pending is None:
+            return
+        import os
+
+        meta_path, body_path = paths
+        dispatch, outcome = self._pending
+        meta = json.dumps({
+            "dispatch_id": dispatch.dispatch_id,
+            "nonce": dispatch.nonce,
+            "node_ref": dispatch.node_ref,
+            "file_path": dispatch.file_path,
+            "command_id": dispatch.command_id,
+            "run_id": dispatch.run_id,
+            "kind": dispatch.kind,
+            "command_text": dispatch.command_text,
+            "termination": outcome.termination,
+            "exit_code": outcome.exit_code,
+            "content_sha256": hashlib.sha256(outcome.body).hexdigest(),
+            "content_bytes": len(outcome.body),
+        })
+        body_fd = os.open(body_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        try:
+            with os.fdopen(body_fd, "wb") as handle:
+                handle.write(outcome.body)
+        except BaseException:
+            try:
+                os.close(body_fd)
+            except OSError:
+                pass
+            raise
+        meta_fd = os.open(meta_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        try:
+            with os.fdopen(meta_fd, "w", encoding="utf-8") as handle:
+                handle.write(meta)
+        except BaseException:
+            try:
+                os.close(meta_fd)
+            except OSError:
+                pass
+            raise
+
+    def _clear_persisted_pending(self) -> None:
+        paths = self._pending_paths()
+        if paths is None:
+            return
+        import os
+
+        for path in paths:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+
+    def _quarantine_pending(self, *, reason: str, status: Any = None, code: Any = None) -> dict[str, Any]:
+        """Preserve a permanently refused result and release the queue.
+
+        The bytes, the dispatch identity and the refusal cause stay on disk
+        under a dispatch-derived name; nothing is re-executed and nothing is
+        silently discarded.
+        """
+        import os
+        import time
+
+        dispatch, outcome = self._pending if self._pending is not None else (None, None)
+        stem = self._safe_quarantine_stem(
+            dispatch.dispatch_id if dispatch is not None else "unknown"
+        )
+        record: dict[str, Any] = {
+            "reason": reason,
+            "status": status,
+            "code": code,
+            "quarantined_at": int(time.time()),
+        }
+        quarantine_path: Any = None
+        if self._pending is not None and self._pending_dir:
+            body = outcome.body if outcome is not None else b""
+            record.update({
+                "dispatch_id": dispatch.dispatch_id,
+                "nonce_sha256": hashlib.sha256(dispatch.nonce.encode("utf-8")).hexdigest(),
+                "node_ref": dispatch.node_ref,
+                "run_id": dispatch.run_id,
+                "kind": dispatch.kind,
+                "termination": outcome.termination,
+                "exit_code": outcome.exit_code,
+                "content_sha256": hashlib.sha256(body).hexdigest(),
+                "content_bytes": len(body),
+            })
+            base = os.path.join(self._pending_dir, "quarantine-" + stem)
+            quarantine_path = base + ".json"
+            body_fd = os.open(base + ".body", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+            try:
+                with os.fdopen(body_fd, "wb") as handle:
+                    handle.write(body)
+            except BaseException:
+                try:
+                    os.close(body_fd)
+                except OSError:
+                    pass
+                raise
+            meta_fd = os.open(quarantine_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+            with os.fdopen(meta_fd, "w", encoding="utf-8") as handle:
+                handle.write(json.dumps(record))
+        self._pending = None
+        self._rejections = 0
+        self._transients = 0
+        self._clear_persisted_pending()
+        return {
+            "ok": False, "dropped": True, "quarantined": True,
+            "quarantine_path": quarantine_path, "status": status, "code": code,
+            "reason": reason,
+        }
+
+    def load_pending(self) -> bool:
+        """Recover a result held across a restart: resend-only, never re-run.
+
+        Returns True when a held result was restored. A corrupt or foreign
+        file is quarantined aside, never executed: recovery resends bytes the
+        PC really produced, nothing else.
+        """
+        import os
+
+        paths = self._pending_paths()
+        if paths is None:
+            return False
+        meta_path, body_path = paths
+        try:
+            with open(meta_path, "r", encoding="utf-8") as handle:
+                meta = json.load(handle)
+            with open(body_path, "rb") as handle:
+                body = handle.read()
+        except OSError:
+            return False
+        except (ValueError, UnicodeDecodeError):
+            stem = "corrupt-" + str(os.getpid())
+            try:
+                os.replace(meta_path, os.path.join(self._pending_dir, "quarantine-" + stem + ".json"))
+            except OSError:
+                pass
+            return False
+        try:
+            if not isinstance(meta, dict):
+                raise ValueError("pending meta is not an object")
+            body_hash = hashlib.sha256(body).hexdigest()
+            if meta.get("content_sha256") != body_hash or meta.get("content_bytes") != len(body):
+                raise ValueError("pending body does not match its manifest")
+            dispatch = OracleMeshDispatch(
+                dispatch_id=_require_text(meta.get("dispatch_id"), "dispatch_id"),
+                nonce=_require_text(meta.get("nonce"), "nonce"),
+                node_ref=_require_text(meta.get("node_ref"), "node_ref"),
+                file_path=_require_text(meta.get("file_path"), "file_path"),
+                command_id=_require_text(meta.get("command_id"), "command_id"),
+                run_id=_require_text(meta.get("run_id"), "run_id"),
+                kind=meta.get("kind") or "read",
+                command_text=meta.get("command_text"),
+            )
+            if dispatch.kind not in ("read", "command"):
+                raise ValueError("pending kind is unknown")
+            if dispatch.kind == "command" and (
+                not isinstance(dispatch.command_text, str) or not dispatch.command_text.strip()
+            ):
+                raise ValueError("pending command has no command")
+            termination = meta.get("termination")
+            if termination not in ("exited", "cancelled", "timed_out", "no_reply", "output_too_large"):
+                raise ValueError("pending termination is unknown")
+            exit_code = meta.get("exit_code")
+            if exit_code is not None and (
+                isinstance(exit_code, bool) or not isinstance(exit_code, int)
+            ):
+                raise ValueError("pending exit code is not an integer")
+            if len(body) > MAX_COMMAND_BYTES:
+                raise ValueError("pending body exceeds the wire envelope")
+            outcome = OracleMeshExecutionOutcome(
+                termination=termination, exit_code=exit_code, body=body,
+            )
+        except (ValueError, OracleMeshChannelRefused, ContractError):
+            stem = "corrupt-" + str(os.getpid())
+            try:
+                os.replace(meta_path, os.path.join(self._pending_dir, "quarantine-" + stem + ".json"))
+                os.replace(body_path, os.path.join(self._pending_dir, "quarantine-" + stem + ".body"))
+            except OSError:
+                pass
+            self._pending = None
+            return False
+        self._pending = (dispatch, outcome)
+        self._rejections = 0
+        self._transients = 0
+        return True
+
+    def _transient_wait_seconds(self) -> int:
+        wait = _BACKOFF_FIRST_SECONDS * (2 ** min(self._transients, 4))
+        return max(1, min(_BACKOFF_MAX_SECONDS, wait))
+
     def submit(
         self, dispatch: OracleMeshDispatch, outcome: OracleMeshExecutionOutcome
     ) -> dict[str, Any]:
-        """Submit one outcome, and keep it until the server accepts it.
+        """Submit one outcome, and keep it until the server decides it.
 
-        A transient store failure answers 503. The exact bytes are then held in
-        memory and resent on the next pass — the PC file is never read a second
-        time. ``resend_pending`` reports that held outcome so the caller can
-        drive the retry without touching the read port again.
+        The bytes are persisted before the post and resent unchanged on a
+        transient refusal — the PC file is never read a second time and a
+        held command is never re-executed. ``resend_pending`` reports that
+        held outcome so the caller can drive the retry without touching
+        either port.
         """
         try:
             text = outcome.body.decode("utf-8") if outcome.body else ""
         except UnicodeDecodeError:
-            return {"ok": False, "error": {"code": "oracle_mesh_result_not_utf8"}}
+            # Not submittable on the UTF-8 wire, but still a real outcome:
+            # preserve it instead of dropping it on the floor.
+            self._pending = (dispatch, outcome)
+            try:
+                self._persist_pending()
+            except OSError:
+                pass
+            return self._quarantine_pending(reason="result_not_utf8")
         payload = {
             "dispatch_id": dispatch.dispatch_id,
             "nonce": dispatch.nonce,
@@ -307,30 +554,58 @@ class OracleMeshExecutor:
             "content_bytes": len(outcome.body),
         }
         self._pending = (dispatch, outcome)
-        status, data = self._post(RESULT_PATH, payload)
-        if status == 503:
-            # The server parked the verified result; keep the bytes for a resend.
-            self._rejections = 0
-            return {"ok": False, "retryable": True, "resend_pending": True}
+        try:
+            self._persist_pending()
+        except OSError:
+            pass
+        try:
+            status, data = self._post(RESULT_PATH, payload)
+        except OracleMeshChannelRefused:
+            # Transport down: same bytes, backed off, never re-executed.
+            wait = self._transient_wait_seconds()
+            self._transients += 1
+            return {"ok": False, "retryable": True, "resend_pending": True,
+                    "wait_seconds": wait}
         if status == 200 and data.get("ok") is True:
             self._pending = None
             self._rejections = 0
+            self._transients = 0
+            self._clear_persisted_pending()
             return data
-        # A non-retryable refusal is retried a bounded number of times, then
-        # dropped with an explicit report. Dropping on the first refusal could
-        # discard a result whose row is still an unfinished "received" row;
-        # retrying forever blocks the whole queue behind one dead result.
-        self._rejections += 1
         error = data.get("error")
         code = error.get("code") if isinstance(error, dict) else None
+        if status == 503 or status == 429 or status >= 500:
+            # Transient store/channel failure. The server parks the verified
+            # result (503) or never saw it; either way the exact bytes are
+            # kept and resent after a backoff — never re-read, never re-run.
+            self._rejections = 0
+            wait = self._transient_wait_seconds()
+            self._transients += 1
+            return {"ok": False, "retryable": True, "resend_pending": True,
+                    "status": status, "code": code, "wait_seconds": wait}
+        if status == 409 and code == "oracle_mesh_result_fingerprint_mismatch":
+            # Permanent for this payload: the held bytes differ from what the
+            # server pinned first. Resending cannot change that; preserve the
+            # bytes with the cause instead of looping or dropping silently.
+            return self._quarantine_pending(
+                reason="result_fingerprint_mismatch", status=status, code=code)
+        if status in (400, 403):
+            # Ownership refusal is final and a malformed body stays malformed.
+            return self._quarantine_pending(
+                reason="result_refused", status=status, code=code)
+        # An ambiguous 409 (unknown, expired, already-consumed dispatch) is
+        # retried a bounded number of times, then quarantined — never resent
+        # forever, never dropped silently.
+        self._rejections += 1
         if self._rejections < MAX_RESULT_REJECTIONS:
+            wait = self._transient_wait_seconds()
+            self._transients += 1
             return {
                 "ok": False, "retryable": True, "resend_pending": True,
-                "status": status, "code": code,
+                "status": status, "code": code, "wait_seconds": wait,
             }
-        self._pending = None
-        self._rejections = 0
-        return {"ok": False, "dropped": True, "status": status, "code": code}
+        return self._quarantine_pending(
+            reason="dispatch_rejected", status=status, code=code)
 
     @property
     def resend_pending(self) -> bool:
@@ -442,6 +717,7 @@ def make_oracle_mesh_executor(
         read_port=read_port,
         command_port=command_port,
         timeout_seconds=timeout_seconds,
+        pending_dir=work_dir,
     )
 
 
@@ -521,6 +797,14 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
         print(f"oracle-mesh-executor refused to start: {exc}", file=sys.stderr)
         return 2
 
+    # A restart never re-executes: a persisted held result is resent as-is.
+    try:
+        if executor.load_pending():
+            print("oracle-mesh-executor restored a held result; resending only",
+                  file=sys.stderr)
+    except OSError as exc:
+        print(f"oracle-mesh-executor pending restore refused: {exc}", file=sys.stderr)
+
     while True:
         try:
             result = executor.run_once()
@@ -534,9 +818,16 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             continue
         print(
             f"oracle-mesh-executor result ok={result.get('ok')} "
-            f"retryable={result.get('retryable', False)}",
+            f"retryable={result.get('retryable', False)} "
+            f"quarantined={result.get('quarantined', False)}",
             flush=True,
         )
+        if result.get("ok") is True:
+            continue
+        wait = result.get("wait_seconds") if isinstance(result, dict) else None
+        if not isinstance(wait, int) or isinstance(wait, bool):
+            wait = idle
+        time.sleep(max(1, min(wait, 300)))
 
 
 if __name__ == "__main__":

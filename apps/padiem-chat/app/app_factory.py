@@ -705,9 +705,11 @@ def create_app(
         # no such routes.
         if oracle_mesh_return_source is not None:
             from .oracle_mesh_read_return_routes import (
+                ORACLE_MESH_READ_ORIGINAL_PATH,
                 ORACLE_MESH_READ_POLL_PATH,
                 ORACLE_MESH_READ_REQUEST_PATH,
                 ORACLE_MESH_READ_RESULT_PATH,
+                oracle_mesh_read_original,
                 oracle_mesh_read_poll,
                 oracle_mesh_read_request,
                 oracle_mesh_read_result,
@@ -716,6 +718,7 @@ def create_app(
                 Route(ORACLE_MESH_READ_REQUEST_PATH, oracle_mesh_read_request, methods=["POST"]),
                 Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
+                Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
     app = Starlette(routes=routes)
     # #3476: added before telemetry deliberately — Starlette prepends each

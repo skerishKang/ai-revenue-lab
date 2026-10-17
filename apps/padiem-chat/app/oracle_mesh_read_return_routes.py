@@ -46,7 +46,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
@@ -59,6 +59,11 @@ from .request_telemetry import emit_stage_event
 ORACLE_MESH_READ_REQUEST_PATH = "/api/claw/connector/mesh-reads/request"
 ORACLE_MESH_READ_POLL_PATH = "/api/claw/connector/mesh-reads/poll"
 ORACLE_MESH_READ_RESULT_PATH = "/api/claw/connector/mesh-reads/result"
+#: Owner-scoped read of one stored over-budget command original. The dispatch
+#: id is the only browser-supplied value; the object key, the conversation and
+#: the message id are all re-derived server-side, so no browser-chosen object
+#: path or foreign-account result is addressable here.
+ORACLE_MESH_READ_ORIGINAL_PATH = "/api/claw/connector/mesh-results/{dispatch_id}"
 #: Deployment-owned ownership map, read from Worker env by the worker root.
 #: JSON list of {account_ref, device_id, node_ref, root_ref, path_relative,
 #: file_path}. Absent or invalid keeps the source unconfigured; the routes
@@ -1097,21 +1102,49 @@ def _command_result_content(
     return "\n".join(lines)
 
 
-def _command_output_too_large_content(
-    dispatch: dict[str, Any], wire: dict[str, Any], output_chars: int,
+def _command_output_withheld_content(
+    dispatch: dict[str, Any], wire: dict[str, Any],
 ) -> str:
-    """A result whose output would fill the conversation with hundreds of parts.
+    """An execution whose output never crossed the wire.
 
-    The output itself is verified and pinned (bytes and digest are on the
-    dispatch row), so nothing is silently dropped; only the stored text is
-    withheld, with the exact size and the storage bound stated.
+    The executor withheld the body at the wire envelope, so there is no
+    stored original to point at: the message says exactly that instead of
+    claiming the dispatch row holds a body it does not. Only the observed
+    termination and exit code are delivered.
     """
     lines = _command_header(dispatch, wire)
     lines.append(
-        "출력 " + str(output_chars) + "자가 저장 한도 "
-        + str(_MAX_COMMAND_MESSAGE_PARTS) + "개 메시지를 초과하여 대화에 싣지 않았습니다."
+        "출력 본문은 전송 한도를 초과하여 전달되지 않았습니다. "
+        "원문이 서버에 보관되지 않았으므로 다시 조회할 수 없습니다. "
+        "출력 범위를 좁힌 명령으로 다시 실행하십시오."
     )
-    lines.append("출력 본문과 SHA-256은 dispatch에 그대로 보관되어 있습니다.")
+    return "\n".join(lines)
+
+
+def _command_original_stored_content(
+    dispatch: dict[str, Any], wire: dict[str, Any], preview: str,
+) -> str:
+    """One notice for an output larger than the conversation budget.
+
+    The full output passed verification (bytes and digest are pinned on the
+    dispatch row) and the private original store accepted it before this
+    message was built, so "stored" is only claimed after the put succeeds.
+    The conversation carries a head preview; the whole original is fetched
+    through the owner-scoped retrieval reference below.
+    """
+    lines = _command_header(dispatch, wire)
+    lines.append(
+        "출력 " + str(wire["content_bytes"]) + "바이트 전체는 비공개 원문 저장소에 "
+        "보관되었습니다. 아래는 앞부분 미리보기입니다."
+    )
+    lines.append("--- 출력 미리보기 시작 ---")
+    lines.append(preview)
+    lines.append("--- 출력 미리보기 끝 ---")
+    lines.append("SHA-256: " + str(wire["content_sha256"]))
+    lines.append(
+        "원문 전체 조회: GET "
+        + "/api/claw/connector/mesh-results/" + str(dispatch["dispatch_id"])
+    )
     return "\n".join(lines)
 
 
@@ -1181,6 +1214,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     for method in ("consume_oracle_mesh_dispatch", "finish_oracle_mesh_dispatch",
                    "mark_oracle_mesh_store_failed",
                    "record_oracle_mesh_first_result",
+                   "store_oracle_mesh_original",
                    "get_claw_run", "append_local_task_result"):
         if not callable(getattr(history_store, method, None)):
             return _error(503, "oracle_mesh_unconfigured")
@@ -1344,24 +1378,63 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         revision_ref=dispatch["revision_ref"],
     )
     if command_output is not None:
-        output_parts = _command_output_parts(
-            command_output, _MAX_COMMAND_MESSAGE_CHARS - _COMMAND_HEADER_CHARS,
-        )
-        if len(output_parts) > _MAX_COMMAND_MESSAGE_PARTS:
-            # Storage guard, never a silent drop: the byte count is reported.
-            messages = [_command_output_too_large_content(
-                dispatch, wire, len(command_output),
-            )]
+        if wire["termination"] == "output_too_large" and not command_output:
+            # The executor withheld the body at the wire envelope, so there
+            # is no original to store and nothing to split: the observed
+            # exit code is delivered with an explicit non-delivery notice.
+            messages = [_command_output_withheld_content(dispatch, wire)]
         else:
-            total = str(len(output_parts))
-            head = _command_header(dispatch, wire)
-            messages = []
-            for index, part in enumerate(output_parts):
-                lines = list(head)
-                lines.append("--- 출력 " + str(index + 1) + "/" + total + " 시작 ---")
-                lines.append(part)
-                lines.append("--- 출력 끝 ---")
-                messages.append("\n".join(lines))
+            output_parts = _command_output_parts(
+                command_output, _MAX_COMMAND_MESSAGE_CHARS - _COMMAND_HEADER_CHARS,
+            )
+            if len(output_parts) > _MAX_COMMAND_MESSAGE_PARTS:
+                # Over-budget output: the verified original is kept in the
+                # private store first. The conversation carries a head
+                # preview plus the owner-scoped retrieval reference; "stored"
+                # is claimed only after the put succeeds, never before.
+                try:
+                    await history_store.store_oracle_mesh_original(
+                        user_id=dispatch["user_id"],
+                        dispatch_id=wire["dispatch_id"],
+                        conversation_id=conversation_id,
+                        message_id=base_message_id,
+                        raw=command_output,
+                        expected_sha256=result_digest,
+                        expected_bytes=result_size,
+                    )
+                except HistoryForbidden:
+                    # Ownership refusal is final: retrying cannot change it.
+                    try:
+                        await history_store.finish_oracle_mesh_dispatch(
+                            dispatch_id=wire["dispatch_id"], outcome="failed",
+                        )
+                    except Exception:
+                        pass
+                    return _error(403, "oracle_mesh_conversation_forbidden")
+                except Exception:
+                    # Storage failed: park the row so the executor resends
+                    # the SAME bytes. No completion is reported, and the PC
+                    # command is never re-run for a store failure.
+                    try:
+                        await history_store.mark_oracle_mesh_store_failed(
+                            dispatch_id=wire["dispatch_id"],
+                        )
+                    except Exception:
+                        pass
+                    return _error(503, "oracle_mesh_original_unavailable")
+                messages = [_command_original_stored_content(
+                    dispatch, wire, output_parts[0],
+                )]
+            else:
+                total = str(len(output_parts))
+                head = _command_header(dispatch, wire)
+                messages = []
+                for index, part in enumerate(output_parts):
+                    lines = list(head)
+                    lines.append("--- 출력 " + str(index + 1) + "/" + total + " 시작 ---")
+                    lines.append(part)
+                    lines.append("--- 출력 끝 ---")
+                    messages.append("\n".join(lines))
     elif read_output is not None:
         output_parts = _command_output_parts(
             read_output, _MAX_COMMAND_MESSAGE_CHARS - _COMMAND_HEADER_CHARS,
@@ -1430,3 +1503,74 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         "executor": _EXECUTOR,
         "brokerAcknowledged": False,
     })
+
+
+async def oracle_mesh_read_original(request: Request) -> Response:
+    """Owner-scoped read of one stored over-budget command original.
+
+    Only the dispatch id comes from the browser. The dispatch row (owner,
+    run, correlation), the originating conversation and the deterministic
+    result id are all re-derived server-side, so no browser-chosen object
+    key or foreign-account result is addressable. Unknown ids, foreign
+    accounts and missing objects all answer 404 without disclosing which
+    part failed; a stored object that disagrees with the dispatch pin is a
+    503, never served bytes.
+    """
+    uid = current_user_id(request)
+    if not isinstance(uid, str) or not uid:
+        return _error(401, "canonical_session_required")
+    params = getattr(request, "path_params", None) or {}
+    dispatch_id = _ref(params.get("dispatch_id"), 128)
+    if dispatch_id is None:
+        return _error(404, "oracle_mesh_original_unavailable")
+    history_store = getattr(request.app.state, "history_store", None)
+    for method in ("get_oracle_mesh_dispatch_for_owner", "get_claw_run",
+                   "read_oracle_mesh_original"):
+        if not callable(getattr(history_store, method, None)):
+            return _error(503, "oracle_mesh_unconfigured")
+    try:
+        dispatch = await history_store.get_oracle_mesh_dispatch_for_owner(
+            user_id=uid, dispatch_id=dispatch_id,
+        )
+    except Exception:
+        return _error(503, "oracle_mesh_unconfigured")
+    if not isinstance(dispatch, dict):
+        return _error(404, "oracle_mesh_original_unavailable")
+    try:
+        run_row = await history_store.get_claw_run(uid, dispatch.get("run_id"))
+    except Exception:
+        run_row = None
+    conversation_id = (
+        validate_conversation_id((run_row or {}).get("conversation_id"))
+        if isinstance(run_row, dict) else None
+    )
+    if not conversation_id:
+        return _error(404, "oracle_mesh_original_unavailable")
+    try:
+        message_id = result_message_id(
+            conversation_id=conversation_id,
+            command_id=dispatch.get("command_id"),
+            revision_ref=dispatch.get("revision_ref"),
+        )
+    except Exception:
+        return _error(404, "oracle_mesh_original_unavailable")
+    try:
+        stored = await history_store.read_oracle_mesh_original(
+            user_id=uid, dispatch_id=dispatch_id,
+            conversation_id=conversation_id, message_id=message_id,
+        )
+    except HistoryError:
+        return _error(503, "oracle_mesh_original_unavailable")
+    except Exception:
+        return _error(503, "oracle_mesh_unconfigured")
+    if stored is None:
+        return _error(404, "oracle_mesh_original_unavailable")
+    payload, pinned_sha = stored
+    try:
+        text = payload.decode("utf-8")
+    except UnicodeDecodeError:
+        return _error(503, "oracle_mesh_original_unavailable")
+    return Response(
+        text, media_type="text/plain; charset=utf-8",
+        headers={**_NO_STORE, "X-Oracle-Mesh-Content-SHA256": pinned_sha},
+    )

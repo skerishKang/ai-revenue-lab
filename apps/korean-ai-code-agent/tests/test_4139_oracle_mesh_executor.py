@@ -242,10 +242,11 @@ class ResultSubmitTests(unittest.TestCase):
             seen["payload"]["content_sha256"], hashlib.sha256(b"").hexdigest()
         )
 
-    def test_dispatch_rejection_is_retried_bounded_then_dropped(self):
+    def test_dispatch_rejection_is_retried_bounded_then_quarantined(self):
         # The same 409 code is also answered while the row is still an
         # unfinished received row, so the held outcome is kept for a few
-        # attempts — but never resent forever.
+        # attempts — then preserved with the cause instead of looping
+        # forever or vanishing silently.
         attempts = []
 
         def transport(path, payload):
@@ -264,11 +265,15 @@ class ResultSubmitTests(unittest.TestCase):
                 break
             final = executor.resend_pending_result()
         self.assertTrue(final.get("dropped"))
+        self.assertTrue(final.get("quarantined"))
         self.assertEqual(final.get("status"), 409)
         self.assertFalse(executor.resend_pending)
         self.assertEqual(len(attempts), MAX_RESULT_REJECTIONS)
 
-    def test_fingerprint_mismatch_is_retried_bounded_then_dropped(self):
+    def test_fingerprint_mismatch_is_quarantined_immediately(self):
+        # The held bytes differ from what the server pinned first: resending
+        # cannot change that, so the result is preserved with the cause on
+        # the first refusal instead of looping.
         def transport(path, payload):
             return 409, {
                 "ok": False, "error": {"code": "oracle_mesh_result_fingerprint_mismatch"}
@@ -277,14 +282,10 @@ class ResultSubmitTests(unittest.TestCase):
         executor = self._executor(transport)
         outcome = OracleMeshExecutionOutcome(termination="exited", exit_code=0, body=b"abc")
         first = executor.submit(self._dispatch(), outcome)
-        self.assertTrue(first.get("retryable"))
-        self.assertTrue(executor.resend_pending)
-        final = None
-        for _ in range(MAX_RESULT_REJECTIONS + 1):
-            if not executor.resend_pending:
-                break
-            final = executor.resend_pending_result()
-        self.assertTrue(final.get("dropped"))
+        self.assertFalse(first.get("ok"))
+        self.assertTrue(first.get("dropped"))
+        self.assertTrue(first.get("quarantined"))
+        self.assertFalse(first.get("retryable"))
         self.assertFalse(executor.resend_pending)
 
 
