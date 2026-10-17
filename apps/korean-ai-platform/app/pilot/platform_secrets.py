@@ -32,7 +32,7 @@ from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urlparse
 
-from .worker_env import scoped_secret
+from .worker_env import scoped_secret, secret_status
 
 
 class CredentialSource(str, Enum):
@@ -241,6 +241,28 @@ def is_secret_present(spec: PlatformProviderSpec) -> bool:
     if spec.credential_source == CredentialSource.REQUEST_BYOK:
         return False
     return bool(resolve_secret(spec))
+
+
+def credential_failure_reason(spec: PlatformProviderSpec | None) -> str:
+    """Return a value-free reason a platform credential is unusable.
+
+    Distinguishes an unresolved binding (``missing``), a runtime fetch failure
+    (``error:<token>``), and an empty/placeholder value. Used only for bounded
+    diagnostics; the secret value is never included.
+    """
+    if spec is None or spec.credential_source != CredentialSource.PLATFORM_SECRET:
+        return ""
+    scoped = scoped_secret(spec.credential_binding_name)
+    if scoped is None:
+        return ""  # Not inside a Worker request; no request-scoped binding.
+    status = secret_status(spec.credential_binding_name)
+    if status.startswith("error:") or status in ("missing", "empty"):
+        return status
+    if not scoped:
+        return "empty" if status == "resolved" else "unresolved"
+    if _looks_like_placeholder(scoped):
+        return "placeholder"
+    return ""
 
 
 def any_platform_secret_present() -> bool:

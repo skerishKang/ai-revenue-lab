@@ -407,10 +407,11 @@ async def pilot_auto_stream_preview(request: Request):
             else gateway_request_id
         )
         logger.warning(
-            "auto_stream_preview_pre_start_error request_id=%s code=%s status=%d",
+            "auto_stream_preview_pre_start_error request_id=%s code=%s status=%d credential_reason=%s",
             request_id,
             exc.code,
             exc.status_code,
+            getattr(exc, "credential_reason", ""),
         )
         return _error_response(exc, request_id)
     except Exception:

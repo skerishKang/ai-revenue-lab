@@ -1197,9 +1197,10 @@ async def pilot_chat_completions(
 
     except NoSafeRoute as e:
         logger.warning(
-            "pilot_no_safe_route request_id=%s reason=%s",
+            "pilot_no_safe_route request_id=%s reason=%s credential_reason=%s",
             request_id,
             e.reason_code,
+            getattr(e, "credential_reason", ""),
         )
         return JSONResponse(
             status_code=e.status_code,

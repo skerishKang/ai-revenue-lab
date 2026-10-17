@@ -209,10 +209,15 @@ def resolve_manual_route(
 
     # Platform-owned secret missing -> fail closed with zero upstream calls.
     if cred_source == "platform_secret" and not cred_ok:
+        from app.pilot import platform_secrets as ps
+
         raise NoSafeRoute(
             reason_code="provider_secret_missing",
             message=f"모델 '{model_id}'의 Provider 비밀키가 설정되지 않았습니다.",
             upstream_called=False,
+            credential_reason=ps.credential_failure_reason(
+                ps.get_platform_provider(plat_pid)
+            ),
         )
 
     route_id = f"platform:{cm.model_id}"
