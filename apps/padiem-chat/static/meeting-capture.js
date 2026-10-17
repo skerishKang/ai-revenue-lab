@@ -186,7 +186,7 @@
     const status = find("meetingStatus"), text = find("meetingTranscript");
     const startButton = find("meetingStart"), stopButton = find("meetingStop");
     const downloadAudio = find("meetingDownloadAudio"), downloadText = find("meetingDownloadText");
-    const closeButton = find("meetingClose"), interim = find("meetingInterim");
+    const interim = find("meetingInterim");
     const draftInClaw = find("meetingDraftInClaw");
     const driveAudio = find("meetingSaveAudioDrive"), driveText = find("meetingSaveTextDrive");
     let uploadInFlight = false;
@@ -237,12 +237,15 @@
       win.setTimeout(() => win.URL.revokeObjectURL(url), 60000);
     }
     function open() {
-      if (!signedIn) { say("PADIEM 로그인 후 회의록을 이용할 수 있습니다."); return false; }
       const shell = doc.querySelector(".app-shell");
       if (!shell) return false;
       shell.dataset.state = "meeting";
       dialog.hidden = false;
       trigger.setAttribute("aria-current", "page");
+      // Owner decision: a visitor may open the page. Recording, drafting and
+      // Drive saving still require a session, so the note says what is missing
+      // instead of the click doing nothing.
+      if (!signedIn) say("PADIEM 로그인 후 회의록을 이용할 수 있습니다.");
       // Use the same app.js view synchronizer as Claw, Calendar, Connectors.
       win.dispatchEvent(new win.CustomEvent("padiem:meeting-open"));
       shell?.classList.remove("sidebar-open");
@@ -268,7 +271,6 @@
     });
     win.addEventListener("padiem:auth-state", (event) => {
       signedIn = event?.detail?.authenticated === true;
-      trigger.disabled = !signedIn;
       startButton.disabled = !signedIn || controller.snapshot().active;
       if (!signedIn) {
         uploadAbort?.abort();
@@ -285,13 +287,6 @@
         else discard();
         say("로그아웃되어 회의 데이터를 지웠습니다.");
       }
-    });
-    closeButton.addEventListener("click", () => {
-      if (controller.snapshot().active || uploadInFlight) {
-        say("회의 녹음이나 저장을 종료한 뒤 Claw로 돌아갈 수 있습니다.");
-        return;
-      }
-      find("clawNavButton")?.click();
     });
     startButton.addEventListener("click", async () => {
       if (!signedIn || uploadInFlight) return;

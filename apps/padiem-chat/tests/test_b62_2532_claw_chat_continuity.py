@@ -24,6 +24,9 @@ INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 GLASS_CSS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
+STANDALONE_CSS = (STATIC / "standalone-views.css").read_text(encoding="utf-8")
+CALENDAR_CSS = (STATIC / "calendar.css").read_text(encoding="utf-8")
+LIBRARY_CSS = (STATIC / "library.css").read_text(encoding="utf-8")
 PORTRAIT_CSS = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
 
 
@@ -100,9 +103,45 @@ def test_no_stacked_opacity_on_claw_surfaces() -> None:
 
 def test_glass_kicker_uses_chat_eyebrow_ink() -> None:
     eyebrow = GLASS_CSS.split("html[data-theme=\"padiem-glass\"] .eyebrow {", 1)[1].split("}", 1)[0]
-    kicker = GLASS_CSS.split('html[data-theme="padiem-glass"] .claw-workspace-kicker {', 1)[1].split("}", 1)[0]
     assert "#334a5b" in eyebrow
-    assert "#334a5b" in kicker
+    # The per-page kicker restatements are gone; one shared rule carries the same
+    # ink for every destination, so the brand lines cannot drift apart again.
+    assert 'html[data-theme="padiem-glass"] .claw-workspace-kicker' not in GLASS_CSS
+    assert 'data-state="calendar"] .calendar-view-kicker' not in CALENDAR_CSS
+    unified = STANDALONE_CSS.split(".claw-workspace-kicker) {", 1)[1].split("}", 1)[0]
+    for declaration in ("#334a5b", "font-size: 10px", "font-weight: 600",
+                        "letter-spacing: 0.16em", "text-transform: uppercase"):
+        assert declaration in unified, declaration
+
+
+def test_page_eyebrow_shares_the_hero_vertical_origin() -> None:
+    """The brand line must land on the Chat/Claw row at any viewport height."""
+    frame = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
+    decl = frame.split("use the Chat/Claw eyebrow origin", 1)[1].split("!important", 1)[0]
+    padding = [line for line in decl.splitlines() if line.strip().startswith("padding:")][0]
+    assert "calc(clamp(52px, 7.4vh, 88px) - 7px)" in padding
+    assert "78px" not in padding, "a fixed inset cannot track the height-relative hero inset"
+    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    assert locale.count('"connectors-kicker": "PADIEM CONNECTORS"') == 2
+    assert locale.count('"automation-view-kicker": "PADIEM AUTOMATION"') == 2
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    assert ">Padiem Chat</span>" in html
+    assert ">PADIEM CLAW</span>" in html
+
+
+def test_every_destination_shares_one_glass_eyebrow() -> None:
+    """The Chat/Claw landing is the visual authority for all product panels."""
+    states = [s for s in ("claw", "connectors", "automation", "meeting", "calendar", "library")
+              if f'[data-state="{s}"]' in STANDALONE_CSS]
+    assert len(states) == 6, states
+    classes = [c for c in ("standalone-view-kicker", "calendar-view-kicker",
+                           "library-kicker", "claw-workspace-kicker")
+               if c in STANDALONE_CSS.split("One Glass page eyebrow", 1)[1]]
+    assert len(classes) == 4, classes
+    # Library now carries its own brand rather than borrowing Chat's.
+    library_js = (STATIC / "library.js").read_text(encoding="utf-8")
+    assert 'copy("PADIEM LIBRARY", "PADIEM LIBRARY")' in library_js
+    assert 'copy("PADIEM CHAT", "PADIEM CHAT")' not in library_js
 
 
 def test_glass_mode_bar_matches_composer_surface() -> None:

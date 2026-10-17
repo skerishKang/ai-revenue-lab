@@ -40,6 +40,9 @@ def test_sidebar_entry_and_section_exist() -> None:
     assert 'id="clawAutomationError"' in html
     assert 'id="clawAutomationEmpty"' in html
     assert 'id="clawAutomationRetry"' in html
+    # The signed-out note is static markup with a locale key in both languages.
+    assert 'id="automationViewSignedOut"' in html
+    assert 'data-locale-key="claw-automation-signed-out"' in html
     # The section is a real labelled region, not a bare div.
     assert 'aria-labelledby="clawAutomationTitle"' in html
     assert 'id="clawAutomationTitle"' in html
@@ -58,6 +61,7 @@ def test_scheduler_live_disclaimer_is_present_and_persistent() -> None:
     locale = LOCALE_JS.read_text(encoding="utf-8")
     # Both languages carry the disclaimer and the two vocabulary keys.
     assert locale.count('"claw-automation-scheduler-note"') == 2
+    assert locale.count('"claw-automation-signed-out"') == 2
     assert locale.count('"automation-rule-setting"') == 2
     assert locale.count('"automation-rule-quarantined"') == 2
     # The bare on/off keys are gone: the setting is always labelled.
@@ -228,6 +232,7 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawInbox","clawInboxTitle","clawInboxLoading","clawInboxError","clawInboxEmpty","clawInboxList","clawInboxRetry",
   "automationNavButton","clawAutomation","clawAutomationLoading","clawAutomationError","clawAutomationEmpty",
   "clawAutomationList","clawAutomationRetry",
+  "automationView","automationViewBody","automationViewSignedOut",
 ].forEach((id) => add(id, "div"));
 // index.html nests #messageList inside <section class="conversation">, and the
 // real app.js reads that ancestor to decide whether the first turn continues
@@ -315,17 +320,22 @@ function clickAutomationNav() {
   // The Automation entry follows the same signed-in gate as Tasks/Alerts.
   // The gate is read from the DOM after auth resolution, not from the fixture.
   const navDisabled = byId.automationNavButton.disabled === true;
-  const navAria = byId.automationNavButton.getAttribute("aria-disabled");
   if (FIXTURE.mode === "signed_out") {
-    if (!navDisabled) fail("SIGNED_OUT_NAV_ENABLED");
-    if (navAria !== "true") fail("SIGNED_OUT_NAV_ARIA_ENABLED");
-    // Signed out: the section must not be reachable and no rule is fetched.
+    // Owner decision: a visitor may open the Automation page. The data guard is
+    // that no rule request leaves the browser, not an inert sidebar entry.
+    if (navDisabled) fail("SIGNED_OUT_NAV_INERT");
+    clickAutomationNav();
+    await tick(40);
+    if (byId.automationView.hidden !== false) fail("SIGNED_OUT_VIEW_NOT_OPEN");
+    if (shell.dataset.state !== "automation") fail("SIGNED_OUT_SURFACE_NOT_SWITCHED");
+    if (byId.clawAutomation.hidden !== true) fail("SIGNED_OUT_SECTION_LEAKED");
+    if (byId.automationViewSignedOut.hidden !== false) fail("SIGNED_OUT_NOTE_NOT_SHOWN");
+    if (rowCount() !== 0) fail("SIGNED_OUT_MUST_RENDER_NO_ROWS");
     if (ruleCalls !== 0) fail("SIGNED_OUT_RULE_FETCHED");
     console.log(JSON.stringify({ ok: true, rows: 0, ruleCalls }));
     process.exit(0);
   }
   if (navDisabled) fail("SIGNED_IN_NAV_DISABLED");
-  if (navAria !== "false") fail("SIGNED_IN_NAV_ARIA_DISABLED");
 
   if (FIXTURE.mode === "error_then_retry") {
     clickAutomationNav();
@@ -501,7 +511,7 @@ def test_error_state_then_explicit_retry() -> None:
     _run("error_then_retry", auth=_SIGNED_IN, rules=_RULES, fail_first=True)
 
 
-def test_signed_out_entry_stays_disabled() -> None:
+def test_signed_out_entry_is_browsable_but_requests_no_rules() -> None:
     _run("signed_out", auth=_SIGNED_OUT, rules=_RULES)
 
 

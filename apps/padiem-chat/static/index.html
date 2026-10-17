@@ -75,9 +75,9 @@
       </div>
       <!-- Owner order: Meeting / Automation / Library / Calendar. -->
       <nav class="side-nav" id="workspaceNav" data-locale-aria-label="workspace-menu" aria-label="워크스페이스 메뉴">
-        <button class="side-item" id="meetingNavButton" type="button" aria-controls="meetingView" aria-current="false" disabled><span class="side-icon" aria-hidden="true">▥</span><span data-locale-key="nav-meeting">회의록</span></button>
-        <button class="side-item" id="automationNavButton" type="button" disabled aria-disabled="true" aria-current="false"><span class="side-icon" aria-hidden="true">◷</span><span data-locale-key="nav-automation">Automation</span></button>
-        <button class="side-item" id="filesNavButton" type="button" disabled aria-disabled="true" aria-current="false"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">라이브러리</span></button>
+        <button class="side-item" id="meetingNavButton" type="button" aria-controls="meetingView" aria-current="false"><span class="side-icon" aria-hidden="true">▥</span><span data-locale-key="nav-meeting">회의록</span></button>
+        <button class="side-item" id="automationNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">◷</span><span data-locale-key="nav-automation">Automation</span></button>
+        <button class="side-item" id="filesNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">라이브러리</span></button>
         <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
       </nav>
       <nav class="side-nav" aria-label="도구 및 연결">
@@ -535,7 +535,7 @@
       <section class="standalone-view connectors-view" id="connectorsView" aria-labelledby="connectorsViewTitle" hidden>
         <header class="standalone-view-header">
           <div>
-            <p class="standalone-view-kicker" data-locale-key="connectors-kicker">CONNECTORS</p>
+            <p class="standalone-view-kicker" data-locale-key="connectors-kicker">PADIEM CONNECTORS</p>
             <h2 class="standalone-view-title" id="connectorsViewTitle" data-locale-key="connectors-title">Connectors</h2>
           </div>
         </header>
@@ -549,10 +549,11 @@
       <section class="standalone-view automation-view" id="automationView" aria-labelledby="automationViewTitle" hidden>
         <header class="standalone-view-header">
           <div>
-            <p class="standalone-view-kicker" data-locale-key="automation-view-kicker">AUTOMATION</p>
+            <p class="standalone-view-kicker" data-locale-key="automation-view-kicker">PADIEM AUTOMATION</p>
             <h2 class="standalone-view-title" id="automationViewTitle" data-locale-key="automation-view-title">자동화</h2>
           </div>
         </header>
+        <p class="standalone-view-tagline" id="automationViewSignedOut" data-locale-key="claw-automation-signed-out" hidden>자동화 규칙은 로그인 후 확인할 수 있습니다. 로그인해도 규칙은 이 워크스페이스 안에서만 조회됩니다.</p>
         <div class="standalone-view-body" id="automationViewBody"></div>
       </section>
       <!-- #4489: Library is its own destination, driven by static/library.js.
@@ -580,7 +581,7 @@
       </section>
       <section class="conversation" aria-live="polite">
         <div class="empty-state" id="emptyState">
-          <p class="eyebrow"><span class="chat-hero-eyebrow">PADIEM CHAT</span><span class="claw-hero-eyebrow">PADIEM CLAW</span></p>
+          <p class="eyebrow"><span class="chat-hero-eyebrow">Padiem Chat</span><span class="claw-hero-eyebrow">PADIEM CLAW</span></p>
           <h1>
             <span class="chat-hero-line" data-locale-key="hello">안녕하세요.</span><br class="chat-hero-line" />
             <span class="chat-hero-line" data-locale-key="ask">무엇을 도와드릴까요?</span>
@@ -934,7 +935,7 @@
     <!-- #4647: dedicated meeting workspace within the Chat/Claw shell, not a popup. -->
     <section id="meetingView" class="standalone-view meeting-view" aria-labelledby="meetingTitle" hidden>
       <div class="meeting-panel">
-       <header class="standalone-view-header meeting-header"><div><p class="standalone-view-kicker" data-locale-key="meeting-kicker">파디엠 회의록</p><h2 class="standalone-view-title" id="meetingTitle" data-locale-key="meeting-title">회의록</h2></div><button type="button" id="meetingClose" data-locale-key="meeting-close" data-locale-aria-label="meeting-close">Claw로 돌아가기</button></header>
+       <header class="standalone-view-header meeting-header"><div><p class="standalone-view-kicker" data-locale-key="meeting-kicker">PADIEM MEETING</p><h2 class="standalone-view-title" id="meetingTitle" data-locale-key="meeting-title">회의록</h2></div></header>
        <p class="meeting-help">녹음·실시간 받아쓰기는 별도 기능입니다. 시작을 누르면 마이크 사용 권한을 요청합니다. 브라우저 음성 인식은 브라우저 제공자의 외부 서비스를 사용할 수 있습니다.</p>
        <fieldset class="meeting-modes"><legend>회의 방식 선택</legend>
         <label><input type="radio" name="meetingMode" value="record" checked> 녹음만</label>

@@ -63,7 +63,7 @@
 
   const TEXT = {
     title: () => copy("라이브러리", "Library"),
-    kicker: () => copy("PADIEM CHAT", "PADIEM CHAT"),
+    kicker: () => copy("PADIEM LIBRARY", "PADIEM LIBRARY"),
     subtitle: () => copy(
       "이 계정에 실제로 저장된 파일만 표시됩니다.",
       "Only files actually stored for this account are listed.",
@@ -293,11 +293,6 @@
     if (active) render();
   }
 
-  function applyAvailability() {
-    navButton.disabled = !signedIn;
-    navButton.setAttribute("aria-disabled", signedIn ? "false" : "true");
-  }
-
   function closeSidebar() {
     shell.classList.remove("sidebar-open");
     const menu = document.getElementById("mobileMenu");
@@ -315,7 +310,8 @@
   }
 
   function openLibrary() {
-    if (!signedIn) return;
+    // Owner decision: a visitor may open the page. loadFiles() still refuses an
+    // unauthenticated call, so the view renders its signed-in note instead of rows.
     shell.dataset.state = "library";
     syncVisibility();
     closeSidebar();
@@ -444,7 +440,6 @@
     // Login as well as logout crosses here, so a new account can never inherit
     // the previous owner's rendered rows.
     if (changed || projectionChanged) invalidate();
-    applyAvailability();
     if (!signedIn && isOpen()) leaveLibrary();
     if (isOpen()) {
       render();

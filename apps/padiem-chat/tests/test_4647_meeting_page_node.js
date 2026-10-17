@@ -13,6 +13,8 @@ const sidebarCss = fs.readFileSync(path.join(root, "sidebar-utility.css"), "utf8
 const clawCss = fs.readFileSync(path.join(root, "claw-focus-layout.css"), "utf8");
 const meetingCss = fs.readFileSync(path.join(root, "meeting-capture.css"), "utf8");
 const frame = fs.readFileSync(path.join(root, "shared-six-panel-frame.css"), "utf8");
+const surfaces = fs.readFileSync(path.join(root, "padiem-surfaces.css"), "utf8");
+const cinematic = fs.readFileSync(path.join(root, "padiem-cinematic-chat.css"), "utf8");
 
 test("Chat and Claw share a group; meeting, automation, library, calendar follow in exact order", () => {
   const order = [
@@ -29,9 +31,9 @@ test("Chat and Claw share a group; meeting, automation, library, calendar follow
   assert.match(sidebarCss, /\.sidebar-chat-claw-group\s*\{[\s\S]*?display:\s*flex;/);
   assert.match(clawCss, /#workspaceNav \.side-item:disabled\s*\{[\s\S]*?display:\s*flex;/);
   assert.equal((html.match(/id="meetingNavButton"/g) || []).length, 1);
-  assert.match(html, /id="automationNavButton"[^>]*disabled/);
-  assert.match(html, /id="filesNavButton"[^>]*disabled/);
-  assert.match(html, /id="meetingNavButton"[^>]+aria-controls="meetingView"[^>]+disabled/);
+  assert.doesNotMatch(html, /id="automationNavButton"[^>]*disabled/);
+  assert.doesNotMatch(html, /id="filesNavButton"[^>]*disabled/);
+  assert.doesNotMatch(html, /id="meetingNavButton"[^>]*disabled/);
   assert.match(html, /data-locale-key="nav-meeting"/);
   assert.match(locale, /"nav-meeting": "Meeting notes"/);
   assert.match(locale, /"nav-meeting": "회의록"/);
@@ -47,14 +49,17 @@ test("meeting is a central workspace, never modal or second site", () => {
   assert.match(app, /meetingNav\.setAttribute\("aria-current", state === "meeting"/);
 });
 
-test("Claw and menu share one recorder and explicit return path", () => {
+test("one recorder, no private exit control, and the draft path still returns to Claw", () => {
   assert.match(capture, /getElementById\("meetingView"\)/);
   assert.match(capture, /getElementById\("meetingNavButton"\)/);
   assert.doesNotMatch(capture, /showModal\(|createElement\("dialog"\)|appendChild\(trigger\)/);
   assert.match(capture, /new win\.CustomEvent\("padiem:meeting-open"\)/);
   assert.match(app, /padiem:meeting-open/);
-  assert.match(capture, /find\("clawNavButton"\)\?\.click\(\)/);
+  assert.match(capture, /clawNav\.click\(\);/);
   assert.match(capture, /controller\.snapshot\(\)\.active && !uploadInFlight/);
+  // Leaving the page is the sidebar's job, and the recorder still owns that gate.
+  assert.doesNotMatch(capture, /meetingClose/);
+  assert.match(capture, /\.side-nav \.side-item, #newChatButton/);
 });
 
 test("meeting header reuses the shared standalone view pattern and carries its own brand", () => {
@@ -64,19 +69,32 @@ test("meeting header reuses the shared standalone view pattern and carries its o
   assert.match(meeting, /class="standalone-view-header meeting-header"/);
   assert.match(meeting, /class="standalone-view-kicker" data-locale-key="meeting-kicker"/);
   assert.match(meeting, /class="standalone-view-title" id="meetingTitle" data-locale-key="meeting-title"/);
-  assert.match(meeting, /id="meetingClose" data-locale-key="meeting-close" data-locale-aria-label="meeting-close"/);
+  assert.doesNotMatch(meeting, /meetingClose|Claw로 돌아가기/);
   assert.doesNotMatch(meeting, /PADIEM CLAW/);
-  assert.match(locale, /"meeting-kicker": "PADIEM MEETING"/);
-  assert.match(locale, /"meeting-kicker": "파디엠 회의록"/);
+  assert.doesNotMatch(locale, /meeting-close/);
+  // Every destination eyebrow is a Latin brand string in both locales; the meeting
+  // page follows the same rule instead of translating the brand.
+  assert.equal((locale.match(/"meeting-kicker": "PADIEM MEETING"/g) || []).length, 2);
   assert.match(locale, /"meeting-title": "Meeting notes"/);
   assert.match(locale, /"meeting-title": "회의록"/);
-  assert.match(locale, /"meeting-close": "Back to Claw"/);
-  assert.match(locale, /"meeting-close": "Claw로 돌아가기"/);
+});
+
+test("meeting first screen rises on the shared Chat/Claw curve", () => {
+  assert.match(meetingCss, /\.meeting-header \{\s*animation: padiem-rise \.72s cubic-bezier\(\.2, \.75, \.2, 1\) both; \}/);
+  assert.match(meetingCss, /\.meeting-panel \{\s*animation: padiem-rise \.82s \.08s cubic-bezier\(\.2, \.75, \.2, 1\) both; \}/);
+  // The keyframes live in an imported sheet, so prove the page actually loads it.
+  assert.match(surfaces, /@keyframes padiem-rise \{/);
+  assert.match(cinematic, /@import url\('\.\/padiem-surfaces\.css'\);/);
+  assert.match(html, /href="\.\/padiem-cinematic-chat\.css"/);
 });
 
 test("meeting view joins the shared glass frame instead of drawing its own surface", () => {
-  assert.match(views, /html\[data-theme="padiem-glass"\][^\n]*\[data-state="meeting"\][^\n]*\.standalone-view-kicker \{/);
-  assert.match(views, /html\[data-theme="padiem-glass"\][^\n]*\[data-state="meeting"\][^\n]*\.standalone-view-kicker::before/);
+  const unified = views.slice(views.indexOf("One Glass page eyebrow"));
+  assert.ok(unified.length > views.indexOf("One Glass page eyebrow") && unified.includes("padiem-glass"),
+    "the shared Glass eyebrow block must exist");
+  assert.match(unified, /\[data-state="meeting"\]/);
+  assert.match(unified, /\.standalone-view-kicker, \.calendar-view-kicker, \.library-kicker, \.claw-workspace-kicker\) \{/);
+  assert.match(unified, /\.standalone-view-kicker, \.calendar-view-kicker, \.library-kicker, \.claw-workspace-kicker\)::before \{/);
   assert.equal((frame.match(/\.automation-view, \.meeting-view/g) || []).length, 3,
     "meeting must be in all three six-panel frame lists");
   assert.ok(frame.includes(".calendar-view, .connectors-view"), "the owner visual-lock frame literal stays intact");
@@ -90,4 +108,16 @@ test("meeting nav carries the horizontal note glyph and no square-grid glyph rem
   const nav = html.slice(html.indexOf('id="meetingNavButton"'), html.indexOf("</button>", html.indexOf('id="meetingNavButton"')));
   assert.match(nav, /class="side-icon" aria-hidden="true">▥/);
   assert.equal((html.match(/▦/g) || []).length, 0);
+});
+
+test("a visitor may open the meeting page while the session guard stays on the controls", () => {
+  // The entry is no longer inert: the owner decision is that every screen is
+  // browsable without a session, so the guard moved from the nav to the actions.
+  assert.doesNotMatch(capture, /trigger\.disabled/);
+  assert.match(capture, /shell\.dataset\.state = "meeting";/);
+  assert.match(capture, /if \(!signedIn\) say\("PADIEM 로그인 후 회의록을 이용할 수 있습니다\."\);/);
+  assert.match(capture, /startButton\.disabled = state\.active \|\| state\.pending \|\| !signedIn/);
+  assert.match(capture, /draftInClaw\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn/);
+  assert.match(capture, /driveText\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn \|\| uploadInFlight/);
+  assert.match(capture, /startButton\.disabled = !signedIn \|\| controller\.snapshot\(\)\.active/);
 });

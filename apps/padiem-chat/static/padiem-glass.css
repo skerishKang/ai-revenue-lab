@@ -221,7 +221,9 @@ html[data-theme="padiem-glass"] .empty-state h1 { color: #16212a; letter-spacing
  * Glass is a bright surface, so keep the second line readable here. */
 html[data-theme="padiem-glass"] .empty-state h1 br + span { color: #66737e; }
 html[data-theme="padiem-glass"] .empty-copy { color: #44515d; }
-html[data-theme="padiem-glass"] .eyebrow { color: #334a5b; letter-spacing: .16em; }
+/* The copy carries its own capitalisation now (owner: "Padiem Chat"), so the
+ * hero no longer forces uppercase. Page eyebrows keep the literal brand strings. */
+html[data-theme="padiem-glass"] .eyebrow { color: #334a5b; letter-spacing: .16em; text-transform: none; }
 html[data-theme="padiem-glass"] .eyebrow::before { background: rgba(121, 188, 231, .95); box-shadow: 0 0 12px rgba(121, 188, 231, .32); }
 
 html[data-theme="padiem-glass"] .starter {
@@ -324,7 +326,6 @@ html[data-theme="padiem-glass"] .reference-note {
 }
 
 /* #2532 Claw ↔ Chat continuity: same eyebrow/card/composer language in the workspace. */
-html[data-theme="padiem-glass"] .claw-workspace-kicker { color: #334a5b; letter-spacing: .16em; }
 html[data-theme="padiem-glass"] .claw-workspace-title { color: #16212a; }
 html[data-theme="padiem-glass"] .claw-workspace-tagline { color: #44515d; }
 html[data-theme="padiem-glass"] .claw-workspace-chip { color: #18232c; }

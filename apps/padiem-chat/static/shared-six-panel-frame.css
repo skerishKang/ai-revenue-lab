@@ -44,11 +44,14 @@ html[data-theme="padiem-glass"] body .app-shell {
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
   }
-  /* Calendar/Connectors/Library/Automation/Meeting use the Chat/Claw eyebrow origin. */
+  /* Calendar/Connectors/Library/Automation/Meeting use the Chat/Claw eyebrow origin:
+   * the same height-relative inset the hero uses, minus the 6px the page header box
+   * adds above its first line, so the brand line lands on the same row at any
+   * viewport height. The previous fixed inset only matched at one height. */
   html[data-theme="padiem-glass"] body .app-shell :is(
     .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view
   ) {
-    padding: 78px clamp(18px, 2.4vw, 34px) 36px !important;
+    padding: calc(clamp(52px, 7.4vh, 88px) - 7px) clamp(18px, 2.4vw, 34px) 36px !important;
   }
   /* Keep the composer physically inside the frame at both first prompt and
      subsequent turns; let Claw's own model selector set its internal height. */
