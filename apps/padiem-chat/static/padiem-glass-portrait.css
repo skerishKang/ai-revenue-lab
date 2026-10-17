@@ -729,3 +729,130 @@ html[data-theme="padiem-glass"] .glass-shell-frag::after {
   border-top: 1px solid rgba(255,255,255,.14);
   border-bottom: 1px solid rgba(45,69,87,.08);
 }
+
+/* Owner-confirmed Plan 4 (2026-10-17, Glass theme, chat state only):
+ * row1 = profile chip + 20px user icon (right-aligned),
+ * row2 = text right-aligned with its right edge on the icon's left edge,
+ * row3 = Codex-style hover-reveal user actions (time/copy/edit).
+ * The answer-side avatar keeps its gray plate (owner: no blue combo); only
+ * the 5 answer-action buttons drop their chrome (26px, no bg/border).
+ * Selectors use the repeated-class + #messageList pattern to beat the
+ * @import'ed polish/accessibility caps independent of sheet order. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message.user-message {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto 20px !important;
+  grid-template-rows: auto auto auto !important;
+  gap: 2px 10px !important;
+  justify-content: end !important;
+  justify-items: end !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message .message-bubble.message-bubble {
+  grid-column: 1 / span 3 !important;
+  grid-row: 2 !important;
+  justify-self: end !important;
+  width: auto !important;
+  margin-right: 20px !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message .user-profile-chip {
+  display: block !important;
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  align-self: center !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  color: #7b8792 !important;
+  white-space: nowrap !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message .user-avatar {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: #111a22 !important;
+  display: grid !important;
+  place-items: center !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message .user-avatar svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+/* Row3: user actions stay out of the layout until hover/focus; touch
+ * devices (no hover) always show them so copy/edit stay reachable. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message .user-actions {
+  grid-column: 1 / span 3 !important;
+  grid-row: 3 !important;
+  justify-self: end !important;
+  margin: 0 20px 0 0 !important;
+  padding: 0 !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message:hover .user-actions,
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message:focus-within .user-actions {
+  display: flex !important;
+}
+@media (hover: none) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message .user-actions {
+    display: flex !important;
+  }
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message .user-action-time {
+  font-size: 12px !important;
+  line-height: 1 !important;
+  color: #7b8792 !important;
+  white-space: nowrap !important;
+  margin-right: 2px !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message .user-action {
+  appearance: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: 26px !important;
+  height: 26px !important;
+  padding: 0 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: none !important;
+  color: #53606c !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message .user-action:hover {
+  background: rgba(17, 26, 34, .07) !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #messageList .user-message .user-action:focus-visible {
+  outline: 2px solid #6557e8 !important;
+  outline-offset: 1px !important;
+}
+/* Answer action bar: drop the 40px chrome to 26px textless icons. The
+ * accessibility-polish 40px min-* floor (0,1,0) and the portrait 38px rule
+ * above both lose to this (1,5,2)+!important pair. */
+html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-action {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  width: 26px !important;
+  height: 26px !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: none !important;
+  color: #53606c !important;
+  font-size: 13px !important;
+}
+html[data-theme="padiem-glass"] .answer-actions {
+  gap: 0 !important;
+  margin-top: 2px !important;
+}
+html[data-theme="padiem-glass"] .answer-action + .answer-action {
+  margin-left: 4px !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
+  gap: 14px !important;
+}

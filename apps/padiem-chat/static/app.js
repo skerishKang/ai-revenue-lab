@@ -317,6 +317,51 @@
       meta.textContent = `${label} · ${attachment.name} · ${formatBytes(attachment.byteSize)}`;
       bubble.appendChild(meta);
     }
+    // Plan 4 (Glass only, shown via CSS): profile chip mirrors the signed-in
+    // account name at send time; hidden account (signed out) drops the chip.
+    const chip = fragment.querySelector(".user-profile-chip");
+    if (chip) {
+      const name = accountName && !accountName.hidden ? accountName.textContent.trim() : "";
+      if (name) chip.textContent = name;
+      else chip.remove();
+    }
+    // Codex-style hover-reveal (Glass only): send-time stamp + copy/edit.
+    const clock = fragment.querySelector(".user-action-time");
+    if (clock) {
+      const now = new Date();
+      const stamp = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      clock.textContent = stamp;
+      clock.setAttribute("datetime", now.toISOString());
+      clock.title = stamp;
+    }
+    const copyBtn = fragment.querySelector(".user-action-copy");
+    if (copyBtn) {
+      copyBtn.setAttribute("aria-label", uiT("answer-copy"));
+      copyBtn.addEventListener("click", () => {
+        const done = copyBtn.querySelector("span") || copyBtn;
+        const prev = done.textContent;
+        const flash = () => { done.textContent = "✓"; setTimeout(() => { done.textContent = prev; }, 900); };
+        const plain = bubble ? bubble.textContent : text;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(plain).then(flash, () => {});
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = plain;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand("copy"); flash(); } catch (e) {}
+          ta.remove();
+        }
+      });
+    }
+    const editBtn = fragment.querySelector(".user-action-edit");
+    if (editBtn) {
+      editBtn.addEventListener("click", () => {
+        input.value = text;
+        input.focus();
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+    }
     messageList.appendChild(fragment);
   }
   function addAssistantShell(label) {
