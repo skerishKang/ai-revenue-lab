@@ -97,7 +97,6 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   font-weight: 600;
   letter-spacing: 0.16em;
   opacity: 1;
-  text-transform: uppercase;
   color: #334a5b;
 }
 html[data-theme="padiem-glass"] body .app-shell:is(

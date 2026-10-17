@@ -75,7 +75,7 @@ def test_claw_identity_is_two_lines_without_a_duplicate_greeting():
     first = HTML[start:HTML.index('class="starter-grid"',start)]
     assert "클로입니다." in first
     assert "직접 작업하는 파디엠 클로입니다." not in first
-    assert '<span class="claw-hero-eyebrow">PADIEM CLAW</span>' in first
+    assert '<span class="claw-hero-eyebrow">Padiem Claw</span>' in first
     assert "어디에서 작업할까요?" in first
     assert "claw-home-intro" in first and "claw-home-question" in first
     assert "chat-hero-line" in first

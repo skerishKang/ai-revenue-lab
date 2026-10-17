@@ -110,8 +110,11 @@ def test_glass_kicker_uses_chat_eyebrow_ink() -> None:
     assert 'data-state="calendar"] .calendar-view-kicker' not in CALENDAR_CSS
     unified = STANDALONE_CSS.split(".claw-workspace-kicker) {", 1)[1].split("}", 1)[0]
     for declaration in ("#334a5b", "font-size: 10px", "font-weight: 600",
-                        "letter-spacing: 0.16em", "text-transform: uppercase"):
+                        "letter-spacing: 0.16em"):
         assert declaration in unified, declaration
+    # The brand copy carries its own capitalisation now, so the shared rule must
+    # not force it back to caps.
+    assert "text-transform" not in unified
 
 
 def test_page_eyebrow_shares_the_hero_vertical_origin() -> None:
@@ -122,11 +125,11 @@ def test_page_eyebrow_shares_the_hero_vertical_origin() -> None:
     assert "calc(clamp(52px, 7.4vh, 88px) - 7px)" in padding
     assert "78px" not in padding, "a fixed inset cannot track the height-relative hero inset"
     locale = (STATIC / "locale.js").read_text(encoding="utf-8")
-    assert locale.count('"connectors-kicker": "PADIEM CONNECTORS"') == 2
-    assert locale.count('"automation-view-kicker": "PADIEM AUTOMATION"') == 2
+    assert locale.count('"connectors-kicker": "Padiem Connectors"') == 2
+    assert locale.count('"automation-view-kicker": "Padiem Automation"') == 2
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     assert ">Padiem Chat</span>" in html
-    assert ">PADIEM CLAW</span>" in html
+    assert ">Padiem Claw</span>" in html
 
 
 def test_every_destination_shares_one_glass_eyebrow() -> None:
@@ -140,8 +143,8 @@ def test_every_destination_shares_one_glass_eyebrow() -> None:
     assert len(classes) == 4, classes
     # Library now carries its own brand rather than borrowing Chat's.
     library_js = (STATIC / "library.js").read_text(encoding="utf-8")
-    assert 'copy("PADIEM LIBRARY", "PADIEM LIBRARY")' in library_js
-    assert 'copy("PADIEM CHAT", "PADIEM CHAT")' not in library_js
+    assert 'copy("Padiem Library", "Padiem Library")' in library_js
+    assert 'copy("Padiem Chat", "Padiem Chat")' not in library_js
 
 
 def test_glass_mode_bar_matches_composer_surface() -> None:

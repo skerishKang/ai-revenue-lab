@@ -83,7 +83,7 @@ def test_browser_setup_requires_canonical_signed_owner(monkeypatch):
     monkeypatch.setattr(setup, "resolve_current_b54_canonical_session", verified)
     response = get(application, setup.SETUP_PATH)
     assert response.status_code == 200
-    assert "PADIEM Connector" in response.text
+    assert "Padiem Connector" in response.text
     assert "setup.js" in response.text
     assert 'id="verify" disabled' in response.text
     assert response.headers["cache-control"].startswith("no-store")
