@@ -1827,7 +1827,8 @@
         if (clawGeneralRequest && data.pc_pending === true
             && typeof data.run_id === "string"
             && typeof data.conversation_id === "string") {
-          conversationState.setConversationId(data.conversation_id);
+          const pendingConversationId = data.conversation_id;
+          conversationState.setConversationId(pendingConversationId);
           PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
           void waitForAcceptedPcRun(article, data, outboundMessages, signal)
             .catch(() => { if (article.isConnected && !signal.aborted) {
