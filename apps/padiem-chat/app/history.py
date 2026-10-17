@@ -35,19 +35,23 @@ MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 #: encode. R2 keys stay server-derived (conversation + deterministic result
 #: id); a browser can never choose an object key.
 ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
-#: #4139 dispatch row field bounds. Each number is the ceiling of the thing it
+#: #4139 dispatch row bounds. Each number is the ceiling of the thing it
 #: describes, not a safety guess:
 #: * a reference keeps the bound this table has always used;
 #: * a Windows path is bounded by the documented maximum path length
 #:   (32,767 characters with the extended-length prefix; Microsoft, "Maximum
 #:   Path Length Limitation"), because a Korean or long PC path is ordinary
 #:   input and the former 1,024-character bound rejected it;
-#: * a command is bounded by the documented Cloudflare D1 ceiling of 100,000
-#:   bytes per statement, because the command text is written into this row and
-#:   the row is the command's only durable home.
+#: * the row as a whole is bounded by Cloudflare D1's documented
+#:   "Maximum string, BLOB or table row size: 2,000,000 bytes". A command carries
+#:   no product length rule: it travels as a bound parameter, so the 100,000-byte
+#:   SQL-statement ceiling does not apply to it, and the row it is written into
+#:   is the storage boundary. The execution boundary is separate and belongs to
+#:   the host (the command port refuses a wrapped command over one argv element),
+#:   not to this table.
 MAX_MESH_REFERENCE_CHARS = 1024
 MAX_MESH_PATH_CHARS = 32_767
-MAX_MESH_COMMAND_BYTES = 100_000
+MAX_MESH_ROW_BYTES = 2_000_000
 _MESH_PATH_FIELDS = frozenset({"path_relative", "file_path"})
 #: #4139 terminal/file result ids: the deterministic `msg_ltr_<40hex>` base
 #: from the result projection, plus the conversation splitter suffix.
@@ -1646,8 +1650,6 @@ class D1HistoryStore:
             # (CR is refused because the exit-code sentinel is parsed per line).
             if not isinstance(command_text, str) or not command_text.strip():
                 raise HistoryError("command_text is required for a command dispatch")
-            if len(command_text.encode("utf-8")) > MAX_MESH_COMMAND_BYTES:
-                raise HistoryError("command_text exceeds the dispatch row bound")
             if any(
                 ord(ch) < 32 and ch not in "\t\n" for ch in command_text
             ) or "\x7f" in command_text:
@@ -1668,9 +1670,15 @@ class D1HistoryStore:
                     raise HistoryError(f"{name} carries a control character")
                 continue
             if name == "command_text":
-                continue  # already bounded above, in bytes
+                continue  # text, not a reference: bounded by the row below
             if len(value) > MAX_MESH_REFERENCE_CHARS:
                 raise HistoryError(f"{name} must be a bounded reference")
+        row_bytes = sum(
+            len(value.encode("utf-8"))
+            for value in fields.values() if isinstance(value, str)
+        )
+        if row_bytes > MAX_MESH_ROW_BYTES:
+            raise HistoryError("oracle mesh dispatch row exceeds the storage row bound")
         if not isinstance(expires_at, str) or not expires_at:
             raise HistoryError("expires_at must be a bounded timestamp")
         owned = await self._first(

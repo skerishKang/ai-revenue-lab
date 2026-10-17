@@ -117,10 +117,6 @@ _SAFE_REF_CHARS = frozenset(
 )
 #: #4139 read lane envelope, shared with the command lane and the executor.
 _MAX_FILE_TEXT_BYTES = _MAX_RESULT_BODY_BYTES
-#: A dispatch row is written through D1, whose documented per-statement ceiling
-#: is 100,000 bytes (Cloudflare D1 platform limits). A command longer than the
-#: row it lives in is refused with a named cause instead of a storage error.
-_MAX_COMMAND_TEXT_BYTES = 100_000
 _EXECUTOR = "oracle_management_host"
 #: #4139 terminal lane. A command dispatch has no file, so the 047 file
 #: columns carry these fixed, self-describing sentinels instead of a bogus
@@ -842,11 +838,6 @@ async def dispatch_oracle_mesh_command_intent(
         return _error(422, "oracle_mesh_device_invalid")
     if not isinstance(command, str) or not command.strip():
         return _error(422, "oracle_mesh_command_invalid")
-    if len(command.encode("utf-8")) > _MAX_COMMAND_TEXT_BYTES:
-        # The command is written into one D1 statement, whose documented
-        # ceiling is 100,000 bytes. Refused here, by name, instead of failing
-        # later as an opaque storage error.
-        return _error(413, "oracle_mesh_command_too_large")
 
     try:
         scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
@@ -938,6 +929,12 @@ async def dispatch_oracle_mesh_command_intent(
     except HistoryForbidden:
         return _error(404, "oracle_mesh_run_unavailable")
     except HistoryError as exc:
+        if str(exc) == "oracle mesh dispatch row exceeds the storage row bound":
+            # The command text is a bound parameter, so the limit that binds it
+            # is D1's documented 2,000,000-byte row ceiling, checked on the row
+            # it is written into. Named here so a huge command reads as too
+            # large rather than as a refused dispatch.
+            return _error(413, "oracle_mesh_dispatch_too_large")
         if str(exc) == "oracle mesh command execution is uncertain":
             # #4139: the command may already have run. A second execution is
             # never attempted; the state is reported as uncertain instead.
@@ -1082,6 +1079,21 @@ def _command_header(dispatch: dict[str, Any], wire: dict[str, Any]) -> list[str]
         lines.append("종료 코드: 확인되지 않음")
     elif termination == "no_reply":
         lines.append("종료 상태: 콘솔 응답 없음")
+        lines.append("종료 코드: 확인되지 않음")
+    elif termination == "not_executed":
+        # The command never reached the PC: the execution boundary refused it
+        # (an argv element over the host limit, a bad node reference). Reporting
+        # that as "콘솔 응답 없음" would blame a console that was never asked.
+        lines.append("종료 상태: 실행되지 않음 (실행 경계에서 거부됨)")
+        lines.append("종료 코드: 확인되지 않음")
+    elif termination == "no_exit_code":
+        # The console answered and the shell reached the statement this lane
+        # appends, but PowerShell only records $LASTEXITCODE for a native program
+        # or script, so a cmdlet-only pipeline reports no number. The output is
+        # delivered whole and the code stays "확인되지 않음" — never 0.
+        lines.append(
+            "종료 상태: 콘솔 응답 완료 (cmdlet 전용 파이프라인이라 종료 코드가 보고되지 않음)"
+        )
         lines.append("종료 코드: 확인되지 않음")
     elif termination == "output_too_large":
         lines.append("종료 상태: 출력이 전송 한도를 초과")
@@ -1342,14 +1354,20 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     if _ref(wire.get("nonce"), 128) is None:
         return _error(400, "oracle_mesh_invalid_body")
     if wire.get("termination") not in (
-        "exited", "cancelled", "timed_out", "no_reply", "output_too_large",
+        "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
+        "not_executed", "output_too_large",
     ):
         return _error(400, "oracle_mesh_invalid_body")
     # #4139: a wait timeout and a console that never answered have NO observed
     # exit code. That is carried as null, never invented as 0; only a real
     # "exited" run must report an integer.
     if wire.get("exit_code") is None:
-        if wire.get("termination") not in ("timed_out", "no_reply"):
+        # ``no_exit_code`` keeps the code unobserved: PowerShell records
+        # $LASTEXITCODE only for a native program or script, so a cmdlet-only
+        # pipeline answers completely without reporting a number.
+        if wire.get("termination") not in (
+            "timed_out", "no_reply", "no_exit_code", "not_executed",
+        ):
             return _error(400, "oracle_mesh_invalid_body")
     elif isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
         return _error(400, "oracle_mesh_invalid_body")
@@ -1427,6 +1445,17 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                     outcome = "failed"
                     summary = str(wire["termination"]) + "/" + str(wire["exit_code"])
                     status = "failed"
+            elif wire["termination"] == "not_executed":
+                # Nothing ran, so nothing succeeded: a refusal is reported as a
+                # failure of this turn without inventing a program exit code.
+                outcome = "failed"
+                summary = "not_executed"
+                status = "failed"
+            elif wire["termination"] == "no_exit_code":
+                # Delivered and complete, with the code unobserved: the console
+                # answered and the shell ran the appended sentinel statement, so
+                # the turn is finished, while nothing here claims exit 0.
+                outcome, summary, status = "done", "no_exit_code", "completed"
             else:
                 outcome = "failed"
                 summary = str(wire["termination"])

@@ -15,7 +15,7 @@ from types import SimpleNamespace
 import pytest
 
 from app import oracle_mesh_read_return_routes as routes
-from app.history import HistoryError, HistoryForbidden
+from app.history import HistoryError, HistoryForbidden, MAX_MESH_ROW_BYTES
 
 NOW = datetime(2026, 10, 17, 9, 0, tzinfo=timezone.utc)
 NODE = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
@@ -104,6 +104,15 @@ class History:
         return None
 
     async def create_oracle_mesh_dispatch(self, **fields):
+        # The real store refuses a row over D1's documented row ceiling before
+        # it writes; the double has to raise the same error or the route's named
+        # 413 mapping is never exercised.
+        row_bytes = sum(
+            len(value.encode("utf-8"))
+            for value in fields.values() if isinstance(value, str)
+        )
+        if row_bytes > MAX_MESH_ROW_BYTES:
+            raise HistoryError("oracle mesh dispatch row exceeds the storage row bound")
         self._seq += 1
         dispatch_id = "dsp-%d" % self._seq
         row = {**fields, "dispatch_id": dispatch_id, "state": "pending",
@@ -419,6 +428,44 @@ def test_output_too_large_is_an_explicit_result(monkeypatch):
     assert "전송 한도를 초과" in appended["content"]
     assert "종료 코드: 0" in appended["content"]
     assert "출력 시작" not in appended["content"]
+
+
+def test_an_answer_without_an_exit_code_is_not_reported_as_no_answer(monkeypatch):
+    """PowerShell records `$LASTEXITCODE` only for a native program or script.
+
+    A cmdlet-only pipeline answers completely and reports no number. That must
+    arrive as a delivered result whose code is unobserved, never as a silent
+    console and never as exit 0.
+    """
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    status, body, _ = _submit(state, row, termination="no_exit_code",
+                              exit_code=None, body="결과\n".encode("utf-8"))
+    assert status == 200, body
+    content = state.history_store.appended[0]["content"]
+    assert "종료 코드: 확인되지 않음" in content
+    assert "콘솔 응답 없음" not in content
+    assert state.history_store.appended[0]["status"] == "completed"
+    assert state.history_store.finished == [(row["dispatch_id"], "done")]
+    assert row["result_sha256"] == hashlib.sha256(
+        "결과\n".encode("utf-8")
+    ).hexdigest()
+
+
+def test_a_command_refused_before_the_pc_is_reported_as_not_executed(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+    status, body, _ = _submit(state, row, termination="not_executed",
+                              exit_code=None, body=b"")
+    assert status == 200, body
+    content = state.history_store.appended[0]["content"]
+    assert "실행되지 않음" in content
+    assert "콘솔 응답 없음" not in content
+    assert "종료 코드: 0" not in content
 
 
 def test_a_large_output_is_split_into_several_messages(monkeypatch):
