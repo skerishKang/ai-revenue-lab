@@ -73,7 +73,6 @@ html[data-theme="padiem-glass"] #clawDialog {
 .capability-kicker {
   font-size: 11px;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   opacity: 0.55;
   margin: 0 0 2px;
 }

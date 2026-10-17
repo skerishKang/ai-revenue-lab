@@ -129,7 +129,7 @@ def test_anonymous_user_cannot_see_the_private_home(browser, server):
     wait_gate(page)
     assert page.locator("#padiemHomeGateTitle").inner_text() == "로그인이 필요합니다"
     # The sign-in control is honest about where authentication happens.
-    assert page.locator("#padiemHomeGateAction").inner_text() == "PADIEM Chat에서 로그인"
+    assert page.locator("#padiemHomeGateAction").inner_text() == "Padiem Chat에서 로그인"
     assert page.locator("#padiemHomeGateAction").get_attribute("href") == "./"
     # No service catalog, no account identity, no product links at all.
     assert page.locator("#padiemHomeServices").is_hidden()
@@ -220,7 +220,7 @@ def test_only_a_supported_destination_is_linked(browser, server):
     chat = page.locator('#padiemHomeGrid li[data-service="chat"]')
     assert chat.locator("a").count() == 1
     assert chat.locator("a").get_attribute("href") == "./"
-    assert chat.locator("a").inner_text() == "PADIEM Chat 열기"
+    assert chat.locator("a").inner_text() == "Padiem Chat 열기"
     claw = page.locator('#padiemHomeGrid li[data-service="claw"]')
     assert claw.locator("a").count() == 1
     assert claw.locator("a").get_attribute("href") == "./"

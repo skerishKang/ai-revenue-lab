@@ -130,7 +130,7 @@ def test_b66_customer_dropdown_shows_four_grades_not_provider_names():
     data = response.json()
     assert [t["tier"] for t in data["tiers"]] == ["free", "plus", "pro", "max"]
     assert [t["name"] for t in data["tiers"]] == [
-        "PADIEM Free", "PADIEM Plus", "PADIEM Pro", "PADIEM Max"]
+        "Padiem Free", "Padiem Plus", "Padiem Pro", "Padiem Max"]
     assert {t["model_id"] for t in data["tiers"]} == {"opencode-go/cat-jam-free"}
     assert data["default_tier"] == "free"
     root = Path(__file__).resolve().parents[3]
