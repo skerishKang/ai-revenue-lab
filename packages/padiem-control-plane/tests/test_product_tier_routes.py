@@ -53,10 +53,10 @@ def test_contract_defines_exactly_four_padiem_tiers() -> None:
     assert [tier.label for tier in PRODUCT_TIER_ROUTES] == list(ProductTierLabel)
     assert PRODUCT_TIER_POLICY_VERSION == "padiem.product_tier_routes.v1"
 
-def test_current_truth_all_four_tiers_use_catjam_with_retired_routes_data_only() -> None:
+def test_current_truth_all_four_tiers_use_beam_with_retired_routes_data_only() -> None:
     routes = _executables()
     assert set(routes) == set(ProductTierLabel)
-    assert {route.model_id for route in routes.values()} == {"opencode-go/cat-jam-free"}
+    assert {route.model_id for route in routes.values()} == {"opencode-go/beam-free"}
     assert all(route.credential_binding == "PADIEM_B14_CREDENTIAL_11" for route in routes.values())
     assert all(route.status is ProductRouteStatus.EXECUTABLE for route in routes.values())
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
@@ -220,7 +220,7 @@ def test_active_tier_routes_match_the_current_b14_model_registry() -> None:
     models={row["id"]: row for row in json.loads(file.read_text(encoding="utf-8"))["models"]}
     assert len(_executables())==4
     for route in _executables().values():
-        assert route.model_id=="opencode-go/cat-jam-free"
+        assert route.model_id=="opencode-go/beam-free"
         assert models[route.model_id]["enabled"] is True
 
 def test_parity_with_chat_model_policy_derivation() -> None:
@@ -258,7 +258,7 @@ def test_selected_routes_match_registered_provider_constants() -> None:
     assert agnes_model and bai_model and agnes_binding and bai_binding
     assert kilo_bunny and kilo_bunny_upstream
     assert set(executables) == set(ProductTierLabel)
-    assert {x.model_id for x in executables.values()} == {"opencode-go/cat-jam-free"}
+    assert {x.model_id for x in executables.values()} == {"opencode-go/beam-free"}
 
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
     plus_hold = next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID)

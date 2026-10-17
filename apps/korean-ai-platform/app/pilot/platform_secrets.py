@@ -186,12 +186,12 @@ async def ensure_route_secrets(
     from .routing_policy import B14_AUTO_CHAIN
     from .worker_env import load_request_secret
 
-    if model_id == "opencode-go/cat-jam-free":
+    if model_id == "opencode-go/beam-free":
         from .tier_fallback import TIER_FALLBACK_B14_MODELS
         if product_tier not in TIER_FALLBACK_B14_MODELS:
             from .errors import InvalidRequest
             raise InvalidRequest("Unsupported product tier.")
-        candidates = [model_id, TIER_FALLBACK_B14_MODELS[product_tier]]
+        candidates = [model_id, *TIER_FALLBACK_B14_MODELS[product_tier]]
     elif model_id == "b14/auto":
         # Even without fallback, the fixed chain selects the first *ready*
         # provider. Check subsequent positions only if predecessors lack keys.

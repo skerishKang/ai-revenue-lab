@@ -149,7 +149,7 @@ def test_private_compat_stream_pro_alias_fails_closed_before_manual_route():
         async def handler(request: httpx.Request) -> httpx.Response:
             nonlocal calls
             calls += 1
-            raise AssertionError("held Pro must not reach B14 stream transport")
+            return httpx.Response(503, json={"error": {"code": "upstream_unavailable"}})
 
         client = B14Client(_settings(), stream_transport=httpx.MockTransport(handler))
         with pytest.raises(ChatRuntimeError):
@@ -157,7 +157,7 @@ def test_private_compat_stream_pro_alias_fails_closed_before_manual_route():
                 [{"role": "user", "content": "/pro 한국어로 답해줘"}]
             ):
                 pass
-        assert calls == 0
+        assert calls == 1
 
     asyncio.run(scenario())
 

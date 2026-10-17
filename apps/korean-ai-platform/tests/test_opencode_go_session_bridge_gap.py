@@ -121,7 +121,7 @@ def test_forged_header_does_not_change_gateway_outcome(model_id: str) -> None:
             body["error"].pop("request_id", None)
     assert plain_body == forged_body
     assert plain_body["error"]["reason_code"] == (
-        "provider_secret_missing" if "muse-spark" in model_id else "model_disabled"
+        "provider_secret_missing" if ("muse-spark" in model_id or "longcat-" in model_id) else "model_disabled"
     )
 
 
@@ -244,12 +244,13 @@ def test_catjam_and_muse_registered_while_unselected_go_models_off() -> None:
 
     reg = read_registry()
     assert reg["providers"]["opencode-go"]["enabled"] is True
-    assert next(m for m in reg["models"] if m["id"] == "opencode-go/cat-jam-free")["enabled"] is True
+    assert next(m for m in reg["models"] if m["id"] == "opencode-go/cat-jam-free")["enabled"] is False
+    assert next(m for m in reg["models"] if m["id"] == "opencode-go/beam-free")["enabled"] is True
     ids = {m["id"] for m in reg["models"] if m["provider_id"] == "opencode-go"}
     assert set(GO_MODELS) <= ids
     for model_id in GO_MODELS:
         row = next(m for m in reg["models"] if m["id"] == model_id)
-        assert row["enabled"] is ("muse-spark" in model_id)
+        assert row["enabled"] is ("muse-spark" in model_id or "longcat-" in model_id)
 
 
 # --------------------------------------------------------------------------
