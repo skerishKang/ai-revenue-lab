@@ -94,4 +94,3 @@ def test_oracle_result_uses_its_durable_dispatch_correlation():
     ))
     assert result == "Padiem-Command-Center"
     assert [item[0] for item in reads] == ["dispatch", "messages"]
-
