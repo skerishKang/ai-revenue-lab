@@ -349,6 +349,24 @@
       "enabled": true
     },
     {
+      "id": "opencode-go/beam-free",
+      "provider_id": "opencode-go",
+      "upstream_model": "beam-free",
+      "display_name": "OpenCode Go: Beam Free",
+      "provider_name": "OpenCode Go",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "OpenCode Go models API checked 2026-10-18; owner-confirmed free offer",
+      "source_checked_at": "2026-10-18",
+      "enabled": true
+    },
+    {
       "id": "opencode-go/cat-jam-free",
       "provider_id": "opencode-go",
       "upstream_model": "cat-jam-free",
@@ -364,7 +382,7 @@
       "output_price_usd_per_1m": 0,
       "source": "https://dev.opencode.ai/v2/docs/console/go/ (Cat Jam Free, chat/completions, limited-time free availability)",
       "source_checked_at": "2026-10-15",
-      "enabled": true
+      "enabled": false
     },
     {
       "id": "opencode-go/longcat-2.5-preview-free",
@@ -382,7 +400,7 @@
       "output_price_usd_per_1m": 0,
       "source": "https://docs.opencode.ai/docs/go/ (exact model/endpoint; chat_completions; owner-selected, Go coding-agent terms; not yet wire-verified)",
       "source_checked_at": "2026-10-12",
-      "enabled": false
+      "enabled": true
     },
     {
       "id": "opencode-go/step-5-preview-free",
