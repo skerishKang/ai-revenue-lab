@@ -245,7 +245,7 @@
       // Owner decision: a visitor may open the page. Recording, drafting and
       // Drive saving still require a session, so the note says what is missing
       // instead of the click doing nothing.
-      if (!signedIn) say("PADIEM 로그인 후 회의록을 이용할 수 있습니다.");
+      if (!signedIn) say("Padiem 로그인 후 회의록을 이용할 수 있습니다.");
       // Use the same app.js view synchronizer as Claw, Calendar, Connectors.
       win.dispatchEvent(new win.CustomEvent("padiem:meeting-open"));
       shell?.classList.remove("sidebar-open");
@@ -459,7 +459,7 @@
       // Deletion is ledger-only by contract; the customer's Drive object is a
       // separate boundary that this page never touches.
       if (typeof win.confirm === "function" && !win.confirm(
-          "PADIEM 회의 기록만 삭제합니다. Google Drive에 저장된 파일은 삭제되지 않습니다.")) return;
+          "Padiem 회의 기록만 삭제합니다. Google Drive에 저장된 파일은 삭제되지 않습니다.")) return;
       try {
         const data = await ledger("DELETE", LEDGER + "/" + encodeURIComponent(ref));
         if (data.record_deleted !== true || data.drive_files_deleted !== false) {
@@ -539,7 +539,7 @@
       startButton.disabled = true;
       driveAudio.disabled = true;
       driveText.disabled = true;
-      say("Google Drive에 저장하는 중입니다. 파일은 PADIEM 서버에 저장되지 않습니다.");
+      say("Google Drive에 저장하는 중입니다. 파일은 Padiem 서버에 저장되지 않습니다.");
       try {
         const result = await provider.upload(blob, { signal: uploadAbort.signal });
         if (!signedIn) return;

@@ -63,7 +63,7 @@
 
   const TEXT = {
     title: () => copy("라이브러리", "Library"),
-    kicker: () => copy("PADIEM LIBRARY", "PADIEM LIBRARY"),
+    kicker: () => copy("Padiem Library", "Padiem Library"),
     subtitle: () => copy(
       "이 계정에 실제로 저장된 파일만 표시됩니다.",
       "Only files actually stored for this account are listed.",
@@ -106,8 +106,8 @@
     ),
     imagesTitle: () => copy("이미지는 저장되지 않습니다", "Images are not stored"),
     imagesBody: () => copy(
-      "PADIEM Chat은 대화에 올린 이미지를 별도 라이브러리로 보관하지 않습니다. 이미지는 요청할 때만 사용되므로 지난 대화의 첨부 파일을 여기서 다시 열 수 없습니다. 저장된 문서 파일은 파일 탭에 표시됩니다.",
-      "PADIEM Chat does not keep chat image uploads as a library. An image is used only for the request it was sent with, so earlier attachments cannot be reopened here. Stored document files appear in the Files tab.",
+      "Padiem Chat은 대화에 올린 이미지를 별도 라이브러리로 보관하지 않습니다. 이미지는 요청할 때만 사용되므로 지난 대화의 첨부 파일을 여기서 다시 열 수 없습니다. 저장된 문서 파일은 파일 탭에 표시됩니다.",
+      "Padiem Chat does not keep chat image uploads as a library. An image is used only for the request it was sent with, so earlier attachments cannot be reopened here. Stored document files appear in the Files tab.",
     ),
     project: (name) => copy(`프로젝트 ${name}`, `Project ${name}`),
     unnamedProject: () => copy("프로젝트 이름 확인 불가", "project name unavailable"),

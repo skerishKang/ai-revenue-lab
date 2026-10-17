@@ -22,7 +22,7 @@
 .claw-connection-guide-heading { flex:1; min-width:0; }
 .claw-connection-guide-kicker {
   margin: 0 0 6px; font-size:10px; line-height:1.4; letter-spacing:.13em;
-  font-weight:750; text-transform:uppercase; color:var(--muted, #99aac2);
+  font-weight:750; color:var(--muted, #99aac2);
 }
 .claw-connection-guide-title { margin:0; color:var(--text); font-size:18px; line-height:1.35; letter-spacing:-.02em; }
 .claw-connection-guide-close {

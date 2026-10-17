@@ -474,3 +474,73 @@ def test_registered_type_and_keys_are_signed_and_never_replayed():
         _ENGINE_DESKTOP_OWNER.reset(token)
     assert seen == ["desktop:type\nPADIEM-GUI-E2E-261017-OK",
                     "desktop:keys\nctrl+s"]
+
+
+def test_secret_store_binding_is_resolved_for_the_desktop_driver():
+    """A Secrets Store binding is an object with async .get(), not a string.
+
+    Accepting only ``str`` silently disabled both the desktop tool binding and
+    the live step driver in Production, where the shared secret is stored in
+    the account Secrets Store.
+    """
+    import importlib
+    import sys
+    import types
+    from contextlib import contextmanager
+
+    @contextmanager
+    def composed_identity():
+        saved = {
+            name: sys.modules.get(name)
+            for name in ("workers", "worker", "worker_identity")
+        }
+        stub = types.ModuleType("workers")
+        stub.Request = lambda *args, **kwargs: None
+        stub.Response = lambda *args, **kwargs: None
+        stub.WorkerEntrypoint = object
+        sys.modules["workers"] = stub
+        for name in ("worker", "worker_identity"):
+            sys.modules.pop(name, None)
+        try:
+            yield importlib.import_module("worker_identity")
+        finally:
+            for name, module in saved.items():
+                if module is None:
+                    sys.modules.pop(name, None)
+                else:
+                    sys.modules[name] = module
+
+    class SecretBinding:
+        def __init__(self, value):
+            self._value = value
+
+        async def get(self):
+            return self._value
+
+    class BrokenBinding:
+        async def get(self):
+            raise RuntimeError("secret unavailable")
+
+    class StoreEnv:
+        B14_SERVICE = object()
+        PADIEM_CHAT_SERVICE = object()
+        CLAW_ENGINE_DESKTOP_SECRET = SecretBinding("s" * 64)
+
+    class PlainEnv:
+        B14_SERVICE = object()
+        PADIEM_CHAT_SERVICE = object()
+        CLAW_ENGINE_DESKTOP_SECRET = "s" * 64
+
+    class BrokenEnv:
+        B14_SERVICE = object()
+        PADIEM_CHAT_SERVICE = object()
+        CLAW_ENGINE_DESKTOP_SECRET = BrokenBinding()
+
+    with composed_identity() as identity:
+        def driver_factory(env):
+            services = asyncio.run(identity._engine_services_for_env(env))
+            return services.orchestration._desktop_step_driver_factory
+
+        assert callable(driver_factory(StoreEnv()))
+        assert callable(driver_factory(PlainEnv()))
+        assert driver_factory(BrokenEnv()) is None
