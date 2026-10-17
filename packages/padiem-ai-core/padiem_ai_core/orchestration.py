@@ -1523,7 +1523,7 @@ class OrchestrationRunner:
                         input_text=prompt_input or "Resume agent plan",
                         run_id=pause.run_id,
                         tool_arguments=request.tool_arguments,
-                        step_driver=request.agent_step_driver,
+                        step_driver=getattr(request, "agent_step_driver", None),
                         initial_step_index=pause.step_index,
                         initial_tool_results=request.initial_tool_results,
                         initial_tool_events=request.initial_tool_events,
