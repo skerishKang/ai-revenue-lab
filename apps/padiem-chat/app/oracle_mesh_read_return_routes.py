@@ -37,9 +37,11 @@ device-acknowledged one.
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import hmac
 import json
+import re
 import secrets
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -140,6 +142,28 @@ _RESULT_KEYS = frozenset({
     "dispatch_id", "nonce", "termination", "exit_code",
     "content_utf8", "content_sha256", "content_bytes",
 })
+#: The screenshot blob rides beside the note on capture turns only; input
+#: turns carry no blob keys at all. Optional, never required, never trusted
+#: without the digest check below.
+_RESULT_BLOB_KEYS = frozenset({
+    "content_blob_base64", "content_blob_sha256", "content_blob_bytes",
+    "content_blob_media_type",
+})
+#: #4139 desktop lane. A desktop dispatch carries its op in the command_text
+#: field (``desktop:<op>`` plus an optional argument line) with the same file
+#: sentinels as a command dispatch, so neither lane can retarget the read
+#: lane's file authority.
+_DESKTOP_COMMAND_PREFIX = "desktop:"
+_DESKTOP_OPS = ("capture", "type", "keys", "click")
+_DESKTOP_SHELL_LABEL = "COM1 데스크톱 릴레이 (MeshCentral meshrelay p=2 + MSC)"
+#: The only screenshot media type the executor produces. The browser renders
+#: it; anything else is refused, never stored or served as an image.
+_DESKTOP_SCREENSHOT_MEDIA_TYPE = "image/jpeg"
+_DESKTOP_SCREENSHOT_MAGIC = b"\xff\xd8\xff"
+#: Server-shaped screenshot reference marker. The conversation carries this
+#: exact line and the frontend renderer fetches only this same-origin path,
+#: so no browser-chosen URL can ever become an image in the conversation.
+_DESKTOP_ORIGINAL_MARKER_PREFIX = "화면 캡처 원문: GET /api/claw/connector/mesh-results/"
 
 #: Canonical fingerprint of zero bytes. Earlier executors pin an empty
 #: string for an empty read, but the pin column requires a value; the
@@ -497,12 +521,18 @@ def _error(status: int, code: str) -> JSONResponse:
     return _response({"ok": False, "error": {"code": code}}, status)
 
 
-def _read_json(raw: bytes, keys: frozenset, limit: int = _MAX_BODY_BYTES) -> dict[str, Any] | None:
+def _read_json(raw: bytes, keys: frozenset, limit: int = _MAX_BODY_BYTES,
+               optional: frozenset = frozenset()) -> dict[str, Any] | None:
     try:
         value = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError, TypeError):
         return None
-    if type(value) is not dict or set(value) != keys:
+    if type(value) is not dict:
+        return None
+    names = set(value)
+    # Required keys must all be present; optional keys (the desktop screenshot
+    # blob, absent on input-only turns) may be present; anything else refuses.
+    if not keys <= names <= keys | optional:
         return None
     return value
 
@@ -534,6 +564,7 @@ def _ref(value: Any, limit: int = 1024) -> str | None:
 
 async def _read_body(
     request: Request, keys: frozenset, limit: int = _MAX_BODY_BYTES,
+    optional: frozenset = frozenset(),
 ) -> dict[str, Any] | None:
     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
         return None
@@ -546,7 +577,7 @@ async def _read_body(
             return None
     except Exception:
         return None
-    return _read_json(raw, keys, limit)
+    return _read_json(raw, keys, limit, optional)
 
 
 def _channel_source(request: Request) -> OracleMeshReturnSource | None:
@@ -956,6 +987,217 @@ async def dispatch_oracle_mesh_command_intent(
     })
 
 
+def _parse_desktop_op_text(value: Any) -> tuple[str, str | None] | None:
+    """Split one ``desktop:`` op body into (op, arg), or None when malformed.
+
+    #4139 desktop lane. This mirrors the executor's grammar so a malformed
+    op is refused here with 422 instead of burning a PC turn; the executor
+    still re-verifies before the PC acts and never trusts this check.
+    """
+    if not isinstance(value, str):
+        return None
+    if not value.startswith(_DESKTOP_COMMAND_PREFIX):
+        return None
+    rest = value[len(_DESKTOP_COMMAND_PREFIX):]
+    if "\x00" in rest or "\r" in rest:
+        return None
+    head, _, tail = rest.partition("\n")
+    op = head.strip().lower()
+    if op not in _DESKTOP_OPS:
+        return None
+    if op == "capture":
+        if tail.strip():
+            return None
+        return op, None
+    arg = tail.strip(" \t\n")
+    if not arg:
+        return None
+    if op == "type":
+        if any(ord(ch) < 32 and ch not in "\t\n" for ch in arg) or "\x7f" in arg:
+            return None
+        return op, arg
+    if op == "keys":
+        if arg.strip().lower() not in (
+            "enter", "esc", "tab", "backspace", "delete",
+            "ctrl+s", "ctrl+c", "ctrl+v", "ctrl+a", "alt+f4", "win+r", "win",
+        ):
+            return None
+        return op, arg.strip().lower()
+    match = re.fullmatch(r"(\d{1,5}),(\d{1,5})", arg)
+    if match is None:
+        return None
+    if int(match.group(1)) > 65535 or int(match.group(2)) > 65535:
+        return None
+    return op, f"{int(match.group(1))},{int(match.group(2))}"
+
+
+async def dispatch_oracle_mesh_desktop_intent(
+    request: Request, *, desktop_op: str, wire: dict[str, Any],
+    trusted_owner: tuple[Any, str, str] | None = None,
+) -> JSONResponse:
+    """Owner intent for ONE desktop observation or input on the pinned PC.
+
+    #4139 desktop lane. Every authority check of the command lane is reused
+    (verified owner session, canonical account scope, origin run, deployment
+    ownership through the SAME ``command_exec`` grant — a desktop input
+    drives the pinned PC exactly like a command does, so a TXT read grant is
+    never enough), and the op travels inside the dispatch itself. Two things
+    are deliberately different:
+
+    * no file/root/path is accepted from the browser, so this route cannot
+      retarget the read lane's file authority;
+    * the op grammar is closed (capture/type/keys/click): anything else is
+      refused here, and the executor re-verifies before the PC acts.
+    """
+    if trusted_owner is None:
+        session, denial = await _verified_owner_request(request)
+        if denial is not None or session is None:
+            return denial if denial is not None else _error(401, "canonical_session_required")
+        uid = current_user_id(request)
+        try:
+            workspace_id = await _resolve_memory_workspace(request, uid)
+        except Exception:
+            return _error(503, "oracle_mesh_workspace_unavailable")
+    else:
+        session, uid, workspace_id = trusted_owner
+        if not uid or not workspace_id or not getattr(session, "tenant_id", None):
+            return _error(401, "canonical_session_required")
+    if not workspace_id:
+        return _error(503, "oracle_mesh_workspace_unavailable")
+
+    mesh_source = _channel_source(request)
+    if mesh_source is None or mesh_source.execution_mode != EXECUTION_MODE_MESH:
+        return _error(503, "oracle_mesh_unconfigured")
+    identity = getattr(request.app.state, "control_plane_identity_authority", None)
+    history_store = getattr(request.app.state, "history_store", None)
+    for method in ("get_claw_run", "get_local_task_correlation", "create_oracle_mesh_dispatch"):
+        if not callable(getattr(history_store, method, None)):
+            return _error(503, "oracle_mesh_unconfigured")
+    if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
+        return _error(503, "oracle_mesh_unconfigured")
+
+    selected = wire.get("device_id")
+    if selected is not None and (not isinstance(selected, str) or not selected):
+        return _error(422, "oracle_mesh_device_invalid")
+    parsed = _parse_desktop_op_text(desktop_op)
+    if parsed is None:
+        return _error(422, "oracle_mesh_desktop_op_invalid")
+    op, arg = parsed
+    canonical_op = "desktop:" + op + ("" if arg is None else "\n" + arg)
+
+    try:
+        scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
+    except Exception as exc:
+        emit_stage_event(
+            stage="mesh.desktop_owner_scope", outcome="error", duration_ms=0,
+            code=getattr(exc, "code", None),
+        )
+        return _error(503, "oracle_mesh_device_directory_unavailable")
+    account_ref = scope.get("account_ref") if isinstance(scope, dict) else None
+    connector_workspace_ref = scope.get("workspace_ref") if isinstance(scope, dict) else None
+    if (
+        not isinstance(account_ref, str) or not account_ref
+        or not isinstance(connector_workspace_ref, str) or not connector_workspace_ref
+    ):
+        return _error(503, "oracle_mesh_device_directory_unavailable")
+
+    try:
+        run_row = await history_store.get_claw_run(uid, wire["run_id"])
+    except Exception:
+        return _error(503, "oracle_mesh_run_unavailable")
+    if (
+        not isinstance(run_row, dict)
+        or run_row.get("run_id") != wire["run_id"]
+        or run_row.get("workspace_id") != workspace_id
+        or not isinstance(run_row.get("conversation_id"), str)
+        or not run_row["conversation_id"]
+    ):
+        return _error(404, "oracle_mesh_run_unavailable")
+
+    target = mesh_source.command_target(account_ref=account_ref, device_id=selected)
+    if target is None:
+        return _error(403, "oracle_mesh_command_unverified")
+
+    try:
+        bound = await history_store.get_local_task_correlation(uid, wire["run_id"])
+    except Exception:
+        bound = None
+    broker_admitted = (
+        isinstance(bound, dict)
+        and all(isinstance(bound.get(name), str) and bound[name] for name in (
+            "command_id", "tool_request_ref", "request_id",
+            "revision_ref", "request_fingerprint",
+        ))
+    )
+    if broker_admitted:
+        cmd_id = bound["command_id"]
+        tool_request_ref = bound["tool_request_ref"]
+        request_id = bound["request_id"]
+        revision_ref = bound["revision_ref"]
+        evidence_ref = bound.get("evidence_ref")
+        request_fingerprint = bound["request_fingerprint"]
+    else:
+        suffix = uuid.uuid4().hex
+        cmd_id = "oracle_mesh_cmd_" + suffix
+        tool_request_ref = "oracle_mesh_tool_" + suffix
+        request_id = "oracle_mesh_req_" + suffix
+        revision_ref = "oracle_mesh_rev_" + suffix
+        evidence_ref = None
+        # The op is part of the correlation: a different op for the same run
+        # is a different request, never a silent retarget.
+        request_fingerprint = hashlib.sha256(
+            (account_ref + "|" + target["node_ref"] + "|" + canonical_op).encode("utf-8")
+        ).hexdigest()
+
+    now = datetime.now(timezone.utc)
+    try:
+        dispatch = await history_store.create_oracle_mesh_dispatch(
+            user_id=uid,
+            run_id=wire["run_id"],
+            command_id=cmd_id,
+            tool_request_ref=tool_request_ref,
+            request_id=request_id,
+            revision_ref=revision_ref,
+            evidence_ref=evidence_ref,
+            request_fingerprint=request_fingerprint,
+            account_ref=account_ref,
+            workspace_ref=connector_workspace_ref,
+            device_id=target.get("device_id") or target["node_ref"],
+            binding_ref=None,
+            node_ref=target["node_ref"],
+            root_ref=_COMMAND_ROOT_REF,
+            path_relative=_COMMAND_PATH_RELATIVE,
+            file_path=_COMMAND_FILE_SENTINEL,
+            expires_at=(now + _DISPATCH_TTL).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
+            kind="desktop",
+            command_text=canonical_op,
+        )
+    except HistoryForbidden:
+        return _error(404, "oracle_mesh_run_unavailable")
+    except HistoryError as exc:
+        if str(exc) == "oracle mesh dispatch row exceeds the storage row bound":
+            return _error(413, "oracle_mesh_dispatch_too_large")
+        if str(exc) == "oracle mesh command execution is uncertain":
+            # A desktop input may already have mutated the PC. A second
+            # execution is never attempted; the state is reported instead.
+            return _error(409, "oracle_mesh_command_uncertain")
+        return _error(409, "oracle_mesh_dispatch_refused")
+    except Exception:
+        return _error(503, "oracle_mesh_dispatch_unavailable")
+    return _response({
+        "ok": True,
+        "dispatch": {
+            "dispatch_id": dispatch["dispatch_id"],
+            "run_id": wire["run_id"],
+            "state": dispatch["state"],
+            "expires_at": dispatch["expires_at"],
+            "kind": "desktop",
+            "execution": "server_owned",
+            "broker_acknowledged": False,
+        },
+    })
+
+
 def _deployment_target_for(
     source: OracleMeshReturnSource, *, account_ref: str, device_id: str,
     root_ref: str, path_relative: str,
@@ -1033,6 +1275,149 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "command_text": pending.get("command_text"),
         },
     })
+
+
+def _verified_desktop_note(wire: dict[str, Any]) -> str | None:
+    """Revalidate a desktop observation note: short text, no control bytes."""
+    note = wire.get("content_utf8")
+    if not isinstance(note, str):
+        return None
+    try:
+        note.encode("utf-8")
+    except UnicodeEncodeError:
+        return None
+    if any(ord(ch) < 32 and ch not in "\n\r\t" for ch in note) or "\x7f" in note:
+        return None
+    return note
+
+
+def _verified_desktop_blob(
+    wire: dict[str, Any], max_bytes: int = _MAX_RESULT_BODY_BYTES,
+) -> bytes | bytearray | None:
+    """Revalidate a desktop screenshot blob, or ``b""`` when absent.
+
+    Returns None for a malformed blob. Absence (act ops) is ``b""``, never
+    an error: only a half-present blob is untrusted.
+    """
+    media = wire.get("content_blob_media_type")
+    encoded = wire.get("content_blob_base64")
+    digest = wire.get("content_blob_sha256")
+    size = wire.get("content_blob_bytes")
+    if media is None and encoded is None and digest is None and size is None:
+        return b""
+    if media != _DESKTOP_SCREENSHOT_MEDIA_TYPE:
+        return None
+    if not isinstance(encoded, str) or not encoded:
+        return None
+    if not isinstance(digest, str) or not digest:
+        return None
+    if isinstance(size, bool) or not isinstance(size, int):
+        return None
+    if size <= 0 or size > max_bytes:
+        return None
+    try:
+        raw = base64.b64decode(encoded, validate=True)
+    except ValueError:
+        return None
+    if len(raw) != size or hashlib.sha256(raw).hexdigest() != digest:
+        return None
+    if not raw.startswith(_DESKTOP_SCREENSHOT_MAGIC):
+        return None
+    return raw
+
+
+_DESKTOP_OP_LABELS = {
+    "capture": "화면 캡처",
+    "type": "문자 입력",
+    "keys": "키 입력",
+    "click": "마우스 클릭",
+}
+
+
+def _desktop_op_description(op: str, arg: str | None) -> str:
+    label = _DESKTOP_OP_LABELS.get(op, op)
+    if op == "keys" and arg:
+        return f"키 입력 ({arg})"
+    if op == "click" and arg:
+        return f"마우스 클릭 ({arg})"
+    return label
+
+
+def _desktop_head(dispatch: dict[str, Any], wire: dict[str, Any], op: str, arg: str | None) -> list[str]:
+    """The fixed head of one desktop message: what ran, how, what is known."""
+    lines = [
+        "COM1 데스크톱 " + _DESKTOP_OP_LABELS.get(op, op),
+        "동작: " + _desktop_op_description(op, arg),
+        "실행 방식: " + _DESKTOP_SHELL_LABEL,
+    ]
+    termination = wire["termination"]
+    if termination == "captured":
+        lines.append("종료 상태: 화면 관측 완료")
+    elif termination == "acted":
+        lines.append("종료 상태: 입력 전달 완료 (릴레이 연결·화면 확인 후 전송)")
+    elif termination == "desktop_unavailable":
+        lines.append("종료 상태: 데스크톱 응답 없음 (세션이 연결되지 않았거나 화면이 완성되지 않음)")
+    elif termination == "timed_out":
+        lines.append("종료 상태: 대기 시간 초과 (PC 입력의 도달을 확인하지 못함)")
+    elif termination == "not_executed":
+        lines.append("종료 상태: 실행되지 않음 (실행 경계에서 거부됨)")
+    elif termination == "output_too_large":
+        lines.append("종료 상태: 화면이 전송 한도를 초과")
+    else:
+        lines.append("종료 상태: " + str(termination))
+    return lines
+
+
+def _desktop_capture_content(
+    dispatch: dict[str, Any], wire: dict[str, Any], op: str, arg: str | None,
+    note: str, digest: str,
+) -> str:
+    """One conversation message for one real screen capture.
+
+    The message carries the observation and the owner-scoped retrieval
+    reference in a server-shaped marker line; the browser renders the image
+    from that same-origin path. The bytes live in the private original
+    store, pinned by the dispatch row.
+    """
+    lines = _desktop_head(dispatch, wire, op, arg)
+    lines.append("관측: " + note)
+    lines.append("SHA-256: " + digest)
+    lines.append(
+        _DESKTOP_ORIGINAL_MARKER_PREFIX + str(dispatch["dispatch_id"])
+    )
+    return "\n".join(lines)
+
+
+def _desktop_act_content(
+    dispatch: dict[str, Any], wire: dict[str, Any], op: str, arg: str | None,
+    note: str,
+) -> str:
+    """One conversation message for one delivered desktop input."""
+    lines = _desktop_head(dispatch, wire, op, arg)
+    lines.append("관측: " + note)
+    return "\n".join(lines)
+
+
+def _desktop_failed_content(
+    dispatch: dict[str, Any], wire: dict[str, Any], op: str, arg: str | None,
+    note: str,
+) -> str:
+    """A desktop turn that observed no success stays an explicit notice."""
+    lines = _desktop_head(dispatch, wire, op, arg)
+    if note:
+        lines.append("관측: " + note)
+    if wire["termination"] == "output_too_large":
+        lines.append(
+            "화면 본문은 전송 한도를 초과하여 전달되지 않았습니다. "
+            "원문이 서버에 보관되지 않았으므로 다시 조회할 수 없습니다. "
+            "한 번에 관측하는 화면 범위를 좁혀 다시 실행하십시오."
+        )
+    else:
+        lines.append(
+            "PC 화면·입력에 도달하지 못했습니다. "
+            "같은 입력을 반복하기 전에 화면 캡처로 현재 상태를 확인하십시오."
+        )
+    return "\n".join(lines)
 
 
 def _verified_result_text(
@@ -1346,7 +1731,8 @@ def _command_output_parts(output: str, limit: int) -> list[str]:
 
 async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     """Executor submit: secret + single-use nonce, verified, appended once."""
-    wire = await _read_body(request, _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES)
+    wire = await _read_body(request, _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
+                            optional=_RESULT_BLOB_KEYS)
     if wire is None:
         return _error(400, "oracle_mesh_invalid_body")
     if _ref(wire.get("dispatch_id"), 128) is None:
@@ -1356,17 +1742,20 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     if wire.get("termination") not in (
         "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
         "not_executed", "output_too_large",
+        "captured", "acted", "desktop_unavailable",
     ):
         return _error(400, "oracle_mesh_invalid_body")
     # #4139: a wait timeout and a console that never answered have NO observed
     # exit code. That is carried as null, never invented as 0; only a real
-    # "exited" run must report an integer.
+    # "exited" run must report an integer. A desktop turn never reports one
+    # at all — there is no console sentinel on that lane.
     if wire.get("exit_code") is None:
         # ``no_exit_code`` keeps the code unobserved: PowerShell records
         # $LASTEXITCODE only for a native program or script, so a cmdlet-only
         # pipeline answers completely without reporting a number.
         if wire.get("termination") not in (
             "timed_out", "no_reply", "no_exit_code", "not_executed",
+            "captured", "acted", "desktop_unavailable", "output_too_large",
         ):
             return _error(400, "oracle_mesh_invalid_body")
     elif isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
@@ -1413,9 +1802,30 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     #: conversation message can be split across deterministic message ids.
     command_output: str | None = None
     read_output: str | None = None
+    #: #4139 desktop lane: the verified observation note, the verified
+    #: screenshot bytes (None when the turn carries no image) and the op the
+    #: dispatch row ordered. Messages are built after the pin below.
+    desktop_note: str | None = None
+    desktop_blob: bytes | None = None
+    desktop_op: str | None = None
+    desktop_arg: str | None = None
     result_digest = wire["content_sha256"] if wire["content_bytes"] else _EMPTY_RESULT_SHA256
     result_size = wire["content_bytes"]
-    if dispatch.get("kind") == "command":
+    if dispatch.get("kind") != "desktop" and any(
+        key in wire for key in _RESULT_BLOB_KEYS
+    ):
+        # Screenshot evidence on a non-desktop turn is untrusted by shape.
+        # The consumed dispatch still closes as failed and nothing reaches
+        # the conversation; an identical resend pins the same digest and
+        # lands on the same verdict instead of appending twice.
+        outcome = "failed"
+        summary = "untrusted-result"
+        status = "failed"
+        content = (
+            "실행 결과를 검증하지 못했습니다. "
+            "사유: 결과 무결성 불일치."
+        )
+    elif dispatch.get("kind") == "command":
         # #4139 terminal lane. The body is the command output, verified with the
         # same UTF-8/SHA rules; the exit code is whatever the PC reported, and a
         # console that never answered stays "확인되지 않음". A large output is
@@ -1460,6 +1870,76 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                 outcome = "failed"
                 summary = str(wire["termination"])
                 status = "failed"
+    elif dispatch.get("kind") == "desktop":
+        # #4139 desktop lane. The note is the observation text, verified with
+        # the same text rules; the screenshot (captures only) is verified
+        # beside it with its own digest. A desktop turn never reports an exit
+        # code — there is no console sentinel on this lane — so a non-null
+        # code is untrusted. The pin covers the screenshot when one is
+        # present, else the note, matching what the executor pinned first.
+        parsed = _parse_desktop_op_text(dispatch.get("command_text"))
+        verified_note = _verified_desktop_note(wire)
+        verified_blob = _verified_desktop_blob(wire)
+        if (
+            parsed is None
+            or verified_note is None
+            or verified_blob is None
+            or wire.get("exit_code") is not None
+        ):
+            outcome = "failed"
+            summary = "untrusted-result"
+            status = "failed"
+            content = (
+                "데스크톱 실행 결과를 검증하지 못했습니다. "
+                "사유: 결과 무결성 불일치."
+            )
+        else:
+            blob = bytes(verified_blob)
+            note_raw = verified_note.encode("utf-8")
+            if blob:
+                pinned_ok = (
+                    wire["content_sha256"] == hashlib.sha256(blob).hexdigest()
+                    and wire["content_bytes"] == len(blob)
+                )
+            else:
+                pinned_ok = (
+                    wire["content_sha256"] == hashlib.sha256(note_raw).hexdigest()
+                    and wire["content_bytes"] == len(note_raw)
+                )
+            if not pinned_ok:
+                outcome = "failed"
+                summary = "untrusted-result"
+                status = "failed"
+                content = (
+                    "데스크톱 실행 결과를 검증하지 못했습니다. "
+                    "사유: 결과 무결성 불일치."
+                )
+            else:
+                desktop_op, desktop_arg = parsed
+                desktop_note = verified_note
+                desktop_blob = blob if blob else None
+                if wire["termination"] == "captured" and blob:
+                    outcome, summary, status = "done", "captured", "completed"
+                    content = ""
+                elif wire["termination"] == "acted" and not blob:
+                    outcome, summary, status = "done", "acted", "completed"
+                    content = ""
+                elif wire["termination"] in (
+                    "desktop_unavailable", "timed_out", "not_executed",
+                    "output_too_large",
+                ):
+                    outcome = "failed"
+                    summary = str(wire["termination"])
+                    status = "failed"
+                    content = ""
+                else:
+                    outcome = "failed"
+                    summary = "untrusted-result"
+                    status = "failed"
+                    content = (
+                        "데스크톱 실행 결과를 검증하지 못했습니다. "
+                        "사유: 결과 무결성 불일치."
+                    )
     elif wire["termination"] == "exited" and wire["exit_code"] == 0:
         verified_text = _verified_result_text(dispatch, wire)
         if verified_text is None:
@@ -1649,6 +2129,55 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             messages = [_file_read_stored_content(dispatch, wire, read_output)]
         else:
             messages = _file_read_part_messages(output_parts)
+    elif desktop_note is not None and desktop_op is not None:
+        # #4139 desktop lane. A capture stores its screenshot bytes first:
+        # "stored" is claimed only after the put succeeds, never before. An
+        # input or failed turn carries its note directly; notes are short by
+        # construction (executor observations, never file bodies).
+        if desktop_blob is not None:
+            if not callable(getattr(
+                history_store, "store_oracle_mesh_original_bytes", None
+            )):
+                return _error(503, "oracle_mesh_unconfigured")
+            try:
+                await history_store.store_oracle_mesh_original_bytes(
+                    user_id=dispatch["user_id"],
+                    dispatch_id=wire["dispatch_id"],
+                    conversation_id=conversation_id,
+                    message_id=base_message_id,
+                    raw=desktop_blob,
+                    media_type=_DESKTOP_SCREENSHOT_MEDIA_TYPE,
+                    expected_sha256=result_digest,
+                    expected_bytes=result_size,
+                )
+            except HistoryForbidden:
+                try:
+                    await history_store.finish_oracle_mesh_dispatch(
+                        dispatch_id=wire["dispatch_id"], outcome="failed",
+                    )
+                except Exception:
+                    pass
+                return _error(403, "oracle_mesh_conversation_forbidden")
+            except Exception:
+                try:
+                    await history_store.mark_oracle_mesh_store_failed(
+                        dispatch_id=wire["dispatch_id"],
+                    )
+                except Exception:
+                    pass
+                return _error(503, "oracle_mesh_original_unavailable")
+            messages = [_desktop_capture_content(
+                dispatch, wire, desktop_op, desktop_arg,
+                desktop_note, result_digest,
+            )]
+        elif summary in ("acted",):
+            messages = [_desktop_act_content(
+                dispatch, wire, desktop_op, desktop_arg, desktop_note,
+            )]
+        else:
+            messages = [_desktop_failed_content(
+                dispatch, wire, desktop_op, desktop_arg, desktop_note,
+            )]
     else:
         messages = [content]
     appended = False
@@ -1768,6 +2297,16 @@ async def oracle_mesh_read_original(request: Request) -> Response:
     if stored is None:
         return _error(404, "oracle_mesh_original_unavailable")
     payload, pinned_sha = stored
+    if dispatch.get("kind") == "desktop":
+        # A desktop capture serves its screenshot bytes. The pin already
+        # binds these exact bytes; the magic is rechecked so a non-image can
+        # never leave through the image path.
+        if not payload.startswith(_DESKTOP_SCREENSHOT_MAGIC):
+            return _error(503, "oracle_mesh_original_unavailable")
+        return Response(
+            payload, media_type="image/jpeg",
+            headers={**_NO_STORE, "X-Oracle-Mesh-Content-SHA256": pinned_sha},
+        )
     try:
         text = payload.decode("utf-8")
     except UnicodeDecodeError:
@@ -1775,4 +2314,111 @@ async def oracle_mesh_read_original(request: Request) -> Response:
     return Response(
         text, media_type="text/plain; charset=utf-8",
         headers={**_NO_STORE, "X-Oracle-Mesh-Content-SHA256": pinned_sha},
+    )
+
+
+async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
+    """Engine-only authenticated desktop dispatch; browser cookies never act as proof.
+
+    A signed call carries only an owner session reference and existing run id.
+    Control Plane must resolve the current session independently before the
+    existing owner-scoped desktop dispatch may run.
+    """
+    import hmac
+    import hashlib
+    import time
+
+    secret = getattr(request.app.state, "claw_engine_desktop_secret", None)
+    if not isinstance(secret, str) or len(secret) < 32:
+        return _error(503, "claw_engine_desktop_unconfigured")
+    raw = await request.body()
+    if len(raw) > 8192:
+        return _error(413, "claw_engine_desktop_invalid_body")
+    timestamp = request.headers.get("X-Claw-Engine-Time", "")
+    signature = request.headers.get("X-Claw-Engine-Proof", "")
+    try:
+        seconds = int(timestamp)
+    except (ValueError, TypeError):
+        return _error(401, "claw_engine_proof_required")
+    if abs(int(time.time()) - seconds) > 60 or not isinstance(signature, str) or len(signature) != 64:
+        return _error(401, "claw_engine_proof_required")
+    expected = hmac.new(secret.encode("utf-8"), timestamp.encode("ascii") + b"." + raw, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(signature, expected):
+        return _error(401, "claw_engine_proof_required")
+    try:
+        payload = json.loads(raw)
+    except (ValueError, TypeError):
+        return _error(400, "claw_engine_desktop_invalid_body")
+    status_query = isinstance(payload, dict) and payload.get("mode") == "status"
+    expected_keys = (
+        {"subject_id", "run_id", "dispatch_id", "mode"} if status_query
+        else {"subject_id", "run_id", "device_id", "desktop_op"}
+    )
+    if (not isinstance(payload, dict)
+        or set(payload) != expected_keys
+        or not all(
+            isinstance(payload[k], str) and 0 < len(payload[k]) <= 512
+            for k in ("subject_id", "run_id")
+        )
+        or (status_query and (not isinstance(payload["dispatch_id"], str)
+            or not 0 < len(payload["dispatch_id"]) <= 128))
+        or (not status_query and (
+            not isinstance(payload["desktop_op"], str)
+            or not 0 < len(payload["desktop_op"]) <= 512
+            or (payload["device_id"] is not None and (
+                not isinstance(payload["device_id"], str)
+                or not 0 < len(payload["device_id"]) <= 128))))):
+        return _error(400, "claw_engine_desktop_invalid_body")
+    identity = getattr(request.app.state, "control_plane_identity_authority", None)
+    if (not callable(getattr(identity, "resolve_product_user_for_subject", None))
+        or not callable(getattr(identity, "resolve_current_auth_session", None))):
+        return _error(503, "claw_engine_identity_unavailable")
+    try:
+        uid = await identity.resolve_product_user_for_subject(
+            product_id="b54-padiem-claw",
+            canonical_subject_id=payload["subject_id"],
+        )
+        session = await identity.resolve_current_auth_session(
+            product_id="b54-padiem-claw", product_user_id=uid,
+        )
+    except Exception:
+        return _error(401, "canonical_session_required")
+    from datetime import datetime, timezone
+    if (session is None or session.subject.subject_id != payload["subject_id"]
+        or session.product_id != "b54-padiem-claw"
+        or not session.is_active(now=datetime.now(timezone.utc))
+        or not session.tenant_id):
+        return _error(401, "canonical_session_required")
+    if status_query:
+        history_store = getattr(request.app.state, "history_store", None)
+        reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
+        if not callable(reader):
+            return _error(503, "oracle_mesh_unconfigured")
+        try:
+            dispatch = await reader(
+                user_id=uid, dispatch_id=payload["dispatch_id"],
+            )
+        except Exception:
+            return _error(503, "oracle_mesh_dispatch_unavailable")
+        if (not isinstance(dispatch, dict)
+            or dispatch.get("run_id") != payload["run_id"]
+            or dispatch.get("kind") != "desktop"):
+            return _error(404, "oracle_mesh_run_unavailable")
+        state = dispatch.get("state")
+        if state not in {"pending", "received", "store_failed", "done", "failed"}:
+            return _error(503, "oracle_mesh_dispatch_unavailable")
+        return _response({
+            "ok": True,
+            "dispatch": {
+                "dispatch_id": dispatch["dispatch_id"],
+                "run_id": payload["run_id"],
+                "kind": "desktop",
+                "state": state,
+                "result_sha256": dispatch.get("result_sha256"),
+            },
+        })
+    return await dispatch_oracle_mesh_desktop_intent(
+        request, desktop_op=payload["desktop_op"],
+        wire={"run_id": payload["run_id"], "device_id": payload["device_id"], "confirmed": True},
+        trusted_owner=(session, uid, session.tenant_id),
     )

@@ -414,6 +414,8 @@ class P01RequestFactory:
         subject_id: str | None = None,
         selected_model_id: str | None = None,
         additional_system_context: str | None = None,
+        desktop_capture: bool = False,
+        desktop_device_id: str | None = None,
     ) -> P01RequestBundle:
         if run.terminal:
             raise P01AdapterError(
@@ -475,11 +477,34 @@ class P01RequestFactory:
             idempotency_key=None,
             timeout_seconds=self._timeout_seconds,
         )
+        desktop_plan = None
+        desktop_arguments = None
+        if desktop_capture:
+            if not subject_id:
+                raise P01AdapterError(
+                    "desktop_owner_required",
+                    "Desktop capture requires a verified canonical owner.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                )
+            from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
+            desktop_plan = AgentPlan(
+                agent_id="agent:padiem:claw-desktop@1",
+                steps=(AgentPlanStep(
+                    step_id="capture", objective="Observe the verified PC screen",
+                    tool_id="claw.desktop.capture",
+                ),),
+            )
+            desktop_arguments = {"capture": (
+                {"device_id": desktop_device_id}
+                if desktop_device_id is not None else {"use_pinned_device": True}
+            )}
         orchestration_request = OrchestrationRequest(
             execution_request=execution_request,
             context=context,
             app_id=P01_APP_ID,
             subject_id=subject_id,
+            agent_plan=desktop_plan,
+            tool_arguments=desktop_arguments,
         )
         return P01RequestBundle(
             execution_request=execution_request,
@@ -718,6 +743,8 @@ class P01CoreOrchestrationAdapter:
         subject_id: str | None = None,
         selected_model_id: str | None = None,
         additional_system_context: str | None = None,
+        desktop_capture: bool = False,
+        desktop_device_id: str | None = None,
         on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
@@ -728,6 +755,8 @@ class P01CoreOrchestrationAdapter:
                 subject_id=subject_id,
                 selected_model_id=selected_model_id,
                 additional_system_context=additional_system_context,
+                desktop_capture=desktop_capture,
+                desktop_device_id=desktop_device_id,
             )
             projector = ClawOrchestrationProjector(
                 run,
