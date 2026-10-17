@@ -23,7 +23,7 @@ from padiem_control_plane.product_tier_routes import (
     get_tier,
 )
 
-CAT_JAM = "opencode-go/cat-jam-free"
+CAT_JAM = "opencode-go/beam-free"
 
 
 def test_plus_identity_is_executable_cat_jam_and_space_bunny_is_historical_only() -> None:
