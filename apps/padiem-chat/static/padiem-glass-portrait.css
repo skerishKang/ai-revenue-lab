@@ -179,6 +179,18 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   gap: 12px !important;
   column-gap: 12px !important;
 }
+/* Live proof (2026-10-17, chat.padiem.net): padiem-chat-ui-polish.css keeps
+ * indenting the chat user turn with
+ * padding-left:clamp(34px,7vw,88px)!important at EQUAL specificity, so it wins
+ * on later source order and the user's avatar/text sit 88px right of the
+ * answer's (measured: user-avatar x=443 vs answer x=355 at 1683px viewport).
+ * The repeated class below beats it on specificity alone, independent of
+ * sheet order. Values mirror the answer's measured box (padding 3px 0 0, no
+ * margin). Glass theme, chat state only — claw state is already aligned. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message.user-message {
+  padding: 3px 0 0 !important;
+  margin: 0 !important;
+}
 /* The plate: claw default first, then the chat state's own values. */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar {
   grid-column: 1;
