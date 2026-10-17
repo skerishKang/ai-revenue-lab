@@ -38,7 +38,7 @@ def test_guest_cannot_read_models_or_contact_authority(monkeypatch):
 
 def test_free_member_sees_only_registered_free_choices(monkeypatch):
     rows = [
-        {"model_id": "opencode-go/cat-jam-free", "name": "Cat Jam Free"},
+        {"model_id": "opencode-go/beam-free", "name": "Cat Jam Free"},
         {"model_id": "google/gemini-3.1-flash-lite", "name": "Gemini 3.1 Flash Lite"},
         {"model_id": "google/gemini-3.5-flash-lite", "name": "Gemini 3.5"},
     ]
@@ -53,7 +53,7 @@ def test_free_member_sees_only_registered_free_choices(monkeypatch):
     assert second.json()["scope"] == "b14_owner_allowed_live_ready"
     assert second.json()["automatic_default"] is False
     assert [x["model_id"] for x in second.json()["model_choices"]] == [
-        "opencode-go/cat-jam-free", "google/gemini-3.1-flash-lite"]
+        "opencode-go/beam-free", "google/gemini-3.1-flash-lite"]
     assert all(x["product_name_prefix"] == "파디엠프리" for x in second.json()["model_choices"])
     assert refused.status_code == 403
     assert refused.json()["error"]["code"] == "tier_not_available"
