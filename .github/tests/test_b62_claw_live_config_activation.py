@@ -1648,6 +1648,13 @@ def test_oracle_mesh_mode_verify_accepts_only_the_one_variable_change() -> None:
         raise AssertionError("an unapproved mode must fail the verify")
 
 
+def test_oracle_mesh_mode_verify_accepts_unchanged_off_readback() -> None:
+    helper = _load_helper()
+    before = _settings(_mesh_bindings("off"))
+    after = _settings(_mesh_bindings("off"))
+    helper.verify_oracle_mesh_mode(after, mode="off", pre_payload=before)
+
+
 def test_oracle_mesh_mode_rollback_requires_the_explicit_flag() -> None:
     helper = _load_helper()
     snapshot = _settings(_mesh_bindings())
