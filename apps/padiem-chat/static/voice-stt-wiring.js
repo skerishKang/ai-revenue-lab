@@ -567,7 +567,8 @@
       if (stopped) return Promise.resolve("");
       const sequence = ++identityRefreshSeq;
       const pending = refreshIdentity().then(function (key) {
-        if (!stopped && sequence === identityRefreshSeq) announceIdentity(key);
+        if (stopped || sequence !== identityRefreshSeq) return "";
+        announceIdentity(key);
         return key;
       });
       return pending;
