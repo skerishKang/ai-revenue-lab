@@ -24,6 +24,7 @@ from .upstream_answer_contract import UpstreamEmptyAnswer
 # Owner-approved Go models; additions must keep their official wire protocol.
 _WIRE = {
     "cat-jam-free": "chat/completions",
+    "beam-free": "chat/completions",
     "longcat-2.5-preview-free": "chat/completions",
     "step-5-preview-free": "chat/completions",
     "muse-spark-1.3-contributor": "responses",
