@@ -117,7 +117,7 @@ async def test_valid_live_image_attachment_fails_closed_without_primary_model(
             },
         )
 
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset({"opencode-go/cat-jam-free"})
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset({"opencode-go/beam-free"})
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "image_model_unavailable"
     assert calls == 0
