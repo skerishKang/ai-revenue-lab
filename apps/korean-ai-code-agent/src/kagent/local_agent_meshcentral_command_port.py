@@ -14,7 +14,8 @@ Two facts drive this module:
   "the request was accepted" and never defaulted to 0.
 * A console that never answers produces NO transcript at all. That is a real
   outcome (``no_reply`` / ``timed_out``) with an unobserved exit code, never a
-  silent success.
+  silent success. A console that answers with the sentinel but no number is
+  ``no_exit_code``: the output is complete and the code stays unobserved.
 
 The bytes returned here are the PC output verbatim, including CR/LF and any
 leading/trailing whitespace, minus the sentinel line this module itself added.
@@ -64,7 +65,10 @@ class MeshCentralCommandRefused(ValueError):
 class MeshCentralCommandOutcome:
     """What one real command run produced, exactly as observed."""
 
-    termination: str  # "exited" | "timed_out" | "no_reply" | "output_too_large"
+    #: "exited" | "timed_out" | "no_reply" | "no_exit_code" | "output_too_large"
+    #: no_reply means the console never answered; no_exit_code means it answered
+    #: completely and PowerShell had no code to report.
+    termination: str
     exit_code: int | None
     output: bytes
     method: str = METHOD_LABEL
@@ -164,9 +168,13 @@ def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
     # Drop the sentinel line (and the newline that ended it) from the output.
     output = data[:start] + (data[end + 1:] if end < len(data) else b"")
     if raw_code is None:
-        # The sentinel printed an empty value: no exit code was observed, so the
-        # run is not an "exited" outcome and must not be reported as one.
-        return "no_reply", None, output
+        # The sentinel printed an empty value. That is not a console that never
+        # answered: PowerShell records `$LASTEXITCODE` only for "the exit code of
+        # the last native program or PowerShell script that ran" (Microsoft,
+        # about_Automatic_Variables), so a pipeline made only of cmdlets and .NET
+        # calls leaves it empty while still returning its whole output. The code
+        # stays unobserved here and is never turned into 0.
+        return "no_exit_code", None, output
     return "exited", int(raw_code), output
 
 

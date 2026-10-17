@@ -278,8 +278,10 @@ class OracleMeshExecutor:
         """#4139 terminal lane: run the command the server put in the dispatch.
 
         The exit code is whatever the PC reported through the sentinel. When no
-        code was observed the outcome says so (``no_reply`` / ``timed_out``)
-        instead of borrowing the shell's own success.
+        code was observed the outcome says so (``no_reply`` for no console
+        answer, ``timed_out`` for a wait that expired, ``no_exit_code`` for a
+        complete console answer whose ``$LASTEXITCODE`` was empty) instead of
+        borrowing the shell's own success.
         """
         if self._command_port is None:
             # A command dispatch on an executor that was not composed with a
@@ -291,10 +293,20 @@ class OracleMeshExecutor:
                 command=dispatch.command_text or "",
                 timeout_seconds=max(1, self._timeout * 2),
             )
-        except Exception:
+        except Exception as exc:
+            if type(exc).__name__ == "MeshCentralCommandRefused":
+                # The port refused before the PC was asked. Collapsing that into
+                # ``no_reply`` would report a silent console for a command that
+                # never ran, so the two observations stay separate.
+                return OracleMeshExecutionOutcome(
+                    termination="not_executed", exit_code=None, body=b"",
+                )
             return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
         termination = getattr(observed, "termination", "no_reply")
-        if termination not in ("exited", "timed_out", "no_reply", "output_too_large"):
+        if termination not in (
+            "exited", "timed_out", "no_reply", "no_exit_code", "not_executed",
+            "output_too_large",
+        ):
             termination = "no_reply"
         exit_code = getattr(observed, "exit_code", None)
         if isinstance(exit_code, bool) or not isinstance(exit_code, int):
@@ -639,7 +651,10 @@ class OracleMeshExecutor:
             ):
                 raise ValueError("pending command has no command")
             termination = meta.get("termination")
-            if termination not in ("exited", "cancelled", "timed_out", "no_reply", "output_too_large"):
+            if termination not in (
+                "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
+                "not_executed", "output_too_large",
+            ):
                 raise ValueError("pending termination is unknown")
             exit_code = meta.get("exit_code")
             if exit_code is not None and (

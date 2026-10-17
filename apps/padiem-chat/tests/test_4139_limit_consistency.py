@@ -108,22 +108,43 @@ def test_dispatch_row_accepts_a_multiline_utf8_command_over_the_old_cap(tmp_path
 
 
 def test_dispatch_row_still_refuses_what_breaks_the_lane(tmp_path):
+    """The refusals are structural, not a product length rule."""
     store, _bucket = fixture(tmp_path)
     _stage_run(store, "run-limit-2")
-    for bad in ("", "a\x00b", "a\rb", "\x07 beep", "x" * 100_001):
+    for bad in ("", "a\x00b", "a\rb", "\x07 beep", "x" * 2_500_000):
         with pytest.raises(HistoryError):
             asyncio.run(store.create_oracle_mesh_dispatch(
                 **_dispatch_kwargs(run_id="run-limit-2", command_text=bad)
             ))
 
 
+def test_a_command_above_the_old_100k_statement_guess_is_stored(tmp_path):
+    """D1's 100,000-byte ceiling is the SQL statement text, not a bound value.
+
+    The command travels as a parameter, so the ceiling that binds it is the
+    documented 2,000,000-byte string/row size. A 220 KB command is ordinary
+    input and must reach the executor leg unchanged.
+    """
+    store, _bucket = fixture(tmp_path)
+    _stage_run(store, "run-limit-3")
+    command = "Get-Content 'C:\\a.txt'\n" * 10_000
+    assert 100_000 < len(command.encode("utf-8")) < 2_000_000
+    asyncio.run(store.create_oracle_mesh_dispatch(
+        **_dispatch_kwargs(run_id="run-limit-3", command_text=command)
+    ))
+    handed = asyncio.run(store.oldest_pending_oracle_mesh_dispatch())
+    assert handed["command_text"] == command
+
+
 def test_a_command_larger_than_the_row_bound_is_refused_by_name(monkeypatch):
+    """Refusal happens at the storage ceiling, named, and nothing is written."""
     setup_auth(monkeypatch)
     state = _state()
-    status, body, _ = _dispatch(state, command="x" * 100_001)
+    status, body, _ = _dispatch(state, command="x" * 150_000)
+    assert status == 200, body
+    status, body, _ = _dispatch(state, command="x" * 2_100_000)
     assert status == 413
-    assert body["error"]["code"] == "oracle_mesh_command_too_large"
-    assert state.history_store.rows == {}
+    assert body["error"]["code"] == "oracle_mesh_dispatch_too_large"
 
 
 def test_a_long_korean_path_survives_the_map_and_the_validator():

@@ -68,10 +68,18 @@ class TranscriptParsingTests(unittest.TestCase):
         self.assertEqual((termination, exit_code), ("no_reply", None))
         self.assertEqual(output, b"partial output")
 
-    def test_sentinel_without_a_number_is_not_an_exit_code(self):
-        raw = ("x\n" + EXIT_SENTINEL + "\n\n").encode("utf-8")
-        termination, exit_code, _ = parse_transcript(raw)
+    def test_marker_with_a_non_numeric_value_is_not_read_as_an_answer(self):
+        """The three observations are distinct and none of them invents a code.
+
+        No marker at all is a console that never answered; a marker whose value
+        is empty is a complete answer with an unobserved code (see the parsing
+        test below); a marker line that is neither is not a transcript we can
+        trust, so it keeps its bytes and reports no exit code.
+        """
+        raw = ("x\n" + EXIT_SENTINEL + "$LASTEXITCODE\n").encode("utf-8")
+        termination, exit_code, output = parse_transcript(raw)
         self.assertEqual((termination, exit_code), ("no_reply", None))
+        self.assertIn(EXIT_SENTINEL.encode(), output)
 
     def test_empty_transcript_is_no_reply(self):
         self.assertEqual(parse_transcript(b""), ("no_reply", None, b""))
@@ -154,10 +162,10 @@ class CommandPortTests(unittest.TestCase):
         self.assertTrue(run_arg.startswith(korean_path))
         # A multi-line command keeps its newlines and still gets the sentinel.
         multi = "echo one\necho two"
-        port = _port(_Completed(0, ("one\ntwo\n" + EXIT_SENTINEL + "\n\n").encode()))
+        port = _port(_Completed(0, ("one\ntwo\n" + EXIT_SENTINEL + "0\n\n").encode()))
         outcome = port.run_command(node_ref=NODE, command=multi, timeout_seconds=45)
-        self.assertEqual(outcome.termination, "no_reply")
-        self.assertIsNone(outcome.exit_code)
+        self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 0))
+        self.assertEqual(outcome.output, b"one\ntwo\n")
 
     def test_command_refuses_nul_and_carriage_return_only(self):
         port = _port(_Completed(0, b""))
@@ -209,6 +217,55 @@ class CommandPortTests(unittest.TestCase):
         )
         self.assertEqual(outcome.termination, "exited")
         self.assertEqual(len(calls), 1)
+
+    def test_sentinel_without_a_code_is_not_called_a_silent_console(self):
+        """`$LASTEXITCODE` is only set for a native program or script.
+
+        A cmdlet-only pipeline answers completely and reports no number, which
+        is a different observation from a console that never answered, and is
+        never a 0.
+        """
+        transcript = ("line one\nline two\n" + EXIT_SENTINEL + "\n").encode()
+        termination, code, output = parse_transcript(transcript)
+        self.assertEqual((termination, code), ("no_exit_code", None))
+        self.assertEqual(output, b"line one\nline two\n")
+        # The genuinely silent case still says so.
+        silent = parse_transcript(b"line one\nline two\n")
+        self.assertEqual((silent[0], silent[1]), ("no_reply", None))
+
+    def test_executor_passes_the_unobserved_code_through_unchanged(self):
+        """The executor neither invents a code nor calls the answer silent."""
+        from kagent.local_agent_meshcentral_command_port import (
+            MeshCentralCommandOutcome,
+        )
+
+        port = _FakeCommandPort(MeshCentralCommandOutcome(
+            termination="no_exit_code", exit_code=None, output=b"full answer\n",
+        ))
+        outcome = _executor(command_port=port, read_port=_ReadPort()).execute(
+            _dispatch(command="Get-Date")
+        )
+        self.assertEqual(
+            (outcome.termination, outcome.exit_code, outcome.body),
+            ("no_exit_code", None, b"full answer\n"),
+        )
+
+    def test_a_command_refused_before_the_pc_is_not_a_silent_console(self):
+        from kagent.local_agent_meshcentral_command_port import (
+            MeshCentralCommandOutcome,
+        )
+
+        class _RefusingPort:
+            def run_command(self, *, node_ref, command, timeout_seconds):
+                raise MeshCentralCommandRefused(
+                    "the wrapped command exceeds the OS single-argument limit"
+                )
+
+        outcome = _executor(command_port=_RefusingPort(), read_port=_ReadPort()).execute(
+            _dispatch(command="x" * 200)
+        )
+        self.assertEqual((outcome.termination, outcome.exit_code), ("not_executed", None))
+        self.assertEqual(outcome.body, b"")
 
     def test_missing_credential_never_runs_the_client(self):
         calls = []
