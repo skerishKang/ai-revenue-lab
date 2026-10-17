@@ -88,6 +88,14 @@
   font-weight: 700;
 }
 
+/* Plan 4 user-turn extras (chip + hover-reveal actions): hidden everywhere
+ * by default so non-Glass themes render exactly as before. The Glass theme
+ * sheet reveals and lays them out for chat state only. */
+.user-profile-chip,
+.user-actions {
+  display: none;
+}
+
 @media (max-width: 700px) {
   .answer-action {
     width: 36px;
