@@ -67,6 +67,9 @@ def _issued(**overrides):
         root_ref="root.docs",
         path_relative=path_relative,
         now=NOW,
+        # The Chat issuance hardening requires the server-verified, per-device
+        # Resident profile path; the fixture supplies a canonical installed one.
+        executable_path=r"C:\Program Files\Padiem\resident.exe",
         **overrides,
     )
 
