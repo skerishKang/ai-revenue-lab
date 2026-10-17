@@ -329,7 +329,9 @@ def test_request_poll_real_read_result_reaches_the_same_conversation(monkeypatch
     assert submitted[0][0] == "/api/claw/connector/mesh-reads/result"
     assert len(history.appended) == 1
     appended = history.appended[0]
-    assert appended["content"] == "PC 파일 읽기 결과:\n" + TEXT
+    assert appended["content"] == (
+        "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n" + TEXT + "\n--- 출력 끝 ---"
+    )
     assert appended["message_id"] == result_message_id(
         conversation_id=CONVERSATION,
         command_id=granted["command_id"], revision_ref=granted["revision_ref"],
@@ -386,7 +388,9 @@ def test_store_failure_allows_resending_the_same_result(monkeypatch):
     assert retry_status == 200 and retry["claim"] == "retry"
     assert retry["status"] == "completed"
     assert len(history.appended) == 1
-    assert history.appended[0]["content"] == "PC 파일 읽기 결과:\n" + TEXT
+    assert history.appended[0]["content"] == (
+        "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n" + TEXT + "\n--- 출력 끝 ---"
+    )
     assert history.rows[dispatch_id]["state"] == "done"
 
 
@@ -520,7 +524,9 @@ def test_resend_with_different_bytes_is_refused(monkeypatch):
         Request(result_body(dispatch_id, nonce), state(history=history), secret=SECRET),
     )
     assert ok_status == 200 and ok["claim"] == "retry"
-    assert history.appended[0]["content"] == "PC 파일 읽기 결과:\n" + TEXT
+    assert history.appended[0]["content"] == (
+        "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n" + TEXT + "\n--- 출력 끝 ---"
+    )
 
 
 def test_executor_holds_the_result_across_a_store_failure(monkeypatch):
@@ -564,7 +570,9 @@ def test_executor_holds_the_result_across_a_store_failure(monkeypatch):
     assert delivered["ok"] is True and delivered["status"] == "completed"
     assert reads == [FILE_PATH]  # still one: the file was never read again
     assert executor.resend_pending is False
-    assert history.appended[0]["content"] == "PC 파일 읽기 결과:\n" + TEXT
+    assert history.appended[0]["content"] == (
+        "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n" + TEXT + "\n--- 출력 끝 ---"
+    )
 
 def test_mesh_lane_proceeds_without_a_native_consent_and_refuses_withdrawal(monkeypatch):
     """Consent existence is not a native precondition; withdrawal still is."""
@@ -844,7 +852,9 @@ def test_legacy_empty_success_is_reported_as_an_empty_file(monkeypatch):
                 state(history=history), secret=SECRET),
     )
     assert status == 200 and result["status"] == "completed"
-    assert history.appended[0]["content"] == "PC \ud30c\uc77c \uc77d\uae30 \uacb0\uacfc:\n(\ube48 \ud30c\uc77c)"
+    assert history.appended[0]["content"] == (
+        "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n(빈 파일)\n--- 출력 끝 ---"
+    )
 
 
 def test_pin_store_error_parks_and_identical_resend_succeeds(monkeypatch):
@@ -868,4 +878,6 @@ def test_pin_store_error_parks_and_identical_resend_succeeds(monkeypatch):
     )
     assert ok_status == 200 and ok["claim"] == "retry"
     assert len(history.appended) == 1
-    assert history.appended[0]["content"] == "PC \ud30c\uc77c \uc77d\uae30 \uacb0\uacfc:\n" + TEXT
+    assert history.appended[0]["content"] == (
+        "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n" + TEXT + "\n--- 출력 끝 ---"
+    )

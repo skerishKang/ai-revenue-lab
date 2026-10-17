@@ -111,16 +111,20 @@ def bounded_utf8_text(content: Any) -> str:
     return content
 
 
-def decode_bounded_utf8_content(content: Any) -> str:
+def decode_bounded_utf8_content(
+    content: Any, max_bytes: int = MAX_VERIFIED_TEXT_RESULT_BYTES,
+) -> str:
     """Decode the *actual bytes* read from the authorized file, or refuse.
 
     The bytes are the authority: a file that is not UTF-8, or that is larger
     than the bound, is refused rather than repaired, transcoded or truncated.
+    #4139: the bound is a parameter so the Mesh read lane can use the shared
+    6 MB wire envelope while the Windows Resident lane keeps its own.
     """
     if not isinstance(content, (bytes, bytearray)):
         raise VerifiedTextResultRefused("verified file read must return bytes")
     raw = bytes(content)
-    if len(raw) > MAX_VERIFIED_TEXT_RESULT_BYTES:
+    if len(raw) > max_bytes:
         raise VerifiedTextResultRefused("verified file text exceeds the bounded size")
     try:
         text = raw.decode("utf-8")
@@ -196,9 +200,10 @@ def build_verified_text_result(
     run_id: str,
     request_fingerprint: str,
     content: Any,
+    max_bytes: int = MAX_VERIFIED_TEXT_RESULT_BYTES,
 ) -> VerifiedTextResult:
     """Build the correlated result from the *bytes actually read*."""
-    text = decode_bounded_utf8_content(content)
+    text = decode_bounded_utf8_content(content, max_bytes)
     raw = text.encode("utf-8")
     return VerifiedTextResult(
         command_id=command_id,

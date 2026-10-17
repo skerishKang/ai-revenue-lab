@@ -45,6 +45,11 @@ from .local_agent_verified_text_result import (
     build_verified_text_result,
 )
 
+#: #4139 wire envelope for one file body: the same 6 MB the Claw request
+#: route already accepts for one user message. The former 768-byte trial cap
+#: could not read a normal document.
+MAX_READ_ENVELOPE_BYTES = 6_000_000
+
 #: Byte-identical to the producer's own ``safe_ref`` pattern.
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _MAX_FILE_PATH_CHARS = 512
@@ -152,7 +157,15 @@ class MeshCentralCliFileReadPort:
         self._command_runner = command_runner
 
     def read_bytes(
-        self, *, node_ref: str, file_path: str, timeout_seconds: int = 60
+        self,
+        *,
+        node_ref: str,
+        file_path: str,
+        timeout_seconds: int = 60,
+        #: #4139: the read lane no longer carries a trial-era byte cap. The
+        #: caller passes the wire envelope; an oversize read is refused whole
+        #: (never truncated) so the caller can report it explicitly.
+        max_bytes: int = MAX_READ_ENVELOPE_BYTES,
     ) -> bytes:
         request = MeshCentralFileReadRequest(node_ref=node_ref, file_path=file_path)
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, int):
@@ -188,13 +201,13 @@ class MeshCentralCliFileReadPort:
                     "the official meshcentral client refused the private read"
                 )
             try:
-                if os.path.getsize(target) > MAX_VERIFIED_TEXT_RESULT_BYTES:
+                if os.path.getsize(target) > max_bytes:
                     raise MeshCentralReadRefused(
                         "the read exceeds the bounded size and is refused, "
                         "never truncated"
                     )
                 with open(target, "rb") as staged:
-                    raw = staged.read(MAX_VERIFIED_TEXT_RESULT_BYTES + 1)
+                    raw = staged.read(max_bytes + 1)
             except FileNotFoundError:
                 raise MeshCentralReadRefused(
                     "the official meshcentral client wrote no staged read"
@@ -204,7 +217,7 @@ class MeshCentralCliFileReadPort:
                 os.remove(target)
             except OSError:
                 pass
-        if len(raw) > MAX_VERIFIED_TEXT_RESULT_BYTES:
+        if len(raw) > max_bytes:
             raise MeshCentralReadRefused(
                 "the read exceeds the bounded size and is refused, never truncated"
             )
@@ -259,6 +272,7 @@ class MeshCentralVerifiedTextReader:
         node_ref: str,
         file_path: str,
         timeout_seconds: int = 60,
+        max_bytes: int = MAX_READ_ENVELOPE_BYTES,
     ) -> VerifiedTextResult:
         """The one real read. The bytes are the authority; oversize refuses."""
 
@@ -266,6 +280,7 @@ class MeshCentralVerifiedTextReader:
             node_ref=_safe_ref(node_ref, "node_ref"),
             file_path=_windows_file_path(file_path),
             timeout_seconds=timeout_seconds,
+            max_bytes=max_bytes,
         )
         if not isinstance(raw, (bytes, bytearray)) or not raw:
             raise MeshCentralReadRefused(
@@ -275,6 +290,7 @@ class MeshCentralVerifiedTextReader:
         return build_verified_text_result(
             command_id=command_id, run_id=run_id,
             request_fingerprint=request_fingerprint, content=bytes(raw),
+            max_bytes=max_bytes,
         )
 
     def execute_verified_read(
@@ -289,6 +305,7 @@ class MeshCentralVerifiedTextReader:
         file_path: str,
         declare_timeout_seconds: int = 20,
         read_timeout_seconds: int = 60,
+        max_bytes: int = MAX_READ_ENVELOPE_BYTES,
     ) -> tuple[dict[str, Any], VerifiedTextResult]:
         """Declare pending first, then read and preserve the real bytes."""
 
@@ -303,6 +320,7 @@ class MeshCentralVerifiedTextReader:
             request_fingerprint=request_fingerprint,
             node_ref=node_ref, file_path=file_path,
             timeout_seconds=read_timeout_seconds,
+            max_bytes=max_bytes,
         )
         return stored, result
 

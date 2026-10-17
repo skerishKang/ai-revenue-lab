@@ -82,10 +82,35 @@ ORACLE_MESH_CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: How long one dispatch stays claimable/submittable.
 _DISPATCH_TTL = timedelta(seconds=600)
 _MAX_BODY_BYTES = 8192
+#: #4139 result envelope. The Claw request route already accepts a 6 MB
+#: body for one user message, so a command result is bounded by the same
+#: proven limit instead of a trial-era 8 KB.
+_MAX_RESULT_BODY_BYTES = 6_000_000
+#: One stored conversation message. Existing product bound
+#: (history.HistoryStore.MAX_HISTORY_MESSAGE_CHARS): a larger output is
+#: split across several messages, never truncated.
+_MAX_COMMAND_MESSAGE_CHARS = 8000
+#: Storage guard for one command result: 256 parts of 8 000 characters is
+#: ~2 MB of stored text. Beyond it the output is withheld with an explicit
+#: message instead of filling a conversation.
+_MAX_COMMAND_MESSAGE_PARTS = 256
+#: Headroom the message head (command, method, stream, exit state, markers)
+#: needs on top of an output chunk, so a stored message never exceeds the
+#: shared per-message bound.
+_COMMAND_HEADER_CHARS = 600
+#: A path or a command may contain Korean (or any non-ASCII) characters.
+#: The only forbidden characters are control characters.
+_MAX_PATH_VALUE_CHARS = 1024
 _SAFE_REF_CHARS = frozenset(
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:@+-"
 )
-_MAX_FILE_TEXT_BYTES = 768
+#: #4139 read lane envelope, shared with the command lane and the executor.
+#: The former 768-byte trial cap could not read a normal document; a larger
+#: body is split across conversation messages, never truncated.
+_MAX_FILE_TEXT_BYTES = _MAX_RESULT_BODY_BYTES
+#: #4139 command lane display limit is gone: an output larger than one
+#: conversation message is split, and an output larger than the wire
+#: envelope is reported as oversize. Nothing is silently dropped.
 _EXECUTOR = "oracle_management_host"
 #: #4139 terminal lane. A command dispatch has no file, so the 047 file
 #: columns carry these fixed, self-describing sentinels instead of a bogus
@@ -157,6 +182,13 @@ class OracleMeshReturnSource:
             row["command_exec"] = command_exec
             for name, value in row.items():
                 if name == "command_exec":
+                    continue
+                if name in ("path_relative", "file_path"):
+                    # A path is not a reference: Korean names are valid input.
+                    if _text_value(value) is None:
+                        raise TypeError(
+                            "oracle mesh ownership " + name + " must be bounded text"
+                        )
                     continue
                 if value is None:
                     # Only ``device_id`` is an optional pin: when it is absent
@@ -464,6 +496,21 @@ def _read_json(raw: bytes, keys: frozenset, limit: int = _MAX_BODY_BYTES) -> dic
     return value
 
 
+def _text_value(value: Any, limit: int = 1024) -> str | None:
+    """A path, a file name or a command: any language, no control characters.
+
+    Windows paths, Korean file names and UTF-8 commands are ordinary input, so
+    the ASCII-only reference alphabet does not apply here. The bound is length
+    plus "no control characters"; nothing else is restricted.
+    """
+    if (
+        not isinstance(value, str) or not value or len(value) > limit
+        or any(ord(ch) < 32 or ord(ch) == 127 for ch in value)
+    ):
+        return None
+    return value
+
+
 def _ref(value: Any, limit: int = 1024) -> str | None:
     if (
         not isinstance(value, str) or not value or len(value) > limit
@@ -473,19 +520,21 @@ def _ref(value: Any, limit: int = 1024) -> str | None:
     return value
 
 
-async def _read_body(request: Request, keys: frozenset) -> dict[str, Any] | None:
+async def _read_body(
+    request: Request, keys: frozenset, limit: int = _MAX_BODY_BYTES,
+) -> dict[str, Any] | None:
     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
         return None
     try:
         declared = request.headers.get("content-length")
-        if declared is not None and (not declared.isdecimal() or int(declared) > _MAX_BODY_BYTES):
+        if declared is not None and (not declared.isdecimal() or int(declared) > limit):
             return None
         raw = await request.body()
-        if len(raw) > _MAX_BODY_BYTES:
+        if len(raw) > limit:
             return None
     except Exception:
         return None
-    return _read_json(raw, keys)
+    return _read_json(raw, keys, limit)
 
 
 def _channel_source(request: Request) -> OracleMeshReturnSource | None:
@@ -509,9 +558,11 @@ async def oracle_mesh_read_request(request: Request) -> JSONResponse:
     wire = await _read_body(request, _REQUEST_KEYS)
     if wire is None:
         return _error(400, "oracle_mesh_invalid_body")
-    for key in ("device_id", "run_id", "root_ref", "path_relative"):
+    for key in ("device_id", "run_id", "root_ref"):
         if _ref(wire.get(key)) is None:
             return _error(400, "oracle_mesh_invalid_body")
+    if _text_value(wire.get("path_relative")) is None:
+        return _error(400, "oracle_mesh_invalid_body")
     if wire.get("confirmed") is not True:
         return _error(400, "oracle_mesh_invalid_body")
     return await dispatch_oracle_mesh_read_intent(request, wire)
@@ -863,7 +914,11 @@ async def dispatch_oracle_mesh_command_intent(
         )
     except HistoryForbidden:
         return _error(404, "oracle_mesh_run_unavailable")
-    except HistoryError:
+    except HistoryError as exc:
+        if str(exc) == "oracle mesh command execution is uncertain":
+            # #4139: the command may already have run. A second execution is
+            # never attempted; the state is reported as uncertain instead.
+            return _error(409, "oracle_mesh_command_uncertain")
         return _error(409, "oracle_mesh_dispatch_refused")
     except Exception:
         return _error(503, "oracle_mesh_dispatch_unavailable")
@@ -983,6 +1038,49 @@ def _verified_result_text(
     return text
 
 
+def _command_header(dispatch: dict[str, Any], wire: dict[str, Any]) -> list[str]:
+    """The fixed head of one command message: what ran, how, and what is known.
+
+    A wait timeout is never reported as a terminated process, and an unobserved
+    exit code stays "확인되지 않음" instead of 0.
+    """
+    lines = [
+        "COM1 명령 실행 결과",
+        "명령: " + str(dispatch.get("command_text") or ""),
+        "실행 방식: " + _COMMAND_SHELL_LABEL,
+        "출력: stdout+stderr 병합",
+    ]
+    termination = wire["termination"]
+    if termination == "timed_out":
+        lines.append("종료 상태: 대기 시간 초과 (PC 프로세스가 계속 실행 중일 수 있음)")
+        lines.append("종료 코드: 확인되지 않음")
+    elif termination == "cancelled":
+        lines.append("종료 상태: 취소됨 (PC 종료 코드 확인 불가)")
+        lines.append("종료 코드: 확인되지 않음")
+    elif termination == "no_reply":
+        lines.append("종료 상태: 콘솔 응답 없음")
+        lines.append("종료 코드: 확인되지 않음")
+    elif termination == "output_too_large":
+        lines.append("종료 상태: 출력이 전송 한도를 초과")
+        lines.append(
+            "종료 코드: " + (
+                str(wire["exit_code"])
+                if isinstance(wire["exit_code"], int)
+                else "확인되지 않음"
+            )
+        )
+    else:
+        lines.append("종료 상태: " + str(termination))
+        lines.append(
+            "종료 코드: " + (
+                str(wire["exit_code"])
+                if isinstance(wire["exit_code"], int)
+                else "확인되지 않음"
+            )
+        )
+    return lines
+
+
 def _command_result_content(
     dispatch: dict[str, Any], wire: dict[str, Any], output: str,
 ) -> str:
@@ -990,43 +1088,82 @@ def _command_result_content(
 
     The output is delimited by explicit markers so its own leading/trailing
     whitespace and newlines survive the shared history projection unchanged:
-    the markers, not the output, are the message edges. The execution method is
-    stated because MeshCentral runs it through the device shell; an exit code
-    is printed only when the PC actually reported one.
+    the markers, not the output, are the message edges.
     """
-    lines = [
-        "COM1 명령 실행 결과",
-        "명령: " + str(dispatch.get("command_text") or ""),
-        "실행 방식: " + _COMMAND_SHELL_LABEL,
-    ]
-    if wire["termination"] == "no_reply":
-        lines.append("종료 상태: 콘솔 응답 없음")
-        lines.append("종료 코드: 확인되지 않음")
-    else:
-        lines.append("종료 상태: " + str(wire["termination"]))
-        lines.append("종료 코드: " + str(wire["exit_code"]))
+    lines = _command_header(dispatch, wire)
     lines.append("--- 출력 시작 ---")
     lines.append(output)
     lines.append("--- 출력 끝 ---")
     return "\n".join(lines)
 
 
+def _command_output_too_large_content(
+    dispatch: dict[str, Any], wire: dict[str, Any], output_chars: int,
+) -> str:
+    """A result whose output would fill the conversation with hundreds of parts.
+
+    The output itself is verified and pinned (bytes and digest are on the
+    dispatch row), so nothing is silently dropped; only the stored text is
+    withheld, with the exact size and the storage bound stated.
+    """
+    lines = _command_header(dispatch, wire)
+    lines.append(
+        "출력 " + str(output_chars) + "자가 저장 한도 "
+        + str(_MAX_COMMAND_MESSAGE_PARTS) + "개 메시지를 초과하여 대화에 싣지 않았습니다."
+    )
+    lines.append("출력 본문과 SHA-256은 dispatch에 그대로 보관되어 있습니다.")
+    return "\n".join(lines)
+
+
+def _command_output_parts(output: str, limit: int = 8000) -> list[str]:
+    """Split one output into conversation-sized parts on line boundaries.
+
+    A larger result is stored as several messages through the existing message
+    append path; no part is ever truncated, and line boundaries are preserved
+    because a shell output is read line by line.
+    """
+    if len(output) <= limit:
+        return [output]
+    parts: list[str] = []
+    current = ""
+    for line in output.split("\n"):
+        # A single line may itself exceed the bound (one long JSON dump, one
+        # base64 blob): it is split on characters so nothing is dropped.
+        while len(line) > limit:
+            if current:
+                parts.append(current)
+                current = ""
+            parts.append(line[:limit])
+            line = line[limit:]
+        candidate = line if not current else current + "\n" + line
+        if len(candidate) > limit and current:
+            parts.append(current)
+            current = line
+        else:
+            current = candidate
+    if current or not parts:
+        parts.append(current)
+    return parts
+
+
 async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     """Executor submit: secret + single-use nonce, verified, appended once."""
-    wire = await _read_body(request, _RESULT_KEYS)
+    wire = await _read_body(request, _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES)
     if wire is None:
         return _error(400, "oracle_mesh_invalid_body")
     if _ref(wire.get("dispatch_id"), 128) is None:
         return _error(400, "oracle_mesh_invalid_body")
     if _ref(wire.get("nonce"), 128) is None:
         return _error(400, "oracle_mesh_invalid_body")
-    if wire.get("termination") not in ("exited", "cancelled", "timed_out", "no_reply"):
+    if wire.get("termination") not in (
+        "exited", "cancelled", "timed_out", "no_reply", "output_too_large",
+    ):
         return _error(400, "oracle_mesh_invalid_body")
-    # #4139: a command whose console never answered has NO observed exit
-    # code. That is carried as null, never invented as 0; every other
-    # termination still requires a real integer.
+    # #4139: a wait timeout and a console that never answered have NO observed
+    # exit code. That is carried as null, never invented as 0; only a real
+    # "exited" run must report an integer.
     if wire.get("exit_code") is None:
-        if wire.get("termination") != "no_reply":
+        if wire.get("termination") not in ("timed_out", "no_reply"):
             return _error(400, "oracle_mesh_invalid_body")
     elif isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
         return _error(400, "oracle_mesh_invalid_body")
@@ -1067,14 +1204,19 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     content = ""
     summary = ""
     status = ""
+    #: #4139: the verified body of each lane, kept so a result larger than one
+    #: conversation message can be split across deterministic message ids.
+    command_output: str | None = None
+    read_output: str | None = None
     result_digest = wire["content_sha256"] if wire["content_bytes"] else _EMPTY_RESULT_SHA256
     result_size = wire["content_bytes"]
     if dispatch.get("kind") == "command":
-        # #4139 terminal lane. The body is the command's stdout, verified with
-        # the same UTF-8/size/SHA rules; the exit code is whatever the PC
-        # reported, and a console that never answered stays "확인되지 않음".
+        # #4139 terminal lane. The body is the command output, verified with the
+        # same UTF-8/SHA rules; the exit code is whatever the PC reported, and a
+        # console that never answered stays "확인되지 않음". A large output is
+        # split across messages, so this branch never rejects a verified result.
         verified_output = _verified_result_text(
-            dispatch, wire, max_bytes=_MAX_COMMAND_OUTPUT_BYTES,
+            dispatch, wire, max_bytes=_MAX_RESULT_BODY_BYTES,
         )
         command_text = dispatch.get("command_text")
         if (
@@ -1090,18 +1232,18 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             )
         else:
             content = _command_result_content(dispatch, wire, verified_output)
-            if wire["termination"] == "exited" and wire["exit_code"] == 0:
-                outcome, summary, status = "done", "exited/0", "completed"
-            elif wire["termination"] == "exited":
-                outcome = "failed"
-                summary = "exited/" + str(wire["exit_code"])
-                status = "failed"
+            command_output = verified_output
+            if wire["termination"] in ("exited", "output_too_large"):
+                if wire["exit_code"] == 0:
+                    outcome, summary, status = "done", "exited/0", "completed"
+                else:
+                    outcome = "failed"
+                    summary = str(wire["termination"]) + "/" + str(wire["exit_code"])
+                    status = "failed"
             else:
                 outcome = "failed"
                 summary = str(wire["termination"])
                 status = "failed"
-        if len(content) > _MAX_COMMAND_OUTPUT_BYTES + 2000:
-            return _error(400, "oracle_mesh_content_unverified")
     elif wire["termination"] == "exited" and wire["exit_code"] == 0:
         verified_text = _verified_result_text(dispatch, wire)
         if verified_text is None:
@@ -1116,7 +1258,12 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                 f"명령: {dispatch['command_id']}, 사유: 결과 무결성 불일치."
             )
         else:
-            content = "PC 파일 읽기 결과:\n" + (verified_text if verified_text else "(빈 파일)")
+            content = (
+                "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n"
+                + (verified_text if verified_text else "(빈 파일)")
+                + "\n--- 출력 끝 ---"
+            )
+            read_output = verified_text if verified_text else None
             summary = "exited/0"
             status = "completed"
     elif wire["termination"] == "cancelled":
@@ -1136,8 +1283,8 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             f"명령: {dispatch['command_id']}, 상태: {wire['termination']}, "
             f"종료 코드: {wire['exit_code']}."
         )
-    if len(content) > 1_000:
-        return _error(400, "oracle_mesh_content_unverified")
+    # Every stored message is now bounded by the splitter, so the former
+    # 1 000-character refusal has no case left to serve.
 
     # Pin the first accepted result. A resend after a transient store failure
     # must be the identical bytes: the executor holds them and never re-reads
@@ -1191,23 +1338,61 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             pass
         return _error(404, "oracle_mesh_run_unavailable")
 
-    message_id = result_message_id(
+    base_message_id = result_message_id(
         conversation_id=conversation_id,
         command_id=dispatch["command_id"],
         revision_ref=dispatch["revision_ref"],
     )
-    try:
-        appended = await history_store.append_local_task_result(
-            user_id=dispatch["user_id"],
-            run_id=dispatch["run_id"],
-            message_id=message_id,
-            summary=summary,
-            content=content,
-            status=status,
-            # A terminal result is the only caller that opts out of the
-            # shared edge trim; every other message keeps today's behavior.
-            preserve_edges=(dispatch.get("kind") == "command"),
+    if command_output is not None:
+        output_parts = _command_output_parts(
+            command_output, _MAX_COMMAND_MESSAGE_CHARS - _COMMAND_HEADER_CHARS,
         )
+        if len(output_parts) > _MAX_COMMAND_MESSAGE_PARTS:
+            # Storage guard, never a silent drop: the byte count is reported.
+            messages = [_command_output_too_large_content(
+                dispatch, wire, len(command_output),
+            )]
+        else:
+            total = str(len(output_parts))
+            head = _command_header(dispatch, wire)
+            messages = []
+            for index, part in enumerate(output_parts):
+                lines = list(head)
+                lines.append("--- 출력 " + str(index + 1) + "/" + total + " 시작 ---")
+                lines.append(part)
+                lines.append("--- 출력 끝 ---")
+                messages.append("\n".join(lines))
+    elif read_output is not None:
+        output_parts = _command_output_parts(
+            read_output, _MAX_COMMAND_MESSAGE_CHARS - _COMMAND_HEADER_CHARS,
+        )
+        total = str(len(output_parts))
+        messages = []
+        for index, part in enumerate(output_parts):
+            lines = ["PC 파일 읽기 결과"]
+            lines.append("--- 출력 " + str(index + 1) + "/" + total + " 시작 ---")
+            lines.append(part)
+            lines.append("--- 출력 끝 ---")
+            messages.append("\n".join(lines))
+    else:
+        messages = [content]
+    appended = False
+    try:
+        for index, part in enumerate(messages):
+            message_id = base_message_id if len(messages) == 1 else (
+                base_message_id + "_p" + str(index)
+            )
+            appended = await history_store.append_local_task_result(
+                user_id=dispatch["user_id"],
+                run_id=dispatch["run_id"],
+                message_id=message_id,
+                summary=summary,
+                content=part,
+                status=status,
+                # A terminal result is the only caller that opts out of the
+                # shared edge trim; every other message keeps today's behavior.
+                preserve_edges=(dispatch.get("kind") == "command"),
+            ) or appended
     except HistoryForbidden:
         # Ownership refusal is final: retrying cannot change it.
         try:

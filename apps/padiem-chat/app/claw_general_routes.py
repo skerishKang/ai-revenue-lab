@@ -524,7 +524,12 @@ _COMMAND_PC_MARKERS = (
 )
 #: Imperative forms only: a description of a command must not execute it.
 _COMMAND_VERBS = ("실행해", "실행하", "run ", "execute ")
-_COMMAND_BODY = re.compile(r"[\x20-\x7e]{1,512}")
+#: #4139: a command is ordinary text — Korean, quotes and any printable
+#: character are allowed. The only forbidden characters are control characters,
+#: and the length bound is the dispatch/poll envelope, far above any real
+#: command line. The former ASCII-only, 512-character rule was a trial limit.
+_MAX_COMMAND_TEXT_CHARS = 8192
+_COMMAND_BODY = re.compile(r"[^\x00-\x1f\x7f]{1,%d}" % _MAX_COMMAND_TEXT_CHARS)
 
 
 def _requested_local_command(user_text: str) -> tuple[bool, str | None]:
@@ -543,7 +548,11 @@ def _requested_local_command(user_text: str) -> tuple[bool, str | None]:
         return False, None
     if not any(verb in lowered for verb in _COMMAND_VERBS):
         return False, None
-    matches = re.findall(r"`([^`\r\n]{1,512})`", user_text)
+    # A delimited command may span several lines; only backticks, NUL and CR
+    # end the span, so a multi-line script is ordinary input.
+    matches = re.findall(
+        r"`([^`\x00\r]{1,%d})`" % _MAX_COMMAND_TEXT_CHARS, user_text,
+    )
     if len(matches) != 1:
         return False, None
     command = matches[0].strip()

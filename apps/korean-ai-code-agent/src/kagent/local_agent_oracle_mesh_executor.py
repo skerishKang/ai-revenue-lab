@@ -29,11 +29,19 @@ CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: evaluated. This executor is a first-party product client, so it identifies
 #: itself with the same product token the kagent transport already sends.
 PRODUCT_USER_AGENT = "PadiemClaw/1.0 (kagent; oracle-mesh-executor)"
-#: meshctrl downloads are size-bounded by the same limit the server enforces.
-MAX_READ_BYTES = 768
-#: #4139 terminal lane: the same bounded contract as the server's command
-#: projection. Oversize output is refused, never truncated.
-MAX_COMMAND_BYTES = 3000
+#: #4139 wire envelope shared by both lanes: the same 6 MB the Claw request
+#: route already accepts for one user message. A command body above it is
+#: reported as ``output_too_large`` and a file body is refused whole — neither
+#: is truncated, and neither is buffered past this bound.
+MAX_COMMAND_BYTES = 6_000_000
+MAX_READ_BYTES_ENVELOPE = 6_000_000
+#: Legacy alias for callers that still import it; the read port now takes its
+#: bound from the shared envelope instead of a trial-era byte count.
+MAX_READ_BYTES = MAX_READ_BYTES_ENVELOPE
+#: A result the server refuses for a non-retryable reason is not resent
+#: forever. After this many identical refusals the executor drops the held
+#: result and reports it, rather than blocking the queue behind it.
+MAX_RESULT_REJECTIONS = 3
 
 
 class OracleMeshChannelRefused(RuntimeError):
@@ -132,6 +140,7 @@ class OracleMeshExecutor:
         self._timeout = timeout_seconds
         self._transport = transport or self._https_post
         self._pending: Optional[tuple[OracleMeshDispatch, OracleMeshExecutionOutcome]] = None
+        self._rejections = 0
 
     # ---- channel -------------------------------------------------------
     def _https_post(self, path: str, payload: Optional[dict[str, Any]]) -> tuple[int, dict[str, Any]]:
@@ -251,12 +260,12 @@ class OracleMeshExecutor:
         except Exception:
             return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
         termination = getattr(observed, "termination", "no_reply")
-        if termination not in ("exited", "timed_out", "no_reply"):
+        if termination not in ("exited", "timed_out", "no_reply", "output_too_large"):
             termination = "no_reply"
         exit_code = getattr(observed, "exit_code", None)
         if isinstance(exit_code, bool) or not isinstance(exit_code, int):
             exit_code = None
-        if termination == "exited" and exit_code is None:
+        if termination in ("exited", "output_too_large") and exit_code is None:
             # The sentinel line arrived without a number: the exit code is not
             # observed, so the run cannot claim a clean exit.
             termination = "no_reply"
@@ -265,8 +274,11 @@ class OracleMeshExecutor:
             body = b""
         raw = bytes(body)
         if len(raw) > MAX_COMMAND_BYTES:
-            # Oversize output is refused, never truncated.
-            return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
+            # Oversize output is never truncated; the body is withheld and the
+            # observed exit code is still carried.
+            return OracleMeshExecutionOutcome(
+                termination="output_too_large", exit_code=exit_code, body=b"",
+            )
         return OracleMeshExecutionOutcome(
             termination=termination, exit_code=exit_code, body=raw,
         )
@@ -298,14 +310,27 @@ class OracleMeshExecutor:
         status, data = self._post(RESULT_PATH, payload)
         if status == 503:
             # The server parked the verified result; keep the bytes for a resend.
+            self._rejections = 0
             return {"ok": False, "retryable": True, "resend_pending": True}
-        if status != 200 or data.get("ok") is not True:
-            # Any refusal keeps the held result: the same dispatch code is
-            # also answered while the row is still an unfinished received
-            # row, so dropping here could discard an undelivered outcome.
-            raise OracleMeshChannelRefused("chat channel refused the result")
+        if status == 200 and data.get("ok") is True:
+            self._pending = None
+            self._rejections = 0
+            return data
+        # A non-retryable refusal is retried a bounded number of times, then
+        # dropped with an explicit report. Dropping on the first refusal could
+        # discard a result whose row is still an unfinished "received" row;
+        # retrying forever blocks the whole queue behind one dead result.
+        self._rejections += 1
+        error = data.get("error")
+        code = error.get("code") if isinstance(error, dict) else None
+        if self._rejections < MAX_RESULT_REJECTIONS:
+            return {
+                "ok": False, "retryable": True, "resend_pending": True,
+                "status": status, "code": code,
+            }
         self._pending = None
-        return data
+        self._rejections = 0
+        return {"ok": False, "dropped": True, "status": status, "code": code}
 
     @property
     def resend_pending(self) -> bool:
@@ -366,6 +391,11 @@ def make_oracle_mesh_executor(
     from .local_agent_meshcentral_command_port import MeshCentralCliCommandPort
     from .local_agent_meshcentral_private_reader import MeshCentralCliFileReadPort
 
+    def _popen(argv, **kwargs):
+        import subprocess
+
+        return subprocess.Popen(argv, **kwargs)
+
     def _run(argv, **kwargs):
         # The merged private read port hands the operator credential to the
         # child on STDIN ("<password>\n"); the OS argv carries only the public
@@ -402,6 +432,9 @@ def make_oracle_mesh_executor(
         password_provider=password_provider,
         url=mesh_url,
         work_dir=work_dir,
+        # #4139: the command lane reads the child incrementally so a runaway
+        # command can never be buffered whole before it is size-checked.
+        popen_factory=_popen,
     )
     return OracleMeshExecutor(
         chat_origin=chat_origin,

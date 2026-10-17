@@ -6,6 +6,7 @@ and the exact transcript parsing that decides whether an exit code was observed.
 """
 from __future__ import annotations
 
+import io
 import subprocess
 import unittest
 
@@ -107,6 +108,31 @@ class CommandPortTests(unittest.TestCase):
         self.assertEqual(outcome.termination, "timed_out")
         self.assertIsNone(outcome.exit_code)
 
+    def test_streaming_timeout_kills_the_child_and_claims_nothing(self):
+        class _Proc:
+            def __init__(self):
+                self.stdin = io.BytesIO()
+                self.stdout = io.BytesIO()
+                self.stderr = io.BytesIO()
+                self.killed = False
+
+            def poll(self):
+                return None
+
+            def kill(self):
+                self.killed = True
+                self.stdout = io.BytesIO(b"done")
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=lambda argv, **kw: _Proc(),
+        )
+        outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=1)
+        self.assertEqual(outcome.termination, "timed_out")
+        self.assertIsNone(outcome.exit_code)
+
     def test_client_failure_is_no_reply(self):
         port = _port(_Completed(1, b""))
         outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
@@ -118,9 +144,24 @@ class CommandPortTests(unittest.TestCase):
         with self.assertRaises(MeshCentralCommandRefused):
             port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
 
-    def test_command_body_is_bounded_to_one_printable_line(self):
+    def test_command_accepts_utf8_and_several_lines(self):
+        calls = []
+        port = _port(_Completed(0, ("ok\n" + EXIT_SENTINEL + "0\n\n").encode()), calls=calls)
+        korean_path = 'type "C:\\사용자\\보고서.txt"'
+        outcome = port.run_command(node_ref=NODE, command=korean_path, timeout_seconds=45)
+        self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 0))
+        run_arg = calls[0][0][calls[0][0].index("--run") + 1]
+        self.assertTrue(run_arg.startswith(korean_path))
+        # A multi-line command keeps its newlines and still gets the sentinel.
+        multi = "echo one\necho two"
+        port = _port(_Completed(0, ("one\ntwo\n" + EXIT_SENTINEL + "\n\n").encode()))
+        outcome = port.run_command(node_ref=NODE, command=multi, timeout_seconds=45)
+        self.assertEqual(outcome.termination, "no_reply")
+        self.assertIsNone(outcome.exit_code)
+
+    def test_command_refuses_nul_and_carriage_return_only(self):
         port = _port(_Completed(0, b""))
-        for bad in ("", "a\nb", "가", "x" * 513):
+        for bad in ("", "a\x00b", "a\rb", "x" * 8193):
             with self.assertRaises(MeshCentralCommandRefused):
                 port.run_command(node_ref=NODE, command=bad, timeout_seconds=45)
 
