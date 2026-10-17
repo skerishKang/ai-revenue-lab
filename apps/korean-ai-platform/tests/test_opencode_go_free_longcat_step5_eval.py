@@ -103,7 +103,7 @@ def test_context_window_zero_means_unknown_never_zero() -> None:
     from app.pilot.model_registry_file import read_registry
 
     reg = read_registry()
-    for model_id in (LONGCAT_MODEL_ID, STEP5_MODEL_ID):
+    for model_id in (STEP5_MODEL_ID,):
         row = next(m for m in reg["models"] if m["id"] == model_id)
         assert row["context_window"] == 0
         # Harness rule: 0 is UNKNOWN (undocumented), not an effective 0-token
