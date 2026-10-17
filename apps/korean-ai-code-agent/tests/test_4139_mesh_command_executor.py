@@ -1,0 +1,251 @@
+"""#4139 terminal lane — the Oracle command port and its exit-code contract.
+
+The official ``meshctrl.js`` client is never actually launched here: the process
+boundary is injected, so these tests pin the argv shape, the stdin credential,
+and the exact transcript parsing that decides whether an exit code was observed.
+"""
+from __future__ import annotations
+
+import subprocess
+import unittest
+
+from kagent.local_agent_meshcentral_command_port import (
+    EXIT_SENTINEL, MeshCentralCliCommandPort, MeshCentralCommandRefused,
+    parse_transcript,
+)
+from kagent.local_agent_oracle_mesh_executor import (
+    OracleMeshChannelRefused, OracleMeshDispatch, OracleMeshExecutor,
+)
+
+SECRET = "deployment-channel-secret-value-261017"
+PASSWORD = "op3rator-meshtr0ll-secret"
+NODE = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
+MESHCTRL = "/opt/meshcentral/meshctrl.js"
+
+
+class _Completed:
+    def __init__(self, returncode=0, stdout=b"", stderr=b""):
+        self.returncode = returncode
+        self.stdout = stdout
+        self.stderr = stderr
+
+
+def _port(completed=None, *, calls=None, password=PASSWORD, exc=None):
+    def runner(argv, **kwargs):
+        if calls is not None:
+            calls.append((list(argv), dict(kwargs)))
+        if exc is not None:
+            raise exc
+        return completed
+
+    return MeshCentralCliCommandPort(
+        command_runner=runner,
+        meshctrl_js=MESHCTRL,
+        login_user="padiemadmin",
+        password_provider=lambda: password,
+        url="wss://127.0.0.1:4443",
+    )
+
+
+class TranscriptParsingTests(unittest.TestCase):
+    def test_crlf_output_is_preserved_and_the_sentinel_is_removed(self):
+        raw = ("Padiem-Command-Center\r\n" + EXIT_SENTINEL + "0\r\n\n").encode("utf-8")
+        termination, exit_code, output = parse_transcript(raw)
+        self.assertEqual(termination, "exited")
+        self.assertEqual(exit_code, 0)
+        # Only meshctrl's own trailing console.log newline is dropped.
+        self.assertEqual(output, b"Padiem-Command-Center\r\n")
+
+    def test_nonzero_exit_is_the_pc_value(self):
+        raw = ("Access is denied.\r\n" + EXIT_SENTINEL + "5\r\n\n").encode("utf-8")
+        termination, exit_code, output = parse_transcript(raw)
+        self.assertEqual((termination, exit_code), ("exited", 5))
+        self.assertEqual(output, b"Access is denied.\r\n")
+
+    def test_missing_sentinel_is_no_reply_not_success(self):
+        termination, exit_code, output = parse_transcript(b"partial output\n")
+        self.assertEqual((termination, exit_code), ("no_reply", None))
+        self.assertEqual(output, b"partial output")
+
+    def test_sentinel_without_a_number_is_not_an_exit_code(self):
+        raw = ("x\n" + EXIT_SENTINEL + "\n\n").encode("utf-8")
+        termination, exit_code, _ = parse_transcript(raw)
+        self.assertEqual((termination, exit_code), ("no_reply", None))
+
+    def test_empty_transcript_is_no_reply(self):
+        self.assertEqual(parse_transcript(b""), ("no_reply", None, b""))
+
+
+class CommandPortTests(unittest.TestCase):
+    def test_command_runs_through_the_official_client_with_the_sentinel(self):
+        calls = []
+        port = _port(_Completed(0, ("ok\r\n" + EXIT_SENTINEL + "0\r\n\n").encode()), calls=calls)
+        outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+        self.assertEqual(outcome.termination, "exited")
+        self.assertEqual(outcome.exit_code, 0)
+        self.assertEqual(outcome.output, b"ok\r\n")
+
+        argv, kwargs = calls[0]
+        self.assertIn("runcommand", argv)
+        self.assertIn("--powershell", argv)
+        self.assertIn("--reply", argv)
+        self.assertEqual(argv[argv.index("--id") + 1], NODE)
+        run_arg = argv[argv.index("--run") + 1]
+        self.assertTrue(run_arg.startswith("hostname.exe"))
+        self.assertIn(EXIT_SENTINEL, run_arg)
+        # The operator credential never reaches the OS command line.
+        self.assertNotIn(PASSWORD, argv)
+        self.assertEqual(argv[argv.index("--loginpass") + 1],
+                         "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__")
+        self.assertEqual(kwargs["input"], PASSWORD + "\n")
+        self.assertEqual(kwargs["timeout"], 45)
+
+    def test_timeout_claims_no_exit_code(self):
+        expired = subprocess.TimeoutExpired(cmd="node", timeout=45, output=b"")
+        port = _port(exc=expired)
+        outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+        self.assertEqual(outcome.termination, "timed_out")
+        self.assertIsNone(outcome.exit_code)
+
+    def test_client_failure_is_no_reply(self):
+        port = _port(_Completed(1, b""))
+        outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+        self.assertEqual(outcome.termination, "no_reply")
+        self.assertIsNone(outcome.exit_code)
+
+    def test_non_utf8_output_is_refused_not_altered(self):
+        port = _port(_Completed(0, b"\xff\xfe" + EXIT_SENTINEL.encode() + b"0\n\n"))
+        with self.assertRaises(MeshCentralCommandRefused):
+            port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+
+    def test_command_body_is_bounded_to_one_printable_line(self):
+        port = _port(_Completed(0, b""))
+        for bad in ("", "a\nb", "가", "x" * 513):
+            with self.assertRaises(MeshCentralCommandRefused):
+                port.run_command(node_ref=NODE, command=bad, timeout_seconds=45)
+
+    def test_missing_credential_never_runs_the_client(self):
+        calls = []
+        port = _port(_Completed(0, b""), calls=calls, password="")
+        with self.assertRaises(MeshCentralCommandRefused):
+            port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+        self.assertEqual(calls, [])
+
+
+class _FakeCommandPort:
+    def __init__(self, outcome):
+        self._outcome = outcome
+        self.calls = []
+
+    def run_command(self, *, node_ref, command, timeout_seconds):
+        self.calls.append((node_ref, command, timeout_seconds))
+        return self._outcome
+
+
+class _ReadPort:
+    def __init__(self):
+        self.calls = []
+
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds):
+        self.calls.append((node_ref, file_path, timeout_seconds))
+        return b"file-bytes"
+
+
+def _executor(command_port=None, read_port=None):
+    return OracleMeshExecutor(
+        chat_origin="https://chat.padiem.net",
+        channel_secret=SECRET,
+        read_port=read_port or _ReadPort(),
+        command_port=command_port,
+        transport=lambda path, payload: (200, {"ok": True}),
+    )
+
+
+def _dispatch(kind="command", command="hostname.exe"):
+    return OracleMeshDispatch(
+        dispatch_id="dsp-1", nonce="n" * 32, node_ref=NODE,
+        file_path="command" if kind == "command" else "C:\\x.txt",
+        command_id="c", run_id="run-1", kind=kind,
+        command_text=command if kind == "command" else None,
+    )
+
+
+class ExecutorRoutingTests(unittest.TestCase):
+    def test_command_dispatch_uses_the_command_port_only(self):
+        from kagent.local_agent_meshcentral_command_port import MeshCentralCommandOutcome
+        command_port = _FakeCommandPort(
+            MeshCentralCommandOutcome(termination="exited", exit_code=0,
+                                      output=b"Padiem-Command-Center\r\n"))
+        read_port = _ReadPort()
+        executor = _executor(command_port=command_port, read_port=read_port)
+        outcome = executor.execute(_dispatch())
+        self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 0))
+        self.assertEqual(outcome.body, b"Padiem-Command-Center\r\n")
+        self.assertEqual(read_port.calls, [])
+        self.assertEqual(command_port.calls[0][1], "hostname.exe")
+
+    def test_read_dispatch_is_unchanged(self):
+        from kagent.local_agent_meshcentral_command_port import MeshCentralCommandOutcome
+        command_port = _FakeCommandPort(
+            MeshCentralCommandOutcome(termination="exited", exit_code=0, output=b"x"))
+        read_port = _ReadPort()
+        executor = _executor(command_port=command_port, read_port=read_port)
+        outcome = executor.execute(_dispatch(kind="read"))
+        self.assertEqual(outcome.body, b"file-bytes")
+        self.assertEqual(command_port.calls, [])
+
+    def test_unobserved_exit_code_is_never_flipped_to_zero(self):
+        from kagent.local_agent_meshcentral_command_port import MeshCentralCommandOutcome
+        command_port = _FakeCommandPort(
+            MeshCentralCommandOutcome(termination="exited", exit_code=None, output=b"x"))
+        executor = _executor(command_port=command_port)
+        outcome = executor.execute(_dispatch())
+        self.assertEqual(outcome.termination, "no_reply")
+        self.assertIsNone(outcome.exit_code)
+
+    def test_command_dispatch_without_a_port_is_a_hard_refusal(self):
+        executor = _executor(command_port=None)
+        with self.assertRaises(OracleMeshChannelRefused):
+            executor.execute(_dispatch())
+
+    def test_poll_refuses_a_command_dispatch_without_a_command(self):
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net",
+            channel_secret=SECRET,
+            read_port=_ReadPort(),
+            command_port=_FakeCommandPort(None),
+            transport=lambda path, payload: (200, {"ok": True, "dispatch": {
+                "dispatch_id": "dsp-1", "nonce": "n", "node_ref": NODE,
+                "file_path": "command", "command_id": "c", "run_id": "run-1",
+                "kind": "command", "command_text": None,
+            }}),
+        )
+        with self.assertRaises(OracleMeshChannelRefused):
+            executor.poll_once()
+
+    def test_submit_carries_an_unobserved_exit_code_as_null(self):
+        seen = {}
+
+        def transport(path, payload):
+            seen.update(payload or {})
+            return 200, {"ok": True}
+
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net",
+            channel_secret=SECRET,
+            read_port=_ReadPort(),
+            command_port=_FakeCommandPort(None),
+            transport=transport,
+        )
+        executor.submit(_dispatch(), _outcome())
+        self.assertIsNone(seen["exit_code"])
+        self.assertEqual(seen["termination"], "no_reply")
+
+
+def _outcome():
+    from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutionOutcome
+    return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
+
+
+if __name__ == "__main__":
+    unittest.main()
