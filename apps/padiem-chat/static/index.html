@@ -30,6 +30,8 @@
   <link rel="stylesheet" href="./claw-local-handoff.css" />
   <link rel="stylesheet" href="./claw-device-manager.css" />
   <link rel="stylesheet" href="./claw-device-guidance.css" />
+  <!-- #4139 dedicated PC connection page (LOCAL2). New files only. -->
+  <link rel="stylesheet" href="./claw-connection-page.css" />
   <!-- #4139 PC enrollment consent surface (LOCAL1). Inert until a verified server port is published. -->
   <link rel="stylesheet" href="./claw-pc-enrollment-consent.css" />
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
@@ -1069,6 +1071,10 @@
   <script src="./sidebar-section-collapse.js"></script>
   <script src="./claw-home-choices.js"></script>
   <script src="./claw-connection-chips.js"></script>
+  <!-- #4139 dedicated PC connection page (LOCAL2). Loads before the legacy
+       small-card guide so PC entries open the full page; other services keep
+       the legacy guide behavior. -->
+  <script src="./claw-connection-page.js"></script>
   <script src="./claw-connection-guide.js"></script>
   <script src="./claw-drive-account-management.js"></script>
   <script src="./claw-connector-management.js"></script>
