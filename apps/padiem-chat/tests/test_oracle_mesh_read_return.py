@@ -917,3 +917,46 @@ def test_pin_store_error_parks_and_identical_resend_succeeds(monkeypatch):
     assert history.appended[0]["content"] == (
         "PC 파일 읽기 결과\n--- 출력 1/1 시작 ---\n" + TEXT + "\n--- 출력 끝 ---"
     )
+
+
+def test_4979_waited_channel_delivers_queued_dispatch_once(monkeypatch):
+    """Authenticated live HTTPS channel waits, then claims the durable queue once."""
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+    original = history.oldest_pending_oracle_mesh_dispatch
+    reads = {"count": 0}
+    delays = []
+
+    async def delayed_pending():
+        reads["count"] += 1
+        if reads["count"] == 1:
+            return None
+        return await original()
+
+    async def fake_sleep(duration):
+        delays.append(duration)
+
+    monkeypatch.setattr(history, "oldest_pending_oracle_mesh_dispatch", delayed_pending)
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
+    request = Request({}, state(history=history), secret=SECRET)
+    request.headers["x-oracle-mesh-wait"] = "20"
+    status, body, _ = call(routes.oracle_mesh_read_poll, request)
+    assert status == 200
+    assert body["dispatch"]["dispatch_id"] == dispatch_id
+    assert len(delays) == 1
+    assert 0 < delays[0] <= 2
+    second, duplicate, _ = call(
+        routes.oracle_mesh_read_poll,
+        Request({}, state(history=history), secret=SECRET),
+    )
+    assert second == 200 and duplicate["dispatch"] is None
+
+
+def test_4979_waited_channel_keeps_secret_gate(monkeypatch):
+    history = History()
+    request = Request({}, state(history=history))
+    request.headers["x-oracle-mesh-wait"] = "20"
+    status, body, _ = call(routes.oracle_mesh_read_poll, request)
+    assert status == 403
+    assert body["error"]["code"] == "oracle_mesh_channel_rejected"
