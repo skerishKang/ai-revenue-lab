@@ -150,17 +150,115 @@ html[data-theme="padiem-glass"] .composer-wrap {
   background: linear-gradient(to bottom, transparent, rgba(187,195,202,.30) 26%, rgba(174,184,192,.58) 100%) !important;
 }
 
-html[data-theme="padiem-glass"] .message-bubble {
-  background: rgba(31, 40, 49, .84);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+/* Owner (2026-10-17), Glass theme only: the user's turn reads like the
+ * assistant's turn. A user message and an answer share ONE typographic voice:
+ * no dark cell, no white-on-dark text, no separate bubble chrome. Both turns
+ * are an avatar plate plus text in the same grid, so the speaker is told apart
+ * by the glyph (person vs "P"), never by a surface colour. This supersedes the
+ * earlier "brighten the bubble one notch" request, which only softened the same
+ * dark cell. Other themes keep their own bubble by design and are untouched.
+ *
+ * Every value below is measured from the answer's own computed style on this
+ * theme (chat plate 32px/r10, claw plate 36px/r11, plus each state's text
+ * metrics), so the two turns match instead of merely appearing similar. The
+ * declarations mirror the answer's rules at equal-or-higher specificity because
+ * @import'ed glass sheets (gutter alignment, brand polish) already put
+ * !important caps on the user turn's width and rail. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 14px;
+  column-gap: 14px;
+  align-items: start;
+  justify-content: stretch;
+  width: auto !important;
+  padding-left: 0 !important;
 }
-/* Owner: brighten the user's greeting bubble one notch, without moving or
- * resizing the right-aligned turn; keep readable contrast on glass. */
-html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .message-bubble {
-  background: rgba(68, 79, 89, .90);
-  color: #f7f9fb;
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
+  grid-template-columns: 32px minmax(0, 1fr) !important;
+  gap: 12px !important;
+  column-gap: 12px !important;
 }
+/* The plate: claw default first, then the chat state's own values. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar {
+  grid-column: 1;
+  grid-row: 1;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: rgba(239, 244, 247, .2);
+  border: 1px solid rgba(255, 255, 255, .3);
+  color: #ffffff;
+  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .user-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 10px !important;
+  background: rgba(73, 84, 94, .52) !important;
+  border: 1px solid rgba(255, 255, 255, .48) !important;
+  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .16) !important;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar svg {
+  width: 17px;
+  height: 17px;
+}
+/* The text keeps the DOM element (and its tests) but loses the cell. The class
+ * is repeated to out-specify the @import'ed gutter sheet's !important caps on
+ * this same element. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .message-bubble.message-bubble {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  font-weight: 400;
+}
+/* Body text: each state uses the answer's own colour, size and leading. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .user-message .message-bubble {
+  color: #17212a;
+  font-size: 16px;
+  line-height: 27.52px;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .message-bubble {
+  color: #111a22;
+  font-size: 17px;
+  line-height: 29.92px;
+}
+@media (max-width: 900px) {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message {
+    grid-template-columns: 32px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    column-gap: 10px !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+/* Narrow phones: the answer text drops to 16px/1.72, so the user's turn
+ * follows it down rather than staying at the desktop metrics. */
+@media (max-width: 640px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .message-bubble {
+    font-size: 16px;
+    line-height: 27.52px;
+  }
+}
+/* #1424 anchored the turn to the frame's right edge and capped it at ~88%.
+ * Left-aligned text needs neither, and those caps are overridden above for this
+ * theme only. Base caps for the other themes stay untouched. */
 
 
 html[data-theme="padiem-glass"] .glass-variant-control {
