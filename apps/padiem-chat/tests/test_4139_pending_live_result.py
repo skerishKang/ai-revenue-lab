@@ -58,3 +58,40 @@ def test_pending_result_rejects_foreign_run(monkeypatch):
     req.scope["app"]=SimpleNamespace(state=SimpleNamespace(history_store=History()))
     result=asyncio.run(claw_pending_result(req))
     assert result.status_code==404
+
+
+
+def test_oracle_result_uses_its_durable_dispatch_correlation():
+    """Oracle command results are correlated by its durable dispatch, not LTR."""
+    from app.history import D1HistoryStore, PRODUCT_SCOPE_CHAT
+    from app.claw_local_task_result_projection import result_message_id
+    cid = "chat_" + "a" * 24
+    command, revision = "command_123", "revision_abc"
+    mid = result_message_id(conversation_id=cid, command_id=command,
+                            revision_ref=revision)
+    reads = []
+
+    async def no_ltr(user_id, run_id):
+        return None
+
+    async def first(sql, *args):
+        reads.append(("dispatch", args))
+        assert "oracle_mesh_dispatch" in sql
+        assert args == ("owner", "run_" + "f"*24)
+        return {"command_id": command, "revision_ref": revision}
+
+    async def all_rows(sql, *args):
+        reads.append(("messages", args))
+        assert "JOIN conversations" in sql
+        assert args[:4] == (cid, "owner", PRODUCT_SCOPE_CHAT, mid)
+        return [{"id": mid, "content": "Padiem-Command-Center"}]
+
+    store = SimpleNamespace(
+        get_local_task_correlation=no_ltr, _first=first, _all=all_rows,
+    )
+    result = asyncio.run(D1HistoryStore.get_claw_run_result_message(
+        store, "owner", "run_" + "f"*24, cid,
+    ))
+    assert result == "Padiem-Command-Center"
+    assert [item[0] for item in reads] == ["dispatch", "messages"]
+

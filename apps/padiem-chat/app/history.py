@@ -1398,6 +1398,14 @@ class D1HistoryStore:
         from .claw_local_task_result_projection import result_message_id
         correlation = await self.get_local_task_correlation(user_id, run_id)
         if not isinstance(correlation, dict):
+            # Oracle's own durable dispatch correlation is the source of truth
+            # for the Mesh command lane; do not forge a Local Runner binding.
+            correlation = await self._first(
+                "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
+                "WHERE user_id=? AND run_id=? AND state='done'",
+                user_id, run_id,
+            )
+        if not isinstance(correlation, dict):
             return None
         command_id = correlation.get("command_id")
         revision_ref = correlation.get("revision_ref")
@@ -1407,13 +1415,15 @@ class D1HistoryStore:
             conversation_id=conversation_id,
             command_id=command_id, revision_ref=revision_ref,
         )
-        row = await self._first(
-            "SELECT m.content FROM messages m JOIN conversations c "
-            "ON c.id=m.conversation_id WHERE m.id=? AND m.role='assistant' "
-            "AND m.conversation_id=? AND c.user_id=? AND c.product_scope=?",
-            message_id, conversation_id, user_id, PRODUCT_SCOPE_CHAT,
+        rows = await self._all(
+            "SELECT m.id, m.content FROM messages m JOIN conversations c "
+            "ON c.id=m.conversation_id WHERE m.role='assistant' "
+            "AND m.conversation_id=? AND c.user_id=? AND c.product_scope=? "
+            "AND (m.id=? OR m.id LIKE ?) ORDER BY m.sequence_number LIMIT 16",
+            conversation_id, user_id, PRODUCT_SCOPE_CHAT,
+            message_id, message_id + "_p%",
         )
-        return row.get("content") if isinstance(row, dict) else None
+        return "\n".join(row["content"] for row in rows) if rows else None
 
     async def append_local_task_result(
         self,
