@@ -28,10 +28,10 @@ import socket
 
 API_URL = "https://api.cloudflare.com/client/v4"
 EXPECTED_ACCOUNT_ID = "9be14bb7b8974e65d0afba647ab16932"
-B37_PROJECT = "ai-revenue-business-37-ai-safe-route"
+B37_PROJECT = "37-ai-safe-route"
 EXPECTED_REPOSITORY = "skerishKang/ai-revenue-lab"
 EXPECTED_BRANCH = "main"
-B37_URL = "https://ai-revenue-business-37-ai-safe-route.pages.dev/"
+B37_URL = "https://37-ai-safe-route.pages.dev/"
 
 
 def request_json(path: str, token: str) -> tuple[int, object]:
