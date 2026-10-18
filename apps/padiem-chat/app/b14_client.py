@@ -439,7 +439,10 @@ class B14Client:
         """
         if guard is None:
             return self
-        guarded = B14Client.__new__(B14Client)
+        # Preserve the installed subclass (DispatchAwareB14Client owns the
+        # pre-dispatch reservation/refund overrides) instead of flattening the
+        # client to the base class when a guard is attached.
+        guarded = self.__class__.__new__(self.__class__)
         guarded.__dict__.update(self.__dict__)
         if self.transport is not None:
             guarded.transport = guard.authorized_http_transport(self.transport)
