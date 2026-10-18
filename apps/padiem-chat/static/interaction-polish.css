@@ -170,3 +170,27 @@
     scroll-padding-bottom: calc(var(--padiem-composer-clearance, 230px) + 16px);
   }
 }
+
+/* Phase 1 turn parity: the manual Claw result card keeps its DOM and execution
+ * contract and only mirrors the unified answer metrics. The request echo
+ * mirrors the unified user turn without reusing .user-message, which the
+ * shared gutter QA selects strictly. */
+.claw-result-body {
+  font-size: 17px;
+  line-height: 1.76;
+}
+.conversation .claw-request-echo .message-bubble {
+  font-size: 17px;
+  line-height: 29.92px;
+  color: #111a22;
+}
+@media (max-width: 640px) {
+  .claw-result-body {
+    font-size: 16px;
+    line-height: 1.72;
+  }
+  .conversation .claw-request-echo .message-bubble {
+    font-size: 16px;
+    line-height: 27.52px;
+  }
+}
