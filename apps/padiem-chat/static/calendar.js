@@ -1112,14 +1112,11 @@
 
     function updateRangeNavigation(timezone) {
       const active = isRangeTab(currentTab);
-      // #5023: reuse the real status and retry controls inside the date row.
-      // Non-range views keep them beside the tabs rather than creating a banner.
-      if (errorBox && rangeNavigation && tabs) {
-        const target = active ? rangeNavigation : tabs;
-        if (errorBox.parentElement !== target) {
-          if (active && nextRange) target.insertBefore(errorBox, nextRange);
-          else target.appendChild(errorBox);
-        }
+      // #5023: title-side status does not change the height of the date row.
+      if (errorBox) {
+        const title = view && view.querySelector(".calendar-view-header, .calendar-header");
+        const header = title ? title.querySelector("div") : (view && view.querySelector("header"));
+        if (header && errorBox.parentElement !== header) header.appendChild(errorBox);
       }
       if (rangeNavigation) rangeNavigation.hidden = !active;
       if (!active) return;
@@ -1134,7 +1131,7 @@
       if (rangeToday) rangeToday.disabled = !localDateInZone(timezone);
     }
 
-    function showError(code) {
+    function showError(code, serverCode = "") {
       if (errorCopy) {
         errorCopy.textContent = code === 401
           ? (korean() ? "일정 조회에 로그인이 필요합니다. 다시 로그인해 주세요." : "Sign in to view calendar events.")
@@ -1144,6 +1141,7 @@
           ? (korean() ? "일정 조회에 실패했습니다 (HTTP " + code + ")." : "Calendar request failed (HTTP " + code + ").")
           : (korean() ? "캘린더를 불러오지 못했습니다. 다시 시도해 주세요." : "Could not load the calendar. Try again.");
       }
+      if (errorBox) errorBox.title = serverCode ? `HTTP ${code}: ${serverCode}` : (code ? `HTTP ${code}` : "");
       lastItems = null;
       list.replaceChildren();
       setStatus("error");
@@ -1352,7 +1350,9 @@
           const projection = data && data.ok === true ? data.projection : null;
           const items = projection && Array.isArray(projection.items) ? projection.items : null;
           if (!response.ok || !items) {
-            showError(response.status);
+            const serverCode = data && data.error && typeof data.error.code === "string"
+              ? data.error.code.slice(0, 80) : "";
+            showError(response.status, serverCode);
             return;
           }
           lastItems = items;
