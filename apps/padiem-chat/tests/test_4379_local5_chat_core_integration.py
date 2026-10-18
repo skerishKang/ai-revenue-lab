@@ -382,8 +382,11 @@ def test_sse_answer_over_one_mib_completes_without_clipping(tmp_path):
     streamed = (ANSWER_WORD * 20_000) + "::SSE_TAIL"
     assert len(streamed.encode("utf-8")) > MAX_B14_RESPONSE_BYTES
 
-    feed = CompletedTransport(streamed)
-    assert isinstance(feed, CompletedTransport)
+    # #4995: /api/chat/stream drives the Core SSE parser, which requires a
+    # text/event-stream upstream. A completed-JSON transport is rejected there
+    # as malformed_upstream before any delta is emitted.
+    feed = StreamingTransport(streamed, piece_chars=6_000)
+    assert feed.largest_frame_bytes < MAX_B14_RESPONSE_BYTES
 
     response = asyncio.run(_post(_chat(store, feed), "/api/chat/stream", _payload()))
 
@@ -401,9 +404,13 @@ def test_sse_answer_over_one_mib_completes_without_clipping(tmp_path):
 def test_sse_per_event_safety_limit_is_preserved(tmp_path):
     """The per-event 1MiB parser ceiling still rejects one oversized frame."""
     store, _bucket = _history_fixture(tmp_path)
-    oversized = "A" * (MAX_CONFIGURED_B14_RESPONSE_BYTES + 4_096)
-    feed = CompletedTransport(oversized)
-    assert len(oversized.encode("utf-8")) > MAX_CONFIGURED_B14_RESPONSE_BYTES
+    # #4995: the per-event ceiling is enforced on one decoded SSE frame, so the
+    # oversized payload must arrive as a single streaming frame rather than as
+    # a completed JSON body.
+    oversized = "가" * 400_000
+    feed = StreamingTransport(oversized, piece_chars=len(oversized))
+    assert MAX_B14_RESPONSE_BYTES == 1_048_576
+    assert feed.largest_frame_bytes > MAX_B14_RESPONSE_BYTES
 
     response = asyncio.run(_post(_chat(store, feed), "/api/chat/stream", _payload()))
 

@@ -211,7 +211,15 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
 
     async def b14_handler(request: httpx.Request) -> httpx.Response:
         seen.append(json.loads(request.content))
-        return httpx.Response(200, json=completion_payload())
+        # #4995: /api/chat/stream drives the Core SSE parser, which requires a
+        # text/event-stream upstream. A completed-JSON body is rejected there
+        # as malformed_upstream before any delta is emitted.
+        answer = completion_payload()["choices"][0]["message"]["content"]
+        return httpx.Response(
+            200,
+            headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([stream_frame(answer), b"data: [DONE]\n\n"]),
+        )
 
     app = create_app(
         Settings(

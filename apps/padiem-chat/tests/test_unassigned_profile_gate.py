@@ -106,8 +106,14 @@ def test_live_stream_active_catjam_propagates_provider_error_and_refunds():
                 pass
 
         assert info.value.status_code == 502
-        assert info.value.code == "upstream_unavailable"
-        assert calls == 0
+        # #4995: the active free profile resolves to opencode-go/beam-free, so
+        # stream_text_auto takes the streaming lane and really dispatches. A
+        # provider 5xx is upstream_server_error, which the approved mapping
+        # presents as provider_server_error — the same contract the completed
+        # lane asserts above. Only the transport-level "unavailable" class is
+        # reserved for a transport that never produced a response.
+        assert info.value.code == "provider_server_error"
+        assert calls == 1
         assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False
 
