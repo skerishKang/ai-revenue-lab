@@ -469,6 +469,28 @@
   }
 }
 
+/* First-screen rise parity across the remaining workspace destinations.
+   Chat landing (.empty-state/.starter-grid) and Meeting (.meeting-header/.meeting-panel)
+   already rise on this curve; extend it to Claw, Connectors, Automation, Library and
+   Calendar so every destination shares one entrance rhythm. */
+.claw-workspace-header,
+.connectors-view .standalone-view-header,
+.automation-view .standalone-view-header,
+.library-header,
+.calendar-view-header {
+  animation: padiem-rise .72s cubic-bezier(.2, .75, .2, 1) both;
+}
+.claw-workspace-tagline,
+.claw-workspace-help,
+.connectors-view .standalone-view-tagline,
+.connectors-view .standalone-view-body,
+.automation-view .standalone-view-tagline,
+.automation-view .standalone-view-body,
+.library-tabs,
+.calendar-view-help {
+  animation: padiem-rise .82s .08s cubic-bezier(.2, .75, .2, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
