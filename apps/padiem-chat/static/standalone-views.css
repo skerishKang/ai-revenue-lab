@@ -171,3 +171,50 @@ html[data-theme="padiem-glass"] body .app-shell:is(
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Connectors: remove dialog-era spacing and make the long list visibly scrollable.
+ * Only the standalone connector page is affected; connection state, auth and
+ * actions are unchanged. */
+.app-shell[data-state="connectors"] .connectors-view {
+  gap: 10px;
+  max-height: calc(100dvh - 92px);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: rgba(72, 91, 108, .72) rgba(120, 136, 148, .14);
+}
+.app-shell[data-state="connectors"] .connectors-view::-webkit-scrollbar {
+  width: 10px;
+}
+.app-shell[data-state="connectors"] .connectors-view::-webkit-scrollbar-track {
+  background: rgba(120, 136, 148, .14);
+  border-radius: 99px;
+}
+.app-shell[data-state="connectors"] .connectors-view::-webkit-scrollbar-thumb {
+  background: rgba(72, 91, 108, .72);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 99px;
+}
+.app-shell[data-state="connectors"] .connectors-view .standalone-view-body {
+  gap: 4px;
+}
+.app-shell[data-state="connectors"] #connectorsViewBody .connector-live-status {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+.app-shell[data-state="connectors"] #connectorsViewBody .connector-live-status:empty {
+  display: none;
+}
+.app-shell[data-state="connectors"] #connectorsViewBody .capability-grid {
+  padding: 0 0 12px;
+  gap: 12px;
+}
+@media (max-width: 700px) {
+  .app-shell[data-state="connectors"] .connectors-view {
+    max-height: calc(100dvh - 62px);
+    padding-bottom: 20px;
+  }
+}
