@@ -424,6 +424,7 @@ async def execute_and_project_scheduled_occurrence(
     store: ScheduledOutcomeStore,
     lease: SandboxLease | None = None,
     product_tier: Any | None = None,
+    central_route_model_id: str | None = None,
     completed_at: datetime | None = None,
     clock: Callable[[], datetime] | None = None,
 ) -> ScheduledOutcomeProjection:
@@ -440,13 +441,13 @@ async def execute_and_project_scheduled_occurrence(
         # retries are projection reads, never a second P01 execution.
         return ScheduledOutcomeProjection(current, None, current.output)
     try:
-        outcome = await execute_scheduled_occurrence(
-            rule=rule,
-            scheduled_run=scheduled_run,
-            adapter=adapter,
-            lease=lease,
-            product_tier=product_tier,
-        )
+        execution_kwargs: dict[str, Any] = {
+            "rule": rule, "scheduled_run": scheduled_run, "adapter": adapter,
+            "lease": lease, "product_tier": product_tier,
+        }
+        if central_route_model_id is not None:
+            execution_kwargs["central_route_model_id"] = central_route_model_id
+        outcome = await execute_scheduled_occurrence(**execution_kwargs)
     except asyncio.CancelledError:
         await _await_projection(
             _project_status(

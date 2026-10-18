@@ -290,7 +290,9 @@ def test_s3_write_routes_are_registered_but_default_off_without_signer():
         "/api/admin/models/me", "/api/admin/models/snapshot",
         "/api/admin/models/preview", "/api/admin/models/change-preview",
         "/api/admin/models/change-apply", "/api/admin/models/rollback-preview",
-        "/api/admin/models/audit",
+        "/api/admin/models/audit", "/api/admin/models/routes",
+        "/api/admin/models/route-preview", "/api/admin/models/route-apply",
+        "/api/admin/models/route-rollback-preview",
     }
     assert paths["/api/admin/models/change-apply"] == {"POST"}
     assert app.state.central_model_policy_write_key is None

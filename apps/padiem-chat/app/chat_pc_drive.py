@@ -38,7 +38,7 @@ from .history import (
     HistoryStore,
     PRODUCT_SCOPE_CHAT,
 )
-from .model_policy import request_tier_context
+from .central_model_route_runtime import chat_request_tier_context
 from .public_chat import public_chat_result
 
 _NO_STORE_HEADERS = {
@@ -269,7 +269,7 @@ async def _complete_with_model(
             "AI 모델을 현재 사용할 수 없습니다.",
         )
     try:
-        with request_tier_context(tier):
+        async with chat_request_tier_context(request, tier):
             result = await client.complete(
                 ({"role": "user", "content": user_text},),
                 skill,

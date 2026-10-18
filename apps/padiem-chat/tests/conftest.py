@@ -124,6 +124,7 @@ def _synthetic_plus_route_for_non_policy_contracts(
     # references too. Missing optional modules are harmless for unrelated tests.
     for module_name_to_patch in (
         "app.model_policy",
+        "app.central_model_route_runtime",
         "app.claw_routes",
         "app.claw_general_routes",
         "kagent.p01_adapter",

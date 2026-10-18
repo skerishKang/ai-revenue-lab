@@ -38,6 +38,7 @@ import pytest
 from starlette.testclient import TestClient
 
 import app.claw_general_routes as general_routes_module
+import app.central_model_route_runtime as route_runtime_module
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
@@ -72,7 +73,7 @@ def module_hold_resolver(monkeypatch: pytest.MonkeyPatch) -> None:
     This is a test-local HOLD reproduction, not a claim about the product: the
     real resolver (and real model registration) stays untouched. The seams are
     the same ones ``tests/conftest.py`` patches — the control-plane module and
-    the by-value reference ``claw_general_routes`` imported — so the route under
+    the runtime module that resolves the static fallback — so the route under
     test resolves through this fixture's HOLD resolver and nothing else.
     """
 
@@ -80,7 +81,7 @@ def module_hold_resolver(monkeypatch: pytest.MonkeyPatch) -> None:
         return None
 
     monkeypatch.setattr(product_tier_routes, "active_route_for", _hold_route_for)
-    monkeypatch.setattr(general_routes_module, "active_route_for", _hold_route_for)
+    monkeypatch.setattr(route_runtime_module, "active_route_for", _hold_route_for)
 
 
 def _settings() -> Settings:
@@ -136,7 +137,7 @@ def _payload(**extra) -> dict:
 def test_module_hold_resolver_reproduces_no_executable_route() -> None:
     """The injected resolver itself yields no executable route for any tier."""
     for label in _HOLDABLE_TIERS:
-        assert general_routes_module.active_route_for(label) is None
+        assert route_runtime_module.active_route_for(label) is None
         assert product_tier_routes.active_route_for(label) is None
 
 

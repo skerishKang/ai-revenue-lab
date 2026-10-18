@@ -78,6 +78,20 @@ _REQUEST_TIER_ID: ContextVar[str | None] = ContextVar(
     "padiem_request_tier_id",
     default=None,
 )
+# #4428: an exact model resolved from the central per-tier route for THIS
+# request task. It replaces only the static primary of the matching grade and
+# is never used to grant a higher membership tier.
+_REQUEST_ROUTE_MODEL: ContextVar[str | None] = ContextVar(
+    "padiem_request_route_model",
+    default=None,
+)
+
+
+def _request_route_override(tier_id: str) -> str | None:
+    model_id = _REQUEST_ROUTE_MODEL.get()
+    if _REQUEST_TIER_ID.get() != tier_id:
+        return None
+    return model_id if isinstance(model_id, str) and model_id else None
 
 
 def current_request_tier_id() -> str | None:
@@ -246,8 +260,9 @@ def resolve_tier_policy(
     if normalized == "free":
         # No paid-member entitlement needed: caller authentication and usage
         # controls are enforced by the actual Chat route before provider dispatch.
+        override = _request_route_override("free")
         return ResolvedModelPolicy(
-            model_id=FREE_B14_MODEL_ID,
+            model_id=override or FREE_B14_MODEL_ID,
             messages=_strip_hidden_tier_alias(messages),
             profile="free",
         )
@@ -263,6 +278,16 @@ def resolve_tier_policy(
     label = TIER_ID_TO_LABEL.get(normalized)
     if label is None:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+
+    override = _request_route_override(normalized)
+    if override is not None:
+        # Validated against the live B14 catalog when the administrator applied
+        # the central route; B14 still rejects an unavailable exact model.
+        return ResolvedModelPolicy(
+            model_id=override,
+            messages=_strip_hidden_tier_alias(messages),
+            profile=TIER_ID_TO_PROFILE[normalized],
+        )
 
     try:
         route = active_route_for(label)
@@ -314,8 +339,13 @@ def resolve_request_model_policy(
 
 
 @contextmanager
-def request_tier_context(tier_id: str | None):
-    """Temporarily bind a validated browser tier for this async request task."""
+def request_tier_context(tier_id: str | None, *, model_id: str | None = None):
+    """Temporarily bind a validated browser tier for this async request task.
+
+    ``model_id`` carries an exact central route primary for the same grade. It
+    is never accepted from browser input; callers pass only a server-resolved,
+    catalog-validated model ID.
+    """
 
     if tier_id is None:
         yield
@@ -325,11 +355,17 @@ def request_tier_context(tier_id: str | None):
     normalized = tier_id.strip().lower()
     if normalized != "free" and normalized != "admin" and normalized not in TIER_ID_TO_LABEL:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
-    token = _REQUEST_TIER_ID.set(normalized)
+    if model_id is not None and (
+        not isinstance(model_id, str) or not model_id or len(model_id) > 256
+    ):
+        raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+    tier_token = _REQUEST_TIER_ID.set(normalized)
+    model_token = _REQUEST_ROUTE_MODEL.set(model_id)
     try:
         yield
     finally:
-        _REQUEST_TIER_ID.reset(token)
+        _REQUEST_ROUTE_MODEL.reset(model_token)
+        _REQUEST_TIER_ID.reset(tier_token)
 
 
 def resolve_model_policy(
