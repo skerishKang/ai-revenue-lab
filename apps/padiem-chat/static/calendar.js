@@ -1112,6 +1112,15 @@
 
     function updateRangeNavigation(timezone) {
       const active = isRangeTab(currentTab);
+      // #5023: reuse the real status and retry controls inside the date row.
+      // Non-range views keep them beside the tabs rather than creating a banner.
+      if (errorBox && rangeNavigation && tabs) {
+        const target = active ? rangeNavigation : tabs;
+        if (errorBox.parentElement !== target) {
+          if (active && nextRange) target.insertBefore(errorBox, nextRange);
+          else target.appendChild(errorBox);
+        }
+      }
       if (rangeNavigation) rangeNavigation.hidden = !active;
       if (!active) return;
       const range = rangeForView(currentTab, rangeAnchorDate);
