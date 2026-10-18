@@ -290,7 +290,7 @@ check(html.includes('id="freeChatStarter"') &&
       easy.includes("bridge.chat(history, { conversationId: sentDialogueId, turnToken: turnToken })") &&
       easy.includes("return bridge.interpret(text)"),
   "B66_CHAT_ENTRY: explicit general AI dialogue CTA routes to real model and preserves approved CGI quote flow");
-check(easy.includes("renderSourcedEvidence(addMessage(\"assistant\", result.answer, { markdown: true }), result.search)") &&
+check(easy.includes("renderSourcedEvidence(addMessage(\"assistant\", result.answer, { markdown: true, copyAction: true }), result.search)") &&
       easy.includes('search.status !== "sourced"') &&
       easy.includes('stamp.textContent = "서버 수집 "') &&
       easy.includes('rel = "noopener noreferrer nofollow"') &&
