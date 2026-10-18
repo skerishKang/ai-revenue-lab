@@ -527,7 +527,7 @@ def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
 
 
 async def _claw_public_search_grounding(
-    request: Request, adapter: Any, messages: Any
+    request: Request, adapter: Any, messages: Any, *, model_id: str | None = None
 ) -> tuple[str | None, tuple[dict[str, str], ...]]:
     """Let the model decide, then reuse the existing Engine evidence operation once.
 
@@ -547,7 +547,7 @@ async def _claw_public_search_grounding(
     digest = build_judgement_digest(messages)
     if digest is None:
         return denied
-    agent = evidence_agent()
+    agent = evidence_agent(model_id)
     try:
         verdict = verdict_from_model(await judge(conversation=digest, agent=agent))
     except Exception:
@@ -1392,9 +1392,14 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # uses, never browser-supplied prior turns, so forged history cannot move the
     # search target. Everything downstream is unchanged when it returns nothing.
     # Private Drive data never enters the public web search judgement/query.
-    if drive_context is None:
+    if initial_pc_drive_query:
+        # #5015: a PC drive query needs no public web evidence. Skipping the
+        # judgement call keeps this turn from spending a model call (and from
+        # entering the suspended b14/auto chain) before the Engine dispatch.
+        grounding_context, search_sources = None, ()
+    elif drive_context is None:
         grounding_context, search_sources = await _claw_public_search_grounding(
-            request, adapter, model_user_text
+            request, adapter, model_user_text, model_id=selected_model_id
         )
     else:
         grounding_context, search_sources = drive_context, drive_sources
