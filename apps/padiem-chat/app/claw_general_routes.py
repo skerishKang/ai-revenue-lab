@@ -1068,9 +1068,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if natural_pc_command is None:
             return _error(422, "natural_pc_command_required",
                           "PC 조회 명령을 결정할 수 없습니다.")
-        return await _dispatch_user_command_request(
-            request, user_text=user_text, command=natural_pc_command, data=data,
-        )
+        if "Get-PSDrive" not in natural_pc_command:
+            return await _dispatch_user_command_request(
+                request, user_text=user_text, command=natural_pc_command, data=data,
+            )
+        initial_pc_drive_query = True
+    else:
+        initial_pc_drive_query = False
 
     txt_requested, txt_path = _requested_local_txt_path(user_text)
     if txt_requested:
@@ -1376,7 +1380,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # target conversation, workspace and owner session from that row, so an
     # unstaged run can only fail after the model has already started.
     staged_conversation_id: str | None = None
-    if initial_pc_capture:
+    if initial_pc_capture or initial_pc_drive_query:
         from .claw_memory_routes import _resolve_memory_workspace
         stage_uid = current_user_id(request) if auth_ready(request) else None
         stage = getattr(
@@ -1415,6 +1419,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if initial_pc_capture:
             live_args["desktop_capture"] = True
             live_args["desktop_device_id"] = desktop_device_id
+        if initial_pc_drive_query:
+            live_args["pc_drive_query"] = True
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
         if grounding_context is not None:
@@ -1441,6 +1447,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if initial_pc_capture:
             dispatch_args["desktop_capture"] = True
             dispatch_args["desktop_device_id"] = desktop_device_id
+        if initial_pc_drive_query:
+            dispatch_args["pc_drive_query"] = True
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
         if grounding_context is not None:

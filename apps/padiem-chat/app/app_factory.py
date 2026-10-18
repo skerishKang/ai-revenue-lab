@@ -729,6 +729,7 @@ def create_app(
             routes[-1:-1] = [
                 Route(ORACLE_MESH_READ_REQUEST_PATH, oracle_mesh_read_request, methods=["POST"]),
                 Route("/internal/claw/engine-desktop", oracle_mesh_engine_desktop_call, methods=["POST"]),
+                Route("/internal/claw/engine-pc-drive", oracle_mesh_engine_desktop_call, methods=["POST"]),
                 Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),

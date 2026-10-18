@@ -829,6 +829,7 @@ async def dispatch_oracle_mesh_read_intent(
 
 async def dispatch_oracle_mesh_command_intent(
     request: Request, *, command: str, wire: dict[str, Any],
+    trusted_owner: tuple[Any, str, str] | None = None,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -842,14 +843,19 @@ async def dispatch_oracle_mesh_command_intent(
     * no file/root/path is accepted from the browser, so this route cannot
       retarget the read lane's file authority.
     """
-    session, denial = await _verified_owner_request(request)
-    if denial is not None or session is None:
-        return denial if denial is not None else _error(401, "canonical_session_required")
-    uid = current_user_id(request)
-    try:
-        workspace_id = await _resolve_memory_workspace(request, uid)
-    except Exception:
-        return _error(503, "oracle_mesh_workspace_unavailable")
+    if trusted_owner is None:
+        session, denial = await _verified_owner_request(request)
+        if denial is not None or session is None:
+            return denial if denial is not None else _error(401, "canonical_session_required")
+        uid = current_user_id(request)
+        try:
+            workspace_id = await _resolve_memory_workspace(request, uid)
+        except Exception:
+            return _error(503, "oracle_mesh_workspace_unavailable")
+    else:
+        session, uid, workspace_id = trusted_owner
+        if not uid or not workspace_id or not getattr(session, "tenant_id", None):
+            return _error(401, "canonical_session_required")
     if not workspace_id:
         return _error(503, "oracle_mesh_workspace_unavailable")
 
@@ -1998,11 +2004,20 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     # must be the identical bytes: the executor holds them and never re-reads
     # the PC file, and a differing resend is refused rather than appended.
     try:
-        same_result = await history_store.record_oracle_mesh_first_result(
-            dispatch_id=wire["dispatch_id"],
-            content_sha256=result_digest,
-            content_bytes=result_size,
-        )
+        try:
+            same_result = await history_store.record_oracle_mesh_first_result(
+                dispatch_id=wire["dispatch_id"],
+                content_sha256=result_digest,
+                content_bytes=result_size,
+                termination=wire.get("termination") if isinstance(wire.get("termination"), str) else None,
+                exit_code=wire.get("exit_code"),
+            )
+        except TypeError:
+            same_result = await history_store.record_oracle_mesh_first_result(
+                dispatch_id=wire["dispatch_id"],
+                content_sha256=result_digest,
+                content_bytes=result_size,
+            )
     except Exception:
         # A pin failure must stay retryable: park the received row so the
         # identical resend is accepted as claim="retry" instead of dying
@@ -2052,6 +2067,38 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         revision_ref=dispatch["revision_ref"],
     )
     if command_output is not None:
+        # #5015: the Engine model lane re-feeds exact bytes, including small
+        # drive inventories that never needed the over-budget original store.
+        # Errors are never promoted by storing: this only preserves bytes, the
+        # outcome below stays as verified. Withheld bodies (empty) are owned
+        # by the non-delivery notice and store nothing, so no result is lost.
+        if 0 < len(command_output) <= 65536 and wire["termination"] in ("exited", "no_exit_code"):
+            try:
+                store_small = getattr(history_store, "store_oracle_mesh_command_result", None)
+                if not callable(store_small):
+                    store_small = history_store.store_oracle_mesh_original
+                await store_small(
+                    user_id=dispatch["user_id"], dispatch_id=wire["dispatch_id"],
+                    conversation_id=conversation_id, message_id=base_message_id,
+                    raw=command_output, expected_sha256=result_digest,
+                    expected_bytes=result_size,
+                )
+            except HistoryForbidden:
+                try:
+                    await history_store.finish_oracle_mesh_dispatch(
+                        dispatch_id=wire["dispatch_id"], outcome="failed",
+                    )
+                except Exception:
+                    pass
+                return _error(403, "oracle_mesh_conversation_forbidden")
+            except Exception:
+                try:
+                    await history_store.mark_oracle_mesh_store_failed(
+                        dispatch_id=wire["dispatch_id"],
+                    )
+                except Exception:
+                    pass
+                return _error(503, "oracle_mesh_original_unavailable")
         if wire["termination"] == "output_too_large" and not command_output:
             # The executor withheld the body at the wire envelope, so there
             # is no original to store and nothing to split: the observed
@@ -2361,9 +2408,11 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
         payload = json.loads(raw)
     except (ValueError, TypeError):
         return _error(400, "claw_engine_desktop_invalid_body")
-    status_query = isinstance(payload, dict) and payload.get("mode") in ("status", "image")
+    status_query = isinstance(payload, dict) and payload.get("mode") in ("status", "image", "result", "command_status")
+    command_dispatch = isinstance(payload, dict) and payload.get("mode") == "dispatch"
     expected_keys = (
         {"subject_id", "run_id", "dispatch_id", "mode"} if status_query
+        else {"subject_id", "run_id", "device_id", "command", "mode"} if command_dispatch
         else {"subject_id", "run_id", "device_id", "desktop_op"}
     )
     if (not isinstance(payload, dict)
@@ -2374,7 +2423,12 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
         )
         or (status_query and (not isinstance(payload["dispatch_id"], str)
             or not 0 < len(payload["dispatch_id"]) <= 128))
-        or (not status_query and (
+        or (command_dispatch and (
+            payload.get("device_id") is not None and not isinstance(payload.get("device_id"), str)
+            or not isinstance(payload.get("command"), str)
+            or payload.get("command") != "Get-PSDrive -PSProvider FileSystem | Select-Object Name,Root,Used,Free | ConvertTo-Json"
+        ))
+        or (not status_query and not command_dispatch and (
             not isinstance(payload["desktop_op"], str)
             or not 0 < len(payload["desktop_op"]) <= 512
             or (payload["device_id"] is not None and (
@@ -2412,9 +2466,10 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             )
         except Exception:
             return _error(503, "oracle_mesh_dispatch_unavailable")
+        expected_kind = "command" if payload.get("mode") in ("result", "command_status") else "desktop"
         if (not isinstance(dispatch, dict)
             or dispatch.get("run_id") != payload["run_id"]
-            or dispatch.get("kind") != "desktop"):
+            or dispatch.get("kind") != expected_kind):
             return _error(404, "oracle_mesh_run_unavailable")
         state = dispatch.get("state")
         if payload["mode"] == "image":
@@ -2448,6 +2503,62 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
                 raw, media_type="image/jpeg",
                 headers={**_NO_STORE, "X-Oracle-Mesh-Content-SHA256": digest},
             )
+        if payload["mode"] == "result":
+            if state != "done" or dispatch.get("kind") != "command":
+                return _error(409, "oracle_mesh_result_not_ready")
+            termination = dispatch.get("termination")
+            exit_code = dispatch.get("exit_code")
+            if termination not in (
+                "exited", "no_exit_code", "output_too_large", "not_executed",
+                "timed_out", "cancelled", "no_reply",
+            ):
+                return _error(503, "oracle_mesh_original_unavailable")
+            if exit_code is None:
+                if termination not in (
+                    "timed_out", "no_reply", "no_exit_code", "not_executed",
+                    "output_too_large", "cancelled",
+                ):
+                    return _error(503, "oracle_mesh_original_unavailable")
+            elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
+                return _error(503, "oracle_mesh_original_unavailable")
+            try:
+                run = await history_store.get_claw_run(uid, payload["run_id"])
+                conversation_id = validate_conversation_id(
+                    (run or {}).get("conversation_id")
+                )
+                if not conversation_id:
+                    return _error(404, "oracle_mesh_run_unavailable")
+                message_id = result_message_id(
+                    conversation_id=conversation_id,
+                    command_id=dispatch["command_id"],
+                    revision_ref=dispatch["revision_ref"],
+                )
+                stored = await history_store.read_oracle_mesh_original(
+                    user_id=uid, dispatch_id=dispatch["dispatch_id"],
+                    conversation_id=conversation_id, message_id=message_id,
+                )
+            except Exception:
+                return _error(503, "oracle_mesh_original_unavailable")
+            if stored is None:
+                return _error(404, "oracle_mesh_original_unavailable")
+            raw, digest = stored
+            if (not isinstance(raw, bytes)
+                or hashlib.sha256(raw).hexdigest() != digest
+                or digest != dispatch.get("result_sha256")):
+                return _error(503, "oracle_mesh_original_unavailable")
+            return _response({
+                "ok": True,
+                "dispatch": {
+                    "dispatch_id": dispatch["dispatch_id"],
+                    "run_id": payload["run_id"],
+                    "kind": "command",
+                    "state": "done",
+                    "result_sha256": digest,
+                    "output": raw.decode("utf-8", errors="replace"),
+                    "termination": termination,
+                    "exit_code": exit_code,
+                },
+            })
         if state not in {"pending", "received", "store_failed", "done", "failed"}:
             return _error(503, "oracle_mesh_dispatch_unavailable")
         return _response({
@@ -2455,11 +2566,25 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             "dispatch": {
                 "dispatch_id": dispatch["dispatch_id"],
                 "run_id": payload["run_id"],
-                "kind": "desktop",
+                "kind": "command" if payload.get("mode") == "command_status" else "desktop",
                 "state": state,
                 "result_sha256": dispatch.get("result_sha256"),
+                "termination": dispatch.get("termination"),
+                "exit_code": dispatch.get("exit_code"),
             },
         })
+    if command_dispatch:
+        try:
+            command_workspace = await _resolve_memory_workspace(request, uid)
+        except Exception:
+            return _error(503, "oracle_mesh_workspace_unavailable")
+        if not command_workspace:
+            return _error(503, "oracle_mesh_workspace_unavailable")
+        return await dispatch_oracle_mesh_command_intent(
+            request, command=payload["command"],
+            wire={"run_id": payload["run_id"], "device_id": payload["device_id"], "confirmed": True},
+            trusted_owner=(session, uid, command_workspace),
+        )
     return await dispatch_oracle_mesh_desktop_intent(
         request, desktop_op=payload["desktop_op"],
         wire={"run_id": payload["run_id"], "device_id": payload["device_id"], "confirmed": True},
