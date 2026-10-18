@@ -1144,19 +1144,41 @@ def create_app(
     # #3186 STEP 3-B: staff status alone never issues review permission.
     # Both inputs are separate server-injected authorities. Without either,
     # the existing operator decision endpoint remains fail-closed (503).
+    # #5094: compose B66-only defaults from authorities that already exist —
+    # the verified Google admin store, the candidate's server-recorded owner
+    # scope and the shared Control Plane canonical session. An explicitly
+    # injected resolver still wins. No request value can mint a grant or a
+    # target, and missing bindings leave the route at 503.
+    _review_grant_issuer = b66_review_grant_issuer
+    _review_target_resolver = b66_canonical_candidate_target_resolver
+    if (isinstance(app.state.b66_member_admin_store, D1B66MemberAdminStore)
+            and _b66_saved_skill_candidate_store is not None):
+        from .b66_candidate_review_host_composition import (
+            build_b66_candidate_review_host,
+        )
+        _composed = build_b66_candidate_review_host(
+            member_admin_store=app.state.b66_member_admin_store,
+            candidate_store=_b66_saved_skill_candidate_store,
+        )
+        if _composed is not None:
+            if _review_grant_issuer is None:
+                _review_grant_issuer = _composed[0]
+            if _review_target_resolver is None:
+                _review_target_resolver = _composed[1]
+
     _candidate_review_authority = None
     if (isinstance(app.state.b66_member_admin_store, D1B66MemberAdminStore)
             and _b66_saved_skill_candidate_store is not None
-            and callable(b66_review_grant_issuer)
-            and callable(b66_canonical_candidate_target_resolver)):
+            and callable(_review_grant_issuer)
+            and callable(_review_target_resolver)):
         from .b66_saved_skill_candidate_authority import (
             D1B66SavedQuoteSkillCandidateOperatorAuthority,
         )
         _candidate_review_authority = D1B66SavedQuoteSkillCandidateOperatorAuthority(
             member_admin_store=app.state.b66_member_admin_store,
             candidate_store=_b66_saved_skill_candidate_store,
-            trusted_review_grant_issuer=b66_review_grant_issuer,
-            canonical_target_resolver=b66_canonical_candidate_target_resolver,
+            trusted_review_grant_issuer=_review_grant_issuer,
+            canonical_target_resolver=_review_target_resolver,
         )
     app.state.b66_saved_skill_candidate_operator_authority = _candidate_review_authority
     app.state.b66_operator_grant_resolver = (
