@@ -42,8 +42,13 @@ B66_PRODUCT_ID = "b66"
 B66_PC_OPERATOR_WORKSPACE_ENV = "B66_PC_OPERATOR_WORKSPACE_REF"
 B66_PC_OPERATOR_OPERATIONS_ENV = "B66_PC_OPERATOR_OPERATIONS"
 
-# Same token grammar as the canonical contract plus the mandatory owner scope.
-_WORKSPACE_RE = re.compile(r"^owner:[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
+# The production workspace is the Control Plane session tenant
+# (``tenant_<hex>``); deployments without the identity authority fall back to
+# the ``owner:<uid>`` compatibility namespace. Only these two server-issued
+# namespaces are accepted here; anything else fails closed even though the
+# canonical token grammar is wider. The server-side equality check
+# (grant.workspace_ref vs the request workspace) remains the real boundary.
+_WORKSPACE_RE = re.compile(r"^(?:owner:|tenant_)[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 
 # The B66 TXT slice needs FILE_READ to dispatch and TASK_RESULT to land the
 # terminal observation. DEVICE_LIST keeps the existing status panel truthful.
