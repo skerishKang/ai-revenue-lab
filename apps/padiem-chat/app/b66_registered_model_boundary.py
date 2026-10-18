@@ -20,6 +20,7 @@ from .b66_reasoning_level import (
     reasoning_transport_available,
     verified_reasoning_levels_for_model,
 )
+from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 
 
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}\Z")
@@ -319,7 +320,7 @@ class B66RegisteredModelCompletion:
         # `default` and an absent value mean provider-native omission, so the
         # request below is byte-identical to the pre-#3906 call.
         if product_tier is not None:
-            if product_tier not in ("free", "plus", "pro", "max") or model_id != "opencode-go/cat-jam-free":
+            if product_tier not in ("free", "plus", "pro", "max") or model_id != FREE_PRIMARY_B14_MODEL_ID:
                 await self._refund_before_dispatch()
                 raise B66ModelRouteError("model_identity_invalid")
         native_parameters = await self._reasoning_parameters(model_id, reasoning_level)

@@ -268,7 +268,7 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
         if tiers.index(requested_tier) > tiers.index(known_member_tier):
             return _error(403, "tier_not_available", "현재 이용 등급 이하의 AI 등급을 선택해 주세요.")
         if model_id != FREE_PRIMARY_B14_MODEL_ID:
-            return _error(400, "invalid_model_id", "등급 선택은 Cat Jam 기본 모델을 사용합니다.")
+            return _error(400, "invalid_model_id", "등급 선택은 기본 모델을 사용합니다.")
     messages = data.get("messages")
     reasoning_level = data.get("reasoning_level")
     conversation_id = data.get("conversation_id")
