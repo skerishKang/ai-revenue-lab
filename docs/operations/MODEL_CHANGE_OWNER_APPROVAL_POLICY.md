@@ -1,3 +1,7 @@
+<!-- B14_FREE_ROLLOUT_STATUS_20261018 -->
+> **2026-10-18 저장소 전체 모델 운영 상태:** [B14 Free 운영 배포 및 B14/B62/B54/P01/B66 검증 현황](B14_FREE_ROLLOUT_REPO_WIDE_STATUS_2026-10-18.md). PR #4983의 현재 대표 지정 고정 폴백은 **Beam Free → LongCat Free → 등급별 나머지 모델(최대 2개)**입니다. 2026-10-15의 'Cat Jam 기본/폴백 1개' 설명은 과거 기록이며 현재 기본/폴백 정책이 아닙니다. B14 배포 확인과 인증 사용자 Free 응답 E2E는 별개의 완료 기준입니다.
+<!-- /B14_FREE_ROLLOUT_STATUS_20261018 -->
+
 <!-- B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
 > **B14 역할 최신 원칙(2026-10-10):** [원제작사 모델·서빙 제공업체·변형 모델의 공식 사양 및 B14 실행 권한](../architecture/B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md)을 우선 확인합니다. **B14는 정확히 사용자가 선택한 모델을 해당 업체의 공식 API로 실행**하며, temperature/토큰/리즈닝을 임의 지정하거나 옵션을 조용히 바꾸지 않습니다. 원본 모델의 공식 사양과 실제 API 제공업체의 계약은 별도 증빙합니다. 과거 코드·평가 수치는 이 원칙의 구현 증명이 아닙니다.
 <!-- /B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->

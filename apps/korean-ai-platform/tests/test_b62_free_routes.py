@@ -40,7 +40,8 @@ def test_removed_free_models_not_in_public_or_exact_catalog():
     assert {m.model_id for m in CATALOG_BY_ID.values() if "free" in m.capabilities and m.enabled} == {
         "tokenharbor/claude-haiku-5.5:free",
         "tokenharbor/deepseek-v4.1-flash:free",
-        "opencode-go/cat-jam-free",
+        "opencode-go/beam-free",
+        "opencode-go/longcat-2.5-preview-free",
     }
     assert all(m not in CATALOG_BY_ID for m in [
         "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",

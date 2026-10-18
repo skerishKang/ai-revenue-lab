@@ -210,7 +210,7 @@ _HEADERS = {
 _HTML = """<!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PADIEM Connector — PC 등록</title>
+<title>Padiem Connector — PC 등록</title>
 <style>
 body{font:16px system-ui,sans-serif;max-width:650px;margin:3rem auto;padding:0 1.5rem;line-height:1.6}
 label{display:block;margin:1rem 0}input:not([type=checkbox]){box-sizing:border-box;width:100%;padding:.7rem}
@@ -218,18 +218,18 @@ button{padding:.7rem 1rem;margin:.4rem .5rem .4rem 0;cursor:pointer}
 output,pre{display:block;padding:1rem;background:#f4f5f7;white-space:pre-wrap;overflow-wrap:anywhere}
 code{font-size:.9em}
 </style></head><body>
-<h1>PADIEM Connector &#8212; PC &#50672;&#44208;</h1>
+<h1>Padiem Connector &#8212; PC &#50672;&#44208;</h1>
 <p>&#49444;&#52824;&#54620; &#52964;&#45349;&#53552;&#47484; &#49892;&#54665;&#54624; &#49688; &#51080;&#49845;&#45768;&#45796;. &#49436;&#48260; &#50672;&#44208;&#51008; &#46321;&#47197; &#54980; &#54869;&#51064;&#54633;&#45768;&#45796;.</p>
 <button type="button" id="native-launch">&#52964;&#45349;&#53552; &#49892;&#54665;</button>
 <output id="native-state" role="status" aria-live="polite">&#49444;&#52824;&#54620; &#52964;&#45349;&#53552;&#47484; &#49892;&#54665;&#54624; &#49688; &#51080;&#49845;&#45768;&#45796;. &#49436;&#48260; &#50672;&#44208;&#51008; &#46321;&#47197; &#54980; &#54869;&#51064;&#54633;&#45768;&#45796;.</output>
 <section id="pending-pc" hidden>
 <h2>PC 연결 정보 전달</h2>
-<p>설치 PC의 연결 정보가 확인됐습니다. 기존 PADIEM CLAW 화면에서 진행 상황을 확인하세요.</p>
-<output id="pending-state" role="status" aria-live="polite">PADIEM CLAW 연결 요청 화면을 확인해 주세요.</output>
+<p>설치 PC의 연결 정보가 확인됐습니다. 기존 Padiem Claw 화면에서 진행 상황을 확인하세요.</p>
+<output id="pending-state" role="status" aria-live="polite">Padiem Claw 연결 요청 화면을 확인해 주세요.</output>
 </section>
 <details id="operator-restore"><summary>&#44288;&#47532;&#51088;&#50857; &#46321;&#47197; &#48373;&#44396;</summary>
 <p>PC의 <code>padiem-connector status</code>에 표시된 기기 ID를 입력하세요.
-등록은 기존 PADIEM 로그인 계정과 해당 PC에 대한 명시적 동의가 필요합니다.</p>
+등록은 기존 Padiem 로그인 계정과 해당 PC에 대한 명시적 동의가 필요합니다.</p>
 <label for="device">PC 기기 ID</label><input id="device" maxlength="256" autocomplete="off" spellcheck="false">
 <label><input id="consent" type="checkbox"> 이 PC를 현재 계정에 등록하는 데 동의합니다.</label>
 <button type="button" id="grant">등록 동의 승인</button>
@@ -269,7 +269,7 @@ async def _signed_b54_owner(request: Request) -> bool:
 
 async def owner_setup_page(request: Request) -> Response:
     if not await _signed_b54_owner(request):
-        return PlainTextResponse("PADIEM owner login required.", status_code=401, headers=_HEADERS)
+        return PlainTextResponse("Padiem owner login required.", status_code=401, headers=_HEADERS)
     return HTMLResponse(_HTML, headers=_HEADERS)
 
 

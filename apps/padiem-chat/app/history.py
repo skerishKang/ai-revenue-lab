@@ -1391,6 +1391,41 @@ class D1HistoryStore:
             run_id, user_id,
         )
 
+    async def get_claw_run_result_message(
+        self, user_id: str, run_id: str, conversation_id: str,
+    ) -> str | None:
+        """Return only the correlated terminal message, never a later run's text."""
+        from .claw_local_task_result_projection import result_message_id
+        # Prefer the actual Oracle receipt. Claw may also have a preliminary
+        # local correlation under the same run; it is not the completed Mesh
+        # command/revision that minted the persisted assistant message.
+        correlation = await self._first(
+            "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state='done'",
+            user_id, run_id,
+        )
+        if not isinstance(correlation, dict):
+            correlation = await self.get_local_task_correlation(user_id, run_id)
+        if not isinstance(correlation, dict):
+            return None
+        command_id = correlation.get("command_id")
+        revision_ref = correlation.get("revision_ref")
+        if not isinstance(command_id, str) or not isinstance(revision_ref, str):
+            return None
+        message_id = result_message_id(
+            conversation_id=conversation_id,
+            command_id=command_id, revision_ref=revision_ref,
+        )
+        rows = await self._all(
+            "SELECT m.id, m.content FROM messages m JOIN conversations c "
+            "ON c.id=m.conversation_id WHERE m.role='assistant' "
+            "AND m.conversation_id=? AND c.user_id=? AND c.product_scope=? "
+            "AND (m.id=? OR m.id LIKE ?) ORDER BY m.sequence_number LIMIT 16",
+            conversation_id, user_id, PRODUCT_SCOPE_CHAT,
+            message_id, message_id + "_p%",
+        )
+        return "\n".join(row["content"] for row in rows) if rows else None
+
     async def append_local_task_result(
         self,
         *,

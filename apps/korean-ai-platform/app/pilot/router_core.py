@@ -209,30 +209,36 @@ def resolve_manual_route(
 
     # Platform-owned secret missing -> fail closed with zero upstream calls.
     if cred_source == "platform_secret" and not cred_ok:
+        from app.pilot import platform_secrets as ps
+
         raise NoSafeRoute(
             reason_code="provider_secret_missing",
             message=f"모델 '{model_id}'의 Provider 비밀키가 설정되지 않았습니다.",
             upstream_called=False,
+            credential_reason=ps.credential_failure_reason(
+                ps.get_platform_provider(plat_pid)
+            ),
         )
 
     route_id = f"platform:{cm.model_id}"
 
-    owner_tier_pair = model_id == "opencode-go/cat-jam-free"
+    owner_tier_pair = model_id == "opencode-go/beam-free"
     fallback_candidates: list[dict[str, str]] = []
     if owner_tier_pair:
         from .tier_fallback import TIER_FALLBACK_B14_MODELS
         if product_tier not in TIER_FALLBACK_B14_MODELS:
             raise NoSafeRoute(reason_code="invalid_product_tier", message="Unsupported product tier.", upstream_called=False)
-        target = get_catalog_by_id(TIER_FALLBACK_B14_MODELS[product_tier])
-        if target is not None and target.enabled and _platform_secret_present(target):
-            fallback_candidates = [{
-                "model_id": target.model_id,
-                "upstream_model": target.upstream_model,
-                "provider": target.provider,
-                "platform_provider_id": target.platform_provider_id,
-                "route_id": f"platform:{target.model_id}",
-                "reason": "owner_selected_tier_fallback",
-            }]
+        for candidate_id in TIER_FALLBACK_B14_MODELS[product_tier]:
+            target = get_catalog_by_id(candidate_id)
+            if target is not None and target.enabled and not excluded_from_owner_customer_selection(target.model_id) and _platform_secret_present(target):
+                fallback_candidates.append({
+                    "model_id": target.model_id,
+                    "upstream_model": target.upstream_model,
+                    "provider": target.provider,
+                    "platform_provider_id": target.platform_provider_id,
+                    "route_id": f"platform:{target.model_id}",
+                    "reason": "owner_selected_tier_fallback",
+                })
     elif allow_external_fallback:
         all_models = get_catalog_models()
         fallback_candidates = [

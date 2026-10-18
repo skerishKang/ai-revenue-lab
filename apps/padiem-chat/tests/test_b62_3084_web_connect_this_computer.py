@@ -864,6 +864,8 @@ ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({
     "/api/connectors/google/ticket",
     "/api/connectors/google/calendar/activate-read",
     "/api/claw/automation/rules",
+    # #4139: owner-scoped, run-specific GET; no new POST or PC dispatch.
+    "/api/claw/runs/",
 })
 
 

@@ -454,7 +454,22 @@
         },
       };
 
-      start();
+      // Verify the current signed-in identity before microphone access.
+      // Direct stand-alone recognizer tests have no identity authority.
+      if (typeof deps.verifyIdentity === "function") {
+        Promise.resolve().then(deps.verifyIdentity).then(function (key) {
+          if (halting) return;
+          if (typeof key !== "string" || !key) {
+            emitError(ERROR_CODES.NOT_ALLOWED);
+            return;
+          }
+          start();
+        }).catch(function () {
+          if (!halting) emitError(ERROR_CODES.NOT_ALLOWED);
+        });
+      } else {
+        start();
+      }
       return handle;
     };
   }
@@ -484,7 +499,8 @@
 
     let stopped = false;
     let identityKey = "";
-    let pollHandle = null;
+    let identityRefreshSeq = 0;
+    const identityListeners = [];
 
     const factory = createRecognizerFactory({
       win: win,
@@ -492,6 +508,7 @@
       fetchImpl: fetchImpl,
       mediaDevices: mediaDevices,
       now: options.now,
+      verifyIdentity: function () { return verifyIdentity(); },
     });
     const canCapture = !!(mediaDevices && typeof win.MediaRecorder === "function");
 
@@ -543,30 +560,50 @@
       }).catch(function () { return ""; });
     }
 
-    function poll() {
-      if (stopped) return;
-      refreshIdentity().then(function (key) {
-        if (stopped) return;
+    // #4979: account verification follows lifecycle events, not an idle timer.
+    // Sequence fencing prevents a late response from an old login from
+    // overwriting the newest account identity.
+    function verifyIdentity() {
+      if (stopped) return Promise.resolve("");
+      const sequence = ++identityRefreshSeq;
+      const pending = refreshIdentity().then(function (key) {
+        if (stopped || sequence !== identityRefreshSeq) return "";
         announceIdentity(key);
-        pollHandle = win.setTimeout(poll, options.intervalMs || 15000);
+        return key;
       });
+      return pending;
     }
 
-    refreshIdentity().then(function (key) {
-      announceIdentity(key);
-      pollHandle = win.setTimeout(poll, options.intervalMs || 15000);
+    function listen(target, name, handler) {
+      if (!target || typeof target.addEventListener !== "function") return;
+      target.addEventListener(name, handler);
+      identityListeners.push([target, name, handler]);
+    }
+    const onAuthChange = function () { verifyIdentity(); };
+    for (const eventName of ["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"]) {
+      listen(win, eventName, onAuthChange);
+    }
+    // Cross-tab sign-in changes become observable at tab reactivation, without
+    // using identity material in browser storage.
+    listen(win, "focus", onAuthChange);
+    listen(doc, "visibilitychange", function () {
+      if (!doc.hidden) verifyIdentity();
     });
+    verifyIdentity();
 
     return {
       factory: factory,
-      refreshIdentity: refreshIdentity,
+      refreshIdentity: verifyIdentity,
       getIdentityKey: function () { return identityKey; },
       destroy: function () {
         stopped = true;
-        if (pollHandle != null) {
-          try { win.clearTimeout(pollHandle); } catch (e) { /* already fired */ }
+        identityRefreshSeq += 1;
+        for (const entry of identityListeners) {
+          if (typeof entry[0].removeEventListener === "function") {
+            entry[0].removeEventListener(entry[1], entry[2]);
+          }
         }
-        pollHandle = null;
+        identityListeners.length = 0;
         composer.registerRecognizerFactory(null);
       },
     };

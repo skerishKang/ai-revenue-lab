@@ -6,7 +6,16 @@ html[data-theme="padiem-glass"] body .app-shell {
   --padiem-six-panel-left: clamp(48px, 4vw, 72px);
   --padiem-six-panel-width: min(1200px,
     calc(100vw - var(--workspace-rail, 252px) - var(--padiem-six-panel-left) - clamp(360px, 32vw, 560px) - 48px));
-  --padiem-six-panel-height: calc(100dvh - 100px);
+  --padiem-six-panel-pad-x: clamp(18px, 2.4vw, 34px);
+  /* The Chat/Claw composer is inset this far from the frame edge, and the amount
+   * it overlaps the portrait artwork is part of the locked first-screen look. */
+  --padiem-six-panel-input-inset: 14px;
+  /* The 110px is the box the frame actually sits inside: a 78px topbar plus the
+   * 16px top and 16px bottom margins. Chat's `.conversation` hides a wrong value
+   * here because `flex: 1 1 0%` recomputes its height from the free space, while
+   * the page views are `flex: 0 1 auto` and take this literal, which overflowed
+   * the document by 10px at every viewport height. */
+  --padiem-six-panel-height: calc(100dvh - 110px);
 }
 @media (min-width: 1024px) and (max-width: 1439px) {
   html[data-theme="padiem-glass"] body .app-shell {
@@ -51,15 +60,29 @@ html[data-theme="padiem-glass"] body .app-shell {
   html[data-theme="padiem-glass"] body .app-shell :is(
     .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view
   ) {
-    padding: calc(clamp(52px, 7.4vh, 88px) - 7px) clamp(18px, 2.4vw, 34px) 36px !important;
+    padding: calc(clamp(52px, 7.4vh, 88px) - 7px) var(--padiem-six-panel-pad-x) 36px !important;
+  }
+  /* The meeting transcript is the page's whole working surface, the same role the
+   * composer has in Chat/Claw, so it takes the composer lane: inset 14px from the
+   * frame edge instead of inheriting the 34px panel padding. Calendar and
+   * automation fields keep their own form lane — pulling one control out of a
+   * multi-field grid measured 9px into the portrait artwork — and share only the
+   * cell skin. The 1px is the frame border and the 12px the reserved scrollbar
+   * gutter, both of which the fixed composer sits over. */
+  html[data-theme="padiem-glass"] body .app-shell[data-state="meeting"] #meetingTranscript {
+    box-sizing: border-box;
+    width: calc(var(--padiem-six-panel-width) - (2 * var(--padiem-six-panel-input-inset))) !important;
+    max-width: none !important;
+    margin-left: calc(var(--padiem-six-panel-input-inset) - var(--padiem-six-panel-pad-x) - 1px) !important;
+    margin-right: calc(var(--padiem-six-panel-input-inset) - var(--padiem-six-panel-pad-x) - 13px) !important;
   }
   /* Keep the composer physically inside the frame at both first prompt and
      subsequent turns; let Claw's own model selector set its internal height. */
   html[data-theme="padiem-glass"] body .app-shell:not(.sidebar-collapsed):is(
     [data-state="home"], [data-state="chat"], [data-state="claw"]
   ) .composer-wrap {
-    left: calc(var(--workspace-rail, 252px) + var(--padiem-six-panel-left) + 14px) !important;
-    width: calc(var(--padiem-six-panel-width) - 28px) !important;
+    left: calc(var(--workspace-rail, 252px) + var(--padiem-six-panel-left) + var(--padiem-six-panel-input-inset)) !important;
+    width: calc(var(--padiem-six-panel-width) - (2 * var(--padiem-six-panel-input-inset))) !important;
     transform: none !important;
   }
   /* Collapsing the sidebar changes the shared frame location once, for all

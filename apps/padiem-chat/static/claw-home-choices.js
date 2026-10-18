@@ -62,8 +62,8 @@
     // We do not remember a privileged click across the login boundary.
     function promptForPcLogin() {
       if (signedIn()) return false;
-      pcNote("\uCEF4\uD4E8\uD130\uB97C \uC5F0\uACB0\uD558\uB824\uBA74 \uBA3C\uC800 PADIEM\uC5D0 \uB85C\uADF8\uC778\uD574 \uC8FC\uC138\uC694.",
-             "Sign in to PADIEM before connecting your computer.");
+      pcNote("\uCEF4\uD4E8\uD130\uB97C \uC5F0\uACB0\uD558\uB824\uBA74 \uBA3C\uC800 Padiem\uC5D0 \uB85C\uADF8\uC778\uD574 \uC8FC\uC138\uC694.",
+             "Sign in to Padiem before connecting your computer.");
       const hint = document.getElementById("clawPcCardStatus");
       if (hint) hint.textContent = document.documentElement.lang === "en"
         ? "Sign in first" : "\uB85C\uADF8\uC778\uD558\uC138\uC694";

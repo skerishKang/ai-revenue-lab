@@ -57,6 +57,10 @@ DEFAULT_CHAT_PROFILE = "free"
 FREE_B14_MODEL_ID = FREE_PRIMARY_B14_MODEL_ID
 PADIEM_FREE = "Padiem Free"
 AUTO_B14_MODEL_ID = "b14/auto"
+# Administrator-only exact model, provisioned by the verified global model
+# admin gate in member_grade_access/chat_routes — never part of the Free..
+# Max product-tier routes, aliases, or the shared declaration.
+ADMIN_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
 
 TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
     "plus": ProductTierLabel.PLUS,
@@ -74,6 +78,14 @@ _REQUEST_TIER_ID: ContextVar[str | None] = ContextVar(
     "padiem_request_tier_id",
     default=None,
 )
+
+
+def current_request_tier_id() -> str | None:
+    """Return the normalized request-scoped tier bound for this async task."""
+    tier = _REQUEST_TIER_ID.get()
+    if not isinstance(tier, str) or not tier:
+        return None
+    return tier
 
 # Product tiers are intentionally decoupled from upstream model/provider names.
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
@@ -239,6 +251,15 @@ def resolve_tier_policy(
             messages=_strip_hidden_tier_alias(messages),
             profile="free",
         )
+    if normalized == "admin":
+        # Verified global model admins only; entitlement is proven by the
+        # Chat route's central admin gate before provider dispatch. The exact
+        # administrator model is pinned here and never routed via b14/auto.
+        return ResolvedModelPolicy(
+            model_id=ADMIN_B14_MODEL_ID,
+            messages=_strip_hidden_tier_alias(messages),
+            profile="high",
+        )
     label = TIER_ID_TO_LABEL.get(normalized)
     if label is None:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
@@ -302,7 +323,7 @@ def request_tier_context(tier_id: str | None):
     if not isinstance(tier_id, str):
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
     normalized = tier_id.strip().lower()
-    if normalized != "free" and normalized not in TIER_ID_TO_LABEL:
+    if normalized != "free" and normalized != "admin" and normalized not in TIER_ID_TO_LABEL:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
     token = _REQUEST_TIER_ID.set(normalized)
     try:

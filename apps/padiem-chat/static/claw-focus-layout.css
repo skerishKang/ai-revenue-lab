@@ -992,7 +992,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   max-height: none;
   overflow-y: visible;
   overscroll-behavior-y: auto;
-  padding-bottom: 218px;
+  /* Must track the composer's measured height, not a constant. The composer
+   * grows with the attachment tray, the model row and the cancel/status row,
+   * and a fixed inset leaves the last turn sitting under the glass input. */
+  padding-bottom: var(--padiem-composer-clearance, 218px);
 }
 @media (max-width: 620px) {
   /* Match Chat's shared cinematic mobile portrait (the original image asset). */

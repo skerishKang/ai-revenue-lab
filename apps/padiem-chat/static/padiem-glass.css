@@ -266,6 +266,47 @@ html[data-theme="padiem-glass"] .composer-wrap {
 html[data-theme="padiem-glass"] .composer textarea { color: #17202a; }
 html[data-theme="padiem-glass"] .composer textarea::placeholder { color: rgba(37, 48, 58, .48); }
 html[data-theme="padiem-glass"] .composer-note { color: rgba(41, 52, 63, .62) !important; }
+
+/* One Glass input cell for every page. Chat/Claw already share this box; the
+ * meeting transcript and the calendar/automation fields each carried their own
+ * radius, an opaque white fill and no blur, which is what made a page read as a
+ * different product. The values are Claw's composer measured at rest — the
+ * surface the owner compares a page against — not the stronger border and shadow
+ * that padiem-first-use.css gives only the `home` first screen, and not the
+ * focus state. Chat and Claw are equal at rest outside that first-use rule. */
+html[data-theme="padiem-glass"] body .app-shell:is(
+  [data-state="meeting"], [data-state="calendar"], [data-state="automation"]
+) :is(#meetingTranscript, .calendar-record-field :is(input, textarea, select)) {
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, .76);
+  border-radius: 17px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, .94), var(--glass-composer-surface, rgba(248, 250, 251, .9)));
+  box-shadow:
+    0 24px 70px rgba(28, 36, 44, .20),
+    inset 0 1px 0 rgba(255, 255, 255, .88);
+  backdrop-filter: blur(32px) saturate(104%);
+  -webkit-backdrop-filter: blur(32px) saturate(104%);
+  color: #17202a;
+  font-size: 16px;
+}
+html[data-theme="padiem-glass"] body .app-shell:is(
+  [data-state="meeting"], [data-state="calendar"], [data-state="automation"]
+) :is(#meetingTranscript, .calendar-record-field :is(input, textarea, select)):focus {
+  outline: none;
+  border-color: rgba(79, 91, 101, .22);
+  box-shadow:
+    0 20px 54px rgba(28, 36, 44, .16),
+    inset 0 1px 0 rgba(255, 255, 255, .8),
+    0 0 0 1px rgba(255, 255, 255, .34);
+}
+html[data-theme="padiem-glass"] body .app-shell:is(
+  [data-state="meeting"], [data-state="calendar"], [data-state="automation"]
+) #meetingTranscript::placeholder,
+html[data-theme="padiem-glass"] body .app-shell:is(
+  [data-state="meeting"], [data-state="calendar"], [data-state="automation"]
+) .calendar-record-field input::placeholder {
+  color: rgba(37, 48, 58, .48);
+}
 html[data-theme="padiem-glass"] .tool-button {
   background: rgba(255, 255, 255, .26);
   color: #25333e;

@@ -25,12 +25,12 @@
 
   function details(id, state) {
     if (!signedIn()) return {
-      headline: tr("먼저 PADIEM에 로그인해 주세요", "Sign in to PADIEM first"),
+      headline: tr("먼저 Padiem에 로그인해 주세요", "Sign in to Padiem first"),
       copy: tr("한 번 로그인하면 CLAW에서 연결을 관리할 수 있습니다.",
-               "Your PADIEM account manages your CLAW connections."),
-      foot: tr("외부 계정이나 PC 프로그램에 별도 PADIEM 로그인이 필요하지 않습니다.",
-               "No second PADIEM sign-in is needed inside the connector."),
-      button: tr("PADIEM 로그인", "Sign in"), intent: "login"
+               "Your Padiem account manages your Claw connections."),
+      foot: tr("외부 계정이나 PC 프로그램에 별도 Padiem 로그인이 필요하지 않습니다.",
+               "No second Padiem sign-in is needed inside the connector."),
+      button: tr("Padiem 로그인", "Sign in"), intent: "login"
     };
     if (state === "unknown" && id === "pc") return {
       headline: tr("컴퓨터 연결 상태를 확인해 주세요", "Check this computer"),
@@ -84,7 +84,7 @@
       button: tr("연결 관리", "Manage connection"), intent: "manage"
     };
     if (id === "pc") return {
-      headline: tr("컴퓨터에 Connector를 설치해 주세요", "Install PADIEM Connector"),
+      headline: tr("컴퓨터에 Connector를 설치해 주세요", "Install Padiem Connector"),
       copy: tr("설치가 끝나면 자동으로 실행되어 CLAW와 연결됩니다.",
                "Once installed, Connector starts and connects to CLAW automatically."),
       foot: tr("별도 로그인이나 '프로그램 켜기' 단계는 필요하지 않습니다. PC가 꺼져 있으면 재연결을 기다립니다.",

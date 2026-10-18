@@ -53,7 +53,7 @@ def test_explicit_model_ids_are_used_exactly_once_and_do_not_pick_defaults():
         assert profile.model_policy == {"model": model, "max_retries": 0, "product_tier": "plus"}
         assert profile.max_steps == 1
         assert profile.allowed_tools == ()
-    assert _agent_profile().model_policy == {"model": "opencode-go/cat-jam-free", "max_retries": 0, "product_tier": "plus"}
+    assert _agent_profile().model_policy == {"model": "opencode-go/beam-free", "max_retries": 0, "product_tier": "plus"}
 
 
 def test_factory_threads_one_exact_model_to_engine_request():
@@ -180,7 +180,7 @@ def test_claw_browser_keeps_explicit_id_in_submit_snapshot_only():
     assert 'id="clawModelIdInput"' in INDEX
     assert 'id="clawVerifiedModelSelect"' in INDEX
     assert 'id="clawModelIdInput" type="text" value=""' in INDEX
-    assert 'return ["free", "plus", "pro", "max"].includes(tier) ? tier : "free";' in FRONT
+    assert 'return ["free", "plus", "pro", "max", "admin"].includes(tier) ? tier : "free";' in FRONT
     assert 'placeholder="등록된 모델 ID를 입력하세요"' in INDEX
     assert "agnes-ai/agnes-3.0-flash" not in INDEX  # Do not suggest deferred providers as defaults.
     assert "clawGeneralRequestActive()" in FRONT

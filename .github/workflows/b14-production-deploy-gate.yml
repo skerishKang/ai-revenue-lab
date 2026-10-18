@@ -604,10 +604,15 @@ jobs:
           python3 - "$preview" <<'PY_MODEL'
           import json, sys, urllib.request, urllib.error
           url = sys.argv[1].rstrip('/') + '/api/pilot/v1/chat/completions'
-          for model in ('opencode-go/cat-jam-free', 'google/gemini-3.1-flash-lite'):
-              body = json.dumps({'model': model, 'messages': [{'role': 'user', 'content': 'Synthetic release check: one word.'}], 'max_tokens': 48, 'business14': {'product_tier': 'free', 'allow_external_fallback': False, 'max_retries': 0}}).encode()
+          # #4992-free502: cat-jam-free is policy-disabled (model_disabled), so the
+          # Free-primary probe is opencode-go/beam-free with its verified message
+          # budget; gemini-3.1-flash-lite keeps the second-route probe unchanged.
+          for model, user_text, max_tokens in (('opencode-go/beam-free', 'Say hello in one short sentence.', 64), ('google/gemini-3.1-flash-lite', 'Synthetic release check: one word.', 48)):
+              body = json.dumps({'model': model, 'messages': [{'role': 'user', 'content': user_text}], 'max_tokens': max_tokens, 'business14': {'product_tier': 'free', 'allow_external_fallback': False, 'max_retries': 0}}).encode()
               try:
-                  req = urllib.request.Request(url, data=body, headers={'Content-Type': 'application/json'}, method='POST')
+                  # Edge bot protection refuses stdlib urllib's default UA; use
+                  # the repo's established gate UA (same as the secret-retire smoke).
+                  req = urllib.request.Request(url, data=body, headers={'Content-Type': 'application/json', 'User-Agent': 'b14-gate/1.0'}, method='POST')
                   with urllib.request.urlopen(req, timeout=40) as response:
                       if response.status != 200: raise ValueError('NON_200')
                       result = json.load(response)

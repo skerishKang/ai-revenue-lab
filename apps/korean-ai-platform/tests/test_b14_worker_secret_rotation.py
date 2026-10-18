@@ -13,6 +13,7 @@ from app.pilot import platform
 from app.pilot.platform_secrets import (
     CredentialSource,
     PlatformProviderSpec,
+    credential_failure_reason,
     resolve_secret,
 )
 from app.pilot.worker_env import (
@@ -22,6 +23,7 @@ from app.pilot.worker_env import (
     load_request_secret,
     reset_request_env,
     scoped_secret,
+    secret_status,
 )
 
 
@@ -459,3 +461,126 @@ def test_every_neutral_wrangler_secret_is_collected_by_worker():
     }
     assert len(declared) == 14
     assert declared <= collected
+
+# ---------------------------------------------------------------------------
+# Value-free resolution diagnostics (#4983 follow-up)
+# ---------------------------------------------------------------------------
+@pytest.mark.asyncio
+async def test_binding_failure_status_is_value_free_and_classified():
+    from types import SimpleNamespace
+
+    key = "PADIEM_B14_CREDENTIAL_11"
+
+    class JsLikeError(Exception):
+        name = "Error"
+
+    class RaisingSecret:
+        def __init__(self, exc):
+            self.exc = exc
+
+        async def get(self):
+            raise self.exc
+
+    cases = (
+        (JsLikeError('Secret "secret-value-canary" not found'), "error:not_found"),
+        (JsLikeError("Cannot perform I/O on behalf of a different request"), "error:cross_request"),
+        (JsLikeError("binding not implemented in this runtime"), "error:unsupported"),
+        (RuntimeError("secret-value-canary"), "error:RuntimeError"),
+    )
+    for exc, expected in cases:
+        token = bind_request_env(collect_request_bindings(
+            SimpleNamespace(**{key: RaisingSecret(exc)}), (key,)
+        ))
+        try:
+            await load_request_secret(key)
+            status = secret_status(key)
+            assert status == expected
+            assert "secret-value-canary" not in status
+            assert scoped_secret(key) == ""
+        finally:
+            reset_request_env(token)
+    assert secret_status(key) == ""
+
+
+@pytest.mark.asyncio
+async def test_binding_status_distinguishes_missing_empty_and_resolved():
+    from types import SimpleNamespace
+
+    key = "PADIEM_B14_CREDENTIAL_11"
+
+    class PlainSecret:
+        def __init__(self, value):
+            self.value = value
+
+        async def get(self):
+            return self.value
+
+    for binding, expected, scoped in (
+        (None, "missing", ""),
+        (PlainSecret(""), "empty", ""),
+        (PlainSecret("synthetic_value_11"), "resolved", "synthetic_value_11"),
+    ):
+        env = SimpleNamespace() if binding is None else SimpleNamespace(**{key: binding})
+        token = bind_request_env(collect_request_bindings(env, (key,)))
+        try:
+            await load_request_secret(key)
+            assert secret_status(key) == expected
+            assert scoped_secret(key) == scoped
+        finally:
+            reset_request_env(token)
+
+
+@pytest.mark.asyncio
+async def test_credential_failure_reason_is_value_free():
+    from types import SimpleNamespace
+
+    key = "PADIEM_B14_CREDENTIAL_11"
+    provider = PlatformProviderSpec(
+        provider_id="opencode-go",
+        credential_source=CredentialSource.PLATFORM_SECRET,
+        credential_binding_name=key,
+        base_origin="https://opencode.example/v1",
+        allowed_hosts=("opencode.example",),
+    )
+
+    class PlainSecret:
+        def __init__(self, value):
+            self.value = value
+
+        async def get(self):
+            return self.value
+
+    class JsLikeError(Exception):
+        name = "Error"
+
+    class RaisingSecret:
+        async def get(self):
+            raise JsLikeError('Secret "secret-value-canary" not found')
+
+    cases = (
+        (PlainSecret(""), "empty"),
+        (PlainSecret("test-key-placeholder-123"), "placeholder"),
+        (PlainSecret("synthetic_value_11"), ""),
+        (RaisingSecret(), "error:not_found"),
+    )
+    for binding, expected in cases:
+        token = bind_request_env(collect_request_bindings(
+            SimpleNamespace(**{key: binding}), (key,)
+        ))
+        try:
+            await load_request_secret(key)
+            reason = credential_failure_reason(provider)
+            assert reason == expected
+            assert "secret-value-canary" not in reason
+        finally:
+            reset_request_env(token)
+
+    # Uncollected/unresolved binding inside a request is not "empty".
+    token = bind_request_env({})
+    try:
+        assert credential_failure_reason(provider) == "unresolved"
+    finally:
+        reset_request_env(token)
+
+    # Outside a Worker request the CLI env contract (or absence) applies.
+    assert credential_failure_reason(provider) == ""

@@ -123,15 +123,15 @@ def test_b66_customer_dropdown_shows_four_grades_not_provider_names():
     client = _client(_Store(), _Interpreter())
     class CatJam:
         async def list_selectable_models(self):
-            return [{"model_id": "opencode-go/cat-jam-free", "name": "Cat Jam"}]
+            return [{"model_id": "opencode-go/beam-free", "name": "Cat Jam"}]
     client.app.state.b66_quote_model_resolver = CatJam()
     response = client.get("/api/b66/quote/models")
     assert response.status_code == 200
     data = response.json()
     assert [t["tier"] for t in data["tiers"]] == ["free", "plus", "pro", "max"]
     assert [t["name"] for t in data["tiers"]] == [
-        "PADIEM Free", "PADIEM Plus", "PADIEM Pro", "PADIEM Max"]
-    assert {t["model_id"] for t in data["tiers"]} == {"opencode-go/cat-jam-free"}
+        "Padiem Free", "Padiem Plus", "Padiem Pro", "Padiem Max"]
+    assert {t["model_id"] for t in data["tiers"]} == {"opencode-go/beam-free"}
     assert data["default_tier"] == "free"
     root = Path(__file__).resolve().parents[3]
     for path in (root / "apps/padiem-chat/static/b66-quote-runtime.js",

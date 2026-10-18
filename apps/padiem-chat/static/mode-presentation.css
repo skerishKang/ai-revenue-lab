@@ -135,6 +135,64 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
   background: rgba(127, 127, 127, .12);
   font-size: 11px;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mode-option-state-icon {
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* Available: Google Drive ON (accent) family */
+.mode-option-state--available {
+  background: rgba(79, 134, 173, .14);
+  color: var(--accent-strong, #2f6f99);
+  font-weight: 600;
+}
+
+/* Upgrade: Google Drive OFF (neutral) family */
+.mode-option-state--upgrade {
+  background: rgba(127, 127, 127, .12);
+  color: var(--muted, #5b6672);
+  font-weight: 600;
+}
+
+/* Unavailable: neutral gray, muted */
+.mode-option-state--unavailable {
+  background: rgba(127, 127, 127, .08);
+  color: var(--muted, #8a8f98);
+  opacity: .7;
+}
+
+.mode-option {
+  cursor: pointer;
+}
+
+.mode-option:not(:disabled):hover {
+  border-color: var(--accent, #79bce7);
+  background: rgba(255, 255, 255, .84);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+}
+
+.mode-option:focus-visible {
+  outline: 2px solid var(--accent, #79bce7);
+  outline-offset: 2px;
+}
+
+@media (hover: none) {
+  .mode-option:not(:disabled):hover {
+    border-color: var(--line);
+    background: rgba(255, 255, 255, .72);
+    box-shadow: none;
+  }
+}
+
+.mode-presentation-truth.is-highlighted {
+  color: var(--accent-strong, #2f6f99);
+  font-weight: 600;
+  transition: color .2s ease, font-weight .2s ease;
 }
 
 .mode-presentation-truth {

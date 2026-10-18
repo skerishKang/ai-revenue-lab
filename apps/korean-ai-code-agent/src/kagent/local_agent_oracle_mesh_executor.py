@@ -186,6 +186,9 @@ class OracleMeshExecutor:
                 CHANNEL_HEADER: self._secret,
                 "Accept": "application/json",
                 "User-Agent": PRODUCT_USER_AGENT,
+                # Retain the authenticated HTTPS request until a queued
+                # dispatch is available. Old consumers still get immediate poll.
+                **({"X-Oracle-Mesh-Wait": "20"} if path == POLL_PATH else {}),
             },
         )
         context = ssl.create_default_context()
@@ -1154,7 +1157,9 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             time.sleep(idle)
             continue
         if result is None:
-            time.sleep(idle)
+            # Empty work queue was already awaited on the live HTTPS channel.
+            # Brief idle gap prevents a retry storm on older Chat versions.
+            time.sleep(1)
             continue
         print(
             f"oracle-mesh-executor result ok={result.get('ok')} "

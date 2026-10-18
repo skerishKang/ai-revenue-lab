@@ -103,7 +103,7 @@ def test_context_window_zero_means_unknown_never_zero() -> None:
     from app.pilot.model_registry_file import read_registry
 
     reg = read_registry()
-    for model_id in (LONGCAT_MODEL_ID, STEP5_MODEL_ID):
+    for model_id in (STEP5_MODEL_ID,):
         row = next(m for m in reg["models"] if m["id"] == model_id)
         assert row["context_window"] == 0
         # Harness rule: 0 is UNKNOWN (undocumented), not an effective 0-token
@@ -277,7 +277,7 @@ def test_off_models_are_never_enabled_by_this_harness() -> None:
 
     reg = read_registry()
     assert reg["providers"]["opencode-go"]["enabled"] is True
-    for model_id in (LONGCAT_MODEL_ID, STEP5_MODEL_ID):
+    for model_id in (STEP5_MODEL_ID,):
         row = next(m for m in reg["models"] if m["id"] == model_id)
         assert row["enabled"] is False
     # The harness imports no activation path and edits no registry file.

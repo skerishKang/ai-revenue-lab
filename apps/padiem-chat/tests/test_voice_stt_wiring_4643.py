@@ -341,3 +341,54 @@ def test_composer_tracks_an_identity_key_for_account_switch():
         r'new CustomEvent\("padiem:auth-state",\s*\{\s*detail:\s*\{\s*authenticated', app
     )
     assert match, "app.js must keep dispatching the identity-free auth-state event"
+
+
+def test_4979_voice_idle_event_identity_and_mic_start():
+    """No timer while idle; refresh on auth/focus and before microphone access."""
+    out = _node(r"""
+        const v = require('./static/voice-stt-wiring.js');
+        const listeners = {};
+        let id = 'owner-a', hits = 0, micOpens = 0, registered;
+        const doc = { hidden:false, addEventListener:(n,fn)=>(listeners[n]=fn),
+          removeEventListener:(n)=>delete listeners[n], querySelector:()=>null };
+        const win = {
+          document:doc, MediaRecorder:function(){}, setTimeout, clearTimeout,
+          navigator:{mediaDevices:{getUserMedia:()=>{micOpens++;return Promise.reject(new Error('unexpected'));}}},
+          addEventListener:(n,fn)=>(listeners[n]=fn),
+          removeEventListener:(n)=>delete listeners[n],
+          dispatchEvent:()=>{}, CustomEvent:function(n,p){this.type=n;this.detail=p.detail},
+        };
+        const composer={registerRecognizerFactory:(fn)=>{registered=fn}};
+        const fetchImpl=(path)=>{
+          if(path==='/health')return Promise.resolve({ok:true,json:()=>Promise.resolve({voice_stt_available:true})});
+          hits++;
+          return Promise.resolve({ok:true,json:()=>Promise.resolve({identity_key:id})});
+        };
+        const wiring=v.createVoiceSttWiring({win,doc,composer,fetchImpl,mediaDevices:win.navigator.mediaDevices,intervalMs:1});
+        setTimeout(async()=>{
+          const idle=hits;
+          listeners['padiem:account-changed']();
+          await new Promise(r=>setTimeout(r,5));
+          const eventHits=hits;
+          id='';
+          const errors=[];
+          registered({onError:(e)=>errors.push(e)},{generation:1,sessionToken:'test'});
+          await new Promise(r=>setTimeout(r,5));
+          console.log(JSON.stringify({idle,eventHits,hits,micOpens,errors,identity:wiring.getIdentityKey()}));
+          wiring.destroy();
+        },25);
+    """)
+    result = json.loads(out)
+    assert result["idle"] == 1
+    assert result["eventHits"] == 2
+    assert result["hits"] == 3
+    assert result["micOpens"] == 0
+    assert result["identity"] == ""
+    assert result["errors"]
+
+
+def test_4979_voice_wiring_has_no_identity_interval():
+    source = WIRING_JS.read_text(encoding="utf-8")
+    assert "pollHandle = win.setTimeout" not in source
+    assert "win.setTimeout(poll" not in source
+    assert 'listen(win, "focus", onAuthChange)' in source

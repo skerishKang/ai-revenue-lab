@@ -197,11 +197,12 @@ def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
     # Cat Jam is the only enabled Go route; other Go and ZansLab models stay disabled.
     rows = [row for row in reg["models"] if row["provider_id"] == "opencode-go"]
     assert {row["upstream_model"] for row in rows} == {
-        "cat-jam-free", "longcat-2.5-preview-free", "step-5-preview-free",
+        "beam-free", "cat-jam-free", "longcat-2.5-preview-free", "step-5-preview-free",
         "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5",
     }
     assert [row["id"] for row in rows if row["enabled"]] == [
-        "opencode-go/cat-jam-free",
+        "opencode-go/beam-free",
+        "opencode-go/longcat-2.5-preview-free",
         "opencode-go/muse-spark-1.2-contributor",
         "opencode-go/muse-spark-1.3-contributor",
     ]

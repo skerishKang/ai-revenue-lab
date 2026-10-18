@@ -11,7 +11,7 @@
   const CURRENCIES = ["KRW", "USD", "EUR", "JPY", "GBP", "CNY"];
 
   const COPY = {
-    "claw-qc-kicker": "PADIEM CLAW COMPARE",
+    "claw-qc-kicker": "Padiem Claw Compare",
     "claw-qc-title": "Supplier quote comparison",
     "claw-qc-tagline": "Compare two or more captured quotes without inventing missing facts.",
     "claw-qc-form-aria": "Supplier quote comparison form",

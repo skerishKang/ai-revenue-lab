@@ -415,7 +415,7 @@ async def b66_quote_models(request: Request) -> JSONResponse:
     permitted = grade_order[:grade_order.index(member_grade)+1]
     catjam = next((row for row in models if row["model_id"] == FREE_PRIMARY_B14_MODEL_ID), None)
     grade_choices = [
-        {"tier": grade, "name": "PADIEM " + grade.capitalize(),
+        {"tier": grade, "name": "Padiem " + grade.capitalize(),
          "model_id": FREE_PRIMARY_B14_MODEL_ID,
          "reasoning_levels": reasoning_options_for_model(
              FREE_PRIMARY_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}

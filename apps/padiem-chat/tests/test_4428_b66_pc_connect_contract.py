@@ -48,7 +48,7 @@ def test_no_eager_request_and_logout_discards_stale_pc_results():
     assert 'if (auth && auth.authenticated === true) refresh();' in js
     assert "resetPcDirectory();\n      runtime = null;" in js
     assert 'pcUnavailable: "PC 연결 서비스가 아직 준비되지 않았습니다.' in js
-    assert "PADIEM Connect installation and same-account sign-in are not ready yet" in js
+    assert "Padiem Connect installation and same-account sign-in are not ready yet" in js
     assert "https://github.com/" not in js.split("async function loadPcDirectory()", 1)[1].split("function closeDialog()", 1)[0]
 
 

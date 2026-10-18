@@ -1235,10 +1235,22 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
         return _error(503, "oracle_mesh_unconfigured")
     if not callable(getattr(history_store, "claim_oracle_mesh_dispatch", None)):
         return _error(503, "oracle_mesh_unconfigured")
-    try:
-        pending = await history_store.oldest_pending_oracle_mesh_dispatch()
-    except Exception:
-        return _error(503, "oracle_mesh_dispatch_unavailable")
+    # Existing authenticated HTTPS channel, not a second broker. Optional
+    # bounded wait is only enabled by the Oracle executor; legacy consumers
+    # retain their immediate response. D1 remains the durable source of truth.
+    import asyncio
+    import time
+    wait_header = request.headers.get("x-oracle-mesh-wait", "")
+    wait_seconds = 20 if wait_header == "20" else 0
+    deadline = time.monotonic() + wait_seconds
+    while True:
+        try:
+            pending = await history_store.oldest_pending_oracle_mesh_dispatch()
+        except Exception:
+            return _error(503, "oracle_mesh_dispatch_unavailable")
+        if pending is not None or time.monotonic() >= deadline:
+            break
+        await asyncio.sleep(min(2, max(0.01, deadline - time.monotonic())))
     if pending is None:
         return _response({"ok": True, "dispatch": None})
     nonce = secrets.token_hex(16)

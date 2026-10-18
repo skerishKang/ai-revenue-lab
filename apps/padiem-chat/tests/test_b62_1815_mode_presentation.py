@@ -20,7 +20,7 @@ def test_browser_lists_all_four_tiers_but_only_plus_is_selectable() -> None:
     assert 'TIER_ORDER = Object.freeze(["free", "plus", "pro", "max"])' in CAPABILITIES
     assert 'TIER_LIST = Object.freeze(["free", "plus", "pro", "max"])' in CAPABILITIES
     assert "list.append(...TIER_LIST.map((tier) => createModeOption(tier)));" in CAPABILITIES
-    assert "button.disabled = !available;" in CAPABILITIES
+    assert "button.disabled = status === \"unavailable\";" in CAPABILITIES
     assert "if (!selectTier(tier)) return;" in CAPABILITIES
     assert 'createModeOption("auto"' not in CAPABILITIES
     assert 'createModeOption("fast"' not in CAPABILITIES

@@ -35,7 +35,7 @@ from .history import (
 )
 from .history import PRODUCT_SCOPE_CHAT
 from .model_policy import model_supports, request_tier_context, FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
-from .member_grade_access import selected_grade_denial
+from .member_grade_access import selected_admin_denial, selected_grade_denial
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
 from .request_contract import (
@@ -219,9 +219,14 @@ async def api_chat_stream(request: Request):
 
     uid = current_user_id(request) if auth_ready(request) else None
     if "tier" in raw:
-        tier_denial = await selected_grade_denial(request, uid, raw["tier"])
-        if tier_denial is not None:
-            return tier_denial
+        if raw.get("tier") == "admin":
+            admin_denial = await selected_admin_denial(request, uid)
+            if admin_denial is not None:
+                return admin_denial
+        else:
+            tier_denial = await selected_grade_denial(request, uid, raw["tier"])
+            if tier_denial is not None:
+                return tier_denial
     # Free is available to every signed-in member; it is not an anonymous
     # platform-key proxy. Never read tier/upgrade claims from browser state.
     if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
@@ -544,9 +549,14 @@ async def api_chat(request: Request) -> JSONResponse:
 
     uid = current_user_id(request) if auth_ready(request) else None
     if "tier" in raw:
-        tier_denial = await selected_grade_denial(request, uid, raw["tier"])
-        if tier_denial is not None:
-            return tier_denial
+        if raw.get("tier") == "admin":
+            admin_denial = await selected_admin_denial(request, uid)
+            if admin_denial is not None:
+                return admin_denial
+        else:
+            tier_denial = await selected_grade_denial(request, uid, raw["tier"])
+            if tier_denial is not None:
+                return tier_denial
     # Free is available to every signed-in member; it is not an anonymous
     # platform-key proxy. Never read tier/upgrade claims from browser state.
     if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":

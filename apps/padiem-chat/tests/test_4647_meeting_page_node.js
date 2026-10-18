@@ -70,11 +70,11 @@ test("meeting header reuses the shared standalone view pattern and carries its o
   assert.match(meeting, /class="standalone-view-kicker" data-locale-key="meeting-kicker"/);
   assert.match(meeting, /class="standalone-view-title" id="meetingTitle" data-locale-key="meeting-title"/);
   assert.doesNotMatch(meeting, /meetingClose|Claw로 돌아가기/);
-  assert.doesNotMatch(meeting, /PADIEM CLAW/);
+  assert.doesNotMatch(meeting, /PADIEM CLAW|Padiem Claw/);
   assert.doesNotMatch(locale, /meeting-close/);
   // Every destination eyebrow is a Latin brand string in both locales; the meeting
   // page follows the same rule instead of translating the brand.
-  assert.equal((locale.match(/"meeting-kicker": "PADIEM MEETING"/g) || []).length, 2);
+  assert.equal((locale.match(/"meeting-kicker": "Padiem Meeting"/g) || []).length, 2);
   assert.match(locale, /"meeting-title": "Meeting notes"/);
   assert.match(locale, /"meeting-title": "회의록"/);
 });
@@ -115,7 +115,7 @@ test("a visitor may open the meeting page while the session guard stays on the c
   // browsable without a session, so the guard moved from the nav to the actions.
   assert.doesNotMatch(capture, /trigger\.disabled/);
   assert.match(capture, /shell\.dataset\.state = "meeting";/);
-  assert.match(capture, /if \(!signedIn\) say\("PADIEM 로그인 후 회의록을 이용할 수 있습니다\."\);/);
+  assert.match(capture, /if \(!signedIn\) say\("Padiem 로그인 후 회의록을 이용할 수 있습니다\."\);/);
   assert.match(capture, /startButton\.disabled = state\.active \|\| state\.pending \|\| !signedIn/);
   assert.match(capture, /draftInClaw\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn/);
   assert.match(capture, /driveText\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn \|\| uploadInFlight/);
