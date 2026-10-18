@@ -19,7 +19,7 @@ import pytest
 from app import oracle_mesh_read_return_routes as routes
 from app.history import HistoryError, HistoryForbidden, MAX_MESH_ROW_BYTES
 
-OWNER = "product-user-1"
+OWNER = "usr_" + "a" * 32
 ACCOUNT = "account-oracle-1"
 WORKSPACE = "connector-ws-1"
 TENANT_WS = "tenant-ws-1"
@@ -541,20 +541,31 @@ def _signed_engine_request(state, *, subject_id="sub_verified", secret="s" * 32)
 
 class EngineIdentity(Identity):
     async def resolve_product_user_for_subject(self, *, product_id, canonical_subject_id):
-        assert product_id == "b54-padiem-claw"
+        # #5015: the Claw lane resolves the owner's shared Chat product user
+        # first, then reuses the canonical B54 session bridge.
+        assert product_id in ("b62", "b54-padiem-claw")
         if canonical_subject_id != "sub_verified":
             raise ValueError("foreign owner")
         return OWNER
 
     async def resolve_current_auth_session(self, *, product_id, product_user_id):
+        from datetime import datetime, timedelta, timezone
+
+        from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+        from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+
         assert product_id == "b54-padiem-claw"
         assert product_user_id == OWNER
-        return SimpleNamespace(
+        now = datetime.now(timezone.utc)
+        return AuthSessionSnapshot(
             session_id="s_verified",
             product_id="b54-padiem-claw",
-            subject=SimpleNamespace(subject_id="sub_verified"),
+            subject=CanonicalSubjectRef(
+                subject_type=SubjectType.USER, subject_id="sub_verified",
+            ),
+            issued_at=now - timedelta(minutes=5),
+            expires_at=now + timedelta(hours=1),
             tenant_id=TENANT_WS,
-            is_active=lambda *, now: True,
         )
 
 
