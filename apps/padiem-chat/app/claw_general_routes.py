@@ -661,10 +661,7 @@ def _natural_pc_query_command(user_text: str) -> str | None:
             "| ForEach-Object { $_.FullName }"
         )
     if any(marker in compact for marker in ("드라이브", "디스크", "drive", "disk")):
-        return (
-            "Get-PSDrive -PSProvider FileSystem | ForEach-Object { "
-            "\"$($_.Name): $($_.Root)\" }"
-        )
+        return "wmic logicaldisk get caption,description"
     if "hostname" in lowered or "호스트" in lowered:
         return "hostname.exe"
     return None
