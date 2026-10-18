@@ -75,13 +75,10 @@ def is_private(text: str) -> bool:
 
 
 def evidence_agent(model_id: str | None = None) -> dict[str, Any]:
-    """One server-owned read-only profile; it authorises nothing.
+    """One server-owned read-only profile; it uses the request's validated model."""
 
-    #5015: an explicitly selected model is carried so the Engine's internal
-    judgement call uses it instead of the suspended ``b14/auto`` chain. The
-    product tier default is not changed here.
-    """
-
+    if not isinstance(model_id, str) or not model_id.strip():
+        raise ValueError("explicit model id is required for search judgement")
     return {
         "id": CLAW_JUDGEMENT_AGENT_ID,
         "title": "Claw public search judgement",
@@ -90,11 +87,7 @@ def evidence_agent(model_id: str | None = None) -> dict[str, Any]:
         "task_type": "general",
         "optimize_for": "balanced",
         "max_tokens": 256,
-        "model_policy": (
-            {"model": model_id, "max_retries": 0}
-            if isinstance(model_id, str) and model_id
-            else {"model": "none/disabled", "max_retries": 0}
-        ),
+        "model_policy": {"model": model_id.strip(), "max_retries": 0},
     }
 
 

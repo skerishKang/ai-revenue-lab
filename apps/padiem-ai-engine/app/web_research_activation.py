@@ -212,9 +212,9 @@ async def run_synthetic_probe(
             "task_type": "general",
             "optimize_for": "balanced",
             "max_tokens": 256,
-            # #2101: the shared research route stays on the Router-owned
-            # fixed `b14/auto` chain; the probe declares it explicitly.
-            "model_policy": {"model": "b14/auto"},
+            # Synthetic probes must declare an explicit registered model. They
+            # still make no real provider call.
+            "model_policy": {"model": "google/gemini-3.1-flash-lite"},
         },
         "trace_id": "a1-synthetic-probe",
     }
@@ -267,8 +267,9 @@ async def run_reference_parity_probe(
                 "task_type": "general",
                 "optimize_for": "balanced",
                 "max_tokens": 256,
-                # #2101: parity probe declares the explicit shared route.
-                "model_policy": {"model": "b14/auto"},
+                # Parity probes must declare an explicit registered model. They
+                # still make no real provider call.
+                "model_policy": {"model": "google/gemini-3.1-flash-lite"},
             },
             "trace_id": f"a1-parity-{consumer}",
         }

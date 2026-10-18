@@ -64,8 +64,8 @@ _TOP_LEVEL_ALLOWED = frozenset(
 # #4469: AI conversation judgement for public web search. The judgement is
 # Engine-owned and product-neutral: it decides whether current public evidence is
 # needed and how to ask for it. It never retrieves, never answers, and grants no
-# tool or provider authority. The fixed `b14/auto` chain stays on the Router side,
-# so the caller's selected answer model is untouched.
+# tool or provider authority. Required model calls reuse the request's validated
+# explicit model; a missing model never selects an internal default.
 _JUDGE_INSTRUCTION = (
     "Decide whether this conversation needs current public web evidence to answer "
     "accurately. Search only for facts that can have changed outside the model: news, "
@@ -99,28 +99,7 @@ _PRIVATE_QUERY_RE = re.compile(
 )
 
 
-def _explicit_internal_model(agent: Any) -> str | None:
-    """The caller's explicit model for Engine-owned judgement/planning (#5015).
-
-    Only an explicitly selected, syntactically valid model is echoed into this
-    internal call. The product default route and tier policy are untouched: the
-    Engine keeps its historical chain when the caller selects nothing.
-    """
-    policy = getattr(agent, "model_policy", None)
-    if not isinstance(policy, dict):
-        return None
-    model = policy.get("model")
-    if not isinstance(model, str):
-        return None
-    model = model.strip()
-    if not model or model in {"b14/auto", "none/disabled"}:
-        return None
-    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", model):
-        return None
-    return model
-
-
-def _judge_profile(model_id: str | None = None) -> AgentProfile:
+def _judge_profile(model_policy: Mapping[str, Any]) -> AgentProfile:
     return AgentProfile(
         id="engine-search-judgement",
         title="Conversation search judgement",
@@ -131,11 +110,7 @@ def _judge_profile(model_id: str | None = None) -> AgentProfile:
         max_tokens=256,
         allowed_tools=(),
         required_capabilities=(),
-        model_policy=(
-            {"model": model_id, "max_retries": 0}
-            if model_id is not None
-            else {"model": "b14/auto"}
-        ),
+        model_policy=dict(model_policy),
         max_steps=1,
     )
 
@@ -386,6 +361,15 @@ class WebResearchEngineService:
                 status_code=exc.status_code,
             )
 
+        model_policy = getattr(request.agent, "model_policy", None)
+        model = model_policy.get("model") if isinstance(model_policy, Mapping) else None
+        if not isinstance(model, str) or not model.strip() or model.strip() == "b14/auto":
+            return _service_error(
+                "auto_routing_deferred",
+                "b14/auto is reserved for future development; select an explicit registered model.",
+                status_code=422,
+            )
+
         try:
             research_runtime = self._research_runtime_factory(request.app_id)
             # Evidence-only must not construct, select, or invoke a B14 model.
@@ -427,11 +411,9 @@ class WebResearchEngineService:
                 max_tokens=240,
                 allowed_tools=(),
                 required_capabilities=(),
-                # #2101/#5015: the Engine-owned planner normally stays on the
-                # Router-owned chain, but an explicitly selected caller model is
-                # carried into this internal call so a suspended b14/auto is not
-                # re-entered for a request that already named its model.
-                model_policy={"model": _explicit_internal_model(request.agent) or "b14/auto"},
+                # The planner must use the request's server-validated explicit
+                # model. It must not fall back to b14/auto or any default.
+                model_policy=dict(request.agent.model_policy),
                 max_steps=1,
             )
             planner_result = await execution_runtime.run(
@@ -456,7 +438,7 @@ class WebResearchEngineService:
                     )
                 verdict = await execution_runtime.run(
                     ExecutionRequest(
-                        agent=_judge_profile(_explicit_internal_model(request.agent)),
+                        agent=_judge_profile(request.agent.model_policy),
                         messages=({"role": "user", "content": request.query},),
                         trace_id=request.trace_id,
                     )

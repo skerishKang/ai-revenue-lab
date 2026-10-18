@@ -545,6 +545,8 @@ async def _claw_public_search_grounding(
     digest = build_judgement_digest(messages)
     if digest is None:
         return denied
+    if not isinstance(model_id, str) or not model_id.strip():
+        return denied
     agent = evidence_agent(model_id)
     try:
         verdict = verdict_from_model(await judge(conversation=digest, agent=agent))
@@ -1144,10 +1146,6 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 return _error(403, "model_not_available_for_tier", "Free 등급에서 선택할 수 없는 모델입니다.")
         elif product_tier is not ProductTierLabel.PLUS:
             return _error(422, "explicit_model_tier_unsupported", "이 등급의 모델 직접 선택은 아직 지원되지 않습니다.")
-    # #5069: an explicit member choice still names the internal judgement model
-    # even when the central route normalization below moves it out of
-    # ``selected_model_id``.
-    explicit_model_id = selected_model_id
     if selected_model_id is None:
         if not claw_route.ok or not claw_route.model_id:
             if product_tier is ProductTierLabel.PLUS:
@@ -1424,7 +1422,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         grounding_context, search_sources = None, ()
     elif drive_context is None:
         grounding_context, search_sources = await _claw_public_search_grounding(
-            request, adapter, model_user_text, model_id=explicit_model_id
+            request, adapter, model_user_text,
+            model_id=selected_model_id or central_route_model_id,
         )
     else:
         grounding_context, search_sources = drive_context, drive_sources
