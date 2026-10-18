@@ -442,6 +442,19 @@
     return items.length ? items[items.length - 1] : null;
   }
 
+  // Shared Chat/Claw follow authority: a completed async result or an
+  // approval pause must not pull a user who is reading earlier content back
+  // to the bottom. When no follow controller exists (non-glass surface), the
+  // historical reveal behavior is preserved.
+  function revealArticleIfFollowing(article) {
+    if (!article) return;
+    const motion = window.__padiemConversationMotion;
+    if (motion && typeof motion.isFollowingLatest === "function" && !motion.isFollowingLatest()) {
+      return;
+    }
+    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
   function clearOrchestrationUi(article) {
     if (!article) return;
     article.querySelectorAll("[data-orchestration-ui]").forEach((node) => node.remove());
@@ -467,7 +480,7 @@
       if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
     }
     window.PadiemChatLifecycle.set(article, states.COMPLETED);
-    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    revealArticleIfFollowing(article);
   }
 
   function renderDecisionTerminal(article, message, state) {
@@ -535,7 +548,7 @@
     };
     orchestrationUi.render(article, orchestration, handlers);
     setExtendedLifecycle(article, "approval_paused");
-    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    revealArticleIfFollowing(article);
   }
 
   function bindOrchestrationController() {

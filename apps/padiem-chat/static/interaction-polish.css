@@ -29,6 +29,50 @@
   opacity: .68;
 }
 
+/* Shared Chat/Claw jump-to-latest control above the fixed composer. */
+.conversation-jump {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  border: 1px solid rgba(45, 69, 87, .18);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .78);
+  color: #25333e;
+  box-shadow: 0 8px 22px rgba(28, 38, 49, .16), inset 0 1px 0 rgba(255, 255, 255, .82);
+  backdrop-filter: blur(16px) saturate(106%);
+  -webkit-backdrop-filter: blur(16px) saturate(106%);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 6;
+}
+
+.conversation-jump[hidden] {
+  display: none !important;
+}
+
+.conversation-jump:hover {
+  background: rgba(255, 255, 255, .92);
+}
+
+.conversation-jump:focus-visible {
+  outline: 3px solid rgba(79, 134, 173, .55);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conversation-jump {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 .assistant-message[data-terminal-actions-safe="false"] .answer-actions {
   display: none !important;
 }
