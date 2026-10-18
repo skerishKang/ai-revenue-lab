@@ -429,6 +429,42 @@ class B14Client:
         self.require_service_binding = require_service_binding
         # #4468: one sampled instant per dispatch, never a session-cached date.
         self._dispatch_wall_clock = dispatch_wall_clock
+        self._final_dispatch_guard = None
+        self._final_dispatch_guard = None
+
+    def with_guard(self, guard):
+        """Return a copy whose transports are guarded by the given guard.
+
+        Applied per-request so a shared B14Client serves multiple
+        sessions/products without leaking authority.
+        """
+        guarded = B14Client.__new__(B14Client)
+        guarded.__dict__.update(self.__dict__)
+        if self.transport is not None:
+            guarded.transport = guard.authorized_http_transport(self.transport)
+        if self.service_transport is not None:
+            guarded.service_transport = guard.authorized_service_transport(self.service_transport)
+        if self.stream_transport is not None:
+            guarded.stream_transport = guard.authorized_http_transport(self.stream_transport)
+        guarded._final_dispatch_guard = guard
+        return guarded
+
+    def with_guard(self, guard):
+        """Return a copy whose transports are guarded by the given guard.
+
+        Applied per-request so a shared B14Client serves multiple
+        sessions/products without leaking authority.
+        """
+        guarded = B14Client.__new__(B14Client)
+        guarded.__dict__.update(self.__dict__)
+        if self.transport is not None:
+            guarded.transport = guard.authorized_http_transport(self.transport)
+        if self.service_transport is not None:
+            guarded.service_transport = guard.authorized_service_transport(self.service_transport)
+        if self.stream_transport is not None:
+            guarded.stream_transport = guard.authorized_http_transport(self.stream_transport)
+        guarded._final_dispatch_guard = guard
+        return guarded
 
     def _config(
         self, timeout_seconds: float | None = None, *,
