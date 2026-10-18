@@ -255,15 +255,16 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
         raise AssertionError(f"Free must be selectable at {label}")
     if await free.get_attribute("aria-pressed") != "true":
         raise AssertionError(f"Free not selected by default at {label}")
-    # Owner decision 2026-10-17. This suite certifies the SIGNED-OUT surface (it
-    # asserts the guest account truth above), and #4743 made tier availability
-    # derive from the server-verified member grade. A signed-out visitor
-    # therefore gets Free only; a paid tier unlocks after sign-in and the
-    # owner-assigned grade. Asserting a paid tier here would certify the member
-    # surface this suite does not exercise.
+    # Owner decision 2026-10-17 / member-tier UI update: higher tiers are now
+    # clickable "업그레이드" cards (not disabled) so the visitor can see the
+    # upgrade guidance. Only actual system failure marks a card disabled.
     for locked in ("plus", "pro", "max"):
-        if not await panel.locator(f'[data-mode-value="{locked}"]').is_disabled():
-            raise AssertionError(f"{locked} must be disabled for a signed-out visitor at {label}")
+        row = panel.locator(f'[data-mode-value="{locked}"]')
+        if await row.is_disabled():
+            raise AssertionError(f"{locked} must be clickable (업그레이드) for a signed-out visitor at {label}")
+        state_text = (await row.locator(".mode-option-state").inner_text()).strip()
+        if "업그레이드" not in state_text:
+            raise AssertionError(f"{locked} must show 업그레이드 for a signed-out visitor at {label}: {state_text!r}")
     await page.keyboard.press("Escape")
     if not await panel.is_hidden():
         raise AssertionError(f"tier panel did not close at {label}")
