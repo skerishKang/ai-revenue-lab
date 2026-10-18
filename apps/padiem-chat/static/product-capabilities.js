@@ -56,10 +56,12 @@
       available: "사용 가능",
       unavailable: "사용 불가",
       upgrade: "업그레이드",
+      adminNote: "관리자 전용 모델로 호출합니다.",
       free: ["Padiem Free", ""],
       plus: ["Padiem Plus", ""],
       pro: ["Padiem Pro", ""],
       max: ["Padiem Max", ""],
+      admin: ["Padiem 관리자", ""],
     }),
     en: Object.freeze({
       label: "AI tier",
@@ -69,10 +71,12 @@
       available: "Available",
       unavailable: "Unavailable",
       upgrade: "Upgrade",
+      adminNote: "Calls the admin-only model.",
       free: ["Padiem Free", ""],
       plus: ["Padiem Plus", ""],
       pro: ["Padiem Pro", ""],
       max: ["Padiem Max", ""],
+      admin: ["Padiem 관리자", ""],
     }),
   });
 
@@ -80,6 +84,12 @@
   const TIER_LIST = Object.freeze(["free", "plus", "pro", "max"]);
 
   let selectedTier = "free";
+  // Administrator entry visibility is proven per session by the server-side
+  // global model admin gate; it is never derived from a username or grade.
+  let adminAvailable = false;
+  let adminProbeInFlight = null;
+  let adminProbeAt = 0;
+  const ADMIN_PROBE_TTL_MS = 60000;
 
   const ACCOUNT_COPY = Object.freeze({
     ko: Object.freeze({
@@ -303,6 +313,13 @@
   }
 
   function selectTier(tier) {
+    if (tier === "admin") {
+      if (!adminAvailable) return false;
+      selectedTier = tier;
+      syncModeCopy();
+      window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier } }));
+      return true;
+    }
     if (!availableTiers().includes(tier)) return false;
     selectedTier = tier;
     syncModeCopy();
@@ -312,7 +329,7 @@
 
   function createModeOption(tier) {
     const copy = currentModeCopy();
-    const status = tierStatus(tier);
+    const status = tier === "admin" ? "available" : tierStatus(tier);
     const available = status === "available";
     const button = document.createElement("button");
     button.type = "button";
@@ -336,6 +353,11 @@
     state.append(icon, label);
     button.append(title, state);
     button.addEventListener("click", () => {
+      if (tier === "admin") {
+        if (!selectTier(tier)) return;
+        closeModePanel({ restoreFocus: true });
+        return;
+      }
       const currentStatus = tierStatus(tier);
       if (currentStatus === "unavailable") return;
       if (currentStatus === "upgrade") {
@@ -355,6 +377,7 @@
 
   function syncModeCopy() {
     if (!modePill || !modePanel) return;
+    syncAdminOption();
     const copy = currentModeCopy();
     const label = modePill.querySelector("span:last-child");
     if (label) label.textContent = copy[selectedTier][0];
@@ -364,11 +387,11 @@
     const truth = modePanel.querySelector("[data-mode-truth]");
     if (title) title.textContent = copy.title;
     if (description) description.textContent = copy.description;
-    if (truth) truth.textContent = copy.truth;
+    if (truth) truth.textContent = selectedTier === "admin" ? copy.adminNote : copy.truth;
     modePanel.querySelectorAll("[data-mode-value]").forEach((button) => {
       const tier = button.dataset.modeValue;
       if (!copy[tier]) return;
-      const status = tierStatus(tier);
+      const status = tier === "admin" ? "available" : tierStatus(tier);
       const available = status === "available";
       button.dataset.modeStatus = status;
       button.disabled = status === "unavailable";
@@ -400,10 +423,89 @@
 
   function openModePanel() {
     if (!modePill || !modePanel) return;
+    if (auth.authenticated) {
+      void refreshAdminPresence().then(() => {
+        if (!modePanel || modePanel.hidden) return;
+        syncModeCopy();
+      });
+    }
     modePanel.hidden = false;
     modePill.setAttribute("aria-expanded", "true");
     const active = modePanel.querySelector(`[data-mode-value="${selectedTier}"]`);
     if (active) active.focus();
+  }
+
+  function syncAdminOption() {
+    if (!modePanel) return;
+    const list = modePanel.querySelector(".mode-option-list");
+    if (!list) return;
+    let adminButton = list.querySelector('[data-mode-value="admin"]');
+    if (!adminAvailable) {
+      if (adminButton) adminButton.remove();
+      return;
+    }
+    if (!adminButton) {
+      adminButton = createModeOption("admin");
+      list.appendChild(adminButton);
+    }
+  }
+
+  async function refreshAdminPresence() {
+    if (!auth.authenticated) {
+      adminAvailable = false;
+      adminProbeInFlight = null;
+      adminProbeAt = 0;
+      syncAdminOption();
+      return false;
+    }
+    if (Date.now() - adminProbeAt < ADMIN_PROBE_TTL_MS) {
+      return adminAvailable;
+    }
+    if (adminProbeInFlight) {
+      try {
+        await adminProbeInFlight;
+      } catch (_) {
+        // A failed probe hides the administrator entry by default.
+      }
+      return adminAvailable;
+    }
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer = window.setTimeout(() => {
+      try {
+        if (controller) controller.abort();
+      } catch (_) {
+        // Ignore abort errors; the probe fails closed below.
+      }
+    }, 5000);
+    const probe = (async () => {
+      try {
+        const response = await nativeFetch("/api/admin/models/me", {
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+          signal: controller ? controller.signal : undefined,
+        });
+        if (!response.ok) return false;
+        const data = await response.json().catch(() => null);
+        return !!(data && data.ok === true && data.admin === true);
+      } catch (_) {
+        return false;
+      } finally {
+        window.clearTimeout(timer);
+      }
+    })();
+    adminProbeInFlight = probe;
+    try {
+      adminAvailable = await probe;
+      adminProbeAt = Date.now();
+    } finally {
+      adminProbeInFlight = null;
+    }
+    if (!adminAvailable && selectedTier === "admin") {
+      selectedTier = "free";
+      window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier: selectedTier } }));
+    }
+    syncAdminOption();
+    return adminAvailable;
   }
 
   function toggleModePanel() {
@@ -446,6 +548,7 @@
     truth.className = "mode-presentation-truth";
     truth.dataset.modeTruth = "true";
     modePanel.append(header, list, truth);
+    syncAdminOption();
     // One common Chat/Claw tier picker. Move, never clone, the existing
     // owner-verified Claw exact-model controls into this picker. Their IDs,
     // listeners and submit-time snapshots stay authoritative and unchanged.
@@ -511,7 +614,11 @@
       nextAuth = EMPTY_AUTH;
     }
     auth = nextAuth;
-    if (!availableTiers().includes(selectedTier)) {
+    await refreshAdminPresence();
+    const selectionValid = selectedTier === "admin"
+      ? adminAvailable
+      : availableTiers().includes(selectedTier);
+    if (!selectionValid) {
       selectedTier = "free";
       window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier: selectedTier } }));
     }
