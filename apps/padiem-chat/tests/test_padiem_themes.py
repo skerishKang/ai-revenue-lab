@@ -153,9 +153,9 @@ def test_bright_theme_assistant_answer_subtree_contrast():
     # inherited/won the !important near-white colour from
     # padiem-surfaces.css (loaded via @import in padiem-cinematic-chat.css),
     # so the actual paragraph and button text stayed near-white on LIGHT and
-    # PADIEM_HOME. The fix lives in the bright chat-state block and uses
-    # descendant selectors with !important so the surface !important rule
-    # loses on specificity.
+    # PADIEM_HOME. The fix lives in the bright shared-state block (Chat and
+    # Claw render the same stored turn) and uses descendant selectors with
+    # !important so the surface !important rule loses on specificity.
     bright_tokens = {"light": "#1e1e22", "padiem-home": "#1e2a3a"}
     subtree = [
         ".assistant-content .rich-response",
@@ -167,7 +167,7 @@ def test_bright_theme_assistant_answer_subtree_contrast():
         ".reference-note",
     ]
     for theme, token in bright_tokens.items():
-        prefix = f'html[data-theme="{theme}"] .app-shell[data-state="chat"]'
+        prefix = f'html[data-theme="{theme}"] .app-shell:is([data-state="chat"],[data-state="claw"])'
         for sel in subtree:
             needle = f"{prefix} {sel}"
             assert needle in THEMES_CSS, f"missing bright answer-subtree override {needle}"
