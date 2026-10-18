@@ -632,6 +632,71 @@ def _requested_local_command(user_text: str) -> tuple[bool, str | None]:
     return True, command
 
 
+#: #4139: a natural-language PC query needs no backtick. The user asks about
+#: their verified PC in prose ("내 PC에 데이터베이스가 있나?") and Claw runs a
+#: bounded inventory command on that PC instead of answering from model memory.
+#: Conservative: only clear PC-state questions with a recognizable subject map
+#: to a command; everything else falls through to the model.
+_NATURAL_PC_QUERY_MARKERS = (
+    "내pc", "내컴퓨터", "로컬pc", "로컬컴퓨터", "com1", "mypc", "mycomputer",
+)
+_NATURAL_PC_QUERY_NOUNS = (
+    "데이터베이스", "db", "파일", "폴더", "디렉터리", "프로그램", "서비스",
+    "프로세스", "호스트", "hostname", "정보", "상태", "인벤토리",
+    "드라이브", "디스크", "drive", "disk",
+)
+_NATURAL_PC_QUERY_VERBS = (
+    "있", "뭐", "무엇", "확인", "조회", "목록", "리스트", "검색", "찾",
+    "보여", "알려", "인벤토리", "어떻",
+)
+
+
+def _natural_pc_query_command(user_text: str) -> str | None:
+    lowered = user_text.lower()
+    compact = "".join(lowered.split())
+    if any(marker in compact for marker in ("데이터베이스", "db")):
+        return (
+            "Get-ChildItem -Path C:\\ -Recurse -Include *.db,*.sqlite,*.sqlite3,"
+            "*.mdf,*.ldb -ErrorAction SilentlyContinue | Select-Object -First 50 "
+            "| ForEach-Object { $_.FullName }"
+        )
+    if any(marker in compact for marker in ("드라이브", "디스크", "drive", "disk")):
+        return (
+            "Get-PSDrive -PSProvider FileSystem | ForEach-Object { "
+            "\"$($_.Name): $($_.Root)\" }"
+        )
+    if "hostname" in lowered or "호스트" in lowered:
+        return "hostname.exe"
+    return None
+
+
+def _requested_natural_pc_query(user_text: str) -> tuple[bool, str | None]:
+    """Natural-language PC state query for the verified owner PC.
+
+    #4139. No backtick is required: a clear question about the verified PC's
+    state ("내 PC에 데이터베이스가 있나?") becomes one bounded command on that
+    PC. Ambiguous prose falls through to the model, so ordinary chat never
+    becomes remote execution.
+    """
+    if not isinstance(user_text, str) or not user_text:
+        return False, None
+    lowered = user_text.lower()
+    compact = "".join(lowered.split())
+    if not any(marker in compact for marker in _NATURAL_PC_QUERY_MARKERS):
+        return False, None
+    if not any(noun in lowered for noun in _NATURAL_PC_QUERY_NOUNS):
+        return False, None
+    if not any(verb in lowered for verb in _NATURAL_PC_QUERY_VERBS):
+        return False, None
+    # A backtick command is the explicit lane; do not double-handle it.
+    if "`" in user_text:
+        return False, None
+    command = _natural_pc_query_command(user_text)
+    if command is None:
+        return False, None
+    return True, command
+
+
 _DESKTOP_PC_MARKERS = (
     "내pc", "내컴퓨터", "로컬pc", "로컬컴퓨터", "com1", "mypc", "mycomputer",
 )
@@ -991,6 +1056,17 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                           "실행할 명령을 백틱으로 하나만 지정해 주세요.")
         return await _dispatch_user_command_request(
             request, user_text=user_text, command=command_text, data=data,
+        )
+
+    # #4139: natural-language PC state query (no backtick). Routes a clear
+    # question about the verified PC to a bounded inventory command on that PC.
+    natural_pc_requested, natural_pc_command = _requested_natural_pc_query(user_text)
+    if natural_pc_requested:
+        if natural_pc_command is None:
+            return _error(422, "natural_pc_command_required",
+                          "PC 조회 명령을 결정할 수 없습니다.")
+        return await _dispatch_user_command_request(
+            request, user_text=user_text, command=natural_pc_command, data=data,
         )
 
     txt_requested, txt_path = _requested_local_txt_path(user_text)
