@@ -227,7 +227,7 @@ async def _check_mesh_grant(request: Request, session: Any) -> bool:
     if session is None:
         return _mesh_grant_denied("canonical_session_absent")
     mesh_source = getattr(request.app.state, "oracle_mesh_return_source", None)
-    if mesh_source is None or getattr(mesh_source, "configured", False) is False:
+    if mesh_source is None or getattr(mesh_source, "configured", True) is False:
         return _mesh_grant_denied("mesh_source_unconfigured")
     if getattr(mesh_source, "execution_mode", None) != EXECUTION_MODE_MESH:
         return _mesh_grant_denied("mesh_mode_unavailable")
