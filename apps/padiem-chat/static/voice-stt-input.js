@@ -230,7 +230,7 @@
       currentUtteranceId = utteranceId;
       acceptedCount += 1;
       emitState(STATES.FINAL);
-      try { appendToInput(text); } catch (e) { /* swallow */ }
+      try { appendToInput(text, "append", stopFlush); } catch (e) { /* swallow */ }
       try { cbFinal(text, utteranceId); } catch (e) { /* swallow */ }
       turnBuffer.reset();
       return { ok: true, text: text, utteranceId: utteranceId, acceptedCount: acceptedCount };
@@ -261,8 +261,8 @@
       return state;
     }
 
-    function appendToInput(text, mode) {
-      if (destroyed) return null;
+    function appendToInput(text, mode, flush) {
+      if (destroyed || (stopped && !flush)) return null;
       text = norm(text);
       if (!text) return null;
       let current = "";
