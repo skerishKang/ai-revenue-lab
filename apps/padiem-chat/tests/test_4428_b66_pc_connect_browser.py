@@ -201,3 +201,71 @@ def test_b66_pc_panel_default_off_without_product_grant(browser, server):
     assert observed == []
     assert not errors, errors
     page.close()
+
+
+CID = "chat_" + "c" * 32
+RUN = "run_" + "d" * 24
+
+
+def test_b66_pc_txt_request_and_terminal_result(browser, server):
+    """#4434 follow-up: status -> TXT request -> pending -> done, same conversation."""
+    page, errors = ready_page(browser, server)
+    txt_requests = []
+    polls = []
+
+    def mock_directory(route):
+        route.fulfill(status=200, content_type="application/json",
+                      body=json.dumps(envelope([pc("home", "집 PC")]), ensure_ascii=False))
+
+    def mock_dialogues(route):
+        route.fulfill(status=200, content_type="application/json",
+                      body=json.dumps({
+                          "ok": True, "authority": "b66-dialogue",
+                          "conversations": [{"conversation_id": CID, "title": "견적 상담"}],
+                          "query": "",
+                      }, ensure_ascii=False))
+
+    def mock_txt_request(route):
+        txt_requests.append(json.loads(route.request.post_data or "{}"))
+        route.fulfill(status=200, content_type="application/json",
+                      body=json.dumps({"ok": True, "run_id": RUN, "conversation_id": CID}))
+
+    def mock_result(route):
+        polls.append(route.request.method)
+        terminal = len(polls) > 1
+        route.fulfill(status=200, content_type="application/json",
+                      body=json.dumps({
+                          "ok": True, "run_id": RUN, "conversation_id": CID,
+                          "appended": terminal,
+                          "status": "completed" if terminal else "pending",
+                          "reason": "terminal observation" if terminal else "running",
+                      }))
+
+    page.route("**" + DEVICE_ENDPOINT, mock_directory)
+    page.route("**/api/b66/ai/dialogues?limit=20", mock_dialogues)
+    page.route("**/api/b66/connect/txt-reads/request", mock_txt_request)
+    page.route("**/api/b66/runs/*/pc-result", mock_result)
+
+    page.locator("#b66QuotePcToggle").click()
+    page.locator("#b66QuotePcConversation option[value='" + CID + "']").wait_for(state="attached")
+    assert page.locator("#b66QuotePcTxt").is_visible()
+
+    # Invalid input never reaches the server.
+    page.locator("#b66QuotePcRequest").click()
+    page.get_by_text("TXT 파일 상대 경로(.txt)를 입력하고", exact=False).wait_for()
+    assert txt_requests == []
+
+    page.locator("#b66QuotePcPath").fill("memo.txt")
+    page.locator("#b66QuotePcConversation").select_option(CID)
+    page.locator("#b66QuotePcRequest").click()
+    page.get_by_text("PC에서 읽는 중입니다", exact=False).wait_for()
+    page.get_by_text("읽기 완료", exact=False).wait_for(timeout=15000)
+
+    assert len(txt_requests) == 1
+    sent = txt_requests[0]
+    assert sent == {"conversation_id": CID, "path_relative": "memo.txt", "device_id": "home"}
+    assert len(polls) >= 2 and all(m == "POST" for m in polls)
+    panel_text = page.locator("#b66QuotePcPanel").inner_text()
+    assert "SUPER_PRIVATE_TOKEN" not in panel_text
+    assert not errors, errors
+    page.close()
