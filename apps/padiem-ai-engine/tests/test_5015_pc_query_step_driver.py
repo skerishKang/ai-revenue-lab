@@ -113,3 +113,93 @@ def test_chat_binding_shares_contract_under_chat_product_only():
     assert chat_auth.granted_auth_scopes == (PC_QUERY_SCOPE,)
     assert CLAW_ENGINE_PC_DRIVE_URL != CHAT_ENGINE_PC_DRIVE_URL
     assert CHAT_ENGINE_PC_DRIVE_URL.endswith("/internal/chat/engine-pc-drive")
+
+
+def test_streaming_lane_composes_the_pc_query_step_driver(monkeypatch):
+    """#5015: the live stream lane must set the PC query step driver.
+
+    Without it the Core plan-backed driver injects a ``query`` argument the
+    drive tool schema rejects, so the tool call fails with
+    ``invalid_tool_arguments`` before any Mesh dispatch.
+    """
+    import json
+    from unittest.mock import patch
+
+    import app.orchestration_service as service_module
+    from app.orchestration_service import (
+        ORCHESTRATION_STREAM_PATH,
+        OrchestrationEngineService,
+    )
+    from padiem_ai_core.orchestration_events import (
+        OrchestrationEvent,
+        OrchestrationEventKind,
+    )
+
+    sentinel = object()
+    captured = {}
+
+    def factory(model_id, model_policy, task_type, optimize_for):
+        captured["model_id"] = model_id
+        return sentinel
+
+    class FakeRunner:
+        def __init__(self, *, runtime, idempotency, event_sink):
+            self._sink = event_sink
+
+        async def run(self, request):
+            captured["request"] = request
+            self._sink(OrchestrationEvent(
+                event_id="evt_stream_pc_1",
+                run_id=request.execution_request.session_id,
+                trace_id=request.context.trace_id,
+                app_id=request.app_id,
+                kind=OrchestrationEventKind.RUN_STARTED,
+                sequence=1,
+                timestamp_iso="2026-10-19T00:00:00Z",
+            ))
+
+    payload = {
+        "app_id": "b54-padiem-claw",
+        "agent": {
+            "id": "agent:padiem:orchestrator_1",
+            "title": "Orchestrator",
+            "description": "Orchestrates execution",
+            "system_instruction": "Execute tasks",
+            "task_type": "general",
+            "optimize_for": "balanced",
+            "max_tokens": 2048,
+            "model_policy": {
+                "model": "google/gemini-3.5-flash-lite",
+                "max_retries": 0,
+                "product_tier": "plus",
+            },
+        },
+        "messages": [{"role": "user", "content": "내 PC에 어떤 드라이브가 있어?"}],
+        "trace_id": "tr_orch_test",
+        "execution_context": {"trace_id": "tr_orch_test", "timeout_seconds": 15.0},
+        "subject_id": "sub_" + "a" * 32,
+        "session_id": "run_5015_pc_stream",
+    }
+    payload["agent_plan"] = {
+        "agent_id": "agent:padiem:claw-pc-query@1",
+        "steps": [{
+            "step_id": "query_drives",
+            "objective": "Query verified PC filesystem drives",
+            "tool_id": "claw.pc.query_drives",
+        }],
+    }
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: object(),
+        b14_service_bound=True,
+        pc_query_step_driver_factory=factory,
+    )
+    with patch.object(service_module, "OrchestrationRunner", FakeRunner):
+        prepared = asyncio.run(service.prepare_stream(
+            method="POST",
+            path=ORCHESTRATION_STREAM_PATH,
+            content_type="application/json",
+            body=json.dumps(payload).encode("utf-8"),
+        ))
+    assert prepared.__class__.__name__ == "PreparedOrchestrationStream"
+    assert captured["model_id"] == "google/gemini-3.5-flash-lite"
+    assert captured["request"].agent_step_driver is sentinel

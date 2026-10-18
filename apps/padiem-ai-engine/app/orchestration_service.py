@@ -1454,7 +1454,41 @@ class OrchestrationEngineService:
         built = self._orchestrate_request_from_payload(payload)
         if isinstance(built, ServiceResponse):
             return built
-        app_id, orch_req, _exec_req, request_fingerprint_value = built
+        app_id, orch_req, exec_req, request_fingerprint_value = built
+
+        # #5015: the streaming lane must compose the same owner-bound PC query
+        # step driver as the non-stream execute() lane. Without it the Core
+        # falls back to the plan-backed driver, which injects a `query`
+        # argument the drive tool schema rejects (invalid_tool_arguments).
+        plan = orch_req.agent_plan
+        if plan is not None and orch_req.subject_id:
+            pc_query_plan = (
+                (app_id == "b54-padiem-claw"
+                 and plan.agent_id == "agent:padiem:claw-pc-query@1")
+                or (app_id == "padiem-chat"
+                    and plan.agent_id == "agent:padiem:chat-pc-query@1")
+            )
+            if pc_query_plan:
+                if self._pc_query_step_driver_factory is None:
+                    return _service_error(
+                        "pc_query_model_unavailable",
+                        "Owner-bound PC query model runtime unavailable.",
+                        status_code=503,
+                    )
+                stream_model_id = exec_req.agent.model_policy.get("model")
+                if not isinstance(stream_model_id, str) or not stream_model_id:
+                    return _service_error(
+                        "pc_query_model_unavailable",
+                        "Resolved model is unavailable.",
+                        status_code=503,
+                    )
+                orch_req = replace(
+                    orch_req,
+                    agent_step_driver=self._pc_query_step_driver_factory(
+                        stream_model_id, exec_req.agent.model_policy,
+                        exec_req.agent.task_type, exec_req.agent.optimize_for,
+                    ),
+                )
 
         # The synchronous sink receives events in emission order (Core's emit
         # closures deliver synchronously); an unbounded asyncio.Queue never
