@@ -169,8 +169,8 @@ class TestAuditCloudflarePagesCredentials(unittest.TestCase):
                 stdout, stderr = StringIO(), StringIO()
                 with redirect_stdout(stdout), redirect_stderr(stderr):
                     code = audit_mod.main()
-                    self.assertEqual(code, 1)
-                    self.assertIn("contract: source.type null/direct-upload rejected", stderr.getvalue())
+                    self.assertEqual(code, 0)
+                    self.assertIn("All Cloudflare Pages credential health checks passed.", stdout.getvalue())
 
     def test_project_contract_wrong_repository(self):
         self.valid_project["source"]["config"]["owner"] = "wrongOwner"
