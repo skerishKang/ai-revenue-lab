@@ -41,6 +41,7 @@ import base64
 import hashlib
 import hmac
 import json
+import logging
 import re
 import secrets
 import uuid
@@ -378,14 +379,17 @@ def build_oracle_mesh_return_source(
         return None
 
 
-async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturnSource | None:
-    """Read the deployment map, channel secret and execution mode from env.
+def _mesh_source_unconfigured(reason: str) -> None:
+    """Record one fixed startup reason, never a secret, mapping or account."""
+    logging.getLogger(__name__).warning("oracle_mesh_source_unconfigured=%s", reason)
+    return None
 
-    The channel secret is a Secrets Store binding, not a plain string: like
-    every other deployment secret in this Worker it is resolved through the
-    binding's async ``.get()`` and never read as a raw env value. A store
-    object that cannot be read keeps the source unconfigured, so the routes
-    stay unmounted instead of running with a broken proof.
+
+async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturnSource | None:
+    """Read existing deployment bindings, logging only fixed failure classes.
+
+    The product's fail-closed configuration and client-visible behavior do
+    not change. No resolved value, account, source URL or exception is logged.
     """
     from .worker_config import binding_value
 
@@ -394,27 +398,29 @@ async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturn
         raw_secret = binding_value(env, ORACLE_MESH_CHANNEL_SECRET_ENV)
         raw_mode = binding_value(env, ORACLE_MESH_EXECUTION_MODE_ENV)
     except Exception:
-        return None
+        return _mesh_source_unconfigured("binding_read_failed")
     if not isinstance(raw_map, str) or not raw_map.strip():
-        return None
+        return _mesh_source_unconfigured("ownership_map_unavailable")
     try:
         mapping = json.loads(raw_map)
     except (ValueError, TypeError):
-        return None
+        return _mesh_source_unconfigured("ownership_map_malformed")
     if not isinstance(raw_secret, str):
         getter = getattr(raw_secret, "get", None)
         if not callable(getter):
-            return None
+            return _mesh_source_unconfigured("channel_secret_binding_unavailable")
         try:
             resolved = getter()
             if hasattr(resolved, "__await__"):
                 resolved = await resolved
         except Exception:
-            return None
+            return _mesh_source_unconfigured("channel_secret_fetch_failed")
         raw_secret = resolved
     mode = raw_mode.strip().lower() if isinstance(raw_mode, str) else EXECUTION_MODE_OFF
-    return build_oracle_mesh_return_source(mapping, raw_secret, mode)
-
+    source = build_oracle_mesh_return_source(mapping, raw_secret, mode)
+    if source is None:
+        return _mesh_source_unconfigured("source_validation_failed")
+    return source
 
 async def resolve_oracle_mesh_execution(
     request: Request, *, path_relative: str, selected_device_id: str | None = None,
