@@ -260,6 +260,9 @@
                 callbacks.onFinal({ text: text, utteranceId: utteranceId, stopped: fromStop === true || halting });
               }
             } catch (e) { /* swallow */ }
+            if (!cancelled && typeof callbacks.onTurnComplete === "function") {
+              callbacks.onTurnComplete({ accepted: true, endOfTurn: true, finalId: utteranceId });
+            }
           },
           function () {
             sending = false;
@@ -315,8 +318,12 @@
         }
         if (speechSeenAt && !sending && chunks.length) {
           const idle = at - lastSpeechAt;
-          if (idle >= GROQ_SILENCE_CUT_MS) flushChunk(false);
-          else if (chunkStartedAt && at - chunkStartedAt >= GROQ_MAX_CHUNK_MS) flushChunk(false);
+          if (idle >= GROQ_SILENCE_CUT_MS || (chunkStartedAt && at - chunkStartedAt >= GROQ_MAX_CHUNK_MS)) {
+            if (typeof callbacks.onAutoStopRequested === "function") {
+              callbacks.onAutoStopRequested();
+            }
+            flushChunk(false);
+          }
         }
       }
 

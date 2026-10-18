@@ -332,3 +332,29 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 .app-shell[data-state="meeting"] .meeting-panel {
   border-radius: 16px;
 }
+
+/* Phase 2 follow-up (#4488): one header/spacing/state contract for the same
+ * five views. CSS only; no index.html, locale, JS, DB or server changes. */
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"])
+.standalone-view-header {
+  align-items: center;
+  min-height: 44px;
+}
+/* #4488: the five-view body gap must actually win over the older per-view
+ * overrides (`.connectors-view .standalone-view-body { gap:4px }`,
+ * `.automation-view .standalone-view-body { gap:0 }`) and the base
+ * `.standalone-view`/`.calendar-view`/`.library-view { gap:14px }`.
+ * Meeting and Calendar carry the gap on the view root, not on a nested
+ * `.standalone-view-body`, so both shapes are named explicitly. */
+.app-shell[data-state="meeting"] .meeting-view,
+.app-shell[data-state="automation"] .automation-view .standalone-view-body,
+.app-shell[data-state="connectors"] .connectors-view .standalone-view-body,
+.app-shell[data-state="calendar"] .calendar-view,
+.app-shell[data-state="library"] .library-view {
+  gap: 12px;
+}
+.app-shell[data-state="calendar"] .calendar-error,
+.app-shell[data-state="automation"] #clawInboxError,
+.app-shell[data-state="connectors"] #connectorsError {
+  color: var(--danger, #b42318);
+}

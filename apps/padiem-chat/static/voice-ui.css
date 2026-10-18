@@ -1,0 +1,151 @@
+/* #4816 voice mode toolbar and M3/M4 surfaces.
+   Microphone (M1) and waveform picker (M2/M3/M4): 44x44 CSS px touch targets. */
+#voiceWaveformButton {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  position: relative;
+  border: 1px solid #bed0dd;
+  border-radius: 14px;
+  color: #587c97;
+  background: #eaf2f7;
+  box-shadow: 0 2px 8px rgba(36, 68, 92, .07);
+  cursor: pointer;
+}
+#voiceWaveformButton[aria-pressed="true"] {
+  background: #d7e4ee;
+  border-color: #9fb3c4;
+}
+#voiceWaveformButton:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+#voiceWaveformButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Mode picker popover */
+.voice-mode-menu {
+  position: absolute;
+  z-index: 60;
+  min-width: 170px;
+  border: 1px solid #bed0dd;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+  padding: 6px 0;
+  outline: none;
+}
+.voice-mode-menu[hidden] { display: none !important; }
+.voice-mode-menu-item {
+  role: menuitemradio;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+  text-align: left;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.voice-mode-menu-item:focus-visible { outline: 2px solid #587c97; outline-offset: -2px; background: #f2f7fb; }
+.voice-mode-menu-item[data-active="true"] { font-weight: 700; background: #eef4f9; }
+.voice-mode-menu-item[data-active="true"][data-recommended="true"]::after {
+  content: " (추천)";
+  margin-left: auto;
+  font-weight: 400;
+  opacity: .75;
+}
+
+/* Answer listen/stop button (M3) */
+.voice-answer-listen {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  padding: 0.22rem 0.55rem;
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-inline-start: 0.45rem;
+  min-height: 28px;
+}
+.voice-answer-listen:disabled { opacity: 0.5; cursor: not-allowed; }
+.voice-answer-listen[aria-pressed="true"] { font-weight: 700; }
+
+/* M4 voice call panel */
+.voice-call-panel {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(420px, 92vw);
+  max-height: 72vh;
+  border: 1px solid #bed0dd;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .16);
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 0;
+  padding: 14px 16px 16px;
+  z-index: 70;
+}
+.voice-call-panel[hidden] { display: none !important; }
+.voice-call-panel__state {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+  text-align: center;
+}
+.voice-call-panel__btn {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #bed0dd;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-align: left;
+  margin: 6px 0;
+}
+.voice-call-panel__btn--end { color: #b3261e; border-color: #b3261e; }
+.voice-call-panel__btn[aria-pressed="true"] { background: #f2f7fb; font-weight: 700; }
+.voice-call-panel__transcript {
+  border-top: 1px solid #e4eaef;
+  padding-top: 10px;
+  font-size: 0.86rem;
+  color: #4a6576;
+  overflow: auto;
+  max-height: 140px;
+}
+.voice-call-panel__transcript summary {
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+  padding: 6px 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
