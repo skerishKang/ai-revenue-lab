@@ -3,9 +3,11 @@
 **기준:** `skerishKang/ai-revenue-lab`; 관련 [#4803](https://github.com/skerishKang/ai-revenue-lab/issues/4803), 고객 운영 수용 [#4316](https://github.com/skerishKang/ai-revenue-lab/issues/4316).
 **범위:** 기존 B66/Chat 운영 D1 구조의 비파괴 확인 및 승인된 코드 배포. 비밀값·고객 자료·인증 쿠키는 기록하지 않는다.
 
+**인증 확인 선행:** 로컬 API 토큰·Wrangler OAuth·GitHub Actions 인증의 구분과 갱신/실패 진단은 [Cloudflare 인증 운영 정본](CLOUDFLARE_CREDENTIAL_OPERATIONS.md)을 먼저 따른다. 아래 재사용 명령은 스키마·배포 전용이며, 일반 애플리케이션 행 조회를 허용하거나 지원한다는 뜻이 아니다.
+
 ## 문제와 검증된 해결
 
-COM1 `Padiem-Command-Center`에서 기본 설치된 `wrangler d1 execute ... --remote`를 호출하면 Cloudflare `Authentication error [code: 10000]`가 발생할 수 있다. 이는 **그 시점 로컬 CLI 인증 자격증명에 해당 D1 API 접근 권한이 없다는 관찰값**이다. D1 테이블이 없거나 B66 서버가 고장났다는 증거가 아니다.
+COM1 `Padiem-Command-Center`에서 기본 설치된 `wrangler d1 execute ... --remote`를 호출하면 Cloudflare `Authentication error [code: 10000]`가 발생할 수 있다. 이는 **그 시점 해당 로컬 CLI 호출의 인증이 실패했다는 관찰값**이다. 실제 선택된 자격증명·계정·권한 원인은 별도로 확인한다. D1 테이블이 없거나 B66 서버가 고장났다는 증거가 아니다.
 
 **이미 동작하는 기존 운영 경로:** GitHub Actions의 `secrets.CLOUDFLARE_API_TOKEN` / `secrets.CLOUDFLARE_ACCOUNT_ID`를 쓰는 보호된 워크플로. 운영 D1 ID는 현재 `padiem-chat` Worker의 `PADIEM_CHAT_DB` 바인딩을 **서버 측으로 조회**해 찾으며 이름만 추측하거나 별도 DB를 생성하지 않는다. 자격증명을 브라우저나 GitHub 로그에 출력하거나 로컬 Wrangler 자격증명으로 복사하지 않는다.
 
