@@ -5,8 +5,18 @@ const MAX_PADIEM_BODY_BYTES = 32 * 1024;
 /* The authenticated dialogue route forwards the bounded same-view transcript,
    not a single quote sentence. Its budget equals the Worker's browser transport
    guard (6MB) so this relay can never reject a conversation the application
-   itself accepts. Every other bridge route keeps the 32KiB ceiling. */
-const MAX_RELAY_BODY_BYTES = new Map([["/api/b66/ai/chat", 6 * 1024 * 1024]]);
+   itself accepts. Bridge routes without their own entry keep the 32KiB ceiling. */
+/* #3404: a voice chunk is base64 audio, not a quote sentence — one real 4-20s
+   utterance is 130-260KiB before it reaches the Chat Worker. Chat accepts up to
+   MAX_VOICE_TRANSCRIBE_BYTES (5MiB base64 envelope + 64KiB JSON wrapper,
+   apps/padiem-chat/app/voice_stt_routes.py), so the relay budget mirrors that
+   envelope instead of the 32KiB bridge default. Keeping the relay at or below
+   the upstream bound is what makes a chunk reachable at all; it stays finite. */
+const MAX_VOICE_TRANSCRIBE_BYTES = 5 * 1024 * 1024 + 64 * 1024;
+const MAX_RELAY_BODY_BYTES = new Map([
+  ["/api/b66/ai/chat", 6 * 1024 * 1024],
+  ["/api/voice/transcribe", MAX_VOICE_TRANSCRIBE_BYTES],
+]);
 const SAVED_SKILL_ROW = /^b66skill_[0-9a-f]{32}$/;
 const SKILL_CANDIDATE_ROW = /^b66cand_[0-9a-f]{32}$/;
 const B66_ASSET_ROW = /^b66asset_[0-9a-f]{32}$/;
