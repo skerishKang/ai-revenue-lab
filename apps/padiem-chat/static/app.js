@@ -234,16 +234,30 @@
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
+  // #4862: Claw is a restorable product route, exactly like Automation.
+  // The fragment names the destination only. It never carries a user id,
+  // session token or conversation id, so a reload after logout or an account
+  // switch can at most reopen the Claw shell for the current session, which
+  // renders from the current session's own server-side state.
+  const AUTOMATION_ROUTE_HASH = "#padiem-automation";
+  const CLAW_ROUTE_HASH = "#padiem-claw";
   let automationDestinationReady = false;
   function setNavActive() {
     const state = shell.dataset.state;
     // The URL fragment is the destination bookmark; no browser persistence.
     if (automationDestinationReady && window.history && window.location) {
-      const isAutomationRoute = window.location.hash === "#padiem-automation";
+      const currentHash = String(window.location.hash || "");
+      const isAutomationRoute = currentHash === AUTOMATION_ROUTE_HASH;
+      const isClawRoute = currentHash === CLAW_ROUTE_HASH;
+      const basePath = window.location.pathname + window.location.search;
       if (state === "automation" && !isAutomationRoute) {
-        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search + "#padiem-automation");
+        window.history.replaceState(window.history.state, "", basePath + AUTOMATION_ROUTE_HASH);
+      } else if (state === "claw" && !isClawRoute) {
+        window.history.replaceState(window.history.state, "", basePath + CLAW_ROUTE_HASH);
       } else if (state !== "automation" && isAutomationRoute) {
-        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+        window.history.replaceState(window.history.state, "", basePath);
+      } else if (state !== "claw" && isClawRoute) {
+        window.history.replaceState(window.history.state, "", basePath);
       }
     }
     const workspace = document.getElementById("clawWorkspace");
@@ -5492,6 +5506,9 @@
   });
   // Restore the Automation surface only after all handlers are registered.
   // It remains read-only for signed-out sessions through openClawAutomation().
-  if (window.location.hash === "#padiem-automation") openClawAutomation();
+  // #4862: restore Claw the same way. An unknown or tampered fragment matches
+  // neither route, so the shell keeps its default Chat home.
+  if (window.location.hash === AUTOMATION_ROUTE_HASH) openClawAutomation();
+  else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
   automationDestinationReady = true;
 })();
