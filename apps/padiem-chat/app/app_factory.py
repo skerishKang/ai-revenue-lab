@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import httpx
 from pathlib import Path
 
 from starlette.applications import Starlette
@@ -49,6 +50,7 @@ from .b66_quote_history_routes import (
 )
 from .b66_quote_history_store import D1QuoteHistoryStore
 from .b66_guided_draft import D1GuidedDraftStore, guided_draft_route, guided_transcript_route
+from .final_dispatch_guard_wiring import SimpleB14CatalogSource
 from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
 from .b66_template_source import (
     B66TemplateSourceStore,
@@ -880,6 +882,23 @@ def create_app(
     app.state.meeting_drive_upload_session_port = meeting_drive_upload_session_port
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = PadiemTierB14Client(resolved, transport=transport)
+    # B14 catalog source for the final dispatch guard (#4483).  Built from the
+    # same base URL as the B14 client; absent when no B14 base URL is configured
+    # (guard then degrades to unguarded dispatch).
+    if resolved.b14_base_url:
+        _catalog_client = httpx.AsyncClient()
+
+        async def _catalog_get_json(path: str):
+            resp = await _catalog_client.get(resolved.b14_base_url + path)
+            try:
+                body = resp.json()
+            except Exception:
+                body = resp.text
+            return resp.status_code, body
+
+        app.state.b14_catalog_source = SimpleB14CatalogSource(_catalog_get_json)
+    else:
+        app.state.b14_catalog_source = None
     # Public, non-secret browser render origin. Unset means B66 account runtime
     # stays fully hidden/off; Production activation is a separate env/deploy gate.
     # Explicit trusted product policy only. No public API, environment bool,

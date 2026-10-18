@@ -506,3 +506,56 @@ def test_differential_without_the_guard_the_same_context_reaches_the_provider():
     result = run_completion(client)
     assert result["answer"] == "final-guard-answer"
     assert len(binding.calls) == 1
+
+
+# --- #4483: with_guard() integration tests -----------------------------------
+
+def test_with_guard_allows_authorized_request():
+    """With a valid guard, an authorized request reaches the provider once."""
+    guard = make_guard()
+    binding = RecordingBinding()
+    client = B14Client(settings(), service_transport=binding)
+    guarded = client.with_guard(guard)
+    result = run_completion(guarded)
+    assert result["answer"] == "final-guard-answer"
+    assert len(binding.calls) == 1
+    assert binding.calls[0][1]["model"] == MODEL
+    assert guard.last_decision is not None
+    assert guard.last_decision.reason == "allowed"
+
+
+def test_with_guard_blocks_unauthorized_model():
+    """With an armed guard, a request for a different model is blocked."""
+    guard = make_guard()
+    binding = RecordingBinding()
+    client = B14Client(settings(), service_transport=guard.authorized_service_transport(binding))
+    guarded = client.with_guard(guard)
+    with pytest.raises(ChatRuntimeError):
+        run_completion(guarded, model=OTHER)
+    assert binding.calls == []
+    assert guard.last_decision is not None
+    assert guard.last_decision.reason == "dispatch_model_mismatch"
+
+
+def test_with_guard_none_returns_original_client():
+    """with_guard(None) returns the client unchanged."""
+    binding = RecordingBinding()
+    client = B14Client(settings(), service_transport=binding)
+    result = client.with_guard(None)
+    assert result is client
+    result = run_completion(client)
+    assert result["answer"] == "final-guard-answer"
+    assert len(binding.calls) == 1
+
+
+def test_with_guard_stream_allowed():
+    """With a valid guard, a stream request reaches the provider once."""
+    guard = make_guard()
+    inner = RecordingSSETransport()
+    client = B14Client(settings(), stream_transport=guard.authorized_http_transport(inner))
+    guarded = client.with_guard(guard)
+    events = asyncio.run(collect_stream(guarded))
+    assert "".join(e.delta_content or "" for e in events) == "안녕하세요"
+    assert events[-1].done is True
+    assert len(inner.requests) == 1
+    assert inner.requests[0][1]["model"] == MODEL
