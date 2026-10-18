@@ -62,7 +62,7 @@ def test_no_visible_all_caps_brand_string_left_in_the_ui():
 
 def test_the_server_side_tier_label_is_title_case_too():
     routes = (ROOT / "app" / "b66_quote_routes.py").read_text(encoding="utf-8")
-    assert '"name": "Padiem " + grade.capitalize()' in routes
+    assert '"name": B66_GRADE_NAMES[grade]' in routes
     page = (ROOT / "app" / "connector_owner_setup_page.py").read_text(encoding="utf-8")
     assert "PADIEM CLAW" not in page
     assert "Padiem Claw" in page

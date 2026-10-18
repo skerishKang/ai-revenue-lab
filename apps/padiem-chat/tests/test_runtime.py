@@ -122,24 +122,23 @@ async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provid
 
 
 @pytest.mark.asyncio
-async def test_plus_alias_strips_command_and_keeps_exact_default_manual_route():
-    seen = {}
+async def test_unauthenticated_plus_alias_cannot_upgrade_grade_without_verified_tier():
+    calls = 0
 
     async def handler(request):
-        seen["body"] = json.loads(request.content)
+        nonlocal calls
+        calls += 1
         return httpx.Response(200, json=success_payload())
 
-    result = await B14Client(
+    client = B14Client(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
         httpx.MockTransport(handler),
-    ).complete([{"role": "user", "content": "/plus 오늘 날씨를 설명해줘"}])
-
-    assert seen["body"]["model"] == ACTIVE_MODEL
-    assert seen["body"]["messages"][-1] == {"role": "user", "content": "오늘 날씨를 설명해줘"}
-    assert seen["body"]["business14"]["allow_external_fallback"] is False
-    assert seen["body"]["business14"]["max_attempts"] == 1
-    assert result["route"]["model"] == ACTIVE_MODEL
-
+    )
+    with pytest.raises(ChatRuntimeError) as error:
+        await client.complete([{"role": "user", "content": "/plus test"}])
+    assert error.value.status_code == 422
+    assert error.value.code == "tier_unavailable"
+    assert calls == 0
 
 @pytest.mark.asyncio
 async def test_dormant_agnes_alias_fails_before_any_b14_call():
