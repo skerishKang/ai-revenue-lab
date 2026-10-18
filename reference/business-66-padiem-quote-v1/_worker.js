@@ -73,7 +73,12 @@ function padiemTarget(url, method) {
     ["/api/padiem/b66/inquiries", ["POST", "/api/b66/inquiries"]],
     ["/api/padiem/b66/admin/me", ["GET", "/api/b66/admin/me"]],
     ["/api/padiem/b66/quote/preview-base", ["GET", "/api/b66/quote/preview-base"]],
-    ["/api/padiem/b66/quote/pdf", ["POST", "/api/b66/quote/pdf"]]
+    ["/api/padiem/b66/quote/pdf", ["POST", "/api/b66/quote/pdf"]],
+    /* #5006: the sidebar PC status reuses the existing #4434 device
+       directory. Read-only and owner-scoped: the Chat Worker derives the
+       owner, workspace and the B66 product grant from the session, so this
+       relay only bounds the path. No device id is ever accepted here. */
+    ["/api/padiem/b66/connect/devices", ["GET", "/api/b66/connect/devices"]]
   ]);
   if (exact.has(path)) {
     const [allowedMethod, upstreamPath] = exact.get(path);

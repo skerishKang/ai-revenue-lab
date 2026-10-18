@@ -22,6 +22,8 @@ on:
       - "reference/business-66-padiem-quote-v1/tests/test_3536_unified_composer_browser.py"
       - "reference/business-66-padiem-quote-v1/tests/test_4076_customer_journey_browser.py"
       - "reference/business-66-padiem-quote-v1/tests/test_5039_post_complete_edit_browser.py"
+      - "reference/business-66-padiem-quote-v1/tests/test_5006_sidebar_browser.py"
+      - "reference/business-66-padiem-quote-v1/tests/b66-5006-sidebar-tools.test.cjs"
       - "reference/business-66-padiem-quote-v1/tests/test_3396_isolated_browser_resume.py"
       - "reference/business-66-padiem-quote-v1/tests/b66-dialogue-ux-4657.test.cjs"
       - "reference/business-66-padiem-quote-v1/tests/b66-dialogue-relay-4657.test.mjs"
@@ -73,6 +75,7 @@ jobs:
           node reference/business-66-padiem-quote-v1/tests/b66-5007-consultation-input.test.cjs
           node reference/business-66-padiem-quote-v1/tests/b66-5007-processing-note.test.cjs
           node reference/business-66-padiem-quote-v1/tests/b66-5007-draft-preview-mobile.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/b66-5006-sidebar-tools.test.cjs
 
       - name: Compare screen A4 preview with actual PDF render
         shell: bash
@@ -95,6 +98,7 @@ jobs:
           python reference/business-66-padiem-quote-v1/tests/test_4076_customer_journey_browser.py
           python reference/business-66-padiem-quote-v1/tests/test_3396_isolated_browser_resume.py
           python reference/business-66-padiem-quote-v1/tests/test_5039_post_complete_edit_browser.py
+          python reference/business-66-padiem-quote-v1/tests/test_5006_sidebar_browser.py
 
       - name: Verify the B66 AI dialogue journey in a real browser (#4657)
         shell: bash

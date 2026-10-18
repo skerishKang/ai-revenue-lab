@@ -15,6 +15,16 @@
   var wasCompact = null;
   var wasMobile = null;
 
+  /* #5006: the Chat product that already owns the AI work tools and its own
+     permission checks. B66 only links into it; it never reads that product's
+     files, schedules or conversations, so a customer gains no new access. */
+  var CHAT_WORKSPACE_ORIGIN = "https://chat.padiem.net";
+  var MAX_CONNECTION_STATUS_BYTES = 32768;
+
+  function chatWorkToolHref(hash) {
+    return hash ? CHAT_WORKSPACE_ORIGIN + "/" + hash : CHAT_WORKSPACE_ORIGIN + "/";
+  }
+
   function byId(id) { return document.getElementById(id); }
 
   function syncCompanyBrand() {
@@ -146,6 +156,99 @@
     });
     historySection.appendChild(guidedDialogue);
     menu.appendChild(historySection);
+
+    /* #5006: AI work tools and connection management, added into the rail's
+       remaining space. The existing quote menus above are untouched. */
+    var toolsSection = document.createElement("section");
+    toolsSection.className = "shell-rail-section";
+    toolsSection.setAttribute("aria-label", "AI 업무 도구");
+    [
+      { id: "shellToolMeeting", icon: "☕", title: "회의록",
+        note: "Chat에서 회의록을 정리합니다", hash: "" },
+      { id: "shellToolAutomation", icon: "⚙", title: "자동화",
+        note: "반복 업무 규칙을 Chat에서 등록합니다", hash: "#padiem-automation" },
+      { id: "shellToolLibrary", icon: "▤", title: "라이브러리",
+        note: "저장한 자료는 Chat에서 확인합니다", hash: "" },
+      { id: "shellToolCalendar", icon: "▦", title: "캘린더",
+        note: "일정은 Chat에서 확인합니다", hash: "" }
+    ].forEach(function (tool) {
+      var item = makeButton(tool.id, tool.icon, tool.title, tool.note);
+      item.classList.add("shell-rail-item-link");
+      var href = chatWorkToolHref(tool.hash);
+      item.setAttribute("role", "link");
+      item.setAttribute("tabindex", "0");
+      item.setAttribute("data-href", href);
+      function openTool(event) {
+        if (event) event.preventDefault();
+        // New tab keeps the in-progress quote exactly as it is, and the Chat
+        // product keeps its own session and permission checks.
+        var opened = window.open(href, "_blank", "noopener,noreferrer");
+        if (!opened) window.location.href = href;
+      }
+      item.addEventListener("click", openTool);
+      item.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") openTool(event);
+      });
+      toolsSection.appendChild(item);
+    });
+    menu.appendChild(toolsSection);
+
+    var connectionSection = document.createElement("section");
+    connectionSection.className = "shell-rail-section";
+    connectionSection.setAttribute("aria-label", "연결 관리");
+
+    // Google Drive reuses the existing B66 Drive connection surface: the real
+    // status and the real connect flow already live in the settings panel.
+    var driveStatus = document.createElement("p");
+    driveStatus.className = "shell-connection-status";
+    driveStatus.id = "shellDriveStatus";
+    driveStatus.setAttribute("role", "status");
+    driveStatus.setAttribute("aria-live", "polite");
+    var driveItem = makeButton(
+      "shellDriveConnection",
+      "☁",
+      "Google Drive 연결",
+      "저장 위치와 연결 상태를 설정에서 확인합니다"
+    );
+    driveItem.addEventListener("click", function () {
+      var choice = byId("settingsDriveChoice");
+      var view = byId("driveSettingsView");
+      if (view && choice) {
+        view.hidden = false;
+        choice.setAttribute("aria-expanded", "true");
+      }
+      if (choice && typeof choice.focus === "function") choice.focus();
+    });
+    connectionSection.appendChild(driveStatus);
+    connectionSection.appendChild(driveItem);
+
+    // PC reuses the existing #4434 device directory read. The status line is
+    // never optimistic: an absent grant, an offline Broker or a failed read
+    // all report the honest current state instead of claiming a connection.
+    var pcStatus = document.createElement("p");
+    pcStatus.className = "shell-connection-status";
+    pcStatus.id = "shellPcStatus";
+    pcStatus.setAttribute("role", "status");
+    pcStatus.setAttribute("aria-live", "polite");
+    var pcItem = makeButton(
+      "shellPcConnection",
+      "▤",
+      "컴퓨터 연결",
+      "연결된 컴퓨터의 상태를 확인합니다"
+    );
+    pcItem.addEventListener("click", function () {
+      // Always re-read first: the status line must reflect a fresh,
+      // server-verified answer and never a remembered one. Only a confirmed
+      // connected PC then leads to the directory the Chat surface renders.
+      Promise.resolve(refreshPcStatus()).then(function (result) {
+        if (result && result.state === "ready" && result.online > 0) {
+          window.open(CHAT_WORKSPACE_ORIGIN + "/", "_blank", "noopener,noreferrer");
+        }
+      });
+    });
+    connectionSection.appendChild(pcStatus);
+    connectionSection.appendChild(pcItem);
+    menu.appendChild(connectionSection);
 
     rail.appendChild(menu);
 
@@ -583,9 +686,113 @@
     });
   }
 
+  /* #5006: PC connection status through the existing #4434 device directory.
+   Fail-closed and never optimistic: only a 200 with an owner-scoped,
+   available envelope counts as a read, and an online device is the only
+   state that may be described as connected. A missing grant (403/404),
+   a signed-out session (401) or any transport failure each report their own
+   honest status instead of claiming or denying a connection. */
+  var pcStatusState = "unknown";
+
+  function setConnectionStatus(node, state, text) {
+    if (!node) return;
+    node.textContent = text;
+    node.dataset.state = state;
+  }
+
+  function readDeviceDirectory(payload) {
+    if (!payload || payload.ok !== true || payload.available !== true ||
+        payload.ownerScoped !== true || !Array.isArray(payload.devices)) {
+      return { state: "unavailable", online: 0, total: 0 };
+    }
+    var online = 0;
+    for (var i = 0; i < payload.devices.length; i += 1) {
+      var device = payload.devices[i];
+      // The #4434 directory serializes a closed field set and already proves
+      // state === "CONNECTED" <=> usable && !revoked && !expired server-side,
+      // so CONNECTED is the canonical online fact here. Any other value is
+      // offline, revoked or unreadable and is never counted as connected.
+      if (device && device.state === "CONNECTED") online += 1;
+    }
+    return { state: "ready", online: online, total: payload.devices.length };
+  }
+
+  async function refreshPcStatus() {
+    var node = byId("shellPcStatus");
+    if (!node) return null;
+    if (pcStatusState === "loading") return null;
+    pcStatusState = "loading";
+    setConnectionStatus(node, "loading", "컴퓨터 연결 상태를 확인하는 중입니다");
+    var result;
+    try {
+      var response = await window.fetch("/api/padiem/b66/connect/devices", {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { "Accept": "application/json" }
+      });
+      if (response.status === 401) {
+        result = { state: "signed-out", online: 0, total: 0 };
+      } else if (response.status === 403 || response.status === 404) {
+        // No B66 PC grant is provisioned yet. Report that exactly: this is
+        // not the same as "no computer connected".
+        result = { state: "not-enabled", online: 0, total: 0 };
+      } else if (response.status === 503) {
+        result = { state: "unavailable", online: 0, total: 0 };
+      } else if (!response.ok) {
+        result = { state: "unavailable", online: 0, total: 0 };
+      } else {
+        var raw = await response.text();
+        if (raw.length > MAX_CONNECTION_STATUS_BYTES) throw new Error("oversize");
+        result = readDeviceDirectory(JSON.parse(raw));
+      }
+    } catch (_) {
+      result = { state: "unavailable", online: 0, total: 0 };
+    }
+    pcStatusState = result.state;
+    var text;
+    if (result.state === "ready" && result.online > 0) {
+      text = "컴퓨터 " + result.online + "대 연결됨";
+    } else if (result.state === "ready") {
+      text = result.total > 0
+        ? "등록된 컴퓨터 " + result.total + "대 · 지금은 연결된 컴퓨터가 없습니다"
+        : "등록된 컴퓨터가 없습니다";
+    } else if (result.state === "signed-out") {
+      text = "로그인하면 컴퓨터 연결 상태를 확인할 수 있습니다";
+    } else if (result.state === "not-enabled") {
+      text = "컴퓨터 연결 권한이 아직 설정되지 않았습니다";
+    } else {
+      text = "컴퓨터 연결 상태를 확인하지 못했습니다";
+    }
+    setConnectionStatus(node, result.state, text);
+    return result;
+  }
+
+  function refreshDriveStatus() {
+    var node = byId("shellDriveStatus");
+    if (!node) return;
+    var ui = window.B66QuoteDriveUiInstance;
+    // Reuse the mounted Drive surface's own verdict. B66 never re-derives the
+    // Drive session or its permission; it only reports what #4089 already
+    // decided, so the two surfaces can never disagree.
+    var session = ui && typeof ui.session === "function" ? ui.session() : null;
+    var tone = ui && typeof ui.statusTone === "function" ? ui.statusTone() : "info";
+    if (session && session.connected === true) {
+      setConnectionStatus(node, "ready", "Google Drive 연결됨");
+      return;
+    }
+    if (tone === "ok") {
+      setConnectionStatus(node, "ready", "Google Drive 연결됨");
+      return;
+    }
+    if (ui) {
+      setConnectionStatus(node, "signed-out", "Google Drive 연결을 확인해 주세요");
+      return;
+    }
+    setConnectionStatus(node, "not-enabled", "Google Drive 연결을 설정에서 관리합니다");
+  }
+
   function syncMobileDefault() {
-    // Run on load AND on window resizing. Earlier code ran only at startup,
-    // leaving an A4 preview in place when a wide browser became a narrow one.
     var mobile = window.matchMedia("(max-width:" + MOBILE_BREAKPOINT + "px)").matches;
     var compact = window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches;
     if (mobile && wasMobile !== true) {
@@ -742,6 +949,15 @@
     document.addEventListener("b66:auth-changed", syncCompanyBrand);
     syncDirectMode();
     syncMobileDefault();
+    /* #5006: read both connection statuses from the server once the shell is
+       ready and again whenever the account changes. A status line never claims
+       a connection it has not just verified. */
+    refreshDriveStatus();
+    void refreshPcStatus();
+    document.addEventListener("b66:auth-changed", function () {
+      refreshDriveStatus();
+      void refreshPcStatus();
+    });
     // Resizing a desktop window must reflow immediately, with no horizontal
     // scrolling or need to reload. The user may explicitly reopen the preview.
     window.addEventListener("resize", syncMobileDefault);
