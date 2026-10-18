@@ -1,0 +1,245 @@
+"""#4816 four-mode voice integration (mocked recognizer + browser TTS)."""
+import json
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+
+STATIC = Path(__file__).resolve().parents[1] / "static"
+SCRIPTS = (
+    "voice-stt-input.js", "voice-composer.js",
+    "voice-live-turn-controller.js", "voice-tts-output.js",
+    "voice-ui-menu.js", "voice-answer-ui.js", "voice-call-ui.js",
+)
+
+
+def test_voice_four_modes():
+    with sync_playwright() as tool:
+        browser = tool.chromium.launch()
+        page = browser.new_page()
+        page.set_content("""<!doctype html><html lang="ko"><body>
+          <div class="app-shell" data-state="chat">
+            <form id="composerForm">
+              <div class="composer-actions">
+                <button id="sendButton" type="submit" disabled>Send</button>
+              </div>
+              <textarea id="messageInput"></textarea>
+            </form>
+            <main id="messageList"></main>
+          </div>
+        </body></html>""")
+        page.evaluate("""() => {
+          window.__voices = [{name:'Korean',lang:'ko-KR'}];
+          window.__ttsSpoken = [];
+          window.__ttsCancelled = 0;
+          Object.defineProperty(window, 'speechSynthesis', {configurable:true,value:{
+            getVoices:()=>window.__voices,
+            speak:u=>window.__ttsSpoken.push(u.text),
+            cancel:()=>{window.__ttsCancelled++;},
+            get speaking(){return false;}
+          }});
+          window.SpeechSynthesisUtterance = function(text){this.text=text;};
+        }""")
+        for script in SCRIPTS:
+            page.add_script_tag(path=str(STATIC / script))
+        page.evaluate("""() => {
+          const input = document.getElementById('messageInput');
+          const form = document.getElementById('composerForm');
+          window.__test = {sent:[]};
+          input.addEventListener('input',()=>{
+            document.getElementById('sendButton').disabled = !input.value.trim();
+          });
+          form.addEventListener('submit',e=>{
+            e.preventDefault();
+            window.__test.sent.push(input.value);
+            input.disabled=true;
+            document.getElementById('sendButton').disabled=true;
+            setTimeout(()=>{input.disabled=false;input.value='';
+              document.getElementById('sendButton').disabled=true;},0);
+          });
+          window.PadiemVoiceComposer.registerRecognizerFactory((cb)=>{
+            window.__test.callbacks=cb;
+            return {stop:()=>{}};
+          });
+          window.dispatchEvent(new CustomEvent('padiem:auth-state',{
+            detail:{authenticated:true,identityKey:'account-one'}}
+          ));
+        }""")
+        page.wait_for_timeout(100)
+
+        def mic(text, fid):
+            page.evaluate("""(args) => {
+              const c = window.__test.callbacks;
+              c.onFinal({text: args.text, utteranceId: args.fid, stopped: false});
+            }""", {"text": text, "fid": fid})
+
+        def clear_input():
+            page.evaluate("""() => {
+              const input = document.getElementById('messageInput');
+              input.value = '';
+              input.dispatchEvent(new Event('input',{bubbles:true}));
+            }""")
+            page.wait_for_timeout(20)
+
+        checks = {}
+
+        # --- M1: microphone draft is manual, never auto-sent ---
+        page.evaluate("""() => document.getElementById('voiceMicButton').click()""")
+        page.wait_for_timeout(50)
+        mic("draft manual", "m1-1")
+        page.wait_for_timeout(50)
+        checks["m1_draft_in_input"] = page.evaluate("""() =>
+          document.getElementById('messageInput').value.trim() === 'draft manual'""")
+        checks["m1_no_auto_send"] = page.evaluate("""() =>
+          window.__test.sent.length === 0""")
+        page.evaluate("""() => {
+          const input = document.getElementById('messageInput');
+          input.value = input.value.trim() + ' edited';
+          input.dispatchEvent(new Event('input',{bubbles:true}));
+        }""")
+        page.wait_for_timeout(30)
+        checks["m1_edit_preserved"] = page.evaluate("""() =>
+          document.getElementById('messageInput').value.includes('edited')""")
+
+        # Stop M1 run before switching modes
+        page.evaluate("""() => window.PadiemVoiceComposer.getController().stop('user-stopped')""")
+        page.wait_for_timeout(50)
+        clear_input()
+
+        # --- M2: "문자로 답변" arms exactly one auto-send per turn ---
+        page.evaluate("""() => document.getElementById('voiceWaveformButton').click()""")
+        page.wait_for_timeout(50)
+        checks["m2_menu_opened"] = page.evaluate("""() =>
+          !document.getElementById('voiceModeMenu').hidden""")
+        page.evaluate("""() => {
+          const items = document.querySelectorAll('.voice-mode-menu-item');
+          for (const it of items) {
+            if (it.textContent.includes('문자로 답변')) {
+              it.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
+              break;
+            }
+          }
+        }""")
+        page.wait_for_timeout(50)
+        checks["m2_text_selected"] = page.evaluate("""() => {
+          const sel = document.querySelector('.voice-mode-menu-item[data-active="true"]');
+          return !!sel && sel.textContent.includes('문자로 답변');
+        }""")
+        # First utterance
+        clear_input()
+        page.evaluate("""() => document.getElementById('voiceMicButton').click()""")
+        page.wait_for_timeout(50)
+        page.evaluate("""() => window.__test.callbacks.onInterim({
+          accountKey:'account-one', sessionGeneration:1, isInterim:true, text:'partial'})""")
+        page.wait_for_timeout(30)
+        checks["m2_interim_no_send"] = page.evaluate("""() =>
+          window.__test.sent.length === 0""")
+        mic("auto message", "m2-1")
+        page.wait_for_timeout(30)
+        page.evaluate("""() => window.__test.callbacks.onAutoStopRequested()""")
+        page.wait_for_timeout(50)
+        page.evaluate("""() => window.__test.callbacks.onTurnComplete({
+          accepted: true, endOfTurn: true, finalId: 'm2-1'})""")
+        page.wait_for_timeout(100)
+        checks["m2_exactly_once"] = page.evaluate("""() =>
+          window.__test.sent.length === 1 &&
+          window.__test.sent[0] === 'auto message'""")
+        # same finalId must not resend
+        page.evaluate("""() => window.__test.callbacks.onTurnComplete({
+          accepted: true, endOfTurn: true, finalId: 'm2-1'})""")
+        page.wait_for_timeout(50)
+        checks["m2_no_duplicate"] = page.evaluate("""() =>
+          window.__test.sent.length === 1""")
+        # a new utterance in the same live session sends once more
+        clear_input()
+        page.wait_for_timeout(200)  # let setTimeout clear input
+        page.evaluate("""() => document.getElementById('voiceMicButton').click()""")
+        page.wait_for_timeout(50)
+        mic("auto message again", "m2-2")
+        page.wait_for_timeout(30)
+        page.evaluate("""() => window.__test.callbacks.onAutoStopRequested()""")
+        page.wait_for_timeout(50)
+        page.evaluate("""() => window.__test.callbacks.onTurnComplete({
+          accepted: true, endOfTurn: true, finalId: 'm2-2'})""")
+        page.wait_for_timeout(100)
+        checks["m2_new_utterance_sends_once"] = page.evaluate("""() =>
+          window.__test.sent.length === 2 &&
+          window.__test.sent[1] === 'auto message again'""")
+        # busy input blocks
+        clear_input()
+        page.wait_for_timeout(200)
+        page.evaluate("""() => document.getElementById('messageInput').disabled = true""")
+        page.evaluate("""() => document.getElementById('voiceMicButton').click()""")
+        page.wait_for_timeout(50)
+        mic("while busy", "m2-3")
+        page.wait_for_timeout(30)
+        page.evaluate("""() => window.__test.callbacks.onAutoStopRequested()""")
+        page.wait_for_timeout(50)
+        page.evaluate("""() => window.__test.callbacks.onTurnComplete({
+          accepted: true, endOfTurn: true, finalId: 'm2-3'})""")
+        page.wait_for_timeout(100)
+        checks["m2_busy_blocked"] = page.evaluate("""() =>
+          window.__test.sent.length === 2""")
+        page.evaluate("""() => document.getElementById('messageInput').disabled = false""")
+
+        # --- M3: "문자 + 음성 함께" auto-sends and speaks answers ---
+        clear_input()
+        page.wait_for_timeout(200)
+        page.evaluate("""() => {
+          document.querySelector('.voice-mode-menu-item[data-mode="tts"]')
+            .dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
+        }""")
+        page.wait_for_timeout(50)
+        page.evaluate("""() => document.getElementById('voiceMicButton').click()""")
+        page.wait_for_timeout(50)
+        mic("auto tts message", "m3-1")
+        page.wait_for_timeout(30)
+        page.evaluate("""() => window.__test.callbacks.onAutoStopRequested()""")
+        page.wait_for_timeout(50)
+        page.evaluate("""() => window.__test.callbacks.onTurnComplete({
+          accepted: true, endOfTurn: true, finalId: 'm3-1'})""")
+        page.wait_for_timeout(100)
+        checks["m3_auto_sent_once"] = page.evaluate("""() =>
+          window.__test.sent.filter(s => s === 'auto tts message').length === 1""")
+        page.evaluate("""() => {
+          const main = document.getElementById('messageList');
+          const article = document.createElement('article');
+          article.className = 'assistant-message';
+          article.innerHTML = '<div class="assistant-meta">Padiem Chat</div>' +
+            '<div class="assistant-content">\\uc544\\ub514\\uc744 \\ub54c\\uc774\\ub958\\uc774\\ub294\\ubc88\\uc6d0.</div>';
+          main.appendChild(article);
+        }""")
+        page.wait_for_timeout(120)
+        checks["m3_tts_spoke_once"] = page.evaluate("""() =>
+          window.__ttsSpoken.length === 1 &&
+          window.__ttsSpoken[0] === '\\uc544\\ub514\\uc744 \\ub54c\\uc774\\ub958\\uc774\\ub294\\ubc88\\uc6d0.'""")
+        checks["m3_listen_button"] = page.evaluate("""() =>
+          !!document.querySelector('.voice-answer-listen')""")
+
+        # --- M4: "음성 통화" shows call panel, end returns to chat ---
+        page.evaluate("""() => {
+          document.querySelector('.voice-mode-menu-item[data-mode="call"]')
+            .dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
+        }""")
+        page.wait_for_timeout(80)
+        checks["m4_panel_visible"] = page.evaluate("""() =>
+          !document.getElementById('voiceCallPanel').hidden""")
+        checks["m4_call_selected"] = page.evaluate("""() =>
+          !!document.querySelector('.voice-mode-menu-item[data-mode="call"][data-active="true"]')""")
+        checks["m4_mute_toggle"] = page.evaluate("""() => {
+          const b = document.getElementById('voiceCallMute');
+          b.click();
+          return b.getAttribute('aria-pressed') === 'true';
+        }""")
+        page.evaluate("""() => document.getElementById('voiceCallEnd').click()""")
+        page.wait_for_timeout(50)
+        checks["m4_end_returns"] = page.evaluate("""() =>
+          document.getElementById('voiceCallPanel').hidden""")
+
+        result = {"checks": checks, "sent": page.evaluate("() => Array.from(window.__test.sent)"),
+                  "spoken": page.evaluate("() => Array.from(window.__ttsSpoken)")}
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        assert all(result["checks"].values()), result["checks"]
+        browser.close()
+
+
+if __name__ == "__main__":
+    test_voice_four_modes()

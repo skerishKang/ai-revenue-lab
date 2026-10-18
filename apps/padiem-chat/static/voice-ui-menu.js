@@ -1,0 +1,269 @@
+// #4816: unified voice mode toolbar for Chat(B62) and Claw(B54).
+// Two icons only: microphone (M1 direct entry) and waveform picker (M2/M3/M4).
+// Shares one turn controller with the composer; never starts a provider call.
+(function (win, doc) {
+  "use strict";
+  const form = doc.getElementById("composerForm");
+  const input = doc.getElementById("messageInput");
+  const send = doc.getElementById("sendButton");
+  const actions = form && form.querySelector(".composer-actions");
+  const shell = doc && typeof doc.querySelector === "function" ? doc.querySelector(".app-shell") : null;
+  if (!form || !input || !send || !actions) return;
+
+  const liveAPI = win.PadiemVoiceLiveTurnController;
+  const composerAPI = win.PadiemVoiceComposer;
+  const ko = () => /^ko/i.test(doc.documentElement.lang || "ko");
+  const modeLabel = (m) => ko()
+    ? (m === "tts" ? "\ub3d9\uc758 + \uc758\uc2dd \ud5c8\ub3d9" : m === "call" ? "\uc758\uc2dd \ud1b5\ud55c" : "\ub3d9\uc758\ub97c \ubb5c\ud1b5")
+    : (m === "tts" ? "Text + voice together" : m === "call" ? "Voice call" : "Text only");
+  const pickerTitle = ko() ? "\uc758\uc2dd \ubb5c\ub9e5 \ub0b4\uc6a9" : "Voice mode";
+
+  let wave = null;
+  let menu = null;
+  let controller = null;
+  let currentMode = "basic"; // basic | live
+  let ttsOn = false;
+  let callOn = false;
+  let outstandingKey = "";
+  let busySeen = false;
+  let menuOpen = false;
+
+  function composerStatus() {
+    const controller = composerAPI && composerAPI.getController && composerAPI.getController();
+    return controller && controller.getStatus ? controller.getStatus() : {};
+  }
+  function key() {
+    const status = composerStatus();
+    return status.authenticated === true && status.authKnown === true
+      ? String(status.identityKey || "") : "";
+  }
+  function isTtsActive() { return currentMode === "live" && ttsOn === true; }
+  function isCallActive() { return currentMode === "live" && callOn === true; }
+
+  function ensureController() {
+    if (!controller && liveAPI && typeof liveAPI.create === "function") {
+      controller = liveAPI.create({
+        accountKey: key(),
+        getAccountKey: key,
+        getInFlight: () => input.disabled === true,
+        getCanSubmit: () => input.disabled !== true && send.disabled !== true &&
+          input.value.trim().length > 0,
+        // The canonical voice composer has already committed the accepted final
+        // into the input; never inject another copy or overwrite user input.
+        commitText: (text) => input.value.trim() === text.trim(),
+        submit: (value, meta) => {
+          form.requestSubmit();
+          return true;
+        },
+        onPreview: function () {},
+        onStateChange: function () { renderWaveform(); },
+      });
+      if (typeof controller.syncSessionGeneration === "function") {
+        controller.syncSessionGeneration(composerStatus().generation);
+      }
+    }
+    return controller;
+  }
+
+  function syncIdentity() {
+    const current = key();
+    const c = controller;
+    if (!c) return;
+    if (c.getState().accountKey !== current) {
+      c.setAccountKey(current);
+      c.setMode("basic");
+      currentMode = "basic"; ttsOn = false; callOn = false;
+      busySeen = false; outstandingKey = "";
+    }
+    if (typeof c.syncSessionGeneration === "function") {
+      c.syncSessionGeneration(composerStatus().generation);
+    }
+  }
+
+  function renderWaveform() {
+    if (!wave) return;
+    const c = controller ? controller.getState() : {};
+    const on = currentMode === "live" && !c.invalidated && !c.cancelled && !!key();
+    wave.setAttribute("aria-pressed", on ? "true" : "false");
+    wave.setAttribute("data-voice-mode", currentMode);
+    wave.disabled = !key() || !liveAPI || typeof liveAPI.create !== "function";
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function placeMenu() {
+    if (!wave || !menu || !menuOpen) return;
+    const rect = wave.getBoundingClientRect();
+    const top = rect.bottom + 6;
+    const left = Math.max(4, Math.min(rect.left, doc.documentElement.clientWidth - menu.offsetWidth - 8));
+    menu.style.left = left + "px";
+    menu.style.top = top + "px";
+    const bottom = top + menu.offsetHeight;
+    if (bottom > doc.documentElement.clientHeight - 4 && rect.top - menu.offsetHeight - 6 >= 4) {
+      menu.style.top = (rect.top - menu.offsetHeight - 6) + "px";
+    }
+  }
+
+  function openMenu() {
+    if (menuOpen) return;
+    ensureController();
+    syncIdentity();
+    menu.hidden = false;
+    menuOpen = true;
+    wave.setAttribute("aria-expanded", "true");
+    placeMenu();
+    renderItems();
+  }
+
+  function closeMenu() {
+    if (!menuOpen) return;
+    menu.hidden = true;
+    menuOpen = false;
+    wave.setAttribute("aria-expanded", "false");
+  }
+
+  function renderItems() {
+    if (!menu) return;
+    const items = menu.querySelectorAll('[data-mode]');
+    items.forEach(function (item) {
+      const m = item.getAttribute("data-mode");
+      const active = currentMode === "live" && (
+        (m === "text" && !ttsOn && !callOn) ||
+        (m === "tts" && ttsOn && !callOn) ||
+        (m === "call" && callOn && !ttsOn)
+      );
+      item.setAttribute("aria-checked", active ? "true" : "false");
+      item.setAttribute("data-active", active ? "true" : "false");
+    });
+  }
+
+  function selectMode(m) {
+    closeMenu();
+    ensureController();
+    syncIdentity();
+    const c = controller;
+    if (!c) return;
+    if (m === "text") { currentMode = "live"; ttsOn = false; callOn = false; c.setMode("live"); }
+    else if (m === "tts") { currentMode = "live"; ttsOn = true; callOn = false; c.setMode("live"); }
+    else if (m === "call") { currentMode = "live"; ttsOn = false; callOn = true; c.setMode("live"); }
+    renderWaveform(); renderItems();
+    if (m === "call" && win.PadiemVoiceCall && typeof win.PadiemVoiceCall.show === "function") {
+      win.PadiemVoiceCall.show();
+    }
+  }
+
+  wave = doc.createElement("button");
+  wave.type = "button";
+  wave.id = "voiceWaveformButton";
+  wave.className = "voice-waveform-button";
+  wave.setAttribute("aria-label", ko() ? "\uc758\uc2dd" : "Voice");
+  wave.setAttribute("data-locale-aria-label", "voice-mode");
+  wave.setAttribute("title", ko() ? "\uc758\uc2dd \ubb5c\ub9e5" : "Voice modes");
+  wave.setAttribute("data-locale-title", "voice-mode");
+  wave.setAttribute("aria-expanded", "false");
+  wave.setAttribute("aria-haspopup", "menu");
+  wave.innerHTML = '<svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24"><path d="M7 16v2a6 6 0 0 0 12 0v-2M12 20v1M7 10v2a4 4 0 0 0 8 0v-2M12 14v1M7 4v2a2 2 0 0 0 4 0v-2M12 8v1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr-only">\uc758\uc2dd \ubb5c\ub9e5</span>';
+  const mic = doc.getElementById("voiceMicButton");
+  if (mic && mic.parentNode === actions) actions.insertBefore(wave, mic.nextSibling);
+  else actions.appendChild(wave);
+
+  menu = doc.createElement("div");
+  menu.id = "voiceModeMenu";
+  menu.className = "voice-mode-menu";
+  menu.hidden = true;
+  menu.setAttribute("role", "menu");
+  menu.setAttribute("aria-label", pickerTitle);
+  menu.innerHTML =
+    '<div class="voice-mode-menu-item" role="menuitemradio" data-mode="text" aria-checked="false">\ubb38\uc790\ub85c \ub2f5\ubcc0</div>' +
+    '<div class="voice-mode-menu-item" role="menuitemradio" data-mode="tts" aria-checked="false">\ubb38\uc790 + \uc74c\uc131 \ud568\uaed8</div>' +
+    '<div class="voice-mode-menu-item" role="menuitemradio" data-mode="call" aria-checked="false">\uc74c\uc131 \ud1b5\ud654</div>';
+  doc.body.appendChild(menu);
+
+  wave.addEventListener("click", function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (wave.disabled) return;
+    if (menuOpen) closeMenu(); else openMenu();
+  });
+
+  menu.addEventListener("click", function (event) {
+    const item = event.target.closest ? event.target.closest('[data-mode]') : null;
+    if (!item) return;
+    event.preventDefault();
+    event.stopPropagation();
+    selectMode(item.getAttribute("data-mode"));
+  });
+
+  function syncIdentityAndState() {
+    syncIdentity();
+    renderWaveform(); renderItems();
+  }
+
+  win.addEventListener("click", function (event) {
+    if (menuOpen && menu && !menu.contains(event.target) && event.target !== wave) closeMenu();
+  });
+  win.addEventListener("keydown", function (event) {
+    if (menuOpen && event.key === "Escape") closeMenu();
+  });
+  win.addEventListener("padiem:auth-state", syncIdentityAndState);
+  win.addEventListener("padiem:voice-identity", syncIdentityAndState);
+  if (shell && win.MutationObserver) {
+    new win.MutationObserver(syncIdentityAndState).observe(shell, {attributes: true, attributeFilter: ["data-state"]});
+  }
+
+  // Accepted-final bridge from the composer: commit already applied to the input,
+  // then exactly one form.submit via composerForm.requestSubmit().
+  win.addEventListener("padiem:voice-accepted-turn", function (event) {
+    const info = event && event.detail;
+    if (!info || !controller || !key()) return;
+    syncIdentity();
+    const c = composerStatus();
+    if (c.active || c.generation !== info.composerGeneration ||
+        c.sessionToken !== info.sessionToken || info.accountKey !== key() ||
+        info.accepted !== true || info.endOfTurn !== true) return;
+    const st = controller.getState();
+    if (st.mode !== "live") return; // auto-send armed only for M2/M3/M4
+    if (typeof controller.syncSessionGeneration === "function") {
+      controller.syncSessionGeneration(info.composerGeneration);
+    }
+    const result = controller.handleFinal({
+      accepted: true, endOfTurn: true,
+      accountKey: info.accountKey, sessionGeneration: st.sessionGeneration,
+      finalId: info.finalId, text: info.text
+    });
+    if (result.submitted) {
+      busySeen = input.disabled === true;
+      outstandingKey = result.finalKey;
+    }
+    renderWaveform();
+  });
+
+  if (win.MutationObserver) {
+    new win.MutationObserver(function () {
+      if (!outstandingKey) return;
+      if (input.disabled) busySeen = true;
+      else if (busySeen) {
+        controller.markAnswerSettled({accountKey: key(), finalKey: outstandingKey});
+        outstandingKey = "";
+        busySeen = false;
+      }
+    }).observe(input, {attributes: true, attributeFilter: ["disabled"]});
+  }
+
+  win.PadiemVoiceMenu = {
+    getController: function () { return controller; },
+    getState: function () {
+      return {mode: currentMode, ttsOn: ttsOn, callOn: callOn,
+        live: currentMode === "live", busySeen: busySeen};
+    },
+    setCallMode: function (on) { callOn = on === true; renderItems(); },
+    isTtsActive: isTtsActive,
+    isCallActive: isCallActive,
+    selectMode: selectMode,
+    closeMenu: closeMenu,
+  };
+  renderWaveform();
+})(window, document);
