@@ -53,12 +53,25 @@ def test_contract_defines_exactly_four_padiem_tiers() -> None:
     assert [tier.label for tier in PRODUCT_TIER_ROUTES] == list(ProductTierLabel)
     assert PRODUCT_TIER_POLICY_VERSION == "padiem.product_tier_routes.v1"
 
-def test_current_truth_all_four_tiers_use_beam_with_retired_routes_data_only() -> None:
+def test_current_truth_free_beam_plus_pro_max_muse_with_history_data_only() -> None:
+    from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID
     routes = _executables()
     assert set(routes) == set(ProductTierLabel)
-    assert {route.model_id for route in routes.values()} == {"opencode-go/beam-free"}
+    assert routes[ProductTierLabel.FREE].model_id == FREE_PRIMARY_B14_MODEL_ID
+    assert routes[ProductTierLabel.FREE].route_id == "free.beam.v1"
+    for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX):
+        assert routes[label].model_id == MUSE_B14_MODEL_ID
     assert all(route.credential_binding == "PADIEM_B14_CREDENTIAL_11" for route in routes.values())
     assert all(route.status is ProductRouteStatus.EXECUTABLE for route in routes.values())
+    for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO):
+        beam = next(r for r in get_tier(label).routes if r.route_id.endswith(".beam.v1"))
+        assert beam.model_id == FREE_PRIMARY_B14_MODEL_ID
+        assert beam.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+        assert "#5009" in (beam.hold_reason or "")
+    max_beam = next(r for r in get_tier(ProductTierLabel.MAX).routes if r.route_id == "max.beam.v1")
+    assert max_beam.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert max_beam.upstream_model == "beam-free"
+    assert "#5009" in (max_beam.hold_reason or "")
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
     assert next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID).status is ProductRouteStatus.HOLD_AS_DATA_ONLY
     assert next(r for r in plus_routes if r.model_id == "kilo/stealth-space-bunny-alpha").status is ProductRouteStatus.HOLD_AS_DATA_ONLY
@@ -216,11 +229,13 @@ def _registry_executable_model_ids() -> dict[str, str]:
 
 def test_active_tier_routes_match_the_current_b14_model_registry() -> None:
     import json
+    from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID
     file=REPO_ROOT/"apps"/"korean-ai-platform"/"app"/"pilot"/"b14_models.json"
     models={row["id"]: row for row in json.loads(file.read_text(encoding="utf-8"))["models"]}
     assert len(_executables())==4
-    for route in _executables().values():
-        assert route.model_id=="opencode-go/beam-free"
+    for label, route in _executables().items():
+        expected = FREE_PRIMARY_B14_MODEL_ID if label is ProductTierLabel.FREE else MUSE_B14_MODEL_ID
+        assert route.model_id == expected
         assert models[route.model_id]["enabled"] is True
 
 def test_parity_with_chat_model_policy_derivation() -> None:
@@ -258,7 +273,10 @@ def test_selected_routes_match_registered_provider_constants() -> None:
     assert agnes_model and bai_model and agnes_binding and bai_binding
     assert kilo_bunny and kilo_bunny_upstream
     assert set(executables) == set(ProductTierLabel)
-    assert {x.model_id for x in executables.values()} == {"opencode-go/beam-free"}
+    from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID
+    assert executables[ProductTierLabel.FREE].model_id == FREE_PRIMARY_B14_MODEL_ID
+    for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX):
+        assert executables[label].model_id == MUSE_B14_MODEL_ID
 
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
     plus_hold = next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID)

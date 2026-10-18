@@ -35,7 +35,19 @@ from .b66_reasoning_level import (
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .request_contract import MAX_BROWSER_BODY_BYTES
 from .member_grade_access import verified_member_grade, GRADES
-from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
+from .b66_grade_models import (
+    B66_ADMIN_GRADE,
+    B66_ADMIN_NAME,
+    B66_GRADE_MODEL_IDS,
+    B66_GRADE_NAMES,
+    B66_GRADES,
+    b66_grade_model_id,
+    b66_verified_admin,
+)
+from padiem_control_plane.product_tier_routes import (
+    FREE_PRIMARY_B14_MODEL_ID,
+    MUSE_B14_MODEL_ID,
+)
 from .claw_memory_routes import _resolve_memory_workspace
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
@@ -413,14 +425,22 @@ async def b66_quote_models(request: Request) -> JSONResponse:
     grade_order = ("free", "plus", "pro", "max")
     member_grade = await verified_member_grade(request, uid, access)
     permitted = grade_order[:grade_order.index(member_grade)+1]
-    catjam = next((row for row in models if row["model_id"] == FREE_PRIMARY_B14_MODEL_ID), None)
+    available_ids = {row["model_id"] for row in models}
     grade_choices = [
-        {"tier": grade, "name": "Padiem " + grade.capitalize(),
-         "model_id": FREE_PRIMARY_B14_MODEL_ID,
+        {"tier": grade, "name": B66_GRADE_NAMES[grade],
+         "model_id": B66_GRADE_MODEL_IDS[grade],
          "reasoning_levels": reasoning_options_for_model(
-             FREE_PRIMARY_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
+             B66_GRADE_MODEL_IDS[grade], transport_supported=_reasoning_transport_supported(request))}
         for grade in permitted
-    ] if catjam is not None else []
+        if B66_GRADE_MODEL_IDS[grade] in available_ids
+    ]
+    if await b66_verified_admin(request, uid) and MUSE_B14_MODEL_ID in available_ids:
+        grade_choices.append(
+            {"tier": B66_ADMIN_GRADE, "name": B66_ADMIN_NAME,
+             "model_id": MUSE_B14_MODEL_ID,
+             "reasoning_levels": reasoning_options_for_model(
+                 MUSE_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
+        )
     # A configured default can only be offered if it remains permitted.
     proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
     default = proposed_default if (
@@ -466,14 +486,20 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     selected_grade = data.get("tier")
     if selected_grade is not None:
         grade_order = ("free", "plus", "pro", "max")
-        if not isinstance(selected_grade, str) or selected_grade not in grade_order:
+        if not isinstance(selected_grade, str) or selected_grade not in grade_order + (B66_ADMIN_GRADE,):
             return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-        member_grade = await verified_member_grade(request, uid, access)
-        if grade_order.index(selected_grade) > grade_order.index(member_grade):
-            return _error(403, "tier_not_available", "이용 등급 이하의 AI 등급을 선택해 주세요.")
-        if data.get("model_id") not in (None, FREE_PRIMARY_B14_MODEL_ID):
+        if selected_grade == B66_ADMIN_GRADE:
+            if not await b66_verified_admin(request, uid):
+                return _error(403, "admin_forbidden", "관리자 전용 기능입니다.")
+            expected_model = MUSE_B14_MODEL_ID
+        else:
+            member_grade = await verified_member_grade(request, uid, access)
+            if grade_order.index(selected_grade) > grade_order.index(member_grade):
+                return _error(403, "tier_not_available", "이용 등급 이하의 AI 등급을 선택해 주세요.")
+            expected_model = B66_GRADE_MODEL_IDS[selected_grade]
+        if data.get("model_id") not in (None, expected_model):
             return _error(400, "invalid_model_id", "선택한 등급의 AI 모델과 일치하지 않습니다.")
-        model_id = FREE_PRIMARY_B14_MODEL_ID
+        model_id = expected_model
     else:
         model_id = data.get("model_id")
     reasoning_level = data.get("reasoning_level")

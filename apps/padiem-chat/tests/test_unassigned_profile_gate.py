@@ -76,7 +76,8 @@ def test_live_completed_active_catjam_propagates_provider_error_and_refunds():
         assert info.value.status_code == 502
         assert info.value.code == "provider_server_error"
         assert DEFAULT_CHAT_PROFILE == "free"
-        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == "opencode-go/beam-free"
+        assert DEFAULT_B14_MODEL_ID == "opencode-go/beam-free"
+        assert LOW_B14_MODEL_ID == "opencode-go/muse-spark-1.3-contributor"
         assert calls == 1
         assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False

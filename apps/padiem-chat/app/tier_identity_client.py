@@ -66,15 +66,32 @@ def _latest_user_text(messages: list[dict[str, str]]) -> str:
     return ""
 
 
-def tier_identity_answer(messages: list[dict[str, str]], model_id: str) -> str | None:
+# #5009: one upstream model may back several grades (Muse Spark backs
+# Plus/Pro/Max), so a model id alone can no longer name the product tier.
+# The request profile bound by resolve_tier_policy carries the grade.
+_PROFILE_TIER_NAMES = {
+    "free": "Padiem Free",
+    "low": "Padiem Plus",
+    "medium": "Padiem Pro",
+    "high": "Padiem Max",
+}
+
+
+def tier_identity_answer(
+    messages: list[dict[str, str]], model_id: str, profile: str = "free"
+) -> str | None:
     """Return a local product-identity answer without asserting route availability."""
     text = _latest_user_text(messages).strip()
     if not text or not any(pattern.search(text) for pattern in _SELF_IDENTITY_PATTERNS):
         return None
-    try:
-        tier = product_tier_name(model_id)
-    except ModelPolicyError:
-        return None
+    tier = None
+    if profile in _PROFILE_TIER_NAMES:
+        tier = _PROFILE_TIER_NAMES.get(profile)
+    if tier is None:
+        try:
+            tier = product_tier_name(model_id)
+        except ModelPolicyError:
+            return None
 
     lowered = text.lower()
     if any(marker in lowered for marker in _UNDERLYING_DETAIL_MARKERS):
@@ -102,7 +119,7 @@ class PadiemTierB14Client(B14Client):
         attachments: tuple[ImageAttachment, ...] = (),
     ) -> dict[str, Any]:
         policy = resolve_request_model_policy(messages, require_executable=False)
-        answer = None if attachments else tier_identity_answer(policy.messages, policy.model_id)
+        answer = None if attachments else tier_identity_answer(policy.messages, policy.model_id, policy.profile)
         if answer is not None:
             resolved_skill = skill or get_task_mode()
             return {
@@ -133,7 +150,7 @@ class PadiemTierB14Client(B14Client):
         additional_system_context: str | None = None,
     ) -> AsyncIterator[ChatStreamEvent]:
         policy = resolve_request_model_policy(messages, require_executable=False)
-        answer = tier_identity_answer(policy.messages, policy.model_id)
+        answer = tier_identity_answer(policy.messages, policy.model_id, policy.profile)
         if answer is not None:
             yield ChatStreamEvent(delta_content=answer)
             yield ChatStreamEvent(done=True)
