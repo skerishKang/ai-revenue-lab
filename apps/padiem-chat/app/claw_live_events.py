@@ -160,14 +160,26 @@ def live_claw_sse(
                     terminal_class = "proven_not_dispatched"
                 else:
                     terminal_class = "verified_failure"
+                # #5015: bounded identifiers only — the adapter code and the
+                # reviewed failure detail, never Engine text or attributes.
+                print(
+                    "claw_live_adapter_failure"
+                    f" code={exc.code} detail={exc.failure_detail}"
+                    f" dispatch={exc.dispatch_class}",
+                    flush=True,
+                )
                 await queue.put(("error", (_public_failure(exc), terminal_class)))
             except asyncio.CancelledError:
                 _clear_reservation()
                 raise
-            except Exception:
+            except Exception as exc:
                 _clear_reservation()
                 # Parity with the non-live lane: a bare failure escape from
                 # the trusted adapter is a verified failure, not a strand.
+                print(
+                    f"claw_live_unhandled_failure type={type(exc).__name__}",
+                    flush=True,
+                )
                 await queue.put(("error", (_bounded_engine_failure(), "verified_failure")))
             finally:
                 _clear_reservation()
