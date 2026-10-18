@@ -2455,25 +2455,29 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
                 or not 0 < len(payload["device_id"]) <= 128))))):
         return _error(400, "claw_engine_desktop_invalid_body")
     identity = getattr(request.app.state, "control_plane_identity_authority", None)
-    if (not callable(getattr(identity, "resolve_product_user_for_subject", None))
-        or not callable(getattr(identity, "resolve_current_auth_session", None))):
+    if not callable(getattr(identity, "resolve_product_user_for_subject", None)):
         return _error(503, "claw_engine_identity_unavailable")
+    # #5015: reuse the existing shared login/session bridge. The owner signs in
+    # to the Chat product; the canonical B54 session is resolved from that same
+    # server-known product user, so the Claw lane never requires a second,
+    # separately active B54 login surface. The product is pinned inside the
+    # Control Plane bridge and no browser/session value is accepted here.
     try:
+        from padiem_control_plane.b54_identity_bridge import (
+            resolve_current_b54_canonical_session as resolve_b54_session,
+        )
         uid = await identity.resolve_product_user_for_subject(
-            product_id="b54-padiem-claw",
+            product_id="b62",
             canonical_subject_id=payload["subject_id"],
         )
-        session = await identity.resolve_current_auth_session(
-            product_id="b54-padiem-claw", product_user_id=uid,
-        )
+        bridged = await resolve_b54_session(identity, uid)
     except Exception:
         return _error(401, "canonical_session_required")
-    from datetime import datetime, timezone
-    if (session is None or session.subject.subject_id != payload["subject_id"]
-        or session.product_id != "b54-padiem-claw"
-        or not session.is_active(now=datetime.now(timezone.utc))
-        or not session.tenant_id):
+    if (bridged is None
+        or bridged.auth_session.subject.subject_id != payload["subject_id"]
+        or not bridged.auth_session.tenant_id):
         return _error(401, "canonical_session_required")
+    session = bridged.auth_session
     if status_query:
         history_store = getattr(request.app.state, "history_store", None)
         reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
