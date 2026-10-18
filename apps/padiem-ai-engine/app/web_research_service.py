@@ -99,7 +99,7 @@ _PRIVATE_QUERY_RE = re.compile(
 )
 
 
-def _judge_profile() -> AgentProfile:
+def _judge_profile(model_policy: Mapping[str, Any]) -> AgentProfile:
     return AgentProfile(
         id="engine-search-judgement",
         title="Conversation search judgement",
@@ -110,7 +110,7 @@ def _judge_profile() -> AgentProfile:
         max_tokens=256,
         allowed_tools=(),
         required_capabilities=(),
-        model_policy={"model": "b14/auto"},
+        model_policy=dict(model_policy),
         max_steps=1,
     )
 
@@ -361,6 +361,15 @@ class WebResearchEngineService:
                 status_code=exc.status_code,
             )
 
+        model_policy = getattr(request.agent, "model_policy", None)
+        model = model_policy.get("model") if isinstance(model_policy, Mapping) else None
+        if not isinstance(model, str) or not model.strip() or model.strip() == "b14/auto":
+            return _service_error(
+                "auto_routing_deferred",
+                "b14/auto is reserved for future development; select an explicit registered model.",
+                status_code=422,
+            )
+
         try:
             research_runtime = self._research_runtime_factory(request.app_id)
             # Evidence-only must not construct, select, or invoke a B14 model.
@@ -402,10 +411,9 @@ class WebResearchEngineService:
                 max_tokens=240,
                 allowed_tools=(),
                 required_capabilities=(),
-                # #2101: the Engine-owned planner stays on the Router-owned
-                # fixed `b14/auto` chain, but the route is now declared
-                # explicitly. Core no longer synthesizes it when omitted.
-                model_policy={"model": "b14/auto"},
+                # The planner must use the request's server-validated explicit
+                # model. It must not fall back to b14/auto or any default.
+                model_policy=dict(request.agent.model_policy),
                 max_steps=1,
             )
             planner_result = await execution_runtime.run(
@@ -430,7 +438,7 @@ class WebResearchEngineService:
                     )
                 verdict = await execution_runtime.run(
                     ExecutionRequest(
-                        agent=_judge_profile(),
+                        agent=_judge_profile(request.agent.model_policy),
                         messages=({"role": "user", "content": request.query},),
                         trace_id=request.trace_id,
                     )

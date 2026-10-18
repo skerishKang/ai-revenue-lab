@@ -99,15 +99,14 @@ def test_judgement_runs_one_model_call_and_never_retrieves():
     assert len(runtime.requests) == 1, "judgement must not answer as well"
 
 
-def test_judgement_uses_the_engine_owned_profile_on_the_fixed_chain():
+def test_judgement_uses_the_request_validated_explicit_model():
     engine, runtime = service(verdict(False, None, "stable_knowledge"))
     asyncio.run(engine.research_payload(request()))
     agent = runtime.requests[0].agent
     assert agent.id == "engine-search-judgement"
-    assert agent.model_policy["model"] == "b14/auto"
+    assert agent.model_policy["model"] == "vendor/selected-route"
     assert agent.allowed_tools == ()
     assert agent.max_steps == 1
-    assert "vendor/selected-route" not in str(agent.model_policy), "the caller's answer route must not be reused"
 
 
 # --- the three outcomes the product needs -----------------------------------
