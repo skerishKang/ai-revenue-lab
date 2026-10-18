@@ -41,10 +41,10 @@ def _preserve_real_plus_hold_for_explicit_selection(monkeypatch):
     """Undo the Chat suite's synthetic Plus route for this policy-specific file."""
     from padiem_control_plane import product_tier_routes
     import kagent.p01_adapter as adapter_module
-    import app.claw_general_routes as general_module
+    import app.central_model_route_runtime as route_runtime
 
     monkeypatch.setattr(adapter_module, "active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
-    monkeypatch.setattr(general_module, "active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
+    monkeypatch.setattr(route_runtime, "active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
 
 
 def test_explicit_model_ids_are_used_exactly_once_and_do_not_pick_defaults():
