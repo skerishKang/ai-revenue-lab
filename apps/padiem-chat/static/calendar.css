@@ -949,3 +949,23 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
     margin-left: 0;
   }
 }
+
+.app-shell[data-state="calendar"] .calendar-view-header > div:has(> .calendar-error) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 2px;
+}
+.app-shell[data-state="calendar"] .calendar-view-header > div > .calendar-view-kicker {
+  flex-basis: 100%;
+}
+.app-shell[data-state="calendar"] .calendar-view-header > div > .calendar-error {
+  margin-left: 0;
+  max-width: 240px;
+}
+@media (max-width: 700px) {
+  .app-shell[data-state="calendar"] .calendar-view-header > div > .calendar-error {
+    max-width: 148px;
+  }
+}
