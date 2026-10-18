@@ -41,6 +41,11 @@
     const index = TIER_ORDER.indexOf(current);
     return TIER_ORDER.slice(0, index < 0 ? 1 : index + 1);
   }
+  function tierStatus(tier) {
+    // System failure: auth loaded but not ready → unavailable for all.
+    if (auth.loaded && !auth.ready) return "unavailable";
+    return availableTiers().includes(tier) ? "available" : "upgrade";
+  }
 
   const TIER_COPY = Object.freeze({
     ko: Object.freeze({
@@ -50,6 +55,7 @@
       truth: "더 높은 등급의 모델을 사용하려면 업그레이드가 필요합니다.",
       available: "사용 가능",
       unavailable: "사용 불가",
+      upgrade: "업그레이드",
       free: ["Padiem Free", ""],
       plus: ["Padiem Plus", ""],
       pro: ["Padiem Pro", ""],
@@ -62,6 +68,7 @@
       truth: "Upgrade is required to use higher-tier models.",
       available: "Available",
       unavailable: "Unavailable",
+      upgrade: "Upgrade",
       free: ["Padiem Free", ""],
       plus: ["Padiem Plus", ""],
       pro: ["Padiem Pro", ""],
@@ -305,22 +312,41 @@
 
   function createModeOption(tier) {
     const copy = currentModeCopy();
-    const available = availableTiers().includes(tier);
+    const status = tierStatus(tier);
+    const available = status === "available";
     const button = document.createElement("button");
     button.type = "button";
     button.className = "mode-option";
     button.dataset.modeValue = tier;
-    button.disabled = !available;
-    button.setAttribute("aria-disabled", available ? "false" : "true");
-    button.setAttribute("aria-pressed", tier === selectedTier ? "true" : "false");
+    button.dataset.modeStatus = status;
+    button.disabled = status === "unavailable";
+    button.setAttribute("aria-disabled", status === "unavailable" ? "true" : "false");
+    button.setAttribute("aria-pressed", tier === selectedTier && available ? "true" : "false");
 
     const title = document.createElement("strong");
     title.textContent = copy[tier][0];
     const state = document.createElement("span");
-    state.className = "mode-option-state";
-    state.textContent = available ? copy.available : copy.unavailable;
+    state.className = "mode-option-state mode-option-state--" + status;
+    const icon = document.createElement("span");
+    icon.className = "mode-option-state-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = status === "available" ? "✓" : status === "upgrade" ? "↑" : "—";
+    const label = document.createElement("span");
+    label.textContent = status === "available" ? copy.available : status === "upgrade" ? copy.upgrade : copy.unavailable;
+    state.append(icon, label);
     button.append(title, state);
     button.addEventListener("click", () => {
+      const currentStatus = tierStatus(tier);
+      if (currentStatus === "unavailable") return;
+      if (currentStatus === "upgrade") {
+        const truthEl = modePanel?.querySelector("[data-mode-truth]");
+        if (truthEl) truthEl.textContent = copy.truth;
+        if (truthEl) {
+          truthEl.classList.add("is-highlighted");
+          window.setTimeout(() => truthEl.classList.remove("is-highlighted"), 1200);
+        }
+        return;
+      }
       if (!selectTier(tier)) return;
       closeModePanel({ restoreFocus: true });
     });
@@ -342,14 +368,26 @@
     modePanel.querySelectorAll("[data-mode-value]").forEach((button) => {
       const tier = button.dataset.modeValue;
       if (!copy[tier]) return;
-      const available = availableTiers().includes(tier);
+      const status = tierStatus(tier);
+      const available = status === "available";
+      button.dataset.modeStatus = status;
+      button.disabled = status === "unavailable";
+      button.setAttribute("aria-disabled", status === "unavailable" ? "true" : "false");
+      button.setAttribute("aria-pressed", tier === selectedTier && available ? "true" : "false");
       const optionTitle = button.querySelector("strong");
-      const state = button.querySelector(".mode-option-state");
+      const stateEl = button.querySelector(".mode-option-state");
       if (optionTitle) optionTitle.textContent = copy[tier][0];
-      if (state) state.textContent = available ? copy.available : copy.unavailable;
-      button.disabled = !available;
-      button.setAttribute("aria-disabled", available ? "false" : "true");
-      button.setAttribute("aria-pressed", tier === selectedTier ? "true" : "false");
+      if (stateEl) {
+        stateEl.className = "mode-option-state mode-option-state--" + status;
+        stateEl.textContent = "";
+        const icon = document.createElement("span");
+        icon.className = "mode-option-state-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = status === "available" ? "✓" : status === "upgrade" ? "↑" : "—";
+        const stateLabel = document.createElement("span");
+        stateLabel.textContent = status === "available" ? copy.available : status === "upgrade" ? copy.upgrade : copy.unavailable;
+        stateEl.append(icon, stateLabel);
+      }
     });
   }
 

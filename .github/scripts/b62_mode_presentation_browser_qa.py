@@ -98,8 +98,11 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
 
     for locked in ("pro", "max"):
         row = panel.locator(f'[data-mode-value="{locked}"]')
-        if not await row.is_disabled():
-            raise AssertionError(f"{locked} must be disabled (사용 불가) at {name}")
+        if await row.is_disabled():
+            raise AssertionError(f"{locked} must be clickable (업그레이드) at {name}")
+        state_text = (await row.locator(".mode-option-state").inner_text()).strip()
+        if "업그레이드" not in state_text:
+            raise AssertionError(f"{locked} must show 업그레이드 at {name}: {state_text!r}")
 
     truth = (await panel.locator("[data-mode-truth]").inner_text()).strip()
     if "더 높은 등급의 모델을 사용하려면 업그레이드가 필요합니다." not in truth:
@@ -132,8 +135,8 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
         "default_tier": "free",
         "selected_tier": "plus",
         "plus": "available",
-        "pro": "unavailable",
-        "max": "unavailable",
+        "pro": "upgrade",
+        "max": "upgrade",
         "server_authority_copy": True,
         "escape_focus_return": True,
         "horizontal_overflow": False,
@@ -191,8 +194,11 @@ async def _english_probe() -> dict[str, Any]:
             await panel.wait_for(state="visible")
             if await panel.locator("[data-mode-value]").count() != 4:
                 raise AssertionError("English tier panel must expose four tier rows")
-            if not await panel.locator('[data-mode-value="pro"]').is_disabled():
+            if await panel.locator('[data-mode-value="pro"]').is_disabled():
                 raise AssertionError("English tier panel must keep Pro disabled")
+            pro_state = (await panel.locator('[data-mode-value="pro"] .mode-option-state').inner_text()).strip()
+            if "Upgrade" not in pro_state:
+                raise AssertionError(f"English tier panel must show Upgrade for Pro: {pro_state!r}")
             truth = (await panel.locator("[data-mode-truth]").inner_text()).strip()
             if "Upgrade is required to use higher-tier models." not in truth:
                 raise AssertionError(f"English tier truth copy missing: {truth!r}")
