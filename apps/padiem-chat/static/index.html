@@ -45,6 +45,7 @@
   <!-- #4643 shared Chat/Claw microphone entry. Inert until a server-granted
        recognizer is registered and a signed-in session exists. -->
   <link rel="stylesheet" href="./voice-composer.css" />
+  <link rel="stylesheet" href="./voice-ui.css" />
   <link rel="stylesheet" href="./shared-six-panel-frame.css" />
   <link rel="stylesheet" href="./sidebar-unified.css" />
   <!-- Dark-mode readability finish: Chat and Claw share this composer and token set. -->
@@ -1065,6 +1066,11 @@
   <!-- Browser-only TTS output primitive for answer listen/stop. No provider
        endpoint or credentials; explicit user Start per playback. -->
   <script src="./voice-tts-output.js"></script>
+  <!-- #4816 shared Chat/Claw voice mode toolbar and M2/M3/M4 surfaces. -->
+  <script src="./voice-live-turn-controller.js"></script>
+  <script src="./voice-ui-menu.js"></script>
+  <script src="./voice-answer-ui.js"></script>
+  <script src="./voice-call-ui.js"></script>
   <script src="./app.js"></script>
   <script src="./meeting-drive-upload.js"></script>
   <script src="./meeting-capture.js"></script>

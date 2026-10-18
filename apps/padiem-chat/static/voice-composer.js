@@ -110,6 +110,8 @@
     let run = null;
     let stoppingRun = null;
     let deferredFinals = [];
+    let lastFinalId = null;
+    let trustedEditOff = null;
     let observer = null;
     let destroyed = false;
     let mounted = false;
@@ -328,13 +330,41 @@
       state.idleKey = "";
       stoppingRun = null;
       deferredFinals = [];
-      const myRun = { generation: state.generation, sessionToken: state.sessionToken, adapter: null, session: null };
+      const myRun = { generation: state.generation, sessionToken: state.sessionToken,
+        adapter: null, session: null, initialInput: input && input.value.trim(), manuallyEdited: false };
+      function handleAutoStopRequested() {
+        // VAD silence cut goes through the exact same Stop pipeline as the user
+        // pressing Stop, preserving tail-drain run authority.
+        if (isSameRun(myRun)) stop("user-stopped");
+      }
+      function handleTurnComplete(event) {
+        // The recognizer fires this only after Stop, all 2xx transcript chunks
+        // (including the tail) and their editable commits complete.
+        if (stoppingRun !== myRun || !event || event.accepted !== true ||
+            event.endOfTurn !== true || !event.finalId || !state.authenticated ||
+            !state.identityKey || state.composing || input.disabled ||
+            myRun.initialInput || myRun.manuallyEdited) return;
+        const text = input && input.value ? input.value.trim() : "";
+        if (!text) return;
+        try {
+          win.dispatchEvent(new win.CustomEvent("padiem:voice-accepted-turn", {
+            detail: {
+              accountKey: state.identityKey,
+              composerGeneration: myRun.generation,
+              sessionToken: myRun.sessionToken,
+              accepted: true, endOfTurn: true, finalId: event.finalId, text: text
+            }
+          }));
+        } catch (_) { /* no background send fallback */ }
+      }
       const adapter = adapterApi.createVoiceInputAdapter({
         generation: myRun.generation,
         sessionToken: myRun.sessionToken,
         input: inputHandle(),
         onState: handleAdapterState,
         onInterim: handleInterim,
+        onAutoStopRequested: handleAutoStopRequested,
+        onTurnComplete: handleTurnComplete,
       });
       myRun.adapter = adapter;
       if (adapter.start() !== true) {
@@ -350,6 +380,7 @@
             if (isSameRun(myRun)) myRun.adapter.feedInterim(chunk, runContext(myRun));
           },
           onFinal: function (payload) {
+            if (payload && payload.utteranceId != null) lastFinalId = String(payload.utteranceId);
             if (isSameRun(myRun)) submitFinal(payload);
             else if (stoppingRun === myRun) {
               const result = commitForRun(myRun, payload);
@@ -366,6 +397,8 @@
           onEnd: function () {
             if (isSameRun(myRun)) recognizerEnded();
           },
+          onAutoStopRequested: handleAutoStopRequested,
+          onTurnComplete: handleTurnComplete,
         }, { generation: myRun.generation, sessionToken: myRun.sessionToken });
       } catch (e) {
         session = null;
@@ -559,6 +592,15 @@
     }
 
     const detach = [];
+    // One listener per composer, not one listener per microphone run.
+    // A user edit during a voice run voids auto-send for that run: Mode 1
+    // keeps manual send, and Mode 2/3 refuse to submit an edited draft.
+    const trustedEditHandler = function (event) {
+      if (event && event.isTrusted === true) {
+        if (run) run.manuallyEdited = true;
+        if (stoppingRun) stoppingRun.manuallyEdited = true;
+      }
+    };
 
     function mount() {
       if (mounted || destroyed) return mounted;
@@ -607,6 +649,14 @@
       nodes.preview = preview;
       nodes.status = status;
       state.inputDisabled = input.disabled === true;
+      if (input && typeof input.addEventListener === "function") {
+        input.addEventListener("input", trustedEditHandler);
+        trustedEditOff = function () {
+          if (input && typeof input.removeEventListener === "function") {
+            input.removeEventListener("input", trustedEditHandler);
+          }
+        };
+      }
       mounted = true;
 
       detach.push(listen(button, "click", function () { toggle(); }));
@@ -647,6 +697,8 @@
         stage.adapter.invalidate("destroyed");
       }
       deferredFinals = [];
+      if (trustedEditOff) { try { trustedEditOff(); } catch (e) { /* already detached */ } }
+      trustedEditOff = null;
       detach.forEach(function (off) { try { off(); } catch (e) { /* already detached */ } });
       detach.length = 0;
       if (observer && typeof observer.disconnect === "function") observer.disconnect();
