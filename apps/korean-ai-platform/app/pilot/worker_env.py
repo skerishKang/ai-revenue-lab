@@ -124,6 +124,8 @@ async def load_request_secret(binding_name: str) -> None:
         secret = await getter()
         resolved = str(secret) if secret is not None else ""
     except Exception as exc:
+        import logging as _dbg_logging
+        _dbg_logging.getLogger("b14dbg").warning("DBG_EXC type=%s name=%s msg=%r", type(exc).__name__, getattr(exc, "name", ""), str(exc)[:300])
         # Missing/revoked bindings fail closed without retries, but the cause
         # is recorded as a fixed token so an outage is diagnosable.
         if statuses is not None:
