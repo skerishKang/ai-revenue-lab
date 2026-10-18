@@ -928,3 +928,24 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
     padding-block: 0;
   }
 }
+
+/* #5023 follow-up: error belongs beside calendar title, not in the date
+   navigation where it wraps and pushes the month grid down. */
+.app-shell[data-state="calendar"] .calendar-view-header:has(.calendar-error),
+.app-shell[data-state="calendar"] .calendar-header:has(.calendar-error),
+.app-shell[data-state="calendar"] #calendarView > header:has(.calendar-error) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.app-shell[data-state="calendar"] :is(.calendar-view-header,.calendar-header,#calendarView > header) > .calendar-error {
+  margin-left: 10px;
+  max-width: min(35%, 230px);
+}
+@media (max-width: 700px) {
+  .app-shell[data-state="calendar"] :is(.calendar-view-header,.calendar-header,#calendarView > header) > .calendar-error {
+    max-width: 160px;
+    margin-left: 0;
+  }
+}
