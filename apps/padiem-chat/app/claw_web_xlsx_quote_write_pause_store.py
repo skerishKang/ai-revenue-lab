@@ -2,7 +2,7 @@
 from __future__ import annotations
 import inspect
 import re
-from datetime import datetime,timezone
+from datetime import datetime,timedelta,timezone
 from .claw_web_xlsx_quote_write_store import D1WebQuoteWriteReceiptStore
 from .workspace_storage import _row_to_dict
 
@@ -44,7 +44,7 @@ class D1WebQuoteWritePauseStore:
         if (not isinstance(pause_id,str) or not _PAUSE.fullmatch(pause_id)
                 or not isinstance(continuation_ref,str) or not _CONT.fullmatch(continuation_ref)
                 or not isinstance(expires_at,str) or not now < _utc(expires_at)
-                or _utc(expires_at)>now.replace(year=now.year+1)):
+                or _utc(expires_at)>now + timedelta(days=366)):
             raise ValueError("invalid Core WRITE pause")
         await _aw(self.db.prepare(
             "UPDATE claw_web_xlsx_quote_write_pauses SET "
