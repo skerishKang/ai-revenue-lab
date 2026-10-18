@@ -237,14 +237,15 @@
   let automationDestinationReady = false;
   function setNavActive() {
     const state = shell.dataset.state;
-    // Keep the current Automation destination across a page refresh in this tab.
-    // Save only a route name, never user identity, credentials, or rule data.
-    try {
-      if (automationDestinationReady) {
-        if (state === "automation") sessionStorage.setItem("padiem_last_destination", "automation");
-        else sessionStorage.removeItem("padiem_last_destination");
+    // The URL fragment is the destination bookmark; no browser persistence.
+    if (automationDestinationReady && window.history && window.location) {
+      const isAutomationRoute = window.location.hash === "#padiem-automation";
+      if (state === "automation" && !isAutomationRoute) {
+        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search + "#padiem-automation");
+      } else if (state !== "automation" && isAutomationRoute) {
+        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
       }
-    } catch (_) { /* Storage unavailable: navigation remains functional. */ }
+    }
     const workspace = document.getElementById("clawWorkspace");
     if (workspace) workspace.hidden = state !== "claw";
     const meetingView = document.getElementById("meetingView");
@@ -5485,10 +5486,6 @@
   });
   // Restore the Automation surface only after all handlers are registered.
   // It remains read-only for signed-out sessions through openClawAutomation().
-  try {
-    if (sessionStorage.getItem("padiem_last_destination") === "automation") {
-      openClawAutomation();
-    }
-  } catch (_) { /* Private browsing can reject storage. */ }
+  if (window.location.hash === "#padiem-automation") openClawAutomation();
   automationDestinationReady = true;
 })();
