@@ -22,6 +22,7 @@ explicit code; nothing is ever claimed about an unverified PC.
 from __future__ import annotations
 
 import json
+import logging
 import re
 import uuid
 from typing import Any
@@ -205,36 +206,48 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
     return session, subject_id, tenant_id
 
 
-async def _check_mesh_grant(request: Request, session: Any) -> bool:
-    """Whether the shared deployment Mesh grant covers this account.
+_MESH_GRANT_LOG = logging.getLogger(__name__)
 
-    False covers every unverified shape (lane off, unmapped account,
-    ambiguous rows) with one honest answer upstream; grant existence is
-    never distinguished.
+
+def _mesh_grant_denied(reason: str) -> bool:
+    """Log a fixed internal reason only; never include owner, session, or grant data."""
+    _MESH_GRANT_LOG.warning("chat_pc_mesh_grant_denied=%s", reason)
+    return False
+
+
+async def _check_mesh_grant(request: Request, session: Any) -> bool:
+    """Check the existing shared deployment grant without changing its semantics.
+
+    Each denial logs only a fixed diagnostic code. The user sees the same
+    generic refusal, so account existence, mapping, and authorization remain
+    private.
     """
     from .oracle_mesh_read_return_routes import EXECUTION_MODE_MESH
 
     if session is None:
-        return False
+        return _mesh_grant_denied("canonical_session_absent")
     mesh_source = getattr(request.app.state, "oracle_mesh_return_source", None)
-    if mesh_source is None or getattr(mesh_source, "execution_mode", None) != EXECUTION_MODE_MESH:
-        return False
+    if mesh_source is None or getattr(mesh_source, "configured", True) is False:
+        return _mesh_grant_denied("mesh_source_unconfigured")
+    if getattr(mesh_source, "execution_mode", None) != EXECUTION_MODE_MESH:
+        return _mesh_grant_denied("mesh_mode_unavailable")
     identity = getattr(request.app.state, "control_plane_identity_authority", None)
     if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
-        return False
+        return _mesh_grant_denied("identity_authority_unavailable")
     try:
         scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
     except Exception:
-        return False
+        return _mesh_grant_denied("owner_scope_resolution_failed")
     account_ref = scope.get("account_ref") if isinstance(scope, dict) else None
     if not isinstance(account_ref, str) or not account_ref:
-        return False
+        return _mesh_grant_denied("owner_scope_account_unavailable")
     try:
         target = mesh_source.command_target(account_ref=account_ref, device_id=None)
     except Exception:
-        return False
-    return target is not None
-
+        return _mesh_grant_denied("mesh_command_target_lookup_failed")
+    if target is None:
+        return _mesh_grant_denied("mesh_command_target_not_unique")
+    return True
 
 def _no_pc_answer() -> str:
     return (

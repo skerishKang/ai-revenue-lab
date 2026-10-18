@@ -550,3 +550,72 @@ def test_lane_complete_decision_answers_without_engine():
     assert bridge.requests == []
     assert history.staged is None
 
+def test_5015_mesh_grant_internal_diagnostics_are_fixed_codes_only(caplog):
+    """Observe which existing gate refused, without exposing account/session values."""
+    import app.chat_pc_drive as lane
+
+    private_session = "PRIVATE_SESSION_DO_NOT_LOG"
+    private_account = "PRIVATE_ACCOUNT_DO_NOT_LOG"
+    session = SimpleNamespace(session_id=private_session)
+
+    class Identity:
+        async def resolve_connector_owner_scope(self, *, session_id):
+            assert session_id == private_session
+            return {"account_ref": private_account}
+
+    class BrokenIdentity:
+        async def resolve_connector_owner_scope(self, *, session_id):
+            raise RuntimeError("SENSITIVE_PROVIDER_FAILURE_DO_NOT_LOG")
+
+    class NoAccount:
+        async def resolve_connector_owner_scope(self, *, session_id):
+            return {"account_ref": ""}
+
+    class Source:
+        execution_mode = "mesh"
+        configured = True
+
+        def __init__(self, result=None, fail=False):
+            self.result = result
+            self.fail = fail
+
+        def command_target(self, *, account_ref, device_id):
+            assert account_ref == private_account and device_id is None
+            if self.fail:
+                raise RuntimeError("SENSITIVE_LOOKUP_FAILURE_DO_NOT_LOG")
+            return self.result
+
+    def check(reason, *, sess=session, source=None, identity=None):
+        state = SimpleNamespace(
+            oracle_mesh_return_source=source,
+            control_plane_identity_authority=identity,
+        )
+        caplog.clear()
+        result = asyncio.run(lane._check_mesh_grant(
+            SimpleNamespace(app=SimpleNamespace(state=state)), sess,
+        ))
+        assert result is False
+        assert caplog.messages == ["chat_pc_mesh_grant_denied=" + reason]
+        assert "PRIVATE_" not in caplog.text
+        assert "SENSITIVE_" not in caplog.text
+
+    caplog.set_level("WARNING", logger="app.chat_pc_drive")
+    check("canonical_session_absent", sess=None)
+    check("mesh_source_unconfigured")
+    check("mesh_source_unconfigured", source=SimpleNamespace(configured=False))
+    check("mesh_mode_unavailable", source=SimpleNamespace(execution_mode="off"))
+    check("identity_authority_unavailable", source=Source())
+    check("owner_scope_resolution_failed", source=Source(), identity=BrokenIdentity())
+    check("owner_scope_account_unavailable", source=Source(), identity=NoAccount())
+    check("mesh_command_target_lookup_failed", source=Source(fail=True), identity=Identity())
+    check("mesh_command_target_not_unique", source=Source(), identity=Identity())
+
+    caplog.clear()
+    ok_state = SimpleNamespace(
+        oracle_mesh_return_source=Source(result={"node_ref": "node"}),
+        control_plane_identity_authority=Identity(),
+    )
+    assert asyncio.run(lane._check_mesh_grant(
+        SimpleNamespace(app=SimpleNamespace(state=ok_state)), session,
+    )) is True
+    assert caplog.messages == []

@@ -960,3 +960,29 @@ def test_4979_waited_channel_keeps_secret_gate(monkeypatch):
     status, body, _ = call(routes.oracle_mesh_read_poll, request)
     assert status == 403
     assert body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+def test_5015_mesh_source_startup_reason_does_not_log_secrets(caplog):
+    """Worker startup emits only fixed denial reasons, never Secrets Store bytes."""
+    class FailedSecret:
+        async def get(self):
+            raise RuntimeError("PRIVATE_SECRET_FETCH_ERROR_DO_NOT_LOG")
+
+    caplog.set_level("WARNING", logger="app.oracle_mesh_read_return_routes")
+    env = _deployment_env()
+    env[routes.ORACLE_MESH_CHANNEL_SECRET_ENV] = FailedSecret()
+    result = asyncio.run(routes.build_oracle_mesh_return_source_from_env(env))
+    assert result is None
+    assert caplog.messages == ["oracle_mesh_source_unconfigured=channel_secret_fetch_failed"]
+    assert "PRIVATE_" not in caplog.text
+    caplog.clear()
+
+    env = _deployment_env()
+    env[routes.ORACLE_MESH_OWNERSHIP_MAP_ENV] = "PRIVATE_BAD_MAPPING_DO_NOT_LOG"
+    assert asyncio.run(routes.build_oracle_mesh_return_source_from_env(env)) is None
+    assert caplog.messages == ["oracle_mesh_source_unconfigured=ownership_map_malformed"]
+    assert "PRIVATE_" not in caplog.text
+    caplog.clear()
+
+    good = asyncio.run(routes.build_oracle_mesh_return_source_from_env(_deployment_env()))
+    assert good is not None and good.configured is True
+    assert caplog.messages == []
