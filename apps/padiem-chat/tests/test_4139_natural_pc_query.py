@@ -23,7 +23,7 @@ def test_natural_pc_query_detects_drive_question() -> None:
     ok, command = _requested_natural_pc_query("내 PC에 어떤 드라이브가 있어?")
     assert ok is True
     assert command is not None
-    assert "Get-PSDrive" in command or "Drive" in command
+    assert "wmic" in command.lower() and "logicaldisk" in command.lower()
 
 
 def test_natural_pc_query_rejects_backtick_command() -> None:
