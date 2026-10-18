@@ -1191,15 +1191,6 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     adapter: P01CoreOrchestrationAdapter | None = getattr(
         request.app.state, "claw_p01_adapter", None
     )
-    # #5015: the Chat product's model-selected PC drive query runs under the
-    # Chat Engine app identity, whose signed callback resolves the active Chat
-    # session. Every other Claw turn keeps the historical Claw app identity.
-    if initial_pc_drive_query:
-        chat_pc_adapter = getattr(
-            request.app.state, "claw_chat_pc_query_adapter", None
-        )
-        if chat_pc_adapter is not None:
-            adapter = chat_pc_adapter
     subject_id: str | None = None
     authorized_workspace_id: str | None = None
     if conversation_id is not None and (

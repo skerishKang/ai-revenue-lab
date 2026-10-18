@@ -562,23 +562,13 @@ class P01EngineOrchestrationClient:
         no caller-supplied tool arguments. Anything else stays refused.
         """
         plan = request.agent_plan
-        # #5015: the same one-step plan is trusted under the Claw product and
-        # under the Chat product's own Engine identity. The app and agent pair
-        # must match exactly; no cross-product impersonation is allowed.
-        trusted_plan = (
-            request.app_id == "b54-padiem-claw"
-            and plan is not None
-            and plan.agent_id == "agent:padiem:claw-pc-query@1"
-        ) or (
-            request.app_id == "padiem-chat"
-            and plan is not None
-            and plan.agent_id == "agent:padiem:chat-pc-query@1"
-        )
         return bool(
             self._allow_subject_identity
-            and trusted_plan
+            and request.app_id == "b54-padiem-claw"
             and request.subject_id
             and request.execution_request.session_id
+            and plan is not None
+            and plan.agent_id == "agent:padiem:claw-pc-query@1"
             and len(plan.steps) == 1
             and plan.steps[0].step_id == "query_drives"
             and plan.steps[0].tool_id == "claw.pc.query_drives"

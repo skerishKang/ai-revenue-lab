@@ -37,7 +37,6 @@ def _claw_engine_client(
     env: Any,
     *,
     request_factory: Any,
-    app_id: str = P01_APP_ID,
 ) -> tuple[PadiemAiEngineClient | None, str | None]:
     """One fail-closed Engine client for every B54 P01 lane (#2229, #2961).
 
@@ -63,7 +62,7 @@ def _claw_engine_client(
         return (
             PadiemAiEngineClient(
                 transport=transport,
-                app_id=app_id,
+                app_id=P01_APP_ID,
                 caller_id=config.caller_id,
                 credential=config.credential,
             ),
@@ -144,39 +143,6 @@ def build_claw_p01_lanes_with_diagnostic(
         )
     except Exception:
         return None, None, P01_DIAG_COMPOSITION_UNAVAILABLE
-
-
-def build_chat_pc_query_adapter(
-    env: Any,
-    *,
-    request_factory: Any,
-) -> P01CoreOrchestrationAdapter | None:
-    """Chat-identity adapter for the model-selected PC drive query (#5015).
-
-    The Chat product presents its own Engine caller app identity and the
-    matching Chat PC-query agent, so the signed callback resolves the owner's
-    active Chat session instead of requiring a separate Claw product session.
-    The Engine's Chat binding already maps this exact app/agent pair to the Chat
-    internal endpoint. No caller, credential or binding is changed.
-    """
-    client, _ = _claw_engine_client(
-        env, request_factory=request_factory, app_id="padiem-chat",
-    )
-    if client is None:
-        return None
-    identity_authority_bound = (
-        binding_value(env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME) is not None
-    )
-    try:
-        return P01CoreOrchestrationAdapter(
-            P01EngineOrchestrationClient(
-                client, allow_subject_identity=identity_authority_bound
-            ),
-            allow_subject_identity=identity_authority_bound,
-            app_id="padiem-chat",
-        )
-    except Exception:
-        return None
 
 
 def build_claw_p01_adapter_with_diagnostic(

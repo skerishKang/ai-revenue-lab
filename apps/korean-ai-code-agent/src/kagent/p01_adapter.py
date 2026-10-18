@@ -414,14 +414,7 @@ class P01RequestFactory:
         clock: Callable[[], datetime] | None = None,
         product_tier: ProductTierLabel = ProductTierLabel.PLUS,
         allow_subject_identity: bool = False,
-        app_id: str = P01_APP_ID,
     ) -> None:
-        if not isinstance(app_id, str) or not app_id:
-            raise P01AdapterError(
-                "invalid_app_id",
-                "P01 app identity must be a bounded non-empty string.",
-                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
-            )
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
             raise P01AdapterError(
                 "invalid_timeout",
@@ -452,7 +445,6 @@ class P01RequestFactory:
         self._timeout_seconds = normalized_timeout
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._product_tier = product_tier
-        self._app_id = app_id
         # #3382: only the reviewed canonical USER lane may carry a subject
         # identity on the P01 wire. The default lane keeps the historical
         # subjectless contract; a subject passed here without the lane opt-in
@@ -550,16 +542,8 @@ class P01RequestFactory:
                     dispatch_class=P01DispatchClass.NOT_DISPATCHED,
                 )
             from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
-            # The Chat product presents its own Engine caller identity and the
-            # matching Chat PC-query agent, so the signed callback resolves the
-            # active Chat session instead of requiring a Claw product session.
-            pc_query_agent_id = (
-                "agent:padiem:chat-pc-query@1"
-                if self._app_id == "padiem-chat"
-                else "agent:padiem:claw-pc-query@1"
-            )
             desktop_plan = AgentPlan(
-                agent_id=pc_query_agent_id,
+                agent_id="agent:padiem:claw-pc-query@1",
                 steps=(AgentPlanStep(
                     step_id="query_drives", objective="Query verified PC filesystem drives",
                     tool_id="claw.pc.query_drives",
@@ -587,7 +571,7 @@ class P01RequestFactory:
         orchestration_request = OrchestrationRequest(
             execution_request=execution_request,
             context=context,
-            app_id=self._app_id,
+            app_id=P01_APP_ID,
             subject_id=subject_id,
             agent_plan=desktop_plan,
             tool_arguments=desktop_arguments,
@@ -788,7 +772,6 @@ class P01CoreOrchestrationAdapter:
         *,
         request_factory: P01RequestFactory | None = None,
         allow_subject_identity: bool = False,
-        app_id: str = P01_APP_ID,
     ) -> None:
         run_method = getattr(runner, "run", None)
         if not callable(run_method):
@@ -805,8 +788,7 @@ class P01CoreOrchestrationAdapter:
             )
         self._runner = runner
         self._factory = request_factory or P01RequestFactory(
-            allow_subject_identity=allow_subject_identity,
-            app_id=app_id,
+            allow_subject_identity=allow_subject_identity
         )
         # #3382: the canonical USER lane must reach the wire serializer too —
         # the Engine client's blanket subject rejection is relaxed only when
