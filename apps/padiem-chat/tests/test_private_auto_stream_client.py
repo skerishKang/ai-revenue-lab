@@ -151,10 +151,13 @@ def test_private_compat_stream_pro_alias_fails_closed_before_manual_route():
             calls += 1
             return httpx.Response(503, json={"error": {"code": "upstream_unavailable"}})
 
-        client = B14Client(_settings(), stream_transport=httpx.MockTransport(handler))
+        # The owner-tier-pair primary (beam-free) streams via bounded
+        # completion, so the single-attempt fail-closed probe rides the
+        # completion transport, not the manual stream-preview transport.
+        client = B14Client(_settings(), transport=httpx.MockTransport(handler))
         with pytest.raises(ChatRuntimeError):
             async for _ in client.stream_text_auto(
-                [{"role": "user", "content": "/pro 한국어로 답해줘"}]
+                [{"role": "user", "content": "/pro �ѱ���� ������"}]
             ):
                 pass
         assert calls == 1

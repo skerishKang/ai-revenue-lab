@@ -610,10 +610,14 @@ class B14Client:
             )
 
         # Stream gateway forbids mid-stream model replacement. For the owner-
-        # selected tier pair, finish a bounded B14 completion and emit its answer
-        # as one SSE delta so a recoverable Cat Jam failure can use its fallback.
+        # selected tier pair primary, finish a bounded B14 completion and emit
+        # its answer as one SSE delta so a recoverable failure can use its
+        # fallback. beam-free is the current primary; the manual
+        # single-attempt stream-preview structurally rejects it (owner-tier
+        # routes always carry fallback candidates), so it must not reach it.
+        # cat-jam-free is policy-disabled and no Chat path selects it.
         tier = _owner_product_tier(policy.profile)
-        if policy.model_id == "opencode-go/cat-jam-free":
+        if policy.model_id == "opencode-go/beam-free":
             response = await self._complete_text(
                 policy.messages, skill=resolved_skill, model=policy.model_id,
                 additional_system_context=bounded_context, product_tier=tier,

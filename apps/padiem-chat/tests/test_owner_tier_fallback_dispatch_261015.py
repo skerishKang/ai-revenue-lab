@@ -17,7 +17,7 @@ def test_completed_chat_propagates_owner_tier(monkeypatch, profile, expected_tie
     monkeypatch.setattr(
         b14_client, "_resolve_b62_policy",
         lambda messages, **kwargs: SimpleNamespace(
-            profile=profile, model_id="opencode-go/cat-jam-free", messages=messages
+            profile=profile, model_id="opencode-go/beam-free", messages=messages
         ),
     )
     seen=[]
@@ -29,7 +29,7 @@ def test_completed_chat_propagates_owner_tier(monkeypatch, profile, expected_tie
     assert out["answer"]=="ok"
     assert len(seen)==1
     assert seen[0]["product_tier"]==expected_tier
-    assert seen[0]["model"]=="opencode-go/cat-jam-free"
+    assert seen[0]["model"]=="opencode-go/beam-free"
 
 @pytest.mark.parametrize("profile,expected_tier",TIERS)
 def test_streamed_chat_propagates_identical_owner_tier(monkeypatch,profile,expected_tier):
@@ -37,7 +37,7 @@ def test_streamed_chat_propagates_identical_owner_tier(monkeypatch,profile,expec
     monkeypatch.setattr(
         b14_client, "_resolve_b62_policy",
         lambda messages, **kwargs: SimpleNamespace(
-            profile=profile, model_id="opencode-go/cat-jam-free", messages=messages
+            profile=profile, model_id="opencode-go/beam-free", messages=messages
         ),
     )
     seen=[]
