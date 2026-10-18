@@ -15,9 +15,12 @@ membership composition feeds #2987/#2995, ``worker.py`` exposes a gated
 
 from __future__ import annotations
 
+import importlib.util
 import sys
+import types
 from datetime import timedelta
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -246,6 +249,82 @@ async def test_scheduled_execution_composition_runs_full_existing_path(d1_store)
         assert unobserved not in payload
 
 
+async def test_scheduled_execution_forwards_the_central_route_model(d1_store):
+    """#4428: a server-resolved Claw route reaches the P01 adapter verbatim."""
+
+    class CentralRouteAdapter(OutcomeAdapter):
+        def __init__(self) -> None:
+            super().__init__()
+            self.central_routes: list[str | None] = []
+
+        async def execute(
+            self,
+            run,
+            *,
+            lease=None,
+            product_tier=None,
+            central_route_model_id=None,
+        ):
+            self.central_routes.append(central_route_model_id)
+            return await super().execute(
+                run, lease=lease, product_tier=product_tier
+            )
+
+    await d1_store.save_rule(make_rule())
+    authority = _authority(WORKSPACE)
+    boundary = _async_boundary(d1_store)
+    adapter = CentralRouteAdapter()
+
+    receipt = await compose_scheduled_automation_execution(
+        discovery=_discovery(d1_store, authority, boundary),
+        boundary=boundary,
+        store=d1_store,
+        adapter=adapter,
+        owner_resolver=resolver(),
+        history_store=RecordingHistoryStore(),
+        task_alert_store=RecordingTaskAlertStore(),
+        now=NOW,
+        completed_at=NOW,
+        central_route_model_id="central/plus-route",
+    )
+
+    assert len(receipt.executions) == 1
+    assert receipt.executions[0].terminal_run_ids
+    assert adapter.central_routes == ["central/plus-route"]
+
+
+async def test_scheduled_execution_without_a_central_route_keeps_the_legacy_call(d1_store):
+    """No central row must leave the historical adapter call byte-identical."""
+
+    # The legacy adapter does not accept the keyword at all: forwarding an
+    # explicit None would raise TypeError here.
+    class StrictLegacyAdapter(OutcomeAdapter):
+        async def execute(self, run, *, lease=None, product_tier=None):
+            return await super().execute(
+                run, lease=lease, product_tier=product_tier
+            )
+
+    await d1_store.save_rule(make_rule())
+    authority = _authority(WORKSPACE)
+    boundary = _async_boundary(d1_store)
+    adapter = StrictLegacyAdapter()
+
+    receipt = await compose_scheduled_automation_execution(
+        discovery=_discovery(d1_store, authority, boundary),
+        boundary=boundary,
+        store=d1_store,
+        adapter=adapter,
+        owner_resolver=resolver(),
+        history_store=RecordingHistoryStore(),
+        task_alert_store=RecordingTaskAlertStore(),
+        now=NOW,
+        completed_at=NOW,
+    )
+
+    assert len(receipt.executions) == 1
+    assert len(adapter.calls) == 1
+
+
 async def test_async_tick_isolates_subjects_and_quarantines_legacy(d1_store):
     subject_b = "sub_ffffffffffffffffffffffffffffffff"
     await d1_store.save_rule(make_rule(rule_id="rule_subject_a"))
@@ -463,6 +542,175 @@ async def test_retry_of_the_same_invocation_executes_exactly_once(d1_store):
     assert len(history2.rows) == 1
     rows = await d1_store.list_runs(WORKSPACE)
     assert [row.status for row in rows] == [ClawScheduledRunStatus.COMPLETED]
+
+
+# ---------------------------------------------------------------------------
+# 1b. the Worker's scheduled source reads the stored Claw PLUS route (#4428)
+# ---------------------------------------------------------------------------
+
+def _route_db():
+    # FakeD1 already applies migration 050 and returns D1-shaped ``results``;
+    # the durable automation store needs its own 018/019 schema on top.
+    from test_4428_central_tier_routes_261019 import FakeD1
+
+    db = FakeD1()
+    for path in (MIGRATION_PATH, MIGRATION_019_PATH):
+        db.conn.executescript(path.read_text(encoding="utf-8"))
+    return db
+
+
+class _RouteRecordingAdapter(OutcomeAdapter):
+    def __init__(self) -> None:
+        super().__init__()
+        self.central_routes: list[str | None] = []
+
+    async def execute(
+        self, run, *, lease=None, product_tier=None, central_route_model_id=None
+    ):
+        self.central_routes.append(central_route_model_id)
+        return await super().execute(run, lease=lease, product_tier=product_tier)
+
+
+class _IdentityBinding:
+    async def resolve_active_tenant_membership(self, payload: dict[str, Any]):
+        return {
+            "ok": True,
+            "membership": {
+                "tenant_id": payload["tenant_id"],
+                "canonical_subject_id": payload["canonical_subject_id"],
+                "state": "active",
+                "created_at": "2025-01-01T00:00:00+00:00",
+                "role": "owner",
+            },
+        }
+
+
+def _load_worker(monkeypatch: pytest.MonkeyPatch):
+    workers_stub = types.ModuleType("workers")
+    workers_stub.Request = object
+
+    class _Response:
+        def __init__(self, body="", *, status=200, headers=None):
+            self.body = body
+            self.status = status
+            self.headers = dict(headers or {})
+
+    class _WorkerEntrypoint:
+        def __init__(self, env=None, ctx=None):
+            self.env = env
+            self.ctx = ctx
+
+    workers_stub.Response = _Response
+    workers_stub.WorkerEntrypoint = _WorkerEntrypoint
+    monkeypatch.setitem(sys.modules, "workers", workers_stub)
+
+    spec = importlib.util.spec_from_file_location(
+        "padiem_chat_worker_route_proof", _CHAT / "worker.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    monkeypatch.setitem(sys.modules, spec.name, module)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _worker_env(db) -> SimpleNamespace:
+    from app.worker_config import (
+        D1_BINDING_NAME,
+        IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
+    )
+
+    return SimpleNamespace(**{
+        D1_BINDING_NAME: db,
+        IDENTITY_AUTHORITY_SERVICE_BINDING_NAME: _IdentityBinding(),
+        "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED": True,
+    })
+
+
+async def _run_worker_source(db, adapter, monkeypatch):
+    module = _load_worker(monkeypatch)
+    return await module.run_scheduled_automation_source(
+        _worker_env(db),
+        now=NOW,
+        execution_ports=SimpleNamespace(
+            adapter=adapter,
+            owner_resolver=resolver(),
+            history_store=RecordingHistoryStore(),
+            task_alert_store=RecordingTaskAlertStore(),
+        ),
+    )
+
+
+async def test_worker_scheduled_source_dispatches_the_stored_claw_plus_route(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    db = _route_db()
+    store = D1ClawAutomationStore(db)
+    await store.save_rule(make_rule())
+    db.conn.execute(
+        "INSERT INTO central_model_route_state(workspace_id,revision,updated_at)"
+        " VALUES(?,?,?)",
+        ("padiem-global", 1, "2026-10-19T07:00:00.000Z"),
+    )
+    db.conn.execute(
+        "INSERT INTO central_model_tier_routes"
+        "(workspace_id,product,tier,primary_model_id,fallback_model_id,enabled)"
+        " VALUES(?,?,?,?,?,?)",
+        ("padiem-global", "claw", "PLUS", "google/central-plus", None, 1),
+    )
+    adapter = _RouteRecordingAdapter()
+
+    receipt = await _run_worker_source(db, adapter, monkeypatch)
+
+    assert receipt is not None
+    assert len(receipt.executions) == 1
+    assert receipt.executions[0].terminal_run_ids
+    assert adapter.central_routes == ["google/central-plus"]
+    rows = await store.list_runs(WORKSPACE)
+    assert [row.status for row in rows] == [ClawScheduledRunStatus.COMPLETED]
+
+
+async def test_worker_scheduled_source_without_a_stored_route_keeps_static_dispatch(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    db = _route_db()
+    store = D1ClawAutomationStore(db)
+    await store.save_rule(make_rule())
+    adapter = _RouteRecordingAdapter()
+
+    receipt = await _run_worker_source(db, adapter, monkeypatch)
+
+    assert receipt is not None
+    # No stored row: the historical adapter contract is called exactly as before.
+    assert adapter.central_routes == [None]
+    rows = await store.list_runs(WORKSPACE)
+    assert [row.status for row in rows] == [ClawScheduledRunStatus.COMPLETED]
+
+
+async def test_worker_scheduled_source_fails_closed_for_a_disabled_stored_route(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    db = _route_db()
+    store = D1ClawAutomationStore(db)
+    await store.save_rule(make_rule())
+    db.conn.execute(
+        "INSERT INTO central_model_route_state(workspace_id,revision,updated_at)"
+        " VALUES(?,?,?)",
+        ("padiem-global", 1, "2026-10-19T07:00:00.000Z"),
+    )
+    db.conn.execute(
+        "INSERT INTO central_model_tier_routes"
+        "(workspace_id,product,tier,primary_model_id,fallback_model_id,enabled)"
+        " VALUES(?,?,?,?,?,?)",
+        ("padiem-global", "claw", "PLUS", "google/central-plus", None, 0),
+    )
+    adapter = _RouteRecordingAdapter()
+
+    receipt = await _run_worker_source(db, adapter, monkeypatch)
+
+    assert receipt is None
+    assert adapter.calls == []
+    # Nothing was claimed: a disabled route never executes the static fallback.
+    assert await store.list_runs(WORKSPACE) == []
 
 
 # ---------------------------------------------------------------------------

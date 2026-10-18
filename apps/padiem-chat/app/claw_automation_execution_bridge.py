@@ -77,6 +77,7 @@ class P01ExecutionPort(Protocol):
         *,
         lease: SandboxLease | None = None,
         product_tier: Any | None = None,
+        central_route_model_id: str | None = None,
     ) -> ClawOrchestrationOutcome: ...
 
 
@@ -142,6 +143,7 @@ async def execute_scheduled_occurrence(
     adapter: P01ExecutionPort,
     lease: SandboxLease | None = None,
     product_tier: Any | None = None,
+    central_route_model_id: str | None = None,
 ) -> ClawOrchestrationOutcome:
     """Hand the canonical ClawRun to the existing P01 adapter, exactly once.
 
@@ -162,7 +164,10 @@ async def execute_scheduled_occurrence(
         raise AutomationExecutionBridgeError(
             "sandbox lease does not belong to the canonical scheduled run"
         )
-    return await adapter.execute(plan.run, lease=lease, product_tier=product_tier)
+    kwargs: dict[str, Any] = {"lease": lease, "product_tier": product_tier}
+    if central_route_model_id is not None:
+        kwargs["central_route_model_id"] = central_route_model_id
+    return await adapter.execute(plan.run, **kwargs)
 
 
 __all__ = [

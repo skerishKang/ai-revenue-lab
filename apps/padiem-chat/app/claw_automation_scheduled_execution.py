@@ -71,6 +71,7 @@ async def compose_scheduled_automation_execution(
     recovery_bound: int | None = None,
     lease: Any | None = None,
     product_tier: Any | None = None,
+    central_route_model_id: str | None = None,
     completed_at: datetime | None = None,
     clock: Callable[[], datetime] | None = None,
 ) -> ScheduledAutomationExecutionReceipt:
@@ -94,6 +95,8 @@ async def compose_scheduled_automation_execution(
             kwargs["lease"] = lease
         if product_tier is not None:
             kwargs["product_tier"] = product_tier
+        if central_route_model_id is not None:
+            kwargs["central_route_model_id"] = central_route_model_id
         if completed_at is not None:
             kwargs["completed_at"] = completed_at
         if clock is not None:
