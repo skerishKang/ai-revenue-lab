@@ -66,6 +66,12 @@ function padiemTarget(url, method) {
     ["/api/padiem/auth/google/start", ["GET", "/auth/google/start"]],
     ["/api/padiem/auth/google/callback", ["GET", "/auth/google/callback"]],
     ["/api/padiem/auth/logout", ["POST", "/api/auth/logout"]],
+    /* #3404: B66 "한번에 말하기" 음성 입력. B66 Pages 프런트가 padiem-chat
+       Worker의 음성 전사·신원 조회를 같은 padiem_session 쿠폰/권한으로
+       호출한다. 전사 Worker 바인딩이 배포되지 않으면 503을 반환하고
+       프런트는 마이크를 사용 불가로 둔다(실패 닫힘). */
+    ["/api/padiem/voice/identity", ["GET", "/api/voice/identity"]],
+    ["/api/padiem/voice/transcribe", ["POST", "/api/voice/transcribe"]],
     ["/api/padiem/b66/company-profile", ["GET", "/api/b66/company-profile"]],
     ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]],
     ["/api/padiem/b66/ai/chat", ["POST", "/api/b66/ai/chat"]],
