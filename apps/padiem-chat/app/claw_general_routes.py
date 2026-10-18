@@ -1451,9 +1451,17 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 staged_conversation_id=staged_conversation_id,
             )
 
+        async def after_live_terminal_without_answer() -> None:
+            # The SSE relay only stores a verified answer. A staged run whose
+            # Engine terminal carried no answer therefore has to be settled
+            # here, or it stays ``pending`` forever with no answer shown.
+            if staged_conversation_id is not None:
+                await _mark_staged_run_failed(request, run.run_id)
+
         return live_claw_sse(
             adapter, run, live_args,
             on_completed=after_verified_live_completion,
+            on_terminal_without_answer=after_live_terminal_without_answer,
             sources=search_sources,
         )
 
