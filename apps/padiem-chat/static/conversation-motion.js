@@ -82,6 +82,13 @@
   function remainingToEnd(){
     var conv = scrollableConversation();
     if (conv) {
+      /* #4488: one shared container-gap calculation with B66. The jump limit
+       * (FOLLOW_THRESHOLD + composer clearance) and the window/document scroll
+       * fallback below stay owned by this product surface. */
+      var shared = window.PadiemConversationScroll || window.SharedConversationScroll;
+      if (shared && typeof shared.remainingToEnd === "function") {
+        return shared.remainingToEnd(conv);
+      }
       return conv.scrollHeight - conv.scrollTop - conv.clientHeight;
     }
     return documentHeight() - ((window.scrollY || 0) + window.innerHeight);

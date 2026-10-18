@@ -16,6 +16,9 @@
   const SafeMarkdown = window.B66SafeMarkdown || null;
   // Shared Chat/Claw/B66 editor behavior; B66 owns submit/quote state.
   const sharedComposer = window.SharedConversationComposer || null;
+  // #4488: shared near-bottom follow math. B66 keeps its own container and the
+  // 120px contract the shared module carries. Product-neutral alias only.
+  const sharedScroll = window.SharedConversationScroll || null;
 
   if (!Core || !History || !FileIntake || !App) return;
 
@@ -357,10 +360,17 @@
 
     // Scroll only the chat transcript, never the entire workspace/window.
     // Stay with the latest message until a user intentionally scrolls back.
-    const wasNearBottom = !conversation ||
-      conversation.scrollHeight - conversation.scrollTop - conversation.clientHeight < 120;
+    // #4488: shared math owns the 120px contract; the legacy branch keeps the
+    // exact old behavior only when the shared script is unavailable.
+    const wasNearBottom = sharedScroll
+      ? sharedScroll.isNearBottom(conversation)
+      : (!conversation ||
+          conversation.scrollHeight - conversation.scrollTop - conversation.clientHeight < 120);
     messageList.appendChild(article);
-    if (conversation && wasNearBottom) conversation.scrollTop = conversation.scrollHeight;
+    if (conversation && wasNearBottom) {
+      if (sharedScroll) sharedScroll.followToBottom(conversation);
+      else conversation.scrollTop = conversation.scrollHeight;
+    }
     // Record only the deterministic CGI Guided messages, never provider/general
     // AI chat turns or temporary loading text. The server validates every entry.
     if (guided && lastEasyView === "guided" && !replayingGuided &&
