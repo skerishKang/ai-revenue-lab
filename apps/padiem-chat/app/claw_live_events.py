@@ -200,10 +200,7 @@ def live_claw_sse(
                     # The run keeps its staged state; only the owner consent
                     # surface can move it forward.
                     return
-                elif status in ("failed", "cancelled") or (
-                    verified_terminal is not None
-                    and verified_terminal["kind"] in ("run_failed", "run_cancelled")
-                ):
+                if status != "completed" or not isinstance(payload.answer, str) or not payload.answer:
                     # A verified failure/cancellation is a real terminal
                     # state even when the final answer is absent. Never turn
                     # an invalid completed answer into a false run_completed.
@@ -216,8 +213,14 @@ def live_claw_sse(
                         # #5015r: a proven cancellation is not a PC execution
                         # failure; settle it as the cancellation it is.
                         await settle_terminal_without_answer("verified_cancelled")
-                    else:
+                    elif status == "failed" or (
+                        verified_terminal is not None
+                        and verified_terminal["kind"] == "run_failed"
+                    ):
                         await settle_terminal_without_answer("verified_failure")
+                    # #5015r: any other invalid outcome (e.g. a completed
+                    # status with an unusable answer) is unverified evidence,
+                    # not a proven failure; it stays unclaimed.
                     yield _frame("error", {"error": {
                         "code": "engine_execution_failed", "message": "Engine 실행이 완료되지 않았습니다.",
                     }})
