@@ -163,6 +163,7 @@ from .claw_conversation_artifact_adopt_routes import (
 from .claw_conversation_artifact_routes import claw_conversation_artifact_followup
 from .claw_durable_drive_output_pipeline import ClawDurableDriveOutputPipeline
 from .claw_office_drive_completion import ClawOfficeDriveCompletion
+from .claw_ticket_drive_output_host import ClawTicketDriveOutputHost
 from .claw_durable_drive_artifact_routes import (
     claw_drive_artifact_download, claw_drive_artifact_preview,
 )
@@ -954,6 +955,21 @@ def create_app(
             pipeline=app.state.claw_durable_drive_output_pipeline
         )
         if app.state.claw_durable_drive_output_pipeline is not None
+        else None
+    )
+    # #3330: host junction — verified Work Ticket → existing Drive output pipeline.
+    # Active only when the trusted production Worker injects both pipeline and
+    # history; no browser/model activation authority. The host exposes
+    # complete_ticketed_output() which forwards to the existing verified
+    # ticket composition and existing uploader/D1 pipeline.
+    app.state.claw_ticket_drive_output_host = (
+        ClawTicketDriveOutputHost(
+            pipeline=app.state.claw_durable_drive_output_pipeline,
+            history=history_store,
+            drive_reader=claw_drive_artifact_reader,
+        )
+        if app.state.claw_durable_drive_output_pipeline is not None
+        and history_store is not None
         else None
     )
     # READ is a separate current-grant host capability. WRITE approval never
