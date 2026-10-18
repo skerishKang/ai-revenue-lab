@@ -695,6 +695,20 @@ textarea { min-height: 82px; resize: vertical; }
 }
 .easy-message-avatar { width: 34px; height: 34px; border-radius: 11px; }
 .easy-message-body { min-width: 0; }
+/* #5007-2: three-dot answer-ready animation, ported from Padiem Chat's
+   `.typing` into the B66 message design. Dots appear while a turn is pending
+   and leave with the pending message on first content, completion, failure
+   or view switch. */
+.easy-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+}
+.easy-typing i { width: 6px; height: 6px; border-radius: 50%; background: #98a2b3; animation: easy-pulse 1s infinite ease-in-out; }
+.easy-typing i:nth-child(2) { animation-delay: .14s; }
+.easy-typing i:nth-child(3) { animation-delay: .28s; }
+@keyframes easy-pulse { 0%, 70%, 100% { opacity: .35; transform: translateY(0); } 35% { opacity: 1; transform: translateY(-2px); } }
 /* #4469 retrieval is labelled separately from the model's own words so a member
    can tell a sourced fact from an unverified one. */
 .easy-evidence-note {

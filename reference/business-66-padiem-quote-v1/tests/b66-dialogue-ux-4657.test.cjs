@@ -553,8 +553,9 @@ async function testAnInFlightAnswerCannotRepopulateANewChat() {
   (env.get("easySend").listeners.click || [])[0]();
   await flush();
   assert.equal(env.calls.chat.length, 1);
-  assert.ok(descendants(env.get("easyMessageList")).some((n) => n.textContent.includes("답변을 작성하고 있습니다")),
-    "the pending notice must be visible while the model runs");
+  /* #5007-2: the pending state is the three-dot animation, not bare text. */
+  assert.ok(descendants(env.get("easyMessageList")).some((n) => String(n.className || "").split(" ").includes("easy-typing")),
+    "the pending dots must be visible while the model runs");
   const inFlight = env.get("easyMessageList").children.length;
 
   // New chat while the model answer is still in flight.
@@ -570,8 +571,8 @@ async function testAnInFlightAnswerCannotRepopulateANewChat() {
   const nodes = descendants(env.get("easyMessageList"));
   assert.ok(!nodes.some((n) => n.textContent.includes("늦은 답변")),
     "no late answer text may appear");
-  assert.ok(!nodes.some((n) => n.textContent.includes("답변을 작성하고 있습니다")),
-    "no late pending notice may appear");
+  assert.ok(!nodes.some((n) => String(n.className || "").split(" ").includes("easy-typing")),
+    "no late pending dots may appear");
   assert.equal(env.get("easyComposerNote").textContent, "",
     "a late answer must not install the unsaved notice either");
   // A follow-up must start a brand-new conversation, not the old one.
