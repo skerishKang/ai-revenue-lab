@@ -32,11 +32,11 @@ MUSE_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
 
 
 def _settings_request(*, authorizer=None, runtime_mode="b14", user_id="usr_admin"):
-    state = SimpleNamespace(
-        central_model_admin_authorizer=authorizer,
+    state = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        b66_member_admin_store=authorizer,
         settings=SimpleNamespace(runtime_mode=runtime_mode),
-    )
-    return SimpleNamespace(app=SimpleNamespace(state=state)), user_id
+    )))
+    return state, user_id
 
 
 class _AdminAuthorizer:
@@ -45,7 +45,7 @@ class _AdminAuthorizer:
         self.explode = explode
         self.seen = []
 
-    async def is_global_model_admin(self, *, user_id):
+    async def is_google_admin(self, user_id):
         self.seen.append(user_id)
         if self.explode:
             raise RuntimeError("authority unavailable")
@@ -86,6 +86,8 @@ def test_admin_model_stays_outside_the_product_tier_executable_set() -> None:
 def test_verified_admin_passes_the_chat_gate() -> None:
     request, user_id = _run_denial_setup(True, "usr_verified_admin")
     assert _run(selected_admin_denial(request, user_id)) is None
+    store = request.app.state.b66_member_admin_store
+    assert store.seen == ["usr_verified_admin"]
 
 
 def _run_denial_setup(verdict, user_id, *, explode=False, authorizer="present", runtime_mode="b14"):
@@ -139,8 +141,9 @@ def test_only_exact_admin_pair_bypasses_product_tier_executability() -> None:
     )
 
 
-def test_popup_proves_admin_via_server_and_never_username_matching() -> None:
-    assert "/api/admin/models/me" in CAPABILITIES
+def test_popup_probes_server_admin_and_never_username_matching() -> None:
+    assert "/api/b66/admin/me" in CAPABILITIES
+    assert "/api/admin/models/me" not in CAPABILITIES
     assert "Padiem 관리자" in CAPABILITIES
     assert "refreshAdminPresence" in CAPABILITIES
     assert 'tier === "admin"' in CAPABILITIES

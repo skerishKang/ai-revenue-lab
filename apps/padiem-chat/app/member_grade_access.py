@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import inspect
-
 from starlette.responses import JSONResponse
 
 GRADES = ("free", "plus", "pro", "max")
@@ -50,25 +48,28 @@ async def verified_member_grade(request, user_id, access=None):
 
 
 async def selected_admin_denial(request, user_id):
-    """Gate the administrator-only Chat model through the verified global admin.
+    """Gate the administrator-only Chat model through the verified operator admin.
 
-    Never infer this role from a username, email, member grade, browser flag or
-    tier. Forged or ordinary sessions are rejected here, before model policy.
+    Authority is the product's own B66 member-admin store, which matches the
+    D1-verified Google subject against the trusted owner email — the same
+    server-side identity that already gates B66 admin APIs. Never infer this
+    role from a username, email, member grade, browser flag or tier. Forged or
+    ordinary sessions are rejected here, before model policy. The CENTRAL
+    cross-product model APIs keep their separate central authorizer untouched.
     """
     settings = getattr(request.app.state, "settings", None)
     if not user_id and getattr(settings, "runtime_mode", None) != "mock":
         return JSONResponse({"error": {"code": "unauthorized", "message": "로그인이 필요합니다."}}, status_code=401)
-    authority = getattr(request.app.state, "central_model_admin_authorizer", None)
-    verify = getattr(authority, "is_global_model_admin", None)
+    store = getattr(request.app.state, "b66_member_admin_store", None)
+    verify = getattr(store, "is_google_admin", None)
     if not callable(verify):
-        return JSONResponse({"error": {"code": "central_admin_not_configured", "message": "관리자 확인 기능을 사용할 수 없습니다."}}, status_code=503)
+        return JSONResponse({"error": {"code": "admin_unavailable", "message": "관리자 확인 기능을 사용할 수 없습니다."}}, status_code=503)
     try:
-        result = verify(user_id=user_id)
-        is_admin = await result if inspect.isawaitable(result) else result
+        is_admin = await verify(user_id)
     except Exception:
-        return JSONResponse({"error": {"code": "central_admin_authority_unavailable", "message": "관리자 확인에 실패했습니다. 잠시 후 다시 시도해 주세요."}}, status_code=503)
+        return JSONResponse({"error": {"code": "admin_unavailable", "message": "관리자 확인에 실패했습니다. 잠시 후 다시 시도해 주세요."}}, status_code=503)
     if is_admin is not True:
-        return JSONResponse({"error": {"code": "global_model_admin_forbidden", "message": "관리자 전용 기능입니다."}}, status_code=403)
+        return JSONResponse({"error": {"code": "admin_forbidden", "message": "관리자 전용 기능입니다."}}, status_code=403)
     return None
 
 
