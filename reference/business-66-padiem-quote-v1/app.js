@@ -2203,16 +2203,74 @@
       }
     });
   }
+  /* B66 전용 파일/의뢰 화면은 index.html 을 바꾸지 않고 필요할 때만 로드한다. */
+  const b66LazyScripts = new Map();
+  function loadB66Script(src) {
+    if (b66LazyScripts.has(src)) return b66LazyScripts.get(src);
+    const job = new Promise((resolve, reject) => {
+      const node = document.createElement("script");
+      node.src = src;
+      node.async = true;
+      node.onload = () => resolve(true);
+      node.onerror = () => {
+        b66LazyScripts.delete(src);
+        reject(new Error("b66_script_load_failed"));
+      };
+      document.head.appendChild(node);
+    });
+    b66LazyScripts.set(src, job);
+    return job;
+  }
+
+  function skillFlowEnv() {
+    return {
+      fetch: (url, options) => window.fetch(url, options),
+      authState: () => ({
+        authenticated: serverHistorySignedIn === true,
+        privateStateReadable: privateStateReadable()
+      }),
+      companyProfile: () => {
+        const bridge = window.B66QuoteRuntimeBridge;
+        return bridge && typeof bridge.getCompanyProfile === "function"
+          ? bridge.getCompanyProfile()
+          : null;
+      },
+      refreshAssignedSkills: () => {
+        const bridge = window.B66QuoteSkillBridge;
+        if (bridge && typeof bridge.refresh === "function") bridge.refresh();
+      }
+    };
+  }
+
+  function openSkillModule(sources, globalName, label) {
+    return sources.reduce(
+      (previous, src) => previous.then(() => loadB66Script(src)),
+      Promise.resolve()
+    ).then(() => {
+      const module = window[globalName];
+      if (!module || typeof module.open !== "function") throw new Error("b66_module_unavailable");
+      module.open(document, skillFlowEnv());
+      return true;
+    }).catch(() => {
+      toast(label + " 화면을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.", 2400);
+      return false;
+    });
+  }
+
   document.addEventListener("b66:open-skill-register", () => {
     // New reusable forms are distinct from the line-item editing workspace.
-    // Both established workflows retain their existing approval and auth gates.
-    if (!skillUiApi?.actions?.openWizard || !manualSkillApi?.open ||
-        !window.B66SkillStartDialog) return;
+    // Each workflow retains its existing approval and auth gates.
+    if (!manualSkillApi?.open || !window.B66SkillStartDialog) return;
     window.B66SkillStartDialog.open({
-      fileOpen: () => skillUiApi.actions.openWizard($("shellManualQuote")),
-      fileCancel: () => $("skillWizardCancel").click(),
+      fileOpen: () => openSkillModule(
+        ["quote-skill-auto.js"], "B66QuoteSkillAuto", "파일로 만들기"
+      ),
       blankOpen: () => manualSkillApi.open($("shellManualQuote")),
-      blankCancel: () => manualSkillApi.close()
+      blankCancel: () => manualSkillApi.close(),
+      assistOpen: () => openSkillModule(
+        ["quote-skill-auto.js", "quote-skill-assisted.js"],
+        "B66QuoteSkillAssisted", "운영자에게 맡기기"
+      )
     }, $("shellManualQuote"));
   });
   document.addEventListener("b66:account-scope-changed", () => {

@@ -464,8 +464,11 @@
     if (!candidate || candidate.status !== SkillCandidate.STATUS_CANDIDATE) {
       return Promise.resolve(failRequest("candidate_not_submittable", state));
     }
-    var ref = clientRefFor(candidate);
-    if (!ref) return Promise.resolve(failRequest("invalid_candidate", state));
+    /* 경로별 접두(manual-/auto-)를 허용하되, 참조는 항상 bounded 형식이어야 한다. */
+    var ref = typeof opts.clientRef === "string" ? opts.clientRef : clientRefFor(candidate);
+    if (typeof ref !== "string" || !CLIENT_REF_PATTERN.test(ref)) {
+      return Promise.resolve(failRequest("invalid_candidate", state));
+    }
     var transport = typeof opts.transport === "function" ? opts.transport : null;
     if (!transport || state.connected !== true) {
       /* 전송 경로가 없으면 승인 요청은 성공할 수 없다. fail closed. */

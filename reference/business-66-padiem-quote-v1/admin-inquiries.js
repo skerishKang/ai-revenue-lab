@@ -1,6 +1,10 @@
 (() => {
   "use strict";
   const API = "/api/padiem/b66/admin";
+  const CATEGORY_LABELS = {
+    general: "일반 문의", usage: "사용 방법", billing: "요금·계정",
+    bug: "오류 신고", other: "기타", quote_skill_assist: "견적서 양식 의뢰"
+  };
   const el = (id) => document.getElementById(id);
   const access = el("access");
   const status = el("inquiryStatus");
@@ -35,7 +39,7 @@
         article.append(
           div((item.status === "resolved" ? "[처리 완료] " : "[미처리] ") +
               (item.subject || ""), "member-email"),
-          div((item.email || "") + " · " + (item.category || "") +
+          div((item.email || "") + " · " + (CATEGORY_LABELS[item.category] || item.category || "") +
               " · " + (item.created_at || "").slice(0, 16), "note"),
           div(item.body || ""),
           div("문의번호: " + (item.inquiry_id || ""), "note")

@@ -1241,7 +1241,7 @@ body.b66-three-pane #easySend {
 }
 .b66-skill-start-choices {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
 }
 .b66-skill-start-choices button {
