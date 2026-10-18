@@ -65,3 +65,26 @@ class TestEngineStageCodeSurvives(SyntheticPlusRouteTestCase):
         exc = self.fail_with(None)
         self.assertEqual(exc.code, "p01_engine_stream_failed")
         self.assertEqual(exc.failure_detail, P01_FAILURE_DETAIL_DOWNSTREAM)
+
+def test_chat_pc_query_factory_presents_the_chat_identity():
+    """#5015: the Chat product drive query uses its own app/agent identity."""
+    from kagent.contracts import ClawTaskIntent, ExecutionMode
+    from kagent.runs import ClawRun
+    from kagent.p01_adapter import P01RequestFactory
+
+    intent = ClawTaskIntent(
+        task_id="task_chat_pc_query",
+        task="내 PC에 어떤 드라이브가 있어?",
+        repository_ref="skerishKang/example",
+        execution_mode=ExecutionMode.LOCAL,
+    )
+    run = ClawRun.create("run_chat_pc_query", intent)
+    subject = "sub_" + "a" * 32
+    bundle = P01RequestFactory(
+        allow_subject_identity=True, app_id="padiem-chat",
+    ).build(run, subject_id=subject, pc_drive_query=True)
+    request = bundle.orchestration_request
+    assert request.app_id == "padiem-chat"
+    assert request.subject_id == subject
+    assert request.agent_plan is not None
+    assert request.agent_plan.agent_id == "agent:padiem:chat-pc-query@1"

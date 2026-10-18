@@ -43,6 +43,7 @@ from app.desktop_conversation_authority import (
     build_desktop_device_session_authority_with_diagnostic,
 )
 from app.claw_p01_composition import (
+    build_chat_pc_query_adapter,
     build_claw_p01_adapter,
     build_claw_p01_lanes_with_diagnostic,
 )
@@ -1182,6 +1183,15 @@ class Default(WorkerEntrypoint):
                 ) = build_claw_p01_lanes_with_diagnostic(
                     self.env,
                     request_factory=Request,
+                )
+                # #5015: the Chat product's model-selected PC drive query must
+                # present the Chat Engine app identity, so the signed callback
+                # resolves the owner's active Chat session instead of requiring
+                # a separate Claw product session. Same caller/config/bindings.
+                _worker_app.state.claw_chat_pc_query_adapter = (
+                    build_chat_pc_query_adapter(
+                        self.env, request_factory=Request,
+                    )
                 )
                 # #4469: Owner-requested Claw public web research. An explicit
                 # Worker flag is only a request to activate: the real B14

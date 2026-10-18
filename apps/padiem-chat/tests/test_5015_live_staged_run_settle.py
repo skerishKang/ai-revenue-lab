@@ -347,3 +347,41 @@ def test_browser_disconnect_after_a_saved_result_preserves_it():
     assert row is not None, "the verified result must be in history"
     assert row["status"] == "completed", "a disconnect never downgrades a result"
     assert row["result_summary"] == RUN_SUMMARY, "the saved answer is preserved"
+
+
+def test_drive_query_selects_the_chat_identity_adapter():
+    """#5015: the Chat product drive query uses its Chat Engine identity.
+
+    The signed callback must resolve the active Chat session; the historical
+    Claw app identity would require a separate Claw product session and return
+    401 before any dispatch.
+    """
+    store = _tracking_store()
+    claw_adapter = _streaming_adapter(status="failed")
+    chat_adapter = MagicMock()
+    chat_adapter.subject_identity_lane = True
+    chat_adapter.execute = AsyncMock(side_effect=P01AdapterError(
+        "p01_engine_stream_failed",
+        "Engine streaming failed before a verified terminal result.",
+        dispatch_class=P01DispatchClass.UNKNOWN,
+    ))
+    payload = _payload(messages=[{"role": "user", "content": PC_DRIVE_TEXT}])
+    with patch("app.claw_general_routes.auth_ready", lambda r: True), \
+         patch("app.claw_general_routes.current_user_id", lambda r: OWNER), \
+         patch("app.b54_canonical_session.resolve_current_b54_canonical_session",
+               new=AsyncMock(return_value=SimpleNamespace(
+                   auth_session=SimpleNamespace(
+                       subject=SimpleNamespace(subject_id="sub_" + "9" * 32))))), \
+         patch("app.claw_general_routes.drive_general_grounding",
+               new=AsyncMock(return_value=("drive ground", ()))):
+        with _client(claw_adapter) as client:
+            client.app.state.history_store = store
+            client.app.state.claw_live_sse_enabled = True
+            client.app.state.claw_chat_pc_query_adapter = chat_adapter
+            response = client.post(
+                "/api/claw/general", json=payload,
+                headers={"X-Padiem-Claw-Live": "p01-events-v1"},
+            )
+    assert response.status_code == 200
+    assert "event: error" in response.text
+    assert chat_adapter.execute.await_count == 1
