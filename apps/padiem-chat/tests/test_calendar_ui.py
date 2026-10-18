@@ -141,7 +141,7 @@ def test_calendar_js_separates_loading_empty_error_ready_and_retry() -> None:
     assert 'retry.addEventListener("click", () => load())' in source
     assert "requestToken" in source
     # The failed-response path and the zero-item path are distinct code paths.
-    assert "function showError(code)" in source and "lastItems = null;" in source and 'setStatus("error")' in source
+    assert "function showError(code, serverCode = \"\")" in source and "lastItems = null;" in source and 'setStatus("error")' in source
     assert re.search(r"if \(!response\.ok \|\| !items\) \{\s*showError\(response\.status\);\s*return;", source)
     assert re.search(r"if \(items\.length === 0\) \{\s*list\.replaceChildren\(\);\s*setStatus\(\"empty\"\);\s*return;", source)
 

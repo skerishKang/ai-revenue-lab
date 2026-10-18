@@ -80,6 +80,9 @@ class MockModel:
             "messages": messages, "model": model, "system": additional_system_context,
         })
         answer, self.answer = self.answer, None
+        if isinstance(answer, list):
+            # One invalid first completion may be repaired once by the model.
+            answer, self.answer = answer[0], answer[1:] or None
         if isinstance(answer, Exception):
             raise answer
         if answer is None:
@@ -426,7 +429,7 @@ def test_cancelling_a_staged_modification_keeps_the_original_facts(ctx):
 ])
 def test_unusable_model_output_fails_closed_and_keeps_the_previous_state(ctx, raw):
     opened = open_authoring(ctx, "flexible")
-    res = send(ctx, "가상건설 배관 견적", revision=opened["revision"], answer=raw)
+    res = send(ctx, "가상건설 배관 견적", revision=opened["revision"], answer=[raw, raw])
     assert res.status_code == 502
     assert res.json()["error"]["code"] == "conversation_invalid_answer"
     assert res.headers["X-B66-Conversation-Reason"]
@@ -440,10 +443,10 @@ def test_a_model_cannot_smuggle_a_computed_total_into_the_draft(ctx):
     opened = open_authoring(ctx, "flexible")
     res = send(
         ctx, "가상건설 배관 100m 18000원", revision=opened["revision"],
-        answer=model_reply("확인해 주세요.", "quote_create", {
+        answer=[model_reply("확인해 주세요.", "quote_create", {
             "recipient": {"company": "가상건설"},
             "items": [{"name": "배관", "qty": 100, "unitPrice": 18000, "grandTotal": 1980000}],
-        }),
+        }), "not json at all"],
     )
     assert res.status_code == 502
     stored = ctx.client.get("/api/b66/ai/conversation").json()["state"]
@@ -660,11 +663,11 @@ def test_an_unusable_tax_mode_still_fails_the_turn_closed_without_mutating(ctx):
     opened = open_authoring(ctx, "flexible")
     res = send(
         ctx, "가상건설 배관 100m 18000원", revision=opened["revision"],
-        answer=model_reply("확인해 주세요.", "quote_create", {
+        answer=[model_reply("확인해 주세요.", "quote_create", {
             "recipient": {"company": "가상건설"},
             "items": [{"name": "배관", "qty": 100, "unitPrice": 18000}],
             "taxMode": "WEIRD",
-        }),
+        }), "not json at all"],
     )
     assert res.status_code == 502
     assert res.headers["X-B66-Conversation-Reason"] == "invalid_tax_mode"
