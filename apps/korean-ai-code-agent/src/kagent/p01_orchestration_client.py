@@ -14,7 +14,8 @@ model, fallback order, or credential fails closed.
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
+import re
+from collections.abc import Awaitable, Callable, Mapping
 from typing import Any
 
 from padiem_ai_core.orchestration_events import (
@@ -53,6 +54,7 @@ from .p01_adapter import (
     P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
     P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
     P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+    P01_FAILURE_DETAIL_TOOL_STAGES,
     P01_FAILURE_DETAIL_TRANSPORT,
 )
 from .p01_approval_pause_transport import (
@@ -148,6 +150,24 @@ _ENGINE_ADMISSION_CODES = frozenset(
 )
 
 
+_BOUNDED_ENGINE_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
+
+
+def _bounded_engine_error_code(record: object) -> str:
+    """The Engine's own closed error code from one stream error line (#5015).
+
+    Only an identifier-shaped code is preserved; anything else keeps the
+    historical generic contract failure. Messages and bodies are never read.
+    """
+    if isinstance(record, dict):
+        error = record.get("error")
+        if isinstance(error, dict):
+            code = error.get("code")
+            if isinstance(code, str) and _BOUNDED_ENGINE_ERROR_CODE_RE.fullmatch(code):
+                return code
+    return "p01_stream_trailing_record"
+
+
 def _engine_failure_detail(code: object) -> str:
     if code in _ENGINE_AUTHENTICATION_CODES:
         return P01_FAILURE_DETAIL_AUTHENTICATION
@@ -171,6 +191,10 @@ def _engine_failure_detail(code: object) -> str:
         return P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED
     if code in _ENGINE_PROVIDER_BAD_RESPONSE_CODES:
         return P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE
+    # #5015: an Engine error line that already names a tool stage keeps that
+    # closed code as its failure detail; everything else stays bucketed.
+    if code in P01_FAILURE_DETAIL_TOOL_STAGES:
+        return code
     return P01_FAILURE_DETAIL_DOWNSTREAM
 
 # OrchestrationRequest fields that carry authority the public wire cannot
@@ -359,17 +383,33 @@ class P01EngineOrchestrationClient:
                         raise fail("p01_stream_invalid_result")
                     terminal_raw = record["orchestration"]
                 else:
-                    raise fail("p01_stream_trailing_record")
+                    # #5015: the Engine ends a failed stream with one bounded
+                    # error line. Preserve its closed stage code so the caller
+                    # can tell admission, configuration and transport causes
+                    # apart instead of collapsing them into one generic code.
+                    raise fail(_bounded_engine_error_code(record))
         except P01AdapterError:
             raise
         except PadiemAiEngineClientError as exc:
             # An Engine request that reached its transport is UNKNOWN,
             # never refunded or automatically retried after a partial stream.
+            # #5015: the decoder preserves the Engine's own bounded error
+            # stage code on the client metadata; it outranks the generic
+            # transport reason when mapping the failure detail.
+            engine_code = None
+            if isinstance(exc.metadata, Mapping):
+                candidate = exc.metadata.get("engine_code")
+                if isinstance(candidate, str) and candidate in P01_FAILURE_DETAIL_TOOL_STAGES:
+                    engine_code = candidate
             raise P01AdapterError(
                 "p01_engine_stream_failed",
                 "Engine streaming failed before a verified terminal result.",
                 dispatch_class=P01DispatchClass.UNKNOWN,
-                failure_detail=_engine_failure_detail(exc.code),
+                failure_detail=(
+                    _engine_failure_detail(engine_code)
+                    if engine_code is not None
+                    else _engine_failure_detail(exc.code)
+                ),
             ) from exc
         except Exception as exc:
             raise P01AdapterError(

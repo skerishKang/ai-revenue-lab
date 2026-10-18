@@ -109,10 +109,10 @@ function jsonResponse(payload) {
     assert.ok(ui.includes("detailRequest !== detailGeneration"), "stale detail responses must be dropped");
     assert.ok(ui.includes("detail.replaceChildren()"), "old candidate detail must be removed on a new request");
     assert.ok(ui.includes("denyAccess()"), "expired admin session must clear and hide staff-only data");
-    assert.ok(!/\/decision[\x22\x27]/.test(ui), "decision endpoint must remain absent from read-only UI");
+    assert.ok(ui.includes("/decision"), "admin decision actions must call the existing bounded relay");
   } finally {
     globalThis.fetch = originalFetch;
   }
   console.log("B66_ADMIN_SKILL_CANDIDATE_INBOX_RELAY=PASS");
-  console.log("STAFF_READ_ONLY_DECISION_CONTROLS=0");
+  console.log("STAFF_DECISION_RELAY_CONNECTED=PASS");
 })();

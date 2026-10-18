@@ -18,6 +18,7 @@ from padiem_control_plane.model_assignment_policy import (
     ModelPolicySnapshot,
 )
 
+from app.auth_routes import create_session_token
 from app.b14_client import B14Client, ChatRuntimeError
 from app.central_model_final_dispatch_guard import (
     DENIAL_REASONS,
@@ -32,6 +33,11 @@ from app.central_model_pre_dispatch_advice import (
     VerifiedProductModelSelection,
 )
 from app.config import Settings
+from app.final_dispatch_guard_wiring import (
+    apply_guard_to_client,
+    create_guard_from_request,
+)
+from app.model_policy import request_tier_context
 
 MODEL = "test-provider/model-a"
 OTHER = "test-provider/model-b"
@@ -506,3 +512,220 @@ def test_differential_without_the_guard_the_same_context_reaches_the_provider():
     result = run_completion(client)
     assert result["answer"] == "final-guard-answer"
     assert len(binding.calls) == 1
+
+
+# --- #4483: with_guard() integration tests -----------------------------------
+
+def test_with_guard_allows_authorized_request():
+    """With a valid guard, an authorized request reaches the provider once."""
+    guard = make_guard()
+    binding = RecordingBinding()
+    client = B14Client(settings(), service_transport=binding)
+    guarded = client.with_guard(guard)
+    result = run_completion(guarded)
+    assert result["answer"] == "final-guard-answer"
+    assert len(binding.calls) == 1
+    assert binding.calls[0][1]["model"] == MODEL
+    assert guard.last_decision is not None
+    assert guard.last_decision.reason == "allowed"
+
+
+def test_with_guard_blocks_unauthorized_model():
+    """With an armed guard, a request for a different model is blocked."""
+    guard = make_guard()
+    binding = RecordingBinding()
+    client = B14Client(settings(), service_transport=guard.authorized_service_transport(binding))
+    guarded = client.with_guard(guard)
+    with pytest.raises(ChatRuntimeError):
+        run_completion(guarded, model=OTHER)
+    assert binding.calls == []
+    assert guard.last_decision is not None
+    assert guard.last_decision.reason == "dispatch_model_mismatch"
+
+
+def test_with_guard_none_returns_original_client():
+    """with_guard(None) returns the client unchanged."""
+    binding = RecordingBinding()
+    client = B14Client(settings(), service_transport=binding)
+    result = client.with_guard(None)
+    assert result is client
+    result = run_completion(client)
+    assert result["answer"] == "final-guard-answer"
+    assert len(binding.calls) == 1
+
+
+def test_with_guard_stream_allowed():
+    """With a valid guard, a stream request reaches the provider once."""
+    guard = make_guard()
+    inner = RecordingSSETransport()
+    client = B14Client(settings(), stream_transport=guard.authorized_http_transport(inner))
+    guarded = client.with_guard(guard)
+    events = asyncio.run(collect_stream(guarded))
+    assert "".join(e.delta_content or "" for e in events) == "안녕하세요"
+    assert events[-1].done is True
+    assert len(inner.requests) == 1
+    assert inner.requests[0][1]["model"] == MODEL
+
+
+# --- #4483: canonical request wiring (final_dispatch_guard_wiring) ----------
+
+
+class _WiringRequest:
+    """Signed-session request with a controllable verified member grade."""
+
+    def __init__(self, *, grade="max", user_id=USER):
+        class _Settings:
+            runtime_mode = "mock"
+            auth_mode = "mock"
+            session_secret = "x" * 32
+            session_max_age_seconds = 7 * 24 * 3600
+
+        class _MemberStore:
+            def __init__(self, current_grade):
+                self.grade = current_grade
+
+            async def runtime_access(self, uid):
+                return {"status": "approved", "tier": self.grade}
+
+        self.app = type("app", (), {"state": type("state", (), {})()})()
+        self.app.state.settings = _Settings()
+        self.app.state.history_store = object()
+        self.app.state.b66_member_admin_store = _MemberStore(grade)
+        self.cookies = {"padiem_session": create_session_token(_Settings(), user_id)}
+
+
+class _WiringPolicyStore:
+    def __init__(self, *, revision=1, tier="MAX", failure=False):
+        self.revision = revision
+        self.failure = failure
+        self.rules = (
+            ModelChange("central", tier, MODEL, "allow"),
+            ModelChange("chat", tier, MODEL, "allow"),
+        )
+        self.calls = []
+
+    async def snapshot(self, workspace_id):
+        self.calls.append(workspace_id)
+        if self.failure:
+            raise RuntimeError("D1 offline")
+        return ModelPolicySnapshot(workspace_id, self.revision, self.rules)
+
+
+class _WiringCatalog:
+    async def list_registered_models(self):
+        return [{
+            "model_id": MODEL,
+            "b14_enabled": True,
+            "owner_excluded": False,
+            "capabilities": ["chat"],
+        }]
+
+    async def list_selectable_models(self):
+        return [{"model_id": MODEL, "name": "Test"}]
+
+
+def test_create_guard_returns_none_without_provisioned_sources():
+    request = _WiringRequest()
+    with request_tier_context("max"):
+        without_store = asyncio.run(create_guard_from_request(
+            request, MODEL, None, _WiringCatalog(),
+        ))
+        without_catalog = asyncio.run(create_guard_from_request(
+            request, MODEL, _WiringPolicyStore(), None,
+        ))
+    assert without_store is None
+    assert without_catalog is None
+
+
+def test_create_guard_returns_none_without_canonical_session():
+    request = _WiringRequest()
+    request.cookies = {}
+    with request_tier_context("max"):
+        guard = asyncio.run(create_guard_from_request(
+            request, MODEL, _WiringPolicyStore(), _WiringCatalog(),
+        ))
+    assert guard is None
+
+
+@pytest.mark.parametrize(
+    ("tier_id", "expected"),
+    [("free", "FREE"), ("plus", "PLUS"), ("pro", "PRO"), ("max", "MAX")],
+)
+def test_create_guard_maps_requested_tier_to_product_tier(tier_id, expected):
+    """Guard tiers use the control-plane TIERS labels, never routing profiles."""
+    store = _WiringPolicyStore(tier=expected)
+    with request_tier_context(tier_id):
+        guard = asyncio.run(create_guard_from_request(
+            _WiringRequest(), MODEL, store, _WiringCatalog(),
+        ))
+    assert isinstance(guard, FinalDispatchGuard)
+    assert guard.exact_model_id == MODEL
+    assert guard._selection.tier == expected
+    assert store.calls == [GLOBAL_WORKSPACE]
+
+
+def test_create_guard_admin_tier_uses_verified_grade():
+    with request_tier_context("admin"):
+        guard = asyncio.run(create_guard_from_request(
+            _WiringRequest(grade="max"), MODEL,
+            _WiringPolicyStore(tier="MAX"), _WiringCatalog(),
+        ))
+    assert isinstance(guard, FinalDispatchGuard)
+    assert guard._selection.tier == "MAX"
+
+
+def test_create_guard_returns_none_for_invalid_policy_snapshot():
+    class _InvalidStore:
+        async def snapshot(self, workspace_id):
+            return object()
+
+    with request_tier_context("max"):
+        guard = asyncio.run(create_guard_from_request(
+            _WiringRequest(), MODEL, _InvalidStore(), _WiringCatalog(),
+        ))
+    assert guard is None
+
+
+def test_create_guard_authorizes_still_entitled_session():
+    store = _WiringPolicyStore(tier="PRO", revision=3)
+    with request_tier_context("pro"):
+        guard = asyncio.run(create_guard_from_request(
+            _WiringRequest(grade="pro"), MODEL, store, _WiringCatalog(),
+        ))
+    decision = asyncio.run(guard.authorize())
+    assert decision.allowed is True
+    assert decision.reason == "allowed"
+    assert decision.revision == 3
+
+
+def test_create_guard_allows_higher_grade_for_lower_requested_tier():
+    store = _WiringPolicyStore(tier="PRO")
+    with request_tier_context("pro"):
+        guard = asyncio.run(create_guard_from_request(
+            _WiringRequest(grade="max"), MODEL, store, _WiringCatalog(),
+        ))
+    decision = asyncio.run(guard.authorize())
+    assert decision.allowed is True
+
+
+def test_create_guard_denies_session_grade_downgrade():
+    request = _WiringRequest(grade="pro")
+    store = _WiringPolicyStore(tier="PRO")
+    with request_tier_context("pro"):
+        guard = asyncio.run(create_guard_from_request(
+            request, MODEL, store, _WiringCatalog(),
+        ))
+    request.app.state.b66_member_admin_store.grade = "free"
+    decision = asyncio.run(guard.authorize())
+    assert decision.allowed is False
+    assert decision.reason == "missing_session_authority"
+
+
+def test_apply_guard_to_client_wraps_only_a_real_guard():
+    binding = RecordingBinding()
+    client = B14Client(settings(), service_transport=binding)
+    assert apply_guard_to_client(client, None) is client
+    guarded = apply_guard_to_client(client, make_guard())
+    assert guarded is not client
+    assert isinstance(guarded.service_transport, GuardedServiceTransport)
+    assert guarded.service_transport._inner is binding

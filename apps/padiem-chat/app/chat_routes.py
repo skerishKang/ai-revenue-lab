@@ -34,7 +34,9 @@ from .history import (
     build_project_context,
 )
 from .history import PRODUCT_SCOPE_CHAT
-from .model_policy import model_supports, request_tier_context, FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
+from .model_policy import model_supports, request_tier_context, resolve_request_model_policy, FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
+from .central_model_route_runtime import chat_request_tier_context
+from .final_dispatch_guard_wiring import apply_guard_to_client, create_guard_from_request
 from .member_grade_access import selected_admin_denial, selected_grade_denial
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
@@ -404,7 +406,15 @@ async def api_chat_stream(request: Request):
         reference_context = auto_plan.prepared.context
 
     client: B14Client = request.app.state.b14_client
-    with request_tier_context(raw.get("tier", "free")):
+    async with chat_request_tier_context(request, raw.get("tier", "free")):
+        policy = resolve_request_model_policy(messages)
+        guard = await create_guard_from_request(
+            request,
+            policy.model_id,
+            request.app.state.central_model_policy_store,
+            request.app.state.b14_catalog_source,
+        )
+        client = apply_guard_to_client(client, guard)
         stream = client.stream_text_auto(
             messages,
             skill=skill,
@@ -726,7 +736,7 @@ async def api_chat(request: Request) -> JSONResponse:
             return JSONResponse(public_chat_result(result))
 
     try:
-        with request_tier_context(raw.get("tier", "free")):
+        async with chat_request_tier_context(request, raw.get("tier", "free")):
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
                 auto_decision = None if image_attachments or drive_context else auto_grounding.decide(messages, skill=skill)
@@ -741,6 +751,14 @@ async def api_chat(request: Request) -> JSONResponse:
                     )
                 else:
                     client: B14Client = request.app.state.b14_client
+                    policy = resolve_request_model_policy(messages)
+                    guard = await create_guard_from_request(
+                        request,
+                        policy.model_id,
+                        request.app.state.central_model_policy_store,
+                        request.app.state.b14_catalog_source,
+                    )
+                    client = apply_guard_to_client(client, guard)
                     result = await client.complete(
                         messages,
                         skill=skill,

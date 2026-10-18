@@ -114,6 +114,35 @@ P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE = "engine_provider_bad_response"
 # the final canary record ENGINE_ADMISSION_RESULT instead of collapsing it
 # into the downstream bucket.
 P01_FAILURE_DETAIL_ENGINE_ADMISSION = "engine_admission_denied"
+# #5015: bounded tool-stage codes emitted by the Core tool runtime and the
+# Claw PC-query handler. These are an already-closed, reviewed vocabulary.
+# Preserving the exact stage is what lets the caller tell a missing
+# verification owner (pc_query_admission_required / tool_owner_mismatch), an
+# unconfigured integration (pc_query_unconfigured) and request-creation faults
+# (pc_query_dispatch_missing / pc_query_dispatch_mismatch) apart instead of
+# collapsing every tool failure into one constant.
+P01_FAILURE_DETAIL_TOOL_STAGES = frozenset(
+    {
+        "tool_not_registered",
+        "tool_agent_mismatch",
+        "tool_not_allowed",
+        "tool_owner_mismatch",
+        "tool_auth_scope_missing",
+        "tool_user_confirmation_required",
+        "tool_external_authorization_required",
+        "invalid_tool_arguments",
+        "pc_query_unconfigured",
+        "pc_query_unavailable",
+        "pc_query_denied",
+        "pc_query_admission_required",
+        "pc_query_dispatch_mismatch",
+        "pc_query_dispatch_missing",
+        "pc_query_result_mismatch",
+        "pc_query_result_unknown",
+        "pc_query_execution_failed",
+        "pc_query_output_missing",
+    }
+)
 P01_FAILURE_DETAILS = frozenset(
     {
         P01_FAILURE_DETAIL_AUTHENTICATION,
@@ -165,7 +194,11 @@ class P01AdapterError(RuntimeError):
         self.dispatch_class = dispatch_class
         self.failure_detail = (
             failure_detail
-            if isinstance(failure_detail, str) and failure_detail in P01_FAILURE_DETAILS
+            if isinstance(failure_detail, str)
+            and (
+                failure_detail in P01_FAILURE_DETAILS
+                or failure_detail in P01_FAILURE_DETAIL_TOOL_STAGES
+            )
             else None
         )
 
@@ -286,6 +319,7 @@ def _agent_profile(
     product_tier: ProductTierLabel = ProductTierLabel.PLUS,
     *,
     selected_model_id: str | None = None,
+    central_route_model_id: str | None = None,
 ) -> AgentProfile:
     """Return the conservative B54 product profile consumed by P01.
 
@@ -306,6 +340,12 @@ def _agent_profile(
             dispatch_class=P01DispatchClass.NOT_DISPATCHED,
         ) from exc
 
+    if central_route_model_id is not None and selected_model_id is not None:
+        raise P01AdapterError(
+            "conflicting_model_selection",
+            "A central route and a member model choice cannot be dispatched together.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
     if selected_model_id is not None:
         if product_tier is ProductTierLabel.FREE:
             if selected_model_id not in (FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID):
@@ -320,11 +360,17 @@ def _agent_profile(
                 "Explicit model choice is not enabled for this tier.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
-    chosen_model = (
-        validate_explicit_b14_model_id(selected_model_id)
-        if selected_model_id is not None
-        else (route.model_id if route is not None else None)
-    )
+    # #4428: a central route is server-resolved against the live B14 catalog by
+    # the product before this call. It is not a member choice and cannot grant
+    # a tier; the verified product_tier still travels for B14 routing options.
+    if central_route_model_id is not None:
+        chosen_model = validate_explicit_b14_model_id(central_route_model_id)
+    else:
+        chosen_model = (
+            validate_explicit_b14_model_id(selected_model_id)
+            if selected_model_id is not None
+            else (route.model_id if route is not None else None)
+        )
     if chosen_model is None:
         code = "max_tier_hold" if product_tier is ProductTierLabel.MAX else "tier_hold"
         raise P01AdapterError(
@@ -413,6 +459,7 @@ class P01RequestFactory:
         product_tier: ProductTierLabel | None = None,
         subject_id: str | None = None,
         selected_model_id: str | None = None,
+        central_route_model_id: str | None = None,
         additional_system_context: str | None = None,
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
@@ -467,6 +514,7 @@ class P01RequestFactory:
             agent=_agent_profile(
                 product_tier or self._product_tier,
                 selected_model_id=selected_model_id,
+                central_route_model_id=central_route_model_id,
             ),
             messages=({"role": "user", "content": run.intent.task},),
             session_id=run.run_id,
@@ -764,6 +812,7 @@ class P01CoreOrchestrationAdapter:
         product_tier: ProductTierLabel | None = None,
         subject_id: str | None = None,
         selected_model_id: str | None = None,
+        central_route_model_id: str | None = None,
         additional_system_context: str | None = None,
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
@@ -777,6 +826,7 @@ class P01CoreOrchestrationAdapter:
                 product_tier=product_tier,
                 subject_id=subject_id,
                 selected_model_id=selected_model_id,
+                central_route_model_id=central_route_model_id,
                 additional_system_context=additional_system_context,
                 desktop_capture=desktop_capture,
                 desktop_device_id=desktop_device_id,

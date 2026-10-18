@@ -18,7 +18,11 @@
     catalog: [], products: null, selected: null,
     selectableIds: new Set(), fullInventory: false,
     authorized: false, writeEnabled: false, pendingReceipt: null, pendingRequest: 0,
+    routeWriteEnabled: false, routeRows: [], routeStatic: null, routeRevision: 0,
+    routeReceipt: null, routeRequest: 0,
   };
+  const ROUTE_PRODUCTS = Object.freeze(["chat", "claw", "b66"]);
+  const ROUTE_TIERS = Object.freeze(["FREE", "PLUS", "PRO", "MAX"]);
 
   function node(tag, value, className) {
     const el = document.createElement(tag);
@@ -241,13 +245,255 @@
     $("flowProducts").textContent = connected + "/5 정책 조회";
   }
 
+  function updateModeBadge() {
+    $("modeBadge").textContent = state.routeWriteEnabled ? "실행 경로 저장 가능" :
+      state.writeEnabled ? "정책 원장 저장 가능" : "미리보기 전용";
+  }
+
+  function routeConfigured(product, tier) {
+    return state.routeRows.find((row) => row.product === product && row.tier === tier) || null;
+  }
+
+  function routeStatic(product, tier) {
+    const value = state.routeStatic?.[product]?.[tier];
+    return value && typeof value.primary_model_id === "string" ? value : null;
+  }
+
+  function modelName(modelId) {
+    if (!modelId) return "없음";
+    return state.catalog.find((row) => row.model_id === modelId)?.name || modelId;
+  }
+
+  function fillModelSelect(select, selected, allowNone) {
+    select.replaceChildren();
+    if (allowNone) {
+      const empty = node("option", "없음");
+      empty.value = "";
+      select.append(empty);
+    }
+    if (selected && !state.selectableIds.has(selected)) {
+      const missing = node("option", (modelName(selected)) + " (선택 불가)");
+      missing.value = selected;
+      select.append(missing);
+    }
+    for (const model of state.catalog.filter((row) => state.selectableIds.has(row.model_id))) {
+      const option = node("option", model.name + " · " + model.model_id);
+      option.value = model.model_id;
+      select.append(option);
+    }
+    select.value = selected || (allowNone ? "" : (select.options[0]?.value || ""));
+  }
+
+  function clearRoutePreview() {
+    state.routeReceipt = null;
+    $("routeApplyBtn").hidden = true;
+    $("routePreviewResult").hidden = true;
+    $("routePreviewResult").replaceChildren();
+    $("routePreviewResult").className = "preview";
+  }
+
+  function renderRouteForm() {
+    const productSelect = $("routeProduct");
+    if (!productSelect.options.length) {
+      for (const key of ROUTE_PRODUCTS) {
+        const option = node("option", PRODUCTS[key].name);
+        option.value = key;
+        productSelect.append(option);
+      }
+    }
+    const product = productSelect.value || ROUTE_PRODUCTS[0];
+    const tier = $("routeTier").value || ROUTE_TIERS[0];
+    const configured = routeConfigured(product, tier);
+    const effective = configured || routeStatic(product, tier);
+    $("routeEnabled").checked = configured ? configured.enabled : true;
+    fillModelSelect($("routePrimary"), effective?.primary_model_id || null, false);
+    fillModelSelect($("routeFallback"), effective?.fallback_model_id || null, true);
+    $("routeResetBtn").disabled = !state.routeWriteEnabled || !configured;
+    $("routePreviewBtn").disabled = !state.routeWriteEnabled;
+  }
+
+  function renderRouteTable() {
+    const root = $("routeTable");
+    root.replaceChildren();
+    const head = node("div", null, "route-row route-row-head");
+    for (const label of ["제품", "등급", "기본 모델", "자동 폴백", "상태"]) head.append(node("span", label));
+    root.append(head);
+    for (const product of ROUTE_PRODUCTS) {
+      for (const tier of ROUTE_TIERS) {
+        const configured = routeConfigured(product, tier);
+        const effective = configured || routeStatic(product, tier);
+        const row = node("button", null, "route-row");
+        row.type = "button";
+        row.append(node("span", PRODUCTS[product].name), node("span", tier));
+        row.append(node("span", modelName(effective?.primary_model_id)));
+        row.append(node("span", modelName(effective?.fallback_model_id)));
+        const status = !configured ? "정적 기본값" : configured.enabled ? "중앙 설정" : "사용 안 함";
+        row.append(node("span", status, !configured ? "static" : configured.enabled ? "central" : "off"));
+        row.addEventListener("click", () => {
+          $("routeProduct").value = product;
+          $("routeTier").value = tier;
+          clearRoutePreview();
+          renderRouteForm();
+        });
+        root.append(row);
+      }
+    }
+  }
+
+  function renderRouteEvents(events) {
+    const root = $("routeEvents");
+    root.replaceChildren();
+    if (!Array.isArray(events) || !events.length) {
+      root.append(node("p", "저장된 경로 변경 이력이 없습니다.", "placeholder"));
+      return;
+    }
+    for (const entry of events.slice(0, 12)) {
+      const row = node("div", null, "source-card");
+      row.append(node("strong", "리비전 " + entry.revision + " · " +
+        (entry.operation === "rollback" ? "롤백" : "저장")));
+      row.append(node("small", String(entry.at || "")));
+      root.append(row);
+    }
+  }
+
+  function renderRoutePreview(result) {
+    const root = $("routePreviewResult");
+    root.replaceChildren();
+    root.className = "preview";
+    root.hidden = false;
+    root.append(node("strong", "✓ 실행 경로 변경안 검증 완료"),
+      node("small", "아직 저장되지 않았습니다 · 저장하면 다음 요청부터 적용됩니다"));
+    const list = node("ul");
+    for (const item of (result.diff || [])) {
+      const before = item.previous ?
+        (item.previous.enabled ? item.previous.primary_model_id +
+          (item.previous.fallback_model_id ? " / " + item.previous.fallback_model_id : "") : "사용 안 함") :
+        "정적 기본값";
+      const after = item.next ?
+        (item.next.enabled ? item.next.primary_model_id +
+          (item.next.fallback_model_id ? " / " + item.next.fallback_model_id : "") : "사용 안 함") :
+        "정적 기본값";
+      list.append(node("li", (PRODUCTS[item.product]?.name || item.product) + " · " +
+        item.tier + " · " + before + " → " + after));
+    }
+    root.append(list);
+  }
+
+  async function loadRoutes() {
+    const seq = ++state.routeRequest;
+    state.routeWriteEnabled = false;
+    state.routeRows = [];
+    state.routeStatic = null;
+    state.routeRevision = 0;
+    clearRoutePreview();
+    $("routeStatus").textContent = "확인 중";
+    $("routeTable").replaceChildren(node("p", "실행 경로를 확인하고 있습니다.", "placeholder"));
+    $("routeEvents").replaceChildren(node("small", "이력 확인 중"));
+    $("routePreviewBtn").disabled = true;
+    $("routeResetBtn").disabled = true;
+    try {
+      const result = await getJSON("/api/admin/models/routes");
+      if (seq !== state.routeRequest) return;
+      if (!Array.isArray(result.routes) || !Number.isSafeInteger(result.revision) ||
+          !result.static || result.runtime_enforced !== true) throw new Error("invalid_routes");
+      state.routeRows = result.routes;
+      state.routeStatic = result.static;
+      state.routeRevision = result.revision;
+      state.routeWriteEnabled = result.write_enabled === true;
+      $("routeStatus").textContent = "실행 적용 · 리비전 " + result.revision;
+      renderRouteForm();
+      renderRouteTable();
+      renderRouteEvents(result.events);
+      updateModeBadge();
+    } catch (err) {
+      if (seq !== state.routeRequest) return;
+      $("routeStatus").textContent = "사용 불가";
+      $("routeTable").replaceChildren(node("p",
+        "실행 경로 원장을 사용할 수 없습니다. (" + String(err.message) + ")", "placeholder"));
+      $("routeEvents").replaceChildren(node("small", "이력 조회 불가"));
+      updateModeBadge();
+    }
+  }
+
+  async function previewRoute(action) {
+    if (!state.routeWriteEnabled) return;
+    const product = $("routeProduct").value;
+    const tier = $("routeTier").value;
+    const body = action === "reset" ? {product, tier, action: "reset"} : {
+      product, tier, action: "set",
+      primary_model_id: $("routePrimary").value || null,
+      fallback_model_id: $("routeFallback").value || null,
+      enabled: $("routeEnabled").checked,
+    };
+    if (action === "set" && !body.primary_model_id) {
+      alertMessage("기본 모델을 선택해 주세요."); return;
+    }
+    if (action === "set" && body.primary_model_id === body.fallback_model_id) {
+      alertMessage("자동 폴백은 기본 모델과 다른 모델이어야 합니다."); return;
+    }
+    const seq = ++state.routeRequest;
+    $("routePreviewBtn").disabled = true;
+    $("routeResetBtn").disabled = true;
+    clearRoutePreview();
+    try {
+      const result = await getJSON("/api/admin/models/route-preview", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body),
+      });
+      if (seq !== state.routeRequest) return;
+      if (result.applied !== false || result.persisted !== false ||
+          result.runtime_enforced !== true || typeof result.confirmation_receipt !== "string") {
+        throw new Error("invalid_route_preview");
+      }
+      renderRoutePreview(result);
+      state.routeReceipt = result.confirmation_receipt;
+      $("routeApplyBtn").hidden = false;
+      alertMessage("");
+    } catch (err) {
+      if (seq !== state.routeRequest) return;
+      $("routePreviewResult").hidden = false;
+      $("routePreviewResult").className = "preview error";
+      $("routePreviewResult").replaceChildren(node("strong", "경로 미리보기 실패"),
+        node("small", String(err.message)));
+    } finally {
+      if (seq === state.routeRequest) {
+        $("routePreviewBtn").disabled = !state.routeWriteEnabled;
+        $("routeResetBtn").disabled = !state.routeWriteEnabled ||
+          !routeConfigured($("routeProduct").value, $("routeTier").value);
+      }
+    }
+  }
+
+  async function applyRoute() {
+    if (!state.routeWriteEnabled || !state.routeReceipt) return;
+    if (!window.confirm("등급별 실행 경로를 저장하시겠습니까? 다음 Chat · Claw · B66 요청부터 실제 모델 선택이 변경됩니다.")) return;
+    const receipt = state.routeReceipt;
+    $("routeApplyBtn").disabled = true;
+    try {
+      const data = await getJSON("/api/admin/models/route-apply", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({confirmation_receipt: receipt}),
+      });
+      if (data.persisted !== true || data.runtime_enforced !== true) {
+        throw new Error("invalid_route_commit");
+      }
+      await load();
+      alertMessage("실행 경로 리비전 " + data.revision + " 저장 완료 · 다음 요청부터 적용됩니다", "success");
+    } catch (err) {
+      clearRoutePreview();
+      alertMessage("실행 경로 저장 실패: " + String(err.message));
+    } finally {
+      $("routeApplyBtn").disabled = false;
+    }
+  }
+
   function renderPreview(result) {
     const root = $("previewResult");
     root.replaceChildren();
     root.className = "preview";
     root.hidden = false;
     root.append(node("strong", "✓ 변경안 검증 완료"),
-      node("small", state.writeEnabled ? "아직 저장되지 않았습니다 · 제품 실행 경로 미적용" : "저장 및 운영 반영 없음"));
+      node("small", state.writeEnabled ? "아직 저장되지 않았습니다 · 허용·차단 원장 전용, 실행 경로 미적용" : "저장 및 운영 반영 없음"));
     const list = node("ul");
     for (const item of (result.diff || result.targets || [])) {
       const product = item.product || item.product_id;
@@ -361,14 +607,15 @@
       $("catalogStatus").textContent = complete ?
         "ON " + state.catalog.filter((m) => m.b14_enabled && !m.owner_excluded).length +
         " · OFF " + state.catalog.filter((m) => !m.b14_enabled).length : "일부 목록";
-      $("modeBadge").textContent = state.writeEnabled ? "정책 저장 가능" : "미리보기 전용";
+      updateModeBadge();
       $("policyHistory").hidden = !state.writeEnabled;
       $("writeNote").firstChild.textContent = state.writeEnabled ?
-        "저장된 정책도 제품 실행에는 아직 적용되지 않습니다. " :
+        "허용·차단 규칙은 저장 원장에만 기록되며 실행 경로에는 아직 적용되지 않습니다. " :
         "미리보기 단계에서는 설정이 바뀌지 않습니다. ";
       renderCatalog();
       renderSources();
       renderPlacement();
+      await loadRoutes();
       if (state.writeEnabled) await loadAudit();
     } catch (err) {
       if (seq !== state.pendingRequest) return;
@@ -381,6 +628,9 @@
       $("modelList").replaceChildren(node("p", "조회 가능한 모델이 없습니다.", "placeholder"));
       $("modelPlacement").replaceChildren(node("p", "상태를 확인할 수 없습니다.", "placeholder"));
       $("sourceList").replaceChildren(node("p", "접근할 수 없습니다.", "placeholder"));
+      $("routeStatus").textContent = "확인 불가";
+      $("routeTable").replaceChildren(node("p", "상태를 확인할 수 없습니다.", "placeholder"));
+      $("routeEvents").replaceChildren(node("small", "이력 조회 불가"));
       alertMessage(code === "authentication_required" ? "로그인 후 이용할 수 있습니다." :
         code === "global_model_admin_forbidden" ? "중앙 관리자 권한이 없습니다." :
         code === "central_admin_not_configured" ? "중앙 관리자 권한이 아직 설정되지 않았습니다." :
@@ -410,7 +660,7 @@
 
   async function applyChange() {
     if (!state.writeEnabled || !state.pendingReceipt) return;
-    if (!window.confirm("선택한 중앙 정책을 D1에 저장하시겠습니까? 제품의 실제 모델 실행 정책은 변경되지 않습니다.")) return;
+    if (!window.confirm("선택한 허용·차단 규칙을 D1 원장에 저장하시겠습니까? 이 원장은 아직 제품 실행에 적용되지 않습니다.")) return;
     const receipt = state.pendingReceipt;
     $("applyBtn").disabled = true;
     try {
@@ -468,6 +718,11 @@
   $("previewBtn").addEventListener("click", preview);
   $("applyBtn").addEventListener("click", applyChange);
   $("rollbackPreviewBtn").addEventListener("click", rollbackPreview);
+  $("routeProduct").addEventListener("change", () => { clearRoutePreview(); renderRouteForm(); });
+  $("routeTier").addEventListener("change", () => { clearRoutePreview(); renderRouteForm(); });
+  $("routePreviewBtn").addEventListener("click", () => previewRoute("set"));
+  $("routeResetBtn").addEventListener("click", () => previewRoute("reset"));
+  $("routeApplyBtn").addEventListener("click", applyRoute);
   $("refreshBtn").addEventListener("click", load);
   $("helpBtn").addEventListener("click", () => help("모델 관리자 안내"));
   $("flowInfoBtn").addEventListener("click", () => help("전체 흐름 안내"));
@@ -478,5 +733,6 @@
     if (event.target === $("helpDialog")) $("helpDialog").close();
   });
   renderTargets();
+  renderRouteForm();
   load();
 })();

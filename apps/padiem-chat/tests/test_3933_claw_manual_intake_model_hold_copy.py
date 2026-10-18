@@ -97,11 +97,11 @@ def test_execute_route_refuses_model_unavailable_pre_dispatch_as_tier_unavailabl
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Reproduce the exact server state the user-visible bug came from."""
-    import app.claw_routes as claw_routes
+    import app.central_model_route_runtime as route_runtime
 
     # No executable route for the selected tier -> the route's own pre-dispatch
     # refusal, exactly as a real unrouted tier behaves. Nothing is dispatched.
-    monkeypatch.setattr(claw_routes, "active_route_for", lambda label: None)
+    monkeypatch.setattr(route_runtime, "active_route_for", lambda label: None)
     with _client() as client:
         response = client.post(EXECUTE_PATH, json=_payload())
 
@@ -118,13 +118,13 @@ def test_execute_route_projects_the_tier_config_failure_as_tier_unavailable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The sibling pre-dispatch branch projects the same public code family."""
-    import app.claw_routes as claw_routes
+    import app.central_model_route_runtime as route_runtime
     from padiem_control_plane.product_tier_routes import ProductTierRoutesError
 
     def _raise(label):
         raise ProductTierRoutesError("no reviewed tier route table")
 
-    monkeypatch.setattr(claw_routes, "active_route_for", _raise)
+    monkeypatch.setattr(route_runtime, "active_route_for", _raise)
     with _client() as client:
         response = client.post(EXECUTE_PATH, json=_payload())
 

@@ -10,7 +10,12 @@ import json
 from typing import Any, Awaitable, Callable
 
 from starlette.responses import StreamingResponse
-from kagent.p01_adapter import P01AdapterError, P01DispatchClass
+from kagent.p01_adapter import (
+    P01AdapterError,
+    P01DispatchClass,
+    P01_FAILURE_DETAILS,
+    P01_FAILURE_DETAIL_TOOL_STAGES,
+)
 from padiem_ai_core.orchestration_events import OrchestrationEvent
 
 from .claw_general_routes import _MODEL_HOLD_ERROR_CODES, _MODEL_HOLD_USER_MESSAGE
@@ -48,7 +53,16 @@ def _public_failure(exc: P01AdapterError) -> dict[str, str]:
     # public code has to survive here instead of an engine-failure claim.
     if exc.code in _MODEL_HOLD_ERROR_CODES:
         return {"code": "tier_unavailable", "message": _MODEL_HOLD_USER_MESSAGE}
-    return _bounded_engine_failure()
+    failure = _bounded_engine_failure()
+    # #5015: parity with the non-live lane — the same closed vocabulary that
+    # reaches the 502 body as `detail` rides here as a bounded `detail` too,
+    # never raw Engine text.
+    if isinstance(exc.failure_detail, str) and (
+        exc.failure_detail in P01_FAILURE_DETAILS
+        or exc.failure_detail in P01_FAILURE_DETAIL_TOOL_STAGES
+    ):
+        return {**failure, "detail": exc.failure_detail}
+    return failure
 
 
 def live_claw_sse(
@@ -146,14 +160,26 @@ def live_claw_sse(
                     terminal_class = "proven_not_dispatched"
                 else:
                     terminal_class = "verified_failure"
+                # #5015: bounded identifiers only — the adapter code and the
+                # reviewed failure detail, never Engine text or attributes.
+                print(
+                    "claw_live_adapter_failure"
+                    f" code={exc.code} detail={exc.failure_detail}"
+                    f" dispatch={exc.dispatch_class}",
+                    flush=True,
+                )
                 await queue.put(("error", (_public_failure(exc), terminal_class)))
             except asyncio.CancelledError:
                 _clear_reservation()
                 raise
-            except Exception:
+            except Exception as exc:
                 _clear_reservation()
                 # Parity with the non-live lane: a bare failure escape from
                 # the trusted adapter is a verified failure, not a strand.
+                print(
+                    f"claw_live_unhandled_failure type={type(exc).__name__}",
+                    flush=True,
+                )
                 await queue.put(("error", (_bounded_engine_failure(), "verified_failure")))
             finally:
                 _clear_reservation()

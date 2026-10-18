@@ -50,6 +50,7 @@ from test_local_agent_broker_text_result_race_4139 import (  # noqa: E402  (test
 from local_agent_broker_text_results import TEXT_RESULT_DEVICE_ROUTE  # noqa: E402
 
 from kagent.local_agent_meshcentral_private_reader import (  # noqa: E402
+    MAX_READ_ENVELOPE_BYTES,
     MeshCentralVerifiedTextReader,
 )
 from kagent.local_agent_secure_transport import (  # noqa: E402
@@ -115,10 +116,13 @@ class FakeMeshCentralPort:
         self.payload = payload
         self.calls: list[dict] = []
 
-    def read_bytes(self, *, node_ref, file_path, timeout_seconds):
+    def read_bytes(
+        self, *, node_ref, file_path, timeout_seconds,
+        max_bytes=MAX_READ_ENVELOPE_BYTES,
+    ):
         self.calls.append({
             "node_ref": node_ref, "file_path": file_path,
-            "timeout_seconds": timeout_seconds,
+            "timeout_seconds": timeout_seconds, "max_bytes": max_bytes,
         })
         return self.payload
 
@@ -207,6 +211,7 @@ def test_live_meshcentral_bytes_reach_the_original_conversation_exactly_once():
     assert last.append is False
     assert history.appends == 1
     assert len(port.calls) == 1, "one live read produced the one delivered body"
+    assert port.calls[0]["max_bytes"] == MAX_READ_ENVELOPE_BYTES
     states = [call["state"] for call in transport.calls]
     assert states == ["pending", "content", "content"], states
     assert transport.calls[2] == transport.calls[1], "replay is the identical body"

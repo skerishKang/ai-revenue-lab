@@ -91,6 +91,32 @@
           </section>
         </div>
 
+        <section class="panel route-editor" aria-labelledby="routeEditorHeading">
+          <div class="section-head"><h2 id="routeEditorHeading">등급별 실행 경로</h2><span id="routeStatus" class="tiny-status">확인 중</span></div>
+          <p class="route-note">Chat · Claw · B66이 실제로 호출할 기본 모델과 자동 폴백입니다. 저장하면 다음 요청부터 서버 실행 경로에 적용됩니다.</p>
+          <div class="route-form">
+            <div class="setting-item"><label for="routeProduct">제품</label><select id="routeProduct" aria-label="경로 제품"></select></div>
+            <div class="setting-item"><label for="routeTier">회원 등급</label><select id="routeTier" aria-label="경로 회원 등급">
+              <option value="FREE">Free</option><option value="PLUS">Plus</option>
+              <option value="PRO">Pro</option><option value="MAX">Max</option>
+            </select></div>
+            <div class="setting-item"><label for="routePrimary">기본 모델</label><select id="routePrimary" aria-label="기본 모델"></select></div>
+            <div class="setting-item"><label for="routeFallback">자동 폴백</label><select id="routeFallback" aria-label="자동 폴백 모델"><option value="">없음</option></select></div>
+            <label class="route-toggle"><input type="checkbox" id="routeEnabled" checked> 경로 사용</label>
+          </div>
+          <div class="route-actions">
+            <button type="button" id="routePreviewBtn" class="btn">변경안 미리보기</button>
+            <button type="button" id="routeResetBtn" class="btn">정적 기본값 복원</button>
+          </div>
+          <div id="routePreviewResult" class="preview" aria-live="polite" hidden></div>
+          <button type="button" id="routeApplyBtn" class="btn primary" hidden>확인 후 실행 경로 저장</button>
+          <div id="routeTable" class="route-table" aria-live="polite"></div>
+          <details class="route-history" id="routeHistory">
+            <summary>경로 변경 이력</summary>
+            <div id="routeEvents" aria-live="polite"></div>
+          </details>
+        </section>
+
         <section class="panel position-panel" aria-labelledby="placementHeading">
           <div class="section-head"><h2 id="placementHeading">위치별 상태</h2><span class="muted">선택한 모델 기준</span></div>
           <div id="modelPlacement" class="placement-grid"><p class="placeholder">모델을 선택하면 위치별 상태가 표시됩니다.</p></div>
@@ -111,8 +137,10 @@
     <div class="help-body" id="helpContent">
       <h3>화면 사용법</h3>
       <p>B14에서 조회 가능한 모델을 선택하고, 변경할 제품·회원 등급·허용 방식을 고른 뒤 변경안을 검토합니다.</p>
-      <h3>미리보기와 실제 적용</h3>
-      <p>변경안은 확인 뒤 중앙 D1 정책 원장에 저장할 수 있습니다. 단, 제품 실행 경로에 연결되지 않은 정책은 실제 모델 호출에 영향을 주지 않습니다.</p>
+      <h3>등급별 실행 경로</h3>
+      <p>제품·등급별 기본 모델과 자동 폴백을 지정합니다. 저장된 경로는 Chat · Claw · B66의 다음 요청부터 서버 실행 경로에 적용됩니다. 경로를 사용하지 않음으로 저장하면 해당 등급은 모델을 실행하지 않습니다.</p>
+      <h3>허용·차단 규칙과의 차이</h3>
+      <p>허용·차단 규칙은 D1 저장 원장이며 아직 제품 실행 경로에 연결되지 않았습니다. 실제 실행 모델은 위의 등급별 실행 경로가 결정합니다.</p>
       <h3>상태 아이콘</h3>
       <p>● 조회됨: 해당 정책을 확인함. ◌ 미연결: 아직 정보 소스가 연결되지 않음. ⊘ 차단: 실제 조회된 정책이 해당 모델을 차단함.</p>
       <h3>모델 목록 기준</h3>

@@ -108,7 +108,9 @@ def test_binding_report_matches_expected_state():
         # Chat uses its own OAuth and Grafana secret bindings, not STT provider keys.
         # #4139: the two Oracle Mesh Secrets Store references are Chat's own
         # (names only, same store); they add no provider key to this Worker.
+        # #5050: the Claw Engine desktop proof binding is also Chat-owned.
         "chat_worker_secret_bindings": [
+            "CLAW_ENGINE_DESKTOP_SECRET",
             "ORACLE_MESH_CHANNEL_SECRET",
             "ORACLE_MESH_OWNERSHIP_MAP",
             "PADIEM_EXLAB_API_KEY",

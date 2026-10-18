@@ -28,11 +28,15 @@
       error.message === "unauthorized" || error.message === "operator_forbidden");
   }
 
-  async function req(path) {
+  async function req(path, options = {}) {
     const r = await fetch(API + path, {
       credentials: "same-origin",
       cache: "no-store",
-      headers: { Accept: "application/json" }
+      method: options.method || "GET",
+      headers: options.body
+        ? { Accept: "application/json", "Content-Type": "application/json" }
+        : { Accept: "application/json" },
+      ...(options.body ? { body: JSON.stringify(options.body) } : {})
     });
     const payload = await r.json().catch(() => ({}));
     if (!r.ok || payload.ok !== true) {
@@ -73,8 +77,54 @@
     addTerm(dl, "결정 시각", candidate.decided_at);
     card.append(dl);
     const note = document.createElement("p");
-    note.textContent = "승인·거부 기능은 현재 준비 중입니다.";
+    note.textContent = "승인 전 고객·견적서 이름·요청 ID를 확인하세요. 서버가 원본 무결성과 계정 배정을 최종 검증합니다.";
     card.append(note);
+    if (candidate.status === "pending" && candidate.candidate_id) {
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      for (const action of ["approve", "reject"]) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = action === "approve" ? "승인" : "거부";
+        if (action === "reject") button.className = "secondary";
+        button.addEventListener("click", async () => {
+          const target = safeText(candidate.candidate_id);
+          const summary = safeText(candidate.skill_name) + " / " + safeText(candidate.user_id);
+          if (!window.confirm(summary + "\n요청 " + target + "을(를) " + (action === "approve" ? "승인" : "거부") + "하시겠습니까?")) return;
+          let reason = null;
+          if (action === "reject") {
+            reason = window.prompt("거부 사유(200자 이내)", "") ;
+            if (reason === null) return;
+            if (reason.trim().length > 200) {
+              statusLine.textContent = "거부 사유는 200자 이하여야 합니다.";
+              return;
+            }
+          }
+          for (const control of actions.querySelectorAll("button")) control.disabled = true;
+          try {
+            await req("/saved-skill-candidates/" + encodeURIComponent(target) + "/decision", {
+              method: "POST",
+              body: action === "approve"
+                ? { action: "approve" }
+                : { action: "reject", rejection_reason: reason.trim() }
+            });
+            detail.replaceChildren();
+            await loadList();
+            statusLine.textContent = "요청 " + target + "의 " + (action === "approve" ? "승인" : "거부") + " 처리가 완료됐습니다.";
+          } catch (error) {
+            if (revoked(error)) {
+              denyAccess();
+              return;
+            }
+            statusLine.textContent = "승인 결정 실패: " + safeText(error.message);
+          } finally {
+            for (const control of actions.querySelectorAll("button")) control.disabled = false;
+          }
+        });
+        actions.append(button);
+      }
+      card.append(actions);
+    }
     detail.append(card);
   }
 

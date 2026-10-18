@@ -132,10 +132,18 @@ async def central_model_admin_me(request: Request) -> JSONResponse:
     denied = await _central_admin(request)
     if denied is not None:
         return denied
-    write_ready = (isinstance(getattr(request.app.state, "central_model_policy_write_key", None), bytes)
+    key = getattr(request.app.state, "central_model_policy_write_key", None)
+    write_ready = (isinstance(key, bytes)
                    and callable(getattr(getattr(request.app.state, "central_model_policy_store", None), "commit", None)))
+    route_store = getattr(request.app.state, "central_model_route_store", None)
+    route_write_ready = (
+        isinstance(key, bytes) and len(key) >= 32
+        and callable(getattr(route_store, "commit", None))
+        and callable(getattr(route_store, "snapshot", None))
+    )
     return JSONResponse(
         {"ok": True, "admin": True, "write_enabled": write_ready,
+         "routes_write_enabled": route_write_ready,
          "authority": "global_model_admin_only"},
         headers=_NO_STORE,
     )
@@ -231,6 +239,37 @@ async def central_model_admin_snapshot(request: Request) -> JSONResponse:
                    and products["central"]["status"] == "stored_only"
                    and callable(getattr(central_store, "commit", None)))
     products["central"]["write_enabled"] = write_ready
+
+    # #4428: per-grade routes are the only central policy read at dispatch.
+    # Their absence is reported as unavailable, never as an empty success.
+    route_store = getattr(request.app.state, "central_model_route_store", None)
+    route_read = getattr(route_store, "snapshot", None)
+    routes: dict[str, Any] = {"status": "not_wired", "runtime_enforced": False}
+    if callable(route_read):
+        try:
+            from padiem_control_plane.model_tier_routes import TierRouteSnapshot
+            value = route_read("padiem-global")
+            snapshot = (await value if inspect.isawaitable(value) else value)
+            if isinstance(snapshot, TierRouteSnapshot):
+                routes = {
+                    "status": "connected", "source": "central_model_route_d1",
+                    "revision": snapshot.revision,
+                    "runtime_enforced": True,
+                    "routes": [row.public() for row in snapshot.routes],
+                }
+                for product in ("chat", "claw"):
+                    products[product] = {
+                        "status": "connected", "source": "central_model_route_d1",
+                        "revision": snapshot.revision, "runtime_enforced": True,
+                    }
+                products["b66"]["route_runtime_enforced"] = True
+            else:
+                routes = {"status": "unavailable", "runtime_enforced": False}
+        except Exception:
+            # Migration 050 may not be applied yet; runtime keeps the static
+            # product contract and the operator sees an unavailable ledger.
+            routes = {"status": "unavailable", "runtime_enforced": False,
+                      "reason": "central_model_route_migration_or_store_unavailable"}
     return JSONResponse({
         "ok": True, "mode": "stored_only" if write_ready else "read_only",
         "write_enabled": write_ready, "policy_apply_enabled": False,
@@ -245,6 +284,8 @@ async def central_model_admin_snapshot(request: Request) -> JSONResponse:
             "models": models,
         },
         "products": products,
+        "routes": routes,
+        "routes_runtime_enforced": routes.get("runtime_enforced") is True,
         "tiers": list(TIERS),
         "product_ids": list(PRODUCTS),
         "flow": ["central_control_plane", "product_policy", "b14_model_dispatch"],

@@ -483,6 +483,7 @@ class ToolRuntime:
                 status=status,
                 duration_ms=duration_ms,
                 error_class=error_class,
+                error_code=code,
             ),
         )
 

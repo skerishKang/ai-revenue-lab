@@ -236,6 +236,10 @@ def test_deep_research_uses_engine_owned_planner_and_core_limits() -> None:
     assert result.body["research"]["planner_fallback"] is False
     assert len(execution.requests) == 2
     assert execution.requests[0].agent.id == "engine-research-planner"
+    assert all(
+        request.agent.model_policy["model"] == "test/route"
+        for request in execution.requests
+    ), "planning and synthesis must retain the same explicit request model"
     assert execution.requests[0].agent.allowed_tools == ()
     assert execution.requests[0].agent.max_steps == 1
     assert execution.requests[1].agent.id == "reference-research-agent"
