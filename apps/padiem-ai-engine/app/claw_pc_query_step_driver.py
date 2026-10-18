@@ -60,7 +60,9 @@ async def _signed_chat_call(*, service, request_factory, secret, subject_id, run
         status = int(response.status)
         data = json.loads(await response.text())
     except Exception as exc:
+        print("pc_query_chat_call=transport_error", flush=True)
         raise ToolHandlerError("pc_query_unavailable", "PC query outcome unavailable; do not replay") from exc
+    print(f"pc_query_chat_call status={status} ok={data.get('ok') if isinstance(data, dict) else None}", flush=True)
     if status != 200 or not isinstance(data, dict) or data.get("ok") is not True:
         raise ToolHandlerError("pc_query_denied", "PC query was denied or failed; no fallback execution")
     return data
@@ -77,6 +79,7 @@ def _make_query_drives_handler(*, service, request_factory, secret, endpoint_url
 
     async def query_drives(arguments):
         owner = _PC_QUERY_OWNER.get()
+        print(f"pc_query_owner_present={bool(isinstance(owner, tuple) and len(owner) == 2)}", flush=True)
         if not isinstance(owner, tuple) or len(owner) != 2 or not all(isinstance(v, str) and v for v in owner):
             raise ToolHandlerError("pc_query_admission_required", "Verified owner run is required")
         dispatched = await _signed_chat_call(service=service, request_factory=request_factory,
