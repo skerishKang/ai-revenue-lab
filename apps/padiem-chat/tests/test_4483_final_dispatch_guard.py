@@ -13,11 +13,6 @@ import json
 
 import httpx
 import pytest
-from padiem_control_plane.model_assignment_policy import (
-    ModelChange,
-    ModelPolicySnapshot,
-)
-
 from app.auth_routes import create_session_token
 from app.b14_client import B14Client, ChatRuntimeError
 from app.central_model_final_dispatch_guard import (
@@ -38,6 +33,10 @@ from app.final_dispatch_guard_wiring import (
     create_guard_from_request,
 )
 from app.model_policy import request_tier_context
+from padiem_control_plane.model_assignment_policy import (
+    ModelChange,
+    ModelPolicySnapshot,
+)
 
 MODEL = "test-provider/model-a"
 OTHER = "test-provider/model-b"
@@ -595,12 +594,16 @@ class _WiringRequest:
 
 
 class _WiringPolicyStore:
-    def __init__(self, *, revision=1, tier="MAX", failure=False):
+    def __init__(self, *, revision=1, tier="MAX", failure=False, rules=None):
         self.revision = revision
         self.failure = failure
         self.rules = (
-            ModelChange("central", tier, MODEL, "allow"),
-            ModelChange("chat", tier, MODEL, "allow"),
+            rules
+            if rules is not None
+            else (
+                ModelChange("central", tier, MODEL, "allow"),
+                ModelChange("chat", tier, MODEL, "allow"),
+            )
         )
         self.calls = []
 
@@ -682,6 +685,29 @@ def test_create_guard_returns_none_for_invalid_policy_snapshot():
     with request_tier_context("max"):
         guard = asyncio.run(create_guard_from_request(
             _WiringRequest(), MODEL, _InvalidStore(), _WiringCatalog(),
+        ))
+    assert guard is None
+
+
+def test_create_guard_stays_off_with_zero_policy_rules():
+    """#4483 staged rollout: an empty ledger must not deny current customers."""
+    store = _WiringPolicyStore(rules=())
+    with request_tier_context("max"):
+        guard = asyncio.run(create_guard_from_request(
+            _WiringRequest(), MODEL, store, _WiringCatalog(),
+        ))
+    assert guard is None
+    assert store.calls == [GLOBAL_WORKSPACE]
+
+
+def test_create_guard_stays_off_when_only_central_rules_exist():
+    """A product with no explicit rule has not opted in yet."""
+    store = _WiringPolicyStore(
+        rules=(ModelChange("central", "MAX", MODEL, "allow"),),
+    )
+    with request_tier_context("max"):
+        guard = asyncio.run(create_guard_from_request(
+            _WiringRequest(), MODEL, store, _WiringCatalog(),
         ))
     assert guard is None
 
