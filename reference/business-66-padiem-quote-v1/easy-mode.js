@@ -1033,7 +1033,7 @@
         if (result && result.code === "model_selection_required") {
           // The live picker is the shell's grade select; the aria-label query
           // is kept only as a fallback for older shells.
-          const picker = document.getElementById("padiemQuoteModelSelect") ||
+          const picker = document.querySelector('select[id$="QuoteModelSelect"]') ||
             document.querySelector('select[aria-label="사용할 AI 모델"]');
           const unavailable = !picker || picker.disabled || picker.options.length <= 1;
           addMessage("assistant", unavailable
