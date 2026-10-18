@@ -1031,7 +1031,10 @@
         }
         // Retain the user's quotation text when a model has not yet been selected.
         if (result && result.code === "model_selection_required") {
-          const picker = document.querySelector('select[aria-label="사용할 AI 모델"]');
+          // The live picker is the shell's grade select; the aria-label query
+          // is kept only as a fallback for older shells.
+          const picker = document.querySelector('select[id$="QuoteModelSelect"]') ||
+            document.querySelector('select[aria-label="사용할 AI 모델"]');
           const unavailable = !picker || picker.disabled || picker.options.length <= 1;
           addMessage("assistant", unavailable
             ? "사용 가능한 AI 모델 목록을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요."

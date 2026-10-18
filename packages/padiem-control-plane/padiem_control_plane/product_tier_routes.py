@@ -50,6 +50,12 @@ class ProductTierRoutesError(ValueError):
 
 FREE_PRIMARY_B14_MODEL_ID = "opencode-go/beam-free"
 FREE_FALLBACK_B14_MODEL_ID = "opencode-go/longcat-2.5-preview-free"
+# #5009: Plus/Pro/Max default. Registered and enabled in B14
+# (b14_models.json) and already the verified administrator-only Chat model,
+# so the provider path is proven; the per-grade provider live call is still
+# pending and tracked by each route's evidence.
+MUSE_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
+MUSE_B14_UPSTREAM_MODEL = "muse-spark-1.3-contributor"
 TIER_FALLBACK_B14_MODELS = {
     "max": ("opencode-go/longcat-2.5-preview-free", "opencode-go/muse-spark-1.3-contributor"),
     "pro": ("opencode-go/longcat-2.5-preview-free", "google/gemma-4-31b-it"),
@@ -241,12 +247,23 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PLUS,
         routes=(
             ProductTierRoute(
-                route_id="plus.beam.v1", status=ProductRouteStatus.EXECUTABLE,
-                model_family="beam", provider_id="opencode-go",
-                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
+                route_id="plus.muse-spark.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="muse-spark", provider_id="opencode-go",
+                model_id=MUSE_B14_MODEL_ID, upstream_model=MUSE_B14_UPSTREAM_MODEL,
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_B14_CREDENTIAL_11",
-                evidence="Owner four-tier Beam primary decision, 2026-10-18.",
+                evidence="Owner #5009 Plus default Muse Spark decision 2026-10-18; per-grade provider live call pending.",
+            ),
+            ProductTierRoute(
+                route_id="plus.beam.v1", status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="beam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
+                hold_reason=(
+                    "Superseded as the Plus default by owner decision #5009 "
+                    "(Muse Spark primary). Retained as inactive history, not a "
+                    "current grade route."
+                ),
+                evidence="Owner four-tier Beam primary decision, 2026-10-18; superseded by #5009.",
             ),
             ProductTierRoute(
                 route_id="plus.hold.v1",
@@ -322,12 +339,23 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PRO,
         routes=(
             ProductTierRoute(
-                route_id="pro.beam.v1", status=ProductRouteStatus.EXECUTABLE,
-                model_family="beam", provider_id="opencode-go",
-                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
+                route_id="pro.muse-spark.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="muse-spark", provider_id="opencode-go",
+                model_id=MUSE_B14_MODEL_ID, upstream_model=MUSE_B14_UPSTREAM_MODEL,
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_B14_CREDENTIAL_11",
-                evidence="Owner four-tier Beam primary decision, 2026-10-18.",
+                evidence="Owner #5009 Pro default Muse Spark decision 2026-10-18; per-grade provider live call pending.",
+            ),
+            ProductTierRoute(
+                route_id="pro.beam.v1", status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="beam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
+                hold_reason=(
+                    "Superseded as the Pro default by owner decision #5009 "
+                    "(Muse Spark primary). Retained as inactive history, not a "
+                    "current grade route."
+                ),
+                evidence="Owner four-tier Beam primary decision, 2026-10-18; superseded by #5009.",
             ),
             ProductTierRoute(
                 route_id="pro.hold.v1",
@@ -398,12 +426,24 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.MAX,
         routes=(
             ProductTierRoute(
-                route_id="max.beam.v1", status=ProductRouteStatus.EXECUTABLE,
-                model_family="beam", provider_id="opencode-go",
-                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
+                route_id="max.muse-spark.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="muse-spark", provider_id="opencode-go",
+                model_id=MUSE_B14_MODEL_ID, upstream_model=MUSE_B14_UPSTREAM_MODEL,
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_B14_CREDENTIAL_11",
-                evidence="Owner four-tier Beam primary decision, 2026-10-18.",
+                evidence="Owner #5009 Max default Muse Spark decision 2026-10-18; per-grade provider live call pending.",
+            ),
+            ProductTierRoute(
+                route_id="max.beam.v1", status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="beam", provider_id="opencode-go",
+                model_id=None, upstream_model="beam-free",
+                hold_reason=(
+                    "Superseded as the Max default by owner decision #5009 "
+                    "(Muse Spark primary). Retained as inactive history, not a "
+                    "current grade route. The Max HOLD identity stays the Max "
+                    "hold sentinel, so this entry names no model id."
+                ),
+                evidence="Owner four-tier Beam primary decision, 2026-10-18; superseded by #5009.",
             ),
             ProductTierRoute(
                 route_id="max.hold.qwen.v1",

@@ -612,7 +612,8 @@ class B14Client:
         # Stream gateway forbids mid-stream model replacement. For the owner-
         # selected tier pair primary, finish a bounded B14 completion and emit
         # its answer as one SSE delta so a recoverable failure can use its
-        # fallback. beam-free is the current primary; the manual
+        # fallback. beam-free is the Free-tier primary (#5009 keeps it there;
+        # Plus/Pro/Max primaries are Muse Spark); the manual
         # single-attempt stream-preview structurally rejects it (owner-tier
         # routes always carry fallback candidates), so it must not reach it.
         # cat-jam-free is policy-disabled and no Chat path selects it.

@@ -119,7 +119,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_plus_policy():
         skill = get_skill()
         assert seen_url == "https://b14.internal" + MANUAL_PATH
         assert seen["stream"] is True
-        assert seen["model"] == REQUEST_MODEL == LOW_B14_MODEL_ID
+        assert seen["model"] == REQUEST_MODEL == DEFAULT_B14_MODEL_ID
         assert seen["business14"]["required_capabilities"] == ["free"]
         assert seen["business14"]["allow_external_fallback"] is False
         assert seen["business14"]["max_attempts"] == 1
@@ -160,7 +160,7 @@ def test_private_compat_stream_pro_alias_fails_closed_before_manual_route():
                 [{"role": "user", "content": "/pro �ѱ���� ������"}]
             ):
                 pass
-        assert calls == 1
+        assert calls == 0
 
     asyncio.run(scenario())
 

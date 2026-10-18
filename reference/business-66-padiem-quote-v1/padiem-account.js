@@ -322,7 +322,7 @@
       if (!result.response.ok || !result.data || result.data.ok !== true ||
           !Array.isArray(result.data.tiers)) return;
       const safeId = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
-      const knownTiers = new Set(["free", "plus", "pro", "max"]);
+      const knownTiers = new Set(["free", "plus", "pro", "max", "admin"]);
       const records = result.data.tiers.filter((row) =>
         row && knownTiers.has(row.tier) &&
         typeof row.model_id === "string" && safeId.test(row.model_id) &&

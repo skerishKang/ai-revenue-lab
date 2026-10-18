@@ -75,12 +75,15 @@ def test_admin_request_context_resolves_exact_muse_model() -> None:
     assert current_request_tier_id() is None
 
 
-def test_admin_model_stays_outside_the_product_tier_executable_set() -> None:
+def test_admin_model_is_pinned_and_gate_kept_even_as_tier_executable() -> None:
     assert MUSE_MODEL_ID in (
         __import__("app.model_policy", fromlist=["MODEL_CAPABILITIES"]).MODEL_CAPABILITIES
     )
-    assert model_policy_is_executable(MUSE_MODEL_ID) is False
-    assert MUSE_MODEL_ID not in EXECUTABLE_B14_MODEL_IDS
+    # #5009: Muse Spark is now the Plus/Pro/Max tier executable, so it belongs
+    # to the product set; the administrator tier is still pinned by the
+    # verified global admin gate, never by tier membership alone.
+    assert model_policy_is_executable(MUSE_MODEL_ID) is True
+    assert MUSE_MODEL_ID in EXECUTABLE_B14_MODEL_IDS
 
 
 def test_verified_admin_passes_the_chat_gate() -> None:

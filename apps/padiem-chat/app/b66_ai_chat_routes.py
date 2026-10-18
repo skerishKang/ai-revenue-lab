@@ -66,6 +66,12 @@ from .b66_quote_routes import (
     _owner,
     _reasoning_transport_supported,
 )
+from .b66_grade_models import (
+    B66_ADMIN_GRADE,
+    B66_GRADES,
+    b66_grade_model_id,
+    b66_verified_admin,
+)
 from .b66_reasoning_level import (
     DEFAULT_REASONING_LEVEL,
     reasoning_parameter_for_request,
@@ -261,13 +267,18 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
     model_id = data.get("model_id") or FREE_PRIMARY_B14_MODEL_ID
     requested_tier = data.get("tier")
     if requested_tier is not None:
-        tiers = ("free", "plus", "pro", "max")
-        if not isinstance(requested_tier, str) or requested_tier not in tiers:
+        if not isinstance(requested_tier, str) or requested_tier not in B66_GRADES + (B66_ADMIN_GRADE,):
             return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-        known_member_tier = await verified_member_grade(request, uid, access)
-        if tiers.index(requested_tier) > tiers.index(known_member_tier):
-            return _error(403, "tier_not_available", "현재 이용 등급 이하의 AI 등급을 선택해 주세요.")
-        if model_id != FREE_PRIMARY_B14_MODEL_ID:
+        if requested_tier == B66_ADMIN_GRADE:
+            if not await b66_verified_admin(request, uid):
+                return _error(403, "admin_forbidden", "관리자 전용 기능입니다.")
+            expected_model = b66_grade_model_id("max")
+        else:
+            known_member_tier = await verified_member_grade(request, uid, access)
+            if B66_GRADES.index(requested_tier) > B66_GRADES.index(known_member_tier):
+                return _error(403, "tier_not_available", "현재 이용 등급 이하의 AI 등급을 선택해 주세요.")
+            expected_model = b66_grade_model_id(requested_tier)
+        if model_id != expected_model:
             return _error(400, "invalid_model_id", "등급 선택은 기본 모델을 사용합니다.")
     messages = data.get("messages")
     reasoning_level = data.get("reasoning_level")

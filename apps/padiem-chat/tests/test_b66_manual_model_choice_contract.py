@@ -116,22 +116,43 @@ def test_dual_b66_ui_sends_exact_user_choice_and_no_implicit_default():
 
 
 
-def test_b66_customer_dropdown_shows_four_grades_not_provider_names():
+def test_b66_customer_dropdown_shows_grades_with_grade_models_not_provider_names():
     from app.b66_quote_routes import b66_quote_models
     from app.b66_member_admin import _TIERS
     assert _TIERS == frozenset(("FREE", "PLUS", "PRO", "MAX"))
     client = _client(_Store(), _Interpreter())
-    class CatJam:
+    # No member store: mock runtime resolves the max grade, so every
+    # available grade row is listed.
+
+    class BeamOnly:
         async def list_selectable_models(self):
-            return [{"model_id": "opencode-go/beam-free", "name": "Cat Jam"}]
-    client.app.state.b66_quote_model_resolver = CatJam()
+            return [{"model_id": "opencode-go/beam-free", "name": "Beam"}]
+    client.app.state.b66_quote_model_resolver = BeamOnly()
+    only_free = client.get("/api/b66/quote/models")
+    assert only_free.status_code == 200
+    assert [t["tier"] for t in only_free.json()["tiers"]] == ["free"]
+    assert [t["name"] for t in only_free.json()["tiers"]] == ["시지아이 Free"]
+    assert [t["model_id"] for t in only_free.json()["tiers"]] == ["opencode-go/beam-free"]
+
+    class BeamAndMuse:
+        async def list_selectable_models(self):
+            return [
+                {"model_id": "opencode-go/beam-free", "name": "Beam"},
+                {"model_id": "opencode-go/muse-spark-1.3-contributor", "name": "Muse Spark"},
+            ]
+    client.app.state.b66_quote_model_resolver = BeamAndMuse()
     response = client.get("/api/b66/quote/models")
     assert response.status_code == 200
     data = response.json()
     assert [t["tier"] for t in data["tiers"]] == ["free", "plus", "pro", "max"]
     assert [t["name"] for t in data["tiers"]] == [
-        "Padiem Free", "Padiem Plus", "Padiem Pro", "Padiem Max"]
-    assert {t["model_id"] for t in data["tiers"]} == {"opencode-go/beam-free"}
+        "시지아이 Free", "시지아이 Plus", "시지아이 Pro", "시지아이 Max"]
+    assert [t["model_id"] for t in data["tiers"]] == [
+        "opencode-go/beam-free",
+        "opencode-go/muse-spark-1.3-contributor",
+        "opencode-go/muse-spark-1.3-contributor",
+        "opencode-go/muse-spark-1.3-contributor",
+    ]
     assert data["default_tier"] == "free"
     root = Path(__file__).resolve().parents[3]
     for path in (root / "apps/padiem-chat/static/b66-quote-runtime.js",
@@ -140,6 +161,58 @@ def test_b66_customer_dropdown_shows_four_grades_not_provider_names():
         assert "response.data.tiers" in source or "result.data.tiers" in source
         assert "selectedTier" in source
         assert "tier: selectedTier" in source
+
+
+class _NoAdmin:
+    async def is_google_admin(self, user_id):
+        return False
+
+    async def runtime_access(self, user_id):
+        return {"status": "approved", "tier": "FREE"}
+
+
+class _VerifiedAdmin:
+    async def is_google_admin(self, user_id):
+        return True
+
+    async def runtime_access(self, user_id):
+        return {"status": "approved", "tier": "MAX"}
+
+
+def test_b66_admin_option_needs_central_verification_and_uses_muse():
+    from app.b66_grade_models import B66_ADMIN_GRADE
+    ordinary = _client(_Store(), _Interpreter())
+    ordinary.app.state.b66_member_admin_store = _NoAdmin()
+    ordinary.app.state.b66_quote_model_resolver = _BeamAndMuse()
+    assert all(t["tier"] != B66_ADMIN_GRADE for t in ordinary.get("/api/b66/quote/models").json()["tiers"])
+    denied = ordinary.post(
+        "/api/b66/quote/interpret",
+        json={"saved_skill_id": SAVED_ID, "message": "synthetic",
+              "tier": B66_ADMIN_GRADE, "model_id": "opencode-go/muse-spark-1.3-contributor"},
+    )
+    assert denied.status_code == 403
+
+    admin = _client(_Store(), _Interpreter())
+    admin.app.state.b66_member_admin_store = _VerifiedAdmin()
+    admin.app.state.b66_quote_model_resolver = _BeamAndMuse()
+    rows = admin.get("/api/b66/quote/models").json()["tiers"]
+    admin_row = next(t for t in rows if t["tier"] == B66_ADMIN_GRADE)
+    assert admin_row["name"] == "Padiem 관리자"
+    assert admin_row["model_id"] == "opencode-go/muse-spark-1.3-contributor"
+
+
+class _BeamAndMuse:
+    async def list_selectable_models(self):
+        return [
+            {"model_id": "opencode-go/beam-free", "name": "Beam"},
+            {"model_id": "opencode-go/muse-spark-1.3-contributor", "name": "Muse Spark"},
+        ]
+
+
+def test_b66_plus_grade_dispatches_muse_not_beam():
+    from app.b66_grade_models import B66_GRADE_MODEL_IDS
+    assert B66_GRADE_MODEL_IDS["plus"] == "opencode-go/muse-spark-1.3-contributor"
+    assert B66_GRADE_MODEL_IDS["free"] == "opencode-go/beam-free"
 
 
 def test_b66_manual_selection_errors_have_readable_korean_messages():

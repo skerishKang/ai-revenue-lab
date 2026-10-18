@@ -24,14 +24,16 @@ from padiem_control_plane.product_tier_routes import (
 )
 
 CAT_JAM = "opencode-go/beam-free"
+MUSE = "opencode-go/muse-spark-1.3-contributor"
 
 
 def test_plus_identity_is_executable_cat_jam_and_space_bunny_is_historical_only() -> None:
     plus = active_route_for(ProductTierLabel.PLUS)
     assert plus is not None
     assert plus.status is ProductRouteStatus.EXECUTABLE
-    assert plus.model_id == DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == CAT_JAM
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset({CAT_JAM})
+    assert plus.model_id == LOW_B14_MODEL_ID == MUSE
+    assert DEFAULT_B14_MODEL_ID == CAT_JAM
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset({CAT_JAM, MUSE})
     bunny = next(
         route for route in get_tier(ProductTierLabel.PLUS).routes
         if route.model_id == "kilo/stealth-space-bunny-alpha"
@@ -47,7 +49,7 @@ def test_plus_chat_executes_cat_jam_and_image_remains_unavailable() -> None:
     default = resolve_model_policy([{"role": "user", "content": "hello"}])
     plus = resolve_tier_policy([{"role": "user", "content": "hello"}], "plus")
     assert default.model_id == CAT_JAM and default.profile == "free"
-    assert plus.model_id == CAT_JAM and plus.profile == "low"
+    assert plus.model_id == MUSE and plus.profile == "low"
 
 
 def test_plus_product_identity_matches_current_executable_route() -> None:
