@@ -55,7 +55,7 @@ def live_claw_sse(
     adapter: Any, run: Any, dispatch_args: dict[str, Any],
     *,
     on_completed: Callable[[str], Awaitable[str | None]] | None = None,
-    on_terminal_without_answer: Callable[[], Awaitable[None]] | None = None,
+    on_terminal_without_answer: Callable[[str], Awaitable[None]] | None = None,
     sources: tuple[dict[str, str], ...] = (),
 ) -> StreamingResponse:
     """Queue backed SSE; upstream gets cancelled if the browser disconnects.
@@ -65,16 +65,20 @@ def live_claw_sse(
     a fabricated HTTP 200 success/AI answer. Quota compensation keeps the
     existing NOT_DISPATCHED vs dispatched/unknown classification.
 
-    ``on_terminal_without_answer`` fires on every terminal that carries no
-    verified answer. ``on_completed`` only ever runs for a verified
-    completion, so without this hook a run staged before dispatch stayed
-    ``pending`` forever on every failure, approval pause and cancellation.
+    ``on_terminal_without_answer(terminal_class)`` fires only on terminals
+    that carry no verified answer AND a proven execution verdict:
+    ``proven_not_dispatched`` (the Engine never received the turn),
+    ``verified_failure`` (Engine itself reported the failure) and
+    ``verified_cancelled``. An approval pause, a browser disconnect and any
+    completion that could not be verified are NOT execution failures — they
+    are never claimed and the staged run stays where its owner can act on it
+    (#5015r). A verified completion still belongs to ``on_completed`` alone.
     """
-    async def settle_terminal_without_answer() -> None:
+    async def settle_terminal_without_answer(terminal_class: str) -> None:
         if on_terminal_without_answer is None:
             return
         try:
-            await on_terminal_without_answer()
+            await on_terminal_without_answer(terminal_class)
         except Exception:
             # Settling history must never break the stream the user reads.
             pass
@@ -87,7 +91,6 @@ def live_claw_sse(
         seen_event_ids: set[str] = set()
         verified_terminal: dict[str, object] | None = None
         terminal_kinds = {"run_completed", "run_failed", "run_cancelled", "approval_paused"}
-        answer_recorded = False
 
         async def report(event: OrchestrationEvent) -> None:
             nonlocal seen, last_sequence, stream_identity, verified_terminal
@@ -135,13 +138,23 @@ def live_claw_sse(
                     await _refund_active_reservation()
                 else:
                     _clear_reservation()
-                await queue.put(("error", _public_failure(exc)))
+                # #5015r: NOT_DISPATCHED is a proven never-sent turn; any
+                # other adapter failure was observed by the trusted adapter
+                # itself. Only these two ever settle a staged run; a genuine
+                # unknown stays unclaimed.
+                if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
+                    terminal_class = "proven_not_dispatched"
+                else:
+                    terminal_class = "verified_failure"
+                await queue.put(("error", (_public_failure(exc), terminal_class)))
             except asyncio.CancelledError:
                 _clear_reservation()
                 raise
             except Exception:
                 _clear_reservation()
-                await queue.put(("error", _bounded_engine_failure()))
+                # Parity with the non-live lane: a bare failure escape from
+                # the trusted adapter is a verified failure, not a strand.
+                await queue.put(("error", (_bounded_engine_failure(), "verified_failure")))
             finally:
                 _clear_reservation()
 
@@ -157,11 +170,20 @@ def live_claw_sse(
                     # run. Forward its bounded terminal BEFORE the error so
                     # Claw recovery can distinguish failed from cancelled.
                     # A withheld run_completed must never be exposed here.
+                    terminal_class = payload[1]
+                    if (verified_terminal is not None
+                            and verified_terminal["kind"] == "run_cancelled"):
+                        terminal_class = "verified_cancelled"
+                    elif (verified_terminal is not None
+                            and verified_terminal["kind"] == "run_failed"):
+                        # A Core-verified failure outranks the adapter's own
+                        # dispatch classification: the run was really sent.
+                        terminal_class = "verified_failure"
                     if (verified_terminal is not None
                             and verified_terminal["kind"] in ("run_failed", "run_cancelled")):
                         yield _frame("p01_event", verified_terminal)
-                    await settle_terminal_without_answer()
-                    yield _frame("error", {"error": payload})
+                    await settle_terminal_without_answer(terminal_class)
+                    yield _frame("error", {"error": payload[0]})
                     return
                 status = payload.projection.status.value
                 if status == "waiting_approval":
@@ -174,25 +196,39 @@ def live_claw_sse(
                         "code": "claw_general_approval_required",
                         "message": "승인이 필요한 요청입니다. Claw 업무 화면에서 진행해 주세요.",
                     }})
-                    await settle_terminal_without_answer()
+                    # #5015r: an approval pause is not a PC execution failure.
+                    # The run keeps its staged state; only the owner consent
+                    # surface can move it forward.
                     return
-                if status != "completed" or not isinstance(payload.answer, str) or not payload.answer:
+                elif status in ("failed", "cancelled") or (
+                    verified_terminal is not None
+                    and verified_terminal["kind"] in ("run_failed", "run_cancelled")
+                ):
                     # A verified failure/cancellation is a real terminal
                     # state even when the final answer is absent. Never turn
                     # an invalid completed answer into a false run_completed.
-                    if (verified_terminal is not None
-                            and verified_terminal["kind"] in ("run_failed", "run_cancelled")):
+                    if verified_terminal is not None and verified_terminal["kind"] != "run_completed":
                         yield _frame("p01_event", verified_terminal)
+                    if status == "cancelled" or (
+                        verified_terminal is not None
+                        and verified_terminal["kind"] == "run_cancelled"
+                    ):
+                        # #5015r: a proven cancellation is not a PC execution
+                        # failure; settle it as the cancellation it is.
+                        await settle_terminal_without_answer("verified_cancelled")
+                    else:
+                        await settle_terminal_without_answer("verified_failure")
                     yield _frame("error", {"error": {
                         "code": "engine_execution_failed", "message": "Engine 실행이 완료되지 않았습니다.",
                     }})
-                    await settle_terminal_without_answer()
                     return
                 if verified_terminal is None or verified_terminal["kind"] != "run_completed":
+                    # #5015r: without a verified terminal this outcome's
+                    # verdict is unknown. Never claim a PC execution failure
+                    # for uncertainty; leave the staged run with its owner.
                     yield _frame("error", {"error": {
                         "code": "engine_execution_failed", "message": "Engine 완료 상태를 확인할 수 없습니다.",
                     }})
-                    await settle_terminal_without_answer()
                     return
                 # One post-completion owner-history projection. The signed
                 # route owns the callback; this SSE relay never mints threads
@@ -205,7 +241,6 @@ def live_claw_sse(
                         # A successful P01 execution cannot become a retryable
                         # error solely because the optional D1 history failed.
                         saved_conversation_id = None
-                answer_recorded = True
                 terminal = {"done": True}
                 if isinstance(saved_conversation_id, str) and saved_conversation_id:
                     terminal["conversation_id"] = saved_conversation_id
@@ -216,10 +251,11 @@ def live_claw_sse(
                 yield _frame("done", terminal)
                 return
         finally:
-            if not answer_recorded:
-                # A stream that ends without a verified answer (browser
-                # disconnect, upstream cancel) must settle the staged run too.
-                await settle_terminal_without_answer()
+            # #5015r: a browser disconnect or upstream cancel says nothing
+            # about whether the PC command ran. Claiming "failed" here would
+            # overwrite a verified completion that raced this cancellation,
+            # so an answer-less stream end stays unclaimed; the guarded
+            # update_claw_run_status keeps any real completion intact.
             if not task.done():
                 task.cancel()
             try:

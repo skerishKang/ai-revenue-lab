@@ -354,19 +354,28 @@ async def _append_staged_claw_answer(
         return False
 
 
-async def _mark_staged_run_failed(request: Request, run_id: str) -> None:
-    """Best-effort truthful terminal state for a staged run with no answer."""
+async def _settle_staged_run_status(request: Request, run_id: str, status: str) -> None:
+    """Best-effort truthful single-row settle for a staged run (#5015r).
+
+    ``update_claw_run_status`` is an atomic guarded write, so an already
+    completed run and an existing result summary are never overwritten.
+    """
     uid = current_user_id(request) if auth_ready(request) else None
     store = getattr(request.app.state, "history_store", None)
     mark = getattr(store, "update_claw_run_status", None)
     if not isinstance(uid, str) or not uid or not callable(mark):
         return
     try:
-        result = mark(uid, run_id, "failed")
+        result = mark(uid, run_id, status)
         if inspect.isawaitable(result):
             await result
     except Exception:
         pass
+
+
+async def _mark_staged_run_failed(request: Request, run_id: str) -> None:
+    """Best-effort truthful terminal state for a staged run with no answer."""
+    await _settle_staged_run_status(request, run_id, "failed")
 
 
 async def _record_completed_claw_result(
@@ -1451,12 +1460,19 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 staged_conversation_id=staged_conversation_id,
             )
 
-        async def after_live_terminal_without_answer() -> None:
-            # The SSE relay only stores a verified answer. A staged run whose
-            # Engine terminal carried no answer therefore has to be settled
-            # here, or it stays ``pending`` forever with no answer shown.
-            if staged_conversation_id is not None:
+        async def after_live_terminal_without_answer(terminal_class: str) -> None:
+            # The SSE relay only settles terminals with a proven execution
+            # verdict (#5015r): proven_not_dispatched / verified_failure
+            # settle as failed, verified_cancelled settles as cancelled.
+            # An approval pause, a browser disconnect and an unverifiable
+            # outcome are not PC execution failures and are never claimed,
+            # so this handler keeps them untouched.
+            if staged_conversation_id is None:
+                return
+            if terminal_class in ("verified_failure", "proven_not_dispatched"):
                 await _mark_staged_run_failed(request, run.run_id)
+            elif terminal_class == "verified_cancelled":
+                await _settle_staged_run_status(request, run.run_id, "cancelled")
 
         return live_claw_sse(
             adapter, run, live_args,
