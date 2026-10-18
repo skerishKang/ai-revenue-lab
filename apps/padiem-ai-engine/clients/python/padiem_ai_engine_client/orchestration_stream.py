@@ -7,6 +7,7 @@ terminal orchestration result before any success is committed to a user.
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import AsyncIterator, Mapping
 from typing import Any
 
@@ -16,11 +17,29 @@ MAX_NDJSON_TERMINAL_LINE_BYTES = 8 * 1024 * 1024
 MAX_NDJSON_LINE_BYTES = 65_536
 MAX_NDJSON_EVENT_COUNT = 128
 
+# #5015: Engine error-line codes are identifiers from a closed vocabulary.
+# Only this shape may cross the fail-closed boundary as evidence; anything
+# else (including free text) is discarded.
+_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
+
+
+def _bounded_engine_error_code(error: object) -> str | None:
+    """The Engine's own bounded stage code from one ``ok:false`` error body.
+
+    The message and every other field stay unread at this transport boundary.
+    """
+    if isinstance(error, Mapping):
+        code = error.get("code")
+        if isinstance(code, str) and _ERROR_CODE_RE.fullmatch(code):
+            return code
+    return None
+
 
 class EngineNdjsonContractError(ValueError):
-    def __init__(self, code: str) -> None:
+    def __init__(self, code: str, *, engine_code: str | None = None) -> None:
         super().__init__(code)
         self.code = code
+        self.engine_code = engine_code
 
 
 async def decode_orchestration_ndjson(
@@ -76,7 +95,14 @@ async def decode_orchestration_ndjson(
                     if not isinstance(record, dict):
                         raise EngineNdjsonContractError("invalid_stream_record")
                     if record.get("ok") is False:
-                        raise EngineNdjsonContractError("engine_stream_error")
+                        # #5015: keep the Engine's own bounded error stage
+                        # code so a tool/admission cause survives this
+                        # fail-closed boundary instead of collapsing into one
+                        # generic contract reason. Never read the message.
+                        raise EngineNdjsonContractError(
+                            "engine_stream_error",
+                            engine_code=_bounded_engine_error_code(record.get("error")),
+                        )
                     if record.get("ok") is not True:
                         raise EngineNdjsonContractError("invalid_stream_record")
                     if set(record) == {"ok", "event"} and isinstance(record["event"], Mapping):

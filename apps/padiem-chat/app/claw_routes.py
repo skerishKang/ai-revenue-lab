@@ -120,6 +120,7 @@ from kagent.p01_adapter import (
     P01_FAILURE_DETAIL_TRANSPORT,
     P01_FAILURE_DETAIL_UNKNOWN,
     P01_FAILURE_DETAILS,
+    P01_FAILURE_DETAIL_TOOL_STAGES,
 )
 from kagent.p01_approval_continuation import (
     OWNER_APPROVAL_DECISIONS,
@@ -217,7 +218,10 @@ _P01_TRANSPORT_ERROR_CODES = frozenset(
 
 def _safe_engine_failure_detail(exc: P01AdapterError) -> str:
     """Project only the closed failure vocabulary to the public route."""
-    if exc.failure_detail in P01_FAILURE_DETAILS:
+    if isinstance(exc.failure_detail, str) and (
+        exc.failure_detail in P01_FAILURE_DETAILS
+        or exc.failure_detail in P01_FAILURE_DETAIL_TOOL_STAGES
+    ):
         return exc.failure_detail
     if isinstance(exc, P01ProjectionError) or exc.code in _P01_CONTRACT_ERROR_CODES:
         return P01_FAILURE_DETAIL_CONTRACT

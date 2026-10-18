@@ -61,6 +61,26 @@ def test_rejects_unsafe_or_incomplete_stream(data, reason):
     assert err.value.code == reason
 
 
+def test_engine_error_line_preserves_only_the_bounded_stage_code():
+    # #5015: the Engine error line names a closed tool/admission stage. Only
+    # the identifier-shaped code may cross the fail-closed boundary; the
+    # message and every other field stay unread.
+    data = wire("event") + (
+        b'{"ok":false,"error":{"code":"pc_query_admission_required",'
+        b'"message":"Owner text","metadata":{"secret":"x"}}}\n'
+    )
+    with pytest.raises(EngineNdjsonContractError) as err:
+        consume(chunks_of(data))
+    assert err.value.code == "engine_stream_error"
+    assert err.value.engine_code == "pc_query_admission_required"
+
+    hostile = wire("event") + b'{"ok":false,"error":{"code":"Owner text; drop table"}}\n'
+    with pytest.raises(EngineNdjsonContractError) as err:
+        consume(chunks_of(hostile))
+    assert err.value.code == "engine_stream_error"
+    assert err.value.engine_code is None
+
+
 class FakeTransport:
     def __init__(self, *, status=200, mime="application/x-ndjson", body=None):
         self.calls = []

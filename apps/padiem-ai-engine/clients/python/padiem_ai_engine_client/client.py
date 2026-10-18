@@ -630,9 +630,15 @@ class PadiemAiEngineClient:
             async for item in decode_orchestration_ndjson(response.chunks):
                 yield item
         except EngineNdjsonContractError as exc:
+            # #5015: carry the Engine's bounded stage code (when present)
+            # alongside the contract reason so callers can attribute the
+            # failure without re-reading any Engine text.
+            metadata: dict[str, Any] = {"reason": exc.code}
+            if exc.engine_code is not None:
+                metadata["engine_code"] = exc.engine_code
             raise PadiemAiEngineClientError(
                 "invalid_engine_stream", "Engine streaming contract failed",
-                metadata={"reason": exc.code},
+                metadata=metadata,
             ) from exc
 
     async def resume_orchestration(self, request: Mapping[str, Any]) -> dict[str, Any]:
