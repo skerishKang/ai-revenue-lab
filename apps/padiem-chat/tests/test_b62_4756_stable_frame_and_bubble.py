@@ -51,13 +51,22 @@ def test_user_turn_has_no_bubble_surface_in_either_state():
     assert any("box-shadow: none !important" in body for body in pinned)
 
 
-def test_user_turn_mirrors_the_answer_typography_per_state():
-    chat = " ".join(blocks_with('[data-state="chat"] .user-message .message-bubble'))
-    claw = " ".join(blocks_with('[data-state="claw"] .user-message .message-bubble'))
-    assert "color: #111a22" in chat
-    assert "font-size: 17px" in chat
-    assert "color: #17212a" in claw
-    assert "font-size: 16px" in claw
+def test_user_turn_mirrors_the_answer_typography_in_both_states():
+    """One thread, one typography.
+
+    This test used to pin two different values — #111a22/17px in Chat and
+    #17212a/16px in Claw — which is precisely the defect the owner reported as
+    "the two conversations look different". A Claw turn is stored in the same
+    conversation row as a Chat turn, so the mirroring must now hold identically
+    in both, and the Claw-only rule must be gone rather than merely unused.
+    """
+    shared = " ".join(
+        blocks_with(':is([data-state="chat"],[data-state="claw"]) .user-message .message-bubble')
+    )
+    assert "color: #111a22" in shared
+    assert "font-size: 17px" in shared
+    claw_only = blocks_with('[data-state="claw"] .user-message .message-bubble')
+    assert claw_only == [], f"a Claw-only bubble rule re-split the thread: {claw_only}"
 
 
 def test_plan4_three_column_grid_and_chip_geometry_stay_pinned():

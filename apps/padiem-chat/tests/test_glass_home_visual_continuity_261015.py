@@ -17,7 +17,10 @@ def test_owner_visual_authority_outweighs_reading_css() -> None:
 
 
 def test_reading_semantics_and_existing_layout_still_available() -> None:
-    assert 'shell.dataset.state==="chat" ? "reading" : "home"' in THEME
+    # Reading is still projected from the explicit shell state, and now also for
+    # a live Claw thread; the shared frame lanes are untouched by that.
+    assert 'if(shell.dataset.state==="chat") return "reading";' in THEME
+    assert 'conv.querySelector("#messageList .message")' in THEME
     assert '--padiem-six-panel-width' in FRAME
     assert '.calendar-view, .connectors-view' in FRAME
     assert '.library-view, .automation-view' in FRAME
