@@ -233,7 +233,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   background: rgba(72,91,108,.72);
   border-radius: 99px;
 }
-.app-shell[data-state="automation"] .automation-view-body { gap: 0; }
+.app-shell[data-state="automation"] .automation-view .standalone-view-body { gap: 0; }
 .app-shell[data-state="automation"] #clawAutomation {
   margin: 0;
   padding: 14px 18px;
