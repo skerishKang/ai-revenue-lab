@@ -1115,7 +1115,7 @@
       // #5023: title-side status does not change the height of the date row.
       if (errorBox) {
         const title = view && view.querySelector(".calendar-view-header, .calendar-header");
-        const header = title || (view && view.querySelector("header"));
+        const header = title ? title.querySelector("div") : (view && view.querySelector("header"));
         if (header && errorBox.parentElement !== header) header.appendChild(errorBox);
       }
       if (rangeNavigation) rangeNavigation.hidden = !active;
