@@ -340,8 +340,16 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   align-items: center;
   min-height: 44px;
 }
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"])
-:is(.standalone-view-body),
+/* #4488: the five-view body gap must actually win over the older per-view
+ * overrides (`.connectors-view .standalone-view-body { gap:4px }`,
+ * `.automation-view .standalone-view-body { gap:0 }`) and the base
+ * `.standalone-view`/`.calendar-view`/`.library-view { gap:14px }`.
+ * Meeting and Calendar carry the gap on the view root, not on a nested
+ * `.standalone-view-body`, so both shapes are named explicitly. */
+.app-shell[data-state="meeting"] .meeting-view,
+.app-shell[data-state="automation"] .automation-view .standalone-view-body,
+.app-shell[data-state="connectors"] .connectors-view .standalone-view-body,
+.app-shell[data-state="calendar"] .calendar-view,
 .app-shell[data-state="library"] .library-view {
   gap: 12px;
 }
