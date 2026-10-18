@@ -48,6 +48,11 @@ on:
       # #4316/#4657: deploy must NOT precede 041 and 042 D1 schema.
       - ".github/scripts/b62_d1_migration_041_042_schema.py"
       - ".github/tests/test_b62_d1_migration_041_042_gate.py"
+      - "packages/padiem-conversation-ui/**"
+      - "scripts/sync_shared_conversation_composer.py"
+      - "scripts/sync_shared_conversation_scroll.py"
+      - "apps/padiem-chat/static/shared-conversation-composer.js"
+      - "apps/padiem-chat/static/shared-conversation-scroll.js"
       - "apps/padiem-chat/migrations/041_b66_ai_conversation.sql"
       - "apps/padiem-chat/migrations/042_conversation_product_scope.sql"
       # #4672: B66 durable paid-call claim must exist before Worker upload.
@@ -354,6 +359,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/sync_shared_conversation_composer.py --check
+          python3 scripts/sync_shared_conversation_scroll.py --check
           python - <<'PY'
           from pathlib import Path
 
@@ -533,6 +539,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/sync_shared_conversation_composer.py --check
+          test -f apps/padiem-chat/static/shared-conversation-scroll.js
+          python3 scripts/sync_shared_conversation_scroll.py --check
 
       - name: Read-only deployed state audit
         id: audit
