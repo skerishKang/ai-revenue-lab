@@ -234,13 +234,16 @@
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
+  let automationDestinationReady = false;
   function setNavActive() {
     const state = shell.dataset.state;
     // Keep the current Automation destination across a page refresh in this tab.
     // Save only a route name, never user identity, credentials, or rule data.
     try {
-      if (state === "automation") sessionStorage.setItem("padiem_last_destination", "automation");
-      else sessionStorage.removeItem("padiem_last_destination");
+      if (automationDestinationReady) {
+        if (state === "automation") sessionStorage.setItem("padiem_last_destination", "automation");
+        else sessionStorage.removeItem("padiem_last_destination");
+      }
     } catch (_) { /* Storage unavailable: navigation remains functional. */ }
     const workspace = document.getElementById("clawWorkspace");
     if (workspace) workspace.hidden = state !== "claw";
@@ -5487,4 +5490,5 @@
       openClawAutomation();
     }
   } catch (_) { /* Private browsing can reject storage. */ }
+  automationDestinationReady = true;
 })();
