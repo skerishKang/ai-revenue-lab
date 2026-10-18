@@ -224,10 +224,15 @@ def _read_audio(payload: object) -> tuple[str, str]:
     if not decoded:
         raise ValueError("invalid_audio")
     mime_type = payload.get("mime_type")
-    if mime_type is not None and (
-        not isinstance(mime_type, str) or not _MIME_RE.fullmatch(mime_type)
-    ):
-        raise ValueError("invalid_audio")
+    if mime_type is not None:
+        if not isinstance(mime_type, str):
+            raise ValueError("invalid_audio")
+        # MediaRecorder reports its container with codec parameters, e.g.
+        # ``audio/webm;codecs=opus``. The forwarding contract carries a bare
+        # media type, so validate that and drop the parameters.
+        mime_type = mime_type.split(";", 1)[0].strip()
+        if not _MIME_RE.fullmatch(mime_type):
+            raise ValueError("invalid_audio")
     return (mime_type or "audio/webm"), stripped
 
 

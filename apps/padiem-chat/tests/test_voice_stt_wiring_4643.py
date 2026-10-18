@@ -211,6 +211,36 @@ def test_valid_audio_is_accepted():
     assert b64 == "QUJD"
 
 
+def test_mediarecorder_codec_parameter_envelope_is_accepted():
+    """#3404: real MediaRecorder blobs carry the codec in their media type.
+
+    ``b66-voice-wiring.js`` posts ``blob.type`` unchanged, so the Worker
+    receives ``audio/webm;codecs=opus``. The payload is otherwise valid; only
+    the forwarded data URL must use the bare media type.
+    """
+    import base64
+
+    routes = _routes_module()
+    # Synthetic WebM-shaped bytes only; no customer audio is stored here.
+    audio = b"\x1aE\xdf\xa3" + b"\x00" * 2044
+    envelope = {
+        "audio_base64": base64.b64encode(audio).decode("ascii"),
+        "mime_type": "audio/webm;codecs=opus",
+        "utterance_id": "u1-real-chunk",
+    }
+    mime, b64 = routes._read_audio(envelope)
+    assert mime == "audio/webm"
+    assert b64 == envelope["audio_base64"]
+    assert base64.b64decode(b64, validate=True) == audio
+
+
+def test_media_type_parameters_cannot_smuggle_a_non_audio_type():
+    routes = _routes_module()
+    for mime in ("text/html;codecs=opus", "audio/;codecs=opus", "", 123):
+        with pytest.raises(ValueError):
+            routes._read_audio({"audio_base64": "QUJD", "mime_type": mime})
+
+
 def test_utterance_id_is_bounded_and_never_used_for_authority():
     routes = _routes_module()
     assert routes._utterance_id({"utterance_id": "u1-2.3"}) == "u1-2.3"
