@@ -48,8 +48,8 @@
 }
 
 .library-kicker {
-  margin: 0 0 2px;
-  font-size: 11px;
+  margin: 0 0 6px;
+  font-size: 12px;
   letter-spacing: 0.14em;
   color: var(--muted, #8a8f98);
 }
