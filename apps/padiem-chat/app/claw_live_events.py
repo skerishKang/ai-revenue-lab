@@ -55,6 +55,7 @@ def live_claw_sse(
     adapter: Any, run: Any, dispatch_args: dict[str, Any],
     *,
     on_completed: Callable[[str], Awaitable[str | None]] | None = None,
+    on_terminal_without_answer: Callable[[], Awaitable[None]] | None = None,
     sources: tuple[dict[str, str], ...] = (),
 ) -> StreamingResponse:
     """Queue backed SSE; upstream gets cancelled if the browser disconnects.
@@ -63,7 +64,21 @@ def live_claw_sse(
     After SSE headers, runtime failures travel as explicit error events, not
     a fabricated HTTP 200 success/AI answer. Quota compensation keeps the
     existing NOT_DISPATCHED vs dispatched/unknown classification.
+
+    ``on_terminal_without_answer`` fires on every terminal that carries no
+    verified answer. ``on_completed`` only ever runs for a verified
+    completion, so without this hook a run staged before dispatch stayed
+    ``pending`` forever on every failure, approval pause and cancellation.
     """
+    async def settle_terminal_without_answer() -> None:
+        if on_terminal_without_answer is None:
+            return
+        try:
+            await on_terminal_without_answer()
+        except Exception:
+            # Settling history must never break the stream the user reads.
+            pass
+
     async def events():
         queue: asyncio.Queue[tuple[str, Any]] = asyncio.Queue(maxsize=16)
         seen = 0
@@ -72,6 +87,7 @@ def live_claw_sse(
         seen_event_ids: set[str] = set()
         verified_terminal: dict[str, object] | None = None
         terminal_kinds = {"run_completed", "run_failed", "run_cancelled", "approval_paused"}
+        answer_recorded = False
 
         async def report(event: OrchestrationEvent) -> None:
             nonlocal seen, last_sequence, stream_identity, verified_terminal
@@ -144,6 +160,7 @@ def live_claw_sse(
                     if (verified_terminal is not None
                             and verified_terminal["kind"] in ("run_failed", "run_cancelled")):
                         yield _frame("p01_event", verified_terminal)
+                    await settle_terminal_without_answer()
                     yield _frame("error", {"error": payload})
                     return
                 status = payload.projection.status.value
@@ -157,6 +174,7 @@ def live_claw_sse(
                         "code": "claw_general_approval_required",
                         "message": "승인이 필요한 요청입니다. Claw 업무 화면에서 진행해 주세요.",
                     }})
+                    await settle_terminal_without_answer()
                     return
                 if status != "completed" or not isinstance(payload.answer, str) or not payload.answer:
                     # A verified failure/cancellation is a real terminal
@@ -168,11 +186,13 @@ def live_claw_sse(
                     yield _frame("error", {"error": {
                         "code": "engine_execution_failed", "message": "Engine 실행이 완료되지 않았습니다.",
                     }})
+                    await settle_terminal_without_answer()
                     return
                 if verified_terminal is None or verified_terminal["kind"] != "run_completed":
                     yield _frame("error", {"error": {
                         "code": "engine_execution_failed", "message": "Engine 완료 상태를 확인할 수 없습니다.",
                     }})
+                    await settle_terminal_without_answer()
                     return
                 # One post-completion owner-history projection. The signed
                 # route owns the callback; this SSE relay never mints threads
@@ -185,6 +205,7 @@ def live_claw_sse(
                         # A successful P01 execution cannot become a retryable
                         # error solely because the optional D1 history failed.
                         saved_conversation_id = None
+                answer_recorded = True
                 terminal = {"done": True}
                 if isinstance(saved_conversation_id, str) and saved_conversation_id:
                     terminal["conversation_id"] = saved_conversation_id
@@ -195,6 +216,10 @@ def live_claw_sse(
                 yield _frame("done", terminal)
                 return
         finally:
+            if not answer_recorded:
+                # A stream that ends without a verified answer (browser
+                # disconnect, upstream cancel) must settle the staged run too.
+                await settle_terminal_without_answer()
             if not task.done():
                 task.cancel()
             try:
