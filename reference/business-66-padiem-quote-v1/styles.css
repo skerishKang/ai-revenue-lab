@@ -739,6 +739,27 @@ textarea { min-height: 82px; resize: vertical; }
   line-height: 1.65;
   white-space: pre-wrap;
 }
+/* #4488: answer-copy action row. Clipboard execution lives in the shared
+   module; this is presentation only and mirrors the CGI quiet style. */
+.easy-message-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.easy-message-copy {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 2px 6px;
+  font-size: 12px;
+  color: #667085;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.easy-message-copy:hover {
+  background: rgba(16, 24, 40, 0.06);
+  color: #344054;
+}
 
 .easy-history-panel {
   width: min(820px, 100%);
