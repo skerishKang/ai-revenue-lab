@@ -301,31 +301,31 @@
     padding-bottom: 224px;
   }
 
-  .app-shell[data-state="chat"] .message-list {
+  .app-shell:is([data-state="chat"],[data-state="claw"]) .message-list {
     gap: 34px;
   }
 
-  .app-shell[data-state="chat"] .user-message {
+  .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message {
     padding-left: 34px;
   }
 
-  .app-shell[data-state="chat"] .message-bubble {
+  .app-shell:is([data-state="chat"],[data-state="claw"]) .message-bubble {
     max-width: 94%;
     padding: 10px 13px 11px;
     font-size: 14px;
   }
 
-  .app-shell[data-state="chat"] .assistant-message {
+  .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-message {
     grid-template-columns: 30px minmax(0, 1fr);
     gap: 11px;
   }
 
-  .app-shell[data-state="chat"] .assistant-message::before {
+  .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-message::before {
     left: 14px;
     top: 39px;
   }
 
-  .app-shell[data-state="chat"] .assistant-avatar {
+  .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-avatar {
     width: 30px;
     height: 30px;
     font-size: 10px;

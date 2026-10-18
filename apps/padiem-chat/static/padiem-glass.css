@@ -385,8 +385,8 @@ html[data-theme="padiem-glass"] .claw-memory-review {
   backdrop-filter: blur(24px) saturate(108%);
   -webkit-backdrop-filter: blur(24px) saturate(108%);
 }
-html[data-theme="padiem-glass"] .claw-result-kind,
-html[data-theme="padiem-glass"] .claw-result-body { color: #17212a; }
+html[data-theme="padiem-glass"] .claw-result-kind { color: #17212a; }
+html[data-theme="padiem-glass"] .claw-result-body { color: #111a22; }
 html[data-theme="padiem-glass"] .claw-disabled-control { color: #53606c; }
 html[data-theme="padiem-glass"] .claw-disabled-control strong { color: #17212a; }
 html[data-theme="padiem-glass"] .claw-chip {

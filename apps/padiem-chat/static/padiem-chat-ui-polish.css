@@ -258,12 +258,12 @@ html[data-theme="padiem-glass"] .settings-panel {
 /* Chat uses the SAME conversation frame and fixed composer as the first screen.
  * The original active-only widened panel moved the input on first submit.
  * Keep data-state=chat for routing/history, not for a second visual page. */
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .error-box {
   padding: 18px 20px !important;
   border-radius: 16px !important;
 }
 
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .retry-button {
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .retry-button {
   margin-top: 14px !important;
 }
 

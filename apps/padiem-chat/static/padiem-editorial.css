@@ -178,7 +178,7 @@
   padding-top: 0;
 }
 
-.app-shell[data-state="chat"] .message {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .message {
   animation: padiem-message-in .42s cubic-bezier(.2, .72, .2, 1) both;
 }
 
@@ -216,14 +216,14 @@
   letter-spacing: .02em;
 }
 
-.app-shell[data-state="chat"] .assistant-message {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-message {
   position: relative;
   grid-template-columns: 36px minmax(0, 1fr);
   gap: 16px;
   padding-top: 3px;
 }
 
-.app-shell[data-state="chat"] .assistant-message::before {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-message::before {
   content: "";
   position: absolute;
   left: 17px;
@@ -234,11 +234,11 @@
   pointer-events: none;
 }
 
-.app-shell[data-state="chat"] .assistant-message:last-child::before {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-message:last-child::before {
   bottom: 2px;
 }
 
-.app-shell[data-state="chat"] .assistant-avatar {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-avatar {
   width: 36px;
   height: 36px;
   border-radius: 10px;
@@ -249,7 +249,7 @@
     0 8px 26px rgba(0, 0, 0, .2);
 }
 
-.app-shell[data-state="chat"] .assistant-meta {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-meta {
   min-height: 30px;
   margin-bottom: 8px;
   color: rgba(255, 255, 255, .78);
@@ -279,7 +279,7 @@
   letter-spacing: -.014em;
 }
 
-.app-shell[data-state="chat"] .assistant-content > p {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content > p {
   margin-bottom: 16px;
 }
 
@@ -319,7 +319,7 @@
 }
 
 /* Streaming signal -------------------------------------------------------- */
-.app-shell[data-state="chat"] .typing {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .typing {
   min-height: 34px;
   gap: 6px;
   padding: 7px 11px;
@@ -328,19 +328,19 @@
   background: rgba(255, 255, 255, .035);
 }
 
-.app-shell[data-state="chat"] .typing i {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .typing i {
   width: 5px;
   height: 5px;
   background: var(--accent);
   box-shadow: 0 0 9px rgba(136, 201, 255, .38);
 }
 
-.app-shell[data-state="chat"] .typing i:nth-child(2) {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .typing i:nth-child(2) {
   background: rgba(255, 255, 255, .82);
   box-shadow: none;
 }
 
-.app-shell[data-state="chat"] .typing i:nth-child(3) {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .typing i:nth-child(3) {
   background: var(--gold);
   box-shadow: 0 0 8px rgba(239, 201, 132, .28);
 }
