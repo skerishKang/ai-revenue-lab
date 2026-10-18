@@ -234,8 +234,18 @@
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
+  let automationDestinationReady = false;
   function setNavActive() {
     const state = shell.dataset.state;
+    // The URL fragment is the destination bookmark; no browser persistence.
+    if (automationDestinationReady && window.history && window.location) {
+      const isAutomationRoute = window.location.hash === "#padiem-automation";
+      if (state === "automation" && !isAutomationRoute) {
+        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search + "#padiem-automation");
+      } else if (state !== "automation" && isAutomationRoute) {
+        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+      }
+    }
     const workspace = document.getElementById("clawWorkspace");
     if (workspace) workspace.hidden = state !== "claw";
     const meetingView = document.getElementById("meetingView");
@@ -5480,4 +5490,8 @@
     // Read-only: this exposes no pairing, session or transport authority.
     getConversationId: () => window.PadiemChatConversationState?.getConversationId?.() || null,
   });
+  // Restore the Automation surface only after all handlers are registered.
+  // It remains read-only for signed-out sessions through openClawAutomation().
+  if (window.location.hash === "#padiem-automation") openClawAutomation();
+  automationDestinationReady = true;
 })();
