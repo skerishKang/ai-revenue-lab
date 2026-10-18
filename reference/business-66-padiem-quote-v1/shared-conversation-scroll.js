@@ -15,12 +15,19 @@
   "use strict";
   const VERSION = "shared-scroll-v1";
   const NEAR_BOTTOM_PX = 120;
-  function isNearBottom(container, thresholdPx = NEAR_BOTTOM_PX) {
-    if (!container || typeof container !== "object") return true;
+  /* Container gap to the newest turn. Products own their own follow limit on
+   * top of this shared number (B66 120px via isNearBottom, Chat/Claw jump
+   * threshold); window/document scroll stays with each product. */
+  function remainingToEnd(container) {
+    if (!container || typeof container !== "object") return 0;
     const height = Number(container.scrollHeight) || 0;
     const top = Number(container.scrollTop) || 0;
     const visible = Number(container.clientHeight) || 0;
-    return (height - top - visible) < thresholdPx;
+    return height - top - visible;
+  }
+  function isNearBottom(container, thresholdPx = NEAR_BOTTOM_PX) {
+    if (!container || typeof container !== "object") return true;
+    return remainingToEnd(container) < thresholdPx;
   }
   function followToBottom(container) {
     if (!container || typeof container !== "object") return false;
@@ -29,5 +36,5 @@
     container.scrollTop = height;
     return true;
   }
-  return Object.freeze({ VERSION, NEAR_BOTTOM_PX, isNearBottom, followToBottom });
+  return Object.freeze({ VERSION, NEAR_BOTTOM_PX, remainingToEnd, isNearBottom, followToBottom });
 });
