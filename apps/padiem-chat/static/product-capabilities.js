@@ -451,6 +451,9 @@
   }
 
   async function refreshAdminPresence() {
+    // The B62 product's own operator authority (/api/b66/admin/me) reports
+    // the verified Google admin with HTTP 200 {ok, admin} — guests and
+    // ordinary members simply get admin:false, so no error text is needed.
     if (!auth.authenticated) {
       adminAvailable = false;
       adminProbeInFlight = null;
@@ -479,7 +482,7 @@
     }, 5000);
     const probe = (async () => {
       try {
-        const response = await nativeFetch("/api/admin/models/me", {
+        const response = await nativeFetch("/api/b66/admin/me", {
           headers: { Accept: "application/json" },
           cache: "no-store",
           signal: controller ? controller.signal : undefined,
