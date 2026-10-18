@@ -389,12 +389,34 @@ async def conversation_turn(request: Request) -> JSONResponse:
     try:
         reply, intent, delta = parse_model_output(result["answer"])
     except B66ConversationError as exc:
-        # Fail-closed: the previous state stays untouched and intent is never
-        # guessed. The customer sees a bounded failure, not a fabricated reply.
-        response = _error(502, "conversation_invalid_answer", "AI 응답을 확인할 수 없습니다.")
-        for header_name, header_value in _rejection_headers(exc).items():
-            response.headers[header_name] = header_value
-        return response
+        # Repair a format mismatch with the same authorized model, without
+        # inferring quote facts in application code or applying unconfirmed edits.
+        # The existing server-owned transition stages modifications for approval.
+        try:
+            repaired = await complete(
+                [{"role": "user", "content": message}],
+                model=route.model_id,
+                **({"product_tier": product_tier} if product_tier is not None else {}),
+                additional_system_context=(
+                    conversation_prompt(state)
+                    + "\n이전 형식이 유효하지 않았습니다. 고객의 마지막 요청을 다시 "
+                    + "해석하여 지정된 reply, intent, facts JSON 객체 하나만 반환하세요. "
+                    + "불확실한 변경은 값을 추측하지 말고 intent=clarify, facts=null로 "
+                    + "두고 reply에 고객 확인 질문을 작성하세요."
+                ),
+                model_parameters=parameters,
+            )
+            if (not isinstance(repaired, dict)
+                    or not isinstance(repaired.get("route"), dict)
+                    or repaired["route"].get("model") != route.model_id
+                    or repaired["route"].get("mode") != "manual"):
+                raise B66ConversationError("invalid_repair_route")
+            reply, intent, delta = parse_model_output(repaired.get("answer"))
+        except (B66ConversationError, ChatRuntimeError, ValueError, TypeError):
+            response = _error(502, "conversation_invalid_answer", "AI 응답을 확인할 수 없습니다.")
+            for header_name, header_value in _rejection_headers(exc).items():
+                response.headers[header_name] = header_value
+            return response
     state = apply_message_transition(state, reply, intent, delta)
     mode_changed = state.pop("_mode_changed", False)
     state = append_history(state, message, reply)
