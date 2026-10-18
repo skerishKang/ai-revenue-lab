@@ -5,6 +5,13 @@ description = "Private COM2 backup transfer Worker (R2 upload, integrity and res
 requires-python = ">=3.12"
 dependencies = []
 
+[project.optional-dependencies]
+# The dispatch suite is async; pytest-asyncio is required for collection.
+test = [
+    "pytest>=8,<10",
+    "pytest-asyncio>=0.24,<2",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"

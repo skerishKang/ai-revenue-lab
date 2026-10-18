@@ -40,14 +40,15 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install test dependencies
-        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10'
+      # Same canonical bootstrap as the Voice STT suites: no project install,
+      # pinned pytest and pytest-asyncio (the dispatch suite is async).
+      - uses: astral-sh/setup-uv@v6
 
       - name: Run Worker contract and dispatch tests
-        run: python -m pytest -q apps/com2-backup/tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "pytest-asyncio>=0.24,<2" python -m pytest -q apps/com2-backup/tests
 
       - name: Run operator script tests
-        run: python -m pytest -q scripts/ops/tests/test_com2_backup.py
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_backup.py
 
       - name: Record gate scope
         run: |
