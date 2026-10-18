@@ -11,9 +11,10 @@ user's session.
 
 from __future__ import annotations
 
-import httpx
 import re
 from typing import Any
+
+from padiem_control_plane.model_assignment_policy import ModelPolicySnapshot
 
 from .auth_routes import current_user_id
 from .b14_client import B14Client
@@ -25,10 +26,20 @@ from .central_model_pre_dispatch_advice import (
     GLOBAL_WORKSPACE,
     VerifiedProductModelSelection,
 )
-from .model_policy import TIER_ID_TO_PROFILE, _REQUEST_TIER_ID
-from padiem_control_plane.model_assignment_policy import ModelPolicySnapshot
+from .member_grade_access import verified_member_grade
+from .model_policy import current_request_tier_id
 
 _CANONICAL_USER = re.compile(r"usr_[a-f0-9]{32}\Z")
+
+# Guard tiers are the product tier labels from the control-plane contract
+# (``TIERS``), not the lowercase routing profiles used by model_policy.
+_REQUEST_TIER_TO_PRODUCT_TIER = {
+    "free": "FREE",
+    "plus": "PLUS",
+    "pro": "PRO",
+    "max": "MAX",
+}
+_GRADE_RANK = {"free": 0, "plus": 1, "pro": 2, "max": 3}
 
 # Product id handled by this guard (Chat/Claw share the same product scope).
 CHAT_PRODUCT_ID = "chat"
@@ -70,17 +81,22 @@ def _user_id_from_request(request) -> str | None:
     return uid
 
 
-def _tier_label_from_request(request) -> str:
-    """Resolve the request tier label from the request context.
+async def _guard_tier_label(request, user_id: str) -> str | None:
+    """Resolve the product tier the guard must authorize for this dispatch.
 
-    ``request_tier_context`` is entered by the route handler before calling
-    ``resolve_request_model_policy``.  We read the context var directly here so
-    the guard can be built without re-running policy resolution.
+    The route enters ``request_tier_context`` before resolving the model, so a
+    mapped request tier is the tier whose route selected ``model_id``.  The
+    admin-only tier is not a product tier in ``TIERS``; it falls back to the
+    verified member grade, which is also what an unmapped legacy request uses.
     """
-    tier_id = _REQUEST_TIER_ID.get()
-    if tier_id is None:
-        return "free"
-    return TIER_ID_TO_PROFILE.get(tier_id, "free")
+    tier_id = current_request_tier_id()
+    mapped = _REQUEST_TIER_TO_PRODUCT_TIER.get(tier_id)
+    if mapped is not None:
+        return mapped
+    grade = await verified_member_grade(request, user_id)
+    if isinstance(grade, str) and grade.lower() in _GRADE_RANK:
+        return grade.upper()
+    return None
 
 
 async def create_guard_from_request(
@@ -93,14 +109,21 @@ async def create_guard_from_request(
     request context cannot be verified.
 
     Returns ``None`` when the session identity cannot be established in the
-    canonical form required by ``DispatchSessionContext``; callers should then
-    fall back to the unguarded client (existing behaviour preserved).
+    canonical form required by ``DispatchSessionContext`` or when the policy
+    store / B14 catalog is not provisioned; callers then fall back to the
+    unguarded client (existing behaviour preserved).
     """
+    if store is None or b14_catalog_source is None:
+        return None
+
     user_id = _user_id_from_request(request)
     if user_id is None:
         return None
 
-    tier_label = _tier_label_from_request(request)
+    tier_label = await _guard_tier_label(request, user_id)
+    if tier_label is None:
+        return None
+    requested_tier_id = current_request_tier_id()
 
     try:
         selection = VerifiedProductModelSelection(
@@ -129,11 +152,28 @@ async def create_guard_from_request(
         uid = current_user_id(request)
         if uid is None or _CANONICAL_USER.fullmatch(uid) is None:
             return None
+        if requested_tier_id in _REQUEST_TIER_TO_PRODUCT_TIER:
+            # Re-check that the live membership still entitles this dispatch
+            # to the tier whose route selected the model. A downgrade denies.
+            fresh_grade = await verified_member_grade(request, uid)
+            if not isinstance(fresh_grade, str):
+                return None
+            fresh_grade = fresh_grade.lower()
+            if _GRADE_RANK.get(fresh_grade, -1) < _GRADE_RANK[requested_tier_id]:
+                return None
+            member_tier = tier_label
+        else:
+            fresh_grade = await verified_member_grade(request, uid)
+            if not isinstance(fresh_grade, str):
+                return None
+            member_tier = fresh_grade.upper()
+            if member_tier != tier_label:
+                return None
         return DispatchSessionContext(
             canonical_user_id=uid,
             workspace_id=GLOBAL_WORKSPACE,
             product_id=CHAT_PRODUCT_ID,
-            member_tier=tier_label,
+            member_tier=member_tier,
             product_capability_verified=True,
         )
 
