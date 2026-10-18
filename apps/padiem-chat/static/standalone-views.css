@@ -332,3 +332,21 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 .app-shell[data-state="meeting"] .meeting-panel {
   border-radius: 16px;
 }
+
+/* Phase 2 follow-up (#4488): one header/spacing/state contract for the same
+ * five views. CSS only; no index.html, locale, JS, DB or server changes. */
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"])
+.standalone-view-header {
+  align-items: center;
+  min-height: 44px;
+}
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"])
+:is(.standalone-view-body),
+.app-shell[data-state="library"] .library-view {
+  gap: 12px;
+}
+.app-shell[data-state="calendar"] .calendar-error,
+.app-shell[data-state="automation"] #clawInboxError,
+.app-shell[data-state="connectors"] #connectorsError {
+  color: var(--danger, #b42318);
+}
