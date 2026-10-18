@@ -82,6 +82,11 @@ from .b66_registered_model_boundary import (
     validate_authorized_route,
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
+from .final_dispatch_guard_wiring import (
+    B66_PRODUCT_ID,
+    apply_guard_to_client,
+    create_guard_from_request,
+)
 from .request_contract import MAX_BROWSER_BODY_BYTES
 from .member_grade_access import verified_member_grade, GRADES
 from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
@@ -366,6 +371,27 @@ async def conversation_turn(request: Request) -> JSONResponse:
     product_tier = requested_tier
     if product_tier is not None and product_tier not in ("free", "plus", "pro", "max"):
         return _error(403, "invalid_membership_tier", "이용 등급을 확인해 주세요.")
+    # #4483: same final dispatch guard as Chat, scoped to the B66 product. The
+    # guarded client covers both this call and the format-repair retry below.
+    guarded_client = apply_guard_to_client(
+        client,
+        await create_guard_from_request(
+            request,
+            route.model_id,
+            getattr(request.app.state, "central_model_policy_store", None),
+            getattr(request.app.state, "b14_catalog_source", None),
+            product_id=B66_PRODUCT_ID,
+            requested_tier=(
+                product_tier
+                if product_tier in ("free", "plus", "pro", "max")
+                else None
+            ),
+        ),
+    )
+    complete = getattr(guarded_client, "complete_registered_b66_chat_model", None)
+    if not callable(complete):
+        await _refund_active_reservation()
+        return _error(503, "ai_chat_unavailable", "AI 대화 실행 경로가 준비되지 않았습니다.")
     try:
         result = await complete(
             [{"role": "user", "content": message}],

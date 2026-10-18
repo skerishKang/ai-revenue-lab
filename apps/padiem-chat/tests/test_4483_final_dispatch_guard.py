@@ -29,6 +29,7 @@ from app.central_model_pre_dispatch_advice import (
 )
 from app.config import Settings
 from app.final_dispatch_guard_wiring import (
+    B66_PRODUCT_ID,
     apply_guard_to_client,
     create_guard_from_request,
 )
@@ -755,3 +756,106 @@ def test_apply_guard_to_client_wraps_only_a_real_guard():
     assert guarded is not client
     assert isinstance(guarded.service_transport, GuardedServiceTransport)
     assert guarded.service_transport._inner is binding
+
+
+# --- #4483: B66 product scope -------------------------------------------------
+
+
+def _b66_wiring_sources(tier="PRO"):
+    store = _WiringPolicyStore(rules=(
+        ModelChange("central", tier, MODEL, "allow"),
+        ModelChange("b66", tier, MODEL, "allow"),
+    ))
+    return store, _WiringCatalog()
+
+
+def test_create_guard_b66_uses_product_and_selected_tier():
+    store, catalog = _b66_wiring_sources(tier="PRO")
+    guard = asyncio.run(create_guard_from_request(
+        _WiringRequest(grade="pro"), MODEL, store, catalog,
+        product_id=B66_PRODUCT_ID, requested_tier="pro",
+    ))
+    assert isinstance(guard, FinalDispatchGuard)
+    assert guard._selection.product_id == "b66"
+    assert guard._selection.tier == "PRO"
+    decision = asyncio.run(guard.authorize())
+    assert decision.allowed is True
+    assert decision.reason == "allowed"
+
+
+def test_create_guard_b66_denies_after_member_downgrade():
+    request = _WiringRequest(grade="pro")
+    store, catalog = _b66_wiring_sources(tier="PRO")
+    guard = asyncio.run(create_guard_from_request(
+        request, MODEL, store, catalog,
+        product_id=B66_PRODUCT_ID, requested_tier="pro",
+    ))
+    request.app.state.b66_member_admin_store.grade = "free"
+    decision = asyncio.run(guard.authorize())
+    assert decision.allowed is False
+    assert decision.reason == "missing_session_authority"
+
+
+def test_create_guard_b66_stays_off_without_b66_rule():
+    store = _WiringPolicyStore(rules=(
+        ModelChange("central", "MAX", MODEL, "allow"),
+        ModelChange("chat", "MAX", MODEL, "allow"),
+    ))
+    guard = asyncio.run(create_guard_from_request(
+        _WiringRequest(), MODEL, store, _WiringCatalog(),
+        product_id=B66_PRODUCT_ID, requested_tier="max",
+    ))
+    assert guard is None
+
+
+def test_with_guard_preserves_installed_client_subclass():
+    class _DispatchAwareLikeClient(B14Client):
+        pass
+
+    binding = RecordingBinding()
+    client = _DispatchAwareLikeClient(settings(), service_transport=binding)
+    guarded = client.with_guard(make_guard())
+    assert type(guarded) is _DispatchAwareLikeClient
+    assert guarded.service_transport._inner is binding
+
+
+def _run_b66_chat(client, model=MODEL):
+    return asyncio.run(
+        client.complete_registered_b66_chat_model(MESSAGES, model=model)
+    )
+
+
+def test_b66_chat_completion_allowed_posts_exactly_once():
+    guard = make_guard(
+        selection_value=selection(product="b66", tier="PRO"),
+        session_value=session(product="b66", tier="PRO"),
+        policy=CanonicalPolicy(rules=[
+            ModelChange("central", "PRO", MODEL, "allow"),
+            ModelChange("b66", "PRO", MODEL, "allow"),
+        ]),
+    )
+    binding = RecordingBinding()
+    guarded = B14Client(settings(), service_transport=binding).with_guard(guard)
+    result = _run_b66_chat(guarded)
+    assert result["answer"] == "final-guard-answer"
+    assert len(binding.calls) == 1
+    assert binding.calls[0][1]["model"] == MODEL
+
+
+def test_b66_chat_completion_denial_never_reaches_provider():
+    guard = make_guard(
+        selection_value=selection(product="b66", tier="PRO"),
+        session_value=session(product="b66", tier="PRO"),
+        policy=CanonicalPolicy(rules=[
+            ModelChange("central", "PRO", MODEL, "allow"),
+            ModelChange("b66", "PRO", MODEL, "allow"),
+        ]),
+    )
+    binding = RecordingBinding()
+    guarded = B14Client(settings(), service_transport=binding).with_guard(guard)
+    with pytest.raises(ChatRuntimeError) as caught:
+        _run_b66_chat(guarded, model=OTHER)
+    assert caught.value.code == "upstream_unavailable"
+    assert binding.calls == []
+    assert guard.last_decision is not None
+    assert guard.last_decision.reason == "dispatch_model_mismatch"

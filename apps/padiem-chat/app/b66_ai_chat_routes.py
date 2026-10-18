@@ -86,6 +86,11 @@ from .b66_registered_model_boundary import (
 )
 from .b66_search_boundary import _envelope, plan_b66_search
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
+from .final_dispatch_guard_wiring import (
+    B66_PRODUCT_ID,
+    apply_guard_to_client,
+    create_guard_from_request,
+)
 from .history import HistoryContextIncomplete, validate_conversation_id
 from .request_contract import MAX_BROWSER_BODY_BYTES
 from .member_grade_access import verified_member_grade, GRADES
@@ -486,6 +491,27 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
         product_tier = requested_tier
         if product_tier is not None and product_tier not in ("free", "plus", "pro", "max"):
             return _error(403, "invalid_membership_tier", "이용 등급을 확인해 주세요.")
+        # #4483: re-check live model authority at the final B66 dispatch. The
+        # guard is per-request and stays off until a b66 policy rule exists.
+        guarded_client = apply_guard_to_client(
+            client,
+            await create_guard_from_request(
+                request,
+                route.model_id,
+                getattr(request.app.state, "central_model_policy_store", None),
+                getattr(request.app.state, "b14_catalog_source", None),
+                product_id=B66_PRODUCT_ID,
+                requested_tier=(
+                    product_tier
+                    if product_tier in ("free", "plus", "pro", "max")
+                    else None
+                ),
+            ),
+        )
+        complete = getattr(guarded_client, "complete_registered_b66_chat_model", None)
+        if not callable(complete):
+            await _refund_active_reservation()
+            return _error(503, "ai_chat_unavailable", "AI 대화 실행 경로가 준비되지 않았습니다.")
         try:
             result = await complete(
                 model_messages,

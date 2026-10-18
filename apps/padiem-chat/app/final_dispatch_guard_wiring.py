@@ -41,8 +41,10 @@ _REQUEST_TIER_TO_PRODUCT_TIER = {
 }
 _GRADE_RANK = {"free": 0, "plus": 1, "pro": 2, "max": 3}
 
-# Product id handled by this guard (Chat/Claw share the same product scope).
+# Product ids handled by this guard.  Chat and B66 dispatch through separate
+# client methods, so each route names its own product scope.
 CHAT_PRODUCT_ID = "chat"
+B66_PRODUCT_ID = "b66"
 
 
 def _product_is_configured(snapshot: ModelPolicySnapshot, product_id: str) -> bool:
@@ -115,6 +117,9 @@ async def create_guard_from_request(
     model_id: str,
     store: Any,
     b14_catalog_source: Any,
+    *,
+    product_id: str = CHAT_PRODUCT_ID,
+    requested_tier: str | None = None,
 ) -> FinalDispatchGuard | None:
     """Build a per-request :class:`FinalDispatchGuard` or ``None`` if the
     request context cannot be verified.
@@ -124,6 +129,12 @@ async def create_guard_from_request(
     store / B14 catalog is not provisioned, or when the ledger has no explicit
     rule for this product yet (staged rollout is still OFF); callers then fall
     back to the unguarded client (existing behaviour preserved).
+
+    ``requested_tier`` is for routes that validate a browser-selected lower
+    grade against the verified membership themselves (B66): the guard then
+    authorizes that grade and the live session must still entitle it.  Routes
+    without an explicit selection (Chat) leave it ``None`` and keep deriving
+    the tier from the request context or the verified member grade.
     """
     if store is None or b14_catalog_source is None:
         return None
@@ -132,19 +143,31 @@ async def create_guard_from_request(
     if user_id is None:
         return None
 
-    tier_label = await _guard_tier_label(request, user_id)
-    if tier_label is None:
-        return None
-    requested_tier_id = current_request_tier_id()
+    if requested_tier is not None:
+        selected_tier_id = requested_tier.lower()
+        if selected_tier_id not in _REQUEST_TIER_TO_PRODUCT_TIER:
+            return None
+        tier_label = _REQUEST_TIER_TO_PRODUCT_TIER[selected_tier_id]
+        entitlement_tier_id = selected_tier_id
+    else:
+        tier_label = await _guard_tier_label(request, user_id)
+        if tier_label is None:
+            return None
+        ambient_tier_id = current_request_tier_id()
+        entitlement_tier_id = (
+            ambient_tier_id
+            if ambient_tier_id in _REQUEST_TIER_TO_PRODUCT_TIER
+            else None
+        )
 
     try:
         selection = VerifiedProductModelSelection(
             canonical_user_id=user_id,
             workspace_id=GLOBAL_WORKSPACE,
-            product_id=CHAT_PRODUCT_ID,
+            product_id=product_id,
             tier=tier_label,
             exact_model_id=model_id,
-            authority_ref=f"chat:{user_id}:{model_id}",
+            authority_ref=f"{product_id}:{user_id}:{model_id}",
         )
     except ValueError:
         return None
@@ -156,7 +179,7 @@ async def create_guard_from_request(
         snapshot = await store.snapshot(GLOBAL_WORKSPACE)
         if not isinstance(snapshot, ModelPolicySnapshot):
             return None
-        if not _product_is_configured(snapshot, CHAT_PRODUCT_ID):
+        if not _product_is_configured(snapshot, product_id):
             return None
         authorized_revision = snapshot.revision
     except Exception:
@@ -166,14 +189,14 @@ async def create_guard_from_request(
         uid = current_user_id(request)
         if uid is None or _CANONICAL_USER.fullmatch(uid) is None:
             return None
-        if requested_tier_id in _REQUEST_TIER_TO_PRODUCT_TIER:
+        if entitlement_tier_id is not None:
             # Re-check that the live membership still entitles this dispatch
             # to the tier whose route selected the model. A downgrade denies.
             fresh_grade = await verified_member_grade(request, uid)
             if not isinstance(fresh_grade, str):
                 return None
             fresh_grade = fresh_grade.lower()
-            if _GRADE_RANK.get(fresh_grade, -1) < _GRADE_RANK[requested_tier_id]:
+            if _GRADE_RANK.get(fresh_grade, -1) < _GRADE_RANK[entitlement_tier_id]:
                 return None
             member_tier = tier_label
         else:
@@ -186,7 +209,7 @@ async def create_guard_from_request(
         return DispatchSessionContext(
             canonical_user_id=uid,
             workspace_id=GLOBAL_WORKSPACE,
-            product_id=CHAT_PRODUCT_ID,
+            product_id=product_id,
             member_tier=member_tier,
             product_capability_verified=True,
         )
