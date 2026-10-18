@@ -19,7 +19,7 @@ from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .history import _row_to_dict, _rows_from_result
 
-_CATEGORIES = {"general", "usage", "billing", "bug", "other"}
+_CATEGORIES = {"general", "usage", "billing", "bug", "other", "quote_skill_assist"}
 _ID = re.compile(r"b66inq_[0-9a-f]{32}\Z")
 _CHANNELS = {"telegram", "discord", "email"}
 _NO_STORE = {"Cache-Control": "no-store, max-age=0"}
@@ -145,7 +145,7 @@ async def deliver_inquiry(store: D1B66InquiryStore, notifier: Any, entry: dict) 
     # to external channels. Admins retrieve details via authenticated page.
     label = {
         "general": "일반 문의", "usage": "사용 방법", "billing": "요금·계정",
-        "bug": "오류 신고", "other": "기타",
+        "bug": "오류 신고", "other": "기타", "quote_skill_assist": "견적서 양식 의뢰",
     }.get(entry["category"], "회원 문의")
     msg = ("[B66 회원 문의] " + label + "\n문의번호: " + inquiry_id +
            "\n관리자 화면: https://quick-quote-kr.pages.dev/admin-inquiries.html")

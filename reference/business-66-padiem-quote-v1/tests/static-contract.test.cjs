@@ -213,7 +213,8 @@ check(worker.includes("SKILL_CANDIDATE_ROW"),
 check(worker.includes('request.headers.get("cookie")') &&
       !worker.includes('request.headers.get("authorization")'),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: opaque session forwarded without browser Authorization authority");
-check(worker.includes("PADIEM_CHAT_SERVICE") && worker.includes("else {\n      upstream = await fetch(target, init);"),
+check(worker.includes("PADIEM_CHAT_SERVICE") && worker.includes("} else {") &&
+      worker.includes("upstream = await fetch(target, init);"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: optional same-account service binding with HTTPS fallback");
 check(!account.includes("localStorage") && !account.includes("sessionStorage"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server-assigned skill is memory-only cache");

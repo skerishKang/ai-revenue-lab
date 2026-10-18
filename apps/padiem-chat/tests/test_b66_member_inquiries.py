@@ -11,8 +11,10 @@ from test_b66_admin_membership import seed_db
 
 def inquiry_store():
     db, admin, user, fake = seed_db()
-    migration = Path(__file__).resolve().parents[1] / "migrations" / "038_b66_member_inquiries.sql"
-    db.conn.executescript(migration.read_text(encoding="utf-8"))
+    migrations = Path(__file__).resolve().parents[1] / "migrations"
+    for name in ("038_b66_member_inquiries.sql",
+                 "051_b66_inquiry_quote_skill_assist.sql"):
+        db.conn.executescript((migrations / name).read_text(encoding="utf-8"))
     return db, admin, user, D1B66InquiryStore(db)
 
 
@@ -204,3 +206,77 @@ def test_invalid_multi_recipient_configuration_does_not_send_partially():
         notifier = B66SignupNotifier(None, resend_api_key="re_mock",
                                       email_from="no-reply@example.org", email_to=email_to)
         assert "email" not in notifier.channels
+
+
+@pytest.mark.asyncio
+async def test_quote_skill_assist_category_accepted_and_labeled(monkeypatch):
+    import json
+    from types import SimpleNamespace
+    from app import b66_member_inquiries as mod
+    db, admin, member, store = inquiry_store()
+
+    class Request:
+        method = "POST"
+        headers = {"content-type": "application/json"}
+        app = SimpleNamespace(state=SimpleNamespace(
+            b66_inquiry_store=store, b66_signup_notifier=None))
+        payload = {
+            "category": "quote_skill_assist",
+            "subject": "Our quote form",
+            "body": "Please reuse our header and table layout.",
+        }
+        async def stream(self):
+            yield json.dumps(self.payload).encode("utf-8")
+
+    monkeypatch.setattr(mod, "current_user_id", lambda _: member)
+    response = await mod.b66_inquiries(Request())
+    assert response.status_code == 201
+    inquiries = await store.list_admin("open")
+    assert len(inquiries) == 1
+    assert inquiries[0]["category"] == "quote_skill_assist"
+
+    sent = []
+    def handler(request):
+        sent.append(json.loads(request.content)["text"])
+        return httpx.Response(200, json={"ok": True})
+    notifier = B66SignupNotifier(
+        None, telegram_bot_token="123456:" + "A" * 45,
+        telegram_chat_id="-123456",
+        http_transport=httpx.MockTransport(handler),
+    )
+    assert await deliver_inquiry(store, notifier, inquiries[0]) == {"sent": 1, "failed": 0}
+    assert len(sent) == 1
+    assert "견적서 양식 의뢰" in sent[0]
+    assert "Please reuse our header" not in sent[0]
+
+
+@pytest.mark.asyncio
+async def test_category_migration_preserves_inquiries_and_receipts():
+    db, admin, member, _ = seed_db()
+    migrations = Path(__file__).resolve().parents[1] / "migrations"
+    db.conn.executescript(
+        (migrations / "038_b66_member_inquiries.sql").read_text(encoding="utf-8"))
+    old_id = "b66inq_" + "a" * 32
+    db.conn.execute(
+        "INSERT INTO b66_member_inquiries "
+        "(inquiry_id,user_id,category,subject,body,status,created_at,updated_at) "
+        "VALUES (?,?,?,?,?,'open','2026-10-01T00:00:00.000Z','2026-10-01T00:00:00.000Z')",
+        (old_id, member, "usage", "Old question", "Still readable"),
+    )
+    db.conn.execute(
+        "INSERT INTO b66_inquiry_alert_delivery (inquiry_id,channel,delivered_at) "
+        "VALUES (?,?,?)", (old_id, "telegram", "2026-10-01T00:00:01.000Z"),
+    )
+    db.conn.executescript(
+        (migrations / "051_b66_inquiry_quote_skill_assist.sql").read_text(encoding="utf-8"))
+
+    store = D1B66InquiryStore(db)
+    own = await store.list_user(member)
+    assert [(row["inquiry_id"], row["category"]) for row in own] == [
+        (old_id, "usage")
+    ]
+    assert await store.receipt_exists(old_id, "telegram")
+    assert [row["inquiry_id"] for row in await store.pending()] == [old_id]
+    new = await store.submit(member, "quote_skill_assist", "New request", "Build our form")
+    assert new["category"] == "quote_skill_assist"
+    assert db.conn.execute("PRAGMA foreign_key_check").fetchall() == []

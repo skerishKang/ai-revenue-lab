@@ -7,6 +7,7 @@
   let active = null;
   let watcher = null;
   let lastTrigger = null;
+  let handingOff = false;
 
   function restore() {
     if (watcher) { watcher.disconnect(); watcher = null; }
@@ -20,8 +21,30 @@
       dialog.querySelector(".b66-skill-start-choices").hidden = false;
       dialog.querySelector(".b66-skill-start-hint").hidden = false;
     }
-    if (lastTrigger && typeof lastTrigger.focus === "function") lastTrigger.focus();
+    if (!handingOff && lastTrigger && typeof lastTrigger.focus === "function") lastTrigger.focus();
     lastTrigger = null;
+    handingOff = false;
+  }
+
+  function card(id, title, description) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.id = id;
+    const strong = document.createElement("strong");
+    strong.textContent = title;
+    const span = document.createElement("span");
+    span.textContent = description;
+    button.append(strong, span);
+    return button;
+  }
+
+  /* 파일/의뢰 화면은 자체 dialog 를 여는 B66 전용 모듈이 소유한다.
+     시작 dialog 는 선택만 전달하고 닫힌 뒤 포커스를 되가져오지 않는다. */
+  function handOff(handler) {
+    if (typeof handler !== "function") return;
+    handingOff = true;
+    dialog.close();
+    handler();
   }
 
   function init() {
@@ -46,15 +69,13 @@
     hint.textContent = "견적 금액 입력과 달리, 앞으로 반복 사용할 견적서 모양을 등록합니다. 저장·적용은 기존 승인 절차를 따릅니다.";
     const choices = document.createElement("div");
     choices.className = "b66-skill-start-choices";
-    const fromFile = document.createElement("button");
-    fromFile.type = "button";
-    fromFile.id = "b66SkillStartFromFile";
-    fromFile.innerHTML = "<strong>기존 파일에서 만들기</strong><span>PDF·엑셀·사진 등의 견적서를 선택하고 검토합니다.</span>";
-    const fromBlank = document.createElement("button");
-    fromBlank.type = "button";
-    fromBlank.id = "b66SkillStartFromBlank";
-    fromBlank.innerHTML = "<strong>빈 양식 직접 만들기</strong><span>제목·표·회사정보·배치를 직접 구성합니다.</span>";
-    choices.append(fromFile, fromBlank);
+    const fromFile = card("b66SkillStartFromFile", "기존 파일에서 만들기",
+      "PDF·엑셀·사진 등의 견적서에서 초안을 만들고 직접 확인합니다.");
+    const fromBlank = card("b66SkillStartFromBlank", "빈 양식 직접 만들기",
+      "제목·표·회사정보·배치를 직접 구성합니다.");
+    const fromAssist = card("b66SkillStartAssist", "운영자에게 맡기기",
+      "회사 정보와 요청만 남기면 운영자가 검토해 내 견적서로 배정합니다.");
+    choices.append(fromFile, fromBlank, fromAssist);
     dialog.append(heading, hint, choices);
     document.body.appendChild(dialog);
     dialog.addEventListener("close", restore);
@@ -90,8 +111,11 @@
       dialog.showModal();
       const fromFile = byId("b66SkillStartFromFile");
       const fromBlank = byId("b66SkillStartFromBlank");
-      fromFile.onclick = () => enter(byId("skillWizardPanel"), handlers.fileOpen, handlers.fileCancel);
-      fromBlank.onclick = () => enter(byId("skillManualPanel"), handlers.blankOpen, handlers.blankCancel);
+      const fromAssist = byId("b66SkillStartAssist");
+      const safe = handlers || {};
+      fromFile.onclick = () => handOff(safe.fileOpen);
+      fromBlank.onclick = () => enter(byId("skillManualPanel"), safe.blankOpen, safe.blankCancel);
+      fromAssist.onclick = () => handOff(safe.assistOpen);
       fromFile.focus();
       return true;
     }

@@ -41,9 +41,10 @@ check(shell.includes('shellManualQuote') && shell.includes('새 양식 만들기
   shell.includes('id="shellNewQuote"'),
   "파일 기반 새 양식 등록은 새 견적 시작 버튼 바로 아래에 연결된다");
 check(app.includes('b66:open-skill-register') &&
-      app.includes('skillUiApi.actions.openWizard($("shellManualQuote"))') &&
+      app.includes('fileOpen: () => openSkillModule(') &&
+      app.includes('"quote-skill-auto.js"') &&
       app.includes('SkillUi.bindSkillSection'),
-  "파일을 선택해 검토하는 기존 Saved Skill 마법사를 사용한다");
+  "파일을 선택해 검토하는 양식 후보는 기존 추출 seam 과 후보 승인 경로를 사용한다");
 check(shell.includes('account.appendChild(accountButton)'),
   "rail moves actual account button");
 check(shell.includes('host.appendChild(preview)'),

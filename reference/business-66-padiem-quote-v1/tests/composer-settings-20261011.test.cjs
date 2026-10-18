@@ -35,7 +35,12 @@ assert.match(shell, /clickExisting\("settingsDriveChoice"\)/, "Drive shortcut re
 assert.match(html, /id="driveSettingsView"/, "Drive is a dedicated settings page");
 assert.match(app, /driveChoice\.addEventListener\("click"/, "Drive settings is functional");
 assert.match(shell, /newSection\.appendChild\(manual\)/, "file-based template creation is immediately below New Quote");
-assert.match(app, /skillUiApi\.actions\.openWizard\(\$\("shellManualQuote"\)\)/, "file wizard reused without approval bypass");
+assert.match(app, /fileOpen: \(\) => openSkillModule\(\s*\["quote-skill-auto\.js"\]/,
+  "file template entry stays on the approved candidate path");
+assert.match(src("quote-skill-auto.js"), /SavedQuoteSkillUi\.analyzeFile/,
+  "file template entry reuses the existing extraction seam");
+assert.match(src("quote-skill-auto.js"), /submitApprovalRequest/,
+  "file template entry reuses the existing candidate approval client");
 assert.match(polish, /#directStarter \{ display: none !important; \}/, "duplicate edit card hidden; edit tab remains");
 assert.match(shell, /senderNote\.hidden = !\(quotePaper\.getAttribute/, "CGI fixed sender disclosure is scoped");
 assert.match(shell, /readinessStatus\.textContent = ready \? "출력 준비" : "작성 중"/);
