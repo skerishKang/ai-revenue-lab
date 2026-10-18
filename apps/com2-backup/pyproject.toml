@@ -1,0 +1,10 @@
+[project]
+name = "padiem-com2-backup"
+version = "0.1.0"
+description = "Private COM2 backup transfer Worker (R2 upload, integrity and restore-check slice)"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
