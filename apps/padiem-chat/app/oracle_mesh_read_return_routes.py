@@ -2471,11 +2471,19 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             canonical_subject_id=payload["subject_id"],
         )
         bridged = await resolve_b54_session(identity, uid)
-    except Exception:
+    except Exception as exc:
+        # #5015: bounded stage identifiers only, never identity values.
+        print(
+            "claw_engine_bridge_failure"
+            f" code={getattr(exc, 'code', 'unknown')}"
+            f" type={type(exc).__name__}",
+            flush=True,
+        )
         return _error(401, "canonical_session_required")
     if (bridged is None
         or bridged.auth_session.subject.subject_id != payload["subject_id"]
         or not bridged.auth_session.tenant_id):
+        print("claw_engine_bridge_mismatch", flush=True)
         return _error(401, "canonical_session_required")
     session = bridged.auth_session
     if status_query:
