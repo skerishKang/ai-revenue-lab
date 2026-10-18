@@ -108,7 +108,7 @@ def _force_executable_route_for_max(monkeypatch: pytest.MonkeyPatch) -> None:
     """Let tier="max" reach adapter.execute instead of the route's own
     early tier_unavailable refusal, so the adapter-level max_tier_hold
     HOLD branch is what the tests actually exercise."""
-    import app.claw_general_routes as claw_general_routes
+    import app.central_model_route_runtime as route_runtime
     import app.model_policy as model_policy_module
     from padiem_control_plane import product_tier_routes as tier_routes
 
@@ -120,9 +120,14 @@ def _force_executable_route_for_max(monkeypatch: pytest.MonkeyPatch) -> None:
         model_id=model_policy_module.DEFAULT_B14_MODEL_ID,
         evidence="test-only synthetic Max route",
     )
-    monkeypatch.setattr(
-        claw_general_routes, "active_route_for", lambda label: synthetic
-    )
+    previous = route_runtime.active_route_for
+
+    def _route_for(label):
+        if label is tier_routes.ProductTierLabel.MAX:
+            return synthetic
+        return previous(label)
+
+    monkeypatch.setattr(route_runtime, "active_route_for", _route_for)
 
 
 def _hold_error(code: str) -> P01AdapterError:

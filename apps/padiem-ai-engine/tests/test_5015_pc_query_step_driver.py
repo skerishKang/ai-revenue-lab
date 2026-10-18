@@ -23,6 +23,33 @@ from padiem_ai_core.tool_runtime import ToolExecutionResult
 from padiem_ai_core.contracts import ToolEvent, RunStatus
 
 
+def test_stream_owner_binding_is_exact_and_narrow():
+    """#5015: only the canonical PC-query plan may carry a stream owner."""
+    from types import SimpleNamespace
+
+    from app.orchestration_service import _pc_query_stream_owner
+
+    plan = SimpleNamespace(agent_id="agent:padiem:claw-pc-query@1")
+    request = SimpleNamespace(
+        agent_plan=plan,
+        subject_id="sub_" + "a" * 32,
+        execution_request=SimpleNamespace(session_id="run_5015"),
+    )
+    assert _pc_query_stream_owner("b54-padiem-claw", request) == (
+        "sub_" + "a" * 32, "run_5015",
+    )
+
+    # A different plan, product, or missing identity never receives an owner.
+    for app_id, override in (
+        ("b54-padiem-claw", {"agent_plan": SimpleNamespace(agent_id="agent:padiem:claw-desktop@1")}),
+        ("other-app", {}),
+        ("b54-padiem-claw", {"subject_id": None}),
+        ("b54-padiem-claw", {"execution_request": SimpleNamespace(session_id=None)}),
+    ):
+        candidate = SimpleNamespace(**{**vars(request), **override})
+        assert _pc_query_stream_owner(app_id, candidate) is None
+
+
 def test_model_selects_drive_tool_as_first_step_then_sees_result():
     seen = []
 

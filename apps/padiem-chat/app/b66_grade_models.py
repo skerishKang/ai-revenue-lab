@@ -37,10 +37,29 @@ B66_ADMIN_NAME = "Padiem 관리자"
 
 
 def b66_grade_model_id(tier: object) -> str | None:
-    """Return the grade model for a B66 tier, or ``None`` when unknown."""
+    """Return the static grade model for a B66 tier, or ``None`` when unknown."""
     if not isinstance(tier, str):
         return None
     return B66_GRADE_MODEL_IDS.get(tier)
+
+
+async def b66_grade_model_id_for_request(request: Request, tier: object) -> str | None:
+    """Return the centrally routed B66 grade model, or ``None`` when denied.
+
+    A missing central row keeps the static B66 map. A disabled or unavailable
+    central row fails closed; the route is never widened to another grade.
+    """
+    if not isinstance(tier, str):
+        return None
+    static_model = B66_GRADE_MODEL_IDS.get(tier)
+    if static_model is None:
+        return None
+    from .central_model_route_runtime import resolve_tier_route
+
+    resolution = await resolve_tier_route(
+        request, product="b66", tier=tier.upper(), static_primary=static_model,
+    )
+    return resolution.model_id if resolution.ok else None
 
 
 async def b66_verified_admin(request: Request, user_id: str) -> bool:
@@ -62,5 +81,6 @@ __all__ = [
     "B66_GRADE_NAMES",
     "B66_GRADES",
     "b66_grade_model_id",
+    "b66_grade_model_id_for_request",
     "b66_verified_admin",
 ]

@@ -42,6 +42,7 @@ from .b66_grade_models import (
     B66_GRADE_NAMES,
     B66_GRADES,
     b66_grade_model_id,
+    b66_grade_model_id_for_request,
     b66_verified_admin,
 )
 from padiem_control_plane.product_tier_routes import (
@@ -426,14 +427,17 @@ async def b66_quote_models(request: Request) -> JSONResponse:
     member_grade = await verified_member_grade(request, uid, access)
     permitted = grade_order[:grade_order.index(member_grade)+1]
     available_ids = {row["model_id"] for row in models}
-    grade_choices = [
-        {"tier": grade, "name": B66_GRADE_NAMES[grade],
-         "model_id": B66_GRADE_MODEL_IDS[grade],
-         "reasoning_levels": reasoning_options_for_model(
-             B66_GRADE_MODEL_IDS[grade], transport_supported=_reasoning_transport_supported(request))}
-        for grade in permitted
-        if B66_GRADE_MODEL_IDS[grade] in available_ids
-    ]
+    grade_choices = []
+    for grade in permitted:
+        grade_model = await b66_grade_model_id_for_request(request, grade)
+        if grade_model is None or grade_model not in available_ids:
+            continue
+        grade_choices.append({
+            "tier": grade, "name": B66_GRADE_NAMES[grade],
+            "model_id": grade_model,
+            "reasoning_levels": reasoning_options_for_model(
+                grade_model, transport_supported=_reasoning_transport_supported(request)),
+        })
     if await b66_verified_admin(request, uid) and MUSE_B14_MODEL_ID in available_ids:
         grade_choices.append(
             {"tier": B66_ADMIN_GRADE, "name": B66_ADMIN_NAME,
@@ -496,7 +500,9 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
             member_grade = await verified_member_grade(request, uid, access)
             if grade_order.index(selected_grade) > grade_order.index(member_grade):
                 return _error(403, "tier_not_available", "이용 등급 이하의 AI 등급을 선택해 주세요.")
-            expected_model = B66_GRADE_MODEL_IDS[selected_grade]
+            expected_model = await b66_grade_model_id_for_request(request, selected_grade)
+            if expected_model is None:
+                return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
         if data.get("model_id") not in (None, expected_model):
             return _error(400, "invalid_model_id", "선택한 등급의 AI 모델과 일치하지 않습니다.")
         model_id = expected_model

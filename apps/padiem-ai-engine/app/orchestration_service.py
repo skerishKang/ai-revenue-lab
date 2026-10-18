@@ -359,6 +359,36 @@ def _b14_model_error_status(exc: ExecutionRuntimeError) -> int:
     return 429
 
 
+_PC_QUERY_STREAM_AGENT_IDS = frozenset({
+    "agent:padiem:claw-pc-query@1",
+    "agent:padiem:chat-pc-query@1",
+})
+_PC_QUERY_STREAM_APP_IDS = frozenset({"b54-padiem-claw", "padiem-chat"})
+
+
+def _pc_query_stream_owner(app_id: str, request: Any) -> tuple[str, str] | None:
+    """Trusted owner binding for the streaming PC drive tool (#5015).
+
+    Only the exact canonical PC-query plan under its own product identity may
+    carry an owner. Every other stream keeps the context unset, exactly as the
+    non-stream admission lane leaves it for non-PC-query work.
+    """
+    plan = getattr(request, "agent_plan", None)
+    subject_id = getattr(request, "subject_id", None)
+    session_id = getattr(getattr(request, "execution_request", None), "session_id", None)
+    if (
+        app_id not in _PC_QUERY_STREAM_APP_IDS
+        or not isinstance(subject_id, str)
+        or not subject_id
+        or not isinstance(session_id, str)
+        or not session_id
+        or plan is None
+        or getattr(plan, "agent_id", None) not in _PC_QUERY_STREAM_AGENT_IDS
+    ):
+        return None
+    return (subject_id, session_id)
+
+
 class OrchestrationEngineService:
     """Pure-Python internal request handler for Unified Orchestration Pipeline."""
 
@@ -1435,7 +1465,19 @@ class OrchestrationEngineService:
             idempotency=self._idempotency_adapter,
             event_sink=queue.put_nowait,
         )
-        task = asyncio.create_task(runner.run(orch_req))
+        # #5015: the streaming lane runs the Core runner directly, so it never
+        # passes through the admission wrapper that sets the tool-owner
+        # context for the non-stream lane. The PC drive tool handler fails
+        # closed without it (pc_query_admission_required) and no Chat dispatch
+        # is ever created. Bind the owner only for the exact canonical
+        # PC-query plan; every other stream keeps the unset default.
+        from app.claw_pc_query_step_driver import _PC_QUERY_OWNER
+
+        pc_owner_token = _PC_QUERY_OWNER.set(_pc_query_stream_owner(app_id, orch_req))
+        try:
+            task = asyncio.create_task(runner.run(orch_req))
+        finally:
+            _PC_QUERY_OWNER.reset(pc_owner_token)
         first_event_task = asyncio.ensure_future(queue.get())
         done, _pending = await asyncio.wait(
             {first_event_task, task},

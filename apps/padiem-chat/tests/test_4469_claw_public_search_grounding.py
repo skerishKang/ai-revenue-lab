@@ -99,7 +99,10 @@ def adapter_for(client):
 
 
 def seam(client, messages, *, enabled=True, selected_model_id="test/selected-model"):
-    return run(_claw_public_search_grounding(Request(State(enabled=enabled)), adapter_for(client), messages, selected_model_id))
+    return run(_claw_public_search_grounding(
+        Request(State(enabled=enabled)), adapter_for(client), messages,
+        model_id=selected_model_id,
+    ))
 
 
 # --- the model, not a keyword list, decides ---------------------------------
@@ -168,6 +171,14 @@ def test_one_request_makes_exactly_one_judgement_and_one_search():
 def test_operational_off_still_means_zero_model_and_zero_search_calls():
     engine = FakeEngine(NEEDS_SEARCH)
     assert seam(engine, turns(("user", "오늘 한국은행 기준금리는?")), enabled=False) == (None, ())
+    assert engine.judge_calls == [] and engine.evidence_calls == []
+
+
+@pytest.mark.parametrize("model_id", [None, "", "   "])
+def test_missing_selected_model_does_not_invoke_judgement_or_search(model_id):
+    engine = FakeEngine(NEEDS_SEARCH)
+    assert seam(engine, turns(("user", "오늘 한국은행 기준금리는?")),
+                selected_model_id=model_id) == (None, ())
     assert engine.judge_calls == [] and engine.evidence_calls == []
 
 

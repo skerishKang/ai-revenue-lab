@@ -71,11 +71,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .member_grade_access import selected_grade_denial
-from padiem_control_plane.product_tier_routes import (
-    ProductTierLabel,
-    ProductTierRoutesError,
-    active_route_for,
-)
+from padiem_control_plane.product_tier_routes import ProductTierLabel
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -530,11 +526,12 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         )
         if tier_denial is not None:
             return tier_denial
-    try:
-        tier_route = active_route_for(product_tier)
-    except ProductTierRoutesError:
-        return _error(503, "tier_unavailable", "AI 등급 설정을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
-    if tier_route is None or not tier_route.model_id:
+    # #4428: resolve the central per-grade route before quota/dispatch. An
+    # absent row preserves the historical static declaration.
+    from .central_model_route_runtime import resolve_claw_tier_model
+
+    claw_route = await resolve_claw_tier_model(request, raw_tier.strip().lower())
+    if not claw_route.ok or not claw_route.model_id:
         return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
 
     try:
@@ -650,7 +647,8 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
 
     try:
         outcome = await adapter.execute(
-            run, product_tier=product_tier, subject_id=subject_id
+            run, product_tier=product_tier, subject_id=subject_id,
+            central_route_model_id=claw_route.model_id,
         )
     except P01AdapterError as exc:
         # Canonical #830 invariant: refund only when B62 can prove the Engine

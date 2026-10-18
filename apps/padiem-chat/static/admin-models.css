@@ -508,3 +508,40 @@ footer{color:#526574}
 #applyBtn[hidden], #policyHistory[hidden] { display:none !important; }
 #policyHistory { margin-top:12px; }
 #policyHistory input[type="number"] { max-width:110px; margin:8px; padding:8px; border-radius:8px; }
+
+/* #4428 S4: per-product/tier execution routes (runtime-enforced). */
+.route-editor{margin-top:16px}
+.route-note{margin:-4px 0 16px;color:#60707c;font-size:11px;line-height:1.65}
+.route-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:end}
+.route-form .setting-item select{background:rgba(255,255,255,.72);border-color:rgba(255,255,255,.7);color:#1b2a35}
+.route-toggle{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:650;color:#53606c;padding:0 0 11px}
+.route-toggle input{width:16px;height:16px;accent-color:#376e93}
+.route-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+.btn{border:1px solid rgba(255,255,255,.72);background:rgba(255,255,255,.66);border-radius:10px;padding:10px 14px;font-size:11px;font-weight:750;color:#2e688e}
+.btn:not(:disabled):hover{background:rgba(121,188,231,.20);border-color:rgba(121,188,231,.55)}
+.route-actions .btn.primary{width:auto;margin-top:0}
+.route-table{margin-top:16px;border:1px solid rgba(255,255,255,.6);border-radius:11px;overflow:hidden;background:rgba(249,251,252,.5)}
+.route-row{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,.5fr) minmax(0,1.5fr) minmax(0,1.2fr) minmax(0,.9fr);gap:8px;align-items:center;width:100%;padding:10px 12px;border:0;border-top:1px solid rgba(255,255,255,.55);background:transparent;font-size:11px;color:#1b2a35;text-align:left}
+.route-row-head{padding:9px 12px;background:rgba(244,247,249,.6);color:#63717e;font-size:10px;font-weight:750;border-top:0}
+button.route-row{cursor:pointer}
+button.route-row:hover{background:rgba(121,188,231,.16)}
+.route-row span{overflow-wrap:anywhere}
+.route-row .central{color:#177357;font-weight:750}
+.route-row .off{color:#a7444b;font-weight:750}
+.route-row .static{color:#7d6f57;font-weight:650}
+.route-history{margin-top:14px;border-top:1px solid rgba(255,255,255,.55);padding-top:5px}
+.route-history summary{cursor:pointer;padding:9px 2px;font-size:11px;font-weight:750;color:#2e688e;list-style:none}
+.route-history summary::-webkit-details-marker{display:none}
+.route-history summary:before{content:"▸";padding-right:8px;color:#7b8b98}
+.route-history[open] summary:before{content:"▾"}
+#routeEvents{display:grid;gap:7px;padding:4px 0 10px}
+#routeEvents .source-card{background:rgba(249,251,252,.55);border-color:rgba(255,255,255,.6)}
+@media(max-width:900px){
+  .route-form{grid-template-columns:1fr}
+  .route-row{grid-template-columns:minmax(0,.9fr) minmax(0,.5fr) minmax(0,1.4fr) minmax(0,1.1fr) minmax(0,.9fr)}
+}
+@media(max-width:650px){
+  .route-row{grid-template-columns:minmax(0,1fr) minmax(0,.5fr) minmax(0,1.3fr) minmax(0,1fr);font-size:10px}
+  .route-row span:nth-child(4){display:none}
+  .route-row-head span:nth-child(4){display:none}
+}

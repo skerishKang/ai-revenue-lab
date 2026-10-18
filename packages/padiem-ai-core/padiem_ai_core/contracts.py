@@ -270,6 +270,10 @@ class ToolEvent:
     status: RunStatus
     duration_ms: int | None = None
     error_class: ErrorClass | None = None
+    # #5015: the bounded ToolHandlerError stage code, so a failed tool keeps
+    # its reviewed cause (e.g. admission vs transport) instead of collapsing
+    # into the generic runtime class. Never raw provider text or user data.
+    error_code: str | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "tool_id", _identifier("tool_id", self.tool_id))
@@ -279,6 +283,8 @@ class ToolEvent:
             raise ValueError("duration_ms must be a non-negative integer or None")
         if self.error_class is not None and not isinstance(self.error_class, ErrorClass):
             raise ValueError("error_class must be ErrorClass or None")
+        if self.error_code is not None:
+            object.__setattr__(self, "error_code", _identifier("error_code", self.error_code))
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
@@ -286,6 +292,7 @@ class ToolEvent:
             "status": self.status.value,
             "duration_ms": self.duration_ms,
             "error_class": self.error_class.value if self.error_class is not None else None,
+            "error_code": self.error_code,
         }
 
 

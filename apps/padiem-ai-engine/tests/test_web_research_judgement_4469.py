@@ -1,8 +1,8 @@
 """#4469: the Engine judges whether a conversation needs public web evidence.
 
-The judgement is one model call with zero retrieval and zero answer, on the Router-owned
-fixed chain, so the caller's selected answer model stays untouched and nothing private is
-allowed to be promoted into a public search query.
+The judgement is one model call with zero retrieval and zero answer, using the
+request's validated explicit model. Nothing private may be promoted into a public
+search query.
 """
 from __future__ import annotations
 
@@ -107,6 +107,25 @@ def test_judgement_uses_the_request_validated_explicit_model():
     assert agent.model_policy["model"] == "vendor/selected-route"
     assert agent.allowed_tools == ()
     assert agent.max_steps == 1
+
+
+@pytest.mark.parametrize("policy,status,code", [
+    (None, 400, "invalid_request"),
+    ({"model": ""}, 400, "invalid_request"),
+    ({"model": "   "}, 400, "invalid_request"),
+    ({"model": "b14/auto"}, 422, "auto_routing_deferred"),
+])
+def test_missing_or_auto_model_is_rejected_without_a_model_call(policy, status, code):
+    engine, runtime = service(verdict(False, None, "stable_knowledge"))
+    payload = request()
+    if policy is None:
+        payload["agent"].pop("model_policy")
+    else:
+        payload["agent"]["model_policy"] = policy
+    result = asyncio.run(engine.research_payload(payload))
+    assert result.status_code == status
+    assert result.body["error"]["code"] == code
+    assert runtime.requests == []
 
 
 # --- the three outcomes the product needs -----------------------------------

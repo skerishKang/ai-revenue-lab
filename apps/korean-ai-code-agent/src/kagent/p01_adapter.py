@@ -286,6 +286,7 @@ def _agent_profile(
     product_tier: ProductTierLabel = ProductTierLabel.PLUS,
     *,
     selected_model_id: str | None = None,
+    central_route_model_id: str | None = None,
 ) -> AgentProfile:
     """Return the conservative B54 product profile consumed by P01.
 
@@ -306,6 +307,12 @@ def _agent_profile(
             dispatch_class=P01DispatchClass.NOT_DISPATCHED,
         ) from exc
 
+    if central_route_model_id is not None and selected_model_id is not None:
+        raise P01AdapterError(
+            "conflicting_model_selection",
+            "A central route and a member model choice cannot be dispatched together.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
     if selected_model_id is not None:
         if product_tier is ProductTierLabel.FREE:
             if selected_model_id not in (FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID):
@@ -320,11 +327,17 @@ def _agent_profile(
                 "Explicit model choice is not enabled for this tier.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
-    chosen_model = (
-        validate_explicit_b14_model_id(selected_model_id)
-        if selected_model_id is not None
-        else (route.model_id if route is not None else None)
-    )
+    # #4428: a central route is server-resolved against the live B14 catalog by
+    # the product before this call. It is not a member choice and cannot grant
+    # a tier; the verified product_tier still travels for B14 routing options.
+    if central_route_model_id is not None:
+        chosen_model = validate_explicit_b14_model_id(central_route_model_id)
+    else:
+        chosen_model = (
+            validate_explicit_b14_model_id(selected_model_id)
+            if selected_model_id is not None
+            else (route.model_id if route is not None else None)
+        )
     if chosen_model is None:
         code = "max_tier_hold" if product_tier is ProductTierLabel.MAX else "tier_hold"
         raise P01AdapterError(
@@ -413,6 +426,7 @@ class P01RequestFactory:
         product_tier: ProductTierLabel | None = None,
         subject_id: str | None = None,
         selected_model_id: str | None = None,
+        central_route_model_id: str | None = None,
         additional_system_context: str | None = None,
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
@@ -467,6 +481,7 @@ class P01RequestFactory:
             agent=_agent_profile(
                 product_tier or self._product_tier,
                 selected_model_id=selected_model_id,
+                central_route_model_id=central_route_model_id,
             ),
             messages=({"role": "user", "content": run.intent.task},),
             session_id=run.run_id,
@@ -764,6 +779,7 @@ class P01CoreOrchestrationAdapter:
         product_tier: ProductTierLabel | None = None,
         subject_id: str | None = None,
         selected_model_id: str | None = None,
+        central_route_model_id: str | None = None,
         additional_system_context: str | None = None,
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
@@ -777,6 +793,7 @@ class P01CoreOrchestrationAdapter:
                 product_tier=product_tier,
                 subject_id=subject_id,
                 selected_model_id=selected_model_id,
+                central_route_model_id=central_route_model_id,
                 additional_system_context=additional_system_context,
                 desktop_capture=desktop_capture,
                 desktop_device_id=desktop_device_id,

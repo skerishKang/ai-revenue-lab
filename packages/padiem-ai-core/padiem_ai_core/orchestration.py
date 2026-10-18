@@ -1095,6 +1095,7 @@ class OrchestrationRunner:
                                 "tool_id": te.tool_id,
                                 "status": "failed",
                                 "error_class": te.error_class.value if te.error_class else None,
+                                "error_code": te.error_code,
                             })
                     await _abort_idempotency(bridge_res.terminal_reason.value)
                     emit(OrchestrationEventKind.RUN_FAILED, f"Agent terminal failure: {bridge_res.terminal_reason.value}", {"error": bridge_res.terminal_reason.value})

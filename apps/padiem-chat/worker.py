@@ -32,6 +32,9 @@ from app.claw_automation_scheduled_execution import (
     compose_scheduled_automation_execution,
 )
 from app.claw_automation_store import D1ClawAutomationStore
+from app.central_model_policy_d1 import D1CentralModelPolicyStore
+from app.central_model_route_d1 import D1CentralModelRouteStore
+from app.central_model_route_runtime import resolve_claw_tier_model_from_stores
 from app.claw_local_access_composition import (
     build_claw_local_access_source_with_diagnostic,
 )
@@ -138,6 +141,25 @@ async def run_scheduled_automation_source(
         return None
     try:
         store = D1ClawAutomationStore(db_binding)
+        # Background automation executes at the default Claw product tier. A
+        # stored central route supplies the exact model; without one the
+        # existing adapter contract is untouched. A stored row that resolves to
+        # nothing (disabled, or every candidate blocked) fails the pass closed
+        # rather than silently reusing the historical static route.
+        try:
+            route_store = D1CentralModelRouteStore(db_binding)
+            policy_store = D1CentralModelPolicyStore(db_binding)
+        except Exception:
+            route_store = None
+            policy_store = None
+        claw_route = await resolve_claw_tier_model_from_stores(
+            route_store, policy_store, "plus"
+        )
+        if not claw_route.ok:
+            return None
+        central_route_model_id = (
+            claw_route.model_id if claw_route.source == "central" else None
+        )
         identity_authority = CloudflareControlPlaneIdentityAuthority(identity_binding)
         boundary = ClawAutomationTriggerBoundary(ClawAutomationTickRuntime(store))
         discovery = compose_canonical_due_workspace_discovery(
@@ -179,6 +201,7 @@ async def run_scheduled_automation_source(
             owner_resolver=owner_resolver,
             history_store=history_store,
             task_alert_store=task_alert_store,
+            central_route_model_id=central_route_model_id,
             now=now or datetime.now(timezone.utc),
         )
     except Exception:

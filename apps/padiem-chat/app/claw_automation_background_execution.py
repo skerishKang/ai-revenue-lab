@@ -571,6 +571,7 @@ async def compose_background_execution(
     recovery_bound: int = _DEFAULT_RECOVERY_BOUND,
     lease: SandboxLease | None = None,
     product_tier: Any | None = None,
+    central_route_model_id: str | None = None,
     completed_at: datetime | None = None,
     clock: Callable[[], datetime] | None = None,
     trigger_receipt: ClawAutomationTriggerReceipt | None = None,
@@ -723,15 +724,15 @@ async def compose_background_execution(
 
         execution_claimed.append(run.run_id)
         try:
+            execution_kwargs: dict[str, Any] = {
+                "rule": rule, "scheduled_run": claimed, "adapter": adapter,
+                "store": store, "lease": lease, "product_tier": product_tier,
+                "completed_at": completed_at, "clock": clock,
+            }
+            if central_route_model_id is not None:
+                execution_kwargs["central_route_model_id"] = central_route_model_id
             projection = await execute_and_project_scheduled_occurrence(
-                rule=rule,
-                scheduled_run=claimed,
-                adapter=adapter,
-                store=store,
-                lease=lease,
-                product_tier=product_tier,
-                completed_at=completed_at,
-                clock=clock,
+                **execution_kwargs
             )
         except Exception:
             # Absorb a P01 execution exception only after the existing terminal

@@ -64,8 +64,8 @@ _TOP_LEVEL_ALLOWED = frozenset(
 # #4469: AI conversation judgement for public web search. The judgement is
 # Engine-owned and product-neutral: it decides whether current public evidence is
 # needed and how to ask for it. It never retrieves, never answers, and grants no
-# tool or provider authority. The fixed `b14/auto` chain stays on the Router side,
-# so the caller's selected answer model is untouched.
+# tool or provider authority. Required model calls reuse the request's validated
+# explicit model; a missing model never selects an internal default.
 _JUDGE_INSTRUCTION = (
     "Decide whether this conversation needs current public web evidence to answer "
     "accurately. Search only for facts that can have changed outside the model: news, "

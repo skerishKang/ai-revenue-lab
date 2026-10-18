@@ -27,6 +27,11 @@ from .b66_member_inquiries import (
 )
 from .central_model_admin_identity import D1CentralModelAdminAuthorizer
 from .central_model_policy_d1 import D1CentralModelPolicyStore
+from .central_model_route_d1 import D1CentralModelRouteStore
+from .central_model_route_routes import (
+    central_model_route_apply, central_model_route_preview,
+    central_model_route_rollback_preview, central_model_routes_get,
+)
 from .central_model_control_routes import (
     central_model_admin_me, central_model_admin_snapshot,
     central_model_admin_preview,
@@ -386,6 +391,7 @@ def create_app(
     connector_owner_enrollment=None,
     github_oauth_store=None,
     github_oauth_provider=None,
+    central_model_route_store=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -397,6 +403,10 @@ def create_app(
         Route("/api/admin/models/change-apply", central_model_change_apply, methods=["POST"]),
         Route("/api/admin/models/rollback-preview", central_model_rollback_preview, methods=["POST"]),
         Route("/api/admin/models/audit", central_model_change_audit, methods=["GET"]),
+        Route("/api/admin/models/routes", central_model_routes_get, methods=["GET"]),
+        Route("/api/admin/models/route-preview", central_model_route_preview, methods=["POST"]),
+        Route("/api/admin/models/route-apply", central_model_route_apply, methods=["POST"]),
+        Route("/api/admin/models/route-rollback-preview", central_model_route_rollback_preview, methods=["POST"]),
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
@@ -787,11 +797,19 @@ def create_app(
         except ValueError:
             global_model_admin = None
     app.state.central_model_admin_authorizer = global_model_admin
-    # S2 read-only D1 policy inventory. Migration 039 and verified global
-    # administrator remain separately gated. DO NOT wire apply or dispatch.
+    # S2 read-only D1 policy inventory. The allow/block ledger remains
+    # stored-only; only the #4428 per-grade routes below are read at dispatch.
     app.state.central_model_policy_store = (
         central_model_policy_store if central_model_policy_store is not None
         else D1CentralModelPolicyStore(d1_binding)
+        if d1_binding is not None and callable(getattr(d1_binding, "batch", None))
+        and callable(getattr(d1_binding, "prepare", None)) else None
+    )
+    # Migration 050 route ledger. Without it, runtime selection keeps the
+    # historical static product contract (never a wider model set).
+    app.state.central_model_route_store = (
+        central_model_route_store if central_model_route_store is not None
+        else D1CentralModelRouteStore(d1_binding)
         if d1_binding is not None and callable(getattr(d1_binding, "batch", None))
         and callable(getattr(d1_binding, "prepare", None)) else None
     )

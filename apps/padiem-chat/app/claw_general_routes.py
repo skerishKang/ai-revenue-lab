@@ -41,8 +41,6 @@ from starlette.responses import JSONResponse, Response
 from .member_grade_access import selected_grade_denial
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
-    ProductTierRoutesError,
-    active_route_for,
     FREE_PRIMARY_B14_MODEL_ID,
     FREE_FALLBACK_B14_MODEL_ID,
 )
@@ -527,7 +525,7 @@ def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
 
 
 async def _claw_public_search_grounding(
-    request: Request, adapter: Any, messages: Any, selected_model_id: str | None = None
+    request: Request, adapter: Any, messages: Any, *, model_id: str | None = None
 ) -> tuple[str | None, tuple[dict[str, str], ...]]:
     """Let the model decide, then reuse the existing Engine evidence operation once.
 
@@ -547,9 +545,9 @@ async def _claw_public_search_grounding(
     digest = build_judgement_digest(messages)
     if digest is None:
         return denied
-    if not isinstance(selected_model_id, str) or not selected_model_id.strip():
+    if not isinstance(model_id, str) or not model_id.strip():
         return denied
-    agent = evidence_agent(selected_model_id)
+    agent = evidence_agent(model_id)
     try:
         verdict = verdict_from_model(await judge(conversation=digest, agent=agent))
     except Exception:
@@ -1123,26 +1121,42 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         )
         if tier_denial is not None:
             return tier_denial
+    # #4428: the central per-grade route is resolved SERVER-SIDE before any
+    # browser model choice is considered. A stored row is authoritative; no row
+    # keeps the historical static declaration.
+    from .central_model_route_runtime import resolve_claw_tier_model
+
+    claw_route = await resolve_claw_tier_model(request, raw_tier.strip().lower())
+    route_candidates = {
+        model_id for model_id in (claw_route.model_id, claw_route.fallback_model_id)
+        if model_id is not None
+    }
     raw_model = data.get("model_id")
     selected_model_id: str | None = None
+    central_route_model_id: str | None = None
     if raw_model is not None:
         try:
             selected_model_id = validate_explicit_b14_model_id(raw_model)
         except P01AdapterError:
             return _error(422, "invalid_selected_model", "등록된 B14 모델 ID 하나를 선택해 주세요.")
         if product_tier is ProductTierLabel.FREE:
-            if selected_model_id not in (FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID):
+            if selected_model_id not in route_candidates and selected_model_id not in (
+                FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID,
+            ):
                 return _error(403, "model_not_available_for_tier", "Free 등급에서 선택할 수 없는 모델입니다.")
         elif product_tier is not ProductTierLabel.PLUS:
             return _error(422, "explicit_model_tier_unsupported", "이 등급의 모델 직접 선택은 아직 지원되지 않습니다.")
-    try:
-        tier_route = active_route_for(product_tier)
-    except ProductTierRoutesError:
-        return _error(503, "tier_unavailable", "AI 등급 설정을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
-    if selected_model_id is None and (tier_route is None or not tier_route.model_id):
-        if product_tier is ProductTierLabel.PLUS:
-            return _error(503, "tier_unavailable", "Claw Plus에서는 등록된 실행 모델 ID를 직접 선택해 주세요.")
-        return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+    if selected_model_id is None:
+        if not claw_route.ok or not claw_route.model_id:
+            if product_tier is ProductTierLabel.PLUS:
+                return _error(503, "tier_unavailable", "Claw Plus에서는 등록된 실행 모델 ID를 직접 선택해 주세요.")
+            return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+        central_route_model_id = claw_route.model_id
+    elif selected_model_id in route_candidates:
+        # A model already assigned by the central route is not treated as an
+        # unrestricted member choice; it still travels as an exact model.
+        central_route_model_id = selected_model_id
+        selected_model_id = None
 
     # #3929: optional SAME-CONVERSATION follow-ups are verified against the
     # existing owner-scoped D1 conversation before quota/provider. No model,
@@ -1214,7 +1228,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
     # before quota/P01. Test-only deployments without this optional view still
     # rely on B14's final exact-ID execution authority.
-    if selected_model_id is not None:
+    if selected_model_id is not None or central_route_model_id is not None:
         choice_authority = getattr(request.app.state, "b14_model_choice_resolver", None)
         if choice_authority is not None:
             list_fn = getattr(choice_authority, "list_selectable_models", None)
@@ -1227,8 +1241,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 eligible_ids = {row["model_id"] for row in available}
             except (Exception,):
                 return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
-            if selected_model_id not in eligible_ids:
-                return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 모델을 선택해 주세요.")
+            target_model = selected_model_id or central_route_model_id
+            if target_model not in eligible_ids:
+                # Only a server-resolved central route may advance to its
+                # explicitly configured fallback. A member choice never does.
+                if (selected_model_id is None
+                        and claw_route.fallback_model_id in eligible_ids):
+                    central_route_model_id = claw_route.fallback_model_id
+                else:
+                    return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 모델을 선택해 주세요.")
 
     live_requested = (
         request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
@@ -1394,12 +1415,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # uses, never browser-supplied prior turns, so forged history cannot move the
     # search target. Everything downstream is unchanged when it returns nothing.
     # Private Drive data never enters the public web search judgement/query.
-    if drive_context is None:
+    if initial_pc_drive_query:
+        # #5015: a PC drive query needs no public web evidence. Skipping the
+        # judgement call keeps this turn from spending a model call (and from
+        # entering the suspended b14/auto chain) before the Engine dispatch.
+        grounding_context, search_sources = None, ()
+    elif drive_context is None:
         grounding_context, search_sources = await _claw_public_search_grounding(
-            request,
-            adapter,
-            model_user_text,
-            selected_model_id if selected_model_id is not None else getattr(tier_route, "model_id", None),
+            request, adapter, model_user_text,
+            model_id=selected_model_id or central_route_model_id,
         )
     else:
         grounding_context, search_sources = drive_context, drive_sources
@@ -1452,6 +1476,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             live_args["pc_drive_query"] = True
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
+        if central_route_model_id is not None:
+            live_args["central_route_model_id"] = central_route_model_id
         if grounding_context is not None:
             live_args["additional_system_context"] = grounding_context
         async def after_verified_live_completion(answer: str) -> str | None:
@@ -1495,6 +1521,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             dispatch_args["pc_drive_query"] = True
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
+        if central_route_model_id is not None:
+            dispatch_args["central_route_model_id"] = central_route_model_id
         if grounding_context is not None:
             dispatch_args["additional_system_context"] = grounding_context
         outcome = await adapter.execute(run, **dispatch_args)
