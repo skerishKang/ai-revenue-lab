@@ -550,3 +550,48 @@ def test_lane_complete_decision_answers_without_engine():
     assert bridge.requests == []
     assert history.staged is None
 
+def test_5015_chat_mesh_grant_denial_is_operator_only(caplog):
+    import asyncio
+    import logging
+    from types import SimpleNamespace
+    from app.chat_pc_drive import _check_mesh_grant
+
+    class Identity:
+        async def resolve_connector_owner_scope(self, *, session_id):
+            assert session_id == "session-private"
+            return {"account_ref": "account-private"}
+
+    class Source:
+        configured = True
+        execution_mode = "mesh"
+
+        def __init__(self, target=None):
+            self.target = target
+
+        def command_target(self, *, account_ref, device_id):
+            assert account_ref == "account-private" and device_id is None
+            return self.target
+
+    def request(source, identity):
+        return SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+            oracle_mesh_return_source=source,
+            control_plane_identity_authority=identity,
+        )))
+
+    session = SimpleNamespace(session_id="session-private")
+    cases = [
+        (None, request(Source({}), Identity()), "canonical_session_missing"),
+        (session, request(None, Identity()), "mesh_source_unconfigured"),
+        (session, request(SimpleNamespace(execution_mode="off"), Identity()), "mesh_mode_not_mesh"),
+        (session, request(Source({}), None), "scope_method_unavailable"),
+        (session, request(Source(None), Identity()), "command_target_missing_or_ambiguous"),
+    ]
+    with caplog.at_level(logging.WARNING, logger="padiem.chat.pc_drive.grant"):
+        for current, req, reason in cases:
+            assert asyncio.run(_check_mesh_grant(req, current)) is False
+            assert "chat_pc_mesh_grant_denied reason=" + reason in caplog.text
+        assert asyncio.run(_check_mesh_grant(
+            request(Source({"node_ref": "node-private"}), Identity()), session
+        )) is True
+    for private in ("session-private", "account-private", "node-private"):
+        assert private not in caplog.text

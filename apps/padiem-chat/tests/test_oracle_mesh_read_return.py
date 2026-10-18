@@ -960,3 +960,23 @@ def test_4979_waited_channel_keeps_secret_gate(monkeypatch):
     status, body, _ = call(routes.oracle_mesh_read_poll, request)
     assert status == 403
     assert body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+def test_5015_mesh_source_secret_read_logs_category_not_exception(caplog):
+    import asyncio
+    import logging
+    from types import SimpleNamespace
+
+    class DeniedSecretStore:
+        async def get(self):
+            raise RuntimeError("private-binding-error")
+
+    env = SimpleNamespace(
+        ORACLE_MESH_OWNERSHIP_MAP=DeniedSecretStore(),
+        ORACLE_MESH_CHANNEL_SECRET="s" * 32,
+        ORACLE_MESH_EXECUTION_MODE="mesh",
+    )
+    with caplog.at_level(logging.WARNING, logger="padiem.mesh.source_composition"):
+        assert asyncio.run(routes.build_oracle_mesh_return_source_from_env(env)) is None
+    assert "oracle_mesh_source_unavailable reason=ownership_map_read_failed" in caplog.text
+    assert "private-binding-error" not in caplog.text
+    assert "ssssss" not in caplog.text
