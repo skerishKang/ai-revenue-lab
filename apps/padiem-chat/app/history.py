@@ -1084,6 +1084,71 @@ class D1HistoryStore:
         )
         return run_id
 
+    async def record_chat_pc_drive_run(
+        self, *, user_id: str, run_id: str, workspace_id: str,
+        user_text: str, conversation_id: str | None,
+    ) -> str:
+        """Stage a real b62 Chat owner conversation + pending PC drive run.
+
+        Chat-product twin of :meth:`record_txt_pending_run` for the #5015
+        model-driven drive lane: same conversation/user-message/run shape and
+        the same PRODUCT_SCOPE_CHAT ownership, but action
+        ``"pc_drive_query"`` and no Claw title prefix, so a Chat turn never
+        reads as a Claw turn. The verified Mesh result alone is allowed to
+        insert the assistant message later.
+        """
+        workspace = _safe_identifier("workspace_id", workspace_id)
+        content = _bounded_text(user_text, "user_text")
+        cid = validate_conversation_id(conversation_id)
+        creating = cid is None
+        project_id = None
+        if creating:
+            cid = _chat_id()
+            sequence = 0
+        else:
+            owned = await self._first(
+                "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+                cid, user_id, PRODUCT_SCOPE_CHAT,
+            )
+            if not owned:
+                raise HistoryForbidden("conversation is not owned by current user")
+            project_id = owned.get("project_id")
+            found = await self._first(
+                "SELECT MAX(sequence_number) AS max_sequence FROM messages WHERE conversation_id=?",
+                cid,
+            )
+            number = found.get("max_sequence") if isinstance(found, dict) else None
+            sequence = int(number) + 1 if number is not None else 0
+        now = _now_iso()
+        msg_id = _message_id()
+        key = await self._put_full_message(cid, msg_id, user_text.strip())
+        try:
+            if creating:
+                await self._run(
+                    "INSERT INTO conversations (id,user_id,project_id,title,created_at,updated_at,product_scope) "
+                    "VALUES (?,?,NULL,?,?,?,?)",
+                    cid, user_id, _title_from_user_text(content), now, now, PRODUCT_SCOPE_CHAT,
+                )
+            await self._run(
+                "INSERT INTO messages (id,conversation_id,sequence_number,role,content,created_at) "
+                "VALUES (?,?,?,'user',?,?)",
+                msg_id, cid, sequence, content, now,
+            )
+            await self.record_claw_run(
+                user_id=user_id, run_id=run_id, channel="web",
+                action="pc_drive_query", title=("PC 드라이브 조회: " + content)[:MAX_HISTORY_TITLE_CHARS],
+                status="pending", conversation_id=cid, workspace_id=workspace,
+            )
+            await self._run(
+                "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
+                now, cid, user_id,
+            )
+        except Exception:
+            if key is not None:
+                await self._delete_full_keys([key])
+            raise
+        return cid
+
     async def record_claw_run(
         self,
         user_id: str,
@@ -1930,7 +1995,8 @@ class D1HistoryStore:
         return {**dict(accepted), "claim": "first"}
 
     async def record_oracle_mesh_first_result(
-        self, *, dispatch_id: str, content_sha256: str, content_bytes: int
+        self, *, dispatch_id: str, content_sha256: str, content_bytes: int,
+        termination: str | None = None, exit_code: int | None = None,
     ) -> bool:
         """#4139 — pin the first accepted result fingerprint for one dispatch.
 
@@ -1945,6 +2011,12 @@ class D1HistoryStore:
                 raise HistoryError(f"{name} is required")
         if isinstance(content_bytes, bool) or not isinstance(content_bytes, int):
             raise HistoryError("content_bytes must be an integer")
+        if termination is not None and not isinstance(termination, str):
+            raise HistoryError("termination must be a string")
+        if exit_code is not None and (
+            isinstance(exit_code, bool) or not isinstance(exit_code, int)
+        ):
+            raise HistoryError("exit_code must be an integer or null")
         written = await self._run(
             "UPDATE oracle_mesh_dispatch SET result_sha256=?, result_bytes=? "
             "WHERE dispatch_id=? AND result_sha256 IS NULL",
@@ -1960,6 +2032,17 @@ class D1HistoryStore:
                 pinned is not None
                 and pinned.get("result_sha256") == content_sha256
                 and pinned.get("result_bytes") == content_bytes
+            )
+        if termination is not None:
+            # #5015: the executor-observed termination/exit_code travels with
+            # the pinned result so the model lane re-feeds the exact evidence
+            # instead of inventing one. The additive 049 columns must exist:
+            # a missing-column failure here stays a retryable 503 upstream and
+            # never a silent deploy success — apply the 049 gate first.
+            await self._run(
+                "UPDATE oracle_mesh_dispatch SET termination=?, exit_code=? "
+                "WHERE dispatch_id=?",
+                termination, exit_code, dispatch_id,
             )
         return True
 
@@ -2041,6 +2124,50 @@ class D1HistoryStore:
             # always exceeds one message, so a skip here means the caller
             # passed the wrong body rather than a stored one.
             raise HistoryError("mesh original was not stored")
+        return key
+
+    async def store_oracle_mesh_command_result(
+        self, *, user_id: str, dispatch_id: str, conversation_id: str,
+        message_id: str, raw: str, expected_sha256: str, expected_bytes: int,
+    ) -> str:
+        """#5015 — keep one small verified command output for Engine re-feed.
+
+        Same owner/pin checks as :meth:`store_oracle_mesh_original`, but the
+        short-text gate of the over-budget path does not apply: a typical
+        drive inventory is a few hundred bytes and still needs exact bytes for
+        the model lane. Large outputs keep using the over-budget method so the
+        existing non-delivery/retry contract for ``output_too_large`` is
+        unchanged. Empty bodies are never stored here; the withheld-body notice
+        path owns those.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(raw, str) or not raw:
+            raise HistoryError("original text is required")
+        if not isinstance(expected_sha256, str) or not expected_sha256:
+            raise HistoryError("expected digest is required")
+        row = await self._first(
+            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        if row is None or row.get("user_id") != user_id:
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
+            raise HistoryError("mesh original does not match the pinned result")
+        data = raw.encode("utf-8")
+        if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
+            raise HistoryError("mesh original bytes do not match the pinned result")
+        if len(data) > ORACLE_MESH_ORIGINAL_MAX_BYTES:
+            raise HistoryError("mesh original exceeds the bounded storage envelope")
+        bucket = self.full_context_bucket
+        if bucket is None or not callable(getattr(bucket, "put", None)):
+            raise HistoryError("private full model-context storage is unavailable")
+        import inspect as _inspect
+        key = self._context_key(conversation_id, message_id)
+        result = bucket.put(key, data, httpMetadata={"contentType": "text/plain; charset=utf-8"})
+        if _inspect.isawaitable(result):
+            await result
         return key
 
     async def store_oracle_mesh_original_bytes(
@@ -2149,13 +2276,18 @@ class D1HistoryStore:
             return None
         if not isinstance(dispatch_id, str) or not dispatch_id:
             return None
+        # #5015: the 049 termination/exit_code columns are required. A database
+        # without them raises here and every caller fails closed (503), so a
+        # missing migration can never read as a successful deploy.
         row = await self._first(
             "SELECT dispatch_id, user_id, run_id, kind, command_id, revision_ref, "
-            "result_sha256, result_bytes, state FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=? AND user_id=?",
+            "result_sha256, result_bytes, termination, exit_code, state "
+            "FROM oracle_mesh_dispatch WHERE dispatch_id=? AND user_id=?",
             dispatch_id, user_id,
         )
-        return dict(row) if row is not None else None
+        if row is None:
+            return None
+        return dict(row)
 
     async def record_claw_approval_handoff(
         self,

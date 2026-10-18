@@ -416,6 +416,7 @@ class P01RequestFactory:
         additional_system_context: str | None = None,
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
+        pc_drive_query: bool = False,
     ) -> P01RequestBundle:
         if run.terminal:
             raise P01AdapterError(
@@ -479,6 +480,27 @@ class P01RequestFactory:
         )
         desktop_plan = None
         desktop_arguments = None
+        if pc_drive_query and desktop_capture:
+            raise P01AdapterError(
+                "conflicting_pc_observation",
+                "PC drive query and desktop capture cannot run in one turn.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
+        if pc_drive_query:
+            if not subject_id:
+                raise P01AdapterError(
+                    "pc_query_owner_required",
+                    "PC drive query requires a verified canonical owner.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                )
+            from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
+            desktop_plan = AgentPlan(
+                agent_id="agent:padiem:claw-pc-query@1",
+                steps=(AgentPlanStep(
+                    step_id="query_drives", objective="Query verified PC filesystem drives",
+                    tool_id="claw.pc.query_drives",
+                ),),
+            )
         if desktop_capture:
             if not subject_id:
                 raise P01AdapterError(
@@ -745,6 +767,7 @@ class P01CoreOrchestrationAdapter:
         additional_system_context: str | None = None,
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
+        pc_drive_query: bool = False,
         on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
@@ -757,6 +780,7 @@ class P01CoreOrchestrationAdapter:
                 additional_system_context=additional_system_context,
                 desktop_capture=desktop_capture,
                 desktop_device_id=desktop_device_id,
+                pc_drive_query=pc_drive_query,
             )
             projector = ClawOrchestrationProjector(
                 run,
