@@ -1487,13 +1487,18 @@ class D1HistoryStore:
             conversation_id=conversation_id,
             command_id=command_id, revision_ref=revision_ref,
         )
+        # D1 rejects a LIKE pattern longer than 50 characters as "too complex",
+        # and this exact id plus the split-part marker is already 51. A prefix
+        # comparison keeps the same membership without the LIKE pattern.
+        part_prefix = message_id + "_p"
         rows = await self._all(
             "SELECT m.id, m.content FROM messages m JOIN conversations c "
             "ON c.id=m.conversation_id WHERE m.role='assistant' "
             "AND m.conversation_id=? AND c.user_id=? AND c.product_scope=? "
-            "AND (m.id=? OR m.id LIKE ?) ORDER BY m.sequence_number LIMIT 16",
+            "AND (m.id=? OR substr(m.id, 1, ?)=?) "
+            "ORDER BY m.sequence_number LIMIT 16",
             conversation_id, user_id, PRODUCT_SCOPE_CHAT,
-            message_id, message_id + "_p%",
+            message_id, len(part_prefix), part_prefix,
         )
         return "\n".join(row["content"] for row in rows) if rows else None
 
