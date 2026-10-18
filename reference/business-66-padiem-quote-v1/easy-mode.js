@@ -372,14 +372,29 @@
   function setInput(handler, placeholder) {
     inputHandler = handler;
     composer.disabled = false;
+    composer.readOnly = false;
     sendButton.disabled = false;
     composer.placeholder = placeholder || "답변을 입력하세요";
     setTimeout(() => composer.focus(), 0);
   }
 
+  /* #5007: an in-flight model turn must not freeze the text field. The customer
+     can keep typing (including Korean IME composition) and the draft survives
+     until the answer lands; only a duplicate submit is refused, which the empty
+     inputHandler already guarantees. `disableInput` remains for genuine
+     read-only screens (history lists, restore failures). */
+  function blockSend(note) {
+    inputHandler = null;
+    composer.disabled = false;
+    composer.readOnly = false;
+    sendButton.disabled = true;
+    if (note) $("easyComposerNote").textContent = note;
+  }
+
   function disableInput(note) {
     inputHandler = null;
     composer.disabled = true;
+    composer.readOnly = false;
     sendButton.disabled = true;
     if (note) $("easyComposerNote").textContent = note;
   }
@@ -508,7 +523,7 @@
     interpretationInFlight = true;
     addMessage("user", text);
     const pending = addMessage("assistant", "AI가 답변을 작성하고 있습니다…");
-    disableInput("AI가 답변하는 동안 잠시 기다려 주세요.");
+    blockSend("AI가 답변하는 동안 잠시 기다려 주세요. 다음 질문은 미리 입력해 두세요.");
     /* The conversation id is only ever the server's. When it is null the answer
        starts a new stored conversation; the browser cannot choose one. */
     const sentDialogueId = currentDialogueId;
@@ -706,13 +721,111 @@
         chips.push({ label: "견적서 보기", action: () => setWorkspaceMode("direct") });
       }
     }
-    if (!chips.length) chips.push({ label: "견적 상담 이어가기", action: () => composer.focus() });
+    /* #5007: the previous chip only focused the composer, so clicking it did
+       nothing. It now restores the stored consultation through the server-owned
+       state slot, or explains that there is none. */
+    if (!chips.length) chips.push({ label: "견적 상담 이어가기", action: resumeQuoteConsultation });
     setChips(chips);
     if (autoPdf && result.draft && result.draft.taxMode &&
         approvedConversationQuoteNo && dialogueGeneration === viewGeneration) {
       const print = $("printPdf");
       if (print && !print.disabled) print.click();
       else addMessage("assistant", "인증된 PDF 출력이 준비되지 않았습니다. 양식과 부가세 조건을 확인해 주세요.");
+    }
+  }
+
+  /* #5007: "견적 상담 이어가기" was a no-op chip that only moved focus to the
+     composer, so the customer's stored consultation was never restored. This
+     reuses the existing owner-scoped server state slot (#4412 `state`) instead
+     of adding a second persistence system: the server owns the state and the
+     revision, the browser only renders it and asks where to continue.
+       - stored quote-authoring state -> resume at the last valid step
+       - nothing stored, or only an ordinary chat thread -> say so and offer a
+         real entry point rather than pretending a consultation was resumed. */
+  async function resumeQuoteConsultation() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (!bridge || typeof bridge.quoteConversation !== "function") {
+      App.toast("견적 상담 상태를 확인할 수 없습니다.");
+      return;
+    }
+    if (interpretationInFlight) return;
+    if (!accountSignedIn) {
+      resumeAccountGuidedOrLocal();
+      return;
+    }
+    const generation = dialogueGeneration;
+    const scope = accountScopeRevision;
+    const stillCurrent = () => (
+      generation === dialogueGeneration && scope === accountScopeRevision
+    );
+    interpretationInFlight = true;
+    const pending = addMessage("assistant", "저장된 견적 상담을 확인하고 있습니다…");
+    blockSend("저장된 견적 상담을 불러오는 중입니다.");
+    try {
+      const loaded = await bridge.quoteConversation("state");
+      if (!stillCurrent()) return;
+      if (!loaded || !loaded.ok) {
+        addMessage("assistant", quoteConversationError(loaded && loaded.code));
+        setChips([
+          { label: "질문받으며 새 견적", action: () => startGuidedIfReady() },
+          { label: "처음으로", action: showHome }
+        ]);
+        setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+        return;
+      }
+      const state = loaded.state || null;
+      quoteConversationRevision = state && Number.isSafeInteger(state.revision) ? state.revision : 0;
+      quoteConversationEngaged = Boolean(state && state.mode === "quote_authoring");
+      const resumable = Boolean(state) && (state.mode === "quote_authoring" || state.awaiting_method);
+      if (!resumable) {
+        /* No stored consultation to resume. Say that plainly instead of
+           silently starting a fresh one, and never fold the previous facts into
+           a new quote. */
+        pending.remove();
+        addMessage("assistant",
+          "이어서 진행할 저장된 견적 상담이 없습니다. 새 견적을 시작하면 이전 상담 내용은 새 초안에 섞이지 않습니다.");
+        setChips([
+          { label: "질문받으며 새 견적", action: () => startGuidedIfReady() },
+          { label: "이전 AI 대화", action: showAiDialogues },
+          { label: "처음으로", action: showHome }
+        ]);
+        setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+        $("easyComposerNote").textContent = "";
+        return;
+      }
+      pending.remove();
+      const summary = state.quote || state;
+      const facts = summary.facts || {};
+      const collected = Object.keys(facts).filter((key) => {
+        const value = facts[key];
+        if (Array.isArray(value)) return value.length > 0;
+        if (value && typeof value === "object") {
+          return Object.values(value).some((entry) => String(entry || "").trim() !== "");
+        }
+        return String(value || "").trim() !== "";
+      });
+      addMessage("assistant",
+        "저장된 견적 상담을 불러왔습니다. 지금까지 확인된 항목: " +
+        (collected.length ? collected.join(", ") : "없음") + ".");
+      if (state.awaiting_method) {
+        addMessage("assistant", "견적을 어떻게 진행할지 선택해 주세요.");
+      } else if (summary.next_question) {
+        addMessage("assistant", summary.next_question);
+      }
+      conversationQuoteChips(bridge, { quote: summary }, dialogueGeneration, false);
+      setInput(submitFreeFormText, "견적 질문 또는 수정 사항을 이어서 입력하세요");
+      $("easyComposerNote").textContent = "저장된 견적 상담을 이어서 진행 중입니다.";
+    } catch (_) {
+      if (!stillCurrent()) return;
+      pending.remove();
+      addMessage("assistant", "저장된 견적 상담을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      setChips([
+        { label: "질문받으며 새 견적", action: () => startGuidedIfReady() },
+        { label: "처음으로", action: showHome }
+      ]);
+      setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+    } finally {
+      if (stillCurrent()) interpretationInFlight = false;
     }
   }
 
@@ -733,7 +846,7 @@
     interpretationInFlight = true;
     if (isMessage) addMessage("user", currentText);
     const pending = addMessage("assistant", "요청을 처리하고 있습니다…");
-    disableInput("AI 요청을 처리하는 중입니다.");
+    blockSend("AI 요청을 처리하는 중입니다. 기다리는 동안 다음 질문을 미리 입력할 수 있습니다.");
     try {
       if (pendingQuoteReset) {
         const reset = await pendingQuoteReset;
@@ -769,7 +882,13 @@
       quoteConversationRevision = result.revision;
       quoteConversationEngaged = true;
       addMessage("assistant", result.answer, { markdown: result.answer_origin === "registered_model_completion" });
-      if (result.quote && result.quote.next_question &&
+      /* #5007: the server owns the mode. `next_question` is derived from the
+         still-missing quote fields and is therefore present even while the
+         registered model is answering ordinary chat ("오늘 며칠이야?"). Printing
+         it unconditionally repeated the "거래처 또는 담당자명" prompt after
+         every general answer. Only an actively quote-authoring turn may ask the
+         next quote question, so a general answer stays an answer. */
+      if (result.quote && result.quote.mode === "quote_authoring" && result.quote.next_question &&
           !result.answer.includes(result.quote.next_question)) {
         addMessage("assistant", result.quote.next_question);
       }
@@ -848,7 +967,7 @@
     interpretationInFlight = true;
     addMessage("user", text);
     const processingMessage = addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…", { guidedHistory: false });
-    disableInput("견적을 만드는 동안에는 입력을 잠시 멈춥니다.");
+    blockSend("견적을 만드는 동안에는 전송만 잠시 멈춥니다. 다음 내용은 미리 입력해 두세요.");
     const stillCurrentView = () => (
       requestScopeRevision === accountScopeRevision &&
       requestViewGeneration === dialogueGeneration
@@ -951,7 +1070,7 @@
       },
       { label: "처음으로", action: showHome }
     ]);
-    disableInput("새 견적은 처음으로 돌아가서 시작할 수 있습니다.");
+    blockSend("새 견적은 처음으로 돌아가서 시작할 수 있습니다.");
   }
 
   let guidedStartInFlight = false;
@@ -1077,6 +1196,7 @@
       { label: "처음으로", action: showHome }
     ]);
     setInput(() => {}, "최근 견적은 아래 버튼으로 선택하세요");
+    composer.readOnly = false;
     composer.disabled = true;
     sendButton.disabled = true;
     readRecentHistory().then((result) => {
@@ -1365,6 +1485,7 @@
       ? "저장된 이전 AI 대화입니다. 대화를 선택해 이어서 물어보세요."
       : "로그인하면 이전 AI 대화를 불러올 수 있습니다.");
     setChips([{ label: "처음으로", action: showHome }]);
+    composer.readOnly = false;
     composer.disabled = true;
     sendButton.disabled = true;
     $("easyComposerNote").textContent = "";
