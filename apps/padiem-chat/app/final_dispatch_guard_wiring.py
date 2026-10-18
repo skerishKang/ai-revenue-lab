@@ -45,6 +45,17 @@ _GRADE_RANK = {"free": 0, "plus": 1, "pro": 2, "max": 3}
 CHAT_PRODUCT_ID = "chat"
 
 
+def _product_is_configured(snapshot: ModelPolicySnapshot, product_id: str) -> bool:
+    """Whether the ledger contains any explicit rule for ``product_id``.
+
+    #4483 stages enforcement per product: arming the guard against a ledger
+    with zero product grants would deny every current customer instead of
+    enforcing an owner decision.  An explicit product rule is the opt-in
+    boundary; once present the guard stays fail-closed for unassigned models.
+    """
+    return any(rule.product == product_id for rule in snapshot.rules)
+
+
 class SimpleB14CatalogSource:
     """Minimal B14 registry source backed by an async ``get_json`` callable.
 
@@ -109,9 +120,10 @@ async def create_guard_from_request(
     request context cannot be verified.
 
     Returns ``None`` when the session identity cannot be established in the
-    canonical form required by ``DispatchSessionContext`` or when the policy
-    store / B14 catalog is not provisioned; callers then fall back to the
-    unguarded client (existing behaviour preserved).
+    canonical form required by ``DispatchSessionContext``, when the policy
+    store / B14 catalog is not provisioned, or when the ledger has no explicit
+    rule for this product yet (staged rollout is still OFF); callers then fall
+    back to the unguarded client (existing behaviour preserved).
     """
     if store is None or b14_catalog_source is None:
         return None
@@ -143,6 +155,8 @@ async def create_guard_from_request(
     try:
         snapshot = await store.snapshot(GLOBAL_WORKSPACE)
         if not isinstance(snapshot, ModelPolicySnapshot):
+            return None
+        if not _product_is_configured(snapshot, CHAT_PRODUCT_ID):
             return None
         authorized_revision = snapshot.revision
     except Exception:
