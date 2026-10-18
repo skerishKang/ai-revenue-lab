@@ -816,11 +816,18 @@ def create_app(
         and callable(getattr(d1_binding, "prepare", None)) else None
     )
     # Independent, server-only signer. Missing or malformed => all central writes OFF.
+    # Dashboard copy/paste artifacts (surrounding whitespace, 0x prefix) are
+    # stripped before validation; the bar stays exactly 64 hex chars (256-bit
+    # key), so already-valid values and the fail-closed default are unchanged.
     import re as _model_re
-    app.state.central_model_policy_write_key = (
-        bytes.fromhex(central_model_policy_signing_key)
+    _signing_key_text = (
+        central_model_policy_signing_key.strip().removeprefix("0x").removeprefix("0X")
         if isinstance(central_model_policy_signing_key, str)
-        and _model_re.fullmatch(r"[a-fA-F0-9]{64}", central_model_policy_signing_key)
+        else ""
+    )
+    app.state.central_model_policy_write_key = (
+        bytes.fromhex(_signing_key_text)
+        if _model_re.fullmatch(r"[a-fA-F0-9]{64}", _signing_key_text)
         else None
     )
     app.state.b66_membership_enforced = False

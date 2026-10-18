@@ -388,6 +388,48 @@ def call(app, settings, method, path, body=None, *, owner=USER, origin=BASE):
     return asyncio.run(inner())
 
 
+PASTE_KEY = "d" * 64
+
+
+def _app_with_key(raw_key):
+    settings = Settings.from_values(
+        runtime_mode="mock", auth_mode="password", public_base_url=BASE,
+        session_secret="4428-central-route-test-session-secret",
+        session_max_age_seconds=3600,
+    )
+    app = create_app(
+        settings=settings, history_store=SimpleNamespace(),
+        central_model_admin_authorizer=GlobalAdmin(True),
+        central_model_route_store=D1CentralModelRouteStore(FakeD1()),
+        central_model_policy_signing_key=raw_key,
+    )
+    return app, settings
+
+
+@pytest.mark.parametrize("raw", [
+    "  " + PASTE_KEY + "\n",
+    PASTE_KEY + "\r\n",
+    "0x" + PASTE_KEY,
+])
+def test_pasted_signing_key_with_whitespace_or_hex_prefix_arms_writes(raw):
+    # Dashboard copy/paste artifacts (surrounding whitespace, 0x prefix)
+    # must not silently disable the central write path.
+    app, settings = _app_with_key(raw)
+    assert app.state.central_model_policy_write_key == bytes.fromhex(PASTE_KEY)
+    me = call(app, settings, "GET", "/api/admin/models/me")
+    assert me.status_code == 200
+    assert me.json()["routes_write_enabled"] is True
+
+
+@pytest.mark.parametrize("raw", ["not-hex-at-all", "a" * 63, "", "0x" + "z" * 64])
+def test_malformed_signing_key_keeps_writes_off(raw):
+    app, settings = _app_with_key(raw)
+    assert app.state.central_model_policy_write_key is None
+    me = call(app, settings, "GET", "/api/admin/models/me")
+    assert me.status_code == 200
+    assert me.json()["routes_write_enabled"] is False
+
+
 def test_admin_route_preview_apply_and_read_back_are_admin_and_origin_gated():
     store = D1CentralModelRouteStore(FakeD1())
     app, settings = built_app(store=store)
