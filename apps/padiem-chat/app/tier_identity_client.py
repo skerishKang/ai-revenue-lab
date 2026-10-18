@@ -7,7 +7,9 @@ from typing import Any
 from .attachments import ImageAttachment
 from .b14_client import B14Client, ChatRuntimeError, ChatStreamEvent
 from .model_policy import (
+    ADMIN_B14_MODEL_ID,
     ModelPolicyError,
+    current_request_tier_id,
     model_policy_is_executable,
     product_tier_name,
     resolve_request_model_policy,
@@ -41,6 +43,19 @@ _UNDERLYING_DETAIL_MARKERS = (
 )
 
 _TIER_UNAVAILABLE_MESSAGE = "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요."
+
+
+def _verified_admin_exact_dispatch(policy_model_id: str) -> bool:
+    """Allow the one verified administrator-only Chat dispatch.
+
+    The Chat route proves the global model admin before binding this tier, so
+    the executability gate below must not reject the pinned admin model. Every
+    other model keeps the product-tier executability rule unchanged.
+    """
+    return (
+        policy_model_id == ADMIN_B14_MODEL_ID
+        and current_request_tier_id() == "admin"
+    )
 
 
 def _latest_user_text(messages: list[dict[str, str]]) -> str:
@@ -97,7 +112,11 @@ class PadiemTierB14Client(B14Client):
                 "route": {"mode": "manual", "model": policy.model_id, "provider": None},
                 "skill": task_mode_public_metadata(resolved_skill),
             }
-        if self.settings.runtime_mode != "mock" and not model_policy_is_executable(policy.model_id):
+        if (
+            self.settings.runtime_mode != "mock"
+            and not model_policy_is_executable(policy.model_id)
+            and not _verified_admin_exact_dispatch(policy.model_id)
+        ):
             raise ChatRuntimeError(422, "tier_unavailable", _TIER_UNAVAILABLE_MESSAGE)
         return await super().complete(
             messages,
@@ -119,7 +138,11 @@ class PadiemTierB14Client(B14Client):
             yield ChatStreamEvent(delta_content=answer)
             yield ChatStreamEvent(done=True)
             return
-        if self.settings.runtime_mode != "mock" and not model_policy_is_executable(policy.model_id):
+        if (
+            self.settings.runtime_mode != "mock"
+            and not model_policy_is_executable(policy.model_id)
+            and not _verified_admin_exact_dispatch(policy.model_id)
+        ):
             raise ChatRuntimeError(422, "tier_unavailable", _TIER_UNAVAILABLE_MESSAGE)
 
         stream = super().stream_text_auto(

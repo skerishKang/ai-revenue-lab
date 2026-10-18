@@ -1906,8 +1906,10 @@
     // Both Chat and the shared Claw first-use composer honor the visible
     // PADIEM FREE/PLUS choice. Never silently force Claw to Plus while its
     // explicit Plus model chooser is hidden. The server validates entitlements.
+    // The administrator entry rides the same payload; only a verified global
+    // model admin passes the server gate, and every other tier keeps its rule.
     const tier = window.PadiemTierSelection?.get?.();
-    return ["free", "plus", "pro", "max"].includes(tier) ? tier : "free";
+    return ["free", "plus", "pro", "max", "admin"].includes(tier) ? tier : "free";
   }
 
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {
