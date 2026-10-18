@@ -160,6 +160,7 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
       el.replaceChildren = (...children) => {{ el.children = children.slice(); }};
       el.addEventListener = (name, fn) => {{ (el.listeners[name] ||= []).push(fn); }};
       el.click = () => (el.listeners.click || []).forEach((fn) => fn({{ target: el, preventDefault() {{}} }}));
+      el.querySelector = () => null;
       el.closest = () => el;
       return el;
     }}
@@ -241,7 +242,8 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
       process.stdout.write(JSON.stringify({{ monthLoads, loadingVisible, dayReady, previousLoad, unauthorized, unavailable, monthGrouped }}));
     }})();
     """
-    completed = subprocess.run(["node", "-e", harness], check=True, capture_output=True, text=True)
+    completed = subprocess.run(["node", "-e", harness], capture_output=True, text=True)
+    assert completed.returncode == 0, completed.stderr
     result = json.loads(completed.stdout)
     assert result["monthLoads"] is True
     assert result["loadingVisible"] is True

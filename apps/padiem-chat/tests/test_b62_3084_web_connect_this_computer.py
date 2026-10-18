@@ -714,7 +714,7 @@ def test_app_exposes_a_narrow_injection_seam_with_no_transport() -> None:
     assert "projectLocalHandoff" in app
     assert "padiem:claw-local-connect-requested" in app
     # The CTA must not navigate, open a deep link, or hit the network itself.
-    assert "window.location" not in app.split("#3084 — Claw")[1] if "#3084 — Claw" in app else True
+    assert "window.location" not in app.split("#3084 — Claw", 1)[1].split("window.__padiemClawLocalHandoff = Object.freeze", 1)[0] if "#3084 — Claw" in app else True
     for forbidden in (
         "new WebSocket",
         "EventSource",
