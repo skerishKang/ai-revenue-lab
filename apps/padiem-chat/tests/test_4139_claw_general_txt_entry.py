@@ -398,3 +398,72 @@ def test_mesh_mode_still_refuses_withdrawn_consent_and_foreign_account(monkeypat
     # A withdrawn consent is enforced as a hard refusal too.
     withdrawn = _run(_app(mesh.EXECUTION_MODE_MESH, withdrawn=True))
     assert withdrawn.status_code == 403
+
+
+def test_an_incomplete_mesh_target_never_strands_the_staged_run_as_pending(monkeypatch):
+    """A staged run must reach a terminal state even if building the dispatch
+    wire raises.
+
+    This is the production shape seen on 2026-10-18: the run row was written
+    ``pending`` and never transitioned, with no dispatch row and no assistant
+    message, so the composer kept rendering the previous turn's answer. The
+    wire is built from the resolved Mesh target *after* the run is staged, so
+    an incomplete target used to raise straight past the settle path.
+    """
+    import json
+    from starlette.requests import Request
+    from app import claw_memory_routes
+    from app import connector_txt_read_routes as native
+    from app import oracle_mesh_read_return_routes as mesh
+
+    async def auth(request):
+        return SimpleNamespace(session_id="session.owner"), None
+    async def tenant(request, uid):
+        return "tenant.ws1"
+    async def authorized_session(request, data):
+        return "conv.txt", None
+
+    for module in (mesh, native):
+        monkeypatch.setattr(module, "_verified_owner_request", auth)
+        monkeypatch.setattr(module, "_resolve_memory_workspace", tenant)
+        monkeypatch.setattr(module, "current_user_id", lambda r: "owner1")
+    monkeypatch.setattr(claw_memory_routes, "_resolve_memory_workspace", tenant)
+    monkeypatch.setattr(general, "_resolve_intake_session_reference", authorized_session)
+    monkeypatch.setattr(general, "auth_ready", lambda r: True)
+    monkeypatch.setattr(general, "current_user_id", lambda r: "owner1")
+
+    async def incomplete_target(request, *, path_relative, selected_device_id):
+        # ``root_ref`` is absent, exactly as a partially resolved Mesh target.
+        return {"device_id": "com1.mesh", "path_relative": path_relative}, None
+    monkeypatch.setattr(mesh, "resolve_oracle_mesh_execution", incomplete_target)
+
+    class History:
+        def __init__(self):
+            self.rows = {}
+        async def record_txt_pending_run(self, *, user_id, run_id, workspace_id,
+                                         user_text, conversation_id):
+            self.rows[run_id] = {"run_id": run_id, "conversation_id": conversation_id,
+                                 "workspace_id": workspace_id, "status": "pending"}
+            return conversation_id
+        async def update_claw_run_status(self, user_id, run_id, status):
+            self.rows[run_id]["status"] = status
+
+    history = History()
+    app = SimpleNamespace(state=SimpleNamespace(
+        control_plane_identity_authority=None,
+        connector_txt_read_source=None,
+        history_store=history,
+    ))
+    body = json.dumps({"messages": [{"role": "user", "content":
+                                     "내 PC notes/report.txt 읽어줘"}]}).encode("utf-8")
+    scope = {"type": "http", "method": "POST", "path": "/api/claw/general",
+             "app": app, "headers": [(b"content-type", b"application/json")]}
+    async def receive():
+        return {"type": "http.request", "body": body, "more_body": False}
+
+    response = run(general.claw_general_execute(Request(scope, receive=receive)))
+
+    assert response.status_code == 503
+    assert b"txt_read_dispatch_unavailable" in response.body
+    assert history.rows, "the run was staged before dispatch and must be settled"
+    assert [row["status"] for row in history.rows.values()] == ["failed"]

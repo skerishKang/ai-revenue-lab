@@ -870,6 +870,21 @@ async def _dispatch_user_command_request(
     )
 
 
+async def _settle_claw_run_failed(history: Any, uid: str, run_id: str) -> None:
+    """Give a staged run a terminal state so it can never strand as ``pending``.
+
+    Without this, a dispatch step that raises leaves the run row at ``pending``
+    with no dispatch row and no answer, so the composer keeps showing the
+    previous turn and the request silently never completes.
+    """
+    mark_failed = getattr(history, "update_claw_run_status", None)
+    if callable(mark_failed):
+        try:
+            await mark_failed(uid, run_id, "failed")
+        except Exception:
+            pass
+
+
 async def _dispatch_user_txt_request(
     request: Request, *, user_text: str, path_relative: str,
     data: dict[str, Any],
@@ -921,20 +936,20 @@ async def _dispatch_user_txt_request(
             )
         except Exception:
             return _error(503, "txt_read_history_unavailable", "대화 저장에 실패했습니다.")
-        staged = await dispatch_oracle_mesh_read_intent(request, {
-            "device_id": mesh_target["device_id"],
-            "run_id": run.run_id,
-            "root_ref": mesh_target["root_ref"],
-            "path_relative": mesh_target["path_relative"],
-            "confirmed": True,  # derived from this authenticated user's READ text
-        })
+        try:
+            staged = await dispatch_oracle_mesh_read_intent(request, {
+                "device_id": mesh_target["device_id"],
+                "run_id": run.run_id,
+                "root_ref": mesh_target["root_ref"],
+                "path_relative": mesh_target["path_relative"],
+                "confirmed": True,  # derived from this authenticated user's READ text
+            })
+        except Exception:
+            await _settle_claw_run_failed(history, uid, run.run_id)
+            return _error(503, "txt_read_dispatch_unavailable",
+                          "PC 작업 요청을 보내지 못했습니다.")
         if staged.status_code != 200:
-            mark_failed = getattr(history, "update_claw_run_status", None)
-            if callable(mark_failed):
-                try:
-                    await mark_failed(uid, run.run_id, "failed")
-                except Exception:
-                    pass
+            await _settle_claw_run_failed(history, uid, run.run_id)
             return staged
         return _claw_general_sse(
             "PC의 TXT 파일을 읽는 중입니다. 실제 파일 내용은 작업 완료 후 이 대화에 표시됩니다.",
@@ -964,18 +979,18 @@ async def _dispatch_user_txt_request(
         )
     except Exception:
         return _error(503, "txt_read_history_unavailable", "대화 저장에 실패했습니다.")
-    dispatched = await dispatch_verified_txt_read(request, {
-        "device_id": device_id, "root_ref": "root.3140",
-        "path_relative": path_relative, "run_id": run.run_id,
-        "confirmed": True,  # derived from this authenticated user's actual READ text
-    })
+    try:
+        dispatched = await dispatch_verified_txt_read(request, {
+            "device_id": device_id, "root_ref": "root.3140",
+            "path_relative": path_relative, "run_id": run.run_id,
+            "confirmed": True,  # derived from this authenticated user's actual READ text
+        })
+    except Exception:
+        await _settle_claw_run_failed(history, uid, run.run_id)
+        return _error(503, "txt_read_dispatch_unavailable",
+                      "PC 작업 요청을 보내지 못했습니다.")
     if dispatched.status_code != 200:
-        mark_failed = getattr(history, "update_claw_run_status", None)
-        if callable(mark_failed):
-            try:
-                await mark_failed(uid, run.run_id, "failed")
-            except Exception:
-                pass
+        await _settle_claw_run_failed(history, uid, run.run_id)
         return dispatched
     # Only a wait response is emitted. The *verified* PC body is appended
     # asynchronously on existing run-history/local-result reconciliation.
