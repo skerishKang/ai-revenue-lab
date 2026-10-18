@@ -2462,19 +2462,28 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
     # server-known product user, so the Claw lane never requires a second,
     # separately active B54 login surface. The product is pinned inside the
     # Control Plane bridge and no browser/session value is accepted here.
+    from padiem_control_plane.b54_identity_bridge import (
+        resolve_current_b54_canonical_session as resolve_b54_session,
+    )
     try:
-        from padiem_control_plane.b54_identity_bridge import (
-            resolve_current_b54_canonical_session as resolve_b54_session,
-        )
         uid = await identity.resolve_product_user_for_subject(
             product_id="b62",
             canonical_subject_id=payload["subject_id"],
         )
-        bridged = await resolve_b54_session(identity, uid)
     except Exception as exc:
         # #5015: bounded stage identifiers only, never identity values.
         print(
-            "claw_engine_bridge_failure"
+            "claw_engine_bridge_stage stage=product_user"
+            f" code={getattr(exc, 'code', 'unknown')}"
+            f" type={type(exc).__name__}",
+            flush=True,
+        )
+        return _error(401, "canonical_session_required")
+    try:
+        bridged = await resolve_b54_session(identity, uid)
+    except Exception as exc:
+        print(
+            "claw_engine_bridge_stage stage=b54_session"
             f" code={getattr(exc, 'code', 'unknown')}"
             f" type={type(exc).__name__}",
             flush=True,
