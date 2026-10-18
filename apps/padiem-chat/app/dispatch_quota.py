@@ -5,7 +5,11 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .b14_client import B14Client, ChatRuntimeError, _resolve_b62_policy
-from .model_policy import model_policy_is_executable
+from .model_policy import (
+    ADMIN_B14_MODEL_ID,
+    current_request_tier_id,
+    model_policy_is_executable,
+)
 from .usage_gate import UsageDecision
 
 
@@ -135,6 +139,15 @@ class DispatchAwareB14Client(B14Client):
             return
         policy = _resolve_b62_policy(messages, require_executable=False)
         if model_policy_is_executable(policy.model_id):
+            return
+        # One verified administrator-only dispatch: the Chat route already
+        # proved the global admin on this request before binding this tier, so
+        # the pinned admin model is not a product-tier route the quota gate
+        # should refund. Every other model keeps the rule unchanged.
+        if (
+            policy.model_id == ADMIN_B14_MODEL_ID
+            and current_request_tier_id() == "admin"
+        ):
             return
         await _refund_active_reservation()
         raise ChatRuntimeError(

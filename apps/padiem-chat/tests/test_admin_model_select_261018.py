@@ -126,6 +126,54 @@ def test_admin_lookup_failure_never_elevates() -> None:
     assert response.status_code == 503
 
 
+def _live_quota_client():
+    import httpx
+
+    from app.config import Settings
+    from app.dispatch_quota import DispatchAwareB14Client
+
+    return DispatchAwareB14Client(
+        Settings(runtime_mode="b14", b14_base_url="https://b14.internal", live_enabled=True),
+        stream_transport=httpx.MockTransport(lambda request: httpx.Response(500)),
+        require_service_binding=True,
+    )
+
+
+def test_admin_muse_survives_the_dispatch_quota_executability_gate() -> None:
+    """The live quota gate must not refund the verified admin dispatch.
+
+    Production composes DispatchAwareB14Client around the tier client; before
+    this fix the admin model was rejected there with model_profile_unassigned
+    even though the Chat admin gate had already approved the request.
+    """
+
+    client = _live_quota_client()
+    messages = [{"role": "user", "content": "안녕하세요"}]
+    with request_tier_context("admin"):
+        assert _run(client._reject_non_executable_policy(messages)) is None
+        assert resolve_request_model_policy(messages).model_id == MUSE_MODEL_ID
+
+
+def test_dispatch_quota_still_rejects_other_non_executable_models(monkeypatch) -> None:
+    from app import dispatch_quota
+    from app.b14_client import ChatRuntimeError
+
+    client = _live_quota_client()
+    monkeypatch.setattr(
+        dispatch_quota,
+        "_resolve_b62_policy",
+        lambda *args, **kwargs: type(
+            "P", (), {"model_id": "opencode-go/not-a-product-route"}
+        )(),
+    )
+    try:
+        _run(client._reject_non_executable_policy([{"role": "user", "content": "x"}]))
+    except ChatRuntimeError as exc:
+        assert exc.code == "model_profile_unassigned"
+    else:
+        raise AssertionError("a non-executable non-admin model must stay rejected")
+
+
 def test_only_exact_admin_pair_bypasses_product_tier_executability() -> None:
     messages = [{"role": "user", "content": "안녕하세요"}]
     with request_tier_context("admin"):
