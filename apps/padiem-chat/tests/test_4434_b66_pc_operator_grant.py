@@ -24,6 +24,7 @@ from app.b66_pc_operator_grant_composition import (
 )
 
 WORKSPACE = "owner:usr_" + "b" * 32
+TENANT_WORKSPACE = "tenant_" + "3" * 32
 
 
 def env(workspace=None, operations=None):
@@ -71,9 +72,20 @@ def test_unknown_operation_or_empty_list_fails_closed():
             ProductPcAccessPolicy.default_off()
 
 
+def test_production_tenant_workspace_is_accepted():
+    """Production reality: the live workspace is the session tenant_id."""
+    policy = build_b66_pc_operator_policy(env(TENANT_WORKSPACE, "device.list,file.read,task.result"))
+    grant = policy.grant_for("b66")
+    assert grant is not None
+    assert grant.workspace_ref == TENANT_WORKSPACE
+    assert grant.operations == frozenset({
+        PcAccessOperation.DEVICE_LIST, PcAccessOperation.FILE_READ, PcAccessOperation.TASK_RESULT,
+    })
+
+
 def test_workspace_must_be_owner_scoped_token():
     for workspace in ("", "usr_" + "b" * 32, "owner:", "owner:bad ref!",
-                      "other:usr_" + "b" * 32, "owner:usr has space"):
+                      "other:usr_" + "b" * 32, "owner:usr has space", " has space"):
         assert build_b66_pc_operator_policy(env(workspace, "file.read")) == \
             ProductPcAccessPolicy.default_off()
 
