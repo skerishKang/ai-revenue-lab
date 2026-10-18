@@ -155,6 +155,49 @@
 .b66-quote-connect-item strong { overflow-wrap: anywhere; }
 .b66-quote-connect-state { font-size: .8rem; opacity: .8; }
 .b66-quote-connect-state[data-state="online"] { color: var(--success, #137969); opacity: 1; }
+/* #4434 follow-up: minimal TXT read request for the verified PC. */
+.b66-quote-connect-txt {
+  margin-top: 10px;
+  border-top: 1px solid var(--border, rgba(127,127,127,.22));
+  padding-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+.b66-quote-connect-txt[hidden] { display: none !important; }
+.b66-quote-connect-txt-title { font-size: .86rem; font-weight: 650; margin: 0; }
+.b66-quote-connect-field { display: grid; gap: 4px; font-size: .83rem; }
+.b66-quote-connect-field select,
+.b66-quote-connect-field input {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--border, rgba(127,127,127,.3));
+  border-radius: 9px;
+  padding: 8px 10px;
+  min-height: 40px;
+  max-width: 100%;
+}
+.b66-quote-connect-request {
+  border: 1px solid var(--border, rgba(127,127,127,.3));
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-size: .86rem;
+  border-radius: 9px;
+  padding: 8px 12px;
+  min-height: 40px;
+  cursor: pointer;
+  font-weight: 650;
+}
+.b66-quote-connect-request:disabled { opacity: .55; cursor: default; }
+.b66-quote-connect-run-status {
+  font-size: .83rem;
+  line-height: 1.6;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.b66-quote-connect-run-status[data-state="ready"] { color: var(--success, #137969); }
+.b66-quote-connect-run-status[data-state="error"] { color: var(--danger, #b3261e); }
 .b66-quote-connect :focus-visible { outline: 3px solid var(--focus, #2a7db4); outline-offset: 2px; }
 @media (max-width: 640px) {
   .b66-quote-connect-item { align-items: flex-start; flex-direction: column; }

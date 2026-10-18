@@ -60,6 +60,7 @@ from app.b66_registered_model_boundary import (
     B66RegisteredModelCompletion,
 )
 from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
+from app.b66_pc_operator_grant_composition import build_b66_pc_operator_policy
 from app.b66_kira_direct_pilot import B66KiraPilotExecutor
 from app.b66_experiential_direct_pilot import B66ExperientialPilotExecutor
 from app.config import ConfigError
@@ -973,6 +974,10 @@ class Default(WorkerEntrypoint):
                     d1_binding=db_binding,
                     b66_admin_google_email=b66_operator_email,
                     central_model_admin_google_email=central_operator_email,
+                    # #4434 follow-up: B66 product PC policy from the
+                    # owner-managed Worker env; absent/malformed stays
+                    # default-off, identical to today's production.
+                    b66_pc_access_policy=build_b66_pc_operator_policy(self.env),
                     central_model_policy_signing_key=(
                         binding_value(self.env, "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY") or ""
                     ),
