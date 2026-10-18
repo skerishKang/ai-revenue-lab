@@ -224,6 +224,10 @@ function padiemTarget(url, method) {
   if (adminSkillCandidateMatch && method === "GET") {
     return "/api/b66/admin/saved-skill-candidates/" + adminSkillCandidateMatch[1];
   }
+  const adminSkillCandidateDecisionMatch = path.match(/^\/api\/padiem\/b66\/admin\/saved-skill-candidates\/(b66cand_[a-f0-9]{32})\/decision$/);
+  if (adminSkillCandidateDecisionMatch && method === "POST") {
+    return "/api/b66/admin/saved-skill-candidates/" + adminSkillCandidateDecisionMatch[1] + "/decision";
+  }
 
   const assetPrefix = "/api/padiem/b66/assets/";
   if (path.startsWith(assetPrefix) && method === "GET") {
