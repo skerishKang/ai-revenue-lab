@@ -285,3 +285,50 @@ html[data-theme="padiem-glass"] body .app-shell:is(
     justify-content: flex-start;
   }
 }
+
+/* Phase 2 work-view unification (#5028). Additive scoped mirrors of the
+ * finished Chat/Claw expression: titles, kickers, cards, primary actions and
+ * state text. No index.html, locale, JS, DB or server-contract changes; each
+ * view keeps its own features and permissions. The Glass kicker authority
+ * (above) keeps winning under padiem-glass; these rules unify base themes. */
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"]) .standalone-view-title,
+.app-shell[data-state="calendar"] .calendar-view-title,
+.app-shell[data-state="library"] .library-view h2 {
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 770;
+  letter-spacing: -.045em;
+  color: var(--text);
+}
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"])
+:is(.standalone-view-kicker,.calendar-view-kicker,.library-kicker) {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  color: var(--accent);
+  opacity: 1;
+}
+.library-item {
+  border-color: var(--line, #e3e3e9);
+  background: var(--card-bg, #fafafa);
+}
+.app-shell:is([data-state="calendar"],[data-state="connectors"]) :is(.calendar-item,.calendar-record,.capability-card) {
+  border-radius: 14px;
+}
+.app-shell[data-state="calendar"] .calendar-record-submit,
+.app-shell[data-state="meeting"] .meeting-controls #meetingStart {
+  border-radius: 999px;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+.app-shell[data-state="calendar"] :is(.calendar-loading,.calendar-empty) {
+  color: var(--muted);
+  opacity: 1;
+}
+.app-shell[data-state="automation"] #clawAutomation {
+  border-color: var(--line);
+  background: var(--card-bg);
+}
+.app-shell[data-state="meeting"] .meeting-panel {
+  border-radius: 16px;
+}
