@@ -98,8 +98,8 @@ def adapter_for(client):
     return adapter
 
 
-def seam(client, messages, *, enabled=True):
-    return run(_claw_public_search_grounding(Request(State(enabled=enabled)), adapter_for(client), messages))
+def seam(client, messages, *, enabled=True, selected_model_id="test/selected-model"):
+    return run(_claw_public_search_grounding(Request(State(enabled=enabled)), adapter_for(client), messages, selected_model_id))
 
 
 # --- the model, not a keyword list, decides ---------------------------------
@@ -161,6 +161,7 @@ def test_one_request_makes_exactly_one_judgement_and_one_search():
     seam(engine, turns(("user", "오늘 한국은행 기준금리는?")))
     assert len(engine.judge_calls) == 1 and len(engine.evidence_calls) == 1
     assert engine.judge_calls[0]["agent"]["model_policy"]["max_retries"] == 0
+    assert engine.judge_calls[0]["agent"]["model_policy"]["model"] == "test/selected-model"
     assert engine.judge_calls[0]["agent"] == engine.evidence_calls[0]["agent"]
 
 

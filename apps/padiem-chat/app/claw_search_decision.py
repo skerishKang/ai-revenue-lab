@@ -74,9 +74,11 @@ def is_private(text: str) -> bool:
     return any(pattern.search(text or "") for pattern in _PRIVATE_PATTERNS)
 
 
-def evidence_agent() -> dict[str, Any]:
-    """One server-owned read-only profile; it selects no model and authorises nothing."""
+def evidence_agent(model_id: str | None = None) -> dict[str, Any]:
+    """One server-owned read-only profile; it uses the request's validated model."""
 
+    if not isinstance(model_id, str) or not model_id.strip():
+        raise ValueError("explicit model id is required for search judgement")
     return {
         "id": CLAW_JUDGEMENT_AGENT_ID,
         "title": "Claw public search judgement",
@@ -85,7 +87,7 @@ def evidence_agent() -> dict[str, Any]:
         "task_type": "general",
         "optimize_for": "balanced",
         "max_tokens": 256,
-        "model_policy": {"model": "none/disabled", "max_retries": 0},
+        "model_policy": {"model": model_id.strip(), "max_retries": 0},
     }
 
 

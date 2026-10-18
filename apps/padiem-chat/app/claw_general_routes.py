@@ -527,7 +527,7 @@ def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
 
 
 async def _claw_public_search_grounding(
-    request: Request, adapter: Any, messages: Any
+    request: Request, adapter: Any, messages: Any, selected_model_id: str | None = None
 ) -> tuple[str | None, tuple[dict[str, str], ...]]:
     """Let the model decide, then reuse the existing Engine evidence operation once.
 
@@ -547,7 +547,9 @@ async def _claw_public_search_grounding(
     digest = build_judgement_digest(messages)
     if digest is None:
         return denied
-    agent = evidence_agent()
+    if not isinstance(selected_model_id, str) or not selected_model_id.strip():
+        return denied
+    agent = evidence_agent(selected_model_id)
     try:
         verdict = verdict_from_model(await judge(conversation=digest, agent=agent))
     except Exception:
@@ -1394,7 +1396,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # Private Drive data never enters the public web search judgement/query.
     if drive_context is None:
         grounding_context, search_sources = await _claw_public_search_grounding(
-            request, adapter, model_user_text
+            request,
+            adapter,
+            model_user_text,
+            selected_model_id if selected_model_id is not None else getattr(tier_route, "model_id", None),
         )
     else:
         grounding_context, search_sources = drive_context, drive_sources
