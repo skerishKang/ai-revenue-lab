@@ -1319,6 +1319,22 @@ body.b66-three-pane main.shell > .topbar {
   font-size: 11px;
   line-height: 1.45;
 }
+/* #5006: connection status under the connection-management rail items.
+   Never optimistic — each state has its own honest wording, and no state
+   colour is used to imply a connection the server has not confirmed. */
+.shell-connection-status {
+  margin: 4px 5px 2px;
+  color: #667085;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.shell-connection-status[data-state="ready"] { color: #137969; }
+.shell-connection-status[data-state="signed-out"],
+.shell-connection-status[data-state="not-enabled"],
+.shell-connection-status[data-state="unavailable"] { color: #8a6d1f; }
+/* The work-tool entries behave as links; they open the owning product in a
+   new tab so the in-progress quote is never disturbed. */
+.shell-rail-item-link { width: 100%; text-align: left; }
 .shell-account-row {
   flex: 0 0 auto;
   display: flex;
