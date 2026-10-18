@@ -69,6 +69,9 @@ jobs:
           node reference/business-66-padiem-quote-v1/tests/static-contract.test.cjs
           node reference/business-66-padiem-quote-v1/tests/cgi-v2.test.cjs
           node reference/business-66-padiem-quote-v1/tests/three-pane-shell-contract.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/b66-5007-consultation-input.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/b66-5007-processing-note.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/b66-5007-draft-preview-mobile.test.cjs
 
       - name: Compare screen A4 preview with actual PDF render
         shell: bash
