@@ -875,3 +875,56 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   }
   .app-shell[data-state="calendar"] .calendar-visual { height: clamp(300px,48vh,480px); min-height: 300px; }
 }
+
+
+/* #5023: Calendar failures are a small, accessible state beside date controls,
+   never a block pushing the month grid below the fold. */
+.app-shell[data-state="calendar"] .calendar-error {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+  gap: 5px;
+  min-width: 0;
+  max-width: min(45%, 340px);
+  padding: 2px 5px;
+  border-radius: 8px;
+  background: rgba(214, 108, 108, .07);
+  border-color: rgba(214, 108, 108, .24);
+}
+.app-shell[data-state="calendar"] .calendar-error[hidden] { display: none !important; }
+.app-shell[data-state="calendar"] .calendar-error-copy {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #a33737;
+}
+.app-shell[data-state="calendar"] .calendar-retry-button {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 3px 8px;
+  border-radius: 7px;
+  font-size: 11px;
+}
+.app-shell[data-state="calendar"] .calendar-range-navigation {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+.app-shell[data-state="calendar"] .calendar-tabs > .calendar-error {
+  margin-left: auto;
+}
+@media (max-width: 700px) {
+  .app-shell[data-state="calendar"] .calendar-error {
+    max-width: 100%;
+    width: auto;
+  }
+  .app-shell[data-state="calendar"] .calendar-range-navigation .calendar-error {
+    flex-basis: 100%;
+    justify-content: flex-end;
+    border-color: transparent;
+    padding-block: 0;
+  }
+}
