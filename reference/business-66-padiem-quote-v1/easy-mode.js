@@ -228,6 +228,9 @@
   function clearConversation() {
     modelChatTurns = [];
     bumpDialogueGeneration();
+    /* #5007-2: same ownership rule as startConversation: leaving the screen
+       clears the in-flight caption with it. */
+    clearProcessingNote();
     messageList.innerHTML = "";
     historyPanel.innerHTML = "";
     historyPanel.hidden = true;
@@ -272,6 +275,10 @@
   function startConversation() {
     easyEmpty.hidden = true;
     bumpDialogueGeneration();
+    /* #5007-2: a view transition retires the previous turn's UI ownership, so
+       the old request caption must not survive into the new screen. A late
+       reply for the previous view is still discarded by the generation guard. */
+    clearProcessingNote();
     easyView.classList.remove("easy-chat-home");
     if (conversation) conversation.scrollTop = 0;
     messageList.innerHTML = "";
@@ -389,6 +396,35 @@
     composer.readOnly = false;
     sendButton.disabled = true;
     if (note) $("easyComposerNote").textContent = note;
+  }
+
+  /* #5007-2: the composer caption mirrors the real request lifecycle. It is
+     only ever set while a turn owns this view; every terminal path (first
+     answer content, completion, failure, cancel, view switch) returns it to
+     idle so a stale "처리 중" caption can never outlive its request. */
+  function clearProcessingNote() {
+    $("easyComposerNote").textContent = "";
+  }
+
+  /* #5007-2: Chat's three-dot answer-ready animation, ported into the B66
+     message design. A pending turn shows motion with an accessible label;
+     the dots node leaves with the pending message on first content,
+     completion, failure or view switch. */
+  function pendingDots() {
+    const dots = document.createElement("span");
+    dots.className = "easy-typing";
+    dots.setAttribute("aria-label", "답변을 준비하고 있습니다");
+    dots.append(document.createElement("i"), document.createElement("i"), document.createElement("i"));
+    return dots;
+  }
+
+  function addPendingAssistant() {
+    const article = addMessage("assistant", "", { guidedHistory: false });
+    if (article) {
+      const content = article.querySelector(".easy-message-content") || article;
+      content.appendChild(pendingDots());
+    }
+    return article;
   }
 
   function disableInput(note) {
@@ -522,7 +558,7 @@
     const history = modelChatTurns.concat([{ role: "user", content: text }]);
     interpretationInFlight = true;
     addMessage("user", text);
-    const pending = addMessage("assistant", "AI가 답변을 작성하고 있습니다…");
+    const pending = addPendingAssistant();
     blockSend("AI가 답변하는 동안 잠시 기다려 주세요. 다음 질문은 미리 입력해 두세요.");
     /* The conversation id is only ever the server's. When it is null the answer
        starts a new stored conversation; the browser cannot choose one. */
@@ -542,6 +578,7 @@
           : "실제 AI 답변을 가져오지 못했습니다. 로그인과 모델 선택을 확인한 뒤 다시 시도해 주세요.";
         addMessage("assistant", detail);
         setInput(submitFreeFormText, "다시 질문해 주세요");
+        clearProcessingNote();
         return;
       }
       modelChatTurns = history.concat([{ role: "assistant", content: result.answer }]);
@@ -569,6 +606,7 @@
       if (!stillCurrentView()) return;
       addMessage("assistant", "AI 대화 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.");
       setInput(submitFreeFormText, "다시 질문해 주세요");
+      clearProcessingNote();
     }).finally(() => {
       if (!stillCurrentView()) return;
       pending.remove();
@@ -759,18 +797,20 @@
       generation === dialogueGeneration && scope === accountScopeRevision
     );
     interpretationInFlight = true;
-    const pending = addMessage("assistant", "저장된 견적 상담을 확인하고 있습니다…");
+    const pending = addPendingAssistant();
     blockSend("저장된 견적 상담을 불러오는 중입니다.");
     try {
       const loaded = await bridge.quoteConversation("state");
       if (!stillCurrent()) return;
       if (!loaded || !loaded.ok) {
+        pending.remove();
         addMessage("assistant", quoteConversationError(loaded && loaded.code));
         setChips([
           { label: "질문받으며 새 견적", action: () => startGuidedIfReady() },
           { label: "처음으로", action: showHome }
         ]);
         setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+        clearProcessingNote();
         return;
       }
       const state = loaded.state || null;
@@ -824,6 +864,7 @@
         { label: "처음으로", action: showHome }
       ]);
       setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+      clearProcessingNote();
     } finally {
       if (stillCurrent()) interpretationInFlight = false;
     }
@@ -845,7 +886,7 @@
     const current = () => generation === dialogueGeneration && scope === accountScopeRevision;
     interpretationInFlight = true;
     if (isMessage) addMessage("user", currentText);
-    const pending = addMessage("assistant", "요청을 처리하고 있습니다…");
+    const pending = addPendingAssistant();
     blockSend("AI 요청을 처리하는 중입니다. 기다리는 동안 다음 질문을 미리 입력할 수 있습니다.");
     try {
       if (pendingQuoteReset) {
@@ -900,6 +941,10 @@
       if (current()) {
         interpretationInFlight = false;
         setInput(submitFreeFormText, "견적 질문 또는 수정 사항을 이어서 입력하세요");
+        /* #5007-2: the request is over in every terminal path (answer,
+           bounded failure, cancel), so the processing caption must go back
+           to idle here instead of lingering under the finished answer. */
+        clearProcessingNote();
       }
     }
   }
@@ -1501,7 +1546,10 @@
     if (opts.history !== false) recordDialogueState(conversationId);
     startConversation();
     addMessage("assistant", "이전 AI 대화를 불러오는 중...");
-    disableInput("이전 대화를 불러오는 중입니다.");
+    /* #5007-2: a restore is an in-flight request, so typing stays enabled and
+       only a duplicate submit is refused. `disableInput` remains for the
+       genuine read-only list screens, not for a live request. */
+    blockSend("이전 대화를 불러오는 중입니다.");
     /* #4657 P0-B: startConversation already bumped the view generation, so this
        capture is taken AFTER the transition and re-checked on both the resolved
        and the rejected path. Clicking new chat (or any other view) therefore
@@ -1519,7 +1567,7 @@
           { label: "이전 AI 대화", action: showAiDialogues },
           { label: "처음으로", action: showHome }
         ]);
-        disableInput("이전 대화를 불러오지 못했습니다.");
+        blockSend("이전 대화를 불러오지 못했습니다.");
         return;
       }
       startConversation();
@@ -1542,7 +1590,7 @@
     }).catch(() => {
       if (!stillRestoringView()) return;
       addMessage("assistant", "이전 대화를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
-      disableInput("이전 대화를 불러오지 못했습니다.");
+      blockSend("이전 대화를 불러오지 못했습니다.");
     });
   }
 
