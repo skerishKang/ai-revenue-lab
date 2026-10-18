@@ -955,6 +955,9 @@
     conversationArtifactContext?.clear?.();
     emptyState.hidden = false;
     shell.dataset.state = "home";
+    // One shared follow state for Chat and Claw: a new conversation starts
+    // from "latest" and hides the jump control.
+    window.__padiemConversationMotion?.reset?.();
     // Leaving for home drops any pending Claw execute recovery timer/state.
     clearClawRecovery({ syncControls: true });
     clearClawWait();
@@ -1558,6 +1561,9 @@
         if (item.role === "assistant") renderStoredAssistant(item.content);
         if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content });
       });
+      // A restored conversation opens on its newest turn with follow resumed,
+      // on the same shared Chat/Claw control.
+      window.__padiemConversationMotion?.resume?.();
       closeSidebar();
       input.focus();
       return true;
