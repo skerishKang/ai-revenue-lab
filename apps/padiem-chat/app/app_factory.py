@@ -59,6 +59,12 @@ from .b66_certified_preview import B66CertifiedPreviewStore
 from .b66_certified_pdf_routes import b66_certified_pdf, b66_certified_preview_base
 from .b66_native_sol_routes import b66_native_sol_pdf, b66_native_sol_scope
 from .b66_pc_directory_routes import B66_PC_DIRECTORY_PATH, b66_pc_directory
+from .b66_pc_txt_read_routes import (
+    B66_PC_RESULT_PATH,
+    B66_PC_TXT_READ_PATH,
+    b66_pc_run_result,
+    b66_pc_txt_read_request,
+)
 from padiem_control_plane.local_agent_pc_access import ProductPcAccessPolicy
 from .b66_quote_routes import (
     b66_quote_interpret,
@@ -481,6 +487,8 @@ def create_app(
         Route("/api/chat", api_chat, methods=["POST"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
         Route(B66_PC_DIRECTORY_PATH, b66_pc_directory, methods=["GET"]),
+        Route(B66_PC_TXT_READ_PATH, b66_pc_txt_read_request, methods=["POST"]),
+        Route(B66_PC_RESULT_PATH, b66_pc_run_result, methods=["POST"]),
         Route("/api/b66/company-profile", b66_company_profile_get, methods=["GET"]),
         Route("/api/b66/company-profile", b66_company_profile_put, methods=["PUT"]),
         Route("/api/b66/saved-skills", b66_saved_skills, methods=["GET"]),

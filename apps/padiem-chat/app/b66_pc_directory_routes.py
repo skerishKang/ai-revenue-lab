@@ -38,13 +38,25 @@ def _unavailable(reason: str) -> JSONResponse:
     )
 
 
-async def b66_pc_directory_permission(request: Request, owner: str) -> bool:
-    """Trusted product grant + authenticated workspace; never browser input.
+_OPERATION_ORDER = (
+    PcAccessOperation.DEVICE_LIST,
+    PcAccessOperation.FILE_LIST,
+    PcAccessOperation.FILE_READ,
+    PcAccessOperation.TASK_STATUS,
+    PcAccessOperation.TASK_RESULT,
+)
 
-    The public B66 listing intentionally requires an exact workspace-bound
-    product grant. A global/unscoped configuration grant is insufficient for
-    this customer-facing endpoint. No account emails, tier text, query
-    parameters or client-selected product IDs are accepted as grants.
+
+async def b66_pc_operations_allowed(
+    request: Request, owner: str, workspace: str,
+    operations: tuple[PcAccessOperation, ...],
+) -> bool:
+    """Shared B66 product/file gate: exact workspace grant + membership + ops.
+
+    The browser never supplies the product, the workspace or the operations:
+    each caller names the closed operations its own lane needs. A global or
+    unscoped configuration grant is insufficient, and a grant for one
+    operation never implies another.
     """
     policy: Any = getattr(request.app.state, "b66_pc_access_policy", None)
     if not isinstance(policy, ProductPcAccessPolicy):
@@ -52,26 +64,23 @@ async def b66_pc_directory_permission(request: Request, owner: str) -> bool:
     grant = policy.grant_for(_B66_PRODUCT_ID)
     if grant is None or grant.workspace_ref is None:
         return False
-
-    try:
-        workspace = await _resolve_memory_workspace(request, owner)
-    except Exception:
+    if grant.workspace_ref != workspace:
         return False
-    if not workspace or grant.workspace_ref != workspace:
-        return False
-
-    decision = evaluate_pc_access(
-        policy=policy, product_id=_B66_PRODUCT_ID,
-        operation=PcAccessOperation.DEVICE_LIST,
-        bound_product_id=_B66_PRODUCT_ID,
-        workspace_ref=workspace,
-    )
-    if not decision.allowed:
-        return False
+    for operation in operations:
+        if operation not in _OPERATION_ORDER:
+            return False
+        decision = evaluate_pc_access(
+            policy=policy, product_id=_B66_PRODUCT_ID,
+            operation=operation,
+            bound_product_id=_B66_PRODUCT_ID,
+            workspace_ref=workspace,
+        )
+        if not decision.allowed:
+            return False
 
     # The B66 product membership gate is independent of the PC grant.
     # When membership enforcement is enabled, missing/denied membership
-    # must not be bypassed by a separate device.list grant.
+    # must not be bypassed by a device.list grant.
     if getattr(request.app.state, "b66_membership_enforced", False) is True:
         store = getattr(request.app.state, "b66_member_admin_store", None)
         try:
@@ -81,6 +90,26 @@ async def b66_pc_directory_permission(request: Request, owner: str) -> bool:
         if not isinstance(access, dict) or access.get("status") != "approved":
             return False
     return True
+
+
+async def b66_pc_directory_permission(request: Request, owner: str) -> bool:
+    """Trusted product grant + authenticated workspace; never browser input.
+
+    The public B66 listing intentionally requires an exact workspace-bound
+    product grant. A global/unscoped configuration grant is insufficient for
+    this customer-facing endpoint. No account emails, tier text, query
+    parameters or client-selected product IDs are accepted as grants.
+    """
+    try:
+        workspace = await _resolve_memory_workspace(request, owner)
+    except Exception:
+        return False
+    if not workspace:
+        return False
+
+    return await b66_pc_operations_allowed(
+        request, owner, workspace, (PcAccessOperation.DEVICE_LIST,),
+    )
 
 
 async def b66_pc_directory_available(request: Request, owner: str) -> bool:
