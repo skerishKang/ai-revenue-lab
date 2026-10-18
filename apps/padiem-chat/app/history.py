@@ -1414,29 +1414,35 @@ class D1HistoryStore:
         status: str,
         result_summary: str | None = None,
     ) -> bool:
-        """Narrow status-only update of one existing owner-scoped Claw run row (#2961).
+        """Narrow, guarded status-only update of one owner-scoped Claw run row (#2961). (#5015r)
 
         An owner approve/deny must not rewrite channel, action, title, session or
         workspace linkage, so this touches only ``status`` / ``updated_at`` and
         the bounded result summary. Rows are addressed by owner + run id, so a
         caller can never mutate another owner's run.
+
+        The write is one atomic conditional UPDATE:
+
+        - a row already at ``completed`` can never be overwritten by a later
+          failure/cancel settle, and
+        - an existing ``result_summary`` is never blanked to NULL by a
+          summary-free settle call.
+
+        ``False`` therefore also reports "the guarded write matched nothing",
+        e.g. a late settle racing a verified completion.
         """
         if not isinstance(user_id, str) or not user_id:
             return False
         if not isinstance(run_id, str) or not run_id:
             return False
-        owned = await self._first(
-            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
-            run_id, user_id,
-        )
-        if owned is None:
-            return False
         summary = result_summary[:MAX_RUN_RESULT_SUMMARY_CHARS] if result_summary else None
-        await self._run(
-            "UPDATE claw_run_history SET status=?, updated_at=?, result_summary=? WHERE id=?",
-            status, _now_iso(), summary, str(owned.get("id")),
+        result = await self._run(
+            "UPDATE claw_run_history SET status=?, updated_at=?, "
+            "result_summary=CASE WHEN ? IS NULL THEN result_summary ELSE ? END "
+            "WHERE run_id=? AND user_id=? AND status<>'completed'",
+            status, _now_iso(), summary, summary, run_id, user_id,
         )
-        return True
+        return _changed_rows(result) > 0
 
     async def get_claw_run(self, user_id: str, run_id: str) -> dict[str, Any] | None:
         """#3139 — the owner-scoped origin row for one Claw run.
