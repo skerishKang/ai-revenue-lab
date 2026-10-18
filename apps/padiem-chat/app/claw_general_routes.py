@@ -661,7 +661,13 @@ def _natural_pc_query_command(user_text: str) -> str | None:
             "| ForEach-Object { $_.FullName }"
         )
     if any(marker in compact for marker in ("드라이브", "디스크", "drive", "disk")):
-        return "wmic logicaldisk get caption,description"
+        # Cmdlet-only: no native exit is observed, so the lane records the
+        # honest no_exit_code termination. The drive list itself is carried
+        # as JSON in the transcript.
+        return (
+            "Get-PSDrive -PSProvider FileSystem | "
+            "Select-Object Name,Root,Used,Free | ConvertTo-Json"
+        )
     if "hostname" in lowered or "호스트" in lowered:
         return "hostname.exe"
     return None
