@@ -34,13 +34,9 @@ from .history import (
     build_project_context,
 )
 from .history import PRODUCT_SCOPE_CHAT
-<<<<<<< HEAD
-from .model_policy import model_supports, FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
-from .central_model_route_runtime import chat_request_tier_context
-=======
 from .model_policy import model_supports, request_tier_context, resolve_request_model_policy, FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
+from .central_model_route_runtime import chat_request_tier_context
 from .final_dispatch_guard_wiring import apply_guard_to_client, create_guard_from_request
->>>>>>> ceb7f5a2e (feat(b62): #4483 wire final dispatch guard into Claw/Chat route)
 from .member_grade_access import selected_admin_denial, selected_grade_denial
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
