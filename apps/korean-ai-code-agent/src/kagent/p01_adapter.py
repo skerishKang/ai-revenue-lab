@@ -114,6 +114,35 @@ P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE = "engine_provider_bad_response"
 # the final canary record ENGINE_ADMISSION_RESULT instead of collapsing it
 # into the downstream bucket.
 P01_FAILURE_DETAIL_ENGINE_ADMISSION = "engine_admission_denied"
+# #5015: bounded tool-stage codes emitted by the Core tool runtime and the
+# Claw PC-query handler. These are an already-closed, reviewed vocabulary.
+# Preserving the exact stage is what lets the caller tell a missing
+# verification owner (pc_query_admission_required / tool_owner_mismatch), an
+# unconfigured integration (pc_query_unconfigured) and request-creation faults
+# (pc_query_dispatch_missing / pc_query_dispatch_mismatch) apart instead of
+# collapsing every tool failure into one constant.
+P01_FAILURE_DETAIL_TOOL_STAGES = frozenset(
+    {
+        "tool_not_registered",
+        "tool_agent_mismatch",
+        "tool_not_allowed",
+        "tool_owner_mismatch",
+        "tool_auth_scope_missing",
+        "tool_user_confirmation_required",
+        "tool_external_authorization_required",
+        "invalid_tool_arguments",
+        "pc_query_unconfigured",
+        "pc_query_unavailable",
+        "pc_query_denied",
+        "pc_query_admission_required",
+        "pc_query_dispatch_mismatch",
+        "pc_query_dispatch_missing",
+        "pc_query_result_mismatch",
+        "pc_query_result_unknown",
+        "pc_query_execution_failed",
+        "pc_query_output_missing",
+    }
+)
 P01_FAILURE_DETAILS = frozenset(
     {
         P01_FAILURE_DETAIL_AUTHENTICATION,
@@ -165,7 +194,11 @@ class P01AdapterError(RuntimeError):
         self.dispatch_class = dispatch_class
         self.failure_detail = (
             failure_detail
-            if isinstance(failure_detail, str) and failure_detail in P01_FAILURE_DETAILS
+            if isinstance(failure_detail, str)
+            and (
+                failure_detail in P01_FAILURE_DETAILS
+                or failure_detail in P01_FAILURE_DETAIL_TOOL_STAGES
+            )
             else None
         )
 

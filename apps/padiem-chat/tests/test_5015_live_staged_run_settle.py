@@ -26,6 +26,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.history import D1HistoryStore
 from app.claw_general_routes import _requested_natural_pc_query
+from kagent.p01_adapter import P01AdapterError, P01DispatchClass
 from padiem_ai_core.orchestration_events import OrchestrationEventKind
 from test_3930_b54_live_sse_relay import _event, _streaming_adapter
 from test_b54_claw_general_p01_routing import _client, _make_outcome, _payload
@@ -149,6 +150,43 @@ def test_settle_hook_failure_never_breaks_the_user_facing_stream():
     response = _drive_call(adapter, store)
     assert response.status_code == 200
     assert "event: error" in response.text
+
+
+def test_bounded_tool_stage_detail_rides_the_live_error_frame():
+    """#5015: the live lane exposes the same closed detail as the 502 body.
+
+    The Engine error line names the actual tool stage (e.g. a missing
+    verification owner). The browser frame keeps the generic code but adds
+    only the bounded, reviewed stage identifier — never Engine text.
+    """
+    store = _tracking_store()
+    error = P01AdapterError(
+        "p01_engine_stream_failed",
+        "Engine streaming failed before a verified terminal result.",
+        dispatch_class=P01DispatchClass.UNKNOWN,
+        failure_detail="pc_query_admission_required",
+    )
+    adapter = _streaming_adapter(status="failed", error=error)
+    response = _drive_call(adapter, store)
+    assert response.status_code == 200
+    assert '"code":"engine_execution_failed"' in response.text
+    assert '"detail":"pc_query_admission_required"' in response.text
+    assert [r["status"] for r in store.rows.values()] == ["failed"]
+
+
+def test_unbounded_failure_detail_is_never_projected():
+    store = _tracking_store()
+    error = P01AdapterError(
+        "p01_engine_stream_failed",
+        "Engine streaming failed before a verified terminal result.",
+        dispatch_class=P01DispatchClass.UNKNOWN,
+        failure_detail="Owner text; drop table",
+    )
+    adapter = _streaming_adapter(status="failed", error=error)
+    response = _drive_call(adapter, store)
+    assert response.status_code == 200
+    assert '"detail"' not in response.text
+    assert "drop table" not in response.text
 
 
 # --- the real D1-ish guard: a verified completion can never be overwritten ---
