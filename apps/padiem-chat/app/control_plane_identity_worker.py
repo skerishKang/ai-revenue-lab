@@ -27,7 +27,6 @@ _MAX_RPC_TICKET_CHARS = 24_576
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "canonical_subject_id", "state"})
 # #3247: the reverse product-user lookup returns exactly the linked product user
 # id and nothing else — no subject, no state, no provider material.
-_PRODUCT_USER_RESOLVE_KEYS = frozenset({"product_user_id"})
 _SESSION_KEYS_LEGACY = frozenset(
     {"session_id", "product_id", "subject", "issued_at", "expires_at", "state", "revision"}
 )
@@ -184,7 +183,13 @@ class CloudflareControlPlaneIdentityAuthority:
             raise ValueError("Control Plane identity Service Binding is required")
         self._binding = binding
 
-    async def _rpc(self, method_name: str, payload: dict[str, Any], success_field: str) -> dict[str, Any]:
+    async def _rpc_envelope(self, method_name: str, payload: dict[str, Any]) -> dict[str, Any]:
+        """Validated ``{"ok": true, ...}`` envelope from one identity RPC.
+
+        Kept separate from the dict success-field projection because the
+        reverse product-user lookup answers with a scalar ``product_user_id``
+        rather than a nested object (#5015).
+        """
         method = getattr(self._binding, method_name, None)
         if not callable(method):
             raise IdentityBridgeError(
@@ -216,6 +221,10 @@ class CloudflareControlPlaneIdentityAuthority:
                 code,
                 "Canonical identity request was rejected.",
             )
+        return result
+
+    async def _rpc(self, method_name: str, payload: dict[str, Any], success_field: str) -> dict[str, Any]:
+        result = await self._rpc_envelope(method_name, payload)
         if set(result) != {"ok", success_field}:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
         payload_wire = _dict(result.get(success_field))
@@ -333,16 +342,15 @@ class CloudflareControlPlaneIdentityAuthority:
             raise IdentityBridgeError(
                 503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
             )
-        wire = _closed(
-            await self._rpc(
-                "resolve_product_user_for_subject",
-                {"product_id": product_id, "canonical_subject_id": canonical_subject_id},
-                "product_user",
-            ),
-            _PRODUCT_USER_RESOLVE_KEYS,
-            "reverse product-user resolve",
+        result = await self._rpc_envelope(
+            "resolve_product_user_for_subject",
+            {"product_id": product_id, "canonical_subject_id": canonical_subject_id},
         )
-        product_user_id = wire.get("product_user_id")
+        # The Control Plane answers this read-only reverse lookup with the
+        # scalar ``product_user_id`` next to ``ok`` (#3247/#5015).
+        if set(result) != {"ok", "product_user_id"}:
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+        product_user_id = result.get("product_user_id")
         if not isinstance(product_user_id, str) or not product_user_id:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity link is invalid.")
         return product_user_id
