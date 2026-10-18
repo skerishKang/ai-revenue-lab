@@ -923,16 +923,9 @@
       quoteConversationRevision = result.revision;
       quoteConversationEngaged = true;
       addMessage("assistant", result.answer, { markdown: result.answer_origin === "registered_model_completion" });
-      /* #5007: the server owns the mode. `next_question` is derived from the
-         still-missing quote fields and is therefore present even while the
-         registered model is answering ordinary chat ("오늘 며칠이야?"). Printing
-         it unconditionally repeated the "거래처 또는 담당자명" prompt after
-         every general answer. Only an actively quote-authoring turn may ask the
-         next quote question, so a general answer stays an answer. */
-      if (result.quote && result.quote.mode === "quote_authoring" && result.quote.next_question &&
-          !result.answer.includes(result.quote.next_question)) {
-        addMessage("assistant", result.quote.next_question);
-      }
+      // #5007: render exactly one server-authorized assistant response per
+      // request. quote.next_question is workflow metadata, not a second
+      // assistant turn; emitting it caused duplicate quantity/recipient prompts.
       conversationQuoteChips(bridge, result, generation, action === "approve_draft");
     } catch (_) {
       if (current()) addMessage("assistant", quoteConversationError("conversation_unavailable"));

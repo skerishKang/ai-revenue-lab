@@ -121,7 +121,15 @@
 
   function glassMode(){
     var shell=document.querySelector(".app-shell");
-    return shell && shell.dataset.state==="chat" ? "reading" : "home";
+    if(!shell) return "home";
+    if(shell.dataset.state==="chat") return "reading";
+    if(shell.dataset.state==="claw"){
+      // The conversation element is mounted on the Claw landing too, so presence
+      // is not the signal: a rendered turn is. Landing keeps the bright art.
+      var conv=shell.querySelector('.claw-workspace[data-view="general"] ~ .conversation');
+      if(conv && !conv.hidden && conv.querySelector("#messageList .message")) return "reading";
+    }
+    return "home";
   }
 
   function syncGlassMode(){
@@ -524,6 +532,10 @@
     var list=document.getElementById("messageList");
     if(!list || !window.MutationObserver || glassObserver) return;
     glassObserver=new MutationObserver(function(mutations){
+      // The mode predicate now depends on whether a conversation exists, and
+      // that changes without any data-state write when Claw starts or clears a
+      // thread. Re-derive it on every list mutation; it is one attribute set.
+      syncGlassMode();
       if(mutations.some(mutationTouchesAssistant)) noteGlassAnswerActivity();
       else queueGlassMotion();
     });

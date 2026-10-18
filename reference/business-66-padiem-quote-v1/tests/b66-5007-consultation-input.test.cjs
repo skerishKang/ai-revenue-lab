@@ -3,8 +3,8 @@
 // composer input lock. Source-contract regressions: these assertions fail if the
 // defects are restored.
 //
-// 1. A general question must not be answered with a quote prompt. The server owns
-//    `quote.mode`; the browser may only print `next_question` while authoring.
+// 1. One request must emit exactly one assistant answer, even while quote-authoring.
+//    `next_question` is workflow metadata, not another assistant message.
 // 2. The resume chip must call the real restore flow, not just move focus.
 // 3. An in-flight AI turn must keep the textarea writable; only submit is blocked.
 // 4. New quote must keep the server-owned reset so old facts cannot mix in.
@@ -22,10 +22,15 @@ assert.doesNotMatch(
   /if \(result\.quote && result\.quote\.next_question &&/,
   "next_question must not be printed from the quote payload alone"
 );
+assert.doesNotMatch(
+  easy,
+  /addMessage\("assistant", result\.quote\.next_question\)/,
+  "next_question must never produce a second assistant turn"
+);
 assert.match(
   easy,
-  /result\.quote\.mode === "quote_authoring" && result\.quote\.next_question/,
-  "next_question is gated on the server-owned quote_authoring mode"
+  /addMessage\("assistant", result\.answer/,
+  "one server-authorized answer remains visible"
 );
 
 /* 2. "견적 상담 이어가기" restores stored state ------------------- */

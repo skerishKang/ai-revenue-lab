@@ -234,8 +234,18 @@
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
+  let automationDestinationReady = false;
   function setNavActive() {
     const state = shell.dataset.state;
+    // The URL fragment is the destination bookmark; no browser persistence.
+    if (automationDestinationReady && window.history && window.location) {
+      const isAutomationRoute = window.location.hash === "#padiem-automation";
+      if (state === "automation" && !isAutomationRoute) {
+        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search + "#padiem-automation");
+      } else if (state !== "automation" && isAutomationRoute) {
+        window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+      }
+    }
     const workspace = document.getElementById("clawWorkspace");
     if (workspace) workspace.hidden = state !== "claw";
     const meetingView = document.getElementById("meetingView");
@@ -955,6 +965,9 @@
     conversationArtifactContext?.clear?.();
     emptyState.hidden = false;
     shell.dataset.state = "home";
+    // One shared follow state for Chat and Claw: a new conversation starts
+    // from "latest" and hides the jump control.
+    window.__padiemConversationMotion?.reset?.();
     // Leaving for home drops any pending Claw execute recovery timer/state.
     clearClawRecovery({ syncControls: true });
     clearClawWait();
@@ -1558,6 +1571,9 @@
         if (item.role === "assistant") renderStoredAssistant(item.content);
         if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content });
       });
+      // A restored conversation opens on its newest turn with follow resumed,
+      // on the same shared Chat/Claw control.
+      window.__padiemConversationMotion?.resume?.();
       closeSidebar();
       input.focus();
       return true;
@@ -5474,4 +5490,8 @@
     // Read-only: this exposes no pairing, session or transport authority.
     getConversationId: () => window.PadiemChatConversationState?.getConversationId?.() || null,
   });
+  // Restore the Automation surface only after all handlers are registered.
+  // It remains read-only for signed-out sessions through openClawAutomation().
+  if (window.location.hash === "#padiem-automation") openClawAutomation();
+  automationDestinationReady = true;
 })();

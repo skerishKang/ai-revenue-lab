@@ -218,3 +218,70 @@ html[data-theme="padiem-glass"] body .app-shell:is(
     padding-bottom: 20px;
   }
 }
+
+/* Automation workbench: single title, compact actions, usable native scrolling. */
+.app-shell[data-state="automation"] .automation-view {
+  gap: 10px;
+  max-height: calc(100dvh - 92px);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: rgba(72,91,108,.72) rgba(120,136,148,.14);
+}
+.app-shell[data-state="automation"] .automation-view::-webkit-scrollbar { width: 10px; }
+.app-shell[data-state="automation"] .automation-view::-webkit-scrollbar-thumb {
+  background: rgba(72,91,108,.72);
+  border-radius: 99px;
+}
+.app-shell[data-state="automation"] .automation-view .standalone-view-body { gap: 0; }
+.app-shell[data-state="automation"] #clawAutomation {
+  margin: 0;
+  padding: 14px 18px;
+  border: 1px solid rgba(255,255,255,.48);
+  border-radius: 18px;
+  background: rgba(248,250,251,.28);
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-header > div {
+  display: none;
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.app-shell[data-state="automation"] #clawAutomation :is(.claw-inbox-retry,.claw-inbox-status-action) {
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+.app-shell[data-state="automation"] #clawAutomation > .claw-inbox-help {
+  margin: 6px 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.app-shell[data-state="automation"] #clawAutomation .calendar-record {
+  margin-top: 10px;
+}
+.app-shell[data-state="automation"] #clawAutomation .calendar-record-form {
+  max-width: 100%;
+}
+.app-shell[data-state="automation"] #clawAutomation :is(input,textarea,select) {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 700px) {
+  .app-shell[data-state="automation"] .automation-view {
+    max-height: calc(100dvh - 64px);
+    padding-bottom: 20px;
+  }
+  .app-shell[data-state="automation"] #clawAutomation {
+    padding: 12px;
+  }
+  .app-shell[data-state="automation"] #clawAutomation .claw-inbox-header {
+    justify-content: flex-start;
+  }
+}
