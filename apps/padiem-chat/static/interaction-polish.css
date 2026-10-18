@@ -129,3 +129,44 @@
     animation: none !important;
   }
 }
+
+
+/* #5014: Chat phone home should leave room for the composer above the fold.
+ * Scope to Chat only; Claw has its own compact 2x2 connection layout. */
+@media (max-width: 620px) {
+  .app-shell[data-state="chat"] .conversation:has(#emptyState:not([hidden])) {
+    min-height: auto !important;
+    padding-top: 16px !important;
+    padding-bottom: var(--padiem-composer-clearance, 230px) !important;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) {
+    min-height: 0 !important;
+    height: auto !important;
+    padding-block: 8px 16px !important;
+    margin-block: 0 !important;
+    align-content: start;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) h1 {
+    font-size: clamp(25px, 7vw, 34px) !important;
+    line-height: 1.22 !important;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) .empty-copy {
+    margin-top: 8px !important;
+    font-size: 13px !important;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter-grid {
+    margin-top: 16px !important;
+    gap: 8px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter {
+    min-height: 84px !important;
+    padding: 11px !important;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter small {
+    display: none;
+  }
+  .app-shell[data-state="chat"] .conversation {
+    scroll-padding-bottom: calc(var(--padiem-composer-clearance, 230px) + 16px);
+  }
+}
