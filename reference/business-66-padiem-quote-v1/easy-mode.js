@@ -34,6 +34,18 @@
   let inputHandler = null;
   let guided = null;
   let guidedSnapshot = null;
+  /* #5039: finishing a guided quote does not end the conversation. A completed
+     draft stays revisable in the same dialogue: the customer can name a field
+     in plain Korean or pick it from the chips, and only an explicit confirm
+     rebuilds the quote through the existing QuoteCore path. */
+  let guidedRevising = false;
+  let guidedRevisionStep = null;
+  /* #5039: the finished draft stays revisable in this dialogue. These hold
+     that draft so a post-completion edit can re-enter the same per-field
+     questions even after the guided step machine has been released. */
+  let postCompleteDraft = null;
+  let postCompleteTaxUnknown = false;
+  let postCompleteQuoteNo = "";
   let accountSignedIn = false;
   let selectedFile = null;
   let lastEasyView = "home";
@@ -651,6 +663,15 @@
 
   function releaseQuoteArtifacts() {
     while (quoteArtifactUrls.length) URL.revokeObjectURL(quoteArtifactUrls.pop());
+    /* #5039: a new quote, account change or view switch retires the
+       post-completion revision target with the rest of the quote state, so a
+       later edit can never be applied to a quote the customer has moved on
+       from. */
+    postCompleteDraft = null;
+    postCompleteTaxUnknown = false;
+    postCompleteQuoteNo = "";
+    guidedRevising = false;
+    guidedRevisionStep = null;
   }
 
   // The only file offered in a chat result is the Blob actually returned by
@@ -1099,8 +1120,12 @@
       (draft.recipient.person ? " · " + draft.recipient.person : "") +
       "\n\n" + itemLines +
       "\n\n" + taxLine +
-      "\n\n아래에서 견적서를 열어 PDF로 저장하거나 인쇄할 수 있습니다."
+      "\n\n아래에서 견적서를 열어 PDF로 저장하거나 인쇄할 수 있습니다.\n\n" +
+      "수정할 내용이 있으면 이 대화에서 바로 이어서 적어 주세요. (예: 부가세 별도로 바꿔줘, 단가 120만원으로)"
     );
+    // #5039: a finished quote is not the end of this dialogue. Keep the
+    // composer usable so the customer can revise the same draft in place
+    // instead of restarting; a new quote still needs the explicit 처음으로.
     setChips([
       {
         label: "견적서 확인하기",
@@ -1111,7 +1136,46 @@
       },
       { label: "처음으로", action: showHome }
     ]);
-    blockSend("새 견적은 처음으로 돌아가서 시작할 수 있습니다.");
+    postCompleteDraft = draft;
+    postCompleteTaxUnknown = Boolean(taxUnknown);
+    postCompleteQuoteNo = draft && draft.meta ? String(draft.meta.quoteNo || "") : "";
+    setInput(processPostCompleteInput, "수정할 내용만 적어 주세요 (예: 부가세 별도로 바꿔줘)");
+  }
+
+  /* Plain Korean post-completion edit on an already-built draft. The existing
+     server quote thread stays the authority when it owns this draft: it stages
+     the change and returns its own confirm/cancel chips. Otherwise the value is
+     collected through the same per-field questions and the draft is rebuilt by
+     the existing QuoteCore path — never by the browser. */
+  function processPostCompleteInput(raw) {
+    const text = safeText(raw);
+    if (!text) return;
+    addMessage("user", text);
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (bridge && typeof bridge.quoteConversation === "function" && quoteConversationEngaged) {
+      runQuoteConversation(text, "message");
+      return;
+    }
+    const step = guidedRevisionStepFor(text);
+    if (!step) {
+      addMessage("assistant",
+        "수정할 항목을 알려 주세요. 부가세, 수량, 단가, 품목, 거래처, 메모 중 하나를 말씀해 주시면 그대로 바꿔 드릴게요.");
+      setChips(guidedReviseChips());
+      return;
+    }
+    if (!postCompleteDraft) return;
+    guided = {
+      step: "summary",
+      draft: postCompleteDraft,
+      currentItem: postCompleteDraft.items.length - 1,
+      taxUnknown: postCompleteTaxUnknown,
+      conversationId: guidedConversationId(),
+      transcript: []
+    };
+    lastEasyView = "guided";
+    guidedRevising = false;
+    guidedRevisionStep = null;
+    startGuidedRevision(step);
   }
 
   let guidedStartInFlight = false;
@@ -2129,26 +2193,130 @@
       "\n\n" + itemLines +
       "\n\n" + taxLine +
       "\n" + amountLine +
-      "\n\n확인 화면에서 모든 내용을 다시 수정할 수 있습니다."
+      "\n\n수정할 내용이 있으면 바로 편하게 적어 주세요. (예: 부가세 별도로 바꿔줘, 수량 5개로, 단가 120만원으로)"
     );
 
+    // #5039: a prepared quote is not the end of the dialogue. Offer the
+    // finished-quote action plus in-conversation revision, so the customer
+    // never has to abandon the conversation to change one field.
     setChips([
       { label: "견적서 만들기", action: finishGuidedWithRuntime },
+      { label: "수정하기", action: () => { setChips(guidedReviseChips()); } },
       { label: "처음부터 다시", action: startGuided },
       { label: "최근 견적 보기", action: showRecentHistory }
     ]);
-    disableInput("견적서 만들기를 누르면 CGI 기본 견적서로 최종 작성됩니다.");
+    setInput(processGuidedInput, "수정할 내용만 적어 주세요 (예: 부가세 별도로 바꿔줘)");
+  }
+
+  /* #5039: field chips for a prepared guided quote. Each one re-enters the
+     same existing question for that field, so the value is collected through
+     the reviewed per-field validation and then returns to the summary for
+     confirmation. No second prompt set, no new persistence. */
+  function guidedReviseChips() {
+    const items = [];
+    if (guided && guided.draft && guided.draft.items && guided.draft.items.length) {
+      items.push({ label: "수량·단가", action: () => startGuidedRevision("qty") });
+    }
+    items.push({ label: "부가세", action: () => startGuidedRevision("tax") });
+    items.push({ label: "거래처", action: () => startGuidedRevision("recipientCompany") });
+    items.push({ label: "품목", action: () => startGuidedRevision("itemName") });
+    items.push({ label: "메모", action: () => startGuidedRevision("memo") });
+    return items;
+  }
+
+  /* Plain Korean revision phrases map onto the existing field prompts. The
+     matcher is intentionally narrow and closed: an unrecognized sentence
+     re-asks instead of guessing a field. */
+  function guidedRevisionStepFor(text) {
+    const value = safeText(text);
+    if (!value) return null;
+    if (/(부가세|세금|과세|면세)/u.test(value)) return "tax";
+    if (/(수량|개수|몇\s*개|수정)/u.test(value) && /(수량|개수|몇\s*개)/u.test(value)) return "qty";
+    if (/(단가|가격|금액|값)/u.test(value)) return "price";
+    if (/(품목|항목|물건)/u.test(value)) return "itemName";
+    if (/(메모|비고|납기|결제)/u.test(value)) return "memo";
+    if (/(거래처|받는\s*곳|받을\s*곳|받는\s*분|담당자)/u.test(value)) return "recipientCompany";
+    return null;
+  }
+
+  function startGuidedRevision(step) {
+    if (!guided || !guided.draft) return;
+    guidedRevising = true;
+    guidedRevisionStep = step || "tax";
+    const active = guidedReviseChips();
+    switch (guidedRevisionStep) {
+      case "qty": askQty(); break;
+      case "price": askPrice(); break;
+      case "itemName": askItemName(); break;
+      case "memo": askMemo(); break;
+      case "recipientCompany": askRecipientCompanyForRevision(); break;
+      default: askTax();
+    }
+    setChips(active);
+  }
+
+  /* #5039: after one revised field is collected, return to the prepared-quote
+     summary for confirmation. A post-completion revision is also written back
+     to the live quote through the existing draft path, so the preview, the
+     confirmed totals and the eventual PDF all show the revised values. QuoteCore
+     still computes every amount; the browser never does. */
+  function returnToGuidedSummary() {
+    const wasPostComplete = Boolean(postCompleteDraft);
+    guidedRevising = false;
+    guidedRevisionStep = null;
+    guided.step = "summary";
+    if (wasPostComplete && guided && guided.draft) {
+      const applied = App.replaceDraft(guided.draft, {
+        requireTaxReview: Boolean(guided.taxUnknown),
+        toast: ""
+      });
+      if (!applied || applied.ok !== true) {
+        addMessage("assistant",
+          "수정내용을 견적서에 반영하지 못했습니다. 기존 견적은 그대로 유지됩니다. 견적서 확인 화면에서 직접 확인해 주세요.");
+        return;
+      }
+      postCompleteDraft = applied.draft;
+      addResultReview(applied.draft, Boolean(guided.taxUnknown));
+      return;
+    }
+    showGuidedSummary();
+  }
+
+  function askRecipientCompanyForRevision() {
+    guided.step = "recipientCompany";
+    addMessage("assistant", "어떤 업체명으로 바꿀까요?");
+    setChips([]);
+    setInput(processGuidedInput, "예: 홍길동건설");
   }
 
   function processGuidedInput(raw) {
     if (!guided) return;
     const text = safeText(raw);
     if (!text) return;
+
+    // #5039: the summary is a live revision point. A prepared quote keeps the
+    // same dialogue open, and only the field the customer actually named
+    // changes. Anything unrecognized re-asks instead of guessing.
+    if (guided.step === "summary" && !guidedRevising) {
+      const revisionStep = guidedRevisionStepFor(text);
+      if (!revisionStep) {
+        addMessage("assistant",
+          "수정할 항목을 알려 주세요. 부가세, 수량, 단가, 품목, 거래처, 메모 중 하나를 말씀해 주시면 그대로 바꿔 드릴게요.");
+        setChips(guidedReviseChips());
+        setInput(processGuidedInput, "예: 부가세 별도로 바꿔줘");
+        return;
+      }
+      addMessage("user", text);
+      startGuidedRevision(revisionStep);
+      return;
+    }
+
     addMessage("user", text);
 
     switch (guided.step) {
       case "recipientCompany":
         guided.draft.recipient.company = text;
+        if (guidedRevising) { returnToGuidedSummary(); break; }
         askRecipientPerson();
         break;
 
@@ -2160,6 +2328,7 @@
       case "itemName":
         guided.draft.items.push({ id: "item-" + (guided.draft.items.length + 1), name: text });
         guided.currentItem = guided.draft.items.length - 1;
+        if (guidedRevising) { returnToGuidedSummary(); break; }
         askQty();
         break;
 
@@ -2171,6 +2340,7 @@
           return;
         }
         guided.draft.items[guided.currentItem].qty = qty;
+        if (guidedRevising) { returnToGuidedSummary(); break; }
         askPrice();
         break;
       }
@@ -2183,6 +2353,7 @@
           return;
         }
         guided.draft.items[guided.currentItem].unitPrice = price;
+        if (guidedRevising) { returnToGuidedSummary(); break; }
         askMoreItems();
         break;
       }
@@ -2221,11 +2392,13 @@
           askTax();
           return;
         }
+if (guidedRevising) { returnToGuidedSummary(); break; }
         askMemo();
         break;
 
       case "memo":
-        guided.draft.memo = /^(없음|없어요|없습니다)$/u.test(text) ? "" : text;
+        guided.draft.memo = /^(없음|없어요|없음없음)$/u.test(text) ? "" : text;
+        if (guidedRevising) { returnToGuidedSummary(); break; }
         askSender();
         break;
 
