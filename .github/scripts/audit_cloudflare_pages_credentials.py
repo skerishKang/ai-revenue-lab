@@ -61,6 +61,7 @@ def request_json(path: str, token: str) -> tuple[int, object]:
 
 def fetch_production_status(url: str) -> int:
     req = urllib.request.Request(url, method="GET")
+    req.add_header("User-Agent", "Mozilla/5.0 (compatible; PadiemAudit/1.0)")
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             return resp.status
