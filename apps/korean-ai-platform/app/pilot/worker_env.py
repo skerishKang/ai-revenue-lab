@@ -120,27 +120,17 @@ async def load_request_secret(binding_name: str) -> None:
     in_flight = asyncio.get_running_loop().create_future()
     values[binding_name] = in_flight
     resolved = ""
-    _dbg_forms = []
-    for _form, _call in (("noarg", lambda: getter()), ("empty", lambda: getter("")), ("name", lambda: getter(binding_name))):
-        try:
-            secret = await _call()
-            resolved = str(secret) if secret is not None else ""
-            import logging as _dbg_logging
-            _dbg_logging.getLogger("b14dbg").warning("DBG_FORM_OK form=%s resolved_len=%d", _form, len(resolved))
-            break
-        except Exception as exc:
-            import logging as _dbg_logging
-            _dbg_logging.getLogger("b14dbg").warning("DBG_FORM_FAIL form=%s type=%s name=%s msg=%r", _form, type(exc).__name__, getattr(exc, "name", ""), str(exc)[:200])
-            _dbg_forms.append(_form)
-    if not resolved and len(_dbg_forms) == 3:
-        # all forms failed
+    try:
+        secret = await getter()
+        resolved = str(secret) if secret is not None else ""
+    except Exception as exc:
+        # Missing/revoked bindings fail closed without retries, but the cause
+        # is recorded as a fixed token so an outage is diagnosable.
         if statuses is not None:
-            statuses[binding_name] = "error:js_Error"
+            statuses[binding_name] = _classify_binding_error(exc)
     else:
         if statuses is not None:
             statuses[binding_name] = "resolved" if resolved else "empty"
-    try:
-        pass
     finally:
         values[binding_name] = resolved
         in_flight.set_result(resolved)
