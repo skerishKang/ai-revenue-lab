@@ -99,7 +99,28 @@ _PRIVATE_QUERY_RE = re.compile(
 )
 
 
-def _judge_profile() -> AgentProfile:
+def _explicit_internal_model(agent: Any) -> str | None:
+    """The caller's explicit model for Engine-owned judgement/planning (#5015).
+
+    Only an explicitly selected, syntactically valid model is echoed into this
+    internal call. The product default route and tier policy are untouched: the
+    Engine keeps its historical chain when the caller selects nothing.
+    """
+    policy = getattr(agent, "model_policy", None)
+    if not isinstance(policy, dict):
+        return None
+    model = policy.get("model")
+    if not isinstance(model, str):
+        return None
+    model = model.strip()
+    if not model or model in {"b14/auto", "none/disabled"}:
+        return None
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", model):
+        return None
+    return model
+
+
+def _judge_profile(model_id: str | None = None) -> AgentProfile:
     return AgentProfile(
         id="engine-search-judgement",
         title="Conversation search judgement",
@@ -110,7 +131,11 @@ def _judge_profile() -> AgentProfile:
         max_tokens=256,
         allowed_tools=(),
         required_capabilities=(),
-        model_policy={"model": "b14/auto"},
+        model_policy=(
+            {"model": model_id, "max_retries": 0}
+            if model_id is not None
+            else {"model": "b14/auto"}
+        ),
         max_steps=1,
     )
 
@@ -402,10 +427,11 @@ class WebResearchEngineService:
                 max_tokens=240,
                 allowed_tools=(),
                 required_capabilities=(),
-                # #2101: the Engine-owned planner stays on the Router-owned
-                # fixed `b14/auto` chain, but the route is now declared
-                # explicitly. Core no longer synthesizes it when omitted.
-                model_policy={"model": "b14/auto"},
+                # #2101/#5015: the Engine-owned planner normally stays on the
+                # Router-owned chain, but an explicitly selected caller model is
+                # carried into this internal call so a suspended b14/auto is not
+                # re-entered for a request that already named its model.
+                model_policy={"model": _explicit_internal_model(request.agent) or "b14/auto"},
                 max_steps=1,
             )
             planner_result = await execution_runtime.run(
@@ -430,7 +456,7 @@ class WebResearchEngineService:
                     )
                 verdict = await execution_runtime.run(
                     ExecutionRequest(
-                        agent=_judge_profile(),
+                        agent=_judge_profile(_explicit_internal_model(request.agent)),
                         messages=({"role": "user", "content": request.query},),
                         trace_id=request.trace_id,
                     )

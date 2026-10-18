@@ -74,8 +74,13 @@ def is_private(text: str) -> bool:
     return any(pattern.search(text or "") for pattern in _PRIVATE_PATTERNS)
 
 
-def evidence_agent() -> dict[str, Any]:
-    """One server-owned read-only profile; it selects no model and authorises nothing."""
+def evidence_agent(model_id: str | None = None) -> dict[str, Any]:
+    """One server-owned read-only profile; it authorises nothing.
+
+    #5015: an explicitly selected model is carried so the Engine's internal
+    judgement call uses it instead of the suspended ``b14/auto`` chain. The
+    product tier default is not changed here.
+    """
 
     return {
         "id": CLAW_JUDGEMENT_AGENT_ID,
@@ -85,7 +90,11 @@ def evidence_agent() -> dict[str, Any]:
         "task_type": "general",
         "optimize_for": "balanced",
         "max_tokens": 256,
-        "model_policy": {"model": "none/disabled", "max_retries": 0},
+        "model_policy": (
+            {"model": model_id, "max_retries": 0}
+            if isinstance(model_id, str) and model_id
+            else {"model": "none/disabled", "max_retries": 0}
+        ),
     }
 
 
