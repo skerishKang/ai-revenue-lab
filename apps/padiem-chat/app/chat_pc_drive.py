@@ -245,11 +245,10 @@ def _no_pc_answer() -> str:
 
 
 async def _complete_with_model(
-    request: Request, *, user_text: str, skill: Any, model_id: str,
+    request: Request, *, user_text: str, skill: Any,
     tier: str, system_contract: str,
 ) -> str:
     """One bounded B14 text turn under the existing Chat model policy."""
-    del model_id
     client: B14Client | None = getattr(request.app.state, "b14_client", None)
     if client is None:
         raise ChatPCDriveError(
@@ -336,7 +335,7 @@ async def execute_chat_pc_drive_lane(
         return answer, saved_id
 
     decision_raw = await _complete_with_model(
-        request, user_text=user_text, skill=skill, model_id=model_id,
+        request, user_text=user_text, skill=skill,
         tier=tier, system_contract=_decision_contract(user_text),
     )
     decision = parse_chat_pc_tool_decision(decision_raw)
