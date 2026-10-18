@@ -186,6 +186,16 @@ async def main() -> int:
 
             page.once("dialog", lambda dialog: asyncio.create_task(dialog.accept()))
             await page.click("#shellNewQuote")
+            # The product confirms a fresh quote through the <dialog> element
+            # when showModal exists (headless Chromium included); the window
+            # dialog handler above only covers the legacy confirm() fallback.
+            # Confirm the modal explicitly so the reset under test can run.
+            await page.evaluate(
+                """() => {
+                  const d = document.getElementById('b66NewQuoteDialog');
+                  if (d && d.open) { d.returnValue = 'confirm'; d.close(); }
+                }"""
+            )
             await page.wait_for_timeout(100)
             reset = await page.evaluate(
                 """() => ({

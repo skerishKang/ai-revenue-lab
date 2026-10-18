@@ -370,6 +370,20 @@ async def main() -> int:
 
             # ===== session 1: incomplete quote -> follow-up -> complete ======
             session = await open_session(page, base, skill, fingerprint)
+            # #4803 routes first-contact quotes through the server-owned
+            # quoteConversation flow, which this offline harness does not
+            # stub. This journey verifies the stubbed one-shot interpret
+            # path (missing price, 502 preservation), so neutralize only
+            # that entry point like the #3536 bridge replacement does.
+            # The server conversation flow keeps its own coverage elsewhere.
+            await page.evaluate(
+                """() => {
+                  const b = window.B66QuoteRuntimeBridge;
+                  Object.defineProperty(window, 'B66QuoteRuntimeBridge', {
+                    configurable: true,
+                    value: Object.freeze(Object.assign({}, b,
+                      { quoteConversation: undefined }))});
+                }""")
             report["session1"] = session
             if not session["readiness"].get("ready"):
                 failures.append("runtime_not_ready")

@@ -259,6 +259,27 @@ def _reset_state() -> None:
     DialogueHandler.chat_requests = []
 
 
+async def neutralize_quote_conversation(page) -> None:
+    """Keep this offline journey on the general AI dialogue lane.
+
+    #4803 routes first-contact turns through the server-owned
+    quoteConversation flow, which this offline harness does not stub.
+    This journey verifies the general AI dialogue lane (bridge.chat),
+    so neutralize only that entry point like the #3536 bridge
+    replacement does. The server conversation flow keeps its own
+    coverage elsewhere. Re-applied after every page load: a reload
+    rebuilds window and drops the patch.
+    """
+    await page.evaluate(
+        """() => {
+          const b = window.B66QuoteRuntimeBridge;
+          Object.defineProperty(window, 'B66QuoteRuntimeBridge', {
+            configurable: true,
+            value: Object.freeze(Object.assign({}, b,
+              { quoteConversation: undefined }))});
+        }""")
+
+
 async def main() -> int:
     handler = functools.partial(DialogueHandler, directory=str(ROOT))
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
@@ -284,6 +305,7 @@ async def main() -> int:
             await shot(page, "01-home")
 
             # 1) brand -> new empty conversation
+            await neutralize_quote_conversation(page)
             await page.click("#brandHome")
             await page.wait_for_timeout(150)
             empty = await page.evaluate(
@@ -404,7 +426,8 @@ async def main() -> int:
             await page.click("#freeChatStarter")
             await page.fill("#easyComposer", "늦게 도착할 질문")
             await page.click("#easySend")
-            await page.wait_for_selector("text=답변을 작성하고 있습니다", timeout=20000)
+            # #5012 replaced the bare in-flight text with three-dot motion; pending dots are the live indicator now.
+            await page.wait_for_selector("#easyMessageList .easy-typing", timeout=20000)
             await page.click("#brandHome")
             await page.wait_for_timeout(300)
             cleared = await page.evaluate(
@@ -417,7 +440,7 @@ async def main() -> int:
                      return {
                        messages: document.querySelectorAll('#easyMessageList .easy-message').length,
                        answer: nodes.some(n => n.textContent.includes('늦게 도착한 답변')),
-                       pending: nodes.some(n => n.textContent.includes('답변을 작성하고 있습니다'))
+                       pending: nodes.some(n => n.classList && n.classList.contains('easy-typing'))
                      };
                    }"""
             )
@@ -457,6 +480,7 @@ async def main() -> int:
             await page.goto(f"{base}/index.html", wait_until="load")
             await page.wait_for_function(
                 "() => window.B66QuoteRuntimeBridge && window.B66SafeMarkdown", timeout=20000)
+            await neutralize_quote_conversation(page)
             await page.evaluate(SELECT_MODEL_JS)
             await page.click("#freeChatStarter")
             await page.fill("#easyComposer", "모바일 질문")
