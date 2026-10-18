@@ -870,6 +870,19 @@ class OrchestrationEngineService:
                 return _service_error("pc_query_model_unavailable", "Resolved Claw model is unavailable.", status_code=503)
             orch_req = replace(orch_req, agent_step_driver=self._pc_query_step_driver_factory(
                 model_id, exec_req.agent.model_policy, exec_req.agent.task_type, exec_req.agent.optimize_for))
+        # Chat product thin lane: same shared PC-query tool contract and step
+        # driver shape under the Chat Engine caller identity ("padiem-chat",
+        # the exact app_id the B62 Chat Engine bridge presents) with its own
+        # agent id. A Claw agent id is never accepted here and vice versa.
+        if (app_id == "padiem-chat" and orch_req.agent_plan is not None
+            and orch_req.agent_plan.agent_id == "agent:padiem:chat-pc-query@1"):
+            if self._pc_query_step_driver_factory is None or not orch_req.subject_id:
+                return _service_error("pc_query_model_unavailable", "Owner-bound PC query model runtime unavailable.", status_code=503)
+            model_id = exec_req.agent.model_policy.get("model")
+            if not isinstance(model_id, str) or not model_id:
+                return _service_error("pc_query_model_unavailable", "Resolved Chat model is unavailable.", status_code=503)
+            orch_req = replace(orch_req, agent_step_driver=self._pc_query_step_driver_factory(
+                model_id, exec_req.agent.model_policy, exec_req.agent.task_type, exec_req.agent.optimize_for))
         if trusted_office_run_id is not None:
             # No ordinary app may select the Core Agent pause run id. The
             # first-party owner/Broker authority must provide this exact

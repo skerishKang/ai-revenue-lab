@@ -1095,11 +1095,21 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             service=chat_service, request_factory=Request, secret=desktop_secret,
         )
         from app.claw_pc_query_step_driver import (
+            CHAT_APP_ID, build_chat_pc_query_tool_binding,
             build_claw_pc_query_tool_binding, build_live_pc_query_driver,
         )
         pc_binding = build_claw_pc_query_tool_binding(
             service=chat_service, request_factory=Request, secret=desktop_secret,
             runtime=desktop_binding.tool_runtime,
+        )
+        # Chat product thin binding: the same canonical drive-query tool under
+        # the Chat Engine caller identity ("padiem-chat", the exact app_id the
+        # existing B62 Chat Engine bridge presents) with its own agent and
+        # authorization, on its own ToolRuntime so no Claw desktop tool leaks
+        # into the Chat product. Deployment caller-registry allow-lists still
+        # decide whether the Chat caller may actually invoke it.
+        chat_pc_binding = build_chat_pc_query_tool_binding(
+            service=chat_service, request_factory=Request, secret=desktop_secret,
         )
         from app.tool_projection import EngineToolBinding
         from padiem_ai_core.tool_registry import ToolRegistrySnapshot
@@ -1117,6 +1127,8 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         def resolve_with_desktop(app_id: str):
             if app_id == CLAW_APP_ID:
                 return claw_binding
+            if app_id == CHAT_APP_ID:
+                return chat_pc_binding
             return previous_resolver(app_id) if previous_resolver is not None else None
 
         tool_binding_resolver = resolve_with_desktop

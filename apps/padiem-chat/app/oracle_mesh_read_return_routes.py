@@ -2376,12 +2376,12 @@ async def oracle_mesh_read_original(request: Request) -> Response:
     )
 
 
-async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
-    """Engine-only authenticated desktop dispatch; browser cookies never act as proof.
+async def _verify_engine_proof(request: Request) -> tuple[bytes | None, JSONResponse | None]:
+    """Shared Engine proof check for the signed Mesh lanes (Claw and Chat).
 
-    A signed call carries only an owner session reference and existing run id.
-    Control Plane must resolve the current session independently before the
-    existing owner-scoped desktop dispatch may run.
+    The deployment-owned Engine proof secret authenticates the Engine caller;
+    browser cookies never act as proof. Returns the raw body or a ready-made
+    error response. Both product lanes use this exact check.
     """
     import hmac
     import hashlib
@@ -2389,21 +2389,34 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
 
     secret = getattr(request.app.state, "claw_engine_desktop_secret", None)
     if not isinstance(secret, str) or len(secret) < 32:
-        return _error(503, "claw_engine_desktop_unconfigured")
+        return None, _error(503, "claw_engine_desktop_unconfigured")
     raw = await request.body()
     if len(raw) > 8192:
-        return _error(413, "claw_engine_desktop_invalid_body")
+        return None, _error(413, "claw_engine_desktop_invalid_body")
     timestamp = request.headers.get("X-Claw-Engine-Time", "")
     signature = request.headers.get("X-Claw-Engine-Proof", "")
     try:
         seconds = int(timestamp)
     except (ValueError, TypeError):
-        return _error(401, "claw_engine_proof_required")
+        return None, _error(401, "claw_engine_proof_required")
     if abs(int(time.time()) - seconds) > 60 or not isinstance(signature, str) or len(signature) != 64:
-        return _error(401, "claw_engine_proof_required")
+        return None, _error(401, "claw_engine_proof_required")
     expected = hmac.new(secret.encode("utf-8"), timestamp.encode("ascii") + b"." + raw, hashlib.sha256).hexdigest()
     if not hmac.compare_digest(signature, expected):
-        return _error(401, "claw_engine_proof_required")
+        return None, _error(401, "claw_engine_proof_required")
+    return raw, None
+
+
+async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
+    """Engine-only authenticated desktop dispatch; browser cookies never act as proof.
+
+    A signed call carries only an owner session reference and existing run id.
+    Control Plane must resolve the current session independently before the
+    existing owner-scoped desktop dispatch may run.
+    """
+    raw, proof_error = await _verify_engine_proof(request)
+    if proof_error is not None or raw is None:
+        return proof_error if proof_error is not None else _error(401, "claw_engine_proof_required")
     try:
         payload = json.loads(raw)
     except (ValueError, TypeError):
@@ -2589,4 +2602,167 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
         request, desktop_op=payload["desktop_op"],
         wire={"run_id": payload["run_id"], "device_id": payload["device_id"], "confirmed": True},
         trusted_owner=(session, uid, session.tenant_id),
+    )
+
+
+async def oracle_chat_engine_pc_drive_call(request: Request) -> JSONResponse:
+    """Engine-only Chat product PC drive lane; browser cookies never act as proof.
+
+    #5015 review: the b62 Chat product reaches the SAME shared Mesh command
+    contract (same pinned command, ownership grant, executor channel,
+    verification, pin/store and status/result vocabulary) under its own
+    product identity (``b62``), user, workspace and staged run. No Claw
+    product, run or authority is borrowed: the Control Plane resolves the
+    current b62 session independently, the Chat lane stages its own
+    ``chat_pcq_`` run row, and only command modes exist here (no desktop).
+    """
+    from .chat_pc_drive import CHAT_PC_DRIVE_COMMAND
+
+    raw, proof_error = await _verify_engine_proof(request)
+    if proof_error is not None or raw is None:
+        return proof_error if proof_error is not None else _error(401, "claw_engine_proof_required")
+    try:
+        payload = json.loads(raw)
+    except (ValueError, TypeError):
+        return _error(400, "claw_engine_desktop_invalid_body")
+    status_query = isinstance(payload, dict) and payload.get("mode") in ("result", "command_status")
+    command_dispatch = isinstance(payload, dict) and payload.get("mode") == "dispatch"
+    expected_keys = (
+        {"subject_id", "run_id", "dispatch_id", "mode"} if status_query
+        else {"subject_id", "run_id", "device_id", "command", "mode"} if command_dispatch
+        else set()
+    )
+    if (not isinstance(payload, dict)
+        or not expected_keys
+        or set(payload) != expected_keys
+        or not all(
+            isinstance(payload[k], str) and 0 < len(payload[k]) <= 512
+            for k in ("subject_id", "run_id")
+        )
+        or (status_query and (not isinstance(payload["dispatch_id"], str)
+            or not 0 < len(payload["dispatch_id"]) <= 128))
+        or (command_dispatch and (
+            payload.get("device_id") is not None and not isinstance(payload.get("device_id"), str)
+            or not isinstance(payload.get("command"), str)
+            or payload.get("command") != CHAT_PC_DRIVE_COMMAND
+        ))):
+        return _error(400, "claw_engine_desktop_invalid_body")
+    identity = getattr(request.app.state, "control_plane_identity_authority", None)
+    if (not callable(getattr(identity, "resolve_product_user_for_subject", None))
+        or not callable(getattr(identity, "resolve_current_auth_session", None))):
+        return _error(503, "claw_engine_identity_unavailable")
+    try:
+        uid = await identity.resolve_product_user_for_subject(
+            product_id="b62",
+            canonical_subject_id=payload["subject_id"],
+        )
+        session = await identity.resolve_current_auth_session(
+            product_id="b62", product_user_id=uid,
+        )
+    except Exception:
+        return _error(401, "canonical_session_required")
+    from datetime import datetime, timezone
+    if (session is None or session.subject.subject_id != payload["subject_id"]
+        or session.product_id != "b62"
+        or not session.is_active(now=datetime.now(timezone.utc))
+        or not session.tenant_id):
+        return _error(401, "canonical_session_required")
+    history_store = getattr(request.app.state, "history_store", None)
+    if history_store is None:
+        return _error(503, "oracle_mesh_unconfigured")
+    if status_query:
+        reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
+        if not callable(reader):
+            return _error(503, "oracle_mesh_unconfigured")
+        try:
+            dispatch = await reader(
+                user_id=uid, dispatch_id=payload["dispatch_id"],
+            )
+        except Exception:
+            return _error(503, "oracle_mesh_dispatch_unavailable")
+        if (not isinstance(dispatch, dict)
+            or dispatch.get("run_id") != payload["run_id"]
+            or dispatch.get("kind") != "command"):
+            return _error(404, "oracle_mesh_run_unavailable")
+        state = dispatch.get("state")
+        if payload["mode"] == "result":
+            if state != "done" or dispatch.get("kind") != "command":
+                return _error(409, "oracle_mesh_result_not_ready")
+            termination = dispatch.get("termination")
+            exit_code = dispatch.get("exit_code")
+            if termination not in (
+                "exited", "no_exit_code", "output_too_large", "not_executed",
+                "timed_out", "cancelled", "no_reply",
+            ):
+                return _error(503, "oracle_mesh_original_unavailable")
+            if exit_code is None:
+                if termination not in (
+                    "timed_out", "no_reply", "no_exit_code", "not_executed",
+                    "output_too_large", "cancelled",
+                ):
+                    return _error(503, "oracle_mesh_original_unavailable")
+            elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
+                return _error(503, "oracle_mesh_original_unavailable")
+            try:
+                run = await history_store.get_claw_run(uid, payload["run_id"])
+                conversation_id = validate_conversation_id(
+                    (run or {}).get("conversation_id")
+                )
+                if not conversation_id:
+                    return _error(404, "oracle_mesh_run_unavailable")
+                message_id = result_message_id(
+                    conversation_id=conversation_id,
+                    command_id=dispatch["command_id"],
+                    revision_ref=dispatch["revision_ref"],
+                )
+                stored = await history_store.read_oracle_mesh_original(
+                    user_id=uid, dispatch_id=dispatch["dispatch_id"],
+                    conversation_id=conversation_id, message_id=message_id,
+                )
+            except Exception:
+                return _error(503, "oracle_mesh_original_unavailable")
+            if stored is None:
+                return _error(404, "oracle_mesh_original_unavailable")
+            content, digest = stored
+            if (not isinstance(content, bytes)
+                or hashlib.sha256(content).hexdigest() != digest
+                or digest != dispatch.get("result_sha256")):
+                return _error(503, "oracle_mesh_original_unavailable")
+            return _response({
+                "ok": True,
+                "dispatch": {
+                    "dispatch_id": dispatch["dispatch_id"],
+                    "run_id": payload["run_id"],
+                    "kind": "command",
+                    "state": "done",
+                    "result_sha256": digest,
+                    "output": content.decode("utf-8", errors="replace"),
+                    "termination": termination,
+                    "exit_code": exit_code,
+                },
+            })
+        if state not in {"pending", "received", "store_failed", "done", "failed"}:
+            return _error(503, "oracle_mesh_dispatch_unavailable")
+        return _response({
+            "ok": True,
+            "dispatch": {
+                "dispatch_id": dispatch["dispatch_id"],
+                "run_id": payload["run_id"],
+                "kind": "command",
+                "state": state,
+                "result_sha256": dispatch.get("result_sha256"),
+                "termination": dispatch.get("termination"),
+                "exit_code": dispatch.get("exit_code"),
+            },
+        })
+    try:
+        command_workspace = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        return _error(503, "oracle_mesh_workspace_unavailable")
+    if not command_workspace:
+        return _error(503, "oracle_mesh_workspace_unavailable")
+    return await dispatch_oracle_mesh_command_intent(
+        request, command=payload["command"],
+        wire={"run_id": payload["run_id"], "device_id": payload["device_id"], "confirmed": True},
+        trusted_owner=(session, uid, command_workspace),
     )

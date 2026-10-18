@@ -4,9 +4,17 @@ from types import SimpleNamespace
 import pytest
 
 from app.claw_pc_query_step_driver import (
+    CHAT_APP_ID,
+    CHAT_ENGINE_PC_DRIVE_URL,
+    CHAT_PC_QUERY_AGENT_ID,
+    CLAW_APP_ID,
+    CLAW_ENGINE_PC_DRIVE_URL,
+    PC_DRIVES_CANONICAL_TOOL_ID,
     PC_DRIVES_TOOL_ID,
+    PC_QUERY_SCOPE,
     StructuredPCQueryStepDriver,
     PCQueryStepError,
+    build_chat_pc_query_tool_binding,
     build_claw_pc_query_tool_binding,
 )
 from padiem_ai_core.agent_runtime import AgentStepContext
@@ -53,3 +61,28 @@ def test_drive_binding_registers_core_toolruntime_contract():
     )
     assert binding.registry.canonical_tool_ids == ("tool:padiem:claw-pc-query-drives@1",)
     assert binding.tool_runtime.registered_tool_ids == (PC_DRIVES_TOOL_ID,)
+
+
+def test_chat_binding_shares_contract_under_chat_product_only():
+    claw = build_claw_pc_query_tool_binding(
+        service=object(), request_factory=lambda *args, **kwargs: None, secret="s" * 32,
+    )
+    chat = build_chat_pc_query_tool_binding(
+        service=object(), request_factory=lambda *args, **kwargs: None, secret="s" * 32,
+    )
+    # Same shared tool contract: identical canonical/runtime ids and scope.
+    assert chat.registry.canonical_tool_ids == claw.registry.canonical_tool_ids == (
+        PC_DRIVES_CANONICAL_TOOL_ID,)
+    assert chat.tool_runtime.registered_tool_ids == claw.tool_runtime.registered_tool_ids == (
+        PC_DRIVES_TOOL_ID,)
+    # Distinct product authority: Chat binding never carries the Claw app or
+    # agent identity, and Claw never carries the Chat one.
+    assert chat.app_id == CHAT_APP_ID == "padiem-chat"
+    assert claw.app_id == CLAW_APP_ID
+    assert set(chat.authorities) == {CHAT_PC_QUERY_AGENT_ID}
+    assert set(claw.authorities) != {CHAT_PC_QUERY_AGENT_ID}
+    chat_auth = chat.authorities[CHAT_PC_QUERY_AGENT_ID].authorization
+    assert chat_auth.app_id == CHAT_APP_ID
+    assert chat_auth.granted_auth_scopes == (PC_QUERY_SCOPE,)
+    assert CLAW_ENGINE_PC_DRIVE_URL != CHAT_ENGINE_PC_DRIVE_URL
+    assert CHAT_ENGINE_PC_DRIVE_URL.endswith("/internal/chat/engine-pc-drive")

@@ -388,9 +388,9 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
         # Subject is trusted Control Plane admission, run id belongs to its
         # admission-bound logical request. Neither comes from model arguments.
         from app.claw_desktop_step_driver import CLAW_APP_ID, _ENGINE_DESKTOP_OWNER
-        from app.claw_pc_query_step_driver import _PC_QUERY_OWNER
+        from app.claw_pc_query_step_driver import CHAT_APP_ID, _PC_QUERY_OWNER
         desktop_owner = None
-        if binding.app_id == CLAW_APP_ID and binding.subject_id is not None:
+        if binding.app_id in (CLAW_APP_ID, CHAT_APP_ID) and binding.subject_id is not None:
             run_id = payload.get("session_id") if isinstance(payload, dict) else None
             if isinstance(run_id, str) and run_id:
                 desktop_owner = (binding.subject_id, run_id)

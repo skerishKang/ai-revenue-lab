@@ -22,11 +22,14 @@ from app.history import (
 
 MIGRATIONS = (
     Path(__file__).resolve().parents[1] / "migrations" / "001_auth_history.sql",
+    Path(__file__).resolve().parents[1] / "migrations" / "002_projects.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "009_claw_run_history.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "014_claw_run_history_conversation.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "015_claw_run_history_workspace.sql",
+    Path(__file__).resolve().parents[1] / "migrations" / "042_conversation_product_scope.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "047_oracle_mesh_dispatch.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "048_oracle_mesh_command.sql",
+    Path(__file__).resolve().parents[1] / "migrations" / "049_oracle_mesh_command_result_meta.sql",
 )
 
 OWNER = "usr_owner_4139"
@@ -274,6 +277,40 @@ def test_original_missing_or_corrupt_is_loud_not_silent(tmp_path):
             user_id=OWNER, dispatch_id=dispatch_id,
             conversation_id=CONVERSATION, message_id=MID,
         ))
+
+
+def test_command_result_meta_columns_persist_termination(tmp_path):
+    """#5015/049: termination/exit_code travel with the pinned result."""
+    store, _ = fixture(tmp_path)
+    dispatch_id = _stage(store)
+    raw = "drive payload"
+    digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+    assert asyncio.run(store.record_oracle_mesh_first_result(
+        dispatch_id=dispatch_id, content_sha256=digest,
+        content_bytes=len(raw.encode("utf-8")),
+        termination="no_exit_code", exit_code=None,
+    )) is True
+    row = asyncio.run(store.get_oracle_mesh_dispatch_for_owner(
+        user_id=OWNER, dispatch_id=dispatch_id))
+    assert row is not None
+    assert row["termination"] == "no_exit_code"
+    assert row["exit_code"] is None
+    assert row["result_sha256"] == digest
+
+
+def test_chat_pc_drive_run_stages_b62_conversation_and_run(tmp_path):
+    """#5015 review: Chat lane staging keeps the b62-chat scope and run link."""
+    store, _ = fixture(tmp_path)
+    run_id = "chat_pcq_" + "a" * 24
+    cid = asyncio.run(store.record_chat_pc_drive_run(
+        user_id=OWNER, run_id=run_id, workspace_id="ws-1",
+        user_text="내 PC 드라이브 알려줘", conversation_id=None,
+    ))
+    assert cid.startswith("chat_")
+    run = asyncio.run(store.get_claw_run(OWNER, run_id))
+    assert run is not None
+    assert run["conversation_id"] == cid
+    assert run["workspace_id"] == "ws-1"
 
 
 def test_original_envelope_bound_is_the_wire_envelope(tmp_path):

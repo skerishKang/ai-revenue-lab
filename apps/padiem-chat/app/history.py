@@ -1084,6 +1084,71 @@ class D1HistoryStore:
         )
         return run_id
 
+    async def record_chat_pc_drive_run(
+        self, *, user_id: str, run_id: str, workspace_id: str,
+        user_text: str, conversation_id: str | None,
+    ) -> str:
+        """Stage a real b62 Chat owner conversation + pending PC drive run.
+
+        Chat-product twin of :meth:`record_txt_pending_run` for the #5015
+        model-driven drive lane: same conversation/user-message/run shape and
+        the same PRODUCT_SCOPE_CHAT ownership, but action
+        ``"pc_drive_query"`` and no Claw title prefix, so a Chat turn never
+        reads as a Claw turn. The verified Mesh result alone is allowed to
+        insert the assistant message later.
+        """
+        workspace = _safe_identifier("workspace_id", workspace_id)
+        content = _bounded_text(user_text, "user_text")
+        cid = validate_conversation_id(conversation_id)
+        creating = cid is None
+        project_id = None
+        if creating:
+            cid = _chat_id()
+            sequence = 0
+        else:
+            owned = await self._first(
+                "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+                cid, user_id, PRODUCT_SCOPE_CHAT,
+            )
+            if not owned:
+                raise HistoryForbidden("conversation is not owned by current user")
+            project_id = owned.get("project_id")
+            found = await self._first(
+                "SELECT MAX(sequence_number) AS max_sequence FROM messages WHERE conversation_id=?",
+                cid,
+            )
+            number = found.get("max_sequence") if isinstance(found, dict) else None
+            sequence = int(number) + 1 if number is not None else 0
+        now = _now_iso()
+        msg_id = _message_id()
+        key = await self._put_full_message(cid, msg_id, user_text.strip())
+        try:
+            if creating:
+                await self._run(
+                    "INSERT INTO conversations (id,user_id,project_id,title,created_at,updated_at,product_scope) "
+                    "VALUES (?,?,NULL,?,?,?,?)",
+                    cid, user_id, _title_from_user_text(content), now, now, PRODUCT_SCOPE_CHAT,
+                )
+            await self._run(
+                "INSERT INTO messages (id,conversation_id,sequence_number,role,content,created_at) "
+                "VALUES (?,?,?,'user',?,?)",
+                msg_id, cid, sequence, content, now,
+            )
+            await self.record_claw_run(
+                user_id=user_id, run_id=run_id, channel="web",
+                action="pc_drive_query", title=("PC 드라이브 조회: " + content)[:MAX_HISTORY_TITLE_CHARS],
+                status="pending", conversation_id=cid, workspace_id=workspace,
+            )
+            await self._run(
+                "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
+                now, cid, user_id,
+            )
+        except Exception:
+            if key is not None:
+                await self._delete_full_keys([key])
+            raise
+        return cid
+
     async def record_claw_run(
         self,
         user_id: str,
@@ -1969,19 +2034,16 @@ class D1HistoryStore:
                 and pinned.get("result_bytes") == content_bytes
             )
         if termination is not None:
-            # #5015: the executor-observed termination/exit code travels with
-            # the pinned result so the Engine model lane can re-feed the exact
-            # evidence instead of inventing one. Old databases without the
-            # additive columns keep working: the pin above is authoritative
-            # and this metadata write is best-effort.
-            try:
-                await self._run(
-                    "UPDATE oracle_mesh_dispatch SET termination=?, exit_code=? "
-                    "WHERE dispatch_id=?",
-                    termination, exit_code, dispatch_id,
-                )
-            except Exception:
-                pass
+            # #5015: the executor-observed termination/exit_code travels with
+            # the pinned result so the model lane re-feeds the exact evidence
+            # instead of inventing one. The additive 049 columns must exist:
+            # a missing-column failure here stays a retryable 503 upstream and
+            # never a silent deploy success — apply the 049 gate first.
+            await self._run(
+                "UPDATE oracle_mesh_dispatch SET termination=?, exit_code=? "
+                "WHERE dispatch_id=?",
+                termination, exit_code, dispatch_id,
+            )
         return True
 
     async def mark_oracle_mesh_store_failed(self, *, dispatch_id: str) -> bool:
@@ -2214,26 +2276,18 @@ class D1HistoryStore:
             return None
         if not isinstance(dispatch_id, str) or not dispatch_id:
             return None
-        try:
-            row = await self._first(
-                "SELECT dispatch_id, user_id, run_id, kind, command_id, revision_ref, "
-                "result_sha256, result_bytes, termination, exit_code, state "
-                "FROM oracle_mesh_dispatch WHERE dispatch_id=? AND user_id=?",
-                dispatch_id, user_id,
-            )
-        except Exception:
-            row = await self._first(
-                "SELECT dispatch_id, user_id, run_id, kind, command_id, revision_ref, "
-                "result_sha256, result_bytes, state FROM oracle_mesh_dispatch "
-                "WHERE dispatch_id=? AND user_id=?",
-                dispatch_id, user_id,
-            )
+        # #5015: the 049 termination/exit_code columns are required. A database
+        # without them raises here and every caller fails closed (503), so a
+        # missing migration can never read as a successful deploy.
+        row = await self._first(
+            "SELECT dispatch_id, user_id, run_id, kind, command_id, revision_ref, "
+            "result_sha256, result_bytes, termination, exit_code, state "
+            "FROM oracle_mesh_dispatch WHERE dispatch_id=? AND user_id=?",
+            dispatch_id, user_id,
+        )
         if row is None:
             return None
-        out = dict(row)
-        out.setdefault("termination", None)
-        out.setdefault("exit_code", None)
-        return out
+        return dict(row)
 
     async def record_claw_approval_handoff(
         self,

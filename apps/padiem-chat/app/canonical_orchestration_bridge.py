@@ -74,21 +74,35 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         model_id: str,
         conversation_id: str | None,
         additional_system_context: str | None = None,
+        subject_id: str | None = None,
+        agent_plan: Mapping[str, Any] | None = None,
+        tool_arguments: Mapping[str, Any] | None = None,
+        session_id: str | None = None,
     ) -> dict[str, Any]:
-        subject_id = self._current_engine_subject.get()
-        if subject_id is None:
+        resolved_subject_id = self._current_engine_subject.get()
+        if resolved_subject_id is None:
             raise B62OrchestrationError(
                 "canonical_subject_unavailable",
                 "공용 AI 작업에 사용할 사용자 식별자를 확인할 수 없습니다.",
                 status_code=503,
             )
+        if subject_id is not None and subject_id != resolved_subject_id:
+            raise B62OrchestrationError(
+                "canonical_subject_mismatch",
+                "현재 인증 사용자와 AI 작업의 사용자 식별자가 일치하지 않습니다.",
+                status_code=409,
+            )
         return B62EngineOrchestrationBridge.build_engine_request(
-            user_id=subject_id,
+            user_id=resolved_subject_id,
             messages=messages,
             skill=skill,
             model_id=model_id,
             conversation_id=conversation_id,
             additional_system_context=additional_system_context,
+            subject_id=resolved_subject_id,
+            agent_plan=agent_plan,
+            tool_arguments=tool_arguments,
+            session_id=session_id,
         )
 
     async def start(
@@ -101,9 +115,19 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         user_text: str,
         conversation_id: str | None,
         additional_system_context: str | None = None,
+        subject_id: str | None = None,
+        agent_plan: Mapping[str, Any] | None = None,
+        tool_arguments: Mapping[str, Any] | None = None,
+        session_id: str | None = None,
     ):
-        subject_id = await self._resolve_engine_subject(user_id)
-        token = self._current_engine_subject.set(subject_id)
+        resolved_subject_id = await self._resolve_engine_subject(user_id)
+        if subject_id is not None and subject_id != resolved_subject_id:
+            raise B62OrchestrationError(
+                "canonical_subject_mismatch",
+                "현재 인증 사용자와 AI 작업의 사용자 식별자가 일치하지 않습니다.",
+                status_code=409,
+            )
+        token = self._current_engine_subject.set(resolved_subject_id)
         try:
             return await super().start(
                 user_id=user_id,
@@ -113,6 +137,10 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
                 user_text=user_text,
                 conversation_id=conversation_id,
                 additional_system_context=additional_system_context,
+                subject_id=resolved_subject_id,
+                agent_plan=agent_plan,
+                tool_arguments=tool_arguments,
+                session_id=session_id,
             )
         finally:
             self._current_engine_subject.reset(token)
