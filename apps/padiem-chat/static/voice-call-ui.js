@@ -41,23 +41,44 @@
     panel.setAttribute("role", "dialog");
     panel.setAttribute("aria-modal", "true");
     panel.setAttribute("aria-label", isKo() ? "\uc758\uc2dd \ud1b5\ud55c" : "Voice call");
-    panel.innerHTML =
-      '<div class="voice-call-panel__state" id="voiceCallState">' + voiceLabel("idle") + '</div>' +
-      '<button class="voice-call-panel__btn" id="voiceCallMute" type="button" aria-pressed="false">' +
-        (isKo() ? "\uc788\uc6a9\uae08" : "Mute") +
-      '</button>' +
-      '<button class="voice-call-panel__btn voice-call-panel__btn--end" id="voiceCallEnd" type="button">' +
-        (isKo() ? "\ud1b5\ud55c \ubd88\ud130" : "End call") +
-      '</button>' +
-      '<details class="voice-call-panel__transcript open"><summary>' +
-        (isKo() ? "\ub17c\ubb3c \ubcf8\uae30" : "View transcript") +
-        '</summary><div id="voiceCallTranscript" aria-live="polite" aria-atomic="true"></div></details>';
+    const stateEl = doc.createElement("div");
+    stateEl.className = "voice-call-panel__state";
+    stateEl.id = "voiceCallState";
+    stateEl.textContent = voiceLabel("idle");
+    panel.appendChild(stateEl);
+
+    const muteBtn = doc.createElement("button");
+    muteBtn.className = "voice-call-panel__btn";
+    muteBtn.id = "voiceCallMute";
+    muteBtn.type = "button";
+    muteBtn.setAttribute("aria-pressed", "false");
+    muteBtn.textContent = isKo() ? "\uc788\uc6a9\uae08" : "Mute";
+    panel.appendChild(muteBtn);
+
+    const endBtn = doc.createElement("button");
+    endBtn.className = "voice-call-panel__btn voice-call-panel__btn--end";
+    endBtn.id = "voiceCallEnd";
+    endBtn.type = "button";
+    endBtn.textContent = isKo() ? "\ud1b5\ud55c \ubd88\ud130" : "End call";
+    panel.appendChild(endBtn);
+
+    const details = doc.createElement("details");
+    details.className = "voice-call-panel__transcript open";
+    const summary = doc.createElement("summary");
+    summary.textContent = isKo() ? "\ub17c\ubb3c \ubcf8\uae30" : "View transcript";
+    details.appendChild(summary);
+    const transcriptDiv = doc.createElement("div");
+    transcriptDiv.id = "voiceCallTranscript";
+    transcriptDiv.setAttribute("aria-live", "polite");
+    transcriptDiv.setAttribute("aria-atomic", "true");
+    details.appendChild(transcriptDiv);
+    panel.appendChild(details);
     doc.body.appendChild(panel);
 
     stateChip = doc.getElementById("voiceCallState");
     transcript = doc.getElementById("voiceCallTranscript");
     const mute = doc.getElementById("voiceCallMute");
-    const endBtn = doc.getElementById("voiceCallEnd");
+    const endButton = doc.getElementById("voiceCallEnd");
     const mic = doc.getElementById("voiceMicButton");
 
     mute.addEventListener("click", function () {
@@ -67,7 +88,7 @@
       if (pressed) { c.start(); mute.setAttribute("aria-pressed", "false"); }
       else { c.stop("user-muted"); mute.setAttribute("aria-pressed", "true"); }
     });
-    endBtn.addEventListener("click", function () { hide(); });
+    endButton.addEventListener("click", function () { hide(); });
     if (win.MutationObserver && mic) {
       new win.MutationObserver(refreshChip).observe(mic, {attributes: true, attributeFilter: ["data-voice-state", "aria-pressed"]});
     }

@@ -165,7 +165,26 @@
   wave.setAttribute("data-locale-title", "voice-mode");
   wave.setAttribute("aria-expanded", "false");
   wave.setAttribute("aria-haspopup", "menu");
-  wave.innerHTML = '<svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24"><path d="M7 16v2a6 6 0 0 0 12 0v-2M12 20v1M7 10v2a4 4 0 0 0 8 0v-2M12 14v1M7 4v2a2 2 0 0 0 4 0v-2M12 8v1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr-only">\uc758\uc2dd \ubb5c\ub9e5</span>';
+  const svgNs = "http://www.w3.org/2000/svg";
+  const svg = doc.createElementNS(svgNs, "svg");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  svg.setAttribute("width", "20");
+  svg.setAttribute("height", "20");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  const path = doc.createElementNS(svgNs, "path");
+  path.setAttribute("d", "M7 16v2a6 6 0 0 0 12 0v-2M12 20v1M7 10v2a4 4 0 0 0 8 0v-2M12 14v1M7 4v2a2 2 0 0 0 4 0v-2M12 8v1");
+  path.setAttribute("stroke", "currentColor");
+  path.setAttribute("stroke-width", "2.2");
+  path.setAttribute("stroke-linecap", "round");
+  path.setAttribute("stroke-linejoin", "round");
+  path.setAttribute("fill", "none");
+  svg.appendChild(path);
+  wave.appendChild(svg);
+  const srOnly = doc.createElement("span");
+  srOnly.className = "sr-only";
+  srOnly.textContent = "\uc758\uc2dd \ubb5c\ub9e5";
+  wave.appendChild(srOnly);
   const mic = doc.getElementById("voiceMicButton");
   if (mic && mic.parentNode === actions) actions.insertBefore(wave, mic.nextSibling);
   else actions.appendChild(wave);
@@ -176,10 +195,20 @@
   menu.hidden = true;
   menu.setAttribute("role", "menu");
   menu.setAttribute("aria-label", pickerTitle);
-  menu.innerHTML =
-    '<div class="voice-mode-menu-item" role="menuitemradio" data-mode="text" aria-checked="false">\ubb38\uc790\ub85c \ub2f5\ubcc0</div>' +
-    '<div class="voice-mode-menu-item" role="menuitemradio" data-mode="tts" aria-checked="false">\ubb38\uc790 + \uc74c\uc131 \ud568\uaed8</div>' +
-    '<div class="voice-mode-menu-item" role="menuitemradio" data-mode="call" aria-checked="false">\uc74c\uc131 \ud1b5\ud654</div>';
+  const menuItems = [
+    {mode: "text", label: "\ubb38\uc790\ub85c \ub2f5\ubcc0"},
+    {mode: "tts", label: "\ubb38\uc790 + \uc74c\uc131 \ud568\uac8c"},
+    {mode: "call", label: "\uc74c\uc131 \ud1b5\ud654"},
+  ];
+  menuItems.forEach(function (item) {
+    const div = doc.createElement("div");
+    div.className = "voice-mode-menu-item";
+    div.setAttribute("role", "menuitemradio");
+    div.setAttribute("data-mode", item.mode);
+    div.setAttribute("aria-checked", "false");
+    div.textContent = item.label;
+    menu.appendChild(div);
+  });
   doc.body.appendChild(menu);
 
   wave.addEventListener("click", function (event) {
