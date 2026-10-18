@@ -507,7 +507,33 @@ class P01EngineOrchestrationClient:
                 step: dict(arguments)
                 for step, arguments in request.tool_arguments.items()
             }
+        elif self._is_trusted_pc_query_request(request):
+            # #5015: the Engine has a dedicated one-step PC drive query
+            # driver. Without this exact plan the request was refused as
+            # unsupported authority BEFORE dispatch, so the Chat turn only
+            # ever surfaced the bounded `engine_execution_failed` error.
+            payload["agent_plan"] = request.agent_plan.to_public_dict()
         return payload
+
+    def _is_trusted_pc_query_request(self, request: OrchestrationRequest) -> bool:
+        """Exact Claw-owned, one-step PC drive query plan only (#5015).
+
+        Mirrors ``_is_trusted_capture_request``: a single canonical plan with
+        no caller-supplied tool arguments. Anything else stays refused.
+        """
+        plan = request.agent_plan
+        return bool(
+            self._allow_subject_identity
+            and request.app_id == "b54-padiem-claw"
+            and request.subject_id
+            and request.execution_request.session_id
+            and plan is not None
+            and plan.agent_id == "agent:padiem:claw-pc-query@1"
+            and len(plan.steps) == 1
+            and plan.steps[0].step_id == "query_drives"
+            and plan.steps[0].tool_id == "claw.pc.query_drives"
+            and request.tool_arguments is None
+        )
 
     def _is_trusted_capture_request(self, request: OrchestrationRequest) -> bool:
         """Exact Claw-owned, one-capture plan only; never general tool authority."""
@@ -536,6 +562,7 @@ class P01EngineOrchestrationClient:
 
     def _reject_unsupported_authority(self, request: OrchestrationRequest) -> None:
         trusted_capture = self._is_trusted_capture_request(request)
+        trusted_pc_query = self._is_trusted_pc_query_request(request)
         if request.subject_id is not None and not self._allow_subject_identity:
             raise P01AdapterError(
                 "p01_authority_field_unsupported",
@@ -550,7 +577,7 @@ class P01EngineOrchestrationClient:
 
             validate_canonical_subject_id(request.subject_id)
         for name in _NULLABLE_AUTHORITY_FIELDS:
-            if trusted_capture and name in ("agent_plan", "tool_arguments"):
+            if (trusted_capture or trusted_pc_query) and name in ("agent_plan", "tool_arguments"):
                 continue
             if getattr(request, name) is not None:
                 raise P01AdapterError(

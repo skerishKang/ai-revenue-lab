@@ -207,6 +207,24 @@ def _paused_public_result(request) -> dict:
     return public
 
 
+def _pc_query_request(request):
+    """The exact Claw PC drive query request the Chat lane builds (#5015)."""
+    from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
+
+    return replace(
+        request,
+        subject_id="sub_" + "a" * 32,
+        agent_plan=AgentPlan(
+            agent_id="agent:padiem:claw-pc-query@1",
+            steps=(AgentPlanStep(
+                step_id="query_drives",
+                objective="Query verified PC filesystem drives",
+                tool_id="claw.pc.query_drives",
+            ),),
+        ),
+    )
+
+
 def _ok_transport(public: dict) -> FakeEngineTransport:
     body = json.dumps({"ok": True, "orchestration": public}, ensure_ascii=False)
     return FakeEngineTransport(EngineTransportResponse(status=200, body=body.encode("utf-8")))
@@ -554,6 +572,53 @@ class P01EngineOrchestrationClientTests(SyntheticPlusRouteTestCase):
 
         with self.assertRaises(P01AdapterError) as ctx:
             self.run_port(transport, pinned)
+        self.assertEqual(ctx.exception.code, "p01_authority_field_unsupported")
+        self.assertEqual(transport.requests, [])
+
+    def test_pc_query_plan_is_forwarded_before_engine_dispatch(self) -> None:
+        """#5015: the one-step PC drive query plan must reach the Engine.
+
+        Without it the request is refused as unsupported authority before
+        dispatch, which the Chat live relay can only surface as the bounded
+        ``engine_execution_failed`` error.
+        """
+        _, request = _build_request()
+        pc_query = _pc_query_request(request)
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(
+            _client(transport), allow_subject_identity=True
+        )
+
+        asyncio.run(port.run(pc_query))
+
+        self.assertEqual(len(transport.requests), 1)
+        payload = json.loads(transport.requests[0]["body"])
+        self.assertEqual(payload["subject_id"], "sub_" + "a" * 32)
+        self.assertEqual(
+            payload["agent_plan"]["agent_id"], "agent:padiem:claw-pc-query@1"
+        )
+        self.assertEqual(
+            payload["agent_plan"]["steps"][0]["step_id"], "query_drives"
+        )
+        self.assertEqual(
+            payload["agent_plan"]["steps"][0]["tool_id"], "claw.pc.query_drives"
+        )
+        self.assertNotIn("tool_arguments", payload)
+
+    def test_pc_query_plan_with_unexpected_arguments_is_refused(self) -> None:
+        """Only the exact argument-free plan may widen the wire."""
+        _, request = _build_request()
+        pc_query = replace(
+            _pc_query_request(request),
+            tool_arguments={"query_drives": {}},
+        )
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(
+            _client(transport), allow_subject_identity=True
+        )
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            asyncio.run(port.run(pc_query))
         self.assertEqual(ctx.exception.code, "p01_authority_field_unsupported")
         self.assertEqual(transport.requests, [])
 
