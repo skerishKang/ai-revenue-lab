@@ -23,6 +23,7 @@ import re
 import sys
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from urllib.parse import urlparse
 
 TARGET_URL = "https://quick-quote-kr.pages.dev/"
@@ -137,6 +138,16 @@ class Counters:
     interpret_posts: int = 0
     pdf_posts: int = 0
     direct_provider_requests: int = 0
+
+
+def _shot(page, name: str) -> None:
+    """Env-gated customer-view screenshot (default OFF: no files written)."""
+    raw = os.environ.get("B66_SCREENSHOT_DIR", "").strip()
+    if not raw:
+        return
+    out = Path(raw)
+    out.mkdir(parents=True, exist_ok=True)
+    page.screenshot(path=str(out / name), full_page=True, animations="disabled")
 
 
 def _fail(code: str) -> None:
@@ -587,8 +598,12 @@ def _pdf_download_probe(page, counters: Counters) -> None:
         _fail("cgi_browser_pdf_used_server")
     if not str(download.suggested_filename or "").lower().endswith(".pdf"):
         _fail("pdf_filename_invalid")
+    raw_dir = os.environ.get("B66_SCREENSHOT_DIR", "").strip()
+    if raw_dir:
+        out = Path(raw_dir)
+        out.mkdir(parents=True, exist_ok=True)
+        download.save_as(str(out / "07_downloaded_quote.pdf"))
     # Reading the downloaded artifact is bounded; raw bytes never printed.
-    from pathlib import Path
     body = Path(download.path()).read_bytes()
     if not isinstance(body, bytes) or not body.startswith(b"%PDF-"):
         _fail("browser_pdf_bytes_invalid")
@@ -602,7 +617,9 @@ def _open_result_and_download(page, counters: Counters) -> None:
     print("SMOKE_STAGE=RESULT_OPEN", flush=True)
     _click_chip(page, "견적서 확인하기")
     page.locator("#directView").wait_for(state="visible", timeout=10000)
+    _shot(page, "05_quote_preview.png")
     _pdf_download_probe(page, counters)
+    _shot(page, "06_pdf_download_complete.png")
 
 
 def _reset_browser_local_quote_state(page) -> None:
@@ -621,10 +638,12 @@ def _reset_browser_local_quote_state(page) -> None:
 def _login(page, username: str, password: str) -> None:
     print("SMOKE_STAGE=PAGE_GOTO")
     page.goto(TARGET_URL, wait_until="domcontentloaded", timeout=30000)
+    _shot(page, "01_logged_out_home.png")
     print("SMOKE_STAGE=ACCOUNT_BUTTON")
     page.locator("#padiemAccountButton").click()
     print("SMOKE_STAGE=LOGIN_FORM")
     page.locator("#padiemLoginForm").wait_for(state="visible", timeout=15000)
+    _shot(page, "02_login_form_empty.png")
     page.locator("#padiemLoginIdentifier").fill(username)
     page.locator("#padiemLoginPassword").fill(password)
     try:
@@ -668,6 +687,7 @@ def _login(page, username: str, password: str) -> None:
     skill_count = page.locator("#padiemSavedSkillSelect option").count()
     if skill_count != 1:
         _fail("saved_skill_count_not_one")
+    _shot(page, "03_logged_in_cgi_skill.png")
     print("SMOKE_STAGE=LOGIN_READY")
 
 
@@ -805,6 +825,7 @@ def _guided(page, counters: Counters) -> None:
     )
     if counters.interpret_posts != before:
         _fail("guided_used_interpret")
+    _shot(page, "04_quote_ready_in_chat.png")
     print("SMOKE_STAGE=GUIDED_VALIDATED_BEFORE_PDF", flush=True)
     _open_result_and_download(page, counters)
     print("GUIDED=PASS")
@@ -1019,6 +1040,7 @@ def run_live(username: str, password: str, selected_model_id: str) -> int:
         return 3
 
     counters = Counters()
+    page = None
 
     try:
         with sync_playwright() as pw:
@@ -1079,6 +1101,11 @@ def run_live(username: str, password: str, selected_model_id: str) -> int:
         print("B66_FINAL_HANDOFF_SMOKE=PASS")
         return 0
     except SmokeFailure as exc:
+        if page is not None:
+            try:
+                _shot(page, "99_failure_state.png")
+            except Exception:
+                pass
         print("INTERPRET_POSTS=" + str(counters.interpret_posts))
         print("PDF_POSTS=" + str(counters.pdf_posts))
         print("BROWSER_DIRECT_PROVIDER_CALLS=" + str(counters.direct_provider_requests))
@@ -1089,6 +1116,11 @@ def run_live(username: str, password: str, selected_model_id: str) -> int:
         print("B66_FINAL_HANDOFF_SMOKE=FAIL_" + str(exc))
         return 10
     except Exception as exc:
+        if page is not None:
+            try:
+                _shot(page, "99_failure_state.png")
+            except Exception:
+                pass
         print("INTERPRET_POSTS=" + str(counters.interpret_posts))
         print("PASSWORD_OUTPUT=0")
         print("COOKIE_OUTPUT=0")
