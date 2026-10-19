@@ -47,6 +47,7 @@ from .b66_grade_models import (
     B66_GRADES,
     b66_grade_model_id,
     b66_grade_model_id_for_request,
+    b66_tier_grant_permits,
     b66_verified_admin,
 )
 from padiem_control_plane.product_tier_routes import (
@@ -449,9 +450,12 @@ async def b66_quote_models(request: Request) -> JSONResponse:
         return _error(503, "quote_model_unavailable", "AI 모델 목록을 확인할 수 없습니다.")
     # Enforce global OFF first, then the authenticated member's tier grants.
     # Both switches are server-side, not merely hidden options in the browser.
+    disabled = set(access["disabled_models"]) if access is not None else set()
+    # B14 live-ready options for this product, before the product-local grant
+    # list narrows the free-choice models.
+    live_ready_ids = {row["model_id"] for row in models}
+    models = [row for row in models if row["model_id"] not in disabled]
     if access is not None:
-        disabled = set(access["disabled_models"])
-        models = [row for row in models if row["model_id"] not in disabled]
         if access["active_policy"]:
             allowed_ids = set(access["model_ids"])
             models = [row for row in models if row["model_id"] in allowed_ids]
@@ -460,11 +464,17 @@ async def b66_quote_models(request: Request) -> JSONResponse:
     grade_order = ("free", "plus", "pro", "max")
     member_grade = await verified_member_grade(request, uid, access)
     permitted = grade_order[:grade_order.index(member_grade)+1]
-    available_ids = {row["model_id"] for row in models}
     grade_choices = []
     for grade in permitted:
         grade_model = await b66_grade_model_id_for_request(request, grade)
-        if grade_model is None or grade_model not in available_ids:
+        if grade_model is None:
+            continue
+        # The grade's model is the administrator's approved route for this
+        # product/grade. It stays selectable while B14 lists it and it is not
+        # globally OFF. The product-local per-grade grant list narrows only the
+        # additional free-choice models, so a central grade change is never
+        # silently dropped from the picker.
+        if grade_model in disabled or grade_model not in live_ready_ids:
             continue
         grade_choices.append({
             "tier": grade, "name": B66_GRADE_NAMES[grade],
@@ -472,7 +482,9 @@ async def b66_quote_models(request: Request) -> JSONResponse:
             "reasoning_levels": reasoning_options_for_model(
                 grade_model, transport_supported=_reasoning_transport_supported(request)),
         })
-    if await b66_verified_admin(request, uid) and MUSE_B14_MODEL_ID in available_ids:
+    if (await b66_verified_admin(request, uid)
+            and MUSE_B14_MODEL_ID in live_ready_ids
+            and MUSE_B14_MODEL_ID not in disabled):
         grade_choices.append(
             {"tier": B66_ADMIN_GRADE, "name": B66_ADMIN_NAME,
              "model_id": MUSE_B14_MODEL_ID,
@@ -534,6 +546,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         except BrowserRequestError as exc:
             return _error(422, "custom_provider_invalid", str(exc))
     selected_grade = data.get("tier") if custom is None else None
+    grade_model_id: str | None = None
     if selected_grade is not None:
         grade_order = ("free", "plus", "pro", "max")
         if not isinstance(selected_grade, str) or selected_grade not in grade_order + (B66_ADMIN_GRADE,):
@@ -549,6 +562,9 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
             expected_model = await b66_grade_model_id_for_request(request, selected_grade)
             if expected_model is None:
                 return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+            # Only a centrally routed grade is exempt from the product-local
+            # grant list; the administrator lane keeps its own restriction.
+            grade_model_id = expected_model
         if data.get("model_id") not in (None, expected_model):
             return _error(400, "invalid_model_id", "선택한 등급의 AI 모델과 일치하지 않습니다.")
         model_id = expected_model
@@ -561,7 +577,9 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if custom is None and access is not None and model_id in access["disabled_models"]:
         return _error(403, "model_disabled", "관리자가 이 AI 모델을 사용 중지했습니다.")
-    if custom is None and access is not None and access["active_policy"] and model_id not in access["model_ids"]:
+    if custom is None and access is not None and not b66_tier_grant_permits(
+        access, model_id, grade_model_id
+    ):
         return _error(403, "model_tier_forbidden", "이용 등급에서 허용하지 않는 AI 모델입니다.")
     # Explicit reasoning level is validated against the SAME exact model the
     # user chose (#3906). An unsupported level is rejected with an explainable

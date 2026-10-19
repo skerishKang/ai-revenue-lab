@@ -12,7 +12,6 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from padiem_control_plane.owner_model_name_parts import google_owner_name_parts
-from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
 from .member_grade_access import selected_grade_denial
 
 
@@ -39,12 +38,20 @@ async def owner_model_name_preview(request: Request) -> JSONResponse:
 
 
 async def claw_verified_model_choices(request: Request) -> JSONResponse:
-    """Read live-ready exact model IDs from B14's trusted read-only resolver.
+    """Read live-ready exact model IDs for the server-approved Claw grade.
 
     Registration and optional model quality/E2E assessments are separate.
     B54/P01/B14 still enforce final per-request execution authorization.
+
+    The offered set follows the server-approved route for the requested grade:
+    a centrally stored per-product/per-grade row is the administrator's exact
+    selection, and the shared static product contract is used only while no
+    such row exists. A disabled central row fails closed instead of silently
+    widening back to the previous static lane, and no model name is hardcoded
+    here, so renaming a model in the administrator console needs no code edit.
     """
     from .auth_routes import auth_ready, current_user_id
+    from .central_model_route_runtime import resolve_claw_tier_model
 
     headers = {"Cache-Control": "no-store"}
     if not auth_ready(request) or current_user_id(request) is None:
@@ -58,7 +65,6 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
     denial = await selected_grade_denial(request, current_user_id(request), requested_tier)
     if denial is not None:
         return denial
-    free_ids = {FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID}
     authority = getattr(request.app.state, "b14_model_choice_resolver", None)
     list_fn = getattr(authority, "list_selectable_models", None)
     if not callable(list_fn):
@@ -66,6 +72,29 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
             {"ok": False, "error": {"code": "model_catalog_unavailable"}},
             status_code=503, headers=headers,
         )
+    try:
+        route = await resolve_claw_tier_model(request, requested_tier)
+    except Exception:
+        route = None
+    if route is None or not route.ok or not isinstance(route.model_id, str) or not route.model_id:
+        # A disabled or unresolvable central grade never falls back to a wider
+        # model set; the customer sees the grade as unavailable instead.
+        return JSONResponse(
+            {"ok": False, "error": {"code": "tier_unavailable"}},
+            status_code=503, headers=headers,
+        )
+    route_ids = {
+        model_id for model_id in (route.model_id, route.fallback_model_id)
+        if isinstance(model_id, str) and model_id
+    }
+    # A stored central row is the administrator's exact selection for this
+    # product/grade. Without a row the shared static contract decides: the free
+    # lane is the contract's own free route, and a paid grade keeps the
+    # owner-allowed catalog ceiling.
+    if route.source == "central" or requested_tier == "free":
+        allowed_ids: frozenset[str] | None = frozenset(route_ids)
+    else:
+        allowed_ids = None
     try:
         models = await list_fn()
         if not isinstance(models, list) or len(models) > 256:
@@ -82,7 +111,7 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
                     or not isinstance(name, str) or not (0 < len(name) <= 100)):
                 raise ValueError("invalid B14 model identity")
             seen.add(model_id)
-            if requested_tier == "free" and model_id not in free_ids:
+            if allowed_ids is not None and model_id not in allowed_ids:
                 continue
             rows.append({
                 "model_id": model_id,
@@ -101,5 +130,6 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
         "scope": "b14_owner_allowed_live_ready",
         "complete_inventory": True,
         "automatic_default": False,
+        "route_source": route.source,
         "model_choices": rows,
     }, headers=headers)

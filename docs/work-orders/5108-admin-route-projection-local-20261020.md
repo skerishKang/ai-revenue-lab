@@ -1,6 +1,6 @@
 # LOCAL work order — #5108 model-policy propagation from existing admin
 
-STATUS=SCOPE_ONLY / IMPLEMENTED=NO
+STATUS=IMPLEMENTED / IMPLEMENTED=YES
 BASE_MAIN=8f47a771e191b99d8c92bdd34e06904caf8f7f65
 ISSUE=#5108
 Suggested lane: LOCAL C (admin model projection); keep product UI work separate from LOCAL A and LOCAL B.
@@ -18,3 +18,61 @@ Suggested lane: LOCAL C (admin model projection); keep product UI work separate 
 - If propagation is already source-complete, report NO_CHANGE with concrete path/tests instead of inventing code. Focused tests + existing mandatory GitHub CI only; one coherent push.
 
 LOCAL deliverable: verified minimal missing change or explicit NO_CHANGE mapping, exact HEAD and test result; CENTRAL handles review/merge/deploy. Draft/work order is not implementation.
+
+## LOCAL result (2026-10-20) — IMPLEMENTED
+
+Reused unchanged: PR #5132 `/admin` hub, PR #5123 server-attested roles, the existing
+`/api/admin/models/{me,snapshot,change-preview,change-apply,rollback-preview,audit,routes,route-preview,route-apply,route-rollback-preview}`
+contract, the central per-product/per-grade route ledger (migration 050) and the shared
+product-tier declaration. No new admin system, store, account or policy was added.
+
+### Read-path classification (source level)
+
+| Product | Read path | Before | After |
+| --- | --- | --- | --- |
+| Chat | `chat_routes` → `chat_request_tier_context` → `resolve_chat_tier_route` | PRESENT | PRESENT (no change) |
+| Claw | `GET /api/claw/verified-model-choices` | GAP | PRESENT |
+| Claw | `POST /api/claw/general` free-lane model choice | GAP | PRESENT |
+| B66 | `GET /api/b66/quote/models` grade rows | GAP | PRESENT |
+| B66 | `POST /api/b66/quote/interpret`, B66 AI chat, B66 AI conversation | GAP | PRESENT |
+| Admin | `GET /api/admin/models/routes` + `/admin-models` placement panel | GAP (fixed "not wired" label) | PRESENT |
+
+### Confirmed gaps and the minimal fix
+
+1. **Claw model-selection screen ignored the applied route.** The picker hardcoded the
+   static free model pair and offered the whole B14 catalog for paid grades, so an
+   applied `claw/<grade>` route never appeared. It now offers the resolved server route
+   (a stored central row is authoritative; the static contract is the fallback) and
+   reports `route_source`. A disabled central row fails closed with `tier_unavailable`
+   instead of silently reverting to the old lane. No model name is hardcoded any more.
+2. **Claw free-lane dispatch could bypass the applied route.** The hardcoded free pair
+   stayed selectable after an administrator replaced it; the free lane now accepts only
+   the resolved route candidates (identical to the static pair when no row exists).
+3. **B66 dropped a grade whose central-route model was outside the product-local
+   per-grade grant list.** The grade vanished from the picker with no error and the
+   request was later refused with `model_tier_forbidden`. The grade's centrally assigned
+   model is now the selectable model of that grade; the product grant list still narrows
+   the free-choice models and the global model OFF list still wins. Grade separation
+   (a free member never reaches a paid grade) is unchanged.
+4. **The administrator console kept a fixed "not wired" label** for the central policy,
+   Chat and Claw even when the route ledger was connected. The placement panel now
+   projects the real per-product/grade assignment of the selected model, and an explicit
+   product-policy block stays visible.
+
+### Tests
+
+- New: `apps/padiem-chat/tests/test_5108_admin_route_projection.py` (10 cases). 7 of them
+  fail when the product-side fix is reverted (mutation proof), so they are load-bearing.
+- Repaired a stale acceptance mock: `test_4428_central_model_control_browser.py` was
+  already red on `main` because the console calls `/api/admin/models/routes` and the
+  mock answered only `me`/`snapshot`/`preview`; the nav-link count was also stale after
+  PR #5132. It is green again and now also asserts the projected placement.
+- Full `apps/padiem-chat` suite: 6881 passed, 17 failed — every failure also fails on
+  the pristine `main` tree in this environment (Windows subprocess import path, touch
+  target sizes, locale copy) and is unrelated to this change.
+
+### Not covered here
+
+Live migration 050/052, the role grant, Worker/Pages deployment and the real browser
+E2E stay in the CENTRAL acceptance path. `LIVE_VERIFIED=NO`.
+

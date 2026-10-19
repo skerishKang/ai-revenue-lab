@@ -74,6 +74,29 @@ async def b66_verified_admin(request: Request, user_id: str) -> bool:
     return False
 
 
+def b66_tier_grant_permits(
+    access: object, model_id: object, grade_model_id: object = None,
+) -> bool:
+    """Whether the product-local per-grade grant list permits this model.
+
+    The selected grade's own model is the administrator's approved route for
+    that product/grade, so the product-local grant list never silently removes
+    it from the grade it belongs to. Every other member-chosen model keeps the
+    existing product grant restriction, and the global model OFF list is
+    enforced separately before this check.
+    """
+    if not isinstance(access, dict) or access.get("active_policy") is not True:
+        return True
+    allowed = access.get("model_ids")
+    if not isinstance(allowed, list):
+        return True
+    if not isinstance(model_id, str) or not model_id:
+        return False
+    if model_id in allowed:
+        return True
+    return isinstance(grade_model_id, str) and model_id == grade_model_id
+
+
 __all__ = [
     "B66_ADMIN_GRADE",
     "B66_ADMIN_NAME",
@@ -82,5 +105,6 @@ __all__ = [
     "B66_GRADES",
     "b66_grade_model_id",
     "b66_grade_model_id_for_request",
+    "b66_tier_grant_permits",
     "b66_verified_admin",
 ]

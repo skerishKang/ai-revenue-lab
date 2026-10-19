@@ -39,11 +39,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .member_grade_access import selected_grade_denial
-from padiem_control_plane.product_tier_routes import (
-    ProductTierLabel,
-    FREE_PRIMARY_B14_MODEL_ID,
-    FREE_FALLBACK_B14_MODEL_ID,
-)
+from padiem_control_plane.product_tier_routes import ProductTierLabel
 
 from kagent.p01_adapter import (
     P01AdapterError,
@@ -1324,9 +1320,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         except P01AdapterError:
             return _error(422, "invalid_selected_model", "등록된 B14 모델 ID 하나를 선택해 주세요.")
         if product_tier is ProductTierLabel.FREE:
-            if selected_model_id not in route_candidates and selected_model_id not in (
-                FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID,
-            ):
+            # The resolved route candidates are the administrator's stored
+            # per-grade selection when a central row exists, and the shared
+            # static free contract when no row exists. No model name is
+            # hardcoded here, so a renamed or replaced model needs no code
+            # change and never bypasses the approved route.
+            if selected_model_id not in route_candidates:
                 return _error(403, "model_not_available_for_tier", "Free 등급에서 선택할 수 없는 모델입니다.")
         elif product_tier is not ProductTierLabel.PLUS:
             return _error(422, "explicit_model_tier_unsupported", "이 등급의 모델 직접 선택은 아직 지원되지 않습니다.")
