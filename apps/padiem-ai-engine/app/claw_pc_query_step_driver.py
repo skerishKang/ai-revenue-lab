@@ -5,7 +5,6 @@ from contextvars import ContextVar
 import hashlib
 import hmac
 import json
-import re
 import time
 from typing import Any, Awaitable, Callable, Mapping
 
@@ -13,6 +12,7 @@ from padiem_ai_core.agent_runtime import AgentStepContext, AgentStepDecision
 from padiem_ai_core.agent_definition import AgentExecutionBudget, BoundedAgentDefinition
 from padiem_ai_core.agent_profile_adapter import ToolRuntimeBinding, TrustedAgentRuntimePolicy, compile_agent_profile
 from padiem_ai_core.contracts import ApprovalPolicy, ToolSideEffect, ToolSpec
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_ai_core.tool_runtime import ToolAuthorizationContext, ToolRuntime, ToolInvocation, ToolHandlerError
 from padiem_ai_core.tool_registry import RegisteredTool, ToolRegistrySnapshot
 from padiem_ai_core.tool_resource_policy import ToolResourcePolicy
@@ -66,7 +66,6 @@ CHAT_ENGINE_PC_FILES_URL = "https://padiem-chat.internal/internal/chat/engine-pc
 _PC_QUERY_OWNER: ContextVar[tuple[str, str, str, str | None] | None] = ContextVar(
     "claw_pc_query_owner", default=None
 )
-_DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
 class PCQueryStepError(ValueError):
@@ -82,7 +81,7 @@ def _selected_device_id(arguments: Any) -> str | None:
     value = arguments.get("device_id")
     if value is None:
         return None
-    if not isinstance(value, str) or not _DEVICE_ID_PATTERN.fullmatch(value):
+    if not is_pc_device_id(value):
         raise ToolHandlerError("invalid_tool_arguments", "PC target selection is invalid")
     return value
 

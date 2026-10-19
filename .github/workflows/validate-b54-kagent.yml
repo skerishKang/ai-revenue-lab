@@ -9,6 +9,11 @@ on:
       # has to run this suite even when no Claw file moves.
       - 'packages/padiem-ai-core/padiem_ai_core/image_helpers.py'
       - 'packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py'
+      # #5172: the Claw plan boundary uses the shared PC device identity
+      # grammar, so a change to that one contract has to run this suite even
+      # when no Claw file moves.
+      - 'packages/padiem-ai-core/padiem_ai_core/pc_device_identity.py'
+      - 'packages/padiem-ai-core/tests/test_pc_device_identity.py'
       - 'packages/padiem-ai-core/tests/test_pillow_wheel_receipts.py'
       - 'packages/padiem-ai-core/tests/test_image_helpers_3037.py'
       - 'packages/padiem-ai-core/pyproject.toml'

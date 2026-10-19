@@ -45,6 +45,7 @@ from padiem_ai_core import (
 from padiem_ai_core.agent_approval import tool_invocation_digest
 from padiem_ai_core.contracts import ErrorClass
 from padiem_ai_core.execution_runtime import ExecutionRuntimeError
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, ToolInvocation
 
 from app.execution_context_wire import parse_execution_context
@@ -79,7 +80,6 @@ _PC_PLAN_AGENT_IDS = frozenset({
     "agent:padiem:claw-pc-query@1",
     "agent:padiem:chat-pc-query@1",
 })
-_PC_DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 # S13-5 Phase 1: the orchestrate route mirrors the AGENT-SKILL continuation
 # lifecycle plane by reusing the S13-4 projection rather than re-deriving it.
@@ -385,7 +385,7 @@ def _pc_query_selected_device(tool_arguments: Any) -> str | None:
         if not isinstance(target, dict) or set(target) != {"device_id"}:
             return None
         device = target.get("device_id")
-        if isinstance(device, str) and _PC_DEVICE_ID_PATTERN.fullmatch(device):
+        if is_pc_device_id(device):
             return device
     return None
 
@@ -580,10 +580,7 @@ class OrchestrationEngineService:
                     "PC plan tool arguments must contain only a device_id.",
                 )
             device_id = entry.get("device_id")
-            if (
-                not isinstance(device_id, str)
-                or not _PC_DEVICE_ID_PATTERN.fullmatch(device_id)
-            ):
+            if not is_pc_device_id(device_id):
                 raise ServiceContractError(
                     "invalid_tool_arguments",
                     "PC plan device target is invalid.",

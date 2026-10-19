@@ -5,6 +5,7 @@ mocked server, no live pairing, no bot credentials, no user PC side effects).
 """
 import json
 import subprocess
+import tempfile
 from pathlib import Path
 
 MODULE = Path(__file__).resolve().parents[1] / "static" / "claw-local-handoff.js"
@@ -21,9 +22,15 @@ def project(directory, selected=None):
         + json.dumps(selected)
         + ");\nconsole.log(JSON.stringify(output));"
     )
-    result = subprocess.run(
-        ["node", "-e", script], capture_output=True, text=True, check=True,
-    )
+    # The script is written to a file instead of being passed inline: an
+    # inline argument is bounded by the Windows command-line limit, and the
+    # module plus a full directory payload can cross it on a real run.
+    with tempfile.TemporaryDirectory() as work_dir:
+        script_path = Path(work_dir) / "projection.cjs"
+        script_path.write_text(script, encoding="utf-8")
+        result = subprocess.run(
+            ["node", str(script_path)], capture_output=True, text=True, check=True,
+        )
     return json.loads(result.stdout)
 
 
