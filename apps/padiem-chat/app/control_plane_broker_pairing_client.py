@@ -451,6 +451,131 @@ class CloudflareCanonicalBrokerPairingClient:
                                       "Resident execution profile not verified.")
         return profile["executable_path"]
 
+    async def android_saf_profile(
+        self, *, account_ref: str, workspace_ref: str, device_id: str,
+        binding_ref: str,
+    ) -> dict[str, Any]:
+        """#5080: the SAF folder set this phone declared through the Broker.
+
+        Same private Service Binding and same active-generation check as the
+        installed profile. The answer is presentation metadata plus opaque
+        folder references; no SAF URI, path, credential or session secret can
+        cross this boundary.
+        """
+        method = getattr(self._binding, "android_saf_profile", None)
+        if not callable(method):
+            raise IdentityBridgeError(503, "android_saf_profile_unavailable",
+                                      "Android SAF profile unavailable.")
+        expected = {
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+            "device_id": _safe_ref(device_id, "device_id"),
+            "binding_ref": _safe_ref(binding_ref, "binding_ref"),
+            "profile_ref": "profile.android.saf-txt.v1",
+        }
+        try:
+            result = _dict(await _await(method(expected)))
+        except Exception as exc:
+            raise IdentityBridgeError(503, "android_saf_profile_unavailable",
+                                      "Android SAF profile evidence unavailable.") from exc
+        profile = _dict(result.get("profile")) if result is not None else None
+        fields = set(expected) | {
+            "platform", "capabilities", "read_suffix", "folders", "server_verified",
+        }
+        if (result is None or set(result) != {"ok", "profile"}
+                or result.get("ok") is not True or profile is None
+                or set(profile) != fields
+                or any(profile.get(key) != value for key, value in expected.items())
+                or profile.get("platform") != "android"
+                or profile.get("capabilities") != ["local.filesystem.read"]
+                or profile.get("read_suffix") != ".txt"
+                or profile.get("server_verified") is not True
+                or type(profile.get("folders")) is not list
+                or len(profile["folders"]) > 8):
+            raise IdentityBridgeError(503, "android_saf_profile_unavailable",
+                                      "Android SAF profile not verified.")
+        folders: list[dict[str, str]] = []
+        seen: set[str] = set()
+        for item in profile["folders"]:
+            item = _dict(item)
+            if (item is None or set(item) != {"root_ref", "display_name"}
+                    or _safe_ref(item.get("root_ref"), "root_ref") in seen
+                    or not isinstance(item.get("display_name"), str)
+                    or not 1 <= len(item["display_name"]) <= 80
+                    or any(ord(ch) < 32 or ord(ch) == 127 for ch in item["display_name"])):
+                raise IdentityBridgeError(503, "android_saf_profile_unavailable",
+                                          "Android SAF folder set is invalid.")
+            seen.add(item["root_ref"])
+            folders.append({
+                "root_ref": item["root_ref"],
+                "display_name": item["display_name"],
+            })
+        return {
+            "profile_ref": profile["profile_ref"],
+            "platform": profile["platform"],
+            "capabilities": list(profile["capabilities"]),
+            "read_suffix": profile["read_suffix"],
+            "folders": folders,
+        }
+
+    async def android_saf_profiles(
+        self, *, account_ref: str, workspace_ref: str,
+    ) -> list[dict[str, Any]]:
+        """#5080: owner/workspace Android metadata for the device directory.
+
+        Presentation only: binding identity, one capability, the read suffix
+        and a folder count. Folder references, SAF URIs and credentials never
+        cross this boundary, and the answer cannot create or revive a binding.
+        """
+        method = getattr(self._binding, "android_saf_profiles", None)
+        if not callable(method):
+            return []
+        expected = {
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+        }
+        try:
+            result = _dict(await _await(method(expected)))
+        except Exception as exc:
+            raise IdentityBridgeError(503, "android_saf_profiles_unavailable",
+                                      "Android device metadata unavailable.") from exc
+        if (result is None or set(result) != {"ok", "platform", "profiles"}
+                or result.get("ok") is not True
+                or result.get("platform") != "android"
+                or type(result.get("profiles")) is not list
+                or len(result["profiles"]) > 24):
+            raise IdentityBridgeError(503, "android_saf_profiles_unavailable",
+                                      "Android device metadata is invalid.")
+        profiles: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for item in result["profiles"]:
+            item = _dict(item)
+            if (item is None
+                    or set(item) != {"binding_ref", "device_id", "platform",
+                                     "capabilities", "read_suffix", "folder_count"}
+                    or item.get("platform") != "android"
+                    or item.get("read_suffix") != ".txt"
+                    or item.get("capabilities") not in ([], ["local.filesystem.read"])
+                    or type(item.get("folder_count")) is not int
+                    or not 0 <= item["folder_count"] <= 8):
+                raise IdentityBridgeError(503, "android_saf_profiles_unavailable",
+                                          "Android device metadata is invalid.")
+            binding_ref = _safe_ref(item.get("binding_ref"), "binding_ref")
+            device_id = _safe_ref(item.get("device_id"), "device_id")
+            if binding_ref in seen or device_id in seen:
+                raise IdentityBridgeError(503, "android_saf_profiles_unavailable",
+                                          "Android device metadata is invalid.")
+            seen.add(binding_ref)
+            seen.add(device_id)
+            profiles.append({
+                "binding_ref": binding_ref,
+                "device_id": device_id,
+                "capabilities": list(item["capabilities"]),
+                "read_suffix": ".txt",
+                "folder_count": item["folder_count"],
+            })
+        return profiles
+
     async def enqueue_txt_read_command(
         self, *, command: dict[str, Any], material: dict[str, Any],
     ) -> dict[str, Any]:

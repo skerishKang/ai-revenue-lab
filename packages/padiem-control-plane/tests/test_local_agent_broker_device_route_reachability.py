@@ -302,6 +302,9 @@ def test_reconcile_route_reaches_canonical_reconciliation_through_the_private_ed
             # same reason as every other route — it is in the one canonical
             # list the bridge derives from.
             "/text-result",
+            # #5080: the authenticated Android SAF folder declaration route.
+            # It is the same private edge and the same canonical list.
+            "/android-profile",
         }
     )
     assert len(set(device_http.DEVICE_HTTP_ROUTES)) == len(device_http.DEVICE_HTTP_ROUTES)

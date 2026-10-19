@@ -97,6 +97,22 @@ class BrokerTxtReadSource:
             device_id=device_id, binding_ref=binding_ref,
         )
 
+    async def resolve_android_saf_profile(
+        self, *, account_ref: str, workspace_ref: str, device_id: str,
+        binding_ref: str,
+    ) -> dict[str, Any]:
+        """#5080: the Android SAF folder set from the same canonical Broker."""
+        method = getattr(self._broker_client, "android_saf_profile", None)
+        if not callable(method):
+            raise IdentityBridgeError(
+                503, "android_saf_profile_unavailable",
+                "Android SAF profile unavailable.",
+            )
+        return await method(
+            account_ref=account_ref, workspace_ref=workspace_ref,
+            device_id=device_id, binding_ref=binding_ref,
+        )
+
     async def owner_device_directory(
         self, *, account_ref: str, workspace_ref: str,
     ) -> dict[str, Any]:

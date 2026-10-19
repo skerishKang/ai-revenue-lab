@@ -74,6 +74,9 @@ class BrokerDeviceDirectorySource:
             raise TypeError("canonical broker directory RPC unavailable")
         self._port = port
         self._set_usage = getattr(binding, "set_owner_usage", None)
+        # #5080: same trusted service binding, additive presentation metadata
+        # only. Absent on an older Broker and then simply omitted.
+        self._android_profiles = getattr(binding, "android_saf_profiles", None)
 
     async def list_devices(
         self, *, owner_id: str, workspace_id: str, now: datetime
@@ -101,6 +104,7 @@ class BrokerDeviceDirectorySource:
         if paused is not None and type(paused) is not bool:
             return None
         seen: set[str] = set()
+        binding_refs: dict[str, str] = {}
         items: list[dict[str, Any]] = []
         for facts in raw:
             if not isinstance(facts, Mapping):
@@ -114,6 +118,8 @@ class BrokerDeviceDirectorySource:
             if device_id in seen:
                 return None
             seen.add(device_id)
+            if isinstance(binding.get("binding_ref"), str) and binding["binding_ref"]:
+                binding_refs[device_id] = binding["binding_ref"]
             if binding.get("account_ref") != owner_id or binding.get("workspace_ref") != workspace_id:
                 return None
             # Uses exactly the G4 source's authoritative server-backed ONLINE
@@ -138,6 +144,38 @@ class BrokerDeviceDirectorySource:
                 "expired": expired,
                 **({"usagePaused": paused} if paused is not None else {}),
             })
+        if callable(self._android_profiles) and items and binding_refs:
+            try:
+                profiles = self._android_profiles(
+                    {"account_ref": owner_id, "workspace_ref": workspace_id})
+                if inspect.isawaitable(profiles):
+                    profiles = await profiles
+            except Exception:
+                profiles = None
+            # Additive presentation metadata only. A failed or malformed
+            # enrichment omits the Android label; it must not deny the whole
+            # owner directory, and it can never change canonical state.
+            if isinstance(profiles, list) and len(profiles) <= _DEVICE_LIMIT:
+                by_device = {row["deviceId"]: row for row in items}
+                for entry in profiles:
+                    if not isinstance(entry, Mapping):
+                        continue
+                    device_id = entry.get("device_id")
+                    row = by_device.get(device_id)
+                    if (row is None
+                            or entry.get("binding_ref") != binding_refs.get(device_id)
+                            or entry.get("platform") != "android"
+                            or entry.get("read_suffix") != ".txt"
+                            or entry.get("capabilities") not in ([], ["local.filesystem.read"])
+                            or type(entry.get("folder_count")) is not int
+                            or not 0 <= entry["folder_count"] <= 8):
+                        continue
+                    row.update({
+                        "platform": "android",
+                        "androidCapabilities": list(entry["capabilities"]),
+                        "androidReadSuffix": ".txt",
+                        "androidFolderCount": entry["folder_count"],
+                    })
         return sorted(items, key=lambda row: row["deviceId"])
 
     async def set_usage(self, *, owner_id: str, workspace_id: str, paused: bool) -> dict | None:
@@ -243,11 +281,28 @@ async def _read_device_directory(
         if (device_name is not None and (not isinstance(device_name, str) or len(device_name) > 80)
             or platform is not None and (not isinstance(platform, str) or len(platform) > 40)):
             return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
-        seen.add(ident)
-        safe.append({
+        entry = {
             "deviceId": ident, "deviceName": device_name, "platform": platform,
             "state": state, "usable": usable, "revoked": revoked, "expired": expired,
-        })
+        }
+        if platform == "android":
+            # #5080: only the one capability this adapter implements, and only
+            # for a row the Broker actually declared as Android.
+            capabilities = row.get("androidCapabilities")
+            read_suffix = row.get("androidReadSuffix")
+            folder_count = row.get("androidFolderCount")
+            if (capabilities not in ([], ["local.filesystem.read"])
+                    or read_suffix != ".txt"
+                    or type(folder_count) is not int
+                    or not 0 <= folder_count <= 8):
+                return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
+            entry.update({
+                "capabilities": list(capabilities),
+                "readSuffix": read_suffix,
+                "folderCount": folder_count,
+            })
+        seen.add(ident)
+        safe.append(entry)
     # Even a valid sole connected PC is only a visual candidate; selection is
     # explicit in the browser and execution authority is never present here.
     pause_values = {row.get("usagePaused") for row in devices}
