@@ -29,30 +29,28 @@ IP-CONTROL OWNS CROSS-CUTTING IDENTITY/ENTITLEMENT/USAGE/AUDIT TRUTH.
 
 ## 2. Canonical topology
 
-### 2.1 Standalone / product AI path
+### 2.1 Standalone / product AI path — 2026-10-19 execution placement
+
+PADIEM의 공통 capability 소유권은 유지하면서, **독립 Engine 서버를 모든 대화의 필수 경유지로 사용하던 기본 토폴로지**는 점진적으로 축소한다. 짧은 제품 요청은 검증된 same-runtime `IP-CORE` 라이브러리를 직접 사용할 수 있고, 장시간 작업·중단/재개·교차 런타임 서비스는 `IP-ENGINE` 경계를 유지한다.
 
 ```text
-Padiem product / Business
-(Chat, Claw, B66 Padiem Quote, StoryMemory, Living Learning, future products)
-        │
-        │ product/domain adapter
-        ▼
-IP-ENGINE · Padiem AI Engine
-cross-runtime trusted service boundary
-        │
-        ▼
-IP-CORE · Padiem AI Core
-shared execution / evidence / grounding / memory / tool / skill / agent semantics
-        │
-        ▼
-B14 · Korean AI Platform
-provider/model catalog + route validation + credentials + actual execution
-        │
-        ▼
-Provider / Model
+Product (Chat / Claw / B66 / approved consumers)
+  └─ bounded product adapter -> IP-CORE library
+       ├─ managed model: B14 Router -> selected provider
+       ├─ customer BYOK: server-side direct provider adapter (B14-independent)
+       ├─ immediate tools: existing trusted product/Connector/Broker execution
+       └─ durable/paused/cross-runtime: IP-ENGINE -> shared Core semantics
+
+IP-CONTROL: canonical identity/tenant/entitlement/usage/audit across boundaries.
 ```
 
-명시적으로 허용된 same-runtime/library consumer는 IP-ENGINE을 거치지 않고 IP-CORE를 직접 소비할 수 있습니다. 그러나 공용 의미론을 제품 안에 복제할 수 있다는 뜻은 아닙니다.
+- **기능 소유권과 실행 프로세스 배치의 구분:** Common Agent/Tool/Skill semantics는 항상 Core 정본이며, 단일 제품 서버에서 라이브러리로 실행해도 제품별 복사본이나 신규 Router를 만들지 않는다.
+- **현재 운영 경로 ≠ 목표 배치:** 일반 Chat·일부 B66의 관리형 실행은 이미 Engine을 경유하지 않는다. Claw PC 도구는 Engine StepDriver→Chat signed callback 운영 경로를 아직 사용하며, #5015/#4976 수리와 단일 단기 경로 검증 후 전환한다.
+- **BYOK_DIRECT 예외:** 제품 서버에서 명시적으로 선택한 공급사 API로 호출하는 경로는 B14 managed route/credential/자동 폴백을 경유하지 않는다. 키의 서버 저장·소유권·usage/audit은 별도의 기존 계약을 따른다. #5121의 source merge와 Production activation은 별개다.
+- **Engine 유지 이유:** 입구 승인·사용량/환불 정산·idempotency·identity-bound continuation·cross-runtime caller enforcement가 실제 책임 소유자 또는 대체 검증 없이 소멸하지 않도록 한다. 장기 작업뿐 아니라 현재 사용 중인 서비스 경계도 단계적으로 축소한다.
+- **Connector 유지:** Windows 기기 소유/online 상태, 정확한 선택 대상, 실제 dispatch/receipt/권한 검사와 실행 결과 저장은 기존 권위를 재사용한다. 새 Broker/Worker 분할은 기본 계획이 아니다.
+
+세부 전환 순서와 제품별 검증: [PADIEM AI 실행 경로 단순화 운영 기준](../operations/PADIEM_AI_EXECUTION_PATH_SIMPLIFICATION_20261019.md). 기존 #2409의 계약/집행/합성/배포 운영 경계는 이번 실행 위치 결정과 함께 해석하며, 검증 완료 전 한 번에 소스 이동이나 서비스 중지는 하지 않는다.
 
 ### 2.2 Embedded AI / Sidecar path
 
