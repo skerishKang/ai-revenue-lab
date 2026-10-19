@@ -3,7 +3,7 @@ name: COM2 PR Auto Sandbox
 # Trusted default-branch workflow. Never execute fork pull requests on COM2.
 on:
   workflow_run:
-    workflows: ["Operations Policy Guard"]
+    workflows: ["COM2 PR Policy Trigger"]
     types: [completed]
 
 permissions:
