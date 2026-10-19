@@ -11,6 +11,7 @@
     "test_5121_byok_chat_direct.py": "BYOK_DIRECT",
     "test_5121_byok_claw_b66_direct.py": "BYOK_DIRECT",
     "test_5121_byok_claw_b66_product_e2e.py": "BYOK_DIRECT",
+    "test_5121_byok_key_separation.py": "BYOK_DIRECT",
     "test_5002_byok_product_e2e.py": "BYOK_DIRECT",
     "test_2550_stream_fail_taxonomy.py": "B14_MANAGED",
     "test_3977_provider_default_temperature_bridge.py": "B14_MANAGED",

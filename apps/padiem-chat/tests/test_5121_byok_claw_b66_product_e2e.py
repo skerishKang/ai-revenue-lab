@@ -36,6 +36,7 @@ from app.history import D1HistoryStore, PRODUCT_SCOPE_B66, PRODUCT_SCOPE_CHAT
 from app.main import create_app
 from test_5002_byok_product_e2e import (
     CUSTOM_KEY,
+    CUSTOM_KEY_SECRET,
     DEFAULT_ANSWER,
     MODEL_ID,
     ORIGIN,
@@ -219,7 +220,10 @@ class Harness:
         self.history = D1HistoryStore(self.d1)
         self.skill_store = D1SavedQuoteSkillStore(self.d1)
         self.credential_store = D1CustomProviderCredentialStore(
-            self.d1, session_secret=SESSION_SECRET, cipher=FakeAuthenticatedCipher()
+            self.d1,
+            key_secret=CUSTOM_KEY_SECRET,
+            session_secret=SESSION_SECRET,
+            cipher=FakeAuthenticatedCipher(),
         )
         self.recorder = recorder or ProviderRecorder(provider_handler)
         self.b14 = B14Probe()

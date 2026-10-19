@@ -49,6 +49,38 @@ def _strict_bool(value: object, *, name: str) -> bool:
     raise ConfigError(f"{name} must be true or false")
 
 
+def _optional_secret(value: object, *, name: str, minimum: int = 32) -> str | None:
+    raw = "" if value is None else str(value).strip()
+    if not raw:
+        return None
+    if len(raw) < minimum:
+        raise ConfigError(f"{name} must be at least {minimum} characters when configured")
+    return raw
+
+
+def _secret_list(value: object, *, name: str, minimum: int = 32) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    if isinstance(value, str):
+        candidates = value.split(",")
+    elif isinstance(value, (list, tuple)):
+        candidates = [str(item) for item in value]
+    else:
+        raise ConfigError(f"{name} must be a comma-separated list")
+    result: list[str] = []
+    for candidate in candidates:
+        secret = candidate.strip()
+        if not secret:
+            continue
+        if len(secret) < minimum:
+            raise ConfigError(
+                f"{name} entries must be at least {minimum} characters when configured"
+            )
+        if secret not in result:
+            result.append(secret)
+    return tuple(result)
+
+
 @dataclass(frozen=True)
 class Settings:
     runtime_mode: str = "mock"
@@ -67,6 +99,11 @@ class Settings:
     google_client_id: str | None = field(default=None, repr=False)
     google_client_secret: str | None = field(default=None, repr=False)
     session_secret: str | None = field(default=None, repr=False)
+    # #5121: PADIEM Custom credentials use their own encryption secret and key
+    # purpose. The previous/legacy rings exist only for staged migration.
+    custom_key_secret: str | None = field(default=None, repr=False)
+    custom_key_previous_secrets: tuple[str, ...] = field(default=(), repr=False)
+    custom_key_legacy_session_secrets: tuple[str, ...] = field(default=(), repr=False)
     session_max_age_seconds: int = 7 * 24 * 3600
     quota_salt: str | None = field(default=None, repr=False)
     anonymous_burst_limit: int = 4
@@ -93,6 +130,9 @@ class Settings:
         google_client_id: object = None,
         google_client_secret: object = None,
         session_secret: object = None,
+        custom_key_secret: object = None,
+        custom_key_previous_secrets: object = None,
+        custom_key_legacy_session_secrets: object = None,
         session_max_age_seconds: object = 7 * 24 * 3600,
         quota_salt: object = None,
         anonymous_burst_limit: object = 4,
@@ -170,6 +210,17 @@ class Settings:
         client_id = str(google_client_id or "").strip() or None
         client_secret = str(google_client_secret or "").strip() or None
         secret = str(session_secret or "").strip() or None
+        custom_key = _optional_secret(
+            custom_key_secret, name="PADIEM_CHAT_CUSTOM_KEY_SECRET"
+        )
+        previous_custom_keys = _secret_list(
+            custom_key_previous_secrets,
+            name="PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS",
+        )
+        legacy_custom_keys = _secret_list(
+            custom_key_legacy_session_secrets,
+            name="PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS",
+        )
         try:
             max_age = int(session_max_age_seconds)
         except (TypeError, ValueError) as exc:
@@ -231,6 +282,9 @@ class Settings:
             google_client_id=client_id,
             google_client_secret=client_secret,
             session_secret=secret,
+            custom_key_secret=custom_key,
+            custom_key_previous_secrets=previous_custom_keys,
+            custom_key_legacy_session_secrets=legacy_custom_keys,
             session_max_age_seconds=max_age,
             quota_salt=normalized_quota_salt,
             anonymous_burst_limit=anon_burst,
@@ -271,6 +325,13 @@ class Settings:
             google_client_id=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_ID"),
             google_client_secret=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
             session_secret=os.getenv("PADIEM_CHAT_SESSION_SECRET"),
+            custom_key_secret=os.getenv("PADIEM_CHAT_CUSTOM_KEY_SECRET"),
+            custom_key_previous_secrets=os.getenv(
+                "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS"
+            ),
+            custom_key_legacy_session_secrets=os.getenv(
+                "PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS"
+            ),
             session_max_age_seconds=os.getenv("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS", str(7 * 24 * 3600)),
             quota_salt=os.getenv("PADIEM_CHAT_QUOTA_SALT"),
             anonymous_burst_limit=os.getenv("PADIEM_CHAT_ANONYMOUS_BURST_LIMIT", "4"),
