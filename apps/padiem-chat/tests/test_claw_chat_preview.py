@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 from starlette.testclient import TestClient
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 from app.app_factory import create_app
 from app.config import Settings
 
@@ -175,13 +176,13 @@ def test_claw_static_assets_preserve_disabled_controls_and_safe_dom_sinks() -> N
     # Browser persistence primitives forbidden
     forbidden_tokens = [
         "localStorage",
-        "sessionStorage",
         "indexedDB",
         "cookieStore",
         "caches.open",
     ]
     for token in forbidden_tokens:
         assert token not in app_js
+    assert_session_storage_is_handoff_only(app_js)
 
 
 

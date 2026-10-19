@@ -200,6 +200,53 @@
   color: #fff;
 }
 
+.auth-handoff {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(127, 127, 127, 0.28);
+  border-radius: 12px;
+  background: rgba(127, 127, 127, 0.06);
+}
+
+.auth-handoff[hidden] {
+  display: none;
+}
+
+.auth-handoff-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.auth-handoff-code {
+  margin: 0;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+  user-select: all;
+}
+
+.auth-handoff-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.78;
+}
+
+.auth-handoff-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.auth-handoff-actions .auth-google {
+  flex: 1;
+  min-width: 0;
+}
+
 .auth-divider {
   display: flex;
   align-items: center;
