@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 import os
 import sys
@@ -266,22 +267,10 @@ def test_stale_lock_is_replaced(tmp_path, monkeypatch):
 def test_generation_pointer_selects_the_current_snapshot(tmp_path, monkeypatch):
     root, state = _prepare(tmp_path)
     _set_env(monkeypatch)
-    generations = tmp_path / "generations"
-    snapshot = generations / "20261019T084722757869Z"
-    snapshot.mkdir(parents=True)
-    pointer = tmp_path / "current_generation.json"
-    pointer.write_text(
-        json.dumps(
-            {
-                "kind": "PADIEM_COM2_B62_GENERATION_V1",
-                "d1_generation": "20261019T084722757869Z",
-            }
-        ),
-        encoding="utf-8",
-    )
+    generations, snapshot, pointer = _generation_tree(tmp_path)
     ops = FakeOps()
 
-    code, _status_payload = schedule_ops.run_once(
+    code, status_payload = schedule_ops.run_once(
         state,
         _config(root, generation_pointer=pointer, generations_dir=generations),
         ops=ops,
@@ -291,6 +280,100 @@ def test_generation_pointer_selects_the_current_snapshot(tmp_path, monkeypatch):
     assert code == 0
     build = [call for call in ops.calls if call[0] == "build"][0]
     assert str(snapshot.resolve()) in build[2]
+    assert set(status_payload["databases"]) == {"chat", "engine"}
+    assert status_payload["databases"]["engine"]["sha256"] == hashlib.sha256(
+        b"engine-database-bytes"
+    ).hexdigest()
+
+
+def test_generation_without_engine_database_fails_before_build(tmp_path, monkeypatch):
+    root, state = _prepare(tmp_path)
+    _set_env(monkeypatch)
+    generations, _snapshot, pointer = _generation_tree(tmp_path, engine=False)
+    ops = FakeOps()
+
+    code, status = schedule_ops.run_once(
+        state,
+        _config(root, generation_pointer=pointer, generations_dir=generations),
+        ops=ops,
+        retry_delay=0,
+    )
+
+    assert code == 1
+    assert status["error"] == "generation_engine_missing"
+    assert status["failed_stage"] == "prepare"
+    assert status["operator_action_required"] is True
+    assert not [call for call in ops.calls if call[0] == "build"]
+
+
+def test_engine_seed_must_match_the_published_generation(tmp_path, monkeypatch):
+    root, state = _prepare(tmp_path)
+    _set_env(monkeypatch)
+    generations, _snapshot, pointer = _generation_tree(tmp_path, engine_sha="b" * 64)
+
+    code, status = schedule_ops.run_once(
+        state,
+        _config(root, generation_pointer=pointer, generations_dir=generations),
+        ops=FakeOps(),
+        retry_delay=0,
+    )
+
+    assert code == 1
+    assert status["error"] == "generation_engine_integrity_failed"
+    assert status["operator_action_required"] is True
+
+
+def test_chat_runtime_seed_must_match_the_published_generation(tmp_path, monkeypatch):
+    root, state = _prepare(tmp_path)
+    _set_env(monkeypatch)
+    generations, _snapshot, pointer = _generation_tree(tmp_path)
+    (pointer.parent / f"chat-20261019T084722757869Z.sqlite3").write_bytes(b"stale")
+
+    code, status = schedule_ops.run_once(
+        state,
+        _config(root, generation_pointer=pointer, generations_dir=generations),
+        ops=FakeOps(),
+        retry_delay=0,
+    )
+
+    assert code == 1
+    assert status["error"] == "generation_chat_seed_integrity_failed"
+    assert status["operator_action_required"] is True
+
+
+def test_published_generation_must_match_the_runtime_pointer(tmp_path, monkeypatch):
+    root, state = _prepare(tmp_path)
+    _set_env(monkeypatch)
+    generations, _snapshot, pointer = _generation_tree(
+        tmp_path, published_generation="20261019T000000000000Z"
+    )
+
+    code, status = schedule_ops.run_once(
+        state,
+        _config(root, generation_pointer=pointer, generations_dir=generations),
+        ops=FakeOps(),
+        retry_delay=0,
+    )
+
+    assert code == 1
+    assert status["error"] == "generation_pointer_mismatch"
+
+
+def test_generation_manifest_is_required(tmp_path, monkeypatch):
+    root, state = _prepare(tmp_path)
+    _set_env(monkeypatch)
+    generations, _snapshot, pointer = _generation_tree(tmp_path)
+    (tmp_path / "current_generation.json").unlink()
+
+    code, status = schedule_ops.run_once(
+        state,
+        _config(root, generation_pointer=pointer, generations_dir=generations),
+        ops=FakeOps(),
+        retry_delay=0,
+    )
+
+    assert code == 1
+    assert status["error"] == "generation_manifest_missing"
 
 
 def test_generation_pointer_fails_closed_when_snapshot_is_missing(tmp_path, monkeypatch):
@@ -319,6 +402,68 @@ def test_generation_pointer_fails_closed_when_snapshot_is_missing(tmp_path, monk
     assert code == 1
     assert status["error"] == "generation_snapshot_missing"
     assert status["operator_action_required"] is True
+
+
+def _generation_tree(
+    tmp_path: Path,
+    *,
+    engine: bool = True,
+    engine_sha: str | None = None,
+    published_generation: str | None = None,
+):
+    """Create the runtime pointer, published pointer and snapshot pair."""
+    generation = "20261019T084722757869Z"
+    chat_bytes = b"chat-database-bytes"
+    engine_bytes = b"engine-database-bytes"
+    generations = tmp_path / "generations"
+    snapshot = generations / generation
+    snapshot.mkdir(parents=True)
+    (snapshot / "chat.sqlite3").write_bytes(chat_bytes)
+    if engine:
+        (snapshot / "engine.sqlite3").write_bytes(engine_bytes)
+    store = tmp_path / "store"
+    store.mkdir()
+    seed = store / f"chat-{generation}.sqlite3"
+    seed.write_bytes(chat_bytes)
+    pointer = store / "current_generation.json"
+    pointer.write_text(
+        json.dumps(
+            {
+                "kind": "PADIEM_COM2_B62_GENERATION_V1",
+                "d1_generation": generation,
+                "d1_seed": seed.name,
+                "d1_bytes": len(chat_bytes),
+                "d1_sha256": hashlib.sha256(chat_bytes).hexdigest(),
+            }
+        ),
+        encoding="utf-8",
+    )
+    databases = {
+        "chat": {
+            "database": "padiem-chat-db",
+            "tables": 57,
+            "bytes": len(chat_bytes),
+            "sha256": hashlib.sha256(chat_bytes).hexdigest(),
+        }
+    }
+    if engine:
+        databases["engine"] = {
+            "database": "padiem-engine",
+            "tables": 10,
+            "bytes": len(engine_bytes),
+            "sha256": engine_sha or hashlib.sha256(engine_bytes).hexdigest(),
+        }
+    (tmp_path / "current_generation.json").write_text(
+        json.dumps(
+            {
+                "generation": published_generation or generation,
+                "databases": databases,
+                "production_bound": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+    return generations, snapshot, pointer
 
 
 def test_restore_verify_uses_a_throwaway_directory(tmp_path, monkeypatch):
