@@ -131,3 +131,5 @@ EVIDENCE=테스트/로그/PR/실행 식별자(비밀 제외)
 
 검증: `apps/padiem-chat/tests/test_5121_byok_key_separation.py` (`byok_direct`).
 이 문서는 소스·테스트 기준이며, 운영 Secret 등록과 배포 완료를 뜻하지 않는다.
+
+운영 전환의 실행 순서·확인·롤백 경계: `docs/operations/BYOK_KEY_TRANSITION_RUNBOOK_20261019.md`.

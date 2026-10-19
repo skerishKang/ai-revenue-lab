@@ -261,11 +261,36 @@ async def resolve_pc_mesh_target(
     request: Any, *, owner_id: str, workspace_id: str,
 ) -> PcExecutionTarget:
     """Read the existing owner-authorized Mesh target without inventing heartbeat."""
-    resolved_workspace, session = await _resolve_owner_session(request, owner_id)
-    if resolved_workspace != workspace_id:
+    # The browser's B62 session proves the signed-in product owner and
+    # workspace, but Mesh connector ownership is bound to the B54 session.
+    # Passing a B62 session_id to resolve_connector_owner_scope makes an
+    # otherwise executable B54 PC disappear from the shared device picker.
+    resolved_workspace, b62_session = await _resolve_owner_session(request, owner_id)
+    if resolved_workspace != workspace_id or b62_session is None:
+        return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
+    state = getattr(getattr(request, "app", None), "state", None)
+    authority = getattr(state, "control_plane_identity_authority", None)
+    from padiem_control_plane.b54_identity_bridge import (
+        resolve_current_b54_canonical_session,
+    )
+    try:
+        bridged = await resolve_current_b54_canonical_session(authority, owner_id)
+        b54_session = bridged.auth_session
+    except Exception:
+        return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
+    # Matching user ids are not enough: both server-provided canonical
+    # sessions must resolve to the same subject and tenant. Never accept a
+    # browser-provided tenant or mint a replacement grant.
+    b62_subject = getattr(getattr(b62_session, "subject", None), "subject_id", None)
+    b54_subject = getattr(getattr(b54_session, "subject", None), "subject_id", None)
+    if (
+        not isinstance(b62_subject, str) or not b62_subject
+        or b62_subject != b54_subject
+        or getattr(b54_session, "tenant_id", None) != workspace_id
+    ):
         return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
     return await _resolve_execution_target(
-        request, session_id=getattr(session, "session_id", None),
+        request, session_id=getattr(b54_session, "session_id", None),
         selected_device_id=None,
     )
 

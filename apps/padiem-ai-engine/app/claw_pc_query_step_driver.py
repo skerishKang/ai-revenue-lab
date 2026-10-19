@@ -40,6 +40,24 @@ PC_LIST_FILES_SCOPE = "claw.pc.list_files"
 PC_READ_FILE_SCOPE = "claw.pc.read_file"
 PC_FILE_TOOL_IDS = frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID})
 PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
+# Exact, reviewed Chat API codes may cross the trusted Engine boundary as
+# bounded diagnostic stages; unknown codes and messages never leave that
+# boundary. These stages do not authorize or retry any PC command.
+_PC_FILES_DOWNSTREAM_STAGE = {
+    "claw_engine_files_invalid_body": "pc_files_contract_invalid",
+    "canonical_session_required": "pc_files_owner_unavailable",
+    "claw_engine_identity_unavailable": "pc_files_owner_unavailable",
+    "oracle_mesh_run_unavailable": "pc_files_run_unavailable",
+    "oracle_mesh_device_directory_unavailable": "pc_files_owner_unavailable",
+    "oracle_mesh_device_unverified": "pc_files_target_unverified",
+    "oracle_mesh_file_root_unavailable": "pc_files_root_unavailable",
+    "oracle_mesh_file_path_invalid": "pc_files_path_invalid",
+    "oracle_mesh_file_call_invalid": "pc_files_call_invalid",
+    "oracle_mesh_workspace_unavailable": "pc_files_workspace_unavailable",
+    "oracle_mesh_dispatch_unavailable": "pc_files_dispatch_unavailable",
+    "oracle_mesh_unconfigured": "pc_files_unconfigured",
+}
+
 PC_DRIVE_COMMAND = "Get-PSDrive -PSProvider FileSystem | Select-Object Name,Root,Used,Free | ConvertTo-Json"
 CLAW_ENGINE_PC_DRIVE_URL = "https://padiem-chat.internal/internal/claw/engine-pc-drive"
 CHAT_ENGINE_PC_DRIVE_URL = "https://padiem-chat.internal/internal/chat/engine-pc-drive"
@@ -238,15 +256,23 @@ async def _signed_files_call(*, service, request_factory, secret, owner, payload
             "pc_files_unavailable",
             "PC file outcome unavailable; do not replay",
         ) from exc
+    ok = data.get("ok") if isinstance(data, dict) else None
+    failure = data.get("error") if isinstance(data, dict) else None
+    upstream_code = failure.get("code") if isinstance(failure, dict) else None
+    stage = _PC_FILES_DOWNSTREAM_STAGE.get(upstream_code, "pc_files_denied") if (
+        isinstance(upstream_code, str)
+    ) else "pc_files_denied"
+    # Log only a closed, reviewed stage identifier; never raw downstream
+    # error text, model-selected path, customer filename, session or secret.
     print(
-        "pc_files_chat_call mode=%s status=%s ok=%s" % (
-            mode, status, data.get("ok") if isinstance(data, dict) else None,
+        "pc_files_chat_call mode=%s status=%s ok=%s stage=%s" % (
+            mode, status, ok, stage if status != 200 or ok is not True else "ok",
         ),
         flush=True,
     )
-    if status != 200 or not isinstance(data, dict) or data.get("ok") is not True:
+    if status != 200 or not isinstance(data, dict) or ok is not True:
         raise ToolHandlerError(
-            "pc_files_denied",
+            stage,
             "PC file operation was denied or failed; no fallback execution",
         )
     return data

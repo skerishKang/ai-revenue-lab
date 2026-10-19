@@ -12,6 +12,7 @@ import base64
 import hashlib
 import hmac
 import json
+import os
 import sqlite3
 from pathlib import Path
 
@@ -347,6 +348,103 @@ async def test_rotated_session_secret_without_legacy_ring_fails_closed():
     assert d1.row()["sealed_credential"] == await seal(
         SESSION_OLD, LEGACY_CUSTOM_KEY_PURPOSE, CUSTOM_KEY
     )
+
+
+# ---------------------------------------------------------------------------
+# Real AES-GCM interoperability (production WebCrypto wire)
+# ---------------------------------------------------------------------------
+
+
+class RealAesGcmCipher:
+    def __init__(self):
+        aead = pytest.importorskip(
+            "cryptography.hazmat.primitives.ciphers.aead",
+            reason="real AES-GCM cross-check requires the cryptography package",
+        )
+        self._aesgcm = aead.AESGCM
+
+    def random_bytes(self, size: int) -> bytes:
+        assert size == 12
+        return os.urandom(size)
+
+    async def encrypt(self, *, key, iv, plaintext, additional_data):
+        return self._aesgcm(key).encrypt(iv, plaintext, additional_data)
+
+    async def decrypt(self, *, key, iv, ciphertext, additional_data):
+        return self._aesgcm(key).decrypt(iv, ciphertext, additional_data)
+
+
+def _real_plaintext(api_key: str) -> bytes:
+    return json.dumps({"api_key": api_key}, separators=(",", ":")).encode("utf-8")
+
+
+def real_seal(secret: str, purpose: bytes, api_key: str, user_id: str = OWNER) -> str:
+    cipher = RealAesGcmCipher()
+    iv = cipher.random_bytes(12)
+    ciphertext = cipher._aesgcm(derive(secret, purpose)).encrypt(
+        iv, _real_plaintext(api_key), aad(user_id)
+    )
+    return base64.b64encode(iv + ciphertext).decode("ascii")
+
+
+def real_open(sealed: str, secret: str, purpose: bytes, user_id: str = OWNER) -> str:
+    cipher = RealAesGcmCipher()
+    data = base64.b64decode(sealed)
+    plaintext = cipher._aesgcm(derive(secret, purpose)).decrypt(
+        data[:12], data[12:], aad(user_id)
+    )
+    return json.loads(plaintext.decode("utf-8"))["api_key"]
+
+
+@pytest.mark.asyncio
+async def test_real_aes_gcm_legacy_v1_is_resealed_under_v2():
+    d1 = SQLiteD1()
+    legacy = real_seal(SESSION_OLD, LEGACY_CUSTOM_KEY_PURPOSE, CUSTOM_KEY)
+    d1.insert_sealed(legacy)
+
+    credential_store = store(
+        d1,
+        cipher=RealAesGcmCipher(),
+        session_secret=None,
+        legacy_session_secrets=(SESSION_OLD,),
+    )
+    assert await credential_store.api_key(OWNER, PROVIDER_ID) == CUSTOM_KEY
+
+    migrated = d1.row()
+    assert migrated["sealed_credential"] != legacy
+    assert migrated["updated_at"] == 100
+    assert migrated["key_last4"] == CUSTOM_KEY[-4:]
+    assert real_open(
+        migrated["sealed_credential"], KEY_CURRENT, CUSTOM_KEY_PURPOSE
+    ) == CUSTOM_KEY
+    invalid_tag = pytest.importorskip("cryptography.exceptions").InvalidTag
+    with pytest.raises(invalid_tag):
+        real_open(migrated["sealed_credential"], SESSION_OLD, LEGACY_CUSTOM_KEY_PURPOSE)
+
+    # A later deployment with the legacy ring removed reads the v2 row.
+    after = store(d1, cipher=RealAesGcmCipher(), session_secret=None)
+    assert await after.api_key(OWNER, PROVIDER_ID) == CUSTOM_KEY
+
+
+@pytest.mark.asyncio
+async def test_real_aes_gcm_tampered_envelope_fails_closed_and_is_not_rewritten():
+    d1 = SQLiteD1()
+    data = bytearray(base64.b64decode(real_seal(SESSION_OLD, LEGACY_CUSTOM_KEY_PURPOSE, CUSTOM_KEY)))
+    data[-1] ^= 0x01
+    tampered = base64.b64encode(bytes(data)).decode("ascii")
+    d1.insert_sealed(tampered)
+
+    credential_store = store(
+        d1,
+        cipher=RealAesGcmCipher(),
+        session_secret=None,
+        legacy_session_secrets=(SESSION_OLD,),
+    )
+    with pytest.raises(CustomCredentialDecryptionError) as error:
+        await credential_store.api_key(OWNER, PROVIDER_ID)
+    assert CUSTOM_KEY not in str(error.value)
+    assert d1.row()["sealed_credential"] == tampered
+
 
 
 # ---------------------------------------------------------------------------
