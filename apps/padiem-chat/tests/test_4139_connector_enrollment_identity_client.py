@@ -204,3 +204,38 @@ def test_redeem_authorization_requires_exact_owner_scope_and_no_permission():
             owner_ref="sub.1", account_ref="account.1", workspace_ref="workspace.1",
         ))
 
+
+
+class _ReverseLookupBinding:
+    def __init__(self, response):
+        self.response = response
+        self.calls = []
+
+    async def resolve_product_user_for_subject(self, payload):
+        self.calls.append(payload)
+        return self.response
+
+
+def test_reverse_product_user_lookup_matches_the_control_plane_scalar_contract():
+    """#5015: the CP answers the reverse lookup with a scalar product_user_id."""
+    binding = _ReverseLookupBinding({"ok": True, "product_user_id": "usr_test_1"})
+    client = CloudflareControlPlaneIdentityAuthority(binding)
+    result = asyncio.run(client.resolve_product_user_for_subject(
+        product_id="b62", canonical_subject_id="sub_test_1",
+    ))
+    assert result == "usr_test_1"
+    assert binding.calls == [
+        {"product_id": "b62", "canonical_subject_id": "sub_test_1"}
+    ]
+
+
+def test_reverse_product_user_lookup_rejects_a_nested_shape():
+    binding = _ReverseLookupBinding({
+        "ok": True, "product_user": {"product_user_id": "usr_test_1"},
+    })
+    client = CloudflareControlPlaneIdentityAuthority(binding)
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(client.resolve_product_user_for_subject(
+            product_id="b62", canonical_subject_id="sub_test_1",
+        ))
+    assert exc.value.code == "control_plane_rpc_invalid"

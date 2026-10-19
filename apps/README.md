@@ -50,6 +50,7 @@ B14 Korean AI Platform remains a numbered Business and the Provider/model execut
 | `korean-ai-code-agent` | **B54 Padiem Claw / Korean AI Code Agent** | canonical B54 source; task/run/workspace product layer |
 | `padiem-chat` | **B62 Padiem Chat** | standalone general AI product |
 | `padiem-ai-engine` | **IP-ENGINE** | shared cross-runtime AI service boundary; not a Business |
+| `com2-backup` | private COM2 backup transfer Worker | ops transfer/verification slice; not a Business |
 | `portfolio-console` | private owner/operator control tower | not the user-facing Portal |
 | `ai-reward-router` | product/experiment workspace | consult canonical registry/contract before assigning Business identity |
 | `padiem-lab` | laboratory/experimental workspace | workspace existence does not imply Business identity |

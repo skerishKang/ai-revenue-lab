@@ -1,0 +1,26 @@
+name = "padiem-com2-backup"
+main = "worker.py"
+compatibility_date = "2026-08-25"
+compatibility_flags = ["python_workers"]
+# Private Worker. It is not reachable from the public internet; every route is
+# additionally bearer-authenticated. No custom domain, no workers.dev route.
+workers_dev = false
+
+# Fail-closed deployment gate. This file keeps it OFF. Only an Owner-authorized
+# release may flip it; committing "true" here is not a deployment decision.
+[vars]
+COM2_BACKUP_ENABLED = "false"
+
+# Reuse the existing private R2 bucket and its existing access boundary. No new
+# bucket is created and no lifecycle/retention rule is declared. Backups live
+# under the isolated ``com2-backup/v1/`` key prefix. If the Owner later decides a
+# dedicated bucket is required, only ``bucket_name`` changes; the Worker code and
+# route contract stay the same.
+[[r2_buckets]]
+binding = "COM2_BACKUP_BUCKET"
+bucket_name = "padiem-workspace-files"
+
+# The bearer token is NOT declared here. After an authorized deployment:
+#   wrangler secret put COM2_BACKUP_WRITE_TOKEN
+# Never commit, log or print its value. The Worker resolves it from the binding
+# and fails closed (503 backup_token_unavailable) when it is absent.

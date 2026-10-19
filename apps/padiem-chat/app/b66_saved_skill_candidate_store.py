@@ -318,6 +318,12 @@ class SavedQuoteSkillCandidateStore(Protocol):
         candidate_id: str,
     ) -> dict[str, Any] | None: ...
 
+    async def read_candidate_scope(
+        self,
+        *,
+        candidate_id: str,
+    ) -> dict[str, str] | None: ...
+
     async def record_decision(
         self,
         *,
@@ -527,6 +533,33 @@ class D1SavedQuoteSkillCandidateStore:
             "candidate_digest": str(row.get("candidate_digest", "")),
             "candidate_json": row.get("candidate_json"),
             "saved_skill_id": str(row.get("saved_skill_id") or ""),
+        }
+
+    async def read_candidate_scope(
+        self,
+        *,
+        candidate_id: str,
+    ) -> dict[str, str] | None:
+        """Server-recorded owner scope for trusted host composition.
+
+        Routes never project this. It lets the review host resolve the
+        candidate's canonical target from the stored row instead of a
+        request-supplied owner or workspace.
+        """
+
+        row_id = validate_candidate_row_id(candidate_id)
+        row = await self._first(
+            "SELECT id, user_id, workspace_id, status "
+            "FROM b66_saved_skill_candidate WHERE id=?",
+            row_id,
+        )
+        if not row:
+            return None
+        return {
+            "candidate_id": str(row.get("id", "")),
+            "user_id": str(row.get("user_id", "")),
+            "workspace_id": str(row.get("workspace_id", "")),
+            "status": str(row.get("status", "")),
         }
 
     async def record_decision(
