@@ -1,0 +1,58 @@
+name: COM2 PR Sandbox Verification
+
+# Manual trusted trigger. The reviewed PR revision is not executed by the
+# host runner; the syntax check executes inside a constrained Docker sandbox.
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Open pull request number'
+        required: true
+        type: string
+      expected_sha:
+        description: 'Full exact PR head SHA to verify'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: com2-pr-sandbox
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/main' && github.actor == 'skerishKang'
+    name: COM2 PR sandbox verification
+    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
+    timeout-minutes: 10
+    steps:
+      - name: Validate PR SHA before checkout
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ inputs.pr_number }}
+          EXPECTED: ${{ inputs.expected_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$PR" =~ ^[1-9][0-9]{0,7}$ ]]
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          data="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR}" --jq '.head.sha + " " + .state')"
+          [[ "$data" == "$EXPECTED open" ]]
+          echo "sha=$EXPECTED" >> "$GITHUB_OUTPUT"
+      - name: Checkout exact PR source without persisting credential
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.sha }}
+          persist-credentials: false
+          clean: true
+          path: sandbox-input
+      - name: Run constrained offline syntax check
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo -n /usr/local/sbin/padiem-ci-pr-sandbox-check
+          echo "COM2_PR_SANDBOX=PASS"
