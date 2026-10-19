@@ -36,7 +36,9 @@ concurrency:
 jobs:
   policy-consistency:
     name: Operating policy consistency
-    runs-on: ubuntu-latest
+    # Keep untrusted pull_request runs on GitHub-hosted isolation.
+    # Trusted owner-triggered main dispatch executes on COM2.
+    runs-on: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.actor == 'skerishKang' && fromJSON('["self-hosted","linux","x64","padiem-com2-ci"]') || 'ubuntu-latest' }}
     timeout-minutes: 10
     steps:
       - name: Check out reviewed revision
