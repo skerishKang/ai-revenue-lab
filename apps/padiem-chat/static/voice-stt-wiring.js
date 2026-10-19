@@ -178,7 +178,6 @@
       let lastSpeechAt = 0;
       let sending = false;
       let utteranceSeq = 0;
-      let utteranceActive = null;
       const transcribeRoute = routeForShell(doc, TRANSCRIBE_PATH, CLAW_TRANSCRIBE_PATH);
 
       function emitError(code) {
@@ -214,41 +213,42 @@
         stream = null;
       }
 
-      /** Transcribe one assembled chunk and report it as one final utterance. */
-      function flushChunk(force, fromStop) {
-        if (stopped && !force) return;
-        if (halting && !force) return;
-        if (force && finalFlushDone) return;
-        if (sending) {
-          if (force) finalFlushPending = true;
-          return;
-        }
-        if (force) finalFlushDone = true;
-        const held = chunks;
-        if (!held.length) return; // silence/zero-byte stop never spends a provider call
-        const elapsed = chunkStartedAt ? now() - chunkStartedAt : 0;
-        chunks = [];
+      function retimeChunkWindow() {
         chunkStartedAt = now();
         speechSeenAt = 0;
         lastSpeechAt = 0;
-        // A chunk shorter than the reviewed minimum is held back unless the
-        // user explicitly ended the run, so one-word fragments are not billed
-        // as separate transcriptions.
-        if (!force && elapsed < GROQ_MIN_CHUNK_MS) {
-          chunks = held;
-          return;
-        }
-        if (utteranceActive === null) {
-          utteranceSeq += 1;
-          utteranceActive = "u" + run.generation + "-" + run.sessionToken + "-" + utteranceSeq;
-        }
+      }
+
+      /**
+       * Start a fresh recorder run for the next chunk.
+       *
+       * A MediaRecorder timeslice continuation carries no WebM init segment:
+       * only the first dataavailable event of a run has the EBML header. One
+       * long-lived recorder therefore makes every upload after the first
+       * undecodable at the provider. Each chunk gets its own run.
+       */
+      function startRecorderCycle() {
+        chunks = [];
+        retimeChunkWindow();
+        const active = new win.MediaRecorder(stream);
+        recorder = active;
+        active.ondataavailable = function (event) {
+          if (stopped || !event || !event.data || event.data.size === 0) return;
+          chunks.push(event.data);
+        };
+        active.start(1000);
+        return active;
+      }
+
+      /** Transcribe one assembled chunk and report it as one final utterance. */
+      function deliverChunk(held, fromStop) {
+        if (!held.length) { sending = false; return; } // silence never spends a provider call
+        utteranceSeq += 1;
+        const utteranceId = "u" + run.generation + "-" + run.sessionToken + "-" + utteranceSeq;
         const blob = new win.Blob(held, { type: pickMimeType(win) || "audio/webm" });
-        sending = true;
-        const utteranceId = utteranceActive;
         sendChunk(blob, utteranceId).then(
           function (text) {
             sending = false;
-            utteranceActive = null;
             if (cancelled) return;
             if (finalFlushPending) {
               finalFlushPending = false;
@@ -266,7 +266,6 @@
           },
           function () {
             sending = false;
-            utteranceActive = null;
             if (cancelled) return;
             if (finalFlushPending) {
               finalFlushPending = false;
@@ -275,6 +274,46 @@
             emitError(ERROR_CODES.TRANSCRIBE_FAILED);
           }
         );
+      }
+
+      function flushChunk(force, fromStop) {
+        if (stopped && !force) return;
+        if (halting && !force) return;
+        if (force && finalFlushDone) return;
+        if (sending) {
+          if (force) finalFlushPending = true;
+          return;
+        }
+        const active = recorder;
+        if (!active || active.state === "inactive") {
+          if (force && chunks.length) {
+            const held = chunks;
+            chunks = [];
+            sending = true;
+            deliverChunk(held, true);
+          }
+          return;
+        }
+        // A chunk shorter than the reviewed minimum is held back unless the
+        // user explicitly ended the run, so one-word fragments are not billed
+        // as separate transcriptions.
+        const elapsed = chunkStartedAt ? now() - chunkStartedAt : 0;
+        if (!force && elapsed < GROQ_MIN_CHUNK_MS) return;
+        if (force) finalFlushDone = true;
+        sending = true;
+        recorder = null;
+        active.onstop = function () {
+          const held = chunks;
+          chunks = [];
+          // Restart before the upload resolves so speech during the request is
+          // still captured, each time with its own init segment.
+          if (!halting && !stopped && !cancelled) {
+            try { startRecorderCycle(); } catch (e) { emitError(ERROR_CODES.START_FAILED); }
+          }
+          deliverChunk(held, fromStop === true);
+        };
+        try { active.requestData(); } catch (e) { /* best effort */ }
+        try { active.stop(); } catch (e) { active.onstop(); }
       }
 
       function sendChunk(blob, utteranceId) {
@@ -371,13 +410,7 @@
               analyser = audioContext.createAnalyser();
               analyser.fftSize = 1024;
               source.connect(analyser);
-              chunkStartedAt = now();
-              recorder = new win.MediaRecorder(stream);
-              recorder.ondataavailable = function (event) {
-                if (stopped || !event || !event.data || event.data.size === 0) return;
-                chunks.push(event.data);
-              };
-              recorder.start(1000);
+              startRecorderCycle();
               tickHandle = setTimer(tick, 200);
               if (typeof win.requestAnimationFrame === "function") {
                 rafHandle = win.requestAnimationFrame(function loop() {
