@@ -20,6 +20,12 @@ assert.equal(shared.VERSION, "shared-answer-copy-v1");
   });
   assert.equal(await shared.copyText("x"), false);
 
+  Object.defineProperty(globalThis, "navigator", {
+    value: { clipboard: { writeText: () => { throw new Error("sync denied"); } } },
+    configurable: true
+  });
+  assert.equal(await shared.copyText("sync"), false);
+
   /* Legacy path: textarea + execCommand fallback. */
   const field = { value: "", select() {}, remove() {} };
   Object.defineProperty(globalThis, "navigator", {

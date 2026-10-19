@@ -981,9 +981,10 @@
       }
       quoteConversationRevision = result.revision;
       quoteConversationEngaged = true;
+      const isModelAnswer = result.answer_origin === "registered_model_completion";
       addMessage("assistant", result.answer, {
-        markdown: result.answer_origin === "registered_model_completion",
-        copyAction: true
+        markdown: isModelAnswer,
+        copyAction: isModelAnswer
       });
       // #5007: render exactly one server-authorized assistant response per
       // request. quote.next_question is workflow metadata, not a second

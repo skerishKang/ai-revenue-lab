@@ -9,6 +9,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 CANONICAL = ROOT / "packages/padiem-conversation-ui/answer-copy.js"
+WORKFLOWS = ROOT / ".github/workflows"
+SYNC_ANSWER_COPY = "scripts/sync_shared_answer_copy.py --check"
 
 
 def _read(relative: str) -> str:
@@ -50,8 +52,9 @@ def test_b66_real_answers_opt_in_and_status_stays_out():
     assert "Padiem" not in easy
     assert "opts.copyAction === true" in easy
     assert "appendCopyAction(body, content)" in easy
-    # Exactly two real-answer call sites opt in; error/status messages do not.
-    assert easy.count("copyAction: true") == 2
+    assert easy.count("copyAction: true") == 1
+    assert 'const isModelAnswer = result.answer_origin === "registered_model_completion";' in easy
+    assert "copyAction: isModelAnswer" in easy
 
 
 def test_b66_copy_uses_shared_execution_and_truthful_feedback():
@@ -67,3 +70,18 @@ def test_static_copies_match_canonical_bytes():
         "reference/business-66-padiem-quote-v1/shared-answer-copy.js",
     ):
         assert (ROOT / relative).read_bytes() == original
+
+
+def test_release_paths_check_shared_answer_copy():
+    b62 = (WORKFLOWS / "b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
+    b66 = (WORKFLOWS / "b66-neutral-pages-beta.yml").read_text(encoding="utf-8")
+    assert b62.count(SYNC_ANSWER_COPY) >= 2
+    assert b66.count(SYNC_ANSWER_COPY) >= 1
+
+
+def test_shared_answer_copy_changes_trigger_release_paths():
+    b62 = (WORKFLOWS / "b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
+    b66 = (WORKFLOWS / "b66-neutral-pages-beta.yml").read_text(encoding="utf-8")
+    assert '"apps/padiem-chat/static/shared-answer-copy.js"' in b62
+    for workflow in (b62, b66):
+        assert "scripts/sync_shared_answer_copy.py" in workflow

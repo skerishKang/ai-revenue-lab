@@ -35,10 +35,14 @@
   function copyText(text) {
     const value = String(text == null ? "" : text);
     const nav = typeof navigator !== "undefined" ? navigator : null;
-    if (nav && nav.clipboard && typeof nav.clipboard.writeText === "function") {
-      return Promise.resolve(nav.clipboard.writeText(value)).then(() => true, () => false);
+    try {
+      if (nav && nav.clipboard && typeof nav.clipboard.writeText === "function") {
+        return Promise.resolve(nav.clipboard.writeText(value)).then(() => true, () => false);
+      }
+      return Promise.resolve(legacyCopy(value));
+    } catch (_) {
+      return Promise.resolve(false);
     }
-    return Promise.resolve(legacyCopy(value));
   }
   return Object.freeze({ VERSION, copyText });
 });
