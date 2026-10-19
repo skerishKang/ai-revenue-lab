@@ -66,6 +66,23 @@ _MAPPING_IDENTITY_UNCONFIRMED = "identity_unconfirmed"
 _MAPPING_MISMATCH = "mismatch"
 _MAPPING_UNKNOWN = "unknown"
 
+# Canonical connector owner scope (B54 session -> CP connector context)
+_PC_SCOPE_READY = "ready"
+_PC_SCOPE_OWNER_UNAVAILABLE = "owner_unavailable"
+PC_SCOPE_OWNER_UNAVAILABLE = _PC_SCOPE_OWNER_UNAVAILABLE
+
+
+@dataclass(frozen=True, slots=True)
+class PcConnectorScope:
+    status: str
+    account_ref: str | None = None
+    workspace_ref: str | None = None
+    session_id: str | None = None
+
+    @property
+    def ready(self) -> bool:
+        return self.status == _PC_SCOPE_READY
+
 # Saved target preference read status
 SAVED_SELECTION_NONE = "none"
 SAVED_SELECTION_SELECTED = "selected"
@@ -207,6 +224,7 @@ async def _resolve_owner_session(
 
 async def _resolve_execution_target(
     request: Any, *, session_id: str | None, selected_device_id: str | None,
+    account_ref: str | None = None,
 ) -> PcExecutionTarget:
     """Resolve the deployment's single command-capable Mesh target.
 
@@ -220,21 +238,24 @@ async def _resolve_execution_target(
         return PcExecutionTarget(status=_EXEC_UNCONFIGURED)
     if getattr(mesh_source, "execution_mode", None) != _MESH_EXECUTION_MODE:
         return PcExecutionTarget(status=_EXEC_UNCONFIGURED)
-    identity = getattr(state, "control_plane_identity_authority", None)
-    scope_port = getattr(identity, "resolve_connector_owner_scope", None)
     command_target = getattr(mesh_source, "command_target", None)
-    if (
-        not isinstance(session_id, str) or not session_id
-        or not callable(scope_port) or not callable(command_target)
-    ):
+    if not callable(command_target):
         return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
-    try:
-        scope = scope_port(session_id=session_id)
-        if inspect.isawaitable(scope):
-            scope = await scope
-    except Exception:
-        return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
-    account_ref = scope.get("account_ref") if isinstance(scope, Mapping) else None
+    if account_ref is None:
+        identity = getattr(state, "control_plane_identity_authority", None)
+        scope_port = getattr(identity, "resolve_connector_owner_scope", None)
+        if (
+            not isinstance(session_id, str) or not session_id
+            or not callable(scope_port)
+        ):
+            return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
+        try:
+            scope = scope_port(session_id=session_id)
+            if inspect.isawaitable(scope):
+                scope = await scope
+        except Exception:
+            return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
+        account_ref = scope.get("account_ref") if isinstance(scope, Mapping) else None
     if not isinstance(account_ref, str) or not account_ref:
         return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
     try:
@@ -257,17 +278,19 @@ async def _resolve_execution_target(
     )
 
 
-async def resolve_pc_mesh_target(
+async def resolve_pc_connector_scope(
     request: Any, *, owner_id: str, workspace_id: str,
-) -> PcExecutionTarget:
-    """Read the existing owner-authorized Mesh target without inventing heartbeat."""
-    # The browser's B62 session proves the signed-in product owner and
-    # workspace, but Mesh connector ownership is bound to the B54 session.
-    # Passing a B62 session_id to resolve_connector_owner_scope makes an
-    # otherwise executable B54 PC disappear from the shared device picker.
+) -> PcConnectorScope:
+    """Resolve the B54 session and the canonical connector account/workspace.
+
+    The Broker device binding is created by the connector under the canonical
+    connector scope, not under the B62 product user id. Callers that read the
+    Broker directory use these values; the B62 owner/workspace still scopes the
+    product preference and authorization.
+    """
     resolved_workspace, b62_session = await _resolve_owner_session(request, owner_id)
     if resolved_workspace != workspace_id or b62_session is None:
-        return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
+        return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
     state = getattr(getattr(request, "app", None), "state", None)
     authority = getattr(state, "control_plane_identity_authority", None)
     from padiem_control_plane.b54_identity_bridge import (
@@ -277,7 +300,7 @@ async def resolve_pc_mesh_target(
         bridged = await resolve_current_b54_canonical_session(authority, owner_id)
         b54_session = bridged.auth_session
     except Exception:
-        return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
+        return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
     # Matching user ids are not enough: both server-provided canonical
     # sessions must resolve to the same subject and tenant. Never accept a
     # browser-provided tenant or mint a replacement grant.
@@ -288,10 +311,43 @@ async def resolve_pc_mesh_target(
         or b62_subject != b54_subject
         or getattr(b54_session, "tenant_id", None) != workspace_id
     ):
+        return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
+    session_id = getattr(b54_session, "session_id", None)
+    scope_port = getattr(authority, "resolve_connector_owner_scope", None)
+    if not isinstance(session_id, str) or not session_id or not callable(scope_port):
+        return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
+    try:
+        scope = scope_port(session_id=session_id)
+        if inspect.isawaitable(scope):
+            scope = await scope
+    except Exception:
+        return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
+    account_ref = scope.get("account_ref") if isinstance(scope, Mapping) else None
+    workspace_ref = scope.get("workspace_ref") if isinstance(scope, Mapping) else None
+    if (
+        not isinstance(account_ref, str) or not account_ref
+        or not isinstance(workspace_ref, str) or not workspace_ref
+    ):
+        return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
+    return PcConnectorScope(
+        status=_PC_SCOPE_READY, account_ref=account_ref,
+        workspace_ref=workspace_ref, session_id=session_id,
+    )
+
+
+async def resolve_pc_mesh_target(
+    request: Any, *, owner_id: str, workspace_id: str,
+    connector: PcConnectorScope | None = None,
+) -> PcExecutionTarget:
+    """Read the existing owner-authorized Mesh target without inventing heartbeat."""
+    scope = connector if connector is not None else await resolve_pc_connector_scope(
+        request, owner_id=owner_id, workspace_id=workspace_id,
+    )
+    if not scope.ready:
         return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
     return await _resolve_execution_target(
-        request, session_id=getattr(b54_session, "session_id", None),
-        selected_device_id=None,
+        request, session_id=scope.session_id, selected_device_id=None,
+        account_ref=scope.account_ref,
     )
 
 
@@ -387,6 +443,14 @@ async def resolve_pc_work_context(
         )
     state = getattr(getattr(request, "app", None), "state", None)
     source = getattr(state, "claw_device_directory_source", None)
+    # The Broker binding is created under the canonical connector scope. Use
+    # that scope for the directory read; the product owner/workspace still
+    # scopes the saved preference and the user's authorization.
+    connector = await resolve_pc_connector_scope(
+        request, owner_id=owner, workspace_id=workspace,
+    )
+    broker_owner = connector.account_ref if connector.ready else owner
+    broker_workspace = connector.workspace_ref if connector.ready else workspace
     devices: list[PcWorkDevice] = []
     paused_values: set[bool] = set()
     if getattr(source, "configured", False) is not True:
@@ -398,7 +462,7 @@ async def resolve_pc_work_context(
         else:
             try:
                 result = port(
-                    owner_id=owner, workspace_id=workspace,
+                    owner_id=broker_owner, workspace_id=broker_workspace,
                     now=datetime.now(timezone.utc),
                 )
                 if inspect.isawaitable(result):
@@ -421,7 +485,10 @@ async def resolve_pc_work_context(
                     broker_status = _READY
 
     execution = await _resolve_execution_target(
-        request, session_id=session, selected_device_id=selected_device_id,
+        request,
+        session_id=connector.session_id if connector.ready else session,
+        selected_device_id=selected_device_id,
+        account_ref=connector.account_ref if connector.ready else None,
     )
     usable = [device for device in devices if device.usable]
     # A paused owner has no execution target even though a PC is online.
@@ -614,10 +681,11 @@ async def build_pc_work_context_text(
     selected_device_id: str | None = None,
 ) -> str:
     """Restore the request-scoped preference before rendering any new turn."""
-    if owner_id and (workspace_id is None or session_id is None):
-        resolved_workspace, session = await _resolve_owner_session(request, owner_id)
-        workspace_id = workspace_id or resolved_workspace
-        session_id = session_id or getattr(session, "session_id", None)
+    if owner_id and workspace_id is None:
+        resolved_workspace, _ = await _resolve_owner_session(request, owner_id)
+        workspace_id = resolved_workspace
+    # The B62 session id is never passed as the connector scope; the connector
+    # helper resolves the B54 canonical session itself.
     selection = await read_saved_device_selection(
         request, owner_id=owner_id, workspace_id=workspace_id,
     )
@@ -634,6 +702,8 @@ __all__ = [
     "PC_WORK_CONTEXT_VERSION",
     "PC_DRIVE_TOOL_ID",
     "MAX_RENDERED_CHARS",
+    "PC_SCOPE_OWNER_UNAVAILABLE",
+    "PcConnectorScope",
     "PcExecutionTarget",
     "PcWorkContext",
     "PcWorkDevice",
@@ -646,6 +716,7 @@ __all__ = [
     "load_saved_device_selection",
     "read_saved_device_selection",
     "render_pc_work_context",
+    "resolve_pc_connector_scope",
     "resolve_pc_work_context",
     "resolve_pc_mesh_target",
 ]

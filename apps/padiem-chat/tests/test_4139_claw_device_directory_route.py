@@ -110,7 +110,11 @@ def test_empty_broker_directory_is_authoritatively_empty():
     app, settings = make_app(binding)
     response = get(app, settings)
     assert response.status_code == 200
-    assert response.json() == {"ok": True, "available": True, "ownerScoped": True, "devices": []}
+    assert response.json() == {
+        "ok": True, "available": True, "ownerScoped": True, "devices": [],
+        "scopeStatus": "owner_unavailable", "brokerScope": "product_fallback",
+        "targetStatus": "owner_unavailable",
+    }
     assert binding.calls == [{"account_ref": OWNER, "workspace_ref": WORKSPACE}]
 
 
@@ -319,15 +323,15 @@ def test_pause_missing_private_rpc_never_fabricates_off():
 # ── #5015: saved target preference (server restore, never a grant) ─────────
 
 
-def active_fact(device):
+def active_fact(device, *, account=OWNER, workspace=WORKSPACE):
     now = datetime.now(timezone.utc)
-    row = fact(device)
+    row = fact(device, account=account, workspace=workspace)
     row["session"] = {
         "session_id": "sess_" + device,
         "binding_ref": "bind_" + device,
         "device_id": device,
-        "account_ref": OWNER,
-        "workspace_ref": WORKSPACE,
+        "account_ref": account,
+        "workspace_ref": workspace,
         "credential_generation": 1,
         "issued_at": (now - timedelta(minutes=5)).isoformat(),
         "expires_at": (now + timedelta(minutes=35)).isoformat(),
@@ -472,10 +476,12 @@ class _MeshTarget:
 class _ScopeIdentity:
     async def resolve_connector_owner_scope(self, *, session_id):
         del session_id
-        return {"account_ref": "acct-1", "workspace_ref": "ws-connector"}
+        return {"account_ref": CONNECTOR_ACCOUNT, "workspace_ref": CONNECTOR_WORKSPACE}
 
 
-MESH_ONLY = {"account_ref": "acct-1", "device_id": None,
+CONNECTOR_ACCOUNT = "acct-1"
+CONNECTOR_WORKSPACE = "ws-connector"
+MESH_ONLY = {"account_ref": CONNECTOR_ACCOUNT, "device_id": None,
              "node_ref": "mesh-node", "command_exec": True}
 
 
@@ -527,6 +533,9 @@ def test_mesh_only_target_is_listed_selectable_and_saved():
     with p1, p2:
         data = get(app, settings).json()
         assert data["available"] is True
+        assert data["scopeStatus"] == "ready"
+        assert data["brokerScope"] == "connector"
+        assert data["targetStatus"] == "ready"
         row = next(item for item in data["devices"] if item["deviceId"] == "mesh-node")
         assert row["state"] == "ACTION_REQUIRED"
         assert row["usable"] is False
@@ -538,10 +547,62 @@ def test_mesh_only_target_is_listed_selectable_and_saved():
     assert store.saves == [(OWNER, WORKSPACE, "mesh-node")]
 
 
+def test_directory_reads_the_connector_scope_not_the_product_scope():
+    """#5015 live: the Broker binding exists under the connector scope only."""
+    binding = Binding([active_fact(
+        "office", account=CONNECTOR_ACCOUNT, workspace=CONNECTOR_WORKSPACE,
+    )])
+    app, settings = _mesh_app(binding)
+    p1, p2 = _mesh_patches()
+    with p1, p2:
+        data = get(app, settings).json()
+    assert data["available"] is True
+    assert "office" in [item["deviceId"] for item in data["devices"]]
+    assert data["scopeStatus"] == "ready"
+    assert data["brokerScope"] == "connector"
+    assert binding.calls == [{
+        "account_ref": CONNECTOR_ACCOUNT, "workspace_ref": CONNECTOR_WORKSPACE,
+    }]
+
+
+def test_selection_preference_stays_product_scoped_under_the_connector_scope():
+    store = SelectionStore()
+    app, settings = _mesh_app(Binding([active_fact(
+        "office", account=CONNECTOR_ACCOUNT, workspace=CONNECTOR_WORKSPACE,
+    )]), store=store)
+    p1, p2 = _mesh_patches()
+    with p1, p2:
+        saved = post_select(app, settings, body={"device_id": "office"})
+        restored = get(app, settings).json()
+    assert saved.status_code == 200, saved.text
+    assert store.saves == [(OWNER, WORKSPACE, "office")]
+    assert restored["selectedDeviceId"] == "office"
+    assert restored["selectedUsable"] is True
+
+
+def test_pause_uses_the_connector_scope():
+    from app.claw_device_directory_routes import CLAW_PC_PAUSE_PATH
+    binding = UsageBinding()
+    binding.rows = [fact(
+        "office", account=CONNECTOR_ACCOUNT, workspace=CONNECTOR_WORKSPACE,
+    )]
+    app, settings = _mesh_app(binding)
+    p1, p2 = _mesh_patches()
+    with p1, p2:
+        response = _post_usage(app, settings, CLAW_PC_PAUSE_PATH)
+    assert response.status_code == 200, response.text
+    assert binding.writes == [{
+        "account_ref": CONNECTOR_ACCOUNT,
+        "workspace_ref": CONNECTOR_WORKSPACE,
+        "paused": True,
+    }]
+
+
 def test_broker_row_keeps_explicit_offline_and_revoked_truth():
     for row, expected in (
-        (fact("mesh-node"), "OFFLINE"),
-        (fact("mesh-node", state="revoked"), "REVOKED"),
+        (fact("mesh-node", account=CONNECTOR_ACCOUNT, workspace=CONNECTOR_WORKSPACE), "OFFLINE"),
+        (fact("mesh-node", state="revoked", account=CONNECTOR_ACCOUNT,
+              workspace=CONNECTOR_WORKSPACE), "REVOKED"),
     ):
         app, settings = _mesh_app(Binding([row]))
         p1, p2 = _mesh_patches()
@@ -554,7 +615,9 @@ def test_broker_row_keeps_explicit_offline_and_revoked_truth():
 
 
 def test_matching_online_broker_row_is_marked_executable_and_selectable():
-    app, settings = _mesh_app(Binding([active_fact("mesh-node")]))
+    app, settings = _mesh_app(Binding([active_fact(
+        "mesh-node", account=CONNECTOR_ACCOUNT, workspace=CONNECTOR_WORKSPACE,
+    )]))
     p1, p2 = _mesh_patches()
     with p1, p2:
         data = get(app, settings).json()
