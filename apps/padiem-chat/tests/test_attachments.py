@@ -12,6 +12,10 @@ from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
+from padiem_control_plane.product_tier_routes import (
+    PRODUCT_TIER_ROUTES,
+    ProductRouteStatus,
+)
 
 
 JPEG = b"\xff\xd8\xff\xe0phase8"
@@ -117,7 +121,13 @@ async def test_valid_live_image_attachment_fails_closed_without_primary_model(
             },
         )
 
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset({"opencode-go/beam-free", "opencode-go/muse-spark-1.3-contributor"})
+    declared = frozenset(
+        route.model_id
+        for tier in PRODUCT_TIER_ROUTES
+        for route in tier.routes
+        if route.status is ProductRouteStatus.EXECUTABLE
+    )
+    assert EXECUTABLE_B14_MODEL_IDS == declared
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "image_model_unavailable"
     assert calls == 0

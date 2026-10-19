@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CAPABILITIES = (ROOT / "static" / "product-capabilities.js").read_text(encoding="utf-8")
 APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
 
-MUSE_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
+MUSE_MODEL_ID = ADMIN_B14_MODEL_ID
 
 
 def _settings_request(*, authorizer=None, runtime_mode="b14", user_id="usr_admin"):

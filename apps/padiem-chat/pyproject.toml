@@ -44,6 +44,12 @@ include = ["app*"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+markers = [
+    "byok_direct: product -> customer provider directly, without B14",
+    "b14_managed: product -> B14 managed route/selection/fallback boundary",
+    "no_model: no model or engine execution boundary",
+    "mock: model or engine response substituted; logic contract only, not live E2E",
+]
 #4070: Report the slowest pytest phases in CI without changing test selection.
 # The complete existing suite still runs; no hard-coded test count.
 addopts = "--durations=50 --durations-min=0.2"

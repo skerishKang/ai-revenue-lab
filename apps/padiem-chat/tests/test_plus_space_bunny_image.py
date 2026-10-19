@@ -24,8 +24,15 @@ from padiem_control_plane.product_tier_routes import (
     get_tier,
 )
 
-BEAM = "opencode-go/beam-free"
-MUSE = "opencode-go/muse-spark-1.3-contributor"
+
+def _active_model(label: ProductTierLabel) -> str:
+    route = active_route_for(label)
+    assert route is not None and route.model_id
+    return route.model_id
+
+
+BEAM = _active_model(ProductTierLabel.FREE)
+MUSE = _active_model(ProductTierLabel.PLUS)
 
 
 def test_plus_identity_is_executable_route_and_space_bunny_is_historical_only() -> None:

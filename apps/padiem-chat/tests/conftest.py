@@ -8,6 +8,7 @@ import pytest
 from starlette import testclient as starlette_testclient
 
 import app.model_policy as model_policy_module
+import model_path_manifest
 from app.same_origin_guard import MUTATING_METHODS, expected_browser_origin
 from padiem_control_plane import product_tier_routes as tier_routes
 
@@ -15,6 +16,13 @@ from padiem_control_plane import product_tier_routes as tier_routes
 # test client that omits it is not representing the traffic #3476 guards. The
 # marker lets a test assert the missing-Origin case on purpose.
 NO_BROWSER_ORIGIN_MARKER = "x-test-no-origin"
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """Attach exactly one #5002 execution-path marker per collected test."""
+    for item in items:
+        marker = model_path_manifest.marker_for_module(Path(str(item.fspath)).name)
+        item.add_marker(getattr(pytest.mark, marker))
 
 
 def _attach_reviewed_browser_origin(app: object, request: httpx.Request) -> None:
@@ -76,6 +84,8 @@ _HOLD_POLICY_MODULES = {
     "test_admin_model_select_261018.py",
     # Real owner-defined Free route test: synthetic Plus must not overwrite it.
     "test_free_member_chat_4317.py",
+    # #5002: derives every B66 grade from the real shared active route.
+    "test_b66_manual_model_choice_contract.py",
 }
 
 

@@ -54,3 +54,20 @@ EVIDENCE=테스트/로그/PR/실행 식별자(비밀 제외)
 5. #5108에서 관리자 B14 상태 및 BYOK 연결 상태를 혼동하지 않도록 구분.
 
 이 원칙은 테스트 증거의 귀속과 중복 검사 감소를 위한 기술 절차이며, 새로운 고객 요금/이용 제한 정책을 설정하지 않는다.
+
+## #5002 구현 반영 (2026-10-19)
+
+- `apps/padiem-chat/tests/model_path_manifest.py`가 각 모델 경계 테스트 모듈을
+  `BYOK_DIRECT` / `B14_MANAGED` / `NO_MODEL` / `MOCK`으로 분류하고, conftest가
+  모듈당 정확히 하나의 pytest marker를 부여한다. `test_5002_model_path_classification.py`는
+  `app.b14_client`를 새로 import한 테스트가 분류 없이 `NO_MODEL`로 빠지면 실패한다.
+- `.github/workflows/b62-padiem-chat-ci.yml`의 FULL 제품 회귀는 B14 계약 job을
+  계속 실행하되 그 실패로 `b62-test`를 연쇄 실패시키지 않는다. B14 job의 실패는
+  자체 check로 표시되고, 최초 실패 증거는 #4318에 1회 기록한 뒤 제품 원장은 링크만
+  남긴다. `b14_only`(B14 소스)와 `b14_tests_only`(B14 테스트) 범위는 검토 대상
+  자체가 B14이므로 계속 B14 계약 성공을 요구한다.
+- CI summary는 `PRODUCT_E2E_BYOK=NOT_RUN`, `B14_E2E=NOT_RUN`을 별도로 출력한다.
+  현재 Chat/Claw/B66 테스트 중 실제 공급사 호출을 수행하는 LIVE E2E는 없으며,
+  `#5121` BYOK 테스트의 `MockTransport` 결과를 `PRODUCT_E2E_BYOK=PASS`로 기록하지 않는다.
+- 기본 모델 기대값은 `product_tier_routes`의 활성 route에서 파생한다. Free/Plus/Pro/Max의
+  현재 승인 설정은 변경하지 않고, `b14/auto`는 계속 executable 집합 밖이다.

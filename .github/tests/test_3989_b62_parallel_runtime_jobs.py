@@ -175,7 +175,12 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertNotIn("b14_only", job("b14-multimodal-test", self.source))
         self.assertIn('test "$FULL_RESULT" = success', self.aggregate)
         self.assertIn('test "$WORKER_RESULT" = success', self.aggregate)
-        self.assertIn('test "$MM_RESULT" = success', self.aggregate)
+        # B14 test/source scopes keep the B14 contract gate; B14 source-only
+        # changes stay fail-closed.
+        self.assertEqual(self.aggregate.count('test "$MM_RESULT" = success'), 2)
+        self.assertIn('if [ "$SCOPE" = b14_only ]; then', self.aggregate)
+        self.assertIn('case "$MM_RESULT" in', self.aggregate)
+        self.assertIn('success|failure)', self.aggregate)
 
     def test_registry_quick_path_still_has_aggregator_and_is_not_blocked(self):
         self.assertIn("if: ${{ needs.registry-ci-plan.outputs.lane == 'model_registration_only' }}", self.registry)
@@ -212,6 +217,41 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$FULL_RESULT" = success', self.aggregate)
         self.assertIn('test "$WORKER_RESULT" = success', self.aggregate)
         self.assertIn('test "$QUICK_RESULT" = skipped', self.aggregate)
+
+    def test_product_lane_keeps_b14_contract_independent_from_product_e2e(self):
+        # #5002: a B14 outage must not chain-fail the product regression lane.
+        # The B14 job remains in `needs` so a missing/skipped run still fails
+        # closed, while its own failure is reported separately and owned by
+        # #4318 instead of being repeated per product.
+        self.assertIn(
+            "needs: [registry-ci-plan, b62-static-ui, b62-ui-mixed-tests, b62-full-suite, "
+            "b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
+            self.aggregate,
+        )
+        self.assertIn('case "$MM_RESULT" in', self.aggregate)
+        self.assertIn('success|failure)', self.aggregate)
+        self.assertIn('B14 contract lane did not execute', self.aggregate)
+        self.assertIn('B14_CONTRACT_RESULT=$MM_RESULT', self.aggregate)
+        self.assertIn('Record independent result boundaries (#5002)', self.aggregate)
+        self.assertIn('PRODUCT_E2E_BYOK=NOT_RUN', self.aggregate)
+        self.assertIn('B14_E2E=NOT_RUN', self.aggregate)
+        self.assertIn('FIRST_B14_FAILURE_EVIDENCE=record the first failure once in #4318',
+                      self.aggregate)
+        # A B14 source change remains gated by its own contract; product
+        # scopes accept an executed-but-failed B14 lane, while skipped or
+        # cancelled execution is a fan-in configuration error.
+        full_branch = self.aggregate.split(
+            'echo \'B62_CI_MODE=UI_MIXED_TARGETED\'')[1]
+        full_branch = full_branch.split('echo \'B62_CI_MODE=FULL\'')[0]
+        self.assertIn('if [ "$SCOPE" = b14_only ]; then', full_branch)
+        self.assertIn('test "$MM_RESULT" = success', full_branch)
+        self.assertIn('case "$MM_RESULT" in', full_branch)
+        self.assertIn('success|failure)', full_branch)
+        b14_tests_only_branch = self.aggregate.split(
+            'elif [ "$SCOPE" = b14_tests_only ]')[1]
+        b14_tests_only_branch = b14_tests_only_branch.split(
+            'elif [ "$SCOPE" = static_only ]')[0]
+        self.assertIn('test "$MM_RESULT" = success', b14_tests_only_branch)
 
     def test_classifier_tests_and_both_impact_triggers_retained(self):
         self.assertIn("test_3989_b62_parallel_runtime_jobs.py -q", self.plan)
