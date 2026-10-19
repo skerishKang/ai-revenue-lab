@@ -39,6 +39,9 @@
 .sidebar-bottom .home-link {
   text-decoration: none;
 }
+.sidebar-bottom .admin-hub-link[hidden] {
+  display: none;
+}
 .sidebar-bottom .home-link:hover,
 .sidebar-bottom .settings-button:hover {
   background: rgba(255,255,255,.82);

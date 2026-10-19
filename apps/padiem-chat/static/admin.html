@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8fc">
+  <meta name="referrer" content="no-referrer">
+  <title>총관리자 · Padiem</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./admin-models.css">
+  <link rel="stylesheet" href="./admin.css">
+  <script src="./admin.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side" aria-label="관리 메뉴">
+      <a class="brand" href="./" aria-label="Padiem 홈"><span class="brand-symbol" aria-hidden="true">P</span><strong>Padiem</strong></a>
+      <nav class="side-nav" aria-label="관리 메뉴">
+        <a class="nav-link selected" href="./admin" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.2-3.6 4-5.6 7.5-5.6s6.3 2 7.5 5.6"/></svg></span><span>총관리자</span></a>
+        <a class="nav-link" href="./admin-models"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/></svg></span><span>B14 모델 관리</span></a>
+        <a class="nav-link" href="./"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-8h6v8"/></svg></span><span>서비스 홈</span></a>
+      </nav>
+      <div class="side-bottom"><span class="side-caption">Padiem Admin</span><span id="roleCaption">권한 확인 중</span></div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div class="header-title">총관리자 <span class="preview-pill" id="roleBadge">접속 확인 중</span></div>
+        <div class="header-actions">
+          <button type="button" class="icon-button" id="refreshBtn" aria-label="권한 새로고침" title="권한 새로고침"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2 6M20 4v7h-7"/></svg></button>
+        </div>
+      </header>
+      <div class="content">
+        <div class="intro">
+          <div><h1>관리자 허브</h1><p>로그인한 계정의 서버 권한으로 열 수 있는 관리 화면만 표시됩니다.</p></div>
+          <a class="small-count" href="./">서비스 홈 <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="notice" id="accessNotice" role="status" aria-live="polite" hidden></div>
+
+        <section class="panel gate-panel" id="gatePanel" aria-labelledby="gateTitle" hidden>
+          <h2 id="gateTitle">관리자 권한이 없습니다</h2>
+          <p id="gateCopy">관리자 권한이 있는 계정으로 Padiem Chat에 로그인한 뒤 다시 열어 주세요. 이 화면은 별도 로그인을 만들지 않습니다.</p>
+          <div class="gate-actions">
+            <a class="btn primary gate-button" href="./">Padiem Chat으로 이동</a>
+            <a class="btn gate-button" id="legacyB66Link" href="https://quick-quote-kr.pages.dev/admin.html" hidden>기존 B66 관리자 화면</a>
+          </div>
+        </section>
+
+        <section id="adminContent" hidden aria-label="관리 화면 목록">
+          <div class="hub-grid" id="hubGrid"></div>
+          <section class="panel capability-panel" aria-labelledby="capabilityHeading">
+            <div class="section-head"><h2 id="capabilityHeading">세션 권한</h2><span class="tiny-status" id="capabilityStatus">확인됨</span></div>
+            <div class="capability-list" id="capabilityList"></div>
+            <p class="caption-note">표시는 서버가 계산한 세션 권한입니다. 각 관리 화면의 API는 요청마다 서버에서 권한을 다시 검사합니다.</p>
+          </section>
+          <section class="panel note-panel" aria-labelledby="policyHeading">
+            <div class="section-head"><h2 id="policyHeading">운영 원칙</h2></div>
+            <ul class="policy-list">
+              <li>B14 모델 추가·변경은 기존 <a href="./admin-models">B14 모델 관리</a> 화면에서만 수행합니다.</li>
+              <li>Chat·Claw 실행 경로도 같은 화면의 등급별 실행 경로에서 관리합니다.</li>
+              <li>B66 회원·문의 데이터는 B66 소유자 권한이 있는 계정에만 표시됩니다.</li>
+            </ul>
+          </section>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

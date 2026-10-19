@@ -104,6 +104,7 @@
       </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span></div>
       <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
+        <a class="home-link admin-hub-link" id="adminHubLink" href="./admin" aria-label="총관리자 페이지" title="총관리자 페이지" hidden><span class="home-link-mark" aria-hidden="true">◈</span><span>총관리자</span></a>
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false" hidden><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
         <div class="sidebar-account account-controls">
           <span class="account-avatar" id="accountAvatar" aria-hidden="true">?</span>
@@ -1083,6 +1084,8 @@
   <script src="./claw-connector-management.js"></script>
   <script src="./b66-quote-runtime.js"></script>
   <script src="./product-capabilities.js"></script>
+  <!-- #5108: admin hub entry, revealed only by the server-attested session role. -->
+  <script src="./admin-entry.js" defer></script>
   <script src="./conversation-search.js" defer></script>
   <!-- #4489: loads after app.js because it opens a file through the canonical
        project seam app.js publishes. -->

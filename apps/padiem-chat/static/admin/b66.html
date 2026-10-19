@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8fc">
+  <meta name="referrer" content="no-referrer">
+  <title>B66 관리 · Padiem</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/admin-models.css">
+  <link rel="stylesheet" href="/admin.css">
+  <script src="/admin-product.js" defer></script>
+</head>
+<body class="admin-product" data-product="b66">
+  <div class="shell">
+    <aside class="side" aria-label="관리 메뉴">
+      <a class="brand" href="/" aria-label="Padiem 홈"><span class="brand-symbol" aria-hidden="true">P</span><strong>Padiem</strong></a>
+      <nav class="side-nav" aria-label="관리 메뉴">
+        <a class="nav-link" href="/admin"><span class="nav-icon" aria-hidden="true">←</span><span>총관리자</span></a>
+        <a class="nav-link" href="/admin-models"><span class="nav-icon" aria-hidden="true">◇</span><span>B14 모델 관리</span></a>
+        <a class="nav-link" href="/"><span class="nav-icon" aria-hidden="true">⌂</span><span>서비스 홈</span></a>
+      </nav>
+      <div class="side-bottom"><span class="side-caption">Padiem Admin</span><span id="roleCaption">권한 확인 중</span></div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div class="header-title">B66 관리 <span class="preview-pill" id="roleBadge">권한 확인 중</span></div>
+        <div class="header-actions"><a class="icon-button" href="/admin" aria-label="총관리자로 돌아가기" title="총관리자로 돌아가기">←</a></div>
+      </header>
+      <div class="content">
+        <div class="intro"><div><h1>B66 관리</h1><p>B66 관리 화면으로 이동합니다. B66 화면의 서버 권한 검사는 그대로 유지됩니다.</p></div><a class="small-count" href="/admin">총관리자</a></div>
+        <div class="notice" id="accessNotice" role="status" aria-live="polite" hidden></div>
+        <section class="panel gate-panel" id="gatePanel" hidden>
+          <h2>이 화면을 열 권한이 없습니다</h2>
+          <p>B66 플랫폼 정책 또는 B66 고객 데이터 권한이 있는 계정으로 로그인한 뒤 다시 열어 주세요.</p>
+          <div class="gate-actions"><a class="btn primary gate-button" href="/">Padiem Chat으로 이동</a><a class="btn gate-button" href="/admin">총관리자로 이동</a></div>
+        </section>
+        <section class="panel" id="productContent" hidden>
+          <div class="section-head"><h2>관리 화면</h2><span class="tiny-status" id="capabilityStatus">확인 중</span></div>
+          <div class="product-links" id="productLinks"></div>
+          <p class="caption-note">회원·문의 데이터 화면은 B66 소유자 권한이 있는 계정에만 표시됩니다. B66 화면은 기존 B66 로그인 세션을 사용합니다.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
