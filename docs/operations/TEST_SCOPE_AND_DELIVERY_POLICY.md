@@ -113,6 +113,8 @@ Agents and reviewers must not wait for observational/non-blocking jobs before co
 
 Platform-enforced required checks remain required; if an unrelated required check is structurally over-broad, fix the workflow/ruleset scope rather than normalizing repeated unnecessary testing.
 
+Run the relevant merge-ready CI set once for a logical batch. If a required job fails, diagnose it and rerun only the failed relevant job or jobs. Do not blindly rerun the entire suite, and do not relax assertions or thresholds to save time.
+
 ## 5. Workflow design
 
 CI triggers should match actual dependency/blast radius.
@@ -135,6 +137,21 @@ RELEVANT_DRIFT = REVALIDATE_AFFECTED_CLAIM
 ```
 
 Applicability review asks whether intervening changes affect the behavior, transitive dependency, authority, configuration, deployment target or user-facing surface.
+
+Before retesting after main drift, compute the changed-file and contract overlap between the already-tested head and the intervening main changes:
+
+```text
+MAIN_DRIFT_OVERLAP_ANALYSIS=REQUIRED
+NO_OVERLAP_FULL_REGRESSION=NO
+MERGE_READY_CI=RUN_ONCE
+FAILED_RELEVANT_JOB=TARGETED_RERUN
+```
+
+- no overlap and no shared authority, core, engine, identity, session, entitlement, Drive or deployment contract impact: focused smoke or contract checks are sufficient; do not automatically repeat the prior full suite;
+- overlap in an affected area: run the relevant suite for that area;
+- shared trust-boundary change: broaden regression appropriately.
+
+Record the overlap decision together with the reused evidence.
 
 ## 7. Independent validation
 
