@@ -144,3 +144,27 @@ def test_gate_never_emits_the_database_identifier():
     assert "D1_IDENTIFIER_OUTPUT=0" in workflow
     # The live database id is resolved from the worker binding, never guessed.
     assert "workers/scripts/${B62_WORKER}/settings" in workflow
+
+
+def test_recovery_bookmark_is_read_with_get_and_never_created():
+    # POST on the Time Travel bookmark endpoint CREATES a recovery bookmark.
+    # The gate only proves that recovery exists, so it must GET it, exactly as
+    # the existing 040 and 054 migration gates do.
+    workflow = (
+        ROOT / ".github/workflows/b62-claw-d1-migration-058-gate.yml"
+    ).read_text(encoding="utf-8")
+    assert "time_travel/bookmark" in workflow
+    lines = workflow.splitlines()
+    bookmark_calls = []
+    for index, line in enumerate(lines):
+        if "time_travel/bookmark" not in line:
+            continue
+        # The curl invocation carries the URL on its own continuation line.
+        invocation = "\n".join(lines[max(0, index - 3):index])
+        assert "curl" in invocation, invocation
+        bookmark_calls.append(invocation)
+    assert bookmark_calls, "the recovery bookmark readback must exist"
+    for invocation in bookmark_calls:
+        assert "-X POST" not in invocation, invocation
+        assert "-X DELETE" not in invocation, invocation
+        assert "-X PUT" not in invocation, invocation
