@@ -80,6 +80,13 @@ def test_byok_test_is_direct_and_not_b14_managed():
     assert byok not in _modules_in("B14_MANAGED")
 
 
+def test_byok_product_e2e_is_direct():
+    # #5002 product E2E: real ASGI/D1, substituted provider transport.
+    byok = "test_5002_byok_product_e2e.py"
+    assert MANIFEST["modules"][byok] == "BYOK_DIRECT"
+    assert MANIFEST["markers"][MANIFEST["modules"][byok]] == "byok_direct"
+
+
 def test_mock_modules_are_never_reported_as_live_e2e():
     # A substitute transport or relay is a logic contract, not LIVE evidence.
     for name in (

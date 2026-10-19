@@ -6,7 +6,7 @@
 
 현재 B14의 모델·Secret·라우팅 오류가 각 제품의 업무 로직 테스트를 불필요하게 중복 차단한다. **제품 기능의 실제 모델 사용 검증과 B14 경유 통합 검증을 분리**하고, 고장 난 경계의 소유자를 식별하여 동일 장애에 대해 Chat/Claw/B66의 검사를 반복하지 않는다.
 
-PADIEM Custom(BYOK)이 구현·검증되면 **고객 소유 자격증명으로 공급사를 직접 호출하는 B14 비경유 실행**을 제품 기능 수용 증거로 인정할 수 있다. BYOK 성공만으로 B14의 모델 선택·등급·폴백 또는 전체 플랫폼 경로 완료를 주장하지 않는다. **현재 BYOK 미구현·미실증 상태에서 PASS를 선기록하지 않는다.**
+PADIEM Custom(BYOK)이 구현·검증되면 **고객 소유 자격증명으로 공급사를 직접 호출하는 B14 비경유 실행**을 제품 기능 수용 증거로 인정할 수 있다. BYOK 성공만으로 B14의 모델 선택·등급·폴백 또는 전체 플랫폼 경로 완료를 주장하지 않는다. **미구현·미실증 경로에서 PASS를 선기록하지 않는다.**
 
 ## 필수 시험 구분
 
@@ -66,8 +66,32 @@ EVIDENCE=테스트/로그/PR/실행 식별자(비밀 제외)
   자체 check로 표시되고, 최초 실패 증거는 #4318에 1회 기록한 뒤 제품 원장은 링크만
   남긴다. `b14_only`(B14 소스)와 `b14_tests_only`(B14 테스트) 범위는 검토 대상
   자체가 B14이므로 계속 B14 계약 성공을 요구한다.
-- CI summary는 `PRODUCT_E2E_BYOK=NOT_RUN`, `B14_E2E=NOT_RUN`을 별도로 출력한다.
-  현재 Chat/Claw/B66 테스트 중 실제 공급사 호출을 수행하는 LIVE E2E는 없으며,
-  `#5121` BYOK 테스트의 `MockTransport` 결과를 `PRODUCT_E2E_BYOK=PASS`로 기록하지 않는다.
+- CI summary는 `PRODUCT_E2E_BYOK`, `PRODUCT_E2E_BYOK_LIVE`, `B14_E2E`를 별도로 출력한다.
+  `PRODUCT_E2E_BYOK=INTEGRATION_MOCK`은 실제 ASGI·D1 저장소를 쓰되 공급사 전송을
+  `MockTransport`로 대체한 통합 증거이며, LIVE 공급사 호출 증거가 아니다.
+  `PRODUCT_E2E_BYOK_LIVE`와 `B14_E2E`는 별도 승인·실행 전까지 `NOT_RUN`이다.
 - 기본 모델 기대값은 `product_tier_routes`의 활성 route에서 파생한다. Free/Plus/Pro/Max의
   현재 승인 설정은 변경하지 않고, `b14/auto`는 계속 executable 집합 밖이다.
+
+## #5002 제품별 BYOK E2E 자동화 (2026-10-19)
+
+`apps/padiem-chat/tests/test_5002_byok_product_e2e.py`(marker `byok_direct`,
+`PATH=BYOK_DIRECT`)가 실제 ASGI 앱, 실제 `D1HistoryStore`(SQLite + migration
+001/002/042/053), 실제 `D1CustomProviderCredentialStore`를 사용하고 공급사 전송만
+`httpx.MockTransport`로 대체해 다음을 검증한다.
+
+- Chat 일반/스트림 요청의 공급사 호출, 대화 저장, 다음 턴의 서버 저장 이력 복원
+- 테넌트별 키·세션·대화 격리와 타 고객 대화 이어쓰기 거부(공급사 호출 0회)
+- 키 교체·삭제의 즉시 반영과 삭제 후 `custom_credential_required` 거부
+- 공급사 429/5xx 오류 시 오류 코드 매핑, vendor 본문 비노출, 대화 미저장
+- B14 클라이언트·라우터·카탈로그·정책 저장소 실패 주입에서 BYOK 통과(`B14_CALL_COUNT=0`)
+- 같은 주입에서 관리 경로는 502 `b14_injected_failure`로 실제 실패(음성 대조)
+
+| SURFACE | RESULT | 비고 |
+|---|---|---|
+| CHAT | `PRODUCT_E2E_BYOK=INTEGRATION_MOCK` | 공급사는 MockTransport. LIVE 아님 |
+| CLAW | `NOT_RUN` | 구현·테스트는 미병합 PR #5137에 있음. 중복 개발하지 않음 |
+| B66 | `NOT_RUN` | 동일 |
+| B14 | `B14_E2E=NOT_RUN` | BYOK 경로의 B14 호출 0회만 검증 |
+
+`LIVE_VERIFIED=NO`: 승인되지 않은 유료/실제 공급사 호출은 수행하지 않았다.
