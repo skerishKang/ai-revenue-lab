@@ -23,6 +23,11 @@ FAKE_KEY = "test-5121-synthetic-key-0123456789abcdef"
 PROVIDER = "opencode-go"
 MODEL = "opencode-go/beam-free"
 DISPLAY_NAME = "Padiem Custom (OpenCode Go)"
+DEFAULT_ENDPOINT = "https://opencode.ai/inference/go/v1"
+MANUAL_PROVIDER = "qa-manual"
+MANUAL_DISPLAY_NAME = "QA Manual Provider"
+MANUAL_MODELS = ["qa-model-1", "qa-model-2"]
+CUSTOM_ENDPOINT = "https://gateway.example.test/v1"
 
 HARNESS = """<!doctype html>
 <html lang="ko">
@@ -127,13 +132,41 @@ def browser():
         instance.close()
 
 
+def _provider_rows() -> list[dict]:
+    return [
+        {
+            "provider": PROVIDER,
+            "display_name": DISPLAY_NAME,
+            "model": MODEL,
+            "models": [MODEL],
+            "default_endpoint": DEFAULT_ENDPOINT,
+            "supports_custom_endpoint": True,
+            "supports_model_listing": False,
+            "supports_connection_test": False,
+            "manual_model": False,
+        },
+        {
+            "provider": MANUAL_PROVIDER,
+            "display_name": MANUAL_DISPLAY_NAME,
+            "model": "",
+            "models": [],
+            "default_endpoint": "https://qa-provider.example.test/v1",
+            "supports_custom_endpoint": True,
+            "supports_model_listing": True,
+            "supports_connection_test": True,
+            "manual_model": True,
+        },
+    ]
+
+
 def _open_harness(browser, base_url: str, *, viewport: dict, auth_mode: str = "signed_in"):
     state = {
-        "credential": False,
-        "last4": "",
+        "credentials": {},
         "put_bodies": [],
         "delete_urls": [],
         "credential_gets": 0,
+        "model_gets": [],
+        "test_posts": [],
         "request_urls": [],
     }
     context = browser.new_context(viewport=viewport)
@@ -174,35 +207,66 @@ def _open_harness(browser, base_url: str, *, viewport: dict, auth_mode: str = "s
         if path == "/api/chat/custom/credential":
             if request.method == "GET":
                 state["credential_gets"] += 1
-                credentials = (
-                    [{"provider": PROVIDER, "key_last4": state["last4"]}]
-                    if state["credential"] else []
-                )
+                credentials = [
+                    {
+                        "provider": provider,
+                        "key_last4": row["last4"],
+                        "endpoint": row.get("endpoint", ""),
+                        "endpoint_is_default": not row.get("endpoint"),
+                    }
+                    for provider, row in state["credentials"].items()
+                ]
                 route.fulfill(status=200, json={
                     "ok": True,
                     "credentials": credentials,
-                    "providers": [
-                        {"provider": PROVIDER, "model": MODEL, "display_name": DISPLAY_NAME}
-                    ],
+                    "providers": _provider_rows(),
                 })
                 return
             if request.method == "PUT":
                 body = request.post_data or ""
                 state["put_bodies"].append(body)
                 payload = json.loads(body)
-                state["credential"] = True
-                state["last4"] = str(payload.get("api_key", ""))[-4:]
+                provider = str(payload.get("provider", ""))
+                state["credentials"][provider] = {
+                    "last4": str(payload.get("api_key", ""))[-4:],
+                    "endpoint": str(payload.get("endpoint", "")),
+                }
                 route.fulfill(status=200, json={
                     "ok": True,
-                    "credential": {"provider": PROVIDER, "key_last4": state["last4"]},
+                    "credential": {
+                        "provider": provider,
+                        "key_last4": state["credentials"][provider]["last4"],
+                        "endpoint": state["credentials"][provider]["endpoint"],
+                        "endpoint_is_default": not state["credentials"][provider]["endpoint"],
+                    },
                 })
                 return
             if request.method == "DELETE":
                 state["delete_urls"].append(request.url)
-                state["credential"] = False
-                state["last4"] = ""
+                provider = urlsplit(request.url).query.removeprefix("provider=")
+                state["credentials"].pop(provider, None)
                 route.fulfill(status=200, json={"ok": True, "deleted": True})
                 return
+        if path == "/api/chat/custom/models":
+            provider = urlsplit(request.url).query.removeprefix("provider=")
+            state["model_gets"].append(provider)
+            route.fulfill(status=200, json={
+                "ok": True,
+                "provider": provider,
+                "models": MANUAL_MODELS,
+                "source": "provider",
+            })
+            return
+        if path == "/api/chat/custom/credential/test":
+            payload = json.loads(request.post_data or "{}")
+            state["test_posts"].append(payload)
+            route.fulfill(status=200, json={
+                "ok": True,
+                "provider": payload.get("provider"),
+                "models_count": len(MANUAL_MODELS),
+                "source": "provider",
+            })
+            return
         route.fulfill(status=404, json={"error": {"code": "not_found"}})
 
     page.route("**/api/**", handle)
@@ -298,6 +362,88 @@ def test_desktop_custom_key_save_replace_delete_and_selection(browser, static_se
         _assert_no_key_leak(page, FAKE_KEY)
 
         # Every request stayed on the local harness: no provider endpoint at all.
+        assert all(url.startswith(static_server) for url in state["request_urls"])
+        assert all(FAKE_KEY not in url for url in state["request_urls"])
+    finally:
+        context.close()
+
+
+def test_multi_provider_manual_model_endpoint_model_list_and_connection_test(
+    browser, static_server
+) -> None:
+    page, state, context = _open_harness(
+        browser, static_server, viewport={"width": 1280, "height": 900}
+    )
+    try:
+        _open_picker(page)
+        provider_select = page.locator("#modeCustomProvider")
+        expect(provider_select).to_be_visible()
+        expect(provider_select.locator("option")).to_have_count(2)
+        assert provider_select.locator("option").nth(0).get_attribute("value") == PROVIDER
+        assert provider_select.locator("option").nth(1).get_attribute("value") == MANUAL_PROVIDER
+
+        # The original OpenCode Go lane keeps its registry model select.
+        expect(page.locator("#modeCustomModelSelect")).to_be_visible()
+        expect(page.locator("#modeCustomModelInput")).to_be_hidden()
+
+        provider_select.select_option(MANUAL_PROVIDER)
+        expect(page.locator("#modeCustomModelInput")).to_be_visible()
+        expect(page.locator("#modeCustomModelSelect")).to_be_hidden()
+        expect(page.locator("#modeCustomEndpoint")).to_be_visible()
+        assert page.locator("#modeCustomEndpoint").get_attribute("placeholder") == (
+            "https://qa-provider.example.test/v1"
+        )
+
+        # A typed model is required before the custom lane can be selected.
+        page.locator('[data-mode-value="custom"]').click()
+        expect(page.locator(".mode-custom-message")).to_contain_text("모델 ID를 먼저")
+        assert page.evaluate("() => window.PadiemCustomSelection.get()") is None
+
+        model_input = page.locator("#modeCustomModelInput")
+        model_input.fill(MANUAL_MODELS[0])
+        page.locator("#modeCustomEndpoint").fill(CUSTOM_ENDPOINT)
+        page.locator("#modeCustomApiKey").fill(FAKE_KEY)
+        page.locator(".mode-custom-save").click()
+        expect(page.locator(".mode-custom-message")).to_have_text("API 키를 저장했습니다.")
+
+        saved = json.loads(state["put_bodies"][-1])
+        assert saved == {
+            "provider": MANUAL_PROVIDER,
+            "api_key": FAKE_KEY,
+            "endpoint": CUSTOM_ENDPOINT,
+        }
+        expect(page.locator(".mode-custom-status")).to_contain_text(CUSTOM_ENDPOINT)
+        _assert_no_key_leak(page, FAKE_KEY)
+
+        # The model list and the connection test are real server calls made
+        # only after a key exists. No provider origin is contacted by the page.
+        load_models = page.locator(".mode-custom-model-load")
+        expect(load_models).to_be_visible()
+        load_models.click()
+        expect(page.locator(".mode-custom-message")).to_have_text(
+            "공급사 모델 목록을 불러왔습니다."
+        )
+        assert state["model_gets"] == [MANUAL_PROVIDER]
+        datalist = page.locator("#modeCustomModelOptions option")
+        expect(datalist).to_have_count(len(MANUAL_MODELS))
+        assert page.locator("#modeCustomModelInput").get_attribute("list") == (
+            "modeCustomModelOptions"
+        )
+
+        test_button = page.locator(".mode-custom-test")
+        expect(test_button).to_be_visible()
+        test_button.click()
+        expect(page.locator(".mode-custom-message")).to_have_text(
+            "공급사 연결을 확인했습니다."
+        )
+        assert state["test_posts"] == [{"provider": MANUAL_PROVIDER}]
+
+        page.locator('[data-mode-value="custom"]').click()
+        expect(page.locator(".mode-presentation-panel")).to_be_hidden()
+        selection = page.evaluate("() => window.PadiemCustomSelection.get()")
+        assert selection == {"provider": MANUAL_PROVIDER, "model": MANUAL_MODELS[0]}
+        assert page.locator(".model-pill").get_attribute("data-model-selection") == "custom"
+
         assert all(url.startswith(static_server) for url in state["request_urls"])
         assert all(FAKE_KEY not in url for url in state["request_urls"])
     finally:

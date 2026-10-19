@@ -32,6 +32,12 @@ CUSTOM_PROVIDER_FIXTURE = {
             "provider": "qa-custom-provider",
             "model": "qa-custom-provider/qa-model",
             "display_name": "Padiem Custom (QA)",
+            "models": ["qa-custom-provider/qa-model"],
+            "default_endpoint": "https://qa-provider.example.test/v1",
+            "supports_custom_endpoint": True,
+            "supports_model_listing": False,
+            "supports_connection_test": False,
+            "manual_model": False,
         }
     ],
 }
@@ -165,6 +171,21 @@ async def _exercise(page: Page, *, name: str, custom_methods: list[str]) -> dict
     custom_form = custom_section.locator(".mode-custom-credential")
     if not await custom_form.is_visible():
         raise AssertionError(f"PADIEM Custom key form hidden at {name}")
+    provider_select = custom_form.locator("#modeCustomProvider")
+    if await provider_select.count() != 1 or await provider_select.locator("option").count() != 1:
+        raise AssertionError(f"PADIEM Custom provider select mismatch at {name}")
+    model_select = custom_form.locator("#modeCustomModelSelect")
+    if not await model_select.is_visible():
+        raise AssertionError(f"PADIEM Custom registry model select hidden at {name}")
+    if await model_select.locator("option").count() != 1:
+        raise AssertionError(f"PADIEM Custom registry model missing at {name}")
+    if await custom_form.locator(".mode-custom-test").is_visible():
+        raise AssertionError(f"PADIEM Custom connection test must stay hidden at {name}")
+    endpoint = custom_form.locator("#modeCustomEndpoint")
+    if not await endpoint.is_visible():
+        raise AssertionError(f"PADIEM Custom endpoint input hidden at {name}")
+    if await endpoint.get_attribute("placeholder") != "https://qa-provider.example.test/v1":
+        raise AssertionError(f"PADIEM Custom default endpoint missing at {name}")
     custom_input = custom_form.locator("#modeCustomApiKey")
     if await custom_input.get_attribute("type") != "password":
         raise AssertionError(f"PADIEM Custom key input must be masked at {name}")

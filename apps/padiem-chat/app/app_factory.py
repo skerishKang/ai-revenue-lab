@@ -253,6 +253,8 @@ from .byok_routes import (
     custom_credential_delete,
     custom_credential_save,
     custom_credential_status,
+    custom_credential_test,
+    custom_provider_models,
 )
 from .connector_ticket_routes import google_connector_ticket
 from .meeting_drive_upload_routes import MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session
@@ -536,6 +538,8 @@ def create_app(
         Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
         Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),
+        Route("/api/chat/custom/credential/test", custom_credential_test, methods=["POST"]),
+        Route("/api/chat/custom/models", custom_provider_models, methods=["GET"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
         Route(B66_PC_DIRECTORY_PATH, b66_pc_directory, methods=["GET"]),
         Route(B66_PC_TXT_READ_PATH, b66_pc_txt_read_request, methods=["POST"]),
