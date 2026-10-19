@@ -76,7 +76,8 @@ class B66StageAuthorityContract(unittest.TestCase):
             "B66_AUTOMATIC_MODEL_PICKER=OFF",
             "B66_PROVIDER_ATTEMPTS_MAX=1",
             "B66_RETRY=NO",
-            "B66_AUTOMATIC_FALLBACK=NO",
+            "B66_OWNER_PINNED_CAT_JAM_GRADE_FALLBACK=YES",
+            "UNAPPROVED_SILENT_FALLBACK=PROHIBITED",
             "B66_MODEL_TASK=document_quote_field_extraction",
         ):
             self.assertIn(expression, self.policy)
