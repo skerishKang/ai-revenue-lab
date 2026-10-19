@@ -13,9 +13,7 @@ from padiem_control_plane.broker_pending_pc_wss import route_private_pc_wss_upgr
 from local_agent_broker_office_chunks import compose_broker_office_chunks, read_broker_office_part_rpc
 from local_agent_broker_text_results import compose_broker_text_results, read_verified_file_text_rpc
 from local_agent_broker_installed_profile import BrokerInstalledExecutionProfileStore, installed_execution_profile_rpc
-from local_agent_broker_android_profile import (
-    BrokerAndroidSafProfileStore, android_saf_profile_rpc, android_saf_profiles_rpc,
-)
+from local_agent_broker_android_profile import BrokerAndroidSafProfileStore, android_saf_profile_rpc, android_saf_profiles_rpc
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState, CloudflareDurableObjectSerializedStateBackend, safe_ref,
 )
@@ -43,9 +41,7 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
         self.execution_profiles = BrokerInstalledExecutionProfileStore(
             storage=ctx.storage, state_port=self._runtime.state_port,
             authority_ref=self._runtime.authority_ref())
-        self.android_profiles = BrokerAndroidSafProfileStore(
-            storage=ctx.storage, state_port=self._runtime.state_port,
-            authority_ref=self._runtime.authority_ref())
+        self.android_profiles = BrokerAndroidSafProfileStore(storage=ctx.storage, state_port=self._runtime.state_port, authority_ref=self._runtime.authority_ref())
         self._device_http = LocalAgentBrokerDeviceHttpService(
             state_port=self._runtime.state_port,
             pepper=str(env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
