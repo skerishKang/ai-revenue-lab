@@ -2584,7 +2584,24 @@ async def _engine_pc_files_owner(
         or not session.tenant_id
     ):
         return None, None, _error(401, "canonical_session_required")
-    return uid, session, None
+    # The product identity above is b62; the connector owner scope is the
+    # shared B54 canonical session (#5088). Resolve the same bridge the Claw
+    # signed lane uses instead of handing the b62 product session to the
+    # owner-scope lookup.
+    from padiem_control_plane.b54_identity_bridge import (
+        resolve_current_b54_canonical_session as resolve_b54_session,
+    )
+    try:
+        bridged = await resolve_b54_session(identity, uid)
+    except Exception:
+        return None, None, _error(401, "canonical_session_required")
+    if (
+        bridged is None
+        or bridged.auth_session.subject.subject_id != subject_id
+        or not bridged.auth_session.tenant_id
+    ):
+        return None, None, _error(401, "canonical_session_required")
+    return uid, bridged.auth_session, None
 
 
 async def _engine_pc_files_target(

@@ -246,6 +246,33 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
         )
+    # #5088/#5015: the Control Plane owner-scope lookup accepts the shared
+    # B54 canonical session, not a product-local shadow session. Resolve the
+    # same bridge the signed Claw/Chat endpoint uses; the Chat product identity
+    # above and the b62 subject sent to the Engine stay unchanged.
+    from padiem_control_plane.b54_identity_bridge import (
+        resolve_current_b54_canonical_session as resolve_b54_session,
+    )
+
+    try:
+        bridged = await resolve_b54_session(authority, uid)
+    except Exception as exc:
+        raise ChatPCDriveError(
+            "chat_pc_identity_unavailable",
+            "사용자 확인 정보를 사용할 수 없습니다.",
+        ) from exc
+    if (
+        bridged is None
+        or bridged.auth_session.subject.subject_id != subject_id
+        or not isinstance(bridged.auth_session.tenant_id, str)
+        or not bridged.auth_session.tenant_id
+    ):
+        raise ChatPCDriveError(
+            "chat_pc_identity_unavailable",
+            "사용자 확인 정보를 사용할 수 없습니다.",
+        )
+    session = bridged.auth_session
+    tenant_id = session.tenant_id
     from .claw_memory_routes import _resolve_memory_workspace
 
     try:
