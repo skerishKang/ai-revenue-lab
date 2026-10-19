@@ -311,9 +311,12 @@ async function startWiring(env) {
 async function startListening(env, live) {
   await waitFor(function () { return env.mic.disabled === false; }, "STT 게이트 개방");
   if (live) {
-    const toggle = env.doc.getElementById("easyVoiceLiveToggle");
-    toggle.click();
-    assert(toggle.getAttribute("aria-pressed") === "true", "[" + env.timing + "] 라이브 모드 켜짐");
+    const auto = env.doc.getElementById("easyVoiceModeAuto");
+    auto.click();
+    assert(auto.getAttribute("aria-pressed") === "true", "[" + env.timing + "] 모드 2 선택");
+    assert(env.doc.getElementById("easyVoiceModeInput").getAttribute("aria-pressed") === "false", "[" + env.timing + "] 모드 2 선택 시 모드 1 해제");
+    const status = env.doc.getElementById("easyVoiceStatus");
+    assert(status.textContent.indexOf("바로 전송") !== -1, "[" + env.timing + "] 모드 2 안내 표시");
   }
   env.mic.click();
   await waitFor(function () { return env.mic.getAttribute("data-voice-state") === "listening"; }, "마이크 캡처 시작");
@@ -346,20 +349,32 @@ async function scenarioModeA(env) {
   assert(env.mic.disabled === false, "[" + env.timing + "] 신원 확인 후: 마이크 활성");
   assert(wiring.getState().sttAvailable === true, "[" + env.timing + "] sttAvailable=true");
 
-  const liveToggle = env.doc.getElementById("easyVoiceLiveToggle");
-  assert(!!liveToggle, "[" + env.timing + "] 라이브 토글 버튼 존재");
-  assert(liveToggle.disabled === false, "[" + env.timing + "] 라이브 토글 활성");
-  assert(liveToggle.getAttribute("aria-pressed") === "false", "[" + env.timing + "] 라이브 모드 기본 꺼짐");
+  assert(env.doc.getElementById("easyVoiceLiveToggle") === null, "[" + env.timing + "] 구형 자동 전송 토글 제거");
+  const modeGroup = env.doc.getElementById("easyVoiceMode");
+  const modeInput = env.doc.getElementById("easyVoiceModeInput");
+  const modeAuto = env.doc.getElementById("easyVoiceModeAuto");
+  const status = env.doc.getElementById("easyVoiceStatus");
+  assert(!!modeGroup && !!modeInput && !!modeAuto, "[" + env.timing + "] 모드 선택 세그먼트 존재");
+  assert(modeGroup.parentNode !== env.composer, "[" + env.timing + "] 음성 바가 textarea 내부에 삽입되지 않음");
+  assert(modeGroup.parentNode.parentNode === env.composer.parentNode, "[" + env.timing + "] 음성 바가 입력창과 같은 컴포저 카드에 마운트");
+  assert(modeInput.disabled === false && modeAuto.disabled === false, "[" + env.timing + "] 모드 선택 활성");
+  assert(modeInput.getAttribute("aria-pressed") === "true", "[" + env.timing + "] 기본 모드 1(입력창)");
+  assert(modeAuto.getAttribute("aria-pressed") === "false", "[" + env.timing + "] 모드 2 기본 아님");
+  assert(!!status, "[" + env.timing + "] 음성 상태 표시줄 존재");
+  assert(status.textContent.indexOf("입력창에 적힙니다") !== -1, "[" + env.timing + "] 모드 1 안내 표시");
 
   env.mic.click();
   await waitFor(function () { return env.mic.getAttribute("data-voice-state") === "listening"; }, "마이크 캡처 시작");
   assert(env.mic.getAttribute("aria-pressed") === "true", "[" + env.timing + "] 마이크 시작 상태 반영");
+  assert(status.textContent.indexOf("듣는 중") !== -1, "[" + env.timing + "] 녹음 중 상태 표시");
   await sleep(30);
 
   env.mic.click();
   await waitFor(function () { return env.composer.value === TRANSCRIPT; }, "Mode A 전사 반영");
 
   assert(env.composer.value === TRANSCRIPT, "[" + env.timing + "] Mode A: 전사문이 입력창에 기록됨");
+  assert(status.textContent.indexOf("확인 후 보내세요") !== -1, "[" + env.timing + "] 전사 완료 안내 표시");
+  assert(env.doc.getElementById("easyComposerNote").textContent === "", "[" + env.timing + "] easy-mode note 미오염");
   assert(env.sendCount() === 0, "[" + env.timing + "] Mode A: 자동 전송 없음");
   assert(env.transcribeCalls().length === 1, "[" + env.timing + "] Mode A: transcribe 정확히 1회");
   assertAllUploadsHaveInit(env);
@@ -464,10 +479,32 @@ async function scenarioUnavailable(env) {
   const wiring = await startWiring(env);
   await sleep(80);
   assert(env.mic.disabled === true, "[" + env.timing + "] 미인증 세션: 마이크 비활성 유지");
+  const status = env.doc.getElementById("easyVoiceStatus");
+  assert(!!status && status.textContent.indexOf("사용할 수 없습니다") !== -1, "[" + env.timing + "] 미인증: 상태 표시줄 안내");
+  assert(env.doc.getElementById("easyComposerNote").textContent === "", "[" + env.timing + "] 미인증: easy-mode note 미오염");
   env.mic.click();
   await sleep(40);
   assert(env.transcribeCalls().length === 0, "[" + env.timing + "] 미인증 세션: transcribe 호출 없음");
   assert(wiring.getState().sttAvailable === false, "[" + env.timing + "] 미인증 세션: sttAvailable=false");
+  wiring.destroy();
+}
+
+/* 모드 전환은 녹음을 끊지 않는다: 듣는 중 Mode 1/2 전환이 가능해야 한다. */
+async function scenarioModeSwitch(env) {
+  const wiring = await startWiring(env);
+  await startListening(env, false);
+  const status = env.doc.getElementById("easyVoiceStatus");
+
+  env.doc.getElementById("easyVoiceModeAuto").click();
+  assert(env.mic.getAttribute("data-voice-state") === "listening", "[" + env.timing + "] 모드 2 전환 후에도 녹음 유지");
+  assert(status.textContent.indexOf("듣는 중") !== -1 && status.textContent.indexOf("바로 전송") !== -1, "[" + env.timing + "] 모드 2 듣기 안내");
+
+  env.doc.getElementById("easyVoiceModeInput").click();
+  assert(env.mic.getAttribute("data-voice-state") === "listening", "[" + env.timing + "] 모드 1 복귀 후에도 녹음 유지");
+
+  env.mic.click();
+  await waitFor(function () { return env.composer.value === TRANSCRIPT; }, "모드 전환 후 전사 반영");
+  assert(env.sendCount() === 0, "[" + env.timing + "] 모드 1 복귀 후 자동 전송 없음");
   wiring.destroy();
 }
 
@@ -481,6 +518,8 @@ async function main() {
   await scenarioModeBLiveRepeated(makeEnv({ timing: "sync" }));
   await scenarioModeBLiveRepeated(makeEnv({ timing: "async" }));
   await scenarioNoAudio(makeEnv({ timing: "async", emitChunks: false }));
+  await scenarioModeSwitch(makeEnv({ timing: "sync" }));
+  await scenarioModeSwitch(makeEnv({ timing: "async" }));
   await scenarioUnavailable(makeEnv({ timing: "async", identityStatus: 401 }));
   console.log("모든 단위 테스트 통과");
 }
