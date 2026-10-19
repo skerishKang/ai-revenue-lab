@@ -366,7 +366,12 @@
         const prev = done.textContent;
         const flash = () => { done.textContent = "✓"; setTimeout(() => { done.textContent = prev; }, 900); };
         const plain = bubble ? bubble.textContent : text;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
+        /* #4488: shared clipboard path; legacy branches stay only as the
+         * fallback when the shared script is unavailable. */
+        const shared = window.PadiemAnswerCopy || window.SharedAnswerCopy;
+        if (shared && typeof shared.copyText === "function") {
+          shared.copyText(plain).then((ok) => { if (ok) flash(); });
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(plain).then(flash, () => {});
         } else {
           const ta = document.createElement("textarea");

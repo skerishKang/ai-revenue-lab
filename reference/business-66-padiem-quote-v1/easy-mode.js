@@ -19,6 +19,9 @@
   // #4488: shared near-bottom follow math. B66 keeps its own container and the
   // 120px contract the shared module carries. Product-neutral alias only.
   const sharedScroll = window.SharedConversationScroll || null;
+  // #4488: shared clipboard path for real model answers. B66 owns labels and
+  // truthful toast feedback. Product-neutral alias only.
+  const sharedCopy = window.SharedAnswerCopy || null;
 
   if (!Core || !History || !FileIntake || !App) return;
 
@@ -329,6 +332,30 @@
     content.textContent = shown;
   }
 
+  /* #4488: one shared clipboard implementation with Chat/Claw. The action row
+     is opt-in per real model answer; status text, errors and guided prompts
+     never receive it. */
+  function appendCopyAction(body, content) {
+    const actions = document.createElement("div");
+    actions.className = "easy-message-actions";
+    const copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "easy-message-copy";
+    copyBtn.textContent = "복사";
+    copyBtn.addEventListener("click", () => {
+      const text = content.innerText || content.textContent || "";
+      Promise.resolve(
+        sharedCopy && typeof sharedCopy.copyText === "function"
+          ? sharedCopy.copyText(text)
+          : false
+      ).then((ok) => {
+        App.toast(ok ? "답변을 복사했습니다." : "답변을 복사하지 못했습니다.");
+      });
+    });
+    actions.appendChild(copyBtn);
+    body.appendChild(actions);
+  }
+
   function addMessage(role, text, options) {
     const opts = options || {};
     if (suppressGuidedQuestion) return null;
@@ -350,6 +377,7 @@
       content.className = "easy-message-content";
       renderAssistantText(content, text, opts.markdown === true);
       body.append(meta, content);
+      if (opts.copyAction === true) appendCopyAction(body, content);
       article.append(avatar, body);
     } else {
       const bubble = document.createElement("div");
@@ -612,7 +640,7 @@
       } else {
         currentDialogueId = sentDialogueId;
       }
-      renderSourcedEvidence(addMessage("assistant", result.answer, { markdown: true }), result.search);
+      renderSourcedEvidence(addMessage("assistant", result.answer, { markdown: true, copyAction: true }), result.search);
       setChips([
         { label: "질문받으며 견적 작성", action: () => startGuidedIfReady() },
         { label: "이전 AI 대화", action: showAiDialogues },
@@ -953,7 +981,11 @@
       }
       quoteConversationRevision = result.revision;
       quoteConversationEngaged = true;
-      addMessage("assistant", result.answer, { markdown: result.answer_origin === "registered_model_completion" });
+      const isModelAnswer = result.answer_origin === "registered_model_completion";
+      addMessage("assistant", result.answer, {
+        markdown: isModelAnswer,
+        copyAction: isModelAnswer
+      });
       // #5007: render exactly one server-authorized assistant response per
       // request. quote.next_question is workflow metadata, not a second
       // assistant turn; emitting it caused duplicate quantity/recipient prompts.
