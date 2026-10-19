@@ -463,6 +463,51 @@ class ResidentProcess3140Test(unittest.TestCase):
             self.assertFalse(safe["file_reread_after_ack"])
             self.assertFalse(safe["second_upload_path"])
 
+    def test_the_trial_lane_composes_from_meshcentral_material_and_refuses_competition(self) -> None:
+        import types
+
+        from kagent.local_agent_meshcentral_resident_lane import (
+            MeshCentralResidentTextLane,
+        )
+
+        class _TrialMaterial:
+            def target_for_admitted_command(self, **kwargs):
+                return None
+
+            def read_port(self):
+                return types.SimpleNamespace(read_bytes=lambda **kwargs: b"")
+
+        broker = _SharedBroker()
+        entry = BrokerEntry(
+            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker,
+            credential_dir=tempfile.mkdtemp(prefix="claw4-4139-mesh-cred-"),
+        )
+        challenge_id, pairing_code = broker.web_issues()
+        with tempfile.TemporaryDirectory() as base_dir:
+            redeemed = redeem_handoff(
+                _handoff(challenge_id, pairing_code), entry=entry, base_dir=base_dir,
+                now=BASE + timedelta(seconds=1), protected_data=_ProtectedDataPort(),
+            )
+            host = build_resident_host(
+                redeemed, entry=entry,
+                meshcentral_trial_text_material=_TrialMaterial(),
+            )
+            lane = host._verified_text_lane
+            self.assertIsInstance(lane, MeshCentralResidentTextLane)
+            safe = lane.safe_dict()
+            self.assertTrue(safe["pending_before_read"])
+            self.assertTrue(safe["read_before_ack"])
+            self.assertTrue(safe["upload_after_ack"])
+            self.assertFalse(safe["file_reread_after_ack"])
+            self.assertFalse(safe["second_upload_path"])
+            # Two configured text authorities would shadow each other: refused.
+            with self.assertRaises(ContractError):
+                build_resident_host(
+                    redeemed, entry=entry,
+                    verified_text_plan_source=_TextPlanSourceProbe(),
+                    meshcentral_trial_text_material=_TrialMaterial(),
+                )
+
     def test_process_declares_no_authority(self) -> None:
         self.assertFalse(RESIDENT_PROCESS_CONTRACT["pairing_authority_implemented"])
         self.assertFalse(RESIDENT_PROCESS_CONTRACT["broker_authority_implemented"])
