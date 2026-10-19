@@ -30,12 +30,9 @@ from .service_binding_response import (
     read_bounded_service_binding_body,
     cloudflare_chunk_bytes,
 )
-from .worker_config import binding_value
+from .worker_config import binding_value, p01_engine_config_from_worker_bindings
 
-ENGINE_SERVICE_BINDING_NAME = "ENGINE_SERVICE"
 ORCHESTRATION_ENABLED_ENV = "PADIEM_CHAT_ORCHESTRATION_ENABLED"
-ENGINE_CALLER_ID_ENV = "PADIEM_CHAT_ENGINE_CALLER_ID"
-ENGINE_CALLER_SECRET_ENV = "PADIEM_CHAT_ENGINE_CALLER_SECRET"
 _MAX_ENGINE_RESPONSE_BYTES = 1_048_576  # small non-model Engine contracts
 _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES = MAX_NDJSON_TERMINAL_LINE_BYTES
 # Match the Engine's *existing* 6MB model execute ingress safety envelope.
@@ -261,20 +258,25 @@ def build_orchestration_bridge(
         return None
     if getattr(settings, "runtime_mode", "mock") != "b14":
         return None
-    engine_binding = binding_value(env, ENGINE_SERVICE_BINDING_NAME)
-    caller_id = _server_text(env, ENGINE_CALLER_ID_ENV)
-    caller_secret = _server_text(env, ENGINE_CALLER_SECRET_ENV)
-    if engine_binding is None or db_binding is None or not caller_id or not caller_secret:
+    if db_binding is None:
+        return None
+    # One Engine authority only. The Worker already presents the deployment-owned
+    # P01 Engine binding for every Engine call, so the bridge composes from that
+    # same validated surface. Requiring a second caller id/credential pair that
+    # no activation authority provisions kept this bridge permanently None, which
+    # is the failure the Chat PC file lane reported before any run was staged.
+    engine = p01_engine_config_from_worker_bindings(env)
+    if engine is None:
         return None
     try:
         client = PadiemAiEngineClient(
             transport=CloudflareEngineServiceTransport(
-                engine_binding,
+                engine.service_binding,
                 request_factory=request_factory,
             ),
             app_id="padiem-chat",
-            caller_id=caller_id,
-            credential=caller_secret,
+            caller_id=engine.caller_id,
+            credential=engine.credential,
         )
     except (TypeError, ValueError):
         return None
