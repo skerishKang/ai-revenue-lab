@@ -690,10 +690,9 @@ async def test_model_and_connection_routes_use_the_owner_key():
 
     tested = await request(
         app,
-        "POST",
-        "/api/chat/custom/credential/test",
+        "GET",
+        "/api/chat/custom/credential/test?provider=openai",
         uid=OWNER,
-        json_body={"provider": "openai"},
     )
     assert tested.status_code == 200, tested.text
     assert tested.json() == {
@@ -719,10 +718,9 @@ async def test_registry_model_list_works_without_a_key_and_test_is_unsupported()
 
     tested = await request(
         app,
-        "POST",
-        "/api/chat/custom/credential/test",
+        "GET",
+        "/api/chat/custom/credential/test?provider=opencode-go",
         uid=OWNER,
-        json_body={"provider": "opencode-go"},
     )
     assert tested.status_code == 422
     assert tested.json()["error"]["code"] == "custom_connection_test_unsupported"

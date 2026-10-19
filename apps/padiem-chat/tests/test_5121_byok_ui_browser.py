@@ -166,7 +166,7 @@ def _open_harness(browser, base_url: str, *, viewport: dict, auth_mode: str = "s
         "delete_urls": [],
         "credential_gets": 0,
         "model_gets": [],
-        "test_posts": [],
+        "test_gets": [],
         "request_urls": [],
     }
     context = browser.new_context(viewport=viewport)
@@ -258,11 +258,11 @@ def _open_harness(browser, base_url: str, *, viewport: dict, auth_mode: str = "s
             })
             return
         if path == "/api/chat/custom/credential/test":
-            payload = json.loads(request.post_data or "{}")
-            state["test_posts"].append(payload)
+            provider = urlsplit(request.url).query.removeprefix("provider=")
+            state["test_gets"].append(provider)
             route.fulfill(status=200, json={
                 "ok": True,
-                "provider": payload.get("provider"),
+                "provider": provider,
                 "models_count": len(MANUAL_MODELS),
                 "source": "provider",
             })
@@ -436,7 +436,7 @@ def test_multi_provider_manual_model_endpoint_model_list_and_connection_test(
         expect(page.locator(".mode-custom-message")).to_have_text(
             "공급사 연결을 확인했습니다."
         )
-        assert state["test_posts"] == [{"provider": MANUAL_PROVIDER}]
+        assert state["test_gets"] == [MANUAL_PROVIDER]
 
         page.locator('[data-mode-value="custom"]').click()
         expect(page.locator(".mode-presentation-panel")).to_be_hidden()

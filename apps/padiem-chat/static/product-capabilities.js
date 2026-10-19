@@ -878,13 +878,14 @@
     setCustomMessage("", "info");
     syncCustomSection();
     try {
-      const response = await nativeFetch("/api/chat/custom/credential/test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        cache: "no-store",
-        credentials: "same-origin",
-        body: JSON.stringify({ provider: provider.provider }),
-      });
+      const response = await nativeFetch(
+        "/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider),
+        {
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+          credentials: "same-origin",
+        },
+      );
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.ok !== true) {
         if (response.status === 401) {

@@ -87,8 +87,12 @@ def test_connection_test_is_real_and_only_shown_for_server_supported_providers()
         'customTestButton.hidden = !provider || !provider.supports_connection_test || !credential;'
         in CAPABILITIES
     )
-    assert 'nativeFetch("/api/chat/custom/credential/test"' in CAPABILITIES
-    assert 'body: JSON.stringify({ provider: provider.provider })' in CAPABILITIES
+    assert (
+        '"/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider)'
+        in CAPABILITIES
+    )
+    assert 'method: "POST"' not in CAPABILITIES
+    assert 'method: "PATCH"' not in CAPABILITIES
     assert "customTestState = \"testing\";" in CAPABILITIES
     assert "setCustomMessage(copy.testOk, \"ok\");" in CAPABILITIES
     assert "setCustomMessage(errorMessage(data) || copy.testFailed, \"error\");" in CAPABILITIES
@@ -121,7 +125,10 @@ def test_manual_model_requires_an_explicit_model_before_custom_selection() -> No
     assert "customSelection = { provider: provider.provider, model };" in select_custom
     # No automatic success for a typed-but-unverified model.
     assert "customSelection = { provider: provider.provider, model };" in CAPABILITIES
-    assert 'body: JSON.stringify({ provider: provider.provider })' in CAPABILITIES
+    assert (
+        '"/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider)'
+        in CAPABILITIES
+    )
     assert '"/api/chat/custom/models?provider=" + encodeURIComponent(provider.provider)' in CAPABILITIES
 
 

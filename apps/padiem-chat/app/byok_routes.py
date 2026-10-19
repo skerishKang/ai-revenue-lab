@@ -313,22 +313,13 @@ async def custom_credential_test(request: Request):
     client = _client(request)
     if store is None or client is None:
         return _unavailable()
-    if request.query_params:
+    if set(request.query_params.keys()) != {"provider"}:
         return _error(
             "custom_credential_request_invalid",
             "요청 형식이 올바르지 않습니다.",
             400,
         )
-    raw = await _read_json_object(request)
-    if isinstance(raw, JSONResponse):
-        return raw
-    if set(raw) != {"provider"}:
-        return _error(
-            "custom_credential_request_invalid",
-            "요청 형식이 올바르지 않습니다.",
-            422,
-        )
-    provider = raw.get("provider")
+    provider = request.query_params.get("provider")
     spec = CUSTOM_PROVIDERS.get(provider) if isinstance(provider, str) else None
     if spec is None:
         return _error(

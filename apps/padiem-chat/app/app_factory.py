@@ -538,7 +538,7 @@ def create_app(
         Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
         Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),
-        Route("/api/chat/custom/credential/test", custom_credential_test, methods=["POST"]),
+        Route("/api/chat/custom/credential/test", custom_credential_test, methods=["GET"]),
         Route("/api/chat/custom/models", custom_provider_models, methods=["GET"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
         Route(B66_PC_DIRECTORY_PATH, b66_pc_directory, methods=["GET"]),
