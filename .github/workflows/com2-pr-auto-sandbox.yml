@@ -3,7 +3,7 @@ name: COM2 PR Auto Sandbox
 # Trusted default-branch workflow. Never execute fork pull requests on COM2.
 on:
   workflow_run:
-    workflows: ["Operations Policy Guard"]
+    workflows: ["COM2 PR Policy Trigger"]
     types: [completed]
 
 permissions:
@@ -21,7 +21,7 @@ jobs:
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
       github.event.workflow_run.pull_requests[0].number != null
-    name: COM2 auto PR syntax sandbox
+    name: COM2 auto PR policy sandbox
     runs-on: [self-hosted, linux, x64, padiem-com2-ci]
     timeout-minutes: 10
     steps:
@@ -44,11 +44,12 @@ jobs:
         with:
           ref: ${{ steps.target.outputs.sha }}
           persist-credentials: false
+          filter: blob:none
           clean: true
           path: sandbox-input
-      - name: Run bounded offline sandbox
+      - name: Run full bounded offline policy suite
         shell: bash
         run: |
           set -euo pipefail
-          sudo -n /usr/local/sbin/padiem-ci-pr-sandbox-check
-          echo "COM2_AUTO_PR_SANDBOX=PASS"
+          sudo -n /usr/local/sbin/padiem-ci-full-policy-check
+          echo "COM2_AUTO_PR_FULL_POLICY=PASS"
