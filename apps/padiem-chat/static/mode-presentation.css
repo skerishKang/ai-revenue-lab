@@ -63,6 +63,8 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
   max-height: min(72vh, 640px);
   overflow-y: auto;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-block: 12px;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -117,6 +119,14 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
 .mode-option > span:first-child {
   display: grid;
   gap: 2px;
+}
+
+.mode-option-copy {
+  min-width: 0;
+}
+
+.mode-option-model {
+  overflow-wrap: anywhere;
 }
 
 .mode-option strong {
@@ -435,6 +445,7 @@ html[data-theme="padiem-glass"] .mode-custom-save {
     left: 0;
     width: min(320px, calc(100vw - 36px));
     max-height: min(62vh, 520px);
+    max-height: min(62dvh, 520px);
   }
 
   .mode-custom-key-input {
