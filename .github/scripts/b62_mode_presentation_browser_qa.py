@@ -21,9 +21,23 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 # suite ran as a guest and asserted `plus` was selectable, so it failed on every
 # run after #4743 even though the page was behaving as designed.
 MEMBER_GRADE = os.environ.get("B62_MODE_QA_MEMBER_GRADE", "plus")
+TIER_VALUES = ("free", "plus", "pro", "max")
+# PADIEM Custom is a customer-key lane, not a fifth tier. The fixture uses
+# synthetic provider ids so the presentation QA stays provider-neutral.
+CUSTOM_PROVIDER_FIXTURE = {
+    "ok": True,
+    "credentials": [],
+    "providers": [
+        {
+            "provider": "qa-custom-provider",
+            "model": "qa-custom-provider/qa-model",
+            "display_name": "PADIEM Custom (QA)",
+        }
+    ],
+}
 
 
-async def _stub_member_session(page: Page) -> None:
+async def _stub_member_session(page: Page) -> list[str]:
     async def auth_status(route: Route) -> None:
         await route.fulfill(
             status=200,
@@ -47,7 +61,19 @@ async def _stub_member_session(page: Page) -> None:
             ),
         )
 
+    custom_methods: list[str] = []
+
+    async def custom_credential(route: Route) -> None:
+        custom_methods.append(route.request.method)
+        await route.fulfill(
+            status=200,
+            content_type="application/json; charset=utf-8",
+            body=json.dumps(CUSTOM_PROVIDER_FIXTURE, ensure_ascii=False),
+        )
+
     await page.route("**/api/auth/status", auth_status)
+    await page.route("**/api/chat/custom/credential", custom_credential)
+    return custom_methods
 
 
 THEMES = (
@@ -66,7 +92,30 @@ async def _no_horizontal_overflow(page: Page, name: str) -> None:
         raise AssertionError(f"horizontal overflow at {name}: {scroll_width}>{inner_width}")
 
 
-async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
+async def _wait_custom_state(page: Page, *, name: str, expected: str) -> None:
+    # Auth refresh and panel open can both request the credential status, so the
+    # card briefly re-enters the loading state. Wait for the rendered state to
+    # stay settled instead of sampling a single transient paint.
+    deadline = asyncio.get_running_loop().time() + 8
+    stable_since: float | None = None
+    while asyncio.get_running_loop().time() < deadline:
+        current = await page.evaluate(
+            "() => document.querySelector('[data-mode-value=\"custom\"] .mode-option-state')"
+            "?.textContent?.trim() || ''"
+        )
+        now = asyncio.get_running_loop().time()
+        if current == expected:
+            if stable_since is None:
+                stable_since = now
+            elif now - stable_since >= 0.3:
+                return
+        else:
+            stable_since = None
+        await asyncio.sleep(0.05)
+    raise AssertionError(f"PADIEM Custom state did not settle to {expected!r} at {name}")
+
+
+async def _exercise(page: Page, *, name: str, custom_methods: list[str]) -> dict[str, Any]:
     pill = page.locator(".model-pill")
     await pill.wait_for(state="visible")
     await page.wait_for_function(
@@ -83,9 +132,49 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     panel = page.locator("#modePresentationPanel")
     await panel.wait_for(state="visible")
 
-    options = panel.locator("[data-mode-value]")
-    if await options.count() != 4:
+    tiers = panel.locator(".mode-option-list [data-mode-value]")
+    if await tiers.count() != 4:
         raise AssertionError(f"expected four tier rows (free/plus/pro/max) at {name}")
+    tier_values = await tiers.evaluate_all("els => els.map(el => el.dataset.modeValue)")
+    if tier_values != list(TIER_VALUES):
+        raise AssertionError(f"PADIEM tier rows changed at {name}: {tier_values!r}")
+
+    custom_section = panel.locator("section.mode-custom-section")
+    if await custom_section.count() != 1:
+        raise AssertionError(f"PADIEM Custom must be one independent section at {name}")
+    custom_option = custom_section.locator('[data-mode-value="custom"]')
+    if await custom_option.count() != 1:
+        raise AssertionError(f"PADIEM Custom must expose exactly one option at {name}")
+    if await panel.locator('.mode-option-list [data-mode-value="custom"]').count() != 0:
+        raise AssertionError(f"PADIEM Custom must not join the PADIEM tier list at {name}")
+    option_values = await panel.locator("[data-mode-value]").evaluate_all(
+        "els => els.map(el => el.dataset.modeValue)"
+    )
+    if sorted(option_values) != sorted(tuple(TIER_VALUES) + ("custom",)):
+        raise AssertionError(f"unexpected model-card rows at {name}: {option_values!r}")
+
+    await _wait_custom_state(page, name=name, expected="키 필요")
+    custom_title = (await custom_option.locator("strong").inner_text()).strip()
+    if "PADIEM Custom" not in custom_title:
+        raise AssertionError(f"PADIEM Custom label missing at {name}: {custom_title!r}")
+    custom_state = (await custom_option.locator(".mode-option-state").inner_text()).strip()
+    if custom_state != "키 필요":
+        raise AssertionError(f"PADIEM Custom key-required state missing at {name}: {custom_state!r}")
+    if await custom_option.is_disabled():
+        raise AssertionError(f"PADIEM Custom must be selectable for a signed-in member at {name}")
+    custom_form = custom_section.locator(".mode-custom-credential")
+    if not await custom_form.is_visible():
+        raise AssertionError(f"PADIEM Custom key form hidden at {name}")
+    custom_input = custom_form.locator("#modeCustomApiKey")
+    if await custom_input.get_attribute("type") != "password":
+        raise AssertionError(f"PADIEM Custom key input must be masked at {name}")
+    if await custom_input.input_value() != "":
+        raise AssertionError(f"PADIEM Custom key input must stay empty at {name}")
+    custom_status = (await custom_form.locator(".mode-custom-status").inner_text()).strip()
+    if "등록된 키가 없습니다." not in custom_status:
+        raise AssertionError(f"PADIEM Custom credential truth missing at {name}: {custom_status!r}")
+    if await custom_form.locator(".mode-custom-delete").is_visible():
+        raise AssertionError(f"PADIEM Custom delete must stay hidden without a key at {name}")
 
     free = panel.locator('[data-mode-value="free"]')
     if await free.is_disabled():
@@ -112,6 +201,14 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     if not plus_box or plus_box["height"] < 44:
         raise AssertionError(f"Plus tier target too small at {name}: {plus_box}")
 
+    await custom_option.click()
+    if not await panel.is_visible():
+        raise AssertionError(f"key-required PADIEM Custom must keep the panel open at {name}")
+    await page.wait_for_function("() => document.activeElement?.id === 'modeCustomApiKey'")
+    pill_text = (await page.locator(".model-pill span:last-child").inner_text()).strip()
+    if pill_text != "PADIEM Custom":
+        raise AssertionError(f"PADIEM Custom selection not reflected on the pill at {name}: {pill_text!r}")
+
     await plus.click()
     if not await panel.is_hidden():
         raise AssertionError(f"tier selection must close panel at {name}")
@@ -131,12 +228,18 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
         raise AssertionError(f"focus did not return to tier control at {name}")
 
     await _no_horizontal_overflow(page, name)
+    if not custom_methods or any(method != "GET" for method in custom_methods):
+        raise AssertionError(f"PADIEM Custom QA saw non-read credential traffic at {name}: {custom_methods!r}")
     return {
         "default_tier": "free",
         "selected_tier": "plus",
         "plus": "available",
         "pro": "upgrade",
         "max": "upgrade",
+        "tier_rows": list(TIER_VALUES),
+        "custom_section": "separate",
+        "custom_state": "key_required",
+        "custom_credential_methods": sorted(set(custom_methods)),
         "server_authority_copy": True,
         "escape_focus_return": True,
         "horizontal_overflow": False,
@@ -156,10 +259,12 @@ async def main() -> None:
                     page = await browser.new_page(viewport=viewport)
                     try:
                         name = f"{theme}-{viewport_name}"
-                        await _stub_member_session(page)
+                        custom_methods = await _stub_member_session(page)
                         await page.goto(f"{BASE_URL}/{query}", wait_until="domcontentloaded", timeout=30_000)
                         await page.locator("#messageInput").wait_for(state="visible")
-                        report["views"][name] = await _exercise(page, name=name)
+                        report["views"][name] = await _exercise(
+                            page, name=name, custom_methods=custom_methods
+                        )
                         if name in {"light-desktop", "padiem-glass-mobile"}:
                             await page.locator(".model-pill").click()
                             await page.locator("#modePresentationPanel").wait_for(state="visible")
@@ -192,8 +297,23 @@ async def _english_probe() -> dict[str, Any]:
             await page.locator(".model-pill").click()
             panel = page.locator("#modePresentationPanel")
             await panel.wait_for(state="visible")
-            if await panel.locator("[data-mode-value]").count() != 4:
+            tiers = panel.locator(".mode-option-list [data-mode-value]")
+            if await tiers.count() != 4:
                 raise AssertionError("English tier panel must expose four tier rows")
+            tier_values = await tiers.evaluate_all("els => els.map(el => el.dataset.modeValue)")
+            if tier_values != list(TIER_VALUES):
+                raise AssertionError(f"English tier rows changed: {tier_values!r}")
+            custom_section = panel.locator("section.mode-custom-section")
+            custom_option = custom_section.locator('[data-mode-value="custom"]')
+            if await custom_section.count() != 1 or await custom_option.count() != 1:
+                raise AssertionError("English panel must keep PADIEM Custom in one separate section")
+            await _wait_custom_state(page, name="english", expected="Key required")
+            custom_state = (await custom_option.locator(".mode-option-state").inner_text()).strip()
+            if custom_state != "Key required":
+                raise AssertionError(f"English PADIEM Custom state missing: {custom_state!r}")
+            custom_heading = (await panel.locator("#modeCustomTitle").inner_text()).strip()
+            if custom_heading != "My API key (PADIEM Custom)":
+                raise AssertionError(f"English PADIEM Custom heading missing: {custom_heading!r}")
             if await panel.locator('[data-mode-value="pro"]').is_disabled():
                 raise AssertionError("English tier panel must keep Pro disabled")
             pro_state = (await panel.locator('[data-mode-value="pro"] .mode-option-state').inner_text()).strip()

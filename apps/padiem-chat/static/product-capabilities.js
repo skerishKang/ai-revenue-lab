@@ -182,6 +182,10 @@
   let customOption = null;
   let customOptionTitle = null;
   let customOptionState = null;
+  let customHeadingEl = null;
+  let customDescriptionEl = null;
+  let customKeyLabelEl = null;
+  let customKeyHintEl = null;
   let customPanel = null;
   let customStatusEl = null;
   let customGuestNote = null;
@@ -300,6 +304,22 @@
     if (auth.sessionState === "signed_in") return copy.logout;
     if (auth.sessionState === "expired") return copy.signInAgain;
     return copy.login;
+  }
+
+  // locale.js localizes the same button and runs after every capabilitychange,
+  // so its copy is a legitimate presentation and must not look like a foreign
+  // mutation to the observer below.
+  function localeAccountActionText() {
+    const locale = window.__padiemLocale;
+    if (!locale || typeof locale.text !== "function") return "";
+    const key = auth.sessionState === "signed_in"
+      ? "logout"
+      : auth.sessionState === "expired" ? "sign-in-again" : "login";
+    try {
+      return text(locale.text(key), 40);
+    } catch (_) {
+      return "";
+    }
   }
 
   function expectedAccountNameText() {
@@ -485,6 +505,11 @@
   function syncCustomSection() {
     if (!customOption) return;
     const copy = customCopy();
+    if (customHeadingEl) customHeadingEl.textContent = copy.heading;
+    if (customDescriptionEl) customDescriptionEl.textContent = copy.description;
+    if (customKeyLabelEl) customKeyLabelEl.textContent = copy.keyLabel;
+    if (customKeyHintEl) customKeyHintEl.textContent = copy.keyHint;
+    if (customRetryButton) customRetryButton.textContent = copy.retry;
     const state = customUsageState();
     const selectable = state === "ready" || state === "key";
     const credential = customCredential();
@@ -781,6 +806,8 @@
     const description = document.createElement("small");
     description.textContent = copy.description;
     heading.append(title, description);
+    customHeadingEl = title;
+    customDescriptionEl = description;
 
     customOption = document.createElement("button");
     customOption.type = "button";
@@ -808,6 +835,7 @@
     label.className = "mode-custom-key-label";
     label.htmlFor = "modeCustomApiKey";
     label.textContent = copy.keyLabel;
+    customKeyLabelEl = label;
     customInput = document.createElement("input");
     customInput.type = "password";
     customInput.id = "modeCustomApiKey";
@@ -841,6 +869,7 @@
     hint.className = "mode-custom-hint";
     hint.id = "modeCustomKeyHint";
     hint.textContent = copy.keyHint;
+    customKeyHintEl = hint;
 
     customMessageEl = document.createElement("p");
     customMessageEl.className = "mode-custom-message";
@@ -1204,7 +1233,7 @@
       if (auth.sessionState !== "signed_in") return;
       const expectedAction = expectedAccountActionText();
       const actualAction = loginButton.textContent.trim();
-      if (actualAction !== expectedAction) queueAuthRefresh();
+      if (actualAction !== expectedAction && actualAction !== localeAccountActionText()) queueAuthRefresh();
     });
     authUiObserver.observe(loginButton, { childList: true, subtree: true });
     loginButton.addEventListener("click", () => {
