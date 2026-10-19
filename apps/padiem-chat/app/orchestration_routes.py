@@ -141,8 +141,8 @@ async def api_orchestration(request: Request) -> JSONResponse:
         return _error("unauthorized", "이 기능을 사용하려면 로그인이 필요합니다.", 401)
     try:
         raw = await _json_body(request)
-        messages, skill, tool_request, attachments, conversation_id, project_id = _validate_payload(raw)
-        if tool_request is not None or attachments or project_id is not None:
+        messages, skill, tool_request, attachments, conversation_id, project_id, custom = _validate_payload(raw)
+        if tool_request is not None or attachments or project_id is not None or custom is not None:
             return _error(
                 "orchestration_not_applicable",
                 "이 요청은 기존 채팅 경로에서 처리합니다.",
