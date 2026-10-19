@@ -16,10 +16,10 @@ def test_stage_event_is_bounded_and_safe():
     item = build_stage_event(
         request_id="req_1234567890ab", stage="b14.complete",
         outcome="error", duration_ms=25.66, code="upstream_timeout",
-        model="opencode-go/cat-jam-free", provider="example")
+        model="fixture-provider/fixture-model", provider="example")
     assert item["request_id"] == "req_1234567890ab"
     assert item["code"] == "upstream_timeout"
-    assert item["model"] == "opencode-go/cat-jam-free"
+    assert item["model"] == "fixture-provider/fixture-model"
     assert "prompt" not in json.dumps(item)
     assert "cookie" not in json.dumps(item)
 

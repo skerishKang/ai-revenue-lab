@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 from pathlib import Path
 
 import httpx
@@ -15,6 +16,28 @@ from padiem_control_plane import product_tier_routes as tier_routes
 # test client that omits it is not representing the traffic #3476 guards. The
 # marker lets a test assert the missing-Origin case on purpose.
 NO_BROWSER_ORIGIN_MARKER = "x-test-no-origin"
+
+# #5002: JSON keeps the manifest out of the module import graph, so workflows
+# that only collect a subset of this suite need no extra dependency.
+_MODEL_PATH_MANIFEST = json.loads(
+    (Path(__file__).resolve().parent / "model_path_manifest.json").read_text(
+        encoding="utf-8"
+    )
+)
+_MODEL_PATH_MARKERS = {
+    module: _MODEL_PATH_MANIFEST["markers"][category]
+    for module, category in _MODEL_PATH_MANIFEST["modules"].items()
+}
+_DEFAULT_MODEL_PATH_MARKER = _MODEL_PATH_MANIFEST["markers"][
+    _MODEL_PATH_MANIFEST["default_category"]
+]
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """Attach exactly one #5002 execution-path marker per collected test."""
+    for item in items:
+        module = Path(str(item.fspath)).name
+        item.add_marker(getattr(pytest.mark, _MODEL_PATH_MARKERS.get(module, _DEFAULT_MODEL_PATH_MARKER)))
 
 
 def _attach_reviewed_browser_origin(app: object, request: httpx.Request) -> None:
@@ -76,6 +99,8 @@ _HOLD_POLICY_MODULES = {
     "test_admin_model_select_261018.py",
     # Real owner-defined Free route test: synthetic Plus must not overwrite it.
     "test_free_member_chat_4317.py",
+    # #5002: derives every B66 grade from the real shared active route.
+    "test_b66_manual_model_choice_contract.py",
 }
 
 

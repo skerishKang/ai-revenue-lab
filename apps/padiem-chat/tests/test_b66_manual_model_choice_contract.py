@@ -181,6 +181,7 @@ class _VerifiedAdmin:
 
 def test_b66_admin_option_needs_central_verification_and_uses_muse():
     from app.b66_grade_models import B66_ADMIN_GRADE
+    from app.model_policy import ADMIN_B14_MODEL_ID
     ordinary = _client(_Store(), _Interpreter())
     ordinary.app.state.b66_member_admin_store = _NoAdmin()
     ordinary.app.state.b66_quote_model_resolver = _BeamAndMuse()
@@ -198,7 +199,7 @@ def test_b66_admin_option_needs_central_verification_and_uses_muse():
     rows = admin.get("/api/b66/quote/models").json()["tiers"]
     admin_row = next(t for t in rows if t["tier"] == B66_ADMIN_GRADE)
     assert admin_row["name"] == "Padiem 관리자"
-    assert admin_row["model_id"] == "opencode-go/muse-spark-1.3-contributor"
+    assert admin_row["model_id"] == ADMIN_B14_MODEL_ID
 
 
 class _BeamAndMuse:
@@ -209,10 +210,21 @@ class _BeamAndMuse:
         ]
 
 
-def test_b66_plus_grade_dispatches_muse_not_beam():
+def test_b66_grade_map_tracks_the_active_product_routes():
     from app.b66_grade_models import B66_GRADE_MODEL_IDS
-    assert B66_GRADE_MODEL_IDS["plus"] == "opencode-go/muse-spark-1.3-contributor"
-    assert B66_GRADE_MODEL_IDS["free"] == "opencode-go/beam-free"
+    from padiem_control_plane.product_tier_routes import (
+        ProductTierLabel,
+        active_route_for,
+    )
+    for tier, label in (
+        ("free", ProductTierLabel.FREE),
+        ("plus", ProductTierLabel.PLUS),
+        ("pro", ProductTierLabel.PRO),
+        ("max", ProductTierLabel.MAX),
+    ):
+        route = active_route_for(label)
+        assert route is not None and route.model_id
+        assert B66_GRADE_MODEL_IDS[tier] == route.model_id
 
 
 def test_b66_manual_selection_errors_have_readable_korean_messages():

@@ -14,7 +14,11 @@ from app.dispatch_quota import (
 )
 from app.model_policy import DEFAULT_B14_MODEL_ID, DEFAULT_CHAT_PROFILE, LOW_B14_MODEL_ID
 from app.usage_gate import UsageDecision
-from padiem_control_plane.product_tier_routes import PLUS_HOLD_MODEL_ID
+from padiem_control_plane.product_tier_routes import (
+    PLUS_HOLD_MODEL_ID,
+    ProductTierLabel,
+    active_route_for,
+)
 
 
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
@@ -76,8 +80,8 @@ def test_live_completed_active_beam_propagates_provider_error_and_refunds():
         assert info.value.status_code == 502
         assert info.value.code == "provider_server_error"
         assert DEFAULT_CHAT_PROFILE == "free"
-        assert DEFAULT_B14_MODEL_ID == "opencode-go/beam-free"
-        assert LOW_B14_MODEL_ID == "opencode-go/muse-spark-1.3-contributor"
+        assert DEFAULT_B14_MODEL_ID == active_route_for(ProductTierLabel.FREE).model_id
+        assert LOW_B14_MODEL_ID == active_route_for(ProductTierLabel.PLUS).model_id
         assert calls == 1
         assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False
@@ -153,7 +157,7 @@ def test_mock_chat_remains_available_without_provider_dispatch():
         )
         result = await client.complete(MESSAGES)
         assert result["runtime"] == "mock"
-        assert result["route"]["model"] == "opencode-go/beam-free"
+        assert result["route"]["model"] == DEFAULT_B14_MODEL_ID
         assert calls == 0
 
     asyncio.run(scenario())
