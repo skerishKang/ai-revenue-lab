@@ -106,12 +106,12 @@ async def _require_token(env, request) -> None:
 def _bucket(env):
     bucket = getattr(env, contract.BUCKET_BINDING, None)
     if bucket is None:
-        raise contract.BackupError("backup_storage_unavailable", 503)
+        raise contract.BackupError("storage_binding_missing", 503)
     # Only the two operations this slice uses are required. The Worker never
     # calls delete, and it does not depend on an unproven HEAD binding shape.
     for name in ("put", "get"):
         if not callable(getattr(bucket, name, None)):
-            raise contract.BackupError("backup_storage_unavailable", 503)
+            raise contract.BackupError("storage_method_missing", 503)
     return bucket
 
 
@@ -177,18 +177,28 @@ async def _object_bytes(obj) -> bytes:
     data = await _maybe_await(body)
     if isinstance(data, (bytes, bytearray, memoryview)):
         return bytes(data)
-    raise contract.BackupError("backup_storage_unavailable", 503)
+    raise contract.BackupError("storage_body_failed", 502)
 
 
 async def _read_object(bucket, key: str, max_bytes: int) -> bytes | None:
-    obj = await _maybe_await(bucket.get(key))
+    try:
+        obj = await _maybe_await(bucket.get(key))
+    except contract.BackupError:
+        raise
+    except Exception:
+        raise contract.BackupError("storage_read_failed", 502)
     if obj is None:
         return None
     size = getattr(obj, "size", None)
     if isinstance(size, int) and not isinstance(size, bool) and size > max_bytes:
         # An object written out of band must not be buffered into the isolate.
         raise contract.BackupError("stored_object_too_large", 502)
-    return await _object_bytes(obj)
+    try:
+        return await _object_bytes(obj)
+    except contract.BackupError:
+        raise
+    except Exception:
+        raise contract.BackupError("storage_body_failed", 502)
 
 
 async def _existing_state(bucket, key: str, data: bytes, max_bytes: int) -> str | None:
@@ -212,13 +222,18 @@ async def _put_if_absent(
         return "already_present"
     if state == "conflict":
         raise contract.BackupError("backup_conflict_no_overwrite", 409)
-    await _maybe_await(
-        bucket.put(
-            key,
-            data,
-            httpMetadata={"contentType": content_type, "cacheControl": "no-store"},
+    try:
+        await _maybe_await(
+            bucket.put(
+                key,
+                data,
+                httpMetadata={"contentType": content_type, "cacheControl": "no-store"},
+            )
         )
-    )
+    except contract.BackupError:
+        raise
+    except Exception:
+        raise contract.BackupError("storage_write_failed", 502)
     stored = await _read_object(bucket, key, max_bytes)
     if stored is None or stored != data:
         raise contract.BackupError("backup_write_unverified", 502)
