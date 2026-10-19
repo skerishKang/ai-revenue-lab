@@ -395,7 +395,7 @@ def _agent_profile(
         required_capabilities=(),
         context_policy={},
         # max_retries=0 disables a repeated attempt to the SAME model.
-        # It does not disable B14 owner-designated Cat Jam -> tier backup
+        # It does not disable B14 owner-designated primary -> tier backup
         # recovery, which retains the grade and per-attempt evidence.
         model_policy={
             "model": chosen_model, "max_retries": 0,

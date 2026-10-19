@@ -19,7 +19,7 @@ const easySource = fs.readFileSync(path.join(SRC, "easy-mode.js"), "utf8");
 
 const NOW = "2026-10-04T09:00:00.000Z";
 const SKILL_ID = "b66skill_" + "1".repeat(32);
-const SELECTED_MODEL_ID = "opencode-go/cat-jam-free";
+const SELECTED_MODEL_ID = "opencode-go/beam-free";
 
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 async function flush() {
@@ -187,7 +187,7 @@ function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
     }
     if (target.endsWith("/api/padiem/b66/quote/models")) {
       return jsonResponse({
-        ok: true, models: [{ model_id: SELECTED_MODEL_ID, name: "Cat Jam" }],
+        ok: true, models: [{ model_id: SELECTED_MODEL_ID, name: "Beam Free" }],
         default_model_id: null,
         tiers: [{tier:"free", name:"PADIEM Free", model_id:SELECTED_MODEL_ID}],
         default_tier: null
@@ -195,7 +195,7 @@ function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
     }
     if (target.endsWith("/api/padiem/b66/quote/interpret")) {
       const body = JSON.parse(opts.body || "{}");
-      assert.equal(body.model_id, SELECTED_MODEL_ID, "selected grade resolves Cat Jam");
+      assert.equal(body.model_id, SELECTED_MODEL_ID, "selected grade resolves Beam Free");
       assert.equal(body.tier,"free","selected grade forwarded to B14");
       if (!body.message || !body.saved_skill_id) {
         return jsonResponse({ ok: false, error: { code: "quote_input_unrecognized" } }, 422);

@@ -345,7 +345,7 @@ def _agent_profile(
             "model": model,
             # Keep unchosen sampling absent: B14 honours provider native defaults.
             # Arbitrary catalog-wide fallback stays disabled. This does not
-            # block the owner-pinned Cat Jam grade backup in the B14 gateway.
+            # block the owner-pinned tier grade backup in the B14 gateway.
             "allow_external_fallback": False,
             "max_attempts": 1,
             **({"product_tier": product_tier} if product_tier is not None else {}),
@@ -824,8 +824,8 @@ class B14Client:
 
         Caller has already resolved the exact enabled B14 route and product
         membership. No same-model retry or arbitrary model substitution is
-        permitted. B14 still uses the fixed grade backup for Cat Jam primary,
-        and this path cannot issue, save or overwrite a quotation.
+        permitted. B14 still uses the fixed grade backup for the selected
+        primary, and this path cannot issue, save or overwrite a quotation.
         """
         self.ensure_registered_quote_runtime_available()
         if (
@@ -961,7 +961,7 @@ class B14Client:
             # not a model-native output token/character ceiling. Other
             # Chat/Claw callers retain their original independent resource
             # budgets. No same-route retry or arbitrary catalog fallback;
-            # the preselected Cat Jam grade backup in B14 remains enabled.
+            # the preselected tier grade backup in B14 remains enabled.
             completed_response_budget_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
             **({"product_tier": product_tier} if product_tier is not None else {}),
             **native_kwargs,

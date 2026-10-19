@@ -167,7 +167,7 @@ def resolve_manual_route(
     Raises NoSafeRoute if the model is not in the catalog or is disabled.
 
     Manual routes default to no arbitrary catalog substitutions. An owner-
-    selected Cat Jam primary with trusted product grade instead receives
+    selected primary with trusted product grade instead receives
     exactly one preselected grade fallback on recoverable provider failure.
     The generic allow_external_fallback flag does not disable this fixed pair.
     """
