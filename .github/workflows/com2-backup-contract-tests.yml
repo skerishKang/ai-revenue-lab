@@ -3,10 +3,11 @@ name: COM2 Backup Contract Tests
 # #5093 — focused CI for the COM2 backup transfer slice.
 #
 # Scope: the Worker contract/dispatch suite and the operator script suite,
-# including an in-process loopback upload -> verify -> restore-check run.
+# including an in-process loopback upload -> verify -> restore-check run, plus
+# the offline tests for the read-only Cloudflare asset snapshot tool.
 # This workflow never deploys, never touches R2/D1/Production and holds no
-# credential. The loopback server is a test double; it is not production
-# evidence.
+# credential. The loopback server and Wrangler fixtures are test doubles; they
+# are not production evidence.
 
 on:
   pull_request:
@@ -14,6 +15,8 @@ on:
       - "apps/com2-backup/**"
       - "scripts/ops/com2_backup.py"
       - "scripts/ops/tests/test_com2_backup.py"
+      - "scripts/ops/cloudflare_asset_snapshot.py"
+      - "scripts/ops/tests/test_cloudflare_asset_snapshot.py"
       - ".github/workflows/com2-backup-contract-tests.yml"
   workflow_dispatch:
 
@@ -50,10 +53,14 @@ jobs:
       - name: Run operator script tests
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_backup.py
 
+      - name: Run read-only asset snapshot tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_cloudflare_asset_snapshot.py
+
       - name: Record gate scope
         run: |
           echo 'COM2_BACKUP_WORKER_TESTS=EXECUTED'
           echo 'COM2_BACKUP_OPS_TESTS=EXECUTED'
+          echo 'CLOUDFLARE_ASSET_SNAPSHOT_TESTS=EXECUTED'
           echo 'LOOPBACK_TRANSFER_E2E=EXECUTED'
           echo 'PRODUCTION_DEPLOYMENT=0'
           echo 'PRODUCTION_E2E=0'
