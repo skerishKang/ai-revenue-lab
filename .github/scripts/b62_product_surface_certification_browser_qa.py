@@ -28,6 +28,7 @@ VIEWPORTS = (
 STATIC_FONT_HOSTS = frozenset({"cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"})
 QUESTION = "제품 표면 인증을 위한 짧은 응답을 보여줘"
 ANSWER = "제품 표면 인증용 결정론적 응답입니다."
+TIER_VALUES = ("free", "plus", "pro", "max")
 
 REQUIRED_EXACT_HEAD_WORKFLOWS = (
     "B62 Padiem Chat CI",
@@ -247,9 +248,35 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     await page.keyboard.press("Enter")
     panel = page.locator("#modePresentationPanel")
     await panel.wait_for(state="visible")
-    options = panel.locator("[data-mode-value]")
-    if await options.count() != 4:
+    tiers = panel.locator(".mode-option-list [data-mode-value]")
+    if await tiers.count() != 4:
         raise AssertionError(f"four-tier matrix incomplete at {label}")
+    tier_values = await tiers.evaluate_all("els => els.map(el => el.dataset.modeValue)")
+    if tier_values != list(TIER_VALUES):
+        raise AssertionError(f"PADIEM tier matrix changed at {label}: {tier_values!r}")
+    custom_section = panel.locator("section.mode-custom-section")
+    custom_option = custom_section.locator('[data-mode-value="custom"]')
+    if await custom_section.count() != 1 or await custom_option.count() != 1:
+        raise AssertionError(f"PADIEM Custom must be one independent section at {label}")
+    if await panel.locator('.mode-option-list [data-mode-value="custom"]').count() != 0:
+        raise AssertionError(f"PADIEM Custom must not join the PADIEM tier list at {label}")
+    option_values = await panel.locator("[data-mode-value]").evaluate_all(
+        "els => els.map(el => el.dataset.modeValue)"
+    )
+    if sorted(option_values) != sorted(tuple(TIER_VALUES) + ("custom",)):
+        raise AssertionError(f"unexpected model-card rows at {label}: {option_values!r}")
+    if not await custom_option.is_disabled():
+        raise AssertionError(f"PADIEM Custom must require sign-in for a guest at {label}")
+    custom_state = (await custom_option.locator(".mode-option-state").inner_text()).strip()
+    if "로그인 필요" not in custom_state:
+        raise AssertionError(f"PADIEM Custom sign-in state missing at {label}: {custom_state!r}")
+    if await custom_section.locator(".mode-custom-credential").is_visible():
+        raise AssertionError(f"PADIEM Custom key form must stay hidden for a guest at {label}")
+    custom_guest_note = custom_section.locator(".mode-custom-guest-note")
+    if not await custom_guest_note.is_visible():
+        raise AssertionError(f"PADIEM Custom guest note missing at {label}")
+    if "로그인 후 Padiem Custom" not in (await custom_guest_note.inner_text()).strip():
+        raise AssertionError(f"PADIEM Custom guest truth missing at {label}")
     free = panel.locator('[data-mode-value="free"]')
     if await free.is_disabled():
         raise AssertionError(f"Free must be selectable at {label}")

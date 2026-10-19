@@ -111,6 +111,9 @@ const lifecycleForError = () => "failed";
 const clearAttachment = () => {};
 const renderError = () => {};
 const renderCancelled = () => {};
+// #5121: requestAnswer consults the custom-key failure handler after a failed
+// attempt. Routing is under test here, so the handler stays inert.
+const handleCustomRequestFailure = () => {};
 const requestCompletedAnswer = async () => false;
 const addAssistantShell = () => ({ querySelector: () => ({ replaceChildren() {}, appendChild() {} }) });
 const addUserMessage = () => {};

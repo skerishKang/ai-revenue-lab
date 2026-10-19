@@ -69,7 +69,7 @@ CUSTOM_PROVIDERS: dict[str, CustomProvider] = {
         upstream_model="beam-free",
         base_origin="https://opencode.ai/inference/go/v1",
         wire="chat/completions",
-        display_name="PADIEM Custom (OpenCode Go)",
+        display_name="Padiem Custom (OpenCode Go)",
     ),
 }
 

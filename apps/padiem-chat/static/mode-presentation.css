@@ -60,6 +60,9 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
   bottom: calc(100% + 12px);
   left: 0;
   width: min(340px, calc(100vw - 48px));
+  max-height: min(72vh, 640px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -247,6 +250,179 @@ html[data-theme="padiem-glass"] .mode-option-state {
   color: #40515f;
 }
 
+/* PADIEM Custom (BYOK) is a customer-owned key lane. It sits below the
+ * PADIEM-provided tiers with its own divider so the two are never confused. */
+.mode-custom-section {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.mode-custom-heading {
+  display: grid;
+  gap: 3px;
+}
+
+.mode-custom-heading strong {
+  font-size: 14px;
+}
+
+.mode-custom-heading small,
+.mode-custom-hint,
+.mode-custom-status,
+.mode-custom-message,
+.mode-custom-guest-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.mode-option--custom {
+  border-style: dashed;
+}
+
+.mode-option--custom[aria-pressed="true"] {
+  border-style: solid;
+}
+
+.mode-custom-credential {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(127, 127, 127, .06);
+}
+
+.mode-custom-credential[hidden] {
+  display: none !important;
+}
+
+.mode-custom-key-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mode-custom-key-input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .8);
+  color: inherit;
+  font: inherit;
+}
+
+.mode-custom-key-input:focus-visible,
+.mode-custom-action:focus-visible,
+.mode-custom-retry:focus-visible {
+  outline: 2px solid var(--accent, #79bce7);
+  outline-offset: 1px;
+}
+
+.mode-custom-key-input:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.mode-custom-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mode-custom-action,
+.mode-custom-retry {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .8);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.mode-custom-save {
+  border-color: var(--accent, #79bce7);
+  background: var(--accent, #79bce7);
+  color: #fff;
+}
+
+.mode-custom-action:disabled {
+  cursor: not-allowed;
+  opacity: .62;
+}
+
+.mode-custom-delete {
+  color: #b3261e;
+}
+
+.mode-custom-status[data-state="ready"] {
+  color: var(--accent-strong, #2f6f99);
+  font-weight: 600;
+}
+
+.mode-custom-status[data-state="expired"],
+.mode-custom-status[data-state="unavailable"],
+.mode-custom-message[data-state="error"] {
+  color: #b3261e;
+}
+
+.mode-custom-message[data-state="ok"] {
+  color: var(--accent-strong, #2f6f99);
+}
+
+.mode-custom-guest-note[hidden],
+.mode-custom-message[hidden],
+.mode-custom-retry[hidden],
+.mode-custom-delete[hidden] {
+  display: none !important;
+}
+
+html[data-theme="dark"] .mode-custom-credential,
+html[data-theme="cinematic"] .mode-custom-credential,
+html[data-theme="padiem-home"] .mode-custom-credential {
+  background: rgba(255, 255, 255, .04);
+}
+
+html[data-theme="dark"] .mode-custom-key-input,
+html[data-theme="dark"] .mode-custom-action,
+html[data-theme="dark"] .mode-custom-retry,
+html[data-theme="cinematic"] .mode-custom-key-input,
+html[data-theme="cinematic"] .mode-custom-action,
+html[data-theme="cinematic"] .mode-custom-retry,
+html[data-theme="padiem-home"] .mode-custom-key-input,
+html[data-theme="padiem-home"] .mode-custom-action,
+html[data-theme="padiem-home"] .mode-custom-retry {
+  background: rgba(255, 255, 255, .08);
+  color: var(--text);
+}
+
+html[data-theme="padiem-glass"] .mode-custom-credential {
+  border-color: rgba(42, 55, 66, .12);
+  background: rgba(255, 255, 255, .5);
+}
+
+html[data-theme="padiem-glass"] .mode-custom-key-input,
+html[data-theme="padiem-glass"] .mode-custom-action,
+html[data-theme="padiem-glass"] .mode-custom-retry {
+  border-color: rgba(42, 55, 66, .16);
+  background: rgba(255, 255, 255, .82);
+  color: #17212a;
+}
+
+html[data-theme="padiem-glass"] .mode-custom-save {
+  border-color: #3f7fa8;
+  background: #3f7fa8;
+  color: #fff;
+}
+
 @media (max-width: 720px) {
   .model-pill[data-mode-control="true"] {
     min-height: 44px;
@@ -258,5 +434,15 @@ html[data-theme="padiem-glass"] .mode-option-state {
     bottom: calc(100% + 10px);
     left: 0;
     width: min(320px, calc(100vw - 36px));
+    max-height: min(62vh, 520px);
+  }
+
+  .mode-custom-key-input {
+    min-height: 44px;
+  }
+
+  .mode-custom-action,
+  .mode-custom-retry {
+    min-height: 44px;
   }
 }

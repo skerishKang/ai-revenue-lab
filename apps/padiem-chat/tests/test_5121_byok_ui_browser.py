@@ -1,0 +1,340 @@
+"""#5121 PADIEM Custom customer UI in a real Chromium at PC and mobile sizes.
+
+The real product-capabilities.js and mode-presentation.css run in Chromium. All
+API calls are intercepted by Playwright: no PADIEM backend, B14, Engine or
+provider is contacted, and no paid provider call is made.
+"""
+
+from __future__ import annotations
+
+import json
+import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import urlsplit
+
+import pytest
+
+pytest.importorskip("playwright.sync_api")
+from playwright.sync_api import expect, sync_playwright  # noqa: E402
+
+STATIC = Path(__file__).resolve().parents[1] / "static"
+FAKE_KEY = "test-5121-synthetic-key-0123456789abcdef"
+PROVIDER = "opencode-go"
+MODEL = "opencode-go/beam-free"
+DISPLAY_NAME = "Padiem Custom (OpenCode Go)"
+
+HARNESS = """<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#5121 BYOK UI harness</title>
+<style>
+  :root {
+    --line: #d9dee5;
+    --text: #1c2530;
+    --muted: #5b6672;
+    --panel: rgba(255, 255, 255, .96);
+    --accent: #79bce7;
+    --accent-strong: #2f6f99;
+  }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    font-family: sans-serif;
+    color: var(--text);
+  }
+  .composer { padding: 16px; border-top: 1px solid var(--line); }
+  .composer-tools { display: flex; gap: 8px; }
+  .model-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+  <main class="composer">
+    <div class="composer-tools">
+      <button type="button" class="model-pill">
+        <span class="status-spark" aria-hidden="true">S</span>
+        <span>Padiem Free</span>
+      </button>
+    </div>
+  </main>
+  <script src="./product-capabilities.js"></script>
+</body>
+</html>
+"""
+
+
+@pytest.fixture(scope="module")
+def static_server():
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:  # noqa: N802
+            path = urlsplit(self.path).path
+            if path == "/harness.html":
+                body = HARNESS.encode("utf-8")
+                content_type = "text/html; charset=utf-8"
+            else:
+                relative = path.lstrip("/")
+                target = (STATIC / relative).resolve()
+                if not target.is_relative_to(STATIC) or not target.is_file():
+                    self.send_error(404)
+                    return
+                body = target.read_bytes()
+                content_type = (
+                    "text/javascript; charset=utf-8" if target.suffix == ".js"
+                    else "text/css; charset=utf-8" if target.suffix == ".css"
+                    else "application/octet-stream"
+                )
+            self.send_response(200)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, format: str, *args: object) -> None:  # noqa: A002
+            return
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}"
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+@pytest.fixture(scope="module")
+def browser():
+    with sync_playwright() as playwright:
+        try:
+            instance = playwright.chromium.launch()
+        except Exception as exc:  # browser binary absent in a lean CI image
+            pytest.skip(f"Chromium is unavailable: {exc}")
+        yield instance
+        instance.close()
+
+
+def _open_harness(browser, base_url: str, *, viewport: dict, auth_mode: str = "signed_in"):
+    state = {
+        "credential": False,
+        "last4": "",
+        "put_bodies": [],
+        "delete_urls": [],
+        "credential_gets": 0,
+        "request_urls": [],
+    }
+    context = browser.new_context(viewport=viewport)
+    page = context.new_page()
+    page.on("dialog", lambda dialog: dialog.accept())
+    page.on("request", lambda request: state["request_urls"].append(request.url))
+
+    def handle(route, request):
+        path = urlsplit(request.url).path
+        if path == "/health":
+            route.fulfill(status=200, json={"web_tools_ready": True, "deep_research_ready": True})
+            return
+        if path == "/api/auth/status":
+            if auth_mode == "expired":
+                route.fulfill(status=200, json={
+                    "ready": True,
+                    "authenticated": False,
+                    "session_state": "expired",
+                    "user": None,
+                    "member_grade": "free",
+                    "history_ready": False,
+                    "project_files_ready": False,
+                })
+            else:
+                route.fulfill(status=200, json={
+                    "ready": True,
+                    "authenticated": True,
+                    "session_state": "signed_in",
+                    "user": {"name": "테스터"},
+                    "member_grade": "free",
+                    "history_ready": True,
+                    "project_files_ready": False,
+                })
+            return
+        if path == "/api/b66/admin/me":
+            route.fulfill(status=200, json={"ok": True, "admin": False})
+            return
+        if path == "/api/chat/custom/credential":
+            if request.method == "GET":
+                state["credential_gets"] += 1
+                credentials = (
+                    [{"provider": PROVIDER, "key_last4": state["last4"]}]
+                    if state["credential"] else []
+                )
+                route.fulfill(status=200, json={
+                    "ok": True,
+                    "credentials": credentials,
+                    "providers": [
+                        {"provider": PROVIDER, "model": MODEL, "display_name": DISPLAY_NAME}
+                    ],
+                })
+                return
+            if request.method == "PUT":
+                body = request.post_data or ""
+                state["put_bodies"].append(body)
+                payload = json.loads(body)
+                state["credential"] = True
+                state["last4"] = str(payload.get("api_key", ""))[-4:]
+                route.fulfill(status=200, json={
+                    "ok": True,
+                    "credential": {"provider": PROVIDER, "key_last4": state["last4"]},
+                })
+                return
+            if request.method == "DELETE":
+                state["delete_urls"].append(request.url)
+                state["credential"] = False
+                state["last4"] = ""
+                route.fulfill(status=200, json={"ok": True, "deleted": True})
+                return
+        route.fulfill(status=404, json={"error": {"code": "not_found"}})
+
+    page.route("**/api/**", handle)
+    page.goto(base_url + "/harness.html", wait_until="domcontentloaded")
+    page.wait_for_function(
+        "() => document.querySelector('.model-pill')?.dataset.modeControl === 'true'"
+    )
+    return page, state, context
+
+
+def _open_picker(page) -> None:
+    page.locator(".model-pill").click()
+    expect(page.locator(".mode-presentation-panel")).to_be_visible()
+    page.wait_for_function(
+        "() => getComputedStyle(document.querySelector('.mode-custom-section')).borderTopWidth === '1px'"
+    )
+
+
+def _assert_panel_inside_viewport(page, width: int, height: int) -> None:
+    box = page.locator(".mode-presentation-panel").bounding_box()
+    assert box is not None
+    assert box["x"] >= 0
+    assert box["y"] >= 0
+    assert box["x"] + box["width"] <= width + 0.5
+    assert box["y"] + box["height"] <= height + 0.5
+
+
+def _assert_no_key_leak(page, key: str) -> None:
+    assert page.evaluate("needle => document.documentElement.outerHTML.includes(needle)", key) is False
+    storage = page.evaluate(
+        "() => JSON.stringify({ ...localStorage }) + JSON.stringify({ ...sessionStorage })"
+    )
+    assert key not in storage
+
+
+def test_desktop_custom_key_save_replace_delete_and_selection(browser, static_server) -> None:
+    page, state, context = _open_harness(browser, static_server, viewport={"width": 1280, "height": 900})
+    try:
+        _open_picker(page)
+        _assert_panel_inside_viewport(page, 1280, 900)
+
+        custom_option = page.locator('[data-mode-value="custom"]')
+        assert custom_option.is_enabled()
+        assert DISPLAY_NAME in custom_option.inner_text()
+        assert "Padiem Free" in page.locator('[data-mode-value="free"]').inner_text()
+
+        # Selecting without a key keeps the card open and focuses the key field.
+        custom_option.click()
+        key_input = page.locator("#modeCustomApiKey")
+        expect(key_input).to_be_visible()
+        expect(key_input).to_be_focused()
+
+        key_input.fill(FAKE_KEY)
+        page.locator(".mode-custom-save").click()
+        expect(page.locator(".mode-custom-message")).to_have_text("API 키를 저장했습니다.")
+        expect(page.locator(".mode-custom-status")).to_contain_text("등록된 키: ••••" + FAKE_KEY[-4:])
+
+        assert len(state["put_bodies"]) == 1
+        assert json.loads(state["put_bodies"][0]) == {"provider": PROVIDER, "api_key": FAKE_KEY}
+        assert key_input.input_value() == ""
+        _assert_no_key_leak(page, FAKE_KEY)
+        assert page.locator(".mode-custom-save").inner_text().strip() == "키 교체"
+        expect(page.locator(".mode-custom-delete")).to_be_visible()
+
+        # The saved custom provider/model is the selection the Chat request uses.
+        custom_option.click()
+        expect(page.locator(".mode-presentation-panel")).to_be_hidden()
+        assert page.locator(".model-pill").inner_text().strip().endswith("Padiem Custom")
+        assert page.locator(".model-pill").get_attribute("data-model-selection") == "custom"
+        selection = page.evaluate("() => window.PadiemCustomSelection.get()")
+        assert selection == {"provider": PROVIDER, "model": MODEL}
+
+        # Delete uses the provider query parameter and no request body.
+        page.locator(".model-pill").click()
+        page.locator(".mode-custom-delete").click()
+        expect(page.locator(".mode-custom-message")).to_have_text("API 키를 삭제했습니다.")
+        assert len(state["delete_urls"]) == 1
+        deleted = urlsplit(state["delete_urls"][0])
+        assert deleted.path == "/api/chat/custom/credential"
+        assert deleted.query == f"provider={PROVIDER}"
+        expect(page.locator(".mode-custom-status")).to_have_text("등록된 키가 없습니다.")
+        _assert_no_key_leak(page, FAKE_KEY)
+
+        # Every request stayed on the local harness: no provider endpoint at all.
+        assert all(url.startswith(static_server) for url in state["request_urls"])
+        assert all(FAKE_KEY not in url for url in state["request_urls"])
+    finally:
+        context.close()
+
+
+def test_mobile_custom_key_form_fits_and_stays_touch_sized(browser, static_server) -> None:
+    page, state, context = _open_harness(browser, static_server, viewport={"width": 390, "height": 844})
+    try:
+        _open_picker(page)
+        _assert_panel_inside_viewport(page, 390, 844)
+
+        page.locator('[data-mode-value="custom"]').click()
+        key_input = page.locator("#modeCustomApiKey")
+        expect(key_input).to_be_focused()
+
+        box = page.locator(".mode-presentation-panel").bounding_box()
+        assert box is not None
+        assert box["width"] <= 390
+        save_box = page.locator(".mode-custom-save").bounding_box()
+        assert save_box is not None and save_box["height"] >= 44
+        assert key_input.bounding_box()["height"] >= 44
+
+        key_input.fill(FAKE_KEY)
+        page.locator(".mode-custom-save").click()
+        expect(page.locator(".mode-custom-message")).to_have_text("API 키를 저장했습니다.")
+        assert key_input.input_value() == ""
+        _assert_no_key_leak(page, FAKE_KEY)
+        _assert_panel_inside_viewport(page, 390, 844)
+    finally:
+        context.close()
+
+
+def test_expired_session_shows_the_login_state_without_opening_the_key_form(
+    browser, static_server
+) -> None:
+    page, state, context = _open_harness(
+        browser, static_server, viewport={"width": 1280, "height": 900}, auth_mode="expired"
+    )
+    try:
+        _open_picker(page)
+        custom_option = page.locator('[data-mode-value="custom"]')
+        expect(custom_option).to_be_disabled()
+        assert "세션 만료" in custom_option.inner_text()
+        guest_note = page.locator(".mode-custom-guest-note")
+        expect(guest_note).to_be_visible()
+        expect(guest_note).to_contain_text("로그인이 만료되었습니다")
+        expect(page.locator(".mode-custom-credential")).to_be_hidden()
+        assert state["credential_gets"] == 0
+    finally:
+        context.close()

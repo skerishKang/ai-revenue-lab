@@ -74,7 +74,10 @@ def test_browser_capability_projection_is_bounded_visibility_not_execution_autho
         assert flag in source
     assert 'CustomEvent("padiem:capabilitychange"' in source
     assert "Object.freeze" in source
-    assert "/api/chat" not in source
+    # #5121 adds the PADIEM Custom credential metadata endpoint (key registration
+    # and deletion only). Chat execution itself must stay out of this projection.
+    assert '"/api/chat"' not in source
+    assert '"/api/chat/stream"' not in source
     assert "payload.tool" not in source
     assert "localStorage" not in source
     assert "sessionStorage" not in source
@@ -164,10 +167,22 @@ def test_auth_status_controls_account_session_visibility_while_health_controls_c
     assert '"history_store_bound": request.app.state.history_store is not None' in server
 
 
-def test_capability_projection_does_not_mutate_server_or_model_surfaces() -> None:
+def test_capability_projection_only_mutates_the_custom_credential_surface() -> None:
     source = CAPABILITIES.read_text(encoding="utf-8")
     assert 'method: "POST"' not in source
     assert 'method: "PATCH"' not in source
-    assert 'method: "DELETE"' not in source
+    # #5121 requires deleting the customer's own PADIEM Custom credential and
+    # nothing else: exactly one DELETE, scoped to the custom credential route,
+    # with no body. Model, tier and deployment surfaces stay read-only.
+    assert source.count('method: "DELETE"') == 1
+    delete_start = source.index("async function deleteCustomKey()")
+    delete_end = source.index("function createCustomSection()", delete_start)
+    delete_source = source[delete_start:delete_end]
+    assert 'method: "DELETE"' in delete_source
+    assert (
+        '"/api/chat/custom/credential?provider=" + encodeURIComponent(provider.provider)'
+        in delete_source
+    )
+    assert "body:" not in delete_source
     assert "b14" not in source.lower()
     assert "control_plane" not in source.lower()
