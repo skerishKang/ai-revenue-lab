@@ -1,7 +1,7 @@
 """Explicit deferral of the future B14 generic autorouter.
 
-The owner-selected Free Beam and paid Muse primaries and per-tier fallbacks do
-not use b14/auto.
+The owner-selected per-tier primaries and per-tier fallbacks do not use
+b14/auto.
 Historical routing implementation is preserved for future opt-in development.
 """
 

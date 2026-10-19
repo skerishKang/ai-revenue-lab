@@ -155,7 +155,7 @@ PRODUCT_TIER_NAMES: dict[str, str] = {
 EXECUTABLE_B14_MODEL_IDS = _contract_executable_ids() | frozenset({FREE_B14_MODEL_ID})
 
 # The default Chat request uses the Free tier. Each grade resolves its primary
-# through the shared declaration (Free Beam, paid Muse). B14 may automatically
+# through the shared declaration. B14 may automatically
 # try the exact owner-pinned backup for the verified grade on recoverable
 # provider failures; arbitrary `b14/auto` selection remains disabled.
 # Retired Space Bunny metadata is not an executable fallback.
@@ -420,8 +420,8 @@ def resolve_model_policy(
         )
 
     out[user_index]["content"] = remainder.strip()
-    # Plus, Pro and Max share the paid Muse primary: derive the grade from the
-    # explicit alias, never by reverse-mapping the shared upstream model ID.
+    # Derive the grade from the explicit alias, never by reverse-mapping a
+    # shared upstream model ID; one model may serve more than one grade.
     profile = {"/plus": "low", "/pro": "medium", "/max": "high", "/kilo": "medium"}[alias]
     return ResolvedModelPolicy(model_id, out, alias=alias, profile=profile)
 

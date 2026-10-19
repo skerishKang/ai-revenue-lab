@@ -1,7 +1,8 @@
-"""Current owner four-tier routes with historic Space Bunny metadata.
+"""Current executable tier declarations with historic Space Bunny metadata.
 
-Original Plus-hold tests predated the owner decisions that made Beam Free the
-Free primary and Muse Spark the Plus/Pro/Max primary.
+Original Plus-hold tests predated the shared per-tier route declarations.
+Assertions pin the currently declared executable route; this file does not
+set the owner model policy.
 Do not re-enable historical Space Bunny or image execution.
 """
 from __future__ import annotations
@@ -27,7 +28,7 @@ BEAM = "opencode-go/beam-free"
 MUSE = "opencode-go/muse-spark-1.3-contributor"
 
 
-def test_plus_identity_is_executable_muse_and_space_bunny_is_historical_only() -> None:
+def test_plus_identity_is_executable_route_and_space_bunny_is_historical_only() -> None:
     plus = active_route_for(ProductTierLabel.PLUS)
     assert plus is not None
     assert plus.status is ProductRouteStatus.EXECUTABLE
@@ -42,7 +43,7 @@ def test_plus_identity_is_executable_muse_and_space_bunny_is_historical_only() -
     assert bunny.hold_reason and "#3568" in bunny.hold_reason
 
 
-def test_plus_chat_executes_muse_and_image_remains_unavailable() -> None:
+def test_plus_chat_executes_declared_route_and_image_remains_unavailable() -> None:
     assert MODEL_CAPABILITIES[LOW_B14_MODEL_ID] == frozenset({"chat", "coding"})
     assert model_supports(LOW_B14_MODEL_ID, "chat")
     assert not model_supports(LOW_B14_MODEL_ID, "image")
