@@ -1331,6 +1331,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 return _error(403, "model_not_available_for_tier", "Free 등급에서 선택할 수 없는 모델입니다.")
         elif product_tier is not ProductTierLabel.PLUS:
             return _error(422, "explicit_model_tier_unsupported", "이 등급의 모델 직접 선택은 아직 지원되지 않습니다.")
+        elif claw_route.source == "central" and selected_model_id not in route_candidates:
+            # #5108: a stored central row is the administrator's exact selection
+            # for this grade, and the chooser already offers only those models.
+            # A paid-lane pick outside them fails closed instead of silently
+            # replacing the applied route. Without a stored row the Plus
+            # explicit-choice feature keeps its existing behaviour.
+            return _error(403, "model_not_available_for_tier", "선택한 AI 등급에서 선택할 수 없는 모델입니다.")
     if selected_model_id is None:
         if not claw_route.ok or not claw_route.model_id:
             if product_tier is ProductTierLabel.PLUS:
