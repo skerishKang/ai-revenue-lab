@@ -242,7 +242,9 @@
 
   async function requestStreaming(payload, signal) {
     const wire = calendarRequestFields(payload);
-    const orchestrated = await tryOrchestration(payload, signal);
+    // PADIEM Custom is a direct provider lane. It must never be routed
+    // through B14 orchestration, which stays on the PADIEM-provided path.
+    const orchestrated = payload && payload.custom ? null : await tryOrchestration(payload, signal);
     if (orchestrated) return orchestrated;
 
     const response = await fetch("/api/chat/stream", {

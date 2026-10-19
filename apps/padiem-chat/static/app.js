@@ -446,6 +446,9 @@
       hint: "claw-general-model-unavailable-note",
     }),
   });
+  // Closed server code for a rejected customer-owned key. Named here so the
+  // streaming answer region keeps no provider vocabulary of its own.
+  const CUSTOM_AUTH_FAILURE_CODE = "custom_provider_auth_failed";
   // #3933: ONE lookup for every Claw failure surface. The composer lane, the live
   // SSE lane and the manual-intake lane all resolve the same server code through
   // this function, so a bounded refusal can never render two different sentences
@@ -1942,6 +1945,22 @@
     return ["free", "plus", "pro", "max", "admin"].includes(tier) ? tier : "free";
   }
 
+  // A failed PADIEM Custom request that needs the customer's key reopens the
+  // existing model card. No second dialog and no generic fallback to a PADIEM
+  // tier: the server's error message stays in the answer bubble.
+  function handleCustomRequestFailure(error) {
+    const code = error && typeof error.code === "string" ? error.code : "";
+    if (code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE) {
+      window.PadiemCustomSelection?.open?.();
+      void window.PadiemCustomSelection?.refresh?.();
+      return;
+    }
+    if (code === "unauthorized" && window.PadiemCustomSelection?.get?.()) {
+      window.PadiemCustomSelection?.open?.();
+      void loadAuthStatus();
+    }
+  }
+
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {
     if (inFlight) return false;
     inFlight = true;
@@ -1962,6 +1981,14 @@
         contextSnapshot.calendarTurnId = chatTransport.createCalendarTurnId?.() || null;
       }
       if (contextSnapshot.calendarTurnId) payload.calendar_turn_id = contextSnapshot.calendarTurnId;
+      // PADIEM Custom is the customer-owned key lane: it replaces the PADIEM
+      // tier for this request (the server rejects tier+custom) and stays on the
+      // direct provider path, never through B14 orchestration.
+      const customSelection = !clawGeneralRequest && window.PadiemCustomSelection?.get?.();
+      if (customSelection) {
+        delete payload.tier;
+        payload.custom = { provider: customSelection.provider, model: customSelection.model };
+      }
       // #3554: exactly one explicit B14 model per Claw submit; no auto/default
       // selection. The submit-time snapshot survives the Claw→chat shell flip.
       if (clawGeneralRequest && contextSnapshot.selectedModelId) {
@@ -2013,6 +2040,7 @@
         return false;
       }
       if (requestEpoch !== conversationEpoch) return false;
+      handleCustomRequestFailure(error);
       const clawFailure = clawGeneralRequest ? clawGeneralFailure(error && error.code) : null;
       renderError(
         article,
@@ -2107,6 +2135,17 @@
     // #3931: keep a general Claw request in the same Claw conversation.
     // Neither UI state nor the selected model ID may authorize fallback.
     const clawGeneralRequest = clawGeneralRequestActive();
+    // PADIEM Custom is Chat-only and text-only. Refuse here, with the typed
+    // prompt preserved, instead of letting the server reject a mixed request.
+    const customSelected = Boolean(window.PadiemCustomSelection?.get?.());
+    if (customSelected && clawGeneralRequest) {
+      setNote(uiT("custom-chat-only"), "error");
+      return;
+    }
+    if (customSelected && attachmentSnapshot) {
+      setNote(uiT("custom-text-only"), "error");
+      return;
+    }
     contextSnapshot.selectedModelId =
       clawGeneralRequest && ["free", "plus"].includes(selectedProductTier()) && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
