@@ -76,3 +76,38 @@ product-tier declaration. No new admin system, store, account or policy was adde
 Live migration 050/052, the role grant, Worker/Pages deployment and the real browser
 E2E stay in the CENTRAL acceptance path. `LIVE_VERIFIED=NO`.
 
+## LOCAL C addendum (2026-10-20) — two remaining gaps closed
+
+The parallel LOCAL implementation above landed on this same Draft branch and covers the
+Claw free lane, the B66 grade rows and the admin placement panel. Two gaps were still
+open in that result and are closed here, on top of it, without touching its behaviour.
+
+1. **The applied revision was not visible in the product read path.** The chooser
+   reported `route_source` but not *which* applied ledger revision governs the grade,
+   so an operator could not tell an applied decision from the static declaration
+   without opening the admin ledger. `central_model_route_runtime` now resolves the
+   grade route and the applied revision in one ledger read, and the product model
+   read path reports `route_revision`. It is the revision of the stored row that
+   governs that product/grade, and `0` when no stored row governs it, so an
+   unrelated ledger revision is never read as an applied decision.
+2. **A paid grade could still bypass an applied route.** The chooser offers only the
+   routed models once a stored row governs a paid grade, but an explicit member pick
+   outside the routed candidates was still dispatched. The paid lane now refuses that
+   pick with `403 model_not_available_for_tier`, so the offered list and the model
+   that actually runs cannot diverge. Without a stored row the Plus explicit-choice
+   feature keeps its existing behaviour.
+
+### Addendum tests
+
+- New: `apps/padiem-chat/tests/test_5108_admin_route_revision_visibility.py` (4 cases):
+  applied revision visibility, no revision without an applied row, paid-lane
+  bypass refused, paid-lane explicit choice unchanged without an applied row.
+- Mutation proof: disabling the two fixes fails exactly
+  `test_product_model_list_states_the_applied_ledger_revision` and
+  `test_paid_lane_explicit_choice_cannot_replace_the_applied_route`.
+- Focused runs (new file + the admin/model/Claw/B66 route suites) pass. The full
+  `apps/padiem-chat` suite shows the same 17 environment failures with and without
+  this addendum (Windows subprocess import path, touch target sizes, locale copy,
+  browser lifecycle contract), so this addendum adds no regression.
+
+

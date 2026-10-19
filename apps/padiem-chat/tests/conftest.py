@@ -104,6 +104,7 @@ _HOLD_POLICY_MODULES = {
     # #5108: derives the static lane and the applied central route from the
     # real shared product-tier declaration.
     "test_5108_admin_route_projection.py",
+    "test_5108_admin_route_revision_visibility.py",
 }
 
 
