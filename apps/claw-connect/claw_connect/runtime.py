@@ -237,6 +237,44 @@ class ConnectApp:
             connected=self._controller.state is ConnectionState.CONNECTED,
         )
 
+    def self_diagnosis_facts(self) -> dict[str, Any]:
+        """Read-only facts for the Connector self-diagnosis (#3099).
+
+        The committed enrollment record is read through the reviewed read-only
+        accessor, so this never mints a first-launch identity. Every other
+        fact comes from an already-observed local source. No Broker call, no
+        credential readback, no device identity write, no Agent execution.
+
+        The connection state is projected by the same authority the tray uses,
+        so the diagnosis and the tray can never disagree.
+        """
+        from .enrollment import _lifecycle_to_connector_state, project_connector_status
+
+        record = self._enrollment.committed_record()
+        lifecycle = record.lifecycle() if record is not None else None
+        enrolled, blocked, online_capable = _lifecycle_to_connector_state(lifecycle)
+        controller_state = self._controller.state
+        state = project_connector_status(
+            enrolled=enrolled,
+            blocked=blocked,
+            paused=self._user_paused or controller_state is ConnectionState.PAUSED,
+            connecting=controller_state is ConnectionState.CONNECTING,
+            connected=online_capable and controller_state is ConnectionState.CONNECTED,
+        )
+        return {
+            "enrollment": {
+                "enrolled": bool(enrolled),
+                "device_lifecycle": lifecycle,
+                "blocked": bool(blocked),
+            },
+            "connection_state": state.value,
+            "resident_running": bool(self._supervisor.is_running()),
+            "autostart_enabled": bool(self._autostart.is_enabled()),
+            "single_instance": bool(self._single.held),
+            "device_id": getattr(record, "device_id", None) if record is not None else None,
+            "version": CONNECT_VERSION,
+        }
+
     def status_json(self) -> str:
         return json.dumps(self.status(), ensure_ascii=False, sort_keys=True)
 
