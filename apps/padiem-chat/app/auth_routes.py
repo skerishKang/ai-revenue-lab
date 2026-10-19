@@ -9,6 +9,13 @@ from starlette.responses import JSONResponse, RedirectResponse, Response
 
 from padiem_control_plane.b54_identity_bridge import B54BridgedIdentitySession
 
+from .android_auth_routes import (
+    android_handoff_confirm_page,
+    android_handoff_terminal_page,
+    bind_android_handoff_user,
+    load_android_handoff_for_callback,
+)
+from .android_auth_store import HANDOFF_STATUS_AWAITING_CONFIRMATION
 from .auth import (
     AuthError,
     OAUTH_STATE_COOKIE,
@@ -285,11 +292,33 @@ async def google_callback(request: Request) -> Response:
     settings: Settings = request.app.state.settings
     query_state = request.query_params.get("state")
     cookie_state = request.cookies.get(OAUTH_STATE_COOKIE)
+    handoff_record = None
     if not verify_oauth_state(settings, query_state, cookie_state):
-        return JSONResponse(
-            {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
-            status_code=400,
+        # Android 1.0.0 completes Google in the device's external browser. That
+        # browser has no WebView state cookie, so a handoff state is verified by
+        # its own signature instead. It only identifies the pending handoff; it
+        # never authenticates a user or issues a session.
+        if not isinstance(query_state, str) or not query_state:
+            return JSONResponse(
+                {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
+                status_code=400,
+            )
+        handoff_record, handoff_response = await load_android_handoff_for_callback(
+            request, query_state
         )
+        if handoff_response is not None:
+            return handoff_response
+        if handoff_record is None:
+            # Not a signed handoff state either: keep the pre-existing
+            # invalid-OAuth-state rejection and never exchange the code.
+            return JSONResponse(
+                {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
+                status_code=400,
+            )
+        if handoff_record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION:
+            # The Google code was already exchanged on the first callback. A
+            # reload must not consume it again; render the same code form.
+            return android_handoff_confirm_page(query_state)
     code = request.query_params.get("code")
     if not isinstance(code, str) or not code.strip() or len(code) > 4096:
         return JSONResponse(
@@ -308,7 +337,11 @@ async def google_callback(request: Request) -> Response:
         authenticated_epoch = int(datetime.now(timezone.utc).timestamp())
         authenticated_at = datetime.fromtimestamp(authenticated_epoch, tz=timezone.utc)
         expires_at = authenticated_at + timedelta(seconds=settings.session_max_age_seconds)
-        session = create_session_token(settings, profile.id, now=authenticated_epoch)
+        session = (
+            create_session_token(settings, profile.id, now=authenticated_epoch)
+            if handoff_record is None
+            else None
+        )
     except AuthError as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
     except Exception:
@@ -334,6 +367,20 @@ async def google_callback(request: Request) -> Response:
     )
 
     await deliver_after_signup(request, profile.id)
+
+    if handoff_record is not None:
+        # The external browser gets no session cookie. The WebView that created
+        # the handoff claims the verified profile once with its one-time secret.
+        bound = await bind_android_handoff_user(request, handoff_record.handoff_id, profile.id)
+        if not bound:
+            return android_handoff_terminal_page("failed")
+        return android_handoff_confirm_page(query_state)
+
+    if not isinstance(session, str) or not session:
+        return JSONResponse(
+            {"error": {"code": "auth_storage_error", "message": "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요."}},
+            status_code=503,
+        )
     response = RedirectResponse("/", status_code=302)
     response.set_cookie(SESSION_COOKIE, session, **session_cookie_kwargs(settings))
     response.delete_cookie(OAUTH_STATE_COOKIE, path="/", secure=True, httponly=True, samesite="lax")

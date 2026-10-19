@@ -48,6 +48,8 @@ from pathlib import Path
 
 import pytest
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -127,8 +129,9 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     assert "fetch(" not in ticker
     assert "runClawExecution" not in ticker
     # No hidden POST path: no XHR stream and no background flush of the form.
-    for token in ("XMLHttpRequest", "sendBeacon", "keepalive", "location.reload", "localStorage", "sessionStorage"):
+    for token in ("XMLHttpRequest", "sendBeacon", "keepalive", "location.reload", "localStorage"):
         assert token not in app
+    assert_session_storage_is_handoff_only(app)
     # A cooldown, and an unresolved dispatch of the request currently composed,
     # both strictly gate the single execute entry point.
     assert "if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown" in app

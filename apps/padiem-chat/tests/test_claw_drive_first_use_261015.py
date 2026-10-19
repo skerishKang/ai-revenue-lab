@@ -1,6 +1,8 @@
 """First-use Drive OAuth directly; removal only in the existing Connectors settings."""
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 STATIC=Path(__file__).resolve().parents[1] / "static"
 HTML=(STATIC/"index.html").read_text(encoding="utf-8")
 APP=(STATIC/"app.js").read_text(encoding="utf-8")
@@ -14,7 +16,7 @@ def test_first_off_starts_existing_trusted_google_oauth():
     assert 'await loadConnectorStatus()' in APP
     assert 'offered.click()' in APP
     assert 'beginGoogleDriveConnect()' in APP
-    assert 'sessionStorage' not in APP
+    assert_session_storage_is_handoff_only(APP)
 
 
 def test_drive_off_not_revocation_and_explicit_manage_delete():

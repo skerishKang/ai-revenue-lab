@@ -19,6 +19,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -281,8 +283,9 @@ def test_chat_settings_nav_not_regressed() -> None:
 
 
 def test_no_forbidden_persistence_or_unsafe_sink_regression() -> None:
-    for token in ("localStorage", "sessionStorage", "indexedDB", "cookieStore", "caches.open"):
+    for token in ("localStorage", "indexedDB", "cookieStore", "caches.open"):
         assert token not in APP
+    assert_session_storage_is_handoff_only(APP)
     for sink in ("innerHTML", "outerHTML", "document.write"):
         # claw result section must specifically not use innerHTML
         assert "clawResultPreview.innerHTML" not in APP
