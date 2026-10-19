@@ -208,9 +208,20 @@ def test_p01_dispatch_arguments_are_a_closed_set() -> None:
 
     assert response.status_code == 200, response.text
     kwargs = adapter.execute.await_args.kwargs
-    assert set(kwargs) <= {"product_tier", "subject_id", "selected_model_id", "central_route_model_id"}
+    # #5015: the only additional dispatch arg is the server-composed PC work
+    # context. It must remain free of conversation/tenant/workspace values; the
+    # closed-set guard below still rejects any other argument.
+    assert set(kwargs) <= {
+        "product_tier", "subject_id", "selected_model_id",
+        "central_route_model_id", "additional_system_context",
+    }
     assert kwargs["subject_id"] == CANONICAL_SUBJECT
     assert "tenant_forged" not in str(kwargs)
+    if "additional_system_context" in kwargs:
+        context_text = kwargs["additional_system_context"]
+        assert isinstance(context_text, str) and context_text
+        assert "tenant_forged" not in context_text
+        assert thread not in context_text
 
     run = _runs(adapter)[0]
     # The model-only Claw scope is what allows a provider-native prompt; it is
