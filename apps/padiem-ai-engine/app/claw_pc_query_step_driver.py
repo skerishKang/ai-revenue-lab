@@ -173,9 +173,13 @@ async def _signed_files_call(*, service, request_factory, secret, owner, payload
         )
     subject_id, run_id, app_id, device_id = owner
     body_data = {
-        "subject_id": subject_id, "run_id": run_id,
-        "device_id": device_id, "mode": mode,
+        "subject_id": subject_id, "run_id": run_id, "mode": mode,
     }
+    # The status/result legs are addressed by dispatch id only; the Chat
+    # endpoint accepts an exact key set and treats a device hint as a
+    # malformed body. Only the context/dispatch legs carry the target hint.
+    if mode in ("context", "dispatch"):
+        body_data["device_id"] = device_id
     body_data.update(payload)
     body = json.dumps(body_data, sort_keys=True, separators=(",", ":")).encode()
     timestamp = str(int(time.time()))
