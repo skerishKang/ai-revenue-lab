@@ -1,6 +1,10 @@
 # PADIEM Connector / Claw first PC TXT — CENTRAL technical handover (2026-10-15)
 
-**Classification:** public engineering facts, not private business policy. **Status:** handover only; no live release/E2E implied. Existing issue [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) remains open; Windows release acceptance is [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099).
+**Classification:** public engineering facts, not private business policy. **Status:** historical handover (2026-10-15); the current executor state is in the 2026-10-19 block below. Issue [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) is **CLOSED** (historical); the live tracker is [#5015](https://github.com/skerishKang/ai-revenue-lab/issues/5015); Windows release acceptance is [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099).
+
+<!-- CLAW_5015_COM2_ACCEPTANCE_20261019 -->
+> **2026-10-19 current executor state (supersedes the Oracle-era executor host/state below):** the live MeshCentral and executor are on COM2 WSL (`K_lipvoice`, 192.168.0.101); Oracle MeshCentral remains up as recovery and the Oracle executor is stopped. The Claw Pro natural-language PC drive E2E passed on COM2/COM1; see [PADIEM_CLAW_5015_COM2_PRO_ACCEPTANCE_20261019.md](PADIEM_CLAW_5015_COM2_PRO_ACCEPTANCE_20261019.md). The Oracle-era explicit command/TXT evidence below remains historical; Oracle natural-language execution is **not evidenced**. #4139 remains CLOSED; the live tracker is [#5015](https://github.com/skerishKang/ai-revenue-lab/issues/5015).
+<!-- /CLAW_5015_COM2_ACCEPTANCE_20261019 -->
 
 ## 1. Definition of done — still unproven
 
