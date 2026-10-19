@@ -45,9 +45,10 @@ def test_file_commands_are_server_built_literals():
     list_command = routes._pc_files_command(
         op="list", root=ROOT, relative=".", limit=200,
     )
-    assert "Get-ChildItem -LiteralPath $folder" in list_command
+    assert "Get-ChildItem -LiteralPath " in list_command
+    assert "Select-Object Name, Length" in list_command
     assert "ConvertTo-Json" in list_command
-    assert "relative_path" in list_command
+    assert "@{" not in list_command
     assert "\r" not in list_command and "\n" not in list_command
 
     read_command = routes._pc_files_command(
