@@ -1,3 +1,7 @@
+<!-- CURRENT_INDEX_HANDOFF_20261019 -->
+> **2026-10-19 최신 기술 이슈 기준:** 이 문서는 2026-10-13~15 당시 상태의 역사적 기록입니다. 최신 구현/운영검증 이슈 소유권, #4428/#4453/#4483/#4488 종결, 공통 Connector 기능 범위, #4089 통합 검증은 [PADIEM 현재 구현·검증 지도](PADIEM_CURRENT_IMPLEMENTATION_AND_VALIDATION_MAP_20261019.md)와 각 GitHub 이슈의 최신 상태를 우선 참조하세요. 당시 OPEN/PR 건수나 미구현 표를 현재 상태로 해석하지 마세요.
+<!-- /CURRENT_INDEX_HANDOFF_20261019 -->
+
 <!-- CENTRAL_POST_4800_TRIAGE_20261015 -->
 ## CENTRAL latest delta — 2026-10-15, after #4797/#4800 closure
 
