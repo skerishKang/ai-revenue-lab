@@ -24,9 +24,23 @@
 }
 .claw-device-manager-toggle::before { content: "▤"; }
 /* One line: the headline (the connection invitation, or the real PC name)
- * and, once a PC is confirmed, the same state chip the panel rows use. */
-.claw-device-manager-toggle-title { overflow-wrap: anywhere; }
-.claw-device-manager-toggle .claw-device-manager-state { flex: 0 0 auto; }
+ * and, once a PC is confirmed, the same state chip the panel rows use.
+ * The server owns the device name, and it can be long, so the entry keeps a
+ * bounded single line instead of growing the fixed composer area. The full
+ * name stays readable in the management panel rows. */
+.claw-device-manager-toggle-title {
+  max-width: min(48vw, 300px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.claw-device-manager-toggle .claw-device-manager-state {
+  flex: 0 0 auto;
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .claw-device-manager-panel {
   margin-top: 12px;
   padding: 16px;
