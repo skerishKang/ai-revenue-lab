@@ -53,6 +53,7 @@ from typing import Iterable
 
 INVENTORY_KIND = "PADIEM_COM2_INVENTORY_V1"
 DEFAULT_TOKEN_ENV = "COM2_BACKUP_WRITE_TOKEN"
+USER_AGENT = "padiem-com2-backup-ops/1.0"
 HASH_CHUNK = 1024 * 1024
 #: Decompressed-size guard for a restore check. This is a memory/disk safety
 #: bound, not a retention or storage policy.
@@ -479,7 +480,12 @@ def _http(
     timeout: int = 120,
     max_response: int = CONTRACT.MAX_MANIFEST_BYTES,
 ) -> tuple[int, bytes]:
-    request_headers = {"Authorization": f"Bearer {token}"}
+    request_headers = {
+        "Authorization": f"Bearer {token}",
+        # A stable non-default identity. Cloudflare-edge-protected preview
+        # routes reject the default urllib signature with error 1010.
+        "User-Agent": USER_AGENT,
+    }
     request_headers.update(headers or {})
     request = urllib.request.Request(
         url, data=data, method=method, headers=request_headers
