@@ -47,6 +47,10 @@ deployment is performed by this change, and no secret is created. The R2
 binding reuses the existing private `padiem-workspace-files` bucket under the
 `com2-backup/v1/` key prefix, so no new bucket is provisioned.
 
+The COM2 recovery assessment that records this status and the adjacent
+Cloudflare asset snapshot procedure is
+[docs/operations/CLOUDFLARE_ASSET_RECOVERY_AND_SYNC_20261019.md](../../docs/operations/CLOUDFLARE_ASSET_RECOVERY_AND_SYNC_20261019.md).
+
 ## Focused tests
 
 ```bash
