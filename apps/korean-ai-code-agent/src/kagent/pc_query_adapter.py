@@ -42,6 +42,7 @@ import time
 from typing import Any, Awaitable, Callable, Mapping
 
 from padiem_ai_core.agent_definition import AgentExecutionBudget, BoundedAgentDefinition
+from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
 from padiem_ai_core.agent_profile_adapter import (
     CompiledAgentProfile,
     ToolRuntimeBinding,
@@ -414,6 +415,40 @@ def plan_step_arguments(tool_arguments: Any, step_id: str) -> dict[str, Any]:
     return dict(entry)
 
 
+def pc_query_agent_plan(agent_id: str) -> AgentPlan:
+    """The product plan for the verified PC drive lane.
+
+    One read-only drive step. The plan carries no executable arguments: the
+    server-owned target travels as the trusted plan argument, never from the
+    model.
+    """
+    return AgentPlan(
+        agent_id=agent_id,
+        steps=(
+            AgentPlanStep(
+                step_id="query_drives",
+                objective="Query verified PC filesystem drives",
+                tool_id=PC_DRIVES_TOOL_ID,
+            ),
+        ),
+    )
+
+
+def pc_query_plan_arguments(device_id: str | None) -> dict[str, Any]:
+    """The trusted plan arguments for the drive step.
+
+    ``device_id`` is the server-chosen target. It is validated with the same
+    reviewed device-id grammar the tool handler uses, so an invalid target
+    never reaches the dispatch.
+    """
+    if device_id is None:
+        return {}
+    return plan_step_arguments(
+        {"query_drives": {"device_id": selected_device_id({"device_id": device_id})}},
+        "query_drives",
+    )
+
+
 __all__ = [
     "CHAT_APP_ID",
     "CHAT_ENGINE_PC_DRIVE_URL",
@@ -442,8 +477,10 @@ __all__ = [
     "pc_drives_tool_spec",
     "pc_list_files_tool_spec",
     "pc_query_agent_definition",
+    "pc_query_agent_plan",
     "pc_query_agent_policy",
     "pc_query_authorization",
+    "pc_query_plan_arguments",
     "pc_query_registry_entries",
     "pc_read_file_tool_spec",
     "plan_step_arguments",
