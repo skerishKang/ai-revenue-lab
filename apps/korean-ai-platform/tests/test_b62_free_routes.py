@@ -38,7 +38,6 @@ def test_removed_free_models_not_in_public_or_exact_catalog():
     # Historical Kilo promotional free routes remain retired. Explicitly
     # registered free-tagged B14 models include the current Beam Free primary.
     assert {m.model_id for m in CATALOG_BY_ID.values() if "free" in m.capabilities and m.enabled} == {
-        "tokenharbor/claude-haiku-5.5:free",
         "tokenharbor/deepseek-v4.1-flash:free",
         "opencode-go/beam-free",
         "opencode-go/longcat-2.5-preview-free",
