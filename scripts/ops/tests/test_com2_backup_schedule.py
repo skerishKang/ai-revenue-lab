@@ -4,6 +4,7 @@ import importlib.util
 import hashlib
 import json
 import os
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -341,12 +342,38 @@ def test_chat_runtime_seed_must_match_the_published_generation(tmp_path, monkeyp
     assert status["operator_action_required"] is True
 
 
-def test_published_generation_must_match_the_runtime_pointer(tmp_path, monkeypatch):
+def test_runtime_pointer_lag_uses_the_published_generation(tmp_path, monkeypatch):
+    root, state = _prepare(tmp_path)
+    _set_env(monkeypatch)
+    generations, snapshot, pointer = _generation_tree(
+        tmp_path, runtime_generation="20261019T000000000000Z"
+    )
+    ops = FakeOps()
+
+    code, status_payload = schedule_ops.run_once(
+        state,
+        _config(root, generation_pointer=pointer, generations_dir=generations),
+        ops=ops,
+        retry_delay=0,
+    )
+
+    assert code == 0
+    assert status_payload["generation"] == {
+        "published": "20261019T084722757869Z",
+        "runtime": "20261019T000000000000Z",
+        "runtime_lag": True,
+    }
+    build = [call for call in ops.calls if call[0] == "build"][0]
+    assert str(snapshot.resolve()) in build[2]
+
+
+def test_runtime_pointer_with_unknown_generation_fails(tmp_path, monkeypatch):
     root, state = _prepare(tmp_path)
     _set_env(monkeypatch)
     generations, _snapshot, pointer = _generation_tree(
-        tmp_path, published_generation="20261019T000000000000Z"
+        tmp_path, runtime_generation="20261019T000000000000Z"
     )
+    shutil.rmtree(generations / "20261019T000000000000Z")
 
     code, status = schedule_ops.run_once(
         state,
@@ -376,21 +403,11 @@ def test_generation_manifest_is_required(tmp_path, monkeypatch):
     assert status["error"] == "generation_manifest_missing"
 
 
-def test_generation_pointer_fails_closed_when_snapshot_is_missing(tmp_path, monkeypatch):
+def test_generation_snapshot_must_exist(tmp_path, monkeypatch):
     root, state = _prepare(tmp_path)
     _set_env(monkeypatch)
-    generations = tmp_path / "generations"
-    generations.mkdir()
-    pointer = tmp_path / "current_generation.json"
-    pointer.write_text(
-        json.dumps(
-            {
-                "kind": "PADIEM_COM2_B62_GENERATION_V1",
-                "d1_generation": "20261019T000000000000Z",
-            }
-        ),
-        encoding="utf-8",
-    )
+    generations, snapshot, pointer = _generation_tree(tmp_path)
+    shutil.rmtree(snapshot)
 
     code, status = schedule_ops.run_once(
         state,
@@ -409,10 +426,11 @@ def _generation_tree(
     *,
     engine: bool = True,
     engine_sha: str | None = None,
-    published_generation: str | None = None,
+    runtime_generation: str | None = None,
 ):
-    """Create the runtime pointer, published pointer and snapshot pair."""
+    """Create the published pointer, snapshot pair and runtime pointer."""
     generation = "20261019T084722757869Z"
+    runtime = runtime_generation or generation
     chat_bytes = b"chat-database-bytes"
     engine_bytes = b"engine-database-bytes"
     generations = tmp_path / "generations"
@@ -421,16 +439,20 @@ def _generation_tree(
     (snapshot / "chat.sqlite3").write_bytes(chat_bytes)
     if engine:
         (snapshot / "engine.sqlite3").write_bytes(engine_bytes)
+    if runtime != generation:
+        older = generations / runtime
+        older.mkdir(parents=True)
+        (older / "chat.sqlite3").write_bytes(chat_bytes)
     store = tmp_path / "store"
     store.mkdir()
-    seed = store / f"chat-{generation}.sqlite3"
+    seed = store / f"chat-{runtime}.sqlite3"
     seed.write_bytes(chat_bytes)
     pointer = store / "current_generation.json"
     pointer.write_text(
         json.dumps(
             {
                 "kind": "PADIEM_COM2_B62_GENERATION_V1",
-                "d1_generation": generation,
+                "d1_generation": runtime,
                 "d1_seed": seed.name,
                 "d1_bytes": len(chat_bytes),
                 "d1_sha256": hashlib.sha256(chat_bytes).hexdigest(),
@@ -456,7 +478,7 @@ def _generation_tree(
     (tmp_path / "current_generation.json").write_text(
         json.dumps(
             {
-                "generation": published_generation or generation,
+                "generation": generation,
                 "databases": databases,
                 "production_bound": False,
             }
