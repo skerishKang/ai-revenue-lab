@@ -89,6 +89,52 @@ def test_model_cannot_select_unauthorized_tool():
         asyncio.run(driver.next_step(context, object()))
 
 
+def test_file_tool_signed_body_matches_the_closed_server_key_sets():
+    import json
+
+    from app.claw_pc_query_step_driver import _signed_files_call
+
+    captured: list[dict] = []
+
+    class _Request:
+        def __init__(self, url, *, method, headers, body):
+            self.url = url
+            self.method = method
+            self.headers = headers
+            self.body = body
+            self.js_object = self
+
+    class _Response:
+        status = 200
+
+        async def text(self):
+            return '{"ok":true}'
+
+    class _Service:
+        async def fetch(self, request):
+            captured.append(json.loads(request.body))
+            return _Response()
+
+    owner = ("sub_" + "a" * 32, "run_1", "b54-padiem-claw", "device-1")
+    secret = "s" * 32
+    asyncio.run(_signed_files_call(
+        service=_Service(), request_factory=_Request, secret=secret,
+        owner=owner, mode="command_status", payload={"dispatch_id": "dsp_1"},
+    ))
+    assert set(captured[0]) == {
+        "subject_id", "run_id", "dispatch_id", "mode",
+    }
+    asyncio.run(_signed_files_call(
+        service=_Service(), request_factory=_Request, secret=secret,
+        owner=owner, mode="dispatch",
+        payload={"op": "list", "path": ".", "tool_call_ref": "call-1"},
+    ))
+    assert set(captured[1]) == {
+        "subject_id", "run_id", "device_id", "op", "path",
+        "tool_call_ref", "mode",
+    }
+
+
 def test_model_lists_then_reads_the_selected_file_in_one_run():
     """#4976: the listing result is the next step's file-selection input."""
     import json
