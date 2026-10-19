@@ -47,6 +47,73 @@ def test_chat_file_detector_and_two_step_plan():
     ]
 
 
+def test_chat_owner_uses_the_canonical_b62_session(monkeypatch):
+    """The lane must present the same canonical session as the signed endpoint."""
+    from app.chat_pc_drive import _resolve_chat_owner
+
+    class _Session:
+        product_id = "b62"
+        session_id = "session.canonical.chat.1"
+        tenant_id = "tenant-1"
+        subject = SimpleNamespace(subject_id="sub_" + "a" * 32)
+
+        def is_active(self, *, now=None):
+            return True
+
+    class _Authority:
+        async def resolve_current_auth_session(self, *, product_id, product_user_id):
+            assert product_id == "b62"
+            assert product_user_id == "usr_1"
+            return _Session()
+
+    async def _workspace(request, uid):
+        assert uid == "usr_1"
+        return "tenant-ws-1"
+
+    monkeypatch.setattr("app.claw_memory_routes._resolve_memory_workspace", _workspace)
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        control_plane_identity_authority=_Authority(),
+    )))
+    session, subject_id, workspace_id = asyncio.run(
+        _resolve_chat_owner(request, "usr_1")
+    )
+    assert session.session_id == "session.canonical.chat.1"
+    assert subject_id == "sub_" + "a" * 32
+    assert workspace_id == "tenant-ws-1"
+
+
+def test_chat_owner_fails_closed_without_the_authority():
+    from app.chat_pc_drive import _resolve_chat_owner
+
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace()))
+    assert asyncio.run(_resolve_chat_owner(request, "usr_1")) == (
+        None, "", "owner:usr_1",
+    )
+
+
+def test_chat_owner_refuses_an_inactive_session():
+    from app.chat_pc_drive import _resolve_chat_owner
+
+    class _Session:
+        product_id = "b62"
+        session_id = "session.canonical.chat.1"
+        tenant_id = "tenant-1"
+        subject = SimpleNamespace(subject_id="sub_" + "a" * 32)
+
+        def is_active(self, *, now=None):
+            return False
+
+    class _Authority:
+        async def resolve_current_auth_session(self, *, product_id, product_user_id):
+            return _Session()
+
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        control_plane_identity_authority=_Authority(),
+    )))
+    with pytest.raises(ChatPCDriveError):
+        asyncio.run(_resolve_chat_owner(request, "usr_1"))
+
+
 def test_detector_matches_only_drive_questions():
     assert is_chat_pc_drive_query("내 PC 드라이브 목록을 알려줘") is True
     assert is_chat_pc_drive_query("내 컴퓨터 디스크 용량 확인해줘") is True

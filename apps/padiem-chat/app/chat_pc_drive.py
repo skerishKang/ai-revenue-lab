@@ -32,7 +32,6 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .b14_client import B14Client, ChatRuntimeError
-from .control_plane_identity_shadow import resolve_refreshed_session
 from .history import (
     HistoryForbidden,
     HistoryStore,
@@ -205,37 +204,40 @@ def parse_chat_pc_tool_decision(raw: str) -> dict[str, Any]:
 
 
 async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str]:
-    """b62 canonical session, subject and tenant workspace for this lane.
+    """b62 canonical session, subject and workspace for this lane.
 
-    Same fail-closed shape as the memory workspace rule
-    (claw_memory_routes._resolve_memory_workspace): both identity components
-    absent keeps the legacy owner namespace; a partial setup or a
-    failed/inactive session is unavailable, never a fallback identity.
+    Uses the same authority call as the signed Chat PC endpoint
+    (``resolve_current_auth_session(product_id="b62")``), so the lane's
+    session id is the canonical one the Control Plane owner-scope lookup
+    accepts. The former shadow-session path could resolve a different
+    session value and fail the owner scope even for the signed-in owner.
     """
-    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
     authority = getattr(request.app.state, "control_plane_identity_authority", None)
-    if shadow_store is None and authority is None:
+    if authority is None:
         return None, "", f"owner:{uid}"
-    if shadow_store is None or authority is None:
+    if not callable(getattr(authority, "resolve_current_auth_session", None)):
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
         )
     try:
-        session = await resolve_refreshed_session(
-            authority=authority,
-            store=shadow_store,
-            product_user_id=uid,
+        session = await authority.resolve_current_auth_session(
+            product_id="b62", product_user_id=uid,
         )
     except Exception as exc:
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
         ) from exc
+    from datetime import datetime, timezone
+
     subject_id = getattr(getattr(session, "subject", None), "subject_id", None)
     tenant_id = getattr(session, "tenant_id", None)
     if (
-        not isinstance(subject_id, str)
+        session is None
+        or getattr(session, "product_id", None) != "b62"
+        or not session.is_active(now=datetime.now(timezone.utc))
+        or not isinstance(subject_id, str)
         or _SUBJECT_RE.fullmatch(subject_id) is None
         or not isinstance(tenant_id, str)
         or not tenant_id
@@ -244,7 +246,15 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
         )
-    return session, subject_id, tenant_id
+    from .claw_memory_routes import _resolve_memory_workspace
+
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if not isinstance(workspace_id, str) or not workspace_id:
+        workspace_id = tenant_id
+    return session, subject_id, workspace_id
 
 
 _MESH_GRANT_LOG = logging.getLogger(__name__)
