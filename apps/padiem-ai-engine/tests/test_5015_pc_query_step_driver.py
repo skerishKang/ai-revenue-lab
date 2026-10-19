@@ -613,6 +613,7 @@ def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
     upstream_code, expected_stage, capsys,
 ):
     """No command replay, error-message disclosure or generic tool_failed."""
+    import json
     from app.claw_pc_query_step_driver import _signed_files_call
     from padiem_ai_core.tool_runtime import ToolHandlerError
 
