@@ -44,6 +44,7 @@ jobs:
         with:
           ref: ${{ steps.target.outputs.sha }}
           persist-credentials: false
+          filter: blob:none
           clean: true
           path: sandbox-input
       - name: Run bounded offline sandbox
