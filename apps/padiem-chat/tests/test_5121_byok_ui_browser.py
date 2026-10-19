@@ -22,7 +22,7 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 FAKE_KEY = "test-5121-synthetic-key-0123456789abcdef"
 PROVIDER = "opencode-go"
 MODEL = "opencode-go/beam-free"
-DISPLAY_NAME = "PADIEM Custom (OpenCode Go)"
+DISPLAY_NAME = "Padiem Custom (OpenCode Go)"
 
 HARNESS = """<!doctype html>
 <html lang="ko">
@@ -270,7 +270,7 @@ def test_desktop_custom_key_save_replace_delete_and_selection(browser, static_se
         # The saved custom provider/model is the selection the Chat request uses.
         custom_option.click()
         expect(page.locator(".mode-presentation-panel")).to_be_hidden()
-        assert page.locator(".model-pill").inner_text().strip().endswith("PADIEM Custom")
+        assert page.locator(".model-pill").inner_text().strip().endswith("Padiem Custom")
         assert page.locator(".model-pill").get_attribute("data-model-selection") == "custom"
         selection = page.evaluate("() => window.PadiemCustomSelection.get()")
         assert selection == {"provider": PROVIDER, "model": MODEL}

@@ -275,7 +275,7 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     custom_guest_note = custom_section.locator(".mode-custom-guest-note")
     if not await custom_guest_note.is_visible():
         raise AssertionError(f"PADIEM Custom guest note missing at {label}")
-    if "로그인 후 PADIEM Custom" not in (await custom_guest_note.inner_text()).strip():
+    if "로그인 후 Padiem Custom" not in (await custom_guest_note.inner_text()).strip():
         raise AssertionError(f"PADIEM Custom guest truth missing at {label}")
     free = panel.locator('[data-mode-value="free"]')
     if await free.is_disabled():

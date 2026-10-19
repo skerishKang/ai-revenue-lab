@@ -31,7 +31,7 @@ CUSTOM_PROVIDER_FIXTURE = {
         {
             "provider": "qa-custom-provider",
             "model": "qa-custom-provider/qa-model",
-            "display_name": "PADIEM Custom (QA)",
+            "display_name": "Padiem Custom (QA)",
         }
     ],
 }
@@ -155,7 +155,7 @@ async def _exercise(page: Page, *, name: str, custom_methods: list[str]) -> dict
 
     await _wait_custom_state(page, name=name, expected="키 필요")
     custom_title = (await custom_option.locator("strong").inner_text()).strip()
-    if "PADIEM Custom" not in custom_title:
+    if "Padiem Custom" not in custom_title:
         raise AssertionError(f"PADIEM Custom label missing at {name}: {custom_title!r}")
     custom_state = (await custom_option.locator(".mode-option-state").inner_text()).strip()
     if custom_state != "키 필요":
@@ -206,7 +206,7 @@ async def _exercise(page: Page, *, name: str, custom_methods: list[str]) -> dict
         raise AssertionError(f"key-required PADIEM Custom must keep the panel open at {name}")
     await page.wait_for_function("() => document.activeElement?.id === 'modeCustomApiKey'")
     pill_text = (await page.locator(".model-pill span:last-child").inner_text()).strip()
-    if pill_text != "PADIEM Custom":
+    if pill_text != "Padiem Custom":
         raise AssertionError(f"PADIEM Custom selection not reflected on the pill at {name}: {pill_text!r}")
 
     await plus.click()
@@ -312,7 +312,7 @@ async def _english_probe() -> dict[str, Any]:
             if custom_state != "Key required":
                 raise AssertionError(f"English PADIEM Custom state missing: {custom_state!r}")
             custom_heading = (await panel.locator("#modeCustomTitle").inner_text()).strip()
-            if custom_heading != "My API key (PADIEM Custom)":
+            if custom_heading != "My API key (Padiem Custom)":
                 raise AssertionError(f"English PADIEM Custom heading missing: {custom_heading!r}")
             if await panel.locator('[data-mode-value="pro"]').is_disabled():
                 raise AssertionError("English tier panel must keep Pro disabled")
