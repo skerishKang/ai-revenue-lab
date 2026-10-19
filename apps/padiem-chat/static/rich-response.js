@@ -15,29 +15,19 @@
   const INLINE_LINK_PATTERN = /^\[([^\]\n]+)\]\(([^)\s]+)\)$/;
   const INLINE_WORD_CHAR_PATTERN = /[\p{L}\p{N}_]/u;
 
-  function copyText(text) {
-    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-      return navigator.clipboard.writeText(text).then(() => true).catch(() => fallbackCopy(text));
-    }
-    return Promise.resolve(fallbackCopy(text));
+  function answerCopyApi() {
+    const api = window.PadiemAnswerCopy || window.SharedAnswerCopy;
+    return api && typeof api.copyText === "function" ? api : null;
   }
 
-  function fallbackCopy(text) {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.setAttribute("readonly", "");
-    textarea.style.position = "fixed";
-    textarea.style.left = "-9999px";
-    document.body.appendChild(textarea);
-    textarea.select();
-    let copied = false;
+  function copyText(text) {
+    const api = answerCopyApi();
+    if (!api) return Promise.resolve(false);
     try {
-      copied = typeof document.execCommand === "function" && document.execCommand("copy") === true;
+      return Promise.resolve(api.copyText(text)).then((copied) => copied === true, () => false);
     } catch (_) {
-      copied = false;
+      return Promise.resolve(false);
     }
-    textarea.remove();
-    return copied;
   }
 
   function temporaryLabel(button, label, original) {

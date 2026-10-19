@@ -53,7 +53,8 @@ def test_supported_structures_and_local_actions_are_present():
     assert 'document.createElement("code")' in js
     assert 'copy.textContent = "복사"' in js
     assert 'download.textContent = "CSV 다운로드"' in js
-    assert "navigator.clipboard" in js and "document.execCommand" in js
+    assert "window.PadiemAnswerCopy || window.SharedAnswerCopy" in js
+    assert "navigator.clipboard" not in js and "document.execCommand" not in js
     assert 'new Blob(["\\uFEFF", csv], { type: "text/csv;charset=utf-8" })' in js
     assert "URL.createObjectURL" in js and "URL.revokeObjectURL" in js
     assert "rich-code-block" in css and "rich-table-block" in css
