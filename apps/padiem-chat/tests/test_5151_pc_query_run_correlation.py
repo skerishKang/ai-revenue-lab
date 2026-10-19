@@ -20,8 +20,10 @@ import pytest
 from app.chat_pc_run_correlation import (
     CORRELATION_CORRELATED,
     CORRELATION_INVALID_REQUEST,
+    CORRELATION_LINK_MISSING,
     CORRELATION_RUN_MISMATCH,
     CORRELATION_RUN_NOT_FOUND,
+    CORRELATION_RUN_ONLY,
     verify_pc_query_run_correlation,
 )
 from app.history import D1HistoryStore, HistoryError
@@ -251,3 +253,86 @@ def test_an_invalid_request_is_refused_without_a_store_read() -> None:
     ))
     assert verdict.status == CORRELATION_INVALID_REQUEST
     assert store.reads == 0
+
+
+def test_a_stored_run_without_an_execution_result_is_not_correlated() -> None:
+    """Looking the run up is not the same as correlating an executed run."""
+    store = _store()
+    conversation_id = asyncio.run(store.record_chat_pc_drive_run(
+        user_id=OWNER, run_id=RUN_ID, workspace_id=WORKSPACE,
+        user_text=INPUT_TEXT, conversation_id=None,
+    ))
+
+    verdict = asyncio.run(verify_pc_query_run_correlation(
+        store=store, user_id=OWNER, run_id=RUN_ID, outcome=None,
+    ))
+
+    assert verdict.status == CORRELATION_RUN_ONLY
+    assert verdict.correlated is False
+    # The owner-scoped linkage is still reported, only the executed-run
+    # correlation is unproven.
+    assert verdict.conversation_id == conversation_id
+    assert verdict.workspace_id == WORKSPACE
+
+
+def test_a_row_without_a_conversation_link_is_not_correlated() -> None:
+    store = _store()
+    asyncio.run(store.record_claw_run(
+        user_id=OWNER, run_id=RUN_ID, channel="web", action="pc_drive_query",
+        title="PC 드라이브 조회: 링크 없음", status="pending",
+        conversation_id=None, workspace_id=WORKSPACE,
+    ))
+    outcome = _run_assembly(RUN_ID)
+
+    verdict = asyncio.run(verify_pc_query_run_correlation(
+        store=store, user_id=OWNER, run_id=RUN_ID, outcome=outcome,
+    ))
+
+    assert verdict.status == CORRELATION_LINK_MISSING
+    assert verdict.correlated is False
+    assert verdict.conversation_id is None
+
+
+def test_a_row_without_a_workspace_link_is_not_correlated() -> None:
+    store = _store()
+    conversation_id = asyncio.run(store.record_chat_pc_drive_run(
+        user_id=OWNER, run_id="chat_pcq_5151ws", workspace_id=WORKSPACE,
+        user_text=INPUT_TEXT, conversation_id=None,
+    ))
+    # A run row that links the conversation but carries no workspace: the
+    # existing contract keeps a staged run's workspace immutable, so this row
+    # is written without one from the start.
+    asyncio.run(store.record_claw_run(
+        user_id=OWNER, run_id="chat_pcq_5151nows", channel="web",
+        action="pc_drive_query", title="PC 드라이브 조회: 워크스페이스 없음",
+        status="pending", conversation_id=conversation_id, workspace_id=None,
+    ))
+    outcome = _run_assembly("chat_pcq_5151nows")
+
+    verdict = asyncio.run(verify_pc_query_run_correlation(
+        store=store, user_id=OWNER, run_id="chat_pcq_5151nows", outcome=outcome,
+    ))
+
+    assert verdict.status == CORRELATION_LINK_MISSING
+    assert verdict.correlated is False
+    assert verdict.workspace_id is None
+
+
+def test_a_row_for_another_run_is_refused() -> None:
+    """The returned row must be the requested run."""
+
+    class _OtherRunStore:
+        async def get_claw_run(self, user_id, run_id):
+            return {
+                "run_id": "chat_pcq_someotherrun",
+                "conversation_id": "chat_" + "b" * 32,
+                "workspace_id": WORKSPACE,
+            }
+
+    outcome = _run_assembly(RUN_ID)
+    verdict = asyncio.run(verify_pc_query_run_correlation(
+        store=_OtherRunStore(), user_id=OWNER, run_id=RUN_ID, outcome=outcome,
+    ))
+    assert verdict.status == CORRELATION_RUN_MISMATCH
+    assert verdict.correlated is False
+    assert verdict.conversation_id is None
