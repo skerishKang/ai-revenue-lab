@@ -29,6 +29,11 @@ from .b66_member_inquiries import (
 from .central_model_admin_identity import D1CentralModelAdminAuthorizer
 from .central_model_policy_d1 import D1CentralModelPolicyStore
 from .central_model_route_d1 import D1CentralModelRouteStore
+from .platform_admin_routes import (
+    platform_admin_role_assign,
+    platform_admin_role_revoke,
+    platform_admin_session,
+)
 from .central_model_route_routes import (
     central_model_route_apply, central_model_route_preview,
     central_model_route_rollback_preview, central_model_routes_get,
@@ -371,6 +376,7 @@ def create_app(
     b66_canonical_candidate_target_resolver=None,
     central_model_admin_authorizer=None,
     central_model_admin_google_email: str = "",
+    platform_admin_role_store=None,
     central_model_policy_store=None,
     central_model_policy_signing_key: str = "",
     claw_task_alert_store=None,
@@ -409,6 +415,9 @@ def create_app(
         Route("/api/admin/models/route-preview", central_model_route_preview, methods=["POST"]),
         Route("/api/admin/models/route-apply", central_model_route_apply, methods=["POST"]),
         Route("/api/admin/models/route-rollback-preview", central_model_route_rollback_preview, methods=["POST"]),
+        Route("/api/admin/session", platform_admin_session, methods=["GET"]),
+        Route("/api/admin/roles", platform_admin_role_assign, methods=["POST"]),
+        Route("/api/admin/roles/{user_id}", platform_admin_role_revoke, methods=["DELETE"]),
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
@@ -803,6 +812,9 @@ def create_app(
         except ValueError:
             global_model_admin = None
     app.state.central_model_admin_authorizer = global_model_admin
+    # #5118 integrated administrator roles reuse the signed product session and
+    # the existing users/D1 authority; the host supplies the D1-backed store.
+    app.state.platform_admin_role_store = platform_admin_role_store
     # S2 read-only D1 policy inventory. The allow/block ledger remains
     # stored-only; only the #4428 per-grade routes below are read at dispatch.
     app.state.central_model_policy_store = (

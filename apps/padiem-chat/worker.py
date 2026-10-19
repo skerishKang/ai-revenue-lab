@@ -34,6 +34,7 @@ from app.claw_automation_scheduled_execution import (
 from app.claw_automation_store import D1ClawAutomationStore
 from app.central_model_policy_d1 import D1CentralModelPolicyStore
 from app.central_model_route_d1 import D1CentralModelRouteStore
+from app.platform_admin_roles import D1PlatformAdminRoleStore
 from app.central_model_route_runtime import resolve_claw_tier_model_from_stores
 from app.claw_local_access_composition import (
     build_claw_local_access_source_with_diagnostic,
@@ -997,6 +998,10 @@ class Default(WorkerEntrypoint):
                     d1_binding=db_binding,
                     b66_admin_google_email=b66_operator_email,
                     central_model_admin_google_email=central_operator_email,
+                    platform_admin_role_store=(
+                        D1PlatformAdminRoleStore(db_binding)
+                        if db_binding is not None else None
+                    ),
                     # #4434 follow-up: B66 product PC policy from the
                     # owner-managed Worker env; absent/malformed stays
                     # default-off, identical to today's production.
