@@ -141,6 +141,22 @@ P01_FAILURE_DETAIL_TOOL_STAGES = frozenset(
         "pc_query_result_unknown",
         "pc_query_execution_failed",
         "pc_query_output_missing",
+        # #4976: preserve reviewed PC file-tool stages from the signed
+        # Engine->Chat file lane instead of flattening to tool_failed.
+        "pc_files_unconfigured",
+        "pc_files_unavailable",
+        "pc_files_denied",
+        "pc_files_contract_invalid",
+        "pc_files_owner_unavailable",
+        "pc_files_run_unavailable",
+        "pc_files_target_unverified",
+        "pc_files_root_unavailable",
+        "pc_files_path_invalid",
+        "pc_files_call_invalid",
+        "pc_files_workspace_unavailable",
+        "pc_files_dispatch_unavailable",
+        "pc_files_admission_required",
+        "pc_file_arguments_invalid",
     }
 )
 P01_FAILURE_DETAILS = frozenset(
