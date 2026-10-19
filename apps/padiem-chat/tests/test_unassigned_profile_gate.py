@@ -52,7 +52,7 @@ def live_settings() -> Settings:
     )
 
 
-def test_live_completed_active_catjam_propagates_provider_error_and_refunds():
+def test_live_completed_active_beam_propagates_provider_error_and_refunds():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -85,7 +85,7 @@ def test_live_completed_active_catjam_propagates_provider_error_and_refunds():
     asyncio.run(scenario())
 
 
-def test_live_stream_active_catjam_propagates_provider_error_and_refunds():
+def test_live_stream_active_beam_propagates_provider_error_and_refunds():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -115,7 +115,7 @@ def test_live_stream_active_catjam_propagates_provider_error_and_refunds():
     asyncio.run(scenario())
 
 
-def test_non_live_default_catjam_propagates_transport_failure():
+def test_non_live_default_beam_propagates_transport_failure():
     async def scenario():
         calls = 0
 
@@ -158,8 +158,8 @@ def test_mock_chat_remains_available_without_provider_dispatch():
 
     asyncio.run(scenario())
 
-def test_b66_current_product_default_is_catjam_and_propagates_transport_failure():
-    """Real B62 HOLD, not the synthetic Plus used in unrelated tests."""
+def test_b66_current_product_default_is_beam_and_propagates_transport_failure():
+    """Real B62 Free default route, not the synthetic Plus used in unrelated tests."""
     from app.b66_quote_conversation import B66QuoteConversationInterpreter
     async def scenario():
         calls = []

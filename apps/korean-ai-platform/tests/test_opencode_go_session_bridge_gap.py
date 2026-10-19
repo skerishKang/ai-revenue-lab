@@ -235,7 +235,7 @@ def test_distinct_forged_sessions_both_rejected_at_body() -> None:
 
 
 # --------------------------------------------------------------------------
-# 5. Only Cat Jam is enabled. Original Go models remain OFF (read-only).
+# 5. Cat Jam stays disabled; Beam, LongCat and Muse are the enabled Go routes.
 # --------------------------------------------------------------------------
 
 

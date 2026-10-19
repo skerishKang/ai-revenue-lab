@@ -38,7 +38,7 @@ EVIDENCE = Path(_EVIDENCE_DIR) if _EVIDENCE_DIR else None
 
 SAVED_SKILL_ID = "b66skill_" + "0" * 32
 QUOTE_HISTORY_ID = "b66quote_" + "1" * 32
-MODEL_ID = "opencode-go/cat-jam-free"
+MODEL_ID = "opencode-go/beam-free"
 
 # Synthetic, non-routable contact details only. No real person, phone or address.
 DEMO = {
@@ -265,7 +265,7 @@ async def open_session(page, base: str, skill: dict, fingerprint: str) -> dict:
             "models": [
                 {
                     "model_id": MODEL_ID,
-                    "name": "Cat Jam",
+                    "name": "Beam Free",
                     "reasoning_levels": [
                         {"value": "default", "label": "기본(제공자 기본값)"},
                         {"value": "low", "label": "낮음"},

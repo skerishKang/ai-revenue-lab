@@ -10,7 +10,7 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 const SKILL_ID = "b66skill_" + "a".repeat(32);
 const ASSET_ID = "b66asset_" + "b".repeat(32);
-const SELECTED_MODEL_ID = "opencode-go/cat-jam-free";
+const SELECTED_MODEL_ID = "opencode-go/beam-free";
 const content = clone(Template.builtInTemplate().content);
 content.slots = { logo: ASSET_ID, stamp: "" };
 const profile = Template.buildProfile({

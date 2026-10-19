@@ -18,7 +18,7 @@ const easySource = fs.readFileSync(path.join(SRC, "easy-mode.js"), "utf8");
 
 const NOW = "2026-10-04T09:00:00.000Z";
 const SKILL_ID = BrowserPdf.CGI_SKILL_ID;
-const SELECTED_MODEL_ID = "opencode-go/cat-jam-free";
+const SELECTED_MODEL_ID = "opencode-go/beam-free";
 const TURN1_TEXT = "대한건설에 배관 100미터 견적 만들어줘";
 const TURN2_TEXT = "18000원";
 
@@ -181,7 +181,7 @@ function buildAccountEnv(options) {
         // selects the exact model before generating a quote.
         return jsonResponse({
           ok: true,
-          models: [{ model_id: SELECTED_MODEL_ID, name: "Cat Jam" }],
+          models: [{ model_id: SELECTED_MODEL_ID, name: "Beam Free" }],
           default_model_id: null,
           tiers: [{ tier: "free", name: "PADIEM Free", model_id: SELECTED_MODEL_ID }],
           default_tier: null

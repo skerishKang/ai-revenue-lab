@@ -41,7 +41,7 @@ def test_deferred_auto_on_stream_preview(client):
 
 
 def test_exact_model_is_not_deferred():
-    ensure_generic_auto_enabled("opencode-go/cat-jam-free")
+    ensure_generic_auto_enabled("opencode-go/beam-free")
 
 
 def test_future_code_preserved_but_explicit_opt_in_only(monkeypatch):
