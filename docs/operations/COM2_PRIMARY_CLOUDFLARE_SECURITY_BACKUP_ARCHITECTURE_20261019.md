@@ -68,3 +68,5 @@ Cloudflare의 목적은 '가벼운 앱 실행'이 아니라 **접속·보안·�
 
 ## 상태
 `PLAN=APPROVED; ISSUE=#5115; MAIN_DOCUMENT=CREATED; DEPLOYED=NO; LIVE_CUTOVER=NO; FREE_ARCHITECTURE=FEASIBLE_WITH_USAGE_LIMITS`
+
+- 구현 현황: `docs/operations/COM2_PRIMARY_RUNTIME_SUPERVISOR_AND_TUNNEL_20261019.md` (감독기·Tunnel 렌더링 구현, COM2 로컬 검증 완료, 컷오버 미실행)
