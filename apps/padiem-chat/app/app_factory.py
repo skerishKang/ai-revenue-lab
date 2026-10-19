@@ -219,7 +219,9 @@ from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH, local_runner_result
 from .claw_device_directory_routes import (
     CLAW_DEVICE_DIRECTORY_PATH, CLAW_PC_PAUSE_PATH, CLAW_PC_RESUME_PATH,
-    UnconfiguredDeviceDirectorySource, claw_device_directory, claw_pc_pause, claw_pc_resume,
+    CLAW_PC_SELECT_PATH,
+    UnconfiguredDeviceDirectorySource, claw_device_directory, claw_pc_pause,
+    claw_pc_resume, claw_pc_select,
 )
 from .claw_local_access_routes import (
     CLAW_LOCAL_ACCESS_PATH,
@@ -395,6 +397,7 @@ def create_app(
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
     claw_device_directory_source=None,
+    claw_pc_device_selection_store=None,
     b66_pc_access_policy: ProductPcAccessPolicy | None = None,
     claw_local_connect_port=None,
     claw_office_chooser_source=None,
@@ -704,6 +707,7 @@ def create_app(
         Route(CLAW_DEVICE_DIRECTORY_PATH, claw_device_directory, methods=["GET"]),
         Route(CLAW_PC_PAUSE_PATH, claw_pc_pause, methods=["POST"]),
         Route(CLAW_PC_RESUME_PATH, claw_pc_resume, methods=["POST"]),
+        Route(CLAW_PC_SELECT_PATH, claw_pc_select, methods=["POST"]),
         # #3650: the local/nonprod initiating leg. Fail-closed unless the run
         # composition explicitly installs a connect port; the central #3476
         # same-origin guard covers it like every cookie-authenticated POST.
@@ -1113,6 +1117,7 @@ def create_app(
         if claw_device_directory_source is not None
         else UnconfiguredDeviceDirectorySource()
     )
+    app.state.claw_pc_device_selection_store = claw_pc_device_selection_store
     app.state.claw_local_access_source = (
         claw_local_access_source
         if claw_local_access_source is not None

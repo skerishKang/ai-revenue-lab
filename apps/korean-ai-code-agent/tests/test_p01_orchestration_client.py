@@ -854,3 +854,98 @@ class EngineProviderFailureDetailTests(unittest.TestCase):
             _engine_failure_detail("never_seen_code"),
             P01_FAILURE_DETAIL_DOWNSTREAM,
         )
+
+
+class P01SelectedPCPlanWireTests(SyntheticPlusRouteTestCase):
+    """Selected-PC hints survive the closed wire without adding tool authority."""
+
+    @staticmethod
+    def _request(kind):
+        _, request = _build_request()
+        request = _pc_query_request(request)
+        if kind == "files":
+            from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
+
+            request = replace(request, agent_plan=AgentPlan(
+                agent_id="agent:padiem:claw-pc-query@1",
+                steps=(
+                    AgentPlanStep(
+                        step_id="list_files", objective="List approved folder",
+                        tool_id="claw.pc.list_files",
+                    ),
+                    AgentPlanStep(
+                        step_id="read_file", objective="Read selected UTF-8 file",
+                        tool_id="claw.pc.read_file",
+                    ),
+                ),
+            ))
+        return request
+
+    def _forward(self, request):
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(
+            _client(transport), allow_subject_identity=True,
+        )
+        asyncio.run(port.run(request))
+        self.assertEqual(len(transport.requests), 1)
+        return json.loads(transport.requests[0]["body"])
+
+    def _refused(self, request):
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(
+            _client(transport), allow_subject_identity=True,
+        )
+        with self.assertRaises(P01AdapterError) as caught:
+            asyncio.run(port.run(request))
+        self.assertEqual(caught.exception.code, "p01_authority_field_unsupported")
+        self.assertEqual(transport.requests, [])
+
+    def test_selected_drive_target_is_forwarded_unchanged(self):
+        arguments = {"query_drives": {"device_id": "office-pc"}}
+        request = replace(self._request("drive"), tool_arguments=arguments)
+        self.assertEqual(self._forward(request)["tool_arguments"], arguments)
+
+    def test_selected_file_loop_target_is_forwarded_unchanged(self):
+        arguments = {"files": {"device_id": "office-pc"}}
+        request = replace(self._request("files"), tool_arguments=arguments)
+        self.assertEqual(self._forward(request)["tool_arguments"], arguments)
+
+    def test_unselected_drive_and_file_plans_keep_the_existing_wire(self):
+        for kind in ("drive", "files"):
+            with self.subTest(kind=kind):
+                self.assertNotIn("tool_arguments", self._forward(self._request(kind)))
+
+    def test_invalid_pc_targets_are_refused_before_transport(self):
+        for kind, key in (("drive", "query_drives"), ("files", "files")):
+            for device_id in (None, True, "", "bad/path", "bad pc", "pc\nother", "x" * 129):
+                with self.subTest(kind=kind, device_id=device_id):
+                    self._refused(replace(
+                        self._request(kind),
+                        tool_arguments={key: {"device_id": device_id}},
+                    ))
+
+    def test_extra_or_wrong_pc_hint_keys_are_refused_before_transport(self):
+        for kind, key, wrong_key in (
+            ("drive", "query_drives", "files"),
+            ("files", "files", "list_files"),
+        ):
+            cases = (
+                {key: {}},
+                {wrong_key: {"device_id": "office-pc"}},
+                {key: {"device_id": "office-pc", "command": "whoami"}},
+                {key: {"device_id": "office-pc"}, "other": {"device_id": "office-pc"}},
+            )
+            for arguments in cases:
+                with self.subTest(kind=kind, arguments=arguments):
+                    self._refused(replace(
+                        self._request(kind), tool_arguments=arguments,
+                    ))
+
+    def test_a_device_hint_does_not_authorize_a_different_plan(self):
+        request = self._request("files")
+        request = replace(
+            request,
+            agent_plan=replace(request.agent_plan, agent_id="agent:padiem:other@1"),
+            tool_arguments={"files": {"device_id": "office-pc"}},
+        )
+        self._refused(request)

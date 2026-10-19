@@ -138,3 +138,39 @@ def test_browser_module_has_no_new_transport_persistence_or_pairing_authority():
     assert "sessionStorage" not in src
     assert "atob(" not in src
     assert "btoa(" not in src
+
+
+def test_executable_mesh_target_is_selectable_without_a_broker_heartbeat():
+    item = {
+        "deviceId": "mesh-pc", "deviceName": None, "platform": None,
+        "state": "ACTION_REQUIRED", "usable": False,
+        "executable": True, "selectable": True,
+    }
+    directory = {"available": True, "ownerScoped": True, "devices": [item]}
+    unselected = project(directory)
+    assert unselected["devices"][0]["executable"] is True
+    assert unselected["devices"][0]["selectable"] is True
+    assert unselected["canTarget"] is False
+    chosen = project(directory, "mesh-pc")
+    assert chosen["canTarget"] is True
+    assert chosen["selectedDevice"]["executable"] is True
+    assert chosen["selectedDevice"]["online"] is False
+
+
+def test_executable_flag_never_promotes_revoked_expired_or_unflagged_rows():
+    base = {
+        "deviceId": "mesh-pc", "state": "ACTION_REQUIRED", "usable": False,
+        "executable": True, "selectable": True,
+    }
+    for patch in ({"revoked": True}, {"expired": True}, {"state": "REVOKED"}):
+        directory = {"available": True, "ownerScoped": True,
+                     "devices": [{**base, **patch}]}
+        assert project(directory, "mesh-pc")["canTarget"] is False, patch
+    # A selectable hint without the executable fact is not enough.
+    directory = {"available": True, "ownerScoped": True, "devices": [{
+        "deviceId": "mesh-pc", "state": "ACTION_REQUIRED", "usable": False,
+        "executable": False, "selectable": True,
+    }]}
+    chosen = project(directory, "mesh-pc")
+    assert chosen["devices"][0]["selectable"] is False
+    assert chosen["canTarget"] is False

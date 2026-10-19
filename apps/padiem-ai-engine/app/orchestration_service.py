@@ -73,6 +73,14 @@ from app.orchestration_continuation import (
     InMemoryContinuationStore,
 )
 
+# #5015: the only plan agents whose tool arguments carry a PC execution target.
+# The target is a closed property: no other argument may ride along.
+_PC_PLAN_AGENT_IDS = frozenset({
+    "agent:padiem:claw-pc-query@1",
+    "agent:padiem:chat-pc-query@1",
+})
+_PC_DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
+
 # S13-5 Phase 1: the orchestrate route mirrors the AGENT-SKILL continuation
 # lifecycle plane by reusing the S13-4 projection rather than re-deriving it.
 from app.agent_skill_continuation_projection import (
@@ -370,12 +378,15 @@ def _pc_query_selected_device(tool_arguments: Any) -> str | None:
     """The server-provided device hint for the PC tool plan, never model text."""
     if not isinstance(tool_arguments, dict):
         return None
-    files = tool_arguments.get("files")
-    if not isinstance(files, dict):
-        return None
-    device = files.get("device_id")
-    if isinstance(device, str) and 0 < len(device) <= 128:
-        return device
+    for target_key in ("query_drives", "files"):
+        if set(tool_arguments) != {target_key}:
+            continue
+        target = tool_arguments.get(target_key)
+        if not isinstance(target, dict) or set(target) != {"device_id"}:
+            return None
+        device = target.get("device_id")
+        if isinstance(device, str) and _PC_DEVICE_ID_PATTERN.fullmatch(device):
+            return device
     return None
 
 
@@ -535,6 +546,49 @@ class OrchestrationEngineService:
             )
         return parsed
 
+    @staticmethod
+    def _validate_pc_plan_tool_arguments(
+        plan: AgentPlan, parsed: Mapping[str, Mapping[str, Any]],
+    ) -> None:
+        """A PC plan may carry exactly one closed property: ``device_id``.
+
+        Anything else is refused instead of being silently dropped, so a
+        caller can never widen the tool arguments or make the Engine execute
+        on a target the answer context did not name.
+        """
+        if plan.agent_id not in _PC_PLAN_AGENT_IDS:
+            return
+        step_ids = {step.step_id for step in plan.steps}
+        if tuple(
+            (step.step_id, getattr(step, "tool_id", None))
+            for step in plan.steps
+        ) == (
+            ("list_files", "claw.pc.list_files"),
+            ("read_file", "claw.pc.read_file"),
+        ):
+            # One shared target binds the whole model-selected list/read loop.
+            # It is metadata, not a third executable plan step.
+            step_ids = {"files"}
+        for step_id, entry in parsed.items():
+            if (
+                step_id not in step_ids
+                or not isinstance(entry, Mapping)
+                or set(entry) != {"device_id"}
+            ):
+                raise ServiceContractError(
+                    "invalid_tool_arguments",
+                    "PC plan tool arguments must contain only a device_id.",
+                )
+            device_id = entry.get("device_id")
+            if (
+                not isinstance(device_id, str)
+                or not _PC_DEVICE_ID_PATTERN.fullmatch(device_id)
+            ):
+                raise ServiceContractError(
+                    "invalid_tool_arguments",
+                    "PC plan device target is invalid.",
+                )
+
     def _tool_request_kwargs(
         self,
         *,
@@ -565,12 +619,14 @@ class OrchestrationEngineService:
                 )
             return {}
         authority = binding.resolve_authority(plan.agent_id)
+        parsed_tool_arguments = self._parse_tool_arguments(raw_tool_arguments)
+        self._validate_pc_plan_tool_arguments(plan, parsed_tool_arguments)
         kwargs: dict[str, Any] = {
             "agent_definition": authority.definition,
             "compiled_agent_profile": authority.compiled,
             "tool_authorization": authority.authorization,
             "tool_runtime": binding.tool_runtime,
-            "tool_arguments": self._parse_tool_arguments(raw_tool_arguments),
+            "tool_arguments": parsed_tool_arguments,
         }
         if not resume:
             # OrchestrationResumeRequest has no tool_registry / resource_policy
@@ -915,7 +971,8 @@ class OrchestrationEngineService:
             if not isinstance(model_id, str) or not model_id:
                 return _service_error("pc_query_model_unavailable", "Resolved Claw model is unavailable.", status_code=503)
             orch_req = replace(orch_req, agent_step_driver=self._pc_query_step_driver_factory(
-                model_id, exec_req.agent.model_policy, exec_req.agent.task_type, exec_req.agent.optimize_for))
+                model_id, exec_req.agent.model_policy, exec_req.agent.task_type, exec_req.agent.optimize_for,
+                tool_arguments=orch_req.tool_arguments))
         # Chat product thin lane: same shared PC-query tool contract and step
         # driver shape under the Chat Engine caller identity ("padiem-chat",
         # the exact app_id the B62 Chat Engine bridge presents) with its own
@@ -928,7 +985,8 @@ class OrchestrationEngineService:
             if not isinstance(model_id, str) or not model_id:
                 return _service_error("pc_query_model_unavailable", "Resolved Chat model is unavailable.", status_code=503)
             orch_req = replace(orch_req, agent_step_driver=self._pc_query_step_driver_factory(
-                model_id, exec_req.agent.model_policy, exec_req.agent.task_type, exec_req.agent.optimize_for))
+                model_id, exec_req.agent.model_policy, exec_req.agent.task_type, exec_req.agent.optimize_for,
+                tool_arguments=orch_req.tool_arguments))
         if trusted_office_run_id is not None:
             # No ordinary app may select the Core Agent pause run id. The
             # first-party owner/Broker authority must provide this exact
@@ -1503,6 +1561,7 @@ class OrchestrationEngineService:
                     agent_step_driver=self._pc_query_step_driver_factory(
                         stream_model_id, exec_req.agent.model_policy,
                         exec_req.agent.task_type, exec_req.agent.optimize_for,
+                        tool_arguments=orch_req.tool_arguments,
                     ),
                 )
 

@@ -88,8 +88,21 @@
     return result;
   }
 
-  async function requestCompleted(payload, signal) {
+  function withDeviceSelection(payload) {
+    // One shared preference for Chat and Claw. A hint only: the server
+    // re-verifies the saved target against current authority and connection.
+    const chosen = typeof window.padiemSelectedDeviceId === "function"
+      ? window.padiemSelectedDeviceId()
+      : (typeof window.padiemClawSelectedDeviceId === "function"
+        ? window.padiemClawSelectedDeviceId() : null);
     const wire = calendarRequestFields(payload);
+    return typeof chosen === "string" && chosen
+      ? { ...wire, device_id: chosen }
+      : wire;
+  }
+
+  async function requestCompleted(payload, signal) {
+    const wire = withDeviceSelection(payload);
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -214,11 +227,7 @@
     if (liveReady) headers["X-Padiem-Claw-Live"] = "p01-events-v1";
     // Reuse the existing owner-scoped PC chooser; no manual device ID input.
     // The selected id is only a hint: canonical Identity/Broker decide authority.
-    const chosenDevice = typeof window.padiemClawSelectedDeviceId === "function"
-      ? window.padiemClawSelectedDeviceId() : null;
-    const wired = typeof chosenDevice === "string" && chosenDevice
-      ? { ...calendarRequestFields(payload), device_id: chosenDevice }
-      : calendarRequestFields(payload);
+    const wired = withDeviceSelection(payload);
     const response = await fetch("/api/claw/general", {
       method: "POST",
       headers,
@@ -241,7 +250,7 @@
   }
 
   async function requestStreaming(payload, signal) {
-    const wire = calendarRequestFields(payload);
+    const wire = withDeviceSelection(payload);
     const orchestrated = await tryOrchestration(payload, signal);
     if (orchestrated) return orchestrated;
 

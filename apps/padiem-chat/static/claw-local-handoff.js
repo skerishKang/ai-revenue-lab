@@ -330,6 +330,16 @@
       if (seen.has(item.deviceId)) return empty("duplicate_device_identity");
       seen.add(item.deviceId);
       const projection = normalizeDeviceProjection(item);
+      // The server marks a genuinely executable Mesh target separately from a
+      // Broker heartbeat. These flags are presentation facts only; execution
+      // still re-verifies the owner and target. A revoked/expired row can never
+      // be promoted by the flags.
+      const executable = item.executable === true;
+      const revoked = projection.revoked || projection.state === "REVOKED";
+      const meshOnly = item.state === "ACTION_REQUIRED";
+      const selectable = executable && item.selectable === true &&
+        !revoked && !projection.expired &&
+        (projection.usable === true || meshOnly);
       devices.push(Object.freeze({
         deviceId: item.deviceId,
         deviceName: projection.deviceName || null,
@@ -338,7 +348,9 @@
         variant: projection.variant,
         // Not an execution grant: only a server-confirmed canonical fact.
         online: projection.usable && projection.state === "CONNECTED",
-        revoked: projection.revoked || projection.state === "REVOKED",
+        revoked,
+        executable,
+        selectable,
       }));
     }
 
@@ -347,7 +359,9 @@
     const requested = typeof selectedDeviceId === "string" &&
       DEVICE_ID_PATTERN.test(selectedDeviceId) ? selectedDeviceId : null;
     const selected = requested ? devices.find((device) => device.deviceId === requested) : null;
-    const canTarget = Boolean(selected && selected.online);
+    const canTarget = Boolean(
+      selected && (selected.online || (selected.executable && selected.selectable)),
+    );
     return Object.freeze({
       available: true,
       reason: canTarget ? null : selected ? "device_not_online" : "device_selection_required",

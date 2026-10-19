@@ -74,6 +74,7 @@ CHAT_PC_QUERY_TOOL_ID = "claw.pc.query_drives"
 CHAT_PC_RUN_PREFIX = "chat_pcq_"
 
 _SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
+_DEVICE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
 class ChatPCDriveError(ValueError):
@@ -293,7 +294,9 @@ def _mesh_grant_denied(reason: str) -> bool:
     return False
 
 
-async def _check_mesh_grant(request: Request, session: Any) -> bool:
+async def _check_mesh_grant(
+    request: Request, session: Any, *, device_id: str | None = None,
+) -> bool:
     """Check the existing shared deployment grant without changing its semantics.
 
     Each denial logs only a fixed diagnostic code. The user sees the same
@@ -320,7 +323,7 @@ async def _check_mesh_grant(request: Request, session: Any) -> bool:
     if not isinstance(account_ref, str) or not account_ref:
         return _mesh_grant_denied("owner_scope_account_unavailable")
     try:
-        target = mesh_source.command_target(account_ref=account_ref, device_id=None)
+        target = mesh_source.command_target(account_ref=account_ref, device_id=device_id)
     except Exception:
         return _mesh_grant_denied("mesh_command_target_lookup_failed")
     if target is None:
@@ -418,8 +421,45 @@ async def execute_chat_pc_drive_lane(
             "chat_pc_store_unavailable",
             "대화 기록을 현재 사용할 수 없습니다.",
         )
+    if device_id is not None and (
+        not isinstance(device_id, str) or not _DEVICE_ID_RE.fullmatch(device_id)
+    ):
+        raise ChatPCDriveError(
+            "chat_pc_target_invalid",
+            "선택한 PC 정보가 유효하지 않습니다.",
+            422,
+        )
     session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
-    if not await _check_mesh_grant(request, session):
+    from .pc_work_context import (
+        SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
+        read_saved_device_selection, render_pc_work_context,
+        resolve_pc_work_context,
+    )
+
+    saved_selection = await read_saved_device_selection(
+        request, owner_id=uid, workspace_id=workspace_id,
+    )
+    if device_id is not None:
+        if (
+            saved_selection.status == SAVED_SELECTION_SELECTED
+            and saved_selection.device_id != device_id
+        ):
+            raise ChatPCDriveError(
+                "chat_pc_selection_stale",
+                "저장된 작업 대상과 화면 선택이 다릅니다. 내 컴퓨터에서 대상을 다시 선택해 주세요.",
+                409,
+            )
+    elif saved_selection.status == SAVED_SELECTION_SELECTED:
+        # New session/reload: the saved target is the account's default.
+        device_id = saved_selection.device_id
+    elif saved_selection.status == SAVED_SELECTION_UNAVAILABLE:
+        # A failed lookup is not "no selection"; never execute on another PC.
+        raise ChatPCDriveError(
+            "chat_pc_selection_unavailable",
+            "저장된 PC 작업 대상을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+            503,
+        )
+    if not await _check_mesh_grant(request, session, device_id=device_id):
         answer = (
             "검증된 PC 연결을 확인하지 못해 파일 목록을 조회할 수 없습니다. "
             "PC 연결을 먼저 확인한 뒤 다시 요청해 주세요. "
@@ -434,25 +474,46 @@ async def execute_chat_pc_drive_lane(
             raise ChatPCDriveError("conversation_not_found", "대화를 찾을 수 없습니다.", 404)
         return answer, saved_id
 
-    if files_only:
-        if device_id is not None and (
-            not isinstance(device_id, str) or not 0 < len(device_id) <= 128
-        ):
+    # #5015: one server-verified context for both the drive and file lanes.
+    pc_context = await resolve_pc_work_context(
+        request, owner_id=uid, workspace_id=workspace_id,
+        session_id=getattr(session, "session_id", None),
+        selected_device_id=device_id,
+    )
+    if device_id is not None:
+        selected_row = next(
+            (device for device in pc_context.devices
+             if device.device_id == device_id),
+            None,
+        )
+        if selected_row is not None and selected_row.state == "REVOKED":
             raise ChatPCDriveError(
-                "chat_pc_device_invalid", "PC 장치 선택이 유효하지 않습니다.", 422,
+                "chat_pc_selection_revoked",
+                "선택한 PC의 연결이 해제되었습니다. 작업 대상을 다시 선택해 주세요.",
+                409,
             )
+        if not pc_context.selected_confirmed:
+            if not pc_context.execution.ready:
+                raise ChatPCDriveError(
+                    "chat_pc_target_unavailable",
+                    "선택한 PC의 서버 실행 대상을 확인할 수 없습니다. 작업 대상을 다시 확인해 주세요.",
+                    409,
+                )
+            raise ChatPCDriveError(
+                "chat_pc_target_mismatch",
+                "선택한 PC가 서버 실행 대상과 일치하지 않습니다. 작업 대상을 다시 선택해 주세요.",
+                403,
+            )
+    pc_work_text = render_pc_work_context(pc_context)
+
+    if files_only:
         return await _execute_chat_pc_files_lane(
             request, store=store, uid=uid, subject_id=subject_id,
             workspace_id=workspace_id, user_text=user_text, skill=skill,
             model_id=model_id, conversation_id=conversation_id,
-            device_id=device_id,
+            device_id=device_id, additional_system_context=pc_work_text,
         )
 
-    # #5015: the decision model receives the same server-verified PC context
-    # the general Chat path gets, so it never infers connectivity from prose.
-    pc_work_text = await build_pc_work_context_text(
-        request, owner_id=uid, workspace_id=workspace_id,
-    )
     decision_contract = _decision_contract(user_text)
     decision_raw = await _complete_with_model(
         request, user_text=user_text, skill=skill,
@@ -505,6 +566,11 @@ async def execute_chat_pc_drive_lane(
             subject_id=subject_id,
             session_id=lane_run_id,
             agent_plan=build_chat_pc_agent_plan(),
+            additional_system_context=pc_work_text,
+            tool_arguments=(
+                {"query_drives": {"device_id": device_id}}
+                if device_id is not None else None
+            ),
         )
     except B62OrchestrationError as exc:
         await _append_lane_notice(
@@ -559,6 +625,7 @@ async def _execute_chat_pc_files_lane(
     model_id: str,
     conversation_id: str | None,
     device_id: str | None,
+    additional_system_context: str | None = None,
 ) -> tuple[str, str | None]:
     """Stage and run the shared two-step list/read plan on the Chat product.
 
@@ -604,6 +671,7 @@ async def _execute_chat_pc_files_lane(
             subject_id=subject_id,
             session_id=lane_run_id,
             agent_plan=build_chat_pc_files_agent_plan(),
+            additional_system_context=additional_system_context,
             tool_arguments=tool_arguments,
         )
     except B62OrchestrationError as exc:

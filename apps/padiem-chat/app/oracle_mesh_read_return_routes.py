@@ -999,6 +999,9 @@ async def dispatch_oracle_mesh_command_intent(
             "state": dispatch["state"],
             "expires_at": dispatch["expires_at"],
             "kind": "command",
+            # Echo the server-resolved target so the caller can prove the
+            # signed dispatch used the same PC it named to the model.
+            "device_id": target.get("device_id") or target["node_ref"],
             "execution": "server_owned",
             "broker_acknowledged": False,
         },

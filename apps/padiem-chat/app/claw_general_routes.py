@@ -101,6 +101,19 @@ P01_ENGINE_REQUEST_ENVELOPE_BYTES = 5_500_000
 CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
 CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
+# Same closed grammar the canonical Broker device directory exposes.
+_PC_DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
+
+
+def _combine_system_context(*parts: str | None) -> str | None:
+    """Join optional trusted context blocks in a fixed order.
+
+    Each part is server-composed; a browser-supplied string never reaches this
+    helper. Empty/absent blocks disappear instead of emitting a blank section.
+    """
+    blocks = [part for part in parts if isinstance(part, str) and part]
+    return "\n\n".join(blocks) if blocks else None
+
 
 
 def _combine_system_context(*parts: str | None) -> str | None:
@@ -1226,12 +1239,16 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         r"(?:캡처|찍|보여|봐|capture|observe)",
         user_text, re.I,
     ))
-    desktop_device_id = data.get("device_id") if initial_pc_capture else None
-    if initial_pc_capture and desktop_device_id is not None and (
-        not isinstance(desktop_device_id, str)
-        or not 0 < len(desktop_device_id) <= 128
+    # A selected PC is shape-checked once here and then bound to the two PC
+    # lanes below. It is only a target hint: the server re-verifies that the
+    # account actually has this Mesh execution target before dispatch.
+    requested_device_id = data.get("device_id")
+    if requested_device_id is not None and (
+        not isinstance(requested_device_id, str)
+        or not _PC_DEVICE_ID_PATTERN.fullmatch(requested_device_id)
     ):
         return _error(422, "oracle_mesh_device_invalid", "PC 장치 선택이 유효하지 않습니다.")
+    desktop_device_id = requested_device_id if initial_pc_capture else None
 
     command_requested, command_text = _requested_local_command(user_text)
     if command_requested:
@@ -1247,16 +1264,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # single-command/TXT lanes so a named TXT is read by the model from the
     # actual listing rather than by a fixed-path shortcut.
     pc_files_requested = _requested_natural_pc_files(user_text)
-    pc_files_device_id = None
-    if pc_files_requested:
-        candidate_device = data.get("device_id")
-        if candidate_device is not None and (
-            not isinstance(candidate_device, str)
-            or not 0 < len(candidate_device) <= 128
-        ):
-            return _error(422, "oracle_mesh_device_invalid",
-                          "PC 장치 선택이 유효하지 않습니다.")
-        pc_files_device_id = candidate_device
+    # The browser hint was already shape-checked once above; the saved target
+    # or the server-verified target replaces it before dispatch.
+    pc_files_device_id = requested_device_id if pc_files_requested else None
 
     # #4139: natural-language PC state query (no backtick). Routes a clear
     # question about the verified PC to a bounded inventory command on that PC.
@@ -1270,6 +1280,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 request, user_text=user_text, command=natural_pc_command, data=data,
             )
         initial_pc_drive_query = True
+        desktop_device_id = requested_device_id
     else:
         initial_pc_drive_query = False
 
@@ -1366,6 +1377,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     )
     subject_id: str | None = None
     authorized_workspace_id: str | None = None
+    canonical_session_id: str | None = None
     if conversation_id is not None and (
         adapter is None or getattr(adapter, "subject_identity_lane", False) is not True
     ):
@@ -1385,6 +1397,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             )
         subject_id = b54_session.auth_session.subject.subject_id
         authorized_workspace_id = getattr(b54_session.auth_session, "tenant_id", None)
+        canonical_session_id = getattr(b54_session.auth_session, "session_id", None)
         if conversation_id is not None:
             if not isinstance(authorized_workspace_id, str) or not authorized_workspace_id:
                 return _error(403, "workspace_scope_unavailable",
@@ -1397,17 +1410,95 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     except DriveGroundingError as exc:
         return _error(exc.status_code, exc.code, exc.message)
 
-    # #5015: one per-request, server-verified PC work context. It reuses the
-    # same owner/workspace-scoped Broker directory the "내 컴퓨터" panel reads,
-    # so a NEW conversation recognizes the account's current PC state without
-    # browser memory or a fixed "always connected" claim. It is not an
-    # execution grant: the tool dispatch re-verifies owner and device.
+    # #5015: one per-request, server-verified PC work context. It reads BOTH
+    # the owner/workspace-scoped Broker directory the "내 컴퓨터" panel shows
+    # and the deployment's Mesh execution target, so an empty Broker list is
+    # never reported as "unregistered" and an online badge never becomes tool
+    # permission. It is not an execution grant: dispatch re-verifies the owner
+    # and the exact target.
     pc_work_text: str | None = None
     pc_owner = current_user_id(request) if auth_ready(request) else None
     if isinstance(pc_owner, str) and pc_owner:
-        from .pc_work_context import build_pc_work_context_text
+        from .claw_memory_routes import _resolve_memory_workspace
+        from .pc_work_context import (
+            SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
+            render_pc_work_context, resolve_pc_work_context,
+            read_saved_device_selection,
+        )
 
-        pc_work_text = await build_pc_work_context_text(request, owner_id=pc_owner)
+        try:
+            pc_workspace = await _resolve_memory_workspace(request, pc_owner)
+        except Exception:
+            pc_workspace = None
+        pc_target_requested = initial_pc_drive_query or pc_files_requested
+        explicit_pc_device_id = (
+            desktop_device_id if initial_pc_drive_query
+            else (pc_files_device_id if pc_files_requested else None)
+        )
+        selected_pc_device_id = explicit_pc_device_id
+        if (
+            pc_target_requested
+            and isinstance(pc_workspace, str) and pc_workspace
+        ):
+            # The saved value is the account's default target. A failed read
+            # is NOT "no selection": never fall back to another PC.
+            saved_selection = await read_saved_device_selection(
+                request, owner_id=pc_owner, workspace_id=pc_workspace,
+            )
+            if explicit_pc_device_id is not None:
+                if (
+                    saved_selection.status == SAVED_SELECTION_SELECTED
+                    and saved_selection.device_id != explicit_pc_device_id
+                ):
+                    # A stale tab must not execute on a target that differs
+                    # from the current server preference.
+                    return _error(
+                        409, "pc_selection_stale",
+                        "저장된 작업 대상과 화면 선택이 다릅니다. 내 컴퓨터에서 대상을 다시 선택해 주세요.",
+                    )
+            elif saved_selection.status == SAVED_SELECTION_SELECTED:
+                selected_pc_device_id = saved_selection.device_id
+            elif saved_selection.status == SAVED_SELECTION_UNAVAILABLE:
+                return _error(
+                    503, "pc_selection_unavailable",
+                    "저장된 PC 작업 대상을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+                )
+        pc_context = await resolve_pc_work_context(
+            request, owner_id=pc_owner,
+            workspace_id=pc_workspace,
+            session_id=canonical_session_id,
+            selected_device_id=selected_pc_device_id,
+        )
+        if pc_target_requested and selected_pc_device_id is not None:
+            selected_row = next(
+                (device for device in pc_context.devices
+                 if device.device_id == selected_pc_device_id),
+                None,
+            )
+            if selected_row is not None and selected_row.state == "REVOKED":
+                return _error(
+                    409, "pc_selection_revoked",
+                    "선택한 PC의 연결이 해제되었습니다. 작업 대상을 다시 선택해 주세요.",
+                )
+            if not pc_context.selected_confirmed:
+                # An explicit or saved target that did not resolve to the
+                # verified Mesh execution target never falls back to another PC.
+                if not pc_context.execution.ready:
+                    return _error(
+                        409, "pc_target_unavailable",
+                        "선택한 PC의 서버 실행 대상을 확인할 수 없습니다. 작업 대상을 다시 확인해 주세요.",
+                    )
+                return _error(
+                    403, "pc_target_mismatch",
+                    "선택한 PC가 서버 실행 대상과 일치하지 않습니다. 작업 대상을 다시 선택해 주세요.",
+                )
+            # Carry the SAME effective target into the Engine plan for each
+            # PC lane that this turn selected.
+            if initial_pc_drive_query:
+                desktop_device_id = selected_pc_device_id
+            if pc_files_requested:
+                pc_files_device_id = selected_pc_device_id
+        pc_work_text = render_pc_work_context(pc_context)
 
     # #3790: in the production Worker Claw uses the central model
     # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
@@ -1664,6 +1755,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             live_args["desktop_device_id"] = desktop_device_id
         if initial_pc_drive_query:
             live_args["pc_drive_query"] = True
+        if initial_pc_drive_query:
+            live_args["pc_drive_query"] = True
+            if desktop_device_id is not None:
+                # Carries the SAME server-verified target the context named;
+                # the Engine forwards it to the signed Mesh dispatch.
+                live_args["desktop_device_id"] = desktop_device_id
         if pc_files_requested:
             live_args["pc_files_query"] = True
             live_args["pc_files_device_id"] = pc_files_device_id
@@ -1712,6 +1809,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             dispatch_args["desktop_device_id"] = desktop_device_id
         if initial_pc_drive_query:
             dispatch_args["pc_drive_query"] = True
+        if initial_pc_drive_query:
+            dispatch_args["pc_drive_query"] = True
+            if desktop_device_id is not None:
+                dispatch_args["desktop_device_id"] = desktop_device_id
         if pc_files_requested:
             dispatch_args["pc_files_query"] = True
             dispatch_args["pc_files_device_id"] = pc_files_device_id

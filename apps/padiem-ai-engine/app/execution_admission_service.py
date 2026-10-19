@@ -399,10 +399,17 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                 tool_arguments = (
                     payload.get("tool_arguments") if isinstance(payload, dict) else None
                 )
-                if isinstance(tool_arguments, dict) and isinstance(tool_arguments.get("files"), dict):
-                    candidate = tool_arguments["files"].get("device_id")
-                    if isinstance(candidate, str) and 0 < len(candidate) <= 128:
-                        selected_device = candidate
+                if isinstance(tool_arguments, dict):
+                    # The drive plan keys the target by query_drives; the file
+                    # plan uses the shared files hint. Both carry one device.
+                    for step_id in ("files", "query_drives"):
+                        entry = tool_arguments.get(step_id)
+                        if not isinstance(entry, dict):
+                            continue
+                        candidate = entry.get("device_id")
+                        if isinstance(candidate, str) and 0 < len(candidate) <= 128:
+                            selected_device = candidate
+                            break
                 pc_query_owner = (
                     binding.subject_id, run_id, binding.app_id, selected_device,
                 )
