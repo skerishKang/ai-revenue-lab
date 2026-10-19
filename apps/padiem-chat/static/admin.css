@@ -1,0 +1,37 @@
+/* #5108 admin hub surface. Inherits the admin-models palette. */
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.hub-card{position:relative;display:grid;align-content:start;gap:8px;min-height:150px;padding:19px 20px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 3px 18px #243f6710;color:var(--ink)}
+.hub-card:hover,.hub-card:focus-visible{border-color:#b9cdf3;box-shadow:0 7px 24px #2d539515;transform:translateY(-1px)}
+.hub-card-tag{justify-self:start;background:#edf3ff;color:#5177b9;border-radius:100px;padding:4px 9px;font-size:10px;font-weight:700}
+.hub-card strong{font-size:16px;letter-spacing:-.02em;margin-top:3px}
+.hub-card small{color:#7c8ea5;font-size:11px;line-height:1.6}
+.hub-arrow{margin-top:auto;padding-top:10px;color:#4a77c7;font-size:11px;font-weight:750}
+.gate-panel{padding:26px 24px}
+.gate-panel h2{margin:0 0 9px;font-size:17px}
+.gate-panel p{margin:0;color:#7d8ea4;font-size:12px;line-height:1.7;max-width:620px}
+.gate-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}
+.gate-button{width:auto;display:inline-grid;place-items:center;padding:12px 17px;border-radius:11px;font-size:12px;font-weight:750}
+.btn.gate-button{width:auto;margin:0;border:1px solid var(--line);background:#fff;color:#3f5f8c}
+.btn.primary.gate-button{background:#3976d7;color:#fff;border-color:#3976d7}
+.btn.primary.gate-button:hover{background:#2c63c7}
+.capability-panel{margin-top:16px}
+.capability-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 18px}
+.capability-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #edf0f5;background:#fafcfe;border-radius:10px;padding:11px 13px;min-width:0}
+.capability-label{font-size:11px;font-weight:650;color:#51647d;overflow-wrap:anywhere}
+.capability-value{font-size:10px;font-weight:750;white-space:nowrap}
+.capability-value.yes{color:var(--good)}
+.capability-value.no{color:#a3b0c1}
+.note-panel{margin-top:16px}
+.policy-list{margin:0;padding-left:19px;color:#677992;font-size:12px;line-height:1.9}
+.policy-list a{color:#3d70c9;font-weight:700}
+.policy-list a:hover{text-decoration:underline}
+.notice.error{border-color:#f0bec3;background:#fff2f2;color:#ae454d}
+.product-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.product-link{display:grid;gap:5px;border:1px solid #e9edf4;border-radius:12px;padding:15px 16px;background:#fafcfe;color:var(--ink)}
+.product-link:hover,.product-link:focus-visible{border-color:#c3d5f4;background:#f6faff}
+.product-link strong{font-size:12px;font-weight:750}
+.product-link small{color:#8394a9;font-size:10px;line-height:1.6}
+@media (max-width:640px){
+  .hub-grid{grid-template-columns:1fr}
+  .gate-actions .gate-button{width:100%}
+}
