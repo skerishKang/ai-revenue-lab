@@ -233,7 +233,10 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('B14 contract lane did not execute', self.aggregate)
         self.assertIn('B14_CONTRACT_RESULT=$MM_RESULT', self.aggregate)
         self.assertIn('Record independent result boundaries (#5002)', self.aggregate)
-        self.assertIn('PRODUCT_E2E_BYOK=NOT_RUN', self.aggregate)
+        self.assertIn('if [ "$FULL_RESULT" = success ]; then', self.aggregate)
+        self.assertIn('PRODUCT_E2E_BYOK=INTEGRATION_MOCK', self.aggregate)
+        self.assertIn('PRODUCT_E2E_BYOK=NOT_RUN (product regression did not pass', self.aggregate)
+        self.assertIn('PRODUCT_E2E_BYOK_LIVE=NOT_RUN', self.aggregate)
         self.assertIn('B14_E2E=NOT_RUN', self.aggregate)
         self.assertIn('FIRST_B14_FAILURE_EVIDENCE=record the first failure once in #4318',
                       self.aggregate)

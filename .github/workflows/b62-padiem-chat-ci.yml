@@ -279,7 +279,12 @@ jobs:
             echo "- LANE=$LANE SCOPE=$SCOPE"
             echo "- PRODUCT_TEST_REGRESSION=$FULL_RESULT"
             echo "- PRODUCT_WORKER_REGRESSION=$WORKER_RESULT"
-            echo '- PRODUCT_E2E_BYOK=NOT_RUN (this workflow makes no live customer-provider call)'
+            if [ "$FULL_RESULT" = success ]; then
+              echo '- PRODUCT_E2E_BYOK=INTEGRATION_MOCK (real ASGI + real D1 history; provider MockTransport, no live call)'
+            else
+              echo "- PRODUCT_E2E_BYOK=NOT_RUN (product regression did not pass: $FULL_RESULT)"
+            fi
+            echo '- PRODUCT_E2E_BYOK_LIVE=NOT_RUN (no approved paid customer-provider call in CI)'
             echo "- B14_CONTRACT=$MM_RESULT"
             echo '- B14_E2E=NOT_RUN (B14 contract tests only; live E2E is tracked by #4318)'
             echo '- FIRST_B14_FAILURE_EVIDENCE=record the first failure once in #4318; product ledgers link it'
