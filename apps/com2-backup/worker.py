@@ -65,10 +65,48 @@ def _error(code: str) -> Response:
     return _json(contract.status_for_code(code), {"ok": False, "error": {"code": code}})
 
 
-async def _maybe_await(value):
+def _is_thenable(value) -> bool:
+    """True for a Python awaitable or a workerd JS Promise (a JsProxy)."""
     if inspect.isawaitable(value):
+        return True
+    try:
+        return callable(getattr(value, "then", None))
+    except Exception:
+        return False
+
+
+async def _maybe_await(value):
+    # Workerd returns JS promises whose ``then`` is a JsProxy function; they are
+    # not always reported by ``inspect.isawaitable``.
+    if _is_thenable(value):
         return await value
     return value
+
+
+def _diag(stage: str, exc: BaseException) -> None:
+    """Bounded operator diagnostic for ``wrangler tail``; never a binding value."""
+    try:
+        message = str(exc).replace("\n", " ")[:200]
+        print(f"com2_backup_diag stage={stage} type={type(exc).__name__} message={message!r}")
+    except Exception:
+        pass
+
+
+def _bytes_of(value) -> bytes:
+    """Convert a real R2 ArrayBuffer/Uint8Array proxy or a bytes-shaped test double."""
+    if isinstance(value, (bytes, bytearray, memoryview)):
+        return bytes(value)
+    try:
+        return memoryview(value).tobytes()
+    except (TypeError, ValueError):
+        pass
+    to_bytes = getattr(value, "to_bytes", None)
+    if callable(to_bytes):
+        converted = to_bytes()
+        if isinstance(converted, (bytes, bytearray, memoryview)):
+            return bytes(converted)
+        return bytes(converted)
+    return bytes(value)
 
 
 async def _resolve_secret(env, binding_name: str) -> str:
@@ -164,20 +202,54 @@ async def _read_body(request, max_bytes: int) -> bytes:
     return await contract.read_bounded_body(_chunk_reader(request), max_bytes)
 
 
-async def _object_bytes(obj) -> bytes:
+async def _object_bytes(obj, max_bytes: int) -> bytes:
     """Read a real R2 object body or a bytes-shaped test double."""
     array_buffer = getattr(obj, "arrayBuffer", None)
     if callable(array_buffer):
-        data = await _maybe_await(array_buffer())
-        to_bytes = getattr(data, "to_bytes", None)
-        if callable(to_bytes):
-            data = to_bytes()
-        return bytes(data)
-    body = getattr(obj, "body", obj)
-    data = await _maybe_await(body)
-    if isinstance(data, (bytes, bytearray, memoryview)):
-        return bytes(data)
+        try:
+            data = _bytes_of(await _maybe_await(array_buffer()))
+            if len(data) > max_bytes:
+                raise contract.BackupError("stored_object_too_large", 502)
+            return data
+        except contract.BackupError:
+            raise
+        except Exception as exc:
+            _diag("arraybuffer", exc)
+    # Fallback: workerd can expose the object body only as a ReadableStream.
+    body = getattr(obj, "body", None)
+    get_reader = getattr(body, "getReader", None)
+    if callable(get_reader):
+        try:
+            return await _read_stream(get_reader, max_bytes)
+        except contract.BackupError:
+            raise
+        except Exception as exc:
+            _diag("stream", exc)
     raise contract.BackupError("storage_body_failed", 502)
+
+
+async def _read_stream(get_reader, max_bytes: int) -> bytes:
+    reader = get_reader()
+    chunks = bytearray()
+    try:
+        while True:
+            result = await _maybe_await(reader.read())
+            if bool(getattr(result, "done", False)):
+                return bytes(chunks)
+            chunks.extend(_bytes_of(getattr(result, "value", None)))
+            if len(chunks) > max_bytes:
+                raise contract.BackupError("stored_object_too_large", 502)
+    finally:
+        release = getattr(reader, "releaseLock", None)
+        if callable(release):
+            release()
+
+
+def _is_absent(value) -> bool:
+    """Workerd returns a JS ``null`` proxy (``JsNull``) for a missing R2 key."""
+    if value is None:
+        return True
+    return type(value).__name__ in {"JsNull", "JsUndefined"}
 
 
 async def _read_object(bucket, key: str, max_bytes: int) -> bytes | None:
@@ -185,19 +257,21 @@ async def _read_object(bucket, key: str, max_bytes: int) -> bytes | None:
         obj = await _maybe_await(bucket.get(key))
     except contract.BackupError:
         raise
-    except Exception:
+    except Exception as exc:
+        _diag("get", exc)
         raise contract.BackupError("storage_read_failed", 502)
-    if obj is None:
+    if _is_absent(obj):
         return None
     size = getattr(obj, "size", None)
     if isinstance(size, int) and not isinstance(size, bool) and size > max_bytes:
         # An object written out of band must not be buffered into the isolate.
         raise contract.BackupError("stored_object_too_large", 502)
     try:
-        return await _object_bytes(obj)
+        return await _object_bytes(obj, max_bytes)
     except contract.BackupError:
         raise
-    except Exception:
+    except Exception as exc:
+        _diag("body", exc)
         raise contract.BackupError("storage_body_failed", 502)
 
 
@@ -214,6 +288,15 @@ async def _existing_state(bucket, key: str, data: bytes, max_bytes: int) -> str 
     return "identical" if stored == data else "conflict"
 
 
+def _js_buffer(data: bytes):
+    """Workerd ``R2Bucket.put`` needs an ArrayBufferView, not a Python bytes proxy."""
+    try:
+        from pyodide.ffi import to_js
+    except ImportError:  # local test double
+        return data
+    return to_js(data)
+
+
 async def _put_if_absent(
     bucket, key: str, data: bytes, *, content_type: str, max_bytes: int
 ) -> str:
@@ -226,13 +309,14 @@ async def _put_if_absent(
         await _maybe_await(
             bucket.put(
                 key,
-                data,
+                _js_buffer(data),
                 httpMetadata={"contentType": content_type, "cacheControl": "no-store"},
             )
         )
     except contract.BackupError:
         raise
-    except Exception:
+    except Exception as exc:
+        _diag("put", exc)
         raise contract.BackupError("storage_write_failed", 502)
     stored = await _read_object(bucket, key, max_bytes)
     if stored is None or stored != data:
