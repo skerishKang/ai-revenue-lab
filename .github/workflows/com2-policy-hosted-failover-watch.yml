@@ -28,7 +28,10 @@ jobs:
           persist-credentials: false
           sparse-checkout: |
             .github/scripts/com2_policy_failover_watch.py
+            .github/tests/test_com2_policy_failover_watch.py
           sparse-checkout-cone-mode: false
+      - name: Verify exact-SHA failover decision contract
+        run: python3 -m unittest discover -s .github/tests -p test_com2_policy_failover_watch.py -v
       - name: Check stale PR policy statuses and trigger exact-SHA hosted backup
         env:
           GH_TOKEN: ${{ github.token }}
