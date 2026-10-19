@@ -59,7 +59,9 @@ class FakeControlPlaneBinding:
         }
 
     async def resolve_product_user_for_subject(self, payload):
-        return {"ok": True, "product_user": {"product_user_id": OWNER}}
+        # The Control Plane answers this read-only lookup with the scalar
+        # product_user_id next to ok (#3247/#5015).
+        return {"ok": True, "product_user_id": OWNER}
 
     async def resolve_connector_context(self, payload):
         return {
