@@ -19,7 +19,7 @@
     selectableIds: new Set(), fullInventory: false,
     authorized: false, writeEnabled: false, pendingReceipt: null, pendingRequest: 0,
     routeWriteEnabled: false, routeRows: [], routeStatic: null, routeRevision: 0,
-    routeReceipt: null, routeRequest: 0,
+    routeReceipt: null, routeRequest: 0, routeConnected: false,
   };
   const ROUTE_PRODUCTS = Object.freeze(["chat", "claw", "b66"]);
   const ROUTE_TIERS = Object.freeze(["FREE", "PLUS", "PRO", "MAX"]);
@@ -164,6 +164,42 @@
     }
   }
 
+  function routeTile(productId, modelId, fallback) {
+    // The central per-product/per-grade route ledger is the runtime-enforced
+    // placement of a model. Show the administrator where this exact model is
+    // actually assigned instead of a fixed "not wired" label.
+    const rows = state.routeRows.filter((row) => row.product === productId);
+    const placed = rows.filter((row) =>
+      row.primary_model_id === modelId || row.fallback_model_id === modelId);
+    const note = fallback && fallback.detail ? " · " + fallback.detail : "";
+    if (!placed.length) {
+      if (!rows.length) return fallback;
+      return {
+        name: PRODUCTS[productId].name,
+        status: "미배정",
+        detail: "중앙 등급별 실행 경로에 이 모델 배정 없음" + note,
+        kind: "unknown",
+      };
+    }
+    if (fallback && fallback.policy_blocked) {
+      // An explicit product-policy OFF stays visible: a central route
+      // assignment never hides a blocked model.
+      return {
+        name: PRODUCTS[productId].name,
+        status: fallback.status,
+        detail: "중앙 등급별 실행 경로 배정 있음 · " + fallback.detail,
+        kind: "blocked",
+      };
+    }
+    return {
+      name: PRODUCTS[productId].name,
+      status: placed.map((row) => row.tier + (
+        row.primary_model_id === modelId ? " 기본" : " 폴백")).join(" · "),
+      detail: "중앙 등급별 실행 경로 배정" + note,
+      kind: fallback && fallback.kind === "blocked" ? "blocked" : "ready",
+    };
+  }
+
   function positions() {
     const modelId = state.selected?.model_id;
     if (!modelId) return [];
@@ -174,29 +210,40 @@
       state.selectableIds.has(modelId) ?
       {name: "B14 공통", status: "조회됨", detail: "B14 선택 가능 목록에 있음; 실제 실행 성공과 별개", kind: "ready"} :
       {name: "B14 공통", status: "미확인", detail: "제품 선택 가능 여부 확인 필요", kind: "unknown"};
+    const central = state.routeConnected ?
+      {name: "중앙 정책", status: "실행 경로 " + state.routeRevision,
+        detail: "등급별 실행 경로 원장 연결", kind: "ready"} :
+      {name: "중앙 정책", status: "미연결", detail: "등급별 정책 조회 전", kind: "unknown"};
     const result = [
       b14,
-      {name: "중앙 정책", status: "미연결", detail: "등급별 정책 조회 전", kind: "unknown"},
-      {name: "Padiem Chat", status: "미연결", detail: "실제 배정 여부 미확인", kind: "unknown"},
-      {name: "Claw", status: "미연결", detail: "제품별 최종 실행 허용 미확인", kind: "unknown"},
+      central,
+      routeTile("chat", modelId, {
+        name: "Padiem Chat", status: "미연결",
+        detail: "실제 배정 여부 미확인", kind: "unknown"}),
+      routeTile("claw", modelId, {
+        name: "Claw", status: "미연결",
+        detail: "제품별 최종 실행 허용 미확인", kind: "unknown"}),
     ];
     const b66 = state.products?.b66;
+    let b66Tile;
     if (b66?.status !== "connected") {
-      result.push({name: "B66 견적", status: "조회 불가", detail: "D1 정책 조회 불가", kind: "unknown"});
+      b66Tile = {name: "B66 견적", status: "조회 불가", detail: "D1 정책 조회 불가", kind: "unknown"};
     } else if (b66.disabled_models?.includes(modelId)) {
-      result.push({name: "B66 견적", status: "차단됨", detail: "B66 정책의 모델 OFF", kind: "blocked"});
+      b66Tile = {name: "B66 견적", status: "차단됨", detail: "B66 정책의 모델 OFF",
+        kind: "blocked", policy_blocked: true};
     } else if (b66.active === false) {
-      result.push({name: "B66 견적", status: "정책 비활성", detail: "정책 active=false", kind: "unknown"});
+      b66Tile = {name: "B66 견적", status: "정책 비활성", detail: "정책 active=false", kind: "unknown"};
     } else {
       const tiers = Object.entries(b66.tiers || {})
         .filter(([, ids]) => Array.isArray(ids) && ids.includes(modelId))
         .map(([tier]) => tier);
-      result.push({
+      b66Tile = {
         name: "B66 견적", status: tiers.length ? tiers.join(" · ") : "미배정",
         detail: tiers.length ? "B66 정책의 등급 배정; 최종 실행은 별도 검증" : "해당 모델의 등급 배정 없음",
         kind: tiers.length ? "ready" : "blocked",
-      });
+      };
     }
+    result.push(routeTile("b66", modelId, b66Tile));
     result.push({name: "B14 Router", status: "미연결", detail: "외부 API 상품 정책 조회 전", kind: "unknown"});
     return result;
   }
@@ -385,6 +432,7 @@
     state.routeRows = [];
     state.routeStatic = null;
     state.routeRevision = 0;
+    state.routeConnected = false;
     clearRoutePreview();
     $("routeStatus").textContent = "확인 중";
     $("routeTable").replaceChildren(node("p", "실행 경로를 확인하고 있습니다.", "placeholder"));
@@ -399,6 +447,7 @@
       state.routeRows = result.routes;
       state.routeStatic = result.static;
       state.routeRevision = result.revision;
+      state.routeConnected = true;
       state.routeWriteEnabled = result.write_enabled === true;
       $("routeStatus").textContent = "실행 적용 · 리비전 " + result.revision;
       renderRouteForm();
@@ -616,6 +665,9 @@
       renderSources();
       renderPlacement();
       await loadRoutes();
+      // The central route ledger is the runtime-enforced per-product placement,
+      // so the placement panel is projected again once it is known.
+      renderPlacement();
       if (state.writeEnabled) await loadAudit();
     } catch (err) {
       if (seq !== state.pendingRequest) return;
