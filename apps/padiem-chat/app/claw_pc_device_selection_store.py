@@ -14,13 +14,13 @@ The existing ``PADIEM_CHAT_DB`` D1 is reused; no request-time DDL is allowed.
 """
 from __future__ import annotations
 
-import re
 from datetime import datetime
 from typing import Any, Protocol
 
+from padiem_ai_core.pc_device_identity import is_pc_device_id
+
 from .history import _row_to_dict
 
-_DEVICE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 _MAX_OWNER_CHARS = 160
 _MAX_WORKSPACE_CHARS = 160
 
@@ -36,7 +36,7 @@ def _text(value: Any, name: str, limit: int) -> str:
 
 
 def _device_id(value: Any) -> str:
-    if not isinstance(value, str) or not _DEVICE_ID_RE.fullmatch(value):
+    if not is_pc_device_id(value):
         raise PcDeviceSelectionStoreError("device_id must be one bounded device identifier")
     return value
 
@@ -79,7 +79,7 @@ class D1PcDeviceSelectionStore:
         )
         value = row.get("device_id") if isinstance(row, dict) else None
         # A malformed stored row is treated as no preference, never as a PC.
-        return value if isinstance(value, str) and _DEVICE_ID_RE.fullmatch(value) else None
+        return value if is_pc_device_id(value) else None
 
     async def save(
         self, *, owner_id: str, workspace_id: str, device_id: str, now: datetime,

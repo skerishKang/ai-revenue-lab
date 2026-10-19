@@ -30,6 +30,8 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from padiem_ai_core.pc_device_identity import is_pc_device_id
+
 from .auth_routes import auth_ready, current_user_id
 from .b14_client import B14Client, ChatRuntimeError
 from .history import (
@@ -74,7 +76,6 @@ CHAT_PC_QUERY_TOOL_ID = "claw.pc.query_drives"
 CHAT_PC_RUN_PREFIX = "chat_pcq_"
 
 _SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
-_DEVICE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
 class ChatPCDriveError(ValueError):
@@ -421,9 +422,7 @@ async def execute_chat_pc_drive_lane(
             "chat_pc_store_unavailable",
             "대화 기록을 현재 사용할 수 없습니다.",
         )
-    if device_id is not None and (
-        not isinstance(device_id, str) or not _DEVICE_ID_RE.fullmatch(device_id)
-    ):
+    if device_id is not None and not is_pc_device_id(device_id):
         raise ChatPCDriveError(
             "chat_pc_target_invalid",
             "선택한 PC 정보가 유효하지 않습니다.",
