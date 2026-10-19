@@ -15,6 +15,8 @@ from .native_calendar_intent import parse_native_calendar_intent, try_native_cal
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
+from .byok_client import CustomProviderError
+from .byok_credentials import CustomProviderSelectionError, resolve_custom_selection
 from .config import Settings
 from .conversation_routes import _history_unavailable
 from .documents import (
@@ -43,6 +45,7 @@ from .public_chat import public_chat_result
 from .request_contract import (
     MAX_BROWSER_BODY_BYTES,
     BrowserRequestError,
+    CustomModelSelection,
     _apply_b62_model_policy,
     _validate_payload,
 )
@@ -140,6 +143,60 @@ def _model_history_too_large() -> JSONResponse:
     )
 
 
+def _custom_error_response(exc: CustomProviderError) -> JSONResponse:
+    return JSONResponse(
+        {"error": {"code": exc.code, "message": exc.user_message}},
+        status_code=exc.status_code,
+    )
+
+
+def _custom_selection_unsupported(exc: CustomProviderSelectionError) -> JSONResponse:
+    return JSONResponse(
+        {"error": {"code": "custom_provider_unsupported", "message": str(exc)}},
+        status_code=422,
+    )
+
+
+async def _complete_custom_chat(
+    request: Request,
+    *,
+    uid: str,
+    selection: CustomModelSelection,
+    messages: list[dict[str, str]],
+    reference_context: str | None,
+) -> dict[str, Any]:
+    """B14-independent path: owner key -> explicit provider model -> answer."""
+    spec = resolve_custom_selection(selection.provider, selection.model)
+    store = getattr(request.app.state, "custom_credential_store", None)
+    client = getattr(request.app.state, "custom_provider_client", None)
+    if store is None or client is None:
+        raise CustomProviderError(
+            503,
+            "custom_provider_unavailable",
+            "PADIEM Custom을 현재 사용할 수 없습니다.",
+        )
+    try:
+        api_key = await store.api_key(uid, spec.provider_id)
+    except Exception:
+        raise CustomProviderError(
+            503,
+            "custom_credential_unavailable",
+            "PADIEM Custom 자격증명을 확인할 수 없습니다.",
+        )
+    if not api_key:
+        raise CustomProviderError(
+            409,
+            "custom_credential_required",
+            "PADIEM Custom API 키를 먼저 등록해 주세요.",
+        )
+    return await client.complete(
+        spec=spec,
+        api_key=api_key,
+        messages=messages,
+        system_context=reference_context,
+    )
+
+
 async def _restore_owner_chat_model_messages(
     store: HistoryStore,
     owner_id: str,
@@ -200,15 +257,18 @@ async def api_chat_stream(request: Request):
 
     try:
         raw = json.loads(body.decode("utf-8"))
-        messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
-        # No-tier browser clients are Free; validate legacy slash syntax
-        # separately so an unknown alias still fails before B14 dispatch.
-        if "tier" not in raw:
-            _apply_b62_model_policy(messages)
-        selected_model, messages = _apply_b62_model_policy(
-            messages,
-            tier_id=raw.get("tier", "free"),
-        )
+        messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = _validate_payload(raw)
+        if custom is None:
+            # No-tier browser clients are Free; validate legacy slash syntax
+            # separately so an unknown alias still fails before B14 dispatch.
+            if "tier" not in raw:
+                _apply_b62_model_policy(messages)
+            selected_model, messages = _apply_b62_model_policy(
+                messages,
+                tier_id=raw.get("tier", "free"),
+            )
+        else:
+            selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
@@ -220,6 +280,11 @@ async def api_chat_stream(request: Request):
         )
 
     uid = current_user_id(request) if auth_ready(request) else None
+    if custom is not None and uid is None:
+        return JSONResponse(
+            {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
+            status_code=401,
+        )
     if "tier" in raw:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
@@ -291,6 +356,62 @@ async def api_chat_stream(request: Request):
             project_files_context, project_files_used = build_project_files_context(project_files)
 
     reference_context = combine_reference_context(project_context, project_files_context, None)
+
+    # PADIEM Custom: the owner's key goes directly to the explicitly selected
+    # provider. No B14 binding/router/registry/default/fallback/secret lookup
+    # happens on this path, so it stays usable while B14 is unavailable.
+    if custom is not None:
+        try:
+            custom_result = await _complete_custom_chat(
+                request,
+                uid=uid,
+                selection=custom,
+                messages=messages,
+                reference_context=reference_context,
+            )
+        except CustomProviderSelectionError as exc:
+            return _custom_selection_unsupported(exc)
+        except CustomProviderError as exc:
+            return _custom_error_response(exc)
+        custom_answer = custom_result["answer"]
+        custom_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), None)
+
+        async def custom_body_iterator():
+            yield _public_sse("delta", {"delta": custom_answer})
+            custom_done: dict[str, Any] = {"done": True}
+            if uid is not None and store is not None and custom_user:
+                try:
+                    if effective_project_id is None:
+                        saved_id = await store.append_exchange(
+                            uid, conversation_id, custom_user, custom_answer,
+                            product_scope=PRODUCT_SCOPE_CHAT,
+                        )
+                    else:
+                        saved_id = await store.append_exchange(
+                            uid, conversation_id, custom_user, custom_answer,
+                            project_id=effective_project_id,
+                            product_scope=PRODUCT_SCOPE_CHAT,
+                        )
+                except HistoryForbidden:
+                    yield _public_sse(
+                        "error",
+                        {"error": {"code": "conversation_not_found", "message": "대화를 찾을 수 없습니다."}},
+                    )
+                    return
+                except Exception:
+                    saved_id = None
+                if saved_id is not None:
+                    custom_done["conversation_id"] = saved_id
+                    if effective_project_id is not None:
+                        custom_done["project_id"] = effective_project_id
+            yield _public_sse("done", custom_done)
+
+        return StreamingResponse(
+            custom_body_iterator(),
+            status_code=200,
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
+        )
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
     try:
@@ -578,15 +699,18 @@ async def api_chat(request: Request) -> JSONResponse:
 
     try:
         raw = json.loads(body.decode("utf-8"))
-        messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
-        # No-tier browser clients are Free; validate legacy slash syntax
-        # separately so an unknown alias still fails before B14 dispatch.
-        if "tier" not in raw:
-            _apply_b62_model_policy(messages)
-        selected_model, messages = _apply_b62_model_policy(
-            messages,
-            tier_id=raw.get("tier", "free"),
-        )
+        messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = _validate_payload(raw)
+        if custom is None:
+            # No-tier browser clients are Free; validate legacy slash syntax
+            # separately so an unknown alias still fails before B14 dispatch.
+            if "tier" not in raw:
+                _apply_b62_model_policy(messages)
+            selected_model, messages = _apply_b62_model_policy(
+                messages,
+                tier_id=raw.get("tier", "free"),
+            )
+        else:
+            selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
@@ -614,6 +738,11 @@ async def api_chat(request: Request) -> JSONResponse:
             )
 
     uid = current_user_id(request) if auth_ready(request) else None
+    if custom is not None and uid is None:
+        return JSONResponse(
+            {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
+            status_code=401,
+        )
     if "tier" in raw:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
@@ -688,6 +817,47 @@ async def api_chat(request: Request) -> JSONResponse:
     document_attachment = next((item for item in attachments if isinstance(item, DocumentAttachment)), None)
     document_context = build_document_context(document_attachment) if document_attachment is not None else None
     reference_context = combine_reference_context(project_context, project_files_context, document_context)
+
+    # PADIEM Custom: owner key -> explicitly selected provider model. The B14
+    # client, router, registry, default/fallback policy and platform secret
+    # store are not touched on this path.
+    if custom is not None:
+        try:
+            custom_result = await _complete_custom_chat(
+                request,
+                uid=uid,
+                selection=custom,
+                messages=messages,
+                reference_context=reference_context,
+            )
+        except CustomProviderSelectionError as exc:
+            return _custom_selection_unsupported(exc)
+        except CustomProviderError as exc:
+            return _custom_error_response(exc)
+        result = {"answer": custom_result["answer"]}
+        latest_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), None)
+        if latest_user:
+            try:
+                if effective_project_id is None:
+                    saved_id = await store.append_exchange(
+                        uid, conversation_id, latest_user, result["answer"],
+                        product_scope=PRODUCT_SCOPE_CHAT,
+                    )
+                else:
+                    saved_id = await store.append_exchange(
+                        uid, conversation_id, latest_user, result["answer"],
+                        project_id=effective_project_id,
+                        product_scope=PRODUCT_SCOPE_CHAT,
+                    )
+            except HistoryForbidden:
+                return _conversation_not_found()
+            except Exception:
+                saved_id = None
+            if saved_id is not None:
+                result["conversation_id"] = saved_id
+                if effective_project_id is not None:
+                    result["project_id"] = effective_project_id
+        return JSONResponse(public_chat_result(result))
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
     try:
