@@ -1488,10 +1488,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # uses, never browser-supplied prior turns, so forged history cannot move the
     # search target. Everything downstream is unchanged when it returns nothing.
     # Private Drive data never enters the public web search judgement/query.
-    if initial_pc_drive_query:
-        # #5015: a PC drive query needs no public web evidence. Skipping the
-        # judgement call keeps this turn from spending a model call (and from
-        # entering the suspended b14/auto chain) before the Engine dispatch.
+    if initial_pc_drive_query or pc_files_requested:
+        # #5015/#4976: a PC drive or file task needs no public web evidence.
+        # Skipping the judgement call keeps this turn from spending a model
+        # call before the Engine PC tool dispatch.
         grounding_context, search_sources = None, ()
     elif drive_context is None:
         grounding_context, search_sources = await _claw_public_search_grounding(
@@ -1506,7 +1506,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # target conversation, workspace and owner session from that row, so an
     # unstaged run can only fail after the model has already started.
     staged_conversation_id: str | None = None
-    if initial_pc_capture or initial_pc_drive_query:
+    if initial_pc_capture or initial_pc_drive_query or pc_files_requested:
         from .claw_memory_routes import _resolve_memory_workspace
         stage_uid = current_user_id(request) if auth_ready(request) else None
         stage = getattr(
