@@ -26,3 +26,9 @@ packages/padiem-ai-core/tests/test_document_normalization.py text eol=lf
 
 # Existing Win32 tray module is stored as CRLF; its CR is not trailing space.
 apps/claw-connect/claw_connect/tray.py whitespace=cr-at-eol
+
+# #5080: Gradle generates the Windows wrapper launcher with CRLF and the blob keeps those
+# bytes, so every one of its 94 lines read as trailing whitespace in `git diff --check`.
+# `cr-at-eol` alone would also switch off the other classes for this path, so the remaining
+# ones are listed to keep the gate as tight here as it is elsewhere.
+apps/padiem-android-connector/gradlew.bat whitespace=trailing,cr-at-eol,blank-at-eof,space-before-tab
