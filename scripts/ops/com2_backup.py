@@ -12,6 +12,8 @@ Safety boundaries
 * Secret-like paths and files carrying a high-confidence credential marker are
   excluded from the archive. Counts are reported; contents and values are never
   printed.
+* ``backup --key-env`` encrypts the archive on COM2 with AES-256-GCM. The key
+  never reaches the Worker and the manifest still covers the stored bytes.
 * ``restore-check`` verifies the downloaded archive, extracts it into a staging
   directory, verifies every file, and only then publishes into an explicitly
   supplied empty target. It never writes into a source root or a database.
@@ -21,17 +23,22 @@ Usage
 -----
     python scripts/ops/com2_backup.py inventory
     python scripts/ops/com2_backup.py backup --out-dir build/com2-backup
+    python scripts/ops/com2_backup.py backup --out-dir build/com2-backup \
+        --key-env COM2_BACKUP_ENCRYPTION_KEY --key-id com2-2026-10
     python scripts/ops/com2_backup.py upload --endpoint https://... --dir ...
     python scripts/ops/com2_backup.py verify --endpoint https://... --machine com2 --backup-id ...
     python scripts/ops/com2_backup.py restore-check --endpoint https://... --machine com2 --backup-id ... --target empty-dir
 
 The bearer token is read from ``COM2_BACKUP_WRITE_TOKEN`` (override with
-``--token-env``) and is never printed, logged or placed in a URL.
+``--token-env``) and is never printed, logged or placed in a URL. The optional
+payload key is read from ``COM2_BACKUP_ENCRYPTION_KEY`` (override with
+``--key-env``) with the same rule.
 """
 
 from __future__ import annotations
 
 import argparse
+import base64
 import gzip
 import hashlib
 import importlib.util
@@ -58,6 +65,17 @@ HASH_CHUNK = 1024 * 1024
 #: Decompressed-size guard for a restore check. This is a memory/disk safety
 #: bound, not a retention or storage policy.
 MAX_RESTORE_UNCOMPRESSED_BYTES = 256 * 1024 * 1024
+
+#: Client-side envelope for the operator payload. The Worker stores these bytes
+#: opaquely, so encryption stays entirely on the COM2 side and the existing
+#: ciphertext SHA-256 upload/verify path is unchanged.
+ENCRYPTION_MAGIC = b"PADIEM-CBE1\n"
+ENCRYPTION_ALGORITHM = "AES-256-GCM"
+DEFAULT_KEY_ENV = "COM2_BACKUP_ENCRYPTION_KEY"
+_NONCE_BYTES = 12
+_TAG_BYTES = 16
+_KEY_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+_KEY_HEX_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 
 _EXCLUDED_DIRS = {
     ".git",
@@ -201,6 +219,146 @@ def _hash_file(path: Path) -> tuple[int, str]:
             size += len(chunk)
             digest.update(chunk)
     return size, digest.hexdigest()
+
+
+def validate_key_id(value: object) -> str:
+    if not isinstance(value, str) or not _KEY_ID_RE.fullmatch(value):
+        raise OpsError("encryption_key_id_invalid")
+    return value
+
+
+def parse_encryption_key(raw: str) -> bytes:
+    """Decode a 32-byte key from hex or base64url; never echo the input."""
+    value = (raw or "").strip()
+    if not value:
+        raise OpsError("encryption_key_missing")
+    key: bytes | None = None
+    if _KEY_HEX_RE.fullmatch(value):
+        try:
+            key = bytes.fromhex(value)
+        except ValueError:
+            key = None
+    else:
+        try:
+            padded = value + "=" * (-len(value) % 4)
+            decoded = base64.urlsafe_b64decode(padded.encode("ascii"))
+            key = decoded if isinstance(decoded, bytes) else None
+        except Exception:
+            key = None
+    if key is None or len(key) != 32:
+        raise OpsError("encryption_key_invalid")
+    return key
+
+
+def encryption_key_from_env(name: str) -> bytes:
+    raw = os.environ.get(name, "")
+    if not raw:
+        raise OpsError("encryption_key_env_missing")
+    return parse_encryption_key(raw)
+
+
+def _aesgcm():
+    try:
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    except ImportError:
+        raise OpsError("encryption_unavailable")
+    return AESGCM
+
+
+def _encryption_aad(key_id: str, machine: str, backup_id: str) -> bytes:
+    return (
+        ENCRYPTION_MAGIC
+        + key_id.encode("ascii")
+        + b"\x00"
+        + machine.encode("ascii")
+        + b"\x00"
+        + backup_id.encode("ascii")
+    )
+
+
+def is_encrypted_payload(payload: bytes) -> bool:
+    return payload.startswith(ENCRYPTION_MAGIC)
+
+
+def encrypt_payload(
+    plaintext: bytes, key: bytes, key_id: str, machine: str, backup_id: str
+) -> bytes:
+    key_id = validate_key_id(key_id)
+    if len(key) != 32:
+        raise OpsError("encryption_key_invalid")
+    nonce = os.urandom(_NONCE_BYTES)
+    ciphertext = _aesgcm()(key).encrypt(
+        nonce, plaintext, _encryption_aad(key_id, machine, backup_id)
+    )
+    return (
+        ENCRYPTION_MAGIC
+        + bytes([len(key_id)])
+        + key_id.encode("ascii")
+        + nonce
+        + ciphertext
+    )
+
+
+def _parse_encrypted_header(payload: bytes) -> tuple[str, int, int]:
+    """Return ``(key_id, nonce_start, nonce_end)`` for an envelope payload."""
+    if not is_encrypted_payload(payload):
+        raise OpsError("encryption_not_present")
+    header = len(ENCRYPTION_MAGIC)
+    if len(payload) < header + 1:
+        raise OpsError("encrypted_payload_invalid")
+    key_id_len = payload[header]
+    if key_id_len < 1 or key_id_len > 64:
+        raise OpsError("encrypted_payload_invalid")
+    start = header + 1
+    nonce_start = start + key_id_len
+    nonce_end = nonce_start + _NONCE_BYTES
+    if len(payload) < nonce_end + _TAG_BYTES:
+        raise OpsError("encrypted_payload_invalid")
+    try:
+        key_id = payload[start:nonce_start].decode("ascii")
+    except UnicodeDecodeError:
+        raise OpsError("encrypted_payload_invalid")
+    try:
+        validate_key_id(key_id)
+    except OpsError:
+        raise OpsError("encrypted_payload_invalid")
+    return key_id, nonce_start, nonce_end
+
+
+def encrypted_key_id(payload: bytes) -> str:
+    if not is_encrypted_payload(payload):
+        return ""
+    key_id, _nonce_start, _nonce_end = _parse_encrypted_header(payload)
+    return key_id
+
+
+def decrypt_payload(
+    payload: bytes,
+    key: bytes | None,
+    machine: str,
+    backup_id: str,
+    expected_key_id: str = "",
+) -> tuple[bytes, str]:
+    """Decrypt an envelope payload; plaintext payloads pass through unchanged."""
+    if not is_encrypted_payload(payload):
+        return payload, ""
+    key_id, nonce_start, nonce_end = _parse_encrypted_header(payload)
+    if expected_key_id and key_id != expected_key_id:
+        raise OpsError("encryption_key_id_mismatch")
+    if key is None:
+        raise OpsError("encryption_key_missing")
+    if len(key) != 32:
+        raise OpsError("encryption_key_invalid")
+    nonce = payload[nonce_start:nonce_end]
+    ciphertext = payload[nonce_end:]
+    try:
+        plaintext = _aesgcm()(key).decrypt(
+            nonce, ciphertext, _encryption_aad(key_id, machine, backup_id)
+        )
+    except Exception:
+        # Bad tag, wrong key and malformed ciphertext are indistinguishable.
+        raise OpsError("decryption_failed")
+    return plaintext, key_id
 
 
 def _is_reparse_point(path: Path) -> bool:
@@ -371,9 +529,15 @@ def build_backup(
     machine: str,
     backup_id: str,
     created_at: str,
+    encryption_key: bytes | None = None,
+    key_id: str = "",
 ) -> dict:
     CONTRACT.validate_machine(machine)
     CONTRACT.validate_backup_id(backup_id)
+    if encryption_key is not None:
+        key_id = validate_key_id(key_id)
+        if len(encryption_key) != 32:
+            raise OpsError("encryption_key_invalid")
     files, exclusions, _ = collect_files(roots)
     if not files:
         raise OpsError("no_source_files")
@@ -387,6 +551,15 @@ def build_backup(
         temporary_payload.unlink()
     try:
         _write_archive(files, temporary_payload)
+        if encryption_key is not None:
+            encrypted = encrypt_payload(
+                temporary_payload.read_bytes(),
+                encryption_key,
+                key_id,
+                machine,
+                backup_id,
+            )
+            temporary_payload.write_bytes(encrypted)
         payload_bytes, payload_sha = _hash_file(temporary_payload)
         if payload_bytes > CONTRACT.MAX_PAYLOAD_BYTES:
             raise OpsError("payload_exceeds_transfer_bound")
@@ -426,6 +599,11 @@ def build_backup(
         "payload_path": payload_path,
         "payload_bytes": payload_bytes,
         "payload_sha256": payload_sha,
+        "encryption": (
+            {"algorithm": ENCRYPTION_ALGORITHM, "key_id": key_id}
+            if encryption_key is not None
+            else None
+        ),
     }
 
 
@@ -549,7 +727,11 @@ def upload_backup(endpoint: str, directory: Path, machine: str, backup_id: str, 
         token,
         data=payload,
         headers={
-            "Content-Type": "application/gzip",
+            "Content-Type": (
+                "application/octet-stream"
+                if is_encrypted_payload(payload)
+                else "application/gzip"
+            ),
             "X-Padiem-Content-Sha256": actual_sha,
         },
         max_response=CONTRACT.MAX_MANIFEST_BYTES,
@@ -583,6 +765,7 @@ def upload_backup(endpoint: str, directory: Path, machine: str, backup_id: str, 
         "payload_bytes": len(payload),
         "payload_sha256": actual_sha,
         "file_count": manifest["file_count"],
+        "key_id": encrypted_key_id(payload),
     }
 
 
@@ -592,6 +775,7 @@ def verify_backup(
     backup_id: str,
     token: str,
     local_dir: Path | None = None,
+    expected_key_id: str = "",
 ) -> dict:
     status, manifest_raw = _http(
         "GET",
@@ -626,6 +810,10 @@ def verify_backup(
             raise OpsError("local_remote_manifest_differs")
         if hashlib.sha256(local_payload).hexdigest() != result["sha256"]:
             raise OpsError("local_remote_payload_differs")
+    key_id = encrypted_key_id(payload)
+    if expected_key_id and key_id != expected_key_id:
+        raise OpsError("encryption_key_id_mismatch")
+    result["key_id"] = key_id
     return result
 
 
@@ -724,6 +912,8 @@ def restore_check(
     backup_id: str,
     token: str,
     target: Path,
+    encryption_key: bytes | None = None,
+    expected_key_id: str = "",
 ) -> dict:
     if target.exists():
         if not target.is_dir():
@@ -752,13 +942,17 @@ def restore_check(
     except CONTRACT.BackupError:
         raise OpsError("integrity_mismatch")
 
+    plaintext, key_id = decrypt_payload(
+        payload, encryption_key, machine, backup_id, expected_key_id
+    )
+
     target.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(
         tempfile.mkdtemp(prefix=f".{target.name or 'restore'}.restore-", dir=str(target.parent))
     )
     payload_path = staging.parent / f".{staging.name}.payload.tar.gz"
     try:
-        payload_path.write_bytes(payload)
+        payload_path.write_bytes(plaintext)
         tree = extract_and_verify(payload_path, staging, manifest)
         publish_tree(staging, target)
     finally:
@@ -766,6 +960,8 @@ def restore_check(
             payload_path.unlink()
         if staging.exists():
             shutil.rmtree(staging, ignore_errors=True)
+    tree["encrypted"] = bool(key_id)
+    tree["key_id"] = key_id
     return tree
 
 
@@ -798,10 +994,30 @@ def _command_backup(args) -> int:
     roots = [Path(value) for value in args.root] if args.root else default_roots()
     backup_id = args.backup_id or default_backup_id()
     created_at = args.created_at or _utc_now()
-    result = build_backup(roots, Path(args.out_dir), args.machine, backup_id, created_at)
+    encryption_key = None
+    key_id = ""
+    if args.key_env:
+        if not args.key_id:
+            raise OpsError("encryption_key_id_missing")
+        key_id = validate_key_id(args.key_id)
+        encryption_key = encryption_key_from_env(args.key_env)
+    elif args.key_id:
+        raise OpsError("encryption_key_env_missing")
+    result = build_backup(
+        roots,
+        Path(args.out_dir),
+        args.machine,
+        backup_id,
+        created_at,
+        encryption_key=encryption_key,
+        key_id=key_id,
+    )
     manifest = result["manifest"]
     print(f"BACKUP_DIR={Path(args.out_dir).resolve()}")
     print(f"BACKUP_ID={backup_id}")
+    encryption = result["encryption"]
+    if encryption:
+        print(f"BACKUP_ENCRYPTION={encryption['algorithm']} key_id={encryption['key_id']}")
     print(f"BACKUP_OK files={manifest['file_count']} bytes={manifest['total_bytes']} "
           f"payload_bytes={result['payload_bytes']} payload_sha256={result['payload_sha256']}")
     return 0
@@ -824,9 +1040,14 @@ def _command_upload(args) -> int:
         return 0
     token = _token_from_env(args.token_env)
     result = upload_backup(endpoint, directory, args.machine, args.backup_id, token)
+    encryption = (
+        f" encrypted={ENCRYPTION_ALGORITHM} key_id={result['key_id']}"
+        if result.get("key_id")
+        else ""
+    )
     print(f"UPLOAD_OK machine={args.machine} backup_id={args.backup_id} "
           f"files={result['file_count']} payload_bytes={result['payload_bytes']} "
-          f"payload_sha256={result['payload_sha256']}")
+          f"payload_sha256={result['payload_sha256']}{encryption}")
     return 0
 
 
@@ -839,20 +1060,30 @@ def _command_verify(args) -> int:
         args.backup_id,
         token,
         Path(args.dir) if args.dir else None,
+        validate_key_id(args.key_id) if args.key_id else "",
     )
+    encryption = f" key_id={result['key_id']}" if result.get("key_id") else ""
     print(f"VERIFY_OK machine={args.machine} backup_id={args.backup_id} "
-          f"files={result['file_count']} bytes={result['bytes']} sha256={result['sha256']}")
+          f"files={result['file_count']} bytes={result['bytes']} sha256={result['sha256']}{encryption}")
     return 0
 
 
 def _command_restore_check(args) -> int:
     token = _token_from_env(args.token_env)
     endpoint = _validate_endpoint(args.endpoint)
+    encryption_key = encryption_key_from_env(args.key_env) if args.key_env else None
     result = restore_check(
-        endpoint, args.machine, args.backup_id, token, Path(args.target)
+        endpoint,
+        args.machine,
+        args.backup_id,
+        token,
+        Path(args.target),
+        encryption_key=encryption_key,
+        expected_key_id=validate_key_id(args.key_id) if args.key_id else "",
     )
+    encryption = f" encrypted=YES key_id={result['key_id']}" if result.get("key_id") else ""
     print(f"RESTORE_CHECK_OK machine={args.machine} backup_id={args.backup_id} "
-          f"files={result['file_count']} bytes={result['total_bytes']}")
+          f"files={result['file_count']} bytes={result['total_bytes']}{encryption}")
     return 0
 
 
@@ -871,6 +1102,8 @@ def _parser() -> argparse.ArgumentParser:
     backup.add_argument("--machine", default="com2")
     backup.add_argument("--backup-id", default="")
     backup.add_argument("--created-at", default="", help="RFC3339 instant (for reproducible tests)")
+    backup.add_argument("--key-env", default="", help="environment variable holding the 32-byte encryption key")
+    backup.add_argument("--key-id", default="", help="non-secret key label stored in the encrypted payload header")
     backup.set_defaults(handler=_command_backup)
 
     upload = subparsers.add_parser("upload", help="upload payload, manifest and verify")
@@ -888,6 +1121,7 @@ def _parser() -> argparse.ArgumentParser:
     verify.add_argument("--backup-id", required=True)
     verify.add_argument("--dir", default="")
     verify.add_argument("--token-env", default=DEFAULT_TOKEN_ENV)
+    verify.add_argument("--key-id", default="", help="require this key id in an encrypted payload header")
     verify.set_defaults(handler=_command_verify)
 
     restore = subparsers.add_parser("restore-check", help="download, verify and extract into an empty target")
@@ -896,6 +1130,8 @@ def _parser() -> argparse.ArgumentParser:
     restore.add_argument("--backup-id", required=True)
     restore.add_argument("--target", required=True)
     restore.add_argument("--token-env", default=DEFAULT_TOKEN_ENV)
+    restore.add_argument("--key-env", default="", help="environment variable holding the 32-byte encryption key")
+    restore.add_argument("--key-id", default="", help="require this key id in the encrypted payload header")
     restore.set_defaults(handler=_command_restore_check)
     return parser
 

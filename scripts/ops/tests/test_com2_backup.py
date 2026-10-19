@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import http.server
 import importlib.util
@@ -18,6 +19,12 @@ SCRIPT = Path(__file__).resolve().parents[1] / "com2_backup.py"
 TOKEN = "fixture-token-value"
 BACKUP_ID = "20261019t120000z"
 CREATED_AT = "2026-10-19T12:00:00Z"
+ENC_KEY = hashlib.sha256(b"com2-backup-test-encryption-key").digest()
+ENC_KEY_HEX = ENC_KEY.hex()
+ENC_KEY_B64 = base64.urlsafe_b64encode(ENC_KEY).decode("ascii").rstrip("=")
+OTHER_KEY = hashlib.sha256(b"com2-backup-test-other-key").digest()
+ENC_KEY_ID = "com2-test-20261019"
+KEY_ENV = "COM2_BACKUP_TEST_KEY"
 
 
 def _load():
@@ -411,3 +418,286 @@ def test_upload_dry_run_needs_no_token(tmp_path, monkeypatch, capsys):
     assert exit_code == 0
     assert "UPLOAD_PLAN" in captured.out
     assert "NETWORK_MUTATION=NONE" in captured.out
+
+
+# ---------------------------------------------------------------------------
+# Client-side encrypted payload
+# ---------------------------------------------------------------------------
+
+
+def _run_backup(root: Path, out: Path, extra: tuple[str, ...] = ()) -> int:
+    return backup_ops.main(
+        [
+            "backup",
+            "--root",
+            str(root),
+            "--out-dir",
+            str(out),
+            "--machine",
+            "com2",
+            "--backup-id",
+            BACKUP_ID,
+            "--created-at",
+            CREATED_AT,
+            *extra,
+        ]
+    )
+
+
+def _upload(endpoint: str, out: Path) -> int:
+    return backup_ops.main(
+        ["upload", "--endpoint", endpoint, "--dir", str(out), "--backup-id", BACKUP_ID]
+    )
+
+
+def _build_and_upload_encrypted(tmp_path, server, monkeypatch, capsys):
+    endpoint, handler = server
+    monkeypatch.setenv("COM2_BACKUP_WRITE_TOKEN", TOKEN)
+    monkeypatch.setenv(KEY_ENV, ENC_KEY_HEX)
+    root = tmp_path / "data"
+    root.mkdir()
+    _make_tree(root)
+    out = tmp_path / "backup"
+    assert _run_backup(root, out, ("--key-env", KEY_ENV, "--key-id", ENC_KEY_ID)) == 0
+    assert _upload(endpoint, out) == 0
+    return root, out, endpoint, handler
+
+
+def test_encrypted_backup_round_trip_keeps_integrity_and_plaintext_restore(
+    tmp_path, server, monkeypatch, capsys
+):
+    root, out, endpoint, _handler = _build_and_upload_encrypted(
+        tmp_path, server, monkeypatch, capsys
+    )
+    setup_output = capsys.readouterr().out
+    assert f"BACKUP_ENCRYPTION=AES-256-GCM key_id={ENC_KEY_ID}" in setup_output
+    assert "UPLOAD_OK" in setup_output
+
+    payload = (out / "payload.tar.gz").read_bytes()
+    assert payload.startswith(backup_ops.ENCRYPTION_MAGIC)
+    assert b"state=ready" not in payload
+    assert b"fixture-secret-value" not in payload
+    assert ENC_KEY not in payload
+
+    manifest_text = (out / "manifest.json").read_text(encoding="utf-8")
+    manifest = json.loads(manifest_text)
+    assert manifest["payload_sha256"] == hashlib.sha256(payload).hexdigest()
+    assert manifest["payload_bytes"] == len(payload)
+    assert "encryption" not in manifest
+    assert ENC_KEY.hex() not in manifest_text
+    assert ENC_KEY_B64 not in manifest_text
+
+    assert backup_ops.main(
+        [
+            "verify",
+            "--endpoint",
+            endpoint,
+            "--dir",
+            str(out),
+            "--machine",
+            "com2",
+            "--backup-id",
+            BACKUP_ID,
+            "--key-id",
+            ENC_KEY_ID,
+        ]
+    ) == 0
+    verify_output = capsys.readouterr().out
+    assert f"key_id={ENC_KEY_ID}" in verify_output
+    assert ENC_KEY.hex() not in verify_output
+    assert ENC_KEY_B64 not in verify_output
+
+    target = tmp_path / "restored"
+    assert backup_ops.main(
+        [
+            "restore-check",
+            "--endpoint",
+            endpoint,
+            "--target",
+            str(target),
+            "--machine",
+            "com2",
+            "--backup-id",
+            BACKUP_ID,
+            "--key-env",
+            KEY_ENV,
+            "--key-id",
+            ENC_KEY_ID,
+        ]
+    ) == 0
+    restore_output = capsys.readouterr().out
+    assert f"encrypted=YES key_id={ENC_KEY_ID}" in restore_output
+    assert ENC_KEY.hex() not in restore_output
+    assert ENC_KEY_B64 not in restore_output
+    assert (target / "root-1" / "settings" / "app.json").read_text(encoding="utf-8") == '{"mode":"offline"}'
+    assert (target / "root-1" / "state" / "state.txt").read_bytes() == b"state=ready\n"
+    assert not (target / "root-1" / "settings" / "marked.json").exists()
+    assert not (target / "root-1" / "secrets").exists()
+
+
+def test_encrypted_restore_without_a_key_writes_nothing(
+    tmp_path, server, monkeypatch, capsys
+):
+    _root, _out, endpoint, _handler = _build_and_upload_encrypted(
+        tmp_path, server, monkeypatch, capsys
+    )
+    target = tmp_path / "restored"
+
+    exit_code = backup_ops.main(
+        [
+            "restore-check",
+            "--endpoint",
+            endpoint,
+            "--target",
+            str(target),
+            "--machine",
+            "com2",
+            "--backup-id",
+            BACKUP_ID,
+        ]
+    )
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "code=encryption_key_missing" in captured.err
+    assert not target.exists()
+
+
+def test_encrypted_restore_with_the_wrong_key_writes_nothing(
+    tmp_path, server, monkeypatch, capsys
+):
+    _root, _out, endpoint, _handler = _build_and_upload_encrypted(
+        tmp_path, server, monkeypatch, capsys
+    )
+    monkeypatch.setenv(KEY_ENV, OTHER_KEY.hex())
+    target = tmp_path / "restored"
+
+    exit_code = backup_ops.main(
+        [
+            "restore-check",
+            "--endpoint",
+            endpoint,
+            "--target",
+            str(target),
+            "--machine",
+            "com2",
+            "--backup-id",
+            BACKUP_ID,
+            "--key-env",
+            KEY_ENV,
+        ]
+    )
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "code=decryption_failed" in captured.err
+    assert not target.exists()
+    assert OTHER_KEY.hex() not in captured.out + captured.err
+
+
+def test_encrypted_verify_and_restore_reject_a_different_key_id(
+    tmp_path, server, monkeypatch, capsys
+):
+    _root, _out, endpoint, _handler = _build_and_upload_encrypted(
+        tmp_path, server, monkeypatch, capsys
+    )
+
+    assert backup_ops.main(
+        [
+            "verify",
+            "--endpoint",
+            endpoint,
+            "--machine",
+            "com2",
+            "--backup-id",
+            BACKUP_ID,
+            "--key-id",
+            "another-key-id",
+        ]
+    ) == 1
+    assert "code=encryption_key_id_mismatch" in capsys.readouterr().err
+
+    target = tmp_path / "restored"
+    assert backup_ops.main(
+        [
+            "restore-check",
+            "--endpoint",
+            endpoint,
+            "--target",
+            str(target),
+            "--machine",
+            "com2",
+            "--backup-id",
+            BACKUP_ID,
+            "--key-env",
+            KEY_ENV,
+            "--key-id",
+            "another-key-id",
+        ]
+    ) == 1
+    assert "code=encryption_key_id_mismatch" in capsys.readouterr().err
+    assert not target.exists()
+
+
+def test_encrypted_payload_tampering_is_detected(tmp_path, server, monkeypatch, capsys):
+    _root, out, endpoint, handler = _build_and_upload_encrypted(
+        tmp_path, server, monkeypatch, capsys
+    )
+    payload_path = f"/internal/v1/com2-backup/com2/{BACKUP_ID}/payload"
+    tampered = bytearray(handler.objects[payload_path])
+    tampered[-1] ^= 0x01
+
+    # The stored SHA-256 still covers the ciphertext, so transport tampering is
+    # rejected before any decryption attempt.
+    handler.objects[payload_path] = bytes(tampered)
+    assert backup_ops.main(
+        ["verify", "--endpoint", endpoint, "--machine", "com2", "--backup-id", BACKUP_ID]
+    ) == 1
+    assert "code=integrity_mismatch" in capsys.readouterr().err
+
+    # A re-sealed payload with a known checksum but a broken GCM tag fails
+    # authenticated decryption rather than extracting attacker bytes.
+    envelope = (out / "payload.tar.gz").read_bytes()
+    corrupted = envelope[:-1] + bytes([envelope[-1] ^ 0x01])
+    with pytest.raises(backup_ops.OpsError) as exc:
+        backup_ops.decrypt_payload(corrupted, ENC_KEY, "com2", BACKUP_ID)
+    assert exc.value.code == "decryption_failed"
+
+
+def test_encryption_key_parsing_accepts_hex_and_base64_and_rejects_bad_values():
+    assert backup_ops.parse_encryption_key(ENC_KEY_HEX) == ENC_KEY
+    assert backup_ops.parse_encryption_key(ENC_KEY_B64) == ENC_KEY
+    assert backup_ops.parse_encryption_key(f"  {ENC_KEY_HEX}\n") == ENC_KEY
+
+    with pytest.raises(backup_ops.OpsError) as exc:
+        backup_ops.parse_encryption_key("")
+    assert exc.value.code == "encryption_key_missing"
+    for bad in ("not-a-key", "ab" * 16, "00" * 33, "!!" * 24):
+        with pytest.raises(backup_ops.OpsError) as exc:
+            backup_ops.parse_encryption_key(bad)
+        assert exc.value.code == "encryption_key_invalid"
+
+    assert backup_ops.validate_key_id(ENC_KEY_ID) == ENC_KEY_ID
+    for bad_id in ("", "-leading", "has space", "a" * 65):
+        with pytest.raises(backup_ops.OpsError) as exc:
+            backup_ops.validate_key_id(bad_id)
+        assert exc.value.code == "encryption_key_id_invalid"
+
+
+def test_encrypted_backup_requires_both_key_env_and_key_id(tmp_path, monkeypatch, capsys):
+    root = tmp_path / "data"
+    root.mkdir()
+    _make_tree(root)
+    out = tmp_path / "backup"
+
+    monkeypatch.setenv(KEY_ENV, ENC_KEY_HEX)
+    assert _run_backup(root, out, ("--key-env", KEY_ENV)) == 1
+    assert "code=encryption_key_id_missing" in capsys.readouterr().err
+
+    monkeypatch.delenv(KEY_ENV)
+    assert _run_backup(root, out, ("--key-env", KEY_ENV, "--key-id", ENC_KEY_ID)) == 1
+    captured = capsys.readouterr()
+    assert "code=encryption_key_env_missing" in captured.err
+    assert ENC_KEY_HEX not in captured.err
+
+    assert _run_backup(root, out, ("--key-id", ENC_KEY_ID)) == 1
+    assert "code=encryption_key_env_missing" in capsys.readouterr().err
+    assert not (out / "payload.tar.gz").exists()

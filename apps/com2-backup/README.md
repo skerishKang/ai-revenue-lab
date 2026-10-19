@@ -24,6 +24,35 @@ verify        compare the remote payload with the manifest (and optional local c
 restore-check download, verify, extract into an empty target, verify every file
 ```
 
+## Encrypted payloads (COM2-side only)
+
+The operator can encrypt the archive before it leaves COM2. The Worker and the
+manifest contract stay unchanged: it still stores opaque bytes at the same key
+and still verifies SHA-256 over the stored (ciphertext) payload.
+
+- Envelope: `PADIEM-CBE1\n` magic, a 1-byte key-id length, the ASCII key id, a
+  12-byte random nonce and the AES-256-GCM ciphertext with its 16-byte tag.
+  The non-secret key id is also printed as `key_id=...`.
+- AAD binds the header, `machine` and `backup_id`, so a payload cannot be
+  replayed under another machine or backup id.
+- Keys are 32 bytes, supplied as 64 hex characters or unpadded base64url in
+  `COM2_BACKUP_ENCRYPTION_KEY` (`--key-env` overrides the variable name). The
+  key value is never printed, written to the manifest or sent to the Worker.
+- Store the key in the existing DPAPI secret store and let `run` inject it:
+
+```bash
+python D:/PADIEM-Servers/infrastructure/secret-store/store.py run -- \
+  python scripts/ops/com2_backup.py backup --out-dir build/com2-backup \
+  --key-env COM2_BACKUP_ENCRYPTION_KEY --key-id com2-2026-10
+```
+
+- `verify --key-id ...` rejects a payload whose header does not carry the
+  expected key id. `restore-check --key-env ... [--key-id ...]` authenticates
+  and decrypts before extracting; a missing key, wrong key, wrong key id or a
+  broken GCM tag stops the restore before the target is created.
+- Payloads without the envelope remain readable, so existing plaintext
+  generations and their SHA-256 evidence are unaffected.
+
 ## Safety properties
 
 - **Fail closed.** `COM2_BACKUP_ENABLED` must be the literal `"true"` and the
@@ -73,3 +102,5 @@ Cloudflare asset snapshot procedure is
 python -m pytest -q apps/com2-backup/tests
 python -m pytest -q scripts/ops/tests/test_com2_backup.py
 ```
+
+The operator tests need the `cryptography` package (CI installs it explicitly).
