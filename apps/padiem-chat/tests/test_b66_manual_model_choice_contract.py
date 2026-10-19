@@ -124,23 +124,23 @@ def test_b66_customer_dropdown_shows_grades_with_grade_models_not_provider_names
     # No member store: mock runtime resolves the max grade, so every
     # available grade row is listed.
 
-    class BeamOnly:
+    class GeminiOnly:
         async def list_selectable_models(self):
-            return [{"model_id": "opencode-go/beam-free", "name": "Beam"}]
-    client.app.state.b66_quote_model_resolver = BeamOnly()
+            return [{"model_id": "google/gemini-3.1-flash-lite", "name": "Gemini 3.1 Flash Lite"}]
+    client.app.state.b66_quote_model_resolver = GeminiOnly()
     only_free = client.get("/api/b66/quote/models")
     assert only_free.status_code == 200
     assert [t["tier"] for t in only_free.json()["tiers"]] == ["free"]
     assert [t["name"] for t in only_free.json()["tiers"]] == ["시지아이 Free"]
-    assert [t["model_id"] for t in only_free.json()["tiers"]] == ["opencode-go/beam-free"]
+    assert [t["model_id"] for t in only_free.json()["tiers"]] == ["google/gemini-3.1-flash-lite"]
 
-    class BeamAndMuse:
+    class GeminiAndMuse:
         async def list_selectable_models(self):
             return [
-                {"model_id": "opencode-go/beam-free", "name": "Beam"},
+                {"model_id": "google/gemini-3.1-flash-lite", "name": "Gemini 3.1 Flash Lite"},
                 {"model_id": "opencode-go/muse-spark-1.3-contributor", "name": "Muse Spark"},
             ]
-    client.app.state.b66_quote_model_resolver = BeamAndMuse()
+    client.app.state.b66_quote_model_resolver = GeminiAndMuse()
     response = client.get("/api/b66/quote/models")
     assert response.status_code == 200
     data = response.json()
@@ -148,7 +148,7 @@ def test_b66_customer_dropdown_shows_grades_with_grade_models_not_provider_names
     assert [t["name"] for t in data["tiers"]] == [
         "시지아이 Free", "시지아이 Plus", "시지아이 Pro", "시지아이 Max"]
     assert [t["model_id"] for t in data["tiers"]] == [
-        "opencode-go/beam-free",
+        "google/gemini-3.1-flash-lite",
         "opencode-go/muse-spark-1.3-contributor",
         "opencode-go/muse-spark-1.3-contributor",
         "opencode-go/muse-spark-1.3-contributor",
@@ -184,7 +184,7 @@ def test_b66_admin_option_needs_central_verification_and_uses_muse():
     from app.model_policy import ADMIN_B14_MODEL_ID
     ordinary = _client(_Store(), _Interpreter())
     ordinary.app.state.b66_member_admin_store = _NoAdmin()
-    ordinary.app.state.b66_quote_model_resolver = _BeamAndMuse()
+    ordinary.app.state.b66_quote_model_resolver = _GeminiAndMuse()
     assert all(t["tier"] != B66_ADMIN_GRADE for t in ordinary.get("/api/b66/quote/models").json()["tiers"])
     denied = ordinary.post(
         "/api/b66/quote/interpret",
@@ -195,17 +195,17 @@ def test_b66_admin_option_needs_central_verification_and_uses_muse():
 
     admin = _client(_Store(), _Interpreter())
     admin.app.state.b66_member_admin_store = _VerifiedAdmin()
-    admin.app.state.b66_quote_model_resolver = _BeamAndMuse()
+    admin.app.state.b66_quote_model_resolver = _GeminiAndMuse()
     rows = admin.get("/api/b66/quote/models").json()["tiers"]
     admin_row = next(t for t in rows if t["tier"] == B66_ADMIN_GRADE)
     assert admin_row["name"] == "Padiem 관리자"
     assert admin_row["model_id"] == ADMIN_B14_MODEL_ID
 
 
-class _BeamAndMuse:
+class _GeminiAndMuse:
     async def list_selectable_models(self):
         return [
-            {"model_id": "opencode-go/beam-free", "name": "Beam"},
+            {"model_id": "google/gemini-3.1-flash-lite", "name": "Gemini 3.1 Flash Lite"},
             {"model_id": "opencode-go/muse-spark-1.3-contributor", "name": "Muse Spark"},
         ]
 
