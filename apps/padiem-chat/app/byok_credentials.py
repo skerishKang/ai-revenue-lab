@@ -480,7 +480,7 @@ class D1CustomProviderCredentialStore:
             )
 
         # A custom-endpoint row is sealed under the endpoint-bound AAD. The
-        # default endpoint intentionally uses the legacy AAD so pre-058 rows
+        # default endpoint intentionally uses the legacy AAD so pre-059 rows
         # stay readable, and that is the only AAD ever offered there.
         if not matched_current:
             await self._reseal(

@@ -73,13 +73,13 @@ QUOTE_MARKER = "견적 입력값 추출기"
 
 
 class EndpointD1(SQLiteD1):
-    """SQLite D1 with the additive 058 endpoint column."""
+    """SQLite D1 with the additive 059 endpoint column."""
 
     def __init__(self):
         super().__init__()
         migrations = Path(__file__).resolve().parents[1] / "migrations"
         self.conn.executescript(
-            (migrations / "058_chat_custom_provider_endpoints.sql").read_text(
+            (migrations / "059_chat_custom_provider_endpoints.sql").read_text(
                 encoding="utf-8"
             )
         )
@@ -819,7 +819,7 @@ async def test_default_sealed_row_cannot_be_redirected_to_a_custom_endpoint():
 
 
 @pytest.mark.asyncio
-async def test_default_endpoint_remains_usable_without_migration_058():
+async def test_default_endpoint_remains_usable_without_migration_059():
     d1 = SQLiteD1()
     credential_store = store_for(d1)
 
@@ -840,7 +840,7 @@ async def test_default_endpoint_remains_usable_without_migration_058():
 
 
 @pytest.mark.asyncio
-async def test_save_route_reports_endpoint_storage_unavailable_without_058():
+async def test_save_route_reports_endpoint_storage_unavailable_without_059():
     app, *_ = build_chat_app(d1=SQLiteD1())
     response = await request(
         app,

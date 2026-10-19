@@ -1,5 +1,5 @@
 -- PADIEM Custom multi-provider BYOK: bind each owner/provider credential to
--- the effective API endpoint. Additive only; pre-058 rows keep NULL and are
+-- the effective API endpoint. Additive only; pre-059 rows keep NULL and are
 -- read through the provider default endpoint with the legacy AAD, then
 -- re-sealed on the next successful read.
 -- Application order: after 053. No existing column or row is rewritten here.
