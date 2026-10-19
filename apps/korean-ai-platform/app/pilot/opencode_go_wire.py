@@ -199,12 +199,26 @@ async def _authenticated_headers(session_headers: dict[str, str], wire: str) -> 
     return {**headers, **session_headers}
 
 
+_GO_APPROVED_ORIGIN = "https://opencode.ai/inference/go"
+# Inference endpoints are grouped by API family under the approved origin.
+# The Responses family lives under /openai/v1; chat/completions and messages
+# keep the paths already in use for their own wire families.
+_GO_INFERENCE_SUFFIXES = {
+    "chat/completions": "/v1/chat/completions",
+    "responses": "/openai/v1/responses",
+    "messages": "/v1/messages",
+}
+
+
 def _go_url(wire: str) -> str:
     from .platform import _require_spec
     spec = _require_spec("opencode-go")
-    if spec.base_origin != "https://opencode.ai/inference/go/v1":
+    if spec.base_origin != _GO_APPROVED_ORIGIN + "/v1":
         raise PilotNotConfigured("OpenCode Go origin does not match the owner approved endpoint.")
-    return spec.base_origin + "/" + wire
+    suffix = _GO_INFERENCE_SUFFIXES.get(wire)
+    if suffix is None:
+        raise PilotNotConfigured("OpenCode Go wire family is not approved.")
+    return _GO_APPROVED_ORIGIN + suffix
 
 
 async def call_go_model(*, model_id: str, upstream_model: str,
