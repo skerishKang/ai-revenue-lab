@@ -40,7 +40,7 @@ jobs:
           set -euo pipefail
           [[ "$PR" =~ ^[1-9][0-9]{0,7}$ ]]
           [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
-          data="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR}" --jq '.head.sha + " " + .state')"
+          data="$(curl --fail --silent --show-error --header "Authorization: Bearer $GH_TOKEN" --header "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["head"]["sha"], d["state"])')"
           [[ "$data" == "$EXPECTED open" ]]
           echo "sha=$EXPECTED" >> "$GITHUB_OUTPUT"
       - name: Checkout exact PR source without persisting credential
