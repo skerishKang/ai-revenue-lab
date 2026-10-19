@@ -118,6 +118,21 @@ def test_computer_entry_reuses_the_existing_directory_endpoint_and_copy():
     css = MANAGER_CSS.read_text(encoding="utf-8")
     assert ".claw-device-manager-toggle-title" in css
     assert ".claw-device-manager-connect-action" in css
+    # A long server-owned device name must not grow the fixed composer area.
+    assert "text-overflow: ellipsis;" in css
+    assert "white-space: nowrap;" in css
+
+
+def test_composer_clearance_sheet_is_linked_statically():
+    """A runtime-injected sheet applies too late: the last card would still
+    sit under the fixed input until its loader chain resolved."""
+    index = (STATIC / "index.html").read_text(encoding="utf-8")
+    assert 'href="./interaction-polish.css"' in index
+    assert "data-interaction-polish-styles" in index
+    # The loader must not add a second copy of the same sheet.
+    assert 'document.querySelector("link[data-interaction-polish-styles]")' in (
+        STATIC / "interaction-polish.js"
+    ).read_text(encoding="utf-8")
 
 
 MEASURE = """() => {
@@ -240,6 +255,40 @@ def test_computer_entry_shows_the_guidance_before_and_the_pc_name_after(browser,
     assert page.locator("#clawDeviceManagerList li strong").first.inner_text() == "집 컴퓨터"
     assert page.locator("#clawDeviceManagerList .claw-device-manager-state").first.get_attribute(
         "data-state") == "CONNECTED"
+    assert not errors, errors
+    page.close()
+
+
+@requires_browser
+def test_long_server_device_name_keeps_the_entry_on_one_line(browser, server):
+    """The server owns the device name; a long one must not grow the composer."""
+    page = browser.new_page(viewport={"width": 360, "height": 844})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.locator("#clawDeviceManagerToggle").wait_for(state="attached")
+    page.wait_for_timeout(800)
+    long_name = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
+    page.route(re.compile(r".*/api/claw/local-access/devices$"), lambda route: route.fulfill(
+        status=200, content_type="application/json",
+        body=json.dumps(_directory(long_name, "CONNECTED"), ensure_ascii=False),
+    ))
+    page.locator("#clawDeviceManagerToggle").click()
+    page.locator("#clawDeviceManagerList li").first.wait_for()
+    box = page.evaluate("""() => {
+      const toggle = document.getElementById('clawDeviceManagerToggle');
+      const rect = toggle.getBoundingClientRect();
+      return {
+        height: Math.round(rect.height),
+        width: Math.round(rect.width),
+        lines: Math.round(rect.height / 20),
+        horizontalOverflow:
+          document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      };
+    }""")
+    # One 44px-tall control, whatever the server named the PC.
+    assert box["height"] <= 60, box
+    assert not box["horizontalOverflow"], box
     assert not errors, errors
     page.close()
 
