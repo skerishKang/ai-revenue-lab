@@ -40,12 +40,28 @@ restore-check download, verify, extract into an empty target, verify every file
   (`MAX_PAYLOAD_BYTES`) is a memory-safety limit, not a lifecycle policy.
   `capabilities` reports `retention_policy: "undecided"`.
 
-## Deployment status
+## Deployment
 
-Source slice only. The committed config keeps the gate OFF, no Cloudflare
-deployment is performed by this change, and no secret is created. The R2
-binding reuses the existing private `padiem-workspace-files` bucket under the
-`com2-backup/v1/` key prefix, so no new bucket is provisioned.
+The Worker deploys with plain `wrangler deploy` from this directory. The
+committed config keeps `COM2_BACKUP_ENABLED = "false"`; enabling the transfer
+path is a separate, authorized deployment step:
+
+```bash
+cd apps/com2-backup
+wrangler deploy --var COM2_BACKUP_ENABLED:true
+printf '%s' "$COM2_BACKUP_WRITE_TOKEN" | wrangler secret put COM2_BACKUP_WRITE_TOKEN
+```
+
+- `routes` exposes only `https://com2-backup.padiem.net` (custom domain,
+  bearer-authenticated). `workers_dev` and `preview_urls` stay `false`, so
+  there is no `*.workers.dev` or preview ingress.
+- `disable_python_external_sdk` makes `from workers import ...` resolve to the
+  runtime-provided SDK; without it `wrangler deploy` fails validation with
+  `ModuleNotFoundError: workers`.
+- Rollback the transfer path by deploying again without `--var`: the committed
+  `"false"` gate is restored and every route answers 503.
+- The R2 binding reuses the existing private `padiem-workspace-files` bucket
+  under the `com2-backup/v1/` key prefix; no new bucket is provisioned.
 
 The COM2 recovery assessment that records this status and the adjacent
 Cloudflare asset snapshot procedure is
