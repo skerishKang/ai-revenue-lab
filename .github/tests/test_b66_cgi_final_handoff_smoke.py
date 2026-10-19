@@ -5,11 +5,13 @@ import ast
 import io
 from contextlib import redirect_stdout
 import json
+import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 
 
@@ -28,6 +30,34 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
         self.assertEqual(module.PDF_PATH, "/api/padiem/b66/quote/pdf")
         self.assertEqual(module.RETRY, 0)
         self.assertEqual(module.FALLBACK, 0)
+
+    def test_customer_screenshots_are_env_gated_and_default_off(self):
+        class Page:
+            def __init__(self):
+                self.calls = []
+            def screenshot(self, **kwargs):
+                self.calls.append(kwargs)
+
+        page = Page()
+        previous = os.environ.pop("B66_SCREENSHOT_DIR", None)
+        try:
+            module._shot(page, "01_logged_out_home.png")
+            self.assertEqual(page.calls, [])
+            with tempfile.TemporaryDirectory() as tmp:
+                target = Path(tmp) / "b66-shots"
+                os.environ["B66_SCREENSHOT_DIR"] = str(target)
+                module._shot(page, "01_logged_out_home.png")
+                self.assertEqual(len(page.calls), 1)
+                call = page.calls[0]
+                self.assertEqual(Path(call["path"]).name, "01_logged_out_home.png")
+                self.assertEqual(Path(call["path"]).parent, target)
+                self.assertTrue(call["full_page"])
+                self.assertEqual(call["animations"], "disabled")
+        finally:
+            if previous is None:
+                os.environ.pop("B66_SCREENSHOT_DIR", None)
+            else:
+                os.environ["B66_SCREENSHOT_DIR"] = previous
 
     def test_guided_canary_preflight_preserves_any_existing_account_draft(self):
         class Page:

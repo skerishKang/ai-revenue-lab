@@ -376,7 +376,9 @@ def test_saved_outputs_ui_is_additive_and_truthful():
     assert 'fetch("/api/outputs"' in js
     assert 'save.hidden = true' in js
     assert '"answer-action answer-copy"' in js and '"answer-action answer-download"' in js
-    assert "navigator.clipboard" in js and "document.execCommand" in js
+    assert "window.PadiemAnswerCopy || window.SharedAnswerCopy" in js
+    assert "copyText(text)" in js
+    assert "navigator.clipboard" not in js and "document.execCommand" not in js
     assert "new Blob([text]" in js and "URL.createObjectURL" in js and "URL.revokeObjectURL" in js
     assert 'save.hidden = !outputsReady' not in js
     assert "window.confirm(" not in js

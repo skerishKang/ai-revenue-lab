@@ -151,6 +151,76 @@ def resolve(source, *, mesh=None, identity=None, owner=OWNER, workspace=WORKSPAC
     ))
 
 
+def test_5015_device_picker_requires_b54_connector_session_not_b62():
+    """A valid Claw PC must not disappear because the picker sent B62 to Mesh."""
+    from app.pc_work_context import (
+        _EXEC_OWNER_UNAVAILABLE, resolve_pc_mesh_target,
+    )
+
+    identity = Identity()
+    request = request_for(Directory([]), mesh=Mesh([mesh_row()]), identity=identity)
+    b62 = SimpleNamespace(
+        session_id="sess-b62", tenant_id=WORKSPACE,
+        subject=SimpleNamespace(subject_id="sub-shared-owner"),
+    )
+    b54 = SimpleNamespace(
+        session_id="sess-b54", tenant_id=WORKSPACE,
+        subject=SimpleNamespace(subject_id="sub-shared-owner"),
+    )
+
+    async def owner_session(_request, _owner_id):
+        return WORKSPACE, b62
+
+    async def b54_bridge(_identity, _user_id):
+        return SimpleNamespace(auth_session=b54)
+
+    with (
+        patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
+        patch(
+            "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+            side_effect=b54_bridge,
+        ),
+    ):
+        result = asyncio.run(resolve_pc_mesh_target(
+            request, owner_id=OWNER, workspace_id=WORKSPACE,
+        ))
+    assert result.ready is True
+    assert result.device_id == "office-pc"
+    assert identity.calls == ["sess-b54"]
+    assert request.app.state.oracle_mesh_return_source.calls[0]["account_ref"] == CONNECTOR_ACCOUNT
+
+    # A B54 session for the wrong canonical tenant is never an execution hint.
+    b54.tenant_id = "foreign-tenant"
+    identity.calls.clear()
+    with (
+        patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
+        patch(
+            "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+            side_effect=b54_bridge,
+        ),
+    ):
+        denied = asyncio.run(resolve_pc_mesh_target(
+            request, owner_id=OWNER, workspace_id=WORKSPACE,
+        ))
+    assert denied.status == _EXEC_OWNER_UNAVAILABLE
+    assert identity.calls == []
+
+    # A B54 subject mismatch must fail closed even when the tenant matches.
+    b54.tenant_id = WORKSPACE
+    b54.subject.subject_id = "sub-different-owner"
+    with (
+        patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
+        patch(
+            "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+            side_effect=b54_bridge,
+        ),
+    ):
+        denied = asyncio.run(resolve_pc_mesh_target(
+            request, owner_id=OWNER, workspace_id=WORKSPACE,
+        ))
+    assert denied.status == _EXEC_OWNER_UNAVAILABLE
+
+
 def text_for(source, *, mesh=None, identity=None, selected=None):
     return asyncio.run(build_pc_work_context_text(
         request_for(source, mesh=mesh, identity=identity),

@@ -49,28 +49,19 @@
     return `${cleaned || "Padiem Chat 답변"}.txt`;
   }
 
-  async function copyText(text) {
-    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-      try {
-        await navigator.clipboard.writeText(text);
-        return true;
-      } catch (_) {}
-    }
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.setAttribute("readonly", "");
-    textarea.style.position = "fixed";
-    textarea.style.left = "-9999px";
-    document.body.appendChild(textarea);
-    textarea.select();
-    let copied = false;
+  function answerCopyApi() {
+    const api = window.PadiemAnswerCopy || window.SharedAnswerCopy;
+    return api && typeof api.copyText === "function" ? api : null;
+  }
+
+  function copyText(text) {
+    const api = answerCopyApi();
+    if (!api) return Promise.resolve(false);
     try {
-      copied = typeof document.execCommand === "function" && document.execCommand("copy") === true;
+      return Promise.resolve(api.copyText(text)).then((copied) => copied === true, () => false);
     } catch (_) {
-      copied = false;
+      return Promise.resolve(false);
     }
-    textarea.remove();
-    return copied;
   }
 
   function downloadText(text, title) {
@@ -238,9 +229,10 @@
   function shareAvailable() {
     try {
       if (typeof navigator !== "undefined" && typeof navigator.share === "function") return true;
-      if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function") return true;
-    } catch (_) {}
-    return false;
+      return Boolean(answerCopyApi());
+    } catch (_) {
+      return false;
+    }
   }
 
   function stopArticleTts(article) {

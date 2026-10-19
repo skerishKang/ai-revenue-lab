@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import http.server
 import json
+import re
 import threading
 from pathlib import Path
 
@@ -93,13 +94,19 @@ def route_directory(page, fixture, gets, posts):
             status=200, content_type="application/json",
             body=json.dumps(fixture["devices"], ensure_ascii=False),
         )
-    page.route("**/api/claw/local-access/devices**", handler)
+    # A compiled regex is used on purpose: the glob "…/devices**" does NOT
+    # intercept the "/select" subpath in this Playwright version, so the
+    # selection POST silently reached the static server and the flow failed.
+    page.route(re.compile(r".*/api/claw/local-access/devices(?:/select)?$"), handler)
 
 
 def online(device_id, name):
+    # Mirrors the server-owned projection for an actionable row (#5145):
+    # executable/selectable are presentation facts emitted with the row.
     return {
         "deviceId": device_id, "deviceName": name, "platform": "Windows",
         "state": "CONNECTED", "usable": True,
+        "executable": True, "selectable": True,
     }
 
 

@@ -6,28 +6,47 @@
 
 ## 1. 확인된 현재 상태
 
-`scripts/ops/byok_key_transition.py preflight` 읽기 전용 실행 결과:
+2026-10-19 읽기 전용 재확인 결과다. 이 작업은 운영 Worker·D1·Secret·DNS를 변경하지 않았다.
+
+`scripts/ops/byok_key_transition.py preflight`:
 
 ```text
 DPAPI_CUSTOM_KEY_SECRET=MISSING
 WORKER_CUSTOM_KEY_SECRET=MISSING
 D1_MIGRATION_053=MISSING
 CUSTOM_CREDENTIAL_ROWS=TABLE_MISSING
-DEPLOYED_BYOK_ROUTE=ABSENT
+DEPLOYED_BYOK_ROUTE=PRESENT
 BYOK_TRANSITION_READY=NO
 SECRET_VALUES_PRINTED=0
 ```
 
+`apps/padiem-chat/scripts/byok_predeploy_readiness.py check` (bounded evidence):
+
+```text
+BYOK_PREDEPLOY_STATE=BLOCKED_BY_SECRET
+SECRET_READY=NO
+SECRET_STRENGTH=NOT_INSPECTED
+MIGRATION_053=MISSING
+D1_OWNERSHIP=UNKNOWN
+BYOK_BLOCKERS=SECRET_MISSING,MIGRATION_053_MISSING
+SECRET_VALUES_OUTPUT=0
+ROW_VALUES_OUTPUT=0
+PRODUCTION_MUTATION=0
+```
+
 확인 내용:
 
-- COM2 DPAPI 저장소에 `PADIEM_CHAT_CUSTOM_KEY_SECRET`이 없다. `PADIEM_CHAT_SESSION_SECRET`은 존재한다.
-- Cloudflare Worker `padiem-chat`의 Secret 이름 목록에 `PADIEM_CHAT_CUSTOM_KEY_SECRET`이 없다.
-- 운영 D1 `padiem-chat-db`에 `chat_custom_provider_credentials` 테이블이 없다. 기존 고객 BYOK 행은 0건이다.
-- `GET https://chat.padiem.net/api/chat/custom/credential`은 404다. BYOK 코드가 운영 Worker에 배포되지 않았다.
-- COM2 로컬 런타임의 고정 릴리스 디렉터리에는 `app/byok_credentials.py`가 없다. 로컬 런타임도 BYOK 코드 이전 상태다.
+- **코드 배포 단계 완료:** `GET https://chat.padiem.net/api/chat/custom/credential`은 JSON 401 `authentication_required`를 반환한다. 같은 상위 경로의 미존재 경로(`/api/chat/custom/nonexistent-probe`)는 404이므로 라우트별 401을 배포 증거로 판정한다. 기존 B62 코드 배포 gate 실행(2026-10-19T12:50:54Z, `d953eadd`)이 main 코드를 배포했으며 이 작업이 실행한 변경이 아니다.
+- **Secret 단계 미완료:** COM2 DPAPI 저장소와 Cloudflare Worker `padiem-chat` 양쪽에 `PADIEM_CHAT_CUSTOM_KEY_SECRET`이 없다. `PADIEM_CHAT_SESSION_SECRET`은 양쪽에 존재한다. 두 저장소의 존재 여부는 독립 신호다.
+- **Migration 단계 미완료:** 운영 D1 `padiem-chat-db`에 `chat_custom_provider_credentials` 테이블이 없다. 기존 고객 BYOK 행은 0건이다.
+- **고객 키 복호화 단계 해당 없음:** 등록 행이 없으므로 재봉인·복호화 실패 대상도 0건이다.
 - 2026-10-19 확인 시 Governance 로컬 경로 `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance`는 이 호스트에서 접근할 수 없었다. 상태 표기: `GOVERNANCE=NOT_READ`.
 
-## 2. 전환 전제
+## 2. 도구 역할과 전환 전제
+
+- `scripts/ops/byok_key_transition.py`는 전환 상태 요약(`preflight`), 단계 계획(`print_plan`)과 승인된 변경 명령(`register-local`, `upload-worker`, `apply-migration`)을 담당한다.
+- `apps/padiem-chat/scripts/byok_predeploy_readiness.py`(#5149)는 읽기 전용 증거로 053 스키마 정확성, FK·소유 무결성, Secret 이름과 강도를 분류한다. 변경 명령이 없다. 같은 분류기를 새로 만들지 않는다.
+- 두 도구는 같은 `PADIEM_CHAT_CUSTOM_KEY_SECRET`, 최소 32자, `chat_custom_provider_credentials` 계약을 공유한다. 집중 테스트가 이 일치를 고정한다.
 
 - 전환 대상 main SHA는 40자 전체 SHA로 고정한다. PR merge commit을 사용한다.
 - **하나의 전용 키 값을 COM2 DPAPI와 Cloudflare Worker에 동일하게 공급한다.** 두 런타임이 같은 D1의 봉인 행을 읽으므로 값이 다르면 한쪽은 503으로 fail-closed 된다.
@@ -39,11 +58,40 @@ SECRET_VALUES_PRINTED=0
 
 ## 3. 실행 순서
 
-### Step 0 — 읽기 전용 preflight
+### Step 0 — 읽기 전용 기준선
+
+전환 상태와 준비도 증거를 먼저 기록한다. 두 명령 모두 운영 값을 변경하지 않는다.
 
 ```powershell
 py -3 scripts/ops/byok_key_transition.py preflight --account-id <ACCOUNT_ID>
 ```
+
+```powershell
+$w = "D:\cli\wrangler.cmd"
+$db = "padiem-chat-db"
+$env:CLOUDFLARE_ACCOUNT_ID = "<ACCOUNT_ID>"
+
+& $w d1 execute $db --remote --json `
+  --command "SELECT name,type,sql FROM sqlite_master WHERE name='chat_custom_provider_credentials'" `
+  | Set-Content -Encoding ascii byok-meta-1.json
+& $w d1 execute $db --remote --json `
+  --command "PRAGMA table_info(chat_custom_provider_credentials)" `
+  | Set-Content -Encoding ascii byok-meta-2.json
+& $w d1 execute $db --remote --json `
+  --command "PRAGMA foreign_key_list(chat_custom_provider_credentials)" `
+  | Set-Content -Encoding ascii byok-meta-3.json
+
+py -3 -c "import json; parts=[json.load(open(f'byok-meta-{i}.json',encoding='utf-8')) for i in (1,2,3)]; json.dump([p[0] for p in parts], open('byok-d1-evidence.json','w',encoding='utf-8'))"
+
+& $w secret list --name padiem-chat --format json | Set-Content -Encoding ascii byok-secrets.json
+
+py -3 apps/padiem-chat/scripts/byok_predeploy_readiness.py check-d1 byok-d1-evidence.json
+py -3 apps/padiem-chat/scripts/byok_predeploy_readiness.py check --secrets byok-secrets.json --d1 byok-d1-evidence.json
+```
+
+- `check-d1`: `EXACT`(종료 0), `MISSING`(종료 2), `DRIFT`/`INVALID_EVIDENCE`(종료 1)
+- `check`: `READY`(0), `BLOCKED_BY_SECRET`/`BLOCKED_BY_MIGRATION`(2), `FAILED`(1)
+- 증거 파일은 이름·스키마·집계만 담는다. Secret 값, 봉인 값, 행 값은 출력되지 않는다.
 
 `BYOK_TRANSITION_READY=NO`여도 나머지 점검은 계속된다. 각 실패 코드는 독립적으로 표시된다.
 
@@ -111,6 +159,8 @@ py -3 D:\PADIEM-Servers\infrastructure\secret-store\store.py run `
 
 ### Step 5 — 준비 완료 확인
 
+상태 요약과 준비도 분류를 모두 통과해야 한다.
+
 ```powershell
 py -3 scripts/ops/byok_key_transition.py preflight --account-id <ACCOUNT_ID> --require-ready
 ```
@@ -128,6 +178,34 @@ BYOK_TRANSITION_READY=YES
 
 `--require-ready`는 미충족 시 종료 코드 1을 반환한다.
 
+이어서 #5149 분류기로 스키마 정확성·무결성·Secret 강도를 확인한다. Step 0과 같은 PowerShell 세션에서 실행한다(`$w`, `$db` 사용). `--inspect-local-key`는 `store.py run`이 주입한 DPAPI 값을 길이만 검사하며 값을 출력하지 않는다.
+
+```powershell
+py -3 apps/padiem-chat/scripts/byok_predeploy_readiness.py write-integrity-query byok-integrity.json
+$sql = (Get-Content byok-integrity.json -Raw | ConvertFrom-Json).sql
+& $w d1 execute $db --remote --json --command $sql | Set-Content -Encoding ascii byok-integrity-evidence.json
+
+# 스키마·Secret 증거는 Step 2~4 완료 후 Step 0의 세 D1 명령과 `secret list`를 다시 실행해 갱신한다.
+py -3 apps/padiem-chat/scripts/byok_predeploy_readiness.py check-d1 byok-d1-evidence.json
+py -3 D:\PADIEM-Servers\infrastructure\secret-store\store.py run `
+  py -3 apps/padiem-chat/scripts/byok_predeploy_readiness.py check `
+  --secrets byok-secrets.json --d1 byok-d1-evidence.json `
+  --integrity byok-integrity-evidence.json --inspect-local-key
+```
+
+기대값:
+
+```text
+BYOK_PREDEPLOY_STATE=READY
+SECRET_READY=YES
+SECRET_STRENGTH=OK
+MIGRATION_053=EXACT
+D1_OWNERSHIP=EMPTY
+BYOK_BLOCKERS=NONE
+```
+
+종료 코드 0과 `BYOK_BLOCKERS=NONE`을 동시에 확인한다. 기존 행이 있으면 `D1_OWNERSHIP=OK`이 정상이며, `VIOLATION`은 전환 중단 사유다.
+
 ### Step 6 — Owner 범위 실제 검증
 
 1. Owner 세션으로 `PUT /api/chat/custom/credential`에 공급사 API 키를 등록한다.
@@ -138,7 +216,38 @@ BYOK_TRANSITION_READY=YES
 
 이 검증은 BYOK_DIRECT 증거다. B14_MANAGED 또는 FULL_PLATFORM 통과 증거로 기록하지 않는다.
 
-## 4. Legacy v1 → v2 재봉인 검증 절차
+## 4. 단계별 실패 판정
+
+각 상태는 서로 다른 원인이므로 하나의 503/404로 합쳐 판정하지 않는다. 인증(401)은 BYOK 저장소 접근보다 먼저 수행되므로 404는 코드 단계, 401/503은 코드 배포 이후 단계의 신호다.
+
+| 관측 신호 | 판정 | 다음 조치 |
+| --- | --- | --- |
+| `preflight`의 `DEPLOYED_BYOK_ROUTE=ABSENT`, 라우트 404, 같은 상위 경로도 404 | 코드 미배포 | Step 1 exact-main 배포 gate |
+| `DEPLOYED_BYOK_ROUTE=UNKNOWN` (HTML 403) | WAF 응답, 배포 여부 미판정 | JSON 401/404가 나오는 경로로 재확인 |
+| `DPAPI_CUSTOM_KEY_SECRET=MISSING`, `WORKER_CUSTOM_KEY_SECRET=PRESENT` | COM2 DPAPI에만 전용 키 없음 | Step 3 `register-local`만 실행 |
+| `DPAPI_CUSTOM_KEY_SECRET=PRESENT`, `WORKER_CUSTOM_KEY_SECRET=MISSING`, `SECRET_READY=NO`, `BYOK_BLOCKERS=SECRET_MISSING` | Worker에만 전용 키 없음 | Step 4 `store.py run` + `upload-worker`만 실행 |
+| 두 Secret 모두 `MISSING` | 전용 키 미공급 | Step 3 → Step 4 순서로 실행 |
+| `D1_MIGRATION_053=MISSING`, `CUSTOM_CREDENTIAL_ROWS=TABLE_MISSING`, `check-d1=MISSING`, `MIGRATION_053_MISSING` | 053 미적용 | Step 2 exact-main `apply-migration` |
+| `check-d1=DRIFT` 또는 `BYOK_PREDEPLOY_STATE=FAILED` + `MIGRATION_053_DRIFT` | 053 스키마 불일치 | 중단. 테이블 삭제·변경 금지, Owner 결정 후 교정 migration |
+| `D1_OWNERSHIP=VIOLATION` (`orphan_users`, `invalid_owner`, `invalid_last4`, `invalid_envelope`, `invalid_timestamps` 중 1 이상) | 행 무결성 위반 | 중단. 값이 아닌 집계만 보고하고 Owner 결정 |
+| 인증된 `GET /api/chat/custom/credential` → 503 `custom_provider_unavailable` | Worker 저장소 미구성(전용 키 누락) | Step 4 |
+| 인증된 `PUT /api/chat/custom/credential` → 503 `custom_credential_save_failed` | D1 테이블 부재/쓰기 실패 | Step 2, D1 상태 재확인 |
+| 인증된 `GET`/제품 요청 → 503 `custom_credential_unavailable` | 고객 키 복호화 실패(키 ring 불일치·변조) | §6 복구 절차. 행 삭제 금지 |
+| 인증된 제품 요청 → 409 `custom_credential_required` | 등록된 고객 키 없음 | 전환 실패가 아니다. Step 6의 Owner 키 등록 필요 |
+| 라우트 401 `authentication_required` | 인증 전 단계 | 코드 배포는 정상. Owner 세션으로 재확인 |
+
+고객 키 복호화 실패는 읽기 전용 분류기로 판정할 수 없다. 분류기는 봉인 값·행 값을 투영하지 않으며, 이 경로는 `tests/test_5121_byok_key_separation.py`의 실제 AES-GCM 계약과 인증된 런타임 응답으로만 확인한다.
+
+제품별 확인은 기존 #5138·#5145 증거를 재사용한다. 각 제품에서 `custom` 선택 요청 1회의 응답 계약만 확인하고, 실패 시 같은 요청을 반복하지 않고 위 표의 코드로 원인을 판정한다.
+
+중단 조건:
+
+- Step 1~5 중 하나라도 `PENDING`·`BLOCKED`·`FAILED`이면 다음 단계로 진행하지 않는다.
+- `MIGRATION_053_DRIFT`, `D1_OWNERSHIP_VIOLATION`, `EVIDENCE_INVALID`는 중단 사유다. 테이블·행·Secret 값을 임의로 수정해 우회하지 않는다.
+- 런타임 503은 코드별로 1회만 재현 확인한다. 원인이 판정되면 해당 단계만 복구하고 전체 제품 요청을 반복하지 않는다.
+- 복구는 §6 롤백 절차를 사용하며, 행 삭제·덮어쓰기와 D1 데이터 변경은 하지 않는다.
+
+## 5. Legacy v1 → v2 재봉인 검증 절차
 
 현재 운영 행은 0건이므로 이 절차는 `STEP_7_LEGACY_RESEAL_HASH_CHECK=NOT_APPLICABLE`이다. 향후 v1 행이 존재하는 상태에서 전환할 때 사용한다.
 
@@ -165,14 +274,14 @@ py -3 -m pytest apps/padiem-chat/tests/test_5121_byok_key_separation.py -q
 - 변조된 ciphertext의 fail-closed 및 행 미변경
 - 잘못된 전용 키의 503 매핑과 공급사 미호출
 
-## 5. 롤백
+## 6. 롤백
 
 - 코드: 기존 `rollback_production_code` 모드와 기록된 `previous_version_id`를 사용한다.
 - 기능 비활성화: Worker의 `PADIEM_CHAT_CUSTOM_KEY_SECRET`을 제거하면 BYOK 경로만 503이 되고 B14 관리 경로는 유지된다. D1 테이블은 additive이므로 삭제하지 않는다.
 - 키 불일치: 이전 전용 키 값을 다시 공급하고 `PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS`에 해당 값을 넣어 읽기를 복구한다. v2 행을 삭제하거나 덮어쓰지 않는다.
 - Migration: 되돌릴 필요가 없다. 빈 테이블은 관리 경로에 영향을 주지 않는다.
 
-## 6. 향후 전용 키 회전
+## 7. 향후 전용 키 회전
 
 1. 현재 키를 `PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS`에 먼저 등록한다(Worker와 COM2 양쪽).
 2. 새 키로 교체한다.
@@ -181,7 +290,7 @@ py -3 -m pytest apps/padiem-chat/tests/test_5121_byok_key_separation.py -q
 
 `register-local --replace`는 1단계 이전에 실행하지 않는다. previous ring 없이 교체하면 기존 v2 행을 읽을 수 없다.
 
-## 7. 금지·경계
+## 8. 금지·경계
 
 - Secret 원문 출력, argv 전달, PR/로그/스크린샷 게시 금지
 - preflight 외 명령의 무단 실행 금지. 모든 변경 명령은 `--confirm-*`과 exact-main 검증을 요구한다.

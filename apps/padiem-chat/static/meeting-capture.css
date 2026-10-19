@@ -83,3 +83,19 @@
     box-shadow: none;
   }
 }
+
+/* #4647 meeting ledger: the record list reuses the panel's own text scale and
+   button surface, so no second card, border or framework layer is introduced. */
+.meeting-records { display: grid; gap: 10px; margin-top: 18px; }
+.meeting-records h3 { margin: 0; font-size: 1rem; }
+.meeting-records-new { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.meeting-records-new label { margin: 0; }
+.meeting-records-new input { flex: 1 1 220px; min-width: 0; }
+.meeting-records-list { display: grid; gap: 6px; }
+.meeting-record { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.meeting-record-open { flex: 1 1 auto; text-align: left; }
+.meeting-records-empty, .meeting-records-status { margin: 0; font-size: .9rem; }
+.meeting-records-status:empty { display: none; }
+.meeting-records-detail { display: grid; gap: 4px; font-size: .9rem; }
+.meeting-record-heading { margin: 6px 0 0; font-weight: 600; }
+.meeting-record-artifact, .meeting-record-action { margin: 0; overflow-wrap: anywhere; }
