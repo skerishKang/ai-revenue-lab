@@ -221,6 +221,49 @@ def test_5015_device_picker_requires_b54_connector_session_not_b62():
     assert denied.status == _EXEC_OWNER_UNAVAILABLE
 
 
+def test_model_context_reads_the_connector_scope_and_uses_the_same_target():
+    """#5015 live: B62 uid/tenant has no Broker binding; the connector does."""
+    identity = Identity()
+    directory = Directory([device("office-pc")])
+    mesh = Mesh([mesh_row()])
+    request = request_for(directory, mesh=mesh, identity=identity)
+    subject = "sub-shared-owner"
+    b62 = SimpleNamespace(
+        session_id="sess-b62", tenant_id=WORKSPACE,
+        subject=SimpleNamespace(subject_id=subject),
+    )
+    b54 = SimpleNamespace(
+        session_id="sess-b54", tenant_id=WORKSPACE,
+        subject=SimpleNamespace(subject_id=subject),
+    )
+
+    async def owner_session(_request, _owner_id):
+        return WORKSPACE, b62
+
+    async def b54_bridge(_identity, _user_id):
+        return SimpleNamespace(auth_session=b54)
+
+    with (
+        patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
+        patch(
+            "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+            side_effect=b54_bridge,
+        ),
+    ):
+        context = asyncio.run(resolve_pc_work_context(
+            request, owner_id=OWNER, workspace_id=WORKSPACE, session_id=SESSION,
+        ))
+    assert directory.calls == [
+        {"owner_id": CONNECTOR_ACCOUNT, "workspace_id": "ws-connector"},
+    ]
+    assert identity.calls == ["sess-b54"]
+    assert mesh.calls == [{"account_ref": CONNECTOR_ACCOUNT, "device_id": None}]
+    assert context.execution.status == "ready"
+    assert context.execution_device_id == "office-pc"
+    assert context.mapping == "confirmed"
+    assert context.tool_available is True
+
+
 def text_for(source, *, mesh=None, identity=None, selected=None):
     return asyncio.run(build_pc_work_context_text(
         request_for(source, mesh=mesh, identity=identity),

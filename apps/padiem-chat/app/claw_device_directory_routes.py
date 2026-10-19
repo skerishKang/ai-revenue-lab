@@ -22,6 +22,12 @@ from .auth_routes import auth_ready, current_user_id
 from .same_origin_guard import expected_browser_origin
 from .claw_memory_routes import _resolve_memory_workspace
 from .claw_local_access_source import CanonicalClawLocalAccessTruthSource
+from .pc_work_context import (
+    PC_SCOPE_OWNER_UNAVAILABLE,
+    PcConnectorScope,
+    resolve_pc_connector_scope,
+    resolve_pc_mesh_target,
+)
 from .worker_config import (
     LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME,
     binding_value,
@@ -220,6 +226,18 @@ async def claw_device_directory(request: Request) -> JSONResponse:
 async def _read_device_directory(
     request: Request, *, uid: str, workspace_id: str,
 ) -> JSONResponse:
+    # The Broker binding is created by the connector under the canonical
+    # connector owner scope (B54 session -> CP connector context), not under
+    # the B62 product user/tenant. The product scope still keys the saved
+    # preference and the user's authorization.
+    try:
+        connector = await resolve_pc_connector_scope(
+            request, owner_id=uid, workspace_id=workspace_id,
+        )
+    except Exception:
+        connector = PcConnectorScope(status=PC_SCOPE_OWNER_UNAVAILABLE)
+    broker_owner = connector.account_ref if connector.ready else uid
+    broker_workspace = connector.workspace_ref if connector.ready else workspace_id
     source = getattr(request.app.state, "claw_device_directory_source", None)
     broker_reason = None
     devices = []
@@ -227,7 +245,10 @@ async def _read_device_directory(
         broker_reason = "device_directory_unconfigured"
     else:
         try:
-            devices = source.list_devices(owner_id=uid, workspace_id=workspace_id, now=datetime.now(timezone.utc))
+            devices = source.list_devices(
+                owner_id=broker_owner, workspace_id=broker_workspace,
+                now=datetime.now(timezone.utc),
+            )
             if inspect.isawaitable(devices):
                 devices = await devices
         except Exception:
@@ -293,9 +314,9 @@ async def _read_device_directory(
     # A Mesh grant proves execution authority, not a Broker heartbeat. Reuse
     # its stable target id as a separate selectable row without claiming it
     # is online, and never mint an alias for a raw node reference.
-    from .pc_work_context import resolve_pc_mesh_target
-
-    execution = await resolve_pc_mesh_target(request, owner_id=uid, workspace_id=workspace_id)
+    execution = await resolve_pc_mesh_target(
+        request, owner_id=uid, workspace_id=workspace_id, connector=connector,
+    )
     mesh_id = execution.device_id if execution.ready else None
     if (
         isinstance(mesh_id, str) and _DEVICE_ID_PATTERN.fullmatch(mesh_id)
@@ -314,7 +335,12 @@ async def _read_device_directory(
             # Explicit offline/revoked/expired Broker truth is not overridden.
             mesh_row["selectable"] = mesh_row["usable"] is True
     if broker_reason and not safe:
-        return _response({"ok": True, "available": False, "reason": broker_reason})
+        return _response({
+            "ok": True, "available": False, "reason": broker_reason,
+            "scopeStatus": connector.status,
+            "brokerScope": "connector" if connector.ready else "product_fallback",
+            "targetStatus": execution.status,
+        })
     # #5015: the saved target is a PREFERENCE, restored per owner/workspace so
     # a new conversation/session sees the same choice. It is never a grant and
     # is never substituted: a stale/offline/revoked stored device is returned
@@ -343,6 +369,9 @@ async def _read_device_directory(
         selected_device_id = None
     return _response({
         "ok": True, "available": True, "ownerScoped": True,
+        "scopeStatus": connector.status,
+        "brokerScope": "connector" if connector.ready else "product_fallback",
+        "targetStatus": execution.status,
         **({"usagePaused": paused} if paused is not None else {}),
         "devices": sorted(safe, key=lambda row: row["deviceId"]),
         **({"directoryReason": broker_reason} if broker_reason else {}),
@@ -366,12 +395,22 @@ async def _owner_usage_mutation(request: Request, *, paused: bool) -> JSONRespon
     workspace_id = await _resolve_memory_workspace(request, uid)
     if not workspace_id:
         return _error(503, "pc_usage_workspace_unavailable")
+    # The pause flag is stored on the canonical connector binding, so the
+    # Broker write uses the same connector scope as the directory read.
+    try:
+        connector = await resolve_pc_connector_scope(
+            request, owner_id=uid, workspace_id=workspace_id,
+        )
+    except Exception:
+        connector = PcConnectorScope(status=PC_SCOPE_OWNER_UNAVAILABLE)
+    broker_owner = connector.account_ref if connector.ready else uid
+    broker_workspace = connector.workspace_ref if connector.ready else workspace_id
     source = getattr(request.app.state, "claw_device_directory_source", None)
     port = getattr(source, "set_usage", None)
     if not callable(port) or getattr(source, "configured", False) is not True:
         return _error(503, "pc_usage_unavailable")
     try:
-        result = port(owner_id=uid, workspace_id=workspace_id, paused=paused)
+        result = port(owner_id=broker_owner, workspace_id=broker_workspace, paused=paused)
         if inspect.isawaitable(result):
             result = await result
     except Exception:
