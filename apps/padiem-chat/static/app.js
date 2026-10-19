@@ -1966,6 +1966,14 @@
   function applyStreamDone(article, data, answer, outboundMessages, contextSnapshot) {
     conversationState.commitAssistant(outboundMessages, answer);
     if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
+    // #4469: render the terminal sources the backend already validated and sent
+    // (https url + title + retrieved_at). Nothing here trusts or re-requests
+    // them; the bounded renderer in claw-answer-sources.js stays the single
+    // display authority, and a frame without sources leaves the answer surface
+    // unchanged — a model-only answer is never shown as a searched answer.
+    if (Array.isArray(data.sources) && data.sources.length) {
+      window.PadiemClawAnswerSources?.render(article, data.sources);
+    }
     if (typeof data.project_id === "string") {
       const snapshotProject = contextSnapshot.project && contextSnapshot.project.id === data.project_id ? contextSnapshot.project : null;
       const boundedProject = data.project && data.project.id === data.project_id && typeof data.project.name === "string" ? data.project : null;
