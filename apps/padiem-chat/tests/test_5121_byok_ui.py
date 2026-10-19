@@ -43,6 +43,82 @@ def test_model_card_adds_a_custom_lane_separate_from_padiem_tiers() -> None:
     assert "overscroll-behavior: contain" in panel
 
 
+def _custom_copy_block() -> str:
+    return CAPABILITIES.split("const CUSTOM_COPY", 1)[1].split("let customSelection", 1)[0]
+
+
+def _custom_section() -> str:
+    return CAPABILITIES.split("function createCustomSection()", 1)[1].split(
+        "function createModeOption", 1
+    )[0]
+
+
+def test_picker_title_and_byok_copy_match_the_owner_contract() -> None:
+    tier_ko = CAPABILITIES.split("const TIER_COPY", 1)[1].split("en: Object.freeze", 1)[0]
+    assert 'title: "모델 선택"' in tier_ko
+    assert 'title: "Choose model"' in CAPABILITIES
+
+    custom_copy = _custom_copy_block()
+    assert 'heading: "내 API 키"' in custom_copy
+    assert 'heading: "My API key"' in custom_copy
+    assert "(Padiem Custom)" not in custom_copy.split('heading: "내 API 키"', 1)[1].split(
+        "description", 1
+    )[0]
+    # One explanation per language, with no second copy of it on selection.
+    assert custom_copy.count("description:") == 2
+    assert "truth:" not in custom_copy
+    assert "custom.truth" not in CAPABILITIES
+
+
+def test_byok_heading_has_no_decorative_icon() -> None:
+    heading = _custom_section().split(
+        'heading.className = "mode-custom-heading";', 1
+    )[1].split("customOption = document.createElement", 1)[0]
+    assert "heading.append(title, description);" in heading
+    for forbidden in ("status-spark", "<svg", "<img", "createElementNS", "🔑"):
+        assert forbidden not in heading, forbidden
+
+
+def test_picker_has_no_fake_connection_test_or_update_history() -> None:
+    for forbidden in (
+        "연결 테스트",
+        "connection test",
+        "Connection test",
+        "업데이트 내역",
+        "Update history",
+    ):
+        assert forbidden not in CAPABILITIES, forbidden
+
+
+def test_picker_renders_only_server_reported_provider_and_model() -> None:
+    assert 'const providers = Array.isArray(data.providers) ? data.providers : [];' in CAPABILITIES
+    assert 'customOptionModel.textContent = provider ? copy.modelLabel + " " + provider.model : "";' in CAPABILITIES
+    assert "customCopyBlock.append(customOptionTitle, customOptionModel);" in CAPABILITIES
+    for provider in ("openai", "anthropic", "openrouter", "gemini"):
+        assert provider not in CAPABILITIES.lower(), provider
+
+
+def test_tier_rows_keep_existing_order_status_and_badges() -> None:
+    assert 'TIER_LIST = Object.freeze(["free", "plus", "pro", "max"]);' in CAPABILITIES
+    assert 'status === "available" ? "✓" : status === "upgrade" ? "↑" : "—"' in CAPABILITIES
+    option = CAPABILITIES.split("function createModeOption", 1)[1].split(
+        "function syncModeCopy", 1
+    )[0]
+    for forbidden in ("status-spark", "<img", "<svg", "brand-icon"):
+        assert forbidden not in option, forbidden
+
+
+def test_mobile_picker_scroll_stays_inside_the_panel() -> None:
+    panel = CSS.split(".mode-presentation-panel {", 1)[1].split("}", 1)[0]
+    assert "overflow-y: auto" in panel
+    assert "overscroll-behavior: contain" in panel
+    assert "-webkit-overflow-scrolling: touch" in panel
+    assert "scroll-padding-block: 12px" in panel
+    mobile = CSS.split("@media (max-width: 720px)", 1)[1]
+    mobile_panel = mobile.split(".mode-presentation-panel {", 1)[1].split("}", 1)[0]
+    assert "max-height: min(62dvh, 520px)" in mobile_panel
+
+
 def test_customer_key_is_write_only_and_only_last_four_are_rendered() -> None:
     assert 'nativeFetch("/api/chat/custom/credential", {' in CAPABILITIES
     assert 'method: "PUT"' in CAPABILITIES

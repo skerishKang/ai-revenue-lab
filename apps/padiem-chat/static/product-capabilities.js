@@ -50,7 +50,7 @@
   const TIER_COPY = Object.freeze({
     ko: Object.freeze({
       label: "AI 등급",
-      title: "Padiem AI",
+      title: "모델 선택",
       description: "등급이 높을수록 더 고급 모델을 사용할 수 있습니다.",
       truth: "더 높은 등급의 모델을 사용하려면 업그레이드가 필요합니다.",
       available: "사용 가능",
@@ -65,7 +65,7 @@
     }),
     en: Object.freeze({
       label: "AI tier",
-      title: "Padiem AI",
+      title: "Choose model",
       description: "Higher tiers unlock more advanced models.",
       truth: "Upgrade is required to use higher-tier models.",
       available: "Available",
@@ -97,10 +97,10 @@
   // ever rendered. The raw key is written once and never read back.
   const CUSTOM_COPY = Object.freeze({
     ko: Object.freeze({
-      heading: "내 API 키 (Padiem Custom)",
-      description: "Padiem 제공 모델과 별개로, 직접 등록한 공급사 키로 호출합니다.",
+      heading: "내 API 키",
+      description: "공급사 모델을 내 API 키로 직접 호출합니다. Padiem 등급 모델과 별개입니다.",
       option: "Padiem Custom",
-      truth: "내 API 키로 선택한 공급사 모델을 직접 호출합니다. Padiem 등급 모델과 별개입니다.",
+      modelLabel: "모델",
       stateReady: "사용 가능",
       stateKey: "키 필요",
       stateLogin: "로그인 필요",
@@ -132,10 +132,10 @@
       deleteFailed: "API 키를 삭제하지 못했습니다.",
     }),
     en: Object.freeze({
-      heading: "My API key (Padiem Custom)",
-      description: "Calls your own provider key, separate from Padiem-provided models.",
+      heading: "My API key",
+      description: "Calls the provider model directly with your API key, separate from Padiem models.",
       option: "Padiem Custom",
-      truth: "Calls the selected provider model directly with your own key, separate from Padiem tiers.",
+      modelLabel: "Model",
       stateReady: "Available",
       stateKey: "Key required",
       stateLogin: "Sign-in required",
@@ -181,6 +181,7 @@
   let customMessageState = "info";
   let customOption = null;
   let customOptionTitle = null;
+  let customOptionModel = null;
   let customOptionState = null;
   let customHeadingEl = null;
   let customDescriptionEl = null;
@@ -521,6 +522,10 @@
     customOption.setAttribute("aria-pressed", customSelection && selectable ? "true" : "false");
     customOption.dataset.modeStatus = state === "ready" ? "available" : state === "key" ? "key" : "unavailable";
     if (customOptionTitle) customOptionTitle.textContent = provider ? provider.display_name : copy.option;
+    if (customOptionModel) {
+      customOptionModel.textContent = provider ? copy.modelLabel + " " + provider.model : "";
+      customOptionModel.hidden = !provider;
+    }
     if (customOptionState) {
       const labels = {
         ready: copy.stateReady,
@@ -813,10 +818,15 @@
     customOption.type = "button";
     customOption.className = "mode-option mode-option--custom";
     customOption.dataset.modeValue = "custom";
+    const customCopyBlock = document.createElement("span");
+    customCopyBlock.className = "mode-option-copy";
     customOptionTitle = document.createElement("strong");
+    customOptionModel = document.createElement("small");
+    customOptionModel.className = "mode-option-model";
+    customCopyBlock.append(customOptionTitle, customOptionModel);
     customOptionState = document.createElement("span");
     customOptionState.className = "mode-option-state";
-    customOption.append(customOptionTitle, customOptionState);
+    customOption.append(customCopyBlock, customOptionState);
     customOption.addEventListener("click", () => {
       if (!customIsSelectable()) return;
       selectCustom();
@@ -958,9 +968,7 @@
     if (title) title.textContent = copy.title;
     if (description) description.textContent = copy.description;
     if (truth) {
-      truth.textContent = custom
-        ? custom.truth
-        : selectedTier === "admin" ? copy.adminNote : copy.truth;
+      truth.textContent = selectedTier === "admin" ? copy.adminNote : copy.truth;
     }
     modePanel.querySelectorAll("[data-mode-value]").forEach((button) => {
       const tier = button.dataset.modeValue;

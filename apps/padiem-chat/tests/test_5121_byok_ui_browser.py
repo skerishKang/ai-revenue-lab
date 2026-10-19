@@ -243,6 +243,17 @@ def test_desktop_custom_key_save_replace_delete_and_selection(browser, static_se
     try:
         _open_picker(page)
         _assert_panel_inside_viewport(page, 1280, 900)
+        expect(page.locator("[data-mode-title]")).to_have_text("모델 선택")
+        expect(page.locator("#modeCustomTitle")).to_have_text("내 API 키")
+        expect(page.locator(".mode-custom-heading")).not_to_contain_text("(Padiem Custom)")
+        assert page.locator(
+            ".mode-custom-heading .status-spark, .mode-custom-heading svg,"
+            " .mode-custom-heading img, .mode-custom-heading [aria-hidden='true']"
+        ).count() == 0
+        expect(page.locator(".mode-option-model")).to_have_text("모델 " + MODEL)
+        panel_text = page.locator(".mode-presentation-panel").inner_text()
+        assert "업데이트 내역" not in panel_text
+        assert "연결 테스트" not in panel_text
 
         custom_option = page.locator('[data-mode-value="custom"]')
         assert custom_option.is_enabled()
@@ -316,6 +327,82 @@ def test_mobile_custom_key_form_fits_and_stays_touch_sized(browser, static_serve
         assert key_input.input_value() == ""
         _assert_no_key_leak(page, FAKE_KEY)
         _assert_panel_inside_viewport(page, 390, 844)
+    finally:
+        context.close()
+
+
+def test_mobile_picker_scrolls_internally_to_reach_the_key_actions(
+    browser, static_server
+) -> None:
+    page, state, context = _open_harness(
+        browser, static_server, viewport={"width": 390, "height": 560}
+    )
+    try:
+        _open_picker(page)
+        page.locator('[data-mode-value="custom"]').click()
+        expect(page.locator("#modeCustomApiKey")).to_be_focused()
+
+        metrics = page.evaluate(
+            """() => {
+              const panel = document.querySelector('.mode-presentation-panel');
+              const style = getComputedStyle(panel);
+              return {
+                scrollHeight: panel.scrollHeight,
+                clientHeight: panel.clientHeight,
+                overflowY: style.overflowY,
+                overscroll: style.overscrollBehavior,
+                pageY: window.scrollY,
+              };
+            }"""
+        )
+        assert metrics["overflowY"] == "auto"
+        assert metrics["overscroll"] == "contain"
+        assert metrics["scrollHeight"] > metrics["clientHeight"]
+        assert metrics["pageY"] == 0
+
+        page.evaluate(
+            "() => { const panel = document.querySelector('.mode-presentation-panel'); panel.scrollTop = panel.scrollHeight; }"
+        )
+        assert page.evaluate(
+            "() => document.querySelector('.mode-presentation-panel').scrollTop"
+        ) > 0
+        assert page.evaluate("() => window.scrollY") == 0
+
+        save = page.locator(".mode-custom-save")
+        save.scroll_into_view_if_needed()
+        expect(save).to_be_visible()
+        panel_box = page.locator(".mode-presentation-panel").bounding_box()
+        save_box = save.bounding_box()
+        assert panel_box is not None and save_box is not None
+        assert save_box["y"] >= panel_box["y"] - 0.5
+        assert save_box["y"] + save_box["height"] <= panel_box["y"] + panel_box["height"] + 0.5
+        _assert_panel_inside_viewport(page, 390, 560)
+        _assert_no_key_leak(page, FAKE_KEY)
+    finally:
+        context.close()
+
+
+def test_dark_mode_keeps_the_picker_and_key_form_readable(browser, static_server) -> None:
+    page, state, context = _open_harness(
+        browser, static_server, viewport={"width": 1280, "height": 900}
+    )
+    try:
+        page.evaluate(
+            """() => {
+              document.documentElement.dataset.theme = 'dark';
+              document.documentElement.style.setProperty('--text', '#eef2f7');
+              document.documentElement.style.setProperty('--muted', '#a9b4c0');
+            }"""
+        )
+        _open_picker(page)
+        background = page.evaluate(
+            "() => getComputedStyle(document.querySelector('.mode-presentation-panel')).backgroundColor"
+        )
+        assert "14, 18, 26" in background
+        expect(page.locator("#modeCustomTitle")).to_be_visible()
+        page.locator('[data-mode-value="custom"]').click()
+        expect(page.locator("#modeCustomApiKey")).to_be_focused()
+        expect(page.locator(".mode-custom-save")).to_be_visible()
     finally:
         context.close()
 

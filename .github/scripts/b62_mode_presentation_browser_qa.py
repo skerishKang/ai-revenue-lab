@@ -312,7 +312,7 @@ async def _english_probe() -> dict[str, Any]:
             if custom_state != "Key required":
                 raise AssertionError(f"English PADIEM Custom state missing: {custom_state!r}")
             custom_heading = (await panel.locator("#modeCustomTitle").inner_text()).strip()
-            if custom_heading != "My API key (Padiem Custom)":
+            if custom_heading != "My API key":
                 raise AssertionError(f"English PADIEM Custom heading missing: {custom_heading!r}")
             if await panel.locator('[data-mode-value="pro"]').is_disabled():
                 raise AssertionError("English tier panel must keep Pro disabled")
