@@ -208,9 +208,20 @@ def test_p01_dispatch_arguments_are_a_closed_set() -> None:
 
     assert response.status_code == 200, response.text
     kwargs = adapter.execute.await_args.kwargs
-    assert set(kwargs) <= {"product_tier", "subject_id", "selected_model_id", "central_route_model_id"}
+    assert set(kwargs) <= {
+        "product_tier", "subject_id", "selected_model_id",
+        "central_route_model_id", "additional_system_context",
+    }
     assert kwargs["subject_id"] == CANONICAL_SUBJECT
     assert "tenant_forged" not in str(kwargs)
+    # #5015: the optional server-composed PC context is not an authority
+    # channel. Neither the browser-supplied workspace nor the owner's
+    # conversation/thread may appear in it.
+    context = kwargs.get("additional_system_context") or ""
+    assert context, "the signed-in PC recognition context must reach the dispatch"
+    assert thread not in context
+    assert "tenant_forged" not in context
+    assert CANONICAL_SUBJECT not in context
 
     run = _runs(adapter)[0]
     # The model-only Claw scope is what allows a provider-native prompt; it is

@@ -1276,6 +1276,17 @@ class Default(WorkerEntrypoint):
                 device_directory_source = build_broker_device_directory_source(self.env)
                 if device_directory_source is not None:
                     _worker_app.state.claw_device_directory_source = device_directory_source
+                # #5015: owner/workspace-scoped preferred PC target. The saved
+                # row is a preference only; execution still re-reads the Broker
+                # directory and the Mesh target. Absent D1 keeps it unset and
+                # the select route fails closed.
+                if db_binding is not None:
+                    from app.claw_pc_device_selection_store import (
+                        D1PcDeviceSelectionStore,
+                    )
+                    _worker_app.state.claw_pc_device_selection_store = (
+                        D1PcDeviceSelectionStore(db_binding)
+                    )
                 # #4139: TXT read request leg on the SAME trusted broker
                 # binding (device resolution + atomic command enqueue). Absent
                 # binding keeps the fail-closed unconfigured source: the route

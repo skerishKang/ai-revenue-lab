@@ -9,6 +9,7 @@ No pairing, credential rotation, P01 grant or device revocation occurs here.
 from __future__ import annotations
 
 import inspect
+import json
 import re
 from datetime import datetime, timezone
 from typing import Any, Mapping
@@ -29,8 +30,10 @@ from .worker_config import (
 CLAW_DEVICE_DIRECTORY_PATH = "/api/claw/local-access/devices"
 CLAW_PC_PAUSE_PATH = "/api/claw/local-access/devices/pause"
 CLAW_PC_RESUME_PATH = "/api/claw/local-access/devices/resume"
+CLAW_PC_SELECT_PATH = "/api/claw/local-access/devices/select"
 _DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 _DEVICE_LIMIT = 24
+_MAX_SELECT_BODY_BYTES = 1024
 _NO_STORE = {
     "Cache-Control": "no-store, max-age=0",
     "Pragma": "no-cache",
@@ -224,10 +227,40 @@ async def claw_device_directory(request: Request) -> JSONResponse:
     ):
         return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
     paused = next(iter(pause_values), None)
+    # #5015: the saved target is a PREFERENCE, restored per owner/workspace so
+    # a new conversation/session sees the same choice. It is never a grant and
+    # is never substituted: a stale/offline/revoked stored device is returned
+    # as such and execution re-verifies it.
+    selection_store = getattr(request.app.state, "claw_pc_device_selection_store", None)
+    selected_device_id = None
+    selected_usable = False
+    selected_state = None
+    if selection_store is not None:
+        try:
+            selected_device_id = await selection_store.load(
+                owner_id=uid, workspace_id=workspace_id,
+            )
+        except Exception:
+            selected_device_id = None
+    if isinstance(selected_device_id, str) and _DEVICE_ID_PATTERN.fullmatch(selected_device_id):
+        selected_row = next(
+            (row for row in safe if row["deviceId"] == selected_device_id), None,
+        )
+        if selected_row is None:
+            selected_usable, selected_state = False, "NOT_REGISTERED"
+        else:
+            selected_usable, selected_state = selected_row["usable"], selected_row["state"]
+    else:
+        selected_device_id = None
     return _response({
         "ok": True, "available": True, "ownerScoped": True,
         **({"usagePaused": paused} if paused is not None else {}),
         "devices": sorted(safe, key=lambda row: row["deviceId"]),
+        **({
+            "selectedDeviceId": selected_device_id,
+            "selectedUsable": selected_usable,
+            "selectedState": selected_state,
+        } if selected_device_id is not None else {}),
     })
 
 async def _owner_usage_mutation(request: Request, *, paused: bool) -> JSONResponse:
@@ -265,6 +298,87 @@ async def claw_pc_pause(request: Request) -> JSONResponse:
 
 async def claw_pc_resume(request: Request) -> JSONResponse:
     return await _owner_usage_mutation(request, paused=False)
+
+
+async def claw_pc_select(request: Request) -> JSONResponse:
+    """Persist one owner-scoped target preference from an explicit choice.
+
+    The browser may name a device id, but the directory read (owner+workspace
+    scoped) decides whether it belongs to this account and is currently usable.
+    The saved row is not an execution grant; every execution re-checks the
+    Broker directory and the Mesh target.
+    """
+    if (
+        request.query_params
+        or request.headers.get("origin") != expected_browser_origin(request.app.state.settings)
+    ):
+        return _error(403, "pc_selection_request_rejected")
+    content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    if content_type != "application/json":
+        return _error(415, "pc_selection_json_required")
+    try:
+        raw = await request.body()
+    except Exception:
+        return _error(400, "pc_selection_invalid")
+    if not raw or len(raw) > _MAX_SELECT_BODY_BYTES:
+        return _error(413 if raw else 400, "pc_selection_invalid")
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return _error(400, "pc_selection_invalid")
+    if not isinstance(data, dict) or set(data) != {"device_id"}:
+        return _error(422, "pc_selection_invalid")
+    device_id = data.get("device_id")
+    if not isinstance(device_id, str) or not _DEVICE_ID_PATTERN.fullmatch(device_id):
+        return _error(422, "pc_selection_device_invalid")
+
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not uid:
+        return _error(401, "pc_selection_auth_required")
+    workspace_id = await _resolve_memory_workspace(request, uid)
+    if not workspace_id:
+        return _error(503, "pc_selection_workspace_unavailable")
+    source = getattr(request.app.state, "claw_device_directory_source", None)
+    if getattr(source, "configured", False) is not True:
+        return _error(503, "device_directory_unconfigured")
+    try:
+        devices = source.list_devices(
+            owner_id=uid, workspace_id=workspace_id, now=datetime.now(timezone.utc),
+        )
+        if inspect.isawaitable(devices):
+            devices = await devices
+    except Exception:
+        devices = None
+    if not isinstance(devices, list) or len(devices) > _DEVICE_LIMIT:
+        return _error(503, "device_directory_read_failed")
+    selected_row = next(
+        (row for row in devices
+         if isinstance(row, Mapping) and row.get("deviceId") == device_id),
+        None,
+    )
+    if selected_row is None:
+        return _error(403, "pc_selection_not_owned")
+    if selected_row.get("revoked") is True or selected_row.get("usable") is not True:
+        return _error(409, "pc_selection_not_online")
+
+    store = getattr(request.app.state, "claw_pc_device_selection_store", None)
+    if store is None:
+        return _error(503, "pc_selection_unavailable")
+    try:
+        saved = await store.save(
+            owner_id=uid, workspace_id=workspace_id, device_id=device_id,
+            now=datetime.now(timezone.utc),
+        )
+    except Exception:
+        saved = False
+    if saved is not True:
+        return _error(503, "pc_selection_not_confirmed")
+    return _response({
+        "ok": True,
+        "selectedDeviceId": device_id,
+        "selectedUsable": True,
+        "selectedState": "CONNECTED",
+    })
 
 
 MUTATION = True

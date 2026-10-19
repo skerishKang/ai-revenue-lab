@@ -138,8 +138,9 @@ def test_streaming_lane_composes_the_pc_query_step_driver(monkeypatch):
     sentinel = object()
     captured = {}
 
-    def factory(model_id, model_policy, task_type, optimize_for):
+    def factory(model_id, model_policy, task_type, optimize_for, tool_arguments=None):
         captured["model_id"] = model_id
+        captured["tool_arguments"] = tool_arguments
         return sentinel
 
     class FakeRunner:
@@ -203,3 +204,140 @@ def test_streaming_lane_composes_the_pc_query_step_driver(monkeypatch):
     assert prepared.__class__.__name__ == "PreparedOrchestrationStream"
     assert captured["model_id"] == "google/gemini-3.5-flash-lite"
     assert captured["request"].agent_step_driver is sentinel
+
+
+# ── #5015: the verified target travels with the trusted plan ────────────────
+
+
+def test_plan_target_is_injected_into_the_selected_tool():
+    async def select_step(**kwargs):
+        return {"action": "tool", "tool_id": PC_DRIVES_TOOL_ID, "arguments": {}}
+
+    driver = StructuredPCQueryStepDriver(
+        select_step=select_step, static_arguments={"device_id": "office-pc"},
+    )
+    context = AgentStepContext(run_id="run_5015", step_index=1, input_text="list drives", tool_results=())
+    decision = asyncio.run(driver.next_step(context, object()))
+    assert decision.invocation == ToolInvocation(
+        tool_id=PC_DRIVES_TOOL_ID, arguments={"device_id": "office-pc"},
+    )
+
+
+def test_model_cannot_choose_or_change_the_execution_target():
+    async def select_step(**kwargs):
+        return {
+            "action": "tool", "tool_id": PC_DRIVES_TOOL_ID,
+            "arguments": {"device_id": "attacker-pc"},
+        }
+
+    driver = StructuredPCQueryStepDriver(
+        select_step=select_step, static_arguments={"device_id": "office-pc"},
+    )
+    context = AgentStepContext(run_id="run_5015", step_index=1, input_text="list drives", tool_results=())
+    with pytest.raises(PCQueryStepError):
+        asyncio.run(driver.next_step(context, object()))
+
+
+def test_plan_target_rejects_other_arguments():
+    from app.claw_pc_query_step_driver import _plan_step_arguments
+
+    assert _plan_step_arguments(
+        {"query_drives": {"device_id": "office-pc"}}, "query_drives",
+    ) == {"device_id": "office-pc"}
+    assert _plan_step_arguments(None, "query_drives") == {}
+    with pytest.raises(PCQueryStepError):
+        _plan_step_arguments({"query_drives": {"device_id": "pc", "run_id": "x"}}, "query_drives")
+
+
+def test_signed_dispatch_body_carries_the_same_target():
+    import json
+
+    from app.claw_pc_query_step_driver import _signed_chat_call
+
+    class FakeResponse:
+        status = 200
+
+        async def text(self):
+            return json.dumps({"ok": True, "dispatch": {}})
+
+    class FakeService:
+        def __init__(self):
+            self.bodies = []
+
+        async def fetch(self, js_object):
+            self.bodies.append(js_object["body"])
+            return FakeResponse()
+
+    service = FakeService()
+    asyncio.run(_signed_chat_call(
+        service=service,
+        request_factory=lambda url, **kwargs: SimpleNamespace(js_object={"body": kwargs["body"]}),
+        secret="s" * 32, subject_id="sub_" + "a" * 32, run_id="run_5015",
+        mode="dispatch", device_id="office-pc",
+    ))
+    body = json.loads(service.bodies[0])
+    assert body["device_id"] == "office-pc"
+    assert body["subject_id"] == "sub_" + "a" * 32
+    assert body["run_id"] == "run_5015"
+
+
+def test_handler_refuses_a_dispatch_that_resolved_another_device():
+    import json
+
+    from app.claw_pc_query_step_driver import (
+        _PC_QUERY_OWNER,
+        _make_query_drives_handler,
+    )
+    from padiem_ai_core.tool_runtime import ToolHandlerError
+
+    class FakeResponse:
+        status = 200
+
+        async def text(self):
+            return json.dumps({"ok": True, "dispatch": {
+                "dispatch_id": "dsp_1", "run_id": "run_5015",
+                "kind": "command", "device_id": "other-pc",
+            }})
+
+    class FakeService:
+        async def fetch(self, js_object):
+            return FakeResponse()
+
+    handler = _make_query_drives_handler(
+        service=FakeService(),
+        request_factory=lambda url, **kwargs: SimpleNamespace(js_object={"body": kwargs["body"]}),
+        secret="s" * 32, endpoint_url="https://chat.example.test/internal/claw/engine-pc-drive",
+    )
+    token = _PC_QUERY_OWNER.set(("sub_" + "a" * 32, "run_5015"))
+    try:
+        with pytest.raises(ToolHandlerError) as caught:
+            asyncio.run(handler({"device_id": "office-pc"}))
+    finally:
+        _PC_QUERY_OWNER.reset(token)
+    assert caught.value.code == "pc_query_target_mismatch"
+
+
+def test_pc_plan_arguments_are_closed_to_the_device_property():
+    from types import SimpleNamespace
+
+    from app.orchestration_service import OrchestrationEngineService
+
+    plan = SimpleNamespace(
+        agent_id="agent:padiem:claw-pc-query@1",
+        steps=(SimpleNamespace(step_id="query_drives"),),
+    )
+    validate = OrchestrationEngineService._validate_pc_plan_tool_arguments
+    validate(plan, {"query_drives": {"device_id": "office-pc"}})
+    validate(plan, {})
+    for bad in (
+        {"query_drives": {"device_id": "office-pc", "run_id": "x"}},
+        {"other_step": {"device_id": "office-pc"}},
+        {"query_drives": {"device_id": "bad/path"}},
+        {"query_drives": {"device_id": None}},
+    ):
+        with pytest.raises(Exception) as caught:
+            validate(plan, bad)
+        assert getattr(caught.value, "code", "") == "invalid_tool_arguments"
+    # A non-PC plan keeps the historical argument surface.
+    other = SimpleNamespace(agent_id="agent:padiem:other@1", steps=(SimpleNamespace(step_id="s"),))
+    validate(other, {"s": {"query": "x"}})

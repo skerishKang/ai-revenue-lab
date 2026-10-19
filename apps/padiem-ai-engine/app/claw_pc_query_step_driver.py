@@ -5,6 +5,7 @@ from contextvars import ContextVar
 import hashlib
 import hmac
 import json
+import re
 import time
 from typing import Any, Awaitable, Callable, Mapping
 
@@ -35,17 +36,33 @@ PC_DRIVE_COMMAND = "Get-PSDrive -PSProvider FileSystem | Select-Object Name,Root
 CLAW_ENGINE_PC_DRIVE_URL = "https://padiem-chat.internal/internal/claw/engine-pc-drive"
 CHAT_ENGINE_PC_DRIVE_URL = "https://padiem-chat.internal/internal/chat/engine-pc-drive"
 _PC_QUERY_OWNER: ContextVar[tuple[str, str] | None] = ContextVar("claw_pc_query_owner", default=None)
+_DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
 class PCQueryStepError(ValueError):
     pass
 
 
+def _selected_device_id(arguments: Any) -> str | None:
+    """Server-supplied target only; the model may select the tool, not a PC."""
+    if arguments is None:
+        return None
+    if not isinstance(arguments, Mapping) or set(arguments) - {"device_id"}:
+        raise ToolHandlerError("invalid_tool_arguments", "PC query arguments are invalid")
+    value = arguments.get("device_id")
+    if value is None:
+        return None
+    if not isinstance(value, str) or not _DEVICE_ID_PATTERN.fullmatch(value):
+        raise ToolHandlerError("invalid_tool_arguments", "PC target selection is invalid")
+    return value
+
+
 async def _signed_chat_call(*, service, request_factory, secret, subject_id, run_id, mode, dispatch_id=None,
+                            device_id: str | None = None,
                             endpoint_url: str = CLAW_ENGINE_PC_DRIVE_URL):
     if not isinstance(secret, str) or len(secret) < 32:
         raise ToolHandlerError("pc_query_unconfigured", "Owner-authorized PC query is unavailable")
-    body_data = ({"subject_id": subject_id, "run_id": run_id, "device_id": None,
+    body_data = ({"subject_id": subject_id, "run_id": run_id, "device_id": device_id,
                    "command": PC_DRIVE_COMMAND, "mode": "dispatch"} if mode == "dispatch" else
                   {"subject_id": subject_id, "run_id": run_id,
                    "dispatch_id": dispatch_id, "mode": mode})
@@ -82,12 +99,20 @@ def _make_query_drives_handler(*, service, request_factory, secret, endpoint_url
         print(f"pc_query_owner_present={bool(isinstance(owner, tuple) and len(owner) == 2)}", flush=True)
         if not isinstance(owner, tuple) or len(owner) != 2 or not all(isinstance(v, str) and v for v in owner):
             raise ToolHandlerError("pc_query_admission_required", "Verified owner run is required")
+        device_id = _selected_device_id(arguments)
+        print(f"pc_query_target_selected={device_id is not None}", flush=True)
         dispatched = await _signed_chat_call(service=service, request_factory=request_factory,
             secret=secret, subject_id=owner[0], run_id=owner[1], mode="dispatch",
-            endpoint_url=endpoint_url)
+            device_id=device_id, endpoint_url=endpoint_url)
         dispatch = dispatched.get("dispatch")
         if not isinstance(dispatch, dict) or dispatch.get("run_id") != owner[1] or dispatch.get("kind") != "command":
             raise ToolHandlerError("pc_query_dispatch_mismatch", "PC dispatch correlation failed")
+        if device_id is not None:
+            actual_device = dispatch.get("device_id")
+            if actual_device is not None and actual_device != device_id:
+                # The answer context named one PC; the signed dispatch row
+                # resolved another. Never execute or report on the mismatch.
+                raise ToolHandlerError("pc_query_target_mismatch", "PC dispatch target mismatch")
         dispatch_id = dispatch.get("dispatch_id")
         if not isinstance(dispatch_id, str) or not dispatch_id:
             raise ToolHandlerError("pc_query_dispatch_missing", "PC dispatch identifier unavailable")
@@ -145,7 +170,9 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
     spec = ToolSpec(id=PC_DRIVES_TOOL_ID, title="List verified PC drives",
         description="Query filesystem drives on the currently verified owner PC",
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
-        auth_scope=(PC_QUERY_SCOPE,), input_schema={"type":"object","properties":{},"additionalProperties":False},
+        auth_scope=(PC_QUERY_SCOPE,), input_schema={"type":"object","properties":{
+            "device_id":{"type":"string","pattern":"^[A-Za-z0-9_.:-]{1,128}$"},
+        },"additionalProperties":False},
         output_contract={"type":"object"}, timeout_seconds=300.0)
     runtime = runtime or ToolRuntime()
     runtime.register(spec, _make_query_drives_handler(
@@ -183,8 +210,16 @@ def build_chat_pc_query_tool_binding(*, service, request_factory, secret, runtim
 
 
 class StructuredPCQueryStepDriver:
-    def __init__(self, *, select_step: Callable[..., Awaitable[Mapping[str, Any]]]):
+    def __init__(
+        self,
+        *,
+        select_step: Callable[..., Awaitable[Mapping[str, Any]]],
+        static_arguments: Mapping[str, Any] | None = None,
+    ):
         self._select_step = select_step
+        # Supplied by the trusted plan, never by the model step. The model may
+        # choose the tool id; it may not choose or widen the execution target.
+        self._static_arguments = dict(static_arguments or {})
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
         observations = [{"tool_id": result.tool_id, "event": result.event.to_public_dict(),
@@ -197,11 +232,26 @@ class StructuredPCQueryStepDriver:
             return AgentStepDecision.complete(decision["answer"])
         if (decision.get("action") == "tool" and decision.get("tool_id") == PC_DRIVES_TOOL_ID
             and decision.get("arguments") == {} and not observations):
-            return AgentStepDecision.use_tool(ToolInvocation(tool_id=PC_DRIVES_TOOL_ID, arguments={}))
+            return AgentStepDecision.use_tool(ToolInvocation(
+                tool_id=PC_DRIVES_TOOL_ID, arguments=dict(self._static_arguments),
+            ))
         raise PCQueryStepError("model tool selection is invalid or unauthorized")
 
 
-def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_type=None, optimize_for=None):
+def _plan_step_arguments(tool_arguments: Any, step_id: str) -> dict[str, Any]:
+    if not isinstance(tool_arguments, Mapping):
+        return {}
+    entry = tool_arguments.get(step_id)
+    if not isinstance(entry, Mapping):
+        return {}
+    if set(entry) - {"device_id"}:
+        raise PCQueryStepError("plan tool arguments are not a PC target selection")
+    return dict(entry)
+
+
+def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_type=None,
+                               optimize_for=None, tool_arguments=None, step_id="query_drives"):
+    static_arguments = _plan_step_arguments(tool_arguments, step_id)
     async def select_step(*, context, compiled_profile, observations):
         from padiem_ai_core.b14_execution import B14RoutingOptions
         from padiem_ai_core.b14_execution import B14ChatRequest
@@ -217,4 +267,6 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             return json.loads(response.answer.strip())
         except (TypeError, ValueError) as exc:
             raise PCQueryStepError("model response is not valid JSON") from exc
-    return StructuredPCQueryStepDriver(select_step=select_step)
+    return StructuredPCQueryStepDriver(
+        select_step=select_step, static_arguments=static_arguments,
+    )

@@ -549,6 +549,13 @@ class P01RequestFactory:
                     tool_id="claw.pc.query_drives",
                 ),),
             )
+            if desktop_device_id is not None:
+                # The route already verified this selection against the Mesh
+                # execution target; the plan carries it unchanged so the Engine
+                # dispatches to exactly the PC the answer context named.
+                desktop_arguments = {
+                    "query_drives": {"device_id": desktop_device_id},
+                }
         if desktop_capture:
             if not subject_id:
                 raise P01AdapterError(
