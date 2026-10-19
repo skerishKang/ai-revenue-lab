@@ -51,7 +51,7 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
     here, so renaming a model in the administrator console needs no code edit.
     """
     from .auth_routes import auth_ready, current_user_id
-    from .central_model_route_runtime import resolve_claw_tier_model
+    from .central_model_route_runtime import resolve_claw_tier_model_view
 
     headers = {"Cache-Control": "no-store"}
     if not auth_ready(request) or current_user_id(request) is None:
@@ -73,9 +73,9 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
             status_code=503, headers=headers,
         )
     try:
-        route = await resolve_claw_tier_model(request, requested_tier)
+        route, route_revision = await resolve_claw_tier_model_view(request, requested_tier)
     except Exception:
-        route = None
+        route, route_revision = None, 0
     if route is None or not route.ok or not isinstance(route.model_id, str) or not route.model_id:
         # A disabled or unresolvable central grade never falls back to a wider
         # model set; the customer sees the grade as unavailable instead.
@@ -131,5 +131,9 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
         "complete_inventory": True,
         "automatic_default": False,
         "route_source": route.source,
+        # The ledger revision that governs this grade. 0 means no stored row
+        # governs it, so an operator never reads an unrelated revision as an
+        # applied decision.
+        "route_revision": route_revision,
         "model_choices": rows,
     }, headers=headers)
