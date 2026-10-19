@@ -50,7 +50,13 @@ from .agent_progress import (
     AgentProgressTracker,
     await_with_agent_progress,
 )
-from .agent_planner import AgentPlan, AgentPlanner, validate_agent_plan
+from .agent_planner import (
+    AgentPlan,
+    AgentPlanner,
+    AgentPlannerError,
+    AgentPlanStep,
+    validate_agent_plan,
+)
 from .agent_profile_adapter import CompiledAgentProfile
 from .agent_runtime import AgentRuntimeError
 from .b14_execution import B14RouteMetadata
@@ -282,6 +288,10 @@ _USAGE_PUBLIC_KEYS = frozenset({"input_tokens", "output_tokens", "total_tokens"}
 _TOOL_EVENT_PUBLIC_KEYS = frozenset({
     "tool_id", "status", "duration_ms", "error_class", "error_code",
 })
+_PLAN_PUBLIC_KEYS = frozenset({"agent_id", "steps"})
+_PLAN_STEP_PUBLIC_KEYS = frozenset({
+    "step_id", "objective", "tool_id", "depends_on",
+})
 _RUN_METADATA_PUBLIC_KEYS = frozenset({
     "trace_id",
     "app_id",
@@ -417,6 +427,50 @@ def tool_event_from_public(payload: Any) -> ToolEvent:
         raise
     except ValueError as exc:
         raise OrchestrationError("invalid_result_tool_event", "tool_event block is not a valid tool event") from exc
+
+
+def agent_plan_from_public(payload: Any) -> AgentPlan:
+    """Reconstruct a validated `AgentPlan` from its public-dict shape (#5015).
+
+    The public projection carries every field the plan value type needs:
+    ``agent_id`` and per-step ``step_id``/``objective``/``tool_id``/
+    ``depends_on``. The existing `AgentPlan`/`AgentPlanStep` constructors are
+    the validation authority, so an unbounded, cyclic, reordered or
+    over-budget plan stays refused instead of being silently dropped.
+    """
+    try:
+        block = _result_mapping(payload, name="plan")
+        _result_unknown_keys(block, allowed=_PLAN_PUBLIC_KEYS, name="plan")
+        steps = []
+        for item in _result_sequence(block.get("steps"), name="plan.steps"):
+            step = _result_mapping(item, name="plan.steps[]")
+            _result_unknown_keys(step, allowed=_PLAN_STEP_PUBLIC_KEYS, name="plan.steps[]")
+            steps.append(
+                AgentPlanStep(
+                    step_id=_result_required_str(
+                        step.get("step_id"), name="plan.steps[].step_id"
+                    ),
+                    objective=_result_required_str(
+                        step.get("objective"), name="plan.steps[].objective"
+                    ),
+                    tool_id=_result_optional_str(
+                        step.get("tool_id"), name="plan.steps[].tool_id"
+                    ),
+                    depends_on=_result_str_tuple(
+                        step.get("depends_on", ()), name="plan.steps[].depends_on"
+                    ),
+                )
+            )
+        return AgentPlan(
+            agent_id=_result_required_str(block.get("agent_id"), name="plan.agent_id"),
+            steps=tuple(steps),
+        )
+    except OrchestrationError:
+        raise
+    except (AgentPlannerError, ValueError) as exc:
+        raise OrchestrationError(
+            "invalid_result_plan", "orchestration result plan is not a valid agent plan"
+        ) from exc
 
 
 def run_metadata_from_public(payload: Any) -> RunMetadata:
@@ -556,8 +610,10 @@ def orchestration_result_from_public(payload: Mapping[str, Any]) -> Orchestratio
     is deliberately lossy for these fields, so reconstructing them would produce
     a value that lies about what the run actually did:
 
-    * ``plan`` / ``activated_skill`` - the projection does not carry the fields
-      required to rebuild `AgentPlan` or `ActivatedSkillProfile`.
+    * ``activated_skill`` - the projection does not carry the fields required
+      to rebuild `ActivatedSkillProfile`. A public ``plan`` is reconstructed
+      through `AgentPlan`/`AgentPlanStep` and stays subject to their
+      validation rules.
     * ``evidence`` - the projection carries only claim/source counts plus
       assessments and citations; the `EvidenceGraph` itself is not on the wire,
       so a non-empty evidence block is refused instead of collapsed to ``None``.
@@ -613,12 +669,12 @@ def orchestration_result_from_public(payload: Mapping[str, Any]) -> Orchestratio
     except ValueError as exc:
         raise OrchestrationError("invalid_result_context", "context block is not a valid execution context") from exc
 
-    # plan / skill (not reconstructible) -----------------------------------
-    if payload.get("plan") is not None:
-        raise OrchestrationError(
-            "unsupported_result_plan",
-            "orchestration result carries an agent plan that the public projection cannot reconstruct",
-        )
+    # plan / skill ---------------------------------------------------------
+    plan = (
+        agent_plan_from_public(payload.get("plan"))
+        if payload.get("plan") is not None
+        else None
+    )
     if payload.get("activated_skill") is not None:
         raise OrchestrationError(
             "unsupported_result_skill",
@@ -695,7 +751,7 @@ def orchestration_result_from_public(payload: Mapping[str, Any]) -> Orchestratio
         context=context,
         app_id=app_id,
         subject_id=None,
-        plan=None,
+        plan=plan,
         activated_skill=None,
         resolved_tool_ids=resolved_tool_ids,
         evidence_graph=None,
