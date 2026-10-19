@@ -70,6 +70,23 @@ def test_chat_owner_uses_the_canonical_b62_session(monkeypatch):
         assert uid == "usr_1"
         return "tenant-ws-1"
 
+    class _B54Session:
+        session_id = "session.b54.canonical.1"
+        tenant_id = "tenant-1"
+        subject = SimpleNamespace(subject_id="sub_" + "a" * 32)
+
+    class _Bridged:
+        auth_session = _B54Session()
+
+    async def _bridge(authority, uid):
+        assert uid == "usr_1"
+        return _Bridged()
+
+    import padiem_control_plane.b54_identity_bridge as bridge_module
+
+    monkeypatch.setattr(
+        bridge_module, "resolve_current_b54_canonical_session", _bridge,
+    )
     monkeypatch.setattr("app.claw_memory_routes._resolve_memory_workspace", _workspace)
     request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
         control_plane_identity_authority=_Authority(),
@@ -77,7 +94,9 @@ def test_chat_owner_uses_the_canonical_b62_session(monkeypatch):
     session, subject_id, workspace_id = asyncio.run(
         _resolve_chat_owner(request, "usr_1")
     )
-    assert session.session_id == "session.canonical.chat.1"
+    # The owner-scope lookup receives the shared B54 session, while the b62
+    # subject still identifies the Chat product call to the Engine.
+    assert session.session_id == "session.b54.canonical.1"
     assert subject_id == "sub_" + "a" * 32
     assert workspace_id == "tenant-ws-1"
 
