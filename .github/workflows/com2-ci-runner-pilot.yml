@@ -1,0 +1,41 @@
+name: COM2 CI Runner Pilot
+
+# Initial admission: trusted manual run on main only. Never execute an
+# untrusted pull_request payload on the operational COM2 host.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: com2-ci-pilot
+  cancel-in-progress: true
+
+jobs:
+  com2-pilot:
+    if: github.ref == 'refs/heads/main' && github.actor == 'skerishKang'
+    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
+    timeout-minutes: 8
+    steps:
+      - name: Check host prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "COM2_RUNNER=ONLINE"
+          test "$(id -un)" = "padiem-ci"
+          python3 --version
+          node --version
+          git --version
+          echo "PRODUCTION_DEPLOY=NO"
+          echo "SECRETS_REQUIRED=NO"
+      - name: Validate repository checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify Python source syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile .github/scripts/pr_contract_guard.py
+          echo "COM2_CI_PILOT=PASS"
