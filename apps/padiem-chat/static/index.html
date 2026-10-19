@@ -51,8 +51,15 @@
   <!-- Dark-mode readability finish: Chat and Claw share this composer and token set. -->
   <link rel="stylesheet" href="./padiem-dark-contrast.css" />
   <!-- #4890 follow-up: seamless sidebar rows, collapse controls and responsive starter equality. -->
-  <link rel="stylesheet" href="./sidebar-section-polish.css" />
   <link rel="stylesheet" href="./sidebar-history-scroll.css" />
+  <!-- The composer clearance that keeps the last turn/home card above the
+       fixed input is a layout rule, so it is linked statically instead of
+       being injected at runtime. A runtime-injected sheet applies only after
+       its loader chain resolves, and until then the conversation would keep
+       the smaller static inset and the last card would sit under the input.
+       The data attribute keeps interaction-polish.js from injecting a
+       duplicate sheet. -->
+  <link rel="stylesheet" href="./interaction-polish.css" data-interaction-polish-styles="true" />
 </head>
 <body>
   <div class="app-shell" data-state="home">
