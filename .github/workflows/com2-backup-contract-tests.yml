@@ -26,6 +26,8 @@ on:
       - "scripts/ops/tests/test_com2_runtime.py"
       - "scripts/ops/com2_tunnel.py"
       - "scripts/ops/tests/test_com2_tunnel.py"
+      - "scripts/ops/com2_b62_generation.py"
+      - "scripts/ops/tests/test_com2_b62_generation.py"
       - ".github/workflows/com2-backup-contract-tests.yml"
   workflow_dispatch:
 
@@ -77,6 +79,9 @@ jobs:
       - name: Run COM2 tunnel ingress tests
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_tunnel.py
 
+      - name: Run B62 generation pointer tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_b62_generation.py
+
       - name: Record gate scope
         run: |
           echo 'COM2_BACKUP_WORKER_TESTS=EXECUTED'
@@ -86,6 +91,7 @@ jobs:
           echo 'PERIODIC_SYNC_TESTS=EXECUTED'
           echo 'COM2_RUNTIME_SUPERVISOR_TESTS=EXECUTED'
           echo 'COM2_TUNNEL_INGRESS_TESTS=EXECUTED'
+          echo 'B62_GENERATION_POINTER_TESTS=EXECUTED'
           echo 'LOOPBACK_TRANSFER_E2E=EXECUTED'
           echo 'PRODUCTION_DEPLOYMENT=0'
           echo 'PRODUCTION_E2E=0'
