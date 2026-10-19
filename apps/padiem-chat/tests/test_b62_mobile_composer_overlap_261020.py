@@ -17,12 +17,23 @@ from pathlib import Path
 
 import pytest
 
-sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
+# The static contract tests below must run everywhere (the required CI lane
+# installs no browser), so Playwright is optional here and only the real
+# browser checks are skipped when it is absent.
+try:  # pragma: no cover - environment dependent
+    from playwright.sync_api import sync_playwright
+except ImportError:  # pragma: no cover - environment dependent
+    sync_playwright = None
+
+requires_browser = pytest.mark.skipif(
+    sync_playwright is None, reason="playwright is not installed in this environment"
+)
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
 ENDPOINT = "/api/claw/local-access/devices"
 POLISH_CSS = STATIC / "interaction-polish.css"
+UI_POLISH_CSS = STATIC / "padiem-chat-ui-polish.css"
 STYLES_CSS = STATIC / "styles.css"
 MANAGER_JS = STATIC / "claw-device-manager.js"
 MANAGER_CSS = STATIC / "claw-device-manager.css"
@@ -54,6 +65,8 @@ def server():
 
 @pytest.fixture(scope="module")
 def browser():
+    if sync_playwright is None:
+        pytest.skip("playwright is not installed in this environment")
     with sync_playwright() as pw:
         instance = pw.chromium.launch(headless=True)
         yield instance
@@ -77,11 +90,15 @@ def test_conversation_clearance_follows_the_measured_composer_in_every_state():
 
 def test_mobile_shell_uses_the_dynamic_viewport_height():
     """100vh is the largest viewport height; a phone address bar needs dvh."""
-    styles = STYLES_CSS.read_text(encoding="utf-8")
-    assert "min-height: 100dvh;" in styles
+    polish = UI_POLISH_CSS.read_text(encoding="utf-8")
+    assert "min-height: 100dvh;" in polish
     assert re.search(
-        r"@media \(max-width: 920px\) \{.*?min-height: 100dvh;", styles, re.S
+        r"@media \(max-width: 920px\) \{.*?min-height: 100dvh;", polish, re.S
     )
+    # static/styles.css is byte-pinned to the product reference mirror, so the
+    # mobile shell height belongs to a sheet that is not mirrored.
+    styles = STYLES_CSS.read_text(encoding="utf-8")
+    assert "min-height: 100dvh;" not in styles
 
 
 def test_computer_entry_reuses_the_existing_directory_endpoint_and_copy():
@@ -133,6 +150,7 @@ MEASURE = """() => {
 }"""
 
 
+@requires_browser
 @pytest.mark.parametrize("width", WIDTHS)
 def test_last_home_card_is_never_covered_by_the_fixed_composer(browser, server, width):
     """The reported defect: the bottom input sat on top of the last card."""
@@ -159,6 +177,7 @@ def test_last_home_card_is_never_covered_by_the_fixed_composer(browser, server, 
     page.close()
 
 
+@requires_browser
 @pytest.mark.parametrize("width", WIDTHS)
 def test_software_keyboard_inset_moves_the_composer_and_its_reserved_space(browser, server, width):
     """A software keyboard raises the fixed composer; the body space follows."""
@@ -192,6 +211,7 @@ def _directory(device_name: str, state: str) -> dict:
     }
 
 
+@requires_browser
 def test_computer_entry_shows_the_guidance_before_and_the_pc_name_after(browser, server):
     """One shared entry, one server-confirmed snapshot, both product lanes."""
     page = browser.new_page(viewport={"width": 390, "height": 844})
@@ -224,6 +244,7 @@ def test_computer_entry_shows_the_guidance_before_and_the_pc_name_after(browser,
     page.close()
 
 
+@requires_browser
 def test_not_connected_panel_offers_the_existing_claw_computer_connect_screen(browser, server):
     """The guidance offers one action into the EXISTING connect screen."""
     page = browser.new_page(viewport={"width": 390, "height": 844})
