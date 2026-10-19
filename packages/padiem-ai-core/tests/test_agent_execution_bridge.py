@@ -150,12 +150,14 @@ def make_orch_req(
     trace_id: str = "tr_bridge_1",
     timeout: float = 15.0,
     tool_arguments: dict | None = None,
+    session_id: str | None = None,
 ) -> OrchestrationRequest:
     ctx = ExecutionContext(trace_id=trace_id, timeout_seconds=timeout)
     exec_req = ExecutionRequest(
         agent=compiled.runtime_profile,
         messages=({"role": "user", "content": "Compute result"},),
         trace_id=trace_id,
+        session_id=session_id,
     )
     return OrchestrationRequest(
         execution_request=exec_req,
@@ -431,3 +433,36 @@ async def test_bridge_plan_tool_event_integrity_and_redaction() -> None:
     for ev in pub_dict["events"]:
         meta_str = str(ev.get("metadata", {}))
         assert "sk-12345" not in meta_str
+
+
+async def test_bridge_plan_result_preserves_the_request_session_id() -> None:
+    """#5015: the plan result must carry the originating run session id."""
+    from padiem_ai_core import orchestration_result_from_public
+
+    agent_def = make_agent_def()
+    compiled = make_compiled_profile(agent_def, runtime_tool_id="calc")
+    auth_ctx = make_auth_ctx(agent_id=compiled.runtime_profile.id, allowed_tools=("calc",))
+
+    calc_spec = make_calc_spec(tool_id="calc")
+    runtime = ToolRuntime()
+
+    async def calc_handler(arguments: dict) -> dict:
+        return {"result": 42}
+
+    runtime.register(calc_spec, calc_handler)
+    plan = AgentPlan(
+        agent_id=agent_def.agent_id,
+        steps=(AgentPlanStep(step_id="s1", objective="Do addition", tool_id="calc"),),
+    )
+    req = make_orch_req(
+        agent_def, compiled, plan, runtime, auth_ctx, trace_id="tr_plan_session",
+        tool_arguments={"s1": {"expr": "40 + 2"}},
+        session_id="run_5015_correlation",
+    )
+    runner = OrchestrationRunner(runtime=MockCoreRuntime())
+
+    result = await runner.run(req)
+
+    assert result.execution_result.metadata.session_id == "run_5015_correlation"
+    rebuilt = orchestration_result_from_public(result.to_public_dict())
+    assert rebuilt.execution_result.metadata.session_id == "run_5015_correlation"
