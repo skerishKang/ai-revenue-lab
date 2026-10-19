@@ -10,10 +10,16 @@
  *   - STT는 기본 OFF: 서명된 세션과 voice_stt_available 이 모두 참일 때만
  *      마이크 사용 가능
  *
- * Mode A(기본, 수동 전송): 마이크 시작 → 전사 → easyComposer 입력창에 기록
+ * Mode 1(기본, 수동 전송): 마이크 시작 → 전사 → easyComposer 입력창에 기록
  *      (편집 가능) → 사용자가 easySend 버튼으로 전송
- * Mode B(자동 전송): 라이브 모드 무장 시 최종 발화 확정 후 정확히 1회 자동
- *      전송(중복·재전송 방지)
+ * Mode 2(자동 전송): 최종 발화 확정 후 정확히 1회 자동 전송(중복·재전송 방지)
+ *
+ * UI 계약(#3404 본문 · B66 UI/VOICE 핸드오프 §66):
+ *   - 마이크 옆이 아니라 컴포저 안에 Mode 1/2 세그먼트를 항상 노출한다.
+ *   - 마이크는 unavailable/idle/starting/listening/transcribing 상태를
+ *     data-voice-state로 표시하고, 상태줄이 같은 내용을 문장으로 안내한다.
+ *   - easyComposerNote는 easy-mode가 소유하므로 음성 상태로 덮어쓰지 않는다.
+ *     (데스크톱 B66에서 note는 display:none이라 오류가 보이지 않는다.)
  *
  * QuoteCore·Saved Quote Skill·견적 저장·PDF 경로는 건드리지 않는다.
  * #4816(Chat/Claw 음성 4모드 UI) 파일은 건드리지 않는다.
@@ -28,10 +34,12 @@
   "use strict";
 
   const MIC_ID = "easyVoiceMic";
-  const LIVE_TOGGLE_ID = "easyVoiceLiveToggle";
+  const MODE_GROUP_ID = "easyVoiceMode";
+  const MODE_INPUT_ID = "easyVoiceModeInput";
+  const MODE_AUTO_ID = "easyVoiceModeAuto";
+  const STATUS_ID = "easyVoiceStatus";
   const COMPOSER_ID = "easyComposer";
   const SEND_ID = "easySend";
-  const NOTE_ID = "easyComposerNote";
 
   const TRANSCRIBE_PATH = "/api/padiem/voice/transcribe";
   const IDENTITY_PATH = "/api/padiem/voice/identity";
@@ -54,31 +62,47 @@
     mic: "음성 입력",
     micStart: "음성 입력 시작",
     micStop: "음성 입력 중지",
-    liveOff: "자동 전송 끔",
-    liveOn: "자동 전송 켬",
-    listening: "듣고 있습니다.",
-    final: "전사문을 입력창에 추가했습니다. 검토 후 보내기를 눌러 주세요.",
+    modeGroup: "음성 입력 방식",
+    modeInput: "입력창",
+    modeAuto: "자동 대화",
+    modeInputLabel: "모드 1: 전사문을 입력창에 적기",
+    modeAutoLabel: "모드 2: 전사문을 대화로 바로 보내기",
+    modeInputHint: "말하면 입력창에 적힙니다. 확인 후 보내세요.",
+    modeAutoHint: "말하면 대화로 바로 전송합니다.",
+    listeningBasic: "듣는 중… 말을 마치면 입력창에 적습니다.",
+    listeningAuto: "듣는 중… 말을 마치면 바로 전송합니다.",
+    transcribing: "전사 중…",
+    finalBasic: "입력창에 넣었습니다. 확인 후 보내세요.",
+    finalSent: "대화로 전송했습니다.",
+    finalHeld: "전송하지 못했습니다. 입력창을 확인하세요.",
     stopped: "음성 입력이 중지되었습니다.",
     error: "음성 입력이 실패했습니다. 다시 시도하거나 직접 입력해 주세요.",
     errorPermission: "마이크 권한이 거부되었습니다. 브라우저 설정을 확인하거나 직접 입력해 주세요.",
     errorUnsupported: "이 브라우저는 음성 입력을 지원하지 않습니다. 직접 입력해 주세요.",
     errorUnavailable: "음성 입력 서비스를 사용할 수 없습니다. 직접 입력해 주세요.",
-    liveAutoSend: "최종 전사 확정 후 한 번만 자동 전송합니다.",
   };
   const EN = {
     mic: "Voice input",
     micStart: "Start voice input",
     micStop: "Stop voice input",
-    liveOff: "Auto-send off",
-    liveOn: "Auto-send on",
-    listening: "Listening.",
-    final: "Transcript added to the input. Review or edit it, then press send.",
+    modeGroup: "Voice input mode",
+    modeInput: "Input box",
+    modeAuto: "Auto chat",
+    modeInputLabel: "Mode 1: put the transcript in the input box",
+    modeAutoLabel: "Mode 2: send the transcript to the conversation",
+    modeInputHint: "Speak and the transcript goes into the input box. Review, then send.",
+    modeAutoHint: "Speak and the transcript is sent to the conversation.",
+    listeningBasic: "Listening… the transcript will go into the input box.",
+    listeningAuto: "Listening… the transcript will be sent right away.",
+    transcribing: "Transcribing…",
+    finalBasic: "Added to the input box. Review, then send.",
+    finalSent: "Sent to the conversation.",
+    finalHeld: "Not sent. Check the input box.",
     stopped: "Voice input stopped.",
     error: "Voice input failed. Try again or type instead.",
     errorPermission: "Microphone permission was denied. Check browser settings or type instead.",
     errorUnsupported: "This browser does not support voice input. Please type instead.",
     errorUnavailable: "Voice input service is unavailable. Please type instead.",
-    liveAutoSend: "Send once automatically after the final utterance is confirmed.",
   };
   function t(key) {
     const ko = /^ko/i.test((typeof document !== "undefined" && document.documentElement) ? document.documentElement.lang || "ko" : "ko");
@@ -155,6 +179,7 @@
 
     function emitError(code) { if (stopped) return; try { if (typeof callbacks.onError === "function") callbacks.onError(code); } catch (e) {} }
     function emitEnd() { if (stopped) return; try { if (typeof callbacks.onEnd === "function") callbacks.onEnd(); } catch (e) {} }
+    function emitTranscribing(active) { try { if (typeof callbacks.onTranscribeState === "function") callbacks.onTranscribeState(active === true); } catch (e) {} }
     function releaseCapture() {
       if (rafHandle != null && win.cancelAnimationFrame) { try { win.cancelAnimationFrame(rafHandle); } catch (e) {} }
       rafHandle = null;
@@ -192,8 +217,10 @@
       utteranceSeq += 1;
       const utteranceId = "u" + generation + "-" + sessionToken + "-" + utteranceSeq;
       const blob = new win.Blob(held, { type: pickMimeType(win) || "audio/webm" });
+      emitTranscribing(true);
       sendChunk(blob, utteranceId).then(function (text) {
         sending = false;
+        emitTranscribing(false);
         if (cancelled) return;
         if (finalFlushPending) { finalFlushPending = false; flushChunk(true, true); }
         if (!text) return;
@@ -201,6 +228,7 @@
         if (!cancelled && typeof callbacks.onTurnComplete === "function") { try { callbacks.onTurnComplete({ accepted: true, endOfTurn: true, finalId: utteranceId }); } catch (e) {} }
       }, function () {
         sending = false;
+        emitTranscribing(false);
         if (cancelled) return;
         if (finalFlushPending) { finalFlushPending = false; flushChunk(true, true); }
         emitError(ERROR_CODES.TRANSCRIBE_FAILED);
@@ -493,7 +521,6 @@
     const mic = doc.getElementById(MIC_ID);
     const composer = doc.getElementById(COMPOSER_ID);
     const send = doc.getElementById(SEND_ID);
-    const note = doc.getElementById(NOTE_ID);
     if (!mic || !composer || !send) return null;
 
     const fetchImpl = options.fetchImpl || (typeof win.fetch === "function" ? win.fetch.bind(win) : null);
@@ -507,7 +534,9 @@
     let adapter = null;
     let controller = null;
     let mode = "basic";
-    let liveToggleEl = null;
+    let modeGroupEl = null, modeInputEl = null, modeAutoEl = null, statusEl = null, voiceBarEl = null;
+    let transcribing = false;
+    let lastStatus = "";
     let captureStarted = false;
     let listeners = [];
 
@@ -539,26 +568,53 @@
         return key;
       });
     }
+    function voiceState() {
+      if (!sttAvailable || identityKey === "") return "unavailable";
+      if (transcribing) return "transcribing";
+      if (recognizer && captureStarted) return "listening";
+      if (recognizer) return "starting";
+      return "idle";
+    }
+    function statusText(state) {
+      if (state === "unavailable") return t("errorUnavailable");
+      if (state === "transcribing") return t("transcribing");
+      if (state === "listening" || state === "starting") return mode === "live" ? t("listeningAuto") : t("listeningBasic");
+      if (lastStatus) return lastStatus;
+      return mode === "live" ? t("modeAutoHint") : t("modeInputHint");
+    }
+    function syncModeUi(ready) {
+      if (voiceBarEl) voiceBarEl.setAttribute("data-voice-mode", mode);
+      if (modeGroupEl) modeGroupEl.setAttribute("aria-disabled", String(!ready));
+      const pairs = [[modeInputEl, "basic"], [modeAutoEl, "live"]];
+      for (let i = 0; i < pairs.length; i += 1) {
+        const el = pairs[i][0];
+        if (!el) continue;
+        el.disabled = !ready;
+        el.setAttribute("aria-pressed", String(mode === pairs[i][1]));
+      }
+    }
     function updateMicState() {
       const ready = sttAvailable && identityKey !== "";
+      const state = voiceState();
       mic.disabled = !ready;
       mic.setAttribute("aria-disabled", String(!ready));
-      // 마이크 상태는 "요청됨"이 아니라 실제 캡처 시작 시점에 맞춘다.
-      // getUserMedia 승인 전에 중지하면 듣고 있다고 표시하지 않는다.
-      const listening = !!recognizer && captureStarted;
-      mic.setAttribute("aria-label", ready ? (listening ? t("micStop") : t("micStart")) : t("errorUnavailable"));
-      mic.setAttribute("title", mic.getAttribute("aria-label"));
-      mic.setAttribute("data-voice-state", ready ? (listening ? "listening" : "starting") : "unavailable");
-      mic.setAttribute("aria-pressed", String(listening));
+      // 마이크 상태는 "요청됨"이 아니라 실제 캡처/전사 진행 시점에 맞춘다.
+      const active = state === "listening" || state === "starting" || state === "transcribing";
+      const label = ready ? (active ? t("micStop") : t("micStart")) : t("errorUnavailable");
+      mic.setAttribute("aria-label", label);
+      mic.setAttribute("title", label);
+      mic.setAttribute("data-voice-state", state);
+      mic.setAttribute("aria-pressed", String(active));
       composer.disabled = !ready;
       send.disabled = !ready;
-      if (liveToggleEl) liveToggleEl.disabled = !ready;
+      syncModeUi(ready);
+      if (statusEl) statusEl.textContent = statusText(state);
       if (!ready) {
-        note.textContent = t("errorUnavailable");
         recognizer = null;
         adapter = null;
         controller = null;
         captureStarted = false;
+        transcribing = false;
       }
     }
     function checkAvailability() {
@@ -601,13 +657,21 @@
             const result = adapter.commitFinal(opts);
             // commitFinal() already appended to the composer; re-setting it here
             // would replace earlier chunks with the newest one.
-            if (result && result.ok) { try { composer.dispatchEvent(new win.Event("input", { bubbles: true })); } catch (e) {} }
+            if (result && result.ok) {
+              if (mode !== "live") lastStatus = t("finalBasic");
+              try { composer.dispatchEvent(new win.Event("input", { bubbles: true })); } catch (e) {}
+              updateMicState();
+            }
+          },
+          onTranscribeState: function (active) {
+            transcribing = active === true;
+            updateMicState();
           },
           onTurnComplete: function (event) {
             if (mode !== "live" || !controller) return;
             // controller.submit 이 정확히 1회 전송을 수행한다. 여기서 다시 clickSend를
             // 호출하면 같은 발화가 두 번 전송되므로 결과만 소비한다.
-            controller.handleFinal({
+            const result = controller.handleFinal({
               accepted: true,
               endOfTurn: true,
               accountKey: identityKey,
@@ -615,6 +679,8 @@
               finalId: event && event.finalId != null ? String(event.finalId) : "",
               text: composer.value.trim(),
             });
+            lastStatus = result && result.submitted ? t("finalSent") : t("finalHeld");
+            updateMicState();
           },
           onStart: function () {
             // The adapter only accepts finals while it is listening. Without
@@ -622,13 +688,16 @@
             // rejected as "not-listening" and live auto-send never fires.
             if (adapter) adapter.start();
             captureStarted = true;
+            transcribing = false;
+            lastStatus = "";
             updateMicState();
           },
           onError: function (code) {
             recognizer = null;
             captureStarted = false;
+            transcribing = false;
+            lastStatus = t(code === "permission-denied" ? "errorPermission" : code === "unsupported-browser" ? "errorUnsupported" : "error");
             updateMicState();
-            note.textContent = t(code === "permission-denied" ? "errorPermission" : code === "unsupported-browser" ? "errorUnsupported" : "error");
           },
           onEnd: function () { recognizer = null; captureStarted = false; updateMicState(); },
         },
@@ -653,12 +722,11 @@
         onPreview: function () {},
         onStateChange: function () { updateMicState(); },
       });
-      // 무장된 자동 전송 모드(Mode B)는 발화 단위가 아니라 사용자가 끌 때까지 유지한다.
+      // 무장된 자동 전송 모드(Mode 2)는 발화 단위가 아니라 사용자가 바꿀 때까지 유지한다.
       controller.setMode(mode);
       captureStarted = false;
       recognizer = buildRecognizer();
       updateMicState();
-      syncLiveToggle();
       return recognizer;
     }
     function stopRecognizer(release) {
@@ -670,6 +738,7 @@
         adapter.stop("user-stopped");
         if (release === true) adapter = null;
       }
+      if (release !== true) lastStatus = t("stopped");
       updateMicState();
     }
     function toggleMic() {
@@ -681,19 +750,52 @@
         return true;
       });
     }
-    function syncLiveToggle() {
-      if (!liveToggleEl) return;
-      liveToggleEl.setAttribute("aria-pressed", mode === "live" ? "true" : "false");
-      liveToggleEl.setAttribute("aria-label", mode === "live" ? t("liveOn") : t("liveOff"));
-      liveToggleEl.textContent = mode === "live" ? t("liveOn") : t("liveOff");
-    }
-    function toggleLive() {
+    function setMode(next) {
       if (!sttAvailable || identityKey === "") return;
-      mode = mode === "basic" ? "live" : "basic";
+      const normalized = next === "live" ? "live" : "basic";
+      if (normalized === mode) return;
+      mode = normalized;
+      lastStatus = "";
       if (controller) controller.setMode(mode);
-      syncLiveToggle();
-      note.textContent = mode === "live" ? t("liveAutoSend") : "";
-      if (mode === "basic" && recognizer) stopRecognizer(false);
+      // 모드 전환은 녹음을 끊지 않는다. 이후 확정되는 발화부터 새 모드가 적용된다.
+      updateMicState();
+    }
+    function makeModeButton(id, label, ariaLabel, value) {
+      const el = doc.createElement("button");
+      el.id = id;
+      el.type = "button";
+      el.className = "b66-voice-mode-button";
+      el.setAttribute("aria-label", ariaLabel);
+      el.setAttribute("aria-pressed", "false");
+      el.textContent = label;
+      el.disabled = true;
+      el.addEventListener("click", function () { setMode(value); });
+      return el;
+    }
+    function mountVoiceBar() {
+      modeGroupEl = doc.createElement("div");
+      modeGroupEl.id = MODE_GROUP_ID;
+      modeGroupEl.className = "b66-voice-mode";
+      modeGroupEl.setAttribute("role", "group");
+      modeGroupEl.setAttribute("aria-label", t("modeGroup"));
+      modeInputEl = makeModeButton(MODE_INPUT_ID, t("modeInput"), t("modeInputLabel"), "basic");
+      modeAutoEl = makeModeButton(MODE_AUTO_ID, t("modeAuto"), t("modeAutoLabel"), "live");
+      modeGroupEl.insertBefore(modeInputEl, null);
+      modeGroupEl.insertBefore(modeAutoEl, null);
+      statusEl = doc.createElement("span");
+      statusEl.id = STATUS_ID;
+      statusEl.className = "b66-voice-status";
+      statusEl.setAttribute("role", "status");
+      statusEl.setAttribute("aria-live", "polite");
+      voiceBarEl = doc.createElement("div");
+      voiceBarEl.className = "b66-voice-bar";
+      voiceBarEl.insertBefore(modeGroupEl, null);
+      voiceBarEl.insertBefore(statusEl, null);
+      // 컴포저 카드 안, 입력창 위에 둔다. easy-mode의 note(데스크톱 숨김)와 분리한다.
+      // textarea의 자식 노드는 브라우저가 렌더하지 않으므로 상위 컨테이너에 삽입한다.
+      const host = composer.parentElement || composer.parentNode || null;
+      if (host && typeof host.insertBefore === "function") host.insertBefore(voiceBarEl, composer);
+      else composer.insertBefore(voiceBarEl, null);
     }
     function invalidate() {
       stopRecognizer(true);
@@ -703,6 +805,9 @@
       sttAvailable = false;
       updateMicState();
     }
+
+    mountVoiceBar();
+    updateMicState();
 
     listen(win, "padiem:auth-state", function (event) {
       const detail = event && event.detail ? event.detail : {};
@@ -721,20 +826,8 @@
 
     mic.addEventListener("click", function () { Promise.resolve(toggleMic()); });
 
-    liveToggleEl = doc.createElement("button");
-    liveToggleEl.id = LIVE_TOGGLE_ID;
-    liveToggleEl.type = "button";
-    liveToggleEl.className = "voice-live-toggle";
-    liveToggleEl.setAttribute("aria-pressed", "false");
-    liveToggleEl.setAttribute("aria-label", t("liveOff"));
-    liveToggleEl.textContent = t("liveOff");
-    liveToggleEl.disabled = true;
-    liveToggleEl.addEventListener("click", toggleLive);
-    const micParent = mic.parentNode;
-    if (micParent && typeof micParent.insertBefore === "function") micParent.insertBefore(liveToggleEl, mic.nextSibling);
-
     return {
-      MIC_ID, COMPOSER_ID, SEND_ID,
+      MIC_ID, COMPOSER_ID, SEND_ID, MODE_GROUP_ID, MODE_INPUT_ID, MODE_AUTO_ID, STATUS_ID,
       destroy: function () {
         wiringStopped = true;
         stopRecognizer(true);
@@ -744,12 +837,14 @@
         });
         listeners.length = 0;
         mic.disabled = true;
-        if (liveToggleEl && liveToggleEl.parentNode && typeof liveToggleEl.parentNode.removeChild === "function") {
-          liveToggleEl.parentNode.removeChild(liveToggleEl);
+        if (voiceBarEl && voiceBarEl.parentNode && typeof voiceBarEl.parentNode.removeChild === "function") {
+          voiceBarEl.parentNode.removeChild(voiceBarEl);
         }
-        liveToggleEl = null;
+        voiceBarEl = null; modeGroupEl = null; modeInputEl = null; modeAutoEl = null; statusEl = null;
       },
-      getState: function () { return { mode, sttAvailable, identityKey: identityKey || "", recognizer: !!recognizer }; },
+      getState: function () {
+        return { mode, sttAvailable, identityKey: identityKey || "", recognizer: !!recognizer, state: voiceState(), transcribing };
+      },
     };
   }
 
