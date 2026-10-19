@@ -35,6 +35,8 @@ concurrency:
 
 jobs:
   policy-consistency:
+    # COM2 is primary for same-repository PRs; keep hosted for fork PRs and manual recovery.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name != github.repository
     name: Operating policy consistency
     # Keep untrusted pull_request runs on GitHub-hosted isolation.
     # Trusted owner-triggered main dispatch executes on COM2.
