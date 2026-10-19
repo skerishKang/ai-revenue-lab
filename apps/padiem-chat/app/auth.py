@@ -4,6 +4,7 @@ import base64
 import hashlib
 import hmac
 import json
+import re
 import secrets
 import time
 from dataclasses import dataclass
@@ -21,6 +22,10 @@ SESSION_COOKIE = "padiem_session"
 OAUTH_STATE_COOKIE = "padiem_oauth_state"
 OAUTH_STATE_MAX_AGE_SECONDS = 600
 MAX_AUTH_RESPONSE_BYTES = 128 * 1024
+# Android handoff states are signed with a distinct purpose so a normal
+# cookie-bound OAuth state can never be replayed as a handoff state or back.
+ANDROID_HANDOFF_STATE_PURPOSE = "padiem-chat/android-handoff-state/v1"
+_ANDROID_HANDOFF_ID_RE = re.compile(r"^aho_[A-Za-z0-9_-]{20,48}$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -111,6 +116,40 @@ def verify_oauth_state(settings: Settings, query_state: str | None, cookie_token
         return False
     expected = payload.get("state")
     return isinstance(expected, str) and secrets.compare_digest(expected, query_state)
+
+
+def is_android_handoff_id(value: object) -> bool:
+    return isinstance(value, str) and _ANDROID_HANDOFF_ID_RE.fullmatch(value) is not None
+
+
+def create_android_handoff_state(settings: Settings, handoff_id: str, now: int | None = None) -> str:
+    """Sign the OAuth state for a handoff completed in the external browser.
+
+    The external browser never holds the initiating WebView's state cookie, so
+    this state carries its verifiable authority in the signed value itself. The
+    state only binds the OAuth callback to a handoff row; it never authenticates
+    a user or grants a session.
+    """
+    if not settings.session_secret:
+        raise AuthError(503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
+    if not is_android_handoff_id(handoff_id):
+        raise AuthError(400, "invalid_android_handoff", "로그인 요청을 확인할 수 없습니다.")
+    issued = int(time.time()) if now is None else now
+    return _signed_token(
+        settings.session_secret,
+        ANDROID_HANDOFF_STATE_PURPOSE,
+        {"v": 1, "hid": handoff_id, "exp": issued + OAUTH_STATE_MAX_AGE_SECONDS},
+    )
+
+
+def verify_android_handoff_state(settings: Settings, state: str | None, now: int | None = None) -> str | None:
+    if not state or not settings.session_secret:
+        return None
+    payload = _verify_token(settings.session_secret, ANDROID_HANDOFF_STATE_PURPOSE, state, now=now)
+    if not payload or payload.get("v") != 1:
+        return None
+    handoff_id = payload.get("hid")
+    return handoff_id if is_android_handoff_id(handoff_id) else None
 
 
 def session_cookie_kwargs(settings: Settings) -> dict[str, Any]:

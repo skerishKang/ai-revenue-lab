@@ -11,7 +11,7 @@ const staticAppSourceTreePins = Object.freeze({
   'apps/living-travel/pages-preview/site': '388d5c737b5f78211136b410c64e327fe2824c10'
 });
 const generatedSourceTreePins = Object.freeze({
-  'apps/personal-edition': 'e89bb4ef0d93e9f5f23a01946cd1cfdd42c4930e',
+  'apps/personal-edition': '456f070227f6dd7195b66b7b114fc845caa37029',
   'apps/personal-video-archive': '580be319152fdf2001d979438b345e4172a2e2d4'
 });
 

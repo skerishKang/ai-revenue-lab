@@ -23,6 +23,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -46,8 +48,9 @@ def test_html_has_approved_memory_and_review_surfaces() -> None:
 
 def test_no_forbidden_interception_tokens() -> None:
     source = _app_source()
-    for token in ("MutationObserver", "localStorage", "sessionStorage", "indexedDB", "cookieStore", "window.fetch ="):
+    for token in ("MutationObserver", "localStorage", "indexedDB", "cookieStore", "window.fetch ="):
         assert token not in source
+    assert_session_storage_is_handoff_only(source)
 
 
 def test_explicit_approval_flag_present() -> None:
