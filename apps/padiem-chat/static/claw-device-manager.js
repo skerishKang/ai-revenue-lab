@@ -12,11 +12,13 @@
   const SAVE_TIMEOUT_MS = 12000;
   const COPY = Object.freeze({
     ko: {
-      toggle: "내 컴퓨터",
       title: "연결된 내 컴퓨터",
       close: "닫기",
       refresh: "연결 상태 새로고침",
       help: "연결된 컴퓨터를 확인합니다. PC 작업은 별도의 승인이 필요합니다.",
+      entryTitle: "컴퓨터와 연결해 보세요",
+      entryDescription: "내 컴퓨터의 파일과 프로그램을 PADIEM에서 사용할 수 있어요.",
+      connectAction: "컴퓨터 연결하기",
       loading: "서버에서 컴퓨터 연결 상태를 확인하고 있습니다.",
       unavailable: "컴퓨터 연결 서비스가 아직 준비되지 않았습니다. 연결된 PC를 확인할 수 없습니다.",
       unconfigured: "컴퓨터 연결 서비스가 아직 설정되지 않았습니다. 연결 서비스가 설정되면 이 목록을 확인할 수 있습니다.",
@@ -38,11 +40,13 @@
       choose: "작업 대상 후보로 선택",
     },
     en: {
-      toggle: "My computers",
       title: "My connected computers",
       close: "Close",
       refresh: "Refresh connection status",
       help: "Review connected devices. Running local tasks requires separate approval.",
+      entryTitle: "Connect your computer",
+      entryDescription: "Use the files and programs on your computer in PADIEM.",
+      connectAction: "Connect a computer",
       loading: "Checking your devices with the server.",
       unavailable: "Computer connection service is not ready yet. Device status cannot be confirmed.",
       unconfigured: "The computer connection service is not configured yet. Once it is set up, this list can be shown.",
@@ -98,6 +102,13 @@
     toggle.type = "button";
     toggle.setAttribute("aria-controls", "clawDeviceManagerPanel");
     toggle.setAttribute("aria-expanded", "false");
+    // The entry carries its own headline and state: the connection guidance
+    // before a PC is confirmed, and the real PC name plus its server-confirmed
+    // state afterwards. One control, one line, no second device authority.
+    const toggleTitle = element("span", "claw-device-manager-toggle-title");
+    const toggleState = element("span", "claw-device-manager-state");
+    toggleState.hidden = true;
+    toggle.append(toggleTitle, toggleState);
     const panel = element("section", "claw-device-manager-panel");
     panel.id = "clawDeviceManagerPanel";
     panel.setAttribute("aria-labelledby", "clawDeviceManagerTitle");
@@ -119,8 +130,19 @@
     const list = element("ul", "claw-device-manager-list");
     list.id = "clawDeviceManagerList";
     list.hidden = true;
+    // The not-connected guidance and its one action into the EXISTING Claw
+    // computer connect screen. It is appended last so the panel's existing
+    // control order (close, refresh, device rows) is unchanged.
+    const connect = element("div", "claw-device-manager-connect");
+    connect.id = "clawDeviceManagerConnect";
+    const connectTitle = element("h3", "claw-device-manager-connect-title");
+    const connectCopy = element("p", "claw-device-manager-connect-copy");
+    const connectAction = element("button", "claw-device-manager-connect-action");
+    connectAction.id = "clawDeviceManagerConnectAction";
+    connectAction.type = "button";
+    connect.append(connectTitle, connectCopy, connectAction);
     head.append(title, close);
-    panel.append(head, help, actions, status, list);
+    panel.append(head, help, actions, status, list, connect);
     root.append(toggle, panel);
     composer.parentElement.insertBefore(root, composer);
 
@@ -148,10 +170,66 @@
       return device.state === "OFFLINE" ? t.offline : t.required;
     }
 
+    // The directory rows the server confirmed for this owner. This module stays
+    // the only reader of that endpoint, so the entry line below and the panel
+    // below always describe the same server-confirmed snapshot.
+    function confirmedDevices() {
+      if (!lastDirectory || !lastDirectory.available) return [];
+      return Array.isArray(lastDirectory.devices) ? lastDirectory.devices : [];
+    }
+
+    function primaryDevice() {
+      const devices = confirmedDevices();
+      if (!devices.length) return null;
+      return devices.find((device) => device.online && !device.revoked) || devices[0];
+    }
+
+    // The shared entry line: the connection guidance while no PC is confirmed,
+    // and the real PC name plus its confirmed state afterwards. Desktop and
+    // mobile read the same snapshot, so both always agree.
+    function renderEntry() {
+      const t = locale();
+      const device = primaryDevice();
+      if (device) {
+        toggleTitle.textContent = device.deviceName || device.deviceId;
+        toggleState.textContent = deviceLabel(device);
+        toggleState.dataset.state = device.state;
+        toggleState.hidden = false;
+      } else {
+        toggleTitle.textContent = t.entryTitle;
+        toggleState.textContent = "";
+        toggleState.removeAttribute("data-state");
+        toggleState.hidden = true;
+      }
+      connectTitle.textContent = t.entryTitle;
+      connectCopy.textContent = t.entryDescription;
+      connectAction.textContent = t.connectAction;
+      // The guidance belongs to the not-connected state only.
+      connect.hidden = Boolean(device);
+    }
+
+    // The EXISTING Claw computer connect screen: the Connectors surface that
+    // already owns the computer card. No new screen, no new pairing, no
+    // second registration system. The Connectors surface is a standalone
+    // view, so the existing sidebar entry is the only navigation needed.
+    function openComputerConnectScreen() {
+      const opener = document.getElementById("connectorsNavButton");
+      if (!opener) return;
+      opener.click();
+      const card = document.getElementById("connectorComputerCard");
+      if (!card) return;
+      if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+      card.focus({ preventScroll: true });
+      if (typeof card.scrollIntoView === "function") {
+        card.scrollIntoView({ block: "nearest", behavior: "instant" });
+      }
+    }
+
     function renderDirectory() {
       const t = locale();
       list.replaceChildren();
       list.hidden = !lastDirectory || !lastDirectory.available || !lastDirectory.devices.length;
+      renderEntry();
       if (!lastDirectory || !lastDirectory.available) return;
       for (const device of lastDirectory.devices) {
         const item = element("li", "claw-device-manager-item");
@@ -207,6 +285,8 @@
       lastDirectory = null;
       list.replaceChildren();
       list.hidden = true;
+      // A new account generation starts from the not-connected guidance again.
+      renderEntry();
     }
 
     async function postSelection(deviceId) {
@@ -369,11 +449,13 @@
 
     function translations() {
       const t = locale();
-      toggle.textContent = t.toggle;
       title.textContent = t.title;
       close.textContent = t.close;
       help.textContent = t.help;
       refresh.textContent = t.refresh;
+      // The entry headline follows the confirmed connection state, so a locale
+      // switch and a state switch repaint the same entry.
+      renderEntry();
       if (opened) {
         if (lastDirectory?.available) {
           setStatus(lastDirectory.canTarget ? "selected" :
@@ -410,6 +492,11 @@
       void load();
     });
     close.addEventListener("click", closePanel);
+    // The not-connected action opens the EXISTING Claw computer connect
+    // screen. It never pairs, registers or grants anything by itself.
+    connectAction.addEventListener("click", () => {
+      openComputerConnectScreen();
+    });
     refresh.addEventListener("click", () => {
       selectedId = null;
       void load();

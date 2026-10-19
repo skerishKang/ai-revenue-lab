@@ -994,8 +994,12 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   overscroll-behavior-y: auto;
   /* Must track the composer's measured height, not a constant. The composer
    * grows with the attachment tray, the model row and the cancel/status row,
-   * and a fixed inset leaves the last turn sitting under the glass input. */
-  padding-bottom: var(--padiem-composer-clearance, 218px);
+   * and a fixed inset leaves the last turn sitting under the glass input.
+   * The software-keyboard inset is added because the fixed composer is raised
+   * by exactly that amount while the keyboard is open. */
+  padding-bottom: calc(
+    var(--padiem-composer-clearance, 218px) + var(--padiem-visual-keyboard-inset, 0px)
+  );
 }
 @media (max-width: 620px) {
   /* Match Chat's shared cinematic mobile portrait (the original image asset). */
@@ -1130,7 +1134,11 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   /* Last turn belongs above the fixed composer even as its measured height
    * changes for attachments or the mobile software keyboard. */
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation {
-    scroll-padding-bottom: calc(var(--padiem-composer-clearance, 218px) + 24px);
-    padding-bottom: calc(var(--padiem-composer-clearance, 218px) + 36px);
+    scroll-padding-bottom: calc(
+      var(--padiem-composer-clearance, 218px) + var(--padiem-visual-keyboard-inset, 0px) + 24px
+    );
+    padding-bottom: calc(
+      var(--padiem-composer-clearance, 218px) + var(--padiem-visual-keyboard-inset, 0px) + 36px
+    );
   }
 }
