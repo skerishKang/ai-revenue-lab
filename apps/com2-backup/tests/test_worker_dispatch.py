@@ -287,7 +287,7 @@ async def test_unknown_route_is_404_after_authentication():
 async def test_missing_bucket_and_storage_failure_are_bounded():
     response = await call(fw.enabled_env(COM2_BACKUP_BUCKET=None), "GET", BASE + "/payload")
     assert response.status == 503
-    assert decode(response)["error"]["code"] == "backup_storage_unavailable"
+    assert decode(response)["error"]["code"] == "storage_binding_missing"
 
     bucket = fw.FakeR2()
     bucket.fail_put = True
@@ -298,5 +298,82 @@ async def test_missing_bucket_and_storage_failure_are_bounded():
         PAYLOAD,
         payload_request_headers(),
     )
-    assert response.status == 503
-    assert decode(response)["error"]["code"] == "backup_storage_unavailable"
+    assert response.status == 502
+    assert decode(response)["error"]["code"] == "storage_write_failed"
+
+
+class _PromiseLike:
+    """Mimics a workerd JS Promise returned by ``arrayBuffer()``."""
+
+    def __init__(self, value):
+        self._value = value
+
+    def __await__(self):
+        async def resolve():
+            return self._value
+
+        return resolve().__await__()
+
+
+class _ArrayBufferProxy:
+    """Mimics a Pyodide ArrayBuffer proxy: only ``to_bytes()`` exposes the data."""
+
+    def __init__(self, data):
+        self._data = data
+
+    def to_bytes(self):
+        return self._data
+
+
+class _PromiseArrayBufferObject:
+    def __init__(self, data):
+        self.size = len(data)
+        self._data = data
+
+    def arrayBuffer(self):
+        return _PromiseLike(_ArrayBufferProxy(self._data))
+
+
+class _StreamOnlyObject:
+    def __init__(self, data):
+        self.size = len(data)
+        self.body = fw._Stream(data, chunk=3)
+
+    def arrayBuffer(self):
+        raise RuntimeError("arrayBuffer unavailable")
+
+
+def _bucket_serving(obj):
+    bucket = fw.FakeR2()
+
+    async def get(key):
+        return obj
+
+    bucket.get = get
+    return bucket
+
+
+@pytest.mark.asyncio
+async def test_workerd_promise_arraybuffer_proxy_is_decoded():
+    env = fw.enabled_env(COM2_BACKUP_BUCKET=_bucket_serving(_PromiseArrayBufferObject(PAYLOAD)))
+    response = await call(env, "GET", BASE + "/payload")
+    assert response.status == 200
+    assert response.body == PAYLOAD
+
+
+@pytest.mark.asyncio
+async def test_workerd_null_proxy_is_treated_as_absent():
+    """A missing R2 key returns a JS null proxy, not Python None."""
+    js_null = type("JsNull", (), {})()
+    env = fw.enabled_env(COM2_BACKUP_BUCKET=_bucket_serving(js_null))
+    response = await call(env, "GET", BASE + "/payload")
+    assert response.status == 404
+    assert decode(response)["error"]["code"] == "payload_not_found"
+
+
+@pytest.mark.asyncio
+async def test_stream_body_is_used_when_arraybuffer_is_unavailable():
+    env = fw.enabled_env(COM2_BACKUP_BUCKET=_bucket_serving(_StreamOnlyObject(PAYLOAD)))
+    response = await call(env, "GET", BASE + "/payload")
+    assert response.status == 200
+    assert response.body == PAYLOAD
