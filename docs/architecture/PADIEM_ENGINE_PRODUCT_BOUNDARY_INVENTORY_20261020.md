@@ -24,6 +24,14 @@ Engine은 **장기 실행·승인 대기·교차 런타임** 경로만 남고, �
 핵심 발견: **Engine의 "제품 전용"은 이벤트 어휘가 아니라 툴 바인딩과 신원 상수다.**
 따라서 분리 작업의 최소 단위는 이벤트 마이그레이션이 아니라, **제품 신원 분기(StepDriver·tool binding·app_id 조건)의 소유권 이전**이다.
 
+### 진행 상황 (2026-10-20 갱신)
+
+제안 A 1단계는 **이미 실행되었다**: PR #5209(`refactor(5151): move the PC tool contract to the product adapter`)가
+PC 툴 계약(제품 신원·툴 id/스코프/spec·서명 제품 콜백·드라이브 쿼리 실행·단계 정책)을
+`apps/korean-ai-code-agent/src/kagent/pc_query_adapter.py` 로 옮기고,
+Engine의 `claw_pc_query_step_driver.py` 는 **호환 재수출**이 되었다(기존 import 경로 전부 그대로 동작).
+따라서 아래 인벤토리의 PC 쿼리 항목은 §2.4에 갱신되었고, §5의 "다음"은 남은 두 조각으로 좁혀졌다.
+
 ## 2. 제품 고유 표면 인벤토리 (`apps/padiem-ai-engine/app/`)
 
 ### 2.1 제품 신원 상수
@@ -32,8 +40,7 @@ Engine은 **장기 실행·승인 대기·교차 런타임** 경로만 남고, �
 | --- | --- | --- | --- |
 | `claw_pc_query_step_driver.py` | 21 | `CLAW_APP_ID` | `b54-padiem-claw` |
 | `claw_pc_query_step_driver.py` | 30 | `CHAT_APP_ID` | `padiem-chat` |
-| `claw_pc_query_step_driver.py` | 31 | `CHAT_PC_QUERY_AGENT_ID` | `agent:padiem:chat-pc-query@1` |
-| `claw_desktop_step_driver.py` | 103-104 | `CLAW_APP_ID` / `DESKTOP_AGENT_ID` | `b54-padiem-claw` / `agent:padiem:claw-desktop@1` |
+| `claw_pc_query_step_driver.py` | 31 | `CHAT_PC_QUERY_AGENT_ID` | `agent:padiem:chat-pc-query@1` || `claw_desktop_step_driver.py` | 103-104 | `CLAW_APP_ID` / `DESKTOP_AGENT_ID` | `b54-padiem-claw` / `agent:padiem:claw-desktop@1` |
 | `connector_bindings.py` | 94-117 | `GMAIL_REFERENCE_APP_ID` + reader agent ids | `b54-padiem-claw` / `agent:padiem:claw_{mail,drive,telegram,slack,calendar}_reader@1` |
 | `hark_office_p01_tool_binding.py` | 22-23 | `APP_ID` / `AGENT_ID` | `hark-office-local-p01` / `agent:padiem:hark-office-p01@1` |
 | `web_xlsx_p01_tool_binding.py` | 20-21 | `APP_ID` / `AGENT_ID` | `padiem-web-xlsx-p01` / `agent:padiem:web-xlsx-confirm@1` |
@@ -64,7 +71,7 @@ Engine은 **장기 실행·승인 대기·교차 런타임** 경로만 남고, �
 
 | StepDriver / binding | 제품 | 성격 | 분리 우선순위 |
 | --- | --- | --- | --- |
-| `claw_pc_query_step_driver` | Claw(`b54-padiem-claw`) / Chat(`padiem-chat`) | PC 드라이브·목록·파일 읽기. 제품 서명 콜백을 **Engine 밖**으로 보낸다 | **높음** (Chat/Claw 직결 대상) |
+| `claw_pc_query_step_driver` | Claw(`b54-padiem-claw`) / Chat(`padiem-chat`) | PC 드라이브·목록·파일 읽기. 제품 서명 콜백을 **Engine 밖**으로 보낸다 | **이동 완료**(§2.4). 파일 실행·모델 스텝 프롬프트만 잔류 |
 | `claw_desktop_step_driver` | Claw | 데스크톱 캡처·입력 | 중간 |
 | `connector_bindings` (Gmail/Drive/Telegram/Slack/Calendar reader) | Claw | 제품 커넥터 리더 agent | 중간 |
 | `web_xlsx_p01_tool_binding` | `padiem-web-xlsx-p01` | 웹 XLSX 확정 | 낮음 |
@@ -72,6 +79,25 @@ Engine은 **장기 실행·승인 대기·교차 런타임** 경로만 남고, �
 | `hark_office_p01_tool_binding` | `hark-office-local-p01` | Hark Office P01 | 낮음 |
 | `approval_smoke_binding` | `b54-engine-approval-smoke` | 승인 스모크 | 낮음 |
 | `agent_preview_authority` | `engine-a5-agent-synthetic` | 합성 미리보기 | 낮음 |
+
+### 2.4 제안 A 1단계 완료 상태 (PR #5209, 2026-10-20 병합)
+
+PC 툴 계약이 **제품 어댑터**로 이동했다. 아래는 이동 후의 소유권이다.
+
+| 이전 소유권 | 현재 소유권 | 비고 |
+| --- | --- | --- |
+| `apps/padiem-ai-engine/app/claw_pc_query_step_driver.py` 의 제품 신원(`CLAW_APP_ID`, `CHAT_APP_ID`, agent id) | `apps/korean-ai-code-agent/src/kagent/pc_query_adapter.py:63-79` | 값은 동일. 위치만 이동 |
+| 툴 id / canonical tool id / 스코프 / spec / agent 정의 / 정책 / 권한 | `pc_query_adapter.py:74-79`, `:284-302` | 동일 |
+| 서명 제품 콜백(dispatch·bounded poll·검증 결과) | `pc_query_adapter.py` | 동일 |
+| 드라이브 쿼리 실행 + 단계 정책 | `pc_query_adapter.py` | 동일 |
+| Engine `claw_pc_query_step_driver.py` | **호환 재수출** | 기존 import 경로(`app.claw_pc_query_step_driver`, `app.execution_admission_service`, `app.orchestration_service`, `app.worker_identity`) 전부 그대로 동작 |
+| **PC 파일 실행(list/read) + `build_live_pc_query_driver` 의 모델 스텝 프롬프트** | **여전히 Engine 파일에 잔류** | 같은 줄을 두 번 편집하지 않기 위해 #5175 병합 후 다음 조각으로 이동 |
+
+어댑터는 Engine 애플리케이션 모듈도, Core 패키지 루트도 가져오지 않고 `padiem_ai_core` 서브모듈만 가져온다
+(`packages/padiem-ai-core/tests/test_package_root_consumer_inventory.py` + 소유권/API 테스트 12건으로 고정).
+
+**#5172와의 상호작용**: 이 어댑터는 `from padiem_ai_core.pc_device_identity import is_pc_device_id` 를 사용한다
+(`pc_query_adapter.py:53`, `:109`). 즉 정식 Mesh 기기 식별자 문법은 Engine PC 쿼리 경로에서도 그대로 유효하다.
 
 ## 3. 사용자 이벤트 표면 (제품 중립 확인)
 
@@ -108,7 +134,12 @@ run_completed
 4. 이동은 **파일 이동이 아니라 참조 이동**이다. Engine의 공개 계약(`/internal/v1/orchestrate` 등)과 요청·응답 형태는 바꾸지 않는다.
 5. 각 이동은 **기존 동작 유지**를 검증 가능한 집중 테스트로 고정한다. 제품 신원 상수(`app_id`/`agent_id`) 값은 그대로 유지한다.
 
-**제안 B — Core 직결(、产品 Worker ↘ shared Core)**
+> **진행: A-1(PC 툴 계약) 완료.** PR #5209로 `claw_pc_query_step_driver` 의 제품 툴 계약이
+> `kagent/pc_query_adapter.py` 로 이동했고 Engine 파일은 호환 재수출이 되었다(§2.4).
+> **남은 A-2**: PC 파일 실행(list/read)과 `build_live_pc_query_driver` 의 모델 스텝 프롬프트.
+> 둘 다 같은 줄을 #5175가 편집 중이므로, **#5175 병합 후** 다음 조각으로 옮긴다.
+
+**제안 B — Core 직결(제품 Worker → shared Core)**
 
 1. Chat/Claw Worker가 공유 Core Agent/Tool runtime으로 직접 동기 실행한다.
 2. B14 관리형 모델은 B14로, 고객 선택 제공자는 기존 BYOK_DIRECT로, PC 실행은 기존 Broker/Mesh/Connector로 간다.
@@ -119,6 +150,7 @@ run_completed
 
 ## 6. 다음 단계와 금지
 
-- 다음: lane D(독립 검증) 담당과 이 인벤토리를 공유하고, **제안 A의 1단계(가장 작은 제품 바인딩 1개) 소유권 이동** 범위를 확정한다. 한 번에 하나만 옮긴다.
+- 다음: lane D(독립 검증) 담당과 이 인벤토리 + §2.4를 공유하고, **제안 A-2(PC 파일 실행 + 모델 스텝 프롬프트) 이동 범위**를 확정한다. #5175 병합 후, 한 번에 하나만 옮긴다.
+- 이어서: `claw_desktop_step_driver` → `connector_bindings` → `web_xlsx_*` → `hark_office_p01_tool_binding` 순으로 같은 방식을 반복한다.
 - 기준선: `docs/architecture/P01_B62_SHARED_RUNTIME_BOUNDARY_LOCK_2409.md` 의 권한/집행 경계 코드 증거 범위를 변경하지 않는다.
 - 금지: 제품 계층·코드·배포·권한·모델 선택·고객 사용 조건의 변경. 신규 Router/Broker/Worker/DO/Workflow. 즉시 별도 배포.
