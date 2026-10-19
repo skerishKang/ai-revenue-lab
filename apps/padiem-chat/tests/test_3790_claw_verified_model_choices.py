@@ -114,3 +114,40 @@ def test_login_refresh_and_logout_clear_stale_model_choice():
     assert 'new CustomEvent("padiem:auth-state"' in app
     assert 'window.addEventListener("padiem:auth-state"' in js
     assert 'manual.value=""; // session revoked' in js
+
+
+def test_admin_model_choices_require_server_verified_admin(monkeypatch):
+    from app.model_policy import ADMIN_B14_MODEL_ID
+
+    class AdminStore:
+        def __init__(self, approved):
+            self.approved = approved
+
+        async def is_google_admin(self, user_id):
+            assert user_id == "usr_fixture"
+            return self.approved
+
+    catalog = Catalog([
+        {"model_id": ADMIN_B14_MODEL_ID, "name": "Admin model"},
+        {"model_id": "opencode-go/beam-free", "name": "Free model"},
+    ])
+    with client_with(monkeypatch, catalog=catalog) as client:
+        client.app.state.b66_member_admin_store = AdminStore(False)
+        denied = client.get("/choices?tier=admin")
+        assert denied.status_code == 403
+        assert catalog.calls == 0
+
+        client.app.state.b66_member_admin_store = AdminStore(True)
+        approved = client.get("/choices?tier=admin")
+    assert approved.status_code == 200
+    assert [row["model_id"] for row in approved.json()["model_choices"]] == [ADMIN_B14_MODEL_ID]
+    assert approved.json()["route_revision"] == 0
+
+
+def test_claw_admin_exact_model_is_server_owned():
+    root = Path(__file__).resolve().parents[1] / "app"
+    source = (root / "claw_general_routes.py").read_text(encoding="utf-8")
+    assert 'admin_lane = requested_tier == "admin"' in source
+    assert 'await selected_admin_denial(request, user_id)' in source
+    assert 'selected_model_id != ADMIN_B14_MODEL_ID' in source
+    assert 'if admin_lane else await resolve_claw_tier_model' in source

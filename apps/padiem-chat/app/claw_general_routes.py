@@ -38,7 +38,9 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from .member_grade_access import selected_grade_denial
+from .member_grade_access import selected_grade_denial, selected_admin_denial
+from .model_policy import ADMIN_B14_MODEL_ID
+from types import SimpleNamespace
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
@@ -1294,13 +1296,18 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     raw_tier = data.get("tier", "free")
     if not isinstance(raw_tier, str):
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-    product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
+    requested_tier = raw_tier.strip().lower()
+    admin_lane = requested_tier == "admin"
+    # P01 currently transports only member-tier enums. The administrator
+    # chooses the separately authorized exact model, never a browser-provided
+    # tier/model grant. PLUS here is solely the existing P01 transport profile.
+    product_tier = ProductTierLabel.PLUS if admin_lane else _BROWSER_TIER_MAP.get(requested_tier)
     if product_tier is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
     if "tier" in data:
-        tier_denial = await selected_grade_denial(
-            request, current_user_id(request) if auth_ready(request) else None, raw_tier.strip().lower()
-        )
+        user_id = current_user_id(request) if auth_ready(request) else None
+        tier_denial = (await selected_admin_denial(request, user_id)
+                       if admin_lane else await selected_grade_denial(request, user_id, requested_tier))
         if tier_denial is not None:
             return tier_denial
     # #4428: the central per-grade route is resolved SERVER-SIDE before any
@@ -1308,7 +1315,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # keeps the historical static declaration.
     from .central_model_route_runtime import resolve_claw_tier_model
 
-    claw_route = await resolve_claw_tier_model(request, raw_tier.strip().lower())
+    claw_route = (SimpleNamespace(ok=True, model_id=ADMIN_B14_MODEL_ID,
+                                  fallback_model_id=None, source="admin")
+                  if admin_lane else await resolve_claw_tier_model(request, requested_tier))
     route_candidates = {
         model_id for model_id in (claw_route.model_id, claw_route.fallback_model_id)
         if model_id is not None
@@ -1321,6 +1330,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             selected_model_id = validate_explicit_b14_model_id(raw_model)
         except P01AdapterError:
             return _error(422, "invalid_selected_model", "등록된 B14 모델 ID 하나를 선택해 주세요.")
+        if admin_lane and selected_model_id != ADMIN_B14_MODEL_ID:
+            return _error(403, "model_not_available_for_tier", "관리자 모델과 일치하지 않습니다.")
         if product_tier is ProductTierLabel.FREE:
             # The resolved route candidates are the administrator's stored
             # per-grade selection when a central row exists, and the shared
