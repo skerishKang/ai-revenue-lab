@@ -35,9 +35,9 @@
       online: "온라인 · 작업 승인 필요",
       offline: "오프라인",
       revoked: "연결 해제",
-      expired: "인증 만료 · 다시 연결해 주세요",
+      expired: "인증이 만료되었습니다 · 다시 연결해 주세요",
       required: "연결 확인 필요",
-      executable: "실행 대상 · 온라인 상태 미확인",
+      executable: "실행 대상 준비 · 온라인 상태 미확인",
       choose: "작업 대상 후보로 선택",
     },
     en: {
@@ -66,7 +66,7 @@
       revoked: "Disconnected",
       expired: "Credential expired · reconnect",
       required: "Connection needs verification",
-      executable: "Execution target · online status unverified",
+      executable: "Execution target ready · online status unverified",
       choose: "Select as candidate device",
     },
   });

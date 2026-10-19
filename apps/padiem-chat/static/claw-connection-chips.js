@@ -89,11 +89,11 @@ async function refresh(){
      // names the real one.
      set("pc","off");
      if(records.every(x=>x?.revoked===true)){
-      pcTruth("revoked","\uC5F0\uACB0\uC774 \uCCD9\uD6C4\uB418\uC5C8\uC2B5\uB2C8\uB2E4 \u00B7 \uB2E7 \uC5F0\uACB0\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694","Connection revoked · reconnect needed");
+      pcTruth("revoked","연결이 철회되었습니다 · 다시 연결해 주세요","Connection revoked · reconnect needed");
      }else if(records.every(x=>x?.expired===true)){
-      pcTruth("expired","\uC778\uC99D\uC815\uBC30\uAC00 \uB9CC\uB8CC\uB418\uC5C8\uC2B5\uB2C8\uB2E4 \u00B7 \uB2E7 \uC5F0\uACB0\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694","Credential expired · reconnect needed");
+      pcTruth("expired","인증이 만료되었습니다 · 다시 연결해 주세요","Credential expired · reconnect needed");
      }else if(records.every(x=>x?.state==="ACTION_REQUIRED")){
-      pcTruth("executable","\uC2E4\uD589 \uB300\uC0C1\uC740 \uC900\uC0AC\uB418\uC9C0\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4 \u00B7 \uC628\uC120 \uC0C1\uD0DC \uC5C6\uC74C","Execution target ready · online status unverified");
+      pcTruth("executable","실행 대상 준비 · 온라인 상태 미확인","Execution target ready · online status unverified");
      }else{
       pcTruth("offline","\uC5F0\uACB0 \uD655\uC778 \uD544\uC694","Connection needs checking");
      }

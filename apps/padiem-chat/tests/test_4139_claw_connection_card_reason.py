@@ -114,6 +114,16 @@ def directory(devices: list[dict]) -> dict:
     return {"ok": True, "available": True, "ownerScoped": True, "devices": devices}
 
 
+#: The exact headlines the card must show, read as UTF-8. A hand-written
+#: Unicode escape is easy to get wrong, so the source strings are plain UTF-8
+#: and these assertions compare the rendered text exactly.
+REASON_TEXT = {
+    "revoked": "연결이 철회되었습니다 · 다시 연결해 주세요",
+    "expired": "인증이 만료되었습니다 · 다시 연결해 주세요",
+    "executable": "실행 대상 준비 · 온라인 상태 미확인",
+}
+
+
 def test_a_connected_pc_reports_the_online_phase():
     result = card(directory([{
         "deviceId": "office", "state": "CONNECTED", "usable": True,
@@ -128,6 +138,7 @@ def test_a_revoked_binding_reports_its_own_reason():
     }]))
     assert result["phase"] == "revoked"
     assert result["chip"] == "off"
+    assert result["text"] == REASON_TEXT["revoked"]
 
 
 def test_an_expired_credential_reports_its_own_reason():
@@ -136,6 +147,7 @@ def test_an_expired_credential_reports_its_own_reason():
     }]))
     assert result["phase"] == "expired"
     assert result["chip"] == "off"
+    assert result["text"] == REASON_TEXT["expired"]
 
 
 def test_a_mesh_target_without_a_heartbeat_reports_its_own_reason():
@@ -145,6 +157,7 @@ def test_a_mesh_target_without_a_heartbeat_reports_its_own_reason():
     }]))
     assert result["phase"] == "executable"
     assert result["chip"] == "off"
+    assert result["text"] == REASON_TEXT["executable"]
 
 
 def test_a_plain_offline_pc_keeps_the_generic_phase():
