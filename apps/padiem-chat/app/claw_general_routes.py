@@ -39,6 +39,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .member_grade_access import selected_grade_denial
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     FREE_PRIMARY_B14_MODEL_ID,
@@ -101,8 +102,8 @@ P01_ENGINE_REQUEST_ENVELOPE_BYTES = 5_500_000
 CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
 CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
-# Same closed grammar the canonical Broker device directory exposes.
-_PC_DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
+# Same canonical device identity grammar the Broker device directory and the
+# saved PC preference expose, including the composed Mesh node identity.
 
 
 def _combine_system_context(*parts: str | None) -> str | None:
@@ -1243,10 +1244,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # lanes below. It is only a target hint: the server re-verifies that the
     # account actually has this Mesh execution target before dispatch.
     requested_device_id = data.get("device_id")
-    if requested_device_id is not None and (
-        not isinstance(requested_device_id, str)
-        or not _PC_DEVICE_ID_PATTERN.fullmatch(requested_device_id)
-    ):
+    if requested_device_id is not None and not is_pc_device_id(requested_device_id):
         return _error(422, "oracle_mesh_device_invalid", "PC 장치 선택이 유효하지 않습니다.")
     desktop_device_id = requested_device_id if initial_pc_capture else None
 

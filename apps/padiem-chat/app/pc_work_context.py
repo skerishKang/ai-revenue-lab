@@ -25,6 +25,8 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
+from padiem_ai_core.pc_device_identity import is_pc_device_id
+
 PC_WORK_CONTEXT_VERSION = "padiem-pc-work-context.v1"
 PC_DRIVE_TOOL_ID = "claw.pc.query_drives"
 PC_LIST_FILES_TOOL_ID = "claw.pc.list_files"
@@ -38,7 +40,6 @@ MAX_RENDERED_CHARS = 1800
 MAX_DEVICE_NAME_CHARS = 60
 _MAX_RENDERED_DEVICES = 6
 _DEVICE_LIMIT = 24
-_DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 #: Same closed grammar the Mesh ownership map accepts for device/node refs.
 _EXEC_REF_PATTERN = re.compile(r"^[A-Za-z0-9_.:@+\-\\/]{1,1024}$")
 _STATES = ("CONNECTED", "OFFLINE", "REVOKED")
@@ -367,8 +368,7 @@ def _broker_devices(
         state = row.get("state")
         usable = row.get("usable")
         if (
-            not isinstance(device_id, str)
-            or not _DEVICE_ID_PATTERN.fullmatch(device_id)
+            not is_pc_device_id(device_id)
             or device_id in seen
             or state not in _STATES
             or type(usable) is not bool
@@ -641,7 +641,7 @@ async def _read_saved_device_selection(
         return SavedDeviceSelection(status=SAVED_SELECTION_UNAVAILABLE)
     if value is None:
         return SavedDeviceSelection(status=SAVED_SELECTION_NONE)
-    if not isinstance(value, str) or not _DEVICE_ID_PATTERN.fullmatch(value):
+    if not is_pc_device_id(value):
         return SavedDeviceSelection(status=SAVED_SELECTION_UNAVAILABLE)
     return SavedDeviceSelection(status=SAVED_SELECTION_SELECTED, device_id=value)
 
