@@ -99,6 +99,17 @@ CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
 CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
 
+
+def _combine_system_context(*parts: str | None) -> str | None:
+    """Join optional trusted context blocks in a fixed order.
+
+    Each part is server-composed; a browser-supplied string never reaches this
+    helper. Empty/absent blocks disappear instead of emitting a blank section.
+    """
+    blocks = [part for part in parts if isinstance(part, str) and part]
+    return "\n\n".join(blocks) if blocks else None
+
+
 # NO_EXECUTABLE_ROUTE product HOLD (#3568/#3566): these adapter codes mean the
 # run was refused before any Engine/B14/provider dispatch because the selected
 # tier has no executable route yet. They are product states, not engine
@@ -709,6 +720,40 @@ def _requested_natural_pc_query(user_text: str) -> tuple[bool, str | None]:
     return True, command
 
 
+_PC_FILE_NOUNS = ("파일", "폴더", "디렉터리", "디렉토리", "txt", "문서")
+_PC_FILE_VERBS = ("목록", "리스트", "보여", "읽", "내용", "설명", "찾", "열어")
+
+
+def _requested_natural_pc_files(user_text: str) -> bool:
+    """Natural-language PC folder/file task for the model's file tools.
+
+    This only selects the model-driven PC file plan; the model chooses the
+    folder/file arguments from the verified context and uses the actual tool
+    results. A surface drive question stays on the drive lane, and a backtick
+    command stays on the explicit terminal lane.
+    """
+    if not isinstance(user_text, str) or not user_text:
+        return False
+    if "`" in user_text:
+        return False
+    # An explicit named .txt path keeps the existing single-file TXT lane
+    # (which resolves the deployment-mapped file); the model file plan is for
+    # folder listing + a file chosen from the actual listing.
+    if _requested_local_txt_path(user_text)[0]:
+        return False
+    compact = "".join(user_text.lower().split())
+    if not any(marker in compact for marker in _NATURAL_PC_QUERY_MARKERS):
+        return False
+    lowered = user_text.lower()
+    if not any(noun in lowered for noun in _PC_FILE_NOUNS):
+        return False
+    if not any(verb in lowered for verb in _PC_FILE_VERBS):
+        return False
+    if any(noun in lowered for noun in ("드라이브", "디스크", "drive", "disk")):
+        return False
+    return True
+
+
 _DESKTOP_PC_MARKERS = (
     "내pc", "내컴퓨터", "로컬pc", "로컬컴퓨터", "com1", "mypc", "mycomputer",
 )
@@ -1085,6 +1130,22 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             request, user_text=user_text, command=command_text, data=data,
         )
 
+    # #4976: a natural-language folder/file task (list then read) uses the
+    # model-selected PC file tools. It is classified before the older
+    # single-command/TXT lanes so a named TXT is read by the model from the
+    # actual listing rather than by a fixed-path shortcut.
+    pc_files_requested = _requested_natural_pc_files(user_text)
+    pc_files_device_id = None
+    if pc_files_requested:
+        candidate_device = data.get("device_id")
+        if candidate_device is not None and (
+            not isinstance(candidate_device, str)
+            or not 0 < len(candidate_device) <= 128
+        ):
+            return _error(422, "oracle_mesh_device_invalid",
+                          "PC 장치 선택이 유효하지 않습니다.")
+        pc_files_device_id = candidate_device
+
     # #4139: natural-language PC state query (no backtick). Routes a clear
     # question about the verified PC to a bounded inventory command on that PC.
     natural_pc_requested, natural_pc_command = _requested_natural_pc_query(user_text)
@@ -1101,7 +1162,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         initial_pc_drive_query = False
 
     txt_requested, txt_path = _requested_local_txt_path(user_text)
-    if txt_requested:
+    if txt_requested and not pc_files_requested:
         if txt_path is None:
             return _error(422, "txt_read_path_required",
                           "내 PC에서 읽을 TXT 파일의 상대 경로를 하나 지정해 주세요.")
@@ -1223,6 +1284,18 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         drive_context, drive_sources = await drive_general_grounding(request, user_text)
     except DriveGroundingError as exc:
         return _error(exc.status_code, exc.code, exc.message)
+
+    # #5015: one per-request, server-verified PC work context. It reuses the
+    # same owner/workspace-scoped Broker directory the "내 컴퓨터" panel reads,
+    # so a NEW conversation recognizes the account's current PC state without
+    # browser memory or a fixed "always connected" claim. It is not an
+    # execution grant: the tool dispatch re-verifies owner and device.
+    pc_work_text: str | None = None
+    pc_owner = current_user_id(request) if auth_ready(request) else None
+    if isinstance(pc_owner, str) and pc_owner:
+        from .pc_work_context import build_pc_work_context_text
+
+        pc_work_text = await build_pc_work_context_text(request, owner_id=pc_owner)
 
     # #3790: in the production Worker Claw uses the central model
     # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
@@ -1466,6 +1539,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             return _error(503, "desktop_history_unavailable",
                           "대화 저장에 실패했습니다.")
 
+    # #5015: the verified PC context travels on the same optional
+    # `additional_system_context` seam grounding already uses. It is composed
+    # server-side per request; the browser cannot supply or suppress it.
+    combined_system_context = _combine_system_context(grounding_context, pc_work_text)
+
     if live_requested:
         from .claw_live_events import live_claw_sse
         live_args = {"product_tier": product_tier, "subject_id": subject_id}
@@ -1474,12 +1552,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             live_args["desktop_device_id"] = desktop_device_id
         if initial_pc_drive_query:
             live_args["pc_drive_query"] = True
+        if pc_files_requested:
+            live_args["pc_files_query"] = True
+            live_args["pc_files_device_id"] = pc_files_device_id
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:
             live_args["central_route_model_id"] = central_route_model_id
-        if grounding_context is not None:
-            live_args["additional_system_context"] = grounding_context
+        if combined_system_context is not None:
+            live_args["additional_system_context"] = combined_system_context
         async def after_verified_live_completion(answer: str) -> str | None:
             # Runs after validated terminal P01 completion, never on pause,
             # failure, disconnect or an unverified/empty answer.
@@ -1519,12 +1600,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             dispatch_args["desktop_device_id"] = desktop_device_id
         if initial_pc_drive_query:
             dispatch_args["pc_drive_query"] = True
+        if pc_files_requested:
+            dispatch_args["pc_files_query"] = True
+            dispatch_args["pc_files_device_id"] = pc_files_device_id
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:
             dispatch_args["central_route_model_id"] = central_route_model_id
-        if grounding_context is not None:
-            dispatch_args["additional_system_context"] = grounding_context
+        if combined_system_context is not None:
+            dispatch_args["additional_system_context"] = combined_system_context
         outcome = await adapter.execute(run, **dispatch_args)
     except P01AdapterError as exc:
         if staged_conversation_id is not None:

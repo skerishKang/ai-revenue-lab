@@ -836,6 +836,7 @@ async def dispatch_oracle_mesh_read_intent(
 async def dispatch_oracle_mesh_command_intent(
     request: Request, *, command: str, wire: dict[str, Any],
     trusted_owner: tuple[Any, str, str] | None = None,
+    tool_call_ref: str | None = None,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -920,7 +921,8 @@ async def dispatch_oracle_mesh_command_intent(
     except Exception:
         bound = None
     broker_admitted = (
-        isinstance(bound, dict)
+        tool_call_ref is None
+        and isinstance(bound, dict)
         and all(isinstance(bound.get(name), str) and bound[name] for name in (
             "command_id", "tool_request_ref", "request_id",
             "revision_ref", "request_fingerprint",
@@ -936,7 +938,10 @@ async def dispatch_oracle_mesh_command_intent(
     else:
         suffix = uuid.uuid4().hex
         cmd_id = "oracle_mesh_cmd_" + suffix
-        tool_request_ref = "oracle_mesh_tool_" + suffix
+        # A file tool call is keyed by its stable per-call reference, so the
+        # same call inside one run cannot execute twice. Other lanes keep the
+        # generated dispatch-scoped reference.
+        tool_request_ref = tool_call_ref or ("oracle_mesh_tool_" + suffix)
         request_id = "oracle_mesh_req_" + suffix
         revision_ref = "oracle_mesh_rev_" + suffix
         evidence_ref = None
@@ -968,6 +973,7 @@ async def dispatch_oracle_mesh_command_intent(
             expires_at=(now + _DISPATCH_TTL).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
             kind="command",
             command_text=command,
+            tool_call_ref=tool_call_ref,
         )
     except HistoryForbidden:
         return _error(404, "oracle_mesh_run_unavailable")
@@ -2411,6 +2417,450 @@ async def _verify_engine_proof(request: Request) -> tuple[bytes | None, JSONResp
     if not hmac.compare_digest(signature, expected):
         return None, _error(401, "claw_engine_proof_required")
     return raw, None
+
+
+# ---------------------------------------------------------------------------
+# #5015/#4976 — structured PC file tools (list/read) on the existing Mesh
+# command lane.
+#
+# The Engine's model-selected list_files/read_file tools send a structured op
+# and a path relative to the approved folder; they never send a shell command.
+# This server derives the approved root from the deployment ownership row's
+# mapped file, rejects traversal/absolute paths, builds the one PowerShell
+# command, and delegates to the existing command dispatch/status/result path.
+# The executor, pin, split, projection and recovery are therefore unchanged.
+# ---------------------------------------------------------------------------
+
+PC_FILES_MAX_PATH_CHARS = 2048
+PC_FILES_LIST_DEFAULT_LIMIT = 200
+PC_FILES_LIST_MAX_LIMIT = 500
+PC_FILES_READ_MAX_BYTES = 1_000_000
+PC_FILES_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
+_PC_FILES_SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,127}$")
+
+
+def _pc_files_text(value: Any, *, limit: int) -> str | None:
+    if not isinstance(value, str) or not value or len(value) > limit:
+        return None
+    if any(ord(ch) < 32 for ch in value):
+        return None
+    return value
+
+
+def _pc_files_approved_root(file_path: Any) -> str | None:
+    """The approved folder is the mapped file's parent, never a caller value.
+
+    The ownership row already pins one real file on one real PC. Its parent is
+    the smallest root that cannot widen the operator's grant to a whole drive.
+    """
+    if not isinstance(file_path, str) or not file_path:
+        return None
+    normalized = file_path.replace("\\", "/")
+    if "/" not in normalized:
+        return None
+    root = normalized.rsplit("/", 1)[0]
+    if not root or root.endswith(":") or len(root) > 32000:
+        return None
+    # At least one real folder component below the drive (C:/Users/...).
+    if root.count("/") < 1:
+        return None
+    return root
+
+
+def _pc_files_relative_path(value: Any) -> str | None:
+    """A relative path inside the approved root, or None.
+
+    ``""`` (and ``.``) means the root itself. Absolute paths, drive/ADS
+    prefixes, empty segments and any ``..`` segment are refused here; the
+    caller never joins an unvalidated value.
+    """
+    text = _pc_files_text(value, limit=PC_FILES_MAX_PATH_CHARS)
+    if text is None:
+        return None
+    text = text.strip().replace("\\", "/")
+    if text in ("", "."):
+        return ""
+    if text.startswith("/") or (len(text) >= 2 and text[1] == ":"):
+        return None
+    parts = text.split("/")
+    if any(part in ("", ".", "..") or ":" in part for part in parts):
+        return None
+    return "/".join(parts)
+
+
+def _pc_files_powershell_literal(value: str) -> str:
+    # A single-quoted PowerShell literal; the only escape is a doubled quote.
+    return "'" + value.replace("'", "''") + "'"
+
+
+def _pc_files_command(*, op: str, root: str, relative: str, limit: int) -> str:
+    """Build the one command this server will execute for a file tool call.
+
+    Cmdlet-only on purpose: no native program runs, so the PC reports no exit
+    code (``no_exit_code``) and the existing result lane stays truthful. The
+    output is either one JSON object (list), the file text (read), or one fixed
+    ``PADIEM_PC_FILE_ERROR:<code>`` marker.
+    """
+    root_literal = _pc_files_powershell_literal(root)
+    folder = root + ("/" + relative if relative else "")
+    folder_literal = _pc_files_powershell_literal(folder)
+    if op == "list":
+        return (
+            "$root=" + root_literal + "; $folder=" + folder_literal + "; "
+            "try { "
+            "$items=@(Get-ChildItem -LiteralPath $folder -Force -ErrorAction Stop "
+            "| Select-Object -First " + str(limit + 1) + "); "
+            "$truncated=$items.Count -gt " + str(limit) + "; "
+            "if($truncated){$items=@($items[0.." + str(limit - 1) + "])}; "
+            "$entries=@($items | Select-Object Name, "
+            "@{n='relative_path';e={$_.FullName.Substring($root.Length)"
+            ".TrimStart('\\').Replace('\\','/')}}, "
+            "Length, LastWriteTimeUtc, PSIsContainer); "
+            "@{ok=$true; folder=$folder; truncated=$truncated; entries=$entries} "
+            "| ConvertTo-Json -Depth 5 -Compress "
+            "} catch { @{ok=$false; error='list_failed'; message=$_.Exception.Message} "
+            "| ConvertTo-Json -Compress }"
+        )
+    file_literal = _pc_files_powershell_literal(root + "/" + relative)
+    return (
+        "$file=" + file_literal + "; "
+        "try { $item=Get-Item -LiteralPath $file -Force -ErrorAction Stop; "
+        "if($item.PSIsContainer){ '" + PC_FILES_ERROR_PREFIX + "not_a_file' "
+        "} elseif($item.Length -gt " + str(PC_FILES_READ_MAX_BYTES) + "){ '"
+        + PC_FILES_ERROR_PREFIX + "too_large' "
+        "} else { [IO.File]::ReadAllText($file,[Text.Encoding]::UTF8) } "
+        "} catch { '" + PC_FILES_ERROR_PREFIX + "read_failed' }"
+    )
+
+
+async def _engine_pc_files_owner(
+    request: Request, *, product: str, subject_id: str,
+) -> tuple[str | None, Any, JSONResponse | None]:
+    """Resolve the product's current canonical owner session from the proof.
+
+    The Engine proof authenticates the caller; the canonical session is still
+    re-resolved here exactly like the existing signed Mesh lanes. No browser
+    cookie, subject value or device value is trusted as authority.
+    """
+    identity = getattr(request.app.state, "control_plane_identity_authority", None)
+    if not callable(getattr(identity, "resolve_product_user_for_subject", None)):
+        return None, None, _error(503, "claw_engine_identity_unavailable")
+    try:
+        uid = await identity.resolve_product_user_for_subject(
+            product_id="b62", canonical_subject_id=subject_id,
+        )
+    except Exception:
+        return None, None, _error(401, "canonical_session_required")
+    if product == "claw":
+        from padiem_control_plane.b54_identity_bridge import (
+            resolve_current_b54_canonical_session as resolve_b54_session,
+        )
+        try:
+            bridged = await resolve_b54_session(identity, uid)
+        except Exception:
+            return None, None, _error(401, "canonical_session_required")
+        if (
+            bridged is None
+            or bridged.auth_session.subject.subject_id != subject_id
+            or not bridged.auth_session.tenant_id
+        ):
+            return None, None, _error(401, "canonical_session_required")
+        return uid, bridged.auth_session, None
+    if not callable(getattr(identity, "resolve_current_auth_session", None)):
+        return None, None, _error(503, "claw_engine_identity_unavailable")
+    try:
+        session = await identity.resolve_current_auth_session(
+            product_id="b62", product_user_id=uid,
+        )
+    except Exception:
+        return None, None, _error(401, "canonical_session_required")
+    from datetime import datetime as _dt
+    from datetime import timezone as _tz
+    if (
+        session is None
+        or session.subject.subject_id != subject_id
+        or session.product_id != "b62"
+        or not session.is_active(now=_dt.now(_tz.utc))
+        or not session.tenant_id
+    ):
+        return None, None, _error(401, "canonical_session_required")
+    return uid, session, None
+
+
+async def _engine_pc_files_target(
+    request: Request, *, session: Any, selected_device_id: str | None,
+) -> tuple[dict[str, Any] | None, JSONResponse | None]:
+    """Resolve the one command-capable owner target + its approved folder.
+
+    The context and the dispatch use this exact resolution, so the device the
+    model is told about and the device that receives the command cannot drift
+    apart. A selected device only narrows the deployment map; it never adds one.
+    """
+    source = getattr(request.app.state, "oracle_mesh_return_source", None)
+    if (
+        source is None
+        or getattr(source, "configured", False) is not True
+        or getattr(source, "execution_mode", None) != EXECUTION_MODE_MESH
+    ):
+        return None, _error(503, "oracle_mesh_unconfigured")
+    identity = getattr(request.app.state, "control_plane_identity_authority", None)
+    if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
+        return None, _error(503, "oracle_mesh_unconfigured")
+    try:
+        scope = await identity.resolve_connector_owner_scope(
+            session_id=session.session_id,
+        )
+    except Exception as exc:
+        emit_stage_event(
+            stage="mesh.files_owner_scope", outcome="error", duration_ms=0,
+            code=getattr(exc, "code", None),
+        )
+        return None, _error(503, "oracle_mesh_device_directory_unavailable")
+    account_ref = scope.get("account_ref") if isinstance(scope, dict) else None
+    workspace_ref = scope.get("workspace_ref") if isinstance(scope, dict) else None
+    if (
+        not isinstance(account_ref, str) or not account_ref
+        or not isinstance(workspace_ref, str) or not workspace_ref
+    ):
+        return None, _error(503, "oracle_mesh_device_directory_unavailable")
+    try:
+        target = source.command_target(
+            account_ref=account_ref, device_id=selected_device_id,
+        )
+    except Exception:
+        return None, _error(503, "oracle_mesh_device_directory_unavailable")
+    if target is None:
+        return None, _error(403, "oracle_mesh_device_unverified")
+    root = _pc_files_approved_root(target.get("file_path"))
+    if root is None:
+        return None, _error(503, "oracle_mesh_file_root_unavailable")
+    return {
+        "target": target,
+        "root": root,
+        "account_ref": account_ref,
+        "workspace_ref": workspace_ref,
+    }, None
+
+
+async def _engine_pc_files_call(request: Request, *, product: str) -> JSONResponse:
+    """One signed Engine call for the PC file context/dispatch/status/result."""
+    raw, proof_error = await _verify_engine_proof(request)
+    if proof_error is not None or raw is None:
+        return proof_error if proof_error is not None else _error(
+            401, "claw_engine_proof_required",
+        )
+    try:
+        payload = json.loads(raw)
+    except (ValueError, TypeError):
+        return _error(400, "claw_engine_files_invalid_body")
+    if not isinstance(payload, dict):
+        return _error(400, "claw_engine_files_invalid_body")
+    mode = payload.get("mode")
+    if mode == "context":
+        expected = {"subject_id", "run_id", "device_id", "mode"}
+    elif mode == "dispatch":
+        expected = {
+            "subject_id", "run_id", "device_id", "op", "path",
+            "tool_call_ref", "mode",
+        }
+    elif mode in ("command_status", "result"):
+        expected = {"subject_id", "run_id", "dispatch_id", "mode"}
+    else:
+        return _error(400, "claw_engine_files_invalid_body")
+    if set(payload) != expected:
+        return _error(400, "claw_engine_files_invalid_body")
+    if not all(
+        isinstance(payload.get(name), str) and 0 < len(payload[name]) <= 512
+        for name in ("subject_id", "run_id")
+    ):
+        return _error(400, "claw_engine_files_invalid_body")
+    selected = payload.get("device_id")
+    if selected is not None and (
+        not isinstance(selected, str) or not 0 < len(selected) <= 128
+    ):
+        return _error(422, "oracle_mesh_device_invalid")
+    uid, session, owner_error = await _engine_pc_files_owner(
+        request, product=product, subject_id=payload["subject_id"],
+    )
+    if owner_error is not None:
+        return owner_error
+    history_store = getattr(request.app.state, "history_store", None)
+    if history_store is None or not callable(
+        getattr(history_store, "get_claw_run", None)
+    ):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        run_row = await history_store.get_claw_run(uid, payload["run_id"])
+    except Exception:
+        return _error(503, "oracle_mesh_run_unavailable")
+    if (
+        not isinstance(run_row, dict)
+        or run_row.get("run_id") != payload["run_id"]
+        or not isinstance(run_row.get("conversation_id"), str)
+        or not run_row["conversation_id"]
+    ):
+        return _error(404, "oracle_mesh_run_unavailable")
+
+    resolved, target_error = await _engine_pc_files_target(
+        request, session=session, selected_device_id=selected,
+    )
+    if target_error is not None:
+        return target_error
+    target = resolved["target"]
+    root = resolved["root"]
+    device_id = target.get("device_id") or target["node_ref"]
+
+    if mode == "context":
+        folder_name = root.rsplit("/", 1)[-1]
+        return _response({
+            "ok": True,
+            "device": {
+                "device_id": device_id,
+                "status": "configured",
+                "folder": {"name": folder_name, "relative_path": "."},
+                "online_verified": False,
+            },
+            "tools": [
+                "claw.pc.list_files",
+                "claw.pc.read_file",
+                "claw.pc.query_drives",
+            ],
+            "run_id": payload["run_id"],
+        })
+
+    if mode == "dispatch":
+        op = payload.get("op")
+        if op not in ("list", "read"):
+            return _error(422, "oracle_mesh_file_op_invalid")
+        relative = _pc_files_relative_path(payload.get("path"))
+        if relative is None:
+            return _error(422, "oracle_mesh_file_path_invalid")
+        if op == "read" and not relative:
+            return _error(422, "oracle_mesh_file_path_invalid")
+        tool_call_ref = payload.get("tool_call_ref")
+        if (
+            not isinstance(tool_call_ref, str)
+            or _PC_FILES_SAFE_REF.fullmatch(tool_call_ref) is None
+        ):
+            return _error(422, "oracle_mesh_file_call_invalid")
+        try:
+            command_workspace = await _resolve_memory_workspace(request, uid)
+        except Exception:
+            return _error(503, "oracle_mesh_workspace_unavailable")
+        if not command_workspace:
+            return _error(503, "oracle_mesh_workspace_unavailable")
+        command = _pc_files_command(
+            op=op, root=root, relative=relative,
+            limit=PC_FILES_LIST_DEFAULT_LIMIT,
+        )
+        response = await dispatch_oracle_mesh_command_intent(
+            request, command=command,
+            wire={
+                "run_id": payload["run_id"],
+                "device_id": selected,
+                "confirmed": True,
+            },
+            trusted_owner=(session, uid, command_workspace),
+            tool_call_ref=tool_call_ref,
+        )
+        return response
+
+    dispatch_id = payload.get("dispatch_id")
+    if not isinstance(dispatch_id, str) or not 0 < len(dispatch_id) <= 128:
+        return _error(400, "claw_engine_files_invalid_body")
+    reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
+    if not callable(reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        dispatch = await reader(user_id=uid, dispatch_id=dispatch_id)
+    except Exception:
+        return _error(503, "oracle_mesh_dispatch_unavailable")
+    if (
+        not isinstance(dispatch, dict)
+        or dispatch.get("run_id") != payload["run_id"]
+        or dispatch.get("kind") != "command"
+    ):
+        return _error(404, "oracle_mesh_run_unavailable")
+    state = dispatch.get("state")
+    if state not in {"pending", "received", "store_failed", "done", "failed"}:
+        return _error(503, "oracle_mesh_dispatch_unavailable")
+    if mode == "command_status":
+        return _response({
+            "ok": True,
+            "dispatch": {
+                "dispatch_id": dispatch["dispatch_id"],
+                "run_id": payload["run_id"],
+                "kind": "command",
+                "state": state,
+                "result_sha256": dispatch.get("result_sha256"),
+                "termination": dispatch.get("termination"),
+                "exit_code": dispatch.get("exit_code"),
+            },
+        })
+    if state != "done":
+        return _error(409, "oracle_mesh_result_not_ready")
+    termination = dispatch.get("termination")
+    exit_code = dispatch.get("exit_code")
+    if termination not in (
+        "exited", "no_exit_code", "output_too_large", "not_executed",
+        "timed_out", "cancelled", "no_reply",
+    ):
+        return _error(503, "oracle_mesh_original_unavailable")
+    if exit_code is None:
+        if termination not in (
+            "timed_out", "no_reply", "no_exit_code", "not_executed",
+            "output_too_large", "cancelled",
+        ):
+            return _error(503, "oracle_mesh_original_unavailable")
+    elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
+        return _error(503, "oracle_mesh_original_unavailable")
+    try:
+        conversation_id = validate_conversation_id(
+            (run_row or {}).get("conversation_id"),
+        )
+        if not conversation_id:
+            return _error(404, "oracle_mesh_run_unavailable")
+        message_id = result_message_id(
+            conversation_id=conversation_id,
+            command_id=dispatch["command_id"],
+            revision_ref=dispatch["revision_ref"],
+        )
+        stored = await history_store.read_oracle_mesh_original(
+            user_id=uid, dispatch_id=dispatch["dispatch_id"],
+            conversation_id=conversation_id, message_id=message_id,
+        )
+    except Exception:
+        return _error(503, "oracle_mesh_original_unavailable")
+    if stored is None:
+        return _error(404, "oracle_mesh_original_unavailable")
+    content, digest = stored
+    if (
+        not isinstance(content, bytes)
+        or hashlib.sha256(content).hexdigest() != digest
+        or digest != dispatch.get("result_sha256")
+    ):
+        return _error(503, "oracle_mesh_original_unavailable")
+    return _response({
+        "ok": True,
+        "dispatch": {
+            "dispatch_id": dispatch["dispatch_id"],
+            "run_id": payload["run_id"],
+            "kind": "command",
+            "state": "done",
+            "result_sha256": digest,
+            "output": content.decode("utf-8", errors="replace"),
+            "termination": termination,
+            "exit_code": exit_code,
+        },
+    })
+
+
+async def oracle_mesh_engine_claw_files_call(request: Request) -> JSONResponse:
+    return await _engine_pc_files_call(request, product="claw")
+
+
+async def oracle_mesh_engine_chat_files_call(request: Request) -> JSONResponse:
+    return await _engine_pc_files_call(request, product="chat")
 
 
 async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
