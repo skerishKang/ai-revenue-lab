@@ -64,6 +64,54 @@ def test_freshness_overrides_source_bound_task() -> None:
     assert decision.reason in {"explicit_search_request", "freshness_sensitive"}
 
 
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "오늘 며칠이야?",
+        "오늘 무슨 요일이야?",
+        "지금 몇 시야?",
+        "내일은 무슨 요일이야?",
+        "아니 오늘 집에 있을거야 근데 오늘 며칠인지나 알아?",
+    ],
+)
+def test_current_calendar_questions_never_need_web_evidence(prompt: str) -> None:
+    # The trusted dispatch pre-instruction already carries the server clock, so
+    # a date/weekday/time question is answered from the system time and must
+    # never become a search-required request.
+    decision = decide_search(prompt)
+    assert decision.disposition is SearchDisposition.NO_SEARCH
+    assert decision.requires_search is False
+    assert decision.evidence_required is False
+    assert decision.reason == "local_clock_fact"
+
+
+def test_a_current_weather_request_still_needs_web_evidence() -> None:
+    decision = decide_search("오늘 광주 날씨 알려줘")
+    assert decision.disposition is SearchDisposition.MUST_SEARCH
+    assert decision.evidence_required is True
+
+
+def test_an_explicit_lookup_keeps_its_evidence_required() -> None:
+    decision = decide_search("오늘 공개된 AI 정책을 찾아서 알려줘")
+    assert decision.disposition is SearchDisposition.MUST_SEARCH
+    assert decision.evidence_required is True
+    assert decision.reason == "explicit_search_request"
+
+
+def test_a_bare_freshness_statement_may_continue_without_evidence() -> None:
+    # The search is still attempted, but the statement needs no current fact,
+    # so a search without usable evidence may continue as a normal answer.
+    decision = decide_search("오늘은 집에 있을 거야.")
+    assert decision.disposition is SearchDisposition.MUST_SEARCH
+    assert decision.evidence_required is False
+
+
+def test_a_local_text_transformation_is_not_hijacked_by_a_lookup_word() -> None:
+    decision = decide_search("이 문장 찾아서 고쳐줘")
+    assert decision.disposition is SearchDisposition.NO_SEARCH
+    assert decision.requires_search is False
+
+
 def test_blank_input_is_rejected() -> None:
     with pytest.raises(ValueError, match="non-empty"):
         decide_search("   ")

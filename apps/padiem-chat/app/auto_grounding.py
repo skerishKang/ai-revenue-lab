@@ -22,6 +22,23 @@ class AutoGroundingPlan:
         return self.prepared is not None
 
 
+def auto_grounding_may_continue(decision: SearchDecision, error: GroundingError) -> bool:
+    """Whether a failed automatic search may continue as a normal answer.
+
+    Only an AUTOMATIC search may continue. The search already ran and produced
+    no usable evidence, and the request does not depend on current external
+    facts, so the ordinary model answer is produced WITHOUT any evidence or
+    source. An explicit user search request and a request about a current
+    external fact (weather, news, rates) keep the honest failure, so a missing
+    web result is never presented as a verified current fact.
+    """
+    return (
+        error.code == "no_evidence"
+        and decision.reason != "explicit_search_request"
+        and not decision.evidence_required
+    )
+
+
 def latest_user_question(messages: list[dict[str, str]]) -> str:
     for item in reversed(messages):
         if item.get("role") == "user" and isinstance(item.get("content"), str):
@@ -76,6 +93,12 @@ class AutoGroundingService:
                 max_total_context_chars=MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
             )
         except GroundingRuntimeError as exc:
-            raise _translate_core_error(exc) from exc
+            error = _translate_core_error(exc)
+            if auto_grounding_may_continue(decision, error):
+                # The automatic search found no usable evidence and the request
+                # does not need it. The turn continues as a normal answer and
+                # no source is shown.
+                return AutoGroundingPlan(decision=decision, prepared=None)
+            raise error from exc
 
         return AutoGroundingPlan(decision=decision, prepared=prepared)
