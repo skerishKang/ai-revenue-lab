@@ -21,7 +21,11 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .b14_client import ChatRuntimeError
+from .byok_client import CustomProviderError, complete_owner_custom
+from .byok_credentials import CustomProviderSelectionError
+from .b66_quote_conversation import B66QuoteConversationInterpreter
 from .b66_registered_model_boundary import B66ModelRouteError
+from .request_contract import BrowserRequestError, parse_custom_selection
 from .b66_quote_conversation import (
     B66QuoteConversationError,
     MAX_CONVERSATION_CHARS,
@@ -191,6 +195,33 @@ async def _authorize_quote_usage(request: Request, uid: str) -> JSONResponse | N
         )
 
 
+class _CustomQuoteConversationClient:
+    """B66 extraction prompt + normalizer over the owner's custom provider key."""
+
+    def __init__(self, request: Request, uid: str, selection: Any):
+        self._request = request
+        self._uid = uid
+        self._selection = selection
+
+    async def complete(
+        self,
+        messages: list[dict[str, str]],
+        skill: Any | None = None,
+        additional_system_context: str | None = None,
+        attachments: tuple = (),
+        model_id: str | None = None,
+        reasoning_level: str | None = None,
+        product_tier: str | None = None,
+    ) -> dict[str, Any]:
+        return await complete_owner_custom(
+            self._request.app.state,
+            uid=self._uid,
+            selection=self._selection,
+            messages=messages,
+            system_context=additional_system_context,
+        )
+
+
 async def _interpret_reserved(
     interpret_fn,
     *,
@@ -199,6 +230,7 @@ async def _interpret_reserved(
     model_id: str,
     reasoning_level: str | None = None,
     product_tier: str | None = None,
+    result_origin: str | None = None,
 ):
     try:
         # An omitted reasoning level is passed as an absence, exactly like an
@@ -209,6 +241,8 @@ async def _interpret_reserved(
             kwargs["reasoning_level"] = reasoning_level
         if product_tier is not None:
             kwargs["product_tier"] = product_tier
+        if result_origin is not None:
+            kwargs["result_origin"] = result_origin
         value = interpret_fn(**kwargs)
         return await value if inspect.isawaitable(value) else value
     finally:
@@ -483,11 +517,23 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     data = await _json(request, max_body_bytes=MAX_BROWSER_BODY_BYTES)
     if isinstance(data, JSONResponse):
         return data
-    if set(data) - {"saved_skill_id", "message", "model_id", "reasoning_level", "tier"}:
+    if set(data) - {"saved_skill_id", "message", "model_id", "reasoning_level", "tier", "custom"}:
         return _error(400, "unsupported_field", "지원되지 않는 요청 필드가 있습니다.")
     saved_skill_id = data.get("saved_skill_id")
     message = data.get("message")
-    selected_grade = data.get("tier")
+    custom = None
+    if "custom" in data:
+        if any(key in data for key in ("tier", "model_id", "reasoning_level")):
+            return _error(
+                422,
+                "custom_selection_conflict",
+                "PADIEM 제공 모델·등급과 PADIEM Custom을 한 요청에서 함께 선택할 수 없습니다.",
+            )
+        try:
+            custom = parse_custom_selection(data.get("custom"))
+        except BrowserRequestError as exc:
+            return _error(422, "custom_provider_invalid", str(exc))
+    selected_grade = data.get("tier") if custom is None else None
     if selected_grade is not None:
         grade_order = ("free", "plus", "pro", "max")
         if not isinstance(selected_grade, str) or selected_grade not in grade_order + (B66_ADMIN_GRADE,):
@@ -507,15 +553,15 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
             return _error(400, "invalid_model_id", "선택한 등급의 AI 모델과 일치하지 않습니다.")
         model_id = expected_model
     else:
-        model_id = data.get("model_id")
+        model_id = custom.model if custom is not None else data.get("model_id")
     reasoning_level = data.get("reasoning_level")
     if not isinstance(model_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if model_id in {"b14/auto"} or model_id.startswith("padiem-profile/"):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
-    if access is not None and model_id in access["disabled_models"]:
+    if custom is None and access is not None and model_id in access["disabled_models"]:
         return _error(403, "model_disabled", "관리자가 이 AI 모델을 사용 중지했습니다.")
-    if access is not None and access["active_policy"] and model_id not in access["model_ids"]:
+    if custom is None and access is not None and access["active_policy"] and model_id not in access["model_ids"]:
         return _error(403, "model_tier_forbidden", "이용 등급에서 허용하지 않는 AI 모델입니다.")
     # Explicit reasoning level is validated against the SAME exact model the
     # user chose (#3906). An unsupported level is rejected with an explainable
@@ -555,7 +601,12 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
 
     store = _store(request)
     get_fn = getattr(store, "get_skill", None) if store is not None else None
-    interpreter = getattr(request.app.state, "b66_quote_interpreter", None)
+    if custom is not None:
+        interpreter = B66QuoteConversationInterpreter(
+            _CustomQuoteConversationClient(request, uid, custom)
+        )
+    else:
+        interpreter = getattr(request.app.state, "b66_quote_interpreter", None)
     interpret_fn = getattr(interpreter, "interpret", None) if interpreter is not None else None
     if not callable(get_fn) or not callable(interpret_fn):
         return _error(503, "quote_runtime_unavailable", "견적 대화 기능을 사용할 수 없습니다.")
@@ -576,9 +627,10 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     if not isinstance(skill, dict):
         return _error(503, "saved_quote_skill_invalid", "내 견적서 데이터를 확인할 수 없습니다.")
 
-    denied = await _authorize_quote_usage(request, uid)
-    if denied is not None:
-        return denied
+    if custom is None:
+        denied = await _authorize_quote_usage(request, uid)
+        if denied is not None:
+            return denied
     try:
         projection = await _interpret_reserved(
             interpret_fn,
@@ -587,7 +639,12 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
             model_id=model_id,
             reasoning_level=accepted_reasoning_level,
             product_tier=selected_grade,
+            result_origin="custom_provider_direct" if custom is not None else None,
         )
+    except CustomProviderSelectionError as exc:
+        return _error(422, "custom_provider_unsupported", str(exc))
+    except CustomProviderError as exc:
+        return _error(exc.status_code, exc.code, exc.user_message)
     except B66ModelRouteError as exc:
         return _model_route_error_response(exc)
     except B66QuoteConversationError as exc:
@@ -632,7 +689,11 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     # Keep the candidate JSON contract unchanged; emit only fixed labels.
     response_headers = dict(_NO_STORE)
     result_origin = getattr(projection, "result_origin", None)
-    if result_origin in {"registered_model_completion", "deterministic_fallback"}:
+    if result_origin in {
+        "registered_model_completion",
+        "deterministic_fallback",
+        "custom_provider_direct",
+    }:
         response_headers["X-B66-Result-Origin"] = result_origin
 
     return JSONResponse(

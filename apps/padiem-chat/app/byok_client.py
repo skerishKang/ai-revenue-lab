@@ -15,7 +15,8 @@ from typing import Any
 
 from . import httpx_compat as httpx
 from .b14_client import PADIEM_IDENTITY_INSTRUCTION
-from .byok_credentials import CustomProvider
+from .byok_credentials import CustomProvider, resolve_custom_selection
+from .request_contract import CustomModelSelection
 
 MAX_CUSTOM_RESPONSE_BYTES = 1_000_000
 CUSTOM_SESSION_HEADER = "padiem-chat-custom/1.0"
@@ -166,3 +167,67 @@ class CustomProviderClient:
                 "PADIEM Custom 공급사에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
             ) from exc
         return _normalize(spec, raw)
+
+
+async def resolve_owner_custom_credential(
+    app_state: Any,
+    *,
+    uid: str,
+    selection: CustomModelSelection,
+) -> tuple[CustomProvider, str]:
+    """Resolve the explicit provider and the owner's sealed key without dispatch.
+
+    Products that must prove the request is executable before claiming a
+    durable attempt token use this; the dispatch itself stays in
+    ``complete_owner_custom``.
+    """
+    spec = resolve_custom_selection(selection.provider, selection.model)
+    store = getattr(app_state, "custom_credential_store", None)
+    client = getattr(app_state, "custom_provider_client", None)
+    if store is None or client is None:
+        raise CustomProviderError(
+            503,
+            "custom_provider_unavailable",
+            "PADIEM Custom을 현재 사용할 수 없습니다.",
+        )
+    try:
+        api_key = await store.api_key(uid, spec.provider_id)
+    except Exception:
+        raise CustomProviderError(
+            503,
+            "custom_credential_unavailable",
+            "PADIEM Custom 자격증명을 확인할 수 없습니다.",
+        )
+    if not api_key:
+        raise CustomProviderError(
+            409,
+            "custom_credential_required",
+            "PADIEM Custom API 키를 먼저 등록해 주세요.",
+        )
+    return spec, api_key
+
+
+async def complete_owner_custom(
+    app_state: Any,
+    *,
+    uid: str,
+    selection: CustomModelSelection,
+    messages: list[dict[str, str]],
+    system_context: str | None = None,
+) -> dict[str, Any]:
+    """The one owner-key -> explicit provider contract shared by Chat/Claw/B66.
+
+    Only the canonical session owner's sealed key is used. No B14 client,
+    router, registry, default/fallback policy or platform provider secret store
+    is read on this path.
+    """
+    spec, api_key = await resolve_owner_custom_credential(
+        app_state, uid=uid, selection=selection,
+    )
+    client = getattr(app_state, "custom_provider_client", None)
+    return await client.complete(
+        spec=spec,
+        api_key=api_key,
+        messages=messages,
+        system_context=system_context,
+    )
