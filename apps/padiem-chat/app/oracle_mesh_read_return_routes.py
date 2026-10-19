@@ -2504,25 +2504,20 @@ def _pc_files_command(*, op: str, root: str, relative: str, limit: int) -> str:
     output is either one JSON object (list), the file text (read), or one fixed
     ``PADIEM_PC_FILE_ERROR:<code>`` marker.
     """
-    root_literal = _pc_files_powershell_literal(root)
+    folder = root + ("/" + relative if relative else "")
+    folder_literal = _pc_files_powershell_literal(folder)
     folder = root + ("/" + relative if relative else "")
     folder_literal = _pc_files_powershell_literal(folder)
     if op == "list":
+        # A plain pipeline: no nested hashtables or calculated properties.
+        # The nested form timed out through the MeshCentral PowerShell reply
+        # while the identical script completed locally, so the wire path gets
+        # the smallest command that still returns name/metadata JSON.
         return (
-            "$root=" + root_literal + "; $folder=" + folder_literal + "; "
-            "try { "
-            "$items=@(Get-ChildItem -LiteralPath $folder -Force -ErrorAction Stop "
-            "| Select-Object -First " + str(limit + 1) + "); "
-            "$truncated=$items.Count -gt " + str(limit) + "; "
-            "if($truncated){$items=@($items[0.." + str(limit - 1) + "])}; "
-            "$entries=@($items | Select-Object Name, "
-            "@{n='relative_path';e={$_.FullName.Substring($root.Length)"
-            ".TrimStart('\\').Replace('\\','/')}}, "
-            "Length, LastWriteTimeUtc, PSIsContainer); "
-            "@{ok=$true; folder=$folder; truncated=$truncated; entries=$entries} "
-            "| ConvertTo-Json -Depth 5 -Compress "
-            "} catch { @{ok=$false; error='list_failed'; message=$_.Exception.Message} "
-            "| ConvertTo-Json -Compress }"
+            "Get-ChildItem -LiteralPath " + folder_literal
+            + " -Force -ErrorAction Stop | Select-Object -First " + str(limit)
+            + " | Select-Object Name, Length, LastWriteTimeUtc, PSIsContainer"
+            + " | ConvertTo-Json -Compress"
         )
     file_literal = _pc_files_powershell_literal(root + "/" + relative)
     return (

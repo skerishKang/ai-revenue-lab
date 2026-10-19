@@ -16,6 +16,8 @@ on:
       - "apps/com2-backup/**"
       - "scripts/ops/com2_backup.py"
       - "scripts/ops/tests/test_com2_backup.py"
+      - "scripts/ops/com2_backup_schedule.py"
+      - "scripts/ops/tests/test_com2_backup_schedule.py"
       - "scripts/ops/cloudflare_asset_snapshot.py"
       - "scripts/ops/tests/test_cloudflare_asset_snapshot.py"
       - "scripts/ops/d1_restore_verify.py"
@@ -26,6 +28,8 @@ on:
       - "scripts/ops/tests/test_com2_runtime.py"
       - "scripts/ops/com2_tunnel.py"
       - "scripts/ops/tests/test_com2_tunnel.py"
+      - "scripts/ops/com2_b62_generation.py"
+      - "scripts/ops/tests/test_com2_b62_generation.py"
       - ".github/workflows/com2-backup-contract-tests.yml"
   workflow_dispatch:
 
@@ -62,6 +66,9 @@ jobs:
       - name: Run operator script tests
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "cryptography>=42,<50" python -m pytest -q scripts/ops/tests/test_com2_backup.py
 
+      - name: Run unattended backup schedule tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "cryptography>=42,<50" python -m pytest -q scripts/ops/tests/test_com2_backup_schedule.py
+
       - name: Run read-only asset snapshot tests
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_cloudflare_asset_snapshot.py
 
@@ -77,15 +84,20 @@ jobs:
       - name: Run COM2 tunnel ingress tests
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_tunnel.py
 
+      - name: Run B62 generation pointer tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_b62_generation.py
+
       - name: Record gate scope
         run: |
           echo 'COM2_BACKUP_WORKER_TESTS=EXECUTED'
           echo 'COM2_BACKUP_OPS_TESTS=EXECUTED'
+          echo 'COM2_BACKUP_SCHEDULE_TESTS=EXECUTED'
           echo 'CLOUDFLARE_ASSET_SNAPSHOT_TESTS=EXECUTED'
           echo 'D1_RESTORE_VERIFY_TESTS=EXECUTED'
           echo 'PERIODIC_SYNC_TESTS=EXECUTED'
           echo 'COM2_RUNTIME_SUPERVISOR_TESTS=EXECUTED'
           echo 'COM2_TUNNEL_INGRESS_TESTS=EXECUTED'
+          echo 'B62_GENERATION_POINTER_TESTS=EXECUTED'
           echo 'LOOPBACK_TRANSFER_E2E=EXECUTED'
           echo 'PRODUCTION_DEPLOYMENT=0'
           echo 'PRODUCTION_E2E=0'

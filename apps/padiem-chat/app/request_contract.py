@@ -29,6 +29,32 @@ class BrowserToolRequest:
     tool_input: str | None
 
 
+@dataclass(frozen=True, slots=True)
+class CustomModelSelection:
+    """Explicit PADIEM Custom provider/model choice (never inferred)."""
+
+    provider: str
+    model: str
+
+
+def _validate_custom_selection(raw: dict[str, Any]) -> CustomModelSelection | None:
+    if "custom" not in raw:
+        return None
+    value = raw.get("custom")
+    if not isinstance(value, dict) or set(value) != {"provider", "model"}:
+        raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.")
+    provider = value.get("provider")
+    model = value.get("model")
+    if (not isinstance(provider, str) or not provider.strip()
+            or not isinstance(model, str) or not model.strip()):
+        raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.")
+    if "tier" in raw:
+        raise BrowserRequestError(
+            "PADIEM 제공 모델과 PADIEM Custom을 한 요청에서 함께 선택할 수 없습니다."
+        )
+    return CustomModelSelection(provider=provider.strip(), model=model.strip())
+
+
 def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
     tool_value = raw.get("tool")
     has_tool_input = "tool_input" in raw
@@ -66,10 +92,10 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
 
 def _validate_payload(
     raw: Any,
-) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None]:
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id"}:
+    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if "calendar_turn_id" in raw:
         turn_id = raw["calendar_turn_id"]
@@ -111,12 +137,15 @@ def _validate_payload(
         raise BrowserRequestError(str(exc)) from exc
     if tool_request is not None and any(isinstance(item, ImageAttachment) for item in attachments):
         raise BrowserRequestError("현재는 사진 첨부와 웹 도구를 한 요청에서 함께 사용할 수 없습니다.")
+    custom = _validate_custom_selection(raw)
+    if custom is not None and (tool_request is not None or attachments):
+        raise BrowserRequestError("PADIEM Custom은 현재 텍스트 대화만 지원합니다.")
     try:
         conversation_id = validate_conversation_id(raw.get("conversation_id"))
         project_id = validate_project_id(raw.get("project_id"))
     except ValueError as exc:
         raise BrowserRequestError(str(exc)) from exc
-    return out, skill, tool_request, attachments, conversation_id, project_id
+    return out, skill, tool_request, attachments, conversation_id, project_id, custom
 
 
 def _apply_b62_model_policy(

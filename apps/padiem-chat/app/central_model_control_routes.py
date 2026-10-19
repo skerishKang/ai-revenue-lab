@@ -144,7 +144,7 @@ async def central_model_admin_me(request: Request) -> JSONResponse:
     return JSONResponse(
         {"ok": True, "admin": True, "write_enabled": write_ready,
          "routes_write_enabled": route_write_ready,
-         "authority": "global_model_admin_only"},
+         "authority": "platform_admin"},
         headers=_NO_STORE,
     )
 

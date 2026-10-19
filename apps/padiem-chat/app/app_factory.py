@@ -29,6 +29,12 @@ from .b66_member_inquiries import (
 from .central_model_admin_identity import D1CentralModelAdminAuthorizer
 from .central_model_policy_d1 import D1CentralModelPolicyStore
 from .central_model_route_d1 import D1CentralModelRouteStore
+from .platform_admin_authority import PlatformAdminAuthority
+from .platform_admin_routes import (
+    platform_admin_role_assign,
+    platform_admin_role_revoke,
+    platform_admin_session,
+)
 from .central_model_route_routes import (
     central_model_route_apply, central_model_route_preview,
     central_model_route_rollback_preview, central_model_routes_get,
@@ -240,6 +246,13 @@ from .connector_disconnect_routes import disconnect_google_drive
 from .github_oauth_routes import (github_start, github_callback, github_status,
                                   github_repositories, github_disconnect, github_pause, github_resume,
                                   github_installation_settings)
+from .byok_client import CustomProviderClient
+from .byok_credentials import D1CustomProviderCredentialStore
+from .byok_routes import (
+    custom_credential_delete,
+    custom_credential_save,
+    custom_credential_status,
+)
 from .connector_ticket_routes import google_connector_ticket
 from .meeting_drive_upload_routes import MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session
 from .b66_drive_routes import (
@@ -373,6 +386,7 @@ def create_app(
     b66_canonical_candidate_target_resolver=None,
     central_model_admin_authorizer=None,
     central_model_admin_google_email: str = "",
+    platform_admin_role_store=None,
     central_model_policy_store=None,
     central_model_policy_signing_key: str = "",
     claw_task_alert_store=None,
@@ -397,6 +411,8 @@ def create_app(
     github_oauth_store=None,
     github_oauth_provider=None,
     central_model_route_store=None,
+    custom_credential_store=None,
+    custom_provider_client=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -412,6 +428,9 @@ def create_app(
         Route("/api/admin/models/route-preview", central_model_route_preview, methods=["POST"]),
         Route("/api/admin/models/route-apply", central_model_route_apply, methods=["POST"]),
         Route("/api/admin/models/route-rollback-preview", central_model_route_rollback_preview, methods=["POST"]),
+        Route("/api/admin/session", platform_admin_session, methods=["GET"]),
+        Route("/api/admin/roles", platform_admin_role_assign, methods=["POST"]),
+        Route("/api/admin/roles/{user_id}", platform_admin_role_revoke, methods=["DELETE"]),
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
@@ -501,6 +520,9 @@ def create_app(
         ),
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
+        Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
+        Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
+        Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
         Route(B66_PC_DIRECTORY_PATH, b66_pc_directory, methods=["GET"]),
         Route(B66_PC_TXT_READ_PATH, b66_pc_txt_read_request, methods=["POST"]),
@@ -773,6 +795,26 @@ def create_app(
     app.state.settings = resolved
     app.state.github_oauth_store = github_oauth_store
     app.state.github_oauth_provider = github_oauth_provider
+    # #5121: owner-scoped customer-provider keys live in the canonical Chat D1,
+    # sealed with a purpose-separated key derived from the existing session
+    # secret. No second identity, login or secret store is introduced.
+    resolved_custom_store = custom_credential_store
+    if (
+        resolved_custom_store is None
+        and d1_binding is not None
+        and isinstance(resolved.session_secret, str)
+        and resolved.session_secret
+    ):
+        try:
+            resolved_custom_store = D1CustomProviderCredentialStore(
+                d1_binding, session_secret=resolved.session_secret
+            )
+        except Exception:
+            resolved_custom_store = None
+    app.state.custom_credential_store = resolved_custom_store
+    app.state.custom_provider_client = custom_provider_client or CustomProviderClient(
+        timeout_seconds=min(600.0, resolved.completed_timeout_seconds)
+    )
     app.state.history_store = history_store
     # #4657: the B66 customer dialogue surface reuses the canonical history
     # store behind the owner+PRODUCT_SCOPE_B66 adapter. It is the same D1/R2 the
@@ -806,7 +848,24 @@ def create_app(
             )
         except ValueError:
             global_model_admin = None
-    app.state.central_model_admin_authorizer = global_model_admin
+    # #5118 integrated administrator roles reuse the signed product session and
+    # the existing users/D1 authority; the host supplies the D1-backed store.
+    app.state.platform_admin_role_store = platform_admin_role_store
+    # One composed authority feeds the existing central model guard. The B66
+    # customer-data store is deliberately NOT replaced: an integrated ADMIN
+    # manages B66 platform policy but never inherits the customer roster.
+    app.state.platform_admin_authority = (
+        PlatformAdminAuthority(
+            role_store=platform_admin_role_store,
+            legacy_model_admin=global_model_admin,
+            legacy_b66_admin=app.state.b66_member_admin_store,
+        )
+        if platform_admin_role_store is not None else None
+    )
+    app.state.central_model_admin_authorizer = (
+        app.state.platform_admin_authority
+        if app.state.platform_admin_authority is not None else global_model_admin
+    )
     # S2 read-only D1 policy inventory. The allow/block ledger remains
     # stored-only; only the #4428 per-grade routes below are read at dispatch.
     app.state.central_model_policy_store = (
