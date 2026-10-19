@@ -57,7 +57,7 @@ EVIDENCE=테스트/로그/PR/실행 식별자(비밀 제외)
 
 ## #5002 구현 반영 (2026-10-19)
 
-- `apps/padiem-chat/tests/model_path_manifest.py`가 각 모델 경계 테스트 모듈을
+- `apps/padiem-chat/tests/model_path_manifest.json`이 각 모델 경계 테스트 모듈을
   `BYOK_DIRECT` / `B14_MANAGED` / `NO_MODEL` / `MOCK`으로 분류하고, conftest가
   모듈당 정확히 하나의 pytest marker를 부여한다. `test_5002_model_path_classification.py`는
   `app.b14_client`를 새로 import한 테스트가 분류 없이 `NO_MODEL`로 빠지면 실패한다.

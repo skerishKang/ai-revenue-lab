@@ -1,14 +1,21 @@
-"""#5002: every model-boundary test declares its execution path."""
+"""#5002: every model-boundary test declares its execution path.
+
+The manifest is JSON so the shared conftest can load it without adding an
+import that another workflow would have to install.
+"""
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
 from app.model_policy import AUTO_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
-import model_path_manifest
 
 TESTS = Path(__file__).resolve().parent
+MANIFEST = json.loads(
+    (TESTS / "model_path_manifest.json").read_text(encoding="utf-8")
+)
 B14_IMPORT = re.compile(
     r"^\s*(?:from\s+app\.b14_client\s+import|import\s+app\.b14_client"
     r"|from\s+app\s+import\s+b14_client)\b",
@@ -30,41 +37,47 @@ def _modules_importing_b14_client() -> set[str]:
     return found
 
 
-def test_categories_are_the_four_independent_paths():
-    assert set(model_path_manifest.CATEGORIES) == {
-        model_path_manifest.BYOK_DIRECT,
-        model_path_manifest.B14_MANAGED,
-        model_path_manifest.NO_MODEL,
-        model_path_manifest.MOCK,
+def _modules_in(category: str) -> set[str]:
+    return {
+        module
+        for module, declared in MANIFEST["modules"].items()
+        if declared == category
     }
-    assert model_path_manifest.DEFAULT_CATEGORY == model_path_manifest.NO_MODEL
+
+
+def test_categories_are_the_four_independent_paths():
+    assert MANIFEST["categories"] == [
+        "BYOK_DIRECT",
+        "B14_MANAGED",
+        "NO_MODEL",
+        "MOCK",
+    ]
+    assert MANIFEST["default_category"] == "NO_MODEL"
+    assert set(MANIFEST["markers"]) == set(MANIFEST["categories"])
 
 
 def test_every_b14_client_importer_is_classified():
-    importers = _modules_importing_b14_client() - model_path_manifest.BYOK_DIRECT_MODULES
+    importers = _modules_importing_b14_client() - _modules_in("BYOK_DIRECT")
     assert importers, "expected at least one B14 boundary test"
-    declared = model_path_manifest.B14_MANAGED_MODULES - B14_SOURCE_READERS
+    declared = _modules_in("B14_MANAGED") - B14_SOURCE_READERS
     assert importers == declared, (
-        "new app.b14_client importer must be added to model_path_manifest: "
+        "new app.b14_client importer must be added to model_path_manifest.json: "
         f"{sorted(importers ^ declared)}"
     )
-    assert B14_SOURCE_READERS <= model_path_manifest.B14_MANAGED_MODULES
+    assert B14_SOURCE_READERS <= _modules_in("B14_MANAGED")
 
 
 def test_manifest_modules_exist_and_have_one_path():
-    listed = set(model_path_manifest.MODULE_CATEGORIES)
-    missing = {name for name in listed if not (TESTS / name).is_file()}
-    assert not missing
-    for name in listed:
-        category = model_path_manifest.path_for_module(name)
-        assert category in model_path_manifest.CATEGORIES
+    for name, category in MANIFEST["modules"].items():
+        assert category in MANIFEST["categories"], name
+        assert (TESTS / name).is_file(), name
 
 
 def test_byok_test_is_direct_and_not_b14_managed():
     byok = "test_5121_byok_chat_direct.py"
-    assert model_path_manifest.path_for_module(byok) == model_path_manifest.BYOK_DIRECT
+    assert MANIFEST["modules"][byok] == "BYOK_DIRECT"
     assert byok in _modules_importing_b14_client()
-    assert byok in model_path_manifest.BYOK_DIRECT_MODULES
+    assert byok not in _modules_in("B14_MANAGED")
 
 
 def test_mock_modules_are_never_reported_as_live_e2e():
@@ -74,9 +87,8 @@ def test_mock_modules_are_never_reported_as_live_e2e():
         "test_4379_local5_chat_core_integration.py",
         "test_b66_3906_reasoning_level.py",
     ):
-        category = model_path_manifest.path_for_module(name)
-        assert category in (model_path_manifest.MOCK, model_path_manifest.B14_MANAGED)
-    assert "LIVE" not in model_path_manifest.CATEGORIES
+        assert MANIFEST["modules"][name] in ("MOCK", "B14_MANAGED")
+    assert "LIVE" not in MANIFEST["categories"]
 
 
 def test_disabled_auto_stays_out_of_the_executable_set():
