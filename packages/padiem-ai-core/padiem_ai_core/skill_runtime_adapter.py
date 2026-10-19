@@ -16,7 +16,7 @@ from dataclasses import dataclass
 import hashlib
 from typing import Any, Mapping
 
-from .agent_profile_adapter import ToolRuntimeBinding
+from .agent_profile_adapter import ToolRuntimeBinding, effective_max_steps
 from .contracts import AgentProfile
 from .skill_package import ReusableSkillPackage, missing_required_capabilities
 
@@ -34,8 +34,8 @@ class TrustedSkillRuntimePolicy:
     output_contract_ref: str
     task_type: str
     optimize_for: str
-    max_tokens: int
-    max_steps_cap: int
+    max_tokens: int | None
+    max_steps_cap: int | None
     context_policy: Mapping[str, Any]
     model_policy: Mapping[str, Any]
     output_contract: Mapping[str, Any]
@@ -56,18 +56,22 @@ class TrustedSkillRuntimePolicy:
             if not isinstance(value, str) or not value.strip():
                 raise SkillRuntimeAdapterError(f"{name} must be a non-empty string")
 
-        if (
+        if self.max_tokens is not None and (
             isinstance(self.max_tokens, bool)
             or not isinstance(self.max_tokens, int)
             or self.max_tokens <= 0
         ):
-            raise SkillRuntimeAdapterError("max_tokens must be a positive integer")
-        if (
+            # #4379: None means no PADIEM output budget.
+            raise SkillRuntimeAdapterError("max_tokens must be a positive integer or None")
+        if self.max_steps_cap is not None and (
             isinstance(self.max_steps_cap, bool)
             or not isinstance(self.max_steps_cap, int)
             or not 1 <= self.max_steps_cap <= 100
         ):
-            raise SkillRuntimeAdapterError("max_steps_cap must be between 1 and 100")
+            # #4379: None means no step ceiling.
+            raise SkillRuntimeAdapterError(
+                "max_steps_cap must be between 1 and 100, or None"
+            )
 
         if not isinstance(self.tool_bindings, tuple):
             raise SkillRuntimeAdapterError("tool_bindings must be a tuple")
@@ -201,7 +205,9 @@ def compile_skill_profile(
         required_capabilities=package.required_capabilities,
         context_policy=policy.context_policy,
         model_policy=policy.model_policy,
-        max_steps=min(package.execution_budget.max_steps, policy.max_steps_cap),
+        max_steps=effective_max_steps(
+            package.execution_budget.max_steps, policy.max_steps_cap
+        ),
         output_contract=policy.output_contract,
     )
     return CompiledSkillProfile(

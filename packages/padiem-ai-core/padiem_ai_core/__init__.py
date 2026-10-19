@@ -219,6 +219,8 @@ from .agent_profile_adapter import (
     ToolRuntimeBinding,
     TrustedAgentRuntimePolicy,
     compile_agent_profile,
+    effective_max_steps,
+    effective_max_tokens,
 )
 from .agent_planner import (
     MAX_AGENT_PLAN_DEPENDENCIES,
@@ -712,6 +714,8 @@ __all__ = [
     "ToolRuntimeBinding",
     "TrustedAgentRuntimePolicy",
     "compile_agent_profile",
+    "effective_max_steps",
+    "effective_max_tokens",
     "MAX_AGENT_PLAN_DEPENDENCIES",
     "MAX_AGENT_PLAN_INPUT_CHARS",
     "MAX_AGENT_PLAN_OBJECTIVE_CHARS",

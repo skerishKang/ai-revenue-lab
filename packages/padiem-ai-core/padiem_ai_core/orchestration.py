@@ -57,7 +57,11 @@ from .agent_planner import (
     AgentPlanStep,
     validate_agent_plan,
 )
-from .agent_profile_adapter import CompiledAgentProfile
+from .agent_profile_adapter import (
+    CompiledAgentProfile,
+    effective_max_steps,
+    effective_max_tokens,
+)
 from .agent_runtime import AgentRuntimeError
 from .b14_execution import B14RouteMetadata
 from .tool_runtime import ToolAuthorizationContext, ToolExecutionResult, ToolRuntime
@@ -1200,11 +1204,17 @@ class OrchestrationRunner:
                         system_instruction=effective_agent.system_instruction,
                         task_type=activated_skill.compiled.runtime_profile.task_type,
                         optimize_for=activated_skill.compiled.runtime_profile.optimize_for,
-                        max_tokens=min(effective_agent.max_tokens, activated_skill.compiled.runtime_profile.max_tokens),
+                        max_tokens=effective_max_tokens(
+                            effective_agent.max_tokens,
+                            activated_skill.compiled.runtime_profile.max_tokens,
+                        ),
                         allowed_tools=resolved_tools,
                         required_capabilities=effective_agent.required_capabilities,
                         model_policy=effective_agent.model_policy,
-                        max_steps=min(effective_agent.max_steps, activated_skill.compiled.runtime_profile.max_steps),
+                        max_steps=effective_max_steps(
+                            effective_agent.max_steps,
+                            activated_skill.compiled.runtime_profile.max_steps,
+                        ),
                     )
 
                 exec_req = ExecutionRequest(

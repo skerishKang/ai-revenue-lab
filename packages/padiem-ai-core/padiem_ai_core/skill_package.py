@@ -68,8 +68,11 @@ def _unique_tuple(name: str, values: tuple[str, ...], *, maximum: int) -> tuple[
 
 @dataclass(frozen=True, slots=True)
 class SkillExecutionBudget:
-    max_steps: int = 8
-    max_tool_calls: int = 8
+    # #4379: a skill no longer carries a PADIEM step or tool-call ceiling by
+    # default. The inactivity window stays: it ends a skill that stops making
+    # progress instead of a skill that legitimately runs long.
+    max_steps: int | None = None
+    max_tool_calls: int | None = None
     max_wall_seconds: int = 900  # skills share the supervised agent run budget
 
     def __post_init__(self) -> None:
@@ -79,6 +82,8 @@ class SkillExecutionBudget:
             "max_wall_seconds": (self.max_wall_seconds, 1, 3_600),
         }
         for name, (value, minimum, maximum) in limits.items():
+            if value is None and name in {"max_steps", "max_tool_calls"}:
+                continue
             if isinstance(value, bool) or not isinstance(value, int):
                 raise SkillPackageError(f"{name} must be an integer")
             if value < minimum or value > maximum:

@@ -18,7 +18,6 @@ from urllib.parse import urlparse
 
 from padiem_ai_core import (
     B14ExecutionClient,
-    B14ExecutionConfig,
     B14StreamingClient,
     ExecutionRuntime,
     StreamingExecutionRuntime,
@@ -65,8 +64,8 @@ from app.cloudflare_request_body import (
     read_bounded_worker_request_body,
 )
 from app.cloudflare_transport import (
-    B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
+    build_b14_execution_configs,
 )
 from app.cloudflare_external_transport import (
     calendar_worker_transport,
@@ -1033,12 +1032,11 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         binding=binding,
         request_factory=Request,
     )
-    config = B14ExecutionConfig(
-        base_url=B14_INTERNAL_ORIGIN,
+    completed_config, stream_config = build_b14_execution_configs(
         timeout_seconds=legacy_worker._b14_timeout_seconds_for_env(env),
     )
-    b14_client = B14ExecutionClient(config, transport=transport)
-    b14_stream_client = B14StreamingClient(config, transport=transport)
+    b14_client = B14ExecutionClient(completed_config, transport=transport)
+    b14_stream_client = B14StreamingClient(stream_config, transport=transport)
     continuation_store = _continuation_store_for_env(env)
     idempotency_adapter = legacy_worker._idempotency_adapter_for_env(env)
     admission_adapter = _admission_adapter_for_env(

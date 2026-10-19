@@ -500,10 +500,10 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
         output_contract_ref="output:text@1",
         allowed_tool_ids=(PC_DRIVES_CANONICAL_TOOL_ID, PC_LIST_FILES_CANONICAL_TOOL_ID,
                           PC_READ_FILE_CANONICAL_TOOL_ID),
-        execution_budget=AgentExecutionBudget(max_steps=4, max_tool_calls=2))
+        execution_budget=AgentExecutionBudget())
     policy = TrustedAgentRuntimePolicy(context_policy_ref="context:default", model_policy_ref="model:auto",
-        output_contract_ref="output:text@1", task_type="general", optimize_for="balanced", max_tokens=1024,
-        max_steps_cap=4, context_policy={}, model_policy={}, output_contract={},
+        output_contract_ref="output:text@1", task_type="general", optimize_for="balanced", max_tokens=None,
+        max_steps_cap=None, context_policy={}, model_policy={}, output_contract={},
         tool_bindings=(
             ToolRuntimeBinding(canonical_tool_id=PC_DRIVES_CANONICAL_TOOL_ID, runtime_tool_id=PC_DRIVES_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_LIST_FILES_CANONICAL_TOOL_ID, runtime_tool_id=PC_LIST_FILES_TOOL_ID),

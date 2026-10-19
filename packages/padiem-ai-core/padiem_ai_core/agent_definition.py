@@ -55,23 +55,29 @@ class AgentTerminalReason(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class AgentExecutionBudget:
-    """Bounded Agent/Task budget with no fixed total wall clock (#4194).
+    """Agent/Task budget with no fixed total wall clock and no fixed counts.
+
+    #4379: ``max_steps``, ``max_tool_calls`` and ``max_skill_calls`` are no
+    longer PADIEM ceilings. ``None`` (the default) means the run continues
+    until the model produces its final answer, exactly like
+    ``max_total_seconds`` already meant "no wall clock". A caller that still
+    wants an explicit ceiling may set one.
 
     ``max_wall_seconds`` is the **inactivity window**, not a cumulative cap: a
     run that keeps making verified progress may exceed it in total and is never
     force-failed for that reason. The window only fails a run that produces no
     locally observed progress (step decision, Tool result, durable checkpoint)
     for that long, which is the ZCode-parity ``timeout: none`` + inactivity
-    watchdog contract. Step/Tool/Skill counts, durable lease fencing, approval
-    expiry, quota/cost limits and user cancellation remain the real limits.
+    watchdog contract. Durable lease fencing, approval expiry, quota/cost
+    limits and user cancellation remain the real limits.
 
     ``max_total_seconds`` is an optional *host-opted* hard ceiling for callers
     that still need one. ``None`` (default) means no fixed wall clock at all.
     """
 
-    max_steps: int = 12
-    max_tool_calls: int = 12
-    max_skill_calls: int = 8
+    max_steps: int | None = None
+    max_tool_calls: int | None = None
+    max_skill_calls: int | None = None
     max_wall_seconds: int = 900  # inactivity window; NOT a cumulative wall cap
     max_total_seconds: int | None = None  # opt-in explicit ceiling; None = no wall
 
@@ -83,6 +89,11 @@ class AgentExecutionBudget:
             "max_wall_seconds": (self.max_wall_seconds, 1, 3_600),
         }
         for name, (value, minimum, maximum) in limits.items():
+            if value is None and name in {
+                "max_steps", "max_tool_calls", "max_skill_calls",
+            }:
+                # #4379: no fixed count ceiling unless a caller opts in.
+                continue
             if isinstance(value, bool) or not isinstance(value, int):
                 raise AgentDefinitionError(f"{name} must be an integer")
             if value < minimum or value > maximum:

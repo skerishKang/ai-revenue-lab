@@ -44,7 +44,7 @@ class TrustedAgentRuntimePolicy:
     task_type: str
     optimize_for: str
     max_tokens: int | None
-    max_steps_cap: int
+    max_steps_cap: int | None
     context_policy: Mapping[str, Any]
     model_policy: Mapping[str, Any]
     output_contract: Mapping[str, Any]
@@ -61,8 +61,15 @@ class TrustedAgentRuntimePolicy:
             or self.max_tokens <= 0
         ):
             raise AgentProfileCompilationError("max_tokens must be positive or None")
-        if isinstance(self.max_steps_cap, bool) or not isinstance(self.max_steps_cap, int) or not 1 <= self.max_steps_cap <= 100:
-            raise AgentProfileCompilationError("max_steps_cap must be between 1 and 100")
+        if self.max_steps_cap is not None and (
+            isinstance(self.max_steps_cap, bool)
+            or not isinstance(self.max_steps_cap, int)
+            or not 1 <= self.max_steps_cap <= 100
+        ):
+            # #4379: None means no step ceiling for this profile.
+            raise AgentProfileCompilationError(
+                "max_steps_cap must be between 1 and 100, or None"
+            )
         if not isinstance(self.tool_bindings, tuple):
             raise AgentProfileCompilationError("tool_bindings must be a tuple")
         if any(not isinstance(binding, ToolRuntimeBinding) for binding in self.tool_bindings):
@@ -93,6 +100,39 @@ def runtime_profile_id_for_agent(canonical_agent_id: str) -> str:
     """Return deterministic legacy-safe runtime ID while preserving canonical ID separately."""
     digest = hashlib.sha256(canonical_agent_id.encode("utf-8")).hexdigest()[:24]
     return f"agent-runtime:{digest}"
+
+
+def effective_max_steps(
+    definition_max_steps: int | None, profile_max_steps_cap: int | None
+) -> int | None:
+    """Resolve the step ceiling for one compiled profile.
+
+    #4379: a step count is no longer a PADIEM ceiling. ``None`` on either
+    side means the run continues until the model produces its final answer.
+    An explicit ceiling on either side still applies, and the tighter of the
+    two wins when both are set.
+    """
+    if definition_max_steps is None:
+        return profile_max_steps_cap
+    if profile_max_steps_cap is None:
+        return definition_max_steps
+    return min(definition_max_steps, profile_max_steps_cap)
+
+
+def effective_max_tokens(
+    agent_max_tokens: int | None, profile_max_tokens: int | None
+) -> int | None:
+    """Resolve the output token budget for one compiled profile.
+
+    #4379: ``None`` means "no PADIEM output budget" and defers to the
+    provider/model default. A side that declares an explicit budget still
+    constrains the other, and the tighter of two explicit budgets wins.
+    """
+    if agent_max_tokens is None:
+        return profile_max_tokens
+    if profile_max_tokens is None:
+        return agent_max_tokens
+    return min(agent_max_tokens, profile_max_tokens)
 
 
 def compile_agent_profile(
@@ -180,7 +220,9 @@ def compile_agent_profile(
         required_capabilities=definition.required_capabilities,
         context_policy=policy.context_policy,
         model_policy=policy.model_policy,
-        max_steps=min(definition.execution_budget.max_steps, policy.max_steps_cap),
+        max_steps=effective_max_steps(
+            definition.execution_budget.max_steps, policy.max_steps_cap
+        ),
         output_contract=policy.output_contract,
     )
     return CompiledAgentProfile(

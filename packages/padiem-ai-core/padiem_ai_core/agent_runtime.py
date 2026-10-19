@@ -35,7 +35,7 @@ import uuid
 
 from .agent_approval import ApprovalPause, approval_pause_from_tool_error
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
-from .agent_profile_adapter import CompiledAgentProfile
+from .agent_profile_adapter import CompiledAgentProfile, effective_max_steps
 from .agent_progress import AgentProgressTracker
 from .contracts import RunStatus, ToolEvent
 from .tool_runtime import (
@@ -527,15 +527,19 @@ class BoundedAgentRuntime:
         idle_seconds = float(budget.max_wall_seconds)
         total_cap = budget.max_total_seconds
         self._record_progress("run_start")
-        max_steps = min(
-            budget.max_steps,
-            request.compiled_profile.runtime_profile.max_steps,
+        max_steps = effective_max_steps(
+            budget.max_steps, request.compiled_profile.runtime_profile.max_steps
         )
         tool_results: list[ToolExecutionResult] = list(request.initial_tool_results)
         tool_events: list[ToolEvent] = list(request.initial_tool_events)
         tool_calls = len(tool_results)
 
-        for step_index in range(request.initial_step_index, max_steps + 1):
+        # #4379: a step count is no longer a PADIEM ceiling. The run continues
+        # until the model produces its final answer; the inactivity watchdog,
+        # the opt-in total cap, the durable lease and cancellation still end it.
+        step_index = request.initial_step_index - 1
+        while max_steps is None or step_index < max_steps:
+            step_index += 1
             await self._ensure_run_active()
             if self._total_cap_reached(started=started, total_cap=total_cap):
                 return self._total_cap_terminal(
@@ -625,7 +629,9 @@ class BoundedAgentRuntime:
             invocation = decision.invocation
             assert isinstance(invocation, ToolInvocation)
 
-            if tool_calls >= budget.max_tool_calls:
+            if budget.max_tool_calls is not None and tool_calls >= budget.max_tool_calls:
+                # #4379: a tool-call count is no longer a PADIEM ceiling. A
+                # caller that still wants one sets it explicitly.
                 return self._terminal(
                     run_id=run_id,
                     reason=AgentTerminalReason.MAX_TOOL_CALLS,
@@ -762,7 +768,7 @@ class BoundedAgentRuntime:
         return self._terminal(
             run_id=run_id,
             reason=AgentTerminalReason.MAX_STEPS,
-            steps=max_steps,
+            steps=max_steps if max_steps is not None else step_index,
             tool_calls=tool_calls,
             tool_events=tool_events,
         )
