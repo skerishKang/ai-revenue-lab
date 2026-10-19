@@ -261,6 +261,10 @@ def test_native_usage_unavailable_fails_closed_without_minting_online() -> None:
 def test_device_service_boundary_truth() -> None:
     assert DEVICE_HTTP_ROUTES == (
         "/acknowledge",
+        # #5080: one more authenticated route on the same canonical surface.
+        # It records the phone's owner-selected SAF folder set; it grants no
+        # execution, exposes no URI and adds no second credential verifier.
+        "/android-profile",
         "/execution-profile",
         "/heartbeat",
         "/material",

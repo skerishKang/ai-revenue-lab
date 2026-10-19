@@ -281,7 +281,12 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # the actual SQLite/auth implementation remains in separate modules.
     # Update the structural size budget (259 -> 274), preserving its margin.
     # One required canonical native-PC private RPC delegate was added to this entrypoint.
-    assert len(source.splitlines()) < 280
+    # #5080 adds one thin Android SAF profile store composition and two private
+    # RPC passthroughs per entrypoint class (record/read profile, directory
+    # projection). The SQLite schema, validation and auth stay in
+    # ``local_agent_broker_android_profile``; this file still only composes and
+    # forwards. Update the budget (280 -> 296), preserving its margin.
+    assert len(source.splitlines()) < 296
 
 
 def test_native_pc_terminal_completion_rpc_is_exported_by_the_existing_worker():
