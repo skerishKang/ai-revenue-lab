@@ -347,3 +347,45 @@ async def test_completed_run_with_missing_events_key_is_rejected_as_truncated() 
     with pytest.raises(OrchestrationError) as caught:
         orchestration_result_from_public(payload)
     assert caught.value.code == "invalid_result_event_set"
+
+
+async def test_tool_event_error_code_round_trips_through_the_parser() -> None:
+    """#5015: the public ToolEvent carries error_code; the parser must accept it."""
+    payload = await _public_result()
+    payload["execution"]["metadata"]["tool_events"] = [
+        {
+            "tool_id": "claw.pc.query_drives",
+            "status": "completed",
+            "duration_ms": 120,
+            "error_class": None,
+            "error_code": None,
+        },
+        {
+            "tool_id": "claw.pc.query_drives",
+            "status": "rejected",
+            "duration_ms": 5,
+            "error_class": None,
+            "error_code": "pc_query_denied",
+        },
+    ]
+    result = orchestration_result_from_public(payload)
+    assert [
+        event.error_code for event in result.execution_result.metadata.tool_events
+    ] == [None, "pc_query_denied"]
+    assert result.to_public_dict()["execution"]["metadata"]["tool_events"] == payload[
+        "execution"
+    ]["metadata"]["tool_events"]
+
+
+async def test_unbounded_tool_event_error_code_is_rejected() -> None:
+    payload = await _public_result()
+    payload["execution"]["metadata"]["tool_events"] = [{
+        "tool_id": "claw.pc.query_drives",
+        "status": "rejected",
+        "duration_ms": 5,
+        "error_class": None,
+        "error_code": "Owner text; drop table",
+    }]
+    with pytest.raises(OrchestrationError) as caught:
+        orchestration_result_from_public(payload)
+    assert caught.value.code == "invalid_result_tool_event"
