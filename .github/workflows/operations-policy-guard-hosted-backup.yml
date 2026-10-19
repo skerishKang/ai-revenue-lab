@@ -16,6 +16,14 @@ name: Operations Policy Guard Hosted Backup
 on:
   workflow_dispatch:
     inputs:
+      pr_number:
+        description: "Open same-repo pull request number for emergency backup (optional)"
+        required: false
+        type: string
+      expected_sha:
+        description: "Exact full 40-hex PR head SHA; must match current PR HEAD"
+        required: false
+        type: string
       enforce_pr_contract:
         description: "Fail the job when a load-bearing PR contract field is missing"
         required: false
@@ -39,10 +47,33 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Resolve optional exact backup PR HEAD
+        id: target
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ inputs.pr_number }}
+          EXPECTED: ${{ inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$PR" && -z "$EXPECTED" ]]; then
+            echo "ref=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          [[ "$PR" =~ ^[1-9][0-9]{0,7}$ ]]
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          result="$(curl --fail --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR}" \
+            | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["head"]["sha"],d["state"],d["head"]["repo"]["full_name"])')"
+          [[ "$result" == "$EXPECTED open $GITHUB_REPOSITORY" ]]
+          echo "ref=$EXPECTED" >> "$GITHUB_OUTPUT"
       - name: Check out reviewed revision
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          ref: ${{ steps.target.outputs.ref }}
           filter: blob:none
 
       - name: Set up Python
