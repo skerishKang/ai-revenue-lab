@@ -30,6 +30,25 @@ test("constants match Global Classroom #87", () => {
   assert.equal(c.TRANSCRIPT_TURN_STALL_MS, 2500);
 });
 
+// #4988: the recognizer loop (voice-stt-wiring.js) and the adapter contract
+// (voice-stt-input.js) each carry the reviewed #87 chunk thresholds. They are
+// separate copies today, so tuning one without the other silently splits the
+// cut rule between what is uploaded and what the composer expects. This guard
+// fails on any drift instead.
+test("recognizer and adapter agree on the reviewed chunk thresholds", () => {
+  const wiring = require("../static/voice-stt-wiring.js");
+  const contract = adapter.constants;
+  const keys = ["GROQ_MIN_CHUNK_MS", "GROQ_SILENCE_CUT_MS", "GROQ_MAX_CHUNK_MS"];
+  for (const key of keys) {
+    assert.equal(typeof wiring[key], "number", key + " missing from the recognizer");
+    assert.equal(typeof contract[key], "number", key + " missing from the adapter");
+    assert.equal(wiring[key], contract[key], key + " drifted between the two modules");
+  }
+  // The cut rule is only sound while the window stays ordered.
+  assert.ok(contract.GROQ_MIN_CHUNK_MS < contract.GROQ_MAX_CHUNK_MS);
+  assert.ok(contract.GROQ_SILENCE_CUT_MS > 0 && contract.GROQ_SILENCE_CUT_MS < contract.GROQ_MIN_CHUNK_MS);
+});
+
 test("interim is preview only, never final candidate", () => {
   const finals = [];
   const a = adapter.createVoiceInputAdapter({
