@@ -12,7 +12,8 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from padiem_control_plane.owner_model_name_parts import google_owner_name_parts
-from .member_grade_access import selected_grade_denial
+from .member_grade_access import selected_grade_denial, selected_admin_denial
+from .model_policy import ADMIN_B14_MODEL_ID
 
 
 async def owner_model_name_preview(request: Request) -> JSONResponse:
@@ -62,7 +63,9 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
     # Query-string tier is a request, not authority: member grade is re-read
     # from the signed owner account and checked before listing any model.
     requested_tier = request.query_params.get("tier", "free").strip().lower()
-    denial = await selected_grade_denial(request, current_user_id(request), requested_tier)
+    admin_lane = requested_tier == "admin"
+    denial = (await selected_admin_denial(request, current_user_id(request))
+              if admin_lane else await selected_grade_denial(request, current_user_id(request), requested_tier))
     if denial is not None:
         return denial
     authority = getattr(request.app.state, "b14_model_choice_resolver", None)
@@ -72,10 +75,16 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
             {"ok": False, "error": {"code": "model_catalog_unavailable"}},
             status_code=503, headers=headers,
         )
-    try:
-        route, route_revision = await resolve_claw_tier_model_view(request, requested_tier)
-    except Exception:
-        route, route_revision = None, 0
+    if admin_lane:
+        from types import SimpleNamespace
+        route, route_revision = SimpleNamespace(
+            ok=True, model_id=ADMIN_B14_MODEL_ID, fallback_model_id=None, source="admin"
+        ), 0
+    else:
+        try:
+            route, route_revision = await resolve_claw_tier_model_view(request, requested_tier)
+        except Exception:
+            route, route_revision = None, 0
     if route is None or not route.ok or not isinstance(route.model_id, str) or not route.model_id:
         # A disabled or unresolvable central grade never falls back to a wider
         # model set; the customer sees the grade as unavailable instead.
@@ -91,7 +100,7 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
     # product/grade. Without a row the shared static contract decides: the free
     # lane is the contract's own free route, and a paid grade keeps the
     # owner-allowed catalog ceiling.
-    if route.source == "central" or requested_tier == "free":
+    if admin_lane or route.source == "central" or requested_tier == "free":
         allowed_ids: frozenset[str] | None = frozenset(route_ids)
     else:
         allowed_ids = None
