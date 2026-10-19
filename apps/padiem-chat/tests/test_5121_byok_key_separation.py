@@ -417,7 +417,8 @@ async def test_real_aes_gcm_legacy_v1_is_resealed_under_v2():
     assert real_open(
         migrated["sealed_credential"], KEY_CURRENT, CUSTOM_KEY_PURPOSE
     ) == CUSTOM_KEY
-    with pytest.raises(Exception):
+    invalid_tag = pytest.importorskip("cryptography.exceptions").InvalidTag
+    with pytest.raises(invalid_tag):
         real_open(migrated["sealed_credential"], SESSION_OLD, LEGACY_CUSTOM_KEY_PURPOSE)
 
     # A later deployment with the legacy ring removed reads the v2 row.
