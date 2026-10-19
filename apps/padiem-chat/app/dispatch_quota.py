@@ -8,7 +8,7 @@ from .b14_client import B14Client, ChatRuntimeError, _resolve_b62_policy
 from .model_policy import (
     ADMIN_B14_MODEL_ID,
     current_request_tier_id,
-    model_policy_is_executable,
+    model_policy_is_request_executable,
 )
 from .usage_gate import UsageDecision
 
@@ -138,7 +138,7 @@ class DispatchAwareB14Client(B14Client):
         if self.settings.runtime_mode == "mock" or not self.settings.live_enabled:
             return
         policy = _resolve_b62_policy(messages, require_executable=False)
-        if model_policy_is_executable(policy.model_id):
+        if model_policy_is_request_executable(policy.model_id):
             return
         # One verified administrator-only dispatch: the Chat route already
         # proved the global admin on this request before binding this tier, so
