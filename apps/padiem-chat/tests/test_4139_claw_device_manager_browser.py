@@ -242,9 +242,15 @@ def test_owner_switch_hides_previous_devices_and_clear_on_navigation(browser, se
     assert posts == [{"device_id": "pc1"}]
     fixture["devices"] = payload([offline("pc2", "계정 B PC")])
     page.evaluate('window.dispatchEvent(new CustomEvent("padiem:auth-state", {detail: {authenticated: true}}))')
-    page.get_by_text("계정 B PC").wait_for()
+    # The shared entry now names the confirmed PC, so the directory list is
+    # addressed directly instead of counting page-wide text matches.
+    page.locator("#clawDeviceManagerList li strong", has_text="계정 B PC").first.wait_for()
     assert page.get_by_text("계정 A PC").count() == 0
     assert page.locator("#clawDeviceManagerList li button").is_disabled()
+    # The entry shows the current owner's PC and never the previous owner's.
+    assert page.locator(
+        "#clawDeviceManagerToggle .claw-device-manager-toggle-title"
+    ).inner_text() == "계정 B PC"
     # #5015: the panel is common now, so switching to Chat keeps it available;
     # the account snapshot was still invalidated and re-read above.
     page.evaluate("""() => {
@@ -252,7 +258,8 @@ def test_owner_switch_hides_previous_devices_and_clear_on_navigation(browser, se
     }""")
     page.wait_for_timeout(50)
     assert page.locator("#clawDeviceManager").is_visible()
-    assert page.get_by_text("계정 B PC").count() == 1
+    assert page.locator("#clawDeviceManagerList li").count() == 1
+    assert page.locator("#clawDeviceManagerList li strong", has_text="계정 B PC").count() == 1
     assert not errors
     page.close()
 
@@ -381,8 +388,9 @@ def test_owner_change_cancels_old_read_before_new_owner_status(browser, server):
     page.locator("#clawDeviceManagerToggle").click()
     page.wait_for_function("window.__calls === 1")
     page.evaluate('window.dispatchEvent(new Event("padiem:account-changed"))')
-    page.wait_for_function("window.__calls === 2 && window.__aborts === 1")
-    page.get_by_text("Account B", exact=True).wait_for()
+    page.wait_for_function("""() => window.__calls === 2 && window.__aborts === 1""")
+    # The entry names the confirmed PC, so the row itself is addressed.
+    page.locator("#clawDeviceManagerList li strong", has_text="Account B").first.wait_for()
     assert page.locator("#clawDeviceManagerList li").count() == 1
     assert     page.locator("#clawDeviceManagerList li button").is_disabled()
     assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") is None
