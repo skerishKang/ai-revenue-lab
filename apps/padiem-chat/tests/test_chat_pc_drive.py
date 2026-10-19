@@ -28,6 +28,25 @@ from app.chat_pc_drive import (
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 
 
+def test_chat_file_detector_and_two_step_plan():
+    """#4976: Chat routes a folder/file task to the shared list/read plan."""
+    from app.chat_pc_drive import (
+        build_chat_pc_files_agent_plan,
+        is_chat_pc_files_query,
+    )
+
+    assert is_chat_pc_files_query(
+        "내 PC의 테스트 폴더에서 파일 목록을 보고, TXT를 읽어서 내용을 설명해 주세요"
+    )
+    assert not is_chat_pc_files_query("내 PC에 어떤 드라이브가 있어?")
+    assert not is_chat_pc_files_query("내 PC에서 `cmd /c hostname` 실행해줘")
+    plan = build_chat_pc_files_agent_plan()
+    assert plan["agent_id"] == "agent:padiem:chat-pc-query@1"
+    assert [step["tool_id"] for step in plan["steps"]] == [
+        "claw.pc.list_files", "claw.pc.read_file",
+    ]
+
+
 def test_detector_matches_only_drive_questions():
     assert is_chat_pc_drive_query("내 PC 드라이브 목록을 알려줘") is True
     assert is_chat_pc_drive_query("내 컴퓨터 디스크 용량 확인해줘") is True

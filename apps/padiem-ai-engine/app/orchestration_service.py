@@ -366,8 +366,21 @@ _PC_QUERY_STREAM_AGENT_IDS = frozenset({
 _PC_QUERY_STREAM_APP_IDS = frozenset({"b54-padiem-claw", "padiem-chat"})
 
 
-def _pc_query_stream_owner(app_id: str, request: Any) -> tuple[str, str] | None:
-    """Trusted owner binding for the streaming PC drive tool (#5015).
+def _pc_query_selected_device(tool_arguments: Any) -> str | None:
+    """The server-provided device hint for the PC tool plan, never model text."""
+    if not isinstance(tool_arguments, dict):
+        return None
+    files = tool_arguments.get("files")
+    if not isinstance(files, dict):
+        return None
+    device = files.get("device_id")
+    if isinstance(device, str) and 0 < len(device) <= 128:
+        return device
+    return None
+
+
+def _pc_query_stream_owner(app_id: str, request: Any) -> tuple[str, str, str, str | None] | None:
+    """Trusted owner binding for the streaming PC tool driver (#5015).
 
     Only the exact canonical PC-query plan under its own product identity may
     carry an owner. Every other stream keeps the context unset, exactly as the
@@ -386,7 +399,10 @@ def _pc_query_stream_owner(app_id: str, request: Any) -> tuple[str, str] | None:
         or getattr(plan, "agent_id", None) not in _PC_QUERY_STREAM_AGENT_IDS
     ):
         return None
-    return (subject_id, session_id)
+    return (
+        subject_id, session_id, app_id,
+        _pc_query_selected_device(getattr(request, "tool_arguments", None)),
+    )
 
 
 class OrchestrationEngineService:

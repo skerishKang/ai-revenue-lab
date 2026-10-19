@@ -11,7 +11,13 @@ from app.claw_pc_query_step_driver import (
     CLAW_ENGINE_PC_DRIVE_URL,
     PC_DRIVES_CANONICAL_TOOL_ID,
     PC_DRIVES_TOOL_ID,
+    PC_LIST_FILES_CANONICAL_TOOL_ID,
+    PC_LIST_FILES_SCOPE,
+    PC_LIST_FILES_TOOL_ID,
     PC_QUERY_SCOPE,
+    PC_READ_FILE_CANONICAL_TOOL_ID,
+    PC_READ_FILE_SCOPE,
+    PC_READ_FILE_TOOL_ID,
     StructuredPCQueryStepDriver,
     PCQueryStepError,
     build_chat_pc_query_tool_binding,
@@ -34,9 +40,10 @@ def test_stream_owner_binding_is_exact_and_narrow():
         agent_plan=plan,
         subject_id="sub_" + "a" * 32,
         execution_request=SimpleNamespace(session_id="run_5015"),
+        tool_arguments=None,
     )
     assert _pc_query_stream_owner("b54-padiem-claw", request) == (
-        "sub_" + "a" * 32, "run_5015",
+        "sub_" + "a" * 32, "run_5015", "b54-padiem-claw", None,
     )
 
     # A different plan, product, or missing identity never receives an owner.
@@ -82,12 +89,102 @@ def test_model_cannot_select_unauthorized_tool():
         asyncio.run(driver.next_step(context, object()))
 
 
+def test_model_lists_then_reads_the_selected_file_in_one_run():
+    """#4976: the listing result is the next step's file-selection input."""
+    import json
+
+    seen = []
+
+    async def select_step(*, context, compiled_profile, observations):
+        seen.append(observations)
+        if not observations:
+            return {
+                "action": "tool", "tool_id": PC_LIST_FILES_TOOL_ID,
+                "arguments": {"path": "."},
+            }
+        if len(observations) == 1:
+            listed = json.loads(observations[0]["output"]["output"])
+            target = listed["entries"][0]["relative_path"]
+            return {
+                "action": "tool", "tool_id": PC_READ_FILE_TOOL_ID,
+                "arguments": {"path": target},
+            }
+        return {
+            "action": "complete",
+            "answer": "읽은 내용: " + observations[-1]["output"]["content"],
+        }
+
+    driver = StructuredPCQueryStepDriver(select_step=select_step)
+    first = asyncio.run(driver.next_step(
+        AgentStepContext(run_id="run_5015", step_index=1,
+                         input_text="폴더 목록을 보고 TXT를 읽어줘", tool_results=()),
+        object(),
+    ))
+    assert first.invocation == ToolInvocation(
+        tool_id=PC_LIST_FILES_TOOL_ID, arguments={"path": "."},
+    )
+
+    listing = json.dumps({
+        "ok": True,
+        "entries": [{"relative_path": "notes.txt", "PSIsContainer": False}],
+    })
+    list_result = ToolExecutionResult(
+        tool_id=PC_LIST_FILES_TOOL_ID,
+        output={"output": listing, "entry_count": 1},
+        event=ToolEvent(tool_id=PC_LIST_FILES_TOOL_ID, status=RunStatus.COMPLETED),
+    )
+    second = asyncio.run(driver.next_step(
+        AgentStepContext(run_id="run_5015", step_index=2,
+                         input_text="폴더 목록을 보고 TXT를 읽어줘",
+                         tool_results=(list_result,)),
+        object(),
+    ))
+    assert second.invocation == ToolInvocation(
+        tool_id=PC_READ_FILE_TOOL_ID, arguments={"path": "notes.txt"},
+    )
+
+    read_result = ToolExecutionResult(
+        tool_id=PC_READ_FILE_TOOL_ID,
+        output={"content": "PADIEM TEST CONTENT", "content_bytes": 19},
+        event=ToolEvent(tool_id=PC_READ_FILE_TOOL_ID, status=RunStatus.COMPLETED),
+    )
+    final = asyncio.run(driver.next_step(
+        AgentStepContext(run_id="run_5015", step_index=3,
+                         input_text="폴더 목록을 보고 TXT를 읽어줘",
+                         tool_results=(list_result, read_result)),
+        object(),
+    ))
+    assert final.answer == "읽은 내용: PADIEM TEST CONTENT"
+    assert len(seen) == 3
+
+
+def test_file_tool_arguments_are_closed():
+    async def select_step(**kwargs):
+        return {
+            "action": "tool", "tool_id": PC_READ_FILE_TOOL_ID,
+            "arguments": {"path": "notes.txt", "command": "whoami"},
+        }
+
+    driver = StructuredPCQueryStepDriver(select_step=select_step)
+    context = AgentStepContext(
+        run_id="run_5015", step_index=1, input_text="read", tool_results=(),
+    )
+    with pytest.raises(PCQueryStepError):
+        asyncio.run(driver.next_step(context, object()))
+
+
 def test_drive_binding_registers_core_toolruntime_contract():
     binding = build_claw_pc_query_tool_binding(
         service=object(), request_factory=lambda *args, **kwargs: None, secret="s" * 32,
     )
-    assert binding.registry.canonical_tool_ids == ("tool:padiem:claw-pc-query-drives@1",)
-    assert binding.tool_runtime.registered_tool_ids == (PC_DRIVES_TOOL_ID,)
+    assert set(binding.registry.canonical_tool_ids) == {
+        PC_DRIVES_CANONICAL_TOOL_ID,
+        PC_LIST_FILES_CANONICAL_TOOL_ID,
+        PC_READ_FILE_CANONICAL_TOOL_ID,
+    }
+    assert set(binding.tool_runtime.registered_tool_ids) == {
+        PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
+    }
 
 
 def test_chat_binding_shares_contract_under_chat_product_only():
@@ -97,11 +194,15 @@ def test_chat_binding_shares_contract_under_chat_product_only():
     chat = build_chat_pc_query_tool_binding(
         service=object(), request_factory=lambda *args, **kwargs: None, secret="s" * 32,
     )
-    # Same shared tool contract: identical canonical/runtime ids and scope.
-    assert chat.registry.canonical_tool_ids == claw.registry.canonical_tool_ids == (
-        PC_DRIVES_CANONICAL_TOOL_ID,)
-    assert chat.tool_runtime.registered_tool_ids == claw.tool_runtime.registered_tool_ids == (
-        PC_DRIVES_TOOL_ID,)
+    # Same shared tool contract: identical canonical/runtime ids and scopes.
+    assert set(chat.registry.canonical_tool_ids) == set(claw.registry.canonical_tool_ids) == {
+        PC_DRIVES_CANONICAL_TOOL_ID,
+        PC_LIST_FILES_CANONICAL_TOOL_ID,
+        PC_READ_FILE_CANONICAL_TOOL_ID,
+    }
+    assert set(chat.tool_runtime.registered_tool_ids) == set(claw.tool_runtime.registered_tool_ids) == {
+        PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
+    }
     # Distinct product authority: Chat binding never carries the Claw app or
     # agent identity, and Claw never carries the Chat one.
     assert chat.app_id == CHAT_APP_ID == "padiem-chat"
@@ -110,7 +211,9 @@ def test_chat_binding_shares_contract_under_chat_product_only():
     assert set(claw.authorities) != {CHAT_PC_QUERY_AGENT_ID}
     chat_auth = chat.authorities[CHAT_PC_QUERY_AGENT_ID].authorization
     assert chat_auth.app_id == CHAT_APP_ID
-    assert chat_auth.granted_auth_scopes == (PC_QUERY_SCOPE,)
+    assert chat_auth.granted_auth_scopes == (
+        PC_QUERY_SCOPE, PC_LIST_FILES_SCOPE, PC_READ_FILE_SCOPE,
+    )
     assert CLAW_ENGINE_PC_DRIVE_URL != CHAT_ENGINE_PC_DRIVE_URL
     assert CHAT_ENGINE_PC_DRIVE_URL.endswith("/internal/chat/engine-pc-drive")
 

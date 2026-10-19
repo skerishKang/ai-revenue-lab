@@ -390,12 +390,24 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
         from app.claw_desktop_step_driver import CLAW_APP_ID, _ENGINE_DESKTOP_OWNER
         from app.claw_pc_query_step_driver import CHAT_APP_ID, _PC_QUERY_OWNER
         desktop_owner = None
+        pc_query_owner = None
         if binding.app_id in (CLAW_APP_ID, CHAT_APP_ID) and binding.subject_id is not None:
             run_id = payload.get("session_id") if isinstance(payload, dict) else None
             if isinstance(run_id, str) and run_id:
                 desktop_owner = (binding.subject_id, run_id)
+                selected_device = None
+                tool_arguments = (
+                    payload.get("tool_arguments") if isinstance(payload, dict) else None
+                )
+                if isinstance(tool_arguments, dict) and isinstance(tool_arguments.get("files"), dict):
+                    candidate = tool_arguments["files"].get("device_id")
+                    if isinstance(candidate, str) and 0 < len(candidate) <= 128:
+                        selected_device = candidate
+                pc_query_owner = (
+                    binding.subject_id, run_id, binding.app_id, selected_device,
+                )
         desktop_scope_token = _ENGINE_DESKTOP_OWNER.set(desktop_owner)
-        pc_query_scope_token = _PC_QUERY_OWNER.set(desktop_owner)
+        pc_query_scope_token = _PC_QUERY_OWNER.set(pc_query_owner)
         original_token: Token[OriginalAdmissionBinding | None] = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
         result_token = _ACTIVE_TERMINAL_RESULT.set(None)
         dispatch_evidence = ExecutionDispatchEvidence()

@@ -1229,6 +1229,8 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                         b14_client=b14_client, model_id=model_id,
                         model_policy=model_policy, task_type=task_type,
                         optimize_for=optimize_for,
+                        service=chat_service, request_factory=Request,
+                        secret=desktop_secret,
                     ))
                 if chat_service is not None and isinstance(desktop_secret, str)
                 and len(desktop_secret) >= 32 else None

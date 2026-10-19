@@ -1087,16 +1087,21 @@ class D1HistoryStore:
     async def record_chat_pc_drive_run(
         self, *, user_id: str, run_id: str, workspace_id: str,
         user_text: str, conversation_id: str | None,
+        action: str = "pc_drive_query",
+        title_prefix: str = "PC 드라이브 조회: ",
     ) -> str:
-        """Stage a real b62 Chat owner conversation + pending PC drive run.
+        """Stage a real b62 Chat owner conversation + pending PC tool run.
 
         Chat-product twin of :meth:`record_txt_pending_run` for the #5015
-        model-driven drive lane: same conversation/user-message/run shape and
-        the same PRODUCT_SCOPE_CHAT ownership, but action
-        ``"pc_drive_query"`` and no Claw title prefix, so a Chat turn never
-        reads as a Claw turn. The verified Mesh result alone is allowed to
-        insert the assistant message later.
+        model-driven PC lanes: same conversation/user-message/run shape and
+        the same PRODUCT_SCOPE_CHAT ownership, with the lane's own action and
+        title so a Chat turn never reads as a Claw turn. The verified Mesh
+        result alone is allowed to insert the assistant message later.
         """
+        if action not in ("pc_drive_query", "pc_files_query"):
+            raise HistoryError("unsupported Chat PC action")
+        if not isinstance(title_prefix, str) or not title_prefix:
+            raise HistoryError("Chat PC title prefix is required")
         workspace = _safe_identifier("workspace_id", workspace_id)
         content = _bounded_text(user_text, "user_text")
         cid = validate_conversation_id(conversation_id)
@@ -1136,7 +1141,7 @@ class D1HistoryStore:
             )
             await self.record_claw_run(
                 user_id=user_id, run_id=run_id, channel="web",
-                action="pc_drive_query", title=("PC 드라이브 조회: " + content)[:MAX_HISTORY_TITLE_CHARS],
+                action=action, title=(title_prefix + content)[:MAX_HISTORY_TITLE_CHARS],
                 status="pending", conversation_id=cid, workspace_id=workspace,
             )
             await self._run(
@@ -1724,15 +1729,22 @@ class D1HistoryStore:
         expires_at: str,
         kind: str = "read",
         command_text: str | None = None,
+        tool_call_ref: str | None = None,
     ) -> dict[str, Any]:
         """#4139 — stage one Oracle management-host execution for one run.
 
         The row snapshots the broker-bound correlation when Broker admission
-        exists, plus the deployment-verified Mesh target. One dispatch per
-        owner+run: an identical pending row is reused, a terminal
-        (done/failed) row refuses any second execution for the run, and an
-        expired pending row is replaced. Every statement is owner-scoped;
-        cross-owner existence is never disclosed.
+        exists, plus the deployment-verified Mesh target. An identical pending
+        row is reused, a terminal (done/failed) row refuses any second
+        execution of the *same* correlation, and an expired pending row is
+        replaced. Every statement is owner-scoped; cross-owner existence is
+        never disclosed.
+
+        ``tool_call_ref`` narrows the correlation key from the legacy one
+        dispatch per owner+run to one dispatch per tool call inside that run.
+        A bounded multi-tool turn (for example list then read) therefore stages
+        a distinct row for each call, while re-staging the exact same call still
+        finds its terminal row and refuses a second execution.
 
         ``evidence_ref`` and ``binding_ref`` are nullable on purpose. A PC that
         has never completed the native PC offer has no Broker binding and no
@@ -1795,6 +1807,21 @@ class D1HistoryStore:
             raise HistoryError("oracle mesh dispatch row exceeds the storage row bound")
         if not isinstance(expires_at, str) or not expires_at:
             raise HistoryError("expires_at must be a bounded timestamp")
+        if tool_call_ref is not None:
+            if (
+                not isinstance(tool_call_ref, str)
+                or not tool_call_ref
+                or len(tool_call_ref) > 128
+                or any(ord(ch) < 33 or ord(ch) > 126 for ch in tool_call_ref)
+            ):
+                raise HistoryError(
+                    "tool_call_ref must be a bounded safe reference"
+                )
+            correlation_sql = "user_id=? AND run_id=? AND tool_request_ref=?"
+            correlation_params = (user_id, run_id, tool_call_ref)
+        else:
+            correlation_sql = "user_id=? AND run_id=?"
+            correlation_params = (user_id, run_id)
         owned = await self._first(
             "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
             run_id, user_id,
@@ -1805,8 +1832,8 @@ class D1HistoryStore:
             "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
             "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
             "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
-            "state, expires_at FROM oracle_mesh_dispatch WHERE user_id=? AND run_id=?",
-            user_id, run_id,
+            f"state, expires_at FROM oracle_mesh_dispatch WHERE {correlation_sql}",
+            *correlation_params,
         )
         now = _now_iso()
         if existing is not None:
@@ -1838,20 +1865,20 @@ class D1HistoryStore:
                 "account_ref=?, workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, "
                 "root_ref=?, path_relative=?, file_path=?, kind=?, command_text=?, "
                 "nonce_sha256=NULL, state=?, "
-                "expires_at=?, created_at=? WHERE user_id=? AND run_id=? AND state=? "
-                "AND expires_at<=?",
+                "expires_at=?, created_at=? WHERE "
+                f"{correlation_sql} AND state=? AND expires_at<=?",
                 command_id, tool_request_ref, request_id, revision_ref,
                 evidence_ref, request_fingerprint, account_ref, workspace_ref,
                 device_id, binding_ref, node_ref, root_ref, path_relative,
                 file_path, kind, command_text, "pending", expires_at, now,
-                user_id, run_id, "pending", now,
+                *correlation_params, "pending", now,
             )
             replaced = await self._first(
                 "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
                 "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
                 "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
-                "state, expires_at FROM oracle_mesh_dispatch WHERE user_id=? AND run_id=?",
-                user_id, run_id,
+                f"state, expires_at FROM oracle_mesh_dispatch WHERE {correlation_sql}",
+                *correlation_params,
             )
             if replaced is None:
                 raise HistoryError("oracle mesh dispatch unavailable")
@@ -1875,8 +1902,8 @@ class D1HistoryStore:
             "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
             "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
             "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
-            "state, expires_at FROM oracle_mesh_dispatch WHERE user_id=? AND run_id=?",
-            user_id, run_id,
+            f"state, expires_at FROM oracle_mesh_dispatch WHERE {correlation_sql}",
+            *correlation_params,
         )
         if created is None:
             raise HistoryError("oracle mesh dispatch unavailable")
