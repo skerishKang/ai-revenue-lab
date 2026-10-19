@@ -112,18 +112,26 @@ PADIEM_GITHUB_APP_CLIENT_SECRET
 ```
 
 `PADIEM_CHAT_AUTH_MODE=hybrid` cannot start without the Google client secret, so
-Google login, hybrid sessions, member lookup after login and GitHub connector are
-`BLOCKED_BY_SECRET`. No login or session was attempted, and no synthetic value was
-injected. Register the values through the existing hidden-input store:
+Google login, hybrid login and GitHub connector are `BLOCKED_BY_SECRET`. No
+credential login was attempted, and no synthetic secret value was injected. The
+local session mechanism itself was exercised separately in §8. Register the
+values through the existing hidden-input store:
 
 ```text
 py -3 D:\PADIEM-Servers\infrastructure\secret-store\store.py put PADIEM_CHAT_GOOGLE_CLIENT_SECRET
 py -3 D:\PADIEM-Servers\infrastructure\secret-store\store.py put PADIEM_GITHUB_APP_CLIENT_SECRET
 ```
 
-After registration, load the prepared `com2-env\chat-auth.env` (hybrid mode), start
-the same entry through `store.py run`, and verify one real browser login, the
-session cookie, and one owner-scoped member read.
+After registration, switch the stored mode with the same hidden-input command so
+`store.py run` injects it (the DPAPI value overrides the parent environment):
+
+```text
+printf '%s' hybrid | py -3 D:\PADIEM-Servers\infrastructure\secret-store\store.py put-stdin PADIEM_CHAT_AUTH_MODE
+```
+
+The non-secret values in `com2-env\chat-auth.env` remain the reference for the
+public base URL, client id and session age. Then start the same entry, and verify
+one real browser login, the session cookie, and one owner-scoped member read.
 
 ## 6. Rollback
 
@@ -137,3 +145,48 @@ generations are read-only; reverting the runtime touches no artifact.
 - No Cloudflare Worker, DNS, Tunnel, secret, D1 or R2 change.
 - No data copy, migration, restore or deletion.
 - No secret value was read, printed, committed or uploaded.
+
+## 8. Transition preflight — 2026-10-19T10:41Z
+
+After PR #5124 and #5126 merged, the actual release path was exercised on a spare
+loopback port while the live service stayed up:
+
+```text
+D:\PADIEM-Servers\b62-chat-api\start-b62-release.ps1 -Port 18765 -GenerationBind
+  -> local_b62:app via store.py run, PADIEM_B62_GENERATION_BIND=1
+```
+
+The bound listener reported:
+
+```text
+/health            200 auth_configured=true history_store_bound=true
+                   project_file_store_bound=true saved_output_store_bound=true
+                   canonical_identity_bound=true identity_shadow_bound=true
+/api/auth/status   200 ready=true history_ready=true
+                   methods={"google":false,"password":true}
+```
+
+Session behavior was checked without an external identity provider:
+
+```text
+foreign/expired cookie      -> authenticated=false session_state=expired
+locally signed session      -> authenticated=true  session_state=signed_in
+                               member profile returned (email/name/picture fields;
+                               values not printed)
+```
+
+The locally signed session is a technical check of session decode plus the D1
+member lookup using the COM2-local session secret. It is not a Google/password
+login and is not evidence of an OAuth flow.
+
+The live listener was re-read afterwards and was unchanged:
+
+```text
+18764 /health 200 all data/identity bounds=false auth_configured=false
+18764 /api/auth/status 200 ready=false history_ready=false
+```
+
+The spare listener was stopped and `18765` no longer accepts connections. The
+transition can be repeated with the same command on `18764` only after the two
+secrets in §5 are registered and the restart is explicitly authorized.
+
