@@ -151,7 +151,7 @@
     let stream = null, recorder = null, audioContext = null, analyser = null;
     let rafHandle = null, tickHandle = null, inflightController = null;
     let chunks = [], chunkStartedAt = 0, speechSeenAt = 0, lastSpeechAt = 0;
-    let utteranceSeq = 0, utteranceActive = null;
+    let utteranceSeq = 0;
 
     function emitError(code) { if (stopped) return; try { if (typeof callbacks.onError === "function") callbacks.onError(code); } catch (e) {} }
     function emitEnd() { if (stopped) return; try { if (typeof callbacks.onEnd === "function") callbacks.onEnd(); } catch (e) {} }
@@ -168,34 +168,73 @@
       }
       stream = null;
     }
-    function flushChunk(force, fromStop) {
-      if (stopped && !force) return;
-      if (halting && !force) return;
-      if (force && finalFlushDone) return;
-      if (sending) { if (force) finalFlushPending = true; return; }
-      if (force) finalFlushDone = true;
-      const held = chunks;
-      if (!held.length) return;
-      const elapsed = chunkStartedAt ? now() - chunkStartedAt : 0;
-      chunks = []; chunkStartedAt = now(); speechSeenAt = 0; lastSpeechAt = 0;
-      if (!force && elapsed < GROQ_MIN_CHUNK_MS) { chunks = held; return; }
-      if (utteranceActive === null) { utteranceSeq += 1; utteranceActive = "u" + generation + "-" + sessionToken + "-" + utteranceSeq; }
+    function retimeChunkWindow() {
+      chunkStartedAt = now(); speechSeenAt = 0; lastSpeechAt = 0;
+    }
+    function startRecorderCycle() {
+      // A timeslice continuation has no WebM init segment: only the first
+      // dataavailable event of a recorder run carries the EBML header. Each
+      // uploaded chunk therefore needs a fresh recorder run, or every chunk
+      // after the first reaches the provider undecodable.
+      chunks = [];
+      retimeChunkWindow();
+      const active = new win.MediaRecorder(stream);
+      recorder = active;
+      active.ondataavailable = function (event) {
+        if (!event || !event.data || event.data.size === 0) return;
+        chunks.push(event.data);
+      };
+      active.start(1000);
+      return active;
+    }
+    function deliverChunk(held, fromStop) {
+      if (!held.length) { sending = false; return; }
+      utteranceSeq += 1;
+      const utteranceId = "u" + generation + "-" + sessionToken + "-" + utteranceSeq;
       const blob = new win.Blob(held, { type: pickMimeType(win) || "audio/webm" });
-      sending = true;
-      const utteranceId = utteranceActive;
       sendChunk(blob, utteranceId).then(function (text) {
-        sending = false; utteranceActive = null;
+        sending = false;
         if (cancelled) return;
         if (finalFlushPending) { finalFlushPending = false; flushChunk(true, true); }
         if (!text) return;
         try { if (typeof callbacks.onFinal === "function") callbacks.onFinal({ text, utteranceId, stopped: fromStop === true || halting }); } catch (e) {}
         if (!cancelled && typeof callbacks.onTurnComplete === "function") { try { callbacks.onTurnComplete({ accepted: true, endOfTurn: true, finalId: utteranceId }); } catch (e) {} }
       }, function () {
-        sending = false; utteranceActive = null;
+        sending = false;
         if (cancelled) return;
         if (finalFlushPending) { finalFlushPending = false; flushChunk(true, true); }
         emitError(ERROR_CODES.TRANSCRIBE_FAILED);
       });
+    }
+    function flushChunk(force, fromStop) {
+      if (stopped && !force) return;
+      if (halting && !force) return;
+      if (force && finalFlushDone) return;
+      if (sending) { if (force) finalFlushPending = true; return; }
+      const active = recorder;
+      if (!active || active.state === "inactive") {
+        if (force && chunks.length) {
+          const held = chunks; chunks = []; sending = true; deliverChunk(held, true);
+        }
+        return;
+      }
+      const elapsed = chunkStartedAt ? now() - chunkStartedAt : 0;
+      if (!force && elapsed < GROQ_MIN_CHUNK_MS) return;
+      if (force) finalFlushDone = true;
+      sending = true;
+      recorder = null;
+      active.onstop = function () {
+        const held = chunks;
+        chunks = [];
+        // Restart before the upload resolves so speech during the request is
+        // still captured, each time with its own init segment.
+        if (!halting && !stopped && !cancelled) {
+          try { startRecorderCycle(); } catch (e) { emitError(ERROR_CODES.START_FAILED); }
+        }
+        deliverChunk(held, fromStop === true);
+      };
+      try { active.requestData(); } catch (e) { /* best effort */ }
+      try { active.stop(); } catch (e) { active.onstop(); }
     }
     function sendChunk(blob, utteranceId) {
       if (typeof fetchImpl !== "function") return Promise.reject(new Error("no-transport"));
@@ -249,13 +288,7 @@
           const source = audioContext.createMediaStreamSource(stream);
           analyser = audioContext.createAnalyser(); analyser.fftSize = 1024;
           source.connect(analyser);
-          chunkStartedAt = now();
-          recorder = new win.MediaRecorder(stream);
-          recorder.ondataavailable = function (event) {
-            if (stopped || !event || !event.data || event.data.size === 0) return;
-            chunks.push(event.data);
-          };
-          recorder.start(1000);
+          startRecorderCycle();
           tickHandle = setTimer(tick, 200);
           if (typeof win.requestAnimationFrame === "function") {
             rafHandle = win.requestAnimationFrame(function loop() { if (halting) return; tick(); rafHandle = win.requestAnimationFrame(loop); });
@@ -430,8 +463,11 @@
       const value = norm(p.text || p.finalText);
       if (!id || !value) return blocked("missing-id-or-text");
       if (composing) return blocked("ime-active");
-      if (outstanding) return blocked("previous-answer-pending");
+      // The app re-enables its send button when the previous answer lands; a
+      // still-busy app is the only reason a later utterance must wait.
+      if (outstanding && !ready()) return blocked("previous-answer-pending");
       if (!ready()) return blocked("not-ready");
+      outstanding = null;
       const finalKey = key + ":" + generation + ":" + id;
       if (seen.has(finalKey)) return blocked("duplicate");
       if (seen.size >= 1024) return blocked("utterance-limit");
@@ -439,8 +475,8 @@
       try {
         if (commit(value) === false) return blocked("composer-rejected");
         if (!auth() || !ready() || revoked || cancelled) return blocked("state-changed");
-        outstanding = { finalKey, accountKey: key };
         if (send(value, { finalKey, accountKey: key, sessionGeneration: generation }) === false) return blocked("send-rejected");
+        outstanding = { finalKey, accountKey: key };
       } catch (_) { return blocked("send-or-commit-error"); }
       finally { report(); }
       return { ok: true, reason: "submitted", submitted: true, finalKey };
@@ -542,6 +578,7 @@
     function buildRecognizer() {
       return createRecognizer({
         win, doc, fetchImpl, mediaDevices,
+        now: options.now,
         generation: 1,
         sessionToken: makeToken(),
         verifyIdentity,
@@ -562,7 +599,9 @@
             if (payload && payload.utteranceId != null) opts.utteranceId = String(payload.utteranceId);
             if (payload && typeof payload.text === "string") opts.text = payload.text;
             const result = adapter.commitFinal(opts);
-            if (result && result.ok) setComposerText(result.text);
+            // commitFinal() already appended to the composer; re-setting it here
+            // would replace earlier chunks with the newest one.
+            if (result && result.ok) { try { composer.dispatchEvent(new win.Event("input", { bubbles: true })); } catch (e) {} }
           },
           onTurnComplete: function (event) {
             if (mode !== "live" || !controller) return;
@@ -577,7 +616,14 @@
               text: composer.value.trim(),
             });
           },
-          onStart: function () { captureStarted = true; updateMicState(); },
+          onStart: function () {
+            // The adapter only accepts finals while it is listening. Without
+            // this, every chunk that arrives while the mic stays on is
+            // rejected as "not-listening" and live auto-send never fires.
+            if (adapter) adapter.start();
+            captureStarted = true;
+            updateMicState();
+          },
           onError: function (code) {
             recognizer = null;
             captureStarted = false;
@@ -597,7 +643,13 @@
         getInFlight: function () { return send.disabled === true; },
         getCanSubmit: function () { return send.disabled !== true && composer.value.trim().length > 0; },
         commitText: function (text) { setComposerText(text); },
-        submit: function () { clickSend(); return true; },
+        submit: function () {
+          const pending = composer.value;
+          clickSend();
+          // submitComposer() clears the input only when it actually dispatched;
+          // a null inputHandler (busy or read-only view) leaves it untouched.
+          return composer.value !== pending;
+        },
         onPreview: function () {},
         onStateChange: function () { updateMicState(); },
       });
