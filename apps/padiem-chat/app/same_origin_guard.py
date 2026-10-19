@@ -26,8 +26,10 @@ Contract
   never weakens to "allow without expectation".
 * JSON binding: a guarded request carrying a body must declare
   ``Content-Type: application/json``; a non-JSON ``Content-Type`` (form,
-  multipart, ``text/plain``) is rejected with 415. No browser route in this
-  repository parses a non-JSON body, so no multipart exception exists.
+  multipart, ``text/plain``) is rejected with 415. No *guarded* browser route in
+  this repository parses a non-JSON body. The one urlencoded browser route,
+  ``/auth/android/confirm``, is explicitly exempt (class D) and authenticates
+  with a signed handoff state plus the app-displayed code, not the cookie.
 
 Route inventory (the #3476 read-only classification, kept next to the policy)
 --------------------------------------------------------------------------
@@ -46,9 +48,15 @@ Route inventory (the #3476 read-only classification, kept next to the policy)
   the canonical Local Runner result family ``/api/claw/runs/{run_id}/local-result``
   only. The suffix alone is never an exemption: an unrelated browser route that
   happens to end with ``local-result`` stays guarded.
-* **D — OAuth callback:** ``/auth/google/callback`` is protocol authority and
-  GET-only; listed explicitly below so the exemption is visible in one place.
-  Its existing state/signature validation is unchanged.
+* **D — OAuth callback / Android handoff confirm:** ``/auth/google/callback`` is
+  protocol authority and GET-only; listed explicitly below so the exemption is
+  visible in one place. Its existing state/signature validation is unchanged.
+  ``/auth/android/confirm`` is a POST-only, urlencoded form target rendered by
+  the Google callback in the *external* browser, which may still carry an
+  unrelated stale session cookie. It sets no cookie and authenticates with the
+  signed handoff state plus the code shown inside the app (bound to the
+  pending user row), so ambient cookie authority is never consulted. The
+  exemption is exact-path, not prefix-based.
 * **E — private Engine / Control Plane ingress:** not present in this app's
   route table; there is nothing to exempt and no browser guard is applied to
   any such route should one be added later (it must be registered as an
@@ -94,6 +102,13 @@ SERVER_TO_SERVER_EXEMPT_PATH_PREFIXES: tuple[str, ...] = (
     # Class D: OAuth provider callback (GET-only protocol authority).
     "/auth/google/callback",
 )
+# Exact-path exemptions for browser-facing protocol endpoints that carry no
+# ambient cookie authority. Exact matching keeps a lookalike route guarded.
+PROTOCOL_EXEMPT_PATHS: tuple[str, ...] = (
+    # Android external-browser return: signed handoff state + app-shown code.
+    "/auth/android/confirm",
+)
+
 # Trusted Local Runner result ingress (see claw_local_task_result_routes),
 # authenticated by its own run/owner authority. Split out of the route's own path
 # template so the exemption can neither drift from the route nor widen past it.
@@ -144,6 +159,8 @@ def is_local_runner_result_ingress(path: str) -> bool:
 
 def is_exempt_path(path: str) -> bool:
     """True for explicitly exempt non-browser ingress paths (classes C/D)."""
+    if path in PROTOCOL_EXEMPT_PATHS:
+        return True
     for prefix in SERVER_TO_SERVER_EXEMPT_PATH_PREFIXES:
         if path.startswith(prefix):
             return True
@@ -260,6 +277,7 @@ __all__ = [
     "MUTATING_METHODS",
     "ORIGIN_GUARD_UNAVAILABLE_CODE",
     "ORIGIN_REJECTED_CODE",
+    "PROTOCOL_EXEMPT_PATHS",
     "SERVER_TO_SERVER_EXEMPT_PATH_PREFIXES",
     "SameOriginGuardMiddleware",
     "expected_browser_origin",

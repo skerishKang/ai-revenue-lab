@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 ROOT = Path(__file__).resolve().parents[1]
 CAPABILITIES_JS = (ROOT / "static/attachment-capabilities.js").read_text(encoding="utf-8")
 APP_JS = (ROOT / "static/app.js").read_text(encoding="utf-8")
@@ -98,8 +100,9 @@ def test_readme_matches_current_ephemeral_composer_contract():
 
 def test_no_hidden_browser_persistence_or_interception_added():
     combined = CAPABILITIES_JS + "\n" + APP_JS + "\n" + BINARY_JS + "\n" + LOCALE_JS
-    for forbidden in ["localStorage", "sessionStorage", "indexedDB", "cookieStore", "window.fetch =", "MutationObserver"]:
+    for forbidden in ["localStorage", "indexedDB", "cookieStore", "window.fetch =", "MutationObserver"]:
         assert forbidden not in combined
+    assert_session_storage_is_handoff_only(combined)
 
 
 def test_document_starter_formats_break_only_at_explicit_separators():

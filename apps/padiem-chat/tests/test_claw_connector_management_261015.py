@@ -1,6 +1,8 @@
 """Connector management must separate reversible usage toggle from OAuth credential removal."""
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 MANAGER = (STATIC / "claw-connector-management.js").read_text(encoding="utf-8")
@@ -29,7 +31,7 @@ def test_main_off_first_use_starts_real_provider_not_connector_workspace():
     assert 'beginGoogleDriveConnect()' in APP
     assert '"/api/connectors/github/start"' in GUIDE
     assert 'window.location.assign("/api/connectors/github/start")' in GUIDE
-    assert 'sessionStorage' not in APP
+    assert_session_storage_is_handoff_only(APP)
     assert 'openConnectorsDialog()' in APP
     assert 'claw-github=connected' in APP
     assert 'window.history.replaceState' in APP

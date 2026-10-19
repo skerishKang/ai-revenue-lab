@@ -22,6 +22,8 @@ the shipped source.
 
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 APP_JS = Path(__file__).resolve().parents[1] / "static" / "app.js"
 AUTOMATION_HASH = "#padiem-automation"
 CLAW_HASH = "#padiem-claw"
@@ -69,7 +71,7 @@ def test_boot_restores_both_routes() -> None:
 def test_route_carries_no_identity_or_storage() -> None:
     src = _source()
     assert "localStorage" not in src
-    assert "sessionStorage" not in src
+    assert_session_storage_is_handoff_only(src)
     # The fragment is a fixed destination name, never a composed identity.
     for banned in ("userId", "sessionToken", "conversationId", "deviceId"):
         assert f"CLAW_ROUTE_HASH + {banned}" not in src

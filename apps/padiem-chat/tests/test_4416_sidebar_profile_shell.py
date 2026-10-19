@@ -2,6 +2,8 @@
 from pathlib import Path
 from html.parser import HTMLParser
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 BASE = Path(__file__).resolve().parents[1] / "static"
 HTML = (BASE / "index.html").read_text(encoding="utf-8")
 APP = (BASE / "app.js").read_text(encoding="utf-8")
@@ -46,7 +48,7 @@ def test_mobile_menu_and_authority_are_unchanged():
     assert 'mobileMenu.addEventListener("click", openSidebar)' in APP
     assert 'mobileClose.addEventListener("click", closeSidebar)' in APP
     assert "localStorage" not in APP
-    assert "sessionStorage" not in APP
+    assert_session_storage_is_handoff_only(APP)
     assert "fetch(" not in CSS.split("#4416:", 1)[1]
     assert "max-width: 920px" in CSS
     assert "min-width: 921px" in CSS
