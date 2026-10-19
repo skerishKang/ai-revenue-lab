@@ -1,10 +1,10 @@
 # B68 — AI Color Lens Discovery + Virtual Try-On
 
-Status: **DISCOVERY / VALIDATION**  
-Business ID: **B68**  
-Master issue: **#3342**  
-Primary market: **Saudi Arabia**  
-Secondary market / partner hub: **UAE, then GCC**  
+Status: **DISCOVERY / VALIDATION**
+Business ID: **B68**
+Master issue: **#3342**
+Primary market: **Saudi Arabia**
+Secondary market / partner hub: **UAE, then GCC**
 Working product name: **Padiem Lens** (working name only)
 
 ---
