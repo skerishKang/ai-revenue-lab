@@ -198,7 +198,12 @@ def _optional_number(
         raise B66QuoteConversationError(
             "invalid_number", path=path, observed_type=_json_type_name(value)
         )
-    number = float(value)
+    try:
+        number = float(value)
+    except OverflowError:
+        raise B66QuoteConversationError(
+            "invalid_number", path=path, observed_type=_json_type_name(value)
+        )
     if not math.isfinite(number):
         raise B66QuoteConversationError(
             "invalid_number", path=path, observed_type=_json_type_name(value)

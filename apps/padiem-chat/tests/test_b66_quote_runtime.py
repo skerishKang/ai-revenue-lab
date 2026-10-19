@@ -881,3 +881,14 @@ def test_invalid_supplied_partial_facts_still_fail_closed(field, invalid, scope)
         raw["detailGroups"] = [{"summaryIndex": 1, "items": [item]}]
     with pytest.raises(B66QuoteConversationError, match="invalid_text|invalid_number"):
         normalize_conversation_output(raw)
+
+
+def test_out_of_range_model_number_fails_bounded():
+    """A model number beyond float range must fail as invalid_number (#3522 lineage)."""
+    for field in ("qty", "unitPrice"):
+        raw = {
+            "recipient": {"person": "Synthetic recipient"},
+            "items": [{"name": "Synthetic item", "qty": 1, "unitPrice": 1200, field: 10**400}],
+        }
+        with pytest.raises(B66QuoteConversationError, match="invalid_number"):
+            normalize_conversation_output(raw)
