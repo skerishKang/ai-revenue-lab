@@ -600,3 +600,57 @@ def test_files_target_alias_cannot_authorize_a_different_pc_plan():
             plan, {"files": {"device_id": "office-pc"}},
         )
     assert caught.value.code == "invalid_tool_arguments"
+
+
+@pytest.mark.parametrize("upstream_code,expected_stage", (
+    ("oracle_mesh_file_path_invalid", "pc_files_path_invalid"),
+    ("oracle_mesh_file_call_invalid", "pc_files_call_invalid"),
+    ("oracle_mesh_device_directory_unavailable", "pc_files_owner_unavailable"),
+    ("canonical_session_required", "pc_files_owner_unavailable"),
+    ("PRIVATE_DOWNSTREAM_ERROR_FROM_UNTRUSTED_SOURCE", "pc_files_denied"),
+))
+def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
+    upstream_code, expected_stage, capsys,
+):
+    """No command replay, error-message disclosure or generic tool_failed."""
+    from app.claw_pc_query_step_driver import _signed_files_call
+    from padiem_ai_core.tool_runtime import ToolHandlerError
+
+    class DeniedResponse:
+        status = 422
+
+        async def text(self):
+            return json.dumps({
+                "ok": False,
+                "error": {
+                    "code": upstream_code,
+                    "message": "PRIVATE_PATH_AND_CUSTOMER_CONTENT_MUST_NOT_LEAK",
+                },
+            })
+
+    class DeniedService:
+        def __init__(self):
+            self.calls = 0
+
+        async def fetch(self, js_object):
+            self.calls += 1
+            return DeniedResponse()
+
+    service = DeniedService()
+    with pytest.raises(ToolHandlerError) as caught:
+        asyncio.run(_signed_files_call(
+            service=service,
+            request_factory=lambda url, **kwargs: SimpleNamespace(
+                js_object={"body": kwargs["body"]},
+            ),
+            secret="s" * 32,
+            owner=("sub_" + "a" * 32, "run_5015", "b54-padiem-claw", "office-pc"),
+            mode="dispatch",
+            payload={"op": "read", "path": "sample.txt", "tool_call_ref": "run_5015:read:abc"},
+        ))
+    assert caught.value.code == expected_stage
+    assert service.calls == 1
+    log = capsys.readouterr().out
+    assert "stage=" + expected_stage in log
+    assert "PRIVATE_" not in log
+    assert "sample.txt" not in log
