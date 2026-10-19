@@ -95,3 +95,39 @@ EVIDENCE=테스트/로그/PR/실행 식별자(비밀 제외)
 | B14 | `B14_E2E=NOT_RUN` | BYOK 경로의 B14 호출 0회만 검증 |
 
 `LIVE_VERIFIED=NO`: 승인되지 않은 유료/실제 공급사 호출은 수행하지 않았다.
+
+## #5121 BYOK 암호화 키 독립화 (2026-10-19)
+
+`apps/padiem-chat/app/byok_credentials.py`는 이제 고객 공급사 키를
+`PADIEM_CHAT_CUSTOM_KEY_SECRET`에서 파생한 전용 AES-GCM 키(v2 purpose)로
+봉인한다. 세션 쿠키 Secret은 새 암호문의 키가 아니다.
+
+| Secret/설정 | 역할 |
+|---|---|
+| `PADIEM_CHAT_CUSTOM_KEY_SECRET` | 현재 쓰기·읽기 키. 32자 이상 |
+| `PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS` | 교체된 전용 Secret의 쉼표 목록. v2 복호화 전용 |
+| `PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS` | 분리 이전 session_secret의 쉼표 목록. v1 복호화 전용 |
+
+- 현재 `PADIEM_CHAT_SESSION_SECRET`도 v1 복호화 후보에 자동 포함된다.
+- 읽기 시 현재 키 → 이전 전용 키 → legacy session 키 순서로 시도하고, 이전 키로
+  열린 행은 `sealed_credential`만 현재 키로 재봉인한다. `key_last4`/`created_at`/
+  `updated_at`은 유지한다.
+- AAD는 `padiem-custom:{user_id}:{provider_id}`로 유지된다.
+- 전용 Secret이 없거나 32자 미만이면 저장소를 구성하지 않아
+  `/api/chat/custom/*`와 BYOK 채팅이 503으로 fail-closed 된다.
+- 모든 키로 복호화할 수 없으면 `CustomCredentialDecryptionError`로 503 처리하며
+  원문·키·봉인문은 응답/로그에 포함하지 않는다.
+
+단계적 전환 순서(운영 Secret 등록·배포는 별도 승인 작업):
+
+1. `PADIEM_CHAT_CUSTOM_KEY_SECRET`을 등록한다.
+2. 현재 세션 Secret이 그대로인 상태에서 배포하면 기존 v1 행이 자동으로 읽히고
+   v2로 재봉인된다.
+3. 세션 Secret을 먼저 교체한 경우 이전 값을
+   `PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS`에 넣어 배포한다.
+4. 재봉인이 끝난 것을 확인한 뒤 legacy 목록을 제거한다.
+5. 전용 Secret 교체 시 이전 값을 `PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS`에 둔 채
+   새 값을 배포하고, 이후 이전 값 목록을 제거한다.
+
+검증: `apps/padiem-chat/tests/test_5121_byok_key_separation.py` (`byok_direct`).
+이 문서는 소스·테스트 기준이며, 운영 Secret 등록과 배포 완료를 뜻하지 않는다.

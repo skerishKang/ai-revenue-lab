@@ -792,18 +792,25 @@ def create_app(
     app.state.github_oauth_store = github_oauth_store
     app.state.github_oauth_provider = github_oauth_provider
     # #5121: owner-scoped customer-provider keys live in the canonical Chat D1,
-    # sealed with a purpose-separated key derived from the existing session
-    # secret. No second identity, login or secret store is introduced.
+    # sealed with a dedicated encryption secret that is separate from the
+    # session-cookie secret. The session secret is consulted only to read
+    # pre-separation v1 rows, which are then re-sealed under the dedicated key.
+    # A missing or unusable dedicated secret leaves the feature unavailable
+    # (fail closed) instead of silently deriving from the session secret.
     resolved_custom_store = custom_credential_store
     if (
         resolved_custom_store is None
         and d1_binding is not None
-        and isinstance(resolved.session_secret, str)
-        and resolved.session_secret
+        and isinstance(resolved.custom_key_secret, str)
+        and resolved.custom_key_secret
     ):
         try:
             resolved_custom_store = D1CustomProviderCredentialStore(
-                d1_binding, session_secret=resolved.session_secret
+                d1_binding,
+                key_secret=resolved.custom_key_secret,
+                session_secret=resolved.session_secret,
+                previous_key_secrets=resolved.custom_key_previous_secrets,
+                legacy_session_secrets=resolved.custom_key_legacy_session_secrets,
             )
         except Exception:
             resolved_custom_store = None

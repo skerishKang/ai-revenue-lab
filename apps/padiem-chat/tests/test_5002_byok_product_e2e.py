@@ -33,6 +33,7 @@ from app.history import D1HistoryStore, PRODUCT_SCOPE_CHAT
 from app.main import create_app
 
 SESSION_SECRET = "byok-5002-product-e2e-session-secret"
+CUSTOM_KEY_SECRET = "byok-5002-product-e2e-custom-key-secret"
 CUSTOM_KEY = "sk-customer-owned-5002-key-AAAA1111"
 OTHER_KEY = "sk-customer-owned-5002-key-BBBB2222"
 ROTATED_KEY = "sk-customer-owned-5002-key-CCCC3333"
@@ -60,6 +61,7 @@ def settings() -> Settings:
         google_client_id="5002-client.apps.googleusercontent.com",
         google_client_secret="unit-test-google-secret",
         session_secret=SESSION_SECRET,
+        custom_key_secret=CUSTOM_KEY_SECRET,
         session_max_age_seconds=3600,
     )
 
@@ -239,7 +241,10 @@ def build_app(recorder=None):
     d1 = SQLiteD1()
     history = D1HistoryStore(d1)
     credential_store = D1CustomProviderCredentialStore(
-        d1, session_secret=SESSION_SECRET, cipher=FakeAuthenticatedCipher()
+        d1,
+        key_secret=CUSTOM_KEY_SECRET,
+        session_secret=SESSION_SECRET,
+        cipher=FakeAuthenticatedCipher(),
     )
     recorder = recorder or ProviderRecorder()
     app = create_app(

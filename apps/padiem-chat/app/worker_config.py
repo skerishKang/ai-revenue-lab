@@ -24,6 +24,9 @@ WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_GOOGLE_CLIENT_ID",
     "PADIEM_CHAT_GOOGLE_CLIENT_SECRET",
     "PADIEM_CHAT_SESSION_SECRET",
+    "PADIEM_CHAT_CUSTOM_KEY_SECRET",
+    "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS",
+    "PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS",
     "PADIEM_CHAT_SESSION_MAX_AGE_SECONDS",
     "PADIEM_CHAT_QUOTA_SALT",
     "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
@@ -217,6 +220,13 @@ def settings_from_worker_bindings(
         google_client_id=binding_value(env, "PADIEM_CHAT_GOOGLE_CLIENT_ID"),
         google_client_secret=binding_value(env, "PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
         session_secret=binding_value(env, "PADIEM_CHAT_SESSION_SECRET"),
+        custom_key_secret=binding_value(env, "PADIEM_CHAT_CUSTOM_KEY_SECRET"),
+        custom_key_previous_secrets=binding_value(
+            env, "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS"
+        ),
+        custom_key_legacy_session_secrets=binding_value(
+            env, "PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS"
+        ),
         session_max_age_seconds=binding_value(env, "PADIEM_CHAT_SESSION_MAX_AGE_SECONDS") or str(7 * 24 * 3600),
         quota_salt=binding_value(env, "PADIEM_CHAT_QUOTA_SALT"),
         anonymous_burst_limit=binding_value(env, "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT") or "4",

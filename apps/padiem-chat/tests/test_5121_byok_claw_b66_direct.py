@@ -21,6 +21,7 @@ from app.byok_credentials import D1CustomProviderCredentialStore
 from app.main import create_app
 from test_5121_byok_chat_direct import (
     CUSTOM_KEY,
+    CUSTOM_KEY_SECRET,
     MODEL_ID,
     ORIGIN,
     OWNER,
@@ -118,7 +119,10 @@ def build_app(
     history.add_user(OWNER)
     d1 = d1 or SQLiteD1()
     credential_store = D1CustomProviderCredentialStore(
-        d1, session_secret=SESSION_SECRET, cipher=FakeAuthenticatedCipher()
+        d1,
+        key_secret=CUSTOM_KEY_SECRET,
+        session_secret=SESSION_SECRET,
+        cipher=FakeAuthenticatedCipher(),
     )
     recorder = recorder or ProviderRecorder()
     app = create_app(
@@ -153,28 +157,30 @@ def provider_json(payload: dict) -> ProviderRecorder:
 
 
 @pytest.mark.asyncio
-async def test_session_secret_rotation_makes_existing_keys_unreadable():
-    """Rotating the product secret must fail closed, not decrypt with a new key.
+async def test_session_secret_rotation_keeps_dedicated_key_readable():
+    """Rotating the session secret must not affect BYOK rows.
 
-    The sealed key is derived from ``session_secret``; a rotated secret cannot
-    open an older row. The store returns ``None`` (never an exception or a
-    guessed key), so every product answers ``custom_credential_required`` and
-    the owner has to re-register. A decrypt-only previous-secret keyring is the
-    minimal remediation; it is deliberately not added here.
+    The sealed key is derived from the dedicated Custom key secret, so a new
+    session secret still opens the same row. Legacy v1 rows and their explicit
+    compatibility ring are verified in ``test_5121_byok_key_separation.py``.
     """
     d1 = SQLiteD1()
     before = D1CustomProviderCredentialStore(
-        d1, session_secret=SESSION_SECRET, cipher=FakeAuthenticatedCipher()
+        d1,
+        key_secret=CUSTOM_KEY_SECRET,
+        session_secret=SESSION_SECRET,
+        cipher=FakeAuthenticatedCipher(),
     )
     await before.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
     assert await before.api_key(OWNER, PROVIDER_ID) == CUSTOM_KEY
 
     rotated = D1CustomProviderCredentialStore(
         d1,
+        key_secret=CUSTOM_KEY_SECRET,
         session_secret=SESSION_SECRET + "-rotated",
         cipher=FakeAuthenticatedCipher(),
     )
-    assert await rotated.api_key(OWNER, PROVIDER_ID) is None
+    assert await rotated.api_key(OWNER, PROVIDER_ID) == CUSTOM_KEY
     assert d1.sealed_values()
 
 
