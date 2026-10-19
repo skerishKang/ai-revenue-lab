@@ -161,8 +161,10 @@ async def verify_pc_query_run_correlation(
         )
 
     row_run_id = row.get("run_id")
-    if isinstance(row_run_id, str) and row_run_id and row_run_id != bounded_run:
-        # The row the store returned is not the requested run.
+    if row_run_id != bounded_run:
+        # The row the store returned must be exactly the requested run. A
+        # missing, empty or different run id is refused here, so a row that
+        # cannot prove which run it is never reaches the link check.
         return PcQueryRunCorrelation(
             run_id=bounded_run,
             user_id=bounded_user,

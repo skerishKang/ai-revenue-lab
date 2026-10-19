@@ -336,3 +336,24 @@ def test_a_row_for_another_run_is_refused() -> None:
     assert verdict.status == CORRELATION_RUN_MISMATCH
     assert verdict.correlated is False
     assert verdict.conversation_id is None
+
+
+@pytest.mark.parametrize("row_run_id", [None, ""])
+def test_a_row_without_a_usable_run_id_is_refused(row_run_id) -> None:
+    """A missing or empty run id cannot prove which run the row is."""
+
+    class _UnusableRunIdStore:
+        async def get_claw_run(self, user_id, run_id):
+            return {
+                "run_id": row_run_id,
+                "conversation_id": "chat_" + "b" * 32,
+                "workspace_id": WORKSPACE,
+            }
+
+    outcome = _run_assembly(RUN_ID)
+    verdict = asyncio.run(verify_pc_query_run_correlation(
+        store=_UnusableRunIdStore(), user_id=OWNER, run_id=RUN_ID, outcome=outcome,
+    ))
+    assert verdict.status == CORRELATION_RUN_MISMATCH
+    assert verdict.correlated is False
+    assert verdict.conversation_id is None
