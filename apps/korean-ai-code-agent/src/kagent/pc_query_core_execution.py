@@ -27,6 +27,10 @@ provider, the Control Plane or the Engine, and it is not wired to the live
 Chat/Claw routes yet. The tool runtime and the step selector are injected, so
 the same assembly serves an offline synthetic tool today and the real signed
 callback later.
+
+Correlation scope: this assembly proves the **run id** correlation. It carries
+no product session or conversation id, so a session/conversation correlation
+is not implemented here and stays follow-up work.
 """
 
 from __future__ import annotations
@@ -46,6 +50,7 @@ from .pc_query_adapter import (
     StructuredPCQueryStepDriver,
     pc_query_agent_plan,
     pc_query_plan_arguments,
+    validate_pc_query_product_identity,
 )
 
 # The model step selector is an injection point: the product owns the model
@@ -60,6 +65,11 @@ class PcQueryCoreRequest:
     ``tool_runtime`` is the Core runtime that already carries the product's
     registered tools; ``subject_id``, ``run_id`` and ``device_id`` are
     server-owned values resolved by the product's own authority path.
+
+    Correlation scope: this request carries no session or conversation id, so
+    the correlation this slice proves is the **run id** (subject, product and
+    target included). Binding a product session/conversation to the run is
+    not implemented here and stays follow-up work.
     """
 
     contract: PcQueryProductContract
@@ -73,7 +83,13 @@ class PcQueryCoreRequest:
 
 @dataclass(frozen=True, slots=True)
 class PcQueryCoreOutcome:
-    """The verified outcome of one product-side PC query run."""
+    """The verified outcome of one product-side PC query run.
+
+    Correlation scope: the outcome proves the run id correlation (run id,
+    product, agent, target and the tool events of that run). It carries no
+    session or conversation id, so a product session/conversation correlation
+    is not part of this slice.
+    """
 
     run_id: str
     product_app_id: str
@@ -98,6 +114,12 @@ def _validate_contract(contract: PcQueryProductContract) -> None:
     """Fail closed when a product contract is mixed with another product."""
     if not isinstance(contract, PcQueryProductContract):
         raise ValueError("contract must be PcQueryProductContract")
+    # A self-consistent contract is not enough: the product app and the agent
+    # must also be one of the reviewed pairs, so a crossed pair (Chat app with
+    # the Claw agent, or the reverse) never reaches a tool.
+    validate_pc_query_product_identity(
+        app_id=contract.app_id, agent_id=contract.agent_id,
+    )
     if contract.authorization.app_id != contract.app_id:
         raise ValueError("contract authorization does not belong to the product app")
     if contract.authorization.agent_id != contract.compiled.runtime_profile.id:
@@ -124,6 +146,10 @@ async def run_pc_query_with_core(
       and target the product resolved;
     * the tool result is re-fed into the next step by the Core runtime, and
       the completed answer is the model's own completion decision.
+
+    The proven correlation is the **run id**. A product session/conversation
+    correlation is not implemented in this slice: the request and the outcome
+    carry no session id, and binding one is follow-up work.
     """
     if not isinstance(request, PcQueryCoreRequest):
         raise ValueError("request must be PcQueryCoreRequest")

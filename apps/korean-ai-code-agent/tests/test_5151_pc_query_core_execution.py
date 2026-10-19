@@ -215,6 +215,63 @@ def test_mixed_product_contract_fails_closed() -> None:
         ))
 
 
+@pytest.mark.parametrize(
+    "app_id,agent_id",
+    [
+        (CHAT, product_adapter.PC_QUERY_AGENT_ID),
+        (CLAW, product_adapter.CHAT_PC_QUERY_AGENT_ID),
+    ],
+)
+def test_contract_builder_refuses_a_crossed_product_pair(app_id, agent_id) -> None:
+    """A Chat app id with the Claw agent id (or the reverse) is refused."""
+    with pytest.raises(ValueError):
+        _contract(app_id, agent_id)
+
+
+def test_execution_refuses_a_crossed_product_pair_even_when_self_consistent() -> None:
+    """Self-consistency is not enough: only a reviewed app/agent pair passes."""
+    chat = _contract(CHAT, product_adapter.CHAT_PC_QUERY_AGENT_ID)
+    crossed = product_adapter.PcQueryProductContract(
+        app_id=CHAT,
+        agent_id=product_adapter.PC_QUERY_AGENT_ID,
+        definition=chat.definition,
+        compiled=chat.compiled,
+        authorization=chat.authorization,
+        registry_entries=chat.registry_entries,
+    )
+    with pytest.raises(ValueError):
+        asyncio.run(run_pc_query_with_core(
+            request=PcQueryCoreRequest(
+                contract=crossed,
+                tool_runtime=_synthetic_runtime([]),
+                input_text=INPUT_TEXT,
+                run_id=RUN_ID,
+                subject_id=SUBJECT_ID,
+                device_id=DEVICE_ID,
+            ),
+            select_step=_RecordingStepSelector(),
+        ))
+
+
+def test_reviewed_product_pairs_are_accepted() -> None:
+    """The two reviewed pairs keep working end to end."""
+    for app_id, agent_id in product_adapter.PC_QUERY_PRODUCT_AGENTS.items():
+        outcome = asyncio.run(run_pc_query_with_core(
+            request=PcQueryCoreRequest(
+                contract=_contract(app_id, agent_id),
+                tool_runtime=_synthetic_runtime([]),
+                input_text=INPUT_TEXT,
+                run_id=RUN_ID,
+                subject_id=SUBJECT_ID,
+                device_id=DEVICE_ID,
+            ),
+            select_step=_RecordingStepSelector(),
+        ))
+        assert outcome.product_app_id == app_id
+        assert outcome.agent_id == agent_id
+        assert outcome.completed is True
+
+
 @pytest.mark.parametrize("path", [ADAPTER_PATH, EXECUTION_PATH])
 def test_product_side_modules_import_no_engine_application_module(path: Path) -> None:
     """The product side must not reach back into the Engine app."""

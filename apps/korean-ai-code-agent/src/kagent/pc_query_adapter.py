@@ -72,6 +72,14 @@ PC_QUERY_CANONICAL_AGENT_ID = "agent:padiem:claw-pc-query@1"
 # and the signed callback resolve the Chat product, user and conversation.
 CHAT_APP_ID = "padiem-chat"
 CHAT_PC_QUERY_AGENT_ID = "agent:padiem:chat-pc-query@1"
+# The only product app / agent pairs this PC query contract may be built for.
+# One product can never borrow the other's identity: a Chat app id with the
+# Claw agent id (or the reverse) is refused before a tool is registered, so an
+# internally consistent but crossed contract cannot pass.
+PC_QUERY_PRODUCT_AGENTS: Mapping[str, str] = {
+    CLAW_APP_ID: PC_QUERY_AGENT_ID,
+    CHAT_APP_ID: CHAT_PC_QUERY_AGENT_ID,
+}
 PC_DRIVES_TOOL_ID = "claw.pc.query_drives"
 PC_DRIVES_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-query-drives@1"
 PC_LIST_FILES_TOOL_ID = "claw.pc.list_files"
@@ -96,6 +104,21 @@ PC_QUERY_OWNER: ContextVar[tuple[str, str, str, str | None] | None] = ContextVar
 
 class PCQueryStepError(ValueError):
     pass
+
+
+def validate_pc_query_product_identity(*, app_id: str, agent_id: str) -> None:
+    """Fail closed unless the product app and agent are a reviewed pair.
+
+    An internally consistent contract (matching authorization, profile and
+    plan) is not enough on its own: a crossed pair such as the Chat app id
+    with the Claw agent id would still be self-consistent. Only the pairs in
+    :data:`PC_QUERY_PRODUCT_AGENTS` may be used.
+    """
+    expected = PC_QUERY_PRODUCT_AGENTS.get(app_id)
+    if expected is None:
+        raise ValueError("pc query product app is not a reviewed product")
+    if expected != agent_id:
+        raise ValueError("pc query product app and agent are not a reviewed pair")
 
 
 def selected_device_id(arguments: Any) -> str | None:
@@ -325,6 +348,7 @@ class PcQueryProductContract:
 
 def build_pc_query_product_contract(*, app_id: str, agent_id: str) -> PcQueryProductContract:
     """Compile the product agent, policy and authorization for one lane."""
+    validate_pc_query_product_identity(app_id=app_id, agent_id=agent_id)
     definition = pc_query_agent_definition(agent_id)
     compiled = compile_agent_profile(definition, pc_query_agent_policy())
     return PcQueryProductContract(
@@ -464,6 +488,7 @@ __all__ = [
     "PC_QUERY_AGENT_ID",
     "PC_QUERY_CANONICAL_AGENT_ID",
     "PC_QUERY_OWNER",
+    "PC_QUERY_PRODUCT_AGENTS",
     "PC_QUERY_SCOPE",
     "PC_READ_FILE_CANONICAL_TOOL_ID",
     "PC_READ_FILE_SCOPE",
@@ -487,4 +512,5 @@ __all__ = [
     "register_pc_query_drives_tool",
     "selected_device_id",
     "signed_chat_call",
+    "validate_pc_query_product_identity",
 ]
