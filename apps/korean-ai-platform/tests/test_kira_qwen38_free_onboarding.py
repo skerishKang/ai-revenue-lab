@@ -26,6 +26,7 @@ MODEL="kira/qwen3.8-flash-free"
 UPSTREAM="qwen3.8-flash-free"
 ORIGIN="https://kiraai.vn/api/v1"
 BINDING="PADIEM_B14_CREDENTIAL_09"
+SECRET_NAME="PADIEM_KIRAAI_API_KEY"
 
 @pytest.fixture
 def live(monkeypatch):
@@ -101,7 +102,7 @@ def test_store_binding_is_metadata_only_and_registered_in_worker():
     assert len(bindings)>=10
     assert len({b["binding"] for b in bindings})==len(bindings)
     assert toml.count('binding = "'+BINDING+'"')==1
-    assert toml.count('secret_name = "'+BINDING+'"')==1
+    assert toml.count('secret_name = "'+SECRET_NAME+'"')==1
     assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in toml
     assert '"'+BINDING+'"' in worker
     spec=get_platform_provider("kira")
