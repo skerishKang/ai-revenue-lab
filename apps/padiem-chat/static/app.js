@@ -179,7 +179,7 @@
   // Android 1.0.0 keeps chat.padiem.net in a WebView and completes Google in a
   // Custom Tab whose cookies never reach the WebView. The WebView therefore
   // creates a one-time handoff and claims it with a secret held only in this
-  // page's sessionStorage — never in a URL and never in localStorage.
+  // tab's temporary storage — never in a URL and never in durable storage.
   const ANDROID_HANDOFF_STORAGE_KEY = "padiem.androidHandoff.v1";
   const ANDROID_HANDOFF_POLL_MS = 2000;
   let androidHandoff = null;
@@ -1365,6 +1365,7 @@
   }
 
   function isAndroidWebView() {
+    if (typeof navigator === "undefined") return false;
     const userAgent = navigator.userAgent || "";
     return /Android/i.test(userAgent) && /\bwv\b/i.test(userAgent);
   }

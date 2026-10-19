@@ -35,6 +35,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -111,8 +113,9 @@ def test_consumes_the_existing_owner_scoped_route_without_new_authority() -> Non
 def test_presentation_does_not_mint_run_truth_in_the_browser() -> None:
     app = _app_source()
     # No local persistence, no interception, no client-side identity/authority.
-    for token in ("localStorage", "sessionStorage", "indexedDB", "cookieStore", "caches.open", "MutationObserver", "window.fetch ="):
+    for token in ("localStorage", "indexedDB", "cookieStore", "caches.open", "MutationObserver", "window.fetch ="):
         assert token not in app
+    assert_session_storage_is_handoff_only(app)
     for token in ("user_id", "workspace_id", "tenant_id"):
         assert token not in app
     # The client never derives run status: unknown tokens stay raw, never "completed".

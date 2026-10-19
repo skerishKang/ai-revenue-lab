@@ -14,6 +14,7 @@ import re
 import subprocess
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
@@ -720,9 +721,9 @@ def test_app_exposes_a_narrow_injection_seam_with_no_transport() -> None:
         "EventSource",
         "crypto.subtle",
         "localStorage",
-        "sessionStorage",
     ):
         assert forbidden not in app, f"{forbidden} must not be introduced by #3084"
+    assert_session_storage_is_handoff_only(app)
 
 
 def test_app_cta_handler_refuses_when_the_projection_is_not_proceedable() -> None:

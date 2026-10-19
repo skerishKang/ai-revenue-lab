@@ -48,6 +48,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 LOCALE_JS = ROOT / "static/locale.js"
@@ -209,11 +211,11 @@ def test_browser_never_mints_a_conversation_id() -> None:
         "crypto.",
         '"chat_"',
         "'chat_'",
-        "sessionStorage",
         "localStorage",
         "XMLHttpRequest",
     ):
         assert token not in app, token
+    assert_session_storage_is_handoff_only(app)
 
 
 # ── static structural contracts: run-card session action ───────────────────

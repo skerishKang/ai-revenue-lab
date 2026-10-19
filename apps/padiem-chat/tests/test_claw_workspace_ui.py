@@ -14,6 +14,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -99,5 +101,6 @@ def test_preview_endpoint_and_safe_dom_sinks_preserved() -> None:
     assert "/api/claw/manual-intake/preview" in APP
     assert "clawResultPreview.textContent =" in APP
     assert "clawResultPreview.innerHTML" not in APP
-    for token in ("localStorage", "sessionStorage", "indexedDB", "cookieStore", "caches.open"):
+    for token in ("localStorage", "indexedDB", "cookieStore", "caches.open"):
         assert token not in APP
+    assert_session_storage_is_handoff_only(APP)
