@@ -83,7 +83,7 @@ Every device call is the same closed envelope, sent through the private service 
 - `tls_verified` must be `true`; the outer edge terminates and verifies TLS.
 - `method` must be `POST`; every route requires a JSON object body carrying `binding_ref` and `credential_b64`.
 - Bodies are bounded; unknown envelope keys, routes or content types fail closed.
-- Routes: `/session`, `/poll`, `/material`, `/heartbeat`, `/acknowledge`, `/reconcile`, `/office-part`, `/text-result`, `/execution-profile`, `/android-profile`.
+- Routes: `/session`, `/poll`, `/material`, `/heartbeat`, `/acknowledge`, `/admission`, `/reconcile`, `/office-part`, `/text-result`, `/execution-profile`, `/android-profile`.
 
 ## 4. SAF folder declaration — `POST /android-profile`
 

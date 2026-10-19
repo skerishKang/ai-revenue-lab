@@ -305,6 +305,9 @@ def test_reconcile_route_reaches_canonical_reconciliation_through_the_private_ed
             # #5080: the authenticated Android SAF folder declaration route.
             # It is the same private edge and the same canonical list.
             "/android-profile",
+            # #5080: server-owned admission for the Android SAF lane, reachable
+            # through the same private edge and canonical list.
+            "/admission",
         }
     )
     assert len(set(device_http.DEVICE_HTTP_ROUTES)) == len(device_http.DEVICE_HTTP_ROUTES)
