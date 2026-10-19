@@ -149,13 +149,16 @@ python scripts/ops/d1_restore_verify.py \
 ### #5096 COM2 백업 구현
 
 - `apps/com2-backup`과 `scripts/ops/com2_backup.py` 소스는 병합되어 있습니다.
-- Worker는 배포되지 않았고 `COM2_BACKUP_ENABLED` 게이트는 꺼져 있으며 Secret도
-  생성되지 않았습니다. 현재 상태로는 라이브 복구 경로가 아닙니다.
+- PR #5110에서 Worker `padiem-com2-backup`을 전용 커스텀 도메인과 bearer
+  인증으로 배포했고 `COM2_BACKUP_ENABLED` 게이트를 켰으며 쓰기 Secret을
+  구성했습니다. #5110 기록에 따르면 업로드, 서버 측 SHA-256 검증, 독립 R2
+  읽기, 빈 대상 복원, 인증·중복·체크섬 부정 케이스가 실제 환경에서
+  통과했습니다.
 - 이 구현은 COM2 로컬 파일의 전송·검증·빈 대상 복원 점검용입니다. D1·R2
   운영 데이터를 대신 백업하지 않습니다. 페이로드 상한 32 MiB, 덮어쓰기 없음,
   삭제 없음, `restore-check`는 빈 대상에만 기록합니다.
-- 사용하려면 승인된 배포, 게이트·Secret 구성, 실제 환경 왕복 검증이 순서대로
-  필요합니다.
+- 롤백은 저장소 구성의 `"false"` 게이트로 다시 배포하는 방식입니다. 게이트가
+  꺼지면 전 경로가 503으로 응답합니다.
 
 ## 5. 자산별 복구 가능 범위
 
@@ -273,7 +276,7 @@ python scripts/ops/com2_periodic_sync.py remove-task
 
 | 격차 | 현재 상태 | 다음 동작 | 담당 범위 |
 | --- | --- | --- | --- |
-| #5096 Worker 미배포 | 소스만 병합, 게이트 OFF | 배포 승인 → Secret 구성 → 실제 왕복 점검 | Owner 승인 후 CTO |
+| #5096 Worker 운영 | PR #5110에서 배포·게이트 ON·Secret 구성, 왕복 검증 기록 | 정기 운영 점검에 포함 | CTO |
 | D1 원격 복원(Time Travel) | 로컬 복원 검증 완료, 원격 복원 미실행 | 보존 기간·복원 지점 결정 후 승인된 리허설 | Owner 승인 필요 |
 | 저장소 구성 없는 Worker | 배포 코드 미확보 | 버전 코드 확보 또는 정리 결정 | CTO |
 | Secret 재발급 절차 | 이름만 확인 | 비공개 승인 범위에서 재발급 절차 확정 | Owner·비공개 거버넌스 |
