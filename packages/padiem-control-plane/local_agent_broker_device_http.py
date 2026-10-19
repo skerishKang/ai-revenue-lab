@@ -7,6 +7,9 @@ from typing import Any, Callable
 
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_broker_auth import StateBackedLocalAgentBindingAuthenticator
+from padiem_control_plane.local_agent_broker_admission_http import (
+    AdmissionEnabledLocalAgentBrokerHttpHandler,
+)
 from padiem_control_plane.local_agent_broker_http import (
     MAX_LOCAL_AGENT_HTTP_BODY_BYTES,
     LocalAgentBrokerHttpHandler,
@@ -25,7 +28,7 @@ from local_agent_broker_android_profile import ANDROID_PROFILE_DEVICE_ROUTE
 #: #5080 — `/android-profile` reuses the same credential and live-session check
 #: to record the owner-selected SAF folder set; it grants no execution.
 _DEVICE_HTTP_ROUTES = frozenset(
-    {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/reconcile", "/office-part",
+    {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/admission", "/reconcile", "/office-part",
      TEXT_RESULT_DEVICE_ROUTE, PROFILE_DEVICE_ROUTE, ANDROID_PROFILE_DEVICE_ROUTE}
 )
 _ENVELOPE_KEYS = frozenset({"method", "route", "content_type", "body_b64", "tls_verified"})
@@ -118,6 +121,7 @@ class LocalAgentBrokerDeviceHttpService:
         execution_profiles=None,
         android_profiles=None,
         owner_usage_gate=None,
+        admission_reference_factory=None,
     ) -> None:
         if not callable(rpc_factory):
             raise ValueError("rpc_factory must be callable")
@@ -139,6 +143,13 @@ class LocalAgentBrokerDeviceHttpService:
         self._text_results = text_results
         self._execution_profiles = execution_profiles
         self._android_profiles = android_profiles
+        if admission_reference_factory is None:
+            import uuid
+            def admission_reference_factory() -> tuple[str, str]:
+                return (f"admission_{uuid.uuid4().hex}", f"evidence_{uuid.uuid4().hex}")
+        if not callable(admission_reference_factory):
+            raise ValueError("admission_reference_factory must be callable")
+        self._admission_reference_factory = admission_reference_factory
         if owner_usage_gate is not None and not callable(owner_usage_gate):
             raise ValueError("owner_usage_gate must be callable")
         self._owner_usage_gate = owner_usage_gate
@@ -308,7 +319,8 @@ class LocalAgentBrokerDeviceHttpService:
             authenticated=True,
             tls_verified=True,
         )
-        handler = LocalAgentBrokerHttpHandler(
+        handler = AdmissionEnabledLocalAgentBrokerHttpHandler(
+            admission_reference_factory=self._admission_reference_factory,
             rpc=self._rpc_factory(),
             state=self._http_state,
             material_resolver=self._material_resolver,
