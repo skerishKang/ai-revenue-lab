@@ -1110,6 +1110,7 @@ class OrchestrationRunner:
                             app_id=app_id,
                             agent_id=request.execution_request.agent.id,
                             status=RunStatus.PAUSED,
+                            session_id=request.execution_request.session_id,
                             tool_events=bridge_res.tool_events,
                         ),
                     )
@@ -1185,6 +1186,7 @@ class OrchestrationRunner:
                         app_id=app_id,
                         agent_id=request.execution_request.agent.id,
                         status=RunStatus.COMPLETED,
+                        session_id=request.execution_request.session_id,
                         tool_events=bridge_res.tool_events,
                     ),
                 )
@@ -1659,6 +1661,7 @@ class OrchestrationRunner:
                         app_id=app_id,
                         agent_id=request.execution_request.agent.id,
                         status=RunStatus.COMPLETED,
+                        session_id=request.execution_request.session_id,
                         tool_events=bridge_res.tool_events,
                     ),
                 )
