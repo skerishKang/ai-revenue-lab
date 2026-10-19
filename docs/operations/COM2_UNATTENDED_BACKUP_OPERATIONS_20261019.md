@@ -26,6 +26,7 @@ build, upload, remote verification and restore checks. It adds:
 | Failure record | `backup-status.json` records failed stage, stable error code, `recoverable`, `operator_action_required`, the failed attempt ids, and `consecutive_failures` |
 | Last success | `last_success_utc` / `last_success_backup_id` are carried forward across failed runs. `status --max-age-hours N` fails only when that explicit bound is given |
 | Generation drift | `--generation-pointer` plus `--generations-dir` resolve the current D1 snapshot from `current_generation.json`; a missing snapshot fails the run instead of backing up an old generation |
+| Chat + Engine coverage | The run requires both D1 seeds to match the published generation pointer before any build: the runtime Chat seed, `chat.sqlite3` and `engine.sqlite3` in the snapshot. A missing, mismatched or cross-generation seed fails in the `prepare` stage |
 | Restore verification | `restore-verify` is operator-invoked only. It verifies remote integrity, decrypts, extracts into a throwaway directory, verifies every file hash and then removes that directory |
 | Scheduling | `install-task` writes a launcher and registers a Windows task. The time is a required argument; the installer does not choose a cadence |
 
@@ -64,6 +65,26 @@ The operator chose 05:30 for the initial registration because the established
 D1/R2 sync starts at 04:20 and the backup must read the published generation
 after that sync. This is a sequencing choice, not a new retention or cost
 policy.
+
+## D1 generation coverage
+
+The published generation is `snapshots/current_generation.json`; it records
+both `chat` (`padiem-chat-db`) and `engine` (`padiem-engine`) from the same
+read-only export batch. A run validates, before building:
+
+1. the runtime pointer generation equals the published generation;
+2. `chat.sqlite3` and `engine.sqlite3` in the generation directory match the
+   published byte size and SHA-256;
+3. the Chat seed named by the runtime pointer matches the same size and SHA-256,
+   so the file the service opens and the file that is backed up are identical.
+
+`backup-status.json` records the validated pair under `databases`. Stable
+failure codes: `generation_manifest_missing`, `generation_manifest_invalid`,
+`generation_pointer_mismatch`, `generation_chat_missing`,
+`generation_engine_missing`, `generation_chat_integrity_failed`,
+`generation_engine_integrity_failed`, `generation_chat_seed_missing`,
+`generation_chat_seed_integrity_failed`. They are non-recoverable because a
+retry cannot fix a stale or incomplete generation.
 
 ## Failure handling
 
