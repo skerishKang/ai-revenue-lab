@@ -191,7 +191,9 @@ jobs:
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           response="${RUNNER_TEMP}/b62-d1-058-time-travel-readonly.json"
-          curl -fsS -X POST "${auth[@]}" \
+          # GET only. POST on this endpoint CREATES a recovery bookmark, and the
+          # Cloudflare API refuses it as a method the read path does not allow.
+          curl -fsS "${auth[@]}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/time_travel/bookmark" \
             -o "${response}"
           python - "${response}" <<'PY'
