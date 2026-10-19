@@ -1,7 +1,7 @@
 # B68 Sources and Evidence Register
 
-Business: **B68 — AI Color Lens Discovery + Virtual Try-On**  
-Master issue: **#3342**  
+Business: **B68 — AI Color Lens Discovery + Virtual Try-On**
+Master issue: **#3342**
 Retrieved / refreshed: **2026-10-01**
 
 This register separates authoritative/regulatory evidence from commercial vendor claims and directional market-research estimates.
@@ -31,7 +31,7 @@ Rules:
 
 ## S01 — Saudi CST Internet Report 2025
 
-URL:  
+URL:
 https://www.cst.gov.sa/en/knowledge-center/reports/saudi-internet-report-25-dashboard
 
 Authority: Saudi Communications, Space & Technology Commission (CST)
@@ -59,7 +59,7 @@ These facts do not specifically measure colored-contact-lens purchases.
 
 ## S02 — Saudi FDA Products Classification Guidance
 
-URL:  
+URL:
 https://sfda.gov.sa/sites/default/files/2024-12/classification%20guidance.pdf
 
 Authority: Saudi Food & Drug Authority (SFDA)
@@ -85,7 +85,7 @@ B68 must not infer that a visualizer is automatically exempt from all Saudi regu
 
 Title: *Use, Misuse, and Complications of Contact Lens Among the General Population of the Kingdom of Saudi Arabia*
 
-URL:  
+URL:
 https://pmc.ncbi.nlm.nih.gov/articles/PMC10825379/
 
 Type: peer-reviewed / PMC-indexed research
@@ -117,10 +117,10 @@ This is a study sample, not a census. Do not extrapolate its exact percentages t
 
 ## S04 — eyewa Series C announcement
 
-URL:  
+URL:
 https://www.generalatlantic.com/media-article/eyewa-announces-100m-in-series-c-round-led-by-general-atlantic/
 
-Primary source: General Atlantic press release  
+Primary source: General Atlantic press release
 Date: 2024-11-27
 
 Key facts:
@@ -144,10 +144,10 @@ Funding is not proof that B68's specific model will succeed.
 
 ## S05 — Banuba TINT Virtual Try-On
 
-Product page:  
+Product page:
 https://www.banuba.com/tint-makeup-virtual-try-on
 
-Pricing guide:  
+Pricing guide:
 https://www.banuba.com/blog/banuba-tint-virtual-try-on-pricing-guide
 
 Primary vendor source.
@@ -175,10 +175,10 @@ Vendor-reported conversion/engagement claims require independent validation. Pri
 
 ## S06 — Perfect Corp Eye Color / Lens Virtual Try-On API
 
-Current product page:  
+Current product page:
 https://yce.perfectcorp.com/ai-api/contents/eye-color-editor
 
-Related lens VTO page observed:  
+Related lens VTO page observed:
 https://yce-stage.perfectcorp.com/ko/ai-api/products/ai-eye-color-lens-virtual-try-on-api
 
 Primary vendor source.
@@ -206,7 +206,7 @@ B68 still needs an empirical dark-iris accuracy test using exact real products. 
 
 Authority: Google developer documentation
 
-Entry point:  
+Entry point:
 https://developers.google.com/mediapipe/solutions/vision/face_landmarker
 
 B68 use:
@@ -223,10 +223,10 @@ Face/iris localization is only one part of the problem. It does not solve produc
 
 ## S08 — Ken Research Saudi Arabia Contact Lenses Market
 
-URL:  
+URL:
 https://www.kenresearch.com/saudi-arabia-contact-lenses-market
 
-Type: commercial market research  
+Type: commercial market research
 Updated/published page observed: 2026
 
 Directional estimates:
@@ -248,7 +248,7 @@ Do not use as canonical market authority. Other research firms materially disagr
 
 ## S09 — IMARC Saudi Arabia Contact Lenses Market
 
-URL:  
+URL:
 https://www.imarcgroup.com/saudi-arabia-contact-lenses-market
 
 Type: commercial market research
@@ -266,7 +266,7 @@ B68 use:
 
 ## S10 — Deep Market Insights Saudi Colored Contact Lenses
 
-URL:  
+URL:
 https://deepmarketinsights.com/vista/insights/colored-contact-lenses-market/saudi-arabia
 
 Type: commercial market research
