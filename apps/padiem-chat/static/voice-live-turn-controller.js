@@ -4,6 +4,9 @@
 // Mode 1 stays manual (no auto-send); M2/M3 arm auto-send via setMode("live").
 (function (root) {
   "use strict";
+  // Dedup cache bound. Memory stays bounded; it is never a turn quota.
+  const DEDUP_LIMIT = 1024;
+
   function normalizeMode(v) { return v === "live" ? "live" : "basic"; }
   function textOf(v) { return typeof v === "string" ? v.trim() : ""; }
 
@@ -91,7 +94,13 @@
       if (!ready()) return blocked("not-ready");
       const finalKey = key + ":" + generation + ":" + id;
       if (seen.has(finalKey)) return blocked("duplicate");
-      if (seen.size >= 1024) return blocked("utterance-limit");
+      // A long live session that keeps one generation must not stop sending
+      // once the cache fills: evict the oldest id instead of refusing a real
+      // final. A final that old cannot arrive again in a live turn.
+      if (seen.size >= DEDUP_LIMIT) {
+        const oldest = seen.values().next().value;
+        if (oldest !== undefined) seen.delete(oldest);
+      }
       seen.add(finalKey); // no replay after partial failure
       try {
         if (commit(value) === false) return blocked("composer-rejected");

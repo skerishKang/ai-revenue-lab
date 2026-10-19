@@ -229,5 +229,23 @@ t("adapter identity drift blocks the final before send", function () {
   assert.strictEqual(commits.length, 1, "no composer commit under the drifted identity");
 });
 
+// #4698: one long live session must never stop sending because the dedup
+// cache filled. Memory stays bounded; the turn itself is never refused.
+t("a long live session never hits a turn quota", function () {
+  const {c, sends} = make();
+  c.setMode("live");
+  const gen = c.getState().sessionGeneration;
+  for (let i = 0; i < 1300; i += 1) {
+    const r = c.handleFinal(event("f" + i, "voice " + i, gen));
+    assert.strictEqual(r.submitted, true, "turn " + i + " must not hit a quota");
+    assert.strictEqual(c.markAnswerSettled({accountKey: "u1", finalKey: r.finalKey}).ok, true);
+  }
+  assert.strictEqual(sends.length, 1300);
+  assert.strictEqual(c.getState().seenCount, 1024, "dedup memory stays bounded");
+  assert.strictEqual(c.handleFinal(event("f1299", "voice 1299", gen)).reason, "duplicate",
+    "recent ids still dedup");
+  assert.strictEqual(sends.length, 1300);
+});
+
 process.stdout.write(fail === 0 ? "ALL PASS (" + pass + ")\n" : "FAILURES: " + fail + " / " + (pass + fail) + "\n");
 process.exit(fail === 0 ? 0 : 1);
