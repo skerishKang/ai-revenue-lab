@@ -12,8 +12,8 @@ from app.pilot.b14_runtime_config import runtime_config as rcfg
 
 STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
 CHAT_URL = "/api/pilot/v1/chat/completions"
-MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-MODEL_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
+MODEL = "test-fixture/kilo-stream-gateway"
+MODEL_UPSTREAM = "test-fixture/kilo-stream-response"
 LIVE_DUMMY_KEY = "unit-live-key-abcdef1234567890"
 
 
@@ -31,6 +31,30 @@ class _ChunkStream(httpx.AsyncByteStream):
 
     async def aclose(self) -> None:
         self.closed = True
+
+
+@pytest.fixture(autouse=True)
+def _synthetic_catalog_stream_route(monkeypatch):
+    """Isolated synthetic keyless fixture; NEVER restore owner-deleted Kilo IDs."""
+    from dataclasses import replace
+    import app.pilot.catalog as cat
+    from app.pilot import platform_secrets as ps
+    base = next(iter(cat.CATALOG_BY_ID.values()))
+    fixture = replace(
+        base, model_id=MODEL, upstream_model=MODEL_UPSTREAM,
+        display_name="Synthetic SSE test-only model",
+        provider="Fixture Test Provider", platform_provider_id="test-fixture",
+        capabilities=frozenset({"chat", "free"}),
+        input_price_usd_per_1m=0.0, output_price_usd_per_1m=0.0,
+    )
+    spec = ps.PlatformProviderSpec(
+        provider_id="test-fixture",credential_source=ps.CredentialSource.NONE,
+        credential_binding_name="",base_origin="https://stream-fixture.example/v1",
+        allowed_hosts=("stream-fixture.example",),
+    )
+    monkeypatch.setitem(cat.CATALOG_BY_ID,MODEL,fixture)
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS,"test-fixture",spec)
+    yield
 
 
 @pytest.fixture(autouse=True)
@@ -137,9 +161,9 @@ def test_mock_preview_is_sse_manual_route_with_done_and_metadata():
     assert metadata["route_evidence_status"] == "mock_no_upstream_call"
 
 
-def test_existing_chat_endpoint_still_rejects_stream_true():
+def test_canonical_stream_true_does_not_promote_auto_route():
     client = _client()
-    response = client.post(CHAT_URL, json=_payload())
+    response = client.post(CHAT_URL, json=_payload(model="b14/auto"))
 
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "stream_not_supported"
@@ -205,7 +229,7 @@ def test_legacy_non_catalog_route_is_rejected_before_network():
         (401, 401, "upstream_auth_failed"),
         (403, 401, "upstream_auth_failed"),
         # The Kilo Gateway route reports its own quota code for 429.
-        (429, 429, "kilo_free_rate_limited"),
+        (429, 429, "upstream_rate_limited"),
         (500, 502, "upstream_server_error"),
         (400, 502, "malformed_upstream_response"),
         (422, 502, "upstream_client_error"),
@@ -342,4 +366,85 @@ def test_live_preview_missing_key_is_anonymous_with_zero_key_material():
     assert response.status_code == 200
     assert calls == 1
     assert seen_authorization is None
+    assert "data: [DONE]" in response.text
+
+
+# #4379 owner rule: normal long generation uses a streaming-capable route
+# instead of silently rejecting a healthy answer at the completed JSON buffer.
+
+def test_canonical_stream_true_manual_route_works_without_json_materialization():
+    rcfg.provider_mode = "mock"
+    response = _client().post(CHAT_URL, json=_payload())
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert "data: [DONE]" in response.text
+    frames = _json_data_frames(response.text)
+    assert frames[0]["object"] == "chat.completion.chunk"
+    assert frames[0]["business14"]["fallback_used"] is False
+
+
+def test_canonical_stream_true_above_completed_json_budget_not_rejected():
+    from app.pilot.platform import MAX_COMPLETED_RESPONSE_BYTES
+
+    rcfg.provider_mode = "live"
+    piece = "S" * (32 * 1024)
+    frames_needed = MAX_COMPLETED_RESPONSE_BYTES // len(piece) + 16
+    model_frames = _valid_sse_chunks(piece)
+    assert len(model_frames) == 3
+    # Each individual frame is memory safe; total generated text exceeds 8MiB.
+    body = model_frames[0] * frames_needed + model_frames[1] + model_frames[2]
+    assert len(body) > MAX_COMPLETED_RESPONSE_BYTES
+    seen = []
+
+    def handler(req):
+        seen.append(req)
+        return httpx.Response(
+            200, content=body,
+            headers={"content-type": "text/event-stream"},
+        )
+
+    response = _client(httpx.MockTransport(handler)).post(CHAT_URL, json=_payload())
+    assert response.status_code == 200
+    assert "data: [DONE]" in response.text
+    assert response.text.count('"object":"chat.completion.chunk"') >= frames_needed
+    assert len(seen) == 1
+    assert json.loads(seen[0].content)["stream"] is True
+
+
+
+def test_canonical_stream_false_remains_completed_json():
+    rcfg.provider_mode = "mock"
+    response = _client().post(CHAT_URL, json=_payload(stream=False))
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("application/json")
+    assert response.json()["choices"][0]["message"]["content"]
+
+
+def test_canonical_stream_true_does_not_enable_fallback_or_extra_calls():
+    rcfg.provider_mode = "mock"
+    response = _client().post(CHAT_URL, json=_payload(
+        business14={"allow_external_fallback": True},
+    ))
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "stream_not_supported"
+
+
+def test_canonical_stream_true_does_not_enable_byok_without_secret():
+    response = _client().post(CHAT_URL, json=_payload(model="some-byok-model"))
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "stream_not_supported"
+
+
+
+def test_canonical_stream_reuses_asgi_parsed_body_without_request_json(monkeypatch):
+    from starlette.requests import Request
+
+    async def reject_convenience_json(self):
+        raise AssertionError("Python Worker request.json must not be used on canonical path")
+
+    monkeypatch.setattr(Request, "json", reject_convenience_json)
+    rcfg.provider_mode = "mock"
+    response = _client().post(CHAT_URL, json=_payload())
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
     assert "data: [DONE]" in response.text

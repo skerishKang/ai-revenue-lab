@@ -65,6 +65,24 @@ def test_rollback_is_bounded_to_first_activation_and_exact_readback():
     assert "B62_GOOGLE_AUTH_ROLLBACK_READBACK=NOT_EXACT" in WORKFLOW
 
 
+def test_served_version_reads_use_canonical_cli_without_changing_activation_contract() -> None:
+    trigger_paths = WORKFLOW.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
+    runtime = WORKFLOW.split("\n  activate-production-auth:", 1)[1]
+
+    assert ".github/scripts/cloudflare_served_version_cli.py" in trigger_paths
+    assert runtime.count("cloudflare_served_version_cli.py resolve-active") == 2
+    assert ".result.deployments[0].versions[0].version_id" not in runtime
+    assert ".result.deployments[0].versions[0].percentage" not in runtime
+    assert "(.result.deployments[0].versions | length) == 1" not in runtime
+    assert 'PREMUTATION_SERVED_VERSION_ID=${pre_version}' in runtime
+    assert "for _ in $(seq 1 30)" in runtime
+    assert "sleep 2" in runtime
+    assert 'post_version=""' in runtime
+    assert 'test "${served_changed}" = yes' in runtime
+    assert "SERVED_VERSION_CHANGED=PASS" in runtime
+    assert "github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_production'" in WORKFLOW
+
+
 def test_gate_does_not_deploy_code_or_attempt_login_phase_b():
     assert "wrangler deploy" not in WORKFLOW
     assert "pywrangler deploy" not in WORKFLOW

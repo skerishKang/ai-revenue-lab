@@ -1,0 +1,131 @@
+name: B14 Gemini Active Version GET-Only (No Provider POST)
+
+# #4499: narrow proof of the actually serving B14 Worker revision.
+# A successful result supplies a *version id only*. It does NOT approve a
+# Gemini provider POST, prove runtime Gemini key validity, or change any route.
+# The production environment does not itself prove an owner approved a model
+# call: this workflow can do Cloudflare GET only.
+on:
+  pull_request:
+    paths:
+      - .github/workflows/b14-gemini-served-version-readonly.yml
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA (no stale-run acceptance)"
+        required: true
+      confirmation:
+        description: "GET-only readback marker: GET_B14_ACTIVE_VERSION_READONLY"
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b14-gemini-active-version-readonly
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact event source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Fail closed on workflow source modification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path(".github/workflows/b14-gemini-served-version-readonly.yml").read_text()
+          required = [
+              "GET_B14_ACTIVE_VERSION_READONLY",
+              "resolve_served_version_id(payload)",
+              "/workers/scripts/ai-revenue-korean-ai-platform/deployments",
+              "curl -fsS --retry 0",
+              "B14_ACTIVE_VERSION_AT_100=",
+              "LIVE_PROVIDER_POST_COUNT=0",
+              "PRODUCTION_MUTATION=0",
+          ]
+          for item in required:
+              if item not in s:
+                  raise SystemExit("READONLY_SOURCE_CONTRACT=FAIL")
+          forbidden = ["wrangler " + "deploy", "pywrangler " + "deploy",
+                       "curl " + "-X POST", "curl " + "-X PUT",
+                       "curl " + "-X PATCH", "curl " + "-X DELETE",
+                       "workflow_" + "deploy"]
+          for item in forbidden:
+              if item in s:
+                  raise SystemExit("READONLY_MUTATION_GUARD=FAIL")
+          print("READONLY_SOURCE_CONTRACT=PASS")
+          print("PRODUCTION_MUTATION=0")
+          print("LIVE_PROVIDER_POST_COUNT=0")
+          PY
+
+  current-active-version:
+    needs: source-contract
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirmation == 'GET_B14_ACTIVE_VERSION_READONLY'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TARGET_SHA: ${{ github.event.inputs.target_sha }}
+    steps:
+      - name: Checkout exact requested main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+      - name: Assert exact main and Secret presence (never print a secret)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'EXACT_MAIN=PASS'
+          echo 'SECRET_NAMES_PRESENT=YES'
+      - name: GET Cloudflare deployments and resolve exactly one 100-percent version
+        shell: bash
+        run: |
+          set -euo pipefail
+          deployments="${RUNNER_TEMP}/b14-readonly-deployments.json"
+          curl -fsS --retry 0 --connect-timeout 10 --max-time 25 \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/ai-revenue-korean-ai-platform/deployments" \
+            -o "${deployments}"
+          python3 - "${deployments}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          sys.path.insert(0, str(Path(".github/scripts").resolve()))
+          from cloudflare_served_version import (  # noqa: E402
+              ServedVersionResolutionError, resolve_served_version_id,
+          )
+          with open(sys.argv[1], encoding="utf-8") as fh:
+              payload = json.load(fh)
+          try:
+              version = resolve_served_version_id(payload)
+          except ServedVersionResolutionError as e:
+              print("B14_ACTIVE_VERSION_RESOLUTION=BLOCKED")
+              print(f"B14_ACTIVE_VERSION_REASON={e.reason}")
+              raise SystemExit(1)
+          print(f"B14_ACTIVE_VERSION_AT_100={version}")
+          print("CANONICAL_RESOLVER=PASS")
+          print("LIVE_PROVIDER_POST_COUNT=0")
+          print("B14_DEPLOY=0")
+          print("D1_MUTATION=0")
+          print("PRODUCTION_MUTATION=0")
+          PY

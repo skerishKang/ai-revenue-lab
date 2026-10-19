@@ -46,6 +46,41 @@ _MATERIAL_KEYS = frozenset(
     }
 )
 _CONTRACT_VERSION = "claw-local-command-material.v2"
+# #4139: closed TXT approval receipt envelope. The Chat worker mints it from
+# the authenticated owner request; the Broker persists it verbatim. This
+# parser only admits its shape here — digests, expiry, command correlation
+# and one-shot use are verified by the plan source before any READ. The
+# bilateral constants must match the issuance module and the Broker validator
+# verbatim; pinned by cross-implementation tests.
+TXT_RECEIPT_FORMAT = "claw-txt-read-approval.v1"
+TXT_RECEIPT_TOOL_ID = "local.filesystem.read"
+TXT_RECEIPT_REQUIREMENT = "user_confirmation"
+TXT_RECEIPT_OUTCOME = "approved"
+TXT_RECEIPT_SCOPE = ("filesystem.read",)
+TXT_RECEIPT_OPERATION = "read"
+TXT_RECEIPT_AUTHORITY_REF = "claw_connector_txt_request_v1"
+TXT_RECEIPT_POLICY_REF = "padiem_txt_selected_root_read_policy_v1"
+TXT_RECEIPT_SUFFIX = ".txt"
+_TXT_RECEIPT_KEYS = frozenset({
+    "format", "evidence_ref", "command_id", "request_id",
+    "approval_pause", "approval_decision", "exact_tool_arguments",
+    "local_policy_ref", "expires_at",
+})
+_TXT_PAUSE_KEYS = frozenset({
+    "pause_id", "run_id", "agent_runtime_id", "tool_id",
+    "invocation_sha256", "requirement", "step_index",
+    "created_at", "expires_at", "approval_scope",
+})
+_TXT_DECISION_KEYS = frozenset({
+    "decision_id", "pause_id", "outcome",
+    "authority_ref", "evidence_ref", "decided_at",
+})
+_TXT_ARG_KEYS = frozenset({
+    "action_id", "run_id", "device_id", "root_ref",
+    "operation", "path_relative", "requested_at", "request_fingerprint",
+    "content_bytes", "content_sha256", "directory_enumeration",
+    "recursive_delete", "admin_elevation",
+})
 
 
 def _ref(value: Any, field_name: str) -> str:
@@ -80,6 +115,106 @@ def _positive_int(value: Any, field_name: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 1:
         raise ContractError(f"{field_name} must be a positive integer without coercion")
     return value
+
+
+def _txt_iso_text(value: Any, field_name: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise ContractError(f"{field_name} must be ISO-8601 text")
+    _timestamp(value, field_name)
+    return value
+
+
+def _txt_relative_path(value: Any, field_name: str) -> str:
+    if not isinstance(value, str) or not value.strip() or len(value) > 1024:
+        raise ContractError(f"{field_name} must be a bounded relative Windows file path")
+    if value.strip() != value:
+        raise ContractError(f"{field_name} must not carry surrounding whitespace")
+    lowered = value.replace("/", "\\")
+    if lowered.startswith("\\") or (len(lowered) >= 2 and lowered[1] == ":"):
+        raise ContractError(f"{field_name} must remain inside the selected root")
+    if any(part == ".." for part in lowered.replace("\\", "/").split("/")):
+        raise ContractError(f"{field_name} traversal is not allowed")
+    if not lowered.lower().endswith(TXT_RECEIPT_SUFFIX):
+        raise ContractError(f"{field_name} must name an exact TXT file")
+    return value
+
+
+def validate_txt_approval_receipt(value: Any) -> dict[str, Any]:
+    """Admit the closed TXT approval envelope shape (no approval granted).
+
+    Mirrors the Broker validator and the Chat issuance self-check key for key.
+    Only shape: exact keys, bounded types, enum constants, digest shapes and
+    parseable timestamps. The plan source recomputes digests, checks expiry
+    against now, binds the receipt to the admitted command and consumes it
+    one-shot before any READ.
+    """
+    if type(value) is not dict or frozenset(value) != _TXT_RECEIPT_KEYS:
+        raise ContractError("TXT approval receipt schema mismatch")
+    receipt = value
+    if receipt["format"] != TXT_RECEIPT_FORMAT:
+        raise ContractError("TXT approval receipt format mismatch")
+    _ref(receipt["evidence_ref"], "receipt.evidence_ref")
+    _ref(receipt["command_id"], "receipt.command_id")
+    _ref(receipt["request_id"], "receipt.request_id")
+    if receipt["local_policy_ref"] != TXT_RECEIPT_POLICY_REF:
+        raise ContractError("TXT approval receipt policy mismatch")
+    _txt_iso_text(receipt["expires_at"], "receipt.expires_at")
+    pause = receipt["approval_pause"]
+    if type(pause) is not dict or frozenset(pause) != _TXT_PAUSE_KEYS:
+        raise ContractError("TXT approval pause schema mismatch")
+    for field_name in ("pause_id", "run_id", "agent_runtime_id"):
+        _ref(pause[field_name], f"pause.{field_name}")
+    if pause["tool_id"] != TXT_RECEIPT_TOOL_ID:
+        raise ContractError("TXT approval pause tool mismatch")
+    _digest(pause["invocation_sha256"], "pause.invocation_sha256")
+    if pause["requirement"] != TXT_RECEIPT_REQUIREMENT:
+        raise ContractError("TXT approval pause requirement mismatch")
+    if type(pause["step_index"]) is not int or not 1 <= pause["step_index"] <= 64:
+        raise ContractError("TXT approval pause step_index out of range")
+    _txt_iso_text(pause["created_at"], "pause.created_at")
+    _txt_iso_text(pause["expires_at"], "pause.expires_at")
+    if (not isinstance(pause["approval_scope"], list)
+            or tuple(pause["approval_scope"]) != TXT_RECEIPT_SCOPE):
+        raise ContractError("TXT approval pause scope mismatch")
+    decision = receipt["approval_decision"]
+    if type(decision) is not dict or frozenset(decision) != _TXT_DECISION_KEYS:
+        raise ContractError("TXT approval decision schema mismatch")
+    _ref(decision["decision_id"], "decision.decision_id")
+    if decision["pause_id"] != pause["pause_id"]:
+        raise ContractError("TXT approval decision does not belong to the pause")
+    if decision["outcome"] != TXT_RECEIPT_OUTCOME:
+        raise ContractError("TXT approval decision outcome mismatch")
+    if decision["authority_ref"] != TXT_RECEIPT_AUTHORITY_REF:
+        raise ContractError("TXT approval decision authority mismatch")
+    _ref(decision["evidence_ref"], "decision.evidence_ref")
+    if decision["evidence_ref"] != receipt["evidence_ref"]:
+        raise ContractError("TXT approval decision evidence_ref mismatch")
+    _txt_iso_text(decision["decided_at"], "decision.decided_at")
+    args = receipt["exact_tool_arguments"]
+    if type(args) is not dict or frozenset(args) != _TXT_ARG_KEYS:
+        raise ContractError("TXT approval arguments schema mismatch")
+    for field_name in ("action_id", "run_id", "device_id", "root_ref"):
+        _ref(args[field_name], f"args.{field_name}")
+    if args["operation"] != TXT_RECEIPT_OPERATION:
+        raise ContractError("TXT approval arguments operation mismatch")
+    _txt_relative_path(args["path_relative"], "args.path_relative")
+    _txt_iso_text(args["requested_at"], "args.requested_at")
+    _digest(args["request_fingerprint"], "args.request_fingerprint")
+    if type(args["content_bytes"]) is not int or args["content_bytes"] != 0:
+        raise ContractError("TXT approval arguments must describe a pre-read intent")
+    if args["content_sha256"] is not None:
+        raise ContractError("TXT approval arguments must describe a pre-read intent")
+    for flag in ("directory_enumeration", "recursive_delete", "admin_elevation"):
+        if args[flag] is not False:
+            raise ContractError(f"TXT approval arguments {flag} must be false")
+    created = datetime.fromisoformat(pause["created_at"].replace("Z", "+00:00"))
+    expires = datetime.fromisoformat(pause["expires_at"].replace("Z", "+00:00"))
+    decided = datetime.fromisoformat(decision["decided_at"].replace("Z", "+00:00"))
+    if not created < expires:
+        raise ContractError("TXT approval pause window is empty")
+    if not created <= decided <= expires:
+        raise ContractError("TXT approval decision is outside the pause window")
+    return receipt
 
 
 def _closed_mapping(payload: Any, expected: frozenset[str], label: str) -> dict[str, Any]:
@@ -162,6 +297,7 @@ class ResolvedLocalCommandMaterial:
     request_fingerprint: str
     request: LocalCommandRequest
     revision_ref: str
+    approval_receipt: Any = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "command_id", _ref(self.command_id, "command_id"))
@@ -177,6 +313,8 @@ class ResolvedLocalCommandMaterial:
             raise ContractError("request must be LocalCommandRequest")
         if command_request_fingerprint(self.request) != self.request_fingerprint:
             raise ContractError("resolved Local Agent material fingerprint mismatch")
+        if self.approval_receipt is not None and type(self.approval_receipt) is not dict:
+            raise ContractError("approval receipt must be a mapping or absent")
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -188,6 +326,7 @@ class ResolvedLocalCommandMaterial:
             "revision_ref": self.revision_ref,
             "revision_semantics": "opaque_correlation_only",
             "request": self.request.safe_dict(),
+            "approval_receipt_present": self.approval_receipt is not None,
             "raw_argv": False,
             "environment_payload": False,
             "shell_authority": False,
@@ -311,8 +450,19 @@ def parse_command_material_wire_projection(
     material = _closed_mapping(payload["material"], _MATERIAL_KEYS, "command material")
     _require_false(material, "shell_authority")
     _require_false(material, "admin_elevation")
-    for field_name in ("environment_payload", "provider_authority", "p01_approval_payload"):
+    for field_name in ("environment_payload", "provider_authority"):
         _require_none(material, field_name)
+    # #4139: the material may carry one closed TXT approval receipt, minted
+    # by the Chat worker from the authenticated owner request and persisted
+    # atomically with this command. Absent for every other command. Shape is
+    # admitted here; digests, expiry, correlation and one-shot use are
+    # verified by the plan source before any READ.
+    approval_payload = material["p01_approval_payload"]
+    approval_receipt: Any | None = None
+    if approval_payload is not None:
+        approval_receipt = validate_txt_approval_receipt(approval_payload)
+        if approval_receipt["command_id"] != command.command_id:
+            raise ContractError("TXT approval receipt does not belong to this command")
 
     argv = material["argv"]
     if type(argv) is not list:
@@ -344,6 +494,17 @@ def parse_command_material_wire_projection(
     if recomputed != fingerprint:
         raise ContractError("command material recomputed request fingerprint mismatch")
 
+    if approval_receipt is not None:
+        receipt_args = approval_receipt["exact_tool_arguments"]
+        if receipt_args["run_id"] != local_request.run_id:
+            raise ContractError("TXT approval receipt run does not match the material")
+        if receipt_args["device_id"] != local_request.device_id:
+            raise ContractError("TXT approval receipt device does not match the material")
+        if receipt_args["root_ref"] != local_request.root_ref:
+            raise ContractError("TXT approval receipt root does not match the material")
+        if approval_receipt["request_id"] != local_request.request_id:
+            raise ContractError("TXT approval receipt request does not match the material")
+
     return ResolvedLocalCommandMaterial(
         command_id=command.command_id,
         binding_ref=command.binding_ref,
@@ -351,6 +512,7 @@ def parse_command_material_wire_projection(
         request_fingerprint=fingerprint,
         request=local_request,
         revision_ref=command.revision_ref,
+        approval_receipt=approval_receipt,
     )
 
 

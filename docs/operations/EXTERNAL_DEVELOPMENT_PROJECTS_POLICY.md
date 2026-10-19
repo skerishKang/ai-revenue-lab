@@ -119,6 +119,30 @@ B5 Neighbor Market / 우리단지 이웃가게
 
 통합된 원 Business를 보고 별도 앱을 다시 만드는 것은 금지한다. 세부 경계와 B30의 사실로 연계 해석은 `BUSINESS_EXPANSION_LINEAGE.md`를 따른다.
 
+## Global Classroom 현재 운영 결정
+
+Global Classroom / AI Interview Interpreter는 현재 별도 저장소를 canonical source로 유지합니다.
+
+```text
+PRODUCT = Global Classroom / AI Interview Interpreter
+CANONICAL_SOURCE = skerishKang/global-classroom
+PRODUCT_ISSUE_TRACKER = skerishKang/global-classroom/issues
+AI_REVENUE_LAB_INTERNAL_COPY = NO
+SOURCE_MIGRATION = NO
+CURRENT_BI_NUMBER_ASSIGNMENT = NO
+```
+
+운영 규칙:
+
+1. Global Classroom 코드, UI/UX, Interview runtime, Netlify Functions, 제품 E2E와 제품 이슈는 `skerishKang/global-classroom`에서 관리한다.
+2. AI Revenue Lab에는 Global Classroom 제품 구현 이슈를 중복 생성하지 않는다.
+3. Padiem Chat/Claw/Control Plane/공용 connector와 교차되는 플랫폼 작업만 AI Revenue Lab 이슈를 cross-reference한다.
+4. Global Classroom의 독립 저장소 유지 결정은 공용 Padiem identity/connector를 사용하지 않는다는 의미가 아니다. 공용 capability를 소비하되 제품 source authority는 분리할 수 있다.
+5. 사용자의 별도 source-migration 승인 전에는 `apps/global-classroom/`, `reference/business-*/global-classroom` 또는 유사 placeholder를 만들지 않는다.
+6. 향후 BI/Business 번호가 부여되더라도 번호만으로 source migration을 추론하지 않는다. 별도 저장소가 canonical source로 유지될 수 있다.
+
+현재 제품 이슈 authority는 Global Classroom 저장소의 #20~#24에 있으며, 이전에 AI Revenue Lab에 생성됐던 Global Classroom 이슈는 GitHub Issue Transfer로 원 저장소에 이전했다.
+
 ## 외부 개발 프로젝트 목록 운영
 
 번호 없는 외부 프로젝트는 이 문서 또는 후속 전용 registry 문서의 표에 **행만 추가**한다.

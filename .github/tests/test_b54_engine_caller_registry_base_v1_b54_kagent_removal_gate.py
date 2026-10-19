@@ -808,8 +808,8 @@ def test_workflow_apply_reconfirms_served_version_before_put() -> None:
     assert "curl -fsS" in body
     assert "resolve-active" in body
     assert "/versions/${current_version}" in body
-    assert '--active-version "${current_version}"' in body
-    assert '--pre-active-version "${PRE_ACTIVE_VERSION_ID}"' in body
+    assert '--active-version="${current_version}"' in body
+    assert '--pre-active-version="${PRE_ACTIVE_VERSION_ID}"' in body
     assert '--pre-legacy-state "${LEGACY_PRE_STATE}"' in body
     assert text.count("-X PUT") == 1  # the single PUT lives in the PUT step only
     assert "PUT_COUNT=0" in text
@@ -974,6 +974,138 @@ def test_toctou_behavioral_regression_under_bash() -> None:
     assert "PREWRITE_SERVED_VERSION_RECONFIRMED=YES" in out
     assert "HARNESS_PUT_CALLED=NO" in out
 
+
+
+
+# #3748 / #3890: offline actual CLI argv parity for all three commands.
+
+
+def _assert_3748_base_v1_argv_source(src: str) -> None:
+    assert src.count('--active-version="${active_version}"') == 2
+    assert src.count('--active-version="${current_version}"') == 1
+    assert src.count('--pre-active-version="${PRE_ACTIVE_VERSION_ID}"') == 1
+    for bad in ('--active-version "${active_version}"',
+                '--active-version "${current_version}"',
+                '--pre-active-version "${PRE_ACTIVE_VERSION_ID}"'):
+        assert bad not in src
+    assert "MIGRATION_TARGET=BASE_V1_ONLY" in src
+    assert "OVERLAY_MUTATION=0" in src
+
+
+def _run_3748_base_v1_cli(command: str, *arguments: str,
+                          fixture_id: str = "-safe-base-v1",
+                          with_overlay: bool = True):
+    bindings = [_binding(BASE_NAME), _binding(LEGACY_NAMES[0], "plain_text")]
+    if with_overlay:
+        bindings.append(_binding(OVERLAY_NAME))
+    detail = _version_detail(bindings, version_id=fixture_id)
+    pre_state = _pre_state(detail)
+    with tempfile.TemporaryDirectory(prefix="base-v1-argv-3748-") as tmp:
+        path = Path(tmp) / "synthetic.json"
+        path.write_text(json.dumps(detail), encoding="utf-8")
+        args = [sys.executable, str(HELPER), command,
+                "--version-detail", str(path), *arguments]
+        if command == "reconfirm":
+            args.extend(["--pre-legacy-state", pre_state])
+        elif command == "verify":
+            args.extend(["--legacy-pre-state", pre_state])
+        else:
+            assert command == "classify"
+        return subprocess.run(args, capture_output=True, text=True,
+                              check=False, timeout=20)
+
+
+def test_3748_base_v1_argv_source_and_pr_only_gate() -> None:
+    src = _workflow_text()
+    _assert_3748_base_v1_argv_source(src)
+    wf = yaml.safe_load(src)
+    jobs = wf["jobs"]
+    source = str(jobs["source-contract"])
+    assert "test_b54_engine_caller_registry_base_v1_b54_kagent_removal_gate.py" in source
+    assert "CLOUDFLARE_MUTATION=0" in source
+    assert "PRODUCTION_MUTATION=0" in source
+    assert "curl " not in source
+    for name in ("cloudflare-readonly", "apply-base-v1-b54-kagent-removal"):
+        assert "workflow_dispatch" in jobs[name]["if"]
+    triggers = wf.get("on", wf.get(True))
+    assert "pull_request" in triggers and "workflow_dispatch" in triggers
+    assert "push" not in triggers
+
+
+def test_3748_base_v1_argv_all_real_subcommands_accept_safe_leading_hyphen() -> None:
+    assert __import__("re").fullmatch(r"[A-Za-z0-9._-]{1,64}", "-safe-base-v1")
+    cases = (
+        ("classify", ("--active-version=-safe-base-v1",),
+         "B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_DISPOSITION=MIGRATION_REQUIRED"),
+        ("reconfirm", ("--active-version=-safe-base-v1",
+                       "--pre-active-version=-safe-base-v1"),
+         "TOCTOU_SERVED_VERSION_GUARD=PASS"),
+        ("verify", ("--active-version=-safe-base-v1",),
+         "B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_POST_READBACK=PASS"),
+    )
+    for command, argv, evidence in cases:
+        proc = _run_3748_base_v1_cli(command, *argv)
+        assert proc.returncode == 0, (command, proc.stderr)
+        assert evidence in proc.stdout, (command, proc.stdout)
+        assert "SYNTHETIC_SECRET" not in proc.stdout + proc.stderr
+
+
+def test_3748_base_v1_argv_split_forms_rejected_including_pre_version() -> None:
+    cases = (
+        ("classify", ("--active-version", "-safe-base-v1")),
+        ("reconfirm", ("--active-version", "-safe-base-v1",
+                       "--pre-active-version=-safe-base-v1")),
+        ("reconfirm", ("--active-version=-safe-base-v1",
+                       "--pre-active-version", "-safe-base-v1")),
+        ("verify", ("--active-version", "-safe-base-v1")),
+    )
+    for command, argv in cases:
+        proc = _run_3748_base_v1_cli(command, *argv)
+        assert proc.returncode == 2, (command, proc.stderr)
+        assert "expected one argument" in proc.stderr
+
+
+def test_3748_base_v1_argv_reconfirm_and_verify_fail_closed() -> None:
+    drift = _run_3748_base_v1_cli(
+        "reconfirm", "--active-version=-safe-base-v1",
+        "--pre-active-version=-another-safe-version")
+    assert drift.returncode == 1
+    assert "SERVED_VERSION_CHANGED_AFTER_READONLY_PREFLIGHT" in drift.stderr
+    assert "PUT_COUNT=0" in drift.stderr
+    mismatch = _run_3748_base_v1_cli("verify",
+                                      "--active-version=-wrong-version")
+    assert mismatch.returncode == 1
+    assert "B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_VERIFY=FAIL" in mismatch.stderr
+    absent = _run_3748_base_v1_cli("classify",
+                                    "--active-version=-safe-base-v1", with_overlay=False)
+    assert absent.returncode == 0
+    assert "REFUSE_OVERLAY_ABSENT" in absent.stdout
+    assert "MIGRATION_REQUIRED" not in absent.stdout
+
+
+def test_3748_base_v1_argv_mutations_red_and_original_bytes_unchanged() -> None:
+    original = WORKFLOW.read_bytes()
+    src = original.decode("utf-8")
+    _assert_3748_base_v1_argv_source(src)
+    tokens = (
+        ('--active-version="${active_version}"', '--active-version "${active_version}"'),
+        ('--active-version="${current_version}"', '--active-version "${current_version}"'),
+        ('--pre-active-version="${PRE_ACTIVE_VERSION_ID}"', '--pre-active-version "${PRE_ACTIVE_VERSION_ID}"'),
+    )
+    red = 0
+    for good, bad in tokens:
+        parts = src.split(good)
+        for index in range(len(parts) - 1):
+            mutated = good.join(parts[:index + 1]) + bad + good.join(parts[index + 1:])
+            assert mutated != src
+            try:
+                _assert_3748_base_v1_argv_source(mutated)
+            except AssertionError:
+                red += 1
+            else:
+                raise AssertionError("split argv mutation survived contract")
+    assert red == 4
+    assert WORKFLOW.read_bytes() == original
 
 def _main() -> None:
     tests = [value for name, value in sorted(globals().items())

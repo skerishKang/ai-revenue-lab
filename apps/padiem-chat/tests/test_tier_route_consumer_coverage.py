@@ -77,18 +77,23 @@ def test_trigger_stays_narrow_to_the_declaration_file() -> None:
 
 
 def test_chat_current_route_expectation_is_derived_not_restated() -> None:
-    # The assertion a switch has to keep passing, stated without naming any model: Chat's
-    # Plus identity and its executable set must equal whatever the declaration says.
-    plus = active_route_for(ProductTierLabel.PLUS)
-    assert plus is not None and plus.model_id, "Padiem Plus must expose an executable route"
-    assert LOW_B14_MODEL_ID == plus.model_id
-    assert DEFAULT_B14_MODEL_ID == plus.model_id
+    # A successor-pending product may have zero executable routes. Chat must mirror
+    # that declaration instead of retaining a stale provider/model literal.
+    # #5009: Free stays Beam, Plus/Pro/Max resolve Muse Spark from the same table.
+    assert active_route_for(ProductTierLabel.PLUS) is not None
+    assert DEFAULT_B14_MODEL_ID == active_route_for(ProductTierLabel.FREE).model_id
+    assert LOW_B14_MODEL_ID == active_route_for(ProductTierLabel.PLUS).model_id
+    # The separate B62 Free model is a product-local executable route;
+    # Plus/Pro/Max follow the shared cross-product declaration.
     assert set(EXECUTABLE_B14_MODEL_IDS) == {
         route.model_id
-        for tier in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)
+        for tier in ProductTierLabel
         for route in get_tier(tier).routes
         if route.status is ProductRouteStatus.EXECUTABLE
     }
+    # #3767: the frozen ``== frozenset()`` restatement below used to duplicate the
+    # derivation above while encoding the empty-route state; the derivation is the
+    # contract, so only it is asserted now.
 
 
 def test_owner_policy_invariants_are_not_traded_for_coverage() -> None:

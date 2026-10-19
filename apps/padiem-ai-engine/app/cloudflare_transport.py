@@ -133,6 +133,12 @@ class CloudflareReadableByteStream(httpx.AsyncByteStream):
                     pass
 
 
+def _correlation_header() -> dict[str, str]:
+    from app.stack_telemetry import active_request_id
+    value = active_request_id()
+    return {"X-Request-Id": value} if value is not None else {}
+
+
 class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
     """Fixed Service Binding bridge used by Core B14 clients."""
 
@@ -186,7 +192,10 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         service_request = self._request_factory(
             str(request.url),
             method="POST",
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                **_correlation_header(),
+            },
             body=body_text,
         )
         js_object = getattr(service_request, "js_object", None)

@@ -19,6 +19,8 @@ action the run-history card offers.
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import json
 import re
 import shutil
@@ -151,11 +153,17 @@ def test_historical_artifact_action_stays_one_bounded_download() -> None:
     assert app.count("/api/claw/manual-intake/artifact/") == 1
     assert app.count("function downloadClawArtifact(") == 1
     assert len(re.findall(r"(?<!function )\bdownloadClawArtifact\(", app)) == 3
-    # The card builds exactly one button per artifact and no second control.
+    # Historical cards still create just ONE direct download button. #3932 may
+    # add a separate, explicitly checked PDF viewer via the existing same-origin
+    # authenticated byte route; this must never become a second download owner.
     card_block = app.split("claw-run-card-artifact", 1)[1].split("function fetchClawRunHistory", 1)[0]
-    assert card_block.count("createElement(\"button\")") == 1
+    assert card_block.count('createElement("button")') == 1
     assert "claw-run-card-download" in card_block
-    assert not re.search(r"open|preview|reopen", card_block, re.IGNORECASE)
+    assert card_block.count("downloadClawArtifact(artifact.document_id") == 1
+    assert "validHistoricalArtifact?.(artifact)" in card_block
+    assert "viewer?.setHistorical?.(artifact)" in card_block
+    assert "fetch(" not in card_block and "window.open(" not in card_block
+    assert "innerHTML" not in card_block and "POST" not in card_block
 
 
 # ── behavioral proof via Node harness executing real app.js ─────────────────
@@ -193,6 +201,15 @@ function makeEl(tag) {
   el.prepend = (...cs) => cs.forEach((c) => { el.children.unshift(c); c.parentNode = el; });
   el.append = (...cs) => cs.forEach((c) => el.appendChild(c));
   el.replaceChildren = (...cs) => { el.children = []; cs.forEach((c) => el.appendChild(c)); };
+  // #4806 inserts the artifact context relative to #messageList, so the shim
+  // needs the same child-insertion API the real Element exposes.
+  el.insertBefore = (node, ref) => {
+    const at = el.children.indexOf(ref);
+    if (at < 0) el.children.push(node); else el.children.splice(at, 0, node);
+    node.parentNode = el;
+    return node;
+  };
+  el.removeChild = (node) => { el.children = el.children.filter((c) => c !== node); return node; };
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
   el.querySelector = (sel) => el.children.find((c) => c.className && c.className.includes(sel.replace(/^\./, ""))) || null;
@@ -203,12 +220,32 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // #4806 added `messageList.closest(".conversation")` to the real app.js.
+  // This minimal DOM shim must expose the same Element API instead of
+  // crashing every behavioral harness that runs the real source.
+  el.closest = (sel) => {
+    const want = String(sel).replace(/^\./, "");
+    let node = el;
+    while (node) {
+      if (node.className && String(node.className).includes(want)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  };
   return el;
 }
 
 const byId = {};
 function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e; }
 declaredIds.forEach((id) => add(id, "div"));
+// index.html nests #messageList inside <section class="conversation">, and the
+// real app.js reads that ancestor to decide whether the first turn continues
+// the landing panel (#4806). Model the same nesting instead of returning null.
+if (byId.messageList) {
+  const conversationSection = makeEl("section");
+  conversationSection.className = "conversation";
+  conversationSection.appendChild(byId.messageList);
+}
 byId.projectForm.querySelector = () => makeEl("div");
 
 let lang = "ko";
@@ -379,6 +416,9 @@ function texts(root) { return walk(root).map((el) => String(el.textContent || ""
 """
 
 
+# Every named consumer checks immutable fields from the same real app.js
+# behavioral journey. Cache only within this process; never share across CI runs.
+@lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"

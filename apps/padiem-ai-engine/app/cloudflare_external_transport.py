@@ -230,10 +230,24 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
         # a second time after Fetch has already exposed decoded body bytes.
         headers["accept-encoding"] = "identity"
         init: dict[str, Any] = {
-            "method": "GET",
+            "method": request.method,
             "headers": headers,
             "redirect": "manual",
         }
+        # All current connector transports still admit GET only. The dedicated
+        # public-web subclass permits POST exclusively to TinyFish Fetch.
+        if request.method == "POST":
+            body = await request.aread()
+            if len(body) > 8_192:
+                raise httpx.RequestError(
+                    "Public-web Fetch body exceeds the safe bound.", request=request,
+                )
+            try:
+                init["body"] = body.decode("utf-8")
+            except UnicodeDecodeError as exc:
+                raise httpx.RequestError(
+                    "Public-web Fetch body must be UTF-8.", request=request,
+                ) from exc
         timeout_signal = self._timeout_signal(request)
         if timeout_signal is not None:
             init["signal"] = timeout_signal
@@ -308,6 +322,49 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
         )
 
 
+
+class CloudflarePublicWebTransport(CloudflareExternalHttpTransport):
+    """Only the existing TinyFish Search/Fetch and Daum Search fixed endpoints."""
+
+    _ROUTES = frozenset({
+        ("GET", "api.search.tinyfish.ai", "/"),
+        ("POST", "api.fetch.tinyfish.ai", "/"),
+        ("GET", "dapi.kakao.com", "/v2/search/web"),
+    })
+
+    def __init__(self, *, fetch_impl: Any | None = None, abort_signal_api: Any | None = None):
+        super().__init__(
+            allowed_hosts=frozenset({"api.search.tinyfish.ai", "api.fetch.tinyfish.ai", "dapi.kakao.com"}),
+            fetch_impl=fetch_impl,
+            abort_signal_api=abort_signal_api,
+        )
+
+    def _validate_target(self, request: httpx.Request) -> None:
+        parsed = urlsplit(str(request.url))
+        if (
+            parsed.scheme != "https"
+            or parsed.port not in (None, 443)
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.fragment
+            or (request.method, parsed.hostname, parsed.path or "/") not in self._ROUTES
+        ):
+            raise httpx.RequestError(
+                "External web-provider origin or method is not approved.",
+                request=request,
+            )
+
+
+def public_web_worker_transport() -> httpx.AsyncBaseTransport | None:
+    """Pyodide-only transport for public evidence; no browser-selectable host."""
+
+    import sys
+
+    if sys.platform != "emscripten":
+        return None
+    return CloudflarePublicWebTransport()
+
+
 def gmail_worker_transport() -> httpx.AsyncBaseTransport | None:
     """Return the Worker-native bounded Gmail GET transport in Pyodide."""
 
@@ -353,6 +410,8 @@ def calendar_worker_transport() -> httpx.AsyncBaseTransport | None:
 
 __all__ = [
     "CloudflareExternalHttpTransport",
+    "CloudflarePublicWebTransport",
+    "public_web_worker_transport",
     "calendar_worker_transport",
     "drive_worker_transport",
     "gmail_worker_transport",

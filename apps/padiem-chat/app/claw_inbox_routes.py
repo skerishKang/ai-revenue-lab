@@ -16,6 +16,7 @@ from starlette.responses import JSONResponse
 
 from kagent.claw_memory import ClawAlertStatus, ClawMemoryError, ClawTaskStatus
 
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_memory_routes import _require_owner, _resolve_memory_workspace
 from .workspace_storage import WorkspaceStorageError
 
@@ -93,8 +94,11 @@ async def claw_inbox_list(request: Request) -> JSONResponse:
 async def _read_status(request: Request) -> str | JSONResponse:
     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
         return _error(415, "unsupported_media_type", "JSON request required.")
-    raw = await request.body()
-    if not raw or len(raw) > MAX_INBOX_BODY_BYTES:
+    try:
+        raw = await read_bounded_request_body(request, max_bytes=MAX_INBOX_BODY_BYTES)
+    except RequestBodyTooLarge:
+        return _error(400, "invalid_payload", "Invalid request payload.")
+    if not raw:
         return _error(400, "invalid_payload", "Invalid request payload.")
     try:
         data = json.loads(raw.decode("utf-8"))

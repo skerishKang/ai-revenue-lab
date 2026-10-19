@@ -55,6 +55,18 @@ async def _assert_no_horizontal_overflow(page: Page, label: str) -> None:
 
 
 async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[str, Any]:
+    await page.add_init_script(
+        """
+        (() => {
+          const writes = [];
+          Object.defineProperty(window, '__qaClipboardWrites', {value: writes});
+          Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: {writeText: async text => { writes.push(String(text)); }}
+          });
+        })();
+        """
+    )
     await page.set_viewport_size({"width": width, "height": height})
     chat_posts: list[dict[str, Any]] = []
 
@@ -158,12 +170,15 @@ async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[s
     if await page.evaluate("Boolean(window.__PADIEM_CODE_EXECUTED)"):
         raise AssertionError("rendered code executed")
 
-    # Headless Chromium normally supports the existing local clipboard/fallback path.
+    # The real click must reach the canonical shared copy API exactly once.
     code_copy = rich.locator(".rich-code-copy")
     await code_copy.click()
-    await page.wait_for_timeout(50)
+    await page.wait_for_function(
+        "expected => window.__qaClipboardWrites?.at(-1) === expected",
+        arg=expected_code,
+    )
     copy_label = (await code_copy.inner_text()).strip()
-    if copy_label not in {"복사됨", "복사 실패", "복사"}:
+    if copy_label != "복사됨":
         raise AssertionError(f"unexpected code-copy state: {copy_label!r}")
 
     table = rich.locator(".rich-table-block table")
@@ -191,6 +206,8 @@ async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[s
         raise AssertionError(f"CSV content mismatch: {csv_text!r}")
 
     # outputs.js must still operate from the exact hidden raw paragraph.
+    # TXT download lives in the answer-bar more (···) menu: open it first.
+    await article.locator(".answer-more").click()
     answer_download = article.locator(".answer-download")
     await answer_download.wait_for(state="visible", timeout=5_000)
     async with page.expect_download(timeout=5_000) as txt_info:
@@ -236,6 +253,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[s
         "blockquote": quote,
         "code_execution": False,
         "code_copy_state": copy_label,
+        "code_copy_exact": True,
         "table_headers": headers,
         "table_rows": rows,
         "csv_file": csv_path.name,

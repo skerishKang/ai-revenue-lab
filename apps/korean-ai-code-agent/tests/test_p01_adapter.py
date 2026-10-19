@@ -16,6 +16,7 @@ from padiem_ai_core.orchestration_events import (
     OrchestrationEventKind,
     public_orchestration_event,
 )
+from padiem_control_plane import product_tier_routes as tier_routes
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
@@ -40,17 +41,39 @@ from kagent.p01_approval_pause_transport import (
 from kagent.preparation import CloudWorkspacePreparer
 from kagent.runs import ClawRun
 from kagent.sandbox import DeterministicFakeSandboxProvider
+import kagent.p01_adapter as p01_adapter_module
+import kagent.p01_orchestration_client as p01_orchestration_client_module
+
+# #3767: P01 execution contracts run on the bounded test-only synthetic Plus route
+# while the canonical declaration still holds the tier, so they execute instead of
+# being skipped. Fail-closed assertions deliberately do not use it.
+from model_route_fixture import (
+    SyntheticPlusRouteTestCase,
+    canonical_plus_route_model,
+    synthetic_plus_route,
+    synthetic_plus_route_installed,
+    synthetic_model_id,
+    with_synthetic_plus_route,
+)
 
 # #2800: Claw is a consumer of the shared product-tier declaration, so these tests compare
 # against whatever the declaration says instead of restating a model id as their own truth.
 # An owner tier switch then exercises the derivation instead of silently passing or breaking
 # a literal nobody re-ran.
-PLUS_ROUTE_MODEL = active_route_for(ProductTierLabel.PLUS).model_id
+_PLUS_ROUTE = active_route_for(ProductTierLabel.PLUS)
+PLUS_ROUTE_MODEL = _PLUS_ROUTE.model_id if _PLUS_ROUTE is not None else None
 
 
 class _ResultFactory:
     @staticmethod
-    def result(request, kinds, *, answer: str = "완료 답변", messages: dict | None = None):
+    def result(
+        request,
+        kinds,
+        *,
+        answer: str = "완료 답변",
+        messages: dict | None = None,
+        route: B14RouteMetadata | None = None,
+    ):
         p01_run_id = "orch_test_001"
         events = []
         for sequence, kind in enumerate(kinds, start=1):
@@ -77,7 +100,7 @@ class _ResultFactory:
             terminal_status = RunStatus.FAILED
         execution_result = ExecutionResult(
             answer=answer,
-            route=B14RouteMetadata(),
+            route=route or B14RouteMetadata(),
             metadata=RunMetadata(
                 trace_id=request.context.trace_id,
                 app_id=request.app_id,
@@ -110,12 +133,14 @@ class _FakeRunner:
         messages: dict | None = None,
         continuation_ref: str | None = None,
         force_pause_wire: bool | None = None,
+        route: B14RouteMetadata | None = None,
     ):
         self.kinds = kinds
         self.answer = answer
         self.messages = messages
         self.continuation_ref = continuation_ref
         self.force_pause_wire = force_pause_wire
+        self.route = route
         self.requests = []
 
     async def run(self, request):
@@ -125,6 +150,7 @@ class _FakeRunner:
             self.kinds,
             answer=self.answer,
             messages=self.messages,
+            route=self.route,
         )
         ends_paused = bool(
             self.kinds
@@ -162,7 +188,7 @@ class _FailingRunner:
         raise RuntimeError("provider secret should never escape here")
 
 
-class P01RequestFactoryTests(unittest.TestCase):
+class P01RequestFactoryTests(SyntheticPlusRouteTestCase):
     def local_run(self, run_id: str = "run_local") -> ClawRun:
         intent = ClawTaskIntent(
             task_id=f"task_{run_id}",
@@ -191,7 +217,7 @@ class P01RequestFactoryTests(unittest.TestCase):
         # Default tier is Plus while Pro is HOLD (#2601).
         self.assertEqual(
             dict(bundle.execution_request.agent.model_policy),
-            {"model": PLUS_ROUTE_MODEL},
+            {"model": self.plus_route_model, "max_retries": 0, "product_tier": "plus"},
         )
         self.assertEqual(bundle.execution_request.messages[0]["role"], "user")
         self.assertIn("provider=caller-model", bundle.execution_request.messages[0]["content"])
@@ -207,14 +233,14 @@ class P01RequestFactoryTests(unittest.TestCase):
         )
         self.assertEqual(
             dict(plus_bundle.execution_request.agent.model_policy),
-            {"model": PLUS_ROUTE_MODEL},
+            {"model": self.plus_route_model, "max_retries": 0, "product_tier": "plus"},
         )
 
         default_run = self.local_run("run_default_after_plus")
         default_bundle = P01RequestFactory().build(default_run)
         self.assertEqual(
             dict(default_bundle.execution_request.agent.model_policy),
-            {"model": PLUS_ROUTE_MODEL},
+            {"model": self.plus_route_model, "max_retries": 0, "product_tier": "plus"},
         )
 
     def test_factory_does_not_promote_repository_reference_to_system_context(self):
@@ -233,7 +259,7 @@ class P01RequestFactoryTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError):
             P01RequestFactory(timeout_seconds=0.5)
         with self.assertRaises(P01AdapterError):
-            P01RequestFactory(timeout_seconds=61)
+            P01RequestFactory(timeout_seconds=3601)
         bundle = P01RequestFactory(timeout_seconds=30).build(self.local_run("run_timeout"))
         self.assertEqual(bundle.context.timeout_seconds, 30.0)
 
@@ -258,6 +284,39 @@ class P01RequestFactoryTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError) as caught:
             P01RequestFactory(clock=lambda: now + timedelta(hours=1)).build(run, lease=lease)
         self.assertEqual(caught.exception.code, "cloud_lease_expired")
+
+
+class P01ModelHoldTests(unittest.TestCase):
+    """The Plus execution gate must agree with the canonical declaration.
+
+    The earlier form asserted the *current* all-HOLD state as a durable contract,
+    so it encoded today's empty-route state rather than the contract. These tests
+    assert the agreement in whichever state the product is in, and keep the
+    fail-closed proof for any tier that still has no declared route (#3767).
+    """
+
+    def test_default_profile_agrees_with_the_declared_plus_route(self):
+        declared = canonical_plus_route_model()
+        if declared is None:
+            with self.assertRaises(P01AdapterError) as caught:
+                _agent_profile(ProductTierLabel.PLUS)
+            self.assertEqual(caught.exception.code, "tier_hold")
+            self.assertEqual(caught.exception.dispatch_class, "not_dispatched")
+            return
+        self.assertEqual(
+            _agent_profile(ProductTierLabel.PLUS).model_policy["model"],
+            declared,
+        )
+
+    def test_every_tier_without_a_declared_route_fails_closed(self):
+        for label in ProductTierLabel:
+            route = active_route_for(label)
+            if route is not None and route.model_id:
+                continue
+            with self.assertRaises(P01AdapterError) as caught:
+                _agent_profile(label)
+            self.assertEqual(caught.exception.dispatch_class, "not_dispatched")
+            self.assertIn(caught.exception.code, {"tier_hold", "max_tier_hold"})
 
 
 class P01ProjectionTests(unittest.TestCase):
@@ -380,7 +439,7 @@ class P01ProjectionTests(unittest.TestCase):
         self.assertEqual(caught.exception.code, "event_id_reuse_conflict")
 
 
-class P01CoreAdapterTests(unittest.IsolatedAsyncioTestCase):
+class P01CoreAdapterTests(SyntheticPlusRouteTestCase, unittest.IsolatedAsyncioTestCase):
     def local_run(self, run_id: str = "run_adapter") -> ClawRun:
         intent = ClawTaskIntent(
             task_id=f"task_{run_id}",
@@ -408,6 +467,16 @@ class P01CoreAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("model", rendered)
         self.assertNotIn("route", rendered)
         self.assertEqual(outcome.p01_event_count, 3)
+        # #3930: these real Core events are retrospective, bounded, and contain
+        # neither raw messages nor potentially sensitive tool/metadata fields.
+        self.assertEqual(len(outcome.p01_event_history), 3)
+        self.assertEqual([e["kind"] for e in outcome.p01_event_history], [
+            "run_started", "context_prepared", "run_completed",
+        ])
+        self.assertTrue(all(set(e) == {
+            "event_id", "run_id", "trace_id", "app_id", "kind", "sequence", "timestamp_iso",
+        } for e in outcome.p01_event_history))
+        self.assertNotIn("p01_event_history", rendered)
         self.assertEqual(len(runner.requests), 1)
 
     async def test_approval_pause_does_not_self_resume_or_return_answer(self):
@@ -583,6 +652,7 @@ class ClawP01ProfileContractTests(unittest.TestCase):
     profile to the Core-owned enums so the drift cannot return.
     """
 
+    @with_synthetic_plus_route
     def test_profile_routing_values_are_accepted_by_core(self) -> None:
         profile = _agent_profile()
         routing = B14RoutingOptions(
@@ -592,28 +662,160 @@ class ClawP01ProfileContractTests(unittest.TestCase):
         self.assertEqual(routing.task_type, "coding")
         self.assertEqual(routing.optimize_for, "balanced")
 
+    @with_synthetic_plus_route
     def test_profile_normalizes_into_core_model_policy(self) -> None:
         model, _temperature, routing = _normalize_model_policy(_agent_profile())
-        self.assertEqual(model, PLUS_ROUTE_MODEL)
+        self.assertEqual(model, self.plus_route_model)
         self.assertIn(routing.task_type, _TASK_TYPES)
         self.assertIn(routing.optimize_for, _OPTIMIZE_FOR)
 
+    @with_synthetic_plus_route
     def test_profile_pins_plus_route_from_shared_contract(self) -> None:
         profile = _agent_profile()
-        self.assertEqual(profile.model_policy, {"model": PLUS_ROUTE_MODEL})
+        self.assertEqual(
+            profile.model_policy,
+            {"model": self.plus_route_model, "max_retries": 0, "product_tier": "plus"},
+        )
         self.assertEqual(profile.allowed_tools, ())
         self.assertEqual(profile.required_capabilities, ())
 
+    @with_synthetic_plus_route
     def test_plus_tier_resolves_to_the_declared_route(self) -> None:
         profile = _agent_profile(ProductTierLabel.PLUS)
-        self.assertEqual(profile.model_policy, {"model": PLUS_ROUTE_MODEL})
+        self.assertEqual(
+            profile.model_policy,
+            {"model": self.plus_route_model, "max_retries": 0, "product_tier": "plus"},
+        )
 
-    def test_pro_tier_fails_closed_while_hold(self) -> None:
-        with self.assertRaises(P01AdapterError) as caught:
-            _agent_profile(ProductTierLabel.PRO)
-        self.assertEqual(caught.exception.code, "tier_hold")
+    def test_pro_tier_uses_shared_declared_route(self) -> None:
+        profile = _agent_profile(ProductTierLabel.PRO)
+        self.assertEqual(profile.model_policy["model"], active_route_for(ProductTierLabel.PRO).model_id)
+        self.assertEqual(profile.model_policy["product_tier"], "pro")
 
-    def test_max_tier_fails_closed(self) -> None:
+    def test_max_tier_uses_shared_declared_route(self) -> None:
+        profile = _agent_profile(ProductTierLabel.MAX)
+        self.assertEqual(profile.model_policy["model"], active_route_for(ProductTierLabel.MAX).model_id)
+        self.assertEqual(profile.model_policy["product_tier"], "max")
+
+
+class P01RouteEvidenceThreadingTests(SyntheticPlusRouteTestCase, unittest.IsolatedAsyncioTestCase):
+    """#3655: the completed outcome threads bounded B14 route refs for the canary.
+
+    The refs ride the outcome server-side only; ``safe_dict`` never projects
+    them, and the chat route grammar-checks each before any header emit.
+    """
+
+    def _local_run(self, run_id: str) -> ClawRun:
+        intent = ClawTaskIntent(
+            task_id=f"task_{run_id}",
+            task="경로 증거를 확인해줘",
+            repository_ref="repo",
+            execution_mode=ExecutionMode.LOCAL,
+        )
+        return ClawRun.create(run_id, intent)
+
+    async def test_completed_outcome_threads_bounded_route_evidence(self) -> None:
+        runner = _FakeRunner(
+            [
+                OrchestrationEventKind.RUN_STARTED,
+                OrchestrationEventKind.CONTEXT_PREPARED,
+                OrchestrationEventKind.RUN_COMPLETED,
+            ],
+            answer="완료",
+            route=B14RouteMetadata(
+                selected_route_id="plus.agnes-3.0-flash.v1",
+                attempt_count=1,
+                fallback_used=False,
+            ),
+        )
+        run = self._local_run("run_route_evidence")
+        outcome = await P01CoreOrchestrationAdapter(runner).execute(run)
+        self.assertEqual(outcome.selected_route_id, "plus.agnes-3.0-flash.v1")
+        self.assertEqual(outcome.provider_attempt_count, 1)
+        self.assertIs(outcome.fallback_used, False)
+        rendered = outcome.safe_dict()
+        self.assertNotIn("selected_route_id", rendered)
+        self.assertNotIn("provider_attempt_count", rendered)
+        self.assertNotIn("fallback_used", rendered)
+
+    async def test_completed_outcome_without_route_metadata_keeps_none(self) -> None:
+        runner = _FakeRunner(
+            [
+                OrchestrationEventKind.RUN_STARTED,
+                OrchestrationEventKind.CONTEXT_PREPARED,
+                OrchestrationEventKind.RUN_COMPLETED,
+            ],
+            answer="완료",
+        )
+        run = self._local_run("run_route_none")
+        outcome = await P01CoreOrchestrationAdapter(runner).execute(run)
+        self.assertIsNone(outcome.selected_route_id)
+        self.assertIsNone(outcome.provider_attempt_count)
+        self.assertIsNone(outcome.fallback_used)
+
+
+class SyntheticPlusRouteBoundaryTests(unittest.TestCase):
+    """The test-only route is bounded: installed for one block, then fully removed.
+
+    #3767 restores execution coverage without registering a production route and
+    without inventing a provider default, so the proof that the shorthand cannot
+    leak into production routing is part of the change.
+    """
+
+    def test_installed_route_is_declaration_shaped_and_removed_afterwards(self) -> None:
+        before_declaration = canonical_plus_route_model()
+        self.assertEqual(before_declaration, PLUS_ROUTE_MODEL)
+        before_executable = p01_orchestration_client_module.PADIEM_EXECUTABLE_MODEL_IDS
+
+        with synthetic_plus_route_installed() as model_id:
+            self.assertEqual(model_id, synthetic_model_id())
+            self.assertEqual(
+                p01_adapter_module.active_route_for(ProductTierLabel.PLUS).model_id,
+                model_id,
+            )
+            # The injected entry is a legal executable route for the canonical
+            # validator, not a hand-rolled shortcut around it.
+            tier_routes._validate_route(synthetic_plus_route(), ProductTierLabel.PLUS)
+            self.assertEqual(
+                p01_orchestration_client_module.PADIEM_EXECUTABLE_MODEL_IDS,
+                frozenset({model_id}),
+            )
+            self.assertEqual(
+                _agent_profile(ProductTierLabel.PLUS).model_policy,
+                {"model": model_id, "max_retries": 0, "product_tier": "plus"},
+            )
+            # Synthetic Plus fixture intentionally whitelists only its injected route.
+            for other in (ProductTierLabel.PRO, ProductTierLabel.MAX):
+                with self.assertRaises(P01AdapterError):
+                    _agent_profile(other)
+
+        self.assertEqual(canonical_plus_route_model(), before_declaration)
+        self.assertEqual(
+            p01_orchestration_client_module.PADIEM_EXECUTABLE_MODEL_IDS,
+            before_executable,
+        )
+
+    def test_synthetic_identity_is_refused_as_an_explicit_selection(self) -> None:
+        """The fixture identity may never become a production dispatch path."""
+
         with self.assertRaises(P01AdapterError) as caught:
-            _agent_profile(ProductTierLabel.MAX)
-        self.assertEqual(caught.exception.code, "max_tier_hold")
+            _agent_profile(
+                ProductTierLabel.PLUS,
+                selected_model_id=synthetic_model_id(),
+            )
+        self.assertEqual(caught.exception.code, "invalid_selected_model")
+        self.assertEqual(caught.exception.dispatch_class, "not_dispatched")
+
+
+def test_explicit_free_choice_allows_only_free_registered_ids():
+    from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
+    for model_id in (FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID):
+        profile = _agent_profile(ProductTierLabel.FREE, selected_model_id=model_id)
+        assert profile.model_policy["model"] == model_id
+        assert profile.model_policy["product_tier"] == "free"
+    try:
+        _agent_profile(ProductTierLabel.FREE, selected_model_id="google/gemini-3.5-flash-lite")
+        assert False, "paid model must be rejected"
+    except P01AdapterError as exc:
+        assert exc.code == "model_not_available_for_tier"
+        assert exc.dispatch_class == "not_dispatched"

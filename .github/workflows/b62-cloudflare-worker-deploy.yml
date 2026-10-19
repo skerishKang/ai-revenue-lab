@@ -2,17 +2,67 @@ name: B62 Cloudflare mock deploy
 
 on:
   pull_request:
+    # #3527 Slice B: `apps/padiem-chat/tests/**` is the only overbroad part of
+    # this trigger. Everything else under `apps/padiem-chat/**` is a proven
+    # dependency and stays in scope:
+    #   worker.py        wrangler.toml `main = "worker.py"`
+    #   app/**           imported by the Worker
+    #   static/**        wrangler.toml `[assets] directory = "static"`, and the
+    #                    deployed-parity step compares static/*.js to the live site
+    #   wrangler.toml    read directly by .github/scripts/b62_cloudflare_mock_config_guard.py
+    #   pyproject/uv.lock/pylock.toml  consumed by `uvx pywrangler deploy`
+    # No step in this workflow (guard scripts, read-only preflight, parity,
+    # mock smoke) reads `tests/`, so a tests-only change cannot alter the
+    # preflight outcome or the deployed Worker bundle. Blind narrowing of the
+    # rest of the tree is explicitly forbidden.
+    # Proven by `.github/tests/test_b62_worker_deploy_trigger_scope.py`.
     paths:
       - "apps/padiem-chat/**"
+      - "!apps/padiem-chat/tests/**"
       - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/scripts/b62_connector_broker_additive_preflight.py"
+      - ".github/tests/test_b62_connector_broker_additive_preflight.py"
+      - ".github/scripts/b62_connector_broker_served_version_readonly.py"
+      - ".github/tests/test_b62_connector_broker_served_version_readonly.py"
+      - ".github/scripts/b62_connector_identity_served_version_readonly.py"
+      - ".github/tests/test_b62_connector_identity_served_version_readonly.py"
+      - ".github/scripts/b62_connector_identity_activation_readonly.py"
+      - ".github/tests/test_b62_connector_identity_activation_readonly.py"
+      - "packages/padiem-control-plane/local_agent_broker_worker.py"
+      - "packages/padiem-control-plane/canonical_broker_pairing_rpc.py"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc"
+      - "packages/padiem-control-plane/identity_authority_worker.py"
+      - "packages/padiem-control-plane/canonical_connector_enrollment_consent_rpc.py"
+      - "packages/padiem-control-plane/wrangler.identity-authority.jsonc"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   push:
     branches: [main]
     paths:
       - "apps/padiem-chat/**"
+      - "!apps/padiem-chat/tests/**"
       - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/scripts/b62_connector_broker_additive_preflight.py"
+      - ".github/tests/test_b62_connector_broker_additive_preflight.py"
+      - ".github/scripts/b62_connector_broker_served_version_readonly.py"
+      - ".github/tests/test_b62_connector_broker_served_version_readonly.py"
+      - ".github/scripts/b62_connector_identity_served_version_readonly.py"
+      - ".github/tests/test_b62_connector_identity_served_version_readonly.py"
+      - ".github/scripts/b62_connector_identity_activation_readonly.py"
+      - ".github/tests/test_b62_connector_identity_activation_readonly.py"
+      - "packages/padiem-control-plane/local_agent_broker_worker.py"
+      - "packages/padiem-control-plane/canonical_broker_pairing_rpc.py"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc"
+      - "packages/padiem-control-plane/identity_authority_worker.py"
+      - "packages/padiem-control-plane/canonical_connector_enrollment_consent_rpc.py"
+      - "packages/padiem-control-plane/wrangler.identity-authority.jsonc"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
+    inputs:
+      allow_initial_mock_deploy:
+        description: "Explicitly authorize INITIAL mock-only Worker creation if absent"
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -49,6 +99,8 @@ jobs:
         run: python .github/scripts/b62_cloudflare_deployed_parity_contract_test.py
       - name: Validate repository mock-only deploy config
         run: python .github/scripts/b62_cloudflare_mock_config_guard.py
+      - name: Guard no implicit initial mock deployment
+        run: python .github/tests/test_b62_initial_mock_manual_gate.py
       - name: Read-only Cloudflare and B14 preflight
         id: preflight
         env:
@@ -60,6 +112,46 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: python .github/scripts/b62_cloudflare_live_readiness.py
+      - name: Inspect deployed Connector private Service Bindings (GET only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python -m unittest discover -s .github/tests -p test_b62_cloudflare_connector_binding_readonly.py -q
+          python .github/scripts/b62_cloudflare_connector_binding_readonly.py
+      - name: Read-only no-loss candidate for Connector Broker binding
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python -m unittest discover -s .github/tests -p test_b62_connector_broker_additive_preflight.py -q
+          python .github/scripts/b62_connector_broker_additive_preflight.py
+      - name: Validate Identity Connector activation parser contract (no network)
+        run: python -m unittest discover -s .github/tests -p test_b62_connector_identity_activation_readonly.py -q
+      - name: Audit production Identity Connector consent activation for initial mock only (GET only)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_initial_mock_deploy == true }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python .github/scripts/b62_connector_identity_activation_readonly.py
+
+      - name: Read-only Broker State and Edge served-version lineage (GET only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python -m unittest discover -s .github/tests -p test_b62_connector_broker_served_version_readonly.py -q
+          python .github/scripts/b62_connector_broker_served_version_readonly.py
+
+      - name: Read-only Identity active revision lineage and race guard (GET only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python -m unittest discover -s .github/tests -p test_b62_connector_identity_served_version_readonly.py -q
+          python .github/scripts/b62_connector_identity_served_version_readonly.py
+
       - name: Read-only deployed progressive-SSE chain parity
         env:
           B62_BASE_URL: https://padiem-chat.${{ steps.preflight.outputs.subdomain }}.workers.dev
@@ -72,9 +164,12 @@ jobs:
     # the repository's minimal mock wrangler file must never overwrite them. Existing
     # Workers are read-only preflight targets; production updates are explicit owner/local
     # deployments that preserve the full binding set.
+    # A main push (including PR merge) is preflight ONLY; never auto-create
+    # a missing Worker. Initial mock creation requires explicit manual consent.
     if: >-
-      github.event_name == 'push' &&
+      github.event_name == 'workflow_dispatch' &&
       github.ref == 'refs/heads/main' &&
+      inputs.allow_initial_mock_deploy == true &&
       needs.preflight.outputs.worker_state == 'absent'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -93,13 +188,18 @@ jobs:
       - name: Guard initial Worker creation only
         env:
           WORKER_STATE: ${{ needs.preflight.outputs.worker_state }}
+          INIT_MOCK_APPROVED: ${{ inputs.allow_initial_mock_deploy }}
         run: |
           set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ] || [ "$GITHUB_REF" != "refs/heads/main" ] || [ "$INIT_MOCK_APPROVED" != "true" ]; then
+            echo "Explicit main-branch manual approval is required for initial mock Worker creation." >&2
+            exit 1
+          fi
           if [ "$WORKER_STATE" != "absent" ]; then
             echo "Refusing repository mock deploy over an existing provisioned Worker." >&2
             exit 1
           fi
-          echo "Padiem Chat Worker is absent; guarded initial mock creation is allowed."
+          echo "Padiem Chat Worker is absent; explicitly approved initial mock creation is allowed."
 
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0

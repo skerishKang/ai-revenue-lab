@@ -1,0 +1,29 @@
+name: PADIEM Voice STT Contract CI
+
+on:
+  pull_request:
+    paths:
+      - "apps/padiem-voice-stt/**"
+      - ".github/workflows/padiem-voice-stt-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/padiem-voice-stt/**"
+      - ".github/workflows/padiem-voice-stt-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  voice-stt-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: astral-sh/setup-uv@v6
+      - name: Run shared Voice STT Worker regression suite
+        run: uv run --no-project --python 3.13 --with "pytest==8.4.2" --with "pytest-asyncio==1.2.0" python -m pytest -q apps/padiem-voice-stt/tests

@@ -254,11 +254,17 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
         worktree_state._drain_bounded = hanging_drain
         self.addCleanup(lambda: setattr(worktree_state, "_drain_bounded", original))
         try:
+            started = time.monotonic()
             with self.assertRaises(ContractError) as refused:
                 port.is_dirty(str(self._repo.path))
+            elapsed = time.monotonic() - started
             self.assertTrue(
                 str(refused.exception).startswith("git_worktree_probe_read_failed"), str(refused.exception)
             )
+            # Both real reader threads must share one 5s grace window, not two
+            # sequential 5s waits. Allow startup/runner scheduling headroom.
+            self.assertLess(elapsed, 9.0, "two blocked Git readers must not cost 10s")
+            self.assertEqual(len(readers), 2)
         finally:
             # Let the released reader finish and close its stream before the
             # test ends, so the run reports no unclosed handle.

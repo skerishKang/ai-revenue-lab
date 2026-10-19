@@ -24,15 +24,9 @@ class B14RuntimeConfig:
 
     def build_http_timeout(self):
         """Build httpx.Timeout with inlined per-phase bounds."""
-        import httpx
+        from app.pilot.b14_timeout_policy import build_provider_http_timeout
 
-        return httpx.Timeout(
-            None,
-            connect=10.0,
-            read=30.0,
-            write=10.0,
-            pool=10.0,
-        )
+        return build_provider_http_timeout()
 
     @property
     def is_live(self) -> bool:
@@ -43,8 +37,17 @@ class B14RuntimeConfig:
         return self.provider_mode == "mock"
 
     def redacted_summary(self) -> str:
-        """Return a redacted summary string for logging."""
-        return f"mode={self.provider_mode} max_response_bytes={self.max_response_bytes}"
+        """Expose truthful effective resource-guard metadata, never secret values."""
+        # Local import prevents a module-level circular dependency.
+        from app.pilot.platform import MAX_COMPLETED_RESPONSE_BYTES, MAX_RESPONSE_BYTES
+
+        return (
+            f"mode={self.provider_mode} "
+            f"max_response_bytes={self.max_response_bytes} "
+            "max_response_bytes_effect=no "
+            f"completed_json_memory_budget_bytes={MAX_COMPLETED_RESPONSE_BYTES} "
+            f"sse_frame_and_error_resource_bytes={MAX_RESPONSE_BYTES}"
+        )
 
 
 runtime_config = B14RuntimeConfig()

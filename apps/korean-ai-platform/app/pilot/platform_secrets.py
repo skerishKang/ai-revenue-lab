@@ -32,6 +32,8 @@ from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urlparse
 
+from .worker_env import scoped_secret, secret_status
+
 
 class CredentialSource(str, Enum):
     """Minimum supported credential-source contract for platform Providers."""
@@ -128,12 +130,103 @@ def resolve_secret(spec: PlatformProviderSpec) -> str:
     """
     if spec.credential_source != CredentialSource.PLATFORM_SECRET:
         return ""
-    raw = os.environ.get(spec.credential_binding_name, "")
+    # Worker requests use request-scoped Secrets Store values; no previously
+    # cached global credential can satisfy a missing/rotated binding.
+    scoped = scoped_secret(spec.credential_binding_name)
+    raw = (
+        os.environ.get(spec.credential_binding_name, "")
+        if scoped is None else scoped
+    )
     if not raw:
         return ""
     if _looks_like_placeholder(raw):
         return ""
     return raw
+
+
+async def ensure_any_platform_secret() -> None:
+    """Find one usable credential for workspace has_key without reading all keys.
+
+    Unlike provider-readiness, this is a boolean existence check. It may stop
+    at the first valid credential, retaining accurate false/true semantics.
+    """
+    from .worker_env import load_request_secret
+
+    for spec in list_platform_providers():
+        if spec.credential_source == CredentialSource.PLATFORM_SECRET:
+            await load_request_secret(spec.credential_binding_name)
+            if is_secret_present(spec):
+                break
+
+
+async def ensure_all_platform_secrets() -> None:
+    """Resolve keys only for an explicit cross-provider readiness/health view.
+
+    Ordinary Worker entry and a single-model POST never pay for these reads.
+    """
+    from .worker_env import load_request_secret
+
+    for spec in list_platform_providers():
+        if spec.credential_source == CredentialSource.PLATFORM_SECRET:
+            await load_request_secret(spec.credential_binding_name)
+
+
+async def ensure_route_secrets(
+    model_id: str, *, allow_external_fallback: bool = False,
+    product_tier: str = "free",
+) -> None:
+    """Load only the permitted candidates' keys ahead of synchronous routing.
+
+    The current canonical router has a synchronous credential-ready guard.
+    Preparing the actual candidate set retains that fail-closed contract and
+    prevents unrelated Provider bindings from being fetched for one model.
+    """
+    from .catalog import get_catalog_by_id, get_catalog_models
+    from .owner_model_exclusions import excluded_from_owner_customer_selection
+    from .routing_policy import B14_AUTO_CHAIN
+    from .worker_env import load_request_secret
+
+    if model_id == "opencode-go/beam-free":
+        from .tier_fallback import TIER_FALLBACK_B14_MODELS
+        if product_tier not in TIER_FALLBACK_B14_MODELS:
+            from .errors import InvalidRequest
+            raise InvalidRequest("Unsupported product tier.")
+        candidates = [model_id, *TIER_FALLBACK_B14_MODELS[product_tier]]
+    elif model_id == "b14/auto":
+        # Even without fallback, the fixed chain selects the first *ready*
+        # provider. Check subsequent positions only if predecessors lack keys.
+        candidates = B14_AUTO_CHAIN
+    elif allow_external_fallback:
+        candidates = [model_id] + [
+            model.model_id
+            for model in get_catalog_models()
+            if model.model_id != model_id
+            and not excluded_from_owner_customer_selection(model.model_id)
+            and model.model_id != "experiential/qwen3.8-flash-next-uncensored"
+        ][:3]
+    else:
+        candidates = [model_id]
+
+    seen: set[str] = set()
+    for candidate in candidates:
+        model = get_catalog_by_id(candidate)
+        if model is None:
+            continue
+        spec = get_platform_provider(model.platform_provider_id)
+        if spec is None or spec.credential_source != CredentialSource.PLATFORM_SECRET:
+            continue
+        binding = spec.credential_binding_name
+        if binding not in seen:
+            seen.add(binding)
+            await load_request_secret(binding)
+        # With fallback disabled, a fixed auto-chain needs only the first
+        # credential-ready position; later positions are not attempted.
+        # If the first is revoked, continue until one is actually available.
+        if model_id == "b14/auto" and not allow_external_fallback:
+            from .b14_runtime_config import runtime_config
+
+            if runtime_config.is_mock or is_secret_present(spec):
+                break
 
 
 def is_secret_present(spec: PlatformProviderSpec) -> bool:
@@ -148,6 +241,28 @@ def is_secret_present(spec: PlatformProviderSpec) -> bool:
     if spec.credential_source == CredentialSource.REQUEST_BYOK:
         return False
     return bool(resolve_secret(spec))
+
+
+def credential_failure_reason(spec: PlatformProviderSpec | None) -> str:
+    """Return a value-free reason a platform credential is unusable.
+
+    Distinguishes an unresolved binding (``missing``), a runtime fetch failure
+    (``error:<token>``), and an empty/placeholder value. Used only for bounded
+    diagnostics; the secret value is never included.
+    """
+    if spec is None or spec.credential_source != CredentialSource.PLATFORM_SECRET:
+        return ""
+    scoped = scoped_secret(spec.credential_binding_name)
+    if scoped is None:
+        return ""  # Not inside a Worker request; no request-scoped binding.
+    status = secret_status(spec.credential_binding_name)
+    if status.startswith("error:") or status in ("missing", "empty"):
+        return status
+    if not scoped:
+        return "empty" if status == "resolved" else "unresolved"
+    if _looks_like_placeholder(scoped):
+        return "placeholder"
+    return ""
 
 
 def any_platform_secret_present() -> bool:

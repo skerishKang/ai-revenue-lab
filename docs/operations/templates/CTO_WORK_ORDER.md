@@ -9,9 +9,28 @@
 - Target branch:
 - Product-evidence stage:
 
+## Finish-first lane control
+
+- Finish-first authority / issue:
+- Primary axis:
+- Reference product:
+- Current lowest missing dependency:
+- Classification: PRIMARY_BLOCKER / PRIMARY_NONBLOCKING_FOLLOWUP / UNRELATED_BACKLOG
+- Active primary implementation axes after this work: must be 1 unless owner explicitly overrides
+- Supporting blocker lane number: PRIMARY / SUPPORT_1 / SUPPORT_2 / BACKGROUND
+- Does this work directly move the primary terminal state? yes/no:
+- If no, why is implementation authorized now?:
+- Unrelated new feature started? must be NO:
+
 ## Objective
 
 State the smallest user/product outcome this revision must prove.
+
+- Closeout mode: NORMAL / MVP_HANDOFF
+- If MVP_HANDOFF, fixed handoff blockers:
+- If MVP_HANDOFF, handoff-required checks:
+- If MVP_HANDOFF, final Production smoke:
+- Explicitly non-blocking follow-up:
 
 ## Product / visual gate
 
@@ -106,10 +125,14 @@ Mark `REQUIRED`, `NOT_REQUIRED`, or `DEFERRED_WITH_REASON`:
 
 - Web CTO:
 - Web Developer:
+- `DEV_FAST_GATE` owner/checks:
 - Independent Local Validator required? yes/no + reason:
+- Windows validator actor:
+- Ubuntu validator actor:
+- Browser/full-regression validator actor:
 - Owner-only decision required? yes/no + reason:
 
-Implementation actor and independent Local Validator must not be the same actor for the same revision.
+Implementation actor and independent Local Validator must not be the same actor for the same revision. Windows/Ubuntu/browser validators may run concurrently after `DEV_FAST_GATE=PASS`; the implementation actor does not wait synchronously for the full matrix before moving to another authorized issue.
 
 ## Acceptance criteria
 
@@ -121,8 +144,15 @@ For visual work, include the exact gate that this revision must reach. Do not us
 
 ## Required checks
 
+- `DEV_FAST_GATE` focused commands:
+- `DEV_ACTOR_RELEASED` condition:
+- Asynchronous validator lanes required:
+- Final `FULL_VALIDATION` requirements:
+- For `MVP_HANDOFF`, list only checks that can block the fixed customer handoff. Do not copy every automatically triggered repository job into this section.
+
 - Automated commands:
-- CI/checks:
+- Handoff-required CI/checks:
+- Observational/non-blocking CI:
 - Browser/local validation:
 - Required Desktop viewport(s):
 - Required Mobile viewport(s):

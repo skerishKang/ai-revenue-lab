@@ -1,0 +1,160 @@
+/* Owner UI decision 2026-10-16.
+   Desktop: one scrollport for recent conversations; account/home stay pinned.
+   Mobile: the entire drawer may scroll; conversation list has a nested limit.
+   Keep primary and secondary click handlers, permissions, and menu semantics. */
+@media (min-width: 921px) {
+  html body .app-shell .sidebar {
+    /* #4905 regression guard. The pinned stacks (brand, Chat/Claw group, the
+       workspace + tools menus, projects) plus the pinned account/home stack can
+       together exceed a short desktop viewport (measured: 1280x800 with the
+       owner-ordered menu). With `overflow-y: hidden` the recent-conversation
+       section collapsed to ~34px and its rows were painted *underneath*
+       .sidebar-bottom, so every row click was intercepted by the account stack.
+       Keep the pinned layout while the content fits, and let the sidebar itself
+       scroll when it cannot, so no row can ever sit under the pinned stack. */
+    overflow: hidden !important;
+    overflow-y: auto !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100dvh;
+    box-sizing: border-box;
+  }
+  html body .app-shell .sidebar > :not(#historySection) {
+    flex-shrink: 0;
+  }
+  html body .app-shell .sidebar #projectsSection {
+    flex: 0 0 auto;
+    /* Emergency overflow for unusually large project lists: keep account/home reachable. */
+    max-height: min(32dvh, 290px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  html body .app-shell .sidebar #historySection:not([hidden]) {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    /* #4905: heading row + at least two conversation rows. Without a floor the
+       section is squeezed to a few pixels on a short viewport and its rows are
+       laid out past the section, under the pinned account/home stack. */
+    min-height: 156px;
+    /* Must never be `visible`. Rows that escape this box are painted below
+       .sidebar-bottom and then intercept every pointer event aimed at the row.
+       #historyList below stays the single scrollport for the conversation list. */
+    overflow: hidden;
+  }
+  html body .app-shell .sidebar #historySection.is-collapsed:not([hidden]) {
+    flex: 0 0 auto;
+  }
+  html body .app-shell .sidebar #historySection > .section-heading-row {
+    flex: 0 0 auto;
+  }
+  html body .app-shell .sidebar #historyList {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(237,243,248,.35) transparent;
+    scroll-padding-block: 8px 62px;
+    padding-bottom: 56px;
+  }
+  html body .app-shell .sidebar #historySection.is-collapsed #historyList {
+    display: none !important;
+  }
+  html body .app-shell .sidebar .sidebar-bottom {
+    flex: 0 0 auto;
+    margin-top: auto;
+  }
+}
+
+/* A single sidebar backdrop; no outlined or separately filled cells.
+   Hover/selected/focus can still identify the active row. */
+html body .app-shell .sidebar :is(.project-row, .history-row) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row):hover,
+html body .app-shell .sidebar :is(.project-row, .history-row):focus-within {
+  background: rgba(255,255,255,.065) !important;
+}
+html body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]),
+html body .app-shell .sidebar .history-row:has(.history-item[aria-current="page"]) {
+  background: rgba(255,255,255,.12) !important;
+}
+/* Previous single-row rules painted no interior surface: preserve this. */
+html body .app-shell .sidebar :is(.project-row, .history-row)
+ > :is(.project-item, .history-item, .project-manage, .history-actions),
+html body .app-shell .sidebar .history-actions > .history-more {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+html body .app-shell .sidebar .history-actions-menu {
+  /* Only the opened contextual menu remains a separate surface. */
+  background: var(--sidebar, #384551);
+}
+
+@media (max-width: 920px) {
+  html body .app-shell .sidebar {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    max-height: 100dvh;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  html body .app-shell .sidebar #historySection:not([hidden]) {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: visible;
+  }
+  html body .app-shell .sidebar #historyList {
+    min-height: 0;
+    max-height: min(44dvh, 360px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scroll-padding-block: 8px 62px;
+    padding-bottom: 48px;
+  }
+  html body .app-shell .sidebar .sidebar-bottom {
+    margin-top: 0;
+  }
+}
+
+/* Owner-approved: one restrained separator between Projects and Recent only. */
+html body .app-shell .sidebar #historySection:not([hidden]) {
+  border-top: 1px solid rgba(230, 240, 250, .20);
+  margin-top: 8px;
+  padding-top: 7px;
+}
+/* Space between the primary Chat/Claw group and workspace tools without
+ * introducing full-width group cards or disrupting single-cell new chat. */
+html body .app-shell .sidebar .sidebar-chat-claw-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+/* Text-only muted items in Claw still visible; unavailable actions remain disabled. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] #workspaceNav .side-item:disabled {
+  display: flex;
+}
+
+/* Owner-confirmed workspace menu order is visible even where individual
+ * features are still gated; disabled entries remain genuinely non-clickable. */
+html body .app-shell #workspaceNav .side-item:disabled {
+  display: flex;
+  opacity: .72;
+}

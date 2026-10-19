@@ -476,3 +476,113 @@ def test_no_runtime_ddl_or_retrieval_machinery_in_new_modules() -> None:
     assert "011_claw_approved_memory.sql" in migration_names
     # 010_claw_task_alert.sql is a separately reserved migration (#2328) and is
     # intentionally not asserted absent here; #2331 owns only migration 011.
+
+
+def _memory_client_with_identity_state(store, *, shadow_store, authority) -> TestClient:
+    settings = _google_settings()
+    app = create_app(settings=settings, history_store=MagicMock(), approved_memory_store=store)
+    app.state.identity_shadow_store = shadow_store
+    app.state.control_plane_identity_authority = authority
+    client = TestClient(app, base_url="https://chat.example.test")
+    client.cookies.set(
+        SESSION_COOKIE,
+        create_session_token(settings, SIGNED_IN_USER_ID),
+        domain="chat.example.test",
+        path="/",
+    )
+    return client
+
+
+class _CountingMemoryStore(_InMemoryApprovedStore):
+    def __init__(self) -> None:
+        super().__init__()
+        self.list_calls = 0
+        self.get_calls = 0
+
+    async def list_approved_memories(self, **kwargs):
+        self.list_calls += 1
+        return await super().list_approved_memories(**kwargs)
+
+    async def get_approved_memory(self, **kwargs):
+        self.get_calls += 1
+        return await super().get_approved_memory(**kwargs)
+
+
+def test_configured_canonical_workspace_failure_stops_all_memory_io() -> None:
+    store = _CountingMemoryStore()
+    authority = MagicMock()
+    authority.resolve_auth_session = AsyncMock(side_effect=RuntimeError("canonical authority down"))
+    client = _memory_client_with_identity_state(
+        store,
+        shadow_store=_make_identity_shadow_store(),
+        authority=authority,
+    )
+
+    approved = client.post(
+        APPROVE_PATH,
+        json={"proposal": dict(_VALID_PROPOSAL), "approved": True},
+    )
+    listed = client.get(LIST_PATH)
+    detail = client.get("/api/claw/memory/mem_" + "0" * 32)
+
+    for response in (approved, listed, detail):
+        assert response.status_code == 503
+        assert response.json()["error"]["code"] == "approved_memory_authority_unavailable"
+    assert store.approve_calls == 0
+    assert store.list_calls == 0
+    assert store.get_calls == 0
+
+
+def test_configured_canonical_session_without_tenant_fails_closed() -> None:
+    store = _CountingMemoryStore()
+    client = _memory_client_with_identity_state(
+        store,
+        shadow_store=_make_identity_shadow_store(),
+        authority=_make_authority(_make_auth_session_snapshot(tenant_id=None)),
+    )
+    response = client.post(
+        APPROVE_PATH,
+        json={"proposal": dict(_VALID_PROPOSAL), "approved": True},
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "approved_memory_authority_unavailable"
+    assert store.approve_calls == 0
+
+
+@pytest.mark.parametrize(
+    ("shadow_store", "authority"),
+    [
+        (_make_identity_shadow_store(), None),
+        (None, _make_authority()),
+    ],
+)
+def test_partial_canonical_workspace_configuration_fails_closed(shadow_store, authority) -> None:
+    store = _CountingMemoryStore()
+    client = _memory_client_with_identity_state(
+        store,
+        shadow_store=shadow_store,
+        authority=authority,
+    )
+    response = client.post(
+        APPROVE_PATH,
+        json={"proposal": dict(_VALID_PROPOSAL), "approved": True},
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "approved_memory_authority_unavailable"
+    assert store.approve_calls == 0
+
+
+def test_legacy_deployment_with_no_canonical_components_keeps_owner_fallback() -> None:
+    store = _CountingMemoryStore()
+    client = _memory_client_with_identity_state(
+        store,
+        shadow_store=None,
+        authority=None,
+    )
+    response = client.post(
+        APPROVE_PATH,
+        json={"proposal": dict(_VALID_PROPOSAL), "approved": True},
+    )
+    assert response.status_code == 200
+    assert response.json()["memory"]["workspace_id"] == f"owner:{SIGNED_IN_USER_ID}"
+    assert store.approve_calls == 1

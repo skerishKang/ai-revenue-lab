@@ -29,6 +29,50 @@
   opacity: .68;
 }
 
+/* Shared Chat/Claw jump-to-latest control above the fixed composer. */
+.conversation-jump {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  border: 1px solid rgba(45, 69, 87, .18);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .78);
+  color: #25333e;
+  box-shadow: 0 8px 22px rgba(28, 38, 49, .16), inset 0 1px 0 rgba(255, 255, 255, .82);
+  backdrop-filter: blur(16px) saturate(106%);
+  -webkit-backdrop-filter: blur(16px) saturate(106%);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 6;
+}
+
+.conversation-jump[hidden] {
+  display: none !important;
+}
+
+.conversation-jump:hover {
+  background: rgba(255, 255, 255, .92);
+}
+
+.conversation-jump:focus-visible {
+  outline: 3px solid rgba(79, 134, 173, .55);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conversation-jump {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 .assistant-message[data-terminal-actions-safe="false"] .answer-actions {
   display: none !important;
 }
@@ -83,5 +127,70 @@
   .retry-button {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+
+/* #5014: Chat phone home should leave room for the composer above the fold.
+ * Scope to Chat only; Claw has its own compact 2x2 connection layout. */
+@media (max-width: 620px) {
+  .app-shell[data-state="chat"] .conversation:has(#emptyState:not([hidden])) {
+    min-height: auto !important;
+    padding-top: 16px !important;
+    padding-bottom: var(--padiem-composer-clearance, 230px) !important;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) {
+    min-height: 0 !important;
+    height: auto !important;
+    padding-block: 8px 16px !important;
+    margin-block: 0 !important;
+    align-content: start;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) h1 {
+    font-size: clamp(25px, 7vw, 34px) !important;
+    line-height: 1.22 !important;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) .empty-copy {
+    margin-top: 8px !important;
+    font-size: 13px !important;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter-grid {
+    margin-top: 16px !important;
+    gap: 8px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter {
+    min-height: 84px !important;
+    padding: 11px !important;
+  }
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter small {
+    display: none;
+  }
+  .app-shell[data-state="chat"] .conversation {
+    scroll-padding-bottom: calc(var(--padiem-composer-clearance, 230px) + 16px);
+  }
+}
+
+/* Phase 1 turn parity: the manual Claw result card keeps its DOM and execution
+ * contract and only mirrors the unified answer metrics. The request echo
+ * mirrors the unified user turn without reusing .user-message, which the
+ * shared gutter QA selects strictly. */
+.claw-result-body {
+  font-size: 17px;
+  line-height: 1.76;
+}
+.conversation .claw-request-echo .message-bubble {
+  font-size: 17px;
+  line-height: 29.92px;
+  color: #111a22;
+}
+@media (max-width: 640px) {
+  .claw-result-body {
+    font-size: 16px;
+    line-height: 1.72;
+  }
+  .conversation .claw-request-echo .message-bubble {
+    font-size: 16px;
+    line-height: 27.52px;
   }
 }

@@ -1039,7 +1039,10 @@ done();
 
 
 def test_a_cross_origin_post_cannot_smuggle_a_local_command() -> None:
-    """The endpoint has no mutation surface, so a forged request hits nothing at all."""
+    """The endpoint has no mutation surface, and #3476's central guard now
+    denies a cross-origin cookie mutation before routing — so the smuggled POST
+    is an explicit 403 instead of an incidental 405. The load-bearing claim is
+    unchanged: nothing reaches the source and the handoff value never leaks."""
 
     source = ProjectionSource()
     settings = _settings()
@@ -1063,7 +1066,8 @@ def test_a_cross_origin_post_cannot_smuggle_a_local_command() -> None:
 
     status, body = asyncio.run(run())
 
-    assert status == 405
+    assert status == 403
+    assert json.loads(body)["error"]["code"] == "origin_rejected"
     assert source.calls == []
     assert DESKTOP_HANDOFF not in body
 

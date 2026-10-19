@@ -161,11 +161,11 @@ function normalizeExecutionContext(value) {
       typeof value.timeout_seconds !== "number" ||
       !Number.isFinite(value.timeout_seconds) ||
       value.timeout_seconds < 1 ||
-      value.timeout_seconds > 60
+      value.timeout_seconds > 3600
     ) {
       throw new PadiemAiEngineClientError(
         "invalid_engine_request",
-        "execution_context.timeout_seconds must be between 1 and 60",
+        "execution_context.timeout_seconds must be between 1 and 3600",
       );
     }
     context.timeout_seconds = value.timeout_seconds;

@@ -44,8 +44,8 @@ env:
   PUBLIC_HOSTNAME: local-agent.padiem.net
   STATE_CONFIG: wrangler.local-agent-broker.jsonc
   EDGE_CONFIG: wrangler.local-agent-broker-edge.jsonc
-  EXPECTED_PRE_FIX_STATE_VERSION: 796f9487-b487-424c-bf21-2a4e7ab0784a
-  EXPECTED_PRE_FIX_EDGE_VERSION: def2fee1-8e40-471a-b2b9-aafa4da828df
+  EXPECTED_PRE_FIX_STATE_VERSION: b5b5e0f1-96de-4521-8242-86466b4b1803
+  EXPECTED_PRE_FIX_EDGE_VERSION: c2217fb5-3a63-4fd5-90d9-431bd94c4a97
   TARGET_SHA: ${{ inputs.target_sha }}
 
 jobs:

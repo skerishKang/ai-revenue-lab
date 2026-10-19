@@ -42,8 +42,10 @@ def test_range_ui_reuses_the_existing_read_only_authority() -> None:
     assert "start_date=" in source and "end_date=" in source
     assert 'credentials: "same-origin"' in source
     assert 'cache: "no-store"' in source
-    assert source.count('method: "POST"') == 2
-    assert not re.search(r"\b(PUT|PATCH|DELETE)\b", source)
+    assert source.count('method: method') == 2  # Existing create path now also supports authorized edit.
+    assert 'method: "DELETE"' in source
+    assert 'method === "PUT"' in source
+    assert not re.search(r"\bPATCH\b", source)
     assert "workspace_id" not in source
     assert "owner_id" not in source
     assert "tenant_id" not in source
@@ -158,6 +160,7 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
       el.replaceChildren = (...children) => {{ el.children = children.slice(); }};
       el.addEventListener = (name, fn) => {{ (el.listeners[name] ||= []).push(fn); }};
       el.click = () => (el.listeners.click || []).forEach((fn) => fn({{ target: el, preventDefault() {{}} }}));
+      el.querySelector = () => null;
       el.closest = () => el;
       return el;
     }}
@@ -192,7 +195,16 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
     const document = {{ readyState: "complete", getElementById: (id) => byId[id] || null,
       querySelector: (selector) => selector === ".app-shell" ? shell : null,
       createElement: (tag) => makeEl(tag), addEventListener() {{}} }};
-    const sandbox = {{ document, fetch: fetchImpl, Intl, Date, JSON, Number, Object, String, Array,
+    const RealDate = Date;
+    class FixedDate extends RealDate {{
+      constructor(...args) {{
+        super(...(args.length ? args : ["2026-09-23T12:00:00Z"]));
+      }}
+      static now() {{ return RealDate.parse("2026-09-23T12:00:00Z"); }}
+      static UTC(...args) {{ return RealDate.UTC(...args); }}
+      static parse(value) {{ return RealDate.parse(value); }}
+    }}
+    const sandbox = {{ document, fetch: fetchImpl, Intl, Date: FixedDate, JSON, Number, Object, String, Array,
       RegExp, Promise, setTimeout, clearTimeout, console, MutationObserver: undefined }};
     sandbox.window = sandbox;
     sandbox.window.addEventListener = () => {{}};
@@ -204,7 +216,7 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
     (async () => {{
       byId.calendarNavButton.click();
       await wait();
-      const todayLoads = requests.length === 1 && requests[0].method === "GET" && requests[0].url.includes("/api/calendar/today?timezone=");
+      const monthLoads = requests.length === 1 && requests[0].method === "GET" && requests[0].url.includes("/api/calendar/items?timezone=") && requests[0].url.includes("start_date=2026-09-01");
       const tabs = byId.calendarTabs;
       tabs.listeners.click[0]({{ target: byId.calendarDayTab }});
       const loadingVisible = byId.calendarLoading.hidden === false;
@@ -227,12 +239,13 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
       await wait();
       const groups = byId.calendarList.children;
       const monthGrouped = groups.length === 2 && textOf(groups[0]).includes("First day") && textOf(groups[1]).includes("<safe text>") && !textOf(byId.calendarList).includes("must be ignored");
-      process.stdout.write(JSON.stringify({{ todayLoads, loadingVisible, dayReady, previousLoad, unauthorized, unavailable, monthGrouped }}));
+      process.stdout.write(JSON.stringify({{ monthLoads, loadingVisible, dayReady, previousLoad, unauthorized, unavailable, monthGrouped }}));
     }})();
     """
-    completed = subprocess.run(["node", "-e", harness], check=True, capture_output=True, text=True)
+    completed = subprocess.run(["node", "-e", harness], capture_output=True, text=True)
+    assert completed.returncode == 0, completed.stderr
     result = json.loads(completed.stdout)
-    assert result["todayLoads"] is True
+    assert result["monthLoads"] is True
     assert result["loadingVisible"] is True
     assert result["dayReady"] is True
     assert "/api/calendar/items" in result["previousLoad"]

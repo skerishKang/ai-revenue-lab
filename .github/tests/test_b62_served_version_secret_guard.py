@@ -368,3 +368,214 @@ if __name__ == "__main__":
     if failures:
         raise SystemExit(f"B62_SERVED_VERSION_SECRET_GUARD_TESTS=FAIL count={failures}")
     print(f"B62_SERVED_VERSION_SECRET_GUARD_TESTS=PASS cases={len(tests)}")
+
+
+# #3748 / #3897: exact argv parity of the canonical B62 production GET-only
+# served-lineage audit. All subprocesses use local synthetic IDs. This suite
+# is already run by the PR-only B62 Production Deploy source-contract job.
+
+
+B62_DEPLOY_GATE = ROOT / ".github/workflows/b62-production-code-deploy-gate.yml"
+LINEAGE_CLI = ROOT / ".github/scripts/cloudflare_served_version_lineage.py"
+
+
+def _assert_3748_b62_production_argv_source(src: str) -> None:
+    assert src.count('--active-version="${active}"') == 1
+    assert src.count('--latest-version="${latest}"') == 1
+    assert '--active-version "${active}"' not in src
+    assert '--latest-version "${latest}"' not in src
+    assert "cloudflare_served_version_lineage.py" in src
+    assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION" in src
+    assert "P01_ENGINE_WORKER: padiem-ai-engine" in src
+
+
+def _run_3748_b62_production_lineage(*argv: str):
+    import subprocess
+    import sys
+    return subprocess.run(
+        [sys.executable, str(LINEAGE_CLI), *argv],
+        capture_output=True, text=True, check=False, timeout=15,
+    )
+
+
+def test_3748_b62_production_argv_only_two_lineage_tokens_and_pr_boundary():
+    source = B62_DEPLOY_GATE.read_text(encoding="utf-8")
+    _assert_3748_b62_production_argv_source(source)
+    assert '  pull_request:' in source
+    assert '  workflow_dispatch:' in source
+    assert "python -m pytest .github/tests/test_b62_served_version_secret_guard.py -q" in source
+    assert "deploy_production_code" in source
+    assert "  deploy-production-code:" in source
+    assert "environment: production" in source
+    assert "PRODUCTION_MUTATION=0" in source
+
+
+def test_3748_b62_production_argv_real_lineage_both_leading_hyphen_pass():
+    from cloudflare_served_version import is_safe_version_id
+    assert is_safe_version_id("-canonical-live-version")
+    run = _run_3748_b62_production_lineage(
+        "--active-version=-canonical-live-version",
+        "--latest-version=-canonical-live-version",
+    )
+    assert run.returncode == 0, run.stderr
+    assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS" in run.stdout
+    assert "SERVED_VERSION_LINEAGE_OUTCOME=PASS" in run.stdout
+    assert "SERVED_VERSION_LINEAGE_HTTP_CALLS=0" in run.stdout
+    assert "SERVED_VERSION_LINEAGE_MUTATION=0" in run.stdout
+    assert "SERVED_VERSION_LINEAGE_SECRET_READ=0" in run.stdout
+
+
+def test_3748_b62_production_argv_both_old_split_forms_rejected_by_real_argparse():
+    for args in (
+        ("--active-version", "-canonical-live-version",
+         "--latest-version=-canonical-live-version"),
+        ("--active-version=-canonical-live-version",
+         "--latest-version", "-canonical-live-version"),
+    ):
+        run = _run_3748_b62_production_lineage(*args)
+        assert run.returncode == 2, run.stderr
+        assert "expected one argument" in run.stderr
+        assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS" not in run.stdout
+
+
+def test_3748_b62_production_argv_real_lineage_mismatch_and_unsafe_refused():
+    mismatch = _run_3748_b62_production_lineage(
+        "--active-version=-canonical-live-version",
+        "--latest-version=-different-version",
+    )
+    assert mismatch.returncode == 1, mismatch.stderr
+    assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION=FAIL" in mismatch.stdout
+    assert "SERVED_VERSION_LINEAGE_REASON=different" in mismatch.stdout
+    unsafe = "unsafe latest with spaces"
+    rejected = _run_3748_b62_production_lineage(
+        "--active-version=-canonical-live-version",
+        "--latest-version=" + unsafe,
+    )
+    assert rejected.returncode == 2, rejected.stderr
+    assert "SERVED_VERSION_LINEAGE_OUTCOME=FAIL_CLOSED" in rejected.stdout
+    assert unsafe not in rejected.stdout + rejected.stderr
+    assert "SERVED_VERSION_LINEAGE_SECRET_READ=0" in rejected.stdout
+
+
+def test_3748_b62_production_argv_two_independent_mutations_red_and_bytes_preserved():
+    original = B62_DEPLOY_GATE.read_bytes()
+    source = original.decode("utf-8")
+    _assert_3748_b62_production_argv_source(source)
+    pairs = (
+        ('--active-version="${active}"', '--active-version "${active}"'),
+        ('--latest-version="${latest}"', '--latest-version "${latest}"'),
+    )
+    caught = 0
+    for good, bad in pairs:
+        mutant = source.replace(good, bad, 1)
+        assert mutant != source
+        try:
+            _assert_3748_b62_production_argv_source(mutant)
+        except AssertionError:
+            caught += 1
+        else:
+            raise AssertionError("old CLI split argv mutation was accepted")
+    assert caught == 2
+    assert B62_DEPLOY_GATE.read_bytes() == original
+
+
+def test_b66_membership_secret_is_exact_one_addition_to_served_set():
+    before = mod.load_capture(expected_capture())
+    actual = base_bindings_map()
+    actual["B66_MEMBERSHIP_ENFORCED"] = secret("B66_MEMBERSHIP_ENFORCED")
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(before, _entries(actual))
+    mod.verify_secret_set(
+        before, _entries(actual), allow_b66_membership_secret=True,
+    )
+
+
+def test_b66_membership_secret_rejects_missing_wrong_type_or_unrelated_secret():
+    before = mod.load_capture(expected_capture())
+    for bindings in (
+        base_bindings_map(),
+        {**base_bindings_map(), "B66_MEMBERSHIP_ENFORCED": plain("enabled")},
+        {**base_bindings_map(),
+         "B66_MEMBERSHIP_ENFORCED": secret("B66_MEMBERSHIP_ENFORCED"),
+         "UNRELATED": secret("UNRELATED")},
+    ):
+        with pytest.raises(mod.ServedVersionGuardError):
+            mod.verify_secret_set(
+                before, _entries(bindings), allow_b66_membership_secret=True,
+            )
+
+
+def test_b66_membership_secret_refuses_simultaneous_other_additive_modes():
+    before = mod.load_capture(expected_capture())
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(
+            before, _entries(base_bindings_map()),
+            allow_web_store_additions=True,
+            allow_b66_membership_secret=True,
+        )
+
+
+def test_b66_membership_secret_preserves_already_served_exact_set():
+    existing = base_bindings_map()
+    existing["B66_MEMBERSHIP_ENFORCED"] = secret("B66_MEMBERSHIP_ENFORCED")
+    captured = mod.load_capture(expected_capture(bindings=_entries(existing)))
+    mod.verify_secret_set(captured, _entries(existing), allow_b66_membership_secret=True)
+    bad = {**existing, "UNEXPECTED": secret("UNEXPECTED")}
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(captured, _entries(bad), allow_b66_membership_secret=True)
+
+
+CLAW_DESKTOP_SECRET_BINDING = {
+    "type": "secrets_store_secret",
+    "name": "CLAW_ENGINE_DESKTOP_SECRET",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "secret_name": "CLAW_ENGINE_DESKTOP_SECRET",
+}
+
+
+def test_claw_desktop_secret_is_exact_one_addition_to_served_set():
+    before = mod.load_capture(expected_capture())
+    actual = base_bindings_map()
+    actual["CLAW_ENGINE_DESKTOP_SECRET"] = {
+        key: value for key, value in CLAW_DESKTOP_SECRET_BINDING.items() if key != "name"
+    }
+    mod.verify_secret_set(before, _entries(actual), allow_claw_desktop_secret=True)
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(before, _entries(actual))
+
+
+@pytest.mark.parametrize("mutation", [
+    {"store_id": "00000000000000000000000000000000"},
+    {"secret_name": "OTHER_SECRET"},
+    {"type": "secret_text"},
+])
+def test_claw_desktop_secret_rejects_served_identity_drift(mutation):
+    before = mod.load_capture(expected_capture())
+    actual = base_bindings_map()
+    entry = {**CLAW_DESKTOP_SECRET_BINDING, **mutation}
+    actual["CLAW_ENGINE_DESKTOP_SECRET"] = {
+        key: value for key, value in entry.items() if key != "name"
+    }
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(before, _entries(actual), allow_claw_desktop_secret=True)
+
+
+def test_claw_desktop_secret_rejects_unrelated_addition():
+    before = mod.load_capture(expected_capture())
+    actual = base_bindings_map()
+    actual["CLAW_ENGINE_DESKTOP_SECRET"] = {
+        key: value for key, value in CLAW_DESKTOP_SECRET_BINDING.items() if key != "name"
+    }
+    actual["UNRELATED"] = secret("UNRELATED")
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(before, _entries(actual), allow_claw_desktop_secret=True)
+
+
+def test_claw_desktop_secret_mode_is_exclusive():
+    before = mod.load_capture(expected_capture())
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(
+            before, _entries(base_bindings_map()),
+            allow_oracle_mesh=True,
+            allow_claw_desktop_secret=True,
+        )

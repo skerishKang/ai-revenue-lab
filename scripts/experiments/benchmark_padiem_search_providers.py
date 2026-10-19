@@ -19,7 +19,7 @@ import re
 import socket
 import sys
 import time
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
@@ -28,6 +28,9 @@ MAX_RESULTS = 5
 MAX_RESPONSE_BYTES = 1_048_576
 MAX_TEXT_CHARS = 2_000
 DEFAULT_TIMEOUT_SECONDS = 20.0
+# Same precedence as the product path (`padiem_ai_core.web_runtime._TINYFISH_SNIPPET_KEYS`), so the
+# benchmark never records an empty snippet for a key the Core provider normalizes.
+TINYFISH_SNIPPET_KEYS = ("snippet", "description", "summary", "content")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CORPUS = REPO_ROOT / "docs/experiments/PADIEM_SEARCH_PROVIDER_BENCHMARK_CORPUS_v1.tsv"
 
@@ -85,7 +88,12 @@ class BenchmarkHttpError(BenchmarkError):
     def __init__(self, status: int):
         super().__init__(f"provider returned HTTP {status}")
         self.status = status
-        if status == 429:
+        # 402 = the provider's free allowance is exhausted (TinyFish documents
+        # HTTP 402 / `INSUFFICIENT_CREDITS`). It must abort the run like 429 so a
+        # live benchmark can never silently spend past the free quota.
+        if status == 402:
+            self.code = "HTTP_402"
+        elif status == 429:
             self.code = "HTTP_429"
         elif 400 <= status < 500:
             self.code = "HTTP_4XX"
@@ -371,6 +379,10 @@ def _normalize_items(provider: str, data: dict[str, Any], limit: int = MAX_RESUL
             snippet = item.get("contents")
             published = item.get("datetime")
             score = None
+        elif provider == "tinyfish":
+            snippet = next((item.get(key) for key in TINYFISH_SNIPPET_KEYS if item.get(key)), None)
+            published = item.get("date") or item.get("published_date")
+            score = item.get("score")
         else:
             snippet = item.get("snippet") or item.get("description")
             published = item.get("date") or item.get("published_date")
@@ -416,14 +428,16 @@ def run_case(
     *,
     limit: int = MAX_RESULTS,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
-    transport=_perform_request,
+    transport: Callable[..., tuple[int, bytes]] | None = None,
 ) -> dict[str, Any]:
     credential = os.environ.get(spec.credential_env, "").strip()
     if not credential:
         raise MissingCredential(f"{spec.credential_env} is not configured")
     method, url, headers, body = _request_for(spec, case, credential, limit)
     started = time.perf_counter()
-    status, raw = transport(method, url, headers, body, timeout)
+    # Resolve the transport at call time (never as a captured default argument),
+    # so a test can inject a transport without any risk of reaching the network.
+    status, raw = (transport or _perform_request)(method, url, headers, body, timeout)
     latency_ms = round((time.perf_counter() - started) * 1000, 1)
     data = _decode_json(raw)
     results = _normalize_items(spec.provider, data, limit)
@@ -549,7 +563,7 @@ def main(argv: list[str] | None = None) -> int:
                     "results": [],
                 }
                 print(json.dumps(record, ensure_ascii=False, sort_keys=True), file=handle, flush=True)
-                if exc.code in {"MISSING_CREDENTIAL", "HTTP_429"}:
+                if exc.code in {"MISSING_CREDENTIAL", "HTTP_402", "HTTP_429"}:
                     return 2
                 continue
             print(json.dumps(record, ensure_ascii=False, sort_keys=True), file=handle, flush=True)

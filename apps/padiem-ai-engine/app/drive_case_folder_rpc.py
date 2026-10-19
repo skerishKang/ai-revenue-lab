@@ -25,6 +25,8 @@ from typing import Any
 
 from app.drive_case_folder_service import (
     CLEAR_PATH,
+    GENERAL_SEARCH_PATH,
+    GENERAL_READ_PATH,
     FOLDERS_PATH,
     SELECT_PATH,
     STATUS_PATH,
@@ -40,8 +42,12 @@ OPERATION_PATHS = {
     "drive_case_folder_select": SELECT_PATH,
     "drive_case_folder_clear": CLEAR_PATH,
 }
-
+GENERAL_OPERATION_PATHS = {
+    "drive_general_search": GENERAL_SEARCH_PATH,
+    "drive_general_read": GENERAL_READ_PATH,
+}
 DRIVE_CASE_FOLDER_RPC_OPERATIONS = tuple(OPERATION_PATHS)
+DRIVE_GENERAL_RPC_OPERATIONS = tuple(GENERAL_OPERATION_PATHS)
 
 PUBLIC_DRIVE_CASE_FOLDER_FETCH_ROUTE = False
 
@@ -51,6 +57,8 @@ _OPERATION_KEYS = {
     "drive_case_folder_folders": frozenset({"workspace_ref", "project_id", "query"}),
     "drive_case_folder_select": frozenset({"workspace_ref", "project_id", "folder_id"}),
     "drive_case_folder_clear": frozenset({"workspace_ref", "project_id"}),
+    "drive_general_search": frozenset({"workspace_ref", "query"}),
+    "drive_general_read": frozenset({"workspace_ref", "file_id"}),
 }
 
 
@@ -77,7 +85,7 @@ async def drive_case_folder_rpc(
     a bounded 503 so a product can never read Drive state without authority.
     """
 
-    if operation not in OPERATION_PATHS:
+    if operation not in OPERATION_PATHS and operation not in GENERAL_OPERATION_PATHS:
         return _rpc_error("not_found", "Unknown Engine RPC operation.", status_code=404)
 
     if service is None:
@@ -103,7 +111,7 @@ async def drive_case_folder_rpc(
 
     response: ServiceResponse = await service.handle(
         method="POST",
-        path=OPERATION_PATHS[operation],
+        path=(OPERATION_PATHS | GENERAL_OPERATION_PATHS)[operation],
         content_type="application/json",
         body=encoded,
     )

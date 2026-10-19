@@ -1,10 +1,17 @@
 from __future__ import annotations
 
+import base64
 from datetime import datetime, timezone
 from typing import Any, Callable, TypeVar
 
 from padiem_control_plane.contracts import ControlPlaneContractError
-from padiem_control_plane.local_agent_broker import MAX_POLL_BATCH, BrokerBindingState, BrokerCommandState
+from padiem_control_plane.local_agent_broker import (
+    MAX_POLL_BATCH,
+    BrokerBindingState,
+    BrokerCommandState,
+    BrokerDeviceBinding,
+)
+from padiem_control_plane.local_agent_broker_auth import StateBackedLocalAgentBindingAuthenticator
 from padiem_control_plane.local_agent_broker_http import LocalAgentMaterialResolutionRequest
 from padiem_control_plane.local_agent_broker_rpc import LocalAgentBrokerRpcFacade
 from padiem_control_plane.local_agent_broker_state import (
@@ -14,6 +21,7 @@ from padiem_control_plane.local_agent_broker_state import (
 from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAgentBrokerStatePort
 
 from local_agent_broker_material_store import CloudflareDurableObjectCommandMaterialStore, closed_mapping
+from local_agent_broker_owner_usage import BrokerOwnerUsageStore
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState,
     CloudflareDurableObjectSerializedStateBackend,
@@ -37,6 +45,68 @@ _MATERIAL_RESOLVE_RPC_KEYS = frozenset(
 # identity only; no conversation, device or destination ref is accepted here.
 _DEVICE_TRUTH_RPC_KEYS = frozenset({"account_ref", "workspace_ref"})
 
+# #4139 — the multi-device directory is the same owner-scoped read as
+# `device_truth`, widened from "the owner's newest binding" to "every device
+# the owner has bound". It accepts the identical closed key set and adds no
+# conversation, device, destination or cursor field: a caller can narrow the
+# scope with `workspace_ref` but can never name a device it wants to see, so a
+# device id stays an output, never an input.
+_DEVICE_DIRECTORY_RPC_KEYS = frozenset({"account_ref", "workspace_ref"})
+
+# #4139 — the directory is bounded to the same 24 devices the Web projection
+# accepts. An owner with more devices is refused *whole* rather than truncated,
+# so the caller can never be handed a silently partial list that looks complete.
+MAX_DEVICE_DIRECTORY_DEVICES = 24
+
+
+def _binding_current_rank(binding: BrokerDeviceBinding) -> tuple[int, datetime, int]:
+    """Ordering key deciding which binding is *current* for one device.
+
+    An ACTIVE binding always outranks a REVOKED one, because a device that has
+    been re-paired keeps its historical revoked bindings while the new active
+    binding is the one that speaks for it. Within the same state the newest
+    issuance wins, and a later credential generation breaks an issuance tie.
+    """
+
+    return (1 if binding.state is BrokerBindingState.ACTIVE else 0, binding.issued_at, binding.credential_generation)
+
+
+def select_current_bindings_by_device(bindings: list[BrokerDeviceBinding]) -> dict[str, BrokerDeviceBinding]:
+    """Collapse scoped bindings to exactly one *current* binding per device.
+
+    Re-pairing legitimately leaves several bindings for one device (an older
+    revoked binding plus the current active one), so grouping is required for
+    the directory to list a device once. The collapse is deliberately strict:
+
+    * a device id with **two ACTIVE bindings in scope** is a duplicated or
+      forged device identity and is refused outright — the directory is never
+      allowed to silently pick the first occurrence;
+    * otherwise the highest-ranked binding wins and every device id appears
+      exactly once in the result.
+    """
+
+    selected: dict[str, BrokerDeviceBinding] = {}
+    active_devices: set[str] = set()
+    for binding in bindings:
+        if binding.state is BrokerBindingState.ACTIVE:
+            if binding.device_id in active_devices:
+                raise ControlPlaneContractError(
+                    "device_directory_duplicate_device_identity",
+                    "device has more than one active broker binding in scope",
+                )
+            active_devices.add(binding.device_id)
+        current = selected.get(binding.device_id)
+        if current is None or _binding_current_rank(binding) > _binding_current_rank(current):
+            selected[binding.device_id] = binding
+    return selected
+
+
+# #3436 B2c — the device-session authentication RPC accepts exactly the
+# caller-held session material and nothing else. No user_id, account_ref,
+# workspace_ref, tenant or product key exists: those are derived by the
+# canonical authority from the verified binding state, never named by a caller.
+_DEVICE_SESSION_AUTH_RPC_KEYS = frozenset({"session_id", "binding_ref", "credential_b64"})
+
 def _iso_utc(value: datetime) -> str:
     return value.astimezone(timezone.utc).isoformat()
 
@@ -49,6 +119,7 @@ class LocalAgentBrokerDurableRuntime:
         self._env = env
         self.backend = CloudflareDurableObjectSerializedStateBackend(storage)
         self.state_port = SerializedLocalAgentBrokerStatePort(backend=self.backend)
+        self.owner_usage = BrokerOwnerUsageStore(storage, self.authority_ref())
         self.http_state = CloudflareDurableObjectHttpSessionState(storage)
         self.material_store = CloudflareDurableObjectCommandMaterialStore(
             storage,
@@ -96,6 +167,17 @@ class LocalAgentBrokerDurableRuntime:
     def open_session(self, payload: dict) -> dict:
         return self.transaction(lambda: self.facade().open_session(payload))
 
+    def _usage_blocked(self, binding_ref: Any) -> bool:
+        snapshot = self.state_port.load(authority_ref=self.authority_ref()).snapshot
+        return self.owner_usage.paused_binding(snapshot, binding_ref)
+
+    def set_owner_usage(self, payload: dict) -> dict:
+        # This is a private, authenticated owner/workspace-only RPC at B62.
+        def operation() -> dict:
+            snapshot = self.state_port.load(authority_ref=self.authority_ref()).snapshot
+            return self.owner_usage.set(payload, snapshot)
+        return self.transaction(operation)
+
     def enqueue_command(self, payload: dict) -> dict:
         """Enqueue a command *without* binding material in the same transaction.
 
@@ -109,7 +191,11 @@ class LocalAgentBrokerDurableRuntime:
         terminal-history compaction, so its ledger writes and blob swap commit
         inside the same storage transaction as every other mutator (#3123).
         """
-        return self.transaction(lambda: self.facade().enqueue_command(payload))
+        def operation() -> dict:
+            if self._usage_blocked(payload.get("binding_ref")):
+                return {"ok": False, "error": {"code": "owner_pc_paused"}}
+            return self.facade().enqueue_command(payload)
+        return self.transaction(operation)
 
     def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
         """#3127 — commit the canonical command and its material atomically.
@@ -136,6 +222,8 @@ class LocalAgentBrokerDurableRuntime:
         """
 
         def operation() -> dict:
+            if self._usage_blocked(payload.get("binding_ref")):
+                return {"ok": False, "error": {"code": "owner_pc_paused"}}
             result = self.facade().enqueue_command(payload)
             if result.get("ok") is not True:
                 # A canonical refusal (duplicate, scope, ttl) wrote nothing, so
@@ -201,6 +289,8 @@ class LocalAgentBrokerDurableRuntime:
             request_fingerprint=payload["request_fingerprint"],
             server_requested_at=parse_iso(payload["server_requested_at"], "server_requested_at"),
         )
+        if self._usage_blocked(request.binding_ref):
+            return {"ok": False, "error": {"code": "owner_pc_paused"}}
         return {"ok": True, "material": self.material_store.resolve(request)}
 
     def poll(self, payload: dict) -> dict:
@@ -243,6 +333,11 @@ class LocalAgentBrokerDurableRuntime:
             page = self.facade().poll({**payload, "after_sequence": cursor, "limit": limit})
             if page.get("ok") is not True:
                 return page
+            # Even queued work minted before OFF must never be delivered while
+            # the owner has paused PC use. The canonical session is validated
+            # by poll before this projection is applied.
+            if self._usage_blocked(payload.get("binding_ref")):
+                return {**page, "commands": []}
             deliverable: list[dict] = []
             while True:
                 commands = page["commands"]
@@ -269,6 +364,9 @@ class LocalAgentBrokerDurableRuntime:
 
     def admit_command(self, payload: dict) -> dict:
         def operation() -> dict:
+            snapshot = self.state_port.load(authority_ref=self.authority_ref()).snapshot
+            if self.owner_usage.paused_command(snapshot, payload.get("command_id")):
+                return {"ok": False, "error": {"code": "owner_pc_paused"}}
             self._require_material_for_transition(
                 payload.get("command_id"), BrokerCommandState.QUEUED, "admission"
             )
@@ -359,6 +457,25 @@ class LocalAgentBrokerDurableRuntime:
         # The owner's newest binding is the device this authority considers
         # current; older and revoked bindings never win the tie-break.
         binding = max(candidates, key=lambda item: (item.issued_at, item.credential_generation))
+        return {
+            "ok": True,
+            "available": True,
+            "device_truth": self._device_facts(snapshot=snapshot, binding=binding, now=now),
+        }
+
+    def _device_facts(self, *, snapshot: Any, binding: BrokerDeviceBinding, now: datetime) -> dict[str, Any]:
+        """The canonical, secret-free fact set for one binding.
+
+        Shared verbatim by ``device_truth`` (the owner's single current device)
+        and ``device_directory`` (every device the owner has bound) so the two
+        projections can never drift into two different fact vocabularies. It
+        reads only canonical broker records and never claims ONLINE: the
+        ``canonical_state`` vocabulary is a pure rename of this authority's own
+        records (``revoked`` / ``credential_expired`` / ``paired_offline``) and
+        the server-backed ONLINE projection is applied downstream by the
+        existing ``kagent.local_agent_server_projection`` rule from the binding
+        + session + heartbeat facts returned here.
+        """
 
         session = None
         for candidate in snapshot.sessions:
@@ -412,13 +529,178 @@ class LocalAgentBrokerDurableRuntime:
             }
             if last_seen_at is not None:
                 facts["heartbeat_last_seen_at"] = _iso_utc(last_seen_at)
-        return {"ok": True, "available": True, "device_truth": facts}
+        return facts
+
+    def device_directory(self, payload: dict) -> dict:
+        """#4139 — the owner-scoped, read-only multi-device directory.
+
+        This is the multi-PC read the Claw Connect device selector consumes.
+        It answers the one question ``device_truth`` cannot — *which computers
+        does this owner have, and what is each one's canonical state* — while
+        remaining the same kind of object: a pure, side-effect-free projection
+        over the canonical #3080 broker state this authority already owns.
+
+        What it deliberately does **not** do:
+
+        * It never claims ONLINE. ``canonical_state`` reuses the ``device_truth``
+          vocabulary (``revoked`` / ``credential_expired`` / ``paired_offline``)
+          and each device carries the binding + session + heartbeat facts the
+          existing ``kagent.local_agent_server_projection`` rule needs to decide
+          ONLINE downstream. A broker that also reported ONLINE here would be a
+          second ONLINE authority, so it does not.
+        * It never trusts a device id from the caller. The closed key set above
+          accepts only the server-derived ``account_ref``/``workspace_ref``, so
+          a device id is an output, never an input.
+        * It never mints a second authority, table or store: the directory is
+          computed from the same snapshot, sessions and heartbeat records the
+          rest of the broker works from.
+
+        Fail-closed rules:
+
+        * a device with more than one ACTIVE binding in scope (a duplicated or
+          forged identity) rejects the *whole* directory, never just that entry;
+        * an owner with more than ``MAX_DEVICE_DIRECTORY_DEVICES`` devices is
+          refused whole rather than truncated, so a partial list is never
+          mistaken for a complete one;
+        * devices are returned one row per device id, sorted by device id, so
+          the ordering is stable across calls and independent of registration
+          order. Ordering and names are presentation only.
+
+        Read-only: no transaction, no compare-and-swap, no material or command
+        state is touched, and the response is assembled from a closed allowlist
+        that never carries the credential digest, session secret or any raw
+        device credential.
+        """
+
+        try:
+            if not isinstance(payload, dict) or not set(payload) <= _DEVICE_DIRECTORY_RPC_KEYS:
+                raise ValueError("device directory schema mismatch")
+            account_ref = safe_ref(str(payload["account_ref"]), "account_ref")
+            workspace_ref = payload.get("workspace_ref")
+            if workspace_ref is not None:
+                workspace_ref = safe_ref(str(workspace_ref), "workspace_ref")
+        except (KeyError, TypeError, ValueError):
+            return {
+                "ok": False,
+                "error": {
+                    "code": "invalid_device_directory_request",
+                    "message": "device directory request was rejected",
+                },
+            }
+
+        stored = self.state_port.load(authority_ref=self.authority_ref())
+        snapshot = stored.snapshot
+        now = datetime.now(timezone.utc)
+
+        scoped = [
+            binding
+            for binding in snapshot.bindings
+            if binding.account_ref == account_ref
+            and (workspace_ref is None or binding.workspace_ref == workspace_ref)
+        ]
+        if not scoped:
+            return {"ok": True, "available": False, "reason": "no_device_binding"}
+
+        try:
+            current = select_current_bindings_by_device(scoped)
+        except ControlPlaneContractError:
+            return {
+                "ok": False,
+                "error": {
+                    "code": "device_directory_duplicate_device_identity",
+                    "message": "device directory state was rejected",
+                },
+            }
+        if len(current) > MAX_DEVICE_DIRECTORY_DEVICES:
+            return {
+                "ok": False,
+                "error": {
+                    "code": "device_directory_too_large",
+                    "message": "device directory exceeds the bounded device limit",
+                },
+            }
+
+        devices = [
+            self._device_facts(snapshot=snapshot, binding=current[device_id], now=now)
+            for device_id in sorted(current)
+        ]
+        return {
+            "ok": True,
+            "available": True,
+            "owner_scoped": True,
+            "usage_paused": self.owner_usage.paused(account_ref, workspace_ref)
+                if workspace_ref is not None else False,
+            "device_count": len(devices),
+            "max_devices": MAX_DEVICE_DIRECTORY_DEVICES,
+            "devices": devices,
+        }
 
     def terminal_command_result(self, payload: dict) -> dict:
         """#3139 read-only terminal fact from the canonical persisted snapshot."""
 
         stored = self.state_port.load(authority_ref=self.authority_ref())
         return terminal_command_result_from_snapshot(stored.snapshot, payload)
+
+    def authenticate_device_session(self, payload: dict) -> dict:
+        """#3436 B2c — one narrow, read-only device-session authentication projection.
+
+        The read-only RPC the B62 Desktop conversation surface consumes through
+        the private Service Binding gateway. It runs exactly the canonical
+        verifier preamble the ``poll`` path has always taken — binding digest,
+        expiry, revocation, then the full session/binding scope correlation —
+        over the canonical persisted state, and projects only the server-derived
+        facts the Desktop conversation read needs:
+
+        * ``account_ref`` / ``workspace_ref`` come from the verified canonical
+          binding state. The closed RPC key set above has no caller-supplied
+          identity field, so a caller can never name its owner or scope.
+        * Every denial is one bounded code. Whether the credential was wrong,
+          expired, rotated, or the binding revoked is never distinguished here,
+          so no deny-reason oracle exists at this boundary.
+        * Read-only: no transaction, no compare-and-swap, no state write. The
+          response never carries the credential digest or any raw credential.
+        """
+
+        try:
+            payload = closed_mapping(payload, _DEVICE_SESSION_AUTH_RPC_KEYS, "device session authentication RPC")
+            session_id = safe_ref(str(payload["session_id"]), "session_id")
+            binding_ref = safe_ref(str(payload["binding_ref"]), "binding_ref")
+            credential_b64 = payload["credential_b64"]
+            if not isinstance(credential_b64, str) or not credential_b64:
+                raise ValueError("credential_b64 must be non-empty text")
+            decoded = base64.b64decode(credential_b64, validate=True)
+            if not decoded:
+                raise ValueError("credential_b64 must decode to non-empty bytes")
+        except (KeyError, TypeError, ValueError):
+            return {
+                "ok": False,
+                "error": {
+                    "code": "invalid_device_session_auth_request",
+                    "message": "device session authentication request was rejected",
+                },
+            }
+
+        authenticator = StateBackedLocalAgentBindingAuthenticator(
+            pepper=str(self._env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
+            authority_ref=self.authority_ref(),
+            state_port=self.state_port,
+        )
+        try:
+            projection = authenticator.authenticate_device_session(
+                session_id=session_id,
+                binding_ref=binding_ref,
+                credential=decoded,
+                now=datetime.now(timezone.utc),
+            )
+        except (ControlPlaneContractError, ValueError, TypeError, RuntimeError):
+            return {
+                "ok": False,
+                "error": {
+                    "code": "device_session_auth_failed",
+                    "message": "device session authentication failed",
+                },
+            }
+        return {"ok": True, "device_session": projection}
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -457,6 +739,27 @@ DEVICE_TRUTH_VOCABULARY_HAS_ONLINE = False
 DEVICE_TRUTH_ONLINE_AUTHORITY = "kagent.local_agent_server_projection (B62 consumer)"
 DEVICE_TRUTH_SECOND_ONLINE_AUTHORITY = False
 DEVICE_TRUTH_MUTATION = False
+
+# --- #4139 — the owner-scoped multi-device directory projection --------------
+# A read-only widening of #3094's device_truth from "the owner's current
+# device" to "every device the owner has bound". It reports the same
+# never-online canonical vocabulary and the same binding/session/heartbeat
+# facts, so ONLINE stays the single job of
+# `kagent.local_agent_server_projection` and no second device authority,
+# ONLINE authority or device table is created.
+DEVICE_DIRECTORY_PROJECTION = True
+DEVICE_DIRECTORY_VOCABULARY_HAS_ONLINE = False
+DEVICE_DIRECTORY_SECOND_ONLINE_AUTHORITY = False
+DEVICE_DIRECTORY_SECOND_DEVICE_AUTHORITY = False
+DEVICE_DIRECTORY_OWNER_SCOPED = True
+DEVICE_DIRECTORY_CALLER_DEVICE_INPUT = False
+DEVICE_DIRECTORY_MUTATION = False
+DEVICE_DIRECTORY_MAX_DEVICES = MAX_DEVICE_DIRECTORY_DEVICES
+DEVICE_DIRECTORY_TRUNCATES = False
+DEVICE_DIRECTORY_DUPLICATE_REJECTS_ALL = True
+DEVICE_DIRECTORY_STABLE_ORDER = "device_id_ascending"
+DEVICE_DIRECTORY_REUSES_DEVICE_TRUTH_FACTS = True
+DEVICE_DIRECTORY_READ_ONLY = True
 SECOND_REPLAY_SEQUENCE_AUTHORITY = False
 FINGERPRINT_AUTHORITY_CHANGED = False
 P01_AUTHORITY_CHANGED = False
@@ -469,3 +772,12 @@ MATERIAL_LESS_COMMAND_ACKNOWLEDGABLE = False
 SECOND_MATERIAL_SEQUENCE_MINT = False
 SECOND_MATERIAL_REVISION_MINT = False
 MISSING_MATERIAL_POLLABLE = False
+
+# --- #3436 B2c — the device-session authentication projection RPC -----------
+NARROW_DEVICE_SESSION_AUTH_PROJECTION = True
+DEVICE_SESSION_AUTH_STATE_MUTATION = False
+DEVICE_SESSION_AUTH_SECOND_CREDENTIAL_VERIFIER = False
+DEVICE_SESSION_AUTH_CALLER_IDENTITY_AUTHORITY = False
+DEVICE_SESSION_AUTH_RAW_CREDENTIAL_RETURNED = False
+DEVICE_SESSION_AUTH_DENY_REASON_DISCLOSED = False
+DEVICE_SESSION_AUTH_PRODUCTION_READY = False

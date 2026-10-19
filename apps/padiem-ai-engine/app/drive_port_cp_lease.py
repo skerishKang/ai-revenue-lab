@@ -6,6 +6,7 @@ from typing import Any, Awaitable
 import httpx
 
 from padiem_ai_core.drive_capability import (
+    DRIVE_FULL_SCOPE,
     DRIVE_READONLY_SCOPE,
     DriveReadPort,
 )
@@ -76,7 +77,7 @@ class ControlPlaneLeaseDriveReadPort(DriveReadPort):
             ) from None
         if lease.binding_ref != binding_ref or lease.actor_ref != actor_ref:
             raise _lease_mismatch("Google Drive access lease does not match the trusted grant.")
-        if lease.scopes != (DRIVE_READONLY_SCOPE,):
+        if lease.scopes not in ((DRIVE_READONLY_SCOPE,), (DRIVE_FULL_SCOPE,)):
             raise _lease_mismatch("Google Drive access lease scope mismatch.")
         return lease
 
@@ -202,6 +203,36 @@ class ControlPlaneLeaseDriveReadPort(DriveReadPort):
         if not isinstance(payload, dict):
             raise _provider_unavailable("Google Drive provider response must be an object.")
         return payload
+
+    async def get_bytes(
+        self,
+        *,
+        binding_ref: str,
+        actor_ref: str,
+        required_scopes: tuple[str, ...],
+        base_url: str,
+        path: str,
+        query: dict[str, str],
+        timeout_seconds: int,
+        max_response_bytes: int,
+    ) -> bytes:
+        """Read bounded opaque Drive bytes using the same CP access lease.
+
+        This Engine-only method is intentionally not part of Core's generic
+        DriveReadPort/tool contract.  It exists for trusted first-party
+        document acquisition after a separate scope/admission gate.
+        """
+
+        return await self._request(
+            binding_ref=binding_ref,
+            actor_ref=actor_ref,
+            required_scopes=required_scopes,
+            base_url=base_url,
+            path=path,
+            query=query,
+            timeout_seconds=timeout_seconds,
+            max_response_bytes=max_response_bytes,
+        )
 
     async def get_text(
         self,

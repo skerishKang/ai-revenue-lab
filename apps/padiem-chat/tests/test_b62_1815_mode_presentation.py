@@ -16,11 +16,12 @@ GLASS_READING = (STATIC / "padiem-glass-reading.css").read_text(encoding="utf-8"
 CERT_QA = (ROOT.parent.parent / ".github" / "scripts" / "b62_product_surface_certification_browser_qa.py").read_text(encoding="utf-8")
 
 
-def test_browser_exposes_only_plus_tier_while_pro_and_max_are_hold() -> None:
-    assert 'AVAILABLE_TIERS = Object.freeze(["plus"])' in CAPABILITIES
-    assert 'createModeOption("plus")' in CAPABILITIES
-    assert 'createModeOption("pro")' not in CAPABILITIES
-    assert 'createModeOption("max")' not in CAPABILITIES
+def test_browser_lists_all_four_tiers_but_only_plus_is_selectable() -> None:
+    assert 'TIER_ORDER = Object.freeze(["free", "plus", "pro", "max"])' in CAPABILITIES
+    assert 'TIER_LIST = Object.freeze(["free", "plus", "pro", "max"])' in CAPABILITIES
+    assert "list.append(...TIER_LIST.map((tier) => createModeOption(tier)));" in CAPABILITIES
+    assert "button.disabled = status === \"unavailable\";" in CAPABILITIES
+    assert "if (!selectTier(tier)) return;" in CAPABILITIES
     assert 'createModeOption("auto"' not in CAPABILITIES
     assert 'createModeOption("fast"' not in CAPABILITIES
     assert 'createModeOption("balanced"' not in CAPABILITIES
@@ -28,7 +29,7 @@ def test_browser_exposes_only_plus_tier_while_pro_and_max_are_hold() -> None:
 
 
 def test_plus_is_default_and_selection_is_shared_by_chat_and_claw() -> None:
-    assert 'let selectedTier = "plus";' in CAPABILITIES
+    assert 'let selectedTier = "free";' in CAPABILITIES
     assert 'window.PadiemTierSelection = Object.freeze({' in CAPABILITIES
     assert 'tier: selectedProductTier()' in APP
     assert 'const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };' in APP
@@ -83,7 +84,7 @@ def test_legacy_mode_qa_and_html_markers_are_removed() -> None:
     assert "Legacy regression marker only" not in INDEX
     assert "mode_fast_balanced_deep" not in CERT_QA
     assert "Fast / Balanced / Deep trusted execution mapping" not in CERT_QA
-    assert '"surface": "tier_plus_only"' in CERT_QA
+    assert '"surface": "tier_free_baseline"' in CERT_QA
     assert '"surface": "tier_max"' in CERT_QA
     assert '"presentation": "BROWSER_HIDDEN"' in CERT_QA
 

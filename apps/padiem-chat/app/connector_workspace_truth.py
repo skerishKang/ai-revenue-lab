@@ -18,9 +18,11 @@ Authority ownership is never mixed:
   never resolves identity;
 * Padiem Chat composes the two results and nothing else.
 
-No new workspace authority and no new credential authority is introduced. Both
-B-1A (``resolve_connector_workspace``) and B-0 (``workspace_connector_state``)
-private contracts are consumed exactly as shipped; neither is reimplemented.
+No new workspace authority and no new credential authority is introduced.
+B-1A (``resolve_connector_workspace``) resolves the workspace once. The existing
+B-0 (``workspace_connector_state``) RPC supplies Gmail / Drive truth, and the
+existing dedicated ``workspace_calendar_connector_state`` RPC supplies Calendar
+truth for that same trusted workspace. Neither authority is reimplemented.
 
 The output is bounded to the reviewed B-0 state contract —
 ``connector_id / state / usable / expires_present / ambiguous`` — and is rebuilt
@@ -40,10 +42,40 @@ from typing import Any
 
 from .control_plane_identity import IdentityBridgeError
 
-# B-1B inherits the reviewed connector scope from B-0 verbatim. Telegram, Slack
-# and Calendar workspace truth is NOT composed here; they stay on the Phase-A
-# platform-support axis until a trusted workspace authority exists for them.
-REVIEWED_WORKSPACE_TRUTH_CONNECTORS = frozenset({"gmail", "google-drive"})
+# B-1B consumes two existing bounded Google OAuth reads for one trusted
+# workspace: the default Gmail / Drive B-0 RPC plus the dedicated Calendar
+# presence RPC. Telegram and Slack remain outside this authority.
+_DEFAULT_WORKSPACE_TRUTH_CONNECTORS = frozenset({"gmail", "google-drive"})
+_CALENDAR_WORKSPACE_TRUTH_CONNECTORS = frozenset({"google-calendar"})
+_B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
+_B66_GOOGLE_DRIVE_FULL_CONNECTOR = "b66-google-drive-full"
+_B66_GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
+_B66_GOOGLE_DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive"
+_B66_GOOGLE_DRIVE_OIDC_SCOPES = ("openid", "profile", "email")
+_B66_DRIVE_SCOPES = {
+    _B66_GOOGLE_DRIVE_FILE_CONNECTOR: (_B66_GOOGLE_DRIVE_FILE_SCOPE,) + _B66_GOOGLE_DRIVE_OIDC_SCOPES,
+    _B66_GOOGLE_DRIVE_FULL_CONNECTOR: (_B66_GOOGLE_DRIVE_FULL_SCOPE,) + _B66_GOOGLE_DRIVE_OIDC_SCOPES,
+}
+_BEGIN_CONNECT_KEYS = frozenset({"connect_ticket"})
+_AUTHORIZATION_KEYS = frozenset({"authorization_url", "connector_id", "expires_at"})
+_B66_SELECTION_ABSENT_KEYS = frozenset({"status", "connector_id", "workspace_ref"})
+_B66_SELECTION_RESOLVED_KEYS = frozenset({
+    "status", "connector_id", "workspace_ref", "binding_ref", "actor_ref",
+    "provider_subject", "provider_email",
+})
+_B66_CONNECTION_KEYS = frozenset({
+    "binding_ref", "connector_id", "actor_ref", "account_ref", "workspace_ref",
+    "scopes", "connected_at", "expires_at", "refresh_token_persisted_sealed",
+    "access_token_discarded", "raw_authorization_code", "raw_access_token",
+    "raw_refresh_token", "raw_client_secret", "verified_destination_subject",
+    "verified_destination_account",
+})
+REVIEWED_WORKSPACE_TRUTH_CONNECTORS = (
+    _DEFAULT_WORKSPACE_TRUTH_CONNECTORS | _CALENDAR_WORKSPACE_TRUTH_CONNECTORS
+)
+_REVIEWED_WORKSPACE_TRUTH_CONNECTORS = (
+    _DEFAULT_WORKSPACE_TRUTH_CONNECTORS | _CALENDAR_WORKSPACE_TRUTH_CONNECTORS
+)
 
 # The B-0 bounded state contract. Anything else is a malformed response.
 _CONNECTOR_STATE_KEYS = frozenset(
@@ -117,8 +149,12 @@ def _invalid() -> IdentityBridgeError:
     return IdentityBridgeError(503, _GOOGLE_OAUTH_INVALID, _INVALID_MESSAGE)
 
 
-def _bounded_connector(value: Any) -> dict[str, Any]:
-    """Validate one B-0 state row and rebuild it from the reviewed keys only.
+def _bounded_connector(
+    value: Any,
+    *,
+    allowed_connector_ids: frozenset[str],
+) -> dict[str, Any]:
+    """Validate one state row and rebuild it from the reviewed keys only.
 
     The B-0 canonical semantics are enforced as two exact equivalences:
 
@@ -151,8 +187,8 @@ def _bounded_connector(value: Any) -> dict[str, Any]:
         or not isinstance(ambiguous, bool)
     ):
         raise _invalid()
-    # Scope lock: only the reviewed Google connectors carry workspace truth.
-    if connector_id not in REVIEWED_WORKSPACE_TRUTH_CONNECTORS:
+    # Scope lock: each private RPC has its own exact reviewed connector set.
+    if connector_id not in allowed_connector_ids:
         raise _invalid()
     # B-0 canonical state semantics. The three reviewed states are total and
     # mutually exclusive, so both derived flags are fully determined by
@@ -230,7 +266,296 @@ class CloudflareGoogleOAuthWorkspaceTruth:
         connectors = result["connectors"]
         if not isinstance(connectors, list):
             raise _invalid()
-        return tuple(_bounded_connector(row) for row in connectors)
+        return tuple(
+            _bounded_connector(
+                row,
+                allowed_connector_ids=_DEFAULT_WORKSPACE_TRUTH_CONNECTORS,
+            )
+            for row in connectors
+        )
+
+    async def workspace_calendar_connector_state(
+        self,
+        *,
+        workspace_ref: str,
+    ) -> tuple[dict[str, Any], ...]:
+        """Read the existing dedicated, identity-free Calendar presence RPC."""
+
+        method = getattr(self._binding, "workspace_calendar_connector_state", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(
+                await _maybe_await(method({"workspace_ref": workspace_ref}))
+            )
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:  # noqa: BLE001 - never leak a driver error
+            raise _unavailable() from exc
+
+        if result is None or not isinstance(result.get("ok"), bool):
+            raise _invalid()
+        if result["ok"] is False:
+            if set(result) != {"ok", "error"}:
+                raise _invalid()
+            error = _as_dict(result.get("error"))
+            if (
+                error is None
+                or set(error) != {"code", "message"}
+                or not isinstance(error.get("code"), str)
+            ):
+                raise _invalid()
+            raise IdentityBridgeError(503, error["code"], _UNAVAILABLE_MESSAGE)
+        if set(result) != {"ok", "connectors"}:
+            raise _invalid()
+        connectors = result["connectors"]
+        if not isinstance(connectors, list) or len(connectors) != 1:
+            raise _invalid()
+        return (
+            _bounded_connector(
+                connectors[0],
+                allowed_connector_ids=_CALENDAR_WORKSPACE_TRUTH_CONNECTORS,
+            ),
+        )
+
+    async def disconnect_drive(self, *, workspace_ref: str) -> bool:
+        """Forward a trusted workspace-only revocation to the canonical OAuth authority.
+
+        No credential, account, scope or provider token can be supplied by the browser.
+        """
+        method = getattr(self._binding, "disconnect_drive", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(await _maybe_await(method({"workspace_ref": workspace_ref})))
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or not isinstance(result.get("ok"), bool):
+            raise _invalid()
+        if result["ok"] is False:
+            if set(result) != {"ok", "error"}:
+                raise _invalid()
+            raise _unavailable()
+        if set(result) != {"ok", "revoked"} or type(result["revoked"]) is not bool:
+            raise _invalid()
+        return result["revoked"]
+
+    async def begin_b66_drive_connect(
+        self,
+        *,
+        connect_ticket: str,
+        connector_id: str = _B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+    ) -> dict[str, Any]:
+        """Start a server-issued B66 Drive-file ticket over private RPC."""
+
+        if connector_id not in _B66_DRIVE_SCOPES:
+            raise _invalid()
+        if not isinstance(connect_ticket, str) or not connect_ticket or len(connect_ticket) > 24_576:
+            raise _invalid()
+        method = getattr(self._binding, "begin_connect", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(
+                await _maybe_await(method({"connect_ticket": connect_ticket}))
+            )
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or result.get("ok") is not True:
+            raise _unavailable()
+        if set(result) != {"ok", "authorization"}:
+            raise _invalid()
+        authorization = _as_dict(result.get("authorization"))
+        if authorization is None or set(authorization) != _AUTHORIZATION_KEYS:
+            raise _invalid()
+        if any(not isinstance(authorization.get(key), str) or not authorization.get(key) for key in _AUTHORIZATION_KEYS):
+            raise _invalid()
+        if authorization["connector_id"] != connector_id:
+            raise _invalid()
+        return {
+            "authorization_url": authorization["authorization_url"],
+            "connector_id": authorization["connector_id"],
+            "expires_at": authorization["expires_at"],
+        }
+
+    async def begin_b66_drive_full_connect(self, *, connect_ticket: str) -> dict[str, Any]:
+        """Start a server-issued B66 full-Drive ticket over private RPC."""
+
+        return await self.begin_b66_drive_connect(
+            connect_ticket=connect_ticket,
+            connector_id=_B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        )
+
+    async def complete_b66_drive_callback(
+        self,
+        *,
+        state_ref: str,
+        authorization_code: str | None,
+        provider_error: str | None,
+        connector_id: str = _B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+    ) -> dict[str, Any]:
+        """Complete one B66 Drive callback over private CP RPC."""
+
+        if connector_id not in _B66_DRIVE_SCOPES:
+            raise _invalid()
+        if not isinstance(state_ref, str) or not state_ref:
+            raise _invalid()
+        method = getattr(self._binding, "complete_callback", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(
+                await _maybe_await(
+                    method({
+                        "state_ref": state_ref,
+                        "authorization_code": authorization_code,
+                        "provider_error": provider_error,
+                    })
+                )
+            )
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or result.get("ok") is not True:
+            raise _unavailable()
+        if set(result) != {"ok", "connection"}:
+            raise _invalid()
+        connection = _as_dict(result.get("connection"))
+        if connection is None or set(connection) != _B66_CONNECTION_KEYS:
+            raise _invalid()
+        if connection.get("connector_id") != connector_id:
+            raise _invalid()
+        if connection.get("scopes") != list(_B66_DRIVE_SCOPES[connector_id]):
+            raise _invalid()
+        if connection.get("refresh_token_persisted_sealed") is not True:
+            raise _invalid()
+        if connection.get("access_token_discarded") is not True:
+            raise _invalid()
+        if connection.get("raw_authorization_code") is not False:
+            raise _invalid()
+        if connection.get("verified_destination_subject") is None:
+            raise _invalid()
+        if connection.get("verified_destination_account") is None:
+            raise _invalid()
+        return dict(connection)
+
+    async def complete_b66_drive_full_callback(
+        self,
+        *,
+        state_ref: str,
+        authorization_code: str | None,
+        provider_error: str | None,
+    ) -> dict[str, Any]:
+        """Complete one B66 full-Drive callback over private CP RPC."""
+
+        return await self.complete_b66_drive_callback(
+            state_ref=state_ref,
+            authorization_code=authorization_code,
+            provider_error=provider_error,
+            connector_id=_B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+        )
+
+    async def select_b66_drive_binding(
+        self,
+        *,
+        workspace_ref: str,
+        connector_id: str = _B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+        binding_method: str = "select_b66_drive_binding",
+    ) -> dict[str, Any]:
+        """Read a trusted workspace's B66 Drive binding selection."""
+
+        if connector_id not in _B66_DRIVE_SCOPES:
+            raise _invalid()
+        if not isinstance(workspace_ref, str) or not workspace_ref:
+            raise _invalid()
+        method = getattr(self._binding, binding_method, None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(
+                await _maybe_await(method({"workspace_ref": workspace_ref}))
+            )
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or result.get("ok") is not True:
+            raise _unavailable()
+        if set(result) != {"ok", "selection"}:
+            raise _invalid()
+        selection = _as_dict(result.get("selection"))
+        if selection is None:
+            raise _invalid()
+        keys = set(selection)
+        status = selection.get("status")
+        if keys == _B66_SELECTION_ABSENT_KEYS:
+            if status != "not_connected" or selection.get("connector_id") != connector_id:
+                raise _invalid()
+            if selection.get("workspace_ref") != workspace_ref:
+                raise _invalid()
+        elif keys == _B66_SELECTION_RESOLVED_KEYS:
+            if status != "resolved" or selection.get("connector_id") != connector_id:
+                raise _invalid()
+            if any(
+                not isinstance(selection.get(key), str) or not selection.get(key)
+                for key in ("workspace_ref", "binding_ref", "actor_ref", "provider_subject")
+            ):
+                raise _invalid()
+            if selection.get("workspace_ref") != workspace_ref:
+                raise _invalid()
+            provider_email = selection.get("provider_email")
+            if provider_email is not None and (
+                not isinstance(provider_email, str) or "@" not in provider_email or len(provider_email) > 320
+            ):
+                raise _invalid()
+        else:
+            raise _invalid()
+        return selection
+
+    async def select_b66_drive_full_binding(self, *, workspace_ref: str) -> dict[str, Any]:
+        """Read a trusted workspace's B66 full-Drive binding selection."""
+
+        return await self.select_b66_drive_binding(
+            workspace_ref=workspace_ref,
+            connector_id=_B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+            binding_method="select_b66_drive_full_binding",
+        )
+
+    async def disconnect_b66_drive(
+        self,
+        *,
+        workspace_ref: str,
+        binding_method: str = "disconnect_b66_drive",
+    ) -> bool:
+        """Revoke only the trusted workspace's B66 Drive-file credential."""
+
+        if not isinstance(workspace_ref, str) or not workspace_ref:
+            raise _invalid()
+        method = getattr(self._binding, binding_method, None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(await _maybe_await(method({"workspace_ref": workspace_ref})))
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or result.get("ok") is not True:
+            raise _unavailable()
+        if set(result) != {"ok", "revoked"} or type(result["revoked"]) is not bool:
+            raise _invalid()
+        return result["revoked"]
+
+    async def disconnect_b66_drive_full(self, *, workspace_ref: str) -> bool:
+        """Revoke only the trusted workspace's B66 full-Drive credential."""
+
+        return await self.disconnect_b66_drive(
+            workspace_ref=workspace_ref,
+            binding_method="disconnect_b66_drive_full",
+        )
 
 
 def _no_workspace_result() -> dict[str, Any]:
@@ -264,8 +589,9 @@ async def compose_workspace_connector_truth(
     ``session_id`` is the trusted server-side canonical session id. There is no
     ``workspace_ref`` parameter on purpose: a caller cannot assert, supply or
     override the workspace, so ``CLIENT_ASSERTED_WORKSPACE_AUTHORITY=NO`` holds
-    by construction. The resolved reference is used for the single private
-    Google OAuth read and is then discarded — it never leaves this function.
+    by construction. The resolved reference is used for the existing default
+    Google connector-state read and the dedicated Calendar presence read, then
+    discarded — it never leaves this function.
 
     Returns a bounded result:
 
@@ -304,20 +630,32 @@ async def compose_workspace_connector_truth(
         raise _invalid()
 
     reader = getattr(google_oauth_authority, "workspace_connector_state", None)
-    if not callable(reader):
+    calendar_reader = getattr(
+        google_oauth_authority,
+        "workspace_calendar_connector_state",
+        None,
+    )
+    if not callable(reader) or not callable(calendar_reader):
         raise _unavailable()
     try:
-        connectors = await _maybe_await(
-            reader(workspace_ref=workspace_ref)
+        connectors = await _maybe_await(reader(workspace_ref=workspace_ref))
+        calendar_connectors = await _maybe_await(
+            calendar_reader(workspace_ref=workspace_ref)
         )
     except IdentityBridgeError:
         raise
     except Exception as exc:  # noqa: BLE001 - never leak a driver error
         raise _unavailable() from exc
 
-    if not isinstance(connectors, tuple):
+    if not isinstance(connectors, tuple) or not isinstance(calendar_connectors, tuple):
         raise _invalid()
-    return _available_result(connectors)
+    combined = connectors + calendar_connectors
+    connector_ids = [row.get("connector_id") for row in combined if isinstance(row, dict)]
+    if len(connector_ids) != len(combined) or len(set(connector_ids)) != len(connector_ids):
+        raise _invalid()
+    if set(connector_ids) - REVIEWED_WORKSPACE_TRUTH_CONNECTORS:
+        raise _invalid()
+    return _available_result(combined)
 
 
 # Reviewed governance pins. These are asserted by the contract tests so the

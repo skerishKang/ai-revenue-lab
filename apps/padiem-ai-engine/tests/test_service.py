@@ -21,6 +21,7 @@ from app.service import (
     EXECUTE_PATH,
     HEALTH_PATH,
     MAX_REQUEST_BODY_BYTES,
+    MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES,
     EngineService,
 )
 
@@ -205,6 +206,68 @@ async def test_invalid_core_model_policy_fails_before_b14(policy) -> None:
     assert b14.calls == []
 
 
+# #3566 / #3382: inert, syntactically valid identifiers used only to prove the
+# Engine forwards the selected model verbatim. The B14 catalog stays the later
+# availability authority, so nothing below claims these are registered models.
+_EXPLICIT_INERT_MODEL_IDS = ("testowner/example-model.v1", "z9/provider:route_second/2")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("model_id", _EXPLICIT_INERT_MODEL_IDS)
+async def test_explicit_model_id_reaches_the_b14_request_without_rewrite(
+    model_id: str,
+) -> None:
+    payload = valid_payload()
+    payload["agent"]["model_policy"] = {"model": model_id, "max_retries": 0}
+    b14 = FakeB14()
+    service = EngineService(
+        runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
+        b14_service_bound=True,
+    )
+
+    response = await service.execute_payload(payload)
+
+    assert response.status_code == 200
+    assert len(b14.calls) == 1
+    request = b14.calls[0]
+    assert request.model == model_id
+    body = request.to_payload()
+    assert body["model"] == model_id
+    # The P01 single-dispatch pin survives the Core request translation.
+    assert body["business14"]["max_retries"] == 0
+    assert "b14/auto" not in json.dumps(body, ensure_ascii=False)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("policy", "expected_code"),
+    [
+        # Engine request parsing owns the explicit-model shape check (app/service.py::_model_policy).
+        ({"max_retries": 0}, "invalid_request"),
+        ({"model": ""}, "invalid_request"),
+        ({"model": "   "}, "invalid_request"),
+        ({"model": None}, "invalid_request"),
+        ({"model": 42}, "invalid_request"),
+        # Unknown policy authority reaches Core, which refuses it.
+        ({"model": "testowner/example-model.v1", "unknown": True}, "invalid_execution_request"),
+    ],
+)
+async def test_missing_or_invalid_model_policy_fails_before_b14(policy, expected_code) -> None:
+    payload = valid_payload()
+    payload["agent"]["model_policy"] = policy
+    b14 = FakeB14()
+    service = EngineService(
+        runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
+        b14_service_bound=True,
+    )
+
+    response = await service.execute_payload(payload)
+
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == expected_code
+    assert b14.calls == []
+
+
 @pytest.mark.asyncio
 async def test_missing_b14_service_binding_fails_before_runtime() -> None:
     runtime = FakeRuntime(value=result())
@@ -312,7 +375,7 @@ async def test_http_contract_bounds_body_and_content_type() -> None:
         method="POST",
         path=EXECUTE_PATH,
         content_type="application/json",
-        body=b"x" * (MAX_REQUEST_BODY_BYTES + 1),
+        body=b"x" * (MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES + 1),
     )
     bad_media = await service.handle(
         method="POST", path=EXECUTE_PATH, content_type="text/plain", body=raw
@@ -326,6 +389,36 @@ async def test_http_contract_bounds_body_and_content_type() -> None:
     assert too_large.body["error"]["code"] == "request_too_large"
     assert bad_media.status_code == 415
     assert bad_json.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_model_execute_accepts_long_unicode_payload_before_provider_without_truncation() -> None:
+    # Old 128KiB pilot cap rejected this input despite B14/Core supporting it.
+    runtime = FakeRuntime(value=result())
+    service = EngineService(runtime_factory=lambda _: runtime, b14_service_bound=True)
+    raw_user_text = ("한글 긴 모델 입력 " * 14000) + "최종"
+    payload = valid_payload()
+    payload["messages"] = [{"role": "user", "content": raw_user_text}]
+    raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    assert MAX_REQUEST_BODY_BYTES < len(raw) < MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+    response = await service.handle(
+        method="POST", path=EXECUTE_PATH, content_type="application/json", body=raw
+    )
+    assert response.status_code == 200
+    assert len(runtime.calls) == 1
+    assert runtime.calls[0].messages[0]["content"] == raw_user_text
+
+
+def test_model_ingress_does_not_change_other_engine_route_memory_guards() -> None:
+    assert MAX_REQUEST_BODY_BYTES == 128 * 1024
+    assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES == 6_000_000
+    from pathlib import Path
+    worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
+    # Three model-orchestration paths share the existing 6MB model ingress;
+    # all unrelated Engine routes continue using their original 128KiB.
+    assert "EXECUTE_PATH, ORCHESTRATE_PATH," in worker
+    assert "ORCHESTRATION_STREAM_PATH, ORCHESTRATE_RESUME_PATH," in worker
+    assert "else MAX_REQUEST_BODY_BYTES" in worker
 
 
 @pytest.mark.asyncio

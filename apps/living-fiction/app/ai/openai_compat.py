@@ -153,7 +153,7 @@ class OpenAICompatibleProvider:
         provider_name: str = "openai_compat",
         base_url: str,
         cost_class: CostClass = CostClass.PAID,
-        timeout_seconds: float = 60.0,
+        timeout_seconds: float = 600.0,
         max_retries: int = 2,
     ):
         if not api_key:
@@ -170,10 +170,10 @@ class OpenAICompatibleProvider:
         self._validated_url = validate_base_url(base_url)
         self._cost_class = cost_class
         self._timeout = httpx.Timeout(
-            connect=timeout_seconds,
+            connect=min(timeout_seconds, 30.0),
             read=timeout_seconds,
-            write=timeout_seconds,
-            pool=timeout_seconds,
+            write=min(timeout_seconds, 20.0),
+            pool=min(timeout_seconds, 10.0),
         )
         self._max_retries = max_retries
         self._endpoint_url = _build_endpoint_url(self._validated_url)

@@ -9,6 +9,19 @@
   const History = window.QuoteHistory;
   const FileIntake = window.B66FileIntake;
   const App = window.B66QuoteAppBridge;
+  const AccountScope = window.QuoteAccountScope || null;
+  const GuidedAPI = window.B66GuidedDraftServer || null;
+  /* #4655: the reviewed assistant-only Markdown renderer. It is a DOM builder
+     with no markup sink, so it can never turn model text into HTML. */
+  const SafeMarkdown = window.B66SafeMarkdown || null;
+  // Shared Chat/Claw/B66 editor behavior; B66 owns submit/quote state.
+  const sharedComposer = window.SharedConversationComposer || null;
+  // #4488: shared near-bottom follow math. B66 keeps its own container and the
+  // 120px contract the shared module carries. Product-neutral alias only.
+  const sharedScroll = window.SharedConversationScroll || null;
+  // #4488: shared clipboard path for real model answers. B66 owns labels and
+  // truthful toast feedback. Product-neutral alias only.
+  const sharedCopy = window.SharedAnswerCopy || null;
 
   if (!Core || !History || !FileIntake || !App) return;
 
@@ -17,6 +30,7 @@
   const directView = $("directView");
   const easyEmpty = $("easyEmpty");
   const messageList = $("easyMessageList");
+  const conversation = $("easyConversation");
   const historyPanel = $("easyHistoryPanel");
   const chipRow = $("easyChipRow");
   const composer = $("easyComposer");
@@ -25,8 +39,88 @@
 
   let inputHandler = null;
   let guided = null;
-  let freeChatPending = "";
+  let guidedSnapshot = null;
+  /* #5039: finishing a guided quote does not end the conversation. A completed
+     draft stays revisable in the same dialogue: the customer can name a field
+     in plain Korean or pick it from the chips, and only an explicit confirm
+     rebuilds the quote through the existing QuoteCore path. */
+  let guidedRevising = false;
+  let guidedRevisionStep = null;
+  /* #5039: the finished draft stays revisable in this dialogue. These hold
+     that draft so a post-completion edit can re-enter the same per-field
+     questions even after the guided step machine has been released. */
+  let postCompleteDraft = null;
+  let postCompleteTaxUnknown = false;
+  let postCompleteQuoteNo = "";
+  let accountSignedIn = false;
   let selectedFile = null;
+  let lastEasyView = "home";
+  let restoringProductHistory = false;
+  let interpretationInFlight = false;
+  let modelChatTurns = [];
+  // #4803: server-owned B66 authoring revision (separate from saved free-chat IDs).
+  let quoteConversationRevision = null;
+  let quoteConversationEngaged = false;
+  let approvedConversationQuoteNo = null;
+  let approvedConversationDraftSnapshot = null;
+  let pendingQuoteReset = null;
+  const quoteArtifactUrls = [];
+  let accountScopeRevision = 0;
+  let guidedSaveQueue = Promise.resolve();
+  let guidedSaveRevision = 0;
+  const PRODUCT_HISTORY_KEY = "b66View";
+  /* #4657: the server-owned B66 conversation this transcript is continuing.
+     null means the next answer starts a new conversation. It is never a
+     browser-chosen id: it only ever comes back from the B66 chat bridge. */
+  let currentDialogueId = null;
+  let dialogueGeneration = 0;
+  let pendingRestoreDialogueId = null;
+  const PRODUCT_DIALOGUE_KEY = "b66DialogueId";
+  const AI_DIALOGUE_VIEW = "ai-dialogues";
+  const GUIDED_DIALOGUE_VIEW = "guided-dialogues";
+  const MAX_GUIDED_MESSAGES = 80;
+  let replayingGuided = false;
+  let suppressGuidedQuestion = false;
+
+  function guidedConversationId() {
+    const bytes = new Uint8Array(16);
+    if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+      window.crypto.getRandomValues(bytes);
+    } else {
+      for (let i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
+    }
+    return "gdt_" + Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  const MAX_DIALOGUE_QUERY_CHARS = 80;
+  const DIALOGUE_ID_PATTERN = /^chat_[a-f0-9]{32}$/;
+
+  /* #4657: one opaque retry identity per customer submission, so the server can
+     recognise a replayed turn instead of charging a second model call. It is
+     not a credential and selects no owner or scope. */
+  function newTurnToken() {
+    const crypto = window.crypto || null;
+    const bytes = new Uint8Array(16);
+    if (crypto && typeof crypto.getRandomValues === "function") {
+      crypto.getRandomValues(bytes);
+    } else {
+      for (let i = 0; i < bytes.length; i += 1) {
+        bytes[i] = Math.floor(Math.random() * 256);
+      }
+    }
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  const QUARANTINE_ACTIONS = AccountScope
+    ? [
+        AccountScope.SCOPE_ACTIONS.QUARANTINED_FOREIGN_OWNER,
+        AccountScope.SCOPE_ACTIONS.QUARANTINED_MALFORMED_OWNER
+      ]
+    : [];
+
+  function quarantineAction(action) {
+    return QUARANTINE_ACTIONS.indexOf(action) !== -1;
+  }
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -36,26 +130,102 @@
     return String(value == null ? "" : value).trim().slice(0, max || 2000);
   }
 
-  function readHistory() {
-    try {
-      return History.normalizeEnvelope(JSON.parse(localStorage.getItem(History.HISTORY_STORAGE_KEY) || "null"));
-    } catch (err) {
-      return History.normalizeEnvelope(null);
+  function recordProductState(view, options) {
+    if (restoringProductHistory || !window.history) return;
+    const opts = options || {};
+    const currentState = Object.assign({}, window.history.state || {});
+    const current = currentState[PRODUCT_HISTORY_KEY];
+    if (!opts.replace && current === view) return;
+
+    const write = (method, nextView) => {
+      if (typeof window.history[method] !== "function") return;
+      const nextState = Object.assign({}, window.history.state || {});
+      nextState[PRODUCT_HISTORY_KEY] = nextView;
+      window.history[method](nextState, "", window.location.href);
+    };
+
+    if (opts.replace) {
+      write("replaceState", view);
+      return;
     }
+
+    if (view === "home" && current && current !== "home") {
+      if (typeof window.history.back === "function") window.history.back();
+      return;
+    }
+
+    if (view !== "home" && current && current !== "home") {
+      write("replaceState", view);
+      return;
+    }
+
+    write("pushState", view);
+  }
+
+  /* #4657: the currently opened B66 dialogue id lives in this product's own
+     history entry, so a reload can restore the same conversation. It is not a
+     credential and never an owner: the server still authorizes the id against
+     the signed-in account and the B66 product scope on every read. */
+  function recordDialogueState(conversationId) {
+    if (restoringProductHistory || !window.history) return;
+    const valid = DIALOGUE_ID_PATTERN.test(String(conversationId || ""));
+    const nextState = Object.assign({}, window.history.state || {});
+    nextState[PRODUCT_DIALOGUE_KEY] = valid ? conversationId : null;
+    if (valid) nextState[PRODUCT_HISTORY_KEY] = "free-form";
+    window.history.replaceState(nextState, "", window.location.href);
+  }
+
+  function readDialogueState() {
+    const state = (window.history && window.history.state) || {};
+    const value = state[PRODUCT_DIALOGUE_KEY];
+    return typeof value === "string" && DIALOGUE_ID_PATTERN.test(value) ? value : null;
+  }
+
+  /* #4657: one monotonic view generation. EVERY transition (new chat, restoring a
+     dialogue, opening the rail, guided/file direct mode and an account change)
+     bumps it, so a late answer or a late restore can never repopulate the screen
+     the customer is actually looking at. */
+  function bumpDialogueGeneration() {
+    dialogueGeneration += 1;
+    /* Any transition also retires an in-flight turn: a late reply for the previous
+       view must not block the customer's next submission in the new one. */
+    interpretationInFlight = false;
+    return dialogueGeneration;
+  }
+
+  function readHistory() {
+    /* 계정 owner 게이트는 app.js(단일 브라우저 저장소 authority)가 통과시킨다 (#3480). */
+    const envelope = App.getHistoryEnvelope();
+    return envelope || History.normalizeEnvelope(null);
+  }
+
+  /* 최근 견적 읽기는 authority-aware 다(#3405 Slice B). signed-in 동안에는
+     app.js 가 서버 목록을 돌려주고, 서버 실패는 local envelope 로 대체되지
+     않는다. bridge 가 아직 없으면 기존 local 경로를 유지한다. */
+  function readRecentHistory() {
+    if (App && typeof App.listRecentQuotes === "function") {
+      return App.listRecentQuotes().catch(() => (
+        { ok: false, authority: "server", error: "history_read_failed" }
+      ));
+    }
+    return Promise.resolve({ ok: true, authority: "local", envelope: readHistory() });
+  }
+
+  function serverAuthorityRecent() {
+    return Boolean(App && typeof App.recentListAuthority === "function" &&
+      App.recentListAuthority() === "server");
   }
 
   function writeHistory(envelope) {
-    try {
-      localStorage.setItem(History.HISTORY_STORAGE_KEY, JSON.stringify(History.normalizeEnvelope(envelope)));
+    if (App.writeHistoryEnvelope(envelope)) {
       window.dispatchEvent(new CustomEvent("b66:history-changed"));
       return true;
-    } catch (err) {
-      App.toast("최근 견적 저장소를 갱신하지 못했습니다.");
-      return false;
     }
+    App.toast("로그인한 계정의 최근 견적에만 저장할 수 있습니다.");
+    return false;
   }
 
-  function setWorkspaceMode(mode) {
+  function setWorkspaceMode(mode, options) {
     const easy = mode === "easy";
     easyView.hidden = !easy;
     directView.hidden = easy;
@@ -63,10 +233,22 @@
     $("directModeButton").classList.toggle("active", !easy);
     $("easyModeButton").setAttribute("aria-pressed", String(easy));
     $("directModeButton").setAttribute("aria-pressed", String(!easy));
+    /* #4657 P0-C: leaving the chat surface for the direct-quote editor also
+       invalidates an in-flight answer or restore, so nothing lands behind the
+       customer. */
+    if (!easy) bumpDialogueGeneration();
     if (!easy) window.scrollTo({ top: 0, behavior: "smooth" });
+    if (!options || options.history !== false) {
+      recordProductState(easy ? lastEasyView : "direct");
+    }
   }
 
   function clearConversation() {
+    modelChatTurns = [];
+    bumpDialogueGeneration();
+    /* #5007-2: same ownership rule as startConversation: leaving the screen
+       clears the in-flight caption with it. */
+    clearProcessingNote();
     messageList.innerHTML = "";
     historyPanel.innerHTML = "";
     historyPanel.hidden = true;
@@ -74,21 +256,49 @@
     inputHandler = null;
   }
 
-  function showHome() {
+  function showHome(options) {
     clearConversation();
-    guided = null;
-    freeChatPending = "";
+    if (!options || options.history !== false) resetServerQuoteConversation();
+    quoteConversationRevision = null;
+    quoteConversationEngaged = false;
+    approvedConversationQuoteNo = null;
+    approvedConversationDraftSnapshot = null;
+    releaseQuoteArtifacts();
+    /* A new chat never deletes stored dialogue: it only drops this screen's
+       transcript, so the previous conversation stays in the rail. */
+    currentDialogueId = null;
+    pendingRestoreDialogueId = null;
+    if (!options || options.history !== false) recordDialogueState(null);
+    snapshotGuidedConversation();
+    /* Home 에서 명시적으로 새 견적을 시작하면 진행 중이던 문맥을 버린다. */
+    if (!options || options.history !== false) {
+      const bridge = window.B66QuoteRuntimeBridge;
+      if (bridge && typeof bridge.clearPending === "function") bridge.clearPending();
+    }
     selectedFile = null;
+    lastEasyView = "home";
+    if (!options || options.history !== false) recordProductState("home");
     easyEmpty.hidden = false;
+    easyView.classList.add("easy-chat-home");
+    if (conversation) conversation.scrollTop = 0;
     composer.value = "";
-    composer.placeholder = "필요한 내용을 편하게 입력하세요";
-    $("easyComposerNote").textContent =
-      "질문형 만들기는 AI 없이도 동작합니다. 자유 문장 자동 해석은 모델 연결 후 제공됩니다.";
+    composer.placeholder = "견적 내용을 한 문장으로 편하게 적어 보세요";
+    $("easyComposerNote").textContent = ""; // No misleading persistent CGI send caption.
+    inputHandler = (text) => startHomeInterpretation(text);
+    composer.disabled = false;
+    sendButton.disabled = false;
     refreshStarters();
   }
 
   function startConversation() {
     easyEmpty.hidden = true;
+    bumpDialogueGeneration();
+    /* #5007-2: a view transition retires the previous turn's UI ownership, so
+       the old request caption must not survive into the new screen. A late
+       reply for the previous view is still discarded by the generation guard. */
+    clearProcessingNote();
+    easyView.classList.remove("easy-chat-home");
+    if (conversation) conversation.scrollTop = 0;
     messageList.innerHTML = "";
     historyPanel.innerHTML = "";
     historyPanel.hidden = true;
@@ -96,7 +306,59 @@
     composer.value = "";
   }
 
-  function addMessage(role, text) {
+  /* #4655: only a real model answer is rendered as Markdown, and only through
+     the DOM-only renderer, which never assigns a markup sink. Status, error and
+     prompt text keep plain textContent, so a non-answer string can never become
+     markup and the existing look is unchanged. */
+  function companyBrand() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    const profile = bridge && typeof bridge.getCompanyProfile === "function"
+      ? bridge.getCompanyProfile() : null;
+    const raw = profile && typeof profile.company === "string" ? profile.company.trim() : "";
+    const name = raw.replace(/^(?:\(주\)|㈜|주식회사)\s*/u, "").trim();
+    return /^CGI$/i.test(name) ? "시지아이" : (name || "시지아이");
+  }
+
+  function renderAssistantText(content, text, markdown) {
+    // The account-owned presentation adapter localizes legacy product greetings
+    // without changing the persisted provider response.
+    const adapter = window.B66AssistantBranding;
+    const shown = adapter && typeof adapter.renderIntro === "function"
+      ? adapter.renderIntro(text, companyBrand()) : String(text);
+    if (markdown && SafeMarkdown && typeof SafeMarkdown.renderAssistantMarkdown === "function") {
+      const rendered = SafeMarkdown.renderAssistantMarkdown(content, shown);
+      if (rendered) return;
+    }
+    content.textContent = shown;
+  }
+
+  /* #4488: one shared clipboard implementation with Chat/Claw. The action row
+     is opt-in per real model answer; status text, errors and guided prompts
+     never receive it. */
+  function appendCopyAction(body, content) {
+    const actions = document.createElement("div");
+    actions.className = "easy-message-actions";
+    const copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "easy-message-copy";
+    copyBtn.textContent = "복사";
+    copyBtn.addEventListener("click", () => {
+      const text = content.innerText || content.textContent || "";
+      Promise.resolve(
+        sharedCopy && typeof sharedCopy.copyText === "function"
+          ? sharedCopy.copyText(text)
+          : false
+      ).then((ok) => {
+        App.toast(ok ? "답변을 복사했습니다." : "답변을 복사하지 못했습니다.");
+      });
+    });
+    actions.appendChild(copyBtn);
+    body.appendChild(actions);
+  }
+
+  function addMessage(role, text, options) {
+    const opts = options || {};
+    if (suppressGuidedQuestion) return null;
     const article = document.createElement("article");
     article.className = "easy-message " + (role === "user" ? "easy-user-message" : "easy-assistant-message");
 
@@ -110,11 +372,12 @@
       body.className = "easy-message-body";
       const meta = document.createElement("div");
       meta.className = "easy-message-meta";
-      meta.textContent = "견적 도우미";
+      meta.textContent = companyBrand() + " 어시스턴트";
       const content = document.createElement("div");
       content.className = "easy-message-content";
-      content.textContent = text;
+      renderAssistantText(content, text, opts.markdown === true);
       body.append(meta, content);
+      if (opts.copyAction === true) appendCopyAction(body, content);
       article.append(avatar, body);
     } else {
       const bubble = document.createElement("div");
@@ -123,8 +386,32 @@
       article.appendChild(bubble);
     }
 
+    // Scroll only the chat transcript, never the entire workspace/window.
+    // Stay with the latest message until a user intentionally scrolls back.
+    // #4488: shared math owns the 120px contract; the legacy branch keeps the
+    // exact old behavior only when the shared script is unavailable.
+    const wasNearBottom = sharedScroll
+      ? sharedScroll.isNearBottom(conversation)
+      : (!conversation ||
+          conversation.scrollHeight - conversation.scrollTop - conversation.clientHeight < 120);
     messageList.appendChild(article);
-    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (conversation && wasNearBottom) {
+      if (sharedScroll) sharedScroll.followToBottom(conversation);
+      else conversation.scrollTop = conversation.scrollHeight;
+    }
+    // Record only the deterministic CGI Guided messages, never provider/general
+    // AI chat turns or temporary loading text. The server validates every entry.
+    if (guided && lastEasyView === "guided" && !replayingGuided &&
+        opts.guidedHistory !== false && accountSignedIn && GuidedAPI) {
+      if (!Array.isArray(guided.transcript)) guided.transcript = [];
+      if (guided.transcript.length < MAX_GUIDED_MESSAGES) {
+        guided.transcript.push({ role: role === "user" ? "user" : "assistant", content: String(text) });
+        saveGuidedToAccount();
+      } else {
+        App.toast("질문형 대화 저장 한도에 도달했습니다. 기존 기록은 유지됩니다.");
+      }
+    }
+    return article;
   }
 
   function setChips(chips) {
@@ -142,14 +429,58 @@
   function setInput(handler, placeholder) {
     inputHandler = handler;
     composer.disabled = false;
+    composer.readOnly = false;
     sendButton.disabled = false;
     composer.placeholder = placeholder || "답변을 입력하세요";
     setTimeout(() => composer.focus(), 0);
   }
 
+  /* #5007: an in-flight model turn must not freeze the text field. The customer
+     can keep typing (including Korean IME composition) and the draft survives
+     until the answer lands; only a duplicate submit is refused, which the empty
+     inputHandler already guarantees. `disableInput` remains for genuine
+     read-only screens (history lists, restore failures). */
+  function blockSend(note) {
+    inputHandler = null;
+    composer.disabled = false;
+    composer.readOnly = false;
+    sendButton.disabled = true;
+    if (note) $("easyComposerNote").textContent = note;
+  }
+
+  /* #5007-2: the composer caption mirrors the real request lifecycle. It is
+     only ever set while a turn owns this view; every terminal path (first
+     answer content, completion, failure, cancel, view switch) returns it to
+     idle so a stale "처리 중" caption can never outlive its request. */
+  function clearProcessingNote() {
+    $("easyComposerNote").textContent = "";
+  }
+
+  /* #5007-2: Chat's three-dot answer-ready animation, ported into the B66
+     message design. A pending turn shows motion with an accessible label;
+     the dots node leaves with the pending message on first content,
+     completion, failure or view switch. */
+  function pendingDots() {
+    const dots = document.createElement("span");
+    dots.className = "easy-typing";
+    dots.setAttribute("aria-label", "답변을 준비하고 있습니다");
+    dots.append(document.createElement("i"), document.createElement("i"), document.createElement("i"));
+    return dots;
+  }
+
+  function addPendingAssistant() {
+    const article = addMessage("assistant", "", { guidedHistory: false });
+    if (article) {
+      const content = article.querySelector(".easy-message-content") || article;
+      content.appendChild(pendingDots());
+    }
+    return article;
+  }
+
   function disableInput(note) {
     inputHandler = null;
     composer.disabled = true;
+    composer.readOnly = false;
     sendButton.disabled = true;
     if (note) $("easyComposerNote").textContent = note;
   }
@@ -158,47 +489,912 @@
     const text = safeText(composer.value);
     if (!text || !inputHandler) return;
     composer.value = "";
+    sharedComposer?.resizeTextarea?.(composer, { maxHeight: 180 });
     inputHandler(text);
   }
 
   function refreshStarters() {
     const activeDraft = App.getDraft();
-    $("resumeDraftStarter").hidden = !History.isMeaningfulDraft(activeDraft);
-    $("recentQuoteStarter").hidden = readHistory().entries.length === 0;
+    // The entry is always visible across devices. Guest access requests sign-in;
+    // no private guided draft or account history is read until authenticated.
+    $("resumeDraftStarter").hidden = false;
+    /* server authority 동안에는 local cache 가 비어 있어도 최근 견적에
+       접근할 수 있어야 한다(서버 목록이 authority). */
+    // Four primary home actions only; recent quote browsing stays in the rail.
+    $("recentQuoteStarter").hidden = true;
 
     let hint = document.getElementById("easyResumeHint");
-    if (History.isMeaningfulDraft(activeDraft)) {
+    if (accountSignedIn) {
+      if (History.isMeaningfulDraft(activeDraft) || accountSignedIn) {
+        if (!hint) {
+          hint = document.createElement("div");
+          hint.id = "easyResumeHint";
+          hint.className = "easy-resume-hint";
+          $("easyStarterGrid").before(hint);
+        }
+        hint.textContent = "견적 이어쓰기를 누르면 이 계정에 저장된 질문형 작성 상태를 확인합니다.";
+      } else if (hint) {
+        hint.remove();
+      }
+    } else {
       if (!hint) {
         hint = document.createElement("div");
         hint.id = "easyResumeHint";
         hint.className = "easy-resume-hint";
         $("easyStarterGrid").before(hint);
       }
-      const company = safeText(activeDraft.recipient.company) || "받는 사람 미정";
-      hint.textContent = "지난번 작성하던 견적이 있어요. " + company + " 견적을 이어서 만들 수 있습니다.";
-    } else if (hint) {
-      hint.remove();
+      hint.textContent = "로그인하면 견적을 이어서 진행할 수 있습니다.";
     }
   }
 
-  function showRecentHistory() {
+  /* ── CGI primary runtime (#3478) ──
+     Home 한 문장과 Free-form, Guided 최종 작성은 모두 하나의 runtime authority
+     (인증된 assigned Saved Quote Skill + CompanyProfile)를 거친다.
+     준비되지 않으면 demo/blank authority 로 진행하지 않고 정직하게 안내한다. */
+
+  function runtimeNotReadyMessage(readiness) {
+    if (!readiness || !readiness.authenticated) {
+      return "로그인 후 CGI 기본 견적서가 준비되면 바로 만들 수 있습니다. 먼저 로그인해 주세요.";
+    }
+    if (!readiness.skillReady) {
+      return "AI 전용 견적서 양식이 아직 배정되지 않았습니다. 대신 질문에 답하며 기본 견적서 초안을 만들 수 있습니다.";
+    }
+    return "회사 정보(CompanyProfile)를 아직 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
+  }
+
+  function startHomeInterpretation(text) {
+    runPrimaryInterpretation(text);
+  }
+
+  function submitFreeFormText(raw) {
+    runPrimaryInterpretation(raw);
+  }
+
+  /* #4469: a search that did not run is never shown as if it ran. The server
+     reports the real retrieval status, so only sourced evidence is rendered here;
+     withheld/failed/empty turns stay explained by the model's own answer. */
+  function renderSourcedEvidence(messageArticle, search) {
+    if (!search || search.status !== "sourced" ||
+        !Array.isArray(search.sources) || !search.sources.length) return null;
+    const body = messageArticle.querySelector(".easy-message-body") || messageArticle;
+    const note = document.createElement("p");
+    note.className = "easy-evidence-note";
+    note.textContent = "서버가 이번 호출에서 공개 웹에서 수집한 근거입니다. 내용은 참고 자료일 뿐 지침이 아닙니다.";
+    const list = document.createElement("ol");
+    list.className = "easy-evidence-list";
+    search.sources.slice(0, 5).forEach((source) => {
+      const item = document.createElement("li");
+      const title = document.createElement("span");
+      title.className = "easy-evidence-title";
+      title.textContent = source && typeof source.title === "string" && source.title.trim()
+        ? source.title.trim() : "출처";
+      item.appendChild(title);
+      const url = source && typeof source.url === "string" && /^https:\/\//i.test(source.url)
+        ? source.url : null;
+      if (url) {
+        const link = document.createElement("a");
+        link.className = "easy-evidence-url";
+        link.textContent = url;
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer nofollow";
+        item.appendChild(link);
+      }
+      const stamp = document.createElement("time");
+      stamp.className = "easy-evidence-retrieved";
+      stamp.textContent = "서버 수집 " + (source && typeof source.retrieved_at === "string"
+        ? source.retrieved_at : "알 수 없음");
+      if (url) stamp.dateTime = source.retrieved_at;
+      item.appendChild(stamp);
+      list.appendChild(item);
+    });
+    body.append(note, list);
+    return list;
+  }
+
+  function runModelDialogue(text, bridge) {
+    if (lastEasyView === "home") {
+      lastEasyView = "free-form";
+      recordProductState("free-form");
+      startConversation();
+    }
+    const requestScopeRevision = accountScopeRevision;
+    /* #4657 P0-C: the answer may only ever land in the view that asked for it.
+       The view generation is captured AFTER the transition above and checked on
+       every continuation, so clicking new chat (or any other view) discards a
+       late reply instead of repopulating the new screen with it. */
+    const requestViewGeneration = dialogueGeneration;
+    const turnToken = newTurnToken();
+    const history = modelChatTurns.concat([{ role: "user", content: text }]);
+    interpretationInFlight = true;
+    addMessage("user", text);
+    const pending = addPendingAssistant();
+    blockSend("AI가 답변하는 동안 잠시 기다려 주세요. 다음 질문은 미리 입력해 두세요.");
+    /* The conversation id is only ever the server's. When it is null the answer
+       starts a new stored conversation; the browser cannot choose one. */
+    const sentDialogueId = currentDialogueId;
+    const stillCurrentView = () => (
+      requestScopeRevision === accountScopeRevision &&
+      requestViewGeneration === dialogueGeneration
+    );
+    Promise.resolve().then(() => {
+      if (!stillCurrentView()) return null;
+      return bridge.chat(history, { conversationId: sentDialogueId, turnToken: turnToken });
+    }).then((result) => {
+      if (!stillCurrentView()) return;
+      if (!result || !result.ok) {
+        const detail = result && result.code === "model_selection_required"
+          ? "입력창 아래에서 사용할 AI 모델을 선택한 뒤 다시 질문해 주세요."
+          : "실제 AI 답변을 가져오지 못했습니다. 로그인과 모델 선택을 확인한 뒤 다시 시도해 주세요.";
+        addMessage("assistant", detail);
+        setInput(submitFreeFormText, "다시 질문해 주세요");
+        clearProcessingNote();
+        return;
+      }
+      modelChatTurns = history.concat([{ role: "assistant", content: result.answer }]);
+      /* A saved conversation keeps the next turn on the same server-owned
+         dialogue. An unsaved answer stays local-only rather than inventing an id. */
+      if (typeof result.conversation_id === "string" && DIALOGUE_ID_PATTERN.test(result.conversation_id)) {
+        currentDialogueId = result.conversation_id;
+        recordDialogueState(currentDialogueId);
+      } else {
+        currentDialogueId = sentDialogueId;
+      }
+      renderSourcedEvidence(addMessage("assistant", result.answer, { markdown: true, copyAction: true }), result.search);
+      setChips([
+        { label: "질문받으며 견적 작성", action: () => startGuidedIfReady() },
+        { label: "이전 AI 대화", action: showAiDialogues },
+        { label: "새 대화", action: showHome }
+      ]);
+      setInput(submitFreeFormText, "이어서 질문하거나 견적에 대해 이야기해 주세요");
+      /* #4657 P1 honesty: an answer the server could not store must not imply it
+         can be found later. Say so where the customer can still read it. */
+      $("easyComposerNote").textContent = result.dialogue_saved === true
+        ? ""
+        : "이 답변은 저장되지 않았습니다. 새로고침하면 사라지며 이전 대화 목록에도 없습니다.";
+    }).catch(() => {
+      if (!stillCurrentView()) return;
+      addMessage("assistant", "AI 대화 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      setInput(submitFreeFormText, "다시 질문해 주세요");
+      clearProcessingNote();
+    }).finally(() => {
+      if (!stillCurrentView()) return;
+      pending.remove();
+      interpretationInFlight = false;
+    });
+  }
+
+  /* #4803: CLAW-style conversational quote execution through the existing
+     #4412 authenticated state machine. Model classifies intent server-side;
+     QuoteCore and the approved template remain the only draft/PDF authorities.
+     This path never sends caller-owned facts, intent, owner or workspace. */
+  function resetServerQuoteConversation() {
+    if (!accountSignedIn) return;
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (!bridge || typeof bridge.quoteConversation !== "function") return;
+    const previous = pendingQuoteReset;
+    pendingQuoteReset = (async () => {
+      if (previous) await previous;
+      const current = await bridge.quoteConversation("state");
+      if (!current.ok) return current;
+      const revision = current.state && Number.isSafeInteger(current.state.revision)
+        ? current.state.revision : 0;
+      return bridge.quoteConversation("start_new", { revision });
+    })().catch(() => ({ ok: false, code: "conversation_state_unavailable" }));
+  }
+
+  function quoteConversationError(code) {
+    const messages = {
+      conversation_state_unavailable: "견적 대화 상태를 확인할 수 없습니다. 기존 내용은 그대로 보존됩니다.",
+      conversation_state_read_failed: "저장된 견적 대화를 불러오지 못했습니다.",
+      conversation_state_write_failed: "견적 대화 저장을 완료하지 못했습니다. 중복 전송하지 말고 상태를 확인해 주세요.",
+      revision_conflict: "다른 화면에서 대화가 변경됐습니다. 견적을 덮어쓰지 않았습니다. 다시 열어 주세요.",
+      ai_chat_unavailable: "선택한 AI 모델 실행 경로를 사용할 수 없습니다.",
+      conversation_invalid_answer: "AI의 견적 응답 형식을 확인하지 못했습니다. 기존 초안은 보존됩니다.",
+      conversation_execution_failed: "AI 실행 중 오류가 발생했습니다. 기존 초안은 보존됩니다.",
+      upstream_timeout: "AI 응답이 시간 초과됐습니다. 자동 재시도하지 않습니다.",
+      model_selection_required: "사용할 AI 모델을 선택해 주세요.",
+      conversation_transition_refused: "현재 단계에서 이 작업을 진행할 수 없습니다. 기존 내용은 보존됩니다."
+    };
+    return messages[code] || "견적 대화 요청을 완료하지 못했습니다. (" + String(code || "unknown") + ")";
+  }
+
+  function releaseQuoteArtifacts() {
+    while (quoteArtifactUrls.length) URL.revokeObjectURL(quoteArtifactUrls.pop());
+    /* #5039: a new quote, account change or view switch retires the
+       post-completion revision target with the rest of the quote state, so a
+       later edit can never be applied to a quote the customer has moved on
+       from. */
+    postCompleteDraft = null;
+    postCompleteTaxUnknown = false;
+    postCompleteQuoteNo = "";
+    guidedRevising = false;
+    guidedRevisionStep = null;
+  }
+
+  // The only file offered in a chat result is the Blob actually returned by
+  // the existing authenticated/certified B66 PDF renderer after its guards pass.
+  function appendQuoteArtifact(blob, filename) {
+    if (!(blob instanceof Blob) || blob.type !== "application/pdf" ||
+        !Number.isFinite(blob.size) || blob.size < 5) return;
+    const article = addMessage("assistant", "견적서 PDF 파일이 생성되었습니다.");
+    const body = article && article.querySelector(".easy-message-body");
+    if (!body) return;
+    const url = URL.createObjectURL(blob);
+    quoteArtifactUrls.push(url);
+    const link = document.createElement("a");
+    link.className = "easy-file-card";
+    link.href = url;
+    link.download = String(filename || "견적서.pdf").replace(/[\\/]/g, "_");
+    link.textContent = "PDF 견적서 다운로드: " + link.download;
+    link.setAttribute("aria-label", "생성된 PDF 견적서 다운로드");
+    body.appendChild(link);
+  }
+
+  function applyApprovedConversationDraft(input) {
+    if (!input || input.sourceKind !== "b66.ai-conversation" ||
+        !Array.isArray(input.items) || !input.items.length || input.missing?.length) {
+      return { ok: false, code: "invalid_approved_draft" };
+    }
+    const active = App.getDraft();
+    const revising = Boolean(approvedConversationQuoteNo);
+    if (revising && (!active || active.meta.quoteNo !== approvedConversationQuoteNo ||
+        JSON.stringify(active) !== approvedConversationDraftSnapshot)) {
+      return { ok: false, code: "quote_changed_outside_conversation" };
+    }
+    // A new conversation may start while another quote is open. Do not
+    // substitute the target or overwrite it without an explicit customer choice.
+    if (!revising && History && History.isMeaningfulDraft(active) &&
+        !window.confirm("작성 중인 기존 견적이 있습니다. 새 견적 내용으로 교체하시겠습니까?")) {
+      return { ok: false, code: "existing_draft_preserved" };
+    }
+    const draft = revising ? active : App.createBlankNextDraft();
+    if (!draft) return { ok: false, code: "draft_not_ready" };
+    const rec = input.recipient || {};
+    draft.recipient = {
+      company: String(rec.company || ""),
+      person: String(rec.person || ""),
+      address: String(rec.address || ""),
+      email: String(rec.email || "")
+    };
+    draft.items = input.items.map((item, i) => ({
+      id: revising && active.items[i] ? active.items[i].id : "item-" + (i + 1),
+      name: item.name, qty: item.qty, unitPrice: item.unitPrice,
+      ...(item.unit ? { unit: item.unit } : {})
+    }));
+    draft.memo = String(input.memo || "");
+    if (input.projectName) draft.meta.projectName = String(input.projectName);
+    const taxKnown = typeof input.taxMode === "string" && input.taxMode !== "";
+    if (taxKnown) draft.tax.mode = input.taxMode;
+    const result = App.replaceDraft(draft, {
+      requireTaxReview: !taxKnown,
+      toast: revising ? "같은 견적서의 수량·단가를 수정했습니다." :
+        "견적 초안을 반영했습니다. 금액을 확인해 주세요."
+    });
+    if (!result || !result.ok) return { ok: false, code: "draft_apply_failed" };
+    approvedConversationQuoteNo = result.draft.meta.quoteNo;
+    approvedConversationDraftSnapshot = JSON.stringify(result.draft);
+    return { ok: true, draft: result.draft, revising };
+  }
+
+  function conversationQuoteChips(bridge, result, viewGeneration, autoPdf) {
+    const quote = result.quote || {};
+    const guardedAction = (action, options) => () => {
+      if (dialogueGeneration !== viewGeneration) return;
+      runQuoteConversation(null, action, options);
+    };
+    const chips = [];
+    if (quote.awaiting_method) {
+      chips.push({ label: "한 번에 말하기", action: guardedAction("choose_method", { method: "flexible" }) });
+      chips.push({ label: "질문받으며 작성", action: guardedAction("choose_method", { method: "guided" }) });
+    }
+    if (quote.staged) {
+      chips.push({ label: "변경 확인", action: guardedAction("confirm") });
+      chips.push({ label: "변경 취소", action: guardedAction("cancel_staged") });
+    }
+    if (quote.approval_required) {
+      chips.push({ label: "견적서 PDF 만들기", action: guardedAction("approve_draft") });
+    }
+    if (result.draft) {
+      const applied = applyApprovedConversationDraft(result.draft);
+      if (!applied.ok) {
+        addMessage("assistant", applied.code === "existing_draft_preserved"
+          ? "기존 견적을 보존했습니다. 새 견적 내용은 대화에 남아 있습니다."
+          : applied.code === "quote_changed_outside_conversation"
+            ? "다른 화면에서 견적 내용이 변경됐습니다. 임의로 덮어쓰지 않았습니다. 변경 대상을 확인해 주세요."
+            : "견적 초안 반영에 실패했습니다. PDF를 생성하지 않았습니다.");
+      } else {
+        addResultReview(applied.draft, !result.draft.taxMode);
+        // addResultReview disables the composer for the older guided flow.
+        // The new server-owned quote thread must stay interactive.
+        chips.push({
+          label: applied.revising ? "수정된 PDF 만들기" : "PDF 만들기",
+          action: () => {
+            const print = $("printPdf");
+            if (print && !print.disabled) print.click();
+            else addMessage("assistant", "인증된 PDF 출력이 준비되지 않았습니다. 양식·부가세 조건을 확인해 주세요.");
+          }
+        });
+        chips.push({ label: "견적서 보기", action: () => setWorkspaceMode("direct") });
+      }
+    }
+    /* #5007: the previous chip only focused the composer, so clicking it did
+       nothing. It now restores the stored consultation through the server-owned
+       state slot, or explains that there is none. */
+    if (!chips.length) chips.push({ label: "견적 상담 이어가기", action: resumeQuoteConsultation });
+    setChips(chips);
+    if (autoPdf && result.draft && result.draft.taxMode &&
+        approvedConversationQuoteNo && dialogueGeneration === viewGeneration) {
+      const print = $("printPdf");
+      if (print && !print.disabled) print.click();
+      else addMessage("assistant", "인증된 PDF 출력이 준비되지 않았습니다. 양식과 부가세 조건을 확인해 주세요.");
+    }
+  }
+
+  /* #5007: "견적 상담 이어가기" was a no-op chip that only moved focus to the
+     composer, so the customer's stored consultation was never restored. This
+     reuses the existing owner-scoped server state slot (#4412 `state`) instead
+     of adding a second persistence system: the server owns the state and the
+     revision, the browser only renders it and asks where to continue.
+       - stored quote-authoring state -> resume at the last valid step
+       - nothing stored, or only an ordinary chat thread -> say so and offer a
+         real entry point rather than pretending a consultation was resumed. */
+  async function resumeQuoteConsultation() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (!bridge || typeof bridge.quoteConversation !== "function") {
+      App.toast("견적 상담 상태를 확인할 수 없습니다.");
+      return;
+    }
+    if (interpretationInFlight) return;
+    if (!accountSignedIn) {
+      resumeAccountGuidedOrLocal();
+      return;
+    }
+    const generation = dialogueGeneration;
+    const scope = accountScopeRevision;
+    const stillCurrent = () => (
+      generation === dialogueGeneration && scope === accountScopeRevision
+    );
+    interpretationInFlight = true;
+    const pending = addPendingAssistant();
+    blockSend("저장된 견적 상담을 불러오는 중입니다.");
+    try {
+      const loaded = await bridge.quoteConversation("state");
+      if (!stillCurrent()) return;
+      if (!loaded || !loaded.ok) {
+        pending.remove();
+        addMessage("assistant", quoteConversationError(loaded && loaded.code));
+        setChips([
+          { label: "질문받으며 새 견적", action: () => startGuidedIfReady() },
+          { label: "처음으로", action: showHome }
+        ]);
+        setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+        clearProcessingNote();
+        return;
+      }
+      const state = loaded.state || null;
+      quoteConversationRevision = state && Number.isSafeInteger(state.revision) ? state.revision : 0;
+      quoteConversationEngaged = Boolean(state && state.mode === "quote_authoring");
+      const resumable = Boolean(state) && (state.mode === "quote_authoring" || state.awaiting_method);
+      if (!resumable) {
+        /* No stored consultation to resume. Say that plainly instead of
+           silently starting a fresh one, and never fold the previous facts into
+           a new quote. */
+        pending.remove();
+        addMessage("assistant",
+          "이어서 진행할 저장된 견적 상담이 없습니다. 새 견적을 시작하면 이전 상담 내용은 새 초안에 섞이지 않습니다.");
+        setChips([
+          { label: "질문받으며 새 견적", action: () => startGuidedIfReady() },
+          { label: "이전 AI 대화", action: showAiDialogues },
+          { label: "처음으로", action: showHome }
+        ]);
+        setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+        $("easyComposerNote").textContent = "";
+        return;
+      }
+      pending.remove();
+      const summary = state.quote || state;
+      const facts = summary.facts || {};
+      const collected = Object.keys(facts).filter((key) => {
+        const value = facts[key];
+        if (Array.isArray(value)) return value.length > 0;
+        if (value && typeof value === "object") {
+          return Object.values(value).some((entry) => String(entry || "").trim() !== "");
+        }
+        return String(value || "").trim() !== "";
+      });
+      addMessage("assistant",
+        "저장된 견적 상담을 불러왔습니다. 지금까지 확인된 항목: " +
+        (collected.length ? collected.join(", ") : "없음") + ".");
+      if (state.awaiting_method) {
+        addMessage("assistant", "견적을 어떻게 진행할지 선택해 주세요.");
+      } else if (summary.next_question) {
+        addMessage("assistant", summary.next_question);
+      }
+      conversationQuoteChips(bridge, { quote: summary }, dialogueGeneration, false);
+      setInput(submitFreeFormText, "견적 질문 또는 수정 사항을 이어서 입력하세요");
+      $("easyComposerNote").textContent = "저장된 견적 상담을 이어서 진행 중입니다.";
+    } catch (_) {
+      if (!stillCurrent()) return;
+      pending.remove();
+      addMessage("assistant", "저장된 견적 상담을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      setChips([
+        { label: "질문받으며 새 견적", action: () => startGuidedIfReady() },
+        { label: "처음으로", action: showHome }
+      ]);
+      setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+      clearProcessingNote();
+    } finally {
+      if (stillCurrent()) interpretationInFlight = false;
+    }
+  }
+
+  async function runQuoteConversation(text, action, extra) {
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (!bridge || typeof bridge.quoteConversation !== "function" || interpretationInFlight) return;
+    const isMessage = !action || action === "message";
+    const currentText = isMessage ? String(text || "").trim() : "";
+    if (isMessage && !currentText) return;
+    if (lastEasyView === "home") {
+      lastEasyView = "free-form";
+      recordProductState("free-form");
+      startConversation();
+    }
+    const generation = dialogueGeneration;
+    const scope = accountScopeRevision;
+    const current = () => generation === dialogueGeneration && scope === accountScopeRevision;
+    interpretationInFlight = true;
+    if (isMessage) addMessage("user", currentText);
+    const pending = addPendingAssistant();
+    blockSend("AI 요청을 처리하는 중입니다. 기다리는 동안 다음 질문을 미리 입력할 수 있습니다.");
+    try {
+      if (pendingQuoteReset) {
+        const reset = await pendingQuoteReset;
+        if (!current()) return;
+        if (!reset || !reset.ok) {
+          addMessage("assistant", quoteConversationError(reset && reset.code));
+          return;
+        }
+        quoteConversationRevision = reset.revision;
+        pendingQuoteReset = null;
+      }
+      if (quoteConversationRevision === null) {
+        const loaded = await bridge.quoteConversation("state");
+        if (!current()) return;
+        if (!loaded.ok) {
+          addMessage("assistant", quoteConversationError(loaded.code));
+          return;
+        }
+        quoteConversationRevision = loaded.state && Number.isSafeInteger(loaded.state.revision)
+          ? loaded.state.revision : 0;
+      }
+      const args = Object.assign({}, extra || {}, {
+        revision: quoteConversationRevision,
+        ...(isMessage ? { message: currentText } : {})
+      });
+      const result = await bridge.quoteConversation(isMessage ? "message" : action, args);
+      if (!current()) return;
+      if (!result.ok) {
+        if (result.code === "revision_conflict") quoteConversationRevision = null;
+        addMessage("assistant", quoteConversationError(result.code));
+        return;
+      }
+      quoteConversationRevision = result.revision;
+      quoteConversationEngaged = true;
+      const isModelAnswer = result.answer_origin === "registered_model_completion";
+      addMessage("assistant", result.answer, {
+        markdown: isModelAnswer,
+        copyAction: isModelAnswer
+      });
+      // #5007: render exactly one server-authorized assistant response per
+      // request. quote.next_question is workflow metadata, not a second
+      // assistant turn; emitting it caused duplicate quantity/recipient prompts.
+      conversationQuoteChips(bridge, result, generation, action === "approve_draft");
+    } catch (_) {
+      if (current()) addMessage("assistant", quoteConversationError("conversation_unavailable"));
+    } finally {
+      pending.remove();
+      if (current()) {
+        interpretationInFlight = false;
+        setInput(submitFreeFormText, "견적 질문 또는 수정 사항을 이어서 입력하세요");
+        /* #5007-2: the request is over in every terminal path (answer,
+           bounded failure, cancel), so the processing caption must go back
+           to idle here instead of lingering under the finished answer. */
+        clearProcessingNote();
+      }
+    }
+  }
+
+  function runPrimaryInterpretation(rawText) {
+    // A second click/Enter must not launch a second B14 interpretation attempt.
+    if (interpretationInFlight) return;
+    // Never truncate a provider-bound quote request in the browser.
+    const text = String(rawText == null ? "" : rawText).trim();
+    if (!text) return;
+    const bridge = window.B66QuoteRuntimeBridge;
+    const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
+    // Real signed-in conversation is model-driven, independent of CGI assignment.
+    // Quote creation/approval remains on the explicit Guided/Direct/CGI flow.
+    const isGreeting = /^(?:hi|hey|hello|하이|안녕(?:하세요)?|반가워요|반갑습니다)[ .!?~]*$/iu.test(text);
+    // Route new signed-in conversations through the existing server-owned B66
+    // intent/authoring adapter. Previously saved general-chat threads keep
+    // their own server conversation IDs and existing read/continuation path.
+    if (readiness && readiness.authenticated &&
+        bridge && typeof bridge.quoteConversation === "function" &&
+        !currentDialogueId) {
+      runQuoteConversation(text, "message");
+      return;
+    }
+    // Preserve the approved one-shot CGI quote interpretation from Home.
+    // Explicit Chat, greetings and no-CGI accounts use real model conversation.
+    if (readiness && readiness.authenticated && bridge && typeof bridge.chat === "function" &&
+        (!readiness.ready || lastEasyView === "free-form" || isGreeting)) {
+      runModelDialogue(text, bridge);
+      return;
+    }
+    if (!readiness || !readiness.ready) {
+      // A Saved Skill is required for CGI/B14 rendering, not for collecting
+      // quotation facts in a deterministic conversation. Do not silently
+      // drop the user's typed message or pretend an LLM interpreted it.
+      if (readiness && readiness.authenticated) {
+        // Free-form chat is not consent to replace an unfinished saved quote.
+        // Only the explicit "new quote" chip invokes the guarded Guided flow.
+        if (lastEasyView === "home") {
+          lastEasyView = "free-form";
+          recordProductState("free-form");
+          startConversation();
+        }
+        addMessage("user", text);
+        addMessage("assistant",
+          "현재 AI 전용 견적 양식이 준비되지 않았습니다. 기존 견적을 이어서 작업하거나 새 질문형 견적을 시작할 수 있습니다. 새 견적을 선택해야만 기존 진행 상태 변경 여부를 확인합니다.");
+        setChips([
+          { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal },
+          { label: "질문받으며 새 견적", action: () => startGuidedIfReady(text) },
+          { label: "처음으로", action: showHome }
+        ]);
+        setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+      } else {
+        addMessage("user", text);
+        addMessage("assistant", runtimeNotReadyMessage(readiness));
+        setChips([{ label: "질문받으며 작성", action: () => startGuided(text) }]);
+        composer.value = text;
+      }
+      return;
+    }
+    const requestScopeRevision = accountScopeRevision;
+    /* #4657 P0-C: an approved one-shot CGI result may only land in the view that
+       asked for it; a new chat or another view discards the late reply. */
+    const requestViewGeneration = dialogueGeneration;
+    interpretationInFlight = true;
+    addMessage("user", text);
+    const processingMessage = addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…", { guidedHistory: false });
+    blockSend("견적을 만드는 동안에는 전송만 잠시 멈춥니다. 다음 내용은 미리 입력해 두세요.");
+    const stillCurrentView = () => (
+      requestScopeRevision === accountScopeRevision &&
+      requestViewGeneration === dialogueGeneration
+    );
+    Promise.resolve().then(() => {
+      // Closing/switching the owner before the dispatch microtask must cancel the call.
+      if (!stillCurrentView()) return null;
+      return bridge.interpret(text);
+    }).then((result) => {
+      // Results from a signed-out/quarantined owner must never update the next account.
+      if (!stillCurrentView()) return;
+      if (!result || result.ok !== true || !result.draft) {
+        /* 정보가 부족하면 무엇이 없는지 한 가지만 되묻고 같은 견적을 이어간다.
+           Guided 로 강제 전환하지 않는다 (#3391). */
+        if (result && (result.code === "incomplete_request" || result.code === "needs_clarification")) {
+          addMessage("assistant", typeof result.question === "string" && result.question.trim()
+            ? result.question
+            : "견적에 필요한 값을 조금 더 알려 주세요.");
+          setInput(submitFreeFormText, result.code === "needs_clarification"
+            ? "견적 내용을 다시 적어 주세요"
+            : "답변을 적어 주세요");
+          return;
+        }
+        // Retain the user's quotation text when a model has not yet been selected.
+        if (result && result.code === "model_selection_required") {
+          // The live picker is the shell's grade select; the aria-label query
+          // is kept only as a fallback for older shells.
+          const picker = document.querySelector('select[id$="QuoteModelSelect"]') ||
+            document.querySelector('select[aria-label="사용할 AI 모델"]');
+          const unavailable = !picker || picker.disabled || picker.options.length <= 1;
+          addMessage("assistant", unavailable
+            ? "사용 가능한 AI 모델 목록을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요."
+            : "입력창 오른쪽에서 AI 모델을 선택한 뒤 다시 보내 주세요.");
+          setInput(submitFreeFormText, "견적 내용을 입력해 주세요");
+          composer.value = text;
+          if (picker && !picker.disabled) picker.focus();
+          return;
+        }
+        const detail = result && bridge && typeof bridge.errorText === "function"
+          ? bridge.errorText(result.code)
+          : "견적 요청을 해석하지 못했습니다.";
+        addMessage("assistant", detail);
+        setChips([
+          { label: "질문받으며 만들기", action: startGuidedIfReady },
+          { label: "처음으로", action: showHome }
+        ]);
+        // A model outage during a missing-field follow-up does not erase the
+        // pending quote. Don't tell the customer to retype their whole request.
+        const pending = bridge && typeof bridge.pendingQuote === "function"
+          ? bridge.pendingQuote() : null;
+        setInput(submitFreeFormText, pending
+          ? "방금 답변을 다시 적어 주세요"
+          : "다시 한 문장으로 적어 주세요");
+        return;
+      }
+      const replace = App.replaceDraft(result.draft, {});
+      if (!replace || replace.ok !== true) {
+        addMessage("assistant", "생성된 견적을 화면에 반영하지 못했습니다. 다시 시도해 주세요.");
+        setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
+        return;
+      }
+      addResultReview(result.draft, false);
+    }).catch(() => {
+      if (requestScopeRevision !== accountScopeRevision) return;
+      addMessage("assistant", "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
+    }).finally(() => {
+      // Keep only the completed result, the missing-field question, or the
+      // failure notice. A stale "작성하고 있습니다" misleads customers.
+      processingMessage.remove();
+      if (requestScopeRevision === accountScopeRevision) interpretationInFlight = false;
+    });
+  }
+
+  function addResultReview(draft, taxUnknown) {
+    const totals = Core.computeDraftTotals(draft);
+    const effectiveItems = totals && Array.isArray(totals.effectiveItems)
+      ? totals.effectiveItems
+      : draft.items;
+    const itemLines = draft.items.map((item, index) =>
+      "- " + item.name + " " + Core.formatInputNumber(item.qty) + " × " +
+      Core.formatMoney(effectiveItems[index].unitPrice)
+    ).join("\n");
+    const taxLine = taxUnknown
+      ? "부가세: 확인 필요 (견적서 확인 화면에서 선택해 주세요)"
+      : "합계: " + Core.formatMoney(totals.grand) + " (" + Core.TAX_LABELS[draft.tax.mode] + ")";
+    addMessage(
+      "assistant",
+      "견적이 준비되었습니다.\n\n받는 곳: " +
+      (draft.recipient.company || "미입력") +
+      (draft.recipient.person ? " · " + draft.recipient.person : "") +
+      "\n\n" + itemLines +
+      "\n\n" + taxLine +
+      "\n\n아래에서 견적서를 열어 PDF로 저장하거나 인쇄할 수 있습니다.\n\n" +
+      "수정할 내용이 있으면 이 대화에서 바로 이어서 적어 주세요. (예: 부가세 별도로 바꿔줘, 단가 120만원으로)"
+    );
+    // #5039: a finished quote is not the end of this dialogue. Keep the
+    // composer usable so the customer can revise the same draft in place
+    // instead of restarting; a new quote still needs the explicit 처음으로.
+    setChips([
+      {
+        label: "견적서 확인하기",
+        action: () => {
+          setWorkspaceMode("direct");
+          if (taxUnknown) setTimeout(() => App.focusTaxReview(), 0);
+        }
+      },
+      { label: "처음으로", action: showHome }
+    ]);
+    postCompleteDraft = draft;
+    postCompleteTaxUnknown = Boolean(taxUnknown);
+    postCompleteQuoteNo = draft && draft.meta ? String(draft.meta.quoteNo || "") : "";
+    setInput(processPostCompleteInput, "수정할 내용만 적어 주세요 (예: 부가세 별도로 바꿔줘)");
+  }
+
+  /* Plain Korean post-completion edit on an already-built draft. The existing
+     server quote thread stays the authority when it owns this draft: it stages
+     the change and returns its own confirm/cancel chips. Otherwise the value is
+     collected through the same per-field questions and the draft is rebuilt by
+     the existing QuoteCore path — never by the browser. */
+  function processPostCompleteInput(raw) {
+    const text = safeText(raw);
+    if (!text) return;
+    addMessage("user", text);
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (bridge && typeof bridge.quoteConversation === "function" && quoteConversationEngaged) {
+      runQuoteConversation(text, "message");
+      return;
+    }
+    const step = guidedRevisionStepFor(text);
+    if (!step) {
+      addMessage("assistant",
+        "수정할 항목을 알려 주세요. 부가세, 수량, 단가, 품목, 거래처, 메모 중 하나를 말씀해 주시면 그대로 바꿔 드릴게요.");
+      setChips(guidedReviseChips());
+      return;
+    }
+    if (!postCompleteDraft) return;
+    guided = {
+      step: "summary",
+      draft: postCompleteDraft,
+      currentItem: postCompleteDraft.items.length - 1,
+      taxUnknown: postCompleteTaxUnknown,
+      conversationId: guidedConversationId(),
+      transcript: []
+    };
+    lastEasyView = "guided";
+    guidedRevising = false;
+    guidedRevisionStep = null;
+    startGuidedRevision(step);
+  }
+
+  let guidedStartInFlight = false;
+  async function startGuidedIfReady(referenceText) {
+    if (guidedStartInFlight) return;
+    const reference = typeof referenceText === "string" ? referenceText : "";
+    const bridge = window.B66QuoteRuntimeBridge;
+    const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
+    if (!readiness || !readiness.authenticated) {
+      startConversation();
+      addMessage("assistant", runtimeNotReadyMessage(readiness));
+      setChips([
+        { label: "로그인 전 질문형 초안", action: () => startGuided() },
+        { label: "처음으로", action: showHome }
+      ]);
+      setInput((text) => startGuided(text), "견적서에 필요한 내용을 적어 주세요");
+      return;
+    }
+    // Missing CGI assignment does not block the question-and-answer draft.
+    // Existing account-backed guided save protection remains in force.
+    // #3396: never silently replace an unfinished account-backed quotation.
+    // Check the canonical server slot, not a browser-local navigation snapshot.
+    if (accountSignedIn && GuidedAPI) {
+      const scopeRevision = accountScopeRevision;
+      guidedStartInFlight = true;
+      try {
+        await guidedSaveQueue.catch(() => {});
+        if (scopeRevision !== accountScopeRevision || !accountSignedIn) return;
+        const result = await GuidedAPI.load();
+        if (scopeRevision !== accountScopeRevision || !accountSignedIn) return;
+        if (!result.ok) {
+          App.toast("기존 질문형 견적 저장 여부를 확인하지 못해 새 견적을 시작하지 않았습니다.");
+          return;
+        }
+        if (result.state && !window.confirm(
+          "계정에 작성 중인 질문형 견적이 있습니다. 새 견적을 시작하면 기존 진행 상태가 덮어써집니다. 계속하시겠습니까?"
+        )) return;
+        if (scopeRevision !== accountScopeRevision || !accountSignedIn) return;
+        startGuided(reference);
+      } catch (_) {
+        if (scopeRevision === accountScopeRevision && accountSignedIn) {
+          App.toast("기존 질문형 견적 상태를 확인하지 못해 새 견적을 시작하지 않았습니다.");
+        }
+      } finally {
+        guidedStartInFlight = false;
+      }
+      return;
+    }
+    startGuided(reference);
+  }
+
+  function finishGuidedWithRuntime() {
+    if (!guided) return;
+    const bridge = window.B66QuoteRuntimeBridge;
+    const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
+    if (!readiness || !readiness.ready) {
+      // Only a standard local quote can be prepared without the approved CGI
+      // Saved Skill. Never call CGI/B14 or assign an unapproved server skill.
+      const taxUnknown = guided.taxUnknown;
+      const result = App.replaceDraft(guided.draft, {
+        requireTaxReview: taxUnknown,
+        toast: "기본 견적서 초안을 만들었습니다. 출력 전에 내용을 확인해 주세요."
+      });
+      if (!result || !result.ok) {
+        addMessage("assistant", "기본 견적서 초안을 반영하지 못했습니다. 직접 입력에서 확인해 주세요.");
+        return;
+      }
+      addMessage("assistant", "승인된 전용 양식이 없어 기본 견적서로 작성했습니다. 금액과 회사정보를 확인한 뒤 PDF로 저장할 수 있습니다.");
+      addResultReview(result.draft, taxUnknown);
+      clearAccountGuidedState();
+      guided = null;
+      guidedSnapshot = null;
+      return;
+    }
+    const taxUnknown = guided.taxUnknown;
+    const processingMessage = addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
+    const facts = {
+      recipient: guided.draft.recipient,
+      items: guided.draft.items.map((item) => ({
+        name: item.name, qty: item.qty, unitPrice: item.unitPrice
+      })),
+      taxMode: guided.draft.tax.mode,
+      memo: guided.draft.memo,
+      quoteNo: guided.draft.meta.quoteNo,
+      issueDate: guided.draft.meta.issueDate
+    };
+    Promise.resolve(bridge.buildFromFacts(facts)).then((result) => {
+      if (!result || result.ok !== true || !result.draft) {
+        const detail = result && bridge && typeof bridge.errorText === "function"
+          ? bridge.errorText(result.code)
+          : "견적을 만들지 못했습니다.";
+        addMessage("assistant", detail + " 내용을 확인하고 다시 시도해 주세요.");
+        return;
+      }
+      const replace = App.replaceDraft(result.draft, {
+        requireTaxReview: taxUnknown,
+        toast: taxUnknown
+          ? "견적을 만들었습니다. 부가세 방식을 확인해 주세요."
+          : "견적을 만들었습니다."
+      });
+      if (!replace || replace.ok !== true) {
+        addMessage("assistant", "생성된 견적을 화면에 반영하지 못했습니다. 다시 시도해 주세요.");
+        return;
+      }
+      addResultReview(result.draft, taxUnknown);
+      clearAccountGuidedState();
+      guided = null;
+      guidedSnapshot = null;
+    }).catch(() => {
+      addMessage("assistant", "견적 생성에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    }).finally(() => {
+      processingMessage.remove();
+    });
+  }
+
+  function showRecentHistory(options) {
+    lastEasyView = "recent";
+    if (!options || options.history !== false) recordProductState("recent");
     startConversation();
-    addMessage("assistant", "이 브라우저에 저장한 최근 견적입니다. 불러오거나 복사해서 새 견적으로 사용할 수 있어요.");
-    renderHistory();
+    renderHistoryPending();
     setChips([
       { label: "질문받으며 새로 만들기", action: startGuided },
       { label: "처음으로", action: showHome }
     ]);
     setInput(() => {}, "최근 견적은 아래 버튼으로 선택하세요");
+    composer.readOnly = false;
     composer.disabled = true;
     sendButton.disabled = true;
+    readRecentHistory().then((result) => {
+      if (lastEasyView !== "recent") return;
+      renderHistory(result);
+    });
   }
 
-  function renderHistory() {
-    const envelope = readHistory();
-    const metadata = History.listMetadata(envelope);
+  function renderHistoryPending() {
     historyPanel.innerHTML = "";
     historyPanel.hidden = false;
+    const pending = document.createElement("p");
+    pending.className = "easy-history-empty";
+    pending.textContent = "최근 견적을 불러오는 중...";
+    historyPanel.appendChild(pending);
+  }
+
+  /* 최근 견적 실패 화면: 서버 실패를 local 기록으로 대체하지 않고 bounded
+     error 상태만 보여준다(NO_SILENT_LOCAL_FALLBACK). */
+  function renderHistoryError() {
+    historyPanel.innerHTML = "";
+    historyPanel.hidden = false;
+    const error = document.createElement("p");
+    error.className = "easy-history-empty";
+    error.textContent = "최근 견적을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.textContent = "다시 시도";
+    retry.addEventListener("click", () => {
+      if (lastEasyView !== "recent") return;
+      renderHistoryPending();
+      readRecentHistory().then((result) => {
+        if (lastEasyView !== "recent") return;
+        renderHistory(result);
+      });
+    });
+    historyPanel.append(error, retry);
+  }
+
+  function renderHistory(result) {
+    const outcome = result || { ok: true, authority: "local", envelope: readHistory() };
+    historyPanel.innerHTML = "";
+    historyPanel.hidden = false;
+
+    if (outcome.ok !== true) {
+      renderHistoryError();
+      return;
+    }
+
+    const envelope = outcome.envelope || History.normalizeEnvelope(null);
+    const metadata = History.listMetadata(envelope);
 
     if (metadata.length === 0) {
       const empty = document.createElement("p");
@@ -259,6 +1455,10 @@
       remove.className = "danger";
       remove.textContent = "삭제";
       remove.addEventListener("click", () => {
+        if (outcome.authority === "server") {
+          deleteServerHistoryEntry(meta.id);
+          return;
+        }
         if (!window.confirm("이 최근 견적을 이 브라우저에서 삭제할까요?")) return;
         if (writeHistory(History.deleteEntry(readHistory(), meta.id))) {
           renderHistory();
@@ -269,6 +1469,368 @@
       actions.append(load, copy, remove);
       card.append(info, actions);
       historyPanel.appendChild(card);
+    });
+  }
+
+  /* server row 삭제: 명시적 확인 후 서버 성공에만 목록을 다시 읽어
+     반영한다. 실패 시 행은 그대로 유지된다(NO_OPTIMISTIC_DELETE). */
+  function deleteServerHistoryEntry(entryId) {
+    if (!window.confirm("이 최근 견적을 계정에서 삭제할까요?")) return;
+    const deletion = App && typeof App.deleteRecentQuote === "function"
+      ? App.deleteRecentQuote(entryId)
+      : Promise.resolve({ ok: false, authority: "server", error: "history_unavailable" });
+    deletion.then((result) => {
+      if (!result || result.ok !== true) {
+        App.toast("최근 견적 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+      refreshRecentHistory();
+      refreshStarters();
+    }).catch(() => {
+      App.toast("최근 견적 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    });
+  }
+
+  function refreshRecentHistory() {
+    if (lastEasyView !== "recent") return;
+    renderHistoryPending();
+    readRecentHistory().then((result) => {
+      if (lastEasyView !== "recent") return;
+      renderHistory(result);
+    });
+  }
+
+  /* ── #4657 이전 AI 대화 (previous AI dialogue) ──────────────────────────
+     The rail reads the owner's stored B66 dialogue through the runtime bridge,
+     which is owner- and B66-product-scoped on the server. The browser names no
+     owner and no scope, and it never falls back to another product's list. */
+  function dialogueBridge() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    return bridge && typeof bridge.listDialogues === "function" ? bridge : null;
+  }
+
+  function dialogueResultsHost() {
+    return $("easyDialogueResults");
+  }
+
+  function renderDialogueSearch() {
+    historyPanel.innerHTML = "";
+    historyPanel.hidden = false;
+    const wrap = document.createElement("div");
+    wrap.className = "easy-dialogue-search";
+    const input = document.createElement("input");
+    input.type = "search";
+    input.id = "easyDialogueSearch";
+    input.className = "easy-dialogue-search-input";
+    input.setAttribute("aria-label", "이전 AI 대화 검색");
+    input.placeholder = "이전 AI 대화 검색";
+    input.maxLength = MAX_DIALOGUE_QUERY_CHARS;
+    input.autocomplete = "off";
+    let timer = null;
+    input.addEventListener("input", () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => fetchAiDialogues(input.value), 250);
+    });
+    const results = document.createElement("div");
+    results.id = "easyDialogueResults";
+    results.className = "easy-dialogue-results";
+    results.setAttribute("aria-live", "polite");
+    wrap.append(input, results);
+    historyPanel.appendChild(wrap);
+    setTimeout(() => input.focus(), 0);
+  }
+
+  function renderDialogueResults(state, rows) {
+    const host = dialogueResultsHost();
+    if (!host) return;
+    host.innerHTML = "";
+    if (state === "loading") {
+      const note = document.createElement("p");
+      note.className = "easy-history-empty";
+      note.textContent = "이전 AI 대화를 불러오는 중...";
+      host.appendChild(note);
+      return;
+    }
+    if (state === "error") {
+      const note = document.createElement("p");
+      note.className = "easy-history-empty";
+      note.textContent = "이전 AI 대화를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.textContent = "다시 시도";
+      retry.addEventListener("click", () => {
+        const input = $("easyDialogueSearch");
+        fetchAiDialogues(input ? input.value : "");
+      });
+      host.append(note, retry);
+      return;
+    }
+    if (state === "empty") {
+      const note = document.createElement("p");
+      note.className = "easy-history-empty";
+      note.textContent = "아직 저장된 AI 대화가 없습니다.";
+      host.appendChild(note);
+      return;
+    }
+    (rows || []).forEach((row) => {
+      if (!row || !DIALOGUE_ID_PATTERN.test(String(row.conversation_id || ""))) return;
+      const card = document.createElement("article");
+      card.className = "easy-history-card easy-dialogue-card";
+      const info = document.createElement("div");
+      info.className = "easy-history-info";
+      const title = document.createElement("strong");
+      title.textContent = typeof row.title === "string" && row.title ? row.title : "제목 없는 대화";
+      const sub = document.createElement("span");
+      sub.textContent = typeof row.updated_at === "string" ? row.updated_at : "";
+      info.append(title, sub);
+      const actions = document.createElement("div");
+      actions.className = "easy-history-actions";
+      const open = document.createElement("button");
+      open.type = "button";
+      open.textContent = "이어서 대화";
+      open.addEventListener("click", () => openAiDialogue(row.conversation_id));
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "danger";
+      remove.textContent = "삭제";
+      remove.addEventListener("click", () => deleteAiDialogue(row.conversation_id));
+      actions.append(open, remove);
+      card.append(info, actions);
+      host.appendChild(card);
+    });
+  }
+
+  function fetchAiDialogues(rawQuery) {
+    const query = safeText(rawQuery, MAX_DIALOGUE_QUERY_CHARS);
+    const bridge = dialogueBridge();
+    const generation = ++dialogueGeneration;
+    if (!bridge) {
+      renderDialogueResults("error", []);
+      return;
+    }
+    renderDialogueResults("loading", []);
+    Promise.resolve().then(() => bridge.listDialogues(query)).then((result) => {
+      if (generation !== dialogueGeneration || lastEasyView !== AI_DIALOGUE_VIEW) return;
+      if (!result || result.ok !== true) {
+        renderDialogueResults("error", []);
+        return;
+      }
+      const rows = Array.isArray(result.conversations) ? result.conversations : [];
+      renderDialogueResults(rows.length ? "list" : "empty", rows);
+    }).catch(() => {
+      if (generation !== dialogueGeneration || lastEasyView !== AI_DIALOGUE_VIEW) return;
+      renderDialogueResults("error", []);
+    });
+  }
+
+  function showAiDialogues(options) {
+    lastEasyView = AI_DIALOGUE_VIEW;
+    if (!options || options.history !== false) recordProductState(AI_DIALOGUE_VIEW);
+    startConversation();
+    const bridge = dialogueBridge();
+    addMessage("assistant", bridge
+      ? "저장된 이전 AI 대화입니다. 대화를 선택해 이어서 물어보세요."
+      : "로그인하면 이전 AI 대화를 불러올 수 있습니다.");
+    setChips([{ label: "처음으로", action: showHome }]);
+    composer.readOnly = false;
+    composer.disabled = true;
+    sendButton.disabled = true;
+    $("easyComposerNote").textContent = "";
+    renderDialogueSearch();
+    fetchAiDialogues("");
+  }
+
+  function openAiDialogue(conversationId, options) {
+    const bridge = dialogueBridge();
+    if (!bridge || !DIALOGUE_ID_PATTERN.test(String(conversationId || ""))) return;
+    const opts = options || {};
+    lastEasyView = "free-form";
+    if (opts.history !== false) recordDialogueState(conversationId);
+    startConversation();
+    addMessage("assistant", "이전 AI 대화를 불러오는 중...");
+    /* #5007-2: a restore is an in-flight request, so typing stays enabled and
+       only a duplicate submit is refused. `disableInput` remains for the
+       genuine read-only list screens, not for a live request. */
+    blockSend("이전 대화를 불러오는 중입니다.");
+    /* #4657 P0-B: startConversation already bumped the view generation, so this
+       capture is taken AFTER the transition and re-checked on both the resolved
+       and the rejected path. Clicking new chat (or any other view) therefore
+       discards a late restore instead of overwriting the new screen. */
+    const generation = dialogueGeneration;
+    const stillRestoringView = () => (
+      generation === dialogueGeneration && lastEasyView === "free-form"
+    );
+    Promise.resolve().then(() => bridge.loadDialogue(conversationId)).then((result) => {
+      if (!stillRestoringView()) return;
+      const conversation = result && result.ok === true ? result.conversation : null;
+      if (!conversation || !Array.isArray(conversation.messages)) {
+        addMessage("assistant", "이전 대화를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+        setChips([
+          { label: "이전 AI 대화", action: showAiDialogues },
+          { label: "처음으로", action: showHome }
+        ]);
+        blockSend("이전 대화를 불러오지 못했습니다.");
+        return;
+      }
+      startConversation();
+      const restored = [];
+      conversation.messages.forEach((message) => {
+        const role = message && message.role === "assistant" ? "assistant" : "user";
+        const content = String((message && message.content) || "");
+        if (!content) return;
+        addMessage(role, content, { markdown: role === "assistant" });
+        restored.push({ role: role, content: content });
+      });
+      modelChatTurns = restored;
+      currentDialogueId = conversation.conversation_id;
+      setChips([
+        { label: "새 대화", action: showHome },
+        { label: "이전 AI 대화", action: showAiDialogues }
+      ]);
+      setInput(submitFreeFormText, "이어서 질문해 주세요");
+      $("easyComposerNote").textContent = "이전 대화를 이어서 작성 중입니다.";
+    }).catch(() => {
+      if (!stillRestoringView()) return;
+      addMessage("assistant", "이전 대화를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      blockSend("이전 대화를 불러오지 못했습니다.");
+    });
+  }
+
+  function deleteAiDialogue(conversationId) {
+    const bridge = dialogueBridge();
+    if (!bridge || typeof bridge.deleteDialogue !== "function") return;
+    if (!DIALOGUE_ID_PATTERN.test(String(conversationId || ""))) return;
+    if (!window.confirm("이 AI 대화를 삭제할까요? 삭제한 대화는 되돌릴 수 없습니다.")) return;
+    const generation = dialogueGeneration;
+    Promise.resolve().then(() => bridge.deleteDialogue(conversationId)).then((result) => {
+      if (!result || result.ok !== true) {
+        App.toast("대화 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+      if (generation !== dialogueGeneration) return;
+      if (currentDialogueId === conversationId) {
+        currentDialogueId = null;
+        recordDialogueState(null);
+      }
+      const input = $("easyDialogueSearch");
+      fetchAiDialogues(input ? input.value : "");
+    }).catch(() => {
+      App.toast("대화 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    });
+  }
+
+  /* #4657 follow-up: deterministic CGI guided sessions are NOT AI conversations.
+     The server retains them in a separate owner/workspace-scoped D1 archive. */
+  function showGuidedDialogues(options) {
+    lastEasyView = GUIDED_DIALOGUE_VIEW;
+    if (!options || options.history !== false) recordProductState(GUIDED_DIALOGUE_VIEW);
+    startConversation();
+    addMessage("assistant", "저장된 견적 상담입니다. 확인할 기록을 선택하세요.");
+    setChips([
+      { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal },
+      { label: "처음으로", action: showHome }
+    ]);
+    disableInput("이전 기록은 읽기 전용입니다.");
+    const generation = dialogueGeneration;
+    const scope = accountScopeRevision;
+    historyPanel.innerHTML = "";
+    historyPanel.hidden = false;
+    const note = document.createElement("p");
+    note.className = "easy-history-empty";
+    note.textContent = "이전 질문형 견적을 불러오는 중...";
+    historyPanel.appendChild(note);
+    if (!accountSignedIn || !GuidedAPI || !GuidedAPI.listConversations) {
+      note.textContent = "로그인하면 이전 질문형 견적을 볼 수 있습니다.";
+      return;
+    }
+    GuidedAPI.listConversations().then(result => {
+      if (generation !== dialogueGeneration || scope !== accountScopeRevision ||
+          lastEasyView !== GUIDED_DIALOGUE_VIEW) return;
+      historyPanel.innerHTML = "";
+      if (!result || result.ok !== true || !Array.isArray(result.conversations)) {
+        note.textContent = "기록을 불러오지 못했습니다. 다시 시도해 주세요.";
+        const retry = document.createElement("button");
+        retry.type = "button"; retry.textContent = "다시 시도";
+        retry.addEventListener("click", showGuidedDialogues);
+        historyPanel.append(note, retry);
+        return;
+      }
+      if (!result.conversations.length) {
+        note.textContent = "저장된 질문형 견적 대화가 없습니다. 기존 진행 중 견적은 '지난 견적 이어서 하기'에서 확인하세요.";
+        historyPanel.appendChild(note);
+      }
+      result.conversations.forEach(row => {
+        if (!row || !/^gdt_[a-f0-9]{32}$/.test(String(row.conversation_id || ""))) return;
+        const card = document.createElement("article");
+        card.className = "easy-history-card easy-guided-card";
+        const info = document.createElement("div");
+        info.className = "easy-history-info";
+        const title = document.createElement("strong");
+        title.textContent = typeof row.title === "string" && row.title.trim()
+          ? row.title : "견적 상담";
+        const date = new Date(String(row.updated_at || ""));
+        const detail = document.createElement("span");
+        detail.textContent = Number.isNaN(date.getTime())
+          ? "작성 시각 정보 없음"
+          : new Intl.DateTimeFormat("ko-KR", {
+              year: "numeric", month: "numeric", day: "numeric",
+              hour: "2-digit", minute: "2-digit"
+            }).format(date);
+        info.append(title, detail);
+        const actions = document.createElement("div");
+        actions.className = "easy-history-actions";
+        const open = document.createElement("button");
+        open.type = "button"; open.className = "easy-guided-open"; open.textContent = "대화 보기";
+        open.addEventListener("click", () => openGuidedDialogue(row.conversation_id));
+        const remove = document.createElement("button");
+        remove.type = "button"; remove.className = "danger easy-guided-delete"; remove.textContent = "삭제";
+        remove.addEventListener("click", () => {
+          if (!window.confirm("이전 질문형 대화 기록을 삭제할까요? 진행 중인 견적은 삭제할 수 없습니다.")) return;
+          GuidedAPI.deleteConversation(row.conversation_id).then(outcome => {
+            if (scope !== accountScopeRevision || generation !== dialogueGeneration) return;
+            if (outcome && outcome.ok) showGuidedDialogues();
+            else App.toast("진행 중 기록이거나 삭제할 수 없는 대화입니다.");
+          }).catch(() => App.toast("기록 삭제를 확인하지 못했습니다."));
+        });
+        actions.append(open, remove);
+        card.append(info, actions);
+        historyPanel.appendChild(card);
+      });
+    }).catch(() => {
+      if (generation === dialogueGeneration && scope === accountScopeRevision)
+        note.textContent = "질문형 기록을 불러오지 못했습니다.";
+    });
+  }
+
+  function openGuidedDialogue(id) {
+    if (!accountSignedIn || !GuidedAPI || !/^gdt_[a-f0-9]{32}$/.test(id)) return;
+    lastEasyView = GUIDED_DIALOGUE_VIEW;
+    startConversation();
+    addMessage("assistant", "질문형 견적 대화를 불러오는 중...");
+    disableInput("이전 기록은 읽기 전용입니다.");
+    setChips([{ label: "이전 질문형 대화", action: showGuidedDialogues },
+              { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal }]);
+    const generation = dialogueGeneration;
+    const scope = accountScopeRevision;
+    GuidedAPI.loadConversation(id).then(outcome => {
+      if (generation !== dialogueGeneration || scope !== accountScopeRevision ||
+          lastEasyView !== GUIDED_DIALOGUE_VIEW) return;
+      startConversation();
+      if (!outcome || !outcome.ok || !outcome.conversation ||
+          !Array.isArray(outcome.conversation.messages)) {
+        addMessage("assistant", "이전 질문형 대화를 불러오지 못했습니다.");
+      } else {
+        outcome.conversation.messages.forEach(entry => {
+          if (entry && (entry.role === "user" || entry.role === "assistant") &&
+              typeof entry.content === "string") addMessage(entry.role, entry.content);
+        });
+      }
+      setChips([{ label: "이전 질문형 대화", action: showGuidedDialogues },
+                { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal }]);
+      disableInput("과거 질문형 대화입니다. 진행 중인 견적은 별도로 이어 쓸 수 있습니다.");
+    }).catch(() => {
+      if (generation === dialogueGeneration && scope === accountScopeRevision)
+        addMessage("assistant", "이전 질문형 대화를 불러오지 못했습니다.");
     });
   }
 
@@ -288,23 +1850,244 @@
     const current = App.getDraft();
     const fresh = App.createFreshDraft("guided");
     fresh.sender = clone(current.sender);
+    if (current.calculationPolicy) fresh.calculationPolicy = clone(current.calculationPolicy);
     fresh.recipient = { company: "", person: "", address: "", email: "" };
     fresh.items = [];
     fresh.memo = "";
     return fresh;
   }
 
-  function startGuided(referenceText) {
+  /* #3396: canonical in-progress state is one private D1 slot, not the
+     browser-local navigation snapshot and never a Chat conversation. */
+  function packagedGuidedState() {
+    if (!guided) return null;
+    const draft = guided.draft;
+    return {
+      schema: "b66.guided-draft.v1",
+      mode: "guided",
+      step: guided.step,
+      currentItem: guided.currentItem,
+      taxUnknown: guided.taxUnknown === true,
+      savedSkillId: window.B66QuoteRuntimeBridge?.assignedSavedSkillId?.() || "",
+      conversationId: guided.conversationId || "",
+      transcript: Array.isArray(guided.transcript) ? guided.transcript.map(entry => ({
+        role: entry.role, content: entry.content
+      })) : [],
+      draft: {
+        recipient: {
+          company: String(draft.recipient?.company || ""),
+          person: String(draft.recipient?.person || ""),
+          address: String(draft.recipient?.address || ""),
+          email: String(draft.recipient?.email || "")
+        },
+        sender: { company: String(draft.sender?.company || "") },
+        items: (draft.items || []).map(item => ({
+          id: String(item.id || ""),
+          name: String(item.name || ""),
+          unit: String(item.unit || ""),
+          qty: item.qty ?? null,
+          unitPrice: item.unitPrice ?? null
+        })),
+        tax: { mode: draft.tax?.mode },
+        memo: String(draft.memo || ""),
+        meta: {
+          quoteNo: String(draft.meta?.quoteNo || ""),
+          issueDate: String(draft.meta?.issueDate || "")
+        }
+      }
+    };
+  }
+
+  function saveGuidedToAccount() {
+    if (!accountSignedIn || !guided || !GuidedAPI) return;
+    const revision = guidedSaveRevision;
+    const state = packagedGuidedState();
+    guidedSaveQueue = guidedSaveQueue.catch(() => {}).then(async () => {
+      if (revision !== guidedSaveRevision || !accountSignedIn) return;
+      const response = await GuidedAPI.save(state);
+      if (!response.ok && revision === guidedSaveRevision) {
+        App.toast("진행 상태를 계정에 저장하지 못했습니다. 다시 시도해 주세요.");
+      }
+    }).catch(() => {
+      if (revision === guidedSaveRevision) App.toast("진행 상태의 서버 저장을 확인하지 못했습니다.");
+    });
+  }
+
+  function clearAccountGuidedState() {
+    if (!accountSignedIn || !GuidedAPI) return;
+    const revision = guidedSaveRevision;
+    guidedSaveQueue = guidedSaveQueue.catch(() => {}).then(async () => {
+      if (revision !== guidedSaveRevision || !accountSignedIn) return;
+      const response = await GuidedAPI.clear();
+      if (!response.ok && revision === guidedSaveRevision) {
+        App.toast("서버에 완료된 초안이 남아 있습니다. 다시 확인해 주세요.");
+      }
+    }).catch(() => {
+      if (revision === guidedSaveRevision) App.toast("완료한 초안의 서버 정리를 확인하지 못했습니다.");
+    });
+  }
+
+  async function resumeAccountGuidedOrLocal() {
+    if (!accountSignedIn) {
+      App.toast("지난 견적을 이어서 사용하려면 먼저 로그인해 주세요.");
+      const signInButton = document.querySelector("#shellAccountRow > button") ||
+        document.querySelector(".topbar-actions > button");
+      if (signInButton) signInButton.click(); // canonical login dialog only
+      return;
+    }
+    const revision = accountScopeRevision;
+    if (!GuidedAPI) {
+      App.toast("계정별 질문형 이어쓰기를 이용할 수 없습니다.");
+      return;
+    }
+    try {
+      await guidedSaveQueue.catch(() => {});
+      if (revision !== accountScopeRevision || !accountSignedIn) return;
+      const payload = await GuidedAPI.load();
+      if (revision !== accountScopeRevision || !accountSignedIn) return;
+      if (!payload.ok) {
+        App.toast("서버의 이어쓰기 상태를 읽지 못했습니다. 계정 로그인을 확인해 주세요.");
+        return;
+      }
+      if (!payload.state) {
+        if (History.isMeaningfulDraft(App.getDraft())) setWorkspaceMode("direct");
+        else App.toast("계정에 저장된 진행 중 질문형 견적이 없습니다.");
+        return;
+      }
+      const state = payload.state;
+      const currentSkill = window.B66QuoteRuntimeBridge?.assignedSavedSkillId?.() || "";
+      if (state.schema !== "b66.guided-draft.v1" || state.mode !== "guided" ||
+          (state.savedSkillId && state.savedSkillId !== currentSkill)) {
+        App.toast("현재 계정의 승인 견적서와 저장된 질문형 견적이 다릅니다. 복원을 중단했습니다.");
+        return;
+      }
+      lastEasyView = "guided";
+      setWorkspaceMode("easy", { history: false });
+      recordProductState("guided");
+      resumeGuidedConversation(state);
+    } catch (_) {
+      if (revision === accountScopeRevision) App.toast("진행 상태를 불러오지 못했습니다.");
+    }
+  }
+
+  /* 진행 중인 guided 대화는 화면 전환으로 버려지지 않고 스냅샷 한 슬롯으로만 보존한다(bounded).
+     브라우저 Back/Forward 복원은 App draft 대신 이 guided 상태를 이어 쓴다. */
+  function snapshotGuidedConversation() {
+    if (!guided) {
+      guidedSnapshot = null;
+      return;
+    }
+    guidedSnapshot = {
+      step: guided.step,
+      draft: clone(guided.draft),
+      currentItem: guided.currentItem,
+      taxUnknown: guided.taxUnknown,
+      conversationId: guided.conversationId,
+      transcript: clone(guided.transcript || [])
+    };
+    guided = null;
+  }
+
+  /* guided 히스토리 항목에 세션 상태(대화/스냅샷)가 없으면 복원할 대상이 없다(재시작 등).
+     App draft 는 이전/다른 견적일 수 있으므로 guided 로 가져오지 않고, 새 초안·견적번호도
+     발급하지 않는다 — Home 으로 귀결시키고 새 견적은 명시적 시작에서만 발급한다. */
+  function restoreGuidedWithoutState() {
+    App.toast("진행 중이던 견적 상태를 복원할 수 없습니다. 새 견적 만들기를 다시 시작해 주세요.");
+    showHome({ history: false });
+    guidedSnapshot = null;
+  }
+
+  function resumeGuidedConversation(state) {
+    startConversation();
+    // Restoring is not a new quotation. Never call App.createFreshDraft here:
+    // it consumes a quote number and fails the zero-allocation Back/Forward contract.
+    // QuoteCore creates a pristine detached structure, not a browser-cached App draft.
+    const fresh = Core.createProductionDraft();
+    const carried = clone(state.draft);
+    fresh.sender.company = approvedRuntimeSender() || carried.sender?.company || "";
+    fresh.recipient = carried.recipient;
+    fresh.items = carried.items;
+    fresh.tax.mode = carried.tax.mode;
+    fresh.memo = carried.memo;
+    fresh.meta.quoteNo = carried.meta.quoteNo;
+    fresh.meta.issueDate = carried.meta.issueDate;
+    guided = {
+      step: state.step,
+      draft: fresh,
+      currentItem: state.currentItem,
+      taxUnknown: state.taxUnknown,
+      conversationId: typeof state.conversationId === "string" && /^gdt_[a-f0-9]{32}$/.test(state.conversationId)
+        ? state.conversationId : guidedConversationId(),
+      transcript: Array.isArray(state.transcript) ? clone(state.transcript) : []
+    };
+    guidedSnapshot = null;
+    lastEasyView = "guided";
+    const previous = guided.transcript;
+    if (previous.length) {
+      replayingGuided = true;
+      try { previous.forEach(entry => addMessage(entry.role, entry.content, { guidedHistory: false })); }
+      finally { replayingGuided = false; }
+      // Stored prompt is already on screen: rewire buttons/input only.
+      suppressGuidedQuestion = true;
+      try { rebindGuidedStep(); }
+      finally { suppressGuidedQuestion = false; }
+    } else {
+      addMessage("assistant", "저장된 질문·답변 원문은 없습니다. 기존 견적 입력 내용부터 이어서 진행합니다.");
+      rebindGuidedStep();
+    }
+  }
+
+  /* 스냅샷 복원은 대기 중인 질문만 다시 묶는다. 이미 답한 값은 guided.draft 에 그대로 있다. */
+  function rebindGuidedStep() {
+    switch (guided.step) {
+      case "recipientCompany":
+        addMessage("assistant", "누구에게 보내는 견적인가요? 업체명이나 받는 분 이름을 입력해 주세요.");
+        setChips([{ label: "직접 입력으로 전환", action: () => setWorkspaceMode("direct") }]);
+        setInput(processGuidedInput, "예: 홍길동건설");
+        break;
+      case "recipientPerson": askRecipientPerson(); break;
+      case "itemName": askItemName(); break;
+      case "qty": askQty(); break;
+      case "price": askPrice(); break;
+      case "moreItems": askMoreItems(); break;
+      case "tax": askTax(); break;
+      case "memo": askMemo(); break;
+      case "senderChoice": askSender(); break;
+      case "senderCompany":
+        addMessage("assistant", "보내는 사람의 상호를 입력해 주세요. 나머지 정보는 확인 화면에서 채울 수 있어요.");
+        setChips([]);
+        setInput(processGuidedInput, "예: 테스트상사");
+        break;
+      case "summary": showGuidedSummary(); break;
+      default: restoreGuidedWithoutState();
+    }
+  }
+
+  function startGuided(referenceText, options) {
     const reference = typeof referenceText === "string"
       ? safeText(referenceText, 8000)
       : "";
+    lastEasyView = "guided";
+    if (!options || options.history !== false) recordProductState("guided");
     startConversation();
+    /* 새 대화 시작은 보존된 스냅샷을 대체한다 — 복원 경로는 startGuided 를 거치지 않는다. */
+    guidedSnapshot = null;
+    /* Guided 로 명시적으로 새 견적을 시작하면 free-form 진행 문맥도 버린다. */
+    if (!options || options.history !== false) {
+      const bridge = window.B66QuoteRuntimeBridge;
+      if (bridge && typeof bridge.clearPending === "function") bridge.clearPending();
+    }
     guided = {
       step: "recipientCompany",
       draft: guidedDraft(),
       currentItem: -1,
-      taxUnknown: false
+      taxUnknown: false,
+      conversationId: guidedConversationId(),
+      transcript: []
     };
+    // The first assistant prompt below is the first durable transcript entry.
+    // Do not PUT an empty shell first: that doubles the write, can race against
+    // actual Q/A and violates the one-write-per-explicit-start contract.
     if (reference) {
       addMessage("user", reference);
       addMessage(
@@ -354,8 +2137,20 @@
     setInput(processGuidedInput, "예: 1,500,000 또는 150만원");
   }
 
+  function guidedItemLimit() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    return bridge && typeof bridge.supportedItemRows === "function" ? bridge.supportedItemRows() : null;
+  }
+
   function askMoreItems() {
     guided.step = "moreItems";
+    const limit = guidedItemLimit();
+    if (Number.isInteger(limit) && limit > 0 && guided.draft.items.length >= limit) {
+      addMessage("assistant", "CGI 기본 견적서는 품목을 최대 " + limit + "개까지 지원합니다. 다음으로 진행해 주세요.");
+      setChips([{ label: "다음으로", action: () => processGuidedInput("다음") }]);
+      setInput(processGuidedInput, "다음");
+      return;
+    }
     addMessage("assistant", "다른 품목도 추가할까요?");
     setChips([
       { label: "품목 추가", action: () => processGuidedInput("추가") },
@@ -383,8 +2178,26 @@
     setInput(processGuidedInput, "예: 다음 달 10일까지 납품");
   }
 
+  /* #4076 CGI MVP: the approved server CompanyProfile, not a typed guided
+     sender override, owns the sender identity on the final quotation. */
+  function approvedRuntimeSender() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    const ready = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
+    const profile = ready && ready.ready && typeof bridge.getCompanyProfile === "function"
+      ? bridge.getCompanyProfile() : null;
+    return safeText(profile && profile.company);
+  }
+
   function askSender() {
     guided.step = "senderChoice";
+    const approved = approvedRuntimeSender();
+    if (approved) {
+      guided.draft.sender.company = approved;
+      addMessage("assistant", "보내는 사람은 내 회사 정보에 등록된 '" + approved + "'로 적용됩니다. 변경하려면 설정의 '내 회사'에서 수정해 주세요.");
+      setChips([{ label: "다음으로", action: () => processGuidedInput("현재") }]);
+      setInput(processGuidedInput, "다음으로");
+      return;
+    }
     const company = safeText(guided.draft.sender.company) || "미입력";
     addMessage("assistant", "보내는 사람은 현재 '" + company + "'로 되어 있어요. 이 정보를 사용할까요?");
     setChips([
@@ -397,10 +2210,13 @@
 
   function showGuidedSummary() {
     guided.step = "summary";
-    const totals = Core.computeTotals(guided.draft.items, guided.draft.tax.mode);
+    const totals = Core.computeDraftTotals(guided.draft);
+    const effectiveItems = totals && Array.isArray(totals.effectiveItems)
+      ? totals.effectiveItems
+      : guided.draft.items;
     const itemLines = guided.draft.items.map((item, index) =>
       (index + 1) + ". " + item.name + " · " +
-      Core.formatInputNumber(item.qty) + " × " + Core.formatMoney(item.unitPrice)
+      Core.formatInputNumber(item.qty) + " × " + Core.formatMoney(effectiveItems[index].unitPrice)
     ).join("\n");
     const taxLine = guided.taxUnknown
       ? "부가세: 확인 필요 (직접 입력 화면에서 선택해 주세요)"
@@ -412,48 +2228,137 @@
 
     addMessage(
       "assistant",
-      "이렇게 준비했어요.\n\n받는 곳: " +
-      (guided.draft.recipient.company || "미입력") +
+      "이렇게 준비했어요.\n\n보내는 곳: " +
+      (guided.draft.sender.company || "미입력") +
+      "\n받는 곳: " + (guided.draft.recipient.company || "미입력") +
       (guided.draft.recipient.person ? " · " + guided.draft.recipient.person : "") +
       "\n\n" + itemLines +
       "\n\n" + taxLine +
       "\n" + amountLine +
-      "\n\n확인 화면에서 모든 내용을 다시 수정할 수 있습니다."
+      "\n\n수정할 내용이 있으면 바로 편하게 적어 주세요. (예: 부가세 별도로 바꿔줘, 수량 5개로, 단가 120만원으로)"
     );
 
+    // #5039: a prepared quote is not the end of the dialogue. Offer the
+    // finished-quote action plus in-conversation revision, so the customer
+    // never has to abandon the conversation to change one field.
     setChips([
-      {
-        label: "견적서 확인하기",
-        action: () => {
-          const result = App.replaceDraft(guided.draft, {
-            requireTaxReview: guided.taxUnknown,
-            toast: guided.taxUnknown
-              ? "견적 초안을 열었습니다. 부가세 방식을 먼저 확인해 주세요."
-              : "견적 초안을 열었습니다."
-          });
-          if (result.ok) {
-            setWorkspaceMode("direct");
-            if (guided.taxUnknown) {
-              setTimeout(() => App.focusTaxReview(), 0);
-            }
-          }
-        }
-      },
+      { label: "견적서 만들기", action: finishGuidedWithRuntime },
+      { label: "수정하기", action: () => { setChips(guidedReviseChips()); } },
       { label: "처음부터 다시", action: startGuided },
       { label: "최근 견적 보기", action: showRecentHistory }
     ]);
-    disableInput("최종 확인은 기존 직접입력 화면에서 합니다.");
+    setInput(processGuidedInput, "수정할 내용만 적어 주세요 (예: 부가세 별도로 바꿔줘)");
+  }
+
+  /* #5039: field chips for a prepared guided quote. Each one re-enters the
+     same existing question for that field, so the value is collected through
+     the reviewed per-field validation and then returns to the summary for
+     confirmation. No second prompt set, no new persistence. */
+  function guidedReviseChips() {
+    const items = [];
+    if (guided && guided.draft && guided.draft.items && guided.draft.items.length) {
+      items.push({ label: "수량·단가", action: () => startGuidedRevision("qty") });
+    }
+    items.push({ label: "부가세", action: () => startGuidedRevision("tax") });
+    items.push({ label: "거래처", action: () => startGuidedRevision("recipientCompany") });
+    items.push({ label: "품목", action: () => startGuidedRevision("itemName") });
+    items.push({ label: "메모", action: () => startGuidedRevision("memo") });
+    return items;
+  }
+
+  /* Plain Korean revision phrases map onto the existing field prompts. The
+     matcher is intentionally narrow and closed: an unrecognized sentence
+     re-asks instead of guessing a field. */
+  function guidedRevisionStepFor(text) {
+    const value = safeText(text);
+    if (!value) return null;
+    if (/(부가세|세금|과세|면세)/u.test(value)) return "tax";
+    if (/(수량|개수|몇\s*개|수정)/u.test(value) && /(수량|개수|몇\s*개)/u.test(value)) return "qty";
+    if (/(단가|가격|금액|값)/u.test(value)) return "price";
+    if (/(품목|항목|물건)/u.test(value)) return "itemName";
+    if (/(메모|비고|납기|결제)/u.test(value)) return "memo";
+    if (/(거래처|받는\s*곳|받을\s*곳|받는\s*분|담당자)/u.test(value)) return "recipientCompany";
+    return null;
+  }
+
+  function startGuidedRevision(step) {
+    if (!guided || !guided.draft) return;
+    guidedRevising = true;
+    guidedRevisionStep = step || "tax";
+    const active = guidedReviseChips();
+    switch (guidedRevisionStep) {
+      case "qty": askQty(); break;
+      case "price": askPrice(); break;
+      case "itemName": askItemName(); break;
+      case "memo": askMemo(); break;
+      case "recipientCompany": askRecipientCompanyForRevision(); break;
+      default: askTax();
+    }
+    setChips(active);
+  }
+
+  /* #5039: after one revised field is collected, return to the prepared-quote
+     summary for confirmation. A post-completion revision is also written back
+     to the live quote through the existing draft path, so the preview, the
+     confirmed totals and the eventual PDF all show the revised values. QuoteCore
+     still computes every amount; the browser never does. */
+  function returnToGuidedSummary() {
+    const wasPostComplete = Boolean(postCompleteDraft);
+    guidedRevising = false;
+    guidedRevisionStep = null;
+    guided.step = "summary";
+    if (wasPostComplete && guided && guided.draft) {
+      const applied = App.replaceDraft(guided.draft, {
+        requireTaxReview: Boolean(guided.taxUnknown),
+        toast: ""
+      });
+      if (!applied || applied.ok !== true) {
+        addMessage("assistant",
+          "수정내용을 견적서에 반영하지 못했습니다. 기존 견적은 그대로 유지됩니다. 견적서 확인 화면에서 직접 확인해 주세요.");
+        return;
+      }
+      postCompleteDraft = applied.draft;
+      addResultReview(applied.draft, Boolean(guided.taxUnknown));
+      return;
+    }
+    showGuidedSummary();
+  }
+
+  function askRecipientCompanyForRevision() {
+    guided.step = "recipientCompany";
+    addMessage("assistant", "어떤 업체명으로 바꿀까요?");
+    setChips([]);
+    setInput(processGuidedInput, "예: 홍길동건설");
   }
 
   function processGuidedInput(raw) {
     if (!guided) return;
     const text = safeText(raw);
     if (!text) return;
+
+    // #5039: the summary is a live revision point. A prepared quote keeps the
+    // same dialogue open, and only the field the customer actually named
+    // changes. Anything unrecognized re-asks instead of guessing.
+    if (guided.step === "summary" && !guidedRevising) {
+      const revisionStep = guidedRevisionStepFor(text);
+      if (!revisionStep) {
+        addMessage("assistant",
+          "수정할 항목을 알려 주세요. 부가세, 수량, 단가, 품목, 거래처, 메모 중 하나를 말씀해 주시면 그대로 바꿔 드릴게요.");
+        setChips(guidedReviseChips());
+        setInput(processGuidedInput, "예: 부가세 별도로 바꿔줘");
+        return;
+      }
+      addMessage("user", text);
+      startGuidedRevision(revisionStep);
+      return;
+    }
+
     addMessage("user", text);
 
     switch (guided.step) {
       case "recipientCompany":
         guided.draft.recipient.company = text;
+        if (guidedRevising) { returnToGuidedSummary(); break; }
         askRecipientPerson();
         break;
 
@@ -463,8 +2368,9 @@
         break;
 
       case "itemName":
-        guided.draft.items.push({ id: "item-" + (guided.draft.items.length + 1), name: text, qty: 1, unitPrice: 0 });
+        guided.draft.items.push({ id: "item-" + (guided.draft.items.length + 1), name: text });
         guided.currentItem = guided.draft.items.length - 1;
+        if (guidedRevising) { returnToGuidedSummary(); break; }
         askQty();
         break;
 
@@ -476,6 +2382,7 @@
           return;
         }
         guided.draft.items[guided.currentItem].qty = qty;
+        if (guidedRevising) { returnToGuidedSummary(); break; }
         askPrice();
         break;
       }
@@ -488,12 +2395,15 @@
           return;
         }
         guided.draft.items[guided.currentItem].unitPrice = price;
+        if (guidedRevising) { returnToGuidedSummary(); break; }
         askMoreItems();
         break;
       }
 
       case "moreItems":
         if (/추가|더|예|네/u.test(text)) {
+          const limit = guidedItemLimit();
+          if (Number.isInteger(limit) && limit > 0 && guided.draft.items.length >= limit) { askMoreItems(); return; }
           addMessage("assistant", "좋아요. 추가할 품목명을 적어 주세요.");
           guided.step = "itemName";
           setChips([]);
@@ -524,15 +2434,28 @@
           askTax();
           return;
         }
+if (guidedRevising) { returnToGuidedSummary(); break; }
         askMemo();
         break;
 
       case "memo":
-        guided.draft.memo = /^(없음|없어요|없습니다)$/u.test(text) ? "" : text;
+        guided.draft.memo = /^(없음|없어요|없음없음)$/u.test(text) ? "" : text;
+        if (guidedRevising) { returnToGuidedSummary(); break; }
         askSender();
         break;
 
-      case "senderChoice":
+      case "senderChoice": {
+        const approved = approvedRuntimeSender();
+        if (approved) {
+          // Never display a user-entered sender that will be ignored by the
+          // approved CGI Saved Skill when the real PDF is produced.
+          guided.draft.sender.company = approved;
+          if (/상호|수정|변경/u.test(text)) {
+            addMessage("assistant", "회사명은 설정의 '내 회사'에서 변경해 주세요. 이번 견적은 승인된 회사 정보로 작성됩니다.");
+          }
+          showGuidedSummary();
+          break;
+        }
         if (/상호/u.test(text)) {
           guided.step = "senderCompany";
           addMessage("assistant", "보내는 사람의 상호를 입력해 주세요. 나머지 정보는 확인 화면에서 채울 수 있어요.");
@@ -547,6 +2470,7 @@
           askSender();
         }
         break;
+      }
 
       case "senderCompany":
         guided.draft.sender.company = text;
@@ -557,34 +2481,28 @@
       default:
         break;
     }
+    saveGuidedToAccount();
   }
 
-  function startFreeChat() {
+  function startFreeChat(options) {
+    lastEasyView = "free-form";
+    if (!options || options.history !== false) recordProductState("free-form");
     startConversation();
-    guided = null;
-    freeChatPending = "";
+    snapshotGuidedConversation();
+    const bridge = window.B66QuoteRuntimeBridge;
+    const ready = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
     addMessage(
       "assistant",
-      "필요한 내용을 한 번에 적어 주세요. 아직 자동 해석 모델은 연결 전이라 내용을 임의로 견적 필드에 넣지는 않습니다. 입력 후 질문형 만들기로 이어갈 수 있어요."
+      ready && ready.authenticated
+        ? "안녕하세요! " + companyBrand() + " 어시스턴트입니다. " + companyBrand() + " 견적서 작성과 관련된 내용을 편하게 말씀해 주세요. 새 견적 작성과 기존 견적 수정도 도와드리겠습니다."
+        : "로그인하면 " + companyBrand() + " 어시스턴트와 견적 상담을 할 수 있습니다. 로그인 전에도 질문형 견적 작성은 이용할 수 있습니다."
     );
     setChips([
-      { label: "질문받으며 만들기", action: startGuided },
-      { label: "직접 입력", action: () => setWorkspaceMode("direct") }
+      { label: "질문받으며 만들기", action: startGuidedIfReady },
+      { label: "처음으로", action: showHome }
     ]);
-    setInput((text) => {
-      freeChatPending = safeText(text, 8000);
-      addMessage("user", freeChatPending);
-      addMessage(
-        "assistant",
-        "내용을 확인했습니다. 현재 버전에서는 이 문장을 AI가 자동 해석하지 않습니다. 질문형으로 이어가면 필요한 값을 하나씩 정확하게 받을 수 있어요."
-      );
-      setChips([
-        { label: "질문받으며 이어가기", action: () => startGuided(freeChatPending) },
-        { label: "직접 입력에서 작성", action: () => setWorkspaceMode("direct") },
-        { label: "처음으로", action: showHome }
-      ]);
-      disableInput("자유 문장 자동 해석은 #3143 모델 연결 후 제공됩니다.");
-    }, "예: ABC상사 홈페이지 제작 150만원, 유지보수 20만원, 부가세 별도");
+    setInput(submitFreeFormText, "예: 대한건설에 배관 100미터, 미터당 18000원, 부가세 별도");
+    $("easyComposerNote").textContent = "";
   }
 
   function openFileChooser() {
@@ -692,7 +2610,9 @@
     renderSelectedFile(file, result.value);
   }
 
-  function startFileIntake() {
+  function startFileIntake(options) {
+    lastEasyView = "file";
+    if (!options || options.history !== false) recordProductState("file");
     startConversation();
     selectedFile = null;
     addMessage(
@@ -706,45 +2626,188 @@
       { label: "처음으로", action: showHome }
     ]);
     disableInput("파일 선택 단계는 로컬 preflight만 수행하며 네트워크 업로드는 하지 않습니다.");
-    openFileChooser();
+    if (!options || options.openChooser !== false) openFileChooser();
+  }
+
+  function restoreProductState(view) {
+    restoringProductHistory = true;
+    try {
+      if (view === "direct") {
+        setWorkspaceMode("direct", { history: false });
+        return;
+      }
+
+      setWorkspaceMode("easy", { history: false });
+      if (view === "home") {
+        showHome({ history: false });
+      } else if (lastEasyView === view) {
+        return;
+      } else if (view === "recent") {
+        showRecentHistory({ history: false });
+      } else if (view === AI_DIALOGUE_VIEW) {
+        showAiDialogues({ history: false });
+      } else if (view === GUIDED_DIALOGUE_VIEW) {
+        showGuidedDialogues({ history: false });
+      } else if (view === "free-form") {
+        startFreeChat({ history: false });
+      } else if (view === "file") {
+        startFileIntake({ history: false, openChooser: false });
+      } else if (view === "guided") {
+        /* popstate 복원은 진행 중이던 guided 상태를 이어 쓴다 — App draft 로 대체하거나
+           새 견적번호를 발급하지 않는다. 세션 상태가 없으면 안전하게 Home 으로 귀결한다. */
+        if (guided) {
+          resumeGuidedConversation(guided);
+        } else if (guidedSnapshot) {
+          resumeGuidedConversation(guidedSnapshot);
+        } else {
+          restoreGuidedWithoutState();
+        }
+      } else {
+        showHome({ history: false });
+      }
+    } finally {
+      restoringProductHistory = false;
+    }
   }
 
   $("easyModeButton").addEventListener("click", () => setWorkspaceMode("easy"));
   $("directModeButton").addEventListener("click", () => setWorkspaceMode("direct"));
   $("directStarter").addEventListener("click", () => setWorkspaceMode("direct"));
-  $("resumeDraftStarter").addEventListener("click", () => {
-    App.toast("지난번 작성하던 견적을 이어서 엽니다.");
-    setWorkspaceMode("direct");
-  });
+  $("resumeDraftStarter").addEventListener("click", resumeAccountGuidedOrLocal);
   $("recentQuoteStarter").addEventListener("click", showRecentHistory);
-  $("guidedStarter").addEventListener("click", startGuided);
+  $("guidedStarter").addEventListener("click", startGuidedIfReady);
   $("freeChatStarter").addEventListener("click", startFreeChat);
+  $("aiDialogueStarter").addEventListener("click", showAiDialogues);
   $("fileStarter").addEventListener("click", startFileIntake);
+  /* #4657: the brand returns to a new, empty conversation. It never deletes a
+     stored dialogue; the previous conversation stays in the rail. */
+  $("brandHome").addEventListener("click", () => showHome());
   fileInput.addEventListener("change", handleFileSelection);
 
   sendButton.addEventListener("click", submitComposer);
+  const compositionGuard = sharedComposer?.createCompositionGuard?.() || null;
+  composer.addEventListener("compositionstart", () => compositionGuard?.start());
+  composer.addEventListener("compositionupdate", () => compositionGuard?.update());
+  composer.addEventListener("compositionend", () => compositionGuard?.end());
   composer.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      submitComposer();
-    }
+    // Enter never submits an unfinished Korean IME candidate.
+    if (!sharedComposer?.shouldSubmitOnEnter?.(event, compositionGuard)) return;
+    event.preventDefault();
+    submitComposer();
   });
   composer.addEventListener("input", () => {
-    composer.style.height = "auto";
-    composer.style.height = Math.min(composer.scrollHeight, 160) + "px";
+    // Adopt Chat's 180px multiline limit; keep B66's guided quote routing.
+    sharedComposer?.resizeTextarea?.(composer, { maxHeight: 180 });
   });
 
+  document.addEventListener("b66:account-scope-changed", (event) => {
+    const detail = event.detail || {};
+    const discarded = detail.privateStateReadable !== true || quarantineAction(detail.action);
+    if (!discarded) {
+      refreshStarters();
+      return;
+    }
+    // In-flight interpretation belongs to the old owner and cannot complete into this scope.
+    accountScopeRevision += 1;
+    interpretationInFlight = false;
+    quoteConversationRevision = null;
+    quoteConversationEngaged = false;
+    approvedConversationQuoteNo = null;
+    approvedConversationDraftSnapshot = null;
+    pendingQuoteReset = null;
+    releaseQuoteArtifacts();
+    /* #4657: the previous owner's dialogue id, list and pending restore are
+       dropped with the rest of the private state, so a late answer cannot be
+       saved into — or displayed under — the new account. */
+    dialogueGeneration += 1;
+    currentDialogueId = null;
+    pendingRestoreDialogueId = null;
+    /* 계정 경계가 바뀌면 private 텍스트/답변/진행 중 문맥을 화면에서도
+       모두 지운다 (#3480, #3536). 응답이 늦게 와도 revision guard 가 폐기한다. */
+    guidedSaveRevision += 1;
+    guided = null;
+    guidedSnapshot = null;
+    selectedFile = null;
+    setWorkspaceMode("easy", { history: false });
+    showHome({ history: false });
+  });
+
+  document.addEventListener("b66:auth-changed", (event) => {
+    accountSignedIn = Boolean(event.detail && event.detail.authenticated);
+    if (!accountSignedIn) guidedSaveRevision += 1;
+    refreshStarters();
+    /* #4657: a reload restores the dialogue the customer had open, once the
+       canonical session is confirmed. The server still authorizes the id. */
+    if (accountSignedIn && pendingRestoreDialogueId) {
+      const target = pendingRestoreDialogueId;
+      pendingRestoreDialogueId = null;
+      openAiDialogue(target, { history: false });
+    }
+  });
   window.addEventListener("b66:history-changed", refreshStarters);
   window.addEventListener("b66:local-data-reset", () => {
     fileInput.value = "";
-    setWorkspaceMode("easy");
+    setWorkspaceMode("easy", { history: false });
     showHome();
+    /* 브라우저 로컬 데이터를 지웠으면 보존된 guided 스냅샷도 함께 폐기한다. */
+    guidedSnapshot = null;
   });
   document.addEventListener("b66:open-file-intake", () => {
-    setWorkspaceMode("easy");
+    setWorkspaceMode("easy", { history: false });
     startFileIntake();
   });
 
-  setWorkspaceMode("easy");
-  showHome();
+  document.addEventListener("b66:open-recent-quotes", () => {
+    setWorkspaceMode("easy", { history: false });
+    showRecentHistory();
+  });
+  document.addEventListener("b66:open-guided-dialogues", () => {
+    setWorkspaceMode("easy", { history: false });
+    showGuidedDialogues();
+  });
+
+  document.addEventListener("b66:open-easy-chat", () => {
+    setWorkspaceMode("easy");
+  });
+  document.addEventListener("b66:quote-pdf-ready", (event) => {
+    if (!accountSignedIn || !quoteConversationEngaged || lastEasyView !== "free-form") return;
+    const detail = event.detail || {};
+    appendQuoteArtifact(detail.blob, detail.filename);
+  });
+
+  // An accepted new quote starts a new visible dialogue, not a continuation
+  // of the prior server-owned conversation. Saved history remains untouched.
+  document.addEventListener("b66:new-quote-started", () => {
+    approvedConversationQuoteNo = null;
+    approvedConversationDraftSnapshot = null;
+    releaseQuoteArtifacts();
+    guided = null;
+    guidedSnapshot = null;
+    selectedFile = null;
+    fileInput.value = "";
+    modelChatTurns = [];
+    currentDialogueId = null;
+    pendingRestoreDialogueId = null;
+    quoteConversationRevision = null;
+    quoteConversationEngaged = false;
+    resetServerQuoteConversation();
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (bridge && typeof bridge.clearPending === "function") bridge.clearPending();
+    setWorkspaceMode("easy", { history: false });
+    showHome({ history: false });
+    recordDialogueState(null);
+    recordProductState("home", { replace: true });
+  });
+
+  window.addEventListener("popstate", (event) => {
+    const view = event.state && event.state[PRODUCT_HISTORY_KEY];
+    if (typeof view === "string" && view) restoreProductState(view);
+  });
+
+  setWorkspaceMode("easy", { history: false });
+  showHome({ history: false });
+  /* #4657: a dialogue the customer had open before a reload is restored only
+     after the canonical session is confirmed (see b66:auth-changed). */
+  pendingRestoreDialogueId = readDialogueState();
+  recordProductState("home", { replace: true });
 })();

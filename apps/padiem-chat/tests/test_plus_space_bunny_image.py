@@ -1,80 +1,69 @@
-"""Padiem Plus text+image primary is Space Bunny Alpha (#3209).
+"""Current executable tier declarations with historic Space Bunny metadata.
 
-Source-only contract:
-
-- ordinary chat resolves to Padiem Plus -> kilo/stealth-space-bunny-alpha
-  (Agnes and SenseNova are not the default).
-- the Plus route carries the image capability, so an image request takes the
-  existing MultimodalExecutionRuntime path (no second stack, no new gateway).
-- provider/model identity stays out of user-facing errors.
+Original Plus-hold tests predated the shared per-tier route declarations.
+Assertions pin the currently declared executable route; this file does not
+set the owner model policy.
+Do not re-enable historical Space Bunny or image execution.
 """
-
 from __future__ import annotations
-
-from pathlib import Path
 
 from app.model_policy import (
     DEFAULT_B14_MODEL_ID,
+    EXECUTABLE_B14_MODEL_IDS,
     LOW_B14_MODEL_ID,
     MODEL_CAPABILITIES,
+    model_policy_is_executable,
     model_supports,
     resolve_model_policy,
     resolve_tier_policy,
 )
 from padiem_control_plane.product_tier_routes import (
+    ProductRouteStatus,
     ProductTierLabel,
     active_route_for,
-)
-
-CLIENT_SOURCE = (Path(__file__).resolve().parents[1] / "app" / "b14_client.py").read_text(
-    encoding="utf-8"
+    get_tier,
 )
 
 
-def test_plus_default_text_is_space_bunny() -> None:
+def _active_model(label: ProductTierLabel) -> str:
+    route = active_route_for(label)
+    assert route is not None and route.model_id
+    return route.model_id
+
+
+BEAM = _active_model(ProductTierLabel.FREE)
+MUSE = _active_model(ProductTierLabel.PLUS)
+
+
+def test_plus_identity_is_executable_route_and_space_bunny_is_historical_only() -> None:
     plus = active_route_for(ProductTierLabel.PLUS)
     assert plus is not None
-    assert plus.model_id == "kilo/stealth-space-bunny-alpha"
-    assert plus.provider_id == "kilo"
-    assert plus.upstream_model == "stealth/space-bunny-alpha"
-
-    assert LOW_B14_MODEL_ID == "kilo/stealth-space-bunny-alpha"
-    assert DEFAULT_B14_MODEL_ID == "kilo/stealth-space-bunny-alpha"
-
-    policy = resolve_model_policy([{"role": "user", "content": "안녕하세요"}])
-    assert policy.model_id == "kilo/stealth-space-bunny-alpha"
-
-    tier_policy = resolve_tier_policy(
-        [{"role": "user", "content": "브라우저 등급 테스트"}], "plus"
+    assert plus.status is ProductRouteStatus.EXECUTABLE
+    assert plus.model_id == LOW_B14_MODEL_ID == MUSE
+    assert DEFAULT_B14_MODEL_ID == BEAM
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset({BEAM, MUSE})
+    bunny = next(
+        route for route in get_tier(ProductTierLabel.PLUS).routes
+        if route.model_id == "kilo/stealth-space-bunny-alpha"
     )
-    assert tier_policy.model_id == "kilo/stealth-space-bunny-alpha"
+    assert bunny.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert bunny.hold_reason and "#3568" in bunny.hold_reason
 
 
-def test_agnes_and_sensenova_are_not_the_default() -> None:
-    assert LOW_B14_MODEL_ID != "agnes-ai/agnes-3.0-flash"
-    assert LOW_B14_MODEL_ID != "sensenova/sensenova-6.8-flash-lite"
-    assert DEFAULT_B14_MODEL_ID != "agnes-ai/agnes-3.0-flash"
-    assert DEFAULT_B14_MODEL_ID != "sensenova/sensenova-6.8-flash-lite"
+def test_plus_chat_executes_declared_route_and_image_remains_unavailable() -> None:
+    assert MODEL_CAPABILITIES[LOW_B14_MODEL_ID] == frozenset({"chat", "coding"})
+    assert model_supports(LOW_B14_MODEL_ID, "chat")
+    assert not model_supports(LOW_B14_MODEL_ID, "image")
+    default = resolve_model_policy([{"role": "user", "content": "hello"}])
+    plus = resolve_tier_policy([{"role": "user", "content": "hello"}], "plus")
+    assert default.model_id == BEAM and default.profile == "free"
+    assert plus.model_id == MUSE and plus.profile == "low"
 
 
-def test_plus_image_uses_the_existing_multimodal_stack() -> None:
-    assert model_supports(LOW_B14_MODEL_ID, "image") is True
-    assert "image" in MODEL_CAPABILITIES[LOW_B14_MODEL_ID]
-    assert model_supports(LOW_B14_MODEL_ID, "video") is False
-
-    # The existing Chat attachment path is reused: capability gate,
-    # multimodal request/runtime, and the shared Core facade.
-    assert 'if not model_supports(model, "image"):' in CLIENT_SOURCE
-    assert "MultimodalExecutionRequest" in CLIENT_SOURCE
-    assert "MultimodalExecutionRuntime" in CLIENT_SOURCE
-    assert "_messages_with_attachment(" in CLIENT_SOURCE
-    assert "B14MultimodalChatRequest" not in CLIENT_SOURCE
-
-    # No second multimodal stack / gateway / transport is introduced here.
-    for forbidden in (
-        "SecondMultimodal",
-        "NewImageGateway",
-        "NewImageTransport",
-        "image_gateway",
-    ):
-        assert forbidden not in CLIENT_SOURCE
+def test_plus_product_identity_matches_current_executable_route() -> None:
+    policy = resolve_model_policy(
+        [{"role": "user", "content": "hello"}],
+        require_executable=False,
+    )
+    assert policy.model_id == BEAM
+    assert model_policy_is_executable(policy.model_id)

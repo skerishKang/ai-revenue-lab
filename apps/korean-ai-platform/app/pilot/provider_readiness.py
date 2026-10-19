@@ -68,6 +68,8 @@ async def provider_readiness(request: Request) -> JSONResponse:
     derived from the existing platform-secret eligibility contract; secret values
     and binding names never enter the response.
     """
+    from app.pilot.platform_secrets import ensure_all_platform_secrets
+    await ensure_all_platform_secrets()
     mode = _provider_mode()
     providers: list[dict[str, object]] = []
 

@@ -26,6 +26,11 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
+from b62_web_secrets_store_contract import (  # noqa: E402
+    expected_claw_desktop_bindings,
+    expected_oracle_mesh_bindings,
+    expected_web_secret_bindings,
+)
 from cloudflare_served_version import (  # noqa: E402
     ServedVersionReason,
     ServedVersionResolutionError,
@@ -33,6 +38,7 @@ from cloudflare_served_version import (  # noqa: E402
 )
 
 SECRET_TYPE = "secret_text"
+SECRET_BINDING_TYPES = frozenset({"secret_text", "secrets_store_secret"})
 REQUIRED_SECRETS = {
     "PADIEM_CHAT_QUOTA_SALT": SECRET_TYPE,
     "P01_ENGINE_CREDENTIAL": SECRET_TYPE,
@@ -146,7 +152,7 @@ def served_version_bindings(version_detail_payload: object, *, expected_version_
 
 def secret_name_type_set(bindings: list[dict]) -> tuple[tuple[str, str], ...]:
     return tuple(sorted(
-        (raw["name"], raw["type"]) for raw in bindings if raw.get("type") == SECRET_TYPE
+        (raw["name"], raw["type"]) for raw in bindings if raw.get("type") in SECRET_BINDING_TYPES
     ))
 
 
@@ -198,9 +204,77 @@ def load_capture(payload: object) -> tuple[tuple[str, str], ...]:
     return tuple(sorted(entries))
 
 
-def verify_secret_set(expected: tuple[tuple[str, str], ...], post_bindings: list[dict]) -> None:
+def verify_secret_set(
+    expected: tuple[tuple[str, str], ...], post_bindings: list[dict], *,
+    allow_web_store_additions: bool = False,
+    allow_b66_membership_secret: bool = False,
+    allow_grafana_telemetry: bool = False,
+    allow_oracle_mesh: bool = False,
+    allow_claw_desktop_secret: bool = False,
+) -> None:
+    if sum((allow_web_store_additions, allow_b66_membership_secret, allow_grafana_telemetry,
+            allow_oracle_mesh, allow_claw_desktop_secret)) > 1:
+        raise ServedVersionGuardError("multiple additive secret modes prohibited")
     require_required_secrets(post_bindings, stage="post-deploy")
     post = secret_name_type_set(post_bindings)
+    if allow_web_store_additions:
+        approved = expected_web_secret_bindings()
+        baseline_names = {name for name, _ in expected}
+        actual = {item["name"]: item for item in post_bindings}
+        for name, identity in approved.items():
+            if name in baseline_names and (name, "secrets_store_secret") not in expected:
+                raise ServedVersionGuardError("web Secrets Store original binding type drift")
+            item = actual.get(name)
+            if item is None or any(item.get(k) != val for k, val in identity.items()):
+                raise ServedVersionGuardError("web Secrets Store served identity missing or drift")
+        expected = tuple(sorted((*expected, *((name, "secrets_store_secret") for name in approved if name not in baseline_names))))
+    if allow_grafana_telemetry:
+        approved = {
+            "type": "secrets_store_secret", "name": "PADIEM_GRAFANA_OTLP_TOKEN",
+            "store_id": "f0b09ca04a7b43248154c773704a5616",
+            "secret_name": "PADIEM_GRAFANA_OTLP_TOKEN",
+        }
+        originals = {name: kind for name, kind in expected}
+        if approved["name"] in originals and originals[approved["name"]] != approved["type"]:
+            raise ServedVersionGuardError("Grafana original binding type drift")
+        matching = [x for x in post_bindings if x.get("name") == approved["name"]]
+        if len(matching) != 1 or any(matching[0].get(k) != v for k, v in approved.items()):
+            raise ServedVersionGuardError("Grafana served Secrets Store identity missing or drift")
+        if approved["name"] not in originals:
+            expected = tuple(sorted((*expected, (approved["name"], approved["type"]))))
+    if allow_oracle_mesh:
+        # #4139: exactly the two Oracle Mesh Secrets Store identities may be added.
+        originals = {name: kind for name, kind in expected}
+        additions: list[tuple[str, str]] = []
+        for name, identity in expected_oracle_mesh_bindings().items():
+            if name in originals and originals[name] != identity["type"]:
+                raise ServedVersionGuardError("Oracle Mesh original binding type drift")
+            matching = [x for x in post_bindings if x.get("name") == name]
+            if len(matching) != 1 or any(matching[0].get(k) != v for k, v in identity.items()):
+                raise ServedVersionGuardError("Oracle Mesh served Secrets Store identity missing or drift")
+            if name not in originals:
+                additions.append((name, identity["type"]))
+        expected = tuple(sorted((*expected, *additions)))
+    if allow_claw_desktop_secret:
+        # #4139: exactly the one shared Engine/Chat desktop identity may be added.
+        originals = {name: kind for name, kind in expected}
+        additions: list[tuple[str, str]] = []
+        for name, identity in expected_claw_desktop_bindings().items():
+            if name in originals and originals[name] != identity["type"]:
+                raise ServedVersionGuardError("Claw desktop original binding type drift")
+            matching = [x for x in post_bindings if x.get("name") == name]
+            if len(matching) != 1 or any(matching[0].get(k) != v for k, v in identity.items()):
+                raise ServedVersionGuardError("Claw desktop served Secrets Store identity missing or drift")
+            if name not in originals:
+                additions.append((name, identity["type"]))
+        expected = tuple(sorted((*expected, *additions)))
+    if allow_b66_membership_secret:
+        approved = ("B66_MEMBERSHIP_ENFORCED", "secret_text")
+        if approved[0] in {name for name, _ in expected}:
+            if approved not in expected:
+                raise ServedVersionGuardError("B66 membership original binding type drift")
+        else:
+            expected = tuple(sorted((*expected, approved)))
     post_types = _type_by_name(post_bindings)
     pre_names = {name for name, _ in expected}
     post_names = {name for name, _ in post}
@@ -256,11 +330,23 @@ def _run_verify(args: argparse.Namespace) -> int:
     detail = _load(args.version_detail)
     version_id = resolve_served_version_id(deployments)
     bindings = served_version_bindings(detail, expected_version_id=version_id)
-    verify_secret_set(expected, bindings)
+    verify_secret_set(
+        expected, bindings,
+        allow_web_store_additions=args.allow_add_existing_web_secrets_store,
+        allow_b66_membership_secret=args.allow_add_existing_b66_membership_secret,
+        allow_grafana_telemetry=args.allow_add_existing_grafana_telemetry,
+        allow_oracle_mesh=args.allow_add_existing_oracle_mesh,
+        allow_claw_desktop_secret=args.allow_add_existing_claw_desktop_secret,
+    )
     print(f"POSTDEPLOY_SERVED_VERSION_ID={version_id}")
     print(f"POSTDEPLOY_SERVED_SECRET_COUNT={len(secret_name_type_set(bindings))}")
     _emit_required_present(bindings)
-    print("SERVED_VERSION_SECRET_SET_EQUALITY=PASS")
+    if (args.allow_add_existing_web_secrets_store or args.allow_add_existing_b66_membership_secret
+            or args.allow_add_existing_grafana_telemetry or args.allow_add_existing_oracle_mesh
+            or args.allow_add_existing_claw_desktop_secret):
+        print("SERVED_VERSION_SECRET_SET_APPROVED_ADDITIONS=PASS")
+    else:
+        print("SERVED_VERSION_SECRET_SET_EQUALITY=PASS")
     print("B62_SERVED_VERSION_SECRET_SET=PRESERVED")
     print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO")
     print("SECRET_VALUES_READ=0")
@@ -277,6 +363,11 @@ def main(argv: list[str] | None = None) -> int:
     capture.add_argument("--output", required=True, type=Path)
     verify = commands.add_parser("verify", help="prove the post-deploy served version kept every secret")
     verify.add_argument("--expected", required=True, type=Path)
+    verify.add_argument("--allow-add-existing-web-secrets-store", action="store_true")
+    verify.add_argument("--allow-add-existing-b66-membership-secret", action="store_true")
+    verify.add_argument("--allow-add-existing-grafana-telemetry", action="store_true")
+    verify.add_argument("--allow-add-existing-oracle-mesh", action="store_true")
+    verify.add_argument("--allow-add-existing-claw-desktop-secret", action="store_true")
     verify.add_argument("--deployments", required=True, type=Path)
     verify.add_argument("--version-detail", required=True, type=Path)
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)

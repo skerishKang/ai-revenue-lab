@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B66 Sol 6.1 — 로컬 PDF 검증</title>
+<style>
+body{background:#edf0f5;color:#15253b;font:15px system-ui,sans-serif;margin:0;padding:22px}
+main{max-width:1120px;margin:auto}
+h1{font-size:24px;margin:4px 0 10px}
+aside{background:#fff4dd;border:1px solid #ac8145;border-radius:8px;padding:12px 15px}
+.grid{display:grid;grid-template-columns:1fr 1.15fr;gap:16px;margin-top:20px}
+section{background:white;border-radius:9px;padding:16px}
+textarea{box-sizing:border-box;width:100%;height:340px;font:13px Consolas,monospace;resize:vertical}
+button{padding:10px 15px;background:#143e74;color:white;border:0;border-radius:6px;cursor:pointer;margin:8px 6px 6px 0}
+button:disabled{opacity:.4;cursor:not-allowed}
+iframe{border:1px solid #9faab7;width:100%;height:510px}
+#status{white-space:pre-wrap;word-break:break-word;font:13px Consolas,monospace}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>Sol 6.1 원본 PDF — Windows 로컬 검증</h1>
+<aside><strong>개발 전용 · 인증서 미발급 · 고객 배포 금지</strong>
+<p>실제 Sol+Node+Windows 글꼴에서 PDF를 한 번 생성합니다. 화면과 다운로드에 같은 파일을 사용하고 Drive 전달 바이트만 검증합니다. <strong>Google Drive 업로드는 실행하지 않습니다.</strong></p>
+</aside>
+<div class="grid">
+<section>
+<h2>견적 데이터 (QuoteCore 계산)</h2>
+<textarea id="changes" spellcheck="false" aria-label="로컬 견적 입력"></textarea>
+<button id="render">원본 Sol PDF 생성</button>
+<button id="download" disabled>동일 PDF 다운로드</button>
+<button id="drive" disabled>Drive용 바이트 일치 검증</button>
+<p id="status" role="status" aria-live="polite">아직 생성하지 않았습니다.</p>
+</section>
+<section>
+<h2>실제 PDF 미리보기</h2>
+<iframe id="preview" title="Sol 원본 PDF" hidden></iframe>
+</section>
+</div>
+</main>
+<script>
+"use strict";
+const DEV_TOKEN = "__DEV_TOKEN__";
+const changes = document.getElementById("changes");
+const preview = document.getElementById("preview");
+const renderButton = document.getElementById("render");
+const downloadButton = document.getElementById("download");
+const driveButton = document.getElementById("drive");
+const status = document.getElementById("status");
+let bytes = null, pdfUrl = null, hash = null, serial = 0;
+function reset() {
+  serial++;
+  if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+  pdfUrl = null; bytes = null; hash = null;
+  preview.removeAttribute("src");
+  preview.hidden = true;
+  downloadButton.disabled = driveButton.disabled = true;
+}
+changes.value = JSON.stringify({changes:{
+  recipient:"목포대학교",project:"통신공사 검증용 견적",issueDate:"2022-06-21",
+  quoteNo:"DEV-CGI-4-ITEMS",
+  items:Array.from({length:4},(_,i)=>({
+    name:"검증품목 "+(i+1),spec:"규격",unit:"식",qty:1,unitPrice:100000*(i+1),note:""
+  }))
+}},null,2);
+changes.addEventListener("input",()=>{reset();status.textContent="데이터 변경: PDF 무효화됨";});
+const digest = async input => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", input)))
+  .map(b=>b.toString(16).padStart(2,"0")).join("");
+renderButton.addEventListener("click",async()=>{
+  reset();
+  const n=serial;
+  renderButton.disabled=true;
+  status.textContent="Windows 원본 Sol PDF를 생성하고 있습니다.";
+  try {
+    const payload=JSON.parse(changes.value);
+    const response=await fetch("/dev/render",{
+      method:"POST",cache:"no-store",credentials:"same-origin",
+      headers:{"Content-Type":"application/json","Accept":"application/pdf",
+               "X-B66-Dev-Token":DEV_TOKEN},
+      body:JSON.stringify(payload)
+    });
+    if(!response.ok) throw new Error("렌더링 거절 ("+response.status+")");
+    if(response.headers.get("X-B66-Dev-Release")!=="NOT_CERTIFIED")
+      throw new Error("인증 경계 오류");
+    const buffer=await response.arrayBuffer();
+    const sha=await digest(buffer);
+    if(n!==serial)return;
+    if(sha!==response.headers.get("X-B66-Dev-Pdf-Sha256") ||
+       response.headers.get("Content-Type")!=="application/pdf")
+      throw new Error("실제 PDF SHA 불일치");
+    bytes=new Uint8Array(buffer);
+    hash=sha;
+    pdfUrl=URL.createObjectURL(new Blob([bytes],{type:"application/pdf"}));
+    preview.src=pdfUrl;preview.hidden=false;
+    downloadButton.disabled=driveButton.disabled=false;
+    status.textContent="원본 Sol PDF 생성됨\nSHA-256: "+sha+
+      "\n페이지: "+response.headers.get("X-B66-Dev-Pages")+
+      "\n동일 PDF 1회 생성 / 미인증 개발 결과";
+  }catch(err){if(n===serial)status.textContent="실패: "+err.message;}
+  finally{renderButton.disabled=false;}
+});
+downloadButton.addEventListener("click",()=>{
+  if(!bytes || !pdfUrl)return;
+  const anchor=document.createElement("a");
+  anchor.href=pdfUrl;anchor.download="sol61-local-dev-proof.pdf";anchor.click();
+});
+driveButton.addEventListener("click",async()=>{
+  if(!bytes || !hash)return;
+  const shareCopy=new Uint8Array(bytes);
+  const proof=await digest(shareCopy);
+  status.textContent=proof===hash
+    ? "Drive 업로드에 사용할 PDF 바이트 동일함\nSHA-256: "+proof+
+      "\n실제 Google Drive API 호출 0건"
+    : "Drive 바이트 불일치 — 전송 중단";
+});
+</script>
+</body></html>

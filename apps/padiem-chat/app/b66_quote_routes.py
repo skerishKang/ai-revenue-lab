@@ -13,17 +13,48 @@ from __future__ import annotations
 
 import inspect
 import json
+import re
 from typing import Any
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .b14_client import ChatRuntimeError
+from .byok_client import CustomProviderError, complete_owner_custom
+from .byok_credentials import CustomProviderSelectionError
+from .b66_quote_conversation import B66QuoteConversationInterpreter
+from .b66_registered_model_boundary import B66ModelRouteError
+from .request_contract import BrowserRequestError, parse_custom_selection
 from .b66_quote_conversation import (
     B66QuoteConversationError,
     MAX_CONVERSATION_CHARS,
 )
+from .b66_reasoning_level import (
+    DEFAULT_REASONING_LEVEL,
+    reasoning_options_for_model,
+    reasoning_transport_available,
+    validate_reasoning_level,
+)
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .request_contract import MAX_BROWSER_BODY_BYTES
+from .member_grade_access import verified_member_grade, GRADES
+from .b66_grade_models import (
+    B66_ADMIN_GRADE,
+    B66_ADMIN_NAME,
+    B66_GRADE_MODEL_IDS,
+    B66_GRADE_NAMES,
+    B66_GRADES,
+    b66_grade_model_id,
+    b66_grade_model_id_for_request,
+    b66_verified_admin,
+)
+from padiem_control_plane.product_tier_routes import (
+    FREE_PRIMARY_B14_MODEL_ID,
+    MUSE_B14_MODEL_ID,
+)
 from .claw_memory_routes import _resolve_memory_workspace
+from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
 MAX_BODY_BYTES = 16 * 1024
 MAX_LIST_LIMIT = 20
@@ -32,6 +63,105 @@ _FORBIDDEN_OWNER_KEYS = frozenset(
 )
 _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
 
+# Bounded rejection diagnostics (#3391): the 422 response may carry the
+# structured reason / field path / JSON type name of the failed conversation
+# validation. Header values are allowlist-checked so customer text or model
+# output can never reach the response regardless of what a raise site attaches.
+_REJECTION_REASON_RE = re.compile(r"^[a-z_]{1,64}$")
+_REJECTION_PATH_RE = re.compile(r"^[A-Za-z0-9_.\[\]]{1,64}$")
+_REJECTION_TYPE_RE = re.compile(r"^[a-z]{1,16}$")
+
+
+# Bounded 502 upstream diagnostics (#3391): a provider/runtime failure may carry
+# only a product-owned fixed upstream class. For broad errors this is the public
+# ``ChatRuntimeError.code``; malformed-answer failures may additionally carry a
+# narrower internal ``upstream_class``. Raw exception text, provider payloads,
+# model output and customer values are never part of this header.
+#
+# These classes come from the existing B14/Core execution boundary. Runtime
+# readiness and registered-model selection failures have separate diagnostics;
+# neither is reported as a provider failure. No default chat tier is selected
+# by this exact registered quote lane.
+_UPSTREAM_CLASS_ALLOWLIST = frozenset(
+    {
+        "upstream_timeout",
+        "upstream_busy",
+        "upstream_response_too_large",
+        "malformed_upstream",
+        "upstream_malformed_json",
+        "upstream_unexpected_shape",
+        "upstream_missing_content",
+        "upstream_non_text_content",
+        "upstream_empty_answer",
+        "upstream_unavailable",
+        "provider_auth_error",
+        "provider_route_error",
+        "provider_server_error",
+        "upstream_execution_failed",
+        "upstream_error",
+        "upstream_binding_unavailable",
+    }
+)
+
+
+def _upstream_class_headers(exc: BaseException) -> dict[str, str]:
+    if not isinstance(exc, ChatRuntimeError):
+        return {}
+    upstream_class = getattr(exc, "upstream_class", None)
+    code = (
+        upstream_class
+        if isinstance(upstream_class, str)
+        else getattr(exc, "code", None)
+    )
+    if not isinstance(code, str) or code not in _UPSTREAM_CLASS_ALLOWLIST:
+        return {}
+    return {"X-B66-Upstream-Class": code}
+
+
+# Closed-vocabulary failure provenance diagnostics for CGI freeform (#3751).
+# Do not expose exceptions/messages/provider payloads/user input in headers.
+_B66_INTERPRET_FAILURE_STAGES = frozenset({
+    "interpreter_exception",
+    "projection_missing_safe_dict",
+    "runtime_unavailable",
+    "model_selection",
+    "provider_execution",
+    "provider_response",
+})
+_B66_INTERPRET_EXCEPTION_FAMILIES = frozenset({
+    "chat_runtime_non_upstream",
+    "type_error",
+    "value_error",
+    "runtime_error",
+    "unexpected_exception",
+})
+
+
+def _bounded_interpret_exception_family(exc: BaseException) -> str:
+    if isinstance(exc, ChatRuntimeError):
+        return "chat_runtime_non_upstream"
+    if isinstance(exc, TypeError):
+        return "type_error"
+    if isinstance(exc, ValueError):
+        return "value_error"
+    if isinstance(exc, RuntimeError):
+        return "runtime_error"
+    return "unexpected_exception"
+
+
+def _rejection_diagnostic_headers(exc: BaseException) -> dict[str, str]:
+    headers: dict[str, str] = {}
+    reason = getattr(exc, "message", None)
+    if isinstance(reason, str) and _REJECTION_REASON_RE.fullmatch(reason):
+        headers["X-B66-Rejection-Reason"] = reason
+    path = getattr(exc, "path", None)
+    if isinstance(path, str) and _REJECTION_PATH_RE.fullmatch(path):
+        headers["X-B66-Rejection-Path"] = path
+    observed_type = getattr(exc, "observed_type", None)
+    if isinstance(observed_type, str) and _REJECTION_TYPE_RE.fullmatch(observed_type):
+        headers["X-B66-Rejection-Type"] = observed_type
+    return headers
+
 
 def _error(status: int, code: str, message: str) -> JSONResponse:
     return JSONResponse(
@@ -39,6 +169,117 @@ def _error(status: int, code: str, message: str) -> JSONResponse:
         status_code=status,
         headers=_NO_STORE,
     )
+
+
+async def _authorize_quote_usage(request: Request, uid: str) -> JSONResponse | None:
+    if not getattr(request.app.state, "usage_gate_enforced", False):
+        return None
+    gate = getattr(request.app.state, "usage_gate", None)
+    authorize = getattr(gate, "authorize", None)
+    try:
+        if not callable(authorize):
+            raise RuntimeError("usage gate unavailable")
+        decision = await authorize(
+            raw_ip=request.headers.get("cf-connecting-ip"), user_id=uid
+        )
+        if decision.allowed:
+            return None
+        response = _error(decision.status_code, decision.code, decision.user_message)
+        if decision.retry_after_seconds is not None:
+            response.headers["Retry-After"] = str(decision.retry_after_seconds)
+        return response
+    except Exception:
+        await _refund_active_reservation()
+        return _error(
+            503, "live_abuse_gate_unavailable", "AI 사용 한도를 확인할 수 없습니다. 잠시 후 다시 이용해 주세요."
+        )
+
+
+class _CustomQuoteConversationClient:
+    """B66 extraction prompt + normalizer over the owner's custom provider key."""
+
+    def __init__(self, request: Request, uid: str, selection: Any):
+        self._request = request
+        self._uid = uid
+        self._selection = selection
+
+    async def complete(
+        self,
+        messages: list[dict[str, str]],
+        skill: Any | None = None,
+        additional_system_context: str | None = None,
+        attachments: tuple = (),
+        model_id: str | None = None,
+        reasoning_level: str | None = None,
+        product_tier: str | None = None,
+    ) -> dict[str, Any]:
+        return await complete_owner_custom(
+            self._request.app.state,
+            uid=self._uid,
+            selection=self._selection,
+            messages=messages,
+            system_context=additional_system_context,
+        )
+
+
+async def _interpret_reserved(
+    interpret_fn,
+    *,
+    message: str,
+    skill: dict,
+    model_id: str,
+    reasoning_level: str | None = None,
+    product_tier: str | None = None,
+    result_origin: str | None = None,
+):
+    try:
+        # An omitted reasoning level is passed as an absence, exactly like an
+        # omitted model_id, so legacy interpreters and quote-parser clients that
+        # do not know the #3906 keyword keep their original call shape.
+        kwargs = {"message": message, "skill": skill, "model_id": model_id}
+        if reasoning_level is not None:
+            kwargs["reasoning_level"] = reasoning_level
+        if product_tier is not None:
+            kwargs["product_tier"] = product_tier
+        if result_origin is not None:
+            kwargs["result_origin"] = result_origin
+        value = interpret_fn(**kwargs)
+        return await value if inspect.isawaitable(value) else value
+    finally:
+        # The dispatch adapter marks the receipt before the actual B14 POST.
+        # Only a provable pre-dispatch failure may refund this request's buckets.
+        await _refund_active_reservation()
+
+
+def _model_route_error_response(exc: B66ModelRouteError) -> JSONResponse:
+    if exc.code == "runtime_unavailable":
+        response = _error(503, "quote_runtime_unavailable", "견적 대화 기능을 사용할 수 없습니다.")
+        response.headers["X-B66-Interpret-Failure-Stage"] = "runtime_unavailable"
+    elif exc.code in {"provider_execution_failed", "provider_response_invalid", "provider_route_mismatch"}:
+        response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        execution_failed = exc.code == "provider_execution_failed"
+        response.headers["X-B66-Upstream-Class"] = "upstream_error" if execution_failed else "malformed_upstream"
+        response.headers["X-B66-Interpret-Failure-Stage"] = "provider_execution" if execution_failed else "provider_response"
+    else:
+        response = _error(
+            503, "quote_model_unavailable", "견적에 사용할 AI 모델을 준비하지 못했습니다. 잠시 후 다시 이용해 주세요."
+        )
+        response.headers["X-B66-Model-Selection-Status"] = (
+            "ambiguous" if exc.code == "selection_ambiguous" else "unavailable"
+        )
+        response.headers["X-B66-Interpret-Failure-Stage"] = "model_selection"
+    return response
+
+
+def _reasoning_transport_supported(request: Request) -> bool:
+    """Whether the shared Core transport can carry native model parameters.
+
+    The flag is set by whoever wires the B14/Core client that implements the
+    validated opt-in contract (#3977). Absent or non-True means B66 offers the
+    provider default only and refuses an explicit level before dispatch. It is
+    never inferred, defaulted to True, or read from the request itself.
+    """
+    return getattr(request.app.state, "b66_reasoning_transport_supported", False) is True
 
 
 def _owner(request: Request) -> str | None:
@@ -50,18 +291,60 @@ def _owner(request: Request) -> str | None:
         return None
 
 
+async def _member_access(request: Request, user_id: str) -> tuple[dict | None, JSONResponse | None]:
+    """Only trusted Worker activation enables enforced membership/tier policies.
+
+    This gate is never based on a browser-supplied tier, an email field, or a
+    made-up B14 route. Missing D1 after activation fails closed.
+    """
+    if getattr(request.app.state, "b66_membership_enforced", False) is not True:
+        # B66 global model OFF is an independent operator control, not a
+        # membership/tier rollout. Production enables this even when membership
+        # enforcement is inactive. Read D1 before exposing choices OR dispatch.
+        if getattr(request.app.state, "b66_global_model_switch_enforced", False) is not True:
+            return None, None  # offline/test app without the production composition
+        store = getattr(request.app.state, "b66_member_admin_store", None)
+        try:
+            if store is None:
+                raise RuntimeError("B66 model OFF policy store missing")
+            disabled_models = await store.globally_disabled_models()
+        except Exception:
+            return None, _error(503, "model_policy_unavailable", "모델 사용 정책을 확인하지 못했습니다.")
+        return {"disabled_models": disabled_models, "active_policy": False, "model_ids": None}, None
+    store = getattr(request.app.state, "b66_member_admin_store", None)
+    try:
+        if store is None:
+            raise RuntimeError("membership store unavailable")
+        access = await store.runtime_access(user_id)
+    except Exception:
+        return None, _error(503, "membership_unavailable", "회원 이용 권한을 확인하지 못했습니다.")
+    if access is None or access["status"] != "approved":
+        return None, _error(403, "membership_approval_required", "관리자 승인 후 AI 모델을 사용할 수 있습니다.")
+    return access, None
+
+
 def _store(request: Request) -> Any | None:
     return getattr(request.app.state, "b66_saved_quote_skill_store", None)
 
 
-async def _json(request: Request) -> dict[str, Any] | JSONResponse:
+def _company_profile_store(request: Request) -> Any | None:
+    return getattr(request.app.state, "b66_company_profile_store", None)
+
+
+async def _json(
+    request: Request, *, max_body_bytes: int = MAX_BODY_BYTES
+) -> dict[str, Any] | JSONResponse:
+    # The quote interpreter carries a model-bound user prompt. Do not apply
+    # the 16KiB B66 metadata/administration request limit to that payload.
+    # The shared 6MB browser transport guard still bounds memory exposure.
     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
-    body = await request.body()
+    try:
+        body = await read_bounded_request_body(request, max_bytes=max_body_bytes)
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(body) > MAX_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     try:
         data = json.loads(body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
@@ -83,15 +366,19 @@ async def b66_runtime_config(request: Request) -> JSONResponse:
             {"ok": True, "enabled": False, "embed_url": None, "origin": None},
             headers=_NO_STORE,
         )
-    return JSONResponse(
-        {
-            "ok": True,
-            "enabled": True,
-            "embed_url": base.rstrip("/") + "/embed.html",
-            "origin": base.rstrip("/"),
-        },
-        headers=_NO_STORE,
-    )
+    from .b66_pc_directory_routes import b66_pc_directory_available
+    # This response is only a UI hint; /api/b66/connect/devices repeats the
+    # full product/workspace/membership grant on every GET, default OFF.
+    pc_list_ready = await b66_pc_directory_available(request, uid)
+    config = {
+        "ok": True,
+        "enabled": True,
+        "embed_url": base.rstrip("/") + "/embed.html",
+        "origin": base.rstrip("/"),
+    }
+    if pc_list_ready:
+        config["pc_device_list_enabled"] = True
+    return JSONResponse(config, headers=_NO_STORE)
 
 
 async def b66_saved_skills(request: Request) -> JSONResponse:
@@ -144,29 +431,182 @@ async def b66_saved_skill_detail(request: Request) -> JSONResponse:
     return JSONResponse({"ok": True, "saved_skill": skill}, headers=_NO_STORE)
 
 
-async def b66_quote_interpret(request: Request) -> JSONResponse:
+async def b66_quote_models(request: Request) -> JSONResponse:
+    """Authenticated, no-store registered model choices; never chooses one."""
     uid = _owner(request)
     if uid is None:
         return _error(401, "unauthorized", "로그인이 필요합니다.")
-    data = await _json(request)
+    access, denied = await _member_access(request, uid)
+    if denied is not None:
+        return denied
+    resolver = getattr(request.app.state, "b66_quote_model_resolver", None)
+    list_fn = getattr(resolver, "list_selectable_models", None)
+    if not callable(list_fn):
+        return _error(503, "quote_model_unavailable", "AI 모델 목록을 확인할 수 없습니다.")
+    try:
+        models = await list_fn()
+    except Exception:
+        return _error(503, "quote_model_unavailable", "AI 모델 목록을 확인할 수 없습니다.")
+    # Enforce global OFF first, then the authenticated member's tier grants.
+    # Both switches are server-side, not merely hidden options in the browser.
+    if access is not None:
+        disabled = set(access["disabled_models"])
+        models = [row for row in models if row["model_id"] not in disabled]
+        if access["active_policy"]:
+            allowed_ids = set(access["model_ids"])
+            models = [row for row in models if row["model_id"] in allowed_ids]
+    # Customer-facing model picker is a grade selector, not a full provider catalog.
+    # The raw model catalog stays unchanged for existing/admin consumers.
+    grade_order = ("free", "plus", "pro", "max")
+    member_grade = await verified_member_grade(request, uid, access)
+    permitted = grade_order[:grade_order.index(member_grade)+1]
+    available_ids = {row["model_id"] for row in models}
+    grade_choices = []
+    for grade in permitted:
+        grade_model = await b66_grade_model_id_for_request(request, grade)
+        if grade_model is None or grade_model not in available_ids:
+            continue
+        grade_choices.append({
+            "tier": grade, "name": B66_GRADE_NAMES[grade],
+            "model_id": grade_model,
+            "reasoning_levels": reasoning_options_for_model(
+                grade_model, transport_supported=_reasoning_transport_supported(request)),
+        })
+    if await b66_verified_admin(request, uid) and MUSE_B14_MODEL_ID in available_ids:
+        grade_choices.append(
+            {"tier": B66_ADMIN_GRADE, "name": B66_ADMIN_NAME,
+             "model_id": MUSE_B14_MODEL_ID,
+             "reasoning_levels": reasoning_options_for_model(
+                 MUSE_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
+        )
+    # A configured default can only be offered if it remains permitted.
+    proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
+    default = proposed_default if (
+        isinstance(proposed_default, str)
+        and any(row["model_id"] == proposed_default for row in models)
+    ) else None
+    # Per-model selectable reasoning levels (#3906). Each row keeps its exact
+    # registered ID and gains only the options that model may actually use.
+    # Until B14 attests per-model capability (#3977), every model offers only
+    # the fail-closed provider default, so no unverified option is ever shown.
+    rows = [
+        {
+            "model_id": row["model_id"],
+            "name": row["name"],
+            "reasoning_levels": reasoning_options_for_model(
+                row["model_id"],
+                transport_supported=_reasoning_transport_supported(request),
+            ),
+        }
+        for row in models
+    ]
+    return JSONResponse(
+        {"ok": True, "models": rows, "default_model_id": default, "tiers": grade_choices, "default_tier": grade_choices[0]["tier"] if grade_choices else None},
+        headers=_NO_STORE,
+    )
+
+
+async def b66_quote_interpret(request: Request) -> JSONResponse:
+    _clear_reservation()
+    uid = _owner(request)
+    if uid is None:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    access, denied = await _member_access(request, uid)
+    if denied is not None:
+        return denied
+    data = await _json(request, max_body_bytes=MAX_BROWSER_BODY_BYTES)
     if isinstance(data, JSONResponse):
         return data
-    if set(data) - {"saved_skill_id", "message"}:
+    if set(data) - {"saved_skill_id", "message", "model_id", "reasoning_level", "tier", "custom"}:
         return _error(400, "unsupported_field", "지원되지 않는 요청 필드가 있습니다.")
     saved_skill_id = data.get("saved_skill_id")
     message = data.get("message")
+    custom = None
+    if "custom" in data:
+        if any(key in data for key in ("tier", "model_id", "reasoning_level")):
+            return _error(
+                422,
+                "custom_selection_conflict",
+                "PADIEM 제공 모델·등급과 PADIEM Custom을 한 요청에서 함께 선택할 수 없습니다.",
+            )
+        try:
+            custom = parse_custom_selection(data.get("custom"))
+        except BrowserRequestError as exc:
+            return _error(422, "custom_provider_invalid", str(exc))
+    selected_grade = data.get("tier") if custom is None else None
+    if selected_grade is not None:
+        grade_order = ("free", "plus", "pro", "max")
+        if not isinstance(selected_grade, str) or selected_grade not in grade_order + (B66_ADMIN_GRADE,):
+            return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+        if selected_grade == B66_ADMIN_GRADE:
+            if not await b66_verified_admin(request, uid):
+                return _error(403, "admin_forbidden", "관리자 전용 기능입니다.")
+            expected_model = MUSE_B14_MODEL_ID
+        else:
+            member_grade = await verified_member_grade(request, uid, access)
+            if grade_order.index(selected_grade) > grade_order.index(member_grade):
+                return _error(403, "tier_not_available", "이용 등급 이하의 AI 등급을 선택해 주세요.")
+            expected_model = await b66_grade_model_id_for_request(request, selected_grade)
+            if expected_model is None:
+                return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+        if data.get("model_id") not in (None, expected_model):
+            return _error(400, "invalid_model_id", "선택한 등급의 AI 모델과 일치하지 않습니다.")
+        model_id = expected_model
+    else:
+        model_id = custom.model if custom is not None else data.get("model_id")
+    reasoning_level = data.get("reasoning_level")
+    if not isinstance(model_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id):
+        return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
+    if model_id in {"b14/auto"} or model_id.startswith("padiem-profile/"):
+        return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
+    if custom is None and access is not None and model_id in access["disabled_models"]:
+        return _error(403, "model_disabled", "관리자가 이 AI 모델을 사용 중지했습니다.")
+    if custom is None and access is not None and access["active_policy"] and model_id not in access["model_ids"]:
+        return _error(403, "model_tier_forbidden", "이용 등급에서 허용하지 않는 AI 모델입니다.")
+    # Explicit reasoning level is validated against the SAME exact model the
+    # user chose (#3906). An unsupported level is rejected with an explainable
+    # 4xx and is never ignored, downgraded, or silently replaced by another
+    # level. An omitted level keeps the pre-existing request behaviour.
+    try:
+        accepted_reasoning_level = validate_reasoning_level(model_id, reasoning_level)
+    except ValueError:
+        return _error(
+            400,
+            "unsupported_reasoning_level",
+            "선택한 모델이 지원하지 않는 추론 수준입니다.",
+        )
+    if (
+        accepted_reasoning_level is not None
+        and accepted_reasoning_level != DEFAULT_REASONING_LEVEL
+        and not reasoning_transport_available(
+            model_id, transport_supported=_reasoning_transport_supported(request)
+        )
+    ):
+        # The level is documented for this exact model, but the shared Core
+        # transport that carries it is not available yet. Refuse before any
+        # dispatch instead of silently answering with the provider default.
+        return _error(
+            422,
+            "reasoning_level_unavailable",
+            "선택한 추론 수준을 지금은 전달할 수 없습니다. 기본값으로 진행해 주세요.",
+        )
     if not isinstance(saved_skill_id, str) or not saved_skill_id:
         return _error(400, "invalid_saved_skill_id", "내 견적서 ID가 필요합니다.")
     if (
         not isinstance(message, str)
         or not message.strip()
-        or len(message.strip()) > MAX_CONVERSATION_CHARS
+        or (MAX_CONVERSATION_CHARS is not None and len(message.strip()) > MAX_CONVERSATION_CHARS)
     ):
         return _error(400, "invalid_message", "견적 요청 내용을 입력해 주세요.")
 
     store = _store(request)
     get_fn = getattr(store, "get_skill", None) if store is not None else None
-    interpreter = getattr(request.app.state, "b66_quote_interpreter", None)
+    if custom is not None:
+        interpreter = B66QuoteConversationInterpreter(
+            _CustomQuoteConversationClient(request, uid, custom)
+        )
+    else:
+        interpreter = getattr(request.app.state, "b66_quote_interpreter", None)
     interpret_fn = getattr(interpreter, "interpret", None) if interpreter is not None else None
     if not callable(get_fn) or not callable(interpret_fn):
         return _error(503, "quote_runtime_unavailable", "견적 대화 기능을 사용할 수 없습니다.")
@@ -187,18 +627,75 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     if not isinstance(skill, dict):
         return _error(503, "saved_quote_skill_invalid", "내 견적서 데이터를 확인할 수 없습니다.")
 
+    if custom is None:
+        denied = await _authorize_quote_usage(request, uid)
+        if denied is not None:
+            return denied
     try:
-        value = interpret_fn(message=message.strip(), skill=skill)
-        projection = await value if inspect.isawaitable(value) else value
-    except B66QuoteConversationError:
-        return _error(422, "quote_input_unrecognized", "견적 입력값을 확인해 주세요.")
-    except Exception:
-        return _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        projection = await _interpret_reserved(
+            interpret_fn,
+            message=message.strip(),
+            skill=skill,
+            model_id=model_id,
+            reasoning_level=accepted_reasoning_level,
+            product_tier=selected_grade,
+            result_origin="custom_provider_direct" if custom is not None else None,
+        )
+    except CustomProviderSelectionError as exc:
+        return _error(422, "custom_provider_unsupported", str(exc))
+    except CustomProviderError as exc:
+        return _error(exc.status_code, exc.code, exc.user_message)
+    except B66ModelRouteError as exc:
+        return _model_route_error_response(exc)
+    except B66QuoteConversationError as exc:
+        response = _error(422, "quote_input_unrecognized", "견적 입력값을 확인해 주세요.")
+        for header_name, header_value in _rejection_diagnostic_headers(exc).items():
+            response.headers[header_name] = header_value
+        return response
+    except Exception as exc:
+        response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        for header_name, header_value in _upstream_class_headers(exc).items():
+            response.headers[header_name] = header_value
+        response.headers["X-B66-Interpret-Failure-Stage"] = "interpreter_exception"
+        # A recognized upstream class already identifies the failure; the
+        # broader family is needed only when no upstream class is available.
+        if "X-B66-Upstream-Class" not in response.headers:
+            response.headers["X-B66-Interpret-Exception-Family"] = (
+                _bounded_interpret_exception_family(exc)
+            )
+        return response
 
     safe_dict = getattr(projection, "safe_dict", None)
     if not callable(safe_dict):
-        return _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        response.headers["X-B66-Interpret-Failure-Stage"] = (
+            "projection_missing_safe_dict"
+        )
+        return response
     candidate = safe_dict()
+
+    company_profile = None
+    profile_store = _company_profile_store(request)
+    get_profile = getattr(profile_store, "get_profile", None) if profile_store is not None else None
+    if callable(get_profile):
+        try:
+            value = get_profile(user_id=uid, workspace_id=workspace_id)
+            company_profile = await value if inspect.isawaitable(value) else value
+        except Exception:
+            return _error(503, "company_profile_read_failed", "회사정보를 불러오지 못했습니다.")
+
+    # Response origin is set by the trusted interpreter branch, never by
+    # Gemini/model JSON, quote text or a user-controlled request field.
+    # Keep the candidate JSON contract unchanged; emit only fixed labels.
+    response_headers = dict(_NO_STORE)
+    result_origin = getattr(projection, "result_origin", None)
+    if result_origin in {
+        "registered_model_completion",
+        "deterministic_fallback",
+        "custom_provider_direct",
+    }:
+        response_headers["X-B66-Result-Origin"] = result_origin
+
     return JSONResponse(
         {
             "ok": True,
@@ -210,6 +707,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
                 "skill_version": saved.get("skill_version"),
             },
             "candidate": candidate,
+            "company_profile": company_profile,
             "execution": {
                 "source_document_parse_calls": 0,
                 "server_total_calculation": False,
@@ -218,5 +716,5 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
                 "browser_approved_renderer_required": True,
             },
         },
-        headers=_NO_STORE,
+        headers=response_headers,
     )

@@ -26,7 +26,7 @@ def test_legacy_supported_tags_map_to_canonical_configured_support(
     assert profile.evidence_for(ModelCapability.LONG_CONTEXT).support is CapabilitySupport.SUPPORTED
 def test_absent_legacy_tag_is_unknown_not_unsupported() -> None:
     profile = capability_profile_from_catalog_model(
-        model("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        model("agnes-ai/agnes-3.0-flash")
     )
     for capability in (
         ModelCapability.STREAMING,
@@ -39,12 +39,12 @@ def test_absent_legacy_tag_is_unknown_not_unsupported() -> None:
         assert evidence.support is CapabilitySupport.UNKNOWN
         assert evidence.evidence_kind is CapabilityEvidenceKind.NONE
 def test_free_legacy_tag_is_not_execution_capability() -> None:
-    profile = capability_profile_from_catalog_model(model("kilo/nvidia-nemotron-3-ultra-550b-a55b-free"))
+    profile = capability_profile_from_catalog_model(model("agnes-ai/agnes-3.0-flash"))
     assert all(entry.capability.value != "free" for entry in profile.entries)
     assert profile.evidence_for(ModelCapability.CHAT).support is CapabilitySupport.SUPPORTED
     assert profile.evidence_for(ModelCapability.STREAMING).support is CapabilitySupport.UNKNOWN
 def test_requirement_evaluation_distinguishes_unknown_from_unsupported() -> None:
-    base = model("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+    base = model("agnes-ai/agnes-3.0-flash")
     profile = capability_profile_from_catalog_model(
         base,
         explicit_evidence=(
@@ -69,7 +69,7 @@ def test_requirement_evaluation_distinguishes_unknown_from_unsupported() -> None
     assert result.unknown == (ModelCapability.STREAMING,)
     assert result.unsupported == (ModelCapability.TOOL_CALLING,)
 def test_explicit_supported_evidence_can_fill_unknown_without_changing_catalog() -> None:
-    base = model("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+    base = model("agnes-ai/agnes-3.0-flash")
     assert "streaming" not in base.capabilities
     profile = capability_profile_from_catalog_model(
         base,
@@ -129,7 +129,7 @@ def test_duplicate_explicit_capability_evidence_fails_closed() -> None:
     )
     with pytest.raises(CapabilityEvidenceError) as exc_info:
         capability_profile_from_catalog_model(
-            model("kilo/nvidia-nemotron-3-ultra-550b-a55b-free"),
+            model("agnes-ai/agnes-3.0-flash"),
             explicit_evidence=(entry, entry),
         )
     assert exc_info.value.code == "duplicate_capability_evidence"

@@ -20,7 +20,7 @@ const SRC_POISON = {
 
 /* §12 synthetic fixture: 회사명/제목/5열/특정 열순서/합계라벨/정렬/accent/margin. */
 function sourceInfo() {
-  return { filename: "synthetic-company-quotation.pdf", mediaType: "application/pdf", byteSize: 5822 };
+  return { filename: "synthetic-company-quotation.xlsx", mediaType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", byteSize: 5822 };
 }
 
 function customLayout() {
@@ -43,7 +43,7 @@ function customLayout() {
 
 function modelOutput() {
   return {
-    source: { kind: "native_document", filename: "synthetic-company-quotation.pdf" },
+    source: { kind: "native_document", filename: "synthetic-company-quotation.xlsx" },
     sender: {
       company: "테스트상사", rep: "최대표", bizNo: "111-22-33333",
       address: "광주", phone: "062-111-2222", email: "t@test.example"
@@ -109,7 +109,7 @@ function runFullSession() {
 
   const skillBuilt = Session.buildSkillCandidate(session, {
     modelOutput: modelOutput(),
-    sourceMeta: { sourceKind: "file", filename: "synthetic-company-quotation.pdf", sourceRef: "evidence:synthetic", capturedAt: NOW },
+    sourceMeta: { sourceKind: "file", filename: "synthetic-company-quotation.xlsx", sourceRef: "evidence:synthetic", capturedAt: NOW },
     skillName: "테스트상사 일반 견적서"
   }, { now: NOW });
   check(skillBuilt.ok === true, "approved profile links into skill registration");

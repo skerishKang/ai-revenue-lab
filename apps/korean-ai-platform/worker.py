@@ -45,15 +45,21 @@ _ENV_KEYS = frozenset({
     "BUSINESS14_PILOT_PROVIDER_ID",
     "BUSINESS14_PILOT_UPSTREAM_MODEL",
     "BUSINESS14_PILOT_TIMEOUT_SECONDS",
-    "PADIEM_KILO_API_KEY",
-    "PADIEM_POOLSIDE_API_KEY",
+    "PADIEM_B14_CREDENTIAL_08",
+    "PADIEM_B14_CREDENTIAL_12",
     "PADIEM_SENSENOVA_API_KEY",
-    "PADIEM_AGNES_API_KEY",
-    "PADIEM_B_AI_API_KEY",
-    "PADIEM_INFRON_API_KEY",
-    "PADIEM_INCEPTION_MERCURY_API_KEY",
-    "PADIEM_ATRIA_API_KEY",
-    "PADIEM_EXLAB_API_KEY",
+    "PADIEM_B14_CREDENTIAL_01",
+    "PADIEM_B14_CREDENTIAL_03",
+    "PADIEM_B14_CREDENTIAL_07",
+    "PADIEM_B14_CREDENTIAL_06",
+    "PADIEM_B14_CREDENTIAL_02",
+    "PADIEM_B14_CREDENTIAL_04",
+    "PADIEM_B14_CREDENTIAL_05",
+    "PADIEM_B14_CREDENTIAL_09",
+    "PADIEM_B14_CREDENTIAL_10",
+    "PADIEM_B14_CREDENTIAL_13",
+    "PADIEM_B14_CREDENTIAL_11",
+    "PADIEM_B14_CREDENTIAL_14",
     "B14_PROVIDER_MODE",
 })
 
@@ -77,6 +83,13 @@ def _apply_security_headers(response: Any) -> Any:
 # ---------------------------------------------------------------------------
 class Default(WorkerEntrypoint):
     async def fetch(self, request: Any) -> Any:
+        path = urlparse(request.url).path
+        observed = path.startswith(("/api/pilot/", "/api/b66/"))
+        if observed:
+            from app.stack_telemetry import start_trace, finish_trace
+            route = "/api/pilot/*" if path.startswith("/api/pilot/") else "/api/b66/*"
+            state, trace_token = start_trace(request, "korean-ai-platform", route)
+        response = None
         import asgi
 
         # The public Worker root is a product entrypoint, not the legacy demo
@@ -92,16 +105,44 @@ class Default(WorkerEntrypoint):
                 },
             )
 
-        from app.pilot.worker_env import collect_env_overrides
+        from app.pilot.worker_env import (
+            bind_request_env,
+            collect_request_bindings,
+            reset_request_env,
+        )
 
-        env_overrides = await collect_env_overrides(self.env, _ENV_KEYS)
+        # Retain only handles; do not fetch every Provider secret on GET/POST.
+        env_overrides = collect_request_bindings(self.env, _ENV_KEYS)
 
-        # Apply Worker env bindings BEFORE app processes the request.
+        # Deployment config remains bootstrapped once. Provider credentials
+        # are resolved lazily by the chosen route within this request, never
+        # written to os.environ or reused across concurrent requests.
         if env_overrides:
             _apply_env_once(env_overrides)
-
-        native_resp = await asgi.fetch(app, request.js_object, self.env)
-        return _apply_security_headers(native_resp)
+        token = bind_request_env(env_overrides)
+        try:
+            # Optional protected registry: exact digest/immutable R2 object,
+            # installed before ASGI touches any model catalog or fallback.
+            from app.pilot.private_runtime_registry import (
+                PrivateRegistryUnavailable,
+                ensure_private_registry,
+            )
+            try:
+                await ensure_private_registry(self.env)
+            except PrivateRegistryUnavailable:
+                response = Response(
+                    "Model configuration unavailable.",
+                    status=503,
+                    headers=_SECURITY_HEADERS,
+                )
+                return response
+            native_resp = await asgi.fetch(app, request.js_object, self.env)
+            response = _apply_security_headers(native_resp)
+            return response
+        finally:
+            reset_request_env(token)
+            if observed:
+                finish_trace(state, trace_token, response, getattr(self, "ctx", None), self.env)
 
 
 # ---------------------------------------------------------------------------
@@ -155,11 +196,20 @@ def _apply_env_once(overrides: dict[str, str]) -> None:
     from app.pilot.registry import reset_registry
     reset_registry()
 
-    # Mirror the allow-listed Worker bindings into process environment so both
-    # legacy settings and generic platform-provider code observe the same
-    # deployment configuration. Secret values remain internal and are never
-    # logged or exposed in responses.
+    # Only non-secret deployment configuration may enter process globals.
+    # Never copy platform-owned API keys into os.environ: dynamic Secrets
+    # Store values belong exclusively to the request ContextVar above.
     import os as _os
 
+    _NON_SECRET_ENV_KEYS = {
+        "B14_PROVIDER_MODE",
+        "BUSINESS14_PROVIDER_REGISTRY_JSON",
+        "BUSINESS14_PILOT_BASE_URL",
+        "BUSINESS14_PILOT_MODEL_ID",
+        "BUSINESS14_PILOT_PROVIDER_ID",
+        "BUSINESS14_PILOT_UPSTREAM_MODEL",
+        "BUSINESS14_PILOT_TIMEOUT_SECONDS",
+    }
     for _env_key, _value in overrides.items():
-        _os.environ[_env_key] = str(_value)
+        if _env_key in _NON_SECRET_ENV_KEYS:
+            _os.environ[_env_key] = str(_value)

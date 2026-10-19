@@ -23,8 +23,10 @@ from kagent.p01_approval_continuation import P01EngineApprovalContinuationClient
 from padiem_ai_engine_client import PadiemAiEngineClient
 
 from .worker_config import (
+    IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
     P01_DIAG_CLIENT_CONSTRUCTOR_ERROR,
     P01_DIAG_COMPOSITION_UNAVAILABLE,
+    binding_value,
     p01_engine_binding_diagnostic,
     p01_engine_config_from_worker_bindings,
 )
@@ -120,8 +122,22 @@ def build_claw_p01_lanes_with_diagnostic(
     if client is None:
         return None, None, diagnostic
     try:
+        # #3382: the canonical USER lane is enabled exactly when the trusted
+        # Control Plane identity authority is bound. With the lane on, the
+        # signed-in B62 session resolves its canonical subject server-side
+        # (current_user_id -> B54 canonical session -> sub_*) and the P01 wire
+        # carries it for A7 admission; without the binding the lane stays off
+        # and the historical subjectless contract is preserved.
+        identity_authority_bound = (
+            binding_value(env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME) is not None
+        )
         return (
-            P01CoreOrchestrationAdapter(P01EngineOrchestrationClient(client)),
+            P01CoreOrchestrationAdapter(
+                P01EngineOrchestrationClient(
+                    client, allow_subject_identity=identity_authority_bound
+                ),
+                allow_subject_identity=identity_authority_bound,
+            ),
             P01EngineApprovalContinuationClient(client),
             None,
         )

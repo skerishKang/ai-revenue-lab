@@ -100,6 +100,40 @@ def test_terminal_projection_reads_only_canonical_snapshot_state():
     assert terminal["p01_approval_payload"] is False
 
 
+def test_terminal_projection_scope_proof_derives_scope_from_own_records():
+    """#4139: mismatched realms resolve scope from proven correlation."""
+    snapshot = _terminal_snapshot()
+    proof = {
+        "command_id": "command.3217",
+        "run_id": "run.3217",
+        "request_fingerprint": FINGERPRINT,
+    }
+    result = terminal_command_result_from_snapshot(
+        snapshot,
+        {"scope_proof": proof, "workspace_ref": "workspace.3217"},
+    )
+    assert result["ok"] is True
+    assert result["available"] is True
+    assert result["command_identity"]["command_id"] == "command.3217"
+    assert result["command_result"]["evidence_ref"] == "evidence.3217"
+    # No account naming by the caller at all.
+    minimal = terminal_command_result_from_snapshot(snapshot, {"scope_proof": proof})
+    assert minimal["ok"] is True and minimal["available"] is True
+    # A wrong workspace expectation, a foreign command, or both modes at
+    # once fail with the same bounded reasons as the legacy path.
+    assert terminal_command_result_from_snapshot(
+        snapshot, {"scope_proof": proof, "workspace_ref": "workspace.foreign"},
+    ) == {"ok": True, "available": False, "reason": "no_device_binding"}
+    assert terminal_command_result_from_snapshot(
+        snapshot,
+        {"scope_proof": {**proof, "command_id": "command.unknown"}},
+    ) == {"ok": True, "available": False, "reason": "no_command_for_run"}
+    assert terminal_command_result_from_snapshot(
+        snapshot,
+        {"scope_proof": proof, "account_ref": "account.3217", "run_id": "run.3217"},
+    )["ok"] is False
+
+
 def test_terminal_projection_is_owner_workspace_scoped_and_closed():
     snapshot = _terminal_snapshot()
 

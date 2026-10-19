@@ -15,7 +15,17 @@ from app.grounding import (
     GroundedChatService,
 )
 from app.main import create_app
+import app.model_policy as model_policy_module
 from app.web_tools import WebToolError
+
+@pytest.fixture(autouse=True)
+def _selected_model_for_deep_research_contracts(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(
+        model_policy_module,
+        "EXECUTABLE_B14_MODEL_IDS",
+        frozenset({model_policy_module.DEFAULT_B14_MODEL_ID}),
+    )
+
 
 QUESTION = "한국의 최근 AI 정책 변화를 여러 출처로 비교해줘"
 MESSAGES = [{"role": "user", "content": QUESTION}]

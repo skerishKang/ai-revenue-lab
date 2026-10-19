@@ -1,0 +1,469 @@
+source-contract	Set up job	﻿2026-10-13T07:24:57.0521803Z Current runner version: '2.337.0'
+source-contract	Set up job	2026-10-13T07:24:57.0547167Z ##[group]Runner Image Provisioner
+source-contract	Set up job	2026-10-13T07:24:57.0548108Z Hosted Compute Agent
+source-contract	Set up job	2026-10-13T07:24:57.0548750Z Version: 20261002.596
+source-contract	Set up job	2026-10-13T07:24:57.0549396Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+source-contract	Set up job	2026-10-13T07:24:57.0550095Z Build Date: 2026-10-02T22:28:27Z
+source-contract	Set up job	2026-10-13T07:24:57.0550801Z Worker ID: {7a1da20c-11cf-4acf-8efc-57381c4f2c12}
+source-contract	Set up job	2026-10-13T07:24:57.0551512Z Region: southcentralus
+source-contract	Set up job	2026-10-13T07:24:57.0552155Z Cloud: Azure
+source-contract	Set up job	2026-10-13T07:24:57.0552686Z ##[endgroup]
+source-contract	Set up job	2026-10-13T07:24:57.0554025Z ##[group]Operating System
+source-contract	Set up job	2026-10-13T07:24:57.0554671Z Ubuntu
+source-contract	Set up job	2026-10-13T07:24:57.0555373Z 24.04.5
+source-contract	Set up job	2026-10-13T07:24:57.0555890Z LTS
+source-contract	Set up job	2026-10-13T07:24:57.0556436Z ##[endgroup]
+source-contract	Set up job	2026-10-13T07:24:57.0556989Z ##[group]Runner Image
+source-contract	Set up job	2026-10-13T07:24:57.0557585Z Image: ubuntu-24.04
+source-contract	Set up job	2026-10-13T07:24:57.0558137Z Version: 20261004.327.1
+source-contract	Set up job	2026-10-13T07:24:57.0559238Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+source-contract	Set up job	2026-10-13T07:24:57.0560875Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+source-contract	Set up job	2026-10-13T07:24:57.0561817Z ##[endgroup]
+source-contract	Set up job	2026-10-13T07:24:57.0562904Z ##[group]GITHUB_TOKEN Permissions
+source-contract	Set up job	2026-10-13T07:24:57.0565508Z Contents: read
+source-contract	Set up job	2026-10-13T07:24:57.0566074Z Metadata: read
+source-contract	Set up job	2026-10-13T07:24:57.0567009Z ##[endgroup]
+source-contract	Set up job	2026-10-13T07:24:57.0569056Z Secret source: Actions
+source-contract	Set up job	2026-10-13T07:24:57.0569988Z Cache mode: write
+source-contract	Set up job	2026-10-13T07:24:57.0570871Z Prepare workflow directory
+source-contract	Set up job	2026-10-13T07:24:57.1049862Z Prepare all required actions
+source-contract	Set up job	2026-10-13T07:24:57.1100547Z Getting action download info
+source-contract	Set up job	2026-10-13T07:24:57.3791624Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+source-contract	Set up job	2026-10-13T07:24:57.4992891Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+source-contract	Set up job	2026-10-13T07:24:57.6949871Z Complete job name: source-contract
+source-contract	Checkout exact dispatch SHA	﻿2026-10-13T07:24:57.7618034Z ##[group]Run actions/checkout@v4
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7618916Z with:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7619553Z   ref: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7620209Z   fetch-depth: 1
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7620766Z   persist-credentials: false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7621369Z   repository: skerishKang/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7625378Z   token: ***
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7625913Z   ssh-strict: true
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7626394Z   ssh-user: git
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7626870Z   clean: true
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7627381Z   sparse-checkout-cone-mode: true
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7627968Z   fetch-tags: false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7628475Z   show-progress: true
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7628968Z   lfs: false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7629463Z   submodules: false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7629966Z   set-safe-directory: true
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7630544Z   allow-unsafe-pr-checkout: false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7631276Z env:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7631744Z   B62_WORKER: padiem-chat
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7632255Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7633023Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.7633649Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8665511Z Syncing repository: skerishKang/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8668396Z ##[group]Getting Git version info
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8669328Z Working directory is '/home/runner/work/ai-revenue-lab/ai-revenue-lab'
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8671255Z [command]/usr/bin/git version
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8730552Z git version 2.55.0
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8767616Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8775701Z Temporarily overriding HOME='/home/runner/work/_temp/0ee39d96-7e6c-40ab-ade8-0b463394025c' before making global git config changes
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8778002Z Adding repository directory to the temporary git global config as a safe directory
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8780453Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ai-revenue-lab/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8830406Z Deleting the contents of '/home/runner/work/ai-revenue-lab/ai-revenue-lab'
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8834454Z ##[group]Initializing the repository
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8840978Z [command]/usr/bin/git init /home/runner/work/ai-revenue-lab/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8960124Z hint: Using 'master' as the name for the initial branch. This default branch name
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8961305Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8962299Z hint: to use in all of your new repositories, which will suppress this warning,
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8963141Z hint: call:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8963616Z hint:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8964200Z hint: 	git config --global init.defaultBranch <name>
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8965122Z hint:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8965770Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8966788Z hint: 'development'. The just-created branch can be renamed via this command:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8967573Z hint:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8968096Z hint: 	git branch -m <name>
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8968637Z hint:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8969400Z hint: Disable this message with "git config set advice.defaultBranchName false"
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8974320Z Initialized empty Git repository in /home/runner/work/ai-revenue-lab/ai-revenue-lab/.git/
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.8984659Z [command]/usr/bin/git remote add origin https://github.com/skerishKang/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9037546Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9038979Z ##[group]Disabling automatic garbage collection
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9041255Z [command]/usr/bin/git config --local gc.auto 0
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9073300Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9074581Z ##[group]Setting up auth
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9080831Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9118814Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9584396Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9618110Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9801786Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:57.9832512Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:58.0020146Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:58.0060061Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:58.0062329Z ##[group]Fetching the repository
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:58.0070363Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:01.7798048Z From https://github.com/skerishKang/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:01.7807361Z  * branch            2235754e14f546f1e31af16484db66b2c9b83235 -> FETCH_HEAD
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:01.7811550Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:01.7813400Z ##[group]Determining the checkout info
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:01.7815259Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:01.7816326Z [command]/usr/bin/git sparse-checkout disable
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:01.7870701Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:01.7904581Z ##[group]Checking out the ref
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:01.7906998Z [command]/usr/bin/git checkout --progress --force 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4880989Z Note: switching to '2235754e14f546f1e31af16484db66b2c9b83235'.
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4882398Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4883421Z You are in 'detached HEAD' state. You can look around, make experimental
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4885752Z changes and commit them, and you can discard any commits you make in this
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4887811Z state without impacting any branches by switching back to a branch.
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4889472Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4890308Z If you want to create a new branch to retain commits you create, you may
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4892124Z do so (now or later) by using -c with the switch command. Example:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4893226Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4893714Z   git switch -c <new-branch-name>
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4894445Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4895020Z Or undo this operation with:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4895714Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4896136Z   git switch -
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4896961Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4898247Z Turn off this advice by setting config variable advice.detachedHead to false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4899753Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4900664Z HEAD is now at 2235754 docs(ops): B62 single-owner release guardrails (#4553)
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4904949Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4943042Z [command]/usr/bin/git log -1 --format=%H
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4968156Z 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4976183Z ##[group]Removing auth
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.4979822Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.5009407Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.5204632Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.5227270Z http.https://github.com/.extraheader
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.5234172Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.5268277Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.5453210Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.5478767Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:25:02.5662704Z ##[endgroup]
+source-contract	Require exact current main for dispatch	﻿2026-10-13T07:25:02.5914498Z ##[group]Run set -euo pipefail
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.5916501Z [36;1mset -euo pipefail[0m
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.5918068Z [36;1mtest "${GITHUB_REF}" = "refs/heads/main"[0m
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.5919963Z [36;1mtest "$(git rev-parse HEAD)" = "${TARGET_SHA}"[0m
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.5921825Z [36;1mgit fetch --no-tags --depth=1 origin main[0m
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.5923792Z [36;1mtest "$(git rev-parse origin/main)" = "${TARGET_SHA}"[0m
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.5925966Z [36;1mecho 'PREMUTATION_EXACT_MAIN_SHA=PASS'[0m
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.6147295Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.6149149Z env:
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.6150270Z   B62_WORKER: padiem-chat
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.6151628Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.6153129Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:02.6154965Z ##[endgroup]
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:06.8644669Z From https://github.com/skerishKang/ai-revenue-lab
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:06.8645844Z  * branch            main       -> FETCH_HEAD
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:06.8646492Z  * [new branch]      main       -> origin/main
+source-contract	Require exact current main for dispatch	2026-10-13T07:25:06.8664291Z PREMUTATION_EXACT_MAIN_SHA=PASS
+source-contract	Run actions/setup-python@v5	﻿2026-10-13T07:25:06.8771886Z ##[group]Run actions/setup-python@v5
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8772351Z with:
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8772757Z   python-version: 3.12
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8773119Z   check-latest: false
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8775586Z   token: ***
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8775963Z   update-environment: true
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8776344Z   allow-prereleases: false
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8776776Z   freethreaded: false
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8777120Z env:
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8777452Z   B62_WORKER: padiem-chat
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8777833Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8778286Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:06.8778948Z ##[endgroup]
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:07.0062787Z ##[group]Installed versions
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:07.0183681Z (node:2401) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:07.0184552Z (Use `node --trace-deprecation ...` to show where the warning was created)
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:07.0185460Z Successfully set up CPython (3.12.15)
+source-contract	Run actions/setup-python@v5	2026-10-13T07:25:07.0186620Z ##[endgroup]
+source-contract	Run migration gate contract tests	﻿2026-10-13T07:25:07.0305772Z ##[group]Run python .github/tests/test_b62_d1_migration_008_gate.py
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0306812Z [36;1mpython .github/tests/test_b62_d1_migration_008_gate.py[0m
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0390010Z shell: /usr/bin/bash -e {0}
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0390589Z env:
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0391031Z   B62_WORKER: padiem-chat
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0391631Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0392216Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0393061Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0393951Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0394865Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0395706Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0396434Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0397165Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.0397942Z ##[endgroup]
+source-contract	Run migration gate contract tests	2026-10-13T07:25:07.1266802Z B62_D1_MIGRATION_008_GATE_TESTS=PASS
+source-contract	Source-only evidence	﻿2026-10-13T07:25:07.1351799Z ##[group]Run echo 'B62_D1_MIGRATION_008_SOURCE_CONTRACT=PASS'
+source-contract	Source-only evidence	2026-10-13T07:25:07.1352394Z [36;1mecho 'B62_D1_MIGRATION_008_SOURCE_CONTRACT=PASS'[0m
+source-contract	Source-only evidence	2026-10-13T07:25:07.1352895Z [36;1mecho 'PRODUCTION_MUTATION=0'[0m
+source-contract	Source-only evidence	2026-10-13T07:25:07.1398475Z shell: /usr/bin/bash -e {0}
+source-contract	Source-only evidence	2026-10-13T07:25:07.1398883Z env:
+source-contract	Source-only evidence	2026-10-13T07:25:07.1399327Z   B62_WORKER: padiem-chat
+source-contract	Source-only evidence	2026-10-13T07:25:07.1399712Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Source-only evidence	2026-10-13T07:25:07.1400159Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Source-only evidence	2026-10-13T07:25:07.1400659Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Source-only evidence	2026-10-13T07:25:07.1401192Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Source-only evidence	2026-10-13T07:25:07.1401781Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Source-only evidence	2026-10-13T07:25:07.1402259Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Source-only evidence	2026-10-13T07:25:07.1402741Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Source-only evidence	2026-10-13T07:25:07.1403244Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Source-only evidence	2026-10-13T07:25:07.1403769Z ##[endgroup]
+source-contract	Source-only evidence	2026-10-13T07:25:07.1474420Z B62_D1_MIGRATION_008_SOURCE_CONTRACT=PASS
+source-contract	Source-only evidence	2026-10-13T07:25:07.1475458Z PRODUCTION_MUTATION=0
+source-contract	Post Run actions/setup-python@v5	﻿2026-10-13T07:25:07.1607570Z Post job cleanup.
+source-contract	Post Run actions/setup-python@v5	2026-10-13T07:25:07.2776319Z (node:2414) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+source-contract	Post Run actions/setup-python@v5	2026-10-13T07:25:07.2777649Z (Use `node --trace-deprecation ...` to show where the warning was created)
+source-contract	Post Checkout exact dispatch SHA	﻿2026-10-13T07:25:07.2987212Z Post job cleanup.
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.3847063Z [command]/usr/bin/git version
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.3889299Z git version 2.55.0
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.3930609Z Temporarily overriding HOME='/home/runner/work/_temp/185ef91f-0fbc-41fa-8d84-75bd06f67108' before making global git config changes
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.3931949Z Adding repository directory to the temporary git global config as a safe directory
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.3938331Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ai-revenue-lab/ai-revenue-lab
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.3981121Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.4012068Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.4234526Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.4263064Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.4496638Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:25:07.4517208Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+source-contract	Complete job	﻿2026-10-13T07:25:07.4883975Z Cleaning up orphan processes
+source-contract	Complete job	2026-10-13T07:25:07.5140633Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+cloudflare-readonly	Set up job	﻿2026-10-13T07:25:12.8559481Z Current runner version: '2.337.0'
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8594556Z ##[group]Runner Image Provisioner
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8596023Z Hosted Compute Agent
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8597032Z Version: 20261002.596
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8598195Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8599518Z Build Date: 2026-10-02T22:28:27Z
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8600730Z Worker ID: {5cdfd961-9c5f-4407-ba96-fa74a6749852}
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8602349Z Region: eastus
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8603288Z Cloud: Azure
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8604321Z ##[endgroup]
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8606716Z ##[group]Operating System
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8607874Z Ubuntu
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8608824Z 24.04.5
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8609832Z LTS
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8610701Z ##[endgroup]
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8611923Z ##[group]Runner Image
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8613062Z Image: ubuntu-24.04
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8614084Z Version: 20261004.327.1
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8616536Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8619639Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8621417Z ##[endgroup]
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8623686Z ##[group]GITHUB_TOKEN Permissions
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8626640Z Contents: read
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8627622Z Metadata: read
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8628893Z ##[endgroup]
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8632178Z Secret source: Actions
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8633885Z Cache mode: write
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.8635295Z Prepare workflow directory
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.9372438Z Prepare all required actions
+cloudflare-readonly	Set up job	2026-10-13T07:25:12.9446022Z Getting action download info
+cloudflare-readonly	Set up job	2026-10-13T07:25:13.1240082Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+cloudflare-readonly	Set up job	2026-10-13T07:25:13.3132155Z Complete job name: cloudflare-readonly
+cloudflare-readonly	Checkout exact target SHA	﻿2026-10-13T07:25:13.3961981Z ##[group]Run actions/checkout@v4
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3962973Z with:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3963479Z   ref: 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3964106Z   fetch-depth: 1
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3964580Z   persist-credentials: false
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3965131Z   repository: skerishKang/ai-revenue-lab
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3968799Z   token: ***
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3969262Z   ssh-strict: true
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3969733Z   ssh-user: git
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3970168Z   clean: true
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3970645Z   sparse-checkout-cone-mode: true
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3971184Z   fetch-tags: false
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3971837Z   show-progress: true
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3972311Z   lfs: false
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3972732Z   submodules: false
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3973185Z   set-safe-directory: true
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3973699Z   allow-unsafe-pr-checkout: false
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3974486Z env:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3974933Z   B62_WORKER: padiem-chat
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3975428Z   D1_BINDING: PADIEM_CHAT_DB
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3976029Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3976905Z   CLOUDFLARE_API_TOKEN: ***
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3977554Z   CLOUDFLARE_ACCOUNT_ID: ***
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.3978054Z ##[endgroup]
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.4976494Z Syncing repository: skerishKang/ai-revenue-lab
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.4979019Z ##[group]Getting Git version info
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.4979961Z Working directory is '/home/runner/work/ai-revenue-lab/ai-revenue-lab'
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.4981389Z [command]/usr/bin/git version
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5069121Z git version 2.55.0
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5092853Z ##[endgroup]
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5108366Z Temporarily overriding HOME='/home/runner/work/_temp/1a0645dc-4a24-4bd5-a0a4-49050c04449e' before making global git config changes
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5110879Z Adding repository directory to the temporary git global config as a safe directory
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5115222Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ai-revenue-lab/ai-revenue-lab
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5168447Z Deleting the contents of '/home/runner/work/ai-revenue-lab/ai-revenue-lab'
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5172170Z ##[group]Initializing the repository
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5176374Z [command]/usr/bin/git init /home/runner/work/ai-revenue-lab/ai-revenue-lab
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5301521Z hint: Using 'master' as the name for the initial branch. This default branch name
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5303601Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5305434Z hint: to use in all of your new repositories, which will suppress this warning,
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5306915Z hint: call:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5307937Z hint:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5309343Z hint: 	git config --global init.defaultBranch <name>
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5310644Z hint:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5312054Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5313891Z hint: 'development'. The just-created branch can be renamed via this command:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5315388Z hint:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5316308Z hint: 	git branch -m <name>
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5317882Z hint:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5319271Z hint: Disable this message with "git config set advice.defaultBranchName false"
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5321415Z Initialized empty Git repository in /home/runner/work/ai-revenue-lab/ai-revenue-lab/.git/
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5325458Z [command]/usr/bin/git remote add origin https://github.com/skerishKang/ai-revenue-lab
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5394905Z ##[endgroup]
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5396265Z ##[group]Disabling automatic garbage collection
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5399051Z [command]/usr/bin/git config --local gc.auto 0
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5435983Z ##[endgroup]
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5437377Z ##[group]Setting up auth
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5445312Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5484671Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5889374Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.5930305Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.6163071Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.6201544Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.6426626Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.6467548Z ##[endgroup]
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.6468960Z ##[group]Fetching the repository
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:13.6478786Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:16.3353420Z From https://github.com/skerishKang/ai-revenue-lab
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:16.3356554Z  * branch            2235754e14f546f1e31af16484db66b2c9b83235 -> FETCH_HEAD
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:16.3361241Z ##[endgroup]
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:16.3363255Z ##[group]Determining the checkout info
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:16.3365301Z ##[endgroup]
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:16.3366766Z [command]/usr/bin/git sparse-checkout disable
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:16.3423188Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:16.3457761Z ##[group]Checking out the ref
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:16.3461952Z [command]/usr/bin/git checkout --progress --force 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0270141Z Note: switching to '2235754e14f546f1e31af16484db66b2c9b83235'.
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0275190Z 
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0275778Z You are in 'detached HEAD' state. You can look around, make experimental
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0277137Z changes and commit them, and you can discard any commits you make in this
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0278258Z state without impacting any branches by switching back to a branch.
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0279183Z 
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0279621Z If you want to create a new branch to retain commits you create, you may
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0280525Z do so (now or later) by using -c with the switch command. Example:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0281076Z 
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0281327Z   git switch -c <new-branch-name>
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0281926Z 
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0282171Z Or undo this operation with:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0282532Z 
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0282746Z   git switch -
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0283059Z 
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0283518Z Turn off this advice by setting config variable advice.detachedHead to false
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0284160Z 
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0284600Z HEAD is now at 2235754 docs(ops): B62 single-owner release guardrails (#4553)
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0305507Z ##[endgroup]
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0360519Z [command]/usr/bin/git log -1 --format=%H
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0390301Z 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0401780Z ##[group]Removing auth
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0406765Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0439605Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0671367Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0708407Z http.https://github.com/.extraheader
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0716531Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0752296Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.0982488Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.1014451Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+cloudflare-readonly	Checkout exact target SHA	2026-10-13T07:25:17.1241469Z ##[endgroup]
+cloudflare-readonly	Reconfirm exact main before live readback	﻿2026-10-13T07:25:17.1457022Z ##[group]Run set -euo pipefail
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1457511Z [36;1mset -euo pipefail[0m
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1457885Z [36;1mtest "$(git rev-parse HEAD)" = "${TARGET_SHA}"[0m
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1458310Z [36;1mgit fetch --no-tags --depth=1 origin main[0m
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1458895Z [36;1mtest "$(git rev-parse origin/main)" = "${TARGET_SHA}"[0m
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1459494Z [36;1mecho 'READONLY_EXACT_MAIN_SHA=PASS'[0m
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1743555Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1744068Z env:
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1744364Z   B62_WORKER: padiem-chat
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1744715Z   D1_BINDING: PADIEM_CHAT_DB
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1745123Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1746016Z   CLOUDFLARE_API_TOKEN: ***
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1746488Z   CLOUDFLARE_ACCOUNT_ID: ***
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:17.1746826Z ##[endgroup]
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:20.3004928Z From https://github.com/skerishKang/ai-revenue-lab
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:20.3005797Z  * branch            main       -> FETCH_HEAD
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:20.3006262Z  * [new branch]      main       -> origin/main
+cloudflare-readonly	Reconfirm exact main before live readback	2026-10-13T07:25:20.3028599Z READONLY_EXACT_MAIN_SHA=PASS
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	﻿2026-10-13T07:25:20.3071079Z ##[group]Run set -euo pipefail
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3071461Z [36;1mset -euo pipefail[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3072058Z [36;1mtest -n "${CLOUDFLARE_API_TOKEN}"[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3072374Z [36;1mtest -n "${CLOUDFLARE_ACCOUNT_ID}"[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3073064Z [36;1mauth=(-H "Authorization: ***" -H "Content-Type: application/json")[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3073536Z [36;1msettings="${RUNNER_TEMP}/b62-settings-d1-008.json"[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3073879Z [36;1mcurl -fsS "${auth[@]}" \[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3074435Z [36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3075255Z [36;1m  -o "${settings}"[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3075567Z [36;1mDB_ID="$(python - "${settings}" "${D1_BINDING}" <<'PY'[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3075903Z [36;1mimport json, re, sys[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3076248Z [36;1mpayload = json.load(open(sys.argv[1], encoding='utf-8'))[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3076634Z [36;1mif payload.get('success') is not True:[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3077023Z [36;1m    raise SystemExit('worker settings read failed')[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3077420Z [36;1mbindings = payload.get('result', {}).get('bindings', [])[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3077903Z [36;1mhits = [b for b in bindings if b.get('type') == 'd1' and b.get('name') == sys.argv[2]][0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3078314Z [36;1mif len(hits) != 1:[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3078677Z [36;1m    raise SystemExit('expected exactly one live PADIEM_CHAT_DB binding')[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3079097Z [36;1mdatabase_id = hits[0].get('id')[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3079568Z [36;1mif not isinstance(database_id, str) or not re.fullmatch(r'[0-9a-fA-F-]{32,36}', database_id):[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3080160Z [36;1m    raise SystemExit('live PADIEM_CHAT_DB binding has invalid database id')[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3080567Z [36;1mprint(database_id)[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3080801Z [36;1mPY[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3080986Z [36;1m)"[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3081176Z [36;1mtest -n "${DB_ID}"[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3081445Z [36;1mecho "::add-mask::${DB_ID}"[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3082124Z [36;1mecho "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3082463Z [36;1mecho 'LIVE_PADIEM_CHAT_DB_DERIVED=PASS'[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3082770Z [36;1mecho 'D1_IDENTIFIER_OUTPUT=0'[0m
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3148576Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3148939Z env:
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3149149Z   B62_WORKER: padiem-chat
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3149401Z   D1_BINDING: PADIEM_CHAT_DB
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3149679Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3150228Z   CLOUDFLARE_API_TOKEN: ***
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3150538Z   CLOUDFLARE_ACCOUNT_ID: ***
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:20.3150773Z ##[endgroup]
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:21.2405595Z LIVE_PADIEM_CHAT_DB_DERIVED=PASS
+cloudflare-readonly	Resolve live PADIEM_CHAT_DB binding without emitting identifiers	2026-10-13T07:25:21.2405974Z D1_IDENTIFIER_OUTPUT=0
+cloudflare-readonly	Read only migration 008 schema	﻿2026-10-13T07:25:21.2509012Z ##[group]Run set -euo pipefail
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2509367Z [36;1mset -euo pipefail[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2509960Z [36;1mauth=(-H "Authorization: ***" -H "Content-Type: application/json")[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2510447Z [36;1mquery="${RUNNER_TEMP}/b62-d1-008-schema-query.json"[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2510799Z [36;1mpython - "${query}" <<'PY'[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2511065Z [36;1mimport json, sys[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2511981Z [36;1msql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('claw_document_metadata','idx_claw_document_metadata_tenant_active') ORDER BY name;[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2512674Z [36;1mPRAGMA table_info(claw_document_metadata);[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2513089Z [36;1mPRAGMA index_info(idx_claw_document_metadata_tenant_active);"""[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2513560Z [36;1mwith open(sys.argv[1], 'w', encoding='utf-8') as handle:[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2513927Z [36;1m    json.dump({'sql': sql}, handle)[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2514202Z [36;1mPY[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2514515Z [36;1mresponse="${RUNNER_TEMP}/b62-d1-008-schema-before.json"[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2514881Z [36;1mcurl -fsS -X POST "${auth[@]}" \[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2515414Z [36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2516000Z [36;1m  --data-binary "@${query}" -o "${response}"[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2516478Z [36;1mevidence="$(python .github/scripts/b62_d1_migration_008_schema.py "${response}")"[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2516925Z [36;1mecho "${evidence}"[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2517401Z [36;1mstate="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_D1_MIGRATION_008_SCHEMA=//p' | tr '[:upper:]' '[:lower:]')"[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2518280Z [36;1mcase "${state}" in exact|missing|drift) ;; *) echo 'invalid schema classifier state' >&2; exit 1;; esac[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2518831Z [36;1mecho "schema_state=${state}" >> "${GITHUB_OUTPUT}"[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2519178Z [36;1mecho 'D1_SCHEMA_QUERY=READ_ONLY'[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2519471Z [36;1mecho 'ROW_DATA_READ=0'[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2519743Z [36;1mecho 'PRODUCTION_MUTATION=0'[0m
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2582520Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2582866Z env:
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2583076Z   B62_WORKER: padiem-chat
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2583327Z   D1_BINDING: PADIEM_CHAT_DB
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2583611Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2584119Z   CLOUDFLARE_API_TOKEN: ***
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2584433Z   CLOUDFLARE_ACCOUNT_ID: ***
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2584705Z   DB_ID: ***
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.2584899Z ##[endgroup]
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.8595438Z B62_D1_MIGRATION_008_SCHEMA=EXACT
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.8617152Z D1_SCHEMA_QUERY=READ_ONLY
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.8617564Z ROW_DATA_READ=0
+cloudflare-readonly	Read only migration 008 schema	2026-10-13T07:25:21.8617804Z PRODUCTION_MUTATION=0
+cloudflare-readonly	Post Checkout exact target SHA	﻿2026-10-13T07:25:21.8754394Z Post job cleanup.
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:21.9594134Z [command]/usr/bin/git version
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:21.9634623Z git version 2.55.0
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:21.9675026Z Temporarily overriding HOME='/home/runner/work/_temp/6d11e493-4806-4092-b6a9-20c73c6fc783' before making global git config changes
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:21.9676702Z Adding repository directory to the temporary git global config as a safe directory
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:21.9679049Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ai-revenue-lab/ai-revenue-lab
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:21.9720745Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:21.9756293Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:22.0016720Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:22.0051808Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:22.0324078Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+cloudflare-readonly	Post Checkout exact target SHA	2026-10-13T07:25:22.0370239Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+cloudflare-readonly	Complete job	﻿2026-10-13T07:25:22.0774074Z Evaluate and set job outputs
+cloudflare-readonly	Complete job	2026-10-13T07:25:22.0779266Z Set output 'schema_state'
+cloudflare-readonly	Complete job	2026-10-13T07:25:22.0781161Z Cleaning up orphan processes
+cloudflare-readonly	Complete job	2026-10-13T07:25:22.1085470Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -1,13 +1,17 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
+
+from canonical_connector_enrollment_consent_rpc import CanonicalIdentityEnrollmentConsentRPC
+from canonical_connector_enrollment_durable import IdentityDurableConnectorEnrollmentRecords
 
 from identity_authority_durable import (
     CloudflareCanonicalIdentityAuthorityStore,
     decode_identity_lookup_key,
 )
 from identity_connector_ticket import (
+    ALLOWED_PRODUCT_ID,
     CanonicalConnectorContextStore,
     GoogleConnectTicketIssuer,
     decode_connect_ticket_key,
@@ -36,6 +40,12 @@ _CURRENT_SESSION_KEYS = frozenset({"product_id", "product_user_id"})
 _REVERSE_PRODUCT_USER_KEYS = frozenset({"product_id", "canonical_subject_id"})
 _CONNECT_KEYS = frozenset({"session_id", "connector_id"})
 _CONNECTOR_WORKSPACE_KEYS = frozenset({"session_id"})
+_CONNECTOR_CONTEXT_KEYS = frozenset({"session_id"})
+_CONNECTOR_CONTEXT_PRESENT_KEYS = frozenset(
+    {"present", "product_id", "subject_id", "actor_ref", "workspace_ref"}
+)
+_CONNECTOR_CONTEXT_ABSENT_KEYS = frozenset({"present"})
+_REVIEWED_B66_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
 _TENANT_CREATE_KEYS: frozenset[str] = frozenset()
 _TENANT_GET_KEYS = frozenset({"tenant_id"})
@@ -106,7 +116,27 @@ def _connector_workspace_wire(context: Any | None) -> dict[str, Any]:
     return {"present": True, "workspace_ref": context.workspace_ref}
 
 
-class CanonicalIdentityDurableObject(DurableObject):
+def _connector_context_wire(session: Any, context: Any | None) -> dict[str, Any]:
+    """Private exact-session actor/workspace/subject projection for host gates.
+
+    Only the already-authorized private Control Plane Service Binding may call
+    the resolver. ``account_ref``, sealed state, tenancy and every credential
+    remain in the Durable Object; the caller supplies only ``session_id``.
+    ``present=False`` is a fail-closed absence, not a projected connector state.
+    """
+
+    if context is None:
+        return {"present": False}
+    return {
+        "present": True,
+        "product_id": context.product_id,
+        "subject_id": session.subject.subject_id,
+        "actor_ref": context.actor_ref,
+        "workspace_ref": context.workspace_ref,
+    }
+
+
+class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, DurableObject):
     """Private canonical identity/session and connector-ticket authority."""
 
     def __init__(self, ctx, env):
@@ -126,6 +156,7 @@ class CanonicalIdentityDurableObject(DurableObject):
             raise RuntimeError(
                 "identity authority product boundary does not match the reviewed product set"
             )
+        self._storage = ctx.storage
         self._store = CloudflareCanonicalIdentityAuthorityStore(
             ctx.storage,
             lookup_key=decode_identity_lookup_key(
@@ -139,6 +170,11 @@ class CanonicalIdentityDurableObject(DurableObject):
             signing_key=decode_connect_ticket_key(
                 _required_env(env, "GOOGLE_CONNECT_TICKET_KEY")
             ),
+        )
+        # Separate opt-in adapter over the SAME canonical Identity DO SQLite.
+        # No enrollment schema is installed during Worker/DO construction.
+        self._connector_enrollment_records = IdentityDurableConnectorEnrollmentRecords(
+            storage=ctx.storage, session_reader=self._store
         )
 
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
@@ -283,6 +319,41 @@ class CanonicalIdentityDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def resolve_connector_context(self, payload: dict) -> dict:
+        """Read-only exact-session host context: product/subject/actor/workspace.
+
+        This RPC exists for trusted product hosts that must verify one signed
+        canonical session and that session's own canonical connector context
+        before starting a reviewed connector. The caller can never supply a
+        subject, actor, account, workspace or tenant. The Durable Object
+        re-reads the authoritative session, rejects inactive or foreign
+        sessions and then performs the existing read-only context lookup, so
+        asking about a host context never mints connector context.
+        """
+
+        try:
+            wire = _closed(
+                payload,
+                _CONNECTOR_CONTEXT_KEYS,
+                "connector context resolve RPC",
+            )
+            session = self._store.resolve_auth_session(session_id=wire["session_id"])
+            if (
+                session.product_id != ALLOWED_PRODUCT_ID
+                or session.subject.subject_type is not SubjectType.USER
+            ):
+                raise ControlPlaneContractError(
+                    "connector_context_session_mismatch",
+                    "canonical connector context is unavailable",
+                )
+            context = self._connector_context_store.resolve_existing(
+                auth_session=session,
+                now=datetime.now().astimezone(),
+            )
+            return {"ok": True, "context": _connector_context_wire(session, context)}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def create_tenant(self, payload: dict) -> dict:
         try:
             _closed(payload, _TENANT_CREATE_KEYS, "tenant-create RPC")
@@ -390,6 +461,9 @@ class Default(WorkerEntrypoint):
     async def resolve_connector_workspace(self, payload: dict) -> dict:
         return await self._stub().resolve_connector_workspace(payload)
 
+    async def resolve_connector_context(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_context(payload)
+
     async def create_tenant(self, payload: dict) -> dict:
         return await self._stub().create_tenant(payload)
 
@@ -407,6 +481,27 @@ class Default(WorkerEntrypoint):
 
     async def resolve_active_tenant_membership(self, payload: dict) -> dict:
         return await self._stub().resolve_active_tenant_membership(payload)
+
+    async def install_connector_enrollment_schema(self, payload: dict) -> dict:
+        return await self._stub().install_connector_enrollment_schema(payload)
+
+    async def resolve_connector_owner_scope(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_owner_scope(payload)
+
+    async def resolve_connector_enrollment_consent_for_device(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_enrollment_consent_for_device(payload)
+
+    async def bind_connector_enrollment_challenge(self, payload: dict) -> dict:
+        return await self._stub().bind_connector_enrollment_challenge(payload)
+
+    async def authorize_connector_enrollment_redeem(self, payload: dict) -> dict:
+        return await self._stub().authorize_connector_enrollment_redeem(payload)
+
+    async def grant_connector_enrollment_consent(self, payload: dict) -> dict:
+        return await self._stub().grant_connector_enrollment_consent(payload)
+
+    async def revoke_connector_enrollment_consent(self, payload: dict) -> dict:
+        return await self._stub().revoke_connector_enrollment_consent(payload)
 
     async def fetch(self, request):
         del request
@@ -435,3 +530,6 @@ PUBLIC_FETCH = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_MUTATION = False
+CANONICAL_CONNECTOR_CONTEXT_RPC = True
+CANONICAL_CONNECTOR_CONTEXT_CLIENT_ASSERTED = False
+CANONICAL_CONNECTOR_CONTEXT_MINT_ON_READ = False

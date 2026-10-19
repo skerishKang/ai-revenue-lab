@@ -4,6 +4,7 @@ import io
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 from kagent.cli import main, parser
@@ -20,6 +21,7 @@ from kagent.document_export import (
 from kagent.draft_flow import run_draft_command
 from kagent.order_flow import run_order_command
 from kagent.p01_adapter import ClawOrchestrationOutcome
+from kagent.review_flow import FLOW_PACING_SECONDS
 
 
 class StubAdapter:
@@ -160,14 +162,19 @@ class DocumentExportTests(unittest.TestCase):
             phase1_ans = "품목:\n- 품명: 기기 | 수량: 1 | 단가: 1000\n"
             adapter = StubAdapter(answers=[phase1_ans, "초안 작성 완료"])
 
-            code = run_draft_command(
-                repo,
-                "context.md",
-                "견적서",
-                adapter=adapter,
-                out_path=out_docx,
-                doc_format="docx",
-            )
+            # Production must still request the real 5s provider throttle;
+            # this synthetic adapter needs to verify the request, not sleep.
+            with mock.patch("kagent.review_flow._sleep") as pacing:
+                code = run_draft_command(
+                    repo,
+                    "context.md",
+                    "견적서",
+                    adapter=adapter,
+                    out_path=out_docx,
+                    doc_format="docx",
+                )
+            pacing.assert_called_once_with(FLOW_PACING_SECONDS)
+            self.assertEqual(adapter.call_count, 2)
             self.assertEqual(code, 0)
             self.assertTrue(out_docx.exists())
             with zipfile.ZipFile(out_docx, "r") as zf:

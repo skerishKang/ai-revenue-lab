@@ -18,6 +18,7 @@ from .execution_runtime import (
     ExecutionRuntimeError,
     _compose_system_instruction,
     _error_class_for_b14,
+    _native_model_parameters,
     _normalize_model_policy,
     _safe_identifier,
     _safe_message_for_b14,
@@ -373,6 +374,10 @@ class StreamingExecutionRuntime:
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
+            # Same validated native contract as the non-streaming lane, so a
+            # customer's explicit level reaches the provider identically in SSE
+            # and JSON shapes (#3977).
+            model_parameters = _native_model_parameters(request.agent)
             messages = request.messages
             if system_instruction is not None:
                 messages = ({"role": "system", "content": system_instruction}, *messages)
@@ -382,6 +387,7 @@ class StreamingExecutionRuntime:
                 temperature=temperature,
                 max_tokens=request.agent.max_tokens,
                 routing=routing,
+                model_parameters=model_parameters,
             )
         except ValueError:
             metadata = self._metadata(

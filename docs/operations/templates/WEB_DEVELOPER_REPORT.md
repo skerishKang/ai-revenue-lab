@@ -1,5 +1,7 @@
 # Web Developer Report
 
+For a tiny bounded fix, prefer the compact report in `GITHUB_REPORT_HANDOFF_POLICY.md`. Use this full template only when the work contract or risk requires it.
+
 ## Revision
 
 - Repository:
@@ -90,10 +92,27 @@ Label browser/local checks run by the implementation actor as `IMPLEMENTATION_SE
 
 Do not claim `ARCHETYPE_SYSTEM_PASS`, `FULL_SURFACE_VISUAL_PASS`, or owner approval solely from implementation self-check.
 
-## CI
+## Development fast gate
+
+```text
+DEV_FAST_GATE=PASS|FAIL|NOT_RUN
+DEV_ACTOR_RELEASED=YES|NO
+```
+
+- Focused commands/checks:
+- Why this is the smallest sufficient implementation gate:
+- Exact head:
+
+After `DEV_FAST_GATE=PASS`, the implementation actor may move to the next authorized issue. Do not wait synchronously for Windows/Ubuntu/full-browser validation.
+
+## CI / asynchronous validation
 
 - Configured checks:
 - Runs/statuses:
+- `VALIDATOR_WINDOWS=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED`:
+- `VALIDATOR_UBUNTU=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED`:
+- `VALIDATOR_BROWSER=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED`:
+- `FULL_VALIDATION=PENDING|PASS|FAIL`:
 - Missing coverage:
 
 ## Security / data / secret boundary
@@ -108,6 +127,7 @@ Do not claim `ARCHETYPE_SYSTEM_PASS`, `FULL_SURFACE_VISUAL_PASS`, or owner appro
 - Visual/system misses:
 - Environment limitations:
 - Independent validation required/pending:
+- Async validator repair owner, if any:
 - CTO visual gate decision pending:
 - Owner-only decision pending:
 

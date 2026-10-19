@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
+import inspect
 from dataclasses import dataclass, field, replace
 from typing import Any
 
-from .config import Settings
+from .config import ConfigError, Settings
 
 WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_RUNTIME_MODE",
@@ -16,12 +17,16 @@ WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_WEB_PROVIDER",
     "FIRECRAWL_API_KEY",
     "PADIEM_CHAT_DAUM_REST_API_KEY",
+    "TINYFISH_API_KEY",
     "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
     "PADIEM_CHAT_AUTH_MODE",
     "PADIEM_CHAT_PUBLIC_BASE_URL",
     "PADIEM_CHAT_GOOGLE_CLIENT_ID",
     "PADIEM_CHAT_GOOGLE_CLIENT_SECRET",
     "PADIEM_CHAT_SESSION_SECRET",
+    "PADIEM_CHAT_CUSTOM_KEY_SECRET",
+    "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS",
+    "PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS",
     "PADIEM_CHAT_SESSION_MAX_AGE_SECONDS",
     "PADIEM_CHAT_QUOTA_SALT",
     "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
@@ -32,6 +37,13 @@ WORKER_BINDING_NAMES = frozenset({
 })
 D1_BINDING_NAME = "PADIEM_CHAT_DB"
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
+# #4643: the Service Binding this Chat Worker uses to reach the private
+# `padiem-voice-stt` Worker. The browser never holds this binding; it posts to
+# /api/voice/transcribe and this Worker forwards. No entry exists in
+# apps/padiem-chat/wrangler.toml yet, so until CENTRAL adds it the app resolves
+# to None and every voice route fails closed with `voice_stt_unavailable`.
+VOICE_STT_SERVICE_BINDING_NAME = "VOICE_STT_SERVICE"
+B66_PDF_RENDERER_SERVICE_BINDING_NAME = "B66_PDF_RENDERER_SERVICE"
 IDENTITY_AUTHORITY_SERVICE_BINDING_NAME = "IDENTITY_AUTHORITY_SERVICE"
 WORKSPACE_R2_BINDING_NAME = "PADIEM_WORKSPACE_FILES"
 # #2830 B-1B private Google OAuth workspace-truth Service Binding. Resolved from
@@ -86,16 +98,23 @@ CONTENT_SECURITY_POLICY = (
     "default-src 'self'; "
     "base-uri 'none'; "
     "object-src 'none'; "
-    "frame-src 'none'; "
+    "frame-src blob:; "
     "frame-ancestors 'none'; "
     "script-src 'self'; "
-    "connect-src 'self'; "
+    "connect-src 'self' https://www.googleapis.com; "
     "img-src 'self' data: blob:; "
     "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
     "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; "
     "form-action 'self'"
 )
-PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=()"
+# #4643: the shared Chat/Claw voice composer needs `getUserMedia` on this origin
+# only. `microphone=(self)` re-enables the microphone for same-origin documents
+# and nothing else: camera and geolocation stay fully denied, and a cross-origin
+# iframe still cannot capture audio. This header change is necessary but NOT
+# sufficient for live STT: the STT Worker deployment gate, the canonical Control
+# Plane bindings and the `voice.stt.*` entitlement grants remain separate,
+# CENTRAL-owned activation steps. Nothing here weakens auth or the cost guard.
+PERMISSIONS_POLICY = "camera=(), microphone=(self), geolocation=()"
 
 BASE_SECURITY_HEADERS = {
     "X-Content-Type-Options": "nosniff",
@@ -112,23 +131,102 @@ def binding_value(env: Any, key: str) -> Any:
     return getattr(env, key, None)
 
 
-def settings_from_worker_bindings(env: Any) -> Settings:
+async def resolve_web_secrets_store_keys(env: Any) -> dict[str, str]:
+    """Resolve only the selected public Search keys from trusted Worker bindings.
+
+    Cloudflare Secrets Store bindings are async .get() capabilities; they are
+    NOT plaintext. Never read a key in mock/off mode, expose errors, or
+    substitute a missing TinyFish credential with the Daum credential.
+    Ordinary direct secret_text bindings remain backward compatible.
+    """
+    mode = str(binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock").strip().lower()
+    armed = str(binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false").strip().lower() == "true"
+    selected = binding_value(env, "PADIEM_CHAT_WEB_PROVIDER")
+    if selected is None:
+        selected = "tinyfish_daum" if mode == "b14" and armed else "off"
+    selected = str(selected).strip().lower()
+    names: tuple[str, ...]
+    if selected == "tinyfish":
+        names = ("TINYFISH_API_KEY",)
+    elif selected == "daum":
+        names = ("PADIEM_CHAT_DAUM_REST_API_KEY",)
+    elif selected == "tinyfish_daum":
+        names = ("TINYFISH_API_KEY", "PADIEM_CHAT_DAUM_REST_API_KEY")
+    else:
+        return {}
+
+    resolved: dict[str, str] = {}
+    for name in names:
+        bound = binding_value(env, name)
+        if bound is None:
+            continue  # Settings.from_values enforces the missing-key gate.
+        if isinstance(bound, str):
+            value = bound
+        else:
+            getter = getattr(bound, "get", None)
+            if not callable(getter):
+                raise ConfigError("selected public web credential binding is invalid")
+            try:
+                pending = getter()
+                if not inspect.isawaitable(pending):
+                    raise TypeError("unexpected synchronous Secrets Store capability")
+                value = await pending
+            except Exception:
+                # Never chain or publish provider/FFI exceptions: they may carry
+                # credential contents, headers, URLs, or account identifiers.
+                raise ConfigError("selected public web credential unavailable") from None
+        if not isinstance(value, str) or not value.strip():
+            raise ConfigError("selected public web credential unavailable")
+        resolved[name] = value
+    return resolved
+
+
+def settings_from_worker_bindings(
+    env: Any, *, resolved_web_keys: Mapping[str, str] | None = None
+) -> Settings:
+    runtime_mode = binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock"
+    live_enabled = binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false"
+    explicit_web_provider = binding_value(env, "PADIEM_CHAT_WEB_PROVIDER")
+    # Source default only when real public B14 execution has been explicitly armed.
+    # Mock and B14 deadman-switch-off modes retain zero-network off default.
+    default_web_provider = (
+        "tinyfish_daum"
+        if str(runtime_mode).strip().lower() == "b14"
+        and str(live_enabled).strip().lower() == "true"
+        else "off"
+    )
     return Settings.from_values(
-        runtime_mode=binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock",
+        runtime_mode=runtime_mode,
         b14_base_url=binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
         b66_quote_base_url=binding_value(env, "PADIEM_CHAT_B66_QUOTE_BASE_URL"),
-        timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "20",
-        completed_timeout_seconds=binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "50",
-        live_enabled=binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false",
-        web_provider=binding_value(env, "PADIEM_CHAT_WEB_PROVIDER") or "off",
+        timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "600",
+        completed_timeout_seconds=binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "600",
+        live_enabled=live_enabled,
+        web_provider=default_web_provider if explicit_web_provider is None else explicit_web_provider,
         firecrawl_api_key=binding_value(env, "FIRECRAWL_API_KEY"),
-        daum_rest_api_key=binding_value(env, "PADIEM_CHAT_DAUM_REST_API_KEY"),
+        daum_rest_api_key=(
+            binding_value(env, "PADIEM_CHAT_DAUM_REST_API_KEY")
+            if resolved_web_keys is None
+            else resolved_web_keys.get("PADIEM_CHAT_DAUM_REST_API_KEY")
+        ),
+        tinyfish_api_key=(
+            binding_value(env, "TINYFISH_API_KEY")
+            if resolved_web_keys is None
+            else resolved_web_keys.get("TINYFISH_API_KEY")
+        ),
         web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "15",
         auth_mode=binding_value(env, "PADIEM_CHAT_AUTH_MODE") or "off",
         public_base_url=binding_value(env, "PADIEM_CHAT_PUBLIC_BASE_URL"),
         google_client_id=binding_value(env, "PADIEM_CHAT_GOOGLE_CLIENT_ID"),
         google_client_secret=binding_value(env, "PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
         session_secret=binding_value(env, "PADIEM_CHAT_SESSION_SECRET"),
+        custom_key_secret=binding_value(env, "PADIEM_CHAT_CUSTOM_KEY_SECRET"),
+        custom_key_previous_secrets=binding_value(
+            env, "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS"
+        ),
+        custom_key_legacy_session_secrets=binding_value(
+            env, "PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS"
+        ),
         session_max_age_seconds=binding_value(env, "PADIEM_CHAT_SESSION_MAX_AGE_SECONDS") or str(7 * 24 * 3600),
         quota_salt=binding_value(env, "PADIEM_CHAT_QUOTA_SALT"),
         anonymous_burst_limit=binding_value(env, "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT") or "4",
@@ -226,8 +324,8 @@ def response_headers_for_path(
         # sole frame authority from the same deployment-owned value that powers
         # /api/b66/runtime-config; browser/request input cannot widen CSP.
         headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY.replace(
-            "frame-src 'none';",
-            f"frame-src {b66_quote_base_url};",
+            "frame-src blob:;",
+            f"frame-src blob: {b66_quote_base_url};",
         )
     if path == "/health" or path.startswith("/api/") or path.startswith("/auth/"):
         headers["Cache-Control"] = "no-store"

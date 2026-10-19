@@ -14,6 +14,7 @@ import re
 import subprocess
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
@@ -714,15 +715,15 @@ def test_app_exposes_a_narrow_injection_seam_with_no_transport() -> None:
     assert "projectLocalHandoff" in app
     assert "padiem:claw-local-connect-requested" in app
     # The CTA must not navigate, open a deep link, or hit the network itself.
-    assert "window.location" not in app.split("#3084 — Claw")[1] if "#3084 — Claw" in app else True
+    assert "window.location" not in app.split("#3084 — Claw", 1)[1].split("window.__padiemClawLocalHandoff = Object.freeze", 1)[0] if "#3084 — Claw" in app else True
     for forbidden in (
         "new WebSocket",
         "EventSource",
         "crypto.subtle",
         "localStorage",
-        "sessionStorage",
     ):
         assert forbidden not in app, f"{forbidden} must not be introduced by #3084"
+    assert_session_storage_is_handoff_only(app)
 
 
 def test_app_cta_handler_refuses_when_the_projection_is_not_proceedable() -> None:
@@ -861,7 +862,11 @@ BASE_APP_ENDPOINTS = frozenset(
 # than by weakening the historical baseline.
 ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({
     "/api/connectors/status",
+    "/api/connectors/google/ticket",
+    "/api/connectors/google/calendar/activate-read",
     "/api/claw/automation/rules",
+    # #4139: owner-scoped, run-specific GET; no new POST or PC dispatch.
+    "/api/claw/runs/",
 })
 
 
@@ -869,9 +874,17 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     """#3084 is a Web slice. It must not add a server endpoint of its own."""
     assert "/api/" not in _source()
 
-    present = set(re.findall(r'"/api/[^"]+"', _app_source()))
+    app = _app_source()
+    # #3932: same existing run-history endpoint, bounded 10/30 on explicit user click.
+    # Keep the old baseline route in scope; never admit a new endpoint silently.
+    assert app.count("fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`") == 1
+    assert "let clawRunHistoryLimit = 10;" in app
+    assert "clawRunHistoryLimit = 30;" in app
+    present = set(re.findall(r'"/api/[^"]+"', app))
     # The regex captures the surrounding quotes; the pinned baseline does not.
     present = {value.strip('"') for value in present}
+    # A safe template-literal GET replaces the previous literal limit=10 call.
+    present.add("/api/claw/runs?limit=10")
     added = present - ALLOWED_APP_ENDPOINTS
     assert not added, f"#3084 introduced new endpoints: {sorted(added)}"
     # No historical endpoint disappeared, and the only later reconciled

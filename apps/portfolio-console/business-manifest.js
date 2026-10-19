@@ -1,4 +1,4 @@
-/*  business-manifest.js  —  SOLE static identity source for B1-61 (Phase 2A+)
+/*  business-manifest.js  —  SOLE static identity source for registered portfolio entries (Phase 2A+)
  *
  * This is the ONLY file defining Business display identity (slug, title,
  * koreanTitle, authority, lifecycle, state, workspace, surfaceUrl, priority).
@@ -11,6 +11,8 @@
  *
  * Contains NO volatile state: no Issue state, PR state, CI, SHA, updated-at.
  * B56 is an intentional numbering gap and is not represented as a Business.
+ * B62/B63 are reserved-but-unregistered numbers (StoryMemory B61 is canonical;
+ * B64 AI Reward Router is registered here under owner-approved Issue #987).
  */
 
 (function () {
@@ -111,6 +113,8 @@
     identity({ n:60, s:"ai-api", t:"AI API", k:"AI API 탐색 허브", a:NA.PROPOSED, l:"private_preview", st:"review", p:90, su:"https://ai-api-a9x.pages.dev/", w:"reference/business-60-ai-api-v1/" }),
     // ═══ 61 ═══
     identity({ n:61, s:"storymemory", t:"StoryMemory", k:"스토리메모리", a:NA.CANONICAL, l:"active", st:"running", p:89, su:"https://storymemory-padiem.pages.dev/" }),
+    // ═══ 64 ═══
+    identity({ n:64, s:"ai-reward-router", t:"AI Reward Router", k:"AI 수익 기회 라우터", a:NA.PROPOSED, l:"incubation", st:"review", p:90, w:"apps/ai-reward-router/" }),
   ];
 
   (function () {

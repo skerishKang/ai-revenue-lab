@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 from starlette.testclient import TestClient
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 from app.app_factory import create_app
 from app.config import Settings
 
@@ -101,7 +102,7 @@ def test_claw_manual_intake_preview_empty_content_rejected(client: TestClient) -
 
 def test_claw_manual_intake_preview_oversized_content_rejected(client: TestClient) -> None:
     payload = {
-        "content": "A" * 5000,
+        "content": "A" * 12_010,
         "channel": "sms",
         "action": "order",
     }
@@ -175,11 +176,21 @@ def test_claw_static_assets_preserve_disabled_controls_and_safe_dom_sinks() -> N
     # Browser persistence primitives forbidden
     forbidden_tokens = [
         "localStorage",
-        "sessionStorage",
         "indexedDB",
         "cookieStore",
         "caches.open",
     ]
     for token in forbidden_tokens:
         assert token not in app_js
+    assert_session_storage_is_handoff_only(app_js)
 
+
+
+def test_claw_manual_preview_accepts_longer_than_legacy_4k(client: TestClient) -> None:
+    content = "valid-user-message-" * 300 + chr(0xAC00) * 800
+    assert len(content) > 4_000
+    response = client.post("/api/claw/manual-intake/preview", json={
+        "content": content, "channel": "kakao", "action": "reply",
+    })
+    assert response.status_code == 200
+    assert content in response.json()["preview"]["result_text"]

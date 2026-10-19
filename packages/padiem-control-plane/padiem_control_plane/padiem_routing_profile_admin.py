@@ -111,6 +111,8 @@ ARBITRARY_ROUTE_ID_FREE_TEXT = False
 AUTO_ROUTING = False
 SILENT_FALLBACK = False
 MAX_HOLD_FAIL_CLOSED = True
+# Legacy profile-admin stages Plus/Pro/Max; Free is a separate product route.
+_PROFILE_ADMIN_TIERS = (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)
 B14_EXECUTION_AUTHORITY_MOVES = False
 PADIEM_PROFILE_SOT_REUSED = True
 
@@ -277,7 +279,7 @@ class PadiemRoutingProfileTierSelection:
 def _validate_selections(selections: tuple[PadiemRoutingProfileTierSelection, ...]) -> None:
     selections = _tuple_of(selections, PadiemRoutingProfileTierSelection, "selections", 3)
     by_tier = {item.tier: item for item in selections}
-    if len(by_tier) != 3 or set(by_tier) != set(ProductTierLabel):
+    if len(by_tier) != 3 or set(by_tier) != set(_PROFILE_ADMIN_TIERS):
         raise _error("invalid_padiem_profile_tiers", "exactly Plus, Pro, and Max selections are required")
     for tier in (ProductTierLabel.PLUS, ProductTierLabel.PRO):
         item = by_tier[tier]
@@ -426,7 +428,7 @@ def build_padiem_routing_profile_diff(
             before_credential_state=old[tier].credential_state,
             after_credential_state=new[tier].credential_state,
         )
-        for tier in ProductTierLabel
+        for tier in _PROFILE_ADMIN_TIERS
         if old[tier] != new[tier]
     )
     return PadiemRoutingProfileDiff(

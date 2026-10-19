@@ -528,24 +528,24 @@ html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer-note { co
    bright pages. Override the descendant that owns the visible glyphs with
    bright-theme tokens, scoped to active chat so DARK / CINEMATIC remain
    untouched. */
-html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response,
-html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-paragraph,
-html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-heading,
-html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-list,
-html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-quote,
-html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-source,
-html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response a,
-html[data-theme="light"] .app-shell[data-state="chat"] .answer-action,
-html[data-theme="light"] .app-shell[data-state="chat"] .reference-note { color: #1e1e22 !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response,
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-paragraph,
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-heading,
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-list,
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-quote,
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-source,
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response a,
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .answer-action,
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .reference-note { color: #1e2a3a !important; }
+html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response,
+html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response .rich-response-paragraph,
+html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response .rich-response-heading,
+html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response .rich-response-list,
+html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response .rich-response-quote,
+html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response .rich-response-source,
+html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response a,
+html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .answer-action,
+html[data-theme="light"] .app-shell:is([data-state="chat"],[data-state="claw"]) .reference-note { color: #1e1e22 !important; }
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response,
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response .rich-response-paragraph,
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response .rich-response-heading,
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response .rich-response-list,
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response .rich-response-quote,
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response .rich-response-source,
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-content .rich-response a,
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .answer-action,
+html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .reference-note { color: #1e2a3a !important; }
 html[data-theme="padiem-home"] .composer textarea { color: #1a2230; }
 html[data-theme="padiem-home"] .composer textarea::placeholder { color: #7a869a; }
 html[data-theme="padiem-home"] .source-card,

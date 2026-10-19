@@ -1,9 +1,10 @@
-"""One-shot anonymous Kilo Space Bunny live probe (#3221).
+"""Retired Kilo Space Bunny anonymous live probe (fail-closed).
 
-This proves only the raw anonymous Kilo Gateway path. It never reads an API
-key, never sends Authorization, never retries, and prints bounded evidence.
-Default invocation cannot reach the network; live execution requires an
-explicit authorized marker.
+Owner final retirement decision (2026-10-07): the Space Bunny lane
+(``stealth/space-bunny-alpha``) executes nowhere. This probe is retained as
+historical source only and can no longer construct or send any request: the
+default invocation and every authorized-live invocation both fail closed
+before any network I/O.
 """
 
 from __future__ import annotations
@@ -147,57 +148,18 @@ def _success(payload: Any) -> tuple[bool, str]:
 
 
 def run(modality: str, *, transport: Transport = _http_post_once) -> int:
+    """Fail closed: the retired Space Bunny lane must never POST.
+
+    Owner final retirement decision (2026-10-07). Retained for source
+    continuity only; it now always reports the retirement block with zero
+    posts and never touches the transport.
+    """
     prefix = "SPACE_BUNNY_ANON_TEXT" if modality == MODALITY_TEXT else "SPACE_BUNNY_ANON_IMAGE"
-    post_count = 0
-    try:
-        body = canonical_body(modality)
-        headers = canonical_headers()
-        if any(key.lower() == "authorization" for key in headers):
-            raise ValueError("authorization_forbidden")
-        post_count += 1
-        status, raw = transport(body, headers)
-    except Exception:
-        print(f"{prefix}=FAIL_NETWORK")
-        print(f"KILO_POST_COUNT={post_count}")
-        print("NETWORK_RETRY_COUNT=0")
-        return 1
-
-    payload = _parse(raw)
-    if status != 200:
-        print(f"{prefix}=FAIL_HTTP")
-        print(f"KILO_ANON_HTTP={status}")
-        print(f"ERROR_CODE={_safe_error_code(payload)}")
-        print(f"KILO_POST_COUNT={post_count}")
-        print("NETWORK_RETRY_COUNT=0")
-        print("REQUEST_AUTH_MODE=ANONYMOUS")
-        print(f"REQUEST_MODEL={UPSTREAM_MODEL}")
-        print("RAW_RESPONSE_OUTPUT=0")
-        print("RAW_IMAGE_OUTPUT=0")
-        return 1
-
-    nonempty, response_model = _success(payload)
-    if not nonempty:
-        print(f"{prefix}=FAIL_NONCANONICAL_SUCCESS")
-        print("KILO_ANON_HTTP=200")
-        print(f"KILO_POST_COUNT={post_count}")
-        print("NETWORK_RETRY_COUNT=0")
-        return 1
-
-    print(f"{prefix}=PASS")
-    print("KILO_ANON_HTTP=200")
-    print("REQUEST_AUTH_MODE=ANONYMOUS")
-    print(f"REQUEST_MODEL={UPSTREAM_MODEL}")
-    print(f"RESPONSE_MODEL={response_model}")
-    print(f"RESPONSE_MODEL_MATCH={'YES' if response_model == UPSTREAM_MODEL else 'NO'}")
-    print("NONEMPTY_TEXT_OUTPUT=YES")
-    print(f"IMAGE_ACCEPTED={'YES' if modality == MODALITY_IMAGE else 'N/A'}")
-    print(f"KILO_POST_COUNT={post_count}")
+    print(f"{prefix}=FAIL_RETIRED_LANE")
+    print("KILO_POST_COUNT=0")
     print("NETWORK_RETRY_COUNT=0")
-    print("FALLBACK=0")
-    print("RAW_RESPONSE_OUTPUT=0")
-    print("RAW_IMAGE_OUTPUT=0")
-    print("SECRET_VALUE_OUTPUT=0")
-    return 0
+    print("RETIRED_LANE_EXECUTION=BLOCKED")
+    return 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -214,7 +176,13 @@ def main(argv: list[str] | None = None) -> int:
         print("KILO_SPACE_BUNNY_ANON_PROBE=FAIL_MODALITY")
         print("KILO_POST_COUNT=0")
         return 1
-    return run(modality)
+    # Owner final retirement decision (2026-10-07): the lane is retired, so
+    # every authorized-live invocation now fails closed with zero posts.
+    print("KILO_SPACE_BUNNY_ANON_PROBE=FAIL_RETIRED_LANE")
+    print("KILO_POST_COUNT=0")
+    print("NETWORK_RETRY_COUNT=0")
+    print("RETIRED_LANE_EXECUTION=BLOCKED")
+    return 1
 
 
 if __name__ == "__main__":

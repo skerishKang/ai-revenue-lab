@@ -144,6 +144,8 @@ class ProductAdapter:
     ) -> None:
         if not isinstance(config, SidecarProductConfig):
             raise SidecarContractError("adapter requires a SidecarProductConfig")
+        if engine_port is not None and not isinstance(engine_port, EnginePort):
+            raise SidecarContractError("engine_port must implement the canonical EnginePort contract")
         self._config = config
         self._engine = engine_port if engine_port is not None else DeterministicFakeEnginePort({})
         if control_plane_port is not None and not isinstance(

@@ -11,6 +11,7 @@ a later Production activation gate.
 from __future__ import annotations
 
 import asyncio
+import inspect
 
 from typing import Any
 from urllib.parse import urlparse
@@ -37,15 +38,32 @@ from app.agent_preview_authority import (
 )
 from app.agent_skill_service import AgentSkillEngineService
 from app.agent_skill_authority import build_agent_skill_binding_resolver
+from app.agent_durable_d1 import D1AgentRunLedger
 from app.capability_manifest import set_posture_overrides
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.approval_smoke_binding import with_approval_smoke_binding
+from app.hark_office_p01_tool_binding import with_hark_office_p01_tool_binding
+from app.web_xlsx_p01_tool_binding import with_web_xlsx_p01_tool_binding
+from app.web_xlsx_p01_trusted_scope_d1 import D1WebXlsxTrustedScopeResolver
+from app.web_xlsx_tool_pending_d1 import D1WebXlsxToolPendingStore
+from app.web_xlsx_p01_owner_approval_d1 import D1WebXlsxOwnerApprovalGrant
+from app.web_xlsx_quote_write_tool_binding import with_web_quote_write_tool_binding
+from app.web_xlsx_quote_write_scope_d1 import D1WebQuoteWriteScopeResolver
+from app.web_xlsx_quote_write_tool_pending_d1 import D1WebQuoteWriteToolPendingStore
+from app.web_xlsx_dual_tool_pending_d1 import DualWebXlsxToolPendingStore
+from app.web_xlsx_quote_write_owner_approval_d1 import D1WebQuoteOwnerWriteApprovalGrant
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 from app.attachment_admission_service import (
     ATTACHMENT_ADMISSION_PATH,
+    MAX_ADMISSION_REQUEST_BODY_BYTES,
     AttachmentAdmissionEngineService,
 )
 from app.auth_session_scope_authority import AuthSessionScopeAuthority
+from app.cloudflare_request_body import (
+    RequestBodyReadError,
+    RequestBodyTooLarge,
+    read_bounded_worker_request_body,
+)
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
@@ -79,6 +97,7 @@ from app.google_oauth_access_lease import (
 )
 from app.document_admission_service import (
     DOCUMENT_ADMISSION_PATH,
+    MAX_DOCUMENT_ADMISSION_REQUEST_BODY_BYTES,
     DocumentAdmissionEngineService,
 )
 from app.document_byte_store import (
@@ -98,7 +117,19 @@ from app.authority_diagnostic import (
 )
 from app.calendar_credential_presence import (
     CALENDAR_CREDENTIAL_PRESENCE_PATH,
+    MAX_PRESENCE_BODY_BYTES,
     calendar_presence_response,
+)
+from app.calendar_read_activation import (
+    CALENDAR_READ_ACTIVATION_PATH,
+    CalendarReadActivationService,
+    CloudflareCalendarBindingClient,
+    CloudflareConnectorWorkspaceClient,
+    parse_calendar_activation_request,
+)
+from app.calendar_read_state import (
+    CALENDAR_READ_STATE_PATH,
+    CalendarReadStateService,
 )
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
@@ -121,7 +152,12 @@ from app.tenant_auth import (
     ControlPlaneTenantAdmissionAdapter,
     build_control_plane_admission_adapter,
 )
-from app.service import EngineService, ServiceContractError, ServiceResponse
+from app.service import (
+    MAX_REQUEST_BODY_BYTES,
+    EngineService,
+    ServiceContractError,
+    ServiceResponse,
+)
 from app.streaming_service import StreamingEngineService
 from app.tool_execution_service import ToolExecutionEngineService
 from app.tool_projection import (
@@ -168,6 +204,37 @@ ENGINE_SLACK_PRIVATE_CHANNELS_ENV = "ENGINE_SLACK_PRIVATE_CHANNELS"
 # allowlist is server-derived configuration. Nothing is ever logged and no
 # caller-provided calendar id can widen the allowlist.
 ENGINE_CALENDAR_ALLOWED_CALENDARS_ENV = "ENGINE_CALENDAR_ALLOWED_CALENDARS"
+_CALENDAR_READ_REQUEST_BODY_BYTES = 4_096
+
+
+async def _read_bounded_post_body(
+    request: Any,
+    *,
+    max_bytes: int,
+    too_large_code: str = "request_too_large",
+    too_large_message: str = "Request body exceeds the internal Engine safety limit.",
+    too_large_status: int = 413,
+    read_error_message: str = "Request body could not be read.",
+) -> tuple[bytes | None, Any | None]:
+    """Read one POST body while preserving the route's existing error contract."""
+
+    if str(getattr(request, "method", "")).upper() != "POST":
+        return b"", None
+    try:
+        body = await read_bounded_worker_request_body(request, max_bytes=max_bytes)
+    except RequestBodyTooLarge:
+        return None, legacy_worker._error_response(
+            too_large_code,
+            too_large_message,
+            too_large_status,
+        )
+    except RequestBodyReadError:
+        return None, legacy_worker._error_response(
+            "invalid_request",
+            read_error_message,
+            400,
+        )
+    return body, None
 
 
 def _continuation_store_for_env(
@@ -271,7 +338,7 @@ def _research_service_for_env(
 ) -> WebResearchEngineService:
     def research_runtime_factory(_app_id: str) -> GroundedResearchRuntime:
         return GroundedResearchRuntime(
-            create_web_provider(legacy_worker._web_runtime_config_for_env(env))
+            legacy_worker._engine_web_provider_for_env(env)
         )
 
     return WebResearchEngineService(
@@ -477,21 +544,18 @@ def _drive_workspace_grant_provider_for_env(env: Any):
     )
 
 
-def _drive_case_folder_service_for_env(env: Any):
-    """B67 private Drive case-folder Engine service (#3190).
+def _drive_case_folder_dependencies_for_env(env: Any):
+    """Resolve the one canonical dependency set for B67 selected-folder reads.
 
-    Reuses the existing ``CONTROL_PLANE_GOOGLE_OAUTH`` binding for the
-    workspace-scoped grant and the trusted Drive port, and the existing Engine
-    D1 binding (the one that owns migration 0008) for the durable selected-folder
-    store. No new binding is declared. Any missing dependency yields ``None`` so
-    the RPC fails closed instead of falling back to the global Drive grant.
+    Both folder-management and PDF-acquisition services consume these same
+    server authorities. No product-local Drive grant, OAuth stack, folder store
+    or provider client is introduced.
     """
 
     from app.drive_case_folder_binding import (
         CloudflareD1DriveCaseFolderBindingStore,
         DriveCaseFolderBindingAuthority,
     )
-    from app.drive_case_folder_service import DriveCaseFolderEngineService
 
     binding = legacy_worker._binding_value(env, DOCUMENT_STORE_BINDING_NAME)
     if binding is None:
@@ -500,10 +564,52 @@ def _drive_case_folder_service_for_env(env: Any):
         store = CloudflareD1DriveCaseFolderBindingStore(binding)
     except (RuntimeError, TypeError, ValueError):
         return None
+    return (
+        _drive_workspace_grant_provider_for_env(env),
+        _drive_port_for_env(env),
+        DriveCaseFolderBindingAuthority(store=store),
+    )
+
+
+def _drive_case_folder_service_for_env(env: Any):
+    """B67 private Drive case-folder Engine service (#3190).
+
+    Reuses the existing CONTROL_PLANE_GOOGLE_OAUTH binding for the
+    workspace-scoped grant and trusted Drive port, plus the canonical Engine D1
+    selected-folder store. Any missing dependency fails closed.
+    """
+
+    from app.drive_case_folder_service import DriveCaseFolderEngineService
+
+    dependencies = _drive_case_folder_dependencies_for_env(env)
+    if dependencies is None:
+        return None
+    grant_provider, drive_port, binding_authority = dependencies
     return DriveCaseFolderEngineService(
-        grant_provider=_drive_workspace_grant_provider_for_env(env),
-        drive_port=_drive_port_for_env(env),
-        binding_authority=DriveCaseFolderBindingAuthority(store=store),
+        grant_provider=grant_provider,
+        drive_port=drive_port,
+        binding_authority=binding_authority,
+    )
+
+
+def _drive_case_pdf_service_for_env(env: Any):
+    """B67 private selected-folder PDF acquisition composition (#3350).
+
+    Source-only composition. It reuses exactly the same workspace-scoped grant,
+    CP access-lease Drive port, and durable selected-folder authority as the
+    existing B67 folder service. No new binding or public route is created.
+    """
+
+    from app.drive_case_pdf_service import DriveCasePdfService
+
+    dependencies = _drive_case_folder_dependencies_for_env(env)
+    if dependencies is None:
+        return None
+    grant_provider, drive_port, binding_authority = dependencies
+    return DriveCasePdfService(
+        grant_provider=grant_provider,
+        drive_port=drive_port,
+        binding_authority=binding_authority,
     )
 
 
@@ -661,6 +767,53 @@ async def _calendar_grants_for_env(env: Any) -> dict[str, CalendarGrant]:
         ) from None
 
 
+def _calendar_read_activation_service_for_env(
+    env: Any,
+) -> CalendarReadActivationService | None:
+    """Compose the private Calendar READ activation authority from served bindings."""
+
+    identity = legacy_worker._binding_value(env, CONTROL_PLANE_IDENTITY_BINDING_NAME)
+    oauth = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    grants = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if identity is None or oauth is None or grants is None:
+        return None
+    try:
+        return CalendarReadActivationService(
+            workspace_client=CloudflareConnectorWorkspaceClient(identity),
+            binding_client=CloudflareCalendarBindingClient(oauth),
+            grant_store=CloudflareD1ConnectorGrantStore(grants),
+        )
+    except (TypeError, ValueError):
+        return None
+
+
+def _calendar_read_state_service_for_env(
+    env: Any,
+) -> CalendarReadStateService | None:
+    """Compose the read-only persisted READ-grant state projection.
+
+    Reuses the activation composition's own authorities — the same Control
+    Plane identity binding, the same private Google OAuth binding selector and
+    the same canonical D1 grant store — so no second selector, grant store or
+    OAuth authority exists. Missing bindings fail closed to None (the route
+    then answers 503, never a fabricated state).
+    """
+
+    identity = legacy_worker._binding_value(env, CONTROL_PLANE_IDENTITY_BINDING_NAME)
+    oauth = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    grants = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if identity is None or oauth is None or grants is None:
+        return None
+    try:
+        return CalendarReadStateService(
+            workspace_client=CloudflareConnectorWorkspaceClient(identity),
+            binding_client=CloudflareCalendarBindingClient(oauth),
+            grant_store=CloudflareD1ConnectorGrantStore(grants),
+        )
+    except (TypeError, ValueError):
+        return None
+
+
 def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
     """Resolve the CP auth-session scope authority via private Service Binding.
 
@@ -729,13 +882,76 @@ def _agent_skill_service_for_env(
     preview = build_preview_agent_lane(env)
     if preview is not None:
         return preview.service
+    durable_enabled = legacy_worker._binding_value(env, "PADIEM_ENGINE_AGENT_DURABLE_ENABLED") == "true"
+    agent_run_ledger = None
+    if durable_enabled:
+        # Engine's *existing* identity-bound D1 database, no new binding scope.
+        # Migration 0011 must be provisioned first; missing D1 fails closed.
+        db = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
+        if db is None:
+            raise ServiceContractError(
+                "agent_run_lease_unavailable",
+                "Trusted Agent run storage is unavailable.",
+                status_code=503,
+            )
+        agent_run_ledger = D1AgentRunLedger(db)
+    # #4194 B: the expired-lease sweep is a maintenance call. It stays off
+    # unless the deployment explicitly enables it, so an unmarked isolate can
+    # never mutate run records through the recovery route.
+    recovery_enabled = (
+        legacy_worker._binding_value(env, "PADIEM_ENGINE_AGENT_RECOVERY_ENABLED") == "true"
+    )
     return AgentSkillEngineService(
         runtime_factory=runtime_factory,
         binding_resolver=binding_resolver,
         idempotency_adapter=idempotency_adapter,
         approval_decision_verifier=approval_decision_verifier,
         continuation_store=continuation_store,
+        agent_run_ledger=agent_run_ledger,
+        agent_run_recovery_enabled=recovery_enabled,
     )
+
+
+def _with_web_xlsx_trusted_scope_for_env(env: Any, base_resolver: Any) -> Any:
+    """#3580 optional Engine-only B62 D1 read authority, never browser claims.
+
+    The deployment binding must be a read-only connection to the canonical
+    B62 metadata database, not the Engine D1 continuation database. This
+    composition is OFF by default and does not itself enable tool resume.
+    """
+    if legacy_worker._binding_value(
+        env, "PADIEM_WEB_XLSX_P01_ENGINE_SCOPE_ENABLED"
+    ) != "true":
+        return base_resolver
+    binding = legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1")
+    try:
+        source = D1WebXlsxTrustedScopeResolver(binding)
+    except (TypeError, ValueError):
+        return base_resolver
+    approved_source = D1WebXlsxTrustedScopeResolver(
+        binding, required_status="waiting_p01",
+    )
+    return with_web_xlsx_p01_tool_binding(
+        base_resolver, enabled=True, selection_resolver=source,
+        approved_selection_resolver=approved_source,
+    )
+
+
+def _web_xlsx_tool_pending_for_env(env: Any) -> D1WebXlsxToolPendingStore | None:
+    """Enable only after operator-specified exact-source Engine scope and D1.
+
+    Generic Engine tool continuations remain disabled. Never fall back to
+    isolate memory when this separately enabled durable store is unavailable.
+    """
+    if (legacy_worker._binding_value(env, "PADIEM_WEB_XLSX_P01_DURABLE_TOOL_ENABLED") != "true"
+            or legacy_worker._binding_value(env, "PADIEM_WEB_XLSX_P01_ENGINE_SCOPE_ENABLED") != "true"
+            or legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1") is None):
+        return None
+    db = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
+    try:
+        return D1WebXlsxToolPendingStore(db)
+    except (ValueError, TypeError):
+        return None
 
 
 async def _engine_services_for_env(env: Any) -> EngineServices:
@@ -848,6 +1064,74 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         )
 
     tool_binding_resolver = await _tool_binding_resolver_for_env(env)
+    # Only the admitted Claw Agent may reach the signed Chat desktop transport.
+    # All other app tool registrations remain unchanged.
+    from app.claw_desktop_step_driver import (
+        CLAW_APP_ID, build_claw_desktop_tool_binding,
+        build_live_desktop_driver,
+    )
+    chat_service = legacy_worker._binding_value(env, "PADIEM_CHAT_SERVICE")
+    # Secrets Store bindings resolve to an object with an async .get(); a
+    # plain Worker secret is already a string. Never log or persist the value.
+    desktop_secret_binding = legacy_worker._binding_value(
+        env, "CLAW_ENGINE_DESKTOP_SECRET"
+    )
+    desktop_secret: str | None = None
+    if isinstance(desktop_secret_binding, str):
+        desktop_secret = desktop_secret_binding
+    elif desktop_secret_binding is not None:
+        secret_getter = getattr(desktop_secret_binding, "get", None)
+        if callable(secret_getter):
+            try:
+                resolved_secret = secret_getter()
+                if hasattr(resolved_secret, "__await__"):
+                    resolved_secret = await resolved_secret
+            except Exception:
+                resolved_secret = None
+            if isinstance(resolved_secret, str):
+                desktop_secret = resolved_secret
+    if chat_service is not None and isinstance(desktop_secret, str) and len(desktop_secret) >= 32:
+        desktop_binding = build_claw_desktop_tool_binding(
+            service=chat_service, request_factory=Request, secret=desktop_secret,
+        )
+        from app.claw_pc_query_step_driver import (
+            CHAT_APP_ID, build_chat_pc_query_tool_binding,
+            build_claw_pc_query_tool_binding, build_live_pc_query_driver,
+        )
+        pc_binding = build_claw_pc_query_tool_binding(
+            service=chat_service, request_factory=Request, secret=desktop_secret,
+            runtime=desktop_binding.tool_runtime,
+        )
+        # Chat product thin binding: the same canonical drive-query tool under
+        # the Chat Engine caller identity ("padiem-chat", the exact app_id the
+        # existing B62 Chat Engine bridge presents) with its own agent and
+        # authorization, on its own ToolRuntime so no Claw desktop tool leaks
+        # into the Chat product. Deployment caller-registry allow-lists still
+        # decide whether the Chat caller may actually invoke it.
+        chat_pc_binding = build_chat_pc_query_tool_binding(
+            service=chat_service, request_factory=Request, secret=desktop_secret,
+        )
+        from app.tool_projection import EngineToolBinding
+        from padiem_ai_core.tool_registry import ToolRegistrySnapshot
+        claw_binding = EngineToolBinding(
+            app_id=CLAW_APP_ID,
+            tool_runtime=desktop_binding.tool_runtime,
+            registry=ToolRegistrySnapshot.from_entries(
+                desktop_binding.registry.entries + pc_binding.registry.entries
+            ),
+            authorities={**desktop_binding.authorities, **pc_binding.authorities},
+            authorization_provider=None, resource_policy=desktop_binding.resource_policy,
+        )
+        previous_resolver = tool_binding_resolver
+
+        def resolve_with_desktop(app_id: str):
+            if app_id == CLAW_APP_ID:
+                return claw_binding
+            if app_id == CHAT_APP_ID:
+                return chat_pc_binding
+            return previous_resolver(app_id) if previous_resolver is not None else None
+
+        tool_binding_resolver = resolve_with_desktop
     # #3317: source-only approval smoke fixture. The wrapper returns the exact
     # original resolver object while the deployment-owned enable flag is absent
     # (the default/current Production state), so no ordinary product/connector
@@ -856,6 +1140,59 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         env,
         tool_binding_resolver,
     )
+    # #3580 registered, explicit Engine LIST/READ confirmation only.
+    # The absent deployment-owned flag retains the original resolver identity.
+    # No Bridge/Resident/file authority is created by enabling this tool.
+    tool_binding_resolver = with_hark_office_p01_tool_binding(
+        env, tool_binding_resolver,
+    )
+    # #3580 Engine independently re-reads the SAME private B62 D1 tables.
+    # A configured but missing/invalid D1 binding NEVER enables XLSX P01.
+    # Operator must prove actual B62 D1 identity before setting this flag;
+    # merely trusting browser-supplied owner/hash is forbidden.
+    tool_binding_resolver = _with_web_xlsx_trusted_scope_for_env(
+        env, tool_binding_resolver,
+    )
+    web_xlsx_pending_store = _web_xlsx_tool_pending_for_env(env)
+    web_quote_write_owner_grant = None
+    # Both sides require independent private D1 authority and existing
+    # durable READ ToolRuntime. Without all operator flags, WRITE is absent.
+    if (web_xlsx_pending_store is not None
+            and legacy_worker._binding_value(
+                env, "PADIEM_WEB_XLSX_QUOTE_WRITE_ENGINE_ENABLED") == "true"
+            and legacy_worker._binding_value(
+                env, "PADIEM_WEB_XLSX_QUOTE_WRITE_DURABLE_ENABLED") == "true"
+            and legacy_worker._binding_value(
+                env, "PADIEM_WEB_XLSX_QUOTE_WRITE_OWNER_DECISION_ENABLED") == "true"):
+        try:
+            b62_db = legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1")
+            engine_db = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
+            write_resolver = D1WebQuoteWriteScopeResolver(b62_db)
+            write_pending = D1WebQuoteWriteToolPendingStore(engine_db)
+            write_grant = D1WebQuoteOwnerWriteApprovalGrant(b62_db)
+            tool_binding_resolver = with_web_quote_write_tool_binding(
+                tool_binding_resolver, enabled=True,
+                scope_resolver=write_resolver,
+            )
+            web_xlsx_pending_store = DualWebXlsxToolPendingStore(
+                web_xlsx_pending_store, write_pending,
+            )
+            web_quote_write_owner_grant = write_grant
+        except (ValueError, TypeError, KeyError):
+            web_quote_write_owner_grant = None
+    web_xlsx_owner_grant = None
+    if (web_xlsx_pending_store is not None
+            and legacy_worker._binding_value(
+                env, "PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED"
+            ) == "true"):
+        # The Engine must read the canonical B62 owner decision receipt
+        # independently. The Service Binding credential is not owner consent.
+        try:
+            web_xlsx_owner_grant = D1WebXlsxOwnerApprovalGrant(
+                legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1")
+            )
+        except (ValueError, TypeError):
+            web_xlsx_owner_grant = None
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,
@@ -874,6 +1211,31 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
             tool_binding_resolver=tool_binding_resolver,
             admission_adapter=admission_adapter,
+            desktop_step_driver_factory=(
+                (lambda model_id, model_policy, task_type, optimize_for:
+                    build_live_desktop_driver(
+                        b14_client=b14_client, chat_service=chat_service,
+                        request_factory=Request, secret=desktop_secret,
+                        model_id=model_id, model_policy=model_policy,
+                        task_type=task_type, optimize_for=optimize_for,
+                    ))
+                if chat_service is not None
+                and isinstance(desktop_secret, str)
+                and len(desktop_secret) >= 32 else None
+            ),
+            pc_query_step_driver_factory=(
+                (lambda model_id, model_policy, task_type, optimize_for, tool_arguments=None:
+                    build_live_pc_query_driver(
+                        b14_client=b14_client, model_id=model_id,
+                        model_policy=model_policy, task_type=task_type,
+                        optimize_for=optimize_for,
+                        service=chat_service, request_factory=Request,
+                        secret=desktop_secret,
+                        tool_arguments=tool_arguments,
+                    ))
+                if chat_service is not None and isinstance(desktop_secret, str)
+                and len(desktop_secret) >= 32 else None
+            ),
         ),
         research=_research_service_for_env(
             env,
@@ -919,7 +1281,14 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         # `drive_grant_unavailable`, every other tool stays
         # `tool_runtime_unavailable`.
         tool_execution=ToolExecutionEngineService(
-            tool_binding_resolver=tool_binding_resolver
+            tool_binding_resolver=tool_binding_resolver,
+            continuation_store=web_xlsx_pending_store,
+            approval_decision_verifier=(
+                AuthenticatedFirstPartyApprovalDecisionVerifier()
+                if web_xlsx_pending_store is not None else None
+            ),
+            web_xlsx_owner_approval_grant=web_xlsx_owner_grant,
+            web_quote_write_approval_grant=web_quote_write_owner_grant,
         ),
         # #1964 source slice: replay composes only the same trusted durable
         # adapter as execution; without it the route fails closed (503).
@@ -956,24 +1325,49 @@ class Default(legacy_worker.Default):
     engine_services_factory = staticmethod(_engine_services_for_env)
 
     async def fetch(self, request: Any) -> Any:
+        from app.stack_telemetry import start_trace, finish_trace
         path = urlparse(str(request.url)).path
-        if path == AUTHORITY_DIAGNOSTIC_PATH:
-            return self._fetch_authority_diagnostic(request)
-        if path == CALENDAR_CREDENTIAL_PRESENCE_PATH:
-            return await self._fetch_calendar_credential_presence(request)
-        if path == DOCUMENT_CONTEXT_PATH:
-            return await self._fetch_document_context(request, path)
-        if path == MULTIMODAL_EXECUTE_PATH:
-            return await self._fetch_multimodal(request, path)
-        if path == MULTIMODAL_STREAM_PATH:
-            return await self._fetch_multimodal_stream(request, path)
-        if path == ATTACHMENT_ADMISSION_PATH:
-            return await self._fetch_attachment_admission(request, path)
-        if path == DOCUMENT_ADMISSION_PATH:
-            return await self._fetch_document_admission(request, path)
-        if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
-            return await self._fetch_tool(request, path)
-        return await super().fetch(request)
+        observe = path.startswith("/internal/")
+        if observe:
+            state, token = start_trace(request, "padiem-ai-engine", "/internal/*")
+        response = None
+        try:
+            path = urlparse(str(request.url)).path
+            if path == AUTHORITY_DIAGNOSTIC_PATH:
+                response = self._fetch_authority_diagnostic(request)
+                return response
+            if path == CALENDAR_CREDENTIAL_PRESENCE_PATH:
+                response = await self._fetch_calendar_credential_presence(request)
+                return response
+            if path == CALENDAR_READ_ACTIVATION_PATH:
+                response = await self._fetch_calendar_read_activation(request)
+                return response
+            if path == CALENDAR_READ_STATE_PATH:
+                response = await self._fetch_calendar_read_state(request)
+                return response
+            if path == DOCUMENT_CONTEXT_PATH:
+                response = await self._fetch_document_context(request, path)
+                return response
+            if path == MULTIMODAL_EXECUTE_PATH:
+                response = await self._fetch_multimodal(request, path)
+                return response
+            if path == MULTIMODAL_STREAM_PATH:
+                response = await self._fetch_multimodal_stream(request, path)
+                return response
+            if path == ATTACHMENT_ADMISSION_PATH:
+                response = await self._fetch_attachment_admission(request, path)
+                return response
+            if path == DOCUMENT_ADMISSION_PATH:
+                response = await self._fetch_document_admission(request, path)
+                return response
+            if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
+                response = await self._fetch_tool(request, path)
+                return response
+            response = await super().fetch(request)
+            return response
+        finally:
+            if observe:
+                finish_trace(state, token, response, getattr(self, "ctx", None), self.env)
 
     def _fetch_authority_diagnostic(self, request: Any) -> Any:
         """Content-blind caller-authority diagnostic (#2439), token-gated.
@@ -1005,15 +1399,142 @@ class Default(legacy_worker.Default):
         raw = b""
         if method.upper() == "POST":
             try:
-                text = await request.text()
-                raw = str(text).encode("utf-8")
-            except Exception:
+                raw = await read_bounded_worker_request_body(
+                    request,
+                    max_bytes=MAX_PRESENCE_BODY_BYTES,
+                )
+            except RequestBodyTooLarge:
+                # Preserve the existing token-auth-first projection: the
+                # presence service receives only a bounded oversize sentinel,
+                # never the attacker-controlled remainder of the stream.
+                raw = bytes(MAX_PRESENCE_BODY_BYTES + 1)
+            except RequestBodyReadError:
                 raw = b""
 
         status, body = await calendar_presence_response(self.env, method, headers, raw)
         return legacy_worker._json_response(
             ServiceResponse(status_code=status, body=body)
         )
+
+    async def _fetch_calendar_read_activation(self, request: Any) -> Any:
+        """Activate only the canonical Calendar READ grant for a trusted session."""
+
+        method = str(getattr(request, "method", "")).upper()
+        if method != "POST":
+            return legacy_worker._error_response(
+                "method_not_allowed",
+                "Calendar READ activation requires POST.",
+                405,
+            )
+        headers = getattr(request, "headers", None)
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=_CALENDAR_READ_REQUEST_BODY_BYTES,
+            too_large_code="invalid_request",
+            too_large_message="Calendar activation request is too large.",
+            too_large_status=400,
+            read_error_message="Calendar activation request could not be read.",
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        try:
+            session_id = parse_calendar_activation_request(body)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+
+        service = _calendar_read_activation_service_for_env(self.env)
+        if service is None:
+            return legacy_worker._error_response(
+                "calendar_activation_unavailable",
+                "Calendar READ activation authority is unavailable.",
+                503,
+            )
+        try:
+            result = await service.activate(session_id=session_id)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_calendar_read_state(self, request: Any) -> Any:
+        """Read-only persisted Calendar READ grant state for a trusted session.
+
+        Same caller credential, same closed request body and the same
+        fail-closed surface discipline as the activation route. A failed check
+        is an error response (the chat projection maps it to ``unavailable``),
+        never an ``inactive`` state.
+        """
+
+        method = str(getattr(request, "method", "")).upper()
+        if method != "POST":
+            return legacy_worker._error_response(
+                "method_not_allowed",
+                "Calendar READ state requires POST.",
+                405,
+            )
+        headers = getattr(request, "headers", None)
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=_CALENDAR_READ_REQUEST_BODY_BYTES,
+            too_large_code="invalid_request",
+            too_large_message="Calendar state request is too large.",
+            too_large_status=400,
+            read_error_message="Calendar state request could not be read.",
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        try:
+            session_id = parse_calendar_activation_request(body)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+
+        service = _calendar_read_state_service_for_env(self.env)
+        if service is None:
+            return legacy_worker._error_response(
+                "calendar_activation_unavailable",
+                "Calendar READ state authority is unavailable.",
+                503,
+            )
+        try:
+            result = await service.state(session_id=session_id)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+        return legacy_worker._json_response(result)
 
     async def _fetch_multimodal(self, request: Any, path: str) -> Any:
         """E5A trusted multimodal reference route: source-wired, fail-closed.
@@ -1026,26 +1547,13 @@ class Default(legacy_worker.Default):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,
@@ -1082,26 +1590,13 @@ class Default(legacy_worker.Default):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_ADMISSION_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,
@@ -1138,26 +1633,13 @@ class Default(legacy_worker.Default):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_DOCUMENT_ADMISSION_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,
@@ -1186,17 +1668,13 @@ class Default(legacy_worker.Default):
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
-        body = b""
-        if method.upper() == "POST":
-            try:
-                body = str(await request.text()).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(status_code=400, body={"ok": False, "error": {
-                        "code": "invalid_request", "message": "Request body could not be read.",
-                        "retryable": False, "metadata": None,
-                    }})
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
         auth_error = legacy_worker._authenticate_non_health_request(self.env, headers, body)
         if auth_error is not None:
             return auth_error
@@ -1226,26 +1704,14 @@ class Default(legacy_worker.Default):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+            too_large_message="Request body exceeds the safety limit.",
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,
@@ -1282,26 +1748,13 @@ class Default(legacy_worker.Default):
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,

@@ -58,13 +58,13 @@ eq(fresh.candidate, null, "a fresh session has no candidate");
 eq(Cloner.statusLabel(fresh), "대기", "the idle status is labelled");
 
 const preflightOk = Cloner.startFromFile(fresh, {
-  ok: true, name: "quote-a.pdf", extension: ".pdf", media: "application/pdf", size: 2048
+  ok: true, name: "quote-a.xlsx", extension: ".xlsx", media: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", size: 2048
 });
 check(preflightOk.ok === true, "a valid preflight starts the flow");
 eq(preflightOk.session.status, Cloner.STATUS_PREFLIGHT_OK, "the session waits at the analyzer boundary");
 eq(preflightOk.session.candidate, null, "preflight alone produces no candidate");
 eq(preflightOk.analyzer.live, false, "TEMPLATE_ANALYZER_LIVE=NO: the analyzer is not live");
-eq(preflightOk.session.source.name, "quote-a.pdf", "the source file name is kept as data");
+eq(preflightOk.session.source.name, "quote-a.xlsx", "the source file name is kept as data");
 
 const preflightBad = Cloner.startFromFile(fresh, { ok: false, error: "legacy_hwp_unsupported" });
 eq(preflightBad.ok, false, "a failed preflight stops the flow");
@@ -338,7 +338,7 @@ const appSource = readSource("app.js");
 check(appSource.indexOf('$("templateClone").addEventListener("click"') !== -1 &&
       appSource.indexOf('$("templateCloneFile").click()') !== -1,
   "TEMPLATE_CLONER_ENTRYPOINT=YES: the manager entry point opens the file chooser");
-check(appSource.indexOf("FileIntake.classifyFile(file)") !== -1,
+check(appSource.indexOf("FileIntake.classifyTemplateSourceFile(file)") !== -1,
   "the cloner reuses the bounded file preflight");
 check(appSource.indexOf("window.B66QuoteTemplateClonerBridge") !== -1 &&
       appSource.indexOf("injectCandidate: (payload) => injectClonerCandidate(payload)") !== -1,

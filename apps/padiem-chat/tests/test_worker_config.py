@@ -37,7 +37,7 @@ def test_worker_bindings_default_to_mock_web_off_auth_off_with_finite_limits():
     settings = settings_from_worker_bindings({})
     assert settings.runtime_mode == "mock"
     assert settings.b14_base_url is None
-    assert settings.timeout_seconds == 20.0
+    assert settings.timeout_seconds == 600.0
     assert settings.live_enabled is False
     assert settings.web_provider == "off"
     assert settings.firecrawl_api_key is None
@@ -87,12 +87,16 @@ def test_server_only_worker_bindings_and_google_config_validation():
         "PADIEM_CHAT_WEB_PROVIDER",
         "FIRECRAWL_API_KEY",
         "PADIEM_CHAT_DAUM_REST_API_KEY",
+        "TINYFISH_API_KEY",
         "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
         "PADIEM_CHAT_AUTH_MODE",
         "PADIEM_CHAT_PUBLIC_BASE_URL",
         "PADIEM_CHAT_GOOGLE_CLIENT_ID",
         "PADIEM_CHAT_GOOGLE_CLIENT_SECRET",
         "PADIEM_CHAT_SESSION_SECRET",
+        "PADIEM_CHAT_CUSTOM_KEY_SECRET",
+        "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS",
+        "PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS",
         "PADIEM_CHAT_SESSION_MAX_AGE_SECONDS",
         "PADIEM_CHAT_QUOTA_SALT",
         "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
@@ -107,6 +111,7 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert "BUSINESS14_PROVIDER_KEY" not in joined
     assert "FIRECRAWL_API_KEY" in WORKER_BINDING_NAMES
     assert "PADIEM_CHAT_DAUM_REST_API_KEY" in WORKER_BINDING_NAMES
+    assert "TINYFISH_API_KEY" in WORKER_BINDING_NAMES
 
     with pytest.raises(ConfigError):
         settings_from_worker_bindings({"PADIEM_CHAT_WEB_PROVIDER": "firecrawl"})
@@ -184,7 +189,7 @@ def test_b66_worker_binding_and_csp_share_one_validated_origin():
     assert settings.b66_quote_base_url == "https://quote.example.test"
 
     default_csp = response_headers_for_path("/")["Content-Security-Policy"]
-    assert "frame-src 'none'" in default_csp
+    assert "frame-src blob:" in default_csp
 
     enabled_csp = response_headers_for_path(
         "/",
@@ -195,7 +200,7 @@ def test_b66_worker_binding_and_csp_share_one_validated_origin():
         for part in enabled_csp.split(";")
         if part.strip().startswith("frame-src ")
     ]
-    assert frame_directives == ["frame-src https://quote.example.test"]
+    assert frame_directives == ["frame-src blob: https://quote.example.test"]
 
 
 def test_security_headers_and_api_auth_no_store():
@@ -219,12 +224,15 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     worker = (root / "worker.py").read_text(encoding="utf-8")
     assert 'name = "padiem-chat"' in wrangler
     assert 'main = "worker.py"' in wrangler
+    assert 'base_dir = ".b66-worker-src"' in wrangler
+    assert 'command = "uv run python scripts/build_b66_worker_dependencies.py"' in wrangler
     assert 'compatibility_flags = ["python_workers"]' in wrangler
     assert 'directory = "static"' in wrangler
     assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler
     assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
     assert "database_id" not in wrangler
-    assert "settings_from_worker_bindings(self.env)" in worker
+    assert "settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)" in worker
+    assert "await resolve_web_secrets_store_keys(self.env)" in worker
     assert "D1HistoryStore" in worker and "PADIEM_CHAT_DB" not in worker
     assert "D1UsageCounterStore" in worker
     assert "UsageGate(settings, usage_store)" in worker
@@ -251,3 +259,19 @@ def test_phase1_css_blob_content_remains_byte_equal():
     assert (root / "static/styles.css").read_bytes() == (
         repo / "reference/business-62-padiem-chat-v1/styles.css"
     ).read_bytes()
+
+
+def test_b66_pdf_renderer_binding_is_fixed_server_authority():
+    from app.worker_config import B66_PDF_RENDERER_SERVICE_BINDING_NAME
+    assert B66_PDF_RENDERER_SERVICE_BINDING_NAME == "B66_PDF_RENDERER_SERVICE"
+
+
+def test_source_wrangler_model_idle_matches_chat_worker_default():
+    """A deploy from source must not resurrect the pre-#4200 20s timeout."""
+    import tomllib
+
+    source = Path(__file__).resolve().parents[1] / "wrangler.toml"
+    config = tomllib.loads(source.read_text(encoding="utf-8"))
+    assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
+    assert config["vars"]["PADIEM_CHAT_TIMEOUT_SECONDS"] == "600"
+    assert settings_from_worker_bindings(config["vars"]).timeout_seconds == 600.0

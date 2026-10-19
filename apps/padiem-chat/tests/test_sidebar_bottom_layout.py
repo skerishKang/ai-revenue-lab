@@ -93,18 +93,18 @@ def test_padiem_home_is_final_sidebar_bottom_utility() -> None:
 
 def test_glass_home_frame_has_desktop_vertical_breathing_room() -> None:
     assert '@media (min-width: 921px)' in UI_POLISH
-    assert '.app-shell[data-state="home"] .conversation' in UI_POLISH
+    assert '.app-shell:is([data-state="home"],[data-state="chat"]) .conversation' in UI_POLISH
     assert 'margin-top: 16px !important' in UI_POLISH
     assert 'margin-bottom: 16px !important' in UI_POLISH
-    assert '.app-shell[data-state="home"] .composer-wrap' in UI_POLISH
+    assert '.app-shell:is([data-state="home"],[data-state="chat"]) .composer-wrap' in UI_POLISH
     assert 'bottom: 16px !important' in UI_POLISH
     assert 'padding-bottom: 16px !important' in UI_POLISH
 
 
 def test_glass_home_composer_vertical_padding_is_balanced() -> None:
-    assert '.app-shell[data-state="home"] .composer {' in UI_POLISH
+    assert '.app-shell:is([data-state="home"],[data-state="chat"]) .composer {' in UI_POLISH
     assert 'padding: 12px 12px 11px !important' in UI_POLISH
-    assert '.app-shell[data-state="home"] .composer textarea {' in UI_POLISH
+    assert '.app-shell:is([data-state="home"],[data-state="chat"]) .composer textarea {' in UI_POLISH
     assert 'padding: 9px 9px 7px !important' in UI_POLISH
 
 

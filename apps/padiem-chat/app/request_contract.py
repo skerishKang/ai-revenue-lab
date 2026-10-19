@@ -11,9 +11,11 @@ from .tool_presentations import ToolPresentationDescriptor, get_tool_presentatio
 from .web_tools import MAX_QUERY_CHARS, normalize_public_url
 
 MAX_BROWSER_BODY_BYTES = 6_000_000
-MAX_MESSAGES = 20
-MAX_MESSAGE_CHARS = 8_000
-MAX_TOTAL_MESSAGE_CHARS = 32_000
+# Deprecated model-input caps remain importable for compatibility; no product
+# pilot count/character ceiling applies before B14. HTTP body safety is separate.
+MAX_MESSAGES: int | None = None
+MAX_MESSAGE_CHARS: int | None = None
+MAX_TOTAL_MESSAGE_CHARS: int | None = None
 _ALLOWED_ROLES = {"user", "assistant"}
 
 
@@ -25,6 +27,37 @@ class BrowserRequestError(ValueError):
 class BrowserToolRequest:
     tool: ToolPresentationDescriptor
     tool_input: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class CustomModelSelection:
+    """Explicit PADIEM Custom provider/model choice (never inferred)."""
+
+    provider: str
+    model: str
+
+
+def parse_custom_selection(value: Any) -> CustomModelSelection:
+    """Validate one explicit PADIEM Custom selection shared by every product."""
+    if not isinstance(value, dict) or set(value) != {"provider", "model"}:
+        raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.")
+    provider = value.get("provider")
+    model = value.get("model")
+    if (not isinstance(provider, str) or not provider.strip()
+            or not isinstance(model, str) or not model.strip()):
+        raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.")
+    return CustomModelSelection(provider=provider.strip(), model=model.strip())
+
+
+def _validate_custom_selection(raw: dict[str, Any]) -> CustomModelSelection | None:
+    if "custom" not in raw:
+        return None
+    custom = parse_custom_selection(raw.get("custom"))
+    if "tier" in raw:
+        raise BrowserRequestError(
+            "PADIEM 제공 모델과 PADIEM Custom을 한 요청에서 함께 선택할 수 없습니다."
+        )
+    return custom
 
 
 def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
@@ -64,11 +97,15 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
 
 def _validate_payload(
     raw: Any,
-) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None]:
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id"}:
+    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
+    if "calendar_turn_id" in raw:
+        turn_id = raw["calendar_turn_id"]
+        if not isinstance(turn_id, str) or not turn_id.strip() or len(turn_id) > 128:
+            raise BrowserRequestError("Calendar 요청 식별자 형식이 올바르지 않습니다.")
     if raw.get("mode", "auto") != "auto":
         raise BrowserRequestError("현재는 자동 추천 모드만 지원합니다.")
 
@@ -81,10 +118,9 @@ def _validate_payload(
         raise BrowserRequestError(str(exc)) from exc
 
     messages = raw.get("messages")
-    if not isinstance(messages, list) or not 1 <= len(messages) <= MAX_MESSAGES:
-        raise BrowserRequestError("대화 내용은 1개 이상 20개 이하로 보내 주세요.")
+    if not isinstance(messages, list) or not messages:
+        raise BrowserRequestError("대화 내용은 1개 이상 보내 주세요.")
     out: list[dict[str, str]] = []
-    total = 0
     for item in messages:
         if not isinstance(item, dict) or set(item) != {"role", "content"}:
             raise BrowserRequestError("대화 항목 형식이 올바르지 않습니다.")
@@ -95,11 +131,6 @@ def _validate_payload(
         if not isinstance(content, str) or not content.strip():
             raise BrowserRequestError("빈 메시지는 보낼 수 없습니다.")
         text = content.strip()
-        if len(text) > MAX_MESSAGE_CHARS:
-            raise BrowserRequestError("한 메시지가 너무 깁니다.")
-        total += len(text)
-        if total > MAX_TOTAL_MESSAGE_CHARS:
-            raise BrowserRequestError("한 번에 보낸 대화가 너무 깁니다.")
         out.append({"role": role, "content": text})
     if not any(item["role"] == "user" for item in out):
         raise BrowserRequestError("사용자 질문이 필요합니다.")
@@ -111,12 +142,15 @@ def _validate_payload(
         raise BrowserRequestError(str(exc)) from exc
     if tool_request is not None and any(isinstance(item, ImageAttachment) for item in attachments):
         raise BrowserRequestError("현재는 사진 첨부와 웹 도구를 한 요청에서 함께 사용할 수 없습니다.")
+    custom = _validate_custom_selection(raw)
+    if custom is not None and (tool_request is not None or attachments):
+        raise BrowserRequestError("PADIEM Custom은 현재 텍스트 대화만 지원합니다.")
     try:
         conversation_id = validate_conversation_id(raw.get("conversation_id"))
         project_id = validate_project_id(raw.get("project_id"))
     except ValueError as exc:
         raise BrowserRequestError(str(exc)) from exc
-    return out, skill, tool_request, attachments, conversation_id, project_id
+    return out, skill, tool_request, attachments, conversation_id, project_id, custom
 
 
 def _apply_b62_model_policy(
@@ -134,7 +168,11 @@ def _apply_b62_model_policy(
         if tier_id is None:
             policy = resolve_model_policy(messages, require_executable=False)
         else:
-            policy = resolve_tier_policy(messages, tier_id, require_executable=True)
+            # Browser validation owns product identity only. Executability is
+            # enforced by B14Client/P01 at the dispatch boundary so mock,
+            # projects and other non-model features remain usable while a tier
+            # is deliberately HOLD (#3568).
+            policy = resolve_tier_policy(messages, tier_id, require_executable=False)
     except ModelPolicyError as exc:
         raise BrowserRequestError(exc.message) from exc
     # Preserve validated browser messages until the B14/tier-identity dispatch

@@ -6,7 +6,9 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .history import HistoryStore, validate_conversation_id, validate_project_id
+from .history import PRODUCT_SCOPE_CHAT
 from .saved_outputs import (
     SavedOutputLimitError,
     SavedOutputStore,
@@ -47,9 +49,10 @@ def _provenance_not_found() -> JSONResponse:
 
 
 async def _json_body(request: Request) -> dict:
-    body = await request.body()
-    if len(body) > MAX_OUTPUT_BODY_BYTES:
-        raise ValueError("저장할 답변 요청이 너무 큽니다.")
+    try:
+        body = await read_bounded_request_body(request, max_bytes=MAX_OUTPUT_BODY_BYTES)
+    except RequestBodyTooLarge as exc:
+        raise ValueError("저장할 답변 요청이 너무 큽니다.") from exc
     try:
         raw = json.loads(body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -71,7 +74,7 @@ async def _verified_provenance(
 ) -> tuple[str | None, str | None] | None:
     effective_project_id = project_id
     if conversation_id is not None:
-        conversation = await history.get_conversation(user_id, conversation_id)
+        conversation = await history.get_conversation(user_id, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
         if conversation is None:
             return None
         stored_project = conversation.get("project_id")

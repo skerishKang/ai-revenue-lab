@@ -13,7 +13,9 @@ from datetime import datetime
 import json
 import re
 from types import MappingProxyType
-from typing import Any, Mapping, Protocol
+from typing import Any, AsyncIterator, Mapping, Protocol
+
+from .orchestration_stream import EngineNdjsonContractError, decode_orchestration_ndjson
 
 ENGINE_INTERNAL_ORIGIN = "https://padiem-ai-engine.internal"
 ENGINE_CONTRACT_MAJOR = 1
@@ -21,6 +23,8 @@ ENGINE_CONTRACT_VERSION = "1.0"
 ENGINE_EXECUTE_PATH = "/internal/v1/execute"
 ENGINE_HEALTH_PATH = "/internal/v1/health"
 ENGINE_ORCHESTRATE_PATH = "/internal/v1/orchestrate"
+ENGINE_RESEARCH_PATH = "/internal/v1/research"
+ENGINE_ORCHESTRATE_STREAM_PATH = "/internal/v1/orchestrate/stream"
 ENGINE_ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
 ENGINE_MULTIMODAL_ATTACHMENTS_PATH = "/internal/v1/multimodal/attachments"
@@ -58,6 +62,7 @@ _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
     {
         "subject_id",
         "agent_plan",
+        "tool_arguments",
         "recovery_policy",
         "max_retries",
         "require_evidence",
@@ -89,6 +94,65 @@ _DECISION_FIELDS = frozenset(
 )
 _CANCEL_ALLOWED = frozenset({"continuation_ref", "reason"})
 
+# #5015: the only authority-adjacent field this client may forward is the
+# server-selected PC device hint on the two canonical PC plans. It is a closed
+# shape, never a model-chosen device or a general tool argument surface.
+_PC_PLAN_AGENT_IDS = frozenset({
+    "agent:padiem:claw-pc-query@1",
+    "agent:padiem:chat-pc-query@1",
+})
+_PC_PLAN_STEPS = MappingProxyType({
+    "query_drives": (("query_drives", "claw.pc.query_drives"),),
+    "files": (
+        ("list_files", "claw.pc.list_files"),
+        ("read_file", "claw.pc.read_file"),
+    ),
+})
+#: Canonical PC device identity grammar (#5172). This client package has no
+#: runtime dependency, so the two patterns are copied verbatim from
+#: ``padiem_ai_core.pc_device_identity`` and a parity test proves the copies
+#: stay identical to that single authority.
+PC_DEVICE_ID_PATTERN = r"^[A-Za-z0-9_.:@+-]{1,128}$"
+PC_MESH_NODE_ID_PATTERN = r"^node/[A-Za-z0-9._-]{0,64}/[A-Za-z0-9_.:@+-]{1,128}$"
+_PC_DEVICE_ID_RE = re.compile(PC_DEVICE_ID_PATTERN)
+_PC_MESH_NODE_ID_RE = re.compile(PC_MESH_NODE_ID_PATTERN)
+
+
+def _is_pc_device_id(value: Any) -> bool:
+    """True for the canonical bare or composed Mesh device identity."""
+    if not isinstance(value, str) or not value:
+        return False
+    return bool(
+        _PC_DEVICE_ID_RE.fullmatch(value) or _PC_MESH_NODE_ID_RE.fullmatch(value)
+    )
+
+
+def _trusted_pc_tool_arguments(agent_plan: Any, tool_arguments: Any) -> bool:
+    """True only for the closed trusted-PC device hint on a canonical plan."""
+    if not isinstance(agent_plan, Mapping) or not isinstance(tool_arguments, Mapping):
+        return False
+    if agent_plan.get("agent_id") not in _PC_PLAN_AGENT_IDS:
+        return False
+    if set(tool_arguments) not in ({"query_drives"}, {"files"}):
+        return False
+    key = next(iter(tool_arguments))
+    steps = agent_plan.get("steps")
+    expected = _PC_PLAN_STEPS[key]
+    if not isinstance(steps, list) or len(steps) != len(expected):
+        return False
+    for step, (step_id, tool_id) in zip(steps, expected):
+        if (
+            not isinstance(step, Mapping)
+            or step.get("step_id") != step_id
+            or step.get("tool_id") != tool_id
+        ):
+            return False
+    entry = tool_arguments[key]
+    if not isinstance(entry, Mapping) or set(entry) != {"device_id"}:
+        return False
+    device_id = entry.get("device_id")
+    return _is_pc_device_id(device_id)
+
 ORCHESTRATION_FIELD_PARITY = MappingProxyType(
     {
         "app_id": "CLIENT_OWNED_AND_INJECTED",
@@ -111,7 +175,7 @@ ORCHESTRATION_FIELD_PARITY = MappingProxyType(
         "compiled_agent_profile": "EXPLICITLY_DEFERRED_AND_REJECTED",
         "tool_authorization": "EXPLICITLY_DEFERRED_AND_REJECTED",
         "tool_runtime": "EXPLICITLY_DEFERRED_AND_REJECTED",
-        "tool_arguments": "EXPLICITLY_DEFERRED_AND_REJECTED",
+        "tool_arguments": "TRUSTED_PC_PLAN_DEVICE_HINT_ONLY",
         "pause": "UNSUPPORTED_AND_NOT_EXPOSED",
     }
 )
@@ -147,6 +211,13 @@ class EngineTransportResponse:
             raise ValueError("body must be bytes")
         if not isinstance(self.headers, Mapping):
             raise ValueError("headers must be a mapping")
+
+
+@dataclass(frozen=True, slots=True)
+class EngineStreamTransportResponse:
+    status: int
+    chunks: AsyncIterator[bytes]
+    headers: Mapping[str, str] = field(default_factory=dict)
 
 
 class EngineTransport(Protocol):
@@ -220,11 +291,11 @@ def _execution_context(value: Any) -> dict[str, Any] | None:
         if (
             isinstance(timeout, bool)
             or not isinstance(timeout, (int, float))
-            or not 1 <= float(timeout) <= 60
+            or not 1 <= float(timeout) <= 3600
         ):
             raise PadiemAiEngineClientError(
                 "invalid_engine_request",
-                "execution_context.timeout_seconds must be between 1 and 60",
+                "execution_context.timeout_seconds must be between 1 and 3600",
             )
         normalized["timeout_seconds"] = timeout
     return normalized
@@ -262,11 +333,22 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
     if not isinstance(request, Mapping):
         raise PadiemAiEngineClientError("invalid_engine_request", "Engine request must be an object")
     data = dict(request)
-    if set(data) & _DEFERRED_AUTHORITY_FIELDS:
-        raise PadiemAiEngineClientError(
-            "unsupported_orchestration_field",
-            "Engine authority-bearing fields are not client-supplied in this contract version",
+    deferred = set(data) & _DEFERRED_AUTHORITY_FIELDS
+    if deferred:
+        # The closed trusted-PC device hint is the one reviewed exception; every
+        # other authority-bearing field stays rejected before transport.
+        allowed_deferred = (
+            {"tool_arguments"}
+            if _trusted_pc_tool_arguments(
+                data.get("agent_plan"), data.get("tool_arguments")
+            )
+            else set()
         )
+        if deferred - allowed_deferred:
+            raise PadiemAiEngineClientError(
+                "unsupported_orchestration_field",
+                "Engine authority-bearing fields are not client-supplied in this contract version",
+            )
     if set(data) - allowed:
         raise PadiemAiEngineClientError(
             "invalid_engine_request", "Engine request contains unsupported fields"
@@ -282,6 +364,7 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         "trace_id",
         "subject_id",
         "agent_plan",
+        "tool_arguments",
         "recovery_policy",
         "max_retries",
         "require_evidence",
@@ -444,6 +527,17 @@ def _json_body(response: EngineTransportResponse) -> dict[str, Any]:
     return body
 
 
+_JUDGEMENT_REASONS = frozenset(
+    {
+        "fresh_public_fact",
+        "explicit_request",
+        "volatile_business_fact",
+        "stable_knowledge",
+        "user_supplied_text",
+        "clarify_context",
+    }
+)
+
 class PadiemAiEngineClient:
     def __init__(self, *, transport: EngineTransport, app_id: str, caller_id: str, credential: str) -> None:
         self._transport = _transport(transport)
@@ -478,6 +572,89 @@ class PadiemAiEngineClient:
             )
         return body
 
+    async def search_evidence(self, *, query: str, agent: Mapping[str, Any]) -> dict[str, Any]:
+        """Use the existing authenticated Engine research route with zero model calls.
+
+        Product caller must first authorize a PUBLIC, minimized query. This
+        generic Engine client cannot authorize browser text or claim consent.
+        B14 model execution remains on the separate existing P01 lane.
+        """
+        if not isinstance(query, str) or not query.strip() or len(query) > 2_000:
+            raise PadiemAiEngineClientError(
+                "invalid_public_query", "Evidence query must be bounded public text",
+            )
+        if not isinstance(agent, Mapping):
+            raise PadiemAiEngineClientError(
+                "invalid_research_agent", "Research agent profile is required",
+            )
+        body = await self._post(ENGINE_RESEARCH_PATH, {
+            "app_id": self.app_id,
+            "operation": "search_evidence",
+            "query": query.strip(),
+            "agent": dict(agent),
+        })
+        sources = body.get("sources")
+        context = body.get("grounding_context")
+        if (
+            body.get("ok") is not True
+            or body.get("operation") != "search_evidence"
+            or body.get("answer") is not None
+            or not isinstance(sources, list)
+            or not sources
+            or not isinstance(context, str)
+            or not context.startswith("웹 근거 사용 규칙:")
+            or len(context) > 32_768
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Engine evidence-only response is invalid",
+            )
+        return {"sources": sources, "grounding_context": context}
+
+    async def search_judgement(self, *, conversation: str, agent: Mapping[str, Any]) -> dict[str, Any]:
+        """Ask the existing Engine research route to judge one conversation.
+
+        Judgement only: zero retrieval, zero answer, zero provider authority, and the
+        caller's selected answer model is untouched. The product still has to re-check
+        the returned query before anything leaves Padiem.
+        """
+        if (
+            not isinstance(conversation, str)
+            or not conversation.strip()
+            or len(conversation) > 4_000
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_public_conversation", "Judgement input must be bounded conversation text",
+            )
+        if not isinstance(agent, Mapping):
+            raise PadiemAiEngineClientError(
+                "invalid_research_agent", "Research agent profile is required",
+            )
+        body = await self._post(ENGINE_RESEARCH_PATH, {
+            "app_id": self.app_id,
+            "operation": "search_judgement",
+            "query": conversation.strip(),
+            "agent": dict(agent),
+        })
+        reason = body.get("reason")
+        needs_search = body.get("needs_search")
+        if (
+            body.get("ok") is not True
+            or body.get("operation") != "search_judgement"
+            or body.get("answer") is not None
+            or not isinstance(needs_search, bool)
+            or not isinstance(reason, str)
+            or reason not in _JUDGEMENT_REASONS
+            or (needs_search and not isinstance(body.get("query"), str))
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Engine search-judgement response is invalid",
+            )
+        return {
+            "needs_search": needs_search,
+            "query": body.get("query") if needs_search else None,
+            "reason": reason,
+        }
+
     async def orchestrate(self, request: Mapping[str, Any]) -> dict[str, Any]:
         body = await self._post(
             ENGINE_ORCHESTRATE_PATH,
@@ -489,6 +666,52 @@ class PadiemAiEngineClient:
                 "invalid_engine_response", "Engine orchestration response is invalid"
             )
         return dict(orchestration)
+
+    async def stream_orchestration(
+        self, request: Mapping[str, Any]
+    ) -> AsyncIterator[dict[str, Any]]:
+        """Opt-in Engine NDJSON transport; no implicit switch from orchestrate().
+
+        The caller must validate P01 correlation and the terminal result before
+        committing success. Partial event yields have no approval/dispatch power.
+        """
+        payload = _run_payload(self.app_id, request, allowed=_ORCHESTRATION_ALLOWED)
+        stream_request = getattr(self._transport, "stream_request", None)
+        if not callable(stream_request):
+            raise PadiemAiEngineClientError(
+                "engine_stream_unavailable", "Engine streaming transport is not configured"
+            )
+        response = await stream_request(
+            method="POST",
+            url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_STREAM_PATH}",
+            headers=self._headers(),
+            body=json.dumps(payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8"),
+        )
+        if not isinstance(response, EngineStreamTransportResponse):
+            raise PadiemAiEngineClientError("invalid_engine_stream", "Engine stream response is invalid")
+        # A non-200 response is a JSON error, never stream events. Never retry.
+        if response.status != 200 or response.headers.get("content-type", "").split(";", 1)[0].lower() != "application/x-ndjson":
+            close = getattr(response.chunks, "aclose", None)
+            if callable(close):
+                await close()
+            raise PadiemAiEngineClientError(
+                "engine_stream_unavailable" if response.status == 404 else "engine_http_error",
+                "Padiem AI Engine stream request failed", status=response.status,
+            )
+        try:
+            async for item in decode_orchestration_ndjson(response.chunks):
+                yield item
+        except EngineNdjsonContractError as exc:
+            # #5015: carry the Engine's bounded stage code (when present)
+            # alongside the contract reason so callers can attribute the
+            # failure without re-reading any Engine text.
+            metadata: dict[str, Any] = {"reason": exc.code}
+            if exc.engine_code is not None:
+                metadata["engine_code"] = exc.engine_code
+            raise PadiemAiEngineClientError(
+                "invalid_engine_stream", "Engine streaming contract failed",
+                metadata=metadata,
+            ) from exc
 
     async def resume_orchestration(self, request: Mapping[str, Any]) -> dict[str, Any]:
         body = await self._post(

@@ -14,8 +14,8 @@ const NOW = "2026-09-30T03:00:00.000Z";
 
 function sourceInfo(overrides) {
   return Object.assign({
-    filename: "synthetic-company-quotation.pdf",
-    mediaType: "application/pdf",
+    filename: "synthetic-company-quotation.xlsx",
+    mediaType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     byteSize: 3544
   }, overrides || {});
 }
@@ -43,7 +43,7 @@ check(TemplateRegistration.DRAFT_NOTE.includes("자동으로 분석하지 않") 
       TemplateRegistration.DRAFT_NOTE.includes("비교") &&
       !/완전히 학습|AI가/.test(TemplateRegistration.DRAFT_NOTE),
   "honest copy: default draft + no auto-analysis + compare-and-correct");
-eq(seeded.candidate.provenance.sourceName, "synthetic-company-quotation.pdf", "source filename is provenance only");
+eq(seeded.candidate.provenance.sourceName, "synthetic-company-quotation.xlsx", "source filename is provenance only");
 check(!JSON.stringify(seeded.candidate).includes("base64"), "no source bytes enter the candidate");
 eq(seeded.candidate.review.warnings.map((w) => w.code), ["manual_layout_review_required"], "manual review is required, not assumed");
 eq(registerCheckInvalidSource(), "invalid_source_info", "missing filename fails closed");
@@ -96,16 +96,27 @@ check(badPatch.ok === false, "unsupported sections fail closed");
 eq(TemplateRegistration.correctTemplateCandidate(seeded.candidate, { layout: {} }, { now: NOW }).code,
   "unsupported_template_correction", "unknown correction keys fail closed");
 
-/* Slots declared live are NOT_SUPPORTED at the store gate (fidelity honesty). */
+/* #3402: candidate schema can describe private refs, but browser-local approval cannot own them. */
+const privateLogoId = "b66asset_" + "a".repeat(32);
 const slotContent = correctedContent();
-slotContent.slots = { logo: "logo.png", stamp: "" };
+slotContent.slots = { logo: privateLogoId, stamp: "" };
 const slotCandidate = TemplateRegistration.correctTemplateCandidate(seeded.candidate, { content: slotContent }, { now: NOW });
-check(slotCandidate.ok === true, "candidate content may describe slots");
+check(slotCandidate.ok === true, "candidate content may describe private asset slots");
 const slotStore = TemplateStore.emptyStore();
 const slotApproval = TemplateRegistration.approveTemplateCandidate(slotCandidate.candidate, slotStore, {
   id: "tpl-slot", approvedBy: "local-owner", approvedAt: NOW
 }, { now: NOW });
-eq(slotApproval.code, "slot_rendering_not_supported", "live logo/stamp slots are NOT_SUPPORTED, not silently kept");
+eq(slotApproval.code, "private_asset_requires_account_skill",
+  "private assets require account-bound Saved Quote Skill authority");
+const urlSlotContent = correctedContent();
+urlSlotContent.slots = { logo: "https://example.test/logo.png", stamp: "" };
+const urlSlotCandidate = TemplateRegistration.correctTemplateCandidate(
+  seeded.candidate,
+  { content: urlSlotContent },
+  { now: NOW }
+);
+check(urlSlotCandidate.ok === true, "invalid slot URL is normalized rather than persisted");
+eq(urlSlotCandidate.candidate.content.slots.logo, "", "arbitrary logo URL is removed by template normalization");
 
 /* 3. preview without any storage mutation. */
 const draft = sampleDraft();

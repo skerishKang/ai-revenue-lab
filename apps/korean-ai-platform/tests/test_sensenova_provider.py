@@ -88,17 +88,11 @@ def test_provider_spec_pinned_origin_and_binding():
     assert spec.enabled
 
 
-def test_kilo_secondary_route_preserved():
-    # #2003 non-goal: the Kilo entry must remain registered.
+def test_retired_kilo_secondary_route_unregistered():
     from app.pilot.kilo_provider import KILO_MODEL_ID
-
-    assert get_catalog_by_id(KILO_MODEL_ID) is not None
-    assert get_platform_provider("kilo") is not None
-
-
-# ---------------------------------------------------------------------------
-# Adapter request shape (endpoint / Bearer / model)
-# ---------------------------------------------------------------------------
+    assert get_catalog_by_id(KILO_MODEL_ID) is None
+    assert get_platform_provider("kilo") is None
+    assert get_catalog_by_id(SENSENOVA_MODEL_ID) is not None
 
 @pytest.mark.asyncio
 async def test_adapter_request_shape(monkeypatch):
@@ -264,7 +258,8 @@ async def test_busy_429_absorbed_by_gateway_retry(client, monkeypatch):
 
     response = client.post(
         "/api/pilot/v1/chat/completions",
-        json={"model": SENSENOVA_MODEL_ID, "messages": [{"role": "user", "content": "hi"}]},
+        json={"model": SENSENOVA_MODEL_ID, "messages": [{"role": "user", "content": "hi"}],
+              "business14": {"max_retries": 1}},
     )
 
     assert response.status_code == 200

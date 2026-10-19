@@ -19,6 +19,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b62-live-content-marker-gate.yml"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/b62_live_content_marker_probe.py"
       - ".github/tests/test_b62_live_content_marker_probe.py"
   workflow_dispatch:
@@ -142,8 +143,7 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
           deployments_pre="${RUNNER_TEMP}/b62-live-deployments-pre.json"
           curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments_pre}"
-          jq -e '.success == true and (.result.deployments | length) >= 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments_pre}" >/dev/null
-          active_pre="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments_pre}")"
+          active_pre="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments_pre}")"
           [[ "${active_pre}" =~ $uuid_re ]]
           if [[ "${active_pre}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then
             echo "ACTIVE_VERSION=${active_pre}"
@@ -160,8 +160,7 @@ jobs:
           curl -fsS "${auth[@]}" "${api}/content/v2" -o "${content}"
           deployments_post="${RUNNER_TEMP}/b62-live-deployments-post.json"
           curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments_post}"
-          jq -e '.success == true and (.result.deployments | length) >= 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments_post}" >/dev/null
-          active_post="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments_post}")"
+          active_post="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments_post}")"
           [[ "${active_post}" =~ $uuid_re ]]
           if [[ "${active_post}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then
             echo "ACTIVE_VERSION=${active_post}"

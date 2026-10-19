@@ -252,7 +252,7 @@ jobs:
           fi
           version_pre="${RUNNER_TEMP}/b54-same-process-version-pre.json"
           curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${pre_version}" -o "${version_pre}"
-          classify_out="$(python3 "${ROTATION_SCRIPT}" classify --version-detail "${version_pre}" --active-version "${pre_version}")" || true
+          classify_out="$(python3 "${ROTATION_SCRIPT}" classify --version-detail "${version_pre}" --active-version="${pre_version}")" || true
           disposition="$(printf '%s\n' "${classify_out}" | sed -n 's/^B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=//p')"
           if [ "${disposition}" != "ROTATION_REQUIRED" ]; then
             echo 'D3=STOP_PRECONDITION_SERVED_VERSION'
@@ -350,7 +350,7 @@ jobs:
           fi
           version_post="${RUNNER_TEMP}/b54-same-process-version-post.json"
           curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${new_version}" -o "${version_post}"
-          python3 "${GUARD_SCRIPT}" verify --version-settings "${version_post}" --active-version "${new_version}" --expect-overlay >/dev/null
+          python3 "${GUARD_SCRIPT}" verify --version-settings "${version_post}" --active-version="${new_version}" --expect-overlay >/dev/null
           echo "POST_SERVED_VERSION=${new_version}"
           echo 'NEW_SERVED_VERSION_CREATED=YES'
           echo 'POST_PUT_POLLING=BOUNDED_30x2S_GET_ONLY'

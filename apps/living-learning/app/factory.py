@@ -52,7 +52,7 @@ def create_provider(settings) -> AIProvider:
 
         base_url = getattr(settings, "padiem_core_b14_base_url", "")
         model = getattr(settings, "padiem_core_model", "b14/auto")
-        timeout_seconds = getattr(settings, "padiem_core_timeout_seconds", 20.0)
+        timeout_seconds = getattr(settings, "padiem_core_timeout_seconds", 600.0)
         if not isinstance(base_url, str) or not base_url.strip():
             raise ValueError(
                 "LL_PADIEM_CORE_B14_BASE_URL is required when "

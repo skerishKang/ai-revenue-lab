@@ -10,6 +10,7 @@ import pytest
 
 from app.auth import (
     GOOGLE_AUTH_URL,
+    GoogleOAuthClient,
     GOOGLE_TOKEN_URL,
     GOOGLE_USERINFO_URL,
     OAUTH_STATE_COOKIE,
@@ -20,8 +21,9 @@ from app.auth import (
     verify_oauth_state,
 )
 from app.config import ConfigError, Settings
-from app.history import D1HistoryStore, HistoryForbidden, UserProfile
+from app.history import D1HistoryStore, HistoryForbidden, UserProfile, PRODUCT_SCOPE_CHAT
 from app.main import create_app
+from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
 
 SESSION_SECRET = "phase9-session-secret-not-a-real-credential-000000"
 
@@ -55,38 +57,43 @@ class MemoryHistoryStore:
     async def get_user(self, user_id):
         return self.users.get(user_id)
 
-    async def list_conversations(self, user_id, limit=30):
-        rows = [c for c in self.conversations.values() if c["user_id"] == user_id]
+    async def list_conversations(self, user_id, *, product_scope, limit=30):
+        rows = [
+            c for c in self.conversations.values()
+            if c["user_id"] == user_id and c["product_scope"] == product_scope
+        ]
         rows.sort(key=lambda row: row["updated_at"], reverse=True)
         return [{k: c[k] for k in ("id", "title", "created_at", "updated_at")} for c in rows[:limit]]
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row["product_scope"] != product_scope:
             return None
         return {
             "id": row["id"], "title": row["title"], "created_at": row["created_at"], "updated_at": row["updated_at"],
             "messages": [{"role": m["role"], "content": m["content"]} for m in row["messages"]],
         }
 
-    async def delete_conversation(self, user_id, conversation_id):
+    async def delete_conversation(self, user_id, conversation_id, *, product_scope):
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row["product_scope"] != product_scope:
             return False
         del self.conversations[conversation_id]
         return True
 
-    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text):
+    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text,
+                              project_id=None, *, product_scope):
         if conversation_id is None:
             self.counter += 1
             conversation_id = "chat_" + f"{self.counter:032x}"
             self.conversations[conversation_id] = {
                 "id": conversation_id, "user_id": user_id, "title": user_text[:80],
+                "product_scope": product_scope,
                 "created_at": f"2026-08-25T00:00:{self.counter:02d}Z",
                 "updated_at": f"2026-08-25T00:00:{self.counter:02d}Z", "messages": [],
             }
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row["product_scope"] != product_scope:
             raise HistoryForbidden()
         row["messages"].extend([
             {"role": "user", "content": user_text},
@@ -140,6 +147,38 @@ def test_signed_session_and_state_reject_tamper_and_expiry():
     assert verify_oauth_state(settings, state, signed, now=101)
     assert not verify_oauth_state(settings, state + "x", signed, now=101)
     assert not verify_oauth_state(settings, state, signed, now=701)
+
+
+def test_redirect_uri_for_bridge_requires_exact_configured_origin():
+    settings = google_settings(b66_quote_base_url="https://quick-quote-kr.pages.dev")
+    client = GoogleOAuthClient(settings)
+    assert (
+        client.redirect_uri_for_bridge("https://quick-quote-kr.pages.dev/")
+        == "https://quick-quote-kr.pages.dev/api/padiem/auth/google/callback"
+    )
+    assert client.redirect_uri_for_bridge("https://evil.example.test") == client.redirect_uri
+    assert client.redirect_uri_for_bridge(None) == client.redirect_uri
+    plain = GoogleOAuthClient(google_settings())
+    assert plain.redirect_uri_for_bridge("https://quick-quote-kr.pages.dev") == plain.redirect_uri
+
+
+@pytest.mark.asyncio
+async def test_oauth_start_redirect_follows_b66_bridge_origin():
+    settings = google_settings(b66_quote_base_url="https://quick-quote-kr.pages.dev")
+    store = MemoryHistoryStore()
+    app = create_app(settings, history_store=store)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test", follow_redirects=False
+    ) as client:
+        bridged = await client.get("/auth/google/start", headers={"X-B66-Origin": "https://quick-quote-kr.pages.dev"})
+        canonical = await client.get("/auth/google/start")
+    assert bridged.status_code == 302
+    assert (
+        "redirect_uri=https%3A%2F%2Fquick-quote-kr.pages.dev%2Fapi%2Fpadiem%2Fauth%2Fgoogle%2Fcallback"
+        in bridged.headers["location"]
+    )
+    assert canonical.status_code == 302
+    assert "redirect_uri=https%3A%2F%2Fchat.example.test%2Fauth%2Fgoogle%2Fcallback" in canonical.headers["location"]
 
 
 @pytest.mark.asyncio
@@ -222,7 +261,16 @@ async def test_no_store_reports_not_ready_and_keeps_anonymous_chat():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         status = await client.get("/api/auth/status")
         chat = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "안녕"}], "mode": "auto"})
-    assert status.json() == {"ready": False, "authenticated": False, "history_ready": False, "user": None}
+    assert status.json() == {
+        "ready": False,
+        "authenticated": False,
+        "history_ready": False,
+        "user": None,
+        # Owner decision 2026-10-17: the model is not available to a signed-out
+        # visitor, but only in a deployment that can actually authenticate. An
+        # app with no store is not one, so the browser must never gate here.
+        "model_requires_session": False,
+    }
     assert chat.status_code == 200
     assert "conversation_id" not in chat.json()
 
@@ -259,7 +307,7 @@ async def test_cross_user_conversation_is_rejected_before_answer_and_anonymous_i
     owner = await add_test_user(store, "1111111111", "owner@example.test", "owner")
     other = await add_test_user(store, "2222222222", "other@example.test", "other")
     settings = google_settings()
-    cid = await store.append_exchange(owner.id, None, "owner question", "owner answer")
+    cid = await store.append_exchange(owner.id, None, "owner question", "owner answer", product_scope=PRODUCT_SCOPE_CHAT)
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id), domain="chat.example.test", path="/")
@@ -280,7 +328,7 @@ async def test_conversation_delete_is_owner_scoped_and_bounded():
     store = MemoryHistoryStore()
     owner = await add_test_user(store, "3333333333", "owner-delete@example.test", "owner")
     other = await add_test_user(store, "4444444444", "other-delete@example.test", "other")
-    cid = await store.append_exchange(owner.id, None, "삭제할 대화", "보존된 답변")
+    cid = await store.append_exchange(owner.id, None, "삭제할 대화", "보존된 답변", product_scope=PRODUCT_SCOPE_CHAT)
     settings = google_settings()
     app = create_app(settings, history_store=store)
 
@@ -307,13 +355,22 @@ async def test_failed_model_call_does_not_persist_and_image_base64_never_persist
     store = MemoryHistoryStore()
     profile = await add_test_user(store)
     failing_settings = google_settings(runtime_mode="b14", b14_base_url="https://b14.example")
+    provider_calls = 0
     async def fail_handler(request):
+        nonlocal provider_calls
+        provider_calls += 1
         return httpx.Response(500, json={"private": "not exposed"})
     fail_app = create_app(failing_settings, transport=httpx.MockTransport(fail_handler), history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=fail_app), base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, create_session_token(failing_settings, profile.id), domain="chat.example.test", path="/")
         failed = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "실패"}], "mode": "auto"})
-    assert failed.status_code == 502
+    if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
+        assert failed.status_code == 502
+        assert provider_calls == 1
+    else:
+        assert failed.status_code == 422
+        assert failed.json()["error"]["code"] == "tier_unavailable"
+        assert provider_calls == 0
     assert store.conversations == {}
 
     settings = google_settings()
@@ -363,11 +420,13 @@ async def test_d1_adapter_uses_prepared_bound_values_not_interpolation():
     store = D1HistoryStore(db)
     marker = "USER_VALUE_SHOULD_ONLY_BE_BOUND"
     await store.upsert_google_user("subject-1", "user@example.test", marker, "")
-    await store.list_conversations("usr_fake")
+    await store.list_conversations("usr_fake", product_scope=PRODUCT_SCOPE_CHAT)
     cid = "chat_" + "a" * 32
-    assert await store.delete_conversation("usr_fake", cid) is True
+    assert await store.delete_conversation("usr_fake", cid, product_scope=PRODUCT_SCOPE_CHAT) is True
     assert any(
-        sql.startswith("DELETE FROM conversations WHERE id=? AND user_id=?") and values == (cid, "usr_fake")
+        sql.startswith(
+            "DELETE FROM conversations WHERE id=? AND user_id=? AND product_scope=?"
+        ) and values == (cid, "usr_fake", PRODUCT_SCOPE_CHAT)
         for sql, values in db.bound
     )
     assert db.prepared

@@ -149,6 +149,10 @@ As read on the 2026-08-31 refresh: B62 ordinary chat delegated to `b14/auto`; th
 >
 > What the finding endorsed has not changed: B62 stays provider-neutral and never owns Provider/model route authority — the later changes enforced exactly that.
 
+**Current source correction (2026-10-16; supersedes the 2026-09-20 routing example above).** The vendor-specific September mapping remains a **dated historical record**, not current routing authority. Free, Plus, Pro and Max now follow distinct owner-approved grade contracts in the [shared Control Plane tier routes](../../packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py), including a permitted exact grade-pinned backup on eligible upstream errors. The authenticated grade, not a shared upstream model ID, determines entitlement; [B62 model policy](../../apps/padiem-chat/app/model_policy.py) consumes the shared declaration. Current vendor/model assignment is maintained in authorized non-public governance instead of copied into this historical review. These are merged source contracts, **not proof of Production provider availability or customer E2E**.
+
+**Routing distinction (2026-10-16).** Ordinary Chat/Claw does not reselect primary models using a Chat-versus-Coding task scorer. [PR #4844](https://github.com/skerishKang/ai-revenue-lab/pull/4844) removed the unused scored automatic-routing implementation and its scorer-only tests. The remaining `b14/auto` is a separate owner-designated **fixed-chain compatibility route**, not a free-form recommendation engine; see [router_core.py](../../apps/korean-ai-platform/app/pilot/router_core.py) and [routing_policy.py](../../apps/korean-ai-platform/app/pilot/routing_policy.py). Exact model-ID routing and provider/authorization safeguards remain. See the [current model documentation index](../models/README.md) for authoritative links.
+
 Preserve:
 
 ```text

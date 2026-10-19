@@ -1,0 +1,57 @@
+name: Provision PADIEM Phone public demo (Git connected)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: padiem-phone-git-connected-provision
+  cancel-in-progress: false
+
+jobs:
+  provision:
+    name: Provision isolated Git connected demo site
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Require default branch
+        env:
+          ACTUAL_BRANCH: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: test "$ACTUAL_BRANCH" = "$DEFAULT_BRANCH"
+
+      - name: Checkout reviewed main
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Public demo package guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          d=apps/padiem-phone/public-demo
+          for f in index.html app.js demo-api.js styles.css _headers assets/padiem-glass-female.jpg; do
+            test -f "$d/$f"
+          done
+          grep -q "connect-src 'none'" "$d/_headers"
+          grep -q "PUBLIC DEMO" "$d/index.html"
+          if grep -E '(fetch\\s*\\(|XMLHttpRequest|navigator\\.sendBeacon|new WebSocket|localStorage\\.|sessionStorage\\.)' "$d/"*.js; then
+            echo 'Public demo must never contact API or persistent browser storage'
+            exit 1
+          fi
+
+      - name: Connect or verify Cloudflare Pages Git project (no direct deployment)
+        run: python3 .github/scripts/provision_padiem_phone_pages.py
+
+      - name: Deployment reference
+        if: always()
+        run: |
+          echo 'Project: padiem-phone-demo' >> "$GITHUB_STEP_SUMMARY"
+          echo 'GitHub: skerishKang/ai-revenue-lab, main' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Source: apps/padiem-phone/public-demo' >> "$GITHUB_STEP_SUMMARY"
+          echo 'No manual deployment, retry, preview promotion, DNS or site-secret changes' >> "$GITHUB_STEP_SUMMARY"

@@ -19,6 +19,8 @@ from .local_agent_control_plane_admission import (
     ControlPlanePhysicalAdmissionChannel,
 )
 from .local_agent_pairing import DeviceLifecycle, DeviceSession
+from .local_resident_verified_text_delivery import AdmittedTextReadContext
+from .browser_open import BrowserOpenRefusal
 from .local_agent_runtime_assembly import BoundLocalAgentRuntimeAssembly
 from .local_agent_secure_transport import DeviceCredentialStore, OutboundPollRequest
 from .security import redact_secrets
@@ -221,6 +223,8 @@ class LocalAgentResidentRuntimeHost:
         credential_store: DeviceCredentialStore,
         durable_store: DurableRunStore,
         coordinator: ControlPlaneAdmittedExecutionCoordinator | None = None,
+        office_staging=None,
+        verified_text_lane=None,
         clock: Callable[[], datetime] | None = None,
         monotonic: Callable[[], float] | None = None,
         instance_lock: SingleInstanceLockPort | None = None,
@@ -286,6 +290,26 @@ class LocalAgentResidentRuntimeHost:
             durable_store=durable_store,
         )
         self._durable_store = durable_store
+        if office_staging is not None and not callable(
+            getattr(office_staging, "on_acknowledged", None)
+        ):
+            raise ContractError("trusted post-ACK Office output delivery port required")
+        self._office_staging = office_staging
+        # #4139: the bounded TXT read lane is ordered, so it is wired into three
+        # points of the one command path and nowhere else: pending is declared
+        # while the command is admitted and unacknowledged, the approved READ
+        # runs after the execution and before the acknowledgement, and only the
+        # bytes that read produced are uploaded once the successful
+        # acknowledgement is confirmed. It never re-reads the file, never
+        # retries the command and never mints a second correlation.
+        if verified_text_lane is not None and not all(
+            callable(getattr(verified_text_lane, method_name, None))
+            for method_name in (
+                "declare_pending_for_admitted", "observe_approved_read", "on_acknowledged",
+            )
+        ):
+            raise ContractError("trusted ordered verified text lane required")
+        self._verified_text_lane = verified_text_lane
         self._recovery = LocalAgentRestartRecoveryDriver(
             store=durable_store,
             channel=channel,
@@ -345,6 +369,60 @@ class LocalAgentResidentRuntimeHost:
 
     def _now(self) -> datetime:
         return _aware(self._clock(), "clock")
+
+    def redeem_desktop_browser_open(self, **correlation: Any) -> None:
+        """#3611 — the Desktop's redemption entry point, on the existing pipe.
+
+        Delegates straight to the assembly's composed `browser.open` authority,
+        which owns the single durable ``ADMITTED -> EXECUTING`` transition. This
+        host adds no authority of its own and creates no view: the Desktop trusted
+        main owns the browser, and it may only create a view after this call
+        returns.
+        """
+
+        authority = self._assembly.browser_open_authority
+        if authority is None:
+            raise BrowserOpenRefusal(
+                "redemption_unavailable",
+                "no approved browser.open authority is composed on this host",
+            )
+        authority.redeem_transport(**correlation)
+
+    def current_desktop_session_material(self) -> dict[str, Any]:
+        """#3436 B2d — one bounded current-session projection for the trusted
+        local Desktop boundary. Fail-closed on everything that is not the
+        host's own current ONLINE canonical session.
+
+        No value is minted here and no new verifier is invented: the existing
+        canonical pinned authority re-validates the exact session/binding
+        correlation (binding_ref, device_id, account_ref, workspace_ref) and
+        currentness (`require_current_binding`, `require_session`), and the
+        existing protected store re-validates the full binding context on
+        load, so a rotated generation, an expired credential or a mismatched
+        binding refuse here. DESKTOP_SESSION_OPEN=0: the host never opens a
+        session to satisfy this projection.
+        """
+        from .local_agent_desktop_material import project_session_material
+
+        with self._host_lock:
+            if self._state is not ResidentHostState.ONLINE:
+                raise ContractError("resident host is not online")
+            session = self._session
+            if session is None:
+                raise ContractError("resident host has no current broker session")
+            now = self._now()
+            binding = self._assembly._binding
+            authority = self._channel.authority
+            authority.require_current_binding(binding, now=now)
+            authority.require_session(session, now=now)
+            credential = self._credential_store.load(binding=binding, now=now)
+            return project_session_material(
+                session_id=session.session_id,
+                binding_ref=binding.binding_ref,
+                credential=credential,
+                credential_generation=binding.credential_generation,
+                expires_at=session.expires_at,
+            )
 
     def heartbeat_freshness_seconds(self) -> float | None:
         """Client-local freshness of the last acknowledged heartbeat (#3140).
@@ -464,6 +542,73 @@ class LocalAgentResidentRuntimeHost:
         with self._active_execution_lock:
             self._active_session = None
             self._active_request_id = None
+
+    def _declare_text_read_pending(self, **admitted: Any) -> None:
+        """Pre-ACK hook: declare `pending` for an admitted, unacknowledged read.
+
+        A failure propagates out of the canonical coordinator, which stops
+        before `on_execution_start`, so a refused declaration never becomes an
+        execution, a READ or a successful acknowledgement.
+        """
+        lane = self._verified_text_lane
+        if lane is None:
+            return
+        binding = admitted.get("binding")
+        command = admitted.get("command")
+        try:
+            credential = self._credential_store.load(binding=binding, now=self._now())
+            declared = lane.declare_pending_for_admitted(
+                binding=binding,
+                command=command,
+                admitted=AdmittedTextReadContext(
+                    admission_ref=admitted["admission_ref"],
+                    evidence_ref=admitted["evidence_ref"],
+                    request_id=admitted["request_id"],
+                    command_fingerprint=admitted["request_fingerprint"],
+                    admitted_at=admitted["admitted_at"],
+                ),
+                credential=credential,
+                receipt=admitted.get("receipt"),
+            )
+        except Exception:
+            # Bounded evidence only: ids/refs/codes, never a path or a body.
+            self._record_diagnostic(
+                "verified_text", "PENDING_REFUSED",
+                "Admitted text read could not be declared; command not executed",
+            )
+            raise
+        if declared:
+            self._record_diagnostic(
+                "verified_text", "PENDING_DECLARED",
+                "Admitted text read declared before its body",
+            )
+
+    def _observe_text_read(self, *, binding: Any, command: Any, execution: Any) -> None:
+        """Pre-ACK hook: run the approved READ and preserve its bytes.
+
+        It runs after the execution and before the durable terminal write and
+        the acknowledgement, and it is the only place the file is read. A
+        refusal propagates, so a READ that failed is never acknowledged as a
+        successful text result.
+        """
+        lane = self._verified_text_lane
+        if lane is None:
+            return
+        try:
+            read = lane.observe_approved_read(
+                binding=binding, command=command, execution=execution,
+            )
+        except Exception:
+            self._record_diagnostic(
+                "verified_text", "READ_REFUSED",
+                "Authorized PC text read refused; command not acknowledged",
+            )
+            raise
+        if read is not None:
+            self._record_diagnostic(
+                "verified_text", "READ_PRESERVED",
+                "Authorized PC text read preserved before the acknowledgement",
+            )
 
     def _acquire_instance_lock(self) -> None:
         if self._lock_acquired:
@@ -706,13 +851,15 @@ class LocalAgentResidentRuntimeHost:
                 self._active_command_id = command.command_id
                 material_ref = f"mat_{command.command_id}_{command.sequence}"
                 try:
-                    self._coordinator.execute_polled_command(
+                    receipt = self._coordinator.execute_polled_command(
                         binding=binding,
                         session=session,
                         command=command,
                         material_request_ref=material_ref,
                         on_execution_start=self._set_active_request,
                         on_execution_end=self._clear_active_request,
+                        on_admitted=self._declare_text_read_pending,
+                        on_execution_observed=self._observe_text_read,
                     )
                     self._last_sequence = max(self._last_sequence, command.sequence)
                     executed_count += 1
@@ -721,6 +868,67 @@ class LocalAgentResidentRuntimeHost:
                         "EXECUTED",
                         f"Command {command.command_id} sequence {command.sequence} executed and acknowledged",
                     )
+                    # Office material is a post-ACK, explicitly composed side
+                    # effect, NEVER part of the command result/ack authority.
+                    # On staging failure preserve the ACKed command truth; do
+                    # not silently convert it into a second execution/retry.
+                    if self._office_staging is not None:
+                        try:
+                            fact = receipt.execution
+                            if (fact.command_id != command.command_id
+                                    or fact.run_id != command.run_id
+                                    or fact.termination.value != "exited"
+                                    or fact.exit_code != 0
+                                    or fact.revision_ref != command.revision_ref):
+                                raise ContractError("successful exact broker receipt required")
+                            credential = self._credential_store.load(
+                                binding=binding, now=self._now(),
+                            )
+                            staged = self._office_staging.on_acknowledged(
+                                binding=binding, command=command, receipt=receipt,
+                                credential=credential,
+                            )
+                            if staged is not None:
+                                self._record_diagnostic(
+                                    "office", "STAGED",
+                                    "Authorized Office XLSX/PDF bytes staged in private broker",
+                                )
+                        except Exception:
+                            # Do not leak paths, Office content, TLS credentials
+                            # or misleadingly report an execution failure.
+                            self._record_diagnostic(
+                                "office", "STAGING_REFUSED",
+                                "Private Office staging incomplete; no Drive upload",
+                            )
+                    if self._verified_text_lane is not None:
+                        try:
+                            fact = receipt.execution
+                            if (fact.command_id != command.command_id
+                                    or fact.run_id != command.run_id
+                                    or fact.termination.value != "exited"
+                                    or fact.exit_code != 0
+                                    or fact.revision_ref != command.revision_ref):
+                                raise ContractError("successful exact broker receipt required")
+                            credential = self._credential_store.load(
+                                binding=binding, now=self._now(),
+                            )
+                            delivered = self._verified_text_lane.on_acknowledged(
+                                binding=binding, command=command, receipt=receipt,
+                                credential=credential,
+                            )
+                            if delivered is not None:
+                                self._record_diagnostic(
+                                    "verified_text", "DELIVERED",
+                                    "Authorized PC text read returned to the broker",
+                                )
+                        except Exception:
+                            # The file is not re-read and the command is not
+                            # retried: a failed text transport keeps the
+                            # acknowledged command truth and reports no content.
+                            self._record_diagnostic(
+                                "verified_text", "UPLOAD_REFUSED",
+                                "PC text read not returned; no content claimed",
+                            )
                 except Exception as exc:
                     self._record_diagnostic("execution", "EXECUTION_ERROR", str(exc))
                     if isinstance(exc, OSError):

@@ -13,6 +13,8 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+from padiem_ai_engine_client import ENGINE_INTERNAL_ORIGIN, ENGINE_ORCHESTRATE_PATH
 from padiem_ai_core.b14_execution import B14RouteMetadata
 from padiem_ai_core.contracts import RunMetadata, RunStatus
 from padiem_ai_core.execution_context import ExecutionContext
@@ -31,6 +33,12 @@ from app.claw_p01_composition import (
     build_claw_p01_adapter,
     build_claw_p01_adapter_with_diagnostic,
 )
+from app.worker_orchestration import (
+    CloudflareEngineServiceTransport,
+    _MAX_ENGINE_RESPONSE_BYTES,
+    _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES,
+    _MAX_ENGINE_MODEL_REQUEST_BYTES,
+)
 from app.worker_config import (
     P01_DIAG_CALLER_ID_SHAPE_INVALID,
     P01_DIAG_CLIENT_CONSTRUCTOR_ERROR,
@@ -42,6 +50,11 @@ from app.worker_config import (
     p01_engine_binding_diagnostic,
     p01_engine_config_from_worker_bindings,
 )
+# #3767: the autouse ``tests/conftest.py`` fixture installs a bounded test-only
+# Plus route for this module, so the composition contracts below always execute
+# instead of skipping on the current all-HOLD declaration. The production HOLD
+# posture stays asserted in the dedicated policy modules.
+
 from kagent.contracts import ClawTaskIntent, ExecutionMode
 from kagent.p01_adapter import P01_AGENT_ID, P01_APP_ID, P01CoreOrchestrationAdapter
 from kagent.runs import ClawRun
@@ -195,13 +208,18 @@ def test_plus_production_composition_reaches_engine_service_binding_once() -> No
     payload = json.loads(str(request.options["body"]))
     assert payload["app_id"] == P01_APP_ID
     assert payload["agent"]["id"] == P01_AGENT_ID
+    # #3382/#3566 one-shot canary contract: the P01 lane pins B14's same-route
+    # retry ceiling to zero, so the production composition must carry that
+    # ceiling to the wire. The suspension of this test had hidden the drift.
     assert payload["agent"]["model_policy"] == {
-        "model": active_route_for(ProductTierLabel.PLUS).model_id
+        "model": active_route_for(ProductTierLabel.PLUS).model_id,
+        "max_retries": 0,
+        "product_tier": "plus",
     }
     assert payload["agent"]["task_type"] == "coding"
     assert payload["agent"]["required_capabilities"] == []
     assert payload["agent"]["max_tokens"] is None
-    assert payload["execution_context"]["timeout_seconds"] == 20.0
+    assert payload["execution_context"]["timeout_seconds"] == 900.0
     serialized = json.dumps(payload, ensure_ascii=False)
     assert VALID_CREDENTIAL not in serialized
     assert "provider" not in payload["agent"]
@@ -375,3 +393,137 @@ def test_composition_modules_never_read_os_environ() -> None:
         assert "import os" not in source
         assert "os.environ[" not in source
         assert "os.environ.get" not in source
+
+
+class _BoundedEngineReader:
+    def __init__(self, chunks: list[bytes]) -> None:
+        self.chunks = list(chunks)
+        self.read_calls = 0
+        self.cancel_calls = 0
+        self.release_calls = 0
+
+    async def read(self):
+        self.read_calls += 1
+        if self.chunks:
+            return SimpleNamespace(done=False, value=self.chunks.pop(0))
+        return SimpleNamespace(done=True, value=None)
+
+    async def cancel(self):
+        self.cancel_calls += 1
+
+    def releaseLock(self):
+        self.release_calls += 1
+
+
+class _BoundedEngineBody:
+    def __init__(self, reader: _BoundedEngineReader) -> None:
+        self.reader = reader
+
+    def getReader(self):
+        return self.reader
+
+
+class _BoundedEngineResponse:
+    def __init__(self, chunks: list[bytes]) -> None:
+        self.status = 200
+        self.headers = {"content-type": "application/json"}
+        self.reader = _BoundedEngineReader(chunks)
+        self.body = _BoundedEngineBody(self.reader)
+        self.text_calls = 0
+
+    async def text(self):
+        self.text_calls += 1
+        raise AssertionError("production-shaped response must stream")
+
+
+class _BoundedEngineBinding:
+    def __init__(self, response: _BoundedEngineResponse) -> None:
+        self.response = response
+
+    async def fetch(self, _request):
+        return self.response
+
+
+def test_engine_service_transport_cancels_oversized_stream_before_full_buffering() -> None:
+    response = _BoundedEngineResponse(
+        [b"x" * _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES, b"y", b"never-read"]
+    )
+    transport = CloudflareEngineServiceTransport(
+        _BoundedEngineBinding(response),
+        request_factory=_FakeWorkerRequest,
+    )
+
+    with pytest.raises(ValueError, match="safety limit"):
+        asyncio.run(
+            transport.request(
+                method="POST",
+                url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
+                headers={},
+                body=b"{}",
+            )
+        )
+
+    assert response.text_calls == 0
+    assert response.reader.read_calls == 2
+    assert response.reader.cancel_calls == 1
+    assert response.reader.release_calls == 1
+    assert response.reader.chunks == [b"never-read"]
+
+
+
+def test_engine_completed_orchestration_healthy_long_json_from_single_binding_post():
+    payload = b'{"ok":true,"orchestration":{"answer":"' + b"A" * 1_300_000 + b'"}}'
+    assert _MAX_ENGINE_RESPONSE_BYTES < len(payload) < _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES
+    response = _BoundedEngineResponse([payload[:300_000], payload[300_000:]])
+    transport = CloudflareEngineServiceTransport(
+        _BoundedEngineBinding(response), request_factory=_FakeWorkerRequest,
+    )
+    result = asyncio.run(transport.request(
+        method="POST", url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
+        headers={}, body=b"{}",
+    ))
+    assert result.status == 200
+    assert result.body == payload
+    assert response.reader.cancel_calls == 0
+    assert response.reader.release_calls == 1
+
+
+def test_engine_completed_orchestration_6mb_ingress_bound_not_256kb():
+    class CaptureBinding:
+        def __init__(self):
+            self.calls = []
+        async def fetch(self, req):
+            self.calls.append(req)
+            return _BoundedEngineResponse([b'{"ok":true}'])
+    binding = CaptureBinding()
+    transport = CloudflareEngineServiceTransport(binding, request_factory=_FakeWorkerRequest)
+    body = b'{"text":"' + b"A" * 400_000 + b'"}'
+    assert len(body) > 256 * 1024
+    response = asyncio.run(transport.request(
+        method="POST", url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
+        headers={}, body=body,
+    ))
+    assert response.status == 200
+    assert len(binding.calls) == 1
+    with pytest.raises(ValueError, match="safety limit"):
+        asyncio.run(transport.request(
+            method="POST", url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
+            headers={}, body=b"X" * (_MAX_ENGINE_MODEL_REQUEST_BYTES + 1),
+        ))
+    assert len(binding.calls) == 1
+
+
+def test_engine_small_non_model_response_keeps_1mib_resource_guard():
+    response = _BoundedEngineResponse(
+        [b"x" * _MAX_ENGINE_RESPONSE_BYTES, b"y", b"never-read"]
+    )
+    transport = CloudflareEngineServiceTransport(
+        _BoundedEngineBinding(response), request_factory=_FakeWorkerRequest,
+    )
+    with pytest.raises(ValueError, match="safety limit"):
+        asyncio.run(transport.request(
+            method="GET", url=f"{ENGINE_INTERNAL_ORIGIN}/internal/v1/health",
+            headers={}, body=None,
+        ))
+    assert response.reader.cancel_calls == 1
+    assert response.reader.chunks == [b"never-read"]

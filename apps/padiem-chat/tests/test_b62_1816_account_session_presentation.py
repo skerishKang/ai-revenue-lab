@@ -103,6 +103,9 @@ async def test_auth_status_omits_session_projection_when_auth_is_unavailable() -
         "authenticated": False,
         "history_ready": False,
         "user": None,
+        # Owner decision 2026-10-17: a deployment that cannot authenticate never
+        # advertises a session requirement to the browser.
+        "model_requires_session": False,
     }
 
 

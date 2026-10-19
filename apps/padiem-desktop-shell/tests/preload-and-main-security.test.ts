@@ -77,8 +77,28 @@ test('#3083 main process window keeps contextIsolation on and nodeIntegration of
   assert.match(mainCode, /sandbox:\s*true/);
   assert.match(mainCode, /webSecurity:\s*true/);
   assert.match(mainCode, /setWindowOpenHandler\(\(\)\s*=>\s*\(\{\s*action:\s*'deny'/);
+  assert.match(
+    mainCode,
+    /webContents\.on\(['"]will-navigate['"],\s*\(event\)\s*=>\s*event\.preventDefault\(\)\)/,
+  );
+  assert.match(
+    mainCode,
+    /webContents\.on\(['"]will-redirect['"],\s*\(event\)\s*=>\s*event\.preventDefault\(\)\)/,
+  );
   assert.equal(/nodeIntegration:\s*true/.test(mainCode), false);
   assert.equal(/contextIsolation:\s*false/.test(mainCode), false);
+});
+
+test('#3472 pairing evidence persists only redacted resident diagnostic lines', () => {
+  assert.match(mainCode, /import\s*\{\s*redactEvidenceLine\s*\}/);
+  assert.match(
+    mainCode,
+    /\.map\(\(line\)\s*=>\s*redactEvidenceLine\(String\(line\)\)\)/,
+  );
+  assert.match(
+    mainCode,
+    /stderr_tail:\s*tail\.map\(\(line\)\s*=>\s*redactEvidenceLine\(String\(line\)\)\)/,
+  );
 });
 
 test('#3083 main process registers IPC only from the static channel list', () => {

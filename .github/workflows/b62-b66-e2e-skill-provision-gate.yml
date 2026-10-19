@@ -1,0 +1,384 @@
+name: B62 B66 E2E Skill Provision Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-b66-e2e-skill-provision-gate.yml"
+      - ".github/scripts/b62_b66_e2e_provision.py"
+      - ".github/scripts/b62_b66_e2e_skill_fixture.cjs"
+      - ".github/tests/test_b62_b66_e2e_provision_gate.py"
+      - "apps/padiem-chat/app/b66_saved_quote_skill_store.py"
+      - "apps/padiem-chat/app/b66_quote_skill_provisioning.py"
+      - "reference/business-66-padiem-quote-v1/quote-skill.js"
+      - "reference/business-66-padiem-quote-v1/quote-template.js"
+      - "reference/business-66-padiem-quote-v1/quote-template-renderer.js"
+      - "reference/business-66-padiem-quote-v1/quote-core.js"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "repository_preflight | d1_readonly | assign_test_skill"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - d1_readonly
+          - assign_test_skill
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-b66-e2e-skill-provision-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  D1_BINDING: PADIEM_CHAT_DB
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "B62_B66_E2E_EXACT_MAIN=PASS"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install test dependency
+        run: python -m pip install --disable-pip-version-check --quiet "pytest>=8,<10"
+
+      - name: Run provision gate contracts
+        run: python -m pytest -q .github/tests/test_b62_b66_e2e_provision_gate.py
+
+      - name: Generate and validate canonical E2E Skill
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact="${RUNNER_TEMP}/b66-e2e-skill.json"
+          node .github/scripts/b62_b66_e2e_skill_fixture.cjs "${artifact}"
+          python .github/scripts/b62_b66_e2e_provision.py validate-artifact --artifact "${artifact}"
+          echo "CANONICAL_SKILL_GENERATOR=quote-skill.js"
+          echo "MODEL_CALLS=0"
+          echo "SOURCE_PARSE_CALLS=0"
+          echo "PUBLIC_PROVISION_ROUTE=0"
+          echo "PRODUCTION_MUTATION=0"
+
+  d1-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: read
+    outputs:
+      skill_state: ${{ steps.existing.outputs.skill_state }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      B62_B66_E2E_TARGET_USER_ID: ${{ secrets.B62_B66_E2E_TARGET_USER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main and protected target source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -n "${B62_B66_E2E_TARGET_USER_ID}"
+          echo "::add-mask::${B62_B66_E2E_TARGET_USER_ID}"
+          echo "TARGET_USER_SOURCE=PROTECTED_ENV_SECRET"
+          echo "RAW_TARGET_USER_OUTPUT=0"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Resolve live PADIEM_CHAT_DB without emitting identifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          settings="${RUNNER_TEMP}/b66-e2e-worker-settings.json"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
+          db_id="$(jq -r --arg name "${D1_BINDING}" '[.result.bindings[] | select(.type == "d1" and .name == $name)] | if length == 1 then .[0].id else empty end' "${settings}")"
+          test -n "${db_id}"
+          echo "::add-mask::${db_id}"
+          echo "DB_ID=${db_id}" >> "${GITHUB_ENV}"
+          echo "LIVE_PADIEM_CHAT_DB_DERIVED=PASS"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Resolve server-derived workspace evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact="${RUNNER_TEMP}/b66-e2e-skill.json"
+          resolution_query="${RUNNER_TEMP}/b66-e2e-resolution-query.json"
+          resolution_response="${RUNNER_TEMP}/b66-e2e-resolution-response.json"
+          workspace="${RUNNER_TEMP}/b66-e2e-workspace.txt"
+          node .github/scripts/b62_b66_e2e_skill_fixture.cjs "${artifact}"
+          python .github/scripts/b62_b66_e2e_provision.py build-resolution-query --output "${resolution_query}"
+          curl -fsS -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${resolution_query}" -o "${resolution_response}"
+          python .github/scripts/b62_b66_e2e_provision.py resolve-workspace --response "${resolution_response}" --output "${workspace}"
+          workspace_value="$(cat "${workspace}")"
+          echo "::add-mask::${workspace_value}"
+          echo "SERVER_DERIVED_WORKSPACE_PROJECTION=PASS"
+          echo "CALLER_SUPPLIED_WORKSPACE=0"
+          echo "RAW_WORKSPACE_OUTPUT=0"
+
+      - name: Classify exact B66 E2E Skill prestate
+        id: existing
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="${RUNNER_TEMP}/b66-e2e-existing-query.json"
+          response="${RUNNER_TEMP}/b66-e2e-existing-response.json"
+          python .github/scripts/b62_b66_e2e_provision.py build-existing-query \
+            --workspace "${RUNNER_TEMP}/b66-e2e-workspace.txt" \
+            --artifact "${RUNNER_TEMP}/b66-e2e-skill.json" --output "${query}"
+          curl -fsS -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${response}"
+          evidence="$(python .github/scripts/b62_b66_e2e_provision.py classify-existing --response "${response}" --artifact "${RUNNER_TEMP}/b66-e2e-skill.json")"
+          echo "${evidence}"
+          state="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_B66_E2E_SKILL_STATE=//p')"
+          case "${state}" in missing|exact|drift) ;; *) exit 1;; esac
+          echo "skill_state=${state}" >> "${GITHUB_OUTPUT}"
+          echo "D1_QUERY=READ_ONLY"
+          echo "ROW_DATA_OUTPUT=0"
+          echo "PRODUCTION_MUTATION=0"
+
+  assign-test-skill:
+    needs: [source-contract, d1-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'assign_test_skill' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      B62_B66_E2E_TARGET_USER_ID: ${{ secrets.B62_B66_E2E_TARGET_USER_ID }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      READONLY_SKILL_STATE: ${{ needs.d1-readonly.outputs.skill_state }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Require exact owner authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "CONFIRM_ASSIGN_B66_E2E_SKILL_FROM_EXACT_MAIN"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -n "${B62_B66_E2E_TARGET_USER_ID}"
+          echo "::add-mask::${B62_B66_E2E_TARGET_USER_ID}"
+          case "${READONLY_SKILL_STATE}" in missing|exact) ;; *) echo "Refusing prestate ${READONLY_SKILL_STATE}" >&2; exit 1;; esac
+          echo "B62_B66_E2E_ASSIGN_AUTHORIZATION=PASS"
+          echo "PREMUTATION_EXACT_MAIN_SHA=PASS"
+          echo "RAW_TARGET_USER_OUTPUT=0"
+
+      - name: Resolve live DB and regenerate canonical target evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          settings="${RUNNER_TEMP}/b66-e2e-worker-settings.json"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
+          db_id="$(jq -r --arg name "${D1_BINDING}" '[.result.bindings[] | select(.type == "d1" and .name == $name)] | if length == 1 then .[0].id else empty end' "${settings}")"
+          test -n "${db_id}"
+          echo "::add-mask::${db_id}"
+          echo "DB_ID=${db_id}" >> "${GITHUB_ENV}"
+          artifact="${RUNNER_TEMP}/b66-e2e-skill.json"
+          node .github/scripts/b62_b66_e2e_skill_fixture.cjs "${artifact}"
+          query="${RUNNER_TEMP}/b66-e2e-resolution-query.json"
+          response="${RUNNER_TEMP}/b66-e2e-resolution-response.json"
+          python .github/scripts/b62_b66_e2e_provision.py build-resolution-query --output "${query}"
+          curl -fsS -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${db_id}/query" \
+            --data-binary "@${query}" -o "${response}"
+          python .github/scripts/b62_b66_e2e_provision.py resolve-workspace --response "${response}" --output "${RUNNER_TEMP}/b66-e2e-workspace.txt"
+          workspace_value="$(cat "${RUNNER_TEMP}/b66-e2e-workspace.txt")"
+          echo "::add-mask::${workspace_value}"
+          echo "SERVER_DERIVED_WORKSPACE_PROJECTION=PASS"
+          echo "CALLER_SUPPLIED_WORKSPACE=0"
+
+      - name: Re-read create-only Skill prestate immediately before mutation
+        id: prestate
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="${RUNNER_TEMP}/b66-e2e-existing-query.json"
+          response="${RUNNER_TEMP}/b66-e2e-existing-response.json"
+          python .github/scripts/b62_b66_e2e_provision.py build-existing-query --workspace "${RUNNER_TEMP}/b66-e2e-workspace.txt" --artifact "${RUNNER_TEMP}/b66-e2e-skill.json" --output "${query}"
+          curl -fsS -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" --data-binary "@${query}" -o "${response}"
+          evidence="$(python .github/scripts/b62_b66_e2e_provision.py classify-existing --response "${response}" --artifact "${RUNNER_TEMP}/b66-e2e-skill.json")"
+          echo "${evidence}"
+          state="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_B66_E2E_SKILL_STATE=//p')"
+          case "${state}" in missing|exact) ;; *) echo "CREATE_ONLY_REFUSE_DRIFT" >&2; exit 1;; esac
+          echo "state=${state}" >> "${GITHUB_OUTPUT}"
+          echo "CREATE_ONLY=YES"
+
+      - name: Insert exactly one approved Skill when missing
+        id: insert
+        if: ${{ steps.prestate.outputs.state == 'missing' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="${RUNNER_TEMP}/b66-e2e-insert-query.json"
+          row="${RUNNER_TEMP}/b66-e2e-row.txt"
+          response="${RUNNER_TEMP}/b66-e2e-insert-response.json"
+          python .github/scripts/b62_b66_e2e_provision.py build-insert-query --workspace "${RUNNER_TEMP}/b66-e2e-workspace.txt" --artifact "${RUNNER_TEMP}/b66-e2e-skill.json" --row-output "${row}" --output "${query}"
+          row_value="$(cat "${row}")"
+          echo "::add-mask::${row_value}"
+          curl -fsS -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" --data-binary "@${query}" -o "${response}"
+          python .github/scripts/b62_b66_e2e_provision.py verify-mutation --response "${response}"
+          echo "B62_B66_E2E_SKILL_ASSIGN=APPLIED"
+          echo "D1_MUTATION_MAX_ROWS=1"
+          echo "PRODUCTION_MUTATION=1"
+
+      - name: Record already-exact no-op
+        if: ${{ steps.prestate.outputs.state == 'exact' }}
+        run: |
+          echo "B62_B66_E2E_SKILL_ASSIGN=SKIPPED_ALREADY_EXACT"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Read back exact inserted row
+        if: ${{ steps.prestate.outputs.state == 'missing' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="${RUNNER_TEMP}/b66-e2e-readback-query.json"
+          response="${RUNNER_TEMP}/b66-e2e-readback-response.json"
+          python .github/scripts/b62_b66_e2e_provision.py build-readback-query --workspace "${RUNNER_TEMP}/b66-e2e-workspace.txt" --artifact "${RUNNER_TEMP}/b66-e2e-skill.json" --row-file "${RUNNER_TEMP}/b66-e2e-row.txt" --output "${query}"
+          curl -fsS -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" --data-binary "@${query}" -o "${response}"
+          python .github/scripts/b62_b66_e2e_provision.py verify-readback --response "${response}" --artifact "${RUNNER_TEMP}/b66-e2e-skill.json" --row-file "${RUNNER_TEMP}/b66-e2e-row.txt"
+          echo "B62_B66_E2E_POST_READBACK=EXACT"
+          echo "MODEL_CALLS=0"
+          echo "SOURCE_PARSE_CALLS=0"
+          echo "WORKER_DEPLOY=0"
+
+      - name: Reconfirm already-exact row
+        if: ${{ steps.prestate.outputs.state == 'exact' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="${RUNNER_TEMP}/b66-e2e-exact-query.json"
+          response="${RUNNER_TEMP}/b66-e2e-exact-response.json"
+          python .github/scripts/b62_b66_e2e_provision.py build-existing-query --workspace "${RUNNER_TEMP}/b66-e2e-workspace.txt" --artifact "${RUNNER_TEMP}/b66-e2e-skill.json" --output "${query}"
+          curl -fsS -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" --data-binary "@${query}" -o "${response}"
+          evidence="$(python .github/scripts/b62_b66_e2e_provision.py classify-existing --response "${response}" --artifact "${RUNNER_TEMP}/b66-e2e-skill.json")"
+          printf '%s\n' "${evidence}" | grep -q '^B62_B66_E2E_SKILL_STATE=exact$'
+          echo "B62_B66_E2E_POST_READBACK=EXACT"
+          echo "WORKER_DEPLOY=0"
+
+      - name: Roll back only the exact attempted inserted row after downstream failure
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          row="${RUNNER_TEMP}/b66-e2e-row.txt"
+          if [ ! -s "${row}" ]; then
+            echo "B62_B66_E2E_ROLLBACK=NOT_REQUIRED_NO_INSERT_ROW"
+            exit 0
+          fi
+          query="${RUNNER_TEMP}/b66-e2e-delete-query.json"
+          response="${RUNNER_TEMP}/b66-e2e-delete-response.json"
+          python .github/scripts/b62_b66_e2e_provision.py build-delete-query --workspace "${RUNNER_TEMP}/b66-e2e-workspace.txt" --artifact "${RUNNER_TEMP}/b66-e2e-skill.json" --row-file "${row}" --output "${query}"
+          curl -fsS -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" --data-binary "@${query}" -o "${response}"
+          python .github/scripts/b62_b66_e2e_provision.py verify-mutation --response "${response}"
+          rm -f "${RUNNER_TEMP}/b66-e2e-rollback-readback-query.json"
+          python .github/scripts/b62_b66_e2e_provision.py build-readback-query --workspace "${RUNNER_TEMP}/b66-e2e-workspace.txt" --artifact "${RUNNER_TEMP}/b66-e2e-skill.json" --row-file "${row}" --output "${RUNNER_TEMP}/b66-e2e-rollback-readback-query.json"
+          curl -fsS -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" --data-binary "@${RUNNER_TEMP}/b66-e2e-rollback-readback-query.json" -o "${RUNNER_TEMP}/b66-e2e-rollback-readback-response.json"
+          python .github/scripts/b62_b66_e2e_provision.py verify-absent --response "${RUNNER_TEMP}/b66-e2e-rollback-readback-response.json"
+          echo "B62_B66_E2E_ROLLBACK_READBACK=ABSENT"
+          echo "ROLLBACK_SCOPE=EXACT_INSERTED_ROW_ONLY"
+          echo "WORKER_DEPLOY=0"
+          echo "SECRET_MUTATION=0"
+
+      - name: Bound final mutation surface
+        if: ${{ success() }}
+        run: |
+          echo "PUBLIC_PROVISION_ROUTE=0"
+          echo "BROWSER_SELF_ASSIGNMENT=0"
+          echo "MODEL_CALLS=0"
+          echo "SOURCE_PARSE_CALLS=0"
+          echo "WORKER_DEPLOY=0"
+          echo "BINDING_MUTATION=0"
+          echo "SECRET_MUTATION=0"
+          echo "RAW_TARGET_USER_OUTPUT=0"

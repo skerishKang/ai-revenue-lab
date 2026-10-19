@@ -114,7 +114,7 @@ class MemoryHistoryStore:
         self.conversation_project_id = conversation_project_id
         self.append_calls: list[dict] = []
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
         if conversation_id != CHAT_ID:
             return None
         return {
@@ -135,6 +135,8 @@ class MemoryHistoryStore:
         user_text,
         assistant_text,
         project_id=None,
+        *,
+        product_scope,
     ):
         self.append_calls.append(
             {

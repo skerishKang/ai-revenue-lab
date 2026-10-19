@@ -15,6 +15,13 @@ from app.pilot.config import pilot_settings
 from app.pilot.schemas import ChatMessage, PilotChatRequest
 
 
+@pytest.fixture(autouse=True)
+def _enable_archived_auto_route_tests(monkeypatch):
+    """Historical protocol tests explicitly enable future generic auto in test only."""
+    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
+
+
+
 @pytest.fixture()
 def app():
     return create_app()
@@ -151,7 +158,7 @@ class TestSchemaValidation:
 
     def test_max_tokens_too_high(self):
         with pytest.raises(ValidationError):
-            PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], max_tokens=99999)
+            PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], max_tokens=2147483648)
 
     def test_max_tokens_zero(self):
         with pytest.raises(ValidationError):
@@ -298,12 +305,13 @@ class TestPlaceholderKey:
 
 
 class TestDefaultTemperature:
-    def test_ui_form_sends_02(self, client):
-        """The HTML range input sends 0.2, not 20."""
+    def test_ui_form_defaults_to_provider_native(self, client):
+        """Do not force a sampling default in the form."""
         _configure_pilot()
         resp = client.get("/pilot")
         assert resp.status_code == 200
-        assert 'value="0.2"' in resp.text
+        assert 'id="pilot_temp" name="temperature"' in resp.text
+        assert 'name="temperature" min="0" max="2" step="0.1" value=""' in resp.text
         assert 'max="2"' in resp.text
         assert 'step="0.1"' in resp.text
 
@@ -369,7 +377,7 @@ class TestErrorRedaction:
         """The gateway must not depend on Starlette Request.json() in Workers."""
         from app.pilot import gateway
 
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-route-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-route-0123456789")
         original = gateway.Request.json
 
         async def broken_json(_request):

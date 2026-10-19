@@ -1,4 +1,4 @@
-"""One-shot B14 comparative benchmark gate source.
+"""Historical one-shot B14 benchmark fixture, live Owner-registry gated.
 
 The default path is inert. A live run requires an explicit selector and the
 ``--authorized-live-run`` marker. The source gate itself never reads secrets,
@@ -24,6 +24,11 @@ from b14_model_evaluation import (  # noqa: E402
     FIXTURE_PATH,
     evaluate_candidate,
     load_fixture,
+)
+
+from b14_owner_evaluation_registry import (  # noqa: E402
+    authorize_historical_selector,
+    load_current_models,
 )
 
 ALL_FIVE = "all-five"
@@ -169,6 +174,19 @@ def main(argv: list[str] | None = None) -> int:
         print("ROUTE_ACTIVATION=0")
         print("PRODUCTION_MUTATION=0")
         return 0
+    # Historical synthetic fixtures must not authorize a live provider call.
+    # Check currently registered exact IDs BEFORE any first POST.
+    try:
+        selection = authorize_historical_selector(args[0])
+        current = load_current_models()[selection[0]]
+        historical = __import__("b14_candidate_live_smoke").CANDIDATE_REGISTRY[args[0]]
+        if (current["provider_id"] != historical.provider_id
+                or current["upstream_model"] != historical.upstream_model):
+            raise ValueError("legacy_fixture_provider_or_upstream_mismatch")
+    except ValueError as exc:
+        print(f"B14_OWNER_EVALUATION=BLOCKED:{exc}")
+        print("LIVE_PROVIDER_CALL=0")
+        return 2
     result = run_comparative_benchmark(args[0], urllib_transport)
     print(_safe_summary(result))
     return 0 if all(report["status"] == "PASS" for report in result["reports"]) else 1

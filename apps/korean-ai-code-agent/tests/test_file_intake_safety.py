@@ -7,8 +7,10 @@ Every test is deterministic, provider-free and network-free.
 from __future__ import annotations
 
 import random
+import tracemalloc
 import unittest
 import zipfile
+import zlib
 
 from io import BytesIO
 
@@ -17,6 +19,7 @@ from kagent.file_intake_safety import (
     MAX_SUPPORTED_ARCHIVE_DEPTH,
     DetectedFormat,
     FileIntakePolicy,
+    FileIntakeResult,
     FileIntakeSafetyError,
     IntakeDecision,
     inspect_file,
@@ -504,6 +507,103 @@ class PolicyValidationTests(unittest.TestCase):
         self.assertEqual(first.decision, second.decision)
         self.assertEqual(first.reason_code, second.reason_code)
         self.assertEqual(first.safe_dict(), second.safe_dict())
+
+
+class DeclaredSizeLyingTests(unittest.TestCase):
+    """#2824: a declared size is a claim, never a licence to inflate.
+
+    ``ZipFile.read``/``ZipExtFile.read()`` inflate the whole deflate stream and
+    only afterwards truncate to the declared uncompressed size, so an archive
+    that declares a tiny size while carrying a large compressed stream used to
+    allocate hundreds of megabytes before any declared-metadata bound was
+    consulted. These fixtures keep every declared field internally consistent
+    (size and CRC agree) so the archive is refused or admitted by size policy
+    rather than by a CRC error.
+    """
+
+    @staticmethod
+    def lying_entry(entry_name: str, real: bytes, declared: int) -> bytes:
+        payload = bytearray(build_zip([(entry_name, real)]))
+        crc = zlib.crc32(real[:declared]) & 0xFFFFFFFF
+        for magic, crc_offset, size_offset in (
+            (b"PK\x03\x04", 14, 22),
+            (b"PK\x01\x02", 16, 24),
+        ):
+            index = payload.find(magic)
+            assert index >= 0
+            while index != -1:
+                payload[index + crc_offset : index + crc_offset + 4] = crc.to_bytes(4, "little")
+                payload[index + size_offset : index + size_offset + 4] = declared.to_bytes(
+                    4, "little"
+                )
+                index = payload.find(magic, index + 4)
+        return bytes(payload)
+
+    @staticmethod
+    def traced_peak(action) -> tuple[object, int]:
+        tracemalloc.start()
+        try:
+            value = action()
+            _, peak = tracemalloc.get_traced_memory()
+        finally:
+            tracemalloc.stop()
+        return value, peak
+
+    def test_lying_mimetype_size_cannot_amplify_decompression_work(self) -> None:
+        real = b"\x00" * (8 * 1024 * 1024)
+        payload = self.lying_entry("mimetype", real, 24)
+        self.assertLess(len(payload), 64 * 1024)
+
+        result, peak = self.traced_peak(lambda: inspect_file("bomb.hwpx", payload))
+        # 8 MiB of real expansion from a sub-64 KB archive.
+        self.assertLess(peak, 1024 * 1024)
+        # Bounding the work must not widen admission either.
+        self.assertEqual(result.decision, IntakeDecision.UNSUPPORTED)
+        self.assertEqual(result.reason_code, "hwpx_structure_missing")
+        self.assertFalse(result.safe_to_parse)
+        self.assertEqual(result.archive_uncompressed_bytes, 24)
+
+    def test_lying_nested_entry_read_is_bounded(self) -> None:
+        lying = self.lying_entry("inner.bin", b"\x00" * (4 * 1024 * 1024), 4)
+        outer = build_zip([("inner.bin", lying)])
+
+        def run():
+            return inspect_file(
+                "outer.zip", outer, policy=FileIntakePolicy(max_archive_depth=1)
+            )
+
+        result, peak = self.traced_peak(run)
+        # 4 MiB of real expansion behind a 4-byte declaration, recursively read.
+        self.assertLess(peak, 1024 * 1024)
+        self.assertIsInstance(result, FileIntakeResult)
+        self.assertEqual(result.decision, IntakeDecision.SAFE_CANDIDATE)
+        self.assertEqual(result.archive_depth_reached, 1)
+        self.assertEqual(result.archive_entry_count, 2)
+
+    def test_bounded_read_keeps_a_well_formed_archive_byte_identical(self) -> None:
+        # A near-bound entry must still be read in full: the bound caps the
+        # inflate work, it does not truncate honest content. The payload is
+        # incompressible so the archive's own expansion-ratio policy stays quiet.
+        body = incompressible(900_000)
+        self.assertLessEqual(len(body), DEFAULT_POLICY.max_single_archive_entry_bytes)
+        payload = build_zip(
+            [
+                ("mimetype", b"application/hwp+zip"),
+                ("Contents/section0.xml", b"<section><p>hello</p></section>"),
+                ("BinData/pad.bin", body),
+            ]
+        )
+        result, peak = self.traced_peak(lambda: inspect_file("doc.hwpx", payload))
+        self.assertLess(peak, 1024 * 1024)
+        self.assertEqual(result.decision, IntakeDecision.SAFE_CANDIDATE)
+        self.assertEqual(result.detected_format, DetectedFormat.HWPX_CANDIDATE)
+        self.assertEqual(result.reason_code, "ok")
+        # Counted in full, not truncated to a smaller declared-size read.
+        self.assertGreaterEqual(result.archive_uncompressed_bytes, len(body))
+        self.assertLess(
+            result.archive_uncompressed_bytes,
+            DEFAULT_POLICY.max_archive_uncompressed_bytes,
+        )
 
 
 if __name__ == "__main__":

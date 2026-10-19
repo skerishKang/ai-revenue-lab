@@ -1,0 +1,71 @@
+name = "padiem-voice-stt"
+main = "worker.py"
+compatibility_date = "2026-08-25"
+compatibility_flags = ["python_workers"]
+# Private Worker: reachable only by an internal / Service-Binding caller, never
+# from the public internet. Products (Chat/Claw/B66) must not call it directly
+# from the browser.
+#
+# NOTE: `workers_dev = false` only keeps the Worker off the public internet. It
+# does NOT supply application-level caller authentication, identity, tenant scope
+# or cost limiting. Those are the paid-route gate below, and the bindings it
+# needs are not attached yet.
+workers_dev = false
+base_dir = ".worker-src"
+
+[build]
+command = "uv run python scripts/build_worker_dependencies.py"
+
+# Existing Cloudflare Secrets Store (same store id every PADIEM provider key
+# uses; this file is the only source of that resource locator). The value is
+# never read, printed or returned by this Worker; only the binding name is
+# declared here.
+#
+# #4643: the Owner reports a Gemini key and a Groq key already exist in this
+# store. Reuse only — no new key is created or requested.
+[[secrets_store_secrets]]
+binding = "PADIEM_GEMINI_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GEMINI_API_KEY"
+
+# VERIFIED 2026-10-15 IN CLOUDFLARE SECRETS STORE. The Groq key name
+# contains two underscores before API_KEY. The Worker binding alias is unchanged.
+# Store listing was verified without reading or exporting secret values.
+[[secrets_store_secrets]]
+binding = "PADIEM_GROQ_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GROQ__API_KEY"
+
+# Deployment gate. Owner-authorized Mode 1 configuration is enabled in source.
+# This does not deploy the Worker or bypass Control Plane caller admission.
+#
+# ON additionally requires BOTH canonical Control Plane private Service Bindings
+# below, which together supply an authenticated caller identity, its canonical
+# tenant and a per-request cost reservation:
+#
+#   CONTROL_PLANE_IDENTITY          resolve_auth_session
+#   CONTROL_PLANE_ENGINE_ADMISSION  fetch_entitlement_snapshot / reserve_usage
+#
+# They are the same bindings apps/padiem-ai-engine uses, deliberately: voice
+# spending is admitted by the same control-plane authority as Engine spending
+# rather than by a second, voice-local ledger.
+#
+# The canonical identity and admission authorities remain mandatory.
+# Both services are required. No authorization fallback when a target is absent.
+[[services]]
+binding = "CONTROL_PLANE_IDENTITY"
+service = "padiem-control-plane-identity"
+
+[[services]]
+binding = "CONTROL_PLANE_ENGINE_ADMISSION"
+service = "padiem-control-plane-engine-admission"
+#
+# A failed identity, tenant or usage admission rejects the request before spending:
+#   caller_guard_unavailable          a required binding is absent or unusable
+#   voice_stt_unauthenticated         no resolvable authenticated session
+#   voice_stt_forbidden               session/snapshot belong elsewhere
+#   voice_stt_tenant_unavailable      the session carries no canonical tenant
+#   voice_stt_cost_denied             no voice grant, or a refused reservation
+# This flag is activated only in an approved production release.
+[vars]
+PADIEM_VOICE_STT_ENABLED = "true"

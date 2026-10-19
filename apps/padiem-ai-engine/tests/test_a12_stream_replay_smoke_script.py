@@ -18,7 +18,7 @@ spec.loader.exec_module(smoke)
 
 
 def test_require_env_skips_upstream_honestly(capsys: pytest.CaptureFixture[str]) -> None:
-    with patch.object(smoke, "CALLER_ID", ""), patch.object(smoke, "CALLER_SECRET", ""):
+    with patch.object(smoke, "PINNED_MODEL", "test/model"), patch.object(smoke, "CALLER_ID", ""), patch.object(smoke, "CALLER_SECRET", ""):
         assert smoke._require_env() is False
         _, err = capsys.readouterr()
         assert "A12_STREAM_REPLAY_SMOKE=SKIPPED_UPSTREAM" in err

@@ -599,3 +599,95 @@ def test_resolve_command_material_jsdict_still_enforces_key_set() -> None:
     with pytest.raises(ValueError):
         asyncio.run(durable.resolve_command_material(payload))
     assert _material_count(storage) == 0
+
+
+def _txt_receipt(command: dict) -> dict:
+    created = (BASE + timedelta(seconds=1)).isoformat().replace("+00:00", "Z")
+    expires = (BASE + timedelta(minutes=5, seconds=1)).isoformat().replace("+00:00", "Z")
+    return {
+        "format": "claw-txt-read-approval.v1",
+        "evidence_ref": f"evidence.{command['command_id']}",
+        "command_id": command["command_id"],
+        "request_id": f"request.{command['command_id']}",
+        "approval_pause": {
+            "pause_id": f"pause.{command['command_id']}",
+            "run_id": command["run_id"],
+            "agent_runtime_id": "claw_connector_txt_v1",
+            "tool_id": "local.filesystem.read",
+            "invocation_sha256": "c" * 64,
+            "requirement": "user_confirmation",
+            "step_index": 1,
+            "created_at": created,
+            "expires_at": expires,
+            "approval_scope": ["filesystem.read"],
+        },
+        "approval_decision": {
+            "decision_id": f"decision.{command['command_id']}",
+            "pause_id": f"pause.{command['command_id']}",
+            "outcome": "approved",
+            "authority_ref": "claw_connector_txt_request_v1",
+            "evidence_ref": f"evidence.{command['command_id']}",
+            "decided_at": created,
+        },
+        "exact_tool_arguments": {
+            "action_id": f"action.{command['command_id']}",
+            "run_id": command["run_id"],
+            "device_id": "device.material.1",
+            "root_ref": "root.material.1",
+            "operation": "read",
+            "path_relative": "notes\\report.txt",
+            "requested_at": created,
+            "request_fingerprint": "d" * 64,
+            "content_bytes": 0,
+            "content_sha256": None,
+            "directory_enumeration": False,
+            "recursive_delete": False,
+            "admin_elevation": False,
+        },
+        "local_policy_ref": "padiem_txt_selected_root_read_policy_v1",
+        "expires_at": expires,
+    }
+
+
+def test_store_accepts_closed_txt_receipt_and_resolves_it_verbatim() -> None:
+    storage, _env, durable, command = _prepare_command()
+    wire = _wire(command)
+    wire["material"]["p01_approval_payload"] = _txt_receipt(command)
+    stored = durable.material_store.store(wire)
+    assert stored["stored"] is True
+    payload = _resolve_payload(command, request_ref="material-request.txt.1", at=BASE + timedelta(seconds=3))
+    resolved = asyncio.run(durable.resolve_command_material(payload))
+    assert resolved["ok"] is True
+    assert resolved["material"]["material"]["p01_approval_payload"]["format"] == "claw-txt-read-approval.v1"
+    assert _material_count(storage) == 1
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda receipt: receipt.update({"format": "other"}),
+    lambda receipt: receipt["approval_pause"].update({"tool_id": "other.tool"}),
+    lambda receipt: receipt["approval_decision"].update({"outcome": "denied"}),
+    lambda receipt: receipt["exact_tool_arguments"].update({"operation": "write"}),
+    lambda receipt: receipt["exact_tool_arguments"].update({"path_relative": "notes\\report.pdf"}),
+    lambda receipt: receipt["exact_tool_arguments"].update({"content_bytes": 12}),
+    lambda receipt: receipt.pop("local_policy_ref"),
+    lambda receipt: (receipt.clear(), receipt.update({"unexpected": "shape"})),
+])
+def test_store_refuses_malformed_txt_receipt(mutate) -> None:
+    storage, _env, durable, command = _prepare_command()
+    wire = _wire(command)
+    receipt = _txt_receipt(command)
+    mutate(receipt)
+    wire["material"]["p01_approval_payload"] = receipt
+    with pytest.raises(ValueError):
+        durable.material_store.store(wire)
+    assert _material_count(storage) == 0
+
+
+def test_store_refuses_receipt_bound_to_another_command() -> None:
+    _storage, _env, durable, command = _prepare_command()
+    wire = _wire(command)
+    receipt = _txt_receipt(command)
+    receipt["command_id"] = "command.foreign"
+    wire["material"]["p01_approval_payload"] = receipt
+    with pytest.raises(ValueError):
+        durable.material_store.store(wire)

@@ -19,6 +19,7 @@ from pathlib import Path
 import unittest
 
 from padiem_control_plane.product_tier_routes import (
+    MUSE_B14_MODEL_ID,
     ProductTierLabel,
     active_route_for,
 )
@@ -93,7 +94,8 @@ class TierRouteConsumerCoverageTests(unittest.TestCase):
             if route is not None and route.model_id is not None
         }
         self.assertEqual(set(PADIEM_EXECUTABLE_MODEL_IDS), expected)
-        self.assertTrue(expected, "the contract must expose at least one executable tier route")
+        # Owner #5009: Plus and Pro share the Muse Spark 1.3 primary.
+        self.assertEqual(expected, {MUSE_B14_MODEL_ID})
 
     def test_owner_policy_invariants_hold_while_consumers_derive(self):
         # Asserted rather than assumed, because this child makes Claw lean harder on them.

@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = (ROOT / "static/app.js").read_text(encoding="utf-8")
 BINARY_JS = (ROOT / "static/document-binary.js").read_text(encoding="utf-8")
@@ -56,8 +58,10 @@ def test_binary_attachment_payload_uses_existing_completed_chat_path():
     assert "const attachments = attachmentPayload(attachment);" in APP_JS
     assert "if (attachments) payload.attachments = attachments;" in APP_JS
     assert "if (attachments) {" in APP_JS
-    assert "return await requestCompletedAnswer(" in APP_JS
-    assert "return await requestStreamingAnswer(" in APP_JS
+    # Success recording for one-click regenerate keeps the same dispatch
+    # shape: completed JSON for attachments, streaming otherwise.
+    assert "await requestCompletedAnswer(" in APP_JS
+    assert "await requestStreamingAnswer(" in APP_JS
 
 
 def test_binary_reader_loads_before_app_controller():
@@ -66,5 +70,6 @@ def test_binary_reader_loads_before_app_controller():
 
 def test_unification_does_not_add_hidden_browser_persistence():
     combined = APP_JS + "\n" + BINARY_JS
-    for forbidden in ["localStorage", "sessionStorage", "indexedDB", "cookieStore"]:
+    for forbidden in ["localStorage", "indexedDB", "cookieStore"]:
         assert forbidden not in combined
+    assert_session_storage_is_handoff_only(combined)

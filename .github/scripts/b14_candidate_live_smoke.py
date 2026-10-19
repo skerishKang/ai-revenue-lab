@@ -84,7 +84,7 @@ class CandidateSpec:
     ``credential_binding`` is the **name** of the expected platform secret
     binding. Its value is never read, printed, or transmitted by this module.
     Space Bunny may reuse the owner-managed Kilo credential
-    ``PADIEM_KILO_API_KEY`` when present, but its candidate contract remains
+    ``PADIEM_B14_CREDENTIAL_08`` when present, but its candidate contract remains
     runnable when B14 reports no key so the documented anonymous free-model path
     can be measured. Callers never supply or override the credential.
     """
@@ -103,17 +103,14 @@ class CandidateSpec:
 # --------------------------------------------------------------------------
 # Explicit candidate allowlist (#2798 authority correction).
 #
-# PLUS  : Agnes, SenseNova, Poolside, Motif, Mercury, Atria, Space Bunny
+# PLUS  : Agnes, SenseNova, Poolside, Motif, Mercury, Atria
 # PRO   : GPT-5.6 Luna
 # EXCLUDED: B.AI Qwen3.8 (deliberately absent — see _EXCLUDED_* below)
-#
-# Space Bunny (#3209, decision source #3143) is the Padiem Plus text+vision
-# primary on the Kilo Gateway free lane. The existing owner-managed
-# ``PADIEM_KILO_API_KEY`` binding is optional: B14 may use it when present
-# (``kilo/stealth-space-bunny-alpha``, upstream ``stealth/space-bunny-alpha``,
-# provider display ``Kilo Gateway / Stealth`` per the B14 registry). It is the
-# only candidate permitted in image modality; every other candidate stays
-# text-only.
+#           Space Bunny (owner final retirement decision 2026-10-07: the lane
+#           executes nowhere — no product, manual, auto, or smoke execution.
+#           It was the image-modality candidate under #3209; with its removal
+#           no image candidate exists and every remaining candidate is
+#           text-only.)
 # --------------------------------------------------------------------------
 
 _CANDIDATES: tuple[CandidateSpec, ...] = (
@@ -124,8 +121,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Agnes AI",
         model_id="agnes-ai/agnes-3.0-flash",
         upstream_model="agnes-3.0-flash",
-        credential_binding="PADIEM_AGNES_API_KEY",
-        expected_binding="PADIEM_AGNES_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_01",
+        expected_binding="PADIEM_B14_CREDENTIAL_01",
     ),
     CandidateSpec(
         candidate_id="sensenova",
@@ -144,8 +141,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Poolside",
         model_id="poolside/laguna-s-2.1",
         upstream_model="poolside/laguna-s-2.1",
-        credential_binding="PADIEM_POOLSIDE_API_KEY",
-        expected_binding="PADIEM_POOLSIDE_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_12",
+        expected_binding="PADIEM_B14_CREDENTIAL_12",
     ),
     CandidateSpec(
         candidate_id="motif",
@@ -154,8 +151,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Infron",
         model_id="infron/motif/motif-3",
         upstream_model="motif/motif-3",
-        credential_binding="PADIEM_INFRON_API_KEY",
-        expected_binding="PADIEM_INFRON_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_07",
+        expected_binding="PADIEM_B14_CREDENTIAL_07",
     ),
     CandidateSpec(
         candidate_id="mercury",
@@ -164,8 +161,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Inception",
         model_id="inception/mercury-2.5",
         upstream_model="mercury-2.5",
-        credential_binding="PADIEM_INCEPTION_MERCURY_API_KEY",
-        expected_binding="PADIEM_INCEPTION_MERCURY_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_06",
+        expected_binding="PADIEM_B14_CREDENTIAL_06",
     ),
     CandidateSpec(
         candidate_id="atria",
@@ -174,8 +171,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Atria",
         model_id="atria/Atria-Dawn-Preview",
         upstream_model="Atria-Dawn-Preview",
-        credential_binding="PADIEM_ATRIA_API_KEY",
-        expected_binding="PADIEM_ATRIA_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_02",
+        expected_binding="PADIEM_B14_CREDENTIAL_02",
     ),
     CandidateSpec(
         candidate_id="luna",
@@ -184,20 +181,11 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Experiential Labs",
         model_id="experiential/gpt-5.6-luna",
         upstream_model="gpt-5.6-luna",
-        credential_binding="PADIEM_EXLAB_API_KEY",
-        expected_binding="PADIEM_EXLAB_API_KEY",
+        credential_binding="PADIEM_B14_CREDENTIAL_04",
+        expected_binding="PADIEM_B14_CREDENTIAL_04",
     ),
-    CandidateSpec(
-        candidate_id="space-bunny",
-        tier="plus",
-        provider_id="kilo",
-        provider_name="Kilo Gateway / Stealth",
-        model_id="kilo/stealth-space-bunny-alpha",
-        upstream_model="stealth/space-bunny-alpha",
-        credential_binding="PADIEM_KILO_API_KEY",
-        expected_binding="PADIEM_KILO_API_KEY",
-        credential_mode="optional_platform_secret",
-    ),
+    # space-bunny removed from the allowlist: owner final retirement decision
+    # (2026-10-07). Historical id: kilo/stealth-space-bunny-alpha.
 )
 
 CANDIDATE_REGISTRY: dict[str, CandidateSpec] = {
@@ -309,17 +297,20 @@ def canonical_chat_body(spec: CandidateSpec) -> dict[str, Any]:
 
 
 # --------------------------------------------------------------------------
-# Bounded image modality (#3209 S1).
+# Bounded image modality (#3209 S1, retired 2026-10-07).
 #
-# Only the Space Bunny candidate may run in image modality, reusing the
-# existing single-image product contract (one PNG/JPEG/WebP data URL plus one
-# text part, bounded fixture, no raw payload output). Every other
-# candidate/modality combination fails closed before any provider POST.
+# Space Bunny was the only image-modality candidate and is now fully retired;
+# no image candidate remains. The bounded image scaffolding is retained only
+# so every image attempt fails closed before any provider POST without
+# touching the shared canary fixtures.
 # --------------------------------------------------------------------------
 
 MODALITY_TEXT = "text"
 MODALITY_IMAGE = "image"
-IMAGE_ONLY_CANDIDATE_ID = "space-bunny"
+# No image-modality candidate exists after the owner final retirement decision
+# (2026-10-07). The empty sentinel can never equal a real candidate id, so
+# every image attempt fails closed before any provider POST.
+IMAGE_ONLY_CANDIDATE_ID = ""
 
 IMAGE_CASE_GENERIC = "generic"
 IMAGE_CASE_B66_F02 = "b66-f02"
@@ -416,7 +407,12 @@ def canonical_image_body(
     *,
     image_case: str = IMAGE_CASE_GENERIC,
 ) -> dict[str, Any]:
-    """Pin one exact manual image route for the Space Bunny candidate only."""
+    """Pin one exact manual image route — unavailable after retirement.
+
+    The only image candidate (Space Bunny) was retired by the owner final
+    decision (2026-10-07); no image-modality candidate remains, so this always
+    fails closed.
+    """
 
     if spec.candidate_id != IMAGE_ONLY_CANDIDATE_ID:
         raise ValueError("image_modality_not_permitted")
@@ -750,6 +746,38 @@ def _locks(provider_posts: int, retries: int) -> None:
     print("PRODUCTION_MUTATION=0")
 
 
+# Safe answer-shape diagnostics: never print any upstream message value.
+_SAFE_FINISH_REASONS = frozenset(
+    {"stop", "length", "content_filter", "tool_calls", "function_call"}
+)
+
+
+def _emit_empty_answer_diagnostics(chat: dict[str, Any]) -> None:
+    """Classify an HTTP-200-without-text response without emitting user data."""
+    choices = chat.get("choices")
+    first = choices[0] if isinstance(choices, list) and choices and isinstance(choices[0], dict) else {}
+    message = first.get("message")
+    message = message if isinstance(message, dict) else {}
+    content = message.get("content")
+    state = (
+        "null" if content is None else
+        "empty_string" if content == "" else
+        "whitespace_string" if isinstance(content, str) and not content.strip() else
+        "non_string" if not isinstance(content, str) else
+        "nonempty"
+    )
+    finish = first.get("finish_reason")
+    finish = finish if isinstance(finish, str) and finish in _SAFE_FINISH_REASONS else "other_or_missing"
+    usage = chat.get("usage")
+    tokens = usage.get("completion_tokens") if isinstance(usage, dict) else None
+    safe_tokens = tokens if type(tokens) is int and 0 <= tokens <= 1_000_000 else "unknown"
+    print("EMPTY_ANSWER_CONTENT_STATE=" + state)
+    print("EMPTY_ANSWER_FINISH_REASON=" + finish)
+    print("EMPTY_ANSWER_COMPLETION_TOKENS=" + str(safe_tokens))
+    print("EMPTY_ANSWER_REQUESTED_MAX_TOKENS=8")
+    print("EMPTY_ANSWER_PRIVATE_CONTENT_OUTPUT=0")
+
+
 # --------------------------------------------------------------------------
 # The bounded run.
 # --------------------------------------------------------------------------
@@ -992,6 +1020,7 @@ def run(
         or not choices[0]["message"]["content"].strip()
     ):
         _emit_result(cid, "FAIL_EMPTY_ANSWER")
+        _emit_empty_answer_diagnostics(chat)
         _locks(provider_posts, network_retries)
         return 1
 

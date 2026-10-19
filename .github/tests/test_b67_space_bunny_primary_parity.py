@@ -1,22 +1,13 @@
-"""Space Bunny text+vision primary parity + smoke pin-source contract (#3209).
+"""Successor-pending canonical-primary parity contract (#3568).
 
-Static and network-free. Proves that:
-
-1. the canonical declaration (``padiem_ai_core.model_primary``) names Space
-   Bunny Alpha as both text and vision primary with no text fallback and an
-   UNDECIDED vision fallback;
-2. the B14 Kilo catalog registers that exact repo-facing route id with the
-   identical upstream model, keeps context_window 0, and declares image
-   without video;
-3. the shared product-tier declaration and the B14 tier registry both expose
-   the same executable Plus route (Space Bunny) while preserving Agnes /
-   Poolside / SenseNova registrations as non-executable;
-4. A9/A12 smokes source their pin from the canonical declaration;
-5. b14/auto and the A12 classification contract are untouched.
+Static and network-free. Space Bunny survives only as historical identity
+constants, not as a registered model/provider. Padiem has no canonical
+text/vision primary or executable Plus route pending owner decision.
 """
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -32,6 +23,7 @@ TIER_REGISTRY = ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "tier_r
 A9_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a9_production_smoke.py"
 A12_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a12_stream_replay_production_smoke.py"
 A12_DOC = ROOT / "docs" / "operations" / "A12_STREAM_REPLAY_GATE_DEPENDENCIES.md"
+B14_JSON = ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "b14_models.json"
 ROUTING_POLICY = ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "routing_policy.py"
 
 
@@ -40,56 +32,63 @@ def _string_constant(text: str, name: str) -> str | None:
     return match.group(1) if match else None
 
 
-def test_canonical_declaration_names_space_bunny_for_text_and_vision() -> None:
+def test_canonical_declaration_holds_text_and_vision_primary() -> None:
     text = MODEL_PRIMARY.read_text(encoding="utf-8")
-    assert _string_constant(text, "TEXT_PRIMARY_PROVIDER_ID") == "kilo"
-    assert _string_constant(text, "TEXT_PRIMARY_MODEL_ID") == "kilo/stealth-space-bunny-alpha"
-    assert _string_constant(text, "TEXT_PRIMARY_UPSTREAM_MODEL") == "stealth/space-bunny-alpha"
-    assert _string_constant(text, "VISION_PRIMARY_PROVIDER_ID") == "kilo"
-    assert _string_constant(text, "VISION_PRIMARY_MODEL_ID") == "kilo/stealth-space-bunny-alpha"
-    assert _string_constant(text, "VISION_PRIMARY_UPSTREAM_MODEL") == "stealth/space-bunny-alpha"
+    assert _string_constant(text, "TEXT_PRIMARY_DECISION") == "PENDING_SUCCESSOR_SELECTION"
+    assert "TEXT_PRIMARY_PROVIDER_ID = None" in text
+    assert "TEXT_PRIMARY_MODEL_ID = None" in text
+    assert "TEXT_PRIMARY_UPSTREAM_MODEL = None" in text
+    assert _string_constant(text, "VISION_PRIMARY_DECISION") == "PENDING_SUCCESSOR_SELECTION"
+    assert "VISION_PRIMARY_PROVIDER_ID = None" in text
+    assert "VISION_PRIMARY_MODEL_ID = None" in text
+    assert "VISION_PRIMARY_UPSTREAM_MODEL = None" in text
     assert "TEXT_SECONDARY_MODEL_ID = None" in text
     assert "TEXT_FALLBACK_ENABLED = False" in text
-    assert 'VISION_FALLBACK_DECISION = "UNDECIDED"' in text
-    assert 'VIDEO_PRIMARY_DECISION = "UNDECIDED"' in text
 
 
-def test_kilo_catalog_registers_the_exact_canonical_route() -> None:
+def test_kilo_catalog_fully_retires_space_bunny_to_historical_metadata() -> None:
     kilo_text = KILO_PROVIDER.read_text(encoding="utf-8")
     canonical_text = MODEL_PRIMARY.read_text(encoding="utf-8")
 
+    # Historical identity constants survive for audit purposes.
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_MODEL_ID") == "kilo/stealth-space-bunny-alpha"
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_UPSTREAM_MODEL") == "stealth/space-bunny-alpha"
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_CREDENTIAL_BINDING") == "PADIEM_KILO_API_KEY"
-    assert "credential_source=CredentialSource.NONE" in kilo_text
+    # Owner removed all Kilo live registrations, not just Space Bunny.
+    assert "KILO_FREE_ROUTES: tuple[_KiloFreeRoute, ...] = ()" in kilo_text
+    data=json.loads(B14_JSON.read_text(encoding="utf-8"))
+    ids={m["id"] for m in data["models"]}
+    assert len(ids)==len(data["models"])
+    assert "kilo" not in data["providers"]
+    assert ids.isdisjoint({
+        "kilo/stealth-space-bunny-alpha",
+        "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        "kilo/poolside-laguna-s-2.1-free",
+        "b-ai/qwen3.8-flash",
+        "infron/motif/motif-3",
+        "experiential/gpt-5.6-luna",
+    })
 
-    assert _string_constant(canonical_text, "TEXT_PRIMARY_MODEL_ID") == _string_constant(
-        kilo_text, "KILO_SPACE_BUNNY_MODEL_ID"
-    )
-    assert _string_constant(canonical_text, "TEXT_PRIMARY_UPSTREAM_MODEL") == _string_constant(
-        kilo_text, "KILO_SPACE_BUNNY_UPSTREAM_MODEL"
-    )
-    assert _string_constant(canonical_text, "VISION_PRIMARY_MODEL_ID") == _string_constant(
-        kilo_text, "KILO_SPACE_BUNNY_MODEL_ID"
-    )
+    # Owner final retirement decision: the lane is declared retired, absent
+    # from KILO_FREE_ROUTES, and no Space Bunny _KiloFreeRoute entry remains.
+    retired_block = kilo_text.split("RETIRED_KILO_FREE_MODEL_IDS = frozenset(", 1)[1].split("})", 1)[0]
+    assert "KILO_SPACE_BUNNY_MODEL_ID" in retired_block
+    assert "model_id=KILO_SPACE_BUNNY_MODEL_ID" not in kilo_text
+    assert "Kilo: Stealth Space Bunny Alpha" not in kilo_text
 
-    # Context-window authority stays 0; stale 1M metadata is not resurrected.
-    assert "context_window=0" in kilo_text
-
-    # Image enabled, video/audio/wildcard off.
-    assert '"image"' in kilo_text or "'image'" in kilo_text
-    space_bunny_block = kilo_text.split("KILO_SPACE_BUNNY_MODEL_ID")[1].split("KILO_FREE_ROUTES")[0]
-    assert "video" not in space_bunny_block.lower() or "no ``video``" in kilo_text.lower()
+    assert "TEXT_PRIMARY_MODEL_ID = None" in canonical_text
+    assert "VISION_PRIMARY_MODEL_ID = None" in canonical_text
 
 
-def test_product_tiers_and_registry_expose_plus_space_bunny() -> None:
+def test_product_tiers_and_registry_hold_plus_space_bunny() -> None:
     for path in (PRODUCT_TIERS, TIER_REGISTRY):
         text = path.read_text(encoding="utf-8")
+        assert 'route_id="plus.hold.v1"' in text
+        assert "model_id=PLUS_HOLD_MODEL_ID" in text
         assert 'model_id="kilo/stealth-space-bunny-alpha"' in text
         assert 'upstream_model="stealth/space-bunny-alpha"' in text
-        # Agnes is preserved as historical data-only, never deleted.
+        assert "HOLD_AS_DATA_ONLY" in text
         assert 'model_id="agnes-ai/agnes-3.0-flash"' in text
-        assert "PADIEM_AGNES_API_KEY" in text
 
 
 def test_a9_and_a12_smokes_source_the_canonical_pin() -> None:
@@ -110,7 +109,7 @@ def test_provider_registrations_remain_intact() -> None:
     for path in (SENSENOVA_PROVIDER, AGNES_PROVIDER, POOLSIDE_PROVIDER):
         assert path.is_file(), f"provider module deleted: {path.name}"
         text = path.read_text(encoding="utf-8")
-        assert "register_" in text
+        assert "legacy provider registration disabled: edit b14_models.json" in text
 
 
 def test_b14_auto_chain_is_unchanged() -> None:

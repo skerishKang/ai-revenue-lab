@@ -116,8 +116,12 @@ def test_worker_and_wrangler_wire_the_deadman_switch_before_bootstrap():
     worker = (root / "worker.py").read_text(encoding="utf-8")
     wrangler = (root / "wrangler.toml").read_text(encoding="utf-8")
 
-    apply_line = "settings = apply_live_deadman_switch(settings_from_worker_bindings(self.env))"
+    resolve_line = "web_keys = await resolve_web_secrets_store_keys(self.env)"
+    apply_line = "settings = apply_live_deadman_switch("
+    assert resolve_line in worker
     assert apply_line in worker
+    assert "settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)" in worker
+    assert worker.index(resolve_line) < worker.index(apply_line)
     assert worker.index(apply_line) < worker.index("web_transport = CloudflareExternalHttpTransport()")
     assert worker.index("web_transport = CloudflareExternalHttpTransport()") < worker.index("_worker_app = create_app(")
     assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler

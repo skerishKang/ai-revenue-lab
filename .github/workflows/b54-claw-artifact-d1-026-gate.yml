@@ -1,0 +1,203 @@
+name: B54 Hark D1 Migration 026 Owner Gate
+
+# Owner separately approved only additive D1 migration 026.
+# NEVER triggered to mutate on push/PR. No Worker or Secrets writes.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-claw-artifact-d1-026-gate.yml"
+      - ".github/scripts/b54_claw_artifact_schema_026.py"
+      - "apps/padiem-chat/migrations/026_claw_conversation_artifact_index.sql"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Read-only preflight or the explicitly authorized one-time 026 apply"
+        required: true
+        default: readonly
+        type: choice
+        options:
+          - readonly
+          - apply_026
+      target_sha:
+        description: "Exact current MAIN SHA; drift fails closed"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact owner-approved one-time migration confirmation"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-claw-d1-026-production-guard
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Replay exact approved 026 source and all schema classifiers
+        run: |
+          set -euo pipefail
+          python .github/scripts/b54_claw_artifact_schema_026.py offline
+          echo "D1_MIGRATION_026_SOURCE_CONTRACT=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  production-schema-026:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    environment: production
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      MODE: ${{ inputs.mode }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Fail closed without exact current main and correct approval
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          case "${MODE}" in
+            readonly) ;;
+            apply_026) test "${CONFIRMATION}" = "APPLY_B54_CLAW_D1_026_ONCE" ;;
+            *) exit 1 ;;
+          esac
+          python .github/scripts/b54_claw_artifact_schema_026.py offline
+          echo "EXACT_MAIN_AND_SOURCE_026=PASS"
+          echo "APPROVED_ACTION=${MODE}"
+      - name: Resolve database ONLY from actual production Worker D1 binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-chat/settings" \
+            -o "${RUNNER_TEMP}/worker-settings.json"
+          DB_ID="$(python - "${RUNNER_TEMP}/worker-settings.json" <<'PY'
+          import json,re,sys
+          data=json.load(open(sys.argv[1],encoding='utf-8'))
+          if data.get('success') is not True: raise SystemExit('worker settings not verified')
+          hits=[b for b in data.get('result',{}).get('bindings',[])
+                if b.get('type')=='d1' and b.get('name')=='PADIEM_CHAT_DB']
+          if len(hits)!=1: raise SystemExit('exactly one bound production database required')
+          value=hits[0].get('id')
+          if not isinstance(value,str) or re.fullmatch(r'[0-9a-fA-F-]{32,36}',value) is None:
+              raise SystemExit('invalid production D1 binding')
+          print(value)
+          PY
+          )"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo "TARGET_D1=LIVE_PADIEM_CHAT_DB"
+          echo "DB_IDENTIFIER_EXPOSED=NO"
+      - name: Read-only 026 schema preflight (no user rows)
+        id: preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b54_claw_artifact_schema_026.py query "${RUNNER_TEMP}/query.json"
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${RUNNER_TEMP}/query.json" -o "${RUNNER_TEMP}/schema-before.json"
+          evidence="$(python .github/scripts/b54_claw_artifact_schema_026.py inspect "${RUNNER_TEMP}/schema-before.json")"
+          printf '%s\n' "${evidence}"
+          state="$(printf '%s\n' "${evidence}" | sed -n 's/^CLAW_D1_026_SCHEMA=//p')"
+          case "${state}" in MISSING|EXACT) ;; *) echo "preflight refused" >&2; exit 1;; esac
+          echo "state=${state}" >> "${GITHUB_OUTPUT}"
+          echo "PREMUTATION_SCHEMA=VERIFIED_${state}"
+          echo "PRODUCTION_MUTATION=0"
+      - name: Only approved CREATE TABLE and CREATE INDEX (once)
+        if: ${{ inputs.mode == 'apply_026' }}
+        shell: bash
+        env:
+          PRIOR_STATE: ${{ steps.preflight.outputs.state }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "APPLY_B54_CLAW_D1_026_ONCE"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          # Reconfirm exact Worker binding; never use stale/injected database IDs.
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-chat/settings" \
+            -o "${RUNNER_TEMP}/worker-before-mutation.json"
+          python - "${RUNNER_TEMP}/worker-before-mutation.json" "${DB_ID}" <<'PY'
+          import json,sys
+          data=json.load(open(sys.argv[1],encoding='utf-8'))
+          hits=[b for b in data.get('result',{}).get('bindings',[])
+                if b.get('type')=='d1' and b.get('name')=='PADIEM_CHAT_DB'] if data.get('success') is True else []
+          if len(hits)!=1 or hits[0].get('id') != sys.argv[2]:
+              raise SystemExit('live production D1 binding changed')
+          PY
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${RUNNER_TEMP}/query.json" -o "${RUNNER_TEMP}/schema-second.json"
+          current="$(python .github/scripts/b54_claw_artifact_schema_026.py inspect "${RUNNER_TEMP}/schema-second.json" | sed -n 's/^CLAW_D1_026_SCHEMA=//p')"
+          test "${current}" = "${PRIOR_STATE}"
+          if [ "${current}" = "EXACT" ]; then
+            echo "D1_026=ALREADY_EXACT_NOOP"
+            echo "PRODUCTION_MUTATION=0"
+            exit 0
+          fi
+          test "${current}" = "MISSING"
+          python .github/scripts/b54_claw_artifact_schema_026.py payload "${RUNNER_TEMP}/apply-exact-026.json"
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${RUNNER_TEMP}/apply-exact-026.json" -o "${RUNNER_TEMP}/apply-026-response.json"
+          jq -e '.success == true and (.result | type == "array") and (.result | length == 2) and all(.result[]; .success == true)' \
+            "${RUNNER_TEMP}/apply-026-response.json" >/dev/null
+          echo "D1_026=CREATE_TABLE_AND_INDEX_RESPONSE_OK"
+          echo "PRODUCTION_MUTATION=026_ONLY"
+      - name: Independent final schema readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Fresh D1 API query, never trust the apply response for schema proof.
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${RUNNER_TEMP}/query.json" -o "${RUNNER_TEMP}/schema-after.json"
+          evidence="$(python .github/scripts/b54_claw_artifact_schema_026.py inspect "${RUNNER_TEMP}/schema-after.json")"
+          printf '%s\n' "${evidence}"
+          if [ "${MODE}" = "apply_026" ]; then
+            printf '%s\n' "${evidence}" | grep -qx 'CLAW_D1_026_SCHEMA=EXACT'
+            echo "PRODUCTION_D1_026_READBACK=PASS"
+          else
+            echo "PRODUCTION_D1_026_PREFLIGHT_ONLY=PASS"
+          fi
+          echo "WORKER_DEPLOY=0"
+          echo "SECRETS_MUTATION=0"
+          echo "PROVIDER_MODEL_CALLS=0"
+          echo "USER_ROW_DATA_READ=0"

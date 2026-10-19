@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 import re
 from types import MappingProxyType
 import uuid
-from typing import Any, Callable
+from typing import Any, Awaitable, Callable
 
 from .agent_approval import (
     AgentApprovalError,
@@ -44,7 +44,19 @@ from .execution_state_machine import (
 )
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
 from .agent_execution_bridge import AgentPlanExecutor, PlanBackedStepDriver
-from .agent_planner import AgentPlan, AgentPlanner, validate_agent_plan
+from .agent_runtime import AgentStepDriver
+from .agent_progress import (
+    AgentIdleTimeoutError,
+    AgentProgressTracker,
+    await_with_agent_progress,
+)
+from .agent_planner import (
+    AgentPlan,
+    AgentPlanner,
+    AgentPlannerError,
+    AgentPlanStep,
+    validate_agent_plan,
+)
 from .agent_profile_adapter import CompiledAgentProfile
 from .agent_runtime import AgentRuntimeError
 from .b14_execution import B14RouteMetadata
@@ -116,6 +128,9 @@ class OrchestrationRequest:
     context: ExecutionContext
     app_id: str
     subject_id: str | None = None
+    # Only server-trusted OrchestrationRequest construction may supply the
+    # existing Broker/Resident run id. Public Engine JSON is NOT mapped here.
+    trusted_agent_bridge_run_id: str | None = None
 
     # Memory / RAG (Optional)
     memory_authorization: MemoryReadAuthorization | None = None
@@ -141,6 +156,8 @@ class OrchestrationRequest:
     tool_authorization: ToolAuthorizationContext | None = None
     tool_runtime: ToolRuntime | None = None
     tool_arguments: Mapping[str, Mapping[str, Any]] | None = None
+    # Trusted in-process driver; never sourced from public Engine JSON.
+    agent_step_driver: AgentStepDriver | None = None
 
     # Evidence & Verification (Optional)
     evidence_sources: tuple[Evidence, ...] = ()
@@ -161,6 +178,9 @@ class OrchestrationRequest:
         object.__setattr__(self, "app_id", _safe_id("app_id", self.app_id))
         if self.subject_id is not None:
             object.__setattr__(self, "subject_id", _safe_id("subject_id", self.subject_id))
+        if self.trusted_agent_bridge_run_id is not None:
+            object.__setattr__(self, "trusted_agent_bridge_run_id",
+                               _safe_id("trusted_agent_bridge_run_id", self.trusted_agent_bridge_run_id))
 
         # Trace ID alignment invariant
         if self.execution_request.trace_id != self.context.trace_id:
@@ -265,7 +285,13 @@ _ROUTE_PUBLIC_KEYS = frozenset({
     "estimated_krw",
 })
 _USAGE_PUBLIC_KEYS = frozenset({"input_tokens", "output_tokens", "total_tokens"})
-_TOOL_EVENT_PUBLIC_KEYS = frozenset({"tool_id", "status", "duration_ms", "error_class"})
+_TOOL_EVENT_PUBLIC_KEYS = frozenset({
+    "tool_id", "status", "duration_ms", "error_class", "error_code",
+})
+_PLAN_PUBLIC_KEYS = frozenset({"agent_id", "steps"})
+_PLAN_STEP_PUBLIC_KEYS = frozenset({
+    "step_id", "objective", "tool_id", "depends_on",
+})
 _RUN_METADATA_PUBLIC_KEYS = frozenset({
     "trace_id",
     "app_id",
@@ -395,11 +421,56 @@ def tool_event_from_public(payload: Any) -> ToolEvent:
             status=status,
             duration_ms=_result_optional_int(block.get("duration_ms"), name="tool_event.duration_ms"),
             error_class=error_class,
+            error_code=block.get("error_code"),
         )
     except OrchestrationError:
         raise
     except ValueError as exc:
         raise OrchestrationError("invalid_result_tool_event", "tool_event block is not a valid tool event") from exc
+
+
+def agent_plan_from_public(payload: Any) -> AgentPlan:
+    """Reconstruct a validated `AgentPlan` from its public-dict shape (#5015).
+
+    The public projection carries every field the plan value type needs:
+    ``agent_id`` and per-step ``step_id``/``objective``/``tool_id``/
+    ``depends_on``. The existing `AgentPlan`/`AgentPlanStep` constructors are
+    the validation authority, so an unbounded, cyclic, reordered or
+    over-budget plan stays refused instead of being silently dropped.
+    """
+    try:
+        block = _result_mapping(payload, name="plan")
+        _result_unknown_keys(block, allowed=_PLAN_PUBLIC_KEYS, name="plan")
+        steps = []
+        for item in _result_sequence(block.get("steps"), name="plan.steps"):
+            step = _result_mapping(item, name="plan.steps[]")
+            _result_unknown_keys(step, allowed=_PLAN_STEP_PUBLIC_KEYS, name="plan.steps[]")
+            steps.append(
+                AgentPlanStep(
+                    step_id=_result_required_str(
+                        step.get("step_id"), name="plan.steps[].step_id"
+                    ),
+                    objective=_result_required_str(
+                        step.get("objective"), name="plan.steps[].objective"
+                    ),
+                    tool_id=_result_optional_str(
+                        step.get("tool_id"), name="plan.steps[].tool_id"
+                    ),
+                    depends_on=_result_str_tuple(
+                        step.get("depends_on", ()), name="plan.steps[].depends_on"
+                    ),
+                )
+            )
+        return AgentPlan(
+            agent_id=_result_required_str(block.get("agent_id"), name="plan.agent_id"),
+            steps=tuple(steps),
+        )
+    except OrchestrationError:
+        raise
+    except (AgentPlannerError, ValueError) as exc:
+        raise OrchestrationError(
+            "invalid_result_plan", "orchestration result plan is not a valid agent plan"
+        ) from exc
 
 
 def run_metadata_from_public(payload: Any) -> RunMetadata:
@@ -539,8 +610,10 @@ def orchestration_result_from_public(payload: Mapping[str, Any]) -> Orchestratio
     is deliberately lossy for these fields, so reconstructing them would produce
     a value that lies about what the run actually did:
 
-    * ``plan`` / ``activated_skill`` - the projection does not carry the fields
-      required to rebuild `AgentPlan` or `ActivatedSkillProfile`.
+    * ``activated_skill`` - the projection does not carry the fields required
+      to rebuild `ActivatedSkillProfile`. A public ``plan`` is reconstructed
+      through `AgentPlan`/`AgentPlanStep` and stays subject to their
+      validation rules.
     * ``evidence`` - the projection carries only claim/source counts plus
       assessments and citations; the `EvidenceGraph` itself is not on the wire,
       so a non-empty evidence block is refused instead of collapsed to ``None``.
@@ -596,12 +669,12 @@ def orchestration_result_from_public(payload: Mapping[str, Any]) -> Orchestratio
     except ValueError as exc:
         raise OrchestrationError("invalid_result_context", "context block is not a valid execution context") from exc
 
-    # plan / skill (not reconstructible) -----------------------------------
-    if payload.get("plan") is not None:
-        raise OrchestrationError(
-            "unsupported_result_plan",
-            "orchestration result carries an agent plan that the public projection cannot reconstruct",
-        )
+    # plan / skill ---------------------------------------------------------
+    plan = (
+        agent_plan_from_public(payload.get("plan"))
+        if payload.get("plan") is not None
+        else None
+    )
     if payload.get("activated_skill") is not None:
         raise OrchestrationError(
             "unsupported_result_skill",
@@ -678,7 +751,7 @@ def orchestration_result_from_public(payload: Mapping[str, Any]) -> Orchestratio
         context=context,
         app_id=app_id,
         subject_id=None,
-        plan=None,
+        plan=plan,
         activated_skill=None,
         resolved_tool_ids=resolved_tool_ids,
         evidence_graph=None,
@@ -747,6 +820,8 @@ class OrchestrationRunner:
         runtime: Any,
         idempotency: IdempotencyAdapter | None = None,
         event_sink: Callable[[OrchestrationEvent], Any] | None = None,
+        agent_run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
+        agent_checkpoint_hook: Callable[[int], bool | Awaitable[bool]] | None = None,
     ) -> None:
         if not hasattr(runtime, "run") or not callable(getattr(runtime, "run", None)):
             raise OrchestrationError("invalid_runtime", "runtime must provide a callable run method")
@@ -755,6 +830,12 @@ class OrchestrationRunner:
         self._runtime = runtime
         self._idempotency = idempotency
         self._event_sink = event_sink
+        if agent_run_guard is not None and not callable(agent_run_guard):
+            raise OrchestrationError("invalid_agent_run_guard", "trusted Agent guard must be callable")
+        self._agent_run_guard = agent_run_guard
+        if agent_checkpoint_hook is not None and not callable(agent_checkpoint_hook):
+            raise OrchestrationError("invalid_agent_checkpoint", "trusted checkpoint hook must be callable")
+        self._agent_checkpoint_hook = agent_checkpoint_hook
 
     def _deliver_event(self, evt: OrchestrationEvent) -> None:
         """Deliver one emitted event to the optional synchronous event sink.
@@ -965,7 +1046,11 @@ class OrchestrationRunner:
                     if request.execution_request.messages
                     else "Run agent plan"
                 )
-                bridge_res = await asyncio.wait_for(
+                # Inactivity watchdog, not a fixed wall clock: the Agent run is
+                # bounded by verified progress gaps so a healthy long run
+                # (many steps, long generations) is never force-failed (#4194).
+                agent_progress = AgentProgressTracker()
+                bridge_res = await await_with_agent_progress(
                     executor.execute(
                         plan=request.agent_plan,
                         definition=request.agent_definition,
@@ -973,10 +1058,16 @@ class OrchestrationRunner:
                         authorization=request.tool_authorization,
                         tool_runtime=request.tool_runtime,
                         input_text=prompt_input or "Run agent plan",
-                        run_id=f"bridge_run_{uuid.uuid4().hex[:12]}",
+                        run_id=(request.trusted_agent_bridge_run_id
+                                or f"bridge_run_{uuid.uuid4().hex[:12]}"),
                         tool_arguments=request.tool_arguments,
+                        step_driver=request.agent_step_driver,
+                        run_guard=self._agent_run_guard,
+                        checkpoint_hook=self._agent_checkpoint_hook,
+                        progress=agent_progress,
                     ),
-                    timeout=request.context.timeout_seconds,
+                    tracker=agent_progress,
+                    idle_seconds=request.context.timeout_seconds,
                 )
 
                 if bridge_res.terminal_reason is AgentTerminalReason.APPROVAL_REQUIRED:
@@ -1019,6 +1110,7 @@ class OrchestrationRunner:
                             app_id=app_id,
                             agent_id=request.execution_request.agent.id,
                             status=RunStatus.PAUSED,
+                            session_id=request.execution_request.session_id,
                             tool_events=bridge_res.tool_events,
                         ),
                     )
@@ -1045,8 +1137,11 @@ class OrchestrationRunner:
 
                 if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:
                     await _abort_idempotency("timeout")
-                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution reached max wall time", {"reason": "timeout"})
-                    raise OrchestrationError("orchestration_timeout", "Agent execution reached max wall time")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution stopped after inactivity", {"reason": "timeout"})
+                    raise OrchestrationError(
+                        "orchestration_timeout",
+                        "Agent execution produced no verified progress inside the inactivity window",
+                    )
 
                 if bridge_res.terminal_reason in (
                     AgentTerminalReason.AUTHORIZATION_DENIED,
@@ -1055,15 +1150,33 @@ class OrchestrationRunner:
                 ):
                     for te in bridge_res.tool_events:
                         emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
-                        if te.status is RunStatus.FAILED:
+                        if te.status is not RunStatus.COMPLETED:
+                            # #5015: a blocked or rejected tool is just as
+                            # terminal for the caller as a failed one; emit the
+                            # bounded stage code so the cause is attributable.
                             emit(OrchestrationEventKind.TOOL_FAILED, f"Tool '{te.tool_id}' failed", {
                                 "tool_id": te.tool_id,
-                                "status": "failed",
+                                "status": te.status.value,
                                 "error_class": te.error_class.value if te.error_class else None,
+                                "error_code": te.error_code,
                             })
+                    # #5015: prefer the first non-completed tool's bounded
+                    # stage code so the public error line names the actual
+                    # cause instead of the generic terminal reason.
+                    tool_error_code = next(
+                        (
+                            te.error_code
+                            for te in bridge_res.tool_events
+                            if te.status is not RunStatus.COMPLETED and te.error_code
+                        ),
+                        None,
+                    )
                     await _abort_idempotency(bridge_res.terminal_reason.value)
                     emit(OrchestrationEventKind.RUN_FAILED, f"Agent terminal failure: {bridge_res.terminal_reason.value}", {"error": bridge_res.terminal_reason.value})
-                    raise OrchestrationError(bridge_res.terminal_reason.value, f"Agent execution terminated with reason: {bridge_res.terminal_reason.value}")
+                    raise OrchestrationError(
+                        tool_error_code or bridge_res.terminal_reason.value,
+                        f"Agent execution terminated with reason: {bridge_res.terminal_reason.value}",
+                    )
 
                 result = ExecutionResult(
                     answer=bridge_res.answer or "Plan executed successfully.",
@@ -1073,6 +1186,7 @@ class OrchestrationRunner:
                         app_id=app_id,
                         agent_id=request.execution_request.agent.id,
                         status=RunStatus.COMPLETED,
+                        session_id=request.execution_request.session_id,
                         tool_events=bridge_res.tool_events,
                     ),
                 )
@@ -1102,6 +1216,10 @@ class OrchestrationRunner:
                 )
 
                 mark_execution_dispatch_started()
+                # Single-shot model lane: this keeps the caller-declared
+                # ExecutionContext budget (default 900s, max 3600s) unchanged.
+                # The model transport owns its own 600s per-event read idle
+                # watchdog; no new short cap is introduced here (#4194).
                 result = await asyncio.wait_for(
                     self._runtime.run(exec_req),
                     timeout=request.context.timeout_seconds,
@@ -1123,11 +1241,11 @@ class OrchestrationRunner:
                         "error_class": te.error_class.value if te.error_class else None,
                         "duration_ms": te.duration_ms,
                     })
-        except asyncio.TimeoutError:
+        except (asyncio.TimeoutError, AgentIdleTimeoutError):
             await _abort_idempotency("timeout")
             state_machine.timeout("execution_timeout")
-            emit(OrchestrationEventKind.RUN_FAILED, "Execution timed out", {"reason": "timeout"})
-            raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout") from None
+            emit(OrchestrationEventKind.RUN_FAILED, "Execution stopped after inactivity", {"reason": "timeout"})
+            raise OrchestrationError("orchestration_timeout", f"Execution produced no verified progress for {request.context.timeout_seconds}s") from None
         except asyncio.CancelledError:
             await _abort_idempotency("cancelled")
             state_machine.cancel("execution_cancelled")
@@ -1472,8 +1590,9 @@ class OrchestrationRunner:
                 if request.execution_request.messages
                 else "Resume agent plan"
             )
+            resume_progress = AgentProgressTracker()
             try:
-                bridge_res = await asyncio.wait_for(
+                bridge_res = await await_with_agent_progress(
                     executor.execute(
                         plan=request.agent_plan,
                         definition=request.agent_definition,
@@ -1483,18 +1602,26 @@ class OrchestrationRunner:
                         input_text=prompt_input or "Resume agent plan",
                         run_id=pause.run_id,
                         tool_arguments=request.tool_arguments,
+                        step_driver=getattr(request, "agent_step_driver", None),
                         initial_step_index=pause.step_index,
                         initial_tool_results=request.initial_tool_results,
                         initial_tool_events=request.initial_tool_events,
                         trace_id=trace_id,
                         plan_id=request.agent_plan.agent_id,
+                        run_guard=self._agent_run_guard,
+                        checkpoint_hook=self._agent_checkpoint_hook,
+                        progress=resume_progress,
                     ),
-                    timeout=request.context.timeout_seconds,
+                    tracker=resume_progress,
+                    idle_seconds=request.context.timeout_seconds,
                 )
 
                 if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:
-                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution reached max wall time on resume", {"reason": "timeout"})
-                    raise OrchestrationError("orchestration_timeout", "Agent execution reached max wall time on resume")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution stopped after inactivity on resume", {"reason": "timeout"})
+                    raise OrchestrationError(
+                        "orchestration_timeout",
+                        "Agent execution produced no verified progress inside the inactivity window on resume",
+                    )
 
                 if bridge_res.terminal_reason in (
                     AgentTerminalReason.AUTHORIZATION_DENIED,
@@ -1503,14 +1630,28 @@ class OrchestrationRunner:
                 ):
                     for te in bridge_res.tool_events:
                         emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
-                        if te.status is RunStatus.FAILED:
+                        if te.status is not RunStatus.COMPLETED:
                             emit(OrchestrationEventKind.TOOL_FAILED, f"Tool '{te.tool_id}' failed", {
                                 "tool_id": te.tool_id,
-                                "status": "failed",
+                                "status": te.status.value,
                                 "error_class": te.error_class.value if te.error_class else None,
+                                "error_code": te.error_code,
                             })
+                    # #5015: keep the resume-lane error line attributable to
+                    # the same bounded tool stage as the first-run lane.
+                    tool_error_code = next(
+                        (
+                            te.error_code
+                            for te in bridge_res.tool_events
+                            if te.status is not RunStatus.COMPLETED and te.error_code
+                        ),
+                        None,
+                    )
                     emit(OrchestrationEventKind.RUN_FAILED, f"Agent terminal failure on resume: {bridge_res.terminal_reason.value}", {"error": bridge_res.terminal_reason.value})
-                    raise OrchestrationError(bridge_res.terminal_reason.value, f"Agent execution terminated on resume with reason: {bridge_res.terminal_reason.value}")
+                    raise OrchestrationError(
+                        tool_error_code or bridge_res.terminal_reason.value,
+                        f"Agent execution terminated on resume with reason: {bridge_res.terminal_reason.value}",
+                    )
 
                 result = ExecutionResult(
                     answer=bridge_res.answer or "Plan resumed and completed successfully.",
@@ -1520,12 +1661,13 @@ class OrchestrationRunner:
                         app_id=app_id,
                         agent_id=request.execution_request.agent.id,
                         status=RunStatus.COMPLETED,
+                        session_id=request.execution_request.session_id,
                         tool_events=bridge_res.tool_events,
                     ),
                 )
-            except asyncio.TimeoutError:
-                emit(OrchestrationEventKind.RUN_FAILED, "Execution timed out on resume", {"reason": "timeout"})
-                raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout on resume") from None
+            except (asyncio.TimeoutError, AgentIdleTimeoutError):
+                emit(OrchestrationEventKind.RUN_FAILED, "Execution stopped after inactivity on resume", {"reason": "timeout"})
+                raise OrchestrationError("orchestration_timeout", f"Execution produced no verified progress for {request.context.timeout_seconds}s on resume") from None
             except asyncio.CancelledError:
                 await _abort_idempotency("cancelled")
                 emit(OrchestrationEventKind.RUN_CANCELLED, "Execution was cancelled on resume", {"reason": "downstream_cancellation"})
@@ -1540,6 +1682,7 @@ class OrchestrationRunner:
             # Fallback simple runtime execution
             try:
                 mark_execution_dispatch_started()
+                # Single-shot model lane: caller-declared budget retained (#4194).
                 result = await asyncio.wait_for(
                     self._runtime.run(request.execution_request),
                     timeout=request.context.timeout_seconds,

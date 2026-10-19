@@ -66,13 +66,26 @@ SERVICE_IDENTITY_MODULE = ENGINE_APP / "service_identity.py"
 SENTINEL = "sentinel-raw-value-must-never-appear"
 CREDENTIAL_ENV = "B54_TEST_OVERLAY_ROTATION_CREDENTIAL"
 CONFIRM_PHRASE = "ROTATE_B54_KAGENT_ENGINE_OVERLAY_FROM_EXACT_MAIN"
-# #2645 + #2721 (Telegram reader): the single overlay caller is authorized for
-# the Claw app, the canonical Drive app, and the canonical Telegram reader app,
-# and for nothing else.
+# #2645 + #2721 (Telegram reader) + #2952 (Calendar reader) + #3936 (Hark XLSX
+# READ) + #3933 (Hark XLSX WRITE): the single overlay caller is authorized for
+# the Claw app, the canonical Drive app, the canonical Telegram reader app, the
+# canonical Calendar reader app, the Hark WEB-FIRST XLSX READ Engine tool app,
+# and the independent Hark WEB-FIRST XLSX WRITE Engine tool app, and for nothing
+# else. The WRITE entry is app authorization only; WRITE stays default OFF.
 CLAW_APP_ID = "b54-padiem-claw"
 DRIVE_APP_ID = "b54-padiem-claw-drive"
 TELEGRAM_APP_ID = "b54-padiem-claw-telegram"
-CANONICAL_APP_IDS = (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID)
+CALENDAR_APP_ID = "b54-padiem-claw-calendar"
+XLSX_READ_APP_ID = "padiem-web-xlsx-p01"
+XLSX_WRITE_APP_ID = "padiem-web-xlsx-write-p01"
+CANONICAL_APP_IDS = (
+    CLAW_APP_ID,
+    DRIVE_APP_ID,
+    TELEGRAM_APP_ID,
+    CALENDAR_APP_ID,
+    XLSX_READ_APP_ID,
+    XLSX_WRITE_APP_ID,
+)
 FOREIGN_APP_ID = "b62"
 BASE_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
@@ -223,10 +236,18 @@ def test_script_constants_exact() -> None:
     assert helper.REQUIRED_BINDING_TYPE == "secret_text"
     assert set(helper.LEGACY_TRIO_NAMES) == set(LEGACY_TRIO_NAMES)
     assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
-    # #2645 + #2721: exactly three canonical apps — Claw, Drive, and the
-    # Telegram reader — and nothing else.
+    # Explicit bounded connector READ authority: Claw, Drive, Telegram, Calendar,
+    # the Hark WEB-FIRST XLSX READ Engine tool app (#3936), and the independent
+    # Hark WEB-FIRST XLSX WRITE Engine tool app (#3933).
     assert helper.ALLOWED_APP_IDS == CANONICAL_APP_IDS
-    assert helper.ALLOWED_APP_IDS == (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID)
+    assert helper.ALLOWED_APP_IDS == (
+        CLAW_APP_ID,
+        DRIVE_APP_ID,
+        TELEGRAM_APP_ID,
+        CALENDAR_APP_ID,
+        XLSX_READ_APP_ID,
+        XLSX_WRITE_APP_ID,
+    )
     assert helper.ALLOWED_APP_IDS[0] == CLAW_APP_ID
     assert helper.OVERLAY_VERSION == 1
     assert helper.MIN_CREDENTIAL_BYTES == 32
@@ -333,7 +354,14 @@ def test_build_overlay_payload_is_canonical_single_caller() -> None:
         "caller": {
             "caller_id": "b54-p01-overlay-20260914-a1",
             "credential": credential,
-            "allowed_app_ids": [CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID],
+            "allowed_app_ids": [
+                CLAW_APP_ID,
+                DRIVE_APP_ID,
+                TELEGRAM_APP_ID,
+                CALENDAR_APP_ID,
+                XLSX_READ_APP_ID,
+                XLSX_WRITE_APP_ID,
+            ],
         },
     }
     # Credential byte boundaries are enforced before any payload is returned.
@@ -551,13 +579,20 @@ def test_2645_canonical_app_authority_contract() -> None:
     payload = helper.build_overlay_payload(credential=credential)
     overlay_text = helper.build_overlay_put_body(payload)["text"]
 
-    # Caller id unchanged; exactly the canonical trio, in order, no duplicates.
+    # Caller id unchanged; exactly the canonical set, in order, no duplicates.
     assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
     parsed = identity.parse_caller_registry_v1_overlay(overlay_text)
     assert parsed.caller_id == helper.CALLER_ID
-    assert parsed.allowed_app_ids == (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID)
-    assert len(parsed.allowed_app_ids) == 3
-    assert len(set(parsed.allowed_app_ids)) == 3
+    assert parsed.allowed_app_ids == (
+        CLAW_APP_ID,
+        DRIVE_APP_ID,
+        TELEGRAM_APP_ID,
+        CALENDAR_APP_ID,
+        XLSX_READ_APP_ID,
+        XLSX_WRITE_APP_ID,
+    )
+    assert len(parsed.allowed_app_ids) == 6
+    assert len(set(parsed.allowed_app_ids)) == 6
 
     base_registry = {
         "version": 1,
@@ -1140,16 +1175,18 @@ def test_workflow_uses_served_version_never_settings_plane() -> None:
     assert "/settings" not in text
     assert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in text
     assert "SERVED_VERSION_READBACK=YES" in text
-    # PRE-MUTATION: deployments shape is pinned and the served version id is
-    # captured before the single overlay PUT.
-    assert "jq -e '.success == true'" in text
-    assert "(.result.deployments | type == \"array\" and length > 0)" in text
-    assert "(.result.deployments[0].versions | type == \"array\" and length == 1)" in text
-    assert ".result.deployments[0].versions[0].percentage == 100" in text
+    # PRE-MUTATION: the shared Engine guard is the sole deployments-envelope
+    # / served-version shape authority before the single overlay PUT.
+    assert text.count("b54_engine_served_version_guard.py resolve-active") >= 3
+    assert ".result.deployments[0].versions[0].version_id" not in text
+    assert ".result.deployments[0].versions[0].percentage" not in text
     assert "PREMUTATION_SERVED_VERSION_ID" in text
     assert 'echo "PREMUTATION_SERVED_VERSION_ID=${active_version}" >> "${GITHUB_ENV}"' in text
-    # POST-MUTATION: poll deployments to a single 100-percent version, capture
-    # the post id, and emit whether the secret PUT rotated the served version.
+    # POST-MUTATION: keep the same bounded poll, but every acceptable
+    # observation is resolved by the same canonical Engine guard.
+    assert "for _ in $(seq 1 30)" in text
+    assert "sleep 2" in text
+    assert "2>/dev/null" in text
     assert "POSTMUTATION_SERVED_VERSION_ID" in text
     assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=YES" in text
     assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO" in text
@@ -1270,9 +1307,119 @@ def test_workflow_never_touches_b62_live_config_or_padiem_chat() -> None:
     assert "deploy-production-engine" not in text
     pr_paths = re.search(r"pull_request:\s*\n\s*paths:\n((?:\s+- .*\n)+)", text)
     assert pr_paths is not None
+    assert "b54_engine_served_version_guard.py" in pr_paths.group(1)
+    assert "cloudflare_served_version.py" in pr_paths.group(1)
     for line in pr_paths.group(1).splitlines():
         assert "b62" not in line
 
+
+
+
+# #3748 / #3893: exercise the real served-version CLI using only synthetic
+# fixtures. No Cloudflare, Engine requests, credential rotation, or live PUT.
+
+
+def _assert_3748_overlay_argv_contract(src: str) -> None:
+    good = '--active-version="${active_version}"'
+    old = '--active-version "${active_version}"'
+    assert src.count(good) == 3
+    assert old not in src
+    assert src.count("b54_engine_caller_registry_overlay_rotation.py classify") == 2
+    assert src.count("b54_engine_caller_registry_overlay_rotation.py verify") == 1
+    assert "CLOUDFLARE_MUTATION=0" in src
+    assert "PRODUCTION_MUTATION=0" in src
+
+
+def _run_3748_overlay_cli(command: str, *argv: str, version: str = "-safe-overlay-v1",
+                          include_overlay: bool = True, overlay_type: str = "secret_text"):
+    import subprocess
+
+    rows = [
+        _binding(BASE_NAME, "secret_text", text="SYNTHETIC_BASE_NEVER_LOG"),
+    ]
+    if include_overlay:
+        rows.append(_binding(OVERLAY_NAME, overlay_type, text="SYNTHETIC_OVERLAY_NEVER_LOG"))
+    legacy = ";".join(f"{name}=ABSENT" for name in LEGACY_TRIO_NAMES)
+    detail = _version_detail(rows, version_id=version)
+    with tempfile.TemporaryDirectory(prefix="overlay-argv-3748-") as folder:
+        file = Path(folder) / "synthetic-version.json"
+        file.write_text(json.dumps(detail), encoding="utf-8")
+        args = [sys.executable, str(HELPER), command, "--version-detail", str(file), *argv]
+        if command == "verify":
+            args.extend(["--legacy-pre-state", legacy])
+        else:
+            assert command == "classify"
+        return subprocess.run(args, text=True, capture_output=True, check=False, timeout=20)
+
+
+def test_3748_overlay_argv_three_sites_and_pr_source_isolation() -> None:
+    src = WORKFLOW.read_text(encoding="utf-8")
+    _assert_3748_overlay_argv_contract(src)
+    assert "  pull_request:" in src
+    assert "  workflow_dispatch:" in src
+    assert "python .github/tests/test_b54_engine_caller_registry_overlay_rotation_gate.py" in src
+    assert "Run P01 overlay caller-id parity contract" in src
+    assert "if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}" in src
+    assert "PRODUCTION_MUTATION=0" in src.split("  cloudflare-readonly:", 1)[0]
+
+
+def test_3748_overlay_argv_real_classify_and_verify_accept_leading_hyphen() -> None:
+    assert re.fullmatch(r"[A-Za-z0-9._-]{1,64}", "-safe-overlay-v1")
+    classify = _run_3748_overlay_cli("classify", "--active-version=-safe-overlay-v1")
+    assert classify.returncode == 0, classify.stderr
+    assert "B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=ROTATION_REQUIRED" in classify.stdout
+    verify = _run_3748_overlay_cli("verify", "--active-version=-safe-overlay-v1")
+    assert verify.returncode == 0, verify.stderr
+    assert "B54_ENGINE_OVERLAY_ROTATION_POST_READBACK=PASS" in verify.stdout
+    for result in (classify, verify):
+        assert "SYNTHETIC_BASE_NEVER_LOG" not in result.stdout + result.stderr
+        assert "SYNTHETIC_OVERLAY_NEVER_LOG" not in result.stdout + result.stderr
+
+
+def test_3748_overlay_argv_real_classify_and_verify_refuse_old_split_form() -> None:
+    for cmd in ("classify", "verify"):
+        result = _run_3748_overlay_cli(cmd, "--active-version", "-safe-overlay-v1")
+        assert result.returncode == 2, (cmd, result.stderr)
+        assert "expected one argument" in result.stderr
+
+
+def test_3748_overlay_argv_real_mismatch_and_authority_drift_fail_closed() -> None:
+    for cmd in ("classify", "verify"):
+        mismatch = _run_3748_overlay_cli(cmd, "--active-version=-wrong-version")
+        assert mismatch.returncode == 1, (cmd, mismatch.stderr)
+        assert "does not match active version" in mismatch.stderr
+        absent = _run_3748_overlay_cli(
+            cmd, "--active-version=-safe-overlay-v1", include_overlay=False
+        )
+        assert absent.returncode == 1, (cmd, absent.stdout, absent.stderr)
+        bad_type = _run_3748_overlay_cli(
+            cmd, "--active-version=-safe-overlay-v1", overlay_type="kv_namespace"
+        )
+        assert bad_type.returncode == 1, (cmd, bad_type.stdout, bad_type.stderr)
+        for r in (mismatch, absent, bad_type):
+            assert "SYNTHETIC_OVERLAY_NEVER_LOG" not in r.stdout + r.stderr
+
+
+def test_3748_overlay_argv_each_spaced_token_mutation_red_and_bytes_preserved() -> None:
+    original = WORKFLOW.read_bytes()
+    src = original.decode("utf-8")
+    _assert_3748_overlay_argv_contract(src)
+    good = '--active-version="${active_version}"'
+    old = '--active-version "${active_version}"'
+    pieces = src.split(good)
+    assert len(pieces) == 4
+    red = 0
+    for i in range(3):
+        mutated = good.join(pieces[:i + 1]) + old + good.join(pieces[i + 1:])
+        assert mutated != src
+        try:
+            _assert_3748_overlay_argv_contract(mutated)
+        except AssertionError:
+            red += 1
+        else:
+            raise AssertionError("spaced CLI token mutation not detected")
+    assert red == 3
+    assert WORKFLOW.read_bytes() == original
 
 if __name__ == "__main__":
     test_script_constants_exact()
@@ -1299,4 +1446,9 @@ if __name__ == "__main__":
     test_workflow_legacy_trio_preservation_wiring()
     test_workflow_bounded_failure_evidence_wiring()
     test_workflow_never_touches_b62_live_config_or_padiem_chat()
+    test_3748_overlay_argv_three_sites_and_pr_source_isolation()
+    test_3748_overlay_argv_real_classify_and_verify_accept_leading_hyphen()
+    test_3748_overlay_argv_real_classify_and_verify_refuse_old_split_form()
+    test_3748_overlay_argv_real_mismatch_and_authority_drift_fail_closed()
+    test_3748_overlay_argv_each_spaced_token_mutation_red_and_bytes_preserved()
     print("B54_ENGINE_CALLER_REGISTRY_OVERLAY_ROTATION_GATE_TESTS=PASS")

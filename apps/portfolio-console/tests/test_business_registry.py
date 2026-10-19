@@ -34,13 +34,22 @@ class BusinessRegistryTests(unittest.TestCase):
         self.assertIsNotNone(match, f"Business {number} entry not found in identity core")
         return match.group(0)
 
-    def test_registry_has_ordered_unique_numbers_with_only_intentional_gap_56(self) -> None:
+    def test_registry_has_ordered_unique_registered_numbers_with_intentional_gaps(self) -> None:
+        # B56: long-standing intentional numbering gap.
+        # B62/B63: reserved-but-unregistered — no manifest entry yet.
+        # B64: AI Reward Router (owner-approved registration #987).
         numbers = self.manifest_numbers()
-        self.assertGreaterEqual(max(numbers), 60)
-        expected = [number for number in range(1, max(numbers) + 1) if number != 56]
+        self.assertGreaterEqual(max(numbers), 64)
+        intentional_gaps = {56, 62, 63}
+        expected = [
+            number
+            for number in range(1, max(numbers) + 1)
+            if number not in intentional_gaps
+        ]
         self.assertEqual(numbers, expected)
         self.assertEqual(len(numbers), len(set(numbers)))
-        self.assertNotIn(56, numbers)
+        for gap in intentional_gaps:
+            self.assertNotIn(gap, numbers)
 
     def test_reserved_slots_seven_through_twelve_exist_as_canonical(self) -> None:
         # B7-B12 were promoted from PROPOSED to CANONICAL in the 2026-08-15
@@ -75,7 +84,8 @@ class BusinessRegistryTests(unittest.TestCase):
         manifest_numbers = self.manifest_numbers()
         core_numbers = self.core_numbers()
         self.assertEqual(core_numbers, manifest_numbers)
-        self.assertNotIn(56, core_numbers)
+        for gap in (56, 62, 63):
+            self.assertNotIn(gap, core_numbers)
 
     def test_manifest_defines_no_phase_status_literals_single_source(self) -> None:
         for literal in ('ui:"', 'ux:"', 'be:"'):
@@ -113,6 +123,15 @@ class BusinessRegistryTests(unittest.TestCase):
         }
         for number, slug in expected.items():
             self.assertIn(f's:"{slug}"', self.business_block(number))
+
+    def test_business_61_canonical_and_64_proposed_entries_exist(self) -> None:
+        b61 = self.business_block(61)
+        self.assertIn('s:"storymemory"', b61)
+        self.assertIn("CANONICAL", b61)
+        b64 = self.business_block(64)
+        self.assertIn('s:"ai-reward-router"', b64)
+        self.assertIn('a:NA.PROPOSED', b64)
+        self.assertIn('l:"incubation"', b64)
 
 
 if __name__ == "__main__":

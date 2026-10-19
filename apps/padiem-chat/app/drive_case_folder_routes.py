@@ -30,6 +30,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .drive_case_folder_engine import DriveCaseFolderEngineError
 from .history import HistoryStore, validate_project_id
 
@@ -200,8 +201,12 @@ async def drive_case_folder_put(request: Request) -> JSONResponse:
     if error is not None:
         return error
 
-    body = await request.body()
-    if len(body) > MAX_PUT_BODY_BYTES:
+    try:
+        body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_PUT_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
         return _error("invalid_body", "요청 본문이 너무 큽니다.", 413)
     try:
         raw = json.loads(body.decode("utf-8"))
@@ -233,7 +238,10 @@ async def drive_case_folder_delete(request: Request) -> JSONResponse:
     uid, pid, workspace_ref, client, error = await _resolve_context(request)
     if error is not None:
         return error
-    body = await request.body()
+    try:
+        body = await read_bounded_request_body(request, max_bytes=1)
+    except RequestBodyTooLarge:
+        return _invalid("invalid_body", "요청 본문이 허용되지 않습니다.")
     if body:
         return _invalid("invalid_body", "요청 본문이 허용되지 않습니다.")
     try:

@@ -1,0 +1,21 @@
+-- #4139 Oracle management-host terminal command dispatch (additive to 047).
+-- One dispatch row now describes *what* to execute:
+--
+--   kind = 'read'    -> the 047 file read (root_ref/path_relative/file_path)
+--   kind = 'command' -> one terminal command on the same pinned Mesh node
+--
+-- The command lane is a separate grant from the TXT read lane: the deployment
+-- ownership map must explicitly mark the row command-capable, so a file-read
+-- permission never implies command execution. `command_text` holds the exact
+-- single-line command the owner asked for; it is never derived from a result
+-- body and never carries stdout.
+--
+-- For kind='command' the 047 file columns stay NOT NULL and carry the fixed
+-- sentinel root_ref='mesh_terminal', path_relative='command',
+-- file_path='command' so an accidental read-lane use fails loudly instead of
+-- resolving a bogus Windows path.
+--
+-- Additive only: two nullable/defaulted columns, no table rebuild, no data
+-- rewrite. Existing 047 rows keep kind='read' through the column default.
+ALTER TABLE oracle_mesh_dispatch ADD COLUMN kind TEXT NOT NULL DEFAULT 'read';
+ALTER TABLE oracle_mesh_dispatch ADD COLUMN command_text TEXT;

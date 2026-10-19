@@ -7,6 +7,8 @@
 
 ---
 
+> **Private Owner business policy:** see root [AGENTS.md](../../AGENTS.md) for the local governance location and precedence. Historical technical implementation/evidence stays public; company business decisions do not.
+
 ## 1. Executive Summary & Product Objective
 
 **Padiem Claw (B54)** is an AI-assisted business operations agent designed to streamline document workflows (견적서/발주서 drafts, inquiries, schedules, and reconciliations) for Korean SMB and agency workflows.

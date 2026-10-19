@@ -81,6 +81,19 @@ SUPERSEDED
 
 `IMPLEMENTED_SELF_CHECKED` is implementation-actor evidence, not independent validation.
 
+Track implementation throughput separately:
+
+```text
+DEV_FAST_GATE_NOT_RUN
+DEV_FAST_GATE_PENDING
+DEV_FAST_GATE_FAILED
+DEV_FAST_GATE_PASSED
+
+DEV_ACTOR_RELEASED=NO|YES
+```
+
+`DEV_FAST_GATE_PASSED` allows the implementation actor to move to the next authorized issue. It does not mean merge-ready.
+
 ## 5. Independent validation
 
 ```text
@@ -94,6 +107,16 @@ INVALIDATED_BY_NEW_REVISION
 
 Use `PASSED` only when the required independent validator tested the exact revision and did not create a new product-source revision during that validation.
 
+When multiple environments matter, track them independently and allow them to run in parallel:
+
+```text
+VALIDATOR_WINDOWS=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED
+VALIDATOR_UBUNTU=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED
+VALIDATOR_BROWSER=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED
+```
+
+A validator that edits source changes role to repair/implementation actor for the new revision; that run cannot be the independent `PASSED` evidence for the new head.
+
 ## 6. CI
 
 ```text
@@ -103,6 +126,14 @@ PENDING
 FAILED
 PASSED
 ```
+
+Also track the aggregate merge gate separately:
+
+```text
+FULL_VALIDATION=PENDING|FAIL|PASS
+```
+
+`FULL_VALIDATION=PENDING` does not block unrelated implementation work after `DEV_FAST_GATE_PASSED`; it does block merge when the full gate is required.
 
 CI never substitutes for a different required evidence type.
 
@@ -192,6 +223,50 @@ RESTORED
 
 Production status is revision/deployment evidence only.
 
-## 12. Revision rule
+## 12. Customer handoff
 
-Every source-dependent status records the exact SHA or exact artifact/revision identity. A new commit affecting the judged surface may move validation/review/gates back to pending or invalidated.
+For a customer-bound MVP, keep handoff status separate from ordinary CTO readiness:
+
+```text
+HANDOFF_NOT_APPLICABLE
+HANDOFF_BLOCKED
+HANDOFF_READY_PENDING_PRODUCTION
+READY_FOR_CUSTOMER_HANDOFF
+HANDED_OFF
+```
+
+`READY_FOR_CUSTOMER_HANDOFF` requires only the **fixed handoff gate** defined by the current work contract/operating policy:
+
+```text
+ACCEPTED_HANDOFF_BLOCKERS=0
+FOCUSED_CHANGE_REGRESSION=PASS
+HANDOFF_REQUIRED_CI=PASS
+REQUIRED_PRODUCTION_SMOKE=PASS
+```
+
+Open P1/P2/backlog work, unrelated CI fan-out, and exploratory QA do not move this state backward unless they produce new concrete handoff-blocking evidence.
+
+## 13. Revision rule
+
+Every source-dependent status records the exact SHA or exact artifact/revision identity. A new commit affecting the judged surface may move only the **affected** validation/review/gates back to pending or invalidated. Unrelated repository drift does not automatically invalidate previously accepted evidence.
+
+## Finish-first axis status
+
+When governed by a Finish-first authority such as #3523, track the axis separately from individual issue/PR states:
+
+```text
+AXIS_NOT_SELECTED
+AXIS_ACTIVE
+AXIS_BLOCKED
+AXIS_READY_FOR_PRODUCTION
+AXIS_PRODUCTION_ACTIVE
+AXIS_E2E_PROVEN
+AXIS_DONE
+```
+
+`AXIS_DONE` requires the work contract's complete terminal set, normally including merged source, required Production activation, reference-product end-to-end proof, user-visible result, rollback readiness, and zero primary blockers.
+
+Do not infer `AXIS_DONE` from issue count, PR count, source-complete status, or CI green.
+
+New implementation findings are classified `PRIMARY_BLOCKER`, `PRIMARY_NONBLOCKING_FOLLOWUP`, or `UNRELATED_BACKLOG`. Only `PRIMARY_BLOCKER` changes the active implementation queue. Validators may operate in parallel without creating a second primary implementation axis.
+

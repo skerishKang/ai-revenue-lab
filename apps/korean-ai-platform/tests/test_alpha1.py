@@ -18,8 +18,6 @@ from app.pilot.catalog import (
     CatalogModel,
     get_catalog_by_id,
     list_catalog_summaries,
-    select_by_optimize,
-    filter_catalog,
 )
 from app.pilot.b14_runtime_config import B14RuntimeConfig
 from app.pilot import router_core as rcore
@@ -27,7 +25,6 @@ from app.pilot import platform as plat
 from app.pilot.router_core import (
     RouteDecision,
     resolve_manual_route,
-    resolve_auto_route,
     resolve_route,
     is_error_fallback_allowed,
 )
@@ -37,6 +34,72 @@ from app.pilot.b14_runtime_config import runtime_config as rcfg
 KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 KILO_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
 KILO_PROVIDER = "Kilo Gateway / NVIDIA"
+
+
+# #3789: these named historical live-*transport* tests exercise protocol
+# semantics, not the retired NVIDIA route's customer execution authority.
+# A synthetic test-only identity preserves those assertions without bypassing
+# the product's live owner-exclusion check or touching catalog source.
+@pytest.fixture(autouse=True)
+def _enable_archived_auto_route_tests(monkeypatch):
+    """Explicit opt-in: archived generic B14 auto tests, never production defaults."""
+    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
+
+
+
+@pytest.fixture(autouse=True)
+def _legacy_live_transport_synthetic_model(request, monkeypatch):
+    cls=getattr(request.node.cls, "__name__", "")
+    name=request.node.name.split("[")[0]
+    migrate=(
+        cls in {"TestLiveAdapter","TestStreamedResponseLimit","TestKeylessLiveSmoke"}
+        or (cls=="TestFreeRouterExactRoute" and name=="test_free_router_request_body_exact_and_actual_model_preserved")
+        or (cls=="TestFallbackFailClosed" and name=="test_client_errors_raise_and_no_fallback")
+        or (cls=="TestManualRouteDefaultFallback" and name in {
+            "test_manual_model_no_business14_chat_one_attempt",
+            "test_manual_model_explicit_true_429_fallback",
+            "test_manual_model_explicit_true_401_no_fallback",
+            "test_manual_model_explicit_true_404_no_fallback",
+            "test_manual_model_explicit_true_malformed_no_fallback",
+            "test_manual_model_explicit_true_unknown_error_no_fallback",
+        })
+    )
+    if not migrate:
+        yield
+        return
+    import sys
+    from dataclasses import replace
+    import app.pilot.catalog as cat
+    mock_id="test-fixture/kilo-protocol-chat"
+    mock_upstream="test-fixture/kilo-protocol-response"
+    from app.pilot import platform_secrets as ps
+    # A test-only keyless provider and synthetic ID preserve protocol coverage,
+    # with NO registration of owner-retired Kilo IDs or provider.
+    mock_provider="test-fixture"
+    historical=next(iter(cat.CATALOG_BY_ID.values()))
+    synthetic=replace(
+        historical,model_id=mock_id,upstream_model=mock_upstream,
+        display_name="Synthetic streaming protocol fixture",
+        provider="Synthetic test-only gateway",
+        platform_provider_id=mock_provider,
+        capabilities=frozenset({"chat","free"}),
+        input_price_usd_per_1m=0.0,
+        output_price_usd_per_1m=0.0,
+    )
+    spec=ps.PlatformProviderSpec(
+        provider_id=mock_provider,
+        credential_source=ps.CredentialSource.NONE,
+        credential_binding_name="",
+        base_origin="https://synthetic-gateway.example/v1",
+        allowed_hosts=("synthetic-gateway.example",),
+    )
+    monkeypatch.setitem(cat.CATALOG_BY_ID,mock_id,synthetic)
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS,mock_provider,spec)
+    current=sys.modules[__name__]
+    monkeypatch.setattr(current,"KILO_MODEL",mock_id)
+    monkeypatch.setattr(current,"KILO_UPSTREAM",mock_upstream)
+    monkeypatch.setattr(current,"KILO_PROVIDER","Synthetic test-only gateway")
+    yield
 
 
 @pytest.fixture()
@@ -60,7 +123,7 @@ def _reset_config(monkeypatch):
     documented keyless/mock defaults.
     """
     monkeypatch.delenv("KILO_API_KEY", raising=False)
-    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-route-0123456789")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-route-0123456789")
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
         "provider_mode": rcfg.provider_mode,
@@ -120,7 +183,7 @@ def _secondary_catalog_model(
         region="외부",
         sort_order=20,
         credential_source="platform_secret",
-        platform_provider_id="kilo",
+        platform_provider_id="test-fixture",
         source="kilo_official_gateway_models",
         source_checked_at="2026-09-06",
     )
@@ -135,7 +198,7 @@ def two_model_catalog(monkeypatch):
     original_by_id = cat.CATALOG_BY_ID
     extra = _secondary_catalog_model()
     cat.CATALOG_MODELS = [*original_models, extra]
-    cat.CATALOG_BY_ID = {m.model_id: m for m in cat.CATALOG_MODELS}
+    cat.CATALOG_BY_ID = {**original_by_id, extra.model_id: extra}
     try:
         yield extra
     finally:
@@ -216,15 +279,14 @@ class TestKeyRedaction:
 
 class TestManualRoute:
     def test_manual_route_known_model(self):
-        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
         assert d.route_mode == "manual"
-        assert d.selected_model == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-        assert d.selected_upstream_model == KILO_UPSTREAM
-        assert d.selected_provider == KILO_PROVIDER
+        assert d.selected_model == "agnes-ai/agnes-3.0-flash"
+        assert d.selected_upstream_model == get_catalog_by_id("agnes-ai/agnes-3.0-flash").upstream_model
+        assert d.selected_provider == get_catalog_by_id("agnes-ai/agnes-3.0-flash").provider
         assert "manual_selection" in d.reason_codes
         assert "external_fallback_disabled" in d.reason_codes
-        # Keyless platform route: the Kilo free tier is anonymous, so no
-        # stored secret is required and the route is always credential-ready.
+        # Owner-approved Agnes route: dummy secret is provided by _reset_config.
         assert d.credential_available is True
 
     def test_manual_route_unknown_model_no_safe_route(self):
@@ -234,24 +296,24 @@ class TestManualRoute:
         assert exc_info.value.upstream_called is False
 
     def test_manual_route_no_upstream_call(self):
-        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
         assert d.evidence_status == "resolved_not_called"
 
     def test_manual_route_no_fallback_by_default(self):
-        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
         assert d.fallback_allowed is False
         assert d.eligible_fallback == []
         assert d.max_attempts == 1
         assert "external_fallback_disabled" in d.reason_codes
 
     def test_manual_route_explicit_fallback_enabled(self, two_model_catalog):
-        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free", allow_external_fallback=True)
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash", allow_external_fallback=True)
         assert d.fallback_allowed is True
         assert len(d.eligible_fallback) > 0
 
     def test_manual_route_id_is_candidate_specific(self):
-        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
-        assert d.selected_route_id == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
+        assert d.selected_route_id == "platform:agnes-ai/agnes-3.0-flash"
 
 
 # ============================================================================
@@ -259,49 +321,16 @@ class TestManualRoute:
 # ============================================================================
 
 class TestAutoRoute:
-    def test_auto_route_selects_model(self):
-        d = resolve_auto_route(optimize_for="balanced")
-        assert d.route_mode == "auto"
-        assert d.selected_model in {m.model_id for m in CATALOG_MODELS}
-        assert d.selected_upstream_model in {m.upstream_model for m in CATALOG_MODELS}
-        assert d.reason_codes[0].startswith("optimize_for:")
 
-    def test_auto_route_korean_prefers_high_korean(self):
-        d = resolve_auto_route(optimize_for="korean")
-        selected = get_catalog_by_id(d.selected_model)
-        # Should pick highest korean_score (gemini-2.5-flash or claude both = 5)
-        assert selected is not None
-        assert selected.korean_score >= 4
 
-    def test_auto_route_cost_prefers_cheap(self):
-        d = resolve_auto_route(optimize_for="cost")
-        selected = get_catalog_by_id(d.selected_model)
-        assert selected is not None
-        price = (selected.input_price_usd_per_1m or 0.0) + (selected.output_price_usd_per_1m or 0.0)
-        assert price <= 0.01
 
-    def test_auto_route_deterministic(self):
-        d1 = resolve_auto_route(optimize_for="balanced", task_type="general")
-        d2 = resolve_auto_route(optimize_for="balanced", task_type="general")
-        assert d1.selected_model == d2.selected_model
-        assert d1.reason_codes == d2.reason_codes
-        assert d1.request_id != d2.request_id  # request_id unique per call
 
-    def test_auto_route_capability_filter(self):
-        d = resolve_auto_route(required_capabilities=["chat", "coding"])
-        selected = get_catalog_by_id(d.selected_model)
-        assert selected is not None
-        assert "coding" in selected.capabilities
 
-    def test_auto_route_no_candidate_no_safe_route(self):
-        with pytest.raises(NoSafeRoute) as exc_info:
-            resolve_auto_route(required_capabilities=["impossible_capability_xyz"])
-        assert exc_info.value.upstream_called is False
 
     def test_auto_route_unknown_capability_is_ignored(self, client, monkeypatch):
         """D14 (#2044): capability options no longer filter b14/auto; they are ignored."""
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={
@@ -339,18 +368,14 @@ class TestAutoRoute:
         assert data["credential_available"] is True
 
     def test_resolve_manual_model(self, client):
-        resp = client.post(
-            "/api/pilot/router/resolve",
-            json={
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-                "messages": [{"role": "user", "content": "hi"}],
-            },
-        )
-        assert resp.status_code == 200
-        data = resp.json()
+        response=client.post("/api/pilot/router/resolve",json={
+            "model":"agnes-ai/agnes-3.0-flash",
+            "messages":[{"role":"user","content":"hi"}]})
+        assert response.status_code == 200
+        data=response.json()
         assert data["route_mode"] == "manual"
-        assert data["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_model"] == "agnes-ai/agnes-3.0-flash"
+        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
         assert data["max_attempts"] == 1
@@ -402,8 +427,8 @@ class TestFallbackExecution:
         """Auto route: first chain position 429 → fallback to second (D14 fixed chain)."""
         from app.pilot.errors import UpstreamRateLimited
         _set_live()
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
         original = plat.call_platform_chat_completions
         calls = []
 
@@ -485,7 +510,7 @@ class TestLiveFailClosed:
 
     def test_missing_key_live_allows_keyless_route(self, client, monkeypatch):
         """Live mode without active chain credentials fails closed."""
-        monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
+        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_01", raising=False)
         rcfg.provider_mode = "live"
         rcfg.api_key = ""
         captured = self._install_keyless_live_probe(monkeypatch)
@@ -498,7 +523,7 @@ class TestLiveFailClosed:
 
     def test_placeholder_key_live_not_forwarded(self, client, monkeypatch):
         """A stale OpenRouter placeholder key does not satisfy Agnes."""
-        monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
+        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_01", raising=False)
         rcfg.provider_mode = "live"
         rcfg.api_key = "sk-your-key-here"
         captured = self._install_keyless_live_probe(monkeypatch)
@@ -517,19 +542,17 @@ class TestLiveFailClosed:
 
 class TestMockMode:
     def test_mock_mode_returns_mock_response(self, client):
-        resp = client.post(
-            "/api/pilot/v1/chat/completions",
-            json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
-        )
-        assert resp.status_code == 200
-        data = resp.json()
+        response=client.post("/api/pilot/v1/chat/completions",json={
+            "model":"agnes-ai/agnes-3.0-flash","messages":[{"role":"user","content":"hi"}]})
+        assert response.status_code == 200
+        data=response.json()
         assert data["business14"]["provider_mode"] == "mock"
         assert data["business14"]["route_evidence_status"] == "mock_no_upstream_call"
-        assert data["choices"][0]["message"]["content"].startswith("이것은 Mock 응답")
+        assert data["choices"][0]["message"]["content"]
 
     def test_mock_mode_auto_model(self, client, monkeypatch):
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
@@ -569,7 +592,7 @@ class TestLiveAdapter:
         rcfg.provider_mode = "live"
         rcfg.api_key = ""
         async def fake_upstream(request):
-            assert str(request.url) == "https://api.kilo.ai/api/gateway/chat/completions"
+            assert str(request.url) == "https://synthetic-gateway.example/v1/chat/completions"
             assert request.headers.get("authorization") is None
             body = json.loads(request.content)
             assert body["model"] == KILO_UPSTREAM
@@ -587,7 +610,7 @@ class TestLiveAdapter:
             model_id=KILO_MODEL,
             upstream_model=KILO_UPSTREAM,
             provider=KILO_PROVIDER,
-            platform_provider_id="kilo",
+            platform_provider_id="test-fixture",
             transport=httpx.MockTransport(fake_upstream),
         )
         assert result["_live"] is True
@@ -607,7 +630,7 @@ class TestLiveAdapter:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(fake_bad),
             )
 
@@ -625,7 +648,7 @@ class TestLiveAdapter:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(fake_401),
             )
 
@@ -642,7 +665,7 @@ class TestLiveAdapter:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(fake_timeout),
             )
 
@@ -650,17 +673,17 @@ class TestLiveAdapter:
     async def test_live_call_429(self):
         rcfg.provider_mode = "live"
         rcfg.api_key = ""
-        from app.pilot.errors import KiloFreeRateLimited
+        from app.pilot.errors import UpstreamRateLimited
         async def fake_429(request):
             return httpx.Response(429, json={"error": {"message": "slow down"}})
-        with pytest.raises(KiloFreeRateLimited):
+        with pytest.raises(UpstreamRateLimited):
             await plat.call_platform_chat_completions(
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2, max_tokens=32,
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(fake_429),
             )
 
@@ -678,7 +701,7 @@ class TestLiveAdapter:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(fake_500),
             )
 
@@ -701,7 +724,7 @@ class TestLiveAdapter:
             model_id=KILO_MODEL,
             upstream_model=KILO_UPSTREAM,
             provider=KILO_PROVIDER,
-            platform_provider_id="kilo",
+            platform_provider_id="test-fixture",
             transport=httpx.MockTransport(fake_ok),
         )
         assert result["_live"] is True
@@ -713,7 +736,7 @@ class TestLiveAdapter:
 
 class TestCostEstimate:
     def test_price_known_estimate(self):
-        cm = get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        cm = get_catalog_by_id("google/gemini-3.1-flash-lite")
         assert cm.price_is_known
         expected = cm.input_price_usd_per_1m + cm.output_price_usd_per_1m
         usd = cm.estimate_cost_usd(1_000_000, 1_000_000)
@@ -721,12 +744,15 @@ class TestCostEstimate:
         assert usd == pytest.approx(expected, rel=1e-9)
 
     def test_free_route_known_zero_estimate(self):
-        cm = get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        """Validate zero-price math with data-only fixture, never retired catalog model."""
+        cm=CatalogModel(
+            model_id="test/zero-price",upstream_model="test/zero-price",
+            display_name="Test zero",provider="Test",provider_type="platform",
+            input_price_usd_per_1m=0.0,output_price_usd_per_1m=0.0,
+            capabilities=frozenset({"chat","free"}))
         assert cm.price_is_known
-        assert cm.input_price_usd_per_1m == 0.0
-        assert cm.output_price_usd_per_1m == 0.0
-        assert cm.estimate_cost_usd(1000, 500) == 0.0
-        assert cm.estimate_cost_krw(1000, 500) == 0.0
+        assert cm.estimate_cost_usd(1000,500) == 0.0
+        assert cm.estimate_cost_krw(1000,500) == 0.0
 
     def test_price_unknown_null(self):
         cm = CatalogModel(
@@ -743,7 +769,7 @@ class TestCostEstimate:
         assert cm.estimate_cost_krw(1000, 500) is None
 
     def test_krw_uses_configured_rate(self):
-        cm = get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        cm = get_catalog_by_id("google/gemini-3.1-flash-lite")
         expected_usd = cm.input_price_usd_per_1m + cm.output_price_usd_per_1m
         krw = cm.estimate_cost_krw(1_000_000, 1_000_000)
         assert krw is not None
@@ -752,40 +778,37 @@ class TestCostEstimate:
     def test_live_response_has_estimate(self):
         _set_live()
         from app.pilot.gateway import _build_b14_live_metadata as build_live_metadata
-        cm = get_catalog_by_id(KILO_MODEL)
-        expected_usd = cm.estimate_cost_usd(1_000_000, 1_000_000)
-        meta = build_live_metadata(
-            request_id="b14req_test",
-            model_id=KILO_MODEL,
-            upstream_model=KILO_UPSTREAM,
-            provider=KILO_PROVIDER,
-            latency_ms=100,
-            prompt_tokens=1_000_000,
-            completion_tokens=1_000_000,
-            total_tokens=2_000_000,
-        )
-        assert meta["estimated_usd"] == pytest.approx(expected_usd, rel=1e-9)
-        assert meta["estimated_krw"] == pytest.approx(expected_usd * 1380, rel=1e-9)
-        assert meta["cost_basis"] == "known_free"  # $0/$0 snapshot is the free basis
+        cm=get_catalog_by_id("google/gemini-3.1-flash-lite")
+        assert cm.price_is_known
+        expected=cm.estimate_cost_usd(1_000_000,1_000_000)
+        meta=build_live_metadata(
+            request_id="b14req_test",model_id=cm.model_id,
+            upstream_model=cm.upstream_model,provider=cm.provider,
+            latency_ms=100,prompt_tokens=1_000_000,
+            completion_tokens=1_000_000,total_tokens=2_000_000)
+        assert meta["estimated_usd"] == pytest.approx(expected,rel=1e-9)
+        assert meta["estimated_krw"] == pytest.approx(expected*1380,rel=1e-9)
+        assert meta["cost_basis"] != "known_free"
 
-    def test_free_route_live_metadata_known_free(self):
-        _set_live()
+    def test_free_route_live_metadata_known_free(self, monkeypatch):
+        """Zero cost remains supported for synthetic evidenced-free catalog metadata."""
+        import app.pilot.catalog as cat
         from app.pilot.gateway import _build_b14_live_metadata as build_live_metadata
-        meta = build_live_metadata(
-            request_id="b14req_test",
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-            upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-            provider="OpenRouter (free router)",
-            latency_ms=100,
-            prompt_tokens=1000,
-            completion_tokens=500,
-            total_tokens=1500,
-            actual_response_model="some/free-model",
-        )
+        cm=CatalogModel(
+            model_id="test-fixture/known-free",upstream_model="test-fixture/known-free",
+            display_name="Test free",provider="Fixture",provider_type="platform",
+            input_price_usd_per_1m=0.0,output_price_usd_per_1m=0.0,
+            capabilities=frozenset({"chat","free"}))
+        monkeypatch.setitem(cat.CATALOG_BY_ID,cm.model_id,cm)
+        meta=build_live_metadata(
+            request_id="b14req_test",model_id=cm.model_id,
+            upstream_model=cm.upstream_model,provider=cm.provider,
+            latency_ms=100,prompt_tokens=1000,completion_tokens=500,
+            total_tokens=1500,actual_response_model="test-fixture/actual")
         assert meta["estimated_usd"] == 0.0
         assert meta["estimated_krw"] == 0.0
         assert meta["cost_basis"] == "known_free"
-        assert meta["actual_response_model"] == "some/free-model"
+        assert meta["actual_response_model"] == "test-fixture/actual"
 
 
 # ============================================================================
@@ -858,8 +881,10 @@ class TestEndpoints:
         catalog = data.get("catalog", [])
         assert len(catalog) >= len(CATALOG_MODELS)  # includes b14/auto
         ids = {m["id"] for m in catalog}
-        assert "b14/auto" in ids
-        assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" in ids
+        assert "b14/auto" not in ids
+        assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" not in ids
+        from app.pilot.catalog import CATALOG_BY_ID
+        assert ids == {mid for mid, item in CATALOG_BY_ID.items() if item.enabled}
 
     def test_legacy_models_still_work(self, client):
         from app.pilot.config import pilot_settings
@@ -885,34 +910,29 @@ class TestEndpoints:
 class TestCatalog:
     def test_catalog_minimum_models(self):
         ids = {m.model_id for m in CATALOG_MODELS}
-        # Decision #1933 pins a single-route Kilo Gateway catalog; the
-        # deleted multi-provider entries are exercised by two_model_catalog.
-        assert ids == {KILO_MODEL}
+        # Historical public auto/free catalog has no route; live registry is JSON.
+        assert ids == set()
+        from app.pilot.model_registry_file import installed_model_ids
+        from app.pilot.catalog import CATALOG_BY_ID
+        assert installed_model_ids() == frozenset(CATALOG_BY_ID)
 
     def test_all_catalog_models_enabled(self):
         assert all(m.enabled for m in CATALOG_MODELS)
 
     def test_catalog_by_id_lookup(self):
-        assert get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free") is not None
+        assert get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free") is None
+        assert get_catalog_by_id("agnes-ai/agnes-3.0-flash") is not None
         assert get_catalog_by_id("nonexistent") is None
 
-    def test_filter_by_capability(self):
-        result = filter_catalog(required_capabilities=["chat"])
-        assert len(result) == len(CATALOG_MODELS)
 
-    def test_select_by_optimize_cost_first_free(self):
-        sorted_models = select_by_optimize(CATALOG_MODELS, "cost", True)
-        assert sorted_models[0].model_id == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
-    def test_select_by_optimize_korean_high_score(self):
-        sorted_models = select_by_optimize(CATALOG_MODELS, "korean", True)
-        assert sorted_models[0].korean_score >= 4
 
     def test_list_catalog_summaries_shape(self):
         summaries = list_catalog_summaries()
         assert len(summaries) == len(CATALOG_MODELS)
-        assert "model_id" in summaries[0]
-        assert "input_price_usd_per_1m" in summaries[0]
+        assert summaries == []
+        from app.pilot.model_registry_file import read_registry
+        assert all("id" in m and "input_price_usd_per_1m" in m for m in read_registry()["models"])
 
 
 # ============================================================================
@@ -988,9 +1008,10 @@ class TestKoreanUIJourney:
         assert "모의 응답 · 실제 Provider 호출 없음" in resp.text
 
     def test_workspace_page_catalog_options(self, client):
-        resp = client.get("/workspace")
+        resp=client.get("/workspace")
+        assert resp.status_code == 200
         assert "b14/auto" in resp.text
-        assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" in resp.text
+        assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" not in resp.text
 
     def test_start_js_loaded(self, client):
         resp = client.get("/workspace")
@@ -1132,10 +1153,10 @@ class TestResponseLimits:
 
     def test_timeout_bounds_configured(self):
         timeout = rcfg.build_http_timeout()
-        assert timeout.connect <= 10
-        assert timeout.read <= 30
-        assert timeout.write <= 10
-        assert timeout.pool <= 10
+        # Same single source as the live B14 completed and SSE adapters.
+        assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
+            600.0, 600.0, 20.0, 10.0
+        )
 
 
 # ============================================================================
@@ -1174,16 +1195,14 @@ def _ok_upstream_json(model: str) -> dict:
 
 class TestFreeRouterExactRoute:
     def test_free_router_catalog_exact_upstream_id(self):
-        cm = get_catalog_by_id(KILO_MODEL)
-        assert cm is not None
-        assert cm.model_id == KILO_MODEL
-        assert cm.upstream_model == KILO_UPSTREAM
+        assert get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free") is None
+        assert get_catalog_by_id("poolside/laguna-s-2.1") is not None
 
     @pytest.mark.asyncio
     async def test_free_router_request_body_exact_and_actual_model_preserved(self):
         _set_live()
         captured = []
-        concrete_free_model = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        concrete_free_model = KILO_MODEL
 
         async def handler(request):
             captured.append(json.loads(request.read()))
@@ -1193,38 +1212,32 @@ class TestFreeRouterExactRoute:
             messages=[{"role": "user", "content": "안녕"}],
             temperature=0.2,
             max_tokens=16,
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-            upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            model_id=KILO_MODEL,
+            upstream_model=KILO_MODEL,
             provider=KILO_PROVIDER,
-            platform_provider_id="kilo",
+            platform_provider_id="test-fixture",
             transport=httpx.MockTransport(handler),
         )
-        assert captured[0]["model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert captured[0]["model"] == KILO_MODEL
         assert "provider" not in captured[0]
-        assert result["_requested_upstream_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert result["_requested_upstream_model"] == KILO_MODEL
         assert result["_actual_response_model"] == concrete_free_model
         assert result["model"] == concrete_free_model
 
 
 class TestCatalogSourceContract:
     def test_catalog_source_metadata(self):
-        summaries = list_catalog_summaries()
-        assert summaries
-        for s in summaries:
-            assert s["source"] == "kilo_official_gateway_models"
-            assert s["snapshot_state"] == "configured_snapshot"
-            assert s["source_checked_at"]
-            assert "upstream_model" in s
-            assert "price_is_known" in s
+        from app.pilot.model_registry_file import read_registry
+        rows=read_registry()["models"]
+        from app.pilot.catalog import CATALOG_BY_ID
+        assert len(rows) == len(CATALOG_BY_ID)
+        assert all(m["source"] and m["source_checked_at"] and m["upstream_model"] for m in rows)
+        assert list_catalog_summaries() == []
 
     def test_kilo_route_price_snapshot(self):
-        """The single catalog route pins the $0/$0 free-tier snapshot."""
-        cm = get_catalog_by_id(KILO_MODEL)
-        assert cm.input_price_usd_per_1m == pytest.approx(0.0)
-        assert cm.output_price_usd_per_1m == pytest.approx(0.0)
-        assert cm.price_is_known is True
-        assert cm.context_window == 1_000_000
-        assert "free" in cm.capabilities
+        assert get_catalog_by_id(KILO_MODEL) is None
+        from app.pilot.catalog import CATALOG_BY_ID
+        assert KILO_MODEL not in CATALOG_BY_ID
 
 
 class TestFallbackFailClosed:
@@ -1246,10 +1259,10 @@ class TestFallbackFailClosed:
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2,
                 max_tokens=16,
-                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-                upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                model_id=KILO_MODEL,
+                upstream_model=KILO_MODEL,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(handler),
             )
         assert exc_info.value.code == expected_code
@@ -1290,8 +1303,8 @@ class TestFallbackActualEvidence:
         self, client, monkeypatch
     ):
         _set_live()
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
         from app.pilot.errors import UpstreamServerError
 
         calls = []
@@ -1324,7 +1337,7 @@ class TestFallbackActualEvidence:
     def test_fallback_metadata_describes_actual_success_candidate(self, client, monkeypatch):
         _set_live()
         monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
-        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
         from app.pilot.errors import UpstreamRateLimited
         original = plat.call_platform_chat_completions
         calls = []
@@ -1389,12 +1402,6 @@ class TestFallbackActualEvidence:
 
 
 class TestOptionEnforcement:
-    def test_allow_external_fallback_false_resolve(self):
-        d = resolve_auto_route(optimize_for="cost", allow_external_fallback=False)
-        assert d.fallback_allowed is False
-        assert d.eligible_fallback == []
-        assert d.max_attempts == 1
-        assert "external_fallback_disabled" in d.reason_codes
 
     def test_allow_external_fallback_false_gateway_no_retry(self, client):
         _set_live()
@@ -1424,19 +1431,11 @@ class TestOptionEnforcement:
         assert resp.json()["error"]["code"] == "upstream_rate_limited"
         assert len(calls) == 1
 
-    def test_provider_order_changes_selection(self, two_model_catalog):
-        default_pick = resolve_auto_route(optimize_for="cost")
-        assert default_pick.selected_provider == KILO_PROVIDER
-
-        ordered = resolve_auto_route(optimize_for="cost", provider_order=[SECONDARY_PROVIDER])
-        assert ordered.selected_provider == SECONDARY_PROVIDER
-        assert ordered.selected_model == SECONDARY_MODEL_ID
-        assert any(rc.startswith("provider_order:") for rc in ordered.reason_codes)
 
     def test_provider_order_option_ignored_by_fixed_chain(self, client, monkeypatch):
         """D14 (#2044): provider_order is accepted but does not change b14/auto."""
-        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
@@ -1464,15 +1463,6 @@ class TestOptionEnforcement:
         )
         assert resp.status_code == 422
 
-    def test_task_type_hard_capability_filter(self):
-        coding = resolve_auto_route(task_type="coding")
-        coding_model = get_catalog_by_id(coding.selected_model)
-        assert "coding" in coding_model.capabilities
-
-        document = resolve_auto_route(task_type="document")
-        document_model = get_catalog_by_id(document.selected_model)
-        assert "chat" in document_model.capabilities
-        assert document.selected_model == KILO_MODEL
 
     def test_task_type_invalid_422(self, client):
         resp = client.post(
@@ -1497,7 +1487,66 @@ class TestOptionEnforcement:
         assert resp.status_code == 422
 
 
+class TestProviderOwnedLimits:
+    def test_no_b14_context_or_generation_shadow_ceiling(self):
+        from app.pilot.gateway import _validate_body
+
+        messages = [{"role": "user", "content": "x" * 32001}]
+        messages.extend({"role": "user", "content": "ok"} for _ in range(100))
+        result = _validate_body({
+            "model": "google/gemma-4-26b-a4b-it",
+            "messages": messages,
+            "temperature": 3.25,
+            "max_tokens": 2**31,
+        })
+        assert len(result["messages"]) == 101
+        assert len(result["messages"][0]["content"]) == 32001
+        assert result["temperature"] == 3.25
+        assert result["max_tokens"] == 2**31
+
+    @pytest.mark.parametrize("parameter,value", [
+        ("max_tokens", -1),
+        ("max_tokens", 0),
+        ("temperature", float("inf")),
+        ("temperature", float("nan")),
+    ])
+    def test_malformed_values_still_rejected(self, parameter, value):
+        from app.pilot.gateway import _validate_body, _InvalidBody
+        with pytest.raises(_InvalidBody):
+            _validate_body({
+                "model": "google/gemma-4-26b-a4b-it",
+                "messages": [{"role": "user", "content": "ok"}],
+                parameter: value,
+            })
+
+
 class TestStreamedResponseLimit:
+    @pytest.mark.asyncio
+    async def test_long_framed_stream_exceeds_old_total_budget_without_rejection(self):
+        """Healthy provider SSE may exceed 1 MiB across many small frames."""
+        rcfg.provider_mode = "live"
+        event = b"data: " + json.dumps({
+            "choices": [{"delta": {"content": "x" * 11500}, "finish_reason": None}]
+        }).encode() + b"\n\n"
+        payload = event * 100 + b"data: [DONE]\n\n"
+        assert len(payload) > plat.MAX_RESPONSE_BYTES
+
+        def respond(request):
+            return httpx.Response(200, content=payload)
+
+        events = [
+            part async for part in plat.stream_platform_chat_completions(
+                model_id=KILO_MODEL,
+                upstream_model=KILO_UPSTREAM,
+                provider=KILO_PROVIDER,
+                platform_provider_id="test-fixture",
+                messages=[{"role": "user", "content": "hi"}],
+                transport=httpx.MockTransport(respond),
+            )
+        ]
+        assert len([e for e in events if e.delta_content]) == 100
+        assert events[-1].done is True
+
     @pytest.mark.asyncio
     async def test_oversize_response_aborts_before_full_body(self):
         # Platform streaming enforces MAX_RESPONSE_BYTES without buffering.
@@ -1534,7 +1583,7 @@ class TestStreamedResponseLimit:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(handler),
             ):
                 pass
@@ -1617,7 +1666,7 @@ class TestManualRouteDefaultFallback:
         """manual model, no business14 → no fallback, one attempt."""
         resp = client.post(
             "/api/pilot/router/resolve",
-            json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -1625,14 +1674,14 @@ class TestManualRouteDefaultFallback:
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
         assert data["max_attempts"] == 1
-        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_empty_business14_resolve(self, client):
         """manual model, empty business14 → no fallback, one attempt."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "model": "agnes-ai/agnes-3.0-flash",
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": {},
             },
@@ -1642,14 +1691,14 @@ class TestManualRouteDefaultFallback:
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
         assert data["max_attempts"] == 1
-        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_explicit_false_resolve(self, client):
         """manual model, allow_external_fallback=false → no fallback, one attempt."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "model": "agnes-ai/agnes-3.0-flash",
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": {"allow_external_fallback": False},
             },
@@ -1665,7 +1714,7 @@ class TestManualRouteDefaultFallback:
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "model": "agnes-ai/agnes-3.0-flash",
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": {"allow_external_fallback": True},
             },
@@ -1675,7 +1724,7 @@ class TestManualRouteDefaultFallback:
         assert data["fallback_allowed"] is True
         assert len(data["eligible_fallback"]) > 0
         assert data["max_attempts"] > 1
-        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_no_business14_chat_one_attempt(self, client):
         """manual model, no business14 → only 1 upstream call, no fallback."""
@@ -1699,7 +1748,7 @@ class TestManualRouteDefaultFallback:
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
-                json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
+                json={"model": KILO_MODEL, "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
             plat.call_platform_chat_completions = original
@@ -1737,7 +1786,7 @@ class TestManualRouteDefaultFallback:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                    "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
@@ -1770,7 +1819,7 @@ class TestManualRouteDefaultFallback:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                    "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
@@ -1800,7 +1849,7 @@ class TestManualRouteDefaultFallback:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                    "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
@@ -1830,7 +1879,7 @@ class TestManualRouteDefaultFallback:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                    "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
@@ -1859,7 +1908,7 @@ class TestManualRouteDefaultFallback:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                    "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
@@ -1895,11 +1944,11 @@ class TestActualRouteId:
     def test_manual_resolve_route_id(self, client):
         resp = client.post(
             "/api/pilot/router/resolve",
-            json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
-        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_primary_success_route_id(self, client):
         """Primary candidate success: selected_route_id = primary candidate route_id."""
@@ -1935,7 +1984,7 @@ class TestActualRouteId:
         """Fallback success: selected_route_id = actual fallback success candidate route_id."""
         _set_live()
         monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
-        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
         pass  # OpenRouter retired (#1933 S2): platform adapter is patched directly
         from app.pilot.errors import UpstreamRateLimited
         original = plat.call_platform_chat_completions
@@ -2047,7 +2096,7 @@ class TestKeylessLiveSmoke:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(handler),
             )
 

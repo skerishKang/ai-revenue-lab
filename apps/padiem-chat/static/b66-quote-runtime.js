@@ -15,8 +15,35 @@
       idle: "내용을 입력하면 배정된 견적서 양식으로 바로 만듭니다.",
       working: "견적 내용을 정리하고 있습니다.",
       missing: "거래처와 품목·수량·단가를 조금 더 알려 주세요.",
+      companyIdentityMissing: "견적서에 넣을 회사명을 확인해 주세요.",
+      companyDefaultsMissing: "회사 기본 유효기간을 확인해 주세요.",
       ready: "견적서가 준비되었습니다. 아래에서 확인하거나 PDF로 저장하세요.",
-      failed: "견적서를 만들지 못했습니다. 입력 내용을 확인해 주세요."
+      failed: "견적서를 만들지 못했습니다. 입력 내용을 확인해 주세요.",
+      pcToggle: "내 컴퓨터 · 연결 상태",
+      pcHelp: "Padiem Connect 설치와 같은 계정 로그인 기능은 준비 중입니다. 파일 작업은 별도 승인이 필요합니다.",
+      pcRefresh: "상태 새로고침",
+      pcLoading: "서버에서 연결 상태를 확인하고 있습니다.",
+      pcAuth: "Padiem 계정에 로그인한 뒤 확인해 주세요.",
+      pcUnavailable: "PC 연결 서비스가 아직 준비되지 않았습니다. 연결이 완료됐다고 표시하지 않습니다.",
+      pcFailed: "PC 연결 상태를 확인하지 못했습니다.",
+      pcEmpty: "현재 계정에 등록된 컴퓨터가 없습니다.",
+      pcReady: "확인된 컴퓨터 목록입니다. 이 화면에서는 파일에 접근하거나 작업을 실행하지 않습니다.",
+      pcOnline: "온라인 · 작업 승인 필요",
+      pcOffline: "오프라인",
+      pcRevoked: "연결 해제",
+      pcTxtTitle: "PC 파일 읽기 (TXT)",
+      pcConversation: "결과를 반환할 B66 대화",
+      pcConversationPlaceholder: "대화를 선택하세요",
+      pcConversationEmpty: "사용 가능한 B66 대화가 없습니다.",
+      pcConversationGone: "선택한 대화를 찾을 수 없습니다. 목록을 새로고침해 주세요.",
+      pcPath: "TXT 파일 상대 경로",
+      pcPathPlaceholder: "예: memo.txt",
+      pcRequest: "TXT 읽기 요청",
+      pcInvalid: "TXT 파일 상대 경로(.txt)를 입력하고 대화를 선택해 주세요.",
+      pcRequestFailed: "PC 읽기 요청을 전달하지 못했습니다.",
+      pcRunPending: "PC에서 읽는 중입니다.",
+      pcRunDone: "읽기 완료. 결과가 요청한 B66 대화에 반환됐습니다.",
+      pcRunFailed: "PC 읽기에 실패했습니다. 입력과 연결 상태를 확인해 주세요."
     },
     en: {
       launcher: "My quote",
@@ -30,17 +57,59 @@
       idle: "Enter the changing values and your assigned template will be used.",
       working: "Preparing the quote values.",
       missing: "Please add the customer and item, quantity, and unit price.",
+      companyIdentityMissing: "Please confirm the company name to use on the quote.",
+      companyDefaultsMissing: "Please confirm your company's default quote validity period.",
       ready: "Your quote is ready. Review it below or save it as PDF.",
-      failed: "The quote could not be created. Check your request and try again."
+      failed: "The quote could not be created. Check your request and try again.",
+      pcToggle: "My computers · connection status",
+      pcHelp: "Padiem Connect installation and same-account sign-in are not ready yet. File operations require separate approval.",
+      pcRefresh: "Refresh status",
+      pcLoading: "Checking connection status with the server.",
+      pcAuth: "Sign in to your Padiem account first.",
+      pcUnavailable: "The PC connection service is not ready. No connection is claimed.",
+      pcFailed: "Could not verify PC connection status.",
+      pcEmpty: "No computers are registered for this account.",
+      pcReady: "Server-confirmed computers. This view cannot read files or execute tasks.",
+      pcOnline: "Online · approval required",
+      pcOffline: "Offline",
+      pcRevoked: "Disconnected",
+      pcTxtTitle: "Read a TXT file from the PC",
+      pcConversation: "B66 conversation for the result",
+      pcConversationPlaceholder: "Select a conversation",
+      pcConversationEmpty: "No B66 conversations available.",
+      pcConversationGone: "The selected conversation was not found. Refresh the list.",
+      pcPath: "TXT file relative path",
+      pcPathPlaceholder: "Example: memo.txt",
+      pcRequest: "Request TXT read",
+      pcInvalid: "Enter a TXT relative path (.txt) and select a conversation.",
+      pcRequestFailed: "Could not send the PC read request.",
+      pcRunPending: "Reading on the PC…",
+      pcRunDone: "Read complete. The result was returned to the requesting B66 conversation.",
+      pcRunFailed: "The PC read failed. Check the input and connection."
     }
   };
 
   let runtime = null;
   let skills = [];
+  let modelIds = [];
+  let selectedModelByTier = {};
+  let reasoningByModel = {};
   let initialized = false;
   let refreshPromise = null;
   let currentRequestId = null;
   let frameLoadedUrl = "";
+  let pcQuerySequence = 0;
+  let pcTxtSequence = 0;
+  let pcOnlineDeviceId = "";
+  const PC_DIRECTORY_PATH = "/api/b66/connect/devices";
+  const PC_DIALOGUES_PATH = "/api/b66/ai/dialogues?limit=20";
+  const PC_TXT_READ_PATH = "/api/b66/connect/txt-reads/request";
+  const PC_RESULT_PATH_PREFIX = "/api/b66/runs/";
+  const PC_RESULT_PATH_SUFFIX = "/pc-result";
+  const MAX_PC_DIRECTORY_BYTES = 32768;
+  const B66_ASSET_ID = /^b66asset_[0-9a-f]{32}$/;
+  const PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
+  const MAX_PRIVATE_ASSET_BYTES = 256 * 1024;
 
   function copy() {
     return COPY[document.documentElement.lang === "en" ? "en" : "ko"];
@@ -54,8 +123,17 @@
       const origin = new URL(data.origin);
       if (embed.protocol !== "https:" || origin.protocol !== "https:") return null;
       if (embed.origin !== origin.origin || data.origin !== origin.origin) return null;
+      // The embed must be a different origin. A same-origin iframe with
+      // allow-scripts + allow-same-origin can remove its own sandbox.
+      if (embed.origin === window.location.origin) return null;
       if (!embed.pathname.endsWith("/embed.html")) return null;
-      return Object.freeze({ embedUrl: embed.href, origin: origin.origin });
+      // The canonical product permission gate must set this explicitly.
+      // Existing B66 runtime-config does not issue it: default stays OFF.
+      return Object.freeze({
+        embedUrl: embed.href,
+        origin: origin.origin,
+        pcDirectoryEnabled: data.pc_device_list_enabled === true
+      });
     } catch (_) {
       return null;
     }
@@ -70,6 +148,36 @@
       typeof item.skill_name === "string" &&
       item.skill_name.trim()
     )).slice(0, 20);
+  }
+
+  function companyProfileForRender(profile) {
+    if (profile === null || profile === undefined) {
+      return { ok: true, code: "absent", profile: null };
+    }
+    if (typeof profile !== "object" || Array.isArray(profile)) {
+      return { ok: false, code: "invalid", profile: null };
+    }
+    if (typeof profile.company !== "string" || !profile.company.trim()) {
+      return { ok: false, code: "missing_company", profile: null };
+    }
+    if (!Number.isInteger(profile.defaultValidityDays) || profile.defaultValidityDays < 0 || profile.defaultValidityDays > 3650) {
+      return { ok: false, code: "missing_validity", profile: null };
+    }
+    return {
+      ok: true,
+      code: "ready",
+      profile: {
+        company: profile.company,
+        representative: profile.representative,
+        contactPerson: profile.contactPerson,
+        businessNumber: profile.businessNumber,
+        address: profile.address,
+        phone: profile.phone,
+        email: profile.email,
+        defaultValidityDays: profile.defaultValidityDays,
+        defaultTaxMode: profile.defaultTaxMode
+      }
+    };
   }
 
   function el(tag, className, text) {
@@ -120,6 +228,67 @@
     close.setAttribute("aria-label", copy().close);
     header.append(headingWrap, close);
 
+    // #4428: opt-in READ-ONLY cross-product PC presence. The server's existing
+    // owner/workspace-scoped Broker projection is the only source of ONLINE.
+    // No installer URL, pairing challenge, PC action or execution authority.
+    const pcSection = el("section", "b66-quote-connect");
+    pcSection.hidden = true; // No cross-product exposure until server grant exists.
+    const pcToggle = el("button", "b66-quote-connect-toggle", copy().pcToggle);
+    pcToggle.id = "b66QuotePcToggle";
+    pcToggle.type = "button";
+    pcToggle.setAttribute("aria-controls", "b66QuotePcPanel");
+    pcToggle.setAttribute("aria-expanded", "false");
+    const pcPanel = el("div", "b66-quote-connect-panel");
+    pcPanel.id = "b66QuotePcPanel";
+    pcPanel.hidden = true;
+    const pcHelp = el("p", "b66-quote-connect-help", copy().pcHelp);
+    pcHelp.id = "b66QuotePcHelp";
+    const pcRefresh = el("button", "b66-quote-connect-refresh", copy().pcRefresh);
+    pcRefresh.id = "b66QuotePcRefresh";
+    pcRefresh.type = "button";
+    const pcStatus = el("p", "b66-quote-connect-status", "");
+    pcStatus.id = "b66QuotePcStatus";
+    pcStatus.setAttribute("role", "status");
+    pcStatus.setAttribute("aria-live", "polite");
+    const pcList = el("ul", "b66-quote-connect-list");
+    pcList.id = "b66QuotePcList";
+    pcPanel.append(pcHelp, pcRefresh, pcStatus, pcList);
+    // #4434 follow-up: minimal TXT read request for the verified PC. The
+    // browser only names a server-listed conversation, a .txt relative path
+    // and a server-listed device; run id, root and approval stay server-side.
+    const pcTxt = el("div", "b66-quote-connect-txt");
+    pcTxt.id = "b66QuotePcTxt";
+    pcTxt.hidden = true;
+    const pcTxtTitle = el("p", "b66-quote-connect-txt-title", copy().pcTxtTitle);
+    pcTxtTitle.id = "b66QuotePcTxtTitle";
+    const pcConversationLabel = el("label", "b66-quote-connect-field");
+    const pcConversationText = el("span", "", copy().pcConversation);
+    pcConversationText.id = "b66QuotePcConversationLabel";
+    const pcConversation = document.createElement("select");
+    pcConversation.id = "b66QuotePcConversation";
+    pcConversation.disabled = true;
+    pcConversationLabel.append(pcConversationText, pcConversation);
+    const pcPathLabel = el("label", "b66-quote-connect-field");
+    const pcPathText = el("span", "", copy().pcPath);
+    pcPathText.id = "b66QuotePcPathLabel";
+    const pcPath = document.createElement("input");
+    pcPath.id = "b66QuotePcPath";
+    pcPath.type = "text";
+    pcPath.autocomplete = "off";
+    pcPath.maxLength = 256;
+    pcPath.placeholder = copy().pcPathPlaceholder;
+    pcPathLabel.append(pcPathText, pcPath);
+    const pcRequest = el("button", "b66-quote-connect-request", copy().pcRequest);
+    pcRequest.id = "b66QuotePcRequest";
+    pcRequest.type = "button";
+    const pcRunStatus = el("p", "b66-quote-connect-run-status", "");
+    pcRunStatus.id = "b66QuotePcRunStatus";
+    pcRunStatus.setAttribute("role", "status");
+    pcRunStatus.setAttribute("aria-live", "polite");
+    pcTxt.append(pcTxtTitle, pcConversationLabel, pcPathLabel, pcRequest, pcRunStatus);
+    pcPanel.append(pcTxt);
+    pcSection.append(pcToggle, pcPanel);
+
     const form = el("form", "b66-quote-form");
     form.id = "b66QuoteForm";
     const selectLabel = el("label", "b66-quote-field");
@@ -135,10 +304,28 @@
     const message = document.createElement("textarea");
     message.id = "b66QuoteRequest";
     message.rows = 4;
-    message.maxLength = 4000;
     message.autocomplete = "off";
     message.placeholder = copy().requestPlaceholder;
     messageLabel.append(messageText, message);
+
+    const modelLabel = el("label", "b66-quote-field");
+    const modelText = el("span", "", document.documentElement.lang === "en" ? "AI tier" : "AI 등급");
+    modelText.dataset.b66QuoteModelLabel = "true";
+    const modelSelect = document.createElement("select");
+    modelSelect.id = "b66QuoteModelSelect";
+    modelSelect.required = true;
+    modelLabel.append(modelText, modelSelect);
+
+    // #3906: per-model reasoning level. Options come only from
+    // /api/b66/quote/models, so the control never offers a level the selected
+    // model does not actually support. The provider default is first.
+    const reasoningLabel = el("label", "b66-quote-field");
+    const reasoningText = el("span", "", document.documentElement.lang === "en"
+      ? "Reasoning level" : "추론 수준");
+    reasoningText.dataset.b66QuoteReasoningLabel = "true";
+    const reasoningSelect = document.createElement("select");
+    reasoningSelect.id = "b66QuoteReasoningSelect";
+    reasoningLabel.append(reasoningText, reasoningSelect);
 
     const submit = el("button", "b66-quote-generate", copy().generate);
     submit.id = "b66QuoteGenerate";
@@ -149,16 +336,10 @@
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
 
-    const frame = document.createElement("iframe");
-    frame.id = "b66QuoteFrame";
-    frame.className = "b66-quote-frame";
-    frame.hidden = true;
-    frame.title = copy().title;
-    frame.referrerPolicy = "no-referrer";
-    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
-
-    form.append(selectLabel, messageLabel, submit, status);
-    panel.append(header, form, frame);
+    // Do not construct a hidden iframe on Chat startup. The cross-origin
+    // preview is created only after a successful, user-requested quote.
+    form.append(selectLabel, modelLabel, reasoningLabel, messageLabel, submit, status);
+    panel.append(header, pcSection, form);
     dialog.append(panel);
     document.body.append(dialog);
 
@@ -170,16 +351,346 @@
       message.focus();
     });
     close.addEventListener("click", () => closeDialog());
-    dialog.addEventListener("close", () => launcher.setAttribute("aria-expanded", "false"));
-    dialog.addEventListener("cancel", () => launcher.setAttribute("aria-expanded", "false"));
+    pcToggle.addEventListener("click", () => {
+      if (!pcPanel.hidden) {
+        resetPcDirectory();
+        return;
+      }
+      pcPanel.hidden = false;
+      pcToggle.setAttribute("aria-expanded", "true");
+      void loadPcDirectory();
+    });
+    pcRefresh.addEventListener("click", () => { void loadPcDirectory(); });
+    pcRequest.addEventListener("click", () => { void requestPcTxtRead(); });
+    dialog.addEventListener("close", () => {
+      launcher.setAttribute("aria-expanded", "false");
+      resetPcDirectory();
+    });
+    dialog.addEventListener("cancel", () => {
+      launcher.setAttribute("aria-expanded", "false");
+      resetPcDirectory();
+    });
     form.addEventListener("submit", generate);
     window.addEventListener("message", receiveEmbedMessage);
+  }
+
+
+  function resetPcDirectory() {
+    pcQuerySequence += 1; // discard all in-flight responses after account/visibility changes
+    pcTxtSequence += 1; // cancel an in-flight TXT run poll on the same grounds
+    const section = document.getElementById("b66QuotePcPanel");
+    const toggle = document.getElementById("b66QuotePcToggle");
+    const list = document.getElementById("b66QuotePcList");
+    const status = document.getElementById("b66QuotePcStatus");
+    if (section) section.hidden = true;
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+    if (list) list.replaceChildren();
+    if (status) status.textContent = "";
+    resetPcTxt();
+  }
+
+
+  function resetPcTxt() {
+    pcOnlineDeviceId = "";
+    const block = document.getElementById("b66QuotePcTxt");
+    const conversation = document.getElementById("b66QuotePcConversation");
+    const path = document.getElementById("b66QuotePcPath");
+    const runStatus = document.getElementById("b66QuotePcRunStatus");
+    if (block) block.hidden = true;
+    if (conversation) {
+      conversation.replaceChildren();
+      conversation.disabled = true;
+    }
+    if (path) path.value = "";
+    if (runStatus) {
+      runStatus.textContent = "";
+      runStatus.dataset.state = "";
+    }
+  }
+
+
+  function validConversationId(value) {
+    return typeof value === "string" && /^chat_[0-9a-f]{32}$/.test(value);
+  }
+
+
+  function validTxtPath(value) {
+    if (typeof value !== "string") return null;
+    const text = value.trim();
+    if (!text || text.length > 1024) return null;
+    if (text.includes("\x00") || text.includes("\r") || text.includes("\n")) return null;
+    if (!text.toLowerCase().endsWith(".txt")) return null;
+    return text;
+  }
+
+
+  async function loadPcConversations(current, isCurrent) {
+    const c = copy();
+    const block = document.getElementById("b66QuotePcTxt");
+    const conversation = document.getElementById("b66QuotePcConversation");
+    if (!block || !conversation) return false;
+    conversation.replaceChildren();
+    conversation.disabled = true;
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = c.pcConversationPlaceholder;
+    conversation.append(placeholder);
+    let response;
+    try {
+      response = await nativeFetch(PC_DIALOGUES_PATH, {
+        method: "GET", credentials: "same-origin", cache: "no-store",
+        headers: { "Accept": "application/json" }
+      });
+    } catch (_) {
+      if (!isCurrent()) return false;
+      const runStatus = document.getElementById("b66QuotePcRunStatus");
+      if (runStatus) runStatus.textContent = c.pcConversationEmpty;
+      block.hidden = false;
+      return false;
+    }
+    if (!isCurrent()) return false;
+    if (response.status === 401 || response.status === 403) {
+      const runStatus = document.getElementById("b66QuotePcRunStatus");
+      if (runStatus) runStatus.textContent = c.pcAuth;
+      block.hidden = false;
+      return false;
+    }
+    let data = null;
+    try {
+      const raw = await response.text();
+      if (raw.length > MAX_PC_DIRECTORY_BYTES) throw new Error("pc_dialogues_oversize");
+      data = JSON.parse(raw);
+    } catch (_) {
+      data = null;
+    }
+    if (!isCurrent()) return false;
+    const items = data && data.ok === true && Array.isArray(data.conversations)
+      ? data.conversations : null;
+    if (!items) {
+      const runStatus = document.getElementById("b66QuotePcRunStatus");
+      if (runStatus) runStatus.textContent = c.pcConversationEmpty;
+      block.hidden = false;
+      return false;
+    }
+    let usable = 0;
+    for (const item of items.slice(0, 20)) {
+      if (!item || typeof item !== "object") continue;
+      if (!validConversationId(item.conversation_id)) continue;
+      const option = document.createElement("option");
+      option.value = item.conversation_id;
+      // textContent only: titles are untrusted owner data, never HTML.
+      const title = typeof item.title === "string" && item.title.trim()
+        ? item.title.trim().slice(0, 80) : item.conversation_id;
+      option.textContent = title;
+      conversation.append(option);
+      usable += 1;
+    }
+    if (!usable) {
+      const runStatus = document.getElementById("b66QuotePcRunStatus");
+      if (runStatus) runStatus.textContent = c.pcConversationEmpty;
+    }
+    conversation.disabled = usable === 0;
+    block.hidden = false;
+    return usable > 0;
+  }
+
+
+  function setRunStatus(text, state) {
+    const node = document.getElementById("b66QuotePcRunStatus");
+    if (!node) return;
+    node.textContent = text;
+    node.dataset.state = state || "";
+  }
+
+
+  async function requestPcTxtRead() {
+    const c = copy();
+    const current = ++pcTxtSequence;
+    const isCurrent = () => current === pcTxtSequence &&
+      !document.getElementById("b66QuotePcTxt").hidden;
+    const conversation = document.getElementById("b66QuotePcConversation");
+    const path = document.getElementById("b66QuotePcPath");
+    const requestButton = document.getElementById("b66QuotePcRequest");
+    if (!conversation || !path || !requestButton) return;
+    const conversationId = conversation.value;
+    const pathRelative = validTxtPath(path.value);
+    if (!validConversationId(conversationId) || !pathRelative) {
+      setRunStatus(c.pcInvalid, "error");
+      return;
+    }
+    requestButton.disabled = true;
+    setRunStatus(c.pcRunPending, "working");
+    const payload = { conversation_id: conversationId, path_relative: pathRelative };
+    const deviceId = pcOnlineDeviceId;
+    if (deviceId.length > 0 && deviceId.length <= 128) {
+      payload.device_id = deviceId;
+    }
+    let response = null;
+    let data = null;
+    try {
+      response = await nativeFetch(PC_TXT_READ_PATH, {
+        method: "POST", credentials: "same-origin", cache: "no-store",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const raw = await response.text();
+      if (raw.length <= MAX_PC_DIRECTORY_BYTES) data = JSON.parse(raw);
+    } catch (_) {
+      data = null;
+    }
+    if (!isCurrent()) return;
+    if (!response || !response.ok || !data || data.ok !== true ||
+        typeof data.run_id !== "string" || !/^run_[A-Za-z0-9]{12,80}$/.test(data.run_id)) {
+      requestButton.disabled = false;
+      if (response && (response.status === 401 || response.status === 403)) {
+        setRunStatus(c.pcAuth, "error");
+      } else if (response && response.status === 404) {
+        setRunStatus(c.pcConversationGone, "error");
+      } else if (response && (response.status === 422 || response.status === 400)) {
+        setRunStatus(c.pcInvalid, "error");
+      } else {
+        setRunStatus(c.pcRequestFailed, "error");
+      }
+      return;
+    }
+    await pollPcRunResult(data.run_id, isCurrent);
+    if (isCurrent()) requestButton.disabled = false;
+  }
+
+
+  async function pollPcRunResult(runId, isCurrent) {
+    const c = copy();
+    const url = PC_RESULT_PATH_PREFIX + encodeURIComponent(runId) + PC_RESULT_PATH_SUFFIX;
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      if (attempt > 0) await new Promise((resolve) => window.setTimeout(resolve, 3000));
+      if (!isCurrent()) return;
+      let response = null;
+      let data = null;
+      try {
+        response = await nativeFetch(url, {
+          method: "POST", credentials: "same-origin", cache: "no-store",
+          headers: { "Accept": "application/json", "Content-Type": "application/json" },
+          body: "{}"
+        });
+        const raw = await response.text();
+        if (raw.length <= MAX_PC_DIRECTORY_BYTES) data = JSON.parse(raw);
+      } catch (_) {
+        data = null;
+      }
+      if (!isCurrent()) return;
+      if (response && (response.status === 401 || response.status === 403)) {
+        setRunStatus(c.pcAuth, "error");
+        return;
+      }
+      if (response && response.ok && data && data.ok === true) {
+        if (data.status === "completed") {
+          setRunStatus(c.pcRunDone, "ready");
+          return;
+        }
+        if (data.status === "failed") {
+          setRunStatus(c.pcRunFailed + (typeof data.reason === "string" && data.reason
+            ? " (" + data.reason.slice(0, 120) + ")" : ""), "error");
+          return;
+        }
+        setRunStatus(c.pcRunPending, "working");
+        continue;
+      }
+      if (response && (response.status === 404 || response.status === 409)) {
+        setRunStatus(c.pcRunFailed, "error");
+        return;
+      }
+      // 503 and transport failures stay inside the bounded poll budget;
+      // anything terminal above already returned.
+      if (!isCurrent()) return;
+      setRunStatus(c.pcRunPending, "working");
+    }
+    if (isCurrent()) setRunStatus(c.pcRunFailed, "error");
+  }
+
+  async function loadPcDirectory() {
+    const section = document.getElementById("b66QuotePcPanel");
+    const list = document.getElementById("b66QuotePcList");
+    const status = document.getElementById("b66QuotePcStatus");
+    if (!section || section.hidden || !list || !status) return;
+    const current = ++pcQuerySequence;
+    const isCurrent = () => current === pcQuerySequence && !section.hidden;
+    const c = copy();
+    list.replaceChildren();
+    status.textContent = c.pcLoading;
+    const derive = window.PadiemClawLocalHandoff?.deriveDeviceDirectory;
+    if (typeof derive !== "function") {
+      status.textContent = c.pcUnavailable;
+      return;
+    }
+    try {
+      const response = await nativeFetch(PC_DIRECTORY_PATH, {
+        method: "GET", credentials: "same-origin", cache: "no-store",
+        headers: { "Accept": "application/json" }
+      });
+      if (!isCurrent()) return;
+      if (response.status === 401 || response.status === 403) {
+        status.textContent = c.pcAuth;
+        return;
+      }
+      if (response.status === 404 || response.status === 501 ||
+          response.status === 503) {
+        status.textContent = c.pcUnavailable;
+        return;
+      }
+      if (!response.ok) {
+        status.textContent = c.pcFailed;
+        return;
+      }
+      // Bound raw response and reuse the existing closed, read-only Claw
+      // projection, never render raw server HTML/credentials or invent ONLINE.
+      const raw = await response.text();
+      if (!isCurrent()) return;
+      if (raw.length > MAX_PC_DIRECTORY_BYTES) throw new Error("pc_directory_oversize");
+      const payload = JSON.parse(raw);
+      if (!payload || payload.ok !== true || payload.available !== true ||
+          payload.ownerScoped !== true) {
+        status.textContent = c.pcUnavailable;
+        return;
+      }
+      const directory = derive(payload, null);
+      if (!directory || directory.available !== true) {
+        status.textContent = c.pcFailed;
+        return;
+      }
+      status.textContent = directory.devices.length ? c.pcReady : c.pcEmpty;
+      for (const device of directory.devices) {
+        const item = el("li", "b66-quote-connect-item");
+        const name = el("strong", "", device.deviceName || device.deviceId);
+        const stateKey = device.revoked ? "pcRevoked" :
+          device.online ? "pcOnline" : "pcOffline";
+        const state = el("span", "b66-quote-connect-state", c[stateKey]);
+        state.dataset.state = device.online ? "online" : "offline";
+        item.append(name, state);
+        list.append(item);
+      }
+      // The TXT request names only a server-listed, usable device. No device
+      // means no request surface: the panel stays status-only.
+      const usable = directory.devices.find((device) => device && device.online === true &&
+        device.revoked !== true && typeof device.deviceId === "string" &&
+        device.deviceId.length > 0 && device.deviceId.length <= 128);
+      pcOnlineDeviceId = usable ? usable.deviceId : "";
+      if (directory.devices.length > 0) {
+        await loadPcConversations(current, isCurrent);
+      } else {
+        resetPcTxt();
+      }
+    } catch (_) {
+      if (!isCurrent()) return;
+      list.replaceChildren();
+      status.textContent = c.pcFailed;
+    }
   }
 
   function closeDialog() {
     const dialog = document.getElementById("b66QuoteDialog");
     const launcher = document.getElementById("b66QuoteNavButton");
     if (!dialog) return;
+    resetPcDirectory();
     if (typeof dialog.close === "function" && dialog.open) dialog.close();
     else dialog.removeAttribute("open");
     if (launcher) launcher.setAttribute("aria-expanded", "false");
@@ -206,6 +717,22 @@
     if (submit) submit.textContent = c.generate;
     if (close) close.setAttribute("aria-label", c.close);
     if (frame) frame.title = c.title;
+    const pcToggle = document.getElementById("b66QuotePcToggle");
+    const pcHelp = document.getElementById("b66QuotePcHelp");
+    const pcRefresh = document.getElementById("b66QuotePcRefresh");
+    if (pcToggle) pcToggle.textContent = c.pcToggle;
+    if (pcHelp) pcHelp.textContent = c.pcHelp;
+    if (pcRefresh) pcRefresh.textContent = c.pcRefresh;
+    const pcTxtTitle = document.getElementById("b66QuotePcTxtTitle");
+    const pcConversationText = document.getElementById("b66QuotePcConversationLabel");
+    const pcPathText = document.getElementById("b66QuotePcPathLabel");
+    const pcPath = document.getElementById("b66QuotePcPath");
+    const pcRequest = document.getElementById("b66QuotePcRequest");
+    if (pcTxtTitle) pcTxtTitle.textContent = c.pcTxtTitle;
+    if (pcConversationText) pcConversationText.textContent = c.pcConversation;
+    if (pcPathText) pcPathText.textContent = c.pcPath;
+    if (pcPath) pcPath.placeholder = c.pcPathPlaceholder;
+    if (pcRequest) pcRequest.textContent = c.pcRequest;
   }
 
   function setStatus(text, state) {
@@ -215,9 +742,88 @@
     node.dataset.state = state || "";
   }
 
+  async function refreshModels() {
+    const select = document.getElementById("b66QuoteModelSelect");
+    if (!select) return;
+    modelIds = [];
+    selectedModelByTier = {};
+    reasoningByModel = {};
+    select.replaceChildren();
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = document.documentElement.lang === "en"
+      ? "Select a model" : "\uBAA8\uB378\uC744 \uC120\uD0DD\uD558\uC138\uC694";
+    select.append(placeholder);
+    select.disabled = true;
+    const response = await readJson("/api/b66/quote/models");
+    if (!response.response.ok || !response.data || !Array.isArray(response.data.tiers)) return;
+    const safe = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
+    const grades = new Set(["free", "plus", "pro", "max"]);
+    response.data.tiers.forEach((record) => {
+      if (!record || !grades.has(record.tier) || modelIds.includes(record.tier) ||
+          typeof record.model_id !== "string" || !safe.test(record.model_id) ||
+          typeof record.name !== "string") return;
+      const option = document.createElement("option");
+      option.value = record.tier;
+      option.textContent = record.name;
+      select.append(option);
+      modelIds.push(record.tier);
+      selectedModelByTier[record.tier] = record.model_id;
+      reasoningByModel[record.tier] = Array.isArray(record.reasoning_levels)
+        ? record.reasoning_levels.filter((level) => level &&
+            typeof level.value === "string" &&
+            /^[a-z0-9-]{1,32}$/.test(level.value) &&
+            typeof level.label === "string")
+        : [];
+    });
+    const configured = response.data.default_tier;
+    select.value = typeof configured === "string" && modelIds.includes(configured)
+      ? configured : "";
+    select.disabled = modelIds.length === 0;
+    syncReasoningOptions();
+    select.addEventListener("change", syncReasoningOptions);
+  }
+
+  // #3906: only levels the selected model actually supports are offered, and a
+  // model switch re-validates the current choice so an unsupported level can
+  // never be submitted. No recommended level is auto-applied.
+  function reasoningOptionsForModel(modelId) {
+    if (typeof modelId !== "string" || !modelIds.includes(modelId)) return [];
+    const levels = reasoningByModel[modelId];
+    if (!Array.isArray(levels) || !levels.length) return [];
+    return levels;
+  }
+
+  function syncReasoningOptions() {
+    const modelSelect = document.getElementById("b66QuoteModelSelect");
+    const reasoningSelect = document.getElementById("b66QuoteReasoningSelect");
+    if (!modelSelect || !reasoningSelect) return;
+    const options = reasoningOptionsForModel(modelSelect.value);
+    reasoningSelect.replaceChildren();
+    options.forEach((level) => {
+      const option = document.createElement("option");
+      option.value = level.value;
+      option.textContent = level.label;
+      reasoningSelect.append(option);
+    });
+    reasoningSelect.value = options.length ? options[0].value : "";
+    reasoningSelect.disabled = options.length === 0;
+  }
+
+  // #3906: the reasoning choice actually offered for this exact model, or ""
+  // when the control has none so the request keeps its pre-#3906 shape.
+  function selectedReasoningLevel(modelId) {
+    const reasoningSelect = document.getElementById("b66QuoteReasoningSelect");
+    if (!reasoningSelect) return "";
+    const options = reasoningOptionsForModel(modelId);
+    const current = reasoningSelect.value;
+    return options.some((level) => level.value === current) ? current : "";
+  }
+
   function populateSkills() {
     const select = document.getElementById("b66QuoteSkillSelect");
     const launcher = document.getElementById("b66QuoteNavButton");
+    const pcSection = document.querySelector(".b66-quote-connect");
     if (!select || !launcher) return;
     select.replaceChildren();
     skills.forEach((skill) => {
@@ -229,6 +835,9 @@
     launcher.hidden = !(runtime && skills.length > 0);
     launcher.disabled = launcher.hidden;
     launcher.setAttribute("aria-disabled", launcher.hidden ? "true" : "false");
+    const pcEnabled = !launcher.hidden && runtime?.pcDirectoryEnabled === true;
+    if (pcSection) pcSection.hidden = !pcEnabled;
+    if (!pcEnabled) resetPcDirectory();
     if (launcher.hidden) closeDialog();
   }
 
@@ -239,6 +848,66 @@
     }, options || {}));
     const data = await response.json().catch(() => null);
     return { response, data };
+  }
+
+  function declaredAssetRefs(skill) {
+    const template = skill && typeof skill === "object" ? skill.internalTemplate : null;
+    const content = template && typeof template === "object" ? template.content : null;
+    const slots = content && typeof content === "object" ? content.slots : null;
+    const refs = {};
+    ["logo", "stamp"].forEach((key) => {
+      const value = slots && typeof slots[key] === "string" ? slots[key] : "";
+      if (value && !B66_ASSET_ID.test(value)) throw new Error("invalid_private_asset_ref");
+      if (value) refs[key] = value;
+    });
+    return refs;
+  }
+
+  function arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    const parts = [];
+    const chunkSize = 0x8000;
+    for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+      const chunk = bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length));
+      let binary = "";
+      for (let i = 0; i < chunk.length; i += 1) binary += String.fromCharCode(chunk[i]);
+      parts.push(binary);
+    }
+    return window.btoa(parts.join(""));
+  }
+
+  async function readPrivateAsset(assetId) {
+    if (!B66_ASSET_ID.test(assetId || "")) throw new Error("invalid_private_asset_ref");
+    const response = await nativeFetch("/api/b66/assets/" + encodeURIComponent(assetId), {
+      method: "GET",
+      headers: { "Accept": "image/png,image/jpeg,image/webp" },
+      cache: "no-store",
+      credentials: "same-origin"
+    });
+    if (!response.ok) throw new Error("private_asset_unavailable");
+    const mediaType = String(response.headers.get("content-type") || "").split(";", 1)[0].trim().toLowerCase();
+    if (!PRIVATE_ASSET_MEDIA.has(mediaType)) throw new Error("private_asset_media_invalid");
+    const rawLength = Number(response.headers.get("content-length") || "0");
+    if (Number.isFinite(rawLength) && rawLength > MAX_PRIVATE_ASSET_BYTES) {
+      throw new Error("private_asset_too_large");
+    }
+    const buffer = await response.arrayBuffer();
+    if (!buffer.byteLength || buffer.byteLength > MAX_PRIVATE_ASSET_BYTES) {
+      throw new Error("private_asset_too_large");
+    }
+    return {
+      assetId,
+      dataUrl: "data:" + mediaType + ";base64," + arrayBufferToBase64(buffer)
+    };
+  }
+
+  async function loadPrivateAssets(skill) {
+    const refs = declaredAssetRefs(skill);
+    const assets = {};
+    for (const key of ["logo", "stamp"]) {
+      if (refs[key]) assets[key] = await readPrivateAsset(refs[key]);
+    }
+    return assets;
   }
 
   async function refresh() {
@@ -267,6 +936,7 @@
         }
         skills = safeSkills(listResult.data);
         populateSkills();
+        await refreshModels();
         return skills.length > 0;
       } catch (_) {
         runtime = null;
@@ -280,6 +950,24 @@
 
   function requestId() {
     return "b66-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+  }
+
+  function ensurePreviewFrame() {
+    let frame = document.getElementById("b66QuoteFrame");
+    if (frame) return frame;
+    const panel = document.querySelector("#b66QuoteDialog .b66-quote-panel");
+    if (!panel) throw new Error("preview_panel_missing");
+    frame = document.createElement("iframe");
+    frame.id = "b66QuoteFrame";
+    frame.className = "b66-quote-frame";
+    frame.hidden = true;
+    frame.title = copy().title;
+    frame.referrerPolicy = "no-referrer";
+    // Retain the actual B66 embed origin for authenticated postMessage
+    // verification. validRuntime() rejects same-origin embeds above.
+    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
+    panel.append(frame);
+    return frame;
   }
 
   function waitForFrame(frame, url) {
@@ -301,23 +989,33 @@
     const select = document.getElementById("b66QuoteSkillSelect");
     const message = document.getElementById("b66QuoteRequest");
     const submit = document.getElementById("b66QuoteGenerate");
-    const frame = document.getElementById("b66QuoteFrame");
-    if (!runtime || !select || !message || !submit || !frame) return;
+    const existingFrame = document.getElementById("b66QuoteFrame");
+    if (!runtime || !select || !message || !submit) return;
     const savedSkillId = select.value;
+    const modelSelect = document.getElementById("b66QuoteModelSelect");
+    const selectedTier = modelSelect && modelSelect.value;
+    const modelId = selectedModelByTier[selectedTier];
     const requestText = message.value.trim();
-    if (!/^b66skill_[0-9a-f]{32}$/.test(savedSkillId) || !requestText) {
+    if (!/^b66skill_[0-9a-f]{32}$/.test(savedSkillId) || !requestText ||
+        !modelId || !modelIds.includes(selectedTier)) {
       setStatus(c.failed, "error");
       return;
     }
 
     submit.disabled = true;
-    frame.hidden = true;
+    if (existingFrame) existingFrame.hidden = true;
     setStatus(c.working, "working");
     try {
+      // #3906: forward the explicit reasoning choice with the exact model. The
+      // field is omitted when the control offers none, preserving the
+      // pre-#3906 request shape.
+      const payload = { saved_skill_id: savedSkillId, message: requestText, tier: selectedTier, model_id: modelId };
+      const reasoningLevel = selectedReasoningLevel(selectedTier);
+      if (reasoningLevel) payload.reasoning_level = reasoningLevel;
       const interpreted = await readJson("/api/b66/quote/interpret", {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ saved_skill_id: savedSkillId, message: requestText })
+        body: JSON.stringify(payload)
       });
       if (!interpreted.response.ok || !interpreted.data || interpreted.data.ok !== true) {
         throw new Error("interpret_failed");
@@ -333,6 +1031,17 @@
       const skill = detail.data && detail.data.saved_skill && detail.data.saved_skill.skill;
       if (!detail.response.ok || !skill || typeof skill !== "object") throw new Error("skill_unavailable");
 
+      const profileResult = companyProfileForRender(interpreted.data.company_profile);
+      if (!profileResult.ok) {
+        setStatus(
+          profileResult.code === "missing_company" ? c.companyIdentityMissing : c.companyDefaultsMissing,
+          "missing"
+        );
+        return;
+      }
+      const assets = await loadPrivateAssets(skill);
+
+      const frame = ensurePreviewFrame();
       await waitForFrame(frame, runtime.embedUrl);
       const id = requestId();
       currentRequestId = id;
@@ -340,7 +1049,9 @@
         type: "b66.embed.render.v1",
         requestId: id,
         skill,
-        candidate
+        candidate,
+        assets,
+        companyProfile: profileResult.profile
       }, runtime.origin);
     } catch (_) {
       currentRequestId = null;
@@ -373,12 +1084,16 @@
     const auth = event && event.detail && event.detail.auth;
     if (auth && auth.authenticated === true) refresh();
     else {
+      resetPcDirectory();
       runtime = null;
       skills = [];
       ensureUi();
       populateSkills();
     }
   });
+  for (const eventName of ["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"]) {
+    window.addEventListener(eventName, resetPcDirectory);
+  }
   window.addEventListener("padiem:localechange", syncCopy);
 
   if (document.readyState === "loading") {

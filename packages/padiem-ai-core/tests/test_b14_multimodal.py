@@ -44,6 +44,7 @@ def test_multimodal_request_is_b14_request_compatible_and_round_trips(media_type
     assert payload["messages"][1]["content"][0] == {"type": "text", "text": "describe"}
     assert payload["messages"][1]["content"][1]["image_url"]["url"] == data_url(media_type, data)
     assert payload["business14"]["required_capabilities"] == ["free", "image"]
+    assert "temperature" not in payload
 
 
 def test_multimodal_request_is_copy_and_freeze_safe() -> None:

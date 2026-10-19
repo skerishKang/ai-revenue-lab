@@ -19,10 +19,28 @@ MAX_CONNECT_TICKET_RESIDUAL_LIFETIME_SECONDS = 330
 
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
+GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
+GOOGLE_DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive"
+GOOGLE_OPENID_SCOPE = "openid"
+GOOGLE_PROFILE_SCOPE = "profile"
+GOOGLE_EMAIL_SCOPE = "email"
 # #2010: the Control Plane owns the long-lived Google refresh credential and
 # issues short-lived read leases. Calendar joins the same reviewed OAuth
 # authority with exactly one readonly scope.
 GOOGLE_CALENDAR_READONLY_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"
+B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
+B66_GOOGLE_DRIVE_FULL_CONNECTOR = "b66-google-drive-full"
+B66_GOOGLE_DRIVE_OIDC_SCOPES = (
+    GOOGLE_OPENID_SCOPE,
+    GOOGLE_PROFILE_SCOPE,
+    GOOGLE_EMAIL_SCOPE,
+)
+B66_GOOGLE_DRIVE_CONNECTORS = frozenset({
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+})
+_GOOGLE_SUB_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{7,255}$")
+_MAX_PROVIDER_EMAIL_CHARS = 320
 # Internal OAuth-reviewed authority set. It is deliberately WIDER than the
 # public/default workspace-status projection: a connector may be a reviewed
 # OAuth authority without being part of the authorized #2830 B-0 surface.
@@ -30,6 +48,8 @@ _OAUTH_REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
 }
 # Backwards-compatible module-level map used by the Control Plane modules.
 _REVIEWED_SCOPES = _OAUTH_REVIEWED_SCOPES
@@ -67,6 +87,16 @@ CREATE TABLE IF NOT EXISTS google_oauth_refresh_credential (
     issued_at TEXT NOT NULL,
     expires_at TEXT NULL,
     revoked_at TEXT NULL
+)
+"""
+
+_PROVIDER_DESTINATION_SCHEMA = """
+CREATE TABLE IF NOT EXISTS google_oauth_provider_destination (
+    binding_ref TEXT PRIMARY KEY,
+    connector_id TEXT NOT NULL,
+    provider_subject TEXT NOT NULL,
+    provider_email TEXT NULL,
+    verified_at TEXT NOT NULL
 )
 """
 
@@ -119,6 +149,24 @@ def _sealed(value: Any, field_name: str) -> str:
         raise ControlPlaneContractError(
             "invalid_google_oauth_durable_record",
             f"{field_name} must use the bounded sealed:v1 envelope",
+        )
+    return value
+
+
+def _provider_subject(value: Any, field_name: str) -> str:
+    if not isinstance(value, str) or _GOOGLE_SUB_RE.fullmatch(value) is None:
+        raise ControlPlaneContractError(
+            "invalid_google_oauth_durable_record",
+            f"{field_name} must be a bounded verified Google subject",
+        )
+    return value
+
+
+def _provider_email(value: Any, field_name: str) -> str:
+    if not isinstance(value, str) or "@" not in value or len(value) > _MAX_PROVIDER_EMAIL_CHARS:
+        raise ControlPlaneContractError(
+            "invalid_google_oauth_durable_record",
+            f"{field_name} must be a bounded verified Google email",
         )
     return value
 
@@ -219,6 +267,8 @@ class DurableGoogleOAuthCredential:
     issued_at: datetime
     expires_at: datetime | None = None
     revoked_at: datetime | None = None
+    provider_subject: str | None = None
+    provider_email: str | None = None
 
     def __post_init__(self) -> None:
         for name in ("binding_ref", "connector_id", "actor_ref", "account_ref", "workspace_ref"):
@@ -229,6 +279,28 @@ class DurableGoogleOAuthCredential:
             "sealed_refresh_token",
             _sealed(self.sealed_refresh_token, "sealed_refresh_token"),
         )
+        if self.connector_id in B66_GOOGLE_DRIVE_CONNECTORS:
+            if self.provider_subject is None:
+                raise ControlPlaneContractError(
+                    "invalid_google_oauth_durable_record",
+                    "B66 Google Drive binding requires a verified destination subject",
+                )
+            object.__setattr__(
+                self,
+                "provider_subject",
+                _provider_subject(self.provider_subject, "provider_subject"),
+            )
+            if self.provider_email is not None:
+                object.__setattr__(
+                    self,
+                    "provider_email",
+                    _provider_email(self.provider_email, "provider_email"),
+                )
+        elif self.provider_subject is not None or self.provider_email is not None:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "only B66 Google Drive bindings may carry a verified destination",
+            )
         issued_at = _utc(self.issued_at, "issued_at")
         expires_at = _utc(self.expires_at, "expires_at") if self.expires_at is not None else None
         revoked_at = _utc(self.revoked_at, "revoked_at") if self.revoked_at is not None else None
@@ -265,6 +337,16 @@ class DurableGoogleOAuthCredential:
             "raw_refresh_token": False,
             "raw_access_token": False,
             "raw_client_secret": False,
+            "verified_destination_subject": (
+                self.provider_subject
+                if self.connector_id in B66_GOOGLE_DRIVE_CONNECTORS
+                else None
+            ),
+            "verified_destination_email": (
+                self.provider_email
+                if self.connector_id in B66_GOOGLE_DRIVE_CONNECTORS
+                else None
+            ),
         }
 
 
@@ -283,6 +365,8 @@ class GoogleOAuthBindingSelection:
     binding_ref: str | None = None
     actor_ref: str | None = None
     account_ref: str | None = None
+    provider_subject: str | None = None
+    provider_email: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.status, GoogleOAuthBindingSelectionStatus):
@@ -305,7 +389,38 @@ class GoogleOAuthBindingSelection:
                 object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
             if self.account_ref is not None:
                 object.__setattr__(self, "account_ref", _safe_ref(self.account_ref, "account_ref"))
-        elif any(value is not None for value in (self.binding_ref, self.actor_ref, self.account_ref)):
+            if self.connector_id in B66_GOOGLE_DRIVE_CONNECTORS:
+                if self.provider_subject is None:
+                    raise ControlPlaneContractError(
+                        "invalid_google_oauth_binding_selection",
+                        "B66 Drive selection requires a verified provider destination",
+                    )
+                object.__setattr__(
+                    self,
+                    "provider_subject",
+                    _provider_subject(self.provider_subject, "provider_subject"),
+                )
+                if self.provider_email is not None:
+                    object.__setattr__(
+                        self,
+                        "provider_email",
+                        _provider_email(self.provider_email, "provider_email"),
+                    )
+            elif self.provider_subject is not None or self.provider_email is not None:
+                raise ControlPlaneContractError(
+                    "invalid_google_oauth_binding_selection",
+                    "only B66 Drive selections may carry a verified destination",
+                )
+        elif any(
+            value is not None
+            for value in (
+                self.binding_ref,
+                self.actor_ref,
+                self.account_ref,
+                self.provider_subject,
+                self.provider_email,
+            )
+        ):
             raise ControlPlaneContractError(
                 "invalid_google_oauth_binding_selection",
                 "not_connected selection cannot carry identity",
@@ -332,6 +447,10 @@ class GoogleOAuthBindingSelection:
             )
             if self.account_ref is not None:
                 result["account_ref"] = self.account_ref
+            if self.provider_subject is not None:
+                result["provider_subject"] = self.provider_subject
+            if self.provider_email is not None:
+                result["provider_email"] = self.provider_email
         return result
 
     def to_bounded_dict(self) -> dict[str, Any]:
@@ -480,6 +599,7 @@ class CloudflareDurableGoogleOAuthStore:
         self._sql.exec(_TICKET_SCHEMA)
         self._sql.exec(_STATE_SCHEMA)
         self._sql.exec(_CREDENTIAL_SCHEMA)
+        self._sql.exec(_PROVIDER_DESTINATION_SCHEMA)
 
     def transaction(self, operation: Callable[[], _T]) -> _T:
         return self._transaction_sync(operation)
@@ -606,9 +726,22 @@ class CloudflareDurableGoogleOAuthStore:
             )
         return state
 
-    def save_credential(self, record: DurableGoogleOAuthCredential) -> None:
+    def save_credential(
+        self,
+        record: DurableGoogleOAuthCredential,
+        *,
+        verified_at: datetime | None = None,
+    ) -> None:
         if not isinstance(record, DurableGoogleOAuthCredential):
             raise ValueError("record must be DurableGoogleOAuthCredential")
+        if record.connector_id in B66_GOOGLE_DRIVE_CONNECTORS and record.provider_subject is None:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "B66 Google Drive binding requires a verified destination subject",
+            )
+        destination_verified_at = (
+            _iso(_utc(verified_at, "verified_at")) if verified_at is not None else _iso(record.issued_at)
+        )
         cursor = self._sql.exec(
             "INSERT OR IGNORE INTO google_oauth_refresh_credential "
             "(binding_ref, connector_id, actor_ref, account_ref, workspace_ref, scopes_json, "
@@ -630,6 +763,22 @@ class CloudflareDurableGoogleOAuthStore:
                 "duplicate_google_oauth_binding",
                 "Google OAuth credential binding already exists",
             )
+        if record.provider_subject is not None:
+            destination_cursor = self._sql.exec(
+                "INSERT OR IGNORE INTO google_oauth_provider_destination "
+                "(binding_ref, connector_id, provider_subject, provider_email, verified_at) "
+                "VALUES (?, ?, ?, ?, ?)",
+                record.binding_ref,
+                record.connector_id,
+                record.provider_subject,
+                record.provider_email,
+                destination_verified_at,
+            )
+            if _rows_written(destination_cursor) != 1:
+                raise ControlPlaneContractError(
+                    "duplicate_google_oauth_binding",
+                    "Google OAuth verified destination already exists",
+                )
 
     def load_active_credential(
         self,
@@ -661,9 +810,34 @@ class CloudflareDurableGoogleOAuthStore:
             raise RuntimeError("durable Google OAuth scopes row must be a list")
         expires_text = _row_value(row, "expires_at")
         revoked_text = _row_value(row, "revoked_at")
+        connector_id = _row_value(row, "connector_id")
+        provider_subject: str | None = None
+        provider_email: str | None = None
+        if connector_id in B66_GOOGLE_DRIVE_CONNECTORS:
+            destinations = _rows(
+                self._sql.exec(
+                    "SELECT provider_subject, provider_email FROM google_oauth_provider_destination "
+                    "WHERE binding_ref = ? AND connector_id = ?",
+                    binding_ref,
+                    connector_id,
+                )
+            )
+            if len(destinations) != 1:
+                raise RuntimeError(
+                    "B66 Google Drive credential destination is missing or ambiguous"
+                )
+            provider_subject = _provider_subject(
+                _row_value(destinations[0], "provider_subject"), "provider_subject"
+            )
+            provider_email_text = _row_value(destinations[0], "provider_email")
+            provider_email = (
+                _provider_email(provider_email_text, "provider_email")
+                if provider_email_text is not None
+                else None
+            )
         record = DurableGoogleOAuthCredential(
             binding_ref=_row_value(row, "binding_ref"),
-            connector_id=_row_value(row, "connector_id"),
+            connector_id=connector_id,
             actor_ref=_row_value(row, "actor_ref"),
             account_ref=_row_value(row, "account_ref"),
             workspace_ref=_row_value(row, "workspace_ref"),
@@ -672,6 +846,8 @@ class CloudflareDurableGoogleOAuthStore:
             issued_at=_parse_iso(_row_value(row, "issued_at"), "issued_at"),
             expires_at=_parse_iso(expires_text, "expires_at") if expires_text is not None else None,
             revoked_at=_parse_iso(revoked_text, "revoked_at") if revoked_text is not None else None,
+            provider_subject=provider_subject,
+            provider_email=provider_email,
         )
         if not record.usable_at(now):
             raise ControlPlaneContractError(
@@ -858,6 +1034,143 @@ class CloudflareDurableGoogleOAuthStore:
             account_ref=None,
         )
 
+    def select_active_b66_google_drive_file_binding(
+        self,
+        *,
+        workspace_ref: str,
+        now: datetime,
+    ) -> GoogleOAuthBindingSelection:
+        """Select one private B66 Drive-file identity for a trusted workspace."""
+
+        return self.select_active_b66_google_drive_binding(
+            connector_id=B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+            workspace_ref=workspace_ref,
+            now=now,
+        )
+
+    def select_active_b66_google_drive_full_binding(
+        self,
+        *,
+        workspace_ref: str,
+        now: datetime,
+    ) -> GoogleOAuthBindingSelection:
+        """Select one private B66 full-Drive identity for a trusted workspace."""
+
+        return self.select_active_b66_google_drive_binding(
+            connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+            workspace_ref=workspace_ref,
+            now=now,
+        )
+
+    def select_active_b66_google_drive_binding(
+        self,
+        *,
+        connector_id: str,
+        workspace_ref: str,
+        now: datetime,
+    ) -> GoogleOAuthBindingSelection:
+        """Select one private B66 Drive identity for a trusted workspace.
+
+        This selector is connector-fixed in code to one reviewed B66 connector.
+        It reads only identity and validity metadata, never the sealed refresh
+        token, requires the B66 verified provider destination, and fails closed
+        when more than one usable B66 binding exists for the trusted workspace.
+        """
+
+        connector_id = _safe_ref(connector_id, "connector_id")
+        if connector_id not in B66_GOOGLE_DRIVE_CONNECTORS:
+            raise ControlPlaneContractError(
+                "unreviewed_google_oauth_scope",
+                "B66 connector selector requires a reviewed B66 Drive connector",
+            )
+        expected_scope = _OAUTH_REVIEWED_SCOPES[connector_id]
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        now = _utc(now, "now")
+        rows = _rows(
+            self._sql.exec(
+                "SELECT credential.binding_ref, credential.connector_id, credential.actor_ref, "
+                "credential.workspace_ref, credential.scopes_json, credential.expires_at, "
+                "credential.revoked_at, destination.provider_subject, destination.provider_email "
+                "FROM google_oauth_refresh_credential AS credential "
+                "LEFT JOIN google_oauth_provider_destination AS destination "
+                "ON credential.binding_ref = destination.binding_ref "
+                "WHERE credential.workspace_ref = ? AND credential.connector_id = ?",
+                workspace_ref,
+                connector_id,
+            )
+        )
+        usable: list[dict[str, Any]] = []
+        for row in rows:
+            row_connector = _row_value(row, "connector_id")
+            row_workspace = _row_value(row, "workspace_ref")
+            if row_connector != connector_id:
+                raise ControlPlaneContractError(
+                    "google_oauth_connector_mismatch",
+                    "B66 Drive binding selector returned a different connector",
+                )
+            if row_workspace != workspace_ref:
+                raise ControlPlaneContractError(
+                    "google_oauth_workspace_mismatch",
+                    "B66 Drive binding selector returned a different workspace",
+                )
+            revoked_text = _row_value(row, "revoked_at")
+            if revoked_text is not None:
+                continue
+            expires_text = _row_value(row, "expires_at")
+            if expires_text is not None and now >= _parse_iso(expires_text, "expires_at"):
+                continue
+            try:
+                scopes = json.loads(_row_value(row, "scopes_json"))
+            except (TypeError, json.JSONDecodeError) as exc:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "B66 Drive binding scope metadata is invalid",
+                ) from exc
+            if not isinstance(scopes, list) or scopes != list(expected_scope):
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "B66 Drive binding must have exactly its reviewed scope",
+                )
+            provider_subject = _row_value(row, "provider_subject")
+            if not isinstance(provider_subject, str) or not provider_subject:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "B66 Drive binding lacks a verified destination subject",
+                )
+            usable.append(
+                {
+                    "binding_ref": _row_value(row, "binding_ref"),
+                    "connector_id": row_connector,
+                    "actor_ref": _row_value(row, "actor_ref"),
+                    "workspace_ref": row_workspace,
+                    "provider_subject": provider_subject,
+                    "provider_email": _row_value(row, "provider_email"),
+                }
+            )
+
+        if len(usable) > 1:
+            raise ControlPlaneContractError(
+                "ambiguous_google_oauth_binding",
+                "multiple usable B66 Drive bindings exist for the trusted workspace",
+            )
+        if not usable:
+            return GoogleOAuthBindingSelection(
+                status=GoogleOAuthBindingSelectionStatus.NOT_CONNECTED,
+                connector_id=connector_id,
+                workspace_ref=workspace_ref,
+            )
+        selected = usable[0]
+        return GoogleOAuthBindingSelection(
+            status=GoogleOAuthBindingSelectionStatus.RESOLVED,
+            connector_id=selected["connector_id"],
+            workspace_ref=selected["workspace_ref"],
+            binding_ref=selected["binding_ref"],
+            actor_ref=selected["actor_ref"],
+            account_ref=None,
+            provider_subject=selected["provider_subject"],
+            provider_email=selected["provider_email"],
+        )
+
     def revoke_credential(self, *, binding_ref: str, revoked_at: datetime) -> None:
         binding_ref = _safe_ref(binding_ref, "binding_ref")
         revoked_at = _utc(revoked_at, "revoked_at")
@@ -1035,7 +1348,12 @@ DRIVE_OAUTH_REVIEWED_CONNECTOR = "google-drive"
 # Reviewed connector set for the shared private binding-selection model. Kept
 # deliberately narrow: no Gmail (or other) connector may use it.
 REVIEWED_BINDING_SELECTION_CONNECTORS = frozenset(
-    {CALENDAR_OAUTH_REVIEWED_CONNECTOR, DRIVE_OAUTH_REVIEWED_CONNECTOR}
+    {
+        CALENDAR_OAUTH_REVIEWED_CONNECTOR,
+        DRIVE_OAUTH_REVIEWED_CONNECTOR,
+        B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+        B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+    }
 )
 CALENDAR_BINDING_SELECTION_PRIVATE_ONLY = True
 CALENDAR_BINDING_SELECTION_REQUIRES_TRUSTED_WORKSPACE = True
@@ -1058,3 +1376,11 @@ WORKSPACE_READ_WORKSPACE_REF_ECHO = False
 WORKSPACE_READ_SCOPES_OUTPUT = False
 WORKSPACE_READ_SEALED_CREDENTIAL_OUTPUT = False
 WORKSPACE_READ_SCHEMA_UNIQUE_INDEX_ADDED = False
+B66_GOOGLE_DRIVE_FILE_SCOPE_REVIEWED = True
+B66_GOOGLE_DRIVE_FULL_SCOPE_REVIEWED = True
+B66_GOOGLE_DRIVE_OIDC_SCOPES_REVIEWED = True
+B66_GOOGLE_DRIVE_FILE_CONNECTOR_REVIEWED = True
+B66_GOOGLE_DRIVE_FULL_CONNECTOR_REVIEWED = True
+B66_FULL_DRIVE_SCOPE = GOOGLE_DRIVE_FULL_SCOPE
+B66_GOOGLE_DRIVE_FILE_VERIFIED_DESTINATION_REQUIRED = True
+SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False

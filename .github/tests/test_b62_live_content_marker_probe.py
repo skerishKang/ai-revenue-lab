@@ -599,13 +599,17 @@ def test_workflow_is_get_only_and_exact_main_guarded():
     assert 'test "${GITHUB_REF}" = "refs/heads/main"' in workflow
     assert 'test "$(git rev-parse HEAD)" = "${TARGET_SHA}"' in workflow
     assert 'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"' in workflow
-    assert '(.result.deployments | length) >= 1' in workflow
-    assert '(.result.deployments | length) == 1' not in workflow
+    trigger_paths = workflow.split("pull_request:", 1)[1].split("workflow_dispatch:", 1)[0]
+    readonly = workflow.split("\n  live-content-readonly:", 1)[1]
+    assert ".github/scripts/cloudflare_served_version_cli.py" in trigger_paths
+    assert readonly.count("cloudflare_served_version_cli.py resolve-active") == 2
+    assert ".result.deployments[0].versions[0].version_id" not in readonly
+    assert ".result.deployments[0].versions[0].percentage" not in readonly
+    assert "(.result.deployments[0].versions | length) == 1" not in readonly
     assert 'if [[ "${active_pre}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then' in workflow
     assert 'if [[ "${active_post}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then' in workflow
     assert "ACTIVE_VERSION_MATCH=FAIL" in workflow
     assert workflow.count("ACTIVE_VERSION_MATCH=FAIL") == 2
-    assert "percentage == 100" in workflow
     assert "b62_live_content_marker_probe.py" in workflow
     assert "--deployments-pre" in workflow
     assert "--deployments-post" in workflow

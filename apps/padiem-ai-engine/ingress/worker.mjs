@@ -1,7 +1,21 @@
 const EXECUTE_PATH = "/internal/v1/execute";
-const MAX_REQUEST_BODY_BYTES = 128 * 1024;
+// This ingress fronts exactly one Engine route: the model /execute path. Its
+// request budget is therefore the Engine's own existing model budget
+// (app/service.py MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES, published in
+// openapi.json as x-engine-max-body-bytes), not the 128 KiB guard that the
+// non-model Engine routes keep. At 128 KiB a first-party model request between
+// the two values was refused here, before the Engine could ever admit it.
+// tests/test_ingress_budget_source_contract.py pins these literals to the
+// Python constants, so the two sides cannot drift apart again.
+const MAX_REQUEST_BODY_BYTES = 6_000_000;
 const MAX_INGRESS_CREDENTIAL_CHARS = 512;
-const MAX_RESPONSE_BYTES = 1024 * 1024;
+// One completed Engine answer is collected under the same finite Worker memory
+// budget as the B14/Core completed-JSON contract
+// (padiem_ai_core.b14_execution.MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 MiB). The
+// former 1 MiB default rejected healthy large answers as
+// engine_response_too_large before the caller could read them. This is not a
+// model token or output limit, and streaming is not collected here.
+const MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
 // Hard ceiling on Engine attempts per ingress request: the initial attempt
 // plus, during the dual-credential migration window only, exactly one
 // CURRENT-credential retry. Never raised, never looped.
@@ -76,6 +90,52 @@ function secretsEqual(a, b) {
   return result === 0;
 }
 
+// Read an incoming byte stream incrementally and stop as soon as the byte
+// ceiling is crossed. Returns { bytes } on clean completion, { overflow: true }
+// when the ceiling is crossed mid-stream (reader cancelled immediately, later
+// chunks are never consumed), or { failed: true } on transport/read failure.
+// Raw stream content is never reflected into error responses.
+async function readBoundedBytes(stream, maxBytes) {
+  if (stream == null || typeof stream.getReader !== "function") {
+    return { bytes: new Uint8Array(0) };
+  }
+  const reader = stream.getReader();
+  const chunks = [];
+  let total = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = value instanceof Uint8Array ? value : new Uint8Array(value);
+      if (total + chunk.byteLength > maxBytes) {
+        try {
+          await reader.cancel();
+        } catch {
+          // Best-effort cancel; the oversize verdict is unchanged.
+        }
+        return { overflow: true };
+      }
+      chunks.push(chunk);
+      total += chunk.byteLength;
+    }
+  } catch {
+    return { failed: true };
+  } finally {
+    try {
+      reader.releaseLock();
+    } catch {
+      // Ignore release failures.
+    }
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return { bytes };
+}
+
 // Exactly one bounded Engine attempt with a SELECTED caller credential. The
 // already-buffered request body Uint8Array is replayed unchanged; it is never
 // re-read from the incoming request. Returns { status, body } on success, or
@@ -98,12 +158,15 @@ async function engineAttempt(engineBinding, callerId, credential, body) {
     return { error: jsonError(503, "engine_unavailable", "Padiem AI Engine is unavailable.") };
   }
 
-  const buffered = new Uint8Array(await response.arrayBuffer());
-  if (buffered.byteLength > MAX_RESPONSE_BYTES) {
+  const read = await readBoundedBytes(response.body, MAX_RESPONSE_BYTES);
+  if (read.overflow) {
     return { error: jsonError(502, "engine_response_too_large", "Padiem AI Engine response exceeded the safety limit.") };
   }
+  if (read.failed) {
+    return { error: jsonError(502, "engine_response_unavailable", "Padiem AI Engine response could not be read.") };
+  }
 
-  return { status: response.status, body: buffered };
+  return { status: response.status, body: read.bytes };
 }
 
 // Safe fallback detector for the migration seam ONLY. Consumes/parses the
@@ -181,10 +244,14 @@ export async function handleIngress(request, env) {
     }
   }
 
-  const body = new Uint8Array(await request.arrayBuffer());
-  if (body.byteLength > MAX_REQUEST_BODY_BYTES) {
+  const inbound = await readBoundedBytes(request.body, MAX_REQUEST_BODY_BYTES);
+  if (inbound.overflow) {
     return jsonError(413, "request_too_large", "Request body exceeds the ingress safety limit.");
   }
+  if (inbound.failed) {
+    return jsonError(400, "invalid_request", "Request body could not be read.");
+  }
+  const body = inbound.bytes;
 
   if (!env?.ENGINE || typeof env.ENGINE.fetch !== "function") {
     return jsonError(503, "engine_unavailable", "Padiem AI Engine is unavailable.");

@@ -226,7 +226,7 @@ class OpenAICompatibleProvider:
         base_url: str,
         api_key: str,
         model: str,
-        timeout_seconds: int = 30,
+        timeout_seconds: int = 600,
         cost_class: CostClass = CostClass.free,
         transport: Transport | None = None,
         environment: str = "development",

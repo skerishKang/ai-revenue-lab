@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 ROOT = Path(__file__).resolve().parents[1]
 CAPABILITIES_JS = (ROOT / "static/attachment-capabilities.js").read_text(encoding="utf-8")
 APP_JS = (ROOT / "static/app.js").read_text(encoding="utf-8")
@@ -32,7 +34,8 @@ def test_capability_projection_loads_before_copy_and_attachment_consumers():
 
 def test_composer_does_not_hard_code_format_truth_in_html():
     assert '<input id="attachmentFileInput" type="file" hidden />' in INDEX_HTML
-    assert '<small>지원 문서 형식</small>' in INDEX_HTML
+    assert 'id="documentFormatsToggle"' in INDEX_HTML
+    assert 'id="documentFormatsPanel"' in INDEX_HTML
     assert 'id="attachmentButton" title="파일 첨부"' in INDEX_HTML
     assert 'id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.' in INDEX_HTML
 
@@ -97,8 +100,9 @@ def test_readme_matches_current_ephemeral_composer_contract():
 
 def test_no_hidden_browser_persistence_or_interception_added():
     combined = CAPABILITIES_JS + "\n" + APP_JS + "\n" + BINARY_JS + "\n" + LOCALE_JS
-    for forbidden in ["localStorage", "sessionStorage", "indexedDB", "cookieStore", "window.fetch =", "MutationObserver"]:
+    for forbidden in ["localStorage", "indexedDB", "cookieStore", "window.fetch =", "MutationObserver"]:
         assert forbidden not in combined
+    assert_session_storage_is_handoff_only(combined)
 
 
 def test_document_starter_formats_break_only_at_explicit_separators():

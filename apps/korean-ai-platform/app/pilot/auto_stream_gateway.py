@@ -268,7 +268,9 @@ async def _prime_until_visible(
                 )
             raise _pilot_error_from_router_event(event)
 
-        if event.delta_content:
+        # Mirror the Router/Provider visible-text definition: whitespace
+        # cannot commit a route or force HTTP 200 before a real answer.
+        if event.delta_content and event.delta_content.strip():
             if not event.committed:
                 raise PilotError(
                     code="stream_execution_error",
@@ -340,6 +342,16 @@ async def pilot_auto_stream_preview(request: Request):
         except (ValueError, UnicodeDecodeError):
             return _invalid_json_response(gateway_request_id)
 
+        from .auto_availability import ensure_generic_auto_enabled
+        if isinstance(raw, dict) and raw.get("model") == "b14/auto":
+            ensure_generic_auto_enabled("b14/auto")
+            from app.pilot.platform_secrets import ensure_route_secrets
+            options = raw.get("business14")
+            opts = options if isinstance(options, dict) else {}
+            await ensure_route_secrets(
+                "b14/auto",
+                allow_external_fallback=opts.get("allow_external_fallback", True),
+            )
         body, decision = _validate_auto_preview_body(raw)
 
         transport = getattr(request.app.state, "stream_transport", None)
@@ -395,10 +407,11 @@ async def pilot_auto_stream_preview(request: Request):
             else gateway_request_id
         )
         logger.warning(
-            "auto_stream_preview_pre_start_error request_id=%s code=%s status=%d",
+            "auto_stream_preview_pre_start_error request_id=%s code=%s status=%d credential_reason=%s",
             request_id,
             exc.code,
             exc.status_code,
+            getattr(exc, "credential_reason", ""),
         )
         return _error_response(exc, request_id)
     except Exception:

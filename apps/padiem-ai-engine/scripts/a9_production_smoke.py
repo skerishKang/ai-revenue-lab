@@ -79,6 +79,9 @@ def _fail(step: str, message: str, raw: Any = None) -> None:
 
 
 def _require_env() -> bool:
+    if not isinstance(PINNED_MODEL, str) or not PINNED_MODEL:
+        print("A9_SMOKE=BLOCKED_NO_PRIMARY_MODEL", file=sys.stderr)
+        return False
     if not CALLER_ID or not CALLER_SECRET:
         print("SMOKE=SKIPPED_MISSING_SECRET", file=sys.stderr)
         return False

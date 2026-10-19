@@ -14,7 +14,16 @@ model, fallback order, or credential fails closed.
 
 from __future__ import annotations
 
+import re
+from collections.abc import Awaitable, Callable, Mapping
 from typing import Any
+
+from padiem_ai_core.orchestration_events import (
+    OrchestrationEvent,
+    OrchestrationEventError,
+    OrchestrationEventKind,
+    orchestration_event_from_public,
+)
 
 from padiem_ai_core import (
     OrchestrationError,
@@ -22,6 +31,7 @@ from padiem_ai_core import (
     OrchestrationResult,
     orchestration_result_from_public,
 )
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_ai_engine_client import PadiemAiEngineClientError
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
@@ -32,10 +42,20 @@ from padiem_control_plane.product_tier_routes import (
 from .p01_adapter import (
     P01AdapterError,
     P01DispatchClass,
+    validate_explicit_b14_model_id,
     P01_FAILURE_DETAIL_AUTHENTICATION,
     P01_FAILURE_DETAIL_AUTHORIZATION,
     P01_FAILURE_DETAIL_CONTRACT,
     P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
+    P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+    P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+    P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+    P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+    P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+    P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+    P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+    P01_FAILURE_DETAIL_TOOL_STAGES,
     P01_FAILURE_DETAIL_TRANSPORT,
 )
 from .p01_approval_pause_transport import (
@@ -48,8 +68,8 @@ from .p01_approval_pause_transport import (
 def _padiem_executable_route_ids() -> frozenset[str]:
     """Model IDs of the executable Padiem v1 tiers, derived from the shared
     declaration contract (#2099 SOT). B14 stays the execution authority: a
-    route unregistered there still fails closed at dispatch. Max is HOLD and
-    therefore never enters this set."""
+    route unregistered there still fails closed at dispatch. A successor-pending Plus HOLD may make this set empty; that is an import-safe
+    state and never authorizes a dispatch."""
     ids: set[str] = set()
     for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO):
         try:
@@ -62,20 +82,32 @@ def _padiem_executable_route_ids() -> frozenset[str]:
             ) from exc
         if route is not None and route.model_id is not None:
             ids.add(route.model_id)
-    if not ids:
-        raise P01AdapterError(
-            "invalid_product_tier",
-            "Padiem 공유 라우트 계약에 실행 가능한 등급 라우트가 없습니다.",
-            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
-        )
+    # Zero executable routes is a valid model-selection HOLD state (#3568).
+    # Importing Claw/KAgent must remain safe so non-model features still work.
+    # Actual execution fails closed earlier in P01RequestFactory/_agent_profile
+    # with tier_hold before any Engine/B14/provider dispatch.
     return frozenset(ids)
 
 
-# Padiem v1 executable product routes (#2212): the only model policies the
-# P01 wire accepts, consumed read-only from the shared declaration contract
-# so Claw never owns an independent route literal. Any other model_policy is
-# refused as authority pinning.
+# Padiem v1 executable routes are the *implicit* product-tier authority.
+# #3554 adds a bounded explicit user-choice lane (max_retries=0), not an
+# alternate provider catalog: B14 alone resolves/denies the exact model ID.
+# All additional authority fields or implicit/auto choices remain forbidden.
 PADIEM_EXECUTABLE_MODEL_IDS = _padiem_executable_route_ids()
+
+
+def _registered_b14_candidate_syntax(value: object) -> bool:
+    """Only syntax-check explicit user choice; B14 owns catalog resolution.
+
+    The P01 wire admits this path only with max_retries=0 and a single model.
+    A nonregistered exact ID is rejected by B14, never replaced by fallback.
+    """
+    try:
+        validate_explicit_b14_model_id(value)
+        return True
+    except P01AdapterError:
+        return False
+
 
 # The Engine client is injected structurally (any object exposing async
 # ``orchestrate(request)``); production uses ``PadiemAiEngineClient``.
@@ -88,6 +120,53 @@ _ENGINE_AUTHORIZATION_CODES = frozenset({"service_app_not_authorized"})
 _ENGINE_TRANSPORT_CODES = frozenset(
     {"invalid_engine_response", "engine_http_error", "invalid_engine_transport"}
 )
+# Bounded Engine/B14 model-execution failure codes (#3566 evidence rule).
+# The Engine's orchestrate boundary already bounds these to an enumerated
+# `code`; retaining the exact class keeps the terminal evidence load-bearing
+# without forwarding any message, prompt, or provider payload.
+_ENGINE_PROVIDER_SERVER_ERROR_CODES = frozenset({"upstream_server_error"})
+_ENGINE_PROVIDER_TIMEOUT_CODES = frozenset({"upstream_timeout"})
+_ENGINE_PROVIDER_RATE_LIMITED_CODES = frozenset({"upstream_rate_limited"})
+_ENGINE_PROVIDER_UNAVAILABLE_CODES = frozenset({"upstream_unavailable"})
+_ENGINE_PROVIDER_AUTHORIZATION_CODES = frozenset({"upstream_auth_error"})
+_ENGINE_PROVIDER_REQUEST_REJECTED_CODES = frozenset({"upstream_request_error"})
+_ENGINE_PROVIDER_BAD_RESPONSE_CODES = frozenset(
+    {"malformed_upstream", "empty_upstream_answer", "upstream_response_too_large"}
+)
+# Engine trusted-admission denial codes (#3655 canary evidence rule). These
+# are the enumerated fail-closed codes raised by the Engine's admission gate
+# (apps/padiem-ai-engine/app/execution_admission.py); retaining the admission
+# class lets the final canary record ENGINE_ADMISSION_RESULT=DENIED instead
+# of collapsing it into the downstream bucket.
+_ENGINE_ADMISSION_CODES = frozenset(
+    {
+        "missing_entitlement",
+        "entitlement_denied",
+        "entitlement_expired",
+        "entitlement_app_mismatch",
+        "entitlement_subject_mismatch",
+        "invalid_admission",
+        "invalid_admission_request",
+    }
+)
+
+
+_BOUNDED_ENGINE_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
+
+
+def _bounded_engine_error_code(record: object) -> str:
+    """The Engine's own closed error code from one stream error line (#5015).
+
+    Only an identifier-shaped code is preserved; anything else keeps the
+    historical generic contract failure. Messages and bodies are never read.
+    """
+    if isinstance(record, dict):
+        error = record.get("error")
+        if isinstance(error, dict):
+            code = error.get("code")
+            if isinstance(code, str) and _BOUNDED_ENGINE_ERROR_CODE_RE.fullmatch(code):
+                return code
+    return "p01_stream_trailing_record"
 
 
 def _engine_failure_detail(code: object) -> str:
@@ -97,6 +176,26 @@ def _engine_failure_detail(code: object) -> str:
         return P01_FAILURE_DETAIL_AUTHORIZATION
     if code in _ENGINE_TRANSPORT_CODES:
         return P01_FAILURE_DETAIL_TRANSPORT
+    if code in _ENGINE_ADMISSION_CODES:
+        return P01_FAILURE_DETAIL_ENGINE_ADMISSION
+    if code in _ENGINE_PROVIDER_SERVER_ERROR_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR
+    if code in _ENGINE_PROVIDER_TIMEOUT_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_TIMEOUT
+    if code in _ENGINE_PROVIDER_RATE_LIMITED_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED
+    if code in _ENGINE_PROVIDER_UNAVAILABLE_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE
+    if code in _ENGINE_PROVIDER_AUTHORIZATION_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION
+    if code in _ENGINE_PROVIDER_REQUEST_REJECTED_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED
+    if code in _ENGINE_PROVIDER_BAD_RESPONSE_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE
+    # #5015: an Engine error line that already names a tool stage keeps that
+    # closed code as its failure detail; everything else stays bucketed.
+    if code in P01_FAILURE_DETAIL_TOOL_STAGES:
+        return code
     return P01_FAILURE_DETAIL_DOWNSTREAM
 
 # OrchestrationRequest fields that carry authority the public wire cannot
@@ -108,6 +207,7 @@ _NULLABLE_AUTHORITY_FIELDS = (
     "agent_definition",
     "agent_planner",
     "agent_plan",
+    "agent_step_driver",
     "compiled_agent_profile",
     "skill_id",
     "skill_registry",
@@ -134,14 +234,33 @@ _EMPTY_AUTHORITY_FIELDS = (
 class P01EngineOrchestrationClient:
     """`P01OrchestrationPort` implementation backed by the Engine client."""
 
-    def __init__(self, client: Any) -> None:
+    def __init__(self, client: Any, *, allow_subject_identity: bool = False) -> None:
         if not callable(getattr(client, "orchestrate", None)):
             raise P01AdapterError(
                 "invalid_engine_client",
                 "Engine client must expose async orchestrate(request).",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
+        if not isinstance(allow_subject_identity, bool):
+            raise P01AdapterError(
+                "invalid_subject_lane",
+                "P01 subject identity lane must be a boolean.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
         self._client = client
+        # #3382: the reviewed canonical USER lane relaxes the blanket subject
+        # rejection for a bounded canonical subject only; the default lane
+        # keeps rejecting subject identity exactly as before.
+        self._allow_subject_identity = allow_subject_identity
+
+    def enable_subject_identity(self, allowed: bool) -> None:
+        if not isinstance(allowed, bool):
+            raise P01AdapterError(
+                "invalid_subject_lane",
+                "P01 subject identity lane must be a boolean.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
+        self._allow_subject_identity = allowed
 
     async def run(
         self, request: OrchestrationRequest
@@ -185,6 +304,149 @@ class P01EngineOrchestrationClient:
             return P01PausedWireResult(result=result, wire=approval_pause_wire)
         return result
 
+
+    async def run_stream(
+        self,
+        request: OrchestrationRequest,
+        *,
+        on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
+    ) -> OrchestrationResult | P01PausedWireResult:
+        """Opt-in, canonical P01 Engine event consumer (#3930).
+
+        Only intermediate events may reach an observer before completion. A
+        terminal event is withheld until the Engine's EOF-validated result,
+        Core reconstruction and full event-sequence equivalence all succeed.
+        This method does not activate streaming in the existing run() lane.
+        """
+        payload = self._build_payload(request)
+        stream_method = getattr(self._client, "stream_orchestration", None)
+        if not callable(stream_method):
+            raise P01AdapterError(
+                "p01_engine_stream_unavailable",
+                "Engine streaming is not configured for this P01 client.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
+        stream_events: list[OrchestrationEvent] = []
+        stream_run_id: str | None = None
+        terminal_raw: dict[str, Any] | None = None
+        terminal_kinds = frozenset({
+            OrchestrationEventKind.RUN_COMPLETED,
+            OrchestrationEventKind.RUN_FAILED,
+            OrchestrationEventKind.RUN_CANCELLED,
+            OrchestrationEventKind.APPROVAL_PAUSED,
+        })
+
+        def fail(code: str) -> P01AdapterError:
+            return P01AdapterError(
+                code,
+                "Engine streaming lifecycle did not match canonical P01 evidence.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
+                failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+            )
+
+        stream_iterator = stream_method(payload)
+        try:
+            async for record in stream_iterator:
+                if not isinstance(record, dict) or len(record) != 1:
+                    raise fail("p01_stream_invalid_record")
+                if "event" in record and terminal_raw is None:
+                    try:
+                        event = orchestration_event_from_public(record["event"])
+                    except (OrchestrationEventError, ValueError, TypeError) as exc:
+                        raise fail("p01_stream_invalid_event") from exc
+                    if len(stream_events) >= 128:
+                        raise fail("p01_stream_event_budget")
+                    if not stream_events:
+                        if event.sequence != 1 or event.kind is not OrchestrationEventKind.RUN_STARTED:
+                            raise fail("p01_stream_missing_start")
+                        stream_run_id = event.run_id
+                    else:
+                        prior = stream_events[-1]
+                        if (
+                            event.sequence != prior.sequence + 1
+                            or any(event.event_id == e.event_id for e in stream_events)
+                            or prior.kind in terminal_kinds
+                        ):
+                            raise fail("p01_stream_sequence_violation")
+                    if (
+                        event.run_id != stream_run_id
+                        or event.app_id != request.app_id
+                        or event.trace_id != request.context.trace_id
+                    ):
+                        raise fail("p01_stream_correlation_mismatch")
+                    stream_events.append(event)
+                    if on_event is not None and event.kind not in terminal_kinds:
+                        await on_event(event)
+                elif "orchestration" in record and terminal_raw is None:
+                    if not stream_events or stream_events[-1].kind not in terminal_kinds:
+                        raise fail("p01_stream_missing_terminal_event")
+                    if not isinstance(record["orchestration"], dict):
+                        raise fail("p01_stream_invalid_result")
+                    terminal_raw = record["orchestration"]
+                else:
+                    # #5015: the Engine ends a failed stream with one bounded
+                    # error line. Preserve its closed stage code so the caller
+                    # can tell admission, configuration and transport causes
+                    # apart instead of collapsing them into one generic code.
+                    raise fail(_bounded_engine_error_code(record))
+        except P01AdapterError:
+            raise
+        except PadiemAiEngineClientError as exc:
+            # An Engine request that reached its transport is UNKNOWN,
+            # never refunded or automatically retried after a partial stream.
+            # #5015: the decoder preserves the Engine's own bounded error
+            # stage code on the client metadata; it outranks the generic
+            # transport reason when mapping the failure detail.
+            engine_code = None
+            if isinstance(exc.metadata, Mapping):
+                candidate = exc.metadata.get("engine_code")
+                if isinstance(candidate, str) and candidate in P01_FAILURE_DETAIL_TOOL_STAGES:
+                    engine_code = candidate
+            raise P01AdapterError(
+                "p01_engine_stream_failed",
+                "Engine streaming failed before a verified terminal result.",
+                dispatch_class=P01DispatchClass.UNKNOWN,
+                failure_detail=(
+                    _engine_failure_detail(engine_code)
+                    if engine_code is not None
+                    else _engine_failure_detail(exc.code)
+                ),
+            ) from exc
+        except Exception as exc:
+            raise P01AdapterError(
+                "p01_engine_stream_failed",
+                "Engine streaming ended without safe P01 verification.",
+                dispatch_class=P01DispatchClass.UNKNOWN,
+                failure_detail=P01_FAILURE_DETAIL_TRANSPORT,
+            ) from exc
+        finally:
+            close = getattr(stream_iterator, "aclose", None)
+            if callable(close):
+                try:
+                    await close()
+                except Exception:
+                    pass
+
+        if terminal_raw is None:
+            raise fail("p01_stream_missing_result")
+        try:
+            core_payload, approval_pause_wire = split_engine_approval_pause_wire(terminal_raw)
+            result = orchestration_result_from_public(core_payload)
+        except (EngineApprovalPauseWireError, OrchestrationError) as exc:
+            raise fail("p01_stream_invalid_result") from exc
+        self._validate_correlation(request, result)
+        if (
+            len(result.events) != len(stream_events)
+            or any(actual.to_public_dict() != streamed.to_public_dict()
+                   for actual, streamed in zip(result.events, stream_events))
+        ):
+            raise fail("p01_stream_event_result_mismatch")
+        if on_event is not None:
+            await on_event(stream_events[-1])
+        if approval_pause_wire is not None:
+            return P01PausedWireResult(result=result, wire=approval_pause_wire)
+        return result
+
     def _build_payload(self, request: OrchestrationRequest) -> dict[str, Any]:
         if not isinstance(request, OrchestrationRequest):
             raise P01AdapterError(
@@ -204,11 +466,40 @@ class P01EngineOrchestrationClient:
         execution = request.execution_request
         agent = execution.agent
         model_policy = dict(agent.model_policy)
+        model_retries = model_policy.get("max_retries")
+        # #3382/#3566: the only extra model_policy authority the P01 wire
+        # accepts is the single-dispatch retry budget `max_retries=0` (the
+        # Claw one-shot canary contract: PROVIDER_CALL_COUNT_MAX=1, RETRY=0).
+        # Any other retry budget is authority widening and fails closed.
         valid_model_policy = (
             not model_policy
             or (
                 set(model_policy) == {"model"}
                 and model_policy["model"] in PADIEM_EXECUTABLE_MODEL_IDS
+            )
+            or (
+                set(model_policy) == {"model", "max_retries"}
+                and (
+                    model_policy["model"] in PADIEM_EXECUTABLE_MODEL_IDS
+                    or _registered_b14_candidate_syntax(model_policy["model"])
+                )
+                and isinstance(model_retries, int)
+                and not isinstance(model_retries, bool)
+                and model_retries == 0
+            )
+            or (
+                set(model_policy) == {"model", "max_retries", "product_tier"}
+                and model_policy["product_tier"] in ("free", "plus", "pro", "max")
+                and (
+                    model_policy["model"] in PADIEM_EXECUTABLE_MODEL_IDS
+                    or (
+                        model_policy["product_tier"] == "plus"
+                        and _registered_b14_candidate_syntax(model_policy["model"])
+                    )
+                )
+                and isinstance(model_retries, int)
+                and not isinstance(model_retries, bool)
+                and model_retries == 0
             )
         )
         if (
@@ -246,17 +537,118 @@ class P01EngineOrchestrationClient:
             payload["session_id"] = execution.session_id
         if execution.additional_system_context is not None:
             payload["additional_system_context"] = execution.additional_system_context
+        # #3382: the canonical USER lane carries the server-resolved subject on
+        # the Engine wire. The Engine's own admission contract validates the
+        # subject shape and revalidates it against Control Plane Identity.
+        if request.subject_id is not None:
+            payload["subject_id"] = request.subject_id
+        if self._is_trusted_capture_request(request):
+            payload["agent_plan"] = request.agent_plan.to_public_dict()
+            payload["tool_arguments"] = {
+                step: dict(arguments)
+                for step, arguments in request.tool_arguments.items()
+            }
+        elif self._is_trusted_pc_query_request(request):
+            # #5015: the Engine has a dedicated PC-query driver. Without this
+            # exact plan the request was refused as unsupported authority
+            # BEFORE dispatch, so the Chat turn only ever surfaced the bounded
+            # `engine_execution_failed` error.
+            payload["agent_plan"] = request.agent_plan.to_public_dict()
+            if request.tool_arguments is not None:
+                payload["tool_arguments"] = {
+                    step: dict(arguments)
+                    for step, arguments in request.tool_arguments.items()
+                }
         return payload
 
-    @staticmethod
-    def _reject_unsupported_authority(request: OrchestrationRequest) -> None:
-        if request.subject_id is not None:
+    def _is_trusted_pc_query_request(self, request: OrchestrationRequest) -> bool:
+        """Exact Claw-owned PC plan: drive inventory or bounded list+read.
+
+        Mirrors ``_is_trusted_capture_request``: a canonical plan with no
+        caller-supplied command. Both plans may carry only their closed
+        server-selected device hint; the model never chooses the target.
+        """
+        plan = request.agent_plan
+        if not (
+            self._allow_subject_identity
+            and request.app_id == "b54-padiem-claw"
+            and request.subject_id
+            and request.execution_request.session_id
+            and plan is not None
+            and plan.agent_id == "agent:padiem:claw-pc-query@1"
+        ):
+            return False
+        if (
+            len(plan.steps) == 1
+            and plan.steps[0].step_id == "query_drives"
+            and plan.steps[0].tool_id == "claw.pc.query_drives"
+        ):
+            target_key = "query_drives"
+        elif (
+            len(plan.steps) == 2
+            and plan.steps[0].step_id == "list_files"
+            and plan.steps[0].tool_id == "claw.pc.list_files"
+            and plan.steps[1].step_id == "read_file"
+            and plan.steps[1].tool_id == "claw.pc.read_file"
+        ):
+            target_key = "files"
+        else:
+            return False
+        arguments = request.tool_arguments
+        if arguments is None:
+            return True
+        if not isinstance(arguments, dict) or set(arguments) != {target_key}:
+            return False
+        target = arguments.get(target_key)
+        if not isinstance(target, dict) or set(target) != {"device_id"}:
+            return False
+        device_id = target.get("device_id")
+        return is_pc_device_id(device_id)
+
+    def _is_trusted_capture_request(self, request: OrchestrationRequest) -> bool:
+        """Exact Claw-owned, one-capture plan only; never general tool authority."""
+        plan = request.agent_plan
+        arguments = request.tool_arguments
+        if (not self._allow_subject_identity
+            or request.app_id != "b54-padiem-claw"
+            or not request.subject_id
+            or not request.execution_request.session_id
+            or plan is None
+            or plan.agent_id != "agent:padiem:claw-desktop@1"
+            or len(plan.steps) != 1
+            or plan.steps[0].step_id != "capture"
+            or plan.steps[0].tool_id != "claw.desktop.capture"
+            or not isinstance(arguments, dict)
+            or set(arguments) != {"capture"}
+            or not isinstance(arguments["capture"], dict)
+            or set(arguments["capture"]) - {"device_id", "use_pinned_device"}):
+            return False
+        args = arguments["capture"]
+        if args == {"use_pinned_device": True}:
+            return True
+        return set(args) == {"device_id"} and (
+            isinstance(args["device_id"], str) and 0 < len(args["device_id"]) <= 128
+        )
+
+    def _reject_unsupported_authority(self, request: OrchestrationRequest) -> None:
+        trusted_capture = self._is_trusted_capture_request(request)
+        trusted_pc_query = self._is_trusted_pc_query_request(request)
+        if request.subject_id is not None and not self._allow_subject_identity:
             raise P01AdapterError(
                 "p01_authority_field_unsupported",
                 "P01 requests must not carry a subject identity.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
+        if request.subject_id is not None:
+            # #3382: reuse the shared canonical subject validator from
+            # p01_adapter.py — the same grammar the factory uses, so a subject
+            # that bypasses the factory still fails closed on shape.
+            from kagent.p01_adapter import validate_canonical_subject_id
+
+            validate_canonical_subject_id(request.subject_id)
         for name in _NULLABLE_AUTHORITY_FIELDS:
+            if (trusted_capture or trusted_pc_query) and name in ("agent_plan", "tool_arguments"):
+                continue
             if getattr(request, name) is not None:
                 raise P01AdapterError(
                     "p01_authority_field_unsupported",

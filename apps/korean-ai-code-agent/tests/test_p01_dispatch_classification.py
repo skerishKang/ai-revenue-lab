@@ -13,6 +13,8 @@ import json
 import unittest
 from dataclasses import replace
 
+from p01_test_model_route import SyntheticPlusRouteMixin
+
 from padiem_ai_core.b14_execution import B14RouteMetadata
 from padiem_ai_core.contracts import RunMetadata, RunStatus
 from padiem_ai_core.execution_runtime import ExecutionResult
@@ -133,7 +135,7 @@ def _run_port(transport: FakeEngineTransport, request):
     return asyncio.run(port.run(request))
 
 
-class P01DispatchClassificationTests(unittest.TestCase):
+class P01DispatchClassificationTests(SyntheticPlusRouteMixin, unittest.TestCase):
     def test_default_dispatch_class_is_conservative_unknown(self) -> None:
         error = P01AdapterError("some_code", "safe message")
         self.assertEqual(error.dispatch_class, P01DispatchClass.UNKNOWN)

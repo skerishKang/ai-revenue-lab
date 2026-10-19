@@ -19,7 +19,7 @@ import pytest
 from app.service import (
     EXECUTE_PATH,
     HEALTH_PATH,
-    MAX_REQUEST_BODY_BYTES,
+    MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES,
     _AGENT_REQUIRED,
     _TOP_LEVEL_REQUIRED,
 )
@@ -77,7 +77,7 @@ def test_execute_required_agent_fields_match_source(spec: dict):
 
 def test_execute_max_body_bytes_match_source(spec: dict):
     post = spec["paths"][EXECUTE_PATH]["post"]
-    assert post["x-engine-max-body-bytes"] == MAX_REQUEST_BODY_BYTES
+    assert post["x-engine-max-body-bytes"] == MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
 
 
 def test_execute_documents_every_emitted_status(spec: dict):

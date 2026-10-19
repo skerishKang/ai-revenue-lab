@@ -1,0 +1,87 @@
+name: Connector Python SDK Canary (No Deploy)
+
+on:
+  pull_request:
+    paths:
+      - "tools/connector-edge-canary/**"
+      - ".github/workflows/connector-edge-python-sdk-canary.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: connector-python-sdk-canary-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  isolated-python-worker-packaging:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: tools/connector-edge-canary
+    steps:
+      - name: Checkout review head without write token
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Python 3.13 for current Cloudflare Python Worker
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Node 22 for Wrangler
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Prove the canary cannot select any production account or binding
+        run: |
+          python - <<'PY'
+          import pathlib, tomllib
+          cfg = tomllib.loads(pathlib.Path("wrangler.toml").read_text())
+          assert cfg["main"] == "worker.py"
+          assert cfg["compatibility_flags"] == ["python_workers"]
+          assert cfg["workers_dev"] is False
+          assert cfg["preview_urls"] is False
+          for name in ("account_id", "routes", "route", "durable_objects",
+                       "r2_buckets", "d1_databases", "services", "vars", "secrets"):
+              assert name not in cfg, name
+          print("CONNECTOR_CANARY_UNBOUND=PASS")
+          PY
+
+      - name: Test TLS refusal and non-secret ASGI framing offline
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Resolve official Python Workers development dependencies
+        run: uv sync --group dev
+
+      - name: Vendor official external Python Workers SDK on Ubuntu
+        run: |
+          uv run pywrangler sync --force
+          test -f python_modules/workers/__init__.py
+          echo "CONNECTOR_CANARY_EXTERNAL_SDK_VENDOR=PASS"
+
+      - name: Boot actual Ubuntu Workerd with the external Python SDK
+        run: bash ci_local_workerd_probe.sh
+
+      - name: Prove real local Workerd Python ASGI 101 and bidirectional frames
+        run: bash ci_local_wss_probe.sh
+
+      - name: Prove local Python Identity and Broker Service Binding RPC transport
+        run: bash ci_private_rpc_local_probe.sh
+
+      - name: Bundle Python Worker with official SDK without a deployment
+        run: |
+          uv run pywrangler deploy --dry-run --outdir "$RUNNER_TEMP/connector-python-canary"
+          test -d "$RUNNER_TEMP/connector-python-canary"
+          echo "CONNECTOR_CANARY_PYTHON_SDK_DRYRUN=PASS"
+          echo "CLOUDFLARE_ACCOUNT_MUTATION=0"
+          echo "CUSTOMER_DEVICE_ENROLLMENT=0"

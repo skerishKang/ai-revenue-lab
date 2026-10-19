@@ -319,6 +319,14 @@ def collect_package_root_consumers() -> list[dict[str, object]]:
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         except (SyntaxError, UnicodeDecodeError):
             continue
+        except FileNotFoundError:
+            # #4070 race guard. `_iter_python_files()` lists the tree first and
+            # this loop reads each entry afterwards, so a file that another
+            # concurrently running suite creates transiently (and deletes) can
+            # disappear between the two passes. This inventory audits committed
+            # sources; a path that no longer exists contributes nothing, so skip
+            # it rather than failing the whole fail-closed CI lane.
+            continue
 
         module_aliases: set[str] = set()
 

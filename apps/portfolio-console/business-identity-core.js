@@ -1,7 +1,8 @@
-/*  business-identity-core.js  —  SINGLE SOURCE for B1–61 phase authority (Phase 2A+)
+/*  business-identity-core.js  —  SINGLE SOURCE for registered Business phase authority (Phase 2A+)
  *
  * Static portfolio phase status only. Volatile Issue/PR/CI/SHA facts remain
- * outside this file. B56 is an intentional numbering gap.
+ * outside this file. B56 is an intentional numbering gap. B62/B63 remain
+ * reserved-but-unregistered; B64 is tracked under owner-approved Issue #987.
  */
 
 (function (root, factory) {
@@ -72,7 +73,8 @@
     { n:58, ui:"IN_PROGRESS",   ux:"IN_PROGRESS",    be:"FROZEN" },
     { n:59, ui:"IN_PROGRESS",   ux:"IN_PROGRESS",    be:"NOT_APPLICABLE" },
     { n:60, ui:"IN_PROGRESS",   ux:"BLOCKED_BY_UI",  be:"FROZEN" },
-    { n:61, ui:"UI_APPROVED",   ux:"IN_PROGRESS",    be:"IMPLEMENTED" }
+    { n:61, ui:"UI_APPROVED",   ux:"IN_PROGRESS",    be:"IMPLEMENTED" },
+    { n:64, ui:"IN_PROGRESS",   ux:"IN_PROGRESS",    be:"IN_PROGRESS" }
   ]);
 
   var byNumber = {};

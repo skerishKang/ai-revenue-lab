@@ -46,6 +46,10 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
+
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -125,18 +129,52 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     assert "fetch(" not in ticker
     assert "runClawExecution" not in ticker
     # No hidden POST path: no XHR stream and no background flush of the form.
-    for token in ("XMLHttpRequest", "sendBeacon", "keepalive", "location.reload", "localStorage", "sessionStorage"):
+    for token in ("XMLHttpRequest", "sendBeacon", "keepalive", "location.reload", "localStorage"):
         assert token not in app
-    # A cooldown strictly gates the single execute entry point.
+    assert_session_storage_is_handoff_only(app)
+    # A cooldown, and an unresolved dispatch of the request currently composed,
+    # both strictly gate the single execute entry point.
     assert "if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown" in app
-    assert "const blocked = busy || clawRetryRemaining() > 0;" in app
+    assert "if (clawCurrentDispatchIsUncertain()) return; // #3382: no re-send of an unresolved request" in app
+    assert "const blocked = busy || clawRetryRemaining() > 0 || clawCurrentDispatchIsUncertain();" in app
+    # Identity-based, never a released-once boolean: one edit must not clear it.
+    assert "clawExecuteUncertain" not in app
+    assert "clawUncertainKeys.add(clawLastDispatchKey)" in app
+
+
+def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:
+    app = _app_source()
+    start = app.index("function clawVisibleExecutePayload()")
+    builder = app[start: app.index("function noteClawContentEdited(", start)]
+    # One shape, shared by the dispatch and the duplicate comparison.
+    assert builder.count("function clawVisibleExecutePayload()") == 1
+    assert builder.count("function clawExecuteWireKey(") == 1
+    for wire_field in (
+        "payload.content",
+        "payload.channel",
+        "payload.action",
+        "payload.sender_hint",
+        "payload.tier",
+        "payload.conversation_id",
+    ):
+        assert wire_field in builder, wire_field
+    # The model ID selector never reaches this request. Counting it as new work
+    # was the bypass CTO review found on #3382, so it must stay out of the key.
+    assert "clawModelIdInput" not in builder
+    assert "const executePayload = clawVisibleExecutePayload();" in app
+    # One assembly point only: a second inline literal is how the key and the
+    # wire bytes diverge again.
+    assert app.count("const executePayload = {") == 1
+    assert "clawLastDispatchKey = clawExecuteWireKey(executePayload);" in app
 
 
 def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None:
     app = _app_source()
     assert "function isAmbiguousClawFailure(data, response)" in app
     assert 'return status === 502 || code === "engine_execution_failed";' in app
-    assert "else if (isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();" in app
+    # #3933: a bounded pre-dispatch refusal (model HOLD) is a proven non-dispatch,
+    # so it is excluded at the call site as well as in the classifier above.
+    assert "else if (!boundedFailure && isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();" in app
     assert "showClawAmbiguousRecoveryHint();" in app.split("} catch {", 1)[1]
     # Closed allowlist: no other bounded failure on this route may claim that a
     # dispatch possibly happened. Pre-dispatch denials and post-run persistence
@@ -170,9 +208,21 @@ def test_retry_target_is_the_visible_form_not_a_hidden_snapshot() -> None:
     assert "clawRetrySnapshot" not in app
     body = app[app.index("async function runClawExecution()"):]
     body = body[: body.index("if (clawExecuteButton) {")]
-    assert "const body = (input.value || \"\").trim();" in body
-    assert "const channelValue = clawChannel?.value || \"other\";" in body
-    assert "const senderText = (clawSender?.value || \"\").trim();" in body
+    # #3382 moved request assembly into one builder shared with the duplicate
+    # check, so the live-DOM reads are asserted on the builder itself. The entry
+    # point must still derive everything at click time and hold no snapshot.
+    assert "const executePayload = clawVisibleExecutePayload();" in body
+    assert "const body = executePayload.content;" in body
+    builder = app[app.index("function clawVisibleExecutePayload()"):]
+    builder = builder[: builder.index("\n  }")]
+    for live_read in (
+        "(input.value || \"\").trim()",
+        "clawChannel?.value || \"other\"",
+        "clawAction?.value || \"quote\"",
+        "(clawSender?.value || \"\").trim()",
+        "conversationState.getConversationId()",
+    ):
+        assert live_read in builder, live_read
     # The user's request text is preserved on failure: nothing clears the input.
     assert "input.value = \"\";" not in body
 
@@ -256,6 +306,16 @@ function makeEl(tag) {
   el.prepend = (...cs) => cs.forEach((c) => { el.children.unshift(c); c.parentNode = el; });
   el.append = (...cs) => cs.forEach((c) => el.appendChild(c));
   el.replaceChildren = (...cs) => { el.children = []; cs.forEach((c) => el.appendChild(c)); };
+  // #4806 inserts the artifact context relative to #messageList, so the shim
+  // needs the same child-insertion API the real Element exposes.
+  el.insertBefore = (node, ref) => {
+    const at = el.children.indexOf(ref);
+    if (at < 0) el.children.push(node); else el.children.splice(at, 0, node);
+    node.parentNode = el;
+    return node;
+  };
+  el.removeChild = (node) => { el.children = el.children.filter((c) => c !== node); return node; };
+  el.hasChildNodes = () => el.children.length > 0;
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
   el.querySelector = (sel) => el.children.find((c) => c.className && c.className.includes(sel.replace(/^\./, ""))) || null;
@@ -266,6 +326,29 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // #4806 added `messageList.closest(".conversation")` to the real app.js.
+  // This minimal DOM shim must expose the same Element API instead of
+  // crashing every behavioral harness that runs the real source.
+  el.closest = (sel) => {
+    const want = String(sel).replace(/^\./, "");
+    let node = el;
+    while (node) {
+      if (node.className && String(node.className).includes(want)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  };
+  // Assigning .value must model a real user edit: the app separates a new draft
+  // from a re-send by listening to input/change, so the shim fires those.
+  let rawValue = "";
+  Object.defineProperty(el, "value", {
+    get: () => rawValue,
+    set: (v) => {
+      rawValue = v;
+      (el.listeners.input || []).forEach((fn) => fn({ type: "input", target: el }));
+      (el.listeners.change || []).forEach((fn) => fn({ type: "change", target: el }));
+    },
+  });
   return el;
 }
 
@@ -290,7 +373,18 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawInboxEmpty","clawInboxList","clawInboxRetry","clawRunHistory","clawRunHistoryRefresh",
   "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty",
   "clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
+  // index.html:677 declares this input; the execute request never carries it, so
+  // the duplicate guard must treat changing it as NOT new work.
+  "clawModelIdInput",
 ].forEach((id) => add(id, "div"));
+// index.html nests #messageList inside <section class="conversation">, and the
+// real app.js reads that ancestor to decide whether the first turn continues
+// the landing panel (#4806). Model the same nesting instead of returning null.
+if (byId.messageList) {
+  const conversationSection = makeEl("section");
+  conversationSection.className = "conversation";
+  conversationSection.appendChild(byId.messageList);
+}
 
 // Mirror the declared markup: the recovery nodes start hidden/disabled.
 byId.clawRetryHint.hidden = true;
@@ -368,6 +462,10 @@ const COPY = {
     "claw-status-execute-running": "실행 중...",
     "claw-status-execute-success": "실행이 완료되었습니다.",
     "claw-error-generic": "실행 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+    // #3933: the bounded pre-dispatch model-unavailable copy, mirrored from
+    // static/locale.js. Reused verbatim — this slice invents no second wording.
+    "claw-general-model-unavailable": "선택한 AI 모델을 현재 사용할 수 없습니다. 다른 모델을 선택해 주세요.",
+    "claw-general-model-unavailable-note": "이 요청은 실행되지 않았습니다. 자동으로 다시 실행하지 않으며, 다른 모델을 선택해 새로 요청하면 그 결과가 표시됩니다.",
   },
   en: {
     "claw-btn-retry": "Try again",
@@ -380,6 +478,9 @@ const COPY = {
     "claw-status-execute-running": "Running...",
     "claw-status-execute-success": "Done.",
     "claw-error-generic": "Something went wrong. Please try again shortly.",
+    // #3933: English counterpart of the bounded model-unavailable copy.
+    "claw-general-model-unavailable": "The selected AI model isn't available right now. Please choose another model.",
+    "claw-general-model-unavailable-note": "This request was not executed and is never retried automatically. Choose another model and send a new request.",
   },
 };
 function localeText(key, variables) {
@@ -390,12 +491,59 @@ function localeText(key, variables) {
 }
 
 const winListeners = {};
+// #3989: advance ONLY this Node harness's clock, never the app source.
+// Exercise every scheduled callback and 1-second cooldown transition, preserving
+// the existing real-app.js DOM/fetch checks without waiting for wall-clock time.
+const RealDate = Date;
+let virtualNow = RealDate.now();
+let timerSequence = 0;
+const virtualTimers = new Map();
+class VirtualDate extends RealDate {
+  constructor(...args) { if (args.length) super(...args); else super(virtualNow); }
+  static now() { return virtualNow; }
+}
+function virtualSetTimeout(callback, delay=0, ...args) {
+  const id = ++timerSequence;
+  virtualTimers.set(id, {when: virtualNow + Math.max(0, Number(delay)||0), period:0, callback, args});
+  return id;
+}
+function virtualSetInterval(callback, delay=0, ...args) {
+  const period = Math.max(1, Number(delay)||0);
+  const id = ++timerSequence;
+  virtualTimers.set(id, {when: virtualNow + period, period, callback, args});
+  return id;
+}
+function virtualClearTimer(id) { virtualTimers.delete(id); }
+async function advanceClock(ms) {
+  const until = virtualNow + ms;
+  let iterations = 0;
+  while (true) {
+    let chosenId = null;
+    let chosen = null;
+    for (const [id, timer] of virtualTimers) {
+      if (timer.when <= until && (!chosen || timer.when < chosen.when)) {
+        chosenId = id;
+        chosen = timer;
+      }
+    }
+    if (!chosen) break;
+    virtualNow = chosen.when;
+    if (chosen.period > 0) chosen.when += chosen.period;
+    else virtualTimers.delete(chosenId);
+    chosen.callback(...chosen.args);
+    await Promise.resolve();
+    if (++iterations > 10000) throw new Error("timer loop");
+  }
+  virtualNow = until;
+  await new Promise((r) => setImmediate(r));
+}
 const sandbox = {
   document: doc,
   fetch: fetchImpl,
   AbortController: class { constructor() { this.signal = {}; } abort() {} },
   URL: { createObjectURL: () => "blob:x", revokeObjectURL() {}, revokeURL() {} },
-  setTimeout, clearTimeout, setInterval, clearInterval, console,
+  setTimeout: virtualSetTimeout, clearTimeout: virtualClearTimer,
+  setInterval: virtualSetInterval, clearInterval: virtualClearTimer, Date: VirtualDate, console,
   CustomEvent: class {},
   location: { href: "http://localhost/", assign() {} },
   addEventListener: (type, fn) => { (winListeners[type] = winListeners[type] || []).push(fn); },
@@ -423,7 +571,7 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   const fail = (m) => { console.log(JSON.stringify({ ok: false, error: m, requests, checks })); process.exit(0); };
   process.on("unhandledRejection", (e) => { console.log(JSON.stringify({ ok: false, error: "unhandledRejection " + String((e && e.stack) || e) })); process.exit(0); });
   process.on("uncaughtException", (e) => { console.log(JSON.stringify({ ok: false, error: "uncaughtException " + String((e && e.stack) || e) })); process.exit(0); });
-  const tick = (ms) => new Promise((r) => setTimeout(r, ms));
+  const tick = advanceClock;
   const execPosts = () => requests.filter((r) => r.url === "/api/claw/manual-intake/execute" && r.method === "POST");
   const lastExec = () => execPosts()[execPosts().length - 1];
   // Every dispatched execute POST is accounted for by exactly one user action.
@@ -654,7 +802,11 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   if (!checks.NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE) fail("NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE");
 
   // 14) A pre-dispatch 503 (workspace scope/storage/identity) is not ambiguous:
-  //     it keeps its own bounded copy and makes no run-replay claim.
+  //     it keeps its own bounded copy and makes no run-replay claim. Composing
+  //     different work is what releases case 13's uncertain-dispatch latch.
+  byId.messageInput.value = "503 경로 확인";
+  checks.EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH = byId.clawExecuteButton.disabled === false;
+  if (!checks.EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH) fail("EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH");
   executeCall = () => jsonResponse(503, { ok: false, error: { code: "workspace_scope_unavailable" } });
   expectedPosts += 1;
   byId.clawExecuteButton.click();
@@ -665,6 +817,58 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
     byId.clawRetryBox.hidden === true &&
     byId.clawStatus.textContent === COPY.ko["claw-error-auth-unavailable"];
   if (!checks.PRE_DISPATCH_503_IS_NOT_AMBIGUOUS) fail("PRE_DISPATCH_503_IS_NOT_AMBIGUOUS: " + byId.clawStatus.textContent);
+
+  // 14b) #3933: the same pre-dispatch 503 family also carries the
+  //      model-unavailable HOLD. It is a proven non-dispatch, so the manual lane
+  //      must show the bounded model copy (never the generic run-failure
+  //      sentence), state that nothing was executed, and leave no uncertain-run
+  //      latch — the identical body stays re-sendable.
+  byId.messageInput.value = "모델 HOLD 확인";
+  executeCall = () => jsonResponse(503, { ok: false, error: { code: "tier_unavailable" } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const afterHold = execPosts().length;
+  checks.HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY =
+    afterHold === expectedPosts &&
+    byId.clawStatus.textContent === COPY.ko["claw-general-model-unavailable"] &&
+    byId.clawStatus.textContent !== COPY.ko["claw-error-generic"] &&
+    byId.clawResultEmpty.hidden === false &&
+    byId.clawResultEmpty.textContent ===
+      COPY.ko["claw-general-model-unavailable"] + " " + COPY.ko["claw-general-model-unavailable-note"];
+  if (!checks.HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY) {
+    fail("HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY: " + byId.clawStatus.textContent + " | " + byId.clawResultEmpty.textContent);
+  }
+  checks.HOLD_503_IS_NOT_AMBIGUOUS =
+    byId.clawRetryHint.hidden === true &&
+    byId.clawRetryBox.hidden === true &&
+    byId.clawRetryButton.disabled === true &&
+    byId.clawExecuteButton.disabled === false;
+  if (!checks.HOLD_503_IS_NOT_AMBIGUOUS) fail("HOLD_503_IS_NOT_AMBIGUOUS: " + byId.clawRetryHint.textContent);
+
+  // 14c) The HOLD copy is locale-driven in both languages from the same key the
+  //      composer lane already uses, so no second wording exists to drift.
+  lang = "en";
+  emitWindow("padiem:localechange");
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  checks.HOLD_503_COPY_IS_LOCALE_DRIVEN =
+    execPosts().length === expectedPosts &&
+    byId.clawStatus.textContent === COPY.en["claw-general-model-unavailable"] &&
+    byId.clawResultEmpty.textContent ===
+      COPY.en["claw-general-model-unavailable"] + " " + COPY.en["claw-general-model-unavailable-note"];
+  if (!checks.HOLD_503_COPY_IS_LOCALE_DRIVEN) fail("HOLD_503_COPY_IS_LOCALE_DRIVEN: " + byId.clawStatus.textContent);
+  lang = "ko";
+  emitWindow("padiem:localechange");
+
+  // 14d) A HOLD latched nothing: the SAME body is still dispatchable, once.
+  const afterHoldEn = execPosts().length;
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  checks.HOLD_503_LEAVES_NO_UNCERTAIN_LATCH = execPosts().length === afterHoldEn + 1;
+  if (!checks.HOLD_503_LEAVES_NO_UNCERTAIN_LATCH) fail("HOLD_503_LEAVES_NO_UNCERTAIN_LATCH");
 
   // 15) A network failure is ambiguous too: hint, no replay, text preserved.
   const beforeNetwork = execPosts().length;
@@ -683,6 +887,155 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   if (!checks.NETWORK_FAILURE_IS_AMBIGUOUS_AND_NOT_REPLAYED) fail("NETWORK_FAILURE_IS_AMBIGUOUS_AND_NOT_REPLAYED");
   await tick(1500);
   if (execPosts().length !== afterNetwork) fail("NETWORK_FAILURE_REPLAYED");
+
+  // 16) #3382: after an uncertain outcome the SAME content must not be re-sent.
+  //     Case 15 left the form unresolved on its own body; forced clicks on both
+  //     execute entry points must produce zero additional POSTs. The whole wire
+  //     body is captured, because identity is the request, not one field.
+  const applyBody = (b) => {
+    byId.messageInput.value = b.content;
+    byId.clawChannel.value = b.channel;
+    byId.clawAction.value = b.action;
+    byId.clawSender.value = b.sender_hint || "";
+  };
+  const afterLatch = execPosts().length;
+  const uncertainA = Object.assign({}, lastExec().body);
+  if (byId.clawExecuteButton.disabled !== true) fail("UNCERTAIN_LATCH_LEFT_EXECUTE_ENABLED");
+  byId.clawExecuteButton.click();
+  byId.clawRetryButton.click();
+  await tick(120);
+  checks.SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME =
+    execPosts().length === afterLatch &&
+    byId.clawExecuteButton.disabled === true &&
+    byId.clawExecuteButton.getAttribute("aria-disabled") === "true" &&
+    byId.clawRetryButton.disabled === true &&
+    byId.clawRetryHint.hidden === false;
+  if (!checks.SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME) fail("SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME");
+
+  // 17) The block gates the manual-execute lane only. The draft/preview submit
+  //     stays available on the unchanged form, so ordinary work is not blocked.
+  const previewBefore = requests.filter((r) => r.url === "/api/claw/manual-intake/preview").length;
+  byId.clawManualForm.requestSubmit();
+  await tick(80);
+  checks.PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED =
+    requests.filter((r) => r.url === "/api/claw/manual-intake/preview").length === previewBefore + 1 &&
+    execPosts().length === afterLatch &&
+    byId.clawExecuteButton.disabled === true;
+  if (!checks.PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED) fail("PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED");
+
+  // 18) Directive 2: a DIFFERENT request is new work and runs normally.
+  byId.messageInput.value = "새 작업 B";
+  executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const afterB = execPosts().length;
+  checks.NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME =
+    afterB === afterLatch + 1 &&
+    lastExec().body.content === "새 작업 B" &&
+    byId.clawExecuteButton.disabled === false &&
+    byId.clawRetryHint.hidden === true;
+  if (!checks.NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME) fail("NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME: " + JSON.stringify(lastExec().body));
+
+  // 19) Directive 1: editing to B then RESTORING A re-blocks A. B's success is a
+  //     definite outcome for B only; A's dispatch is still unresolved, so a latch
+  //     that released on the first edit would let the identical POST through here.
+  applyBody(uncertainA);
+  byId.clawExecuteButton.click();
+  byId.clawRetryButton.click();
+  await tick(120);
+  checks.RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT =
+    execPosts().length === afterB &&
+    byId.clawExecuteButton.disabled === true;
+  if (!checks.RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT) fail("RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT");
+
+  // 19) CTO review of #3382: the model ID field is not part of the execute
+  //     request, so rotating it alone must NOT release the latch, while a change
+  //     to real wire content still composes exactly one new run.
+  byId.messageInput.value = "모델 ID 우회 확인";
+  executeCall = () => jsonResponse(502, { ok: false, error: { code: "engine_execution_failed" } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const afterBypassTry = execPosts().length;
+  if (lastExec().body.model_id !== undefined) fail("EXECUTE_REQUEST_CARRIES_MODEL_ID");
+  byId.clawModelIdInput.value = "agnes-ai/agnes-3.0-flash";
+  byId.clawExecuteButton.click();
+  byId.clawRetryButton.click();
+  await tick(120);
+  checks.MODEL_ID_ONLY_CHANGE_KEEPS_LATCH =
+    execPosts().length === afterBypassTry &&
+    byId.clawExecuteButton.disabled === true &&
+    byId.clawRetryButton.disabled === true;
+  if (!checks.MODEL_ID_ONLY_CHANGE_KEEPS_LATCH) fail("MODEL_ID_ONLY_CHANGE_KEEPS_LATCH");
+  byId.clawChannel.value = "email";
+  executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  checks.WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE =
+    execPosts().length === afterBypassTry + 1 &&
+    lastExec().body.channel === "email" &&
+    lastExec().body.content === "모델 ID 우회 확인" &&
+    lastExec().body.model_id === undefined;
+  if (!checks.WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE) {
+    fail("WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE: " + JSON.stringify(lastExec().body));
+  }
+
+  // 20) Directive 3: when TWO requests both fail ambiguously, both stay blocked
+  //     and a freshly composed third request still runs.
+  executeCall = () => jsonResponse(502, { ok: false, error: { code: "engine_execution_failed" } });
+  byId.clawChannel.value = "email";
+  byId.messageInput.value = "둘 다 502 P";
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const uncertainP = Object.assign({}, lastExec().body);
+  byId.messageInput.value = "둘 다 502 Q";
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const uncertainQ = Object.assign({}, lastExec().body);
+  const afterPQ = execPosts().length;
+  applyBody(uncertainP);
+  byId.clawExecuteButton.click();
+  await tick(60);
+  applyBody(uncertainQ);
+  byId.clawExecuteButton.click();
+  await tick(60);
+  checks.TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED =
+    execPosts().length === afterPQ && byId.clawExecuteButton.disabled === true;
+  if (!checks.TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED) fail("TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED");
+
+  // 21) Directive 4: uncertainty belongs to the request that failed, not to the
+  //     form. Composing B while A is still in flight must let B run after A dies,
+  //     and A must stay blocked afterwards.
+  let settlePending = null;
+  executeCall = () => new Promise((res) => { settlePending = res; });
+  byId.messageInput.value = "in flight A";
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(40);
+  const inFlightA = Object.assign({}, lastExec().body);
+  byId.messageInput.value = "in flight B";
+  settlePending(jsonResponse(502, { ok: false, error: { code: "engine_execution_failed" } }));
+  await tick(80);
+  checks.IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE =
+    byId.clawExecuteButton.disabled === false;
+  if (!checks.IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE) fail("IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE");
+  executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const afterInFlight = execPosts().length;
+  applyBody(inFlightA);
+  byId.clawExecuteButton.click();
+  await tick(60);
+  checks.IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED =
+    execPosts().length === afterInFlight &&
+    lastExec().body.content === "in flight B" &&
+    byId.clawExecuteButton.disabled === true;
+  if (!checks.IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED) fail("IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED");
 
   // No dispatched execute POST exists that no user action asked for.
   checks.EXECUTE_POST_COUNT_MATCHES_USER_ACTIONS = execPosts().length === expectedPosts;
@@ -715,13 +1068,25 @@ def _run_harness() -> dict:
     return json.loads(line)
 
 
-def test_behavioral_harness_passes() -> None:
+@pytest.fixture(scope="module")
+def behavioral_harness_payload() -> dict:
+    """Run the immutable real-app.js Node journey once, not once per assertion.
+
+    The real-time harness used to wait ~19s; the virtual clock still executes all
+    scheduled callbacks and the original checks/requests. The module fixture preserves
+    assertions and propagates a single failed behavioral run to every consumer.
+    """
     payload = _run_harness()
     assert payload.get("ok") is True, f"behavioral harness failed: {payload}"
+    return payload
 
 
-def test_behavioral_execute_recovery_journey() -> None:
-    payload = _run_harness()
+def test_behavioral_harness_passes(behavioral_harness_payload: dict) -> None:
+    assert behavioral_harness_payload.get("ok") is True, behavioral_harness_payload
+
+
+def test_behavioral_execute_recovery_journey(behavioral_harness_payload: dict) -> None:
+    payload = behavioral_harness_payload
     assert payload.get("ok") is True, payload
     checks = payload["checks"]
     for name in (
@@ -745,13 +1110,27 @@ def test_behavioral_execute_recovery_journey() -> None:
         "AMBIGUOUS_FAILURE_SAFE_RETRY_CLAIM",
         "NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE",
         "PRE_DISPATCH_503_IS_NOT_AMBIGUOUS",
+        "HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY",
+        "HOLD_503_IS_NOT_AMBIGUOUS",
+        "HOLD_503_COPY_IS_LOCALE_DRIVEN",
+        "HOLD_503_LEAVES_NO_UNCERTAIN_LATCH",
         "NETWORK_FAILURE_IS_AMBIGUOUS_AND_NOT_REPLAYED",
+        "EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH",
+        "SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME",
+        "PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED",
+        "NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME",
+        "RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT",
+        "MODEL_ID_ONLY_CHANGE_KEEPS_LATCH",
+        "WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE",
+        "TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED",
+        "IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE",
+        "IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED",
     ):
         assert checks.get(name) is True, name
 
 
-def test_behavioral_execute_posts_stay_within_existing_authority() -> None:
-    payload = _run_harness()
+def test_behavioral_execute_posts_stay_within_existing_authority(behavioral_harness_payload: dict) -> None:
+    payload = behavioral_harness_payload
     assert payload.get("ok") is True, payload
     execute_posts = [r for r in payload["requests"] if r["url"] == "/api/claw/manual-intake/execute"]
     assert execute_posts, "no execute POST recorded"
@@ -766,6 +1145,9 @@ def test_behavioral_execute_posts_stay_within_existing_authority() -> None:
         "/api/claw/memory",
         "/api/claw/inbox/tasks",
         "/api/claw/manual-intake/execute",
+        # Registered draft route (app_factory.py:296), exercised to prove the
+        # execute latch does not collateral-block the preview lane.
+        "/api/claw/manual-intake/preview",
     }
     urls = {r["url"].split("?")[0] for r in payload["requests"]}
     assert urls <= allowed, urls - allowed
@@ -785,7 +1167,10 @@ if __name__ == "__main__":
     test_locale_keys_are_declared_for_both_languages()
     test_runtime_copy_stays_locale_driven()
     test_recovery_roles_inherit_shared_tokens()
-    test_behavioral_harness_passes()
-    test_behavioral_execute_recovery_journey()
-    test_behavioral_execute_posts_stay_within_existing_authority()
+    # Preserve direct script execution without bypassing the real Node harness;
+    # all three read-only assertions now consume the same completed journey.
+    direct_payload = _run_harness()
+    test_behavioral_harness_passes(direct_payload)
+    test_behavioral_execute_recovery_journey(direct_payload)
+    test_behavioral_execute_posts_stay_within_existing_authority(direct_payload)
     print("B54_CLAW_EXECUTE_RETRY_UI_TESTS=PASS")

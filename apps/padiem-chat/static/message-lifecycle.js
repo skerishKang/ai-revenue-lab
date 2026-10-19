@@ -7,6 +7,7 @@
     FAILED: "failed",
     CANCELLED: "cancelled",
     TIMED_OUT: "timed_out",
+    WAITING_APPROVAL: "waiting_for_approval",
   });
 
   window.PadiemChatLifecycle = Object.freeze({
@@ -441,6 +442,19 @@
     return items.length ? items[items.length - 1] : null;
   }
 
+  // Shared Chat/Claw follow authority: a completed async result or an
+  // approval pause must not pull a user who is reading earlier content back
+  // to the bottom. When no follow controller exists (non-glass surface), the
+  // historical reveal behavior is preserved.
+  function revealArticleIfFollowing(article) {
+    if (!article) return;
+    const motion = window.__padiemConversationMotion;
+    if (motion && typeof motion.isFollowingLatest === "function" && !motion.isFollowingLatest()) {
+      return;
+    }
+    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
   function clearOrchestrationUi(article) {
     if (!article) return;
     article.querySelectorAll("[data-orchestration-ui]").forEach((node) => node.remove());
@@ -457,14 +471,16 @@
     paragraph.textContent = data.answer;
     content.appendChild(paragraph);
     const label = article.querySelector("[data-runtime-label]");
-    if (label) label.textContent = "AI 응답";
+    // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
+    // The repetitive "AI 응답" line is removed on completion.
+    if (label && label.textContent === "AI 응답") label.textContent = "";
     const conversationState = window.PadiemChatConversationState;
     if (conversationState) {
       conversationState.commitAssistant(requestPayload.messages, data.answer);
       if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
     }
     window.PadiemChatLifecycle.set(article, states.COMPLETED);
-    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    revealArticleIfFollowing(article);
   }
 
   function renderDecisionTerminal(article, message, state) {
@@ -532,7 +548,7 @@
     };
     orchestrationUi.render(article, orchestration, handlers);
     setExtendedLifecycle(article, "approval_paused");
-    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    revealArticleIfFollowing(article);
   }
 
   function bindOrchestrationController() {

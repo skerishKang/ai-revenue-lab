@@ -9,9 +9,12 @@ from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
     active_route_for,
+    FREE_PRIMARY_B14_MODEL_ID,
+    FREE_FALLBACK_B14_MODEL_ID,
 )
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID as _CONTRACT_MAX_HOLD_MODEL_ID,
+    PLUS_HOLD_MODEL_ID as _CONTRACT_PLUS_HOLD_MODEL_ID,
     PRO_HOLD_MODEL_ID as _CONTRACT_PRO_HOLD_MODEL_ID,
 )
 
@@ -22,18 +25,42 @@ from padiem_control_plane.product_tier_routes import (
 # catalog remains the final execution authority: a contract route that B14
 # unregisters fails closed at dispatch time.
 
-def _contract_route_id(label: ProductTierLabel) -> str:
+def _contract_route_or_hold_id(
+    label: ProductTierLabel,
+    hold_model_id: str,
+) -> str:
     try:
         route = active_route_for(label)
     except ProductTierRoutesError as exc:  # fail closed before any dispatch
         raise RuntimeError(f"product tier route contract is invalid: {exc}") from exc
     if route is None or not route.model_id:
-        raise RuntimeError(f"product tier route contract has no executable route for {label.value}")
+        return hold_model_id
     return route.model_id
 
 
-DEFAULT_CHAT_PROFILE = "low"
+def _contract_executable_ids() -> frozenset[str]:
+    model_ids: set[str] = set()
+    for label in ProductTierLabel:
+        try:
+            route = active_route_for(label)
+        except ProductTierRoutesError as exc:
+            raise RuntimeError(f"product tier route contract is invalid: {exc}") from exc
+        if route is not None and route.model_id:
+            model_ids.add(route.model_id)
+    return frozenset(model_ids)
+
+
+DEFAULT_CHAT_PROFILE = "free"
+# The Free, Plus, Pro and Max primary model is declared per tier in the
+# shared Control Plane. A shared upstream model ID does not grant a higher
+# membership tier; the request's verified tier remains authoritative.
+FREE_B14_MODEL_ID = FREE_PRIMARY_B14_MODEL_ID
+PADIEM_FREE = "Padiem Free"
 AUTO_B14_MODEL_ID = "b14/auto"
+# Administrator-only exact model, provisioned by the verified global model
+# admin gate in member_grade_access/chat_routes — never part of the Free..
+# Max product-tier routes, aliases, or the shared declaration.
+ADMIN_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
 
 TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
     "plus": ProductTierLabel.PLUS,
@@ -41,6 +68,7 @@ TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
     "max": ProductTierLabel.MAX,
 }
 TIER_ID_TO_PROFILE: dict[str, str] = {
+    "free": "free",
     "plus": "low",
     "pro": "medium",
     "max": "high",
@@ -50,13 +78,38 @@ _REQUEST_TIER_ID: ContextVar[str | None] = ContextVar(
     "padiem_request_tier_id",
     default=None,
 )
+# #4428: an exact model resolved from the central per-tier route for THIS
+# request task. It replaces only the static primary of the matching grade and
+# is never used to grant a higher membership tier.
+_REQUEST_ROUTE_MODEL: ContextVar[str | None] = ContextVar(
+    "padiem_request_route_model",
+    default=None,
+)
+
+
+def _request_route_override(tier_id: str) -> str | None:
+    model_id = _REQUEST_ROUTE_MODEL.get()
+    if _REQUEST_TIER_ID.get() != tier_id:
+        return None
+    return model_id if isinstance(model_id, str) and model_id else None
+
+
+def current_request_tier_id() -> str | None:
+    """Return the normalized request-scoped tier bound for this async task."""
+    tier = _REQUEST_TIER_ID.get()
+    if not isinstance(tier, str) or not tier:
+        return None
+    return tier
 
 # Product tiers are intentionally decoupled from upstream model/provider names.
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
 # Padiem Plus / Padiem Pro / Padiem Max.
-LOW_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PLUS)
-MEDIUM_B14_MODEL_ID = _CONTRACT_PRO_HOLD_MODEL_ID
-MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID
+LOW_B14_MODEL_ID = _contract_route_or_hold_id(
+    ProductTierLabel.PLUS,
+    _CONTRACT_PLUS_HOLD_MODEL_ID,
+)
+MEDIUM_B14_MODEL_ID = _contract_route_or_hold_id(ProductTierLabel.PRO, _CONTRACT_PRO_HOLD_MODEL_ID)
+MAX_HOLD_MODEL_ID = _contract_route_or_hold_id(ProductTierLabel.MAX, _CONTRACT_MAX_HOLD_MODEL_ID)
 
 # Kilo Gateway free lanes that are no longer offered upstream. Re-checked
 # against the public Gateway model list on 2026-09-08: neither
@@ -65,9 +118,8 @@ MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID
 # (#2094: the stale minimax default caused every Pro/default chat failure.
 # #2099 STEP-2: the set itself is declared once in the shared contract.)
 RETIRED_B14_MODEL_IDS = frozenset(RETIRED_PRODUCT_MODEL_IDS)
-# Compatibility name retained for consumers that reason in low/medium/high
-# profiles. High currently names the Max product tier but is deliberately not
-# an executable B14 route until #1397 approves a replacement.
+# Compatibility name retained for callers using low/medium/high profiles.
+# High resolves to Max's current active route, not its historical HOLD ID.
 HIGH_B14_MODEL_ID = MAX_HOLD_MODEL_ID
 
 PADIEM_PLUS = "Padiem Plus"
@@ -82,40 +134,41 @@ KILO_B14_MODEL_ID = MEDIUM_B14_MODEL_ID
 UNASSIGNED_B14_MODEL_ID = "padiem-profile/medium-unassigned"
 
 PROFILE_MODEL_IDS: dict[str, str] = {
+    "free": FREE_B14_MODEL_ID,
     "low": LOW_B14_MODEL_ID,
     "medium": MEDIUM_B14_MODEL_ID,
     "high": HIGH_B14_MODEL_ID,
 }
 
-# Product identity and route executability are separate on purpose. A Padiem
-# tier may remain user-visible while its backing route is temporarily HOLD.
+# Product identity and route executability are separate. Retained HOLD
+# sentinels are historical identities; active grades resolve via their routes.
 PRODUCT_TIER_NAMES: dict[str, str] = {
-    LOW_B14_MODEL_ID: PADIEM_PLUS,
-    MEDIUM_B14_MODEL_ID: PADIEM_PRO,
-    HIGH_B14_MODEL_ID: PADIEM_MAX,
+    # Product identity cannot be recovered from a shared upstream model ID.
+    FREE_B14_MODEL_ID: PADIEM_FREE,
+    _CONTRACT_PLUS_HOLD_MODEL_ID: PADIEM_PLUS,
+    _CONTRACT_PRO_HOLD_MODEL_ID: PADIEM_PRO,
+    _CONTRACT_MAX_HOLD_MODEL_ID: PADIEM_MAX,
 }
-EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID})
+# All four grades resolve an active primary in the shared declaration.
+# Whether a caller may use a grade is decided by server-validated membership,
+# not by this model-ID set or by the upstream provider name.
+EXECUTABLE_B14_MODEL_IDS = _contract_executable_ids() | frozenset({FREE_B14_MODEL_ID})
 
-# Current source posture after owner decision #3209:
-#
-#   Padiem Plus -> Space Bunny Alpha on the keyless Kilo free lane
-#     (only executable tier; text + single-image via the existing
-#     MultimodalExecutionRuntime)
-#   Padiem Pro  -> HOLD
-#   Padiem Max  -> HOLD
-#
-# The historical Agnes lane is not a product fallback. `b14/auto` and
-# provider-side auto/fallback behavior remain disabled for product routing.
+# The default Chat request uses the Free tier. Each grade resolves its primary
+# through the shared declaration. B14 may automatically
+# try the exact owner-pinned backup for the verified grade on recoverable
+# provider failures; arbitrary `b14/auto` selection remains disabled.
+# Retired Space Bunny metadata is not an executable fallback.
 DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 
-# Slash selectors are hidden/operator test controls. Normal UI can later expose
-# the product tier names without exposing provider/model identities. `/max`
-# resolves to the Max product identity but fails closed before B14 while HOLD.
+# Slash aliases remain compatibility/test inputs. The browser's tier picker
+# uses a separately validated server-side tier; an alias cannot grant that
+# entitlement. `/max` resolves to Max's active route when authorized.
 MODEL_ALIASES: dict[str, str] = {
     "/plus": LOW_B14_MODEL_ID,
     "/pro": MEDIUM_B14_MODEL_ID,
     "/max": HIGH_B14_MODEL_ID,
-    # Temporary compatibility selector from the earlier test lane.
+    # Legacy `/kilo` test alias; it now resolves through the Pro tier route.
     "/kilo": MEDIUM_B14_MODEL_ID,
     # There is deliberately no "/poolside" key. Poolside Laguna is HOLD_AS_DATA_ONLY in the
     # canonical shared declaration, so an alias naming it could only ever dispatch a
@@ -124,15 +177,14 @@ MODEL_ALIASES: dict[str, str] = {
     # executable tier route in that declaration — not by inventing a hold identity here.
 }
 
-# Product capability claims remain conservative. Free/promotional status is not
-# encoded as a durable B62 capability because upstream zero-cost availability
-# can change independently of the Padiem product tier. HOLD has no executable
-# capabilities. Plus carries image because the active Space Bunny route
-# declares it and Chat reuses the existing single-image multimodal path.
+# These entries describe reported model capabilities, not tier entitlement or
+# provider availability. A fallback entry does not grant model execution.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    LOW_B14_MODEL_ID: frozenset({"chat", "coding", "long_context", "image"}),
-    MEDIUM_B14_MODEL_ID: frozenset(),
-    HIGH_B14_MODEL_ID: frozenset(),
+    FREE_B14_MODEL_ID: frozenset({"chat", "coding"}),
+    FREE_FALLBACK_B14_MODEL_ID: frozenset({"chat", "image"}),
+    "google/gemini-3.5-flash-lite": frozenset({"chat", "image"}),
+    "opencode-go/muse-spark-1.2-contributor": frozenset({"chat", "coding"}),
+    "opencode-go/muse-spark-1.3-contributor": frozenset({"chat", "coding"}),
     AUTO_B14_MODEL_ID: frozenset(),
     UNASSIGNED_B14_MODEL_ID: frozenset(),
 }
@@ -168,6 +220,28 @@ def product_tier_name(model_id: str) -> str:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.") from exc
 
 
+def _strip_hidden_tier_alias(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Remove an owner/test slash alias from the user message before dispatch.
+
+    The slash selector remains a compatibility/test surface. It never grants
+    product identity or dispatch tier by itself when a server-validated browser
+    tier is present; this only keeps provider-bound prompt content clean.
+    """
+    out = [dict(message) for message in messages]
+    index = _latest_user_index(out)
+    if index is None:
+        return out
+    content = out[index].get("content", "")
+    stripped = content.lstrip() if isinstance(content, str) else ""
+    if not stripped.startswith("/"):
+        return out
+    token, separator, remainder = stripped.partition(" ")
+    if token.lower() not in MODEL_ALIASES or not separator or not remainder.strip():
+        return out
+    out[index]["content"] = remainder.strip()
+    return out
+
+
 def resolve_tier_policy(
     messages: list[dict[str, str]],
     tier_id: str,
@@ -183,9 +257,37 @@ def resolve_tier_policy(
     if not isinstance(tier_id, str):
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
     normalized = tier_id.strip().lower()
+    if normalized == "free":
+        # No paid-member entitlement needed: caller authentication and usage
+        # controls are enforced by the actual Chat route before provider dispatch.
+        override = _request_route_override("free")
+        return ResolvedModelPolicy(
+            model_id=override or FREE_B14_MODEL_ID,
+            messages=_strip_hidden_tier_alias(messages),
+            profile="free",
+        )
+    if normalized == "admin":
+        # Verified global model admins only; entitlement is proven by the
+        # Chat route's central admin gate before provider dispatch. The exact
+        # administrator model is pinned here and never routed via b14/auto.
+        return ResolvedModelPolicy(
+            model_id=ADMIN_B14_MODEL_ID,
+            messages=_strip_hidden_tier_alias(messages),
+            profile="high",
+        )
     label = TIER_ID_TO_LABEL.get(normalized)
     if label is None:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+
+    override = _request_route_override(normalized)
+    if override is not None:
+        # Validated against the live B14 catalog when the administrator applied
+        # the central route; B14 still rejects an unavailable exact model.
+        return ResolvedModelPolicy(
+            model_id=override,
+            messages=_strip_hidden_tier_alias(messages),
+            profile=TIER_ID_TO_PROFILE[normalized],
+        )
 
     try:
         route = active_route_for(label)
@@ -201,18 +303,20 @@ def resolve_tier_policy(
                 "tier_unavailable",
                 "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
             )
-        if label is ProductTierLabel.PRO:
+        if label is ProductTierLabel.PLUS:
+            model_id = LOW_B14_MODEL_ID
+        elif label is ProductTierLabel.PRO:
             model_id = MEDIUM_B14_MODEL_ID
         elif label is ProductTierLabel.MAX:
             model_id = MAX_HOLD_MODEL_ID
-        else:
+        else:  # pragma: no cover - exhaustive enum guard
             model_id = ""
     else:
         model_id = route.model_id
 
     return ResolvedModelPolicy(
         model_id=model_id,
-        messages=[dict(message) for message in messages],
+        messages=_strip_hidden_tier_alias(messages),
         profile=TIER_ID_TO_PROFILE[normalized],
     )
 
@@ -235,8 +339,13 @@ def resolve_request_model_policy(
 
 
 @contextmanager
-def request_tier_context(tier_id: str | None):
-    """Temporarily bind a validated browser tier for this async request task."""
+def request_tier_context(tier_id: str | None, *, model_id: str | None = None):
+    """Temporarily bind a validated browser tier for this async request task.
+
+    ``model_id`` carries an exact central route primary for the same grade. It
+    is never accepted from browser input; callers pass only a server-resolved,
+    catalog-validated model ID.
+    """
 
     if tier_id is None:
         yield
@@ -244,13 +353,19 @@ def request_tier_context(tier_id: str | None):
     if not isinstance(tier_id, str):
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
     normalized = tier_id.strip().lower()
-    if normalized not in TIER_ID_TO_LABEL:
+    if normalized != "free" and normalized != "admin" and normalized not in TIER_ID_TO_LABEL:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
-    token = _REQUEST_TIER_ID.set(normalized)
+    if model_id is not None and (
+        not isinstance(model_id, str) or not model_id or len(model_id) > 256
+    ):
+        raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+    tier_token = _REQUEST_TIER_ID.set(normalized)
+    model_token = _REQUEST_ROUTE_MODEL.set(model_id)
     try:
         yield
     finally:
-        _REQUEST_TIER_ID.reset(token)
+        _REQUEST_ROUTE_MODEL.reset(model_token)
+        _REQUEST_TIER_ID.reset(tier_token)
 
 
 def resolve_model_policy(
@@ -260,19 +375,29 @@ def resolve_model_policy(
 ) -> ResolvedModelPolicy:
     """Resolve ordinary B62 chat to a Padiem product tier.
 
-    Ordinary chat defaults to executable Padiem Plus. Hidden ``/plus``, ``/pro``
-    and ``/max`` selectors are owner/test controls. Callers that only need to
-    recognize product identity may set ``require_executable=False``; every path
-    that can reach B14 execution must retain the default fail-closed gate.
+    Ordinary chat defaults to the Free product tier. Hidden ``/plus``, ``/pro``
+    and ``/max`` selectors are compatibility/test controls and cannot grant
+    membership. Callers that only need to recognize a tier may set
+    ``require_executable=False``; dispatch retains the fail-closed route gate.
     """
     out = [dict(message) for message in messages]
     user_index = _latest_user_index(out)
     if user_index is None:
+        if require_executable and not model_policy_is_executable(DEFAULT_B14_MODEL_ID):
+            raise ModelPolicyError(
+                "tier_unavailable",
+                "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
+            )
         return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
 
     content = out[user_index].get("content", "")
     stripped = content.lstrip()
     if not stripped.startswith("/"):
+        if require_executable and not model_policy_is_executable(DEFAULT_B14_MODEL_ID):
+            raise ModelPolicyError(
+                "tier_unavailable",
+                "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
+            )
         return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
 
     token, separator, remainder = stripped.partition(" ")
@@ -295,10 +420,9 @@ def resolve_model_policy(
         )
 
     out[user_index]["content"] = remainder.strip()
-    profile = next(
-        (profile_id for profile_id, candidate in PROFILE_MODEL_IDS.items() if candidate == model_id),
-        DEFAULT_CHAT_PROFILE,
-    )
+    # Derive the grade from the explicit alias, never by reverse-mapping a
+    # shared upstream model ID; one model may serve more than one grade.
+    profile = {"/plus": "low", "/pro": "medium", "/max": "high", "/kilo": "medium"}[alias]
     return ResolvedModelPolicy(model_id, out, alias=alias, profile=profile)
 
 

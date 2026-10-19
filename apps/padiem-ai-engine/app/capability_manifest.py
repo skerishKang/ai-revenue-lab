@@ -35,7 +35,10 @@ from enum import Enum
 from .agent_skill_service import (
     AGENT_SKILL_CANCEL_PATH,
     AGENT_SKILL_RESUME_PATH,
+    AGENT_SKILL_RUN_CANCEL_PATH,
     AGENT_SKILL_RUN_PATH,
+    AGENT_SKILL_RUN_RECOVERY_PATH,
+    AGENT_SKILL_RUN_STATUS_PATH,
 )
 from .document_context_service import DOCUMENT_CONTEXT_PATH
 from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
@@ -553,6 +556,12 @@ def current_capability_manifest(
                     AGENT_SKILL_RUN_PATH,
                     AGENT_SKILL_RESUME_PATH,
                     AGENT_SKILL_CANCEL_PATH,
+                    # #4194 A/B: owner-scoped run status/cancel and the
+                    # deployment-gated expired-lease sweep. Route declaration is
+                    # not Production activation and never registers a cron.
+                    AGENT_SKILL_RUN_STATUS_PATH,
+                    AGENT_SKILL_RUN_CANCEL_PATH,
+                    AGENT_SKILL_RUN_RECOVERY_PATH,
                 ),
                 scope=_row(
                     b14_provider_authority="preserved",

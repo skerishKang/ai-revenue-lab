@@ -107,7 +107,6 @@
             <div class="start-model-field">
               <label for="start_model" class="start-label-small">모델 선택</label>
               <select id="start_model" class="start-select" aria-label="모델 선택">
-                <option value="b14/auto" data-auto="true">Business 14 자동 선택 (b14/auto)</option>
                 {% for m in b14_catalog_models %}
                 <option value="{{ m.model_id }}" data-provider="{{ m.provider }}">{{ m.name }}{% if m.korean_score %} · 한국어 {{ m.korean_score }}/5{% endif %}</option>
                 {% endfor %}
@@ -118,11 +117,7 @@
               <label class="start-label-small">라우팅 모드</label>
               <div class="routing-mode-group" role="radiogroup" aria-label="라우팅 모드">
                 <label class="mode-choice">
-                  <input type="radio" name="start_route_mode" value="auto" checked>
-                  <span>자동</span>
-                </label>
-                <label class="mode-choice">
-                  <input type="radio" name="start_route_mode" value="manual">
+                  <input type="radio" name="start_route_mode" value="manual" checked>
                   <span>수동</span>
                 </label>
               </div>
@@ -141,8 +136,8 @@
                 </select>
               </label>
               <label>
-                <input type="checkbox" id="start_external_fallback" checked>
-                <span>외부 fallback 허용</span>
+                <input type="checkbox" id="start_atria_stream_preview">
+                <span>Atria 수동 스트리밍 시험 (외부 fallback 해제 필요)</span>
               </label>
             </div>
           </details>

@@ -20,7 +20,7 @@ from app.pilot import platform as plat
 from app.pilot import platform_secrets as ps
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.errors import NoSafeRoute, PilotNotConfigured, UpstreamAuthFailed
-from app.pilot.router_core import resolve_auto_route, resolve_manual_route
+from app.pilot.router_core import resolve_manual_route
 
 TEST_PROVIDER_ID = "test-credential-plane"
 TEST_BINDING = "TEST_CREDENTIAL_PLANE_API_KEY"
@@ -135,7 +135,7 @@ def test_agnes_route_reonboarded_as_manual_pin_candidate():
     # public-surface contracts live in tests/test_agnes_provider.py.
     spec = ps.get_platform_provider("agnes-ai")
     assert spec is not None
-    assert spec.credential_binding_name == "PADIEM_AGNES_API_KEY"
+    assert spec.credential_binding_name == "PADIEM_B14_CREDENTIAL_01"
     assert spec.base_origin == "https://apihub.agnes-ai.com/v1"
 
     from app.pilot.agnes_provider import CATALOG_BY_ID as _REAL_BY_ID
@@ -178,6 +178,19 @@ def test_platform_model_has_no_free_capability():
     assert "free" not in model.capabilities
 
 
+def test_missing_credential_error_does_not_expose_binding_or_provider():
+    """Preserve fail-closed behavior without returning internal credentials metadata."""
+    spec = ps.get_platform_provider(TEST_PROVIDER_ID)
+    assert spec is not None
+    with pytest.raises(PilotNotConfigured) as exc:
+        plat._request_headers(spec)
+    response = exc.value.to_dict()
+    assert response["code"] == "pilot_not_configured"
+    assert TEST_BINDING not in response["message"]
+    assert TEST_PROVIDER_ID not in response["message"]
+    assert "credential" in response["message"]
+
+
 # ---------------------------------------------------------------------------
 # Manual route: secret present / missing
 # ---------------------------------------------------------------------------
@@ -202,29 +215,7 @@ def test_manual_route_fails_closed_when_secret_missing():
 # ---------------------------------------------------------------------------
 # b14/auto eligibility tied to credential
 # ---------------------------------------------------------------------------
-def test_b14_auto_excludes_platform_model_when_secret_missing():
-    decision = resolve_auto_route(
-        task_type="general",
-        required_capabilities=["chat"],
-        optimize_for="balanced",
-        allow_external_fallback=True,
-    )
-    assert TEST_MODEL_ID not in _auto_pool(decision)
-    reasons = {c.get("model_id"): c.get("reason") for c in decision.excluded_candidates}
-    assert reasons.get(TEST_MODEL_ID) == "provider_secret_missing"
 
-
-def test_b14_auto_can_include_platform_model_when_secret_present(monkeypatch):
-    monkeypatch.setenv(TEST_BINDING, _SYNTH_KEY)
-    decision = resolve_auto_route(
-        task_type="general",
-        required_capabilities=["chat"],
-        optimize_for="balanced",
-        allow_external_fallback=True,
-    )
-    assert TEST_MODEL_ID in _auto_pool(decision)
-    reasons = {c.get("model_id"): c.get("reason") for c in decision.excluded_candidates}
-    assert reasons.get(TEST_MODEL_ID) != "provider_secret_missing"
 
 
 # ---------------------------------------------------------------------------
@@ -613,19 +604,50 @@ def test_stream_preview_platform_secret_fails_closed_when_secret_missing(monkeyp
     assert TEST_BINDING not in json.dumps(body)
 
 
-def test_stream_preview_kilo_route_still_streams(monkeypatch):
-    """Keyless Kilo manual route streams via stream-preview (mock mode)."""
-    monkeypatch.delenv(TEST_BINDING, raising=False)
-    client = TestClient(create_app())
-    response = client.post(
-        _STREAM_URL,
-        json={
-            "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-            "stream": True,
-            "messages": [{"role": "user", "content": "hi"}],
-        },
-    )
-    assert response.status_code == 200
-    assert response.headers["content-type"].startswith("text/event-stream")
+def test_stream_preview_retired_kilo_is_rejected_without_dispatch(monkeypatch):
+    monkeypatch.delenv(TEST_BINDING,raising=False)
+    client=TestClient(create_app())
+    response=client.post(_STREAM_URL,json={
+        "model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        "stream":True,
+        "messages":[{"role":"user","content":"hi"}],
+    })
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "unsupported_model"
     assert TEST_BINDING not in response.text
     assert _SYNTH_KEY not in response.text
+
+
+@pytest.mark.asyncio
+async def test_manual_route_missing_secret_reports_value_free_reason():
+    """A binding fetch failure is diagnosable without exposing secret material."""
+    from types import SimpleNamespace
+
+    from app.pilot.worker_env import (
+        bind_request_env,
+        collect_request_bindings,
+        load_request_secret,
+        reset_request_env,
+    )
+
+    _ensure_test_provider()
+
+    class JsLikeError(Exception):
+        name = "Error"
+
+    class RaisingSecret:
+        async def get(self):
+            raise JsLikeError('Secret "synthetic-value-canary" not found')
+
+    token = bind_request_env(collect_request_bindings(
+        SimpleNamespace(**{TEST_BINDING: RaisingSecret()}), (TEST_BINDING,)
+    ))
+    try:
+        await load_request_secret(TEST_BINDING)
+        with pytest.raises(NoSafeRoute) as info:
+            resolve_manual_route(TEST_MODEL_ID)
+        assert info.value.reason_code == "provider_secret_missing"
+        assert info.value.credential_reason == "error:not_found"
+        assert "synthetic-value-canary" not in info.value.credential_reason
+    finally:
+        reset_request_env(token)

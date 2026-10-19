@@ -46,6 +46,7 @@ def _engine_error(code: str = "internal_error") -> dict[str, Any]:
 def _clean_state(monkeypatch: pytest.MonkeyPatch):
     smoke._failures.clear()
     smoke._skips.clear()
+    monkeypatch.setattr(smoke, "PINNED_MODEL", "test/model", raising=False)
     monkeypatch.setattr(smoke, "CALLER_ID", "a12-test-caller", raising=False)
     monkeypatch.setattr(smoke, "CALLER_SECRET", "not-a-real-secret", raising=False)
     yield

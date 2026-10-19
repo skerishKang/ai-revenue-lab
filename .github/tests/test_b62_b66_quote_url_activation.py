@@ -133,6 +133,19 @@ def test_verify_readback_requires_target_and_preserves_unrelated_bindings() -> N
         raise AssertionError("unrelated binding removal must fail")
 
 
+def test_workflow_uses_canonical_served_version_cli_for_both_rollback_anchors() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    trigger_paths = workflow.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
+    runtime = workflow.split("\n  cloudflare-readonly:", 1)[1]
+
+    assert ".github/scripts/cloudflare_served_version_cli.py" in trigger_paths
+    assert runtime.count("cloudflare_served_version_cli.py resolve-active") == 2
+    assert ".result.deployments[0].versions[0].version_id" not in runtime
+    assert ".result.deployments[0].versions[0].percentage" not in runtime
+    assert "(.result.deployments[0].versions | length) == 1" not in runtime
+    assert runtime.count("PREMUTATION_SERVED_VERSION_RECORDED=YES") == 2
+
+
 def test_workflow_is_exact_main_bounded_and_no_code_deploy() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     assert 'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"' in workflow
@@ -160,5 +173,6 @@ if __name__ == "__main__":
     test_plan_adds_only_missing_target_and_inherits_everything_else()
     test_plan_exact_is_noop_and_refuses_drift_or_wrong_type()
     test_verify_readback_requires_target_and_preserves_unrelated_bindings()
+    test_workflow_uses_canonical_served_version_cli_for_both_rollback_anchors()
     test_workflow_is_exact_main_bounded_and_no_code_deploy()
     print("B62_B66_QUOTE_URL_ACTIVATION_TESTS=PASS")

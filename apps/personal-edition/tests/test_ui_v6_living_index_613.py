@@ -147,9 +147,14 @@ def test_v7_exact_desktop_mobile_surfaces(server: tuple[str, Path]) -> None:
                 page.on("response", on_response)
 
                 for screen_name, path, marker in SCREENS:
-                    response = page.goto(base + path, wait_until="networkidle", timeout=15000)
+                    response = page.goto(base + path, wait_until="load", timeout=15000)
                     assert response is not None and response.status == 200, (screen_name, path)
                     assert page.locator(marker).count() > 0, (screen_name, marker)
+                    # Keep screenshots loaded without waiting for idle network.
+                    page.evaluate(
+                        "async () => { await document.fonts.ready; await Promise.all("
+                        "Array.from(document.images, img => img.decode().catch(() => {}))); }"
+                    )
                     assert page.locator("body").get_attribute("data-art-direction") == "b1-living-index-v6"
                     assert page.locator("body").get_attribute("data-design-system") == "b1-collectible-glass-v7"
                     assert page.locator("body").get_attribute("data-ui-version") == "b1-personal-edition-v7-collectible-glass"
@@ -271,7 +276,7 @@ def test_v7_admin_surface_remains_operator_v5(server: tuple[str, Path]) -> None:
         browser = launch_browser(pw)
         try:
             page = browser.new_page(viewport={"width": 1440, "height": 1100})
-            response = page.goto(base + "/admin/", wait_until="networkidle", timeout=15000)
+            response = page.goto(base + "/admin/", wait_until="load", timeout=15000)
             assert response is not None and response.status == 200
             assert page.locator("body").get_attribute("data-art-direction") == "b1-image-led-v5"
             assert page.locator("body").get_attribute("data-ui-version") == "b1-personal-edition-v3-454"

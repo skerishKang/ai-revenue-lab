@@ -3,6 +3,19 @@ main = "worker.py"
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
+base_dir = ".b66-worker-src"
+
+# #3933 WEB-FIRST opt-in Browser Run standard quote summary PDF.
+# A browser binding does not authorize XLSX READ/WRITE, trigger a PDF,
+# or enable the feature. Rendering requires a separate explicit flag
+# PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED=true only after live owner E2E.
+# API: BROWSER.quickAction("pdf", {"html": ...}).
+# Compatibility date 2026-08-25 satisfies Quick Actions >=2026-03-24.
+[browser]
+binding = "BROWSER"
+
+[build]
+command = "uv run python scripts/build_b66_worker_dependencies.py"
 
 [assets]
 directory = "static"
@@ -15,12 +28,99 @@ binding = "ASSETS"
 [version_metadata]
 binding = "CF_VERSION_METADATA"
 
+# Shared Engine/Chat desktop proof; the value lives only in Cloudflare
+# Secrets Store. Deploy references this stable object and never rotates it.
+[[secrets_store_secrets]]
+binding = "CLAW_ENGINE_DESKTOP_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "CLAW_ENGINE_DESKTOP_SECRET"
+
 [[services]]
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
 
+# #4139: one existing PADIEM Identity and canonical Broker for Chat/Claw.
+# The Connector's product route is ON by default. Account/device ownership
+# still comes from the existing canonical authorities, not from the socket.
+[[services]]
+binding = "IDENTITY_AUTHORITY_SERVICE"
+service = "padiem-control-plane-identity"
+
+[[services]]
+binding = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+service = "padiem-local-agent-broker-state"
+
+# Private Mode 1: STT secrets are never bound to Chat.
+[[services]]
+binding = "VOICE_STT_SERVICE"
+service = "padiem-voice-stt"
+
+# B66-only one-model direct execution pilot; account-managed secret reference.
+# Never pass the key to the browser, B62 chat or Claw.
+[[secrets_store_secrets]]
+binding = "PADIEM_KIRAAI_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_KIRAAI_API_KEY"
+
+# B66-only Experiential model direct pilot, existing account secret reference.
+[[secrets_store_secrets]]
+binding = "PADIEM_EXLAB_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_EXLAB_API_KEY"
+
+# GitHub App user-to-server OAuth. Set the value in Cloudflare Secrets Store,
+# never commit it or expose it to the browser. Missing value => connector OFF.
+[[secrets_store_secrets]]
+binding = "PADIEM_GITHUB_APP_CLIENT_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GITHUB_APP_CLIENT_SECRET"
+
+# External Grafana Cloud Logs, Japan stack only. The token value stays
+# encrypted in the existing B62 account-level Cloudflare Secrets Store.
+[[secrets_store_secrets]]
+binding = "PADIEM_GRAFANA_OTLP_TOKEN"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GRAFANA_OTLP_TOKEN"
+
+# #4139 Oracle management-host MeshCentral read channel. The value is the
+# deployment channel secret shared with the Oracle executor; it stays
+# encrypted in the account-level Secrets Store and is never in [vars].
+[[secrets_store_secrets]]
+binding = "ORACLE_MESH_CHANNEL_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "ORACLE_MESH_CHANNEL_SECRET"
+
+# #4139 Oracle ownership map: operator-verified account/device pins and the
+# Mesh node/root/path. It is a private Secrets Store value, never [vars].
+[[secrets_store_secrets]]
+binding = "ORACLE_MESH_OWNERSHIP_MAP"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "ORACLE_MESH_OWNERSHIP_MAP"
+
+# Public endpoint and numeric OTLP username. Never put token values in [vars].
 [vars]
+PADIEM_GRAFANA_OTLP_ENDPOINT = "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs"
+PADIEM_GRAFANA_OTLP_USERNAME = "1876517"
+
+# #4139 Oracle Mesh execution lane. "mesh" makes an ordinary Claw TXT request
+# run on the management host over the Secrets Store ownership map above.
+ORACLE_MESH_EXECUTION_MODE = "off"
+
 PADIEM_CHAT_RUNTIME_MODE = "mock"
-PADIEM_CHAT_TIMEOUT_SECONDS = "20"
+PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
 PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
+# #4469 Claw public research: owner-approved opt-in. The Worker requires
+# live B14 + canonical identity/Engine client + a durable D1 quota in addition
+# to this flag; no unauthenticated or unmetered invocation can use it.
+PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED = "true"
+# Connector product availability defaults ON (not an opt-in/approval toggle).
+PADIEM_CHAT_PUBLIC_BASE_URL = "https://chat.padiem.net"
+PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE = "owner-controlled-production-4139"
+PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED = "enabled"
+PADIEM_CONNECTOR_PRODUCTION_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED = "enabled"

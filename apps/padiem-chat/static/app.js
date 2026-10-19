@@ -3,13 +3,26 @@
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
   const messageList = document.getElementById("messageList");
+  // #3933 Hark WEB-FIRST: previous completed work files of the currently
+  // displayed conversation, resolved only from the owner-scoped server index
+  // (GET-only, no file bytes, no grant). Hidden until a verified reference
+  // exists. The context module registers itself before this script runs.
+  const conversationArtifacts = document.createElement("section");
+  conversationArtifacts.id = "clawConversationArtifacts";
+  conversationArtifacts.hidden = true;
+  messageList.parentNode?.insertBefore(conversationArtifacts, messageList);
+  const conversationArtifactContext =
+    window.PadiemClawConversationArtifactContext?.init?.(conversationArtifacts) ?? null;
   const form = document.getElementById("composerForm");
   const input = document.getElementById("messageInput");
+  const clawModelIdInput = document.getElementById("clawModelIdInput");
   const sendButton = document.getElementById("sendButton");
   const cancelStreamButton = document.getElementById("cancelStreamButton");
   const newChatButton = document.getElementById("newChatButton");
   const mobileMenu = document.getElementById("mobileMenu");
   const mobileClose = document.getElementById("mobileClose");
+  const sidebarCollapseButton = document.getElementById("sidebarCollapseButton");
+  const sidebarRestoreButton = document.getElementById("sidebarRestoreButton");
   const sidebarScrim = document.getElementById("sidebarScrim");
   const settingsButton = document.getElementById("settingsButton");
   const settingsDialog = document.getElementById("settingsDialog");
@@ -28,6 +41,12 @@
   const authDialog = document.getElementById("authDialog");
   const authDialogClose = document.getElementById("authDialogClose");
   const googleLoginButton = document.getElementById("googleLoginButton");
+  const androidHandoffPanel = document.getElementById("androidHandoffPanel");
+  const androidHandoffCode = document.getElementById("androidHandoffCode");
+  const androidHandoffNote = document.getElementById("androidHandoffNote");
+  const androidHandoffOpen = document.getElementById("androidHandoffOpen");
+  const androidHandoffCancel = document.getElementById("androidHandoffCancel");
+  const androidHandoffError = document.getElementById("androidHandoffError");
   const authDivider = document.getElementById("authDivider");
   const passwordLoginForm = document.getElementById("passwordLoginForm");
   const passwordLoginIdentifier = document.getElementById("passwordLoginIdentifier");
@@ -43,12 +62,45 @@
   const passwordRegisterError = document.getElementById("passwordRegisterError");
   const passwordRegisterSubmit = document.getElementById("passwordRegisterSubmit");
   const accountName = document.getElementById("accountName");
+  const accountAvatar = document.getElementById("accountAvatar");
   const accountContainer = document.querySelector(".sidebar-account");
+  // Presentation-only account summary. The canonical login/logout button stays
+  // visible and retains its existing auth guards and keyboard contract.
+  const profileToggle = document.createElement("button");
+  profileToggle.type = "button";
+  profileToggle.id = "accountProfileButton";
+  profileToggle.className = "account-profile-toggle";
+  profileToggle.setAttribute("aria-controls", "settingsDialog");
+  profileToggle.setAttribute("aria-haspopup", "dialog");
+  profileToggle.setAttribute("aria-expanded", "false");
+  profileToggle.dataset.localeAriaLabel = "account-profile-toggle";
+  profileToggle.setAttribute("aria-label", uiT("account-profile-toggle"));
+  // Some auth fixtures mount account controls without the original avatar as a
+  // direct child; prepend never assumes a particular descendant relationship.
+  accountContainer?.prepend(profileToggle);
+  // Keep #accountAvatar and #accountName as direct accountContainer children:
+  // product-capabilities.js rehomes fallback avatars before the account name.
+  // A separate accessible button overlays those text/visual nodes instead.
+  const profilePanel = document.createElement("div");
+  profilePanel.id = "accountProfilePanel";
+  profilePanel.className = "account-profile-panel";
+  profilePanel.hidden = true;
+  const profileSettingsAction = document.createElement("button");
+  profileSettingsAction.type = "button";
+  profileSettingsAction.className = "account-profile-settings";
+  profileSettingsAction.dataset.localeKey = "account-profile-settings";
+  profileSettingsAction.textContent = uiT("account-profile-settings");
+  profilePanel.append(profileSettingsAction);
+  accountContainer?.append(profilePanel);
+  function closeProfilePanel(restoreFocus = false) {
+    profilePanel.hidden = true;
+    profileToggle.setAttribute("aria-expanded", "false");
+    if (restoreFocus && !accountContainer?.hidden) profileToggle.focus();
+  }
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
   const historyEmpty = document.getElementById("historyEmpty");
   const projectsNavButton = document.getElementById("projectsNavButton");
-  const filesNavButton = document.getElementById("filesNavButton");
   const projectsBadge = document.getElementById("projectsBadge");
   const projectsSection = document.getElementById("projectsSection");
   const projectsList = document.getElementById("projectsList");
@@ -107,15 +159,33 @@
   let activeRequestController = null;
   let activeRequestArticle = null;
   let activeRequestCancelReason = null;
+  // Latest successfully completed answer request, for the one-click
+  // regenerate action. Replays through requestAnswer with the exact stored
+  // routing snapshot, so model lane, tier, auth and approval conditions are
+  // identical to the original send. Cleared on conversation reset.
+  let lastCompletedAnswerRequest = null;
   let conversationEpoch = 0;
   let selectedAttachment = null;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
+  // Only the owner-scoped Claw run history can identify a Claw thread.
+  const clawConversationIds = new Set();
   let projects = [];
   let projectsReady = false;
   let activeProject = null;
   let activeProjectFileCount = 0;
   let editingProjectId = null;
   let dialogProjectFiles = [];
+
+  // Android 1.0.0 keeps chat.padiem.net in a WebView and completes Google in a
+  // Custom Tab whose cookies never reach the WebView. The WebView therefore
+  // creates a one-time handoff and claims it with a secret held only in this
+  // tab's temporary storage — never in a URL and never in durable storage.
+  const ANDROID_HANDOFF_STORAGE_KEY = "padiem.androidHandoff.v1";
+  const ANDROID_HANDOFF_POLL_MS = 2000;
+  let androidHandoff = null;
+  let androidHandoffTimer = null;
+  let androidHandoffClaiming = false;
+  let androidHandoffStarting = false;
 
 
   function uiT(key, variables = null) {
@@ -137,8 +207,32 @@
     runtimeNote.textContent = text;
     runtimeNote.dataset.state = state;
   }
+  // Short-lived overlay, not a new composer row.
+  const composerInlineHint = document.getElementById("composerInlineHint");
+  let composerInlineHintTimer = null;
+  function showComposerInlineHint(key) {
+    if (!composerInlineHint) return;
+    composerInlineHint.textContent = uiT(key);
+    composerInlineHint.hidden = false;
+    if (composerInlineHintTimer !== null) window.clearTimeout(composerInlineHintTimer);
+    composerInlineHintTimer = window.setTimeout(() => {
+      composerInlineHint.hidden = true;
+      composerInlineHint.textContent = "";
+      composerInlineHintTimer = null;
+    }, 3000);
+  }
+  window.addEventListener("padiem:composer-hint", (event) => {
+    if (event && event.detail && typeof event.detail.key === "string") {
+      showComposerInlineHint(event.detail.key);
+    }
+  });
+  sendButton.addEventListener("click", () => {
+    if (!input.value.trim() && !inFlight) showComposerInlineHint("composer-empty-message");
+  });
+
   function updateComposer() {
-    sendButton.disabled = inFlight || input.value.trim().length === 0;
+    // Empty clicks are allowed; submitPrompt() already ignores blank or busy submissions.
+    sendButton.disabled = false;
     input.disabled = inFlight;
     attachmentButton.disabled = inFlight;
     removeAttachment.disabled = inFlight;
@@ -147,33 +241,110 @@
     cancelStreamButton.hidden = !inFlight;
     cancelStreamButton.disabled = !inFlight;
     cancelStreamButton.setAttribute("aria-disabled", inFlight ? "false" : "true");
-    input.style.height = "auto";
-    input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
+    if (window.PadiemConversationComposer?.resizeTextarea) {
+      window.PadiemConversationComposer.resizeTextarea(input, { maxHeight: 180 });
+    } else {
+      input.style.height = "auto";
+      input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
+    }
   }
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
+  // #4862: Claw is a restorable product route, exactly like Automation.
+  // The fragment names the destination only. It never carries a user id,
+  // session token or conversation id, so a reload after logout or an account
+  // switch can at most reopen the Claw shell for the current session, which
+  // renders from the current session's own server-side state.
+  const AUTOMATION_ROUTE_HASH = "#padiem-automation";
+  const CLAW_ROUTE_HASH = "#padiem-claw";
+  let automationDestinationReady = false;
   function setNavActive() {
     const state = shell.dataset.state;
+    // The URL fragment is the destination bookmark; no browser persistence.
+    if (automationDestinationReady && window.history && window.location) {
+      const currentHash = String(window.location.hash || "");
+      const isAutomationRoute = currentHash === AUTOMATION_ROUTE_HASH;
+      const isClawRoute = currentHash === CLAW_ROUTE_HASH;
+      const basePath = window.location.pathname + window.location.search;
+      if (state === "automation" && !isAutomationRoute) {
+        window.history.replaceState(window.history.state, "", basePath + AUTOMATION_ROUTE_HASH);
+      } else if (state === "claw" && !isClawRoute) {
+        window.history.replaceState(window.history.state, "", basePath + CLAW_ROUTE_HASH);
+      } else if (state !== "automation" && isAutomationRoute) {
+        window.history.replaceState(window.history.state, "", basePath);
+      } else if (state !== "claw" && isClawRoute) {
+        window.history.replaceState(window.history.state, "", basePath);
+      }
+    }
     const workspace = document.getElementById("clawWorkspace");
     if (workspace) workspace.hidden = state !== "claw";
+    const meetingView = document.getElementById("meetingView");
+    if (meetingView) meetingView.hidden = state !== "meeting";
     const modeBar = document.getElementById("clawManualForm");
     if (modeBar) modeBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "manual");
+    // #3531: the explicit manual-entry control lives in the fixed composer
+    // wrap and shows only on the general Claw view — never by default
+    // elsewhere, never inside the manual form it opens.
+    const entryBar = document.getElementById("clawManualEntryBar");
+    if (entryBar) entryBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "general");
     syncComposerForClaw(state === "claw");
     const chatNav = document.getElementById("newChatButton");
     const clawNav = document.getElementById("clawNavButton");
     const tasksNav = document.getElementById("tasksNavButton");
     const alertsNav = document.getElementById("alertsNavButton");
+    const tasksEntry = document.getElementById("clawTasksButton");
+    const alertsEntry = document.getElementById("automationAlertsButton");
     const inboxKind = workspace && workspace.dataset.view === "inbox" ? workspace.dataset.inboxKind : "";
-    if (chatNav) chatNav.setAttribute("aria-current", state === "claw" ? "false" : "page");
+    // New Chat no longer shows a mode hint: the redundant label was removed
+    // when the sidebar actions row was rearranged (B62 split-search task).
+    if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
+    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation" || state === "meeting") ? "false" : "page");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
+    const meetingNav = document.getElementById("meetingNavButton");
+    if (meetingNav) meetingNav.setAttribute("aria-current", state === "meeting" ? "page" : "false");
+    const connectorsNav = document.getElementById("connectorsNavButton");
+    if (connectorsNav) connectorsNav.setAttribute("aria-current", state === "connectors" ? "page" : "false");
+    const automationNav = document.getElementById("automationNavButton");
+    if (automationNav) automationNav.setAttribute("aria-current", state === "automation" ? "page" : "false");
     if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsNav) alertsNav.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
+    if (tasksEntry) tasksEntry.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
+    if (alertsEntry) alertsEntry.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
-  function showConversation() {
-    emptyState.hidden = true;
+  // The first user turn extends the original landing panel. Older saved
+  // threads still open directly on messages instead of replaying the hero.
+  function showConversation({ preserveClaw = false, restoreSaved = false } = {}) {
+    const conversationPanel = messageList.closest(".conversation");
+    const startingOnLanding = !restoreSaved
+      && !emptyState.hidden
+      && messageList.childElementCount === 0
+      && (shell.dataset.state === "home"
+        || (preserveClaw && shell.dataset.state === "claw"));
+    const continuingLanding = !restoreSaved
+      && conversationPanel?.dataset.continuousThread === "true";
+    const keepLanding = startingOnLanding || continuingLanding;
+    if (conversationPanel) {
+      if (keepLanding) conversationPanel.dataset.continuousThread = "true";
+      else delete conversationPanel.dataset.continuousThread;
+    }
+    emptyState.hidden = !keepLanding;
     messageList.hidden = false;
-    shell.dataset.state = "chat";
+    // #3931: Keep an in-flight Claw conversation in the Claw workspace.
+    // Saved Chat conversations and ordinary Chat sends still use Chat.
+    if (!preserveClaw) {
+      shell.dataset.state = "chat";
+      // Switching from Claw to ordinary Chat must not carry the Claw
+      // execution-history disclosure into a customer conversation.
+      // Do not erase the server-owned history, only reset this view.
+      for (const id of ("clawRunHistoryDisclosure", "clawRunHistory",
+                        "clawApprovedDisclosure", "clawApprovedMemory")) {
+        const node = document.getElementById(id);
+        if (!node) continue;
+        node.hidden = true;
+        if (node.tagName === "DETAILS") node.open = false;
+      }
+    }
     setNavActive();
   }
   function addUserMessage(text, attachment) {
@@ -187,11 +358,65 @@
       meta.textContent = `${label} · ${attachment.name} · ${formatBytes(attachment.byteSize)}`;
       bubble.appendChild(meta);
     }
+    // Plan 4 (Glass only, shown via CSS): profile chip mirrors the signed-in
+    // account name at send time; hidden account (signed out) drops the chip.
+    const chip = fragment.querySelector(".user-profile-chip");
+    if (chip) {
+      const name = accountName && !accountName.hidden ? accountName.textContent.trim() : "";
+      if (name) chip.textContent = name;
+      else chip.remove();
+    }
+    // Codex-style hover-reveal (Glass only): send-time stamp + copy/edit.
+    const clock = fragment.querySelector(".user-action-time");
+    if (clock) {
+      const now = new Date();
+      const stamp = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      clock.textContent = stamp;
+      clock.setAttribute("datetime", now.toISOString());
+      clock.title = stamp;
+    }
+    const copyBtn = fragment.querySelector(".user-action-copy");
+    if (copyBtn) {
+      copyBtn.setAttribute("aria-label", uiT("answer-copy"));
+      copyBtn.addEventListener("click", () => {
+        const done = copyBtn.querySelector("span") || copyBtn;
+        const prev = done.textContent;
+        const flash = () => { done.textContent = "✓"; setTimeout(() => { done.textContent = prev; }, 900); };
+        const plain = bubble ? bubble.textContent : text;
+        /* #4488: shared clipboard path; legacy branches stay only as the
+         * fallback when the shared script is unavailable. */
+        const shared = window.PadiemAnswerCopy || window.SharedAnswerCopy;
+        if (shared && typeof shared.copyText === "function") {
+          shared.copyText(plain).then((ok) => { if (ok) flash(); });
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(plain).then(flash, () => {});
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = plain;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand("copy"); flash(); } catch (e) {}
+          ta.remove();
+        }
+      });
+    }
+    const editBtn = fragment.querySelector(".user-action-edit");
+    if (editBtn) {
+      editBtn.addEventListener("click", () => {
+        input.value = text;
+        input.focus();
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+    }
     messageList.appendChild(fragment);
   }
   function addAssistantShell(label) {
     const fragment = document.getElementById("assistantMessageTemplate").content.cloneNode(true);
     const article = fragment.querySelector(".assistant-message");
+    // #3931: identify the product whose conversation is currently rendered.
+    // The shared shell is not evidence that a Claw run came from Chat.
+    const productLabel = article.querySelector("[data-assistant-product]");
+    if (productLabel) productLabel.textContent = shell.dataset.state === "claw" ? "Padiem Claw" : "Padiem Chat";
     article.querySelector("[data-runtime-label]").textContent = label;
     messageList.appendChild(fragment);
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
@@ -227,11 +452,48 @@
       content.appendChild(used);
     }
     const skillTitle = result.skill && result.skill.id !== "auto" && typeof result.skill.title === "string" ? result.skill.title : "";
-    const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : uiT("ai-response");
-    article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
+    // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
+    // The repetitive runtime line is removed: only a truthful non-default
+    // state (mock preview) or an explicit skill title is shown.
+    const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : "";
+    article.querySelector("[data-runtime-label]").textContent = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, actionLabel = uiT("retry")) {
+  // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
+  // must not wear the generic "this run may already have started" state. Closed
+  // code→copy map only: a raw server, Engine or provider string is never shown.
+  const CLAW_BOUNDED_REFUSAL_COPY = Object.freeze({
+    tier_unavailable: Object.freeze({
+      message: "claw-general-model-unavailable",
+      hint: "claw-general-model-unavailable-note",
+    }),
+  });
+  // Closed server code for a rejected customer-owned key. Named here so the
+  // streaming answer region keeps no provider vocabulary of its own.
+  const CUSTOM_AUTH_FAILURE_CODE = "custom_provider_auth_failed";
+  // #3933: ONE lookup for every Claw failure surface. The composer lane, the live
+  // SSE lane and the manual-intake lane all resolve the same server code through
+  // this function, so a bounded refusal can never render two different sentences
+  // or drift into a second invented copy. `Object.hasOwn` only: an inherited or
+  // spoofed key never selects copy, and an unlisted code returns null so each
+  // caller keeps its own existing fallback.
+  function clawBoundedRefusalCopy(code) {
+    const entry = typeof code === "string" && Object.hasOwn(CLAW_BOUNDED_REFUSAL_COPY, code)
+      ? CLAW_BOUNDED_REFUSAL_COPY[code]
+      : null;
+    if (!entry) return null;
+    return Object.freeze({ message: uiT(entry.message), hint: uiT(entry.hint) });
+  }
+  function clawGeneralFailure(code) {
+    const bounded = clawBoundedRefusalCopy(code);
+    if (bounded) return bounded;
+    return Object.freeze({
+      message: window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang)
+        || uiT("claw-general-check-runs"),
+      hint: uiT("claw-general-check-runs"),
+    });
+  }
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry"), clawFailure = null) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
@@ -242,12 +504,44 @@
     retry.type = "button";
     retry.className = "retry-button";
     retry.textContent = actionLabel;
+    // #3566: the general Claw P01 lane may already have dispatched before a
+    // terminal Engine error. Do not offer a one-click replay (even manual)
+    // until the operator checks existing results. Ordinary Chat retains its
+    // established retry behavior; this guard is Claw-general only.
+    if (clawGeneralRequest) {
+      const hint = document.createElement("p");
+      hint.textContent = uiT("claw-general-check-runs");
+      // A provable pre-dispatch refusal has no run to check, so its next step is
+      // a different model rather than the existing run-history guidance.
+      if (clawFailure && clawFailure.hint) hint.textContent = clawFailure.hint;
+      // #3935: navigation only. This button opens the existing owner-scoped
+      // GET /api/claw/runs history and never replays the failed P01 POST.
+      const openRuns = document.createElement("button");
+      openRuns.type = "button";
+      openRuns.className = "claw-inbox-retry claw-check-runs-button";
+      openRuns.textContent = uiT("claw-general-open-runs");
+      openRuns.disabled = authState.authenticated !== true;
+      openRuns.addEventListener("click", () => {
+        if (authState.authenticated !== true) return;
+        openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
+        const history = document.getElementById("clawRunHistory");
+        if (!history || history.hidden) return;
+        // #4488 Phase A: the panel is progressive disclosure; open it so the
+        // navigation target is actually visible and focusable.
+        const historyDisclosure = document.getElementById("clawRunHistoryDisclosure");
+        if (historyDisclosure) historyDisclosure.open = true;
+        history.scrollIntoView?.({ block: "start", behavior: "smooth" });
+        history.querySelector?.("#clawRunHistoryRefresh")?.focus?.();
+      });
+      box.append(strong, p, hint, openRuns);
+      return box;
+    }
     retry.addEventListener("click", async () => {
       article.remove();
       conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
       renderProjectState();
-      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext);
+      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest);
       if (success && selectedAttachment === retryAttachment) clearAttachment();
     }, { once: true });
     box.append(strong, p, retry);
@@ -256,29 +550,29 @@
   function revealErrorState(article) {
     article.scrollIntoView({ block: "center", behavior: "auto" });
   }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderCancelled(article, retryMessages, retrySkill, retryContext) {
+  function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = uiT("generation-cancelled");
-    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, uiT("regenerate")));
+    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
   }
@@ -396,25 +690,15 @@
   }
 
   function clearHistoryUI() {
+    clawConversationIds.clear();
     historyList.replaceChildren();
     historySection.hidden = true;
     historyEmpty.hidden = true;
   }
-  // #3232: the Web Claw sidebar Files entry reuses the existing project-scoped
-  // Files authority. It mirrors the Projects readiness (authenticated +
-  // projectsReady) AND the existing project-files flag consumed by
-  // fetchProjectFiles/loadProjectFilesForDialog/addProjectFile/deleteProjectFile
-  // and the projectFilesPanel visibility, and never introduces its own
-  // storage, routes, or parsers.
-  function filesNavAvailable() {
-    return Boolean(authState.authenticated && projectsReady && authState.project_files_ready);
-  }
-  function syncFilesNav() {
-    if (!filesNavButton) return;
-    const enabled = filesNavAvailable();
-    filesNavButton.disabled = !enabled;
-    filesNavButton.setAttribute("aria-disabled", enabled ? "false" : "true");
-  }
+  // #4489: the Library entry is owned by static/library.js. The old
+  // filesNavAvailable()/syncFilesNav() gate that also required project-file
+  // storage was removed, because Library navigation must work for a signed-in
+  // owner even when that storage is not provisioned.
   function clearProjectsUI() {
     projects = [];
     projectsReady = false;
@@ -423,10 +707,11 @@
     projectsList.replaceChildren();
     projectsSection.hidden = true;
     projectsEmpty.hidden = true;
-    projectsNavButton.disabled = true;
-    projectsNavButton.setAttribute("aria-disabled", "true");
-    syncFilesNav();
-    projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
+    if (projectsNavButton) {
+      projectsNavButton.disabled = true;
+      projectsNavButton.setAttribute("aria-disabled", "true");
+    }
+    if (projectsBadge) projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
     renderProjectState();
   }
   function renderProjectState() {
@@ -438,6 +723,45 @@
       button.setAttribute("aria-current", activeProject && button.dataset.projectId === activeProject.id ? "true" : "false");
     });
     if (!selectedAttachment) setNote(idleNote());
+  }
+  // Static, accessible sidebar actions: keep the translated button text
+  // and ARIA labels; only replace the low-contrast visual affordance.
+  function sidebarActionIcon(kind) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.9");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    if (kind === "more") {
+      for (const cy of [5, 12, 19]) {
+        const dot = document.createElementNS(ns, "circle");
+        dot.setAttribute("cx", "12");
+        dot.setAttribute("cy", String(cy));
+        dot.setAttribute("r", "1.65");
+        dot.setAttribute("fill", "currentColor");
+        dot.setAttribute("stroke", "none");
+        svg.appendChild(dot);
+      }
+      return svg;
+    }
+    const shape = document.createElementNS(ns, "path");
+    shape.setAttribute("d", kind === "settings"
+      ? "M12 2l1.5 2.4 2.8.5 1.9-1.2 2 3.5-1.9 1.9.1 2.9 1.8 1.9-2 3.5-2.8-.5-2.4 1.4L12 21l-3.1-2.7-2.4-1.4-2.8.5-2-3.5 1.8-1.9.1-2.9-1.9-1.9 2-3.5 1.9 1.2 2.8-.5L12 2Z"
+      : "M4 6h16M9 6V4h6v2M6 6l1 15h10l1-15M10 10v7M14 10v7");
+    svg.appendChild(shape);
+    if (kind === "settings") {
+      const center = document.createElementNS(ns, "circle");
+      center.setAttribute("cx", "12");
+      center.setAttribute("cy", "11.5");
+      center.setAttribute("r", "3.1");
+      svg.appendChild(center);
+    }
+    return svg;
   }
   function renderProjects() {
     projectsList.replaceChildren();
@@ -457,30 +781,35 @@
       manage.type = "button";
       manage.className = "project-manage";
       manage.textContent = uiT("manage");
+      manage.prepend(sidebarActionIcon("settings"));
       manage.setAttribute("aria-label", uiT("project-manage-aria", { name: project.name }));
+      manage.title = uiT("project-manage-aria", { name: project.name });
       manage.addEventListener("click", () => openProjectDialog(project));
       row.append(button, manage);
       projectsList.appendChild(row);
     });
-    projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
+    if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
   }
   async function loadProjects() {
     if (!authState.authenticated || !authState.history_ready) {
       clearProjectsUI();
       return false;
     }
-    projectsNavButton.disabled = true;
-    projectsNavButton.setAttribute("aria-disabled", "true");
-    projectsBadge.textContent = uiT("checking");
+    if (projectsNavButton) {
+      projectsNavButton.disabled = true;
+      projectsNavButton.setAttribute("aria-disabled", "true");
+    }
+    if (projectsBadge) projectsBadge.textContent = uiT("checking");
     try {
       const response = await fetch("/api/projects", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !Array.isArray(data.projects)) throw new Error("projects unavailable");
       projects = data.projects.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
       projectsReady = true;
-      projectsNavButton.disabled = false;
-      projectsNavButton.setAttribute("aria-disabled", "false");
-      syncFilesNav();
+      if (projectsNavButton) {
+        projectsNavButton.disabled = false;
+        projectsNavButton.setAttribute("aria-disabled", "false");
+      }
       if (activeProject) activeProject = projects.find((item) => item.id === activeProject.id) || activeProject;
       renderProjects();
       return true;
@@ -655,6 +984,7 @@
 
   function resetConversation(preserveProject = true) {
     conversationEpoch += 1;
+    lastCompletedAnswerRequest = null;
     if (activeRequestController) {
       activeRequestCancelReason = "conversation_reset";
       activeRequestController.abort();
@@ -670,8 +1000,13 @@
     clearAttachment();
     messageList.replaceChildren();
     messageList.hidden = true;
+    delete messageList.closest(".conversation")?.dataset.continuousThread;
+    conversationArtifactContext?.clear?.();
     emptyState.hidden = false;
     shell.dataset.state = "home";
+    // One shared follow state for Chat and Claw: a new conversation starts
+    // from "latest" and hides the jump control.
+    window.__padiemConversationMotion?.reset?.();
     // Leaving for home drops any pending Claw execute recovery timer/state.
     clearClawRecovery({ syncControls: true });
     clearClawWait();
@@ -829,13 +1164,23 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    // A completed or concurrent sign-in invalidates any pending Android handoff.
+    if (authenticated && androidHandoff) clearAndroidHandoff();
+    // #4488: a decision that began in a previous session generation must never
+    // repaint this one, and its still-pending promise must not block the new
+    // session from deciding. Auth loss and an account switch both invalidate.
+    noteClawApprovalSession(authenticated);
+    // #3790 signed-in change notification contains no identity or credentials.
+    if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
+      window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated } }));
+    }
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),
-      // #3237: Automation reuses the same signed-in gate. The server still
-      // owns the canonical tenant, so an enabled button never implies the
-      // caller may read any particular workspace.
-      document.getElementById("automationNavButton"),
+      // #4462: the sidebar entries are gone; the general-view task entry
+      // and the automation-view alerts entry reuse the same signed-in gate.
+      document.getElementById("clawTasksButton"),
+      document.getElementById("automationAlertsButton"),
     ].filter(Boolean);
     inboxNavButtons.forEach((button) => {
       button.disabled = !authenticated;
@@ -856,6 +1201,37 @@
       if (automation) automation.hidden = true;
       if (automationList) automationList.replaceChildren();
       if (runHistory) runHistory.hidden = true;
+      // #4488 Phase A follow-up: the approved-memory disclosure wrapper must
+      // not outlive the session either (run-history parity).
+      const approvedMemory = document.getElementById("clawApprovedMemory");
+      const approvedDisclosure = document.getElementById("clawApprovedDisclosure");
+      const approvedList = document.getElementById("clawApprovedList");
+      const approvedError = document.getElementById("clawApprovedError");
+      if (approvedMemory) approvedMemory.hidden = true;
+      if (approvedDisclosure) {
+        approvedDisclosure.hidden = true;
+        approvedDisclosure.open = false;
+      }
+      if (approvedList) approvedList.replaceChildren();
+      if (approvedError) {
+        approvedError.hidden = true;
+        approvedError.textContent = "";
+        approvedError.removeAttribute("data-state");
+      }
+      // #4488 re-login: the pending approval decision surface is the one
+      // session-scoped Claw control that carries a specific run_id together
+      // with its approve/deny actions, so it must not outlive the session
+      // either. Otherwise re-entering Claw after an auth loss would re-show a
+      // previous session's decision controls for a run this session never
+      // requested.
+      const approvalActions = document.getElementById("clawApprovalActions");
+      if (approvalActions) {
+        approvalActions.replaceChildren();
+        approvalActions.hidden = true;
+      }
+      // #4488 Phase A: the disclosure wrapper must not outlive the session.
+      const runHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
+      if (runHistoryDisclosure) runHistoryDisclosure.hidden = true;
       if (runHistoryList) runHistoryList.replaceChildren();
       if (runHistoryError) {
         runHistoryError.hidden = true;
@@ -864,9 +1240,22 @@
       }
       if (workspace) {
         delete workspace.dataset.inboxKind;
-        if (workspace.dataset.view === "inbox") workspace.dataset.view = "manual";
-        if (workspace.dataset.view === "automation") workspace.dataset.view = "manual";
+        if (workspace.dataset.view === "inbox") workspace.dataset.view = "general";
+        if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
       }
+      // Auth loss hides the standalone Connectors/Automation pages the same
+      // way the Claw automation panel never outlives its session. The moved
+      // nodes stay mounted; reopening after sign-in reloads fresh state.
+      const connectorsView = document.getElementById("connectorsView");
+      if (connectorsView) connectorsView.hidden = true;
+      const automationView = document.getElementById("automationView");
+      if (automationView) automationView.hidden = true;
+      if (shell && (shell.dataset.state === "connectors" || shell.dataset.state === "automation")) {
+        shell.dataset.state = "home";
+        setNavActive();
+      }
+      // Auth loss also closes PDF previews and revokes ephemeral private blobs.
+      window.PadiemClawPdfPreview?.revokeAll?.();
       // Auth loss tears down any pending execute recovery: no timer outlives the session.
       clearClawRecovery({ syncControls: true });
       clearClawWait();
@@ -882,6 +1271,15 @@
     if (accountContainer) {
       accountContainer.dataset.accountState = sessionState;
       accountContainer.hidden = sessionState === "unavailable";
+    }
+    closeProfilePanel();
+    if (accountAvatar) {
+      const displayName = sessionState === "signed_in" && typeof authState.user?.name === "string"
+        ? authState.user.name.trim() : "";
+      const firstCharacter = displayName ? Array.from(displayName)[0] : "";
+      accountAvatar.textContent = sessionState === "signed_in"
+        ? (firstCharacter ? firstCharacter.toLocaleUpperCase() : "●")
+        : sessionState === "expired" ? "!" : "●";
     }
     loginButton.hidden = sessionState === "unavailable";
     loginButton.disabled = !ready;
@@ -905,7 +1303,7 @@
       accountName.textContent = name || uiT("signed-in");
       accountName.hidden = false;
       historySection.hidden = false;
-      projectsBadge.textContent = uiT("checking");
+      if (projectsBadge) projectsBadge.textContent = uiT("checking");
       return;
     }
 
@@ -944,11 +1342,15 @@
     if (authDivider) authDivider.hidden = !(googleEnabled && passwordEnabled);
     if (passwordLoginForm) passwordLoginForm.hidden = !passwordEnabled;
     if (passwordRegisterSection) passwordRegisterSection.hidden = !passwordEnabled;
+    renderAndroidHandoff();
   }
 
   function openAuthDialog() {
     if (!authDialog) {
-      if (authMethodEnabled("google")) window.location.assign("/auth/google/start");
+      if (authMethodEnabled("google")) {
+        if (isAndroidWebView()) startAndroidHandoff();
+        else window.location.assign("/auth/google/start");
+      }
       return;
     }
     syncAuthDialogMethods();
@@ -960,6 +1362,263 @@
       authDialog.setAttribute("open", "");
     }
     if (authMethodEnabled("password") && passwordLoginIdentifier) passwordLoginIdentifier.focus();
+  }
+
+  function isAndroidWebView() {
+    if (typeof navigator === "undefined") return false;
+    const userAgent = navigator.userAgent || "";
+    return /Android/i.test(userAgent) && /\bwv\b/i.test(userAgent);
+  }
+
+  function readStoredAndroidHandoff() {
+    try {
+      const raw = window.sessionStorage.getItem(ANDROID_HANDOFF_STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return null;
+      if (typeof parsed.handoffId !== "string" || !/^aho_[A-Za-z0-9_-]{20,48}$/.test(parsed.handoffId)) return null;
+      if (typeof parsed.claimSecret !== "string" || parsed.claimSecret.length < 16 || parsed.claimSecret.length > 128) return null;
+      if (typeof parsed.userCode !== "string" || !/^[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(parsed.userCode)) return null;
+      if (typeof parsed.authorizationUrl !== "string" || !/^https:\/\//.test(parsed.authorizationUrl)) return null;
+      if (!Number.isFinite(parsed.expiresAt)) return null;
+      return parsed;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function storeAndroidHandoff() {
+    try {
+      if (androidHandoff) {
+        window.sessionStorage.setItem(ANDROID_HANDOFF_STORAGE_KEY, JSON.stringify(androidHandoff));
+      } else {
+        window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY);
+      }
+    } catch (_) {
+      // Storage can be unavailable in hardened WebViews; the in-memory flow still works.
+    }
+  }
+
+  function stopAndroidHandoffPolling() {
+    if (androidHandoffTimer !== null) {
+      window.clearInterval(androidHandoffTimer);
+      androidHandoffTimer = null;
+    }
+  }
+
+  function clearAndroidHandoff() {
+    stopAndroidHandoffPolling();
+    androidHandoffClaiming = false;
+    androidHandoff = null;
+    storeAndroidHandoff();
+    renderAndroidHandoff();
+    setAuthFormError(androidHandoffError);
+  }
+
+  function androidHandoffPhaseKey(phase) {
+    switch (phase) {
+      case "waiting": return "auth-android-waiting";
+      case "confirm": return "auth-android-confirm";
+      case "claiming": return "auth-android-claiming";
+      case "expired": return "auth-android-expired";
+      case "error": return "auth-android-error";
+      default: return "auth-android-code-help";
+    }
+  }
+
+  function renderAndroidHandoff() {
+    if (!androidHandoffPanel) return;
+    if (!androidHandoff) {
+      androidHandoffPanel.hidden = true;
+      return;
+    }
+    androidHandoffPanel.hidden = false;
+    if (androidHandoffCode) androidHandoffCode.textContent = androidHandoff.userCode;
+    if (androidHandoffNote) {
+      const key = androidHandoffPhaseKey(androidHandoff.phase);
+      androidHandoffNote.dataset.localeKey = key;
+      androidHandoffNote.textContent = uiT(key);
+    }
+    const busy = androidHandoff.phase === "claiming";
+    if (androidHandoffOpen) {
+      androidHandoffOpen.hidden = busy;
+      androidHandoffOpen.disabled = busy;
+    }
+    if (androidHandoffCancel) {
+      androidHandoffCancel.hidden = busy;
+      androidHandoffCancel.disabled = busy;
+    }
+  }
+
+  async function claimAndroidHandoff(current) {
+    if (!current || androidHandoffClaiming || androidHandoff !== current) return;
+    androidHandoffClaiming = true;
+    current.phase = "claiming";
+    storeAndroidHandoff();
+    renderAndroidHandoff();
+    let response;
+    try {
+      response = await fetch(`/auth/android/handoff/${encodeURIComponent(current.handoffId)}/claim`, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "X-Padiem-Handoff-Secret": current.claimSecret,
+        },
+        cache: "no-store",
+      });
+    } catch (_) {
+      current.phase = "waiting";
+      storeAndroidHandoff();
+      renderAndroidHandoff();
+      androidHandoffClaiming = false;
+      return;
+    }
+    if (response.ok) {
+      await loadAuthStatus();
+      if (authState.authenticated) {
+        clearAndroidHandoff();
+        closeAuthDialog();
+      } else {
+        current.phase = "error";
+        storeAndroidHandoff();
+        renderAndroidHandoff();
+      }
+      androidHandoffClaiming = false;
+      return;
+    }
+    if (response.status === 410 || response.status === 404) {
+      current.phase = "expired";
+      stopAndroidHandoffPolling();
+    } else if (response.status === 409) {
+      await loadAuthStatus();
+      if (authState.authenticated) {
+        clearAndroidHandoff();
+      } else {
+        current.phase = "error";
+        stopAndroidHandoffPolling();
+      }
+    } else {
+      current.phase = "error";
+      stopAndroidHandoffPolling();
+    }
+    storeAndroidHandoff();
+    renderAndroidHandoff();
+    androidHandoffClaiming = false;
+  }
+
+  async function pollAndroidHandoff() {
+    const current = androidHandoff;
+    if (!current || androidHandoffClaiming) return;
+    if (Date.now() >= current.expiresAt) {
+      current.phase = "expired";
+      stopAndroidHandoffPolling();
+      storeAndroidHandoff();
+      renderAndroidHandoff();
+      return;
+    }
+    let response;
+    try {
+      response = await fetch(`/auth/android/handoff/${encodeURIComponent(current.handoffId)}`, {
+        headers: {
+          "Accept": "application/json",
+          "X-Padiem-Handoff-Secret": current.claimSecret,
+        },
+        cache: "no-store",
+      });
+    } catch (_) {
+      return; // transient; the next tick retries while the page is alive
+    }
+    if (response.status === 404) {
+      current.phase = "error";
+      stopAndroidHandoffPolling();
+      storeAndroidHandoff();
+      renderAndroidHandoff();
+      return;
+    }
+    if (!response.ok) return;
+    const data = await response.json().catch(() => null);
+    if (!data || typeof data.status !== "string") return;
+    if (data.status === "ready") {
+      await claimAndroidHandoff(current);
+      return;
+    }
+    if (data.status === "claimed") {
+      await loadAuthStatus();
+      if (authState.authenticated) clearAndroidHandoff();
+      return;
+    }
+    if (data.status === "expired" || data.status === "cancelled") {
+      current.phase = "expired";
+      stopAndroidHandoffPolling();
+      storeAndroidHandoff();
+      renderAndroidHandoff();
+      return;
+    }
+    current.phase = data.status === "awaiting_confirmation" ? "confirm" : "waiting";
+    storeAndroidHandoff();
+    renderAndroidHandoff();
+  }
+
+  function startAndroidHandoffPolling() {
+    stopAndroidHandoffPolling();
+    if (!androidHandoff || androidHandoff.phase === "expired" || androidHandoff.phase === "error") return;
+    androidHandoffTimer = window.setInterval(() => { pollAndroidHandoff(); }, ANDROID_HANDOFF_POLL_MS);
+  }
+
+  async function startAndroidHandoff() {
+    if (androidHandoffStarting) return;
+    androidHandoffStarting = true;
+    setAuthFormError(androidHandoffError);
+    try {
+      const response = await fetch("/auth/android/handoff", {
+        method: "POST",
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data ||
+          typeof data.handoff_id !== "string" ||
+          typeof data.claim_secret !== "string" ||
+          typeof data.user_code !== "string" ||
+          typeof data.authorization_url !== "string") {
+        throw new Error(uiT("auth-android-error"));
+      }
+      const expiresIn = Number.isFinite(data.expires_in) ? data.expires_in : 600;
+      androidHandoff = {
+        handoffId: data.handoff_id,
+        claimSecret: data.claim_secret,
+        userCode: data.user_code,
+        authorizationUrl: data.authorization_url,
+        expiresAt: Date.now() + Math.max(30, expiresIn - 5) * 1000,
+        phase: "waiting",
+      };
+      storeAndroidHandoff();
+      renderAndroidHandoff();
+      startAndroidHandoffPolling();
+      window.location.assign(androidHandoff.authorizationUrl);
+    } catch (error) {
+      setAuthFormError(
+        androidHandoffError,
+        error instanceof Error && error.message ? error.message : uiT("auth-android-error")
+      );
+    } finally {
+      androidHandoffStarting = false;
+    }
+  }
+
+  function resumeAndroidHandoff() {
+    if (!isAndroidWebView()) return;
+    const stored = readStoredAndroidHandoff();
+    if (!stored) return;
+    if (Date.now() >= stored.expiresAt) {
+      try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}
+      return;
+    }
+    if (stored.phase === "claiming") stored.phase = "waiting";
+    androidHandoff = stored;
+    renderAndroidHandoff();
+    startAndroidHandoffPolling();
+    pollAndroidHandoff();
   }
 
   function closeAuthDialog() {
@@ -1049,6 +1708,29 @@
       const response = await fetch("/api/conversations", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !Array.isArray(data.conversations)) throw new Error("history unavailable");
+      // Labels are presentation only; run history is owner-filtered by the server.
+      // Never infer a Claw execution authority from a title or browser storage.
+      const verifiedClawIds = new Set();
+      if (data.conversations.length) {
+        try {
+          const threadRunHistoryLimit = 30;
+          const runsResponse = await fetch(`/api/claw/runs?limit=${threadRunHistoryLimit}`, {
+            headers: { "Accept": "application/json" }, cache: "no-store",
+          });
+          const runsData = await runsResponse.json().catch(() => null);
+          if (runsResponse.ok && runsData?.ok === true && Array.isArray(runsData.runs)) {
+            runsData.runs.forEach((run) => {
+              if (run?.channel === "web" && run?.action === "general"
+                  && run?.status === "completed"
+                  && /^chat_[a-f0-9]{32}$/.test(run?.session?.conversation_id || "")) {
+                verifiedClawIds.add(run.session.conversation_id);
+              }
+            });
+          }
+        } catch (_) { /* No Claw authority can be inferred from a failed read. */ }
+      }
+      clawConversationIds.clear();
+      verifiedClawIds.forEach((id) => clawConversationIds.add(id));
       historyList.replaceChildren();
       historySection.hidden = false;
       historyEmpty.hidden = data.conversations.length !== 0;
@@ -1059,21 +1741,61 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "recent-item history-item";
-        button.textContent = conversation.title;
+        button.textContent = clawConversationIds.has(conversation.id)
+          ? `Claw · ${conversation.title}` : conversation.title;
         button.addEventListener("click", () => openSavedConversation(conversation.id));
+        const actions = document.createElement("details");
+        actions.className = "history-actions";
+        const more = document.createElement("summary");
+        more.className = "history-more";
+        const moreLabel = uiT("manage") + ": " + conversation.title;
+        more.setAttribute("aria-label", moreLabel);
+        more.title = moreLabel;
+        more.append(sidebarActionIcon("more"));
+        const menu = document.createElement("div");
+        menu.className = "history-actions-menu";
         const remove = document.createElement("button");
         remove.type = "button";
-        remove.className = "history-delete";
-        remove.textContent = uiT("delete");
+        remove.className = "history-delete history-menu-delete";
+        remove.append(sidebarActionIcon("trash"), document.createTextNode(uiT("delete")));
         remove.setAttribute("aria-label", uiT("conversation-delete-aria", { title: conversation.title }));
-        remove.addEventListener("click", () => deleteConversation(conversation.id, conversation.title));
-        row.append(button, remove);
+        remove.title = uiT("conversation-delete-aria", { title: conversation.title });
+        remove.addEventListener("click", async () => {
+          await deleteConversation(conversation.id, conversation.title);
+          // Dialog close must return focus to a visible action, not an item
+          // concealed inside a closed native details panel.
+          if (actions.isConnected) {
+            actions.open = false;
+            more.focus();
+          }
+        });
+        actions.addEventListener("toggle", () => {
+          if (!actions.open) return;
+          historyList.querySelectorAll(".history-actions[open]").forEach((other) => {
+            if (other !== actions) other.open = false;
+          });
+        });
+        menu.appendChild(remove);
+        actions.append(more, menu);
+        row.append(button, actions);
         historyList.appendChild(row);
       });
     } catch (_) {
       clearHistoryUI();
     }
   }
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest(".history-actions")) return;
+    historyList.querySelectorAll(".history-actions[open]").forEach((node) => { node.open = false; });
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    const expanded = historyList.querySelector(".history-actions[open]");
+    if (!expanded) return;
+    expanded.open = false;
+    expanded.querySelector("summary")?.focus();
+    event.stopPropagation();
+  });
   async function deleteConversation(id, title) {
     if (!authState.authenticated || inFlight) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
@@ -1141,19 +1863,87 @@
       activeProjectFileCount = 0;
       renderProjectState();
       if (activeProject) refreshActiveProjectFileCount();
-      showConversation();
+      const isVerifiedClawThread = clawConversationIds.has(data.conversation.id);
+      if (isVerifiedClawThread) openClawWorkspace();
+      showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
+      conversationArtifactContext?.show?.(data.conversation.id);
       data.conversation.messages.forEach((item) => {
         if (!item || typeof item.content !== "string") return;
         if (item.role === "user") addUserMessage(item.content, null);
         if (item.role === "assistant") renderStoredAssistant(item.content);
         if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content });
       });
+      // A restored conversation opens on its newest turn with follow resumed,
+      // on the same shared Chat/Claw control.
+      window.__padiemConversationMotion?.resume?.();
       closeSidebar();
       input.focus();
+      return true;
     } catch (error) {
       setNote(error instanceof Error ? error.message : uiT("conversation-load-failed"), "error");
+      return false;
     }
   }
+
+  // #4471: the sidebar conversation search opens a hit through this loader
+  // instead of a recent-list DOM row, so a hit outside the recent page still
+  // restores with the same auth guard, inFlight lock, project restore and the
+  // server-verified Claw set. Read-only handle: it grants no new authority.
+  window.PadiemChatConversationOpener = Object.freeze({
+    open: (conversationId) => openSavedConversation(conversationId),
+  });
+
+  // #4489: the Library opens a stored project file through that file's owning
+  // project in the existing Project dialog, so project-file permission, the
+  // files panel and every edit guard stay on the one canonical path. The project
+  // resolves only from the already-loaded owner list, so a foreign or stale id
+  // opens nothing. Read-only handle: it grants no new authority.
+  window.PadiemChatProjectOpener = Object.freeze({
+    open: (projectId) => {
+      if (!projectsReady || !authState.authenticated || inFlight) return false;
+      const project = projects.find((item) => item && item.id === projectId);
+      if (!project) return false;
+      openProjectDialog(project);
+      return true;
+    },
+  });
+
+  // Hark's private web XLSX intake creates a separate trusted owner-owned
+  // work conversation. This explicit navigation never guesses that it was the
+  // currently displayed chat or fabricates an assistant answer/file READ grant.
+  window.addEventListener("padiem:claw-web-work-conversation-open", async (event) => {
+    const detail = event?.detail;
+    if (!authState.authenticated || inFlight || !detail
+        || typeof detail.conversationId !== "string"
+        || !/^chat_[a-f0-9]{32}$/.test(detail.conversationId)) return;
+    // Two server-verified handoff shapes exist: an exact owner-indexed
+    // artifact reference (completed revision) or a conversation-only handle
+    // for the verified owner workcopy. A partial artifact reference is
+    // refused instead of being treated as verified, and neither shape is a
+    // new file READ/WRITE grant.
+    const hasArtifact = detail.artifactId !== undefined
+      || detail.integrityRef !== undefined;
+    if (hasArtifact
+        && !(typeof detail.artifactId === "string"
+             && /^doc_[a-f0-9]{32}$/.test(detail.artifactId)
+             && typeof detail.integrityRef === "string"
+             && /^[a-f0-9]{64}$/.test(detail.integrityRef))) return;
+    // The work conversation is loaded through the existing authenticated,
+    // owner-scoped /api/conversations/:id endpoint. The XLSX UI separately
+    // confirmed the exact owner-scoped artifact GET before raising an
+    // artifact-bearing event, and the owner workcopy status read for the
+    // conversation-only one.
+    const opened = await openSavedConversation(detail.conversationId);
+    if (!opened) return;
+    const notice = document.createElement("p");
+    notice.className = "reference-note";
+    notice.setAttribute("role", "status");
+    notice.textContent = uiT(hasArtifact
+      ? "claw-web-work-conversation-opened"
+      : "claw-web-work-conversation-opened-read");
+    messageList.prepend(notice);
+    setNote(uiT("claw-web-work-conversation-note"));
+  });
 
   async function requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, signal) {
     const data = await chatTransport.requestCompleted(payload, signal);
@@ -1176,6 +1966,14 @@
   function applyStreamDone(article, data, answer, outboundMessages, contextSnapshot) {
     conversationState.commitAssistant(outboundMessages, answer);
     if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
+    // #4469: render the terminal sources the backend already validated and sent
+    // (https url + title + retrieved_at). Nothing here trusts or re-requests
+    // them; the bounded renderer in claw-answer-sources.js stays the single
+    // display authority, and a frame without sources leaves the answer surface
+    // unchanged — a model-only answer is never shown as a searched answer.
+    if (Array.isArray(data.sources) && data.sources.length) {
+      window.PadiemClawAnswerSources?.render(article, data.sources);
+    }
     if (typeof data.project_id === "string") {
       const snapshotProject = contextSnapshot.project && contextSnapshot.project.id === data.project_id ? contextSnapshot.project : null;
       const boundedProject = data.project && data.project.id === data.project_id && typeof data.project.name === "string" ? data.project : null;
@@ -1197,15 +1995,110 @@
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
-  async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal) {
-    const response = await chatTransport.requestStreaming(payload, signal);
+  // Transport completion does not imply a completed durable PC run.
+  const resolvedPcRuns = new Set();
+  async function waitForAcceptedPcRun(article, handle, outboundMessages, signal) {
+    const { run_id: runId, conversation_id: conversationId } = handle;
+    const owner = authState.user;
+    if (!runId || !conversationId) return;
+    for (;;) {
+      if (signal.aborted || !article.isConnected || authState.authenticated !== true
+          || authState.user !== owner
+          || conversationState.getConversationId?.() !== conversationId) return;
+      await new Promise((resolve) => window.setTimeout(resolve, 2000));
+      if (signal.aborted || !article.isConnected || authState.user !== owner
+          || conversationState.getConversationId?.() !== conversationId) return;
+      const response = await fetch(
+        "/api/claw/runs/" + encodeURIComponent(runId) + "/pending-result",
+        { headers: { Accept: "application/json" }, cache: "no-store", signal }
+      );
+      if (!response.ok) return;
+      const data = await response.json();
+      const result = data?.result;
+      if (!result || result.run_id !== runId || result.conversation_id !== conversationId) return;
+      if (authState.user !== owner || conversationState.getConversationId?.() !== conversationId
+          || !article.isConnected || signal.aborted) return;
+      if (result.status === "pending" || result.status === "running") continue;
+      if (result.status !== "completed" || typeof result.answer !== "string") {
+        PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
+        return;
+      }
+      if (resolvedPcRuns.has(runId)) return;
+      resolvedPcRuns.add(runId);
+      const content = article.querySelector(".assistant-content");
+      content.replaceChildren();
+      const paragraph = document.createElement("p");
+      paragraph.textContent = result.answer;
+      content.appendChild(paragraph);
+      conversationState.commitAssistant(outboundMessages, result.answer);
+      PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
+      if (authState.authenticated) loadRecentConversations();
+      return;
+    }
+  }
+
+  async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal, route) {
+    // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
+    // canonical P01 Engine lane; the standalone Padiem Chat path keeps the
+    // existing /api/chat/stream transport call byte-for-byte.
+    // The decision is an immutable snapshot taken before showConversation()
+    // mutates shell.dataset.state, so it is never re-derived from live state.
+    const clawGeneralRequest = !!(route && route.clawGeneral);
+    // #3930: no fabricated stages. Only validated server-emitted P01 envelopes
+    // can change the runtime label; a legacy delta/done stream retains its
+    // existing truthful response status.
+    const canonicalEventProjection = clawGeneralRequest ? window.PadiemClawRunEventProjection?.create?.() : null;
+    const verifiedClawRecovery = clawGeneralRequest ? window.PadiemClawRecoveryTruth?.create?.() : null;
+    const historicalStages = [];
+    const response = clawGeneralRequest
+      ? await chatTransport.requestClawGeneral(payload, signal)
+      : await chatTransport.requestStreaming(payload, signal);
 
     let answer = "";
     let paragraph = null;
     let done = false;
     let terminalError = false;
+    // #3935: terminal P01 events outrank a later transport done/connection
+    // loss. Keep any partial text, show bounded status, never mint an approval
+    // button or silently submit a second request.
+    function showVerifiedClawRecovery(state) {
+      const content = article.querySelector(".assistant-content");
+      const typing = content?.querySelector(".typing");
+      if (typing) typing.remove();
+      const status = document.createElement("p");
+      status.className = "claw-recovery-truth";
+      status.setAttribute("role", "status");
+      status.textContent = window.PadiemClawRecoveryTruth.copy(state, document.documentElement.lang);
+      content?.appendChild(status);
+      const marker = article.querySelector("[data-runtime-label]");
+      if (marker) marker.textContent = status.textContent;
+      PadiemChatLifecycle.set(article, state === "waiting_for_approval"
+        ? MESSAGE_LIFECYCLE.WAITING_APPROVAL
+        : state === "cancelled" ? MESSAGE_LIFECYCLE.CANCELLED : MESSAGE_LIFECYCLE.FAILED);
+      revealErrorState(article);
+    }
     try {
       await chatTransport.readSseEvents(response, async (frame) => {
+        if (frame.event === "p01_event") {
+          if (!clawGeneralRequest || !canonicalEventProjection) return false;
+          let envelope;
+          try { envelope = JSON.parse(frame.data); } catch (_) { return false; }
+          if (envelope.delivery !== "live" && envelope.delivery !== "post_execution") return false;
+          const projected = canonicalEventProjection.consume(envelope);
+          if (!projected.accepted) return false;
+          // #3935: only an accepted canonical event can affect terminal truth.
+          verifiedClawRecovery?.observe(projected.kind);
+          const label = window.PadiemClawRunEventProjection.label(projected.kind, document.documentElement.lang);
+          if (envelope.delivery === "post_execution") {
+            // The Engine returned a completed run, not an actual live event.
+            // Preserve truth: show these labels only as a retrospective log.
+            if (label && historicalStages.length < 12) historicalStages.push(label);
+            return false;
+          }
+          const marker = article.querySelector("[data-runtime-label]");
+          if (label && marker) marker.textContent = label;
+          return false;
+        }
         if (!["delta", "done", "error"].includes(frame.event)) return false;
         let data;
         try {
@@ -1214,6 +2107,9 @@
           throw new Error(uiT("stream-format-invalid"));
         }
         if (frame.event === "delta") {
+          // Never append new content after a verified P01 failure, cancellation
+          // or approval pause; a later delta cannot revive a stopped run.
+          if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) return false;
           if (!data || typeof data.delta !== "string") throw new Error(uiT("stream-format-invalid"));
           if (!data.delta) return false;
           if (!paragraph) {
@@ -1221,34 +2117,94 @@
             content.replaceChildren();
             paragraph = document.createElement("p");
             content.appendChild(paragraph);
-            article.querySelector("[data-runtime-label]").textContent = uiT("ai-response");
+            // The template's "answer-preparing" label stays during streaming;
+            // no repetitive runtime line is rendered on first delta.
           }
           answer += data.delta;
           paragraph.textContent = answer;
           return false;
         }
         if (frame.event === "error") {
-          const message = data && data.error && typeof data.error.message === "string"
-            ? data.error.message
-            : uiT("stream-continue-failed");
+          if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+            terminalError = true;
+            showVerifiedClawRecovery(verifiedClawRecovery.state());
+            return true;
+          }
+          const clawFailure = clawGeneralRequest
+            ? clawGeneralFailure(data && data.error ? data.error.code : "")
+            : null;
+          const message = clawGeneralRequest
+            ? clawFailure.message
+            : data && data.error && typeof data.error.message === "string"
+              ? data.error.message : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
-          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, lifecycleForError(chatTransport.errorFor(data, message)));
+          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)), clawFailure);
+          return true;
+        }
+        if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+          terminalError = true;
+          showVerifiedClawRecovery(verifiedClawRecovery.state());
           return true;
         }
         if (!data || data.done !== true || !paragraph || !answer) throw new Error(uiT("stream-complete-invalid"));
         if (done) throw new Error(uiT("stream-done-duplicate"));
         done = true;
+        if (clawGeneralRequest && data.pc_pending === true
+            && typeof data.run_id === "string"
+            && typeof data.conversation_id === "string") {
+          const pendingConversationId = data.conversation_id;
+          conversationState.setConversationId(pendingConversationId);
+          PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
+          void waitForAcceptedPcRun(article, data, outboundMessages, signal)
+            .catch(() => { if (article.isConnected && !signal.aborted) {
+              PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
+            } });
+          return true;
+        }
         applyStreamDone(article, data, answer, outboundMessages, contextSnapshot);
+        if (historicalStages.length) {
+          const details = document.createElement("details");
+          details.className = "claw-event-history";
+          const summary = document.createElement("summary");
+          summary.textContent = uiT("claw-event-history-post-execution");
+          const stages = document.createElement("ul");
+          for (const label of historicalStages) {
+            const item = document.createElement("li");
+            item.textContent = label;
+            stages.appendChild(item);
+          }
+          details.append(summary, stages);
+          article.querySelector(".assistant-body")?.appendChild(details);
+        }
         return true;
       });
       if (done) return true;
       if (terminalError) return false;
+      // No transport done: a *verified* P01 failure/cancellation/approval pause
+      // still has to be represented truthfully, not replaced with "completed".
+      if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+        showVerifiedClawRecovery(verifiedClawRecovery.state());
+        return false;
+      }
       throw new Error(uiT("stream-incomplete"));
     } catch (error) {
       if (error && error.name === "AbortError") throw error;
+      if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+        showVerifiedClawRecovery(verifiedClawRecovery.state());
+        return false;
+      }
       if (paragraph) {
-        renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"), outboundMessages, skill, contextSnapshot);
+        if (clawGeneralRequest) {
+          const clawFailure = clawGeneralFailure(error && error.code);
+          renderStreamError(article, clawFailure.message,
+            outboundMessages, skill, contextSnapshot, true, MESSAGE_LIFECYCLE.FAILED, clawFailure);
+        } else {
+          // Preserve the original standalone Chat catch path and its existing
+          // rich-stream/browser contract. Only Claw uses bounded safe copy.
+          renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"),
+            outboundMessages, skill, contextSnapshot, false);
+        }
         return false;
       }
       throw error;
@@ -1262,12 +2218,43 @@
     setNote(uiT("answer-cancelled-note"), "error");
   }
 
+  // #4317: product-capabilities.js is loaded AFTER app.js. Initialise the
+  // browser's ordinary Chat tier to the universally available signed-in Free
+  // lane once all scripts are ready; preserve an explicit tier choice afterwards.
+  // This updates the visible mode selector but never sends a model request.
+  window.addEventListener("load", () => {
+    if (window.PadiemTierSelection?.get?.() === "plus") {
+      window.PadiemTierSelection.set("free");
+    }
+  }, { once: true });
+
   function selectedProductTier() {
+    // Both Chat and the shared Claw first-use composer honor the visible
+    // PADIEM FREE/PLUS choice. Never silently force Claw to Plus while its
+    // explicit Plus model chooser is hidden. The server validates entitlements.
+    // The administrator entry rides the same payload; only a verified global
+    // model admin passes the server gate, and every other tier keeps its rule.
     const tier = window.PadiemTierSelection?.get?.();
-    return "plus";
+    return ["free", "plus", "pro", "max", "admin"].includes(tier) ? tier : "free";
   }
 
-  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
+  // A failed PADIEM Custom request that needs the customer's key reopens the
+  // existing model card. No second dialog and no generic fallback to a PADIEM
+  // tier: the server's error message stays in the answer bubble.
+  function handleCustomRequestFailure(error) {
+    const code = error && typeof error.code === "string" ? error.code : "";
+    if (code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE) {
+      window.PadiemCustomSelection?.open?.();
+      void window.PadiemCustomSelection?.refresh?.();
+      return;
+    }
+    if (code === "unauthorized" && window.PadiemCustomSelection?.get?.()) {
+      window.PadiemCustomSelection?.open?.();
+      void loadAuthStatus();
+    }
+  }
+
+  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {
     if (inFlight) return false;
     inFlight = true;
     activeRequestCancelReason = null;
@@ -1280,30 +2267,88 @@
     renderTyping(article);
     try {
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
+      // #4745: retain the exact user-turn claim for a manual retry. A new
+      // submitPrompt receives a new contextSnapshot, so a separate identical
+      // request obtains a distinct key; explicit retry reuses this snapshot.
+      if (!contextSnapshot.calendarTurnId) {
+        contextSnapshot.calendarTurnId = chatTransport.createCalendarTurnId?.() || null;
+      }
+      if (contextSnapshot.calendarTurnId) payload.calendar_turn_id = contextSnapshot.calendarTurnId;
+      // PADIEM Custom is the customer-owned key lane: it replaces the PADIEM
+      // tier for this request (the server rejects tier+custom) and stays on the
+      // direct provider path, never through B14 orchestration.
+      const customSelection = !clawGeneralRequest && window.PadiemCustomSelection?.get?.();
+      if (customSelection) {
+        delete payload.tier;
+        payload.custom = { provider: customSelection.provider, model: customSelection.model };
+      }
+      // #3554: exactly one explicit B14 model per Claw submit; no auto/default
+      // selection. The submit-time snapshot survives the Claw→chat shell flip.
+      if (clawGeneralRequest && contextSnapshot.selectedModelId) {
+        payload.model_id = contextSnapshot.selectedModelId;
+      }
+      // #3539: the routing decision arrives as a submit-time snapshot. It is
+      // NEVER re-derived from live shell state here, because showConversation()
+      // has already flipped shell.dataset.state to "chat" by the time this runs
+      // (re-deriving it silently rerouted the generic Claw composer onto the
+      // standalone /api/chat/stream lane in Production).
+      // A generic B54 Claw submit runs on the canonical P01 Engine lane with no
+      // direct-B14 /api/chat/stream fallback; the standalone Padiem Chat composer
+      // keeps /api/chat/stream unchanged, and the explicit manual form submits
+      // through clawManualForm below, never here.
       const attachments = attachmentPayload(attachment);
+      if (clawGeneralRequest && attachments) {
+        // #3554: text-only P01 model choice must never be sent to a
+        // standalone direct-B14 completed-request path.
+        throw new Error(uiT("claw-model-text-only-error"));
+      }
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
       if (contextSnapshot.project) payload.project_id = contextSnapshot.project.id;
       if (attachments) {
-        return await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
+        const completedOk = await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
+        if (completedOk) {
+          lastCompletedAnswerRequest = { outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest: Boolean(clawGeneralRequest), article };
+        }
+        return completedOk;
       }
-      return await requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, controller.signal);
+      const streamOk = await requestStreamingAnswer(
+        article,
+        payload,
+        outboundMessages,
+        skill,
+        contextSnapshot,
+        controller.signal,
+        clawGeneralRequest ? { clawGeneral: true } : null,
+      );
+      if (streamOk) {
+        lastCompletedAnswerRequest = { outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest: Boolean(clawGeneralRequest), article };
+      }
+      return streamOk;
     } catch (error) {
       if (error && error.name === "AbortError") {
         if (activeRequestCancelReason === "user_cancel" && requestEpoch === conversationEpoch) {
-          renderCancelled(article, outboundMessages, skill, contextSnapshot);
+          renderCancelled(article, outboundMessages, skill, contextSnapshot, clawGeneralRequest);
         }
         return false;
       }
       if (requestEpoch !== conversationEpoch) return false;
+      handleCustomRequestFailure(error);
+      const clawFailure = clawGeneralRequest ? clawGeneralFailure(error && error.code) : null;
       renderError(
         article,
-        error instanceof Error ? error.message : uiT("try-again"),
+        clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
+          ? uiT("claw-general-provider-limit")
+          : clawGeneralRequest
+            ? clawFailure.message
+            : (error instanceof Error ? error.message : uiT("try-again")),
         outboundMessages,
         skill,
         attachment,
         contextSnapshot,
+        clawGeneralRequest,
         lifecycleForError(error),
+        clawFailure,
       );
       return false;
     } finally {
@@ -1317,21 +2362,107 @@
       }
     }
   }
+  // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
+  // This predicate documents the product state that selects the lane: the Claw
+  // shell with the explicit manual form hidden. It must be read at submit time,
+  // BEFORE any conversation presentation transition.
+  function clawGeneralRequestActive() {
+    return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
+  }
+
+  // One-click answer regenerate for the action bar (outputs.js). Only the
+  // latest completed answer may regenerate: the stored article, lifecycle
+  // state and DOM position are all re-verified, and requestAnswer's inFlight
+  // lock rejects any overlapping second call, so no duplicate or unintended
+  // paid model call can fire. No user bubble is added; the same outbound
+  // messages replay through the identical routing path.
+  function storedRegenerateRequest(article) {
+    const stored = lastCompletedAnswerRequest;
+    if (!stored || stored.article !== article) return null;
+    if (!article || !article.isConnected) return null;
+    if (!window.PadiemChatLifecycle || !window.PadiemChatLifecycle.isCompleted(article)) return null;
+    if (inFlight) return null;
+    const list = document.getElementById("messageList");
+    const items = list ? list.querySelectorAll(".assistant-message") : [];
+    if (!items.length || items[items.length - 1] !== article) return null;
+    return stored;
+  }
+  window.PadiemChatRegenerate = Object.freeze({
+    available(article) {
+      return storedRegenerateRequest(article) !== null;
+    },
+    regenerate(article) {
+      const stored = storedRegenerateRequest(article);
+      if (!stored) return false;
+      void requestAnswer(stored.outboundMessages, stored.skill, stored.attachment, stored.contextSnapshot, stored.clawGeneralRequest);
+      return true;
+    },
+  });
+
+  // Owner decision 2026-10-17: a guest may browse the product, but the model is
+  // not available without a session. The server already refuses an anonymous
+  // request (chat_routes -> 401 unauthorized, claw_general ->
+  // canonical_session_required), so this stops the request before it leaves the
+  // browser: the visitor gets the login gate instead of a raw error, and keeps
+  // the text they typed. Every screen stays browsable without a session.
+  function requireSessionForModelUse() {
+    if (authState.authenticated === true) return true;
+    // Only the server may decide that this deployment requires a session for the
+    // model (auth/status `model_requires_session`, which mirrors the anonymous
+    // rule the Chat and Claw routes already enforce). An isolated mock or preview
+    // deployment that cannot authenticate must never block the composer.
+    if (authState.model_requires_session !== true) return true;
+    setNote(uiT("model-requires-login"), "error");
+    if (loginButton && !loginButton.hidden && !loginButton.disabled) loginButton.click();
+    return false;
+  }
+
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
     if (!prompt || inFlight) return;
+    if (!requireSessionForModelUse()) return;
     if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachment;
     const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
-    showConversation();
+    // #3539: snapshot the canonical lane before changing presentation;
+    // #3931: keep a general Claw request in the same Claw conversation.
+    // Neither UI state nor the selected model ID may authorize fallback.
+    const clawGeneralRequest = clawGeneralRequestActive();
+    // PADIEM Custom is Chat-only and text-only. Refuse here, with the typed
+    // prompt preserved, instead of letting the server reject a mixed request.
+    const customSelected = Boolean(window.PadiemCustomSelection?.get?.());
+    if (customSelected && clawGeneralRequest) {
+      setNote(uiT("custom-chat-only"), "error");
+      return;
+    }
+    if (customSelected && attachmentSnapshot) {
+      setNote(uiT("custom-text-only"), "error");
+      return;
+    }
+    contextSnapshot.selectedModelId =
+      clawGeneralRequest && ["free", "plus"].includes(selectedProductTier()) && typeof clawModelIdInput !== "undefined" && clawModelIdInput
+        ? clawModelIdInput.value.trim() : "";
+    // Grade-only Claw execution does not require a provider-specific model ID.
+    showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
     const outbound = conversationState.outboundWithUser(prompt);
-    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot);
+    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
     if (success && selectedAttachment === attachmentSnapshot) clearAttachment();
   }
 
+  // Desktop layout preference is ephemeral: never change mobile overlay behavior,
+  // authentication, or per-user server state to store a navigation choice.
+  function setSidebarCollapsed(collapsed) {
+    if (window.matchMedia("(max-width: 920px)").matches) return;
+    shell.classList.toggle("sidebar-collapsed", collapsed);
+    sidebarCollapseButton?.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    sidebarRestoreButton?.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    if (collapsed) sidebarRestoreButton?.focus();
+    else sidebarCollapseButton?.focus();
+  }
   function closeSidebar() {
+    closeProfilePanel();
     shell.classList.remove("sidebar-open");
     mobileMenu.setAttribute("aria-expanded", "false");
     sidebarScrim.hidden = true;
@@ -1346,13 +2477,18 @@
     if (typeof settingsDialog.showModal === "function") settingsDialog.showModal();
     else settingsDialog.setAttribute("open", "");
     settingsButton.setAttribute("aria-expanded", "true");
+    profileToggle.setAttribute("aria-expanded", "true");
   }
   function closeSettings() {
     if (settingsDialog.open && typeof settingsDialog.close === "function") settingsDialog.close();
     else settingsDialog.removeAttribute("open");
     settingsButton.setAttribute("aria-expanded", "false");
+    profileToggle.setAttribute("aria-expanded", "false");
   }
 
+  window.addEventListener("padiem:tierchange", () => {
+    if (shell.dataset.state === "claw") shell.dataset.clawTier = selectedProductTier();
+  });
   input.addEventListener("input", updateComposer);
   // #3084: Korean IME regression protection. While a Hangul/IME composition is
   // active the browser still reports key === "Enter" for the candidate-confirm
@@ -1360,51 +2496,59 @@
   // is the shared pure decision (claw-local-handoff.js) plus an explicit
   // composition tracker for engines that omit event.isComposing.
   const localHandoffModule = window.PadiemClawLocalHandoff;
-  const composerComposition = localHandoffModule
-    ? localHandoffModule.createCompositionGuard()
+  // All three products load the canonical keyboard guard. The historic
+  // handoff guard remains for isolated older fixture/browser pages.
+  const composerInputModule = window.PadiemConversationComposer || localHandoffModule;
+  const composerComposition = composerInputModule
+    ? composerInputModule.createCompositionGuard()
     : null;
   input.addEventListener("compositionstart", () => composerComposition?.start());
   input.addEventListener("compositionupdate", () => composerComposition?.update());
   input.addEventListener("compositionend", () => composerComposition?.end());
   input.addEventListener("keydown", (event) => {
-    const shouldSubmit = localHandoffModule
-      ? localHandoffModule.shouldSubmitOnEnter(event, composerComposition)
-      : event.key === "Enter" && !event.shiftKey;
+    const shouldSubmit = composerInputModule
+      ? composerInputModule.shouldSubmitOnEnter(event, composerComposition)
+      : false; // Never submit Hangul IME text with an unavailable guard.
     if (!shouldSubmit) return;
     event.preventDefault();
     if (!sendButton.disabled) form.requestSubmit();
   });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    // #2532: in the Claw workspace the composer is the request input; Enter routes to preview.
-    if (shell.dataset.state === "claw" && clawManualForm && !clawManualForm.hidden) {
-      clawManualForm.requestSubmit();
-      return;
-    }
+    // #3531: the shared composer always submits to the general Claw
+    // conversation, in every shell state. The quotation/document workflow
+    // runs only via the manual form's own explicit draft submit button;
+    // a generic request must never auto-enter it through the composer.
+    // #4647: the meeting workbench consumes its own explicit meeting-setup
+    // command from its own capture-phase listener on this same form, so this
+    // handler keeps no shell-state fork and every other prompt is unaffected.
     submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   documentStarterButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
+  const documentFormatsToggle = document.getElementById("documentFormatsToggle");
+  const documentFormatsPanel = document.getElementById("documentFormatsPanel");
+  if (documentFormatsToggle && documentFormatsPanel) {
+    documentFormatsToggle.addEventListener("click", () => {
+      const show = documentFormatsPanel.hidden;
+      documentFormatsPanel.hidden = !show;
+      documentFormatsToggle.setAttribute("aria-expanded", show ? "true" : "false");
+    });
+    document.addEventListener("click", (event) => {
+      if (documentFormatsPanel.hidden || (event.target.closest && event.target.closest(".document-starter-shell"))) return;
+      documentFormatsPanel.hidden = true;
+      documentFormatsToggle.setAttribute("aria-expanded", "false");
+    });
+  }
   attachmentFileInput.addEventListener("change", () => {
     const [file] = attachmentFileInput.files || [];
     selectAttachment(file);
   });
   removeAttachment.addEventListener("click", clearAttachment);
-  projectsNavButton.addEventListener("click", () => {
+  if (projectsNavButton) projectsNavButton.addEventListener("click", () => {
     if (!projectsReady) return;
     if (projects.length === 0) openProjectDialog();
-    else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  });
-  // #3232: Files routes into the existing Project UI. With an active project it
-  // reopens that project's dialog (with its existing files panel); otherwise it
-  // reuses the existing Projects flow (create dialog when empty, section scroll
-  // when projects exist). No global file store is introduced: the handler stays
-  // fail-closed unless the project authority is ready.
-  if (filesNavButton) filesNavButton.addEventListener("click", () => {
-    if (!filesNavAvailable()) return;
-    if (activeProject) openProjectDialog(activeProject);
-    else if (projects.length === 0) openProjectDialog();
     else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
   });
   projectCreateButton.addEventListener("click", () => openProjectDialog());
@@ -1445,9 +2589,28 @@
   }
   if (googleLoginButton) {
     googleLoginButton.addEventListener("click", () => {
-      if (authMethodEnabled("google")) window.location.assign("/auth/google/start");
+      if (!authMethodEnabled("google")) return;
+      if (isAndroidWebView()) {
+        startAndroidHandoff();
+        return;
+      }
+      window.location.assign("/auth/google/start");
     });
   }
+  if (androidHandoffOpen) {
+    androidHandoffOpen.addEventListener("click", () => {
+      if (!androidHandoff) return;
+      window.location.assign(androidHandoff.authorizationUrl);
+    });
+  }
+  if (androidHandoffCancel) {
+    androidHandoffCancel.addEventListener("click", () => { clearAndroidHandoff(); });
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && androidHandoff) {
+      pollAndroidHandoff();
+    }
+  });
   if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
   if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
@@ -1455,21 +2618,46 @@
     closeSidebar();
   }));
   newChatButton.addEventListener("click", () => resetConversation(true));
-  settingsButton.addEventListener("click", openSettings);
-  settingsDialog.addEventListener("close", () => settingsButton.setAttribute("aria-expanded", "false"));
+  // The visible account name/avatar is the one-step Settings entry.
+  // Reuse the existing settings action; do not create a second settings flow.
+  profileToggle.addEventListener("click", () => {
+    if (accountContainer?.hidden) return;
+    closeProfilePanel();
+    settingsButton.click();
+  });
+  profileSettingsAction.addEventListener("click", () => {
+    closeProfilePanel();
+    settingsButton.click(); // keep the existing settings-dialog authority
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (!profilePanel.hidden && !accountContainer?.contains(event.target)) closeProfilePanel();
+  });
+  settingsButton.addEventListener("click", () => { closeProfilePanel(); openSettings(); });
+  settingsDialog.addEventListener("close", () => {
+    settingsButton.setAttribute("aria-expanded", "false");
+    profileToggle.setAttribute("aria-expanded", "false");
+  });
   settingsDialog.addEventListener("cancel", (event) => {
     event.preventDefault();
     closeSettings();
   });
   settingsCloseButton.addEventListener("click", closeSettings);
+  sidebarCollapseButton?.addEventListener("click", () => setSidebarCollapsed(true));
+  sidebarRestoreButton?.addEventListener("click", () => setSidebarCollapsed(false));
   mobileMenu.addEventListener("click", openSidebar);
   mobileClose.addEventListener("click", closeSidebar);
   sidebarScrim.addEventListener("click", closeSidebar);
   document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !profilePanel.hidden) {
+      closeProfilePanel(true);
+      return;
+    }
     if (event.key === "Escape" && shell.classList.contains("sidebar-open")) closeSidebar();
   });
   window.addEventListener("padiem:localechange", () => {
     applyAuthState(authState);
+    renderAndroidHandoff();
+    setNavActive();
     if (projectsReady) renderProjects();
     renderProjectState();
     if (!selectedAttachment) setNote(idleNote());
@@ -1523,6 +2711,22 @@
   // #3262: enable/disable toggle state for one canonical rule.
   const clawAutomationToggleStatus = document.getElementById("clawAutomationToggleStatus");
   const clawAutomationInFlightRules = new Set();
+  // #3270: bounded Edit (name + schedule) on a canonical, execution-ready rule.
+  const clawAutomationEditForm = document.getElementById("clawAutomationEditForm");
+  const clawAutomationEditName = document.getElementById("clawAutomationEditName");
+  const clawAutomationEditKind = document.getElementById("clawAutomationEditKind");
+  const clawAutomationEditDaypartField = document.getElementById("clawAutomationEditDaypartField");
+  const clawAutomationEditDaypart = document.getElementById("clawAutomationEditDaypart");
+  const clawAutomationEditIntervalField = document.getElementById("clawAutomationEditIntervalField");
+  const clawAutomationEditInterval = document.getElementById("clawAutomationEditInterval");
+  const clawAutomationEditCronField = document.getElementById("clawAutomationEditCronField");
+  const clawAutomationEditCron = document.getElementById("clawAutomationEditCron");
+  const clawAutomationEditTimezone = document.getElementById("clawAutomationEditTimezone");
+  const clawAutomationEditStatus = document.getElementById("clawAutomationEditStatus");
+  const clawAutomationEditSubmit = document.getElementById("clawAutomationEditSubmit");
+  const clawAutomationEditCancel = document.getElementById("clawAutomationEditCancel");
+  let clawAutomationEditingRuleId = null;
+  let clawAutomationEditInFlight = false;
   const clawManualForm = document.getElementById("clawManualForm");
   const clawChannel = document.getElementById("clawChannel");
   const clawAction = document.getElementById("clawAction");
@@ -1557,12 +2761,48 @@
   // Pre-dispatch execute recovery state (#2760). Owned by the recovery block below.
   let clawRetrySeconds = 0;
   let clawRetryTimer = null;
+  // #3382: an ambiguous manual-execute failure may already have reached Engine,
+  // and a P01 request carries no idempotency key, so the surface cannot tell
+  // "never ran" from "already ran". Uncertainty is tracked PER REQUEST IDENTITY,
+  // not as one flag: composing different work unblocks only that new request, and
+  // restoring an uncertain one re-blocks it. The draft/preview and chat lanes are
+  // never gated by this set.
+  const clawUncertainKeys = new Set();
+  let clawLastDispatchKey = "";
   // In-flight elapsed wait state (#2763). Owned by the wait block below.
   let clawWaitStartedAt = 0;
   let clawWaitTimer = null;
   let clawWaitRevealed = false;
   let clawWaitAnnouncedStage = 0;
   let clawApprovalInFlight = false;
+  // #4488 re-login: monotonic session generation for the pending-approval
+  // decision surface. A decision captures this value when it starts; losing
+  // the session (or signing in as a different account) bumps it, so a response
+  // that lands after the transition can neither repaint the signed-out surface
+  // nor resurrect a previous session's run state. Same shape as the
+  // run-history visibility epoch.
+  let clawApprovalEpoch = 0;
+  // Best-effort client-visible session identity. The browser holds no stable
+  // user id, so the account display name is the only switch signal available.
+  let clawApprovalSessionToken = "unset";
+
+  function invalidateClawApprovalSession() {
+    clawApprovalEpoch += 1;
+    // Release the shared single-flight flag so the next session can decide at
+    // all. The stale promise's own finally is epoch-guarded, so it can never
+    // release a newer session's busy state instead.
+    clawApprovalInFlight = false;
+  }
+
+  function noteClawApprovalSession(authenticated) {
+    const token = authenticated
+      ? "in:" + (typeof authState.user?.name === "string" ? authState.user.name.trim() : "")
+      : "out";
+    if (token !== clawApprovalSessionToken) {
+      clawApprovalSessionToken = token;
+      invalidateClawApprovalSession();
+    }
+  }
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -1613,6 +2853,13 @@
     "claw-runs-open-session": "Open session",
     "claw-runs-status-completed": "Completed",
     "claw-runs-status-waiting_approval": "Approval required",
+    "claw-runs-status-failed": "Failed",
+    "claw-runs-status-cancelled": "Cancelled",
+    "claw-runs-next-waiting_approval": "This run is waiting for your decision; it has not completed.",
+    "claw-runs-next-failed": "The run failed. A recorded file does not mean the task succeeded.",
+    "claw-runs-next-cancelled": "This run was cancelled; no completion is claimed.",
+    "claw-runs-kind-aria": "File type {kind}",
+    "claw-runs-download-only": "This format is download-only. Save the file to view its contents.",
     "claw-approval-actions-aria": "Approval decision",
     "claw-approval-required": "This run is waiting for your approval.",
     "claw-approval-approve": "Approve",
@@ -1646,15 +2893,24 @@
 
   function syncComposerForClaw(isClaw) {
     if (!input) return;
-    if (isClaw) {
+    if (isClaw) shell.dataset.clawTier = selectedProductTier();
+    // #3531: the business-request prompt belongs to the explicit manual
+    // workflow view only. The general Claw view shares the generic prompt
+    // so placeholder parity with Chat Home holds.
+    const manualView = isClaw && clawWorkspace && clawWorkspace.dataset.view === "manual";
+    if (manualView) {
       input.placeholder = localeOr("claw-request-placeholder", "Paste a business request you received by chat, SMS, or email.");
       input.setAttribute("aria-describedby", "clawStatus");
-      input.setAttribute("maxlength", "4000");
+      // Executable Claw task authority is validated by the server.
+      // No separate pilot-era 4,000-character browser ceiling.
     } else {
+      // Claw general and Chat share the same canonical composer placeholder.
       input.placeholder = localeOr("input", "Ask anything");
       input.removeAttribute("aria-describedby");
       input.removeAttribute("aria-invalid");
-      input.setAttribute("maxlength", "8000");
+      // General Claw and Chat accept provider-native prompts. The distinct
+      // manual executable tasks keep their separate tool authorization and bounds.
+      input.removeAttribute("maxlength");
     }
   }
 
@@ -1690,9 +2946,11 @@
       clawGenerateBtn.setAttribute("aria-disabled", String(busy));
     }
     if (clawExecuteButton) {
-      // A running pre-dispatch cooldown also blocks the primary button, so the
-      // surface never offers a dispatch the server has already refused.
-      const blocked = busy || clawRetryRemaining() > 0;
+      // A running pre-dispatch cooldown, and an ambiguous outcome whose dispatch
+      // cannot be ruled out, both block the one manual-execute entry point. The
+      // draft/preview button and the chat lane stay available: they are separate
+      // requests with their own server-side bounds.
+      const blocked = busy || clawRetryRemaining() > 0 || clawCurrentDispatchIsUncertain();
       clawExecuteButton.disabled = blocked;
       clawExecuteButton.setAttribute("aria-busy", busyVal);
       clawExecuteButton.setAttribute("aria-disabled", String(blocked));
@@ -1717,6 +2975,55 @@
 
   function clawRetryRemaining() {
     return clawRetrySeconds > 0 ? clawRetrySeconds : 0;
+  }
+
+  // The manual-execute lane's duplicate check compares WIRE CONTENT, so the
+  // request shape is assembled in exactly one place and reused by both the
+  // dispatch and the comparison. Canonical conversation reuse (#2916): forward
+  // only the exact handle this page already owns; the browser never mints one.
+  // The model ID field is deliberately absent — /api/claw/manual-intake/execute
+  // does not read it (it selects the conversation lane only), so changing it
+  // cannot make the next run a different request.
+  function clawVisibleExecutePayload() {
+    const body = (input.value || "").trim();
+    const channelValue = clawChannel?.value || "other";
+    const actionValue = clawAction?.value || "quote";
+    const senderText = (clawSender?.value || "").trim();
+    const activeConversationId = conversationState.getConversationId();
+    const executePayload = {
+      content: body,
+      channel: channelValue,
+      action: actionValue,
+      sender_hint: senderText || null,
+      tier: selectedProductTier(),
+    };
+    if (typeof activeConversationId === "string" && activeConversationId) {
+      executePayload.conversation_id = activeConversationId;
+    }
+    return executePayload;
+  }
+
+  function clawExecuteWireKey(payload) {
+    return JSON.stringify([
+      payload.content,
+      payload.channel,
+      payload.action,
+      payload.sender_hint ?? null,
+      payload.tier,
+      payload.conversation_id ?? null,
+    ]);
+  }
+
+  // Availability is derived from the request the form would send RIGHT NOW, so it
+  // is re-evaluated on every edit rather than released once by an edit event.
+  function clawCurrentDispatchIsUncertain() {
+    return clawUncertainKeys.size > 0
+      && clawUncertainKeys.has(clawExecuteWireKey(clawVisibleExecutePayload()));
+  }
+
+  function noteClawContentEdited() {
+    if (clawUncertainKeys.size === 0) return;
+    setClawButtonsBusy(clawInFlight);
   }
 
   // Closed parse: integer seconds only, positive, clamped to one documented
@@ -1814,6 +3121,10 @@
     if (!clawRetryHint) return;
     stopClawRetryTimer();
     clawRetrySeconds = 0;
+    // The request may already be running, so its exact content is recorded as
+    // uncertain. The finally block releases the busy flag, so without this the
+    // execute button would reopen on an unresolved run.
+    if (clawLastDispatchKey) clawUncertainKeys.add(clawLastDispatchKey);
     if (clawRetryBox) clawRetryBox.hidden = true;
     if (clawRetryCopy) clawRetryCopy.textContent = "";
     if (clawRetryButton) {
@@ -1823,6 +3134,7 @@
     clawRetryHint.dataset.localeKey = "claw-error-check-runs";
     clawRetryHint.textContent = clawT("claw-error-check-runs");
     clawRetryHint.hidden = false;
+    setClawButtonsBusy(clawInFlight);
   }
 
   // ── In-flight elapsed wait (#2763) ──────────────────────────────────────
@@ -1913,9 +3225,9 @@
     }
   }
 
-  // A generated document exposes exactly one action: the bounded download.
-  // There is no in-browser open/preview capability, so no second control may
-  // exist that would only repeat this same route behind a false "open" label (#2771).
+  // A generated document always retains its original bounded download action.
+  // #3932 preview is separate and only appears for an actual PDF receipt,
+  // with fresh server-side tenant validation and real PDF bytes.
   function setClawDocumentAction(enabled, documentId, filename) {
     const btn = clawResultDocx;
     if (!btn) return;
@@ -1933,12 +3245,16 @@
     delete btn.dataset.filename;
   }
 
+  let clawPdfPreviewController = null;
   function clearClawArtifact() {
+    clawPdfPreviewController?.clear();
     if (clawArtifactMeta) clawArtifactMeta.hidden = true;
     if (clawArtifactName) clawArtifactName.textContent = "";
     if (clawArtifactSize) clawArtifactSize.textContent = "";
     if (clawResultSuccessNote) clawResultSuccessNote.hidden = true;
     setClawDocumentAction(false);
+    const downloadLabel = clawResultDocx?.querySelector?.('[data-locale-key="claw-result-docx"]');
+    if (downloadLabel) downloadLabel.textContent = clawT("claw-result-docx");
   }
 
   function formatClawBytes(bytes) {
@@ -1960,11 +3276,30 @@
     if (clawArtifactMeta) clawArtifactMeta.hidden = false;
     if (clawResultSuccessNote) clawResultSuccessNote.hidden = false;
     setClawDocumentAction(true, artifact.document_id, artifact.filename);
+    const downloadLabel = clawResultDocx?.querySelector?.('[data-locale-key="claw-result-docx"]');
+    if (downloadLabel) downloadLabel.textContent = artifact.media_type === "application/pdf"
+      ? clawT("claw-result-pdf")
+      : clawT("claw-result-docx");
+    if (!clawPdfPreviewController && clawArtifactMeta && window.PadiemClawPdfPreview?.create) {
+      clawPdfPreviewController = window.PadiemClawPdfPreview.create({
+        mount: clawArtifactMeta,
+        onError: (message) => setClawStatus(message, "error"),
+      });
+    }
+    clawPdfPreviewController?.set(artifact);
   }
 
   function safeClawErrorMessage(data, response) {
     const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
     const status = response ? response.status : 0;
+    // #3933: a bounded pre-dispatch refusal is a product state, not a run that
+    // started and then failed. The manual-intake route returns this same
+    // `tier_unavailable` code before it ever dispatches, so resolving it through
+    // the shared bounded-refusal authority keeps this lane's wording identical to
+    // the composer and live SSE lanes instead of the generic "the run failed"
+    // sentence. An unlisted code falls through to the existing bounded copy.
+    const bounded = clawBoundedRefusalCopy(code);
+    if (bounded) return bounded.message;
     if (code === "invalid_content" || code === "content_too_short") return clawT("claw-error-empty");
     if (code === "content_too_long" || code === "body_too_large" || status === 413) return clawT("claw-error-too-large");
     if (code === "invalid_channel" || code === "invalid_action" || code === "unsupported_media_type" || code === "invalid_sender_hint") return clawT("claw-error-invalid");
@@ -2225,6 +3560,18 @@
           void toggleClawAutomationRule(rule.rule_id, rule.enabled !== true, toggle);
         });
         row.appendChild(toggle);
+        // #3270: Edit is offered on the same eligible rows only, and edits
+        // name + schedule exclusively (never task/execution material).
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "claw-automation-rule-edit";
+        edit.dataset.ruleEditRuleId = rule.rule_id;
+        edit.dataset.localeKey = "claw-automation-edit-button";
+        edit.textContent = uiT("claw-automation-edit-button");
+        edit.addEventListener("click", () => {
+          openClawAutomationEdit(rule);
+        });
+        row.appendChild(edit);
       }
       clawAutomationList.appendChild(row);
     });
@@ -2232,6 +3579,8 @@
 
   async function loadClawAutomationRules() {
     if (!clawAutomation || !authState.authenticated) return;
+    const signedOutNote = document.getElementById("automationViewSignedOut");
+    if (signedOutNote) signedOutNote.hidden = true;
     setClawAutomationLoading();
     try {
       const response = await fetch("/api/claw/automation/rules", {
@@ -2247,6 +3596,155 @@
     } catch (_) {
       setClawAutomationError();
     }
+  }
+
+  // --- #3270 bounded edit (name + schedule only) -----------------------------
+  // The form is prefilled ONLY from the existing safe projection, so the
+  // browser never sees task/execution material. The PATCH carries exactly the
+  // four editable fields; nothing is changed locally before the server answers
+  // 200 and the canonical list is reloaded.
+  function setClawAutomationEditStatus(messageKey) {
+    if (!clawAutomationEditStatus) return;
+    if (!messageKey) {
+      clawAutomationEditStatus.hidden = true;
+      clawAutomationEditStatus.textContent = "";
+      return;
+    }
+    clawAutomationEditStatus.hidden = false;
+    clawAutomationEditStatus.textContent = uiT(messageKey);
+  }
+
+  function syncClawAutomationEditFields() {
+    const kind = clawAutomationEditKind ? clawAutomationEditKind.value : "daypart";
+    if (clawAutomationEditDaypartField) clawAutomationEditDaypartField.hidden = kind !== "daypart";
+    if (clawAutomationEditIntervalField) clawAutomationEditIntervalField.hidden = kind !== "interval";
+    if (clawAutomationEditCronField) clawAutomationEditCronField.hidden = kind !== "cron";
+  }
+
+  function clawAutomationEditExpression() {
+    const kind = clawAutomationEditKind ? clawAutomationEditKind.value : "daypart";
+    if (kind === "interval") return clawAutomationEditInterval ? clawAutomationEditInterval.value : "";
+    if (kind === "cron") return clawAutomationEditCron ? clawAutomationEditCron.value : "";
+    return clawAutomationEditDaypart ? clawAutomationEditDaypart.value : "";
+  }
+
+  function findRuleEditButton(ruleId) {
+    if (!clawAutomationList) return null;
+    for (const row of clawAutomationList.children) {
+      for (const node of row.children || []) {
+        if (node.dataset && node.dataset.ruleEditRuleId === ruleId) return node;
+      }
+    }
+    return null;
+  }
+
+  function focusRuleEditAfterReload(ruleId) {
+    const button = findRuleEditButton(ruleId);
+    if (button) {
+      button.focus();
+      return;
+    }
+    if (clawAutomation) clawAutomation.focus();
+  }
+
+  function openClawAutomationEdit(rule) {
+    if (!clawAutomationEditForm) return;
+    clawAutomationEditingRuleId = rule.rule_id;
+    if (clawAutomationEditName) clawAutomationEditName.value = rule.name || "";
+    if (clawAutomationEditKind) clawAutomationEditKind.value = rule.schedule_kind || "daypart";
+    if (clawAutomationEditTimezone) clawAutomationEditTimezone.value = rule.schedule_timezone || "";
+    // Prefill the kind-aware expression control from the projected schedule.
+    const expression = rule.schedule_expression || "";
+    if (rule.schedule_kind === "interval") {
+      if (clawAutomationEditInterval) clawAutomationEditInterval.value = expression;
+    } else if (rule.schedule_kind === "cron") {
+      if (clawAutomationEditCron) clawAutomationEditCron.value = expression;
+    } else if (clawAutomationEditDaypart) {
+      clawAutomationEditDaypart.value = expression;
+    }
+    syncClawAutomationEditFields();
+    setClawAutomationEditStatus(null);
+    clawAutomationEditForm.hidden = false;
+    if (clawAutomationEditName) clawAutomationEditName.focus();
+  }
+
+  function closeClawAutomationEdit() {
+    const ruleId = clawAutomationEditingRuleId;
+    clawAutomationEditingRuleId = null;
+    if (clawAutomationEditForm) clawAutomationEditForm.hidden = true;
+    if (ruleId) {
+      const button = findRuleEditButton(ruleId);
+      if (button) {
+        button.focus();
+        return;
+      }
+    }
+    if (clawAutomation) clawAutomation.focus();
+  }
+
+  async function submitClawAutomationEdit(event) {
+    event.preventDefault();
+    const ruleId = clawAutomationEditingRuleId;
+    if (!clawAutomationEditForm || clawAutomationEditInFlight || !ruleId) return;
+    // Exactly the four editable fields — no authority or immutable field.
+    const payload = {
+      name: clawAutomationEditName ? clawAutomationEditName.value : "",
+      schedule_kind: clawAutomationEditKind ? clawAutomationEditKind.value : "",
+      schedule_expression: clawAutomationEditExpression(),
+      schedule_timezone: clawAutomationEditTimezone ? clawAutomationEditTimezone.value : "",
+    };
+    clawAutomationEditInFlight = true;
+    if (clawAutomationEditSubmit) clawAutomationEditSubmit.disabled = true;
+    try {
+      const response = await fetch(
+        `/api/claw/automation/rules/${encodeURIComponent(ruleId)}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+      const data = await response.json().catch(() => null);
+      if (response.status === 200 && data && data.ok === true) {
+        setClawAutomationEditStatus("claw-automation-edit-saved");
+        await loadClawAutomationRules();
+        closeClawAutomationEdit();
+        return;
+      }
+      const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+      if (response.status === 403 || code === "owner_role_required") {
+        setClawAutomationEditStatus("claw-automation-toggle-forbidden");
+      } else if (response.status === 404 || code === "automation_rule_not_found") {
+        setClawAutomationEditStatus("claw-automation-toggle-not-found");
+      } else if (code === "automation_rule_not_mutable") {
+        setClawAutomationEditStatus("claw-automation-toggle-not-mutable");
+      } else if (code === "automation_rule_not_execution_ready") {
+        setClawAutomationEditStatus("claw-automation-toggle-not-ready");
+      } else if (response.status === 400 || response.status === 413) {
+        setClawAutomationEditStatus("claw-automation-edit-invalid");
+      } else {
+        setClawAutomationEditStatus("claw-automation-edit-failed");
+      }
+      // Failure: the form stays open with the entered values untouched and the
+      // rendered rows unchanged — nothing is optimistically edited.
+    } catch (_) {
+      setClawAutomationEditStatus("claw-automation-edit-failed");
+    } finally {
+      clawAutomationEditInFlight = false;
+      if (clawAutomationEditSubmit) clawAutomationEditSubmit.disabled = false;
+    }
+  }
+
+  if (clawAutomationEditForm) {
+    clawAutomationEditForm.addEventListener("submit", (event) => {
+      void submitClawAutomationEdit(event);
+    });
+  }
+  if (clawAutomationEditKind) {
+    clawAutomationEditKind.addEventListener("change", syncClawAutomationEditFields);
+  }
+  if (clawAutomationEditCancel) {
+    clawAutomationEditCancel.addEventListener("click", () => closeClawAutomationEdit());
   }
 
   // --- #3262 owner-gated enable/disable -------------------------------------
@@ -2448,28 +3946,83 @@
     });
   }
 
+  // Standalone Automation page: the existing #clawAutomation section is moved
+  // once into #automationViewBody. Moving (not cloning) preserves every bound
+  // listener and all getElementById handles, so list/create/edit/toggle/
+  // status/alerts and the permission/workspace checks run against the same
+  // APIs and store. An enabled rule list never claims the scheduler itself
+  // is running; the existing scheduler note stays verbatim.
+  let automationViewMounted = false;
+  function mountAutomationView() {
+    if (automationViewMounted) return;
+    let body = null;
+    let panel = null;
+    try {
+      body = document.getElementById("automationViewBody");
+      panel = document.getElementById("clawAutomation");
+    } catch (_) {
+      return;
+    }
+    if (!body || !panel) return;
+    body.appendChild(panel);
+    automationViewMounted = true;
+  }
+
   function openClawAutomation() {
-    if (!clawWorkspace || !clawAutomation || !authState.authenticated) return;
-    shell.dataset.state = "claw";
-    clawWorkspace.dataset.view = "automation";
-    delete clawWorkspace.dataset.inboxKind;
-    clawAutomation.hidden = false;
-    if (clawInbox) clawInbox.hidden = true;
-    if (clawManualForm) clawManualForm.hidden = true;
-    if (clawResultArea) clawResultArea.hidden = true;
-    clearClawRecovery({ syncControls: true });
+    if (!clawWorkspace || !clawAutomation) return;
+    mountAutomationView();
+    const view = document.getElementById("automationView");
+    if (view) view.hidden = false;
+    shell.dataset.state = "automation";
     clearClawWait();
     setNavActive();
     closeSidebar();
-    syncApprovedMemoryVisibility();
-    syncClawRunHistoryVisibility();
+    // Owner decision: every screen stays browsable without a session. The page
+    // opens for a visitor, but the rule list is still never requested — the
+    // server owns the tenant, and the signed-out note replaces the rows.
+    const signedOut = document.getElementById("automationViewSignedOut");
+    if (!authState.authenticated) {
+      clawAutomation.hidden = true;
+      if (signedOut) signedOut.hidden = false;
+      return;
+    }
+    if (signedOut) signedOut.hidden = true;
+    clawAutomation.hidden = false;
     loadClawAutomationRules();
   }
 
   if (automationNavButton) automationNavButton.addEventListener("click", openClawAutomation);
+  // #4462: automation-related run/completion/failure alerts stay reachable
+  // from the automation view after the standalone sidebar Alerts entry is gone.
+  const automationAlertsButton = document.getElementById("automationAlertsButton");
+  if (automationAlertsButton) automationAlertsButton.addEventListener("click", () => openClawInbox("alerts"));
   if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
 
   function openClawWorkspace() {
+    // #3531: Claw opens on the general conversation view. The document
+    // workflow (manual form, workflow chrome) stays hidden until the user
+    // explicitly enters it via openClawManual.
+    if (!clawWorkspace) return;
+    shell.dataset.state = "claw";
+    clawWorkspace.dataset.view = "general";
+    // The shared Chat first-use hero also introduces Claw when the
+    // existing conversation has not started. Do not reset live messages.
+    if (messageList.hidden && !messageList.hasChildNodes()) emptyState.hidden = false;
+    delete clawWorkspace.dataset.inboxKind;
+    if (clawInbox) clawInbox.hidden = true;
+    if (clawAutomation) clawAutomation.hidden = true;
+    if (clawManualForm) clawManualForm.hidden = true;
+    if (clawResultArea) clawResultArea.hidden = false;
+    setNavActive();
+    input.focus();
+    closeSidebar();
+    syncApprovedMemoryVisibility();
+    syncClawRunHistoryVisibility();
+  }
+
+  function openClawManual() {
+    // Explicit entry into the document/quotation workflow only. The manual
+    // form and its workflow chrome are never shown by default.
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
     clawWorkspace.dataset.view = "manual";
@@ -2520,6 +4073,13 @@
   const connectorsLoading = document.getElementById("connectorsLoading");
   const connectorsError = document.getElementById("connectorsError");
   const connectorsRetry = document.getElementById("connectorsRetry");
+  const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
+  // #3289: the reviewed Google Drive READ-only connect handoff reuses the
+  // same reviewed ticket endpoint; only the reviewed connector id differs.
+  const GOOGLE_DRIVE_CONNECTOR = "google-drive";
+  const GOOGLE_DRIVE_TICKET_ENDPOINT = "/api/connectors/google/ticket";
+  const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
+  const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
   const CONNECTOR_STATUS_IDS = new Set([
     "connector:google:drive@1",
     "connector:google:gmail@1",
@@ -2528,6 +4088,12 @@
     "connector:google:calendar@1",
   ]);
   let connectorStatusInFlight = false;
+  let googleConnectorConnectInFlight = false;
+  // In-session Calendar READ grant truth (#2952). "unknown" until this session
+  // activates it; the status projection carries no persisted grant field, so
+  // nothing here claims a grant the server has not just confirmed.
+  let googleCalendarReadState = "unknown";
+  let googleCalendarReadActivationAfterConnectReturn = false;
 
   function setConnectorCopy(element, key) {
     if (!element) return;
@@ -2554,9 +4120,362 @@
     return "connectors-workspace-unverified";
   }
 
+  // Google Calendar has a second, independent axis: the READ grant activation
+  // (#2952). "Google account connected" (the OAuth/workspace axis) must never
+  // read as "Calendar read is ready" — they are separate truths. The session
+  // state starts "unknown" and is then filled from two bounded sources: the
+  // persisted server projection (row.calendar_read_grant_state) and the
+  // in-session activation result. The server truth is a projection of the
+  // Engine's own grant store — "unavailable" means the check could not be
+  // trusted, never that the grant is missing.
+  const CALENDAR_READ_STATES = Object.freeze(["unknown", "activating", "active", "failed", "unavailable"]);
+  const CALENDAR_READ_STATE_KEYS = Object.freeze({
+    unknown: "connectors-calendar-read-pending",
+    activating: "connectors-calendar-read-activating",
+    active: "connectors-calendar-read-active",
+    failed: "connectors-calendar-read-failed",
+    unavailable: "connectors-calendar-read-unavailable",
+  });
+  // The closed per-row vocabulary the status projection publishes for the
+  // Calendar row's persisted READ grant axis.
+  const CALENDAR_SERVER_GRANT_STATES = Object.freeze(["active", "inactive", "unavailable"]);
+
+  function calendarReadStateKey(state) {
+    return Object.prototype.hasOwnProperty.call(CALENDAR_READ_STATE_KEYS, state)
+      ? CALENDAR_READ_STATE_KEYS[state]
+      : "connectors-calendar-read-pending";
+  }
+
+  // Pure server-truth → session-state transition. The server projection fills
+  // an unset ("unknown") or stale-unavailable session state and can raise it
+  // to "active" — that is what makes a fresh page load show the persisted
+  // grant instead of "activation needed". It never overwrites an in-session
+  // truth ("activating"/"active"/"failed"): the activation response and the
+  // user's own retry flow stay authoritative for this session, and a failed
+  // status check ("unavailable") never claims the grant is missing.
+  function calendarServerGrantSessionState(current, serverState) {
+    if (!CALENDAR_SERVER_GRANT_STATES.includes(serverState)) return current;
+    if (current !== "unknown" && current !== "unavailable") return current;
+    return serverState === "inactive" ? "unknown" : serverState;
+  }
+
+  // Bounded backend-code → copy mapping (#3451 reviewed diagnostics). Only
+  // this closed, reviewed, secret-free vocabulary gets entries; anything else
+  // — including any future code CENTRAL has not reviewed — falls back to the
+  // generic OAuth-preserving message. The server's raw message text is never
+  // rendered and no credential material is read from the body.
+  const CALENDAR_READ_ERROR_KEYS = Object.freeze({
+    "calendar_activation_engine_auth_failed": "connectors-calendar-read-error-engine-auth",
+    "calendar_activation_workspace_unavailable": "connectors-calendar-read-error-workspace",
+    "calendar_activation_binding_unavailable": "connectors-calendar-read-error-binding",
+    "calendar_activation_not_connected": "connectors-calendar-read-error-not-connected",
+    "calendar_activation_grant_unavailable": "connectors-calendar-read-error-grant",
+    "calendar_read_activation_unavailable": "connectors-calendar-read-activation-error",
+  });
+
+  function calendarReadActivationErrorKey(error) {
+    const code = error && typeof error === "object" && typeof error.calendarReadErrorCode === "string"
+      ? error.calendarReadErrorCode
+      : "";
+    return Object.prototype.hasOwnProperty.call(CALENDAR_READ_ERROR_KEYS, code)
+      ? CALENDAR_READ_ERROR_KEYS[code]
+      : "connectors-calendar-read-activation-error";
+  }
+
   function liveConnectorCards() {
-    if (!connectorsDialog) return [];
-    return Array.from(connectorsDialog.querySelectorAll("[data-connector-id]"));
+    const scope = connectorsScope();
+    if (!scope) return [];
+    try {
+      return Array.from(scope.querySelectorAll("[data-connector-id]"));
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function googleCalendarConnectButton() {
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-google-connector-connect="${GOOGLE_CALENDAR_CONNECTOR}"]`);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function googleCalendarCard() {
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-connector-id="connector:google:calendar@1"]`);
+    } catch (_) {
+      return null;
+    }
+  }
+
+
+  function googleDriveConnectButton() {
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-google-connector-connect="${GOOGLE_DRIVE_CONNECTOR}"]`);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function googleDriveCard() {
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-connector-id="connector:google:drive@1"]`);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /** The whole Drive visibility rule as a pure predicate: an authenticated
+   *  session and a canonical ``not_connected`` row. ``unverified``,
+   *  ``ambiguous``, ``connected``, a missing row and a signed-out session all
+   *  withhold the action, so the browser can never start a connect for a
+   *  workspace whose truth it does not hold. */
+  function driveConnectOffered(authenticated, workspaceState) {
+    return Boolean(authenticated && workspaceState === "not_connected");
+  }
+
+  /** Drive has no second axis: connect is the whole action. */
+  function syncGoogleDriveConnectButton(row = null) {
+    const button = googleDriveConnectButton();
+    if (!button) return;
+    const workspaceState = row && typeof row.workspace_state === "string" ? row.workspace_state : "";
+    const offered = driveConnectOffered(authState.authenticated, workspaceState);
+    button.hidden = !offered;
+    button.disabled = googleConnectorConnectInFlight;
+    if (offered && !googleConnectorConnectInFlight) {
+      setConnectorCopy(button, "connectors-connect-drive");
+    }
+  }
+
+  async function beginGoogleDriveConnect() {
+    const button = googleDriveConnectButton();
+    if (!button || googleConnectorConnectInFlight) return;
+    if (!authState.authenticated) {
+      openAuthDialog();
+      return;
+    }
+    googleConnectorConnectInFlight = true;
+    button.disabled = true;
+    setConnectorCopy(button, "connectors-connecting-drive");
+    if (connectorsError) connectorsError.hidden = true;
+    try {
+      // Exactly one ticket POST per user attempt. The raw connect ticket is
+      // never handed to this scope: the reviewed route performs the single
+      // OAuth-edge exchange server-side and answers with the bounded
+      // authorization shape only, so no ticket, provider or credential
+      // material can reach the DOM, storage, logs or the query string.
+      const startResponse = await fetch(GOOGLE_DRIVE_TICKET_ENDPOINT, {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ connector_id: GOOGLE_DRIVE_CONNECTOR, begin_oauth: true }),
+        cache: "no-store",
+      });
+      const startDocument = await startResponse.json().catch(() => null);
+      const authorization = startDocument && startDocument.authorization;
+      const redirect = startResponse.ok && authorization &&
+        authorization.connector_id === GOOGLE_DRIVE_CONNECTOR
+        ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
+        : null;
+      if (!redirect) throw new Error("drive authorization unavailable");
+      window.location.assign(redirect);
+    } catch (_) {
+      // Bounded failure with no automatic retry: only a new explicit user
+      // gesture starts another attempt, and this attempt's state is dropped.
+      googleConnectorConnectInFlight = false;
+      button.disabled = false;
+      setConnectorCopy(button, "connectors-connect-drive");
+      if (connectorsError) {
+        setConnectorCopy(connectorsError, "connectors-connect-drive-error");
+        connectorsError.hidden = false;
+      }
+    }
+  }
+
+  /** Projects the READ-grant axis onto the Calendar card's own state line.
+   *  Only visible while the OAuth/workspace axis is "connected"; every value
+   *  is one of the four closed session states, rendered through the bounded
+   *  textContent sink. */
+  function renderCalendarReadState() {
+    const card = googleCalendarCard();
+    if (!card) return;
+    const element = card.querySelector("[data-connector-read-state]");
+    if (!element) return;
+    const state = CALENDAR_READ_STATES.includes(googleCalendarReadState)
+      ? googleCalendarReadState
+      : "unknown";
+    if (card.dataset.connectorStatus !== "connected") {
+      element.hidden = true;
+      delete card.dataset.calendarReadState;
+      return;
+    }
+    // The visual states are the four reviewed ones: an in-session "unknown"
+    // grant presents as "pending" — activation has not happened here yet.
+    const visualState = state === "unknown" ? "pending" : state;
+    element.hidden = false;
+    element.dataset.readState = visualState;
+    card.dataset.calendarReadState = state;
+    setConnectorCopy(element, calendarReadStateKey(state));
+  }
+
+  function syncGoogleCalendarConnectButton(row = null) {
+    // Consume the persisted server truth for the READ grant axis before the
+    // button logic: a fresh session must show the server's answer, not
+    // "activation needed" for a grant the Engine already holds.
+    const serverGrantState =
+      row && typeof row.calendar_read_grant_state === "string"
+        ? row.calendar_read_grant_state
+        : "";
+    googleCalendarReadState = calendarServerGrantSessionState(
+      googleCalendarReadState,
+      serverGrantState,
+    );
+    const button = googleCalendarConnectButton();
+    const calendarCard = googleCalendarCard();
+    if (calendarCard) {
+      // When the OAuth/workspace axis is connected, say so in Calendar-specific
+      // words: a connected Google account is not the same truth as an active
+      // Calendar READ grant. The generic workspace copy stays for every other
+      // connector.
+      if (row && row.workspace_state === "connected") {
+        setConnectorCopy(calendarCard.querySelector("[data-connector-workspace]"), "connectors-calendar-oauth-connected");
+      }
+      renderCalendarReadState();
+    }
+    if (!button) return;
+    const workspaceState = row && typeof row.workspace_state === "string" ? row.workspace_state : "";
+    const canConnect = Boolean(
+      authState.authenticated &&
+      (workspaceState === "not_connected" || workspaceState === "unverified")
+    );
+    const canActivateRead = Boolean(
+      authState.authenticated &&
+      workspaceState === "connected"
+    );
+    button.hidden = !(canConnect || canActivateRead);
+    button.dataset.calendarAction = canActivateRead ? "activate-read" : "connect";
+    button.disabled = googleConnectorConnectInFlight ||
+      googleCalendarReadState === "activating" ||
+      googleCalendarReadState === "active";
+    if (googleCalendarReadState === "active") {
+      setConnectorCopy(button, "connectors-calendar-read-activation-done");
+    } else if (canActivateRead && googleCalendarReadState !== "activating") {
+      setConnectorCopy(button, "connectors-activate-calendar-read");
+    } else if (canConnect && !googleConnectorConnectInFlight) {
+      setConnectorCopy(button, "connectors-connect-calendar");
+    }
+  }
+
+  function reviewedGoogleAuthorizationUrl(value) {
+    if (typeof value !== "string" || !value) return null;
+    let url;
+    try {
+      url = new URL(value);
+    } catch (_) {
+      return null;
+    }
+    if (url.protocol !== "https:" || url.hostname !== "accounts.google.com") return null;
+    if (url.pathname !== "/o/oauth2/v2/auth" || url.username || url.password || url.hash) return null;
+    return url.toString();
+  }
+
+  async function beginGoogleCalendarConnect() {
+    const button = googleCalendarConnectButton();
+    if (!button || googleConnectorConnectInFlight) return;
+    if (!authState.authenticated) {
+      openAuthDialog();
+      return;
+    }
+    googleConnectorConnectInFlight = true;
+    button.disabled = true;
+    setConnectorCopy(button, "connectors-connecting-calendar");
+    if (connectorsError) connectorsError.hidden = true;
+    try {
+      const startResponse = await fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT, {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ connector_id: GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true }),
+        cache: "no-store",
+      });
+      const startDocument = await startResponse.json().catch(() => null);
+      const authorization = startDocument && startDocument.authorization;
+      const redirect = startResponse.ok && authorization &&
+        authorization.connector_id === GOOGLE_CALENDAR_CONNECTOR
+        ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
+        : null;
+      if (!redirect) throw new Error("calendar authorization unavailable");
+      window.location.assign(redirect);
+    } catch (_) {
+      googleConnectorConnectInFlight = false;
+      button.disabled = false;
+      setConnectorCopy(button, "connectors-connect-calendar");
+      if (connectorsError) {
+        setConnectorCopy(connectorsError, "connectors-connect-error");
+        connectorsError.hidden = false;
+      }
+    }
+  }
+
+  async function activateGoogleCalendarRead() {
+    const button = googleCalendarConnectButton();
+    if (!button || googleCalendarReadState === "activating" || googleCalendarReadState === "active") return;
+    if (!authState.authenticated) {
+      openAuthDialog();
+      return;
+    }
+    googleCalendarReadState = "activating";
+    button.disabled = true;
+    setConnectorCopy(button, "connectors-activating-calendar-read");
+    renderCalendarReadState();
+    if (connectorsError) connectorsError.hidden = true;
+    try {
+      const response = await fetch(GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT, {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true ||
+          data.calendar_read_grant !== "active" ||
+          data.calendar_write_authorized !== false) {
+        // Only the bounded code travels; the server's raw message text is never
+        // rendered and no credential material is read from the body.
+        const failure = new Error("calendar read activation unavailable");
+        failure.calendarReadErrorCode =
+          data && typeof data === "object" &&
+          data.error && typeof data.error === "object" &&
+          typeof data.error.code === "string"
+            ? data.error.code
+            : "";
+        throw failure;
+      }
+      googleCalendarReadState = "active";
+      setConnectorCopy(button, "connectors-calendar-read-activation-done");
+      renderCalendarReadState();
+    } catch (error) {
+      // The Google OAuth/workspace connection is untouched by an activation
+      // failure: the card keeps the connected-account copy and the failure
+      // copy says exactly that, so a grant problem is never presented as an
+      // OAuth one. The cause-specific wording comes from the locale table,
+      // keyed by the bounded backend code (see CALENDAR_READ_ERROR_KEYS).
+      googleCalendarReadState = "failed";
+      renderCalendarReadState();
+      if (connectorsError) {
+        setConnectorCopy(connectorsError, calendarReadActivationErrorKey(error));
+        connectorsError.hidden = false;
+      }
+      setConnectorCopy(button, "connectors-activate-calendar-read");
+    } finally {
+      button.disabled = googleCalendarReadState === "active";
+    }
   }
 
   function setConnectorCardsLoading() {
@@ -2565,6 +4484,8 @@
       setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-loading");
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-loading");
     });
+    syncGoogleCalendarConnectButton();
+    syncGoogleDriveConnectButton();
   }
 
   function setConnectorCardsUnavailable() {
@@ -2573,6 +4494,8 @@
       setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-unavailable");
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-unavailable");
     });
+    syncGoogleCalendarConnectButton();
+    syncGoogleDriveConnectButton();
   }
 
   function renderConnectorStatus(document) {
@@ -2600,13 +4523,18 @@
       setConnectorCopy(card.querySelector("[data-connector-support]"), supportKey);
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), workspaceKey);
     });
+    syncGoogleCalendarConnectButton(rows.get("connector:google:calendar@1") || null);
+    syncGoogleDriveConnectButton(rows.get("connector:google:drive@1") || null);
   }
 
   async function loadConnectorStatus() {
     if (!connectorsDialog || connectorStatusInFlight) return;
     connectorStatusInFlight = true;
     if (connectorsLoading) connectorsLoading.hidden = false;
-    if (connectorsError) connectorsError.hidden = true;
+    if (connectorsError) {
+      setConnectorCopy(connectorsError, "connectors-error");
+      connectorsError.hidden = true;
+    }
     if (connectorsRetry) {
       connectorsRetry.hidden = true;
       connectorsRetry.disabled = true;
@@ -2620,6 +4548,13 @@
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error("connector status unavailable");
       renderConnectorStatus(data);
+      if (googleCalendarReadActivationAfterConnectReturn) {
+        googleCalendarReadActivationAfterConnectReturn = false;
+        const calendarButton = googleCalendarConnectButton();
+        if (calendarButton?.dataset.calendarAction === "activate-read") {
+          await activateGoogleCalendarRead();
+        }
+      }
     } catch (_) {
       setConnectorCardsUnavailable();
       if (connectorsError) connectorsError.hidden = false;
@@ -2631,13 +4566,52 @@
     }
   }
 
-  function openConnectorsDialog() {
-    if (!connectorsDialog) return;
-    if (typeof connectorsDialog.showModal === "function") connectorsDialog.showModal();
-    else connectorsDialog.setAttribute("open", "");
-    if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "true");
+  // Standalone Connectors page: the card grid and the live-status block are
+  // moved once from #connectorsDialog into #connectorsViewBody. Moving (not
+  // cloning) preserves every directly bound listener, and all status queries
+  // below scope to the view body first with the dialog as fallback, so the
+  // existing fetch/render/connect/retry/OAuth logic is reused byte-for-byte.
+  // No endpoint, permission, login or connection state is reset by the move.
+  function connectorsScope() {
+    try {
+      const body = document.getElementById("connectorsViewBody");
+      if (body && body.querySelector("[data-connector-id]")) return body;
+    } catch (_) {}
+    return connectorsDialog;
+  }
+  let connectorsViewMounted = false;
+  function mountConnectorsView() {
+    if (connectorsViewMounted) return;
+    let body = null;
+    let grid = null;
+    let status = null;
+    try {
+      body = document.getElementById("connectorsViewBody");
+      grid = connectorsDialog ? connectorsDialog.querySelector(".capability-grid") : null;
+      status = document.getElementById("connectorsLiveStatus");
+    } catch (_) {
+      return;
+    }
+    if (!body || !grid) return;
+    if (status) body.appendChild(status);
+    body.appendChild(grid);
+    connectorsViewMounted = true;
+  }
+
+  function openConnectorsView() {
+    mountConnectorsView();
+    const view = document.getElementById("connectorsView");
+    if (view) view.hidden = false;
+    shell.dataset.state = "connectors";
+    setNavActive();
     closeSidebar();
+    if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "false");
     void loadConnectorStatus();
+  }
+  // Kept for existing callers (OAuth return, quick-connect fallback): the
+  // Connectors surface is now the standalone page, never a popup.
+  function openConnectorsDialog() {
+    openConnectorsView();
   }
   function closeConnectorsDialog() {
     if (!connectorsDialog) return;
@@ -2649,9 +4623,35 @@
       if (typeof connectorsNavButton.focus === "function") connectorsNavButton.focus();
     }
   }
-  if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsDialog);
+  if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsView);
   if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
   if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
+  document.addEventListener("padiem:refresh-connector-status", () => void loadConnectorStatus());
+  const calendarConnectButton = googleCalendarConnectButton();
+  if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => {
+    if (calendarConnectButton.dataset.calendarAction === "activate-read") {
+      void activateGoogleCalendarRead();
+      return;
+    }
+    void beginGoogleCalendarConnect();
+  });
+  // #3289: Drive connect starts only from this explicit user gesture.
+  const driveConnectButton = googleDriveConnectButton();
+  if (driveConnectButton) driveConnectButton.addEventListener("click", () => {
+    void beginGoogleDriveConnect();
+  });
+  document.addEventListener("padiem:drive-quick-connect", () => {
+    void (async () => {
+      // Existing server-trusted workspace truth, not a synthetic OFF.
+      await loadConnectorStatus();
+      const offered = googleDriveConnectButton();
+      if (offered && !offered.hidden && !offered.disabled) {
+        offered.click();
+      } else {
+        openConnectorsDialog();
+      }
+    })();
+  });
   if (connectorsDialog) {
     connectorsDialog.addEventListener("cancel", (event) => {
       event.preventDefault();
@@ -2660,9 +4660,46 @@
     connectorsDialog.addEventListener("close", () => connectorsNavButton?.setAttribute("aria-expanded", "false"));
   }
 
+  const connectorReturnSearch = typeof window.location.search === "string" ? window.location.search : "";
+  const connectorReturnParts = connectorReturnSearch.replace(/^\?/, "").split("&").filter(Boolean);
+  const connectorReturned = connectorReturnParts.some((part) => part === "google_connector=connected");
+  if (connectorReturned) {
+    googleCalendarReadActivationAfterConnectReturn = true;
+    const cleanQuery = connectorReturnParts.filter((part) => !part.startsWith("google_connector=")).join("&");
+    const cleanPath = String(window.location.pathname || "/");
+    const cleanHash = String(window.location.hash || "");
+    window.history.replaceState(null, "", cleanPath + (cleanQuery ? `?${cleanQuery}` : "") + cleanHash);
+    openConnectorsDialog();
+  }
+
+  if (connectorReturnParts.some(part => part === "claw-github=connected")) {
+    const cleanQuery = connectorReturnParts.filter(part => !part.startsWith("claw-github=")).join("&");
+    const cleanPath = String(window.location.pathname || "/");
+    const cleanHash = String(window.location.hash || "");
+    window.history.replaceState(null, "", cleanPath + (cleanQuery ? "?" + cleanQuery : "") + cleanHash);
+    openClawWorkspace();
+  }
+
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
+  // #4647 Same central workbench for menu entry and Claw natural language.
+  window.addEventListener("padiem:meeting-open", () => {
+    if (!authState.authenticated) return;
+    shell.dataset.state = "meeting";
+    setNavActive();
+    closeSidebar();
+  });
+  const clawManualEntryButton = document.getElementById("clawManualEntryButton");
+  if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
   if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
+  // #4462: background task history stays reachable from the general Claw
+  // entry bar (#3531 keeps the workspace canvas hidden in general/manual
+  // views, so the entry lives beside the manual-entry control instead).
+  // In-conversation run status/results are unchanged; this only preserves
+  // the out-of-conversation task list path (the calendar task links keep
+  // working as before).
+  const clawTasksButton = document.getElementById("clawTasksButton");
+  if (clawTasksButton) clawTasksButton.addEventListener("click", () => openClawInbox("tasks"));
   if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => {
     const kind = clawWorkspace?.dataset.inboxKind;
     if (kind === "tasks" || kind === "alerts") loadClawInbox(kind);
@@ -2741,6 +4778,10 @@
     async function decide(decision) {
       if (clawApprovalInFlight) return;
       clawApprovalInFlight = true;
+      // The session generation this decision belongs to, captured before any
+      // await. An auth loss or account switch bumps the epoch, so a response
+      // that lands afterwards is stale and must not be presented.
+      const decisionEpoch = clawApprovalEpoch;
       setApprovalControlsBusy(container, true);
       status.hidden = false;
       status.dataset.state = "pending";
@@ -2752,6 +4793,9 @@
           body: JSON.stringify({ run_id: runId, decision }),
         });
         const data = await response.json().catch(() => null);
+        // A decision begun before the session changed is not a license to
+        // present its result to the new (or signed-out) session.
+        if (decisionEpoch !== clawApprovalEpoch || authState.authenticated !== true) return;
         if (!response.ok || !data || data.ok !== true || !data.result || typeof data.result.run_id !== "string") {
           throw new Error(approvalDecisionErrorMessage(data, response));
         }
@@ -2759,12 +4803,18 @@
         status.removeAttribute("data-state");
         if (typeof onResolved === "function") await onResolved(data.result);
       } catch (error) {
+        if (decisionEpoch !== clawApprovalEpoch || authState.authenticated !== true) return;
         status.hidden = false;
         status.dataset.state = "error";
         status.textContent = error instanceof Error ? error.message : clawT("claw-approval-error");
       } finally {
-        clawApprovalInFlight = false;
-        setApprovalControlsBusy(container, false);
+        // A stale decision must not release the busy state of a newer
+        // session's controls; the invalidation path already reset the shared
+        // single-flight flag.
+        if (decisionEpoch === clawApprovalEpoch) {
+          clawApprovalInFlight = false;
+          setApprovalControlsBusy(container, false);
+        }
       }
     }
 
@@ -2835,11 +4885,6 @@
         setClawStatus(clawT("claw-error-empty"), "error");
         setClawAreaState("error");
         input.focus();
-        return;
-      }
-      if (body.length > 4000) {
-        setClawStatus(clawT("claw-error-too-large"), "error");
-        setClawAreaState("error");
         return;
       }
       const channelValue = clawChannel?.value || "other";
@@ -2931,18 +4976,21 @@
   renderProjectState();
   updateComposer();
   loadAuthStatus();
+  resumeAndroidHandoff();
   // Initial state
   setClawAreaState("idle");
   clearClawArtifact();
 
   // Single execute entry point. The primary button and the post-cooldown retry
   // button both funnel through here, so a retry can never bypass the
-  // single-flight or pre-dispatch cooldown guards and the payload is always
-  // rebuilt from the currently visible form at click time.
+  // single-flight, pre-dispatch cooldown or uncertain-dispatch guards and the
+  // payload is always rebuilt from the currently visible form at click time.
   async function runClawExecution() {
     if (clawInFlight) return;
     if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown
-    const body = (input.value || "").trim();
+    if (clawCurrentDispatchIsUncertain()) return; // #3382: no re-send of an unresolved request
+    const executePayload = clawVisibleExecutePayload();
+    const body = executePayload.content;
     if (!body) {
       clearClawArtifact();
       if (clawResultCard) clawResultCard.hidden = true;
@@ -2955,30 +5003,10 @@
       input.focus();
       return;
     }
-    if (body.length > 4000) {
-      setClawStatus(clawT("claw-error-too-large"), "error");
-      setClawAreaState("error");
-      return;
-    }
-    const channelValue = clawChannel?.value || "other";
-    const actionValue = clawAction?.value || "quote";
-    const senderText = (clawSender?.value || "").trim();
-    // Canonical conversation reuse (#2916): forward only the exact handle this
-    // page already owns. The browser never mints one; with no active
-    // conversation the field is omitted and legacy payload bytes are kept.
-    const activeConversationId = conversationState.getConversationId();
-    const executePayload = {
-      content: body,
-      channel: channelValue,
-      action: actionValue,
-      sender_hint: senderText || null,
-      tier: selectedProductTier(),
-    };
-    if (typeof activeConversationId === "string" && activeConversationId) {
-      executePayload.conversation_id = activeConversationId;
-    }
-
     clearClawRecovery();
+    // Remember the exact bytes this dispatch carried, so a later ambiguous
+    // failure can tell an identical re-send apart from new work.
+    clawLastDispatchKey = clawExecuteWireKey(executePayload);
     renderClawRequestEcho(body);
     setClawButtonsBusy(true);
     // Explicit user dispatch is the only thing that may start a wait timer.
@@ -3040,17 +5068,28 @@
         return;
       }
       const safeMsg = safeClawErrorMessage(data, response);
+      // #3933: a bounded pre-dispatch refusal also states, in the result area,
+      // that the request was never executed — the distinction the status line
+      // alone cannot carry. Resolved from the same authority as safeMsg.
+      const boundedFailure = clawBoundedRefusalCopy(
+        data && data.error && typeof data.error.code === "string" ? data.error.code : "",
+      );
       if (clawResultEmpty) {
         clawResultEmpty.hidden = false;
-        clawResultEmpty.textContent = safeMsg;
+        clawResultEmpty.textContent = boundedFailure
+          ? `${boundedFailure.message} ${boundedFailure.hint}`
+          : safeMsg;
       }
       setClawStatus(safeMsg, "error");
       setClawAreaState("error");
       // A 429 usage denial happens before dispatch, so its Retry-After may be
       // honored as a cooldown. Anything ambiguous gets guidance, never a retry.
+      // #3933: a bounded pre-dispatch refusal provably never dispatched, so it is
+      // excluded here as well as in the classifier — widening the ambiguous set
+      // later must not be able to latch a HOLD as an uncertain run.
       const retryAfter = response.status === 429 ? clawRetryAfterFromResponse(response) : null;
       if (retryAfter !== null) beginClawRetryCooldown(retryAfter);
-      else if (isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();
+      else if (!boundedFailure && isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();
     } catch {
       const fallback = clawT("claw-error-generic");
       if (clawResultEmpty) {
@@ -3079,8 +5118,18 @@
       void runClawExecution();
     });
   }
+  // #3382: composing different work — new text, model id, channel, action,
+  // sender or conversation — is what releases the uncertain-dispatch latch.
+  [input, clawModelIdInput, clawChannel, clawAction, clawSender].forEach((node) => {
+    if (!node || typeof node.addEventListener !== "function") return;
+    node.addEventListener("input", noteClawContentEdited);
+    node.addEventListener("change", noteClawContentEdited);
+  });
   // Approved-memory review UI (#2340)
   const clawApprovedMemory = document.getElementById("clawApprovedMemory");
+  // #4488 Phase A: the approved-memory panel is progressive disclosure on the
+  // Claw entry; its <details> wrapper is hidden whenever the panel is.
+  const clawApprovedDisclosure = document.getElementById("clawApprovedDisclosure");
   const clawApprovedRefresh = document.getElementById("clawApprovedRefresh");
   const clawApprovedLoading = document.getElementById("clawApprovedLoading");
   const clawApprovedError = document.getElementById("clawApprovedError");
@@ -3350,6 +5399,9 @@
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       if (clawApprovedList) clawApprovedList.hidden = false;
       renderApprovedMemoryDetail(data.memory);
+      // #4488 Phase A follow-up: a detail opened from inside the panel must be
+      // visible (run-history focus parity — open the disclosure first).
+      if (clawApprovedDisclosure) clawApprovedDisclosure.open = true;
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
@@ -3361,10 +5413,14 @@
   function syncApprovedMemoryVisibility() {
     if (!clawApprovedMemory) return;
     // Owner-authenticated surface only: anonymous Phase A flow is unchanged.
+    const onLanding = clawWorkspace?.dataset.view === "general"
+      && !emptyState.hidden;
     const show = authState.authenticated === true
       && shell.dataset.state === "claw"
-      && clawWorkspace?.dataset.view !== "inbox";
+      && clawWorkspace?.dataset.view !== "inbox"
+      && !onLanding;
     clawApprovedMemory.hidden = !show;
+    if (clawApprovedDisclosure) clawApprovedDisclosure.hidden = !show;
     if (show) loadApprovedMemoryList();
   }
 
@@ -3376,14 +5432,26 @@
   // Presentation only: the browser renders what GET /api/claw/runs already
   // exposes to the signed-in owner and never mints its own run/history truth.
   const clawRunHistory = document.getElementById("clawRunHistory");
+  // #4488 Phase A: recent runs are progressive disclosure on the Claw entry.
+  const clawRunHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
   const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");
+  const clawRunHistoryExpand = document.getElementById("clawRunHistoryExpand");
   const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
   const clawRunHistoryError = document.getElementById("clawRunHistoryError");
   const clawRunHistoryList = document.getElementById("clawRunHistoryList");
   const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");
 
   let clawRunHistoryInFlight = false;
+  // #3932: server caps owner-scoped history at MAX_CLAW_RUNS=30.
+  // Expanding is a read-only, explicit user action, not pagination authority.
+  let clawRunHistoryLimit = 10;
   let pendingClawRunFocusId = "";
+  let clawRunHistoryVisibilityEpoch = 0;
+  const clawRunHistoryPdfControllers = new Set();
+  function clearClawRunHistoryPdfPreviews() {
+    for (const controller of clawRunHistoryPdfControllers) controller.destroy();
+    clawRunHistoryPdfControllers.clear();
+  }
 
   function setClawRunHistoryStatus(message) {
     if (!clawRunHistoryError) return;
@@ -3415,9 +5483,58 @@
   }
 
   function renderClawRunCard(run) {
+    // L6: the meta line printed the raw ISO-8601 UTC instant the server stored
+    // ("2026-09-19T01:00:00Z") straight at the reader. Show the same instant in
+    // the page's own language and zone instead, and keep the exact stored value
+    // in the element's title so nothing is hidden. A value the browser cannot
+    // parse is shown exactly as the server sent it rather than as a guess.
+    const instantLanguage = typeof document?.documentElement?.lang === "string"
+      && document.documentElement.lang.toLowerCase().startsWith("en") ? "en" : "ko";
+    const readableClawInstant = (value) => {
+      if (typeof value !== "string" || !value) return "";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return value;
+      try {
+        return new Intl.DateTimeFormat(instantLanguage, {
+          dateStyle: "medium", timeStyle: "short",
+        }).format(parsed);
+      } catch (_) {
+        return value;
+      }
+    };
+    // L2 result-file card: the kind shown on a completed run's file is derived
+    // ONLY from the server-verified media_type the owner-scoped run projection
+    // already carries. A filename extension is never used to invent a type, and
+    // an absent or unregistered media type renders no chip rather than a guess.
+    // The map is closed, so a hostile media type can only fail to match.
+    const artifactKindMap = Object.freeze({
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "XLSX",
+      "application/vnd.ms-excel": "XLS",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "DOCX",
+      "application/msword": "DOC",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation": "PPTX",
+      "application/pdf": "PDF",
+      "text/csv": "CSV",
+      "text/plain": "TXT",
+      "application/zip": "ZIP",
+      "image/png": "PNG",
+      "image/jpeg": "JPG",
+      "image/webp": "WEBP",
+    });
+    const artifactKindOf = (mediaType) => {
+      if (typeof mediaType !== "string") return "";
+      const normalized = mediaType.trim().toLowerCase();
+      // Object prototype members such as "constructor" and "__proto__"
+      // are not registered media types and must never produce a file chip.
+      return Object.hasOwn(artifactKindMap, normalized) ? artifactKindMap[normalized] : "";
+    };
     const card = document.createElement("div");
     card.className = "claw-run-card";
     card.dataset.runId = typeof run.run_id === "string" ? run.run_id : "";
+    // Visual emphasis follows only the canonical server status. Unknown states
+    // retain neutral styling and their raw label; they are never completed.
+    const knownRunStates = ["completed", "waiting_approval", "failed", "cancelled"];
+    if (knownRunStates.includes(run.status)) card.dataset.runState = run.status;
 
     const head = document.createElement("div");
     head.className = "claw-run-card-head";
@@ -3431,16 +5548,27 @@
 
     const meta = document.createElement("div");
     meta.className = "claw-run-card-meta";
-    meta.textContent = [run.channel, run.action, run.created_at]
+    const createdAt = typeof run.created_at === "string" ? run.created_at : "";
+    meta.textContent = [run.channel, run.action, readableClawInstant(createdAt)]
       .map((value) => (typeof value === "string" ? value : ""))
       .filter(Boolean)
       .join(" · ");
+    // The exact instant the server stored stays available even though the
+    // visible text is localized, so nothing about the record is lost.
+    if (createdAt) meta.setAttribute("title", createdAt);
 
     const summary = document.createElement("p");
     summary.className = "claw-run-card-summary";
     summary.textContent = typeof run.result_summary === "string" ? run.result_summary : "";
 
     card.append(head, meta, summary);
+    if (["waiting_approval", "failed", "cancelled"].includes(run.status)) {
+      const nextStep = document.createElement("p");
+      nextStep.className = "claw-run-card-nextstep";
+      nextStep.setAttribute("role", "note");
+      nextStep.textContent = clawT(`claw-runs-next-${run.status}`);
+      card.appendChild(nextStep);
+    }
 
     // Canonical session reopen (#2916): the action exists only when the server
     // projected a validated session handle. Created before the artifact block
@@ -3465,9 +5593,23 @@
     if (artifact) {
       const artifactRow = document.createElement("div");
       artifactRow.className = "claw-run-card-artifact";
+      // L2: the file's own identity is grouped so a type chip can sit beside the
+      // name. Grouping keeps the row's two-element shape (identity + one action)
+      // and lets a long filename shrink instead of pushing the action out.
+      const fileGroup = document.createElement("span");
+      fileGroup.className = "claw-run-card-file";
+      const artifactKind = artifactKindOf(artifact.media_type);
+      if (artifactKind) {
+        const kindChip = document.createElement("span");
+        kindChip.className = "claw-run-card-kind";
+        kindChip.textContent = artifactKind;
+        kindChip.setAttribute("aria-label", clawT("claw-runs-kind-aria", { kind: artifactKind }));
+        fileGroup.appendChild(kindChip);
+      }
       const filename = document.createElement("span");
       filename.className = "claw-run-card-filename";
       filename.textContent = typeof artifact.filename === "string" ? artifact.filename : "";
+      fileGroup.appendChild(filename);
       const downloadBtn = document.createElement("button");
       downloadBtn.type = "button";
       downloadBtn.className = "claw-run-card-download";
@@ -3476,7 +5618,39 @@
         // Reuses the existing bounded artifact route through its single owner.
         if (artifact.document_id) downloadClawArtifact(artifact.document_id, artifact.filename || "");
       });
-      artifactRow.append(filename, downloadBtn);
+      artifactRow.append(fileGroup, downloadBtn);
+      // L2: one verified-preview decision, reused by the note and the controller.
+      const previewable = Boolean(window.PadiemClawPdfPreview?.validHistoricalArtifact?.(artifact));
+      // #3935: a history artifact reference does not make a failed, cancelled,
+      // approval-paused or unknown run completed. Keep its original badge and
+      // existing click-to-check download; never auto-retry or claim delivery.
+      if (run.status !== "completed") {
+        const caveat = document.createElement("p");
+        caveat.className = "claw-run-card-partial-note";
+        caveat.setAttribute("role", "note");
+        caveat.textContent = clawT("claw-runs-artifact-unverified");
+        artifactRow.appendChild(caveat);
+      }
+      // L2: when no verified preview exists for this file, say so plainly so the
+      // single download action is never read as a preview affordance.
+      if (!previewable) {
+        const downloadOnly = document.createElement("p");
+        downloadOnly.className = "claw-run-card-download-only";
+        downloadOnly.setAttribute("role", "note");
+        downloadOnly.textContent = clawT("claw-runs-download-only");
+        fileGroup.appendChild(downloadOnly);
+      }
+      // #3932: old owner-scoped run receipts lack byte_length. Display a
+      // truthful click-to-check PDF action, then use the existing authenticated
+      // 10MiB PDF byte route. Never preview DOCX/XLSX or inferred filenames.
+      if (previewable) {
+        const viewer = window.PadiemClawPdfPreview.create({
+          mount: artifactRow,
+          onError: (message) => setClawRunHistoryStatus(message),
+        });
+        if (viewer?.setHistorical?.(artifact)) clawRunHistoryPdfControllers.add(viewer);
+        else viewer?.destroy?.();
+      }
       card.appendChild(artifactRow);
     }
     if (sessionBtn) card.appendChild(sessionBtn);
@@ -3498,14 +5672,22 @@
     if (!clawRunHistory) return;
     const focusRunId = pendingClawRunFocusId;
     pendingClawRunFocusId = "";
+    const visibilityEpoch = clawRunHistoryVisibilityEpoch;
     setClawRunHistoryStatus("");
     if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = false;
     if (clawRunHistoryList) clawRunHistoryList.hidden = true;
     if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = true;
+    if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
+    // On refresh, retire the old cards before dropping their DOM and PDF Blob.
+    clearClawRunHistoryPdfPreviews();
     if (clawRunHistoryList) clawRunHistoryList.replaceChildren();
     try {
-      const response = await fetch("/api/claw/runs?limit=10", { headers: { "Accept": "application/json" }, cache: "no-store" });
+      const response = await fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
+      // A response begun before logout/workspace departure is not a license
+      // to paint old owner file cards into a newer authenticated session.
+      if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
+          authState.authenticated !== true || clawRunHistory.hidden) return;
       if (!response.ok || !data || data.ok !== true || !Array.isArray(data.runs)) {
         throw new Error(clawRunHistoryErrorMessage(data, response));
       }
@@ -3516,6 +5698,10 @@
         return;
       }
       if (clawRunHistoryList) clawRunHistoryList.hidden = false;
+      // Equal to the requested limit suggests (but does not prove) older runs.
+      // Never invent a count or claim further runs exist until the next GET.
+      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden =
+        clawRunHistoryLimit !== 10 || data.runs.length < 10;
       data.runs.forEach((run) => {
         if (!run || typeof run.run_id !== "string") return;
         clawRunHistoryList?.appendChild(renderClawRunCard(run));
@@ -3523,13 +5709,18 @@
       if (focusRunId && clawRunHistoryList) {
         const target = Array.from(clawRunHistoryList.children).find((card) => card.dataset && card.dataset.runId === focusRunId);
         if (target) {
+          // #4488 Phase A: open the disclosure before focusing a specific run.
+          if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.open = true;
           target.setAttribute("tabindex", "-1");
           target.focus?.();
           target.scrollIntoView?.();
         }
       }
     } catch (error) {
+      if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
+          authState.authenticated !== true || clawRunHistory.hidden) return;
       if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
+      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
       setClawRunHistoryStatus(error instanceof Error ? error.message : clawT("claw-runs-error"));
     }
   }
@@ -3551,11 +5742,27 @@
       && shell.dataset.state === "claw"
       && clawWorkspace?.dataset.view !== "inbox";
     clawRunHistory.hidden = !show;
+    if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.hidden = !show;
     if (show) loadClawRunHistory();
+    else {
+      clawRunHistoryVisibilityEpoch += 1;
+      clawRunHistoryLimit = 10;
+      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
+      clearClawRunHistoryPdfPreviews();
+    }
   }
 
   if (clawRunHistoryRefresh) {
     clawRunHistoryRefresh.addEventListener("click", () => loadClawRunHistory());
+  }
+  if (clawRunHistoryExpand) {
+    clawRunHistoryExpand.addEventListener("click", () => {
+      if (clawRunHistoryInFlight || clawRunHistoryLimit !== 10 ||
+          authState.authenticated !== true || clawRunHistory.hidden) return;
+      clawRunHistoryLimit = 30;
+      clawRunHistoryExpand.hidden = true;
+      void loadClawRunHistory();
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -3650,4 +5857,11 @@
     // Read-only: this exposes no pairing, session or transport authority.
     getConversationId: () => window.PadiemChatConversationState?.getConversationId?.() || null,
   });
+  // Restore the Automation surface only after all handlers are registered.
+  // It remains read-only for signed-out sessions through openClawAutomation().
+  // #4862: restore Claw the same way. An unknown or tampered fragment matches
+  // neither route, so the shell keeps its default Chat home.
+  if (window.location.hash === AUTOMATION_ROUTE_HASH) openClawAutomation();
+  else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
+  automationDestinationReady = true;
 })();

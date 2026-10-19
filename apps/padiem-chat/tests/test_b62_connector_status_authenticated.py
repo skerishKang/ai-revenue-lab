@@ -2,7 +2,7 @@
 
 The public ``GET /api/connectors/status`` keeps publishing the Phase-A platform
 support truth unchanged. On top of it, a **signed B62 product session** may now
-contribute canonical workspace truth for exactly Gmail and Google Drive:
+contribute canonical workspace truth for Gmail, Google Drive and Google Calendar:
 
     signed B62 product session
         -> current_user_id(request)
@@ -10,7 +10,7 @@ contribute canonical workspace truth for exactly Gmail and Google Drive:
         -> existing control_plane_identity_authority (B-1A)
         -> existing google_oauth_workspace_truth (B-0)
         -> compose_workspace_connector_truth (B-1B)
-        -> bounded Gmail / Drive workspace truth
+        -> bounded Gmail / Drive / Calendar workspace truth
         -> /api/connectors/status response
 
 No new workspace, identity or OAuth authority is introduced. The browser can
@@ -106,6 +106,20 @@ DRIVE_AMBIGUOUS = {
     "expires_present": True,
     "ambiguous": True,
 }
+CALENDAR_NOT_CONNECTED = {
+    "connector_id": "google-calendar",
+    "state": "not_connected",
+    "usable": False,
+    "expires_present": False,
+    "ambiguous": False,
+}
+CALENDAR_CONNECTED = {
+    "connector_id": "google-calendar",
+    "state": "connected",
+    "usable": True,
+    "expires_present": True,
+    "ambiguous": False,
+}
 
 # The public response is a bounded projection. These key names may never appear
 # anywhere in it, at any depth.
@@ -178,18 +192,27 @@ class _OAuthBinding:
         connectors: list[dict[str, Any]] | None = None,
         *,
         error: dict[str, Any] | None = None,
+        calendar_connector: dict[str, Any] | None = None,
     ) -> None:
         self.connectors = (
             connectors if connectors is not None else [GMAIL_CONNECTED, DRIVE_CONNECTED]
         )
         self.error = error
+        self.calendar_connector = calendar_connector or CALENDAR_NOT_CONNECTED
         self.calls: list[dict[str, Any]] = []
+        self.calendar_calls: list[dict[str, Any]] = []
 
     async def workspace_connector_state(self, payload: dict[str, Any]) -> dict[str, Any]:
         self.calls.append(dict(payload))
         if self.error is not None:
             return {"ok": False, "error": self.error}
         return {"ok": True, "connectors": self.connectors}
+
+    async def workspace_calendar_connector_state(self, payload: dict[str, Any]) -> dict[str, Any]:
+        self.calendar_calls.append(dict(payload))
+        if self.error is not None:
+            return {"ok": False, "error": self.error}
+        return {"ok": True, "connectors": [self.calendar_connector]}
 
 
 class _ShadowStore:
@@ -306,13 +329,18 @@ def _wired(
     linked: bool = True,
     shadow_store=None,
     error=None,
+    calendar_connector=None,
     history_store=_SENTINEL_PROFILE,
     auth_mode: str = "google",
 ):
     """Return (settings, app, identity_binding, oauth_binding, shadow_store)."""
 
     identity_binding = _IdentityBinding(present=present)
-    oauth_binding = _OAuthBinding(connectors, error=error)
+    oauth_binding = _OAuthBinding(
+        connectors,
+        error=error,
+        calendar_connector=calendar_connector,
+    )
     store = shadow_store if shadow_store is not None else _ShadowStore(linked=linked)
     settings, app = _app(
         identity_binding=identity_binding,
@@ -451,13 +479,16 @@ async def test_8_slack_stays_unverified():
     assert row["workspace_reason"] == WORKSPACE_REASON_NO_TRUSTED_AUTHORITY
 
 
-async def test_9_calendar_stays_unverified():
-    settings, app, *_ = _wired([GMAIL_CONNECTED, DRIVE_CONNECTED])
+async def test_9_calendar_uses_dedicated_workspace_truth():
+    settings, app, *_ = _wired(
+        [GMAIL_CONNECTED, DRIVE_CONNECTED],
+        calendar_connector=CALENDAR_CONNECTED,
+    )
     async with _client(settings, app) as client:
         document = (await client.get(STATUS_PATH)).json()
     row = _rows(document)[CALENDAR_ID]
-    assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
-    assert row["workspace_reason"] == WORKSPACE_REASON_NO_TRUSTED_AUTHORITY
+    assert row["workspace_state"] == WORKSPACE_STATE_CONNECTED
+    assert row["workspace_reason"] is None
 
 
 # --------------------------------------------------------------------------
@@ -955,9 +986,10 @@ def test_governance_pins_hold():
     assert projection_module.READ_TRUTH_PROMOTES_TO_SEND_WRITE is False
 
 
-def test_closed_mapping_is_gmail_and_drive_only():
+def test_closed_mapping_is_reviewed_google_readonly_only():
     assert projection_module._WORKSPACE_TRUTH_TARGETS == {
         "gmail": ("gmail", GMAIL_ID),
         "google-drive": ("drive", DRIVE_ID),
+        "google-calendar": ("calendar", CALENDAR_ID),
     }
     projection_module._require_reviewed_targets()

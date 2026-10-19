@@ -54,11 +54,17 @@ from typing import Any, Callable
 from .contracts import ContractError
 from .local_agent import LocalAgentDeviceProfile, LocalAgentPlatform, LocalRoot
 from .local_agent_broker_pairing_client import LocalAgentBrokerPairingClient
+from .local_agent_desktop_material import (
+    DESKTOP_REQUEST_KINDS,
+    MAX_PREHANDOFF_SKIP_LINES,
+    ResidentDesktopMaterialResponder,
+)
 from .local_agent_control_plane_admission import (
     ControlPlanePhysicalAdmissionChannel,
     ControlPlanePhysicalAdmissionTransport,
 )
 from .local_agent_durable_run_store import DurableRunStore
+from .local_agent_device_binding_store import ProtectedDeviceBindingStore
 from .local_agent_pairing import DeviceLifecycle
 from .local_agent_permissions import default_device_permission_profile
 from .local_agent_runtime_assembly import BoundLocalAgentRuntimeAssembly
@@ -173,6 +179,284 @@ def _acceptance_authorization_port(
             ),
         ),
     )
+
+
+#: #4139: the deployment-supplied P01 verified-text plan source, resolved with
+#: the same ``module:attribute`` factory convention as the broker request port.
+#: It is the *material*, not a switch: without it the ordered text lane is
+#: absent, and no environment value can name a file or mint an approval.
+VERIFIED_TEXT_PLAN_SOURCE_ENV = "PADIEM_AGENT_VERIFIED_TEXT_PLAN_SOURCE"
+
+
+def verified_text_plan_source_from_environment() -> Any | None:
+    """Resolve the deployment's P01 verified-text material, or None (fail closed).
+
+    Only a trusted module already importable in this process can supply it: the
+    same bounded shape the Office lane takes, with a pre-acknowledgement
+    ``approved_plan_for_admitted_command`` entry point. A missing, unimportable
+    or shape-invalid source leaves the lane off — never a fallback plan, never a
+    synthetic approval and never a path read from the environment.
+    """
+
+    factory_path = os.environ.get(VERIFIED_TEXT_PLAN_SOURCE_ENV)
+    if not factory_path:
+        return None
+    try:
+        module_name, _, attribute = factory_path.partition(":")
+        if not module_name or not attribute:
+            return None
+        module = __import__(module_name, fromlist=[attribute])
+        source = getattr(module, attribute)()
+    except (ImportError, AttributeError, ValueError, TypeError):
+        return None
+    if not callable(getattr(source, "approved_plan_for_admitted_command", None)):
+        return None
+    return source
+
+
+#: #4139 trial: the deployment-supplied private-MeshCentral text material,
+#: resolved with the same ``module:attribute`` factory convention. The trial
+#: swap is the *executor* of the approved READ only; the canonical receipt, the
+#: order and the publisher are the ones the P01 lane already uses.
+MESHCENTRAL_TRIAL_TEXT_SOURCE_ENV = "PADIEM_AGENT_MESHCENTRAL_TRIAL_TEXT_SOURCE"
+
+
+def meshcentral_trial_text_material_from_environment() -> Any | None:
+    """Resolve the deployment's private-MeshCentral trial text material, or None.
+
+    Only a trusted module already importable in this process can supply it. A
+    missing, unimportable or shape-invalid material leaves the trial lane off —
+    never a fallback target, never a synthetic approval and never a file for a
+    request read from the environment.
+    """
+
+    factory_path = os.environ.get(MESHCENTRAL_TRIAL_TEXT_SOURCE_ENV)
+    if not factory_path:
+        return None
+    try:
+        module_name, _, attribute = factory_path.partition(":")
+        if not module_name or not attribute:
+            return None
+        module = __import__(module_name, fromlist=[attribute])
+        material = getattr(module, attribute)()
+    except (ImportError, AttributeError, ValueError, TypeError):
+        return None
+    if not callable(getattr(material, "target_for_admitted_command", None)):
+        return None
+    if not callable(getattr(material, "read_port", None)):
+        return None
+    return material
+
+
+def _browser_open_authority(
+    *,
+    device: Any,
+    store: Any,
+    root_source: str,
+    acceptance_command_id: str = "",
+    acceptance_binding_ref: str = "",
+    acceptance_request_id: str = "",
+    host: Any | None = None,
+) -> Any:
+    """Compose the approved `browser.open` slice, fail-closed by default (#3611).
+
+    The slice is built from the *same* redeemed device, the *same* local policy
+    profile and the *same* durable store as the Windows execution lane, so there
+    is no second device view, no second policy and no second one-shot store.
+
+    Only when a real shell-supplied root (root_source=env) and a configured broker
+    boundary and the acceptance correlation exist is the existing canonical P01
+    evidence route wired; otherwise the authority keeps its fail-closed default
+    evidence port. The **host** is never defaulted to something permissive: the
+    trusted main view owner is injected by the process that owns the browser, so
+    an unrouted authority refuses instead of opening.
+    """
+
+    from .browser_open_authority import (
+        BrowserOpenAuthority,
+        P01LoopbackBrowserOpenEvidenceClient,
+    )
+
+    permission_profile = default_device_permission_profile(device=device)
+    broker_url = os.environ.get("PADIEM_AGENT_BROKER_URL")
+    if (
+        root_source != "env"
+        or not broker_url
+        or not acceptance_command_id
+        or not acceptance_binding_ref
+        or not acceptance_request_id
+    ):
+        return BrowserOpenAuthority(
+            device=device,
+            permission_profile=permission_profile,
+            store=store,
+            host=host,
+        )
+    return BrowserOpenAuthority(
+        device=device,
+        permission_profile=permission_profile,
+        store=store,
+        host=host,
+        evidence_port=P01LoopbackBrowserOpenEvidenceClient(
+            store=store,
+            command_id=acceptance_command_id,
+            binding_ref=acceptance_binding_ref,
+            request_id=acceptance_request_id,
+            base_url=broker_url,
+        ),
+    )
+
+
+def _resident_device(*, entry: "BrokerEntry", binding: Any, execution_root: str) -> LocalAgentDeviceProfile:
+    """The single trusted device view every resident lane composes against.
+
+    #3669: the browser.open slice and the browser.control lease slice must
+    describe the same machine, so the device is built in exactly one place
+    from the redeemed binding and the shell-supplied root — never a second,
+    hard-coded view.
+    """
+
+    return LocalAgentDeviceProfile(
+        device_id=entry.device_id,
+        # #3140 review item 3: the workspace is whatever the redeemed binding
+        # says. A hard-coded workspace would let a device from one workspace
+        # present as a device of another.
+        workspace_ref=binding.workspace_ref,
+        platform=LocalAgentPlatform.WINDOWS,
+        roots=(LocalRoot(root_ref=EXECUTION_ROOT_REF, windows_path=execution_root),),
+    )
+
+
+def _browser_control_lease_authority(
+    *,
+    device: Any,
+    credential_dir: str,
+    root_source: str,
+    redeemed_device_binding_ref: str = "",
+    approved_command_correlation: Any = None,
+    observer: Any = None,
+) -> Any:
+    """Compose the canonical `browser.control` lease slice, fail-closed by default (#3669).
+
+    CENTRAL ruling DECISION=B: a *separate* canonical durable lease store sits
+    next to the run store — the `DurableRunStore` itself is not touched. Only
+    when a real shell-supplied root (root_source=env), an authenticated
+    per-command browser.control work ticket, and a configured broker boundary
+    ALL exist can the canonical P01 evidence route be wired. The #3140
+    acceptance command is ONLY pairing/runner evidence, never this grant.
+    Otherwise the authority keeps its fail-closed evidence port.
+
+        DESKTOP_DURABLE_LEASE_AUTHORITY=NO
+        NEW_APPROVAL_STORE=0
+        NEW_DURABLE_LEASE_STORE=1
+    """
+
+    import os
+
+    from .browser_control_lease_authority import (
+        BrowserControlLeaseAuthority,
+        BrowserControlP01CommandCorrelation,
+        P01PerCommandBrowserControlEvidenceClient,
+    )
+    from .browser_control_lease_store import BrowserControlLeaseStore
+    from .local_agent_permissions import default_device_permission_profile
+
+    lease_store_path = os.path.join(credential_dir, "browser-control-leases.sqlite3")
+    store = BrowserControlLeaseStore(lease_store_path, observer=observer)
+    permission_profile = default_device_permission_profile(device=device)
+    broker_url = os.environ.get("PADIEM_AGENT_BROKER_URL")
+    if (
+        root_source != "env"
+        or not broker_url
+        or not isinstance(approved_command_correlation, BrowserControlP01CommandCorrelation)
+        or not redeemed_device_binding_ref
+        or approved_command_correlation.binding_ref != redeemed_device_binding_ref
+    ):
+        # Ambient #3140 pairing IDs are not accepted by this factory.
+        # Only a distinct canonical broker-issued work-ticket can configure it.
+        return BrowserControlLeaseAuthority(
+            device=device,
+            permission_profile=permission_profile,
+            store=store,
+        )
+    return BrowserControlLeaseAuthority(
+        device=device,
+        permission_profile=permission_profile,
+        store=store,
+        evidence_port=P01PerCommandBrowserControlEvidenceClient(
+            base_url=broker_url,
+            correlation=approved_command_correlation,
+        ),
+    )
+
+
+def _lease_authority_callables(lease_authority: Any) -> tuple[Callable[..., dict[str, Any]], Callable[..., int]]:
+    """The two bounded dispatcher callables: PHASE A resolve, PHASE B consume.
+
+    Each call reconstructs the bounded request from the wire fields only,
+    stamps the store against the process's real UTC clock, and returns the
+    bounded projection (or the new durable count). Every refusal the
+    authority raises is a closed-vocabulary code the responder maps onto the
+    wire — no error text, no page content and no approval payload crosses the
+    pipe.
+    """
+
+    from .browser_control_lease_authority import BrowserControlLeaseRequest
+
+    def lease_resolve(
+        *,
+        request_fingerprint: str,
+        browser_session_ref: str,
+        device_ref: str,
+        run_ref: str,
+        workspace_ref: str,
+        owner_ref: str,
+        origin_scope: str,
+        allowed_action_classes: list[str],
+        ttl_seconds: int,
+        max_actions: int,
+    ) -> dict[str, Any]:
+        request = BrowserControlLeaseRequest(
+            browser_session_ref=browser_session_ref,
+            run_ref=run_ref,
+            workspace_ref=workspace_ref,
+            owner_ref=owner_ref,
+            device_id=device_ref,
+            origin_scope=origin_scope,
+            allowed_action_classes=tuple(allowed_action_classes),
+            ttl_seconds=ttl_seconds,
+            max_actions=max_actions,
+        )
+        projection = lease_authority.resolve_or_issue(
+            request,
+            now=datetime.now(timezone.utc).replace(microsecond=0),
+            provided_fingerprint=request_fingerprint,
+        )
+        return projection.wire_lease_dict()
+
+    def lease_consume(
+        *,
+        request_fingerprint: str,
+        browser_session_ref: str,
+        run_ref: str,
+        workspace_ref: str,
+        owner_ref: str,
+        action: str,
+        observed_origin: str,
+    ) -> int:
+        projection = lease_authority.consume_action(
+            request_fingerprint,
+            browser_session_ref=browser_session_ref,
+            run_ref=run_ref,
+            workspace_ref=workspace_ref,
+            owner_ref=owner_ref,
+            action=action,
+            observed_origin=observed_origin,
+            now=datetime.now(timezone.utc).replace(microsecond=0),
+        )
+        return int(projection.consumed_actions)
+
+    return lease_resolve, lease_consume
 
 
 class _FetchedP01EvidenceClient:
@@ -547,9 +831,12 @@ def redeem_handoff(
 
     clock = _Clock(now)
     config = entry.transport_config
+    protection = (
+        protected_data if protected_data is not None else WindowsDpapiProtectedDataPort()
+    )
     store = ProtectedFileDeviceCredentialStore(
         base_dir=base_dir,
-        protected_data=protected_data if protected_data is not None else WindowsDpapiProtectedDataPort(),
+        protected_data=protection,
     )
     client = LocalAgentBrokerPairingClient(
         config=config, credential_store=store, request_port=entry.request_port
@@ -564,6 +851,13 @@ def redeem_handoff(
         raise ContractError("redemption did not yield PAIRED_OFFLINE")
     # The credential is now durable; only then does ownership hold.
     store.load(binding=enrollment.binding, now=now)
+    # #4139 STEP 3: the credential was durable but the *binding* was in-memory
+    # only, so a restart had nothing to resume from and refused even though the
+    # PC was registered. Persist it beside the credential it belongs to, under
+    # the same protected-data port. No raw credential is written here.
+    ProtectedDeviceBindingStore(base_dir=base_dir, protected_data=protection).save(
+        binding=enrollment.binding, now=now
+    )
     if emit is not None:
         emit(handoff)
     return {
@@ -573,6 +867,44 @@ def redeem_handoff(
         "config": config,
         "port": entry.request_port,
         "redeem_count": 1,
+    }
+
+
+def resume_registered_binding(
+    *,
+    entry: BrokerEntry,
+    now: datetime,
+    protected_data: Any | None = None,
+) -> dict:
+    """Rebuild a registered device's boundary from durable state alone.
+
+    No handoff, no challenge, no re-enrollment and no fresh identity: the binding
+    record and the protected credential were both written at enrollment time.
+    The credential is loaded **with the rebuilt binding**, so a binding that no
+    longer matches its credential fails closed here rather than at the broker.
+    """
+    clock = _Clock(now)
+    config = entry.transport_config
+    protection = (
+        protected_data if protected_data is not None else WindowsDpapiProtectedDataPort()
+    )
+    resumed = ProtectedDeviceBindingStore(
+        base_dir=entry.credential_dir, protected_data=protection
+    ).load(device_id=entry.device_id, now=now)
+    store = ProtectedFileDeviceCredentialStore(
+        base_dir=entry.credential_dir, protected_data=protection
+    )
+    # Proof of the reconstruction: the canonical store only returns the
+    # credential when the rebuilt binding context is the protected one.
+    store.load(binding=resumed.binding, now=now)
+    return {
+        "binding": resumed.binding,
+        "store": store,
+        "clock": clock,
+        "config": config,
+        "port": entry.request_port,
+        "redeem_count": 0,
+        "resumed": True,
     }
 
 
@@ -586,6 +918,14 @@ def build_resident_host(
     acceptance_binding_ref: str = "",
     acceptance_request_id: str = "",
     acceptance_request_fingerprint: str = "",
+    browser_open_host: Any | None = None,
+    approved_office_pairs: Any | None = None,
+    office_file_requests: Any | None = None,
+    office_file_authorization_port: Any | None = None,
+    office_renderer: Any | None = None,
+    office_p01_plan_source: Any | None = None,
+    verified_text_plan_source: Any | None = None,
+    meshcentral_trial_text_material: Any | None = None,
 ) -> LocalAgentResidentRuntimeHost:
     """Construct *the* resident host, once, on the redeemed binding."""
 
@@ -607,14 +947,8 @@ def build_resident_host(
         root_ref=EXECUTION_ROOT_REF,
         profile_ref=EXECUTION_PROFILE_REF,
     )
-    device = LocalAgentDeviceProfile(
-        device_id=entry.device_id,
-        # #3140 review item 3: the workspace is whatever the redeemed binding
-        # says. A hard-coded workspace would let a device from one workspace
-        # present as a device of another.
-        workspace_ref=binding.workspace_ref,
-        platform=LocalAgentPlatform.WINDOWS,
-        roots=(LocalRoot(root_ref=EXECUTION_ROOT_REF, windows_path=execution_root),),
+    device = _resident_device(
+        entry=entry, binding=binding, execution_root=execution_root
     )
     # #3140 stall diagnosis: the composition seam is the widest silent step in
     # the resident's own path, so each bounded construction reports itself.
@@ -661,6 +995,122 @@ def build_resident_host(
     _observe_phase("host_build_store_start")
     durable_store = DurableRunStore(entry.durable_store_path, observer=_observe_phase)
     _observe_phase("host_build_store_done")
+    # #3611: the approved browser.open slice shares this durable store, the
+    # redeemed device and the same local policy profile as the Windows lane.
+    browser_open_authority = _browser_open_authority(
+        device=device,
+        store=durable_store,
+        root_source=root_source,
+        acceptance_command_id=acceptance_command_id,
+        acceptance_binding_ref=acceptance_binding_ref,
+        acceptance_request_id=acceptance_request_id,
+        host=browser_open_host,
+    )
+    # #3580: only a deployment-injected trusted P01/Office producer may
+    # opt into post-ACK byte staging. Ordinary pairing/env/browser/model cannot
+    # supply a file path or mint Google Drive WRITE consent.
+    office_staging = None
+    if office_p01_plan_source is not None:
+        if (approved_office_pairs is not None or office_file_requests is not None
+                or office_file_authorization_port is not None):
+            raise ContractError("competing P01 Office authority sources refused")
+        from .trusted_p01_office_file_plan import TrustedP01OfficeFilePlanBridge
+        from .windows_local_filesystem import P01LocalPermissionWindowsFileAuthorizationPort
+
+        office_bridge = TrustedP01OfficeFilePlanBridge(source=office_p01_plan_source)
+        office_file_requests = office_bridge
+        office_file_authorization_port = P01LocalPermissionWindowsFileAuthorizationPort(
+            permission_profile=default_device_permission_profile(device=device),
+            evidence_port=office_bridge,
+        )
+    if (approved_office_pairs is not None and
+            (office_file_requests is not None or office_file_authorization_port is not None)):
+        raise ContractError("two competing Office producer authorities refused")
+    if office_file_requests is not None or office_file_authorization_port is not None:
+        from .approved_windows_office_pair_producer import compose_approved_windows_office_pairs
+        approved_office_pairs = compose_approved_windows_office_pairs(
+            device=device, file_requests=office_file_requests,
+            file_authorization_port=office_file_authorization_port,
+            clock=clock, renderer=office_renderer,
+        )
+    elif office_renderer is not None:
+        raise ContractError("Office renderer without P01 file READ authority refused")
+    if approved_office_pairs is not None:
+        from .local_office_chunk_publisher import LocalOfficeChunkPublisher
+        from .local_resident_office_delivery import ResidentOfficePairPublisher
+        from .local_agent_control_plane_https import StdlibPinnedHttpsJsonRequestPort
+
+        office_staging = ResidentOfficePairPublisher(
+            approved_pairs=approved_office_pairs,
+            publisher=LocalOfficeChunkPublisher(
+                transport=StdlibPinnedHttpsJsonRequestPort(),
+                config=config,
+            ),
+        )
+    # #4139: a bounded TXT read result is ordered around the existing command
+    # path — `pending` while the command is admitted and unacknowledged, the
+    # approved READ after the execution and before the acknowledgement, and the
+    # *preserved* bytes after the successful acknowledgement — from the same
+    # deployment-injected trusted P01 source shape the Office lane uses. It
+    # reaches the broker on the one canonical device route (LOCAL1 #4705),
+    # through the same P01-authorized selected-root READ — no second file
+    # authority, no second upload path and no ambient switch.
+    # #4139 trial: exactly one executor may answer for an admitted TEXT command.
+    # Two configured materials would shadow each other, so they are refused
+    # rather than silently ordered.
+    if verified_text_plan_source is not None and meshcentral_trial_text_material is not None:
+        raise ContractError("two competing verified text read authorities refused")
+    verified_text_lane = None
+    verified_text_authority = None
+    if verified_text_plan_source is not None:
+        from .local_resident_verified_text_delivery import (
+            TrustedP01VerifiedTextFilePlanBridge,
+            compose_verified_text_delivery,
+        )
+        from .windows_local_filesystem import P01LocalPermissionWindowsFileAuthorizationPort
+
+        # The bridge is both the approved-READ request port and the P01 file
+        # evidence port: one plan, one approval, one read. The authorization
+        # port re-checks it at read time, exactly like the Office lane.
+        text_bridge = TrustedP01VerifiedTextFilePlanBridge(source=verified_text_plan_source)
+        verified_text_lane = compose_verified_text_delivery(
+            device=device,
+            file_requests=text_bridge,
+            file_authorization_port=P01LocalPermissionWindowsFileAuthorizationPort(
+                permission_profile=default_device_permission_profile(device=device),
+                evidence_port=text_bridge,
+            ),
+            config=config,
+            clock=clock,
+        )
+        verified_text_authority = "p01_selected_root"
+    elif meshcentral_trial_text_material is not None:
+        # The trial lane reuses the same canonical receipt, order and publisher
+        # and swaps only the executor of the approved READ: the private,
+        # official-MeshCtrl read over the dedicated tunnel.
+        from .local_agent_meshcentral_resident_lane import (
+            compose_meshcentral_verified_text_delivery,
+        )
+
+        verified_text_lane = compose_meshcentral_verified_text_delivery(
+            material=meshcentral_trial_text_material,
+            config=config,
+        )
+        verified_text_authority = "meshcentral_private_trial"
+    # #4139: report the order the resident actually composed, rather than
+    # letting the harness infer it from a later poll line.
+    _emit(
+        event="verified_text_lane",
+        configured=verified_text_lane is not None,
+        authority=verified_text_authority,
+        pending_before_ack=True,
+        read_before_ack=True,
+        upload_after_ack=True,
+        post_ack_only=False,
+        file_reread_after_ack=False,
+        **_phase_stamp(),
+        **RESIDENT_PROCESS_CONTRACT,
+    )
     # #3140 stall diagnosis: the facts a stalled SQLite open would have produced,
     # reported only once the store is actually ready. No path, no handle.
     try:
@@ -681,6 +1131,7 @@ def build_resident_host(
             permissions=default_device_permission_profile(device=device),
             broker_authority=broker_binding,
             runtime=runtime,
+            browser_open=browser_open_authority,
         ),
         channel=channel,
         credential_store=redeemed["store"],
@@ -689,6 +1140,8 @@ def build_resident_host(
         session_id_factory=entry.session_id_factory,
         heartbeat_interval_seconds=30,
         session_ttl_seconds=900,
+        office_staging=office_staging,
+        verified_text_lane=verified_text_lane,
     )
     _observe_phase("host_build_host_done")
     return host
@@ -696,36 +1149,82 @@ def build_resident_host(
 
 def main(argv: list[str] | None = None) -> int:
     del argv
-    entry = BrokerEntry.from_environment()
+    try:
+        entry = BrokerEntry.from_environment()
+    except ContractError:
+        # #4139: a *configured* boundary that the request-port factory rejects
+        # (wrong scheme, wrong port, URL credentials) is not an absent one. The
+        # configured factory refuses before it builds any transport, so emit the
+        # bounded refusal shape here instead of letting that ContractError escape
+        # the process as an unhandled traceback.
+        _emit(
+            status="refused",
+            reason="configured_broker_boundary_rejected",
+            **RESIDENT_PROCESS_CONTRACT,
+        )
+        return 2
     if entry is None:
         _emit(status="refused", reason="no_configured_broker_boundary", **RESIDENT_PROCESS_CONTRACT)
         return 2
     _start_stall_watchdog()
-    raw = sys.stdin.readline()
-    try:
-        handoff = read_handoff(raw)
-    except ContractError as exc:
-        _emit(status="refused", reason="handoff_refused", detail=str(exc), **RESIDENT_PROCESS_CONTRACT)
-        return 2
+    # #3436 B2d: the supervised pipe carries more than the handoff now — the
+    # material responder answers requests only after redemption — so lines that
+    # are not a handoff are skipped, never honoured. The handoff itself must
+    # still parse exactly; the bound keeps a hostile stdin from spinning.
+    handoff: dict | None = None
+    for _ in range(MAX_PREHANDOFF_SKIP_LINES):
+        raw = sys.stdin.readline()
+        if not raw:
+            break
+        try:
+            handoff = read_handoff(raw)
+            break
+        except ContractError:
+            continue
     now = datetime.now(timezone.utc).replace(microsecond=0)
     os.makedirs(entry.credential_dir, exist_ok=True)
     if True:
         base_dir = entry.credential_dir
-        try:
-            # Item 4: the ACK fires from inside the redemption, after ownership.
-            redeemed = redeem_handoff(
-                handoff, entry=entry, base_dir=base_dir, now=now, emit=acknowledge_handoff
+        if handoff is None:
+            # #4139 STEP 3: a registered PC must be able to restart itself. The
+            # one-shot handoff is for *first* registration only; when the device
+            # already holds a durable binding, resume it and enter the same
+            # task-receiving host instead of refusing.
+            try:
+                redeemed = resume_registered_binding(entry=entry, now=now)
+            except ContractError as exc:
+                # Unchanged refusal contract for a device that is not registered.
+                _emit(
+                    status="refused",
+                    reason="handoff_refused",
+                    detail="no handoff line",
+                    resume_refused=str(exc),
+                    **RESIDENT_PROCESS_CONTRACT,
+                )
+                return 2
+            _emit(
+                event="registered_device_resumed",
+                redemption="paired_offline",
+                resume_count=1,
+                **_phase_stamp(),
+                **RESIDENT_PROCESS_CONTRACT,
             )
-        except ContractError as exc:
-            # No acknowledgement, so the caller keeps the handoff armed.
-            _emit(status="refused", reason="redemption_refused", detail=str(exc), **RESIDENT_PROCESS_CONTRACT)
-            return 2
-        _emit(
-            event="handoff_redeemed",
-            redemption="paired_offline",
-            **_phase_stamp(),
-            **RESIDENT_PROCESS_CONTRACT,
-        )
+        else:
+            try:
+                # Item 4: the ACK fires from inside the redemption, after ownership.
+                redeemed = redeem_handoff(
+                    handoff, entry=entry, base_dir=base_dir, now=now, emit=acknowledge_handoff
+                )
+            except ContractError as exc:
+                # No acknowledgement, so the caller keeps the handoff armed.
+                _emit(status="refused", reason="redemption_refused", detail=str(exc), **RESIDENT_PROCESS_CONTRACT)
+                return 2
+            _emit(
+                event="handoff_redeemed",
+                redemption="paired_offline",
+                **_phase_stamp(),
+                **RESIDENT_PROCESS_CONTRACT,
+            )
         _emit(event="host_build_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         try:
             host = build_resident_host(
@@ -738,6 +1237,11 @@ def main(argv: list[str] | None = None) -> int:
                 acceptance_command_id=ACCEPTANCE_COMMAND_ID,
                 acceptance_binding_ref=redeemed["binding"].binding_ref,
                 acceptance_request_id=ACCEPTANCE_REQUEST_ID,
+                # #4139: the ordered verified-text lane is composed on this same
+                # host, from the deployment's own P01 material. Absent material
+                # leaves it off; nothing here approves, names or reads a file.
+                verified_text_plan_source=verified_text_plan_source_from_environment(),
+                meshcentral_trial_text_material=meshcentral_trial_text_material_from_environment(),
             )
         except ContractError as exc:
             _emit(
@@ -751,6 +1255,50 @@ def main(argv: list[str] | None = None) -> int:
         _emit(event="host_built", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         _emit(event="connect_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         host.start()
+        # #3669 DECISION=B: the canonical browser.control lease slice gets its
+        # own durable store in the same credential-dir family as the run store,
+        # on the same redeemed device. No broker, pairing or resident state is
+        # changed — only the store file and the evidence port.
+        lease_execution_root, lease_root_source = trusted_execution_root()
+        lease_device = _resident_device(
+            entry=entry, binding=redeemed["binding"], execution_root=lease_execution_root
+        )
+        lease_authority = _browser_control_lease_authority(
+            device=lease_device,
+            credential_dir=entry.credential_dir,
+            root_source=lease_root_source,
+            redeemed_device_binding_ref=redeemed["binding"].binding_ref,
+            # No ambient #3140 pairing command or request ID is supplied to
+            # browser.control. This remains unconfigured until canonical
+            # per-command Broker/P01 material arrives via a separate ingress.
+            approved_command_correlation=None,
+            observer=_observe_phase,
+        )
+        lease_resolve, lease_consume = _lease_authority_callables(lease_authority)
+        # #3436 B2d + #3611 + #3669: one bounded dispatcher, one reader thread,
+        # exactly four literal request kinds, on the supervised stdio boundary
+        # the resident already shares with the shell. It starts only after the
+        # handoff was consumed and the host is online, projects state the host
+        # already holds (no session is opened, no credential minted or stored),
+        # and owns the agent side of the browser-open redemption and of the
+        # browser-control lease (PHASE A resolve + PHASE B consume).
+        #
+        # A second reader on this same stdin would race this one, so the
+        # redemption and lease kinds are added here instead of in a new thread.
+        material_responder = ResidentDesktopMaterialResponder(
+            material_projection=host.current_desktop_session_material,
+            redemption=host.redeem_desktop_browser_open,
+            lease_resolve=lease_resolve,
+            lease_consume=lease_consume,
+        )
+        material_responder.start()
+        _emit(
+            event="desktop_material_channel_ready",
+            host_state=host.state.value,
+            request_kinds=sorted(DESKTOP_REQUEST_KINDS),
+            **_phase_stamp(),
+            **RESIDENT_PROCESS_CONTRACT,
+        )
         _emit(
             event="session_open",
             host_state=host.state.value,

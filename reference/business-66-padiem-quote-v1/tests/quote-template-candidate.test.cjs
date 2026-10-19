@@ -119,7 +119,7 @@ eq(review.text.title, "견 적 서", "fixed text is surfaced");
 eq(review.text.emptyNameText, "품목을 입력하세요", "default text is surfaced");
 eq(review.layout.page.size, "A4", "page layout is surfaced");
 eq(review.layout.style.accent, "#17202a", "basic style is surfaced");
-eq(review.slots.support, "non_live", "SLOT status is explicit");
+eq(review.slots.support, "private_asset_v1", "SLOT status is explicit");
 eq(review.slots.declared, false, "an undeclared slot is reported as such");
 eq(review.warnings.length, 1, "warnings are surfaced");
 eq(review.unknowns.length, 1, "unknowns are surfaced");

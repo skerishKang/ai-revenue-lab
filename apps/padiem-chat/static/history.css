@@ -60,6 +60,64 @@
   color: #f0c0c0;
 }
 
+/* #4471 sidebar conversation search. Scoped to this module's own classes and
+   reuses the tokens the sidebar already reads; the global input:focus-visible
+   outline still applies, so no ring is redeclared here. */
+.conversation-search-panel {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  margin: 4px 10px 8px;
+}
+
+.conversation-search-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(127, 127, 127, 0.3);
+  border-radius: 10px;
+  background: rgba(127, 127, 127, 0.08);
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+}
+
+.conversation-search-results {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.conversation-search-hit {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  white-space: normal;
+}
+
+.conversation-search-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conversation-search-snippet {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.72;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 720px) {
   .account-name {
     max-width: 88px;
@@ -140,6 +198,53 @@
 .auth-primary {
   background: #111;
   color: #fff;
+}
+
+.auth-handoff {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(127, 127, 127, 0.28);
+  border-radius: 12px;
+  background: rgba(127, 127, 127, 0.06);
+}
+
+.auth-handoff[hidden] {
+  display: none;
+}
+
+.auth-handoff-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.auth-handoff-code {
+  margin: 0;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+  user-select: all;
+}
+
+.auth-handoff-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.78;
+}
+
+.auth-handoff-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.auth-handoff-actions .auth-google {
+  flex: 1;
+  min-width: 0;
 }
 
 .auth-divider {

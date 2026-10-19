@@ -9,6 +9,7 @@ hidden planning text, raw Tool arguments/results and server policy/grant state.
 
 from __future__ import annotations
 
+import asyncio
 import json
 
 import pytest
@@ -68,8 +69,12 @@ class Fixture:
         install_status: SkillInstallStatus | None = SkillInstallStatus.ENABLED,
         register_skill: bool = True,
         skill_runtime_tool_id: str = RUNTIME_SEARCH,
+        handler_gate: asyncio.Event | None = None,
     ) -> None:
         self.handler_calls = 0
+        # #4194: distinguishes "Tool never dispatched" from "Tool already
+        # inside its side effect", which the cancel fence must tell apart.
+        self.handler_started = False
         self.provider = NoProviderRuntime()
         self.tool_runtime = ToolRuntime()
 
@@ -90,6 +95,11 @@ class Fixture:
         )
 
         async def handler(arguments: dict) -> dict:
+            # #4194 A tests park the real Tool here to exercise cancel/resume
+            # races without any provider call or artificial wait in the runtime.
+            self.handler_started = True
+            if handler_gate is not None:
+                await handler_gate.wait()
             self.handler_calls += 1
             assert arguments["query"] == PRIVATE_ARGUMENT
             return {

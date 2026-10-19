@@ -1,0 +1,218 @@
+/* #4428 S1 — PADIEM customer home. Reuses the canonical PADIEM Chat/Claw
+   design tokens from styles.css; adds layout only. Never an admin surface. */
+
+.padiem-home-body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text, #19191d);
+  background: var(--bg, #f8f8fb);
+}
+
+.padiem-home-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 10px 14px;
+  background: var(--panel, #fff);
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 8px;
+  z-index: 50;
+}
+.padiem-home-skip:focus { left: 12px; top: 12px; }
+
+.padiem-home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px clamp(16px, 4vw, 40px);
+  background: var(--panel, #fff);
+  border-bottom: 1px solid var(--line, #e3e3e9);
+}
+
+.padiem-home-brand { display: flex; align-items: center; gap: 10px; }
+.padiem-home-brand-mark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--accent, #6557e8);
+  color: #fff;
+  font-weight: 700;
+}
+.padiem-home-brand-name { font-weight: 700; letter-spacing: .06em; }
+
+.padiem-home-account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.padiem-home-account-name {
+  font-size: .86rem;
+  color: var(--muted, #6f7079);
+  max-width: 42vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.padiem-home-account-menu,
+.padiem-home-signout {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: .82rem;
+  border-radius: 10px;
+  border: 1px solid var(--line, #e3e3e9);
+  background: var(--panel, #fff);
+  color: var(--text, #19191d);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.padiem-home-main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 44px) clamp(16px, 4vw, 40px) 56px;
+}
+
+.padiem-home-title { margin: 0 0 6px; font-size: clamp(1.5rem, 4vw, 2rem); }
+.padiem-home-lead {
+  margin: 0 0 18px;
+  color: var(--muted, #6f7079);
+  font-size: .92rem;
+  max-width: 62ch;
+}
+.padiem-home-status { margin: 0 0 14px; font-size: .86rem; color: var(--muted, #6f7079); }
+
+.padiem-home-gate {
+  margin-top: 8px;
+  padding: clamp(18px, 4vw, 28px);
+  background: var(--panel, #fff);
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: var(--radius-md, 16px);
+  box-shadow: var(--shadow, 0 14px 36px rgba(30, 28, 54, .08));
+}
+.padiem-home-gate-title { margin: 0 0 8px; font-size: 1.1rem; }
+.padiem-home-gate-body { margin: 0 0 16px; font-size: .9rem; color: var(--muted, #6f7079); }
+.padiem-home-gate-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: var(--accent, #6557e8);
+  color: #fff;
+  font-weight: 650;
+  font-size: .9rem;
+  text-decoration: none;
+}
+
+.padiem-home-services-title { margin: 4px 0 6px; font-size: 1.05rem; }
+.padiem-home-notice {
+  margin: 0 0 16px;
+  font-size: .82rem;
+  line-height: 1.6;
+  color: var(--muted, #6f7079);
+  max-width: 70ch;
+}
+
+.padiem-home-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+}
+
+.padiem-home-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: var(--panel, #fff);
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: var(--radius-md, 16px);
+  min-width: 0;
+}
+.padiem-home-card-mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--accent-soft, #efedff);
+  color: var(--accent-strong, #5546d6);
+  font-weight: 700;
+}
+.padiem-home-card-name { margin: 0; font-size: .98rem; }
+.padiem-home-card-access {
+  align-self: flex-start;
+  font-size: .74rem;
+  line-height: 1.45;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  color: var(--muted, #6f7079);
+}
+.padiem-home-card-help {
+  margin: 0;
+  font-size: .8rem;
+  line-height: 1.6;
+  color: var(--muted, #6f7079);
+  flex: 1 1 auto;
+}
+.padiem-home-card-foot { display: flex; flex-wrap: wrap; gap: 8px; }
+.padiem-home-card-action,
+.padiem-home-card-noaction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 9px 16px;
+  font-size: .84rem;
+  border-radius: 10px;
+  border: 1px solid var(--line, #e3e3e9);
+  text-decoration: none;
+}
+.padiem-home-card-action {
+  background: var(--accent, #6557e8);
+  border-color: var(--accent, #6557e8);
+  color: #fff;
+  font-weight: 650;
+}
+.padiem-home-card-noaction { color: var(--muted, #6f7079); }
+
+.padiem-home-help {
+  margin-top: 26px;
+  padding: 14px 16px;
+  background: var(--panel, #fff);
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 12px;
+  font-size: .84rem;
+  color: var(--muted, #6f7079);
+}
+.padiem-home-help-summary { cursor: pointer; font-weight: 650; min-height: 24px; }
+.padiem-home-help-body p { margin: 10px 0 0; line-height: 1.7; }
+
+.padiem-home-body :focus-visible {
+  outline: 3px solid rgba(101, 87, 232, .4);
+  outline-offset: 2px;
+}
+.padiem-home-body [hidden] { display: none !important; }
+
+@media (max-width: 580px) {
+  .padiem-home-account-name { max-width: 100%; }
+  .padiem-home-card-action,
+  .padiem-home-card-noaction { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .padiem-home-body * { transition: none !important; animation: none !important; }
+}

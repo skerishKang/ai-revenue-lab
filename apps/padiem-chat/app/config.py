@@ -49,23 +49,61 @@ def _strict_bool(value: object, *, name: str) -> bool:
     raise ConfigError(f"{name} must be true or false")
 
 
+def _optional_secret(value: object, *, name: str, minimum: int = 32) -> str | None:
+    raw = "" if value is None else str(value).strip()
+    if not raw:
+        return None
+    if len(raw) < minimum:
+        raise ConfigError(f"{name} must be at least {minimum} characters when configured")
+    return raw
+
+
+def _secret_list(value: object, *, name: str, minimum: int = 32) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    if isinstance(value, str):
+        candidates = value.split(",")
+    elif isinstance(value, (list, tuple)):
+        candidates = [str(item) for item in value]
+    else:
+        raise ConfigError(f"{name} must be a comma-separated list")
+    result: list[str] = []
+    for candidate in candidates:
+        secret = candidate.strip()
+        if not secret:
+            continue
+        if len(secret) < minimum:
+            raise ConfigError(
+                f"{name} entries must be at least {minimum} characters when configured"
+            )
+        if secret not in result:
+            result.append(secret)
+    return tuple(result)
+
+
 @dataclass(frozen=True)
 class Settings:
     runtime_mode: str = "mock"
     b14_base_url: str | None = None
     b66_quote_base_url: str | None = None
-    timeout_seconds: float = 20.0
-    completed_timeout_seconds: float = 50.0
+    timeout_seconds: float = 600.0
+    completed_timeout_seconds: float = 600.0
     live_enabled: bool = False
     web_provider: str = "off"
     firecrawl_api_key: str | None = field(default=None, repr=False)
     daum_rest_api_key: str | None = field(default=None, repr=False)
+    tinyfish_api_key: str | None = field(default=None, repr=False)
     web_timeout_seconds: float = 15.0
     auth_mode: str = "off"
     public_base_url: str | None = None
     google_client_id: str | None = field(default=None, repr=False)
     google_client_secret: str | None = field(default=None, repr=False)
     session_secret: str | None = field(default=None, repr=False)
+    # #5121: PADIEM Custom credentials use their own encryption secret and key
+    # purpose. The previous/legacy rings exist only for staged migration.
+    custom_key_secret: str | None = field(default=None, repr=False)
+    custom_key_previous_secrets: tuple[str, ...] = field(default=(), repr=False)
+    custom_key_legacy_session_secrets: tuple[str, ...] = field(default=(), repr=False)
     session_max_age_seconds: int = 7 * 24 * 3600
     quota_salt: str | None = field(default=None, repr=False)
     anonymous_burst_limit: int = 4
@@ -79,18 +117,22 @@ class Settings:
         cls,
         runtime_mode: object = "mock",
         b14_base_url: object = None,
-        timeout_seconds: object = 20.0,
-        completed_timeout_seconds: object = 50.0,
+        timeout_seconds: object = 600.0,
+        completed_timeout_seconds: object = 600.0,
         live_enabled: object = False,
         web_provider: object = "off",
         firecrawl_api_key: object = None,
         daum_rest_api_key: object = None,
+        tinyfish_api_key: object = None,
         web_timeout_seconds: object = 15.0,
         auth_mode: object = "off",
         public_base_url: object = None,
         google_client_id: object = None,
         google_client_secret: object = None,
         session_secret: object = None,
+        custom_key_secret: object = None,
+        custom_key_previous_secrets: object = None,
+        custom_key_legacy_session_secrets: object = None,
         session_max_age_seconds: object = 7 * 24 * 3600,
         quota_salt: object = None,
         anonymous_burst_limit: object = 4,
@@ -120,29 +162,38 @@ class Settings:
             timeout = float(timeout_seconds)
         except (TypeError, ValueError) as exc:
             raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be numeric") from exc
-        if not 1 <= timeout <= 60:
-            raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be between 1 and 60")
+        if not 1 <= timeout <= 3600:
+            raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be between 1 and 3600")
 
         try:
             completed_timeout = float(completed_timeout_seconds)
         except (TypeError, ValueError) as exc:
             raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be numeric") from exc
-        if not 1 <= completed_timeout <= 60:
-            raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 60")
+        if not 1 <= completed_timeout <= 3600:
+            raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 3600")
 
         live = _strict_bool(live_enabled, name="PADIEM_CHAT_LIVE_ENABLED")
 
         web = str(web_provider or "off").strip().lower()
-        if web not in {"off", "mock", "firecrawl", "daum"}:
-            raise ConfigError("PADIEM_CHAT_WEB_PROVIDER must be off, mock, firecrawl, or daum")
+        if web not in {"off", "mock", "firecrawl", "daum", "tinyfish", "tinyfish_daum"}:
+            raise ConfigError(
+                "PADIEM_CHAT_WEB_PROVIDER must be off, mock, firecrawl, daum, tinyfish, or tinyfish_daum"
+            )
         raw_firecrawl_key = "" if firecrawl_api_key is None else str(firecrawl_api_key).strip()
         firecrawl_key = raw_firecrawl_key or None
         if web == "firecrawl" and firecrawl_key is None:
             raise ConfigError("FIRECRAWL_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=firecrawl")
         raw_daum_key = "" if daum_rest_api_key is None else str(daum_rest_api_key).strip()
         daum_key = raw_daum_key or None
-        if web == "daum" and daum_key is None:
+        if web in {"daum", "tinyfish_daum"} and daum_key is None:
             raise ConfigError("PADIEM_CHAT_DAUM_REST_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=daum")
+        # #3385: TinyFish-first / Daum-after-quota is explicitly Owner-approved.
+        # Both credentials are required; missing binding is never a reason to
+        # silently switch provider or treat a failed production search as off.
+        raw_tinyfish_key = "" if tinyfish_api_key is None else str(tinyfish_api_key).strip()
+        tinyfish_key = raw_tinyfish_key or None
+        if web in {"tinyfish", "tinyfish_daum"} and tinyfish_key is None:
+            raise ConfigError("TINYFISH_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=tinyfish")
 
         try:
             web_timeout = float(web_timeout_seconds)
@@ -159,6 +210,17 @@ class Settings:
         client_id = str(google_client_id or "").strip() or None
         client_secret = str(google_client_secret or "").strip() or None
         secret = str(session_secret or "").strip() or None
+        custom_key = _optional_secret(
+            custom_key_secret, name="PADIEM_CHAT_CUSTOM_KEY_SECRET"
+        )
+        previous_custom_keys = _secret_list(
+            custom_key_previous_secrets,
+            name="PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS",
+        )
+        legacy_custom_keys = _secret_list(
+            custom_key_legacy_session_secrets,
+            name="PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS",
+        )
         try:
             max_age = int(session_max_age_seconds)
         except (TypeError, ValueError) as exc:
@@ -213,12 +275,16 @@ class Settings:
             web_provider=web,
             firecrawl_api_key=firecrawl_key,
             daum_rest_api_key=daum_key,
+            tinyfish_api_key=tinyfish_key,
             web_timeout_seconds=web_timeout,
             auth_mode=auth,
             public_base_url=public,
             google_client_id=client_id,
             google_client_secret=client_secret,
             session_secret=secret,
+            custom_key_secret=custom_key,
+            custom_key_previous_secrets=previous_custom_keys,
+            custom_key_legacy_session_secrets=legacy_custom_keys,
             session_max_age_seconds=max_age,
             quota_salt=normalized_quota_salt,
             anonymous_burst_limit=anon_burst,
@@ -230,22 +296,42 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> "Settings":
+        runtime_mode = os.getenv("PADIEM_CHAT_RUNTIME_MODE", "mock")
+        # A real B14 session defaults to the Owner's two-provider search policy.
+        # An explicitly configured provider (including "off") wins; mock and
+        # offline default to off, preserving zero-network development runs.
+        configured_provider = os.getenv("PADIEM_CHAT_WEB_PROVIDER")
+        live_enabled = os.getenv("PADIEM_CHAT_LIVE_ENABLED", "false")
+        default_provider = (
+            "tinyfish_daum"
+            if runtime_mode.strip().lower() == "b14"
+            and live_enabled.strip().lower() == "true"
+            else "off"
+        )
         return cls.from_values(
-            runtime_mode=os.getenv("PADIEM_CHAT_RUNTIME_MODE", "mock"),
+            runtime_mode=runtime_mode,
             b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
             b66_quote_base_url=os.getenv("PADIEM_CHAT_B66_QUOTE_BASE_URL"),
-            timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "20"),
-            completed_timeout_seconds=os.getenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", "50"),
+            timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "600"),
+            completed_timeout_seconds=os.getenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", "600"),
             live_enabled=os.getenv("PADIEM_CHAT_LIVE_ENABLED", "false"),
-            web_provider=os.getenv("PADIEM_CHAT_WEB_PROVIDER", "off"),
+            web_provider=(default_provider if configured_provider is None else configured_provider),
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY"),
             daum_rest_api_key=os.getenv("PADIEM_CHAT_DAUM_REST_API_KEY"),
+            tinyfish_api_key=os.getenv("TINYFISH_API_KEY"),
             web_timeout_seconds=os.getenv("PADIEM_CHAT_WEB_TIMEOUT_SECONDS", "15"),
             auth_mode=os.getenv("PADIEM_CHAT_AUTH_MODE", "off"),
             public_base_url=os.getenv("PADIEM_CHAT_PUBLIC_BASE_URL"),
             google_client_id=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_ID"),
             google_client_secret=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
             session_secret=os.getenv("PADIEM_CHAT_SESSION_SECRET"),
+            custom_key_secret=os.getenv("PADIEM_CHAT_CUSTOM_KEY_SECRET"),
+            custom_key_previous_secrets=os.getenv(
+                "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS"
+            ),
+            custom_key_legacy_session_secrets=os.getenv(
+                "PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS"
+            ),
             session_max_age_seconds=os.getenv("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS", str(7 * 24 * 3600)),
             quota_salt=os.getenv("PADIEM_CHAT_QUOTA_SALT"),
             anonymous_burst_limit=os.getenv("PADIEM_CHAT_ANONYMOUS_BURST_LIMIT", "4"),

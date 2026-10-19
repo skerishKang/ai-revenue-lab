@@ -70,7 +70,7 @@ def _unique_tuple(name: str, values: tuple[str, ...], *, maximum: int) -> tuple[
 class SkillExecutionBudget:
     max_steps: int = 8
     max_tool_calls: int = 8
-    max_wall_seconds: int = 120
+    max_wall_seconds: int = 900  # skills share the supervised agent run budget
 
     def __post_init__(self) -> None:
         limits = {

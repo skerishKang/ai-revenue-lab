@@ -1,0 +1,112 @@
+name: B66 Admin Membership D1 037 Gate
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b66-admin-d1-migration-037-gate.yml"
+      - ".github/scripts/b66_admin_d1_037_gate.py"
+      - "apps/padiem-chat/migrations/037_b66_admin_memberships.sql"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "readonly or apply"
+        type: choice
+        required: true
+        options: [readonly, apply]
+      target_sha:
+        description: "Exact current main SHA"
+        type: string
+        required: true
+      confirmation:
+        description: "Apply requires APPLY_B66_ADMIN_037_PADIEM_D1_ONCE"
+        type: string
+        required: false
+permissions:
+  contents: read
+concurrency:
+  group: b66-admin-d1-037
+  cancel-in-progress: false
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.target_sha }}
+          persist-credentials: false
+      - name: Verify migration locally without mutations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile .github/scripts/b66_admin_d1_037_gate.py
+          python - <<'PY'
+          import sqlite3
+          from pathlib import Path
+          db=sqlite3.connect(':memory:')
+          db.executescript("""
+          CREATE TABLE users (id TEXT PRIMARY KEY, email TEXT, display_name TEXT,
+             auth_provider TEXT, provider_subject TEXT, created_at TEXT, updated_at TEXT);
+          CREATE TABLE password_credentials(user_id TEXT PRIMARY KEY);
+          INSERT INTO users VALUES ('usr_legacy','old@example.test','Old','google','s','2026-10-01','2026-10-01');
+          """)
+          db.executescript(Path('apps/padiem-chat/migrations/037_b66_admin_memberships.sql').read_text())
+          assert db.execute("SELECT status,tier FROM b66_memberships WHERE user_id='usr_legacy'").fetchone()==('approved','FREE')
+          db.execute("INSERT INTO users VALUES ('usr_new','new@example.test','New','google','n','2026-10-11','2026-10-11')")
+          assert db.execute("SELECT status,tier FROM b66_memberships WHERE user_id='usr_new'").fetchone()==('pending','FREE')
+          assert db.execute("SELECT count(*) FROM b66_signup_alert_outbox").fetchone()[0]==1
+          assert db.execute("SELECT active FROM b66_model_access_policy").fetchone()[0]==0
+          print('B66_037_LOCAL_SCHEMA=PASS')
+          print('PRODUCTION_MUTATION=0')
+          PY
+  readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'readonly' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TARGET_SHA: ${{ inputs.target_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - name: Verify exact main for read-only inspection
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = 'refs/heads/main'
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+      - name: Padiem live D1 schema read-only
+        run: python .github/scripts/b66_admin_d1_037_gate.py readonly
+  apply:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TARGET_SHA: ${{ inputs.target_sha }}
+      B66_037_CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - name: Reconfirm exact main and D1 schema authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = 'refs/heads/main'
+          test "${B66_037_CONFIRMATION}" = 'APPLY_B66_ADMIN_037_PADIEM_D1_ONCE'
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'B66_037_EXACT_MAIN_AUTHORITY=PASS'
+      - name: Obtain D1 Time Travel recovery bookmark then apply schema
+        run: python .github/scripts/b66_admin_d1_037_gate.py apply

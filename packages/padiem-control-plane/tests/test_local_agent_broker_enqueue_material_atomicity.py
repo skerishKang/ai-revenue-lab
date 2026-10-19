@@ -757,6 +757,18 @@ def test_product_gateway_exposes_no_split_write_surface() -> None:
     assert not hasattr(Default, "enqueue_command")
     assert not hasattr(Default, "store_command_material")
 
+    # The B54 canonical completion path needs this full private native RPC set.
+    # Missing one method makes Worker Service Binding composition fail closed.
+    for method in (
+        "reserve_native_pc_gateway",
+        "authenticate_native_pc_gateway",
+        "transfer_native_pc_credential_once",
+        "receive_native_pc_install_ack",
+        "authenticate_native_pc_install_ack",
+        "complete_native_pc_enrollment",
+    ):
+        assert callable(getattr(Default, method, None)), method
+
     # Present on the object, so the absence on the gateway is a boundary and
     # not a capability that was never implemented.
     assert hasattr(LocalAgentBrokerDurableObject, "enqueue_command")

@@ -67,7 +67,7 @@ def test_document_dependencies_are_owned_by_core_optional_extra() -> None:
     assert '"pypdf' not in b62_project
     assert '"openpyxl' not in b62_project
     assert "documents = [" in core_project
-    assert '"pypdf>=6.16.2,<7"' in core_project
+    assert '"pypdf>=6.19.0,<6.20"' in core_project
     assert '"openpyxl>=3.1,<4"' in core_project
 
 

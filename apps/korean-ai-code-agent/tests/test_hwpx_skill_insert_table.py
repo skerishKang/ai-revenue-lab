@@ -207,18 +207,31 @@ class HwpxInsertTableSuccessTests(unittest.TestCase):
             (("한",), ("둘",), ("셋",)),
             (("한", "둘"), ("셋", "넷"), ("다섯", "여섯")),
         )
-        for rows in cases:
+        source = _content(_section(_paragraph_block("본문")))
+        source_bytes = serialize_hwpx_package(source)
+        for index, rows in enumerate(cases):
             with self.subTest(rows=rows):
-                result = hwpx_insert_table(
-                    "doc.hwpx",
-                    _payload(_section(_paragraph_block("본문"))),
-                    _request(0, 0, rows),
-                )
-                self.assertEqual(result.receipt.status, STATUS_OK)
-                self.assertEqual(result.receipt.inserted_row_count, len(rows))
-                self.assertEqual(result.receipt.inserted_column_count, len(rows[0]))
-                decoded = deserialize_hwpx_package(result.artifact.payload)
+                request = _request(0, 0, rows)
+                if index == 0:
+                    # Keep the real gate + isolated validate/read + public
+                    # receipt boundary in this matrix's representative case.
+                    result = hwpx_insert_table("doc.hwpx", source_bytes, request)
+                    self.assertEqual(result.receipt.status, STATUS_OK)
+                    self.assertEqual(result.receipt.inserted_row_count, len(rows))
+                    self.assertEqual(result.receipt.inserted_column_count, len(rows[0]))
+                    output = result.artifact.payload
+                else:
+                    # Remaining shapes exercise the exact production model
+                    # insertion and real Core HWPX serialization/decoding;
+                    # only redundant child-parser round trips are omitted.
+                    intended, inserted = hwpx_skill._insert_table_model(source, request)
+                    self.assertEqual(inserted, _table(rows))
+                    output = serialize_hwpx_package(intended)
+                decoded = deserialize_hwpx_package(output)
+                self.assertEqual(len(decoded.sections[0].blocks[0].table.rows), len(rows))
+                self.assertEqual(len(decoded.sections[0].blocks[0].table.rows[0]), len(rows[0]))
                 self.assertEqual(decoded.sections[0].blocks[0].table, _table(rows))
+                self.assertEqual(decoded.sections[0].blocks[1].text, "본문")
 
     def test_korean_latin_numeric_and_empty_cells_round_trip(self) -> None:
         rows = (("한글", "Latin", "123", ""),)
@@ -234,18 +247,29 @@ class HwpxInsertTableSuccessTests(unittest.TestCase):
         )
 
     def test_insert_before_between_and_after_paragraphs(self) -> None:
-        source = _section(
+        source = _content(_section(
             _paragraph_block("first"),
             _paragraph_block("middle"),
             _paragraph_block("last"),
-        )
+        ))
+        source_bytes = serialize_hwpx_package(source)
         for block_index in (0, 2, 3):
             with self.subTest(block_index=block_index):
-                result = hwpx_insert_table(
-                    "doc.hwpx", _payload(source), _request(0, block_index)
-                )
-                self.assertEqual(result.receipt.status, STATUS_OK)
-                decoded = deserialize_hwpx_package(result.artifact.payload)
+                request = _request(0, block_index)
+                if block_index == 0:
+                    # Preserve real facade admission, child-parser readback
+                    # and receipt validation for the first insertion address.
+                    result = hwpx_insert_table("doc.hwpx", source_bytes, request)
+                    self.assertEqual(result.receipt.status, STATUS_OK)
+                    output = result.artifact.payload
+                else:
+                    # Keep a real serializer/decoder round trip for each
+                    # remaining insertion address, without re-launching
+                    # isolated parsers that are verified by the facade case.
+                    intended, inserted = hwpx_skill._insert_table_model(source, request)
+                    self.assertEqual(inserted, _table((("cell",),)))
+                    output = serialize_hwpx_package(intended)
+                decoded = deserialize_hwpx_package(output)
                 self.assertEqual(
                     [block.kind for block in decoded.sections[0].blocks],
                     ["table", "paragraph", "paragraph", "paragraph"]
@@ -253,6 +277,11 @@ class HwpxInsertTableSuccessTests(unittest.TestCase):
                     else ["paragraph", "paragraph", "table", "paragraph"]
                     if block_index == 2
                     else ["paragraph", "paragraph", "paragraph", "table"],
+                )
+                self.assertEqual(decoded.sections[0].blocks[block_index].table, _table((("cell",),)))
+                self.assertEqual(
+                    tuple(block.text for block in decoded.sections[0].blocks if block.kind == "paragraph"),
+                    ("first", "middle", "last"),
                 )
 
     def test_existing_tables_and_inserted_table_keep_exact_order(self) -> None:

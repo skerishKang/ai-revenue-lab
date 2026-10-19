@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 STATIC = ROOT / "apps" / "padiem-chat" / "static"
 QA = ROOT / ".github" / "scripts" / "b62_post_certification_browser_qa.py"
-WORKFLOW = ROOT / ".github" / "workflows" / "b62-browser-visual-qa.yml"
+WORKFLOW = ROOT / ".github" / "workflows" / "b62-browser-qa-unified.yml"
 
 
 def test_long_answer_browser_qa_proves_no_client_truncation_contract() -> None:
@@ -25,8 +25,14 @@ def test_long_answer_browser_qa_covers_rich_response_and_workspace_geometry() ->
         ".rich-code-block",
         'locator("table")',
         ".rich-response-heading",
-        "conversation_box[\"width\"] < 1000",
-        "conversation/composer width drift",
+        # #4783 (edbbe75811e) replaced the fixed lane with a rail-aware clamp:
+        # the composer is a deliberate inner inset of the reading lane, so the
+        # pre-#4783 "width < 1000" / "width drift" markers were unreachable and
+        # were replaced by the measured invariants below.
+        'abs(conversation_box["width"] - 988) > 1',
+        "composer is not the designed inner inset of the lane",
+        "conversation/composer left gutter is not the designed inset",
+        "composer right inset left the designed frame",
         "wide rich surface did not exceed prose measure",
         "horizontal overflow",
     ):
@@ -46,13 +52,12 @@ def test_multiline_composer_and_visual_viewport_contract_is_bounded() -> None:
     assert "bottom: var(--padiem-visual-keyboard-inset, 0px) !important" in css
 
 
-def test_large_desktop_glass_lane_is_content_first_but_prose_stays_bounded() -> None:
+def test_large_desktop_glass_lane_does_not_jump_on_first_message() -> None:
     css = (STATIC / "padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
     assert "--padiem-chat-reading-measure: 76ch" in css
-    assert "@media (min-width: 1440px)" in css
-    assert "--padiem-chat-lane-offset: clamp(36px, 3vw, 56px)" in css
-    assert "1080px" in css
-    assert "clamp(300px, 24vw, 430px)" in css
+    assert "FIRST SCREEN = ACTIVE CHAT FRAME" in css
+    assert "--padiem-chat-lane-offset:" not in css
+    assert "--padiem-chat-lane-width:" not in css
     assert ".rich-response-paragraph" in css
     assert "max-inline-size: min(var(--padiem-chat-reading-measure), 100%)" in css
 

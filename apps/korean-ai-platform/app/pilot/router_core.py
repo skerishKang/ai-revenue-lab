@@ -21,11 +21,6 @@ Automatic (D14, #2044):
     malformed request, malformed upstream response, missing key,
     unsupported feature, oversize response, unknown exceptions
 
-Legacy scorer options (kept for the resolve_auto_route library only):
-  - allow_external_fallback=False → no fallback candidates, one attempt
-  - provider_order → deterministic provider priority in candidate sorting
-  - task_type → hard capability filter (+ korean scoring boost)
-
 Resolve endpoint does NOT make upstream calls.
 """
 
@@ -36,17 +31,12 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
-from app.pilot.capability_routing import filter_capability_eligible_models
 from app.pilot.catalog import (
-    CatalogModel,
-    TASK_TYPE_REQUIRED_CAPABILITIES,
     get_catalog_by_id,
     get_catalog_models,
-    filter_catalog as _filter_catalog,
-    is_evidenced_free,
-    select_by_optimize,
 )
 from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.errors import NoSafeRoute, RoutingError
 
 
@@ -169,18 +159,27 @@ def _platform_secret_present(cm) -> bool:
 def resolve_manual_route(
     model_id: str,
     allow_external_fallback: bool = False,
+    product_tier: str = "free",
 ) -> RouteDecision:
     """Resolve a manual route for a specific model ID.
 
     Returns a RouteDecision. Does NOT make upstream calls.
     Raises NoSafeRoute if the model is not in the catalog or is disabled.
 
-    Manual routes default to ``allow_external_fallback=False``: no fallback
-    candidates, ``fallback_allowed=False``, ``max_attempts=1``.  Only when the
-    caller explicitly passes ``allow_external_fallback=True`` are fallback
-    candidates populated (subject to error-allow-list in the gateway).
+    Manual routes default to no arbitrary catalog substitutions. An owner-
+    selected primary with trusted product grade instead receives
+    exactly one preselected grade fallback on recoverable provider failure.
+    The generic allow_external_fallback flag does not disable this fixed pair.
     """
     request_id = _new_request_id()
+    # Owner exclusions override historical B14 registration in live mode.
+    # Preserve mock fixture compatibility; this never authorizes a model.
+    if runtime_config.is_live and excluded_from_owner_customer_selection(model_id):
+        raise NoSafeRoute(
+            reason_code="owner_model_excluded",
+            message="OWNER가 제외한 모델은 실행할 수 없습니다.",
+            upstream_called=False,
+        )
     cm = get_catalog_by_id(model_id)
 
     if cm is None:
@@ -197,20 +196,50 @@ def resolve_manual_route(
             upstream_called=False,
         )
 
+    # Free-only TokenHarbor routes may never fall back to another provider's
+    # paid model, even when a client requests external fallback.
+    if cm.platform_provider_id == "tokenharbor" and allow_external_fallback:
+        raise NoSafeRoute(
+            reason_code="tokenharbor_free_only_fallback_disabled",
+            message="TokenHarbor free-only routes do not allow external fallback.",
+            upstream_called=False,
+        )
+
     cred_ok, cred_status, cred_source, plat_pid = _credential_status_for(cm)
 
     # Platform-owned secret missing -> fail closed with zero upstream calls.
     if cred_source == "platform_secret" and not cred_ok:
+        from app.pilot import platform_secrets as ps
+
         raise NoSafeRoute(
             reason_code="provider_secret_missing",
             message=f"모델 '{model_id}'의 Provider 비밀키가 설정되지 않았습니다.",
             upstream_called=False,
+            credential_reason=ps.credential_failure_reason(
+                ps.get_platform_provider(plat_pid)
+            ),
         )
 
     route_id = f"platform:{cm.model_id}"
 
+    owner_tier_pair = model_id == "opencode-go/beam-free"
     fallback_candidates: list[dict[str, str]] = []
-    if allow_external_fallback:
+    if owner_tier_pair:
+        from .tier_fallback import TIER_FALLBACK_B14_MODELS
+        if product_tier not in TIER_FALLBACK_B14_MODELS:
+            raise NoSafeRoute(reason_code="invalid_product_tier", message="Unsupported product tier.", upstream_called=False)
+        for candidate_id in TIER_FALLBACK_B14_MODELS[product_tier]:
+            target = get_catalog_by_id(candidate_id)
+            if target is not None and target.enabled and not excluded_from_owner_customer_selection(target.model_id) and _platform_secret_present(target):
+                fallback_candidates.append({
+                    "model_id": target.model_id,
+                    "upstream_model": target.upstream_model,
+                    "provider": target.provider,
+                    "platform_provider_id": target.platform_provider_id,
+                    "route_id": f"platform:{target.model_id}",
+                    "reason": "owner_selected_tier_fallback",
+                })
+    elif allow_external_fallback:
         all_models = get_catalog_models()
         fallback_candidates = [
             {
@@ -218,14 +247,19 @@ def resolve_manual_route(
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
                 "route_id": f"platform:{m.model_id}",
+                "platform_provider_id": m.platform_provider_id,
                 "reason": "catalog_alternative",
             }
             for m in all_models
             if m.model_id != model_id
+            and not excluded_from_owner_customer_selection(m.model_id)
+            and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
         ][:3]  # limit to top 3 fallback candidates
 
     reason_codes = ["manual_selection"]
-    if not allow_external_fallback:
+    if owner_tier_pair:
+        reason_codes.append("owner_selected_tier_fallback:" + product_tier)
+    elif not allow_external_fallback:
         reason_codes.append("external_fallback_disabled")
 
     return RouteDecision(
@@ -235,7 +269,7 @@ def resolve_manual_route(
         selected_upstream_model=cm.upstream_model,
         selected_route_id=route_id,
         reason_codes=reason_codes,
-        fallback_allowed=allow_external_fallback,
+        fallback_allowed=bool(fallback_candidates) if owner_tier_pair else allow_external_fallback,
         eligible_fallback=fallback_candidates,
         excluded_candidates=[],
         credential_available=cred_ok,
@@ -243,194 +277,12 @@ def resolve_manual_route(
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
         provider_mode=runtime_config.provider_mode,
-        max_attempts=1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3),
+        max_attempts=(1 + len(fallback_candidates)) if owner_tier_pair else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3)),
         credential_source=cred_source,
         platform_provider_id=plat_pid,
     )
 
 
-def resolve_auto_route(
-    task_type: str = "general",
-    required_capabilities: list[str] | None = None,
-    optimize_for: str = "balanced",
-    allow_external_fallback: bool = True,
-    provider_order: list[str] | None = None,
-    max_attempts: int | None = None,
-    allow_paid: bool = False,
-) -> RouteDecision:
-    """Resolve an automatic route for b14/auto.
-
-    NOTE (D14, #2044): the live ``b14/auto`` lane no longer calls this
-    scorer; it resolves through ``app.pilot.routing_policy`` (fixed_chain_v1).
-    This function is retained as the deterministic scorer library surface
-    (capability filtering and optimize_for ranking) and is exercised directly
-    by scorer unit tests only.
-
-    Uses canonical capability evidence to deterministically select the best model.
-    Does NOT make upstream calls.
-
-    Hard constraints (applied first):
-    - Model must be enabled
-    - plan/catalog tags such as ``free`` remain hard eligibility filters
-    - execution capabilities are evaluated through canonical capability evidence
-    - task_type requirements compose with explicit capability requirements
-    - UNKNOWN and UNSUPPORTED canonical capability evidence are both ineligible
-    - By default (allow_paid=False), only evidenced-free models are eligible
-
-    Preferences (applied second, all enforced):
-    - provider_order: listed providers win in the given order
-    - optimize_for: balanced | cost | latency | korean
-    - task_type "korean": korean_score becomes the leading scoring key
-
-    allow_external_fallback=False is enforced: no fallback candidates and
-    exactly one attempt.
-
-    Returns RouteDecision. Raises NoSafeRoute if no candidate is found.
-    """
-    request_id = _new_request_id()
-
-    # Compatibility hook only: calling the legacy filter with no requirements
-    # returns the enabled catalog without allowing free-form tag subsets to act
-    # as capability authority. Existing tests may monkeypatch this source hook.
-    source_candidates = _filter_catalog(
-        required_capabilities=None,
-        task_type=None,
-    )
-
-    requested = list(required_capabilities or [])
-    plan_tags = [value for value in requested if value == "free"]
-    execution_requirements = [value for value in requested if value != "free"]
-
-    if plan_tags:
-        source_candidates = [
-            model
-            for model in source_candidates
-            if all(tag in model.capabilities for tag in plan_tags)
-        ]
-
-    task_requirements = sorted(TASK_TYPE_REQUIRED_CAPABILITIES.get(task_type, frozenset()))
-    try:
-        canonical_candidates = filter_capability_eligible_models(
-            source_candidates,
-            execution_requirements,
-        )
-        canonical_candidates = filter_capability_eligible_models(
-            canonical_candidates,
-            task_requirements,
-        )
-    except ValueError as exc:
-        raise NoSafeRoute(
-            reason_code="invalid_capability_requirement",
-            message="지원하지 않는 capability 요구사항이 포함되어 있습니다.",
-            upstream_called=False,
-        ) from exc
-
-    excluded: list[dict[str, str]] = []
-    secret_missing_ids: set[str] = set()
-
-    all_models = get_catalog_models()
-    candidates = []
-    for m in all_models:
-        if m in canonical_candidates:
-            if m.credential_source == "platform_secret" and not _platform_secret_present(m):
-                secret_missing_ids.add(m.model_id)
-                continue
-            if not allow_paid and not is_evidenced_free(m):
-                # An explicit provider_order opts in to the specified providers.
-                # Platform-owned models with secret present (like Agnes) can be in the fallback pool.
-                is_explicit_provider = bool(provider_order and m.provider in provider_order)
-                is_platform_secret_eligible = bool(m.credential_source == "platform_secret")
-                if not (is_explicit_provider or is_platform_secret_eligible):
-                    excluded.append({
-                        "model_id": m.model_id,
-                        "upstream_model": m.upstream_model,
-                        "provider": m.provider,
-                        "reason": "paid_or_unknown_price_not_allowed",
-                    })
-                    continue
-            candidates.append(m)
-        else:
-            excluded.append({
-                "model_id": m.model_id,
-                "upstream_model": m.upstream_model,
-                "provider": m.provider,
-                "reason": "capability_mismatch",
-            })
-    for m in all_models:
-        if m.model_id in secret_missing_ids:
-            excluded.append({
-                "model_id": m.model_id,
-                "upstream_model": m.upstream_model,
-                "provider": m.provider,
-                "reason": "provider_secret_missing",
-            })
-
-    if not candidates:
-        raise NoSafeRoute(
-            reason_code="no_candidate_meets_capabilities",
-            message="요구사항을 충족하는 모델이 없습니다. required_capabilities 또는 optimize_for를 확인하십시오.",
-            upstream_called=False,
-        )
-
-    sorted_candidates = select_by_optimize(
-        candidates,
-        optimize_for,
-        allow_external_fallback,
-        provider_order=provider_order,
-        task_type=task_type,
-    )
-    selected = sorted_candidates[0]
-    cred_ok, cred_status, cred_source, plat_pid = _credential_status_for(selected)
-    route_id = f"platform:{selected.model_id}"
-
-    if allow_external_fallback:
-        fallback_candidates = [
-            {
-                "model_id": m.model_id,
-                "upstream_model": m.upstream_model,
-                "provider": m.provider,
-                "route_id": f"platform:{m.model_id}",
-                "reason": "auto_fallback_candidate",
-            }
-            for m in sorted_candidates[1:]
-        ]
-        effective_max_attempts = max_attempts or min(len(sorted_candidates), 3)
-    else:
-        fallback_candidates = []
-        effective_max_attempts = 1
-
-    reason_codes = [
-        f"optimize_for:{optimize_for}",
-        f"task_type:{task_type}",
-        "free_first:opt_in" if allow_paid else "free_first:default",
-    ]
-    if required_capabilities:
-        reason_codes.append(f"capabilities:{','.join(required_capabilities)}")
-    if provider_order:
-        reason_codes.append(f"provider_order:{','.join(provider_order)}")
-    if not allow_external_fallback:
-        reason_codes.append("external_fallback_disabled")
-    reason_codes.append(f"selected:{selected.model_id}")
-
-    return RouteDecision(
-        route_mode=RouteMode.AUTO.value,
-        selected_provider=selected.provider,
-        selected_model=selected.model_id,
-        selected_upstream_model=selected.upstream_model,
-        selected_route_id=route_id,
-        reason_codes=reason_codes,
-        fallback_allowed=allow_external_fallback,
-        eligible_fallback=fallback_candidates,
-        excluded_candidates=excluded,
-        credential_available=cred_ok,
-        credential_status=cred_status,
-        evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
-        request_id=request_id,
-        provider_mode=runtime_config.provider_mode,
-        max_attempts=effective_max_attempts,
-        credential_source=cred_source,
-        platform_provider_id=plat_pid,
-    )
 
 
 def resolve_route(model_id: str, business14_options: dict[str, Any] | None = None) -> RouteDecision:
@@ -460,6 +312,7 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
     return resolve_manual_route(
         model_id,
         allow_external_fallback=allow_external_fallback,
+        product_tier=opts.get("product_tier", "free"),
     )
 
 

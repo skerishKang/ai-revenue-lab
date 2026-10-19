@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+import re
 from typing import Any
 
 from padiem_ai_core.execution_context import ExecutionContext
@@ -21,15 +22,25 @@ from app.agent_skill_authority import (
     TrustedAgentSkillSelection,
 )
 from app.execution_context_wire import parse_execution_context
-from app.orchestration_wire import _parse_agent_plan
+from app.orchestration_wire import _parse_agent_plan, _parse_cancel_reason
 from app.service import ServiceContractError
 from app.tool_projection import MAX_WIRE_TOOL_ARGUMENTS_BYTES, EngineToolProjectionError, json_size
 
 AGENT_SKILL_RUN_PATH = "/internal/v1/agent-skill/run"
 AGENT_SKILL_RESUME_PATH = "/internal/v1/agent-skill/resume"
 AGENT_SKILL_CANCEL_PATH = "/internal/v1/agent-skill/cancel"
+# #4194: owner-scoped control of an already-issued run (never an approval or
+# authority surface). Same authenticated internal caller boundary as run/resume.
+AGENT_SKILL_RUN_STATUS_PATH = "/internal/v1/agent-skill/run-status"
+AGENT_SKILL_RUN_CANCEL_PATH = "/internal/v1/agent-skill/run-cancel"
+AGENT_SKILL_RUN_RECOVERY_PATH = "/internal/v1/agent-skill/run-recovery"
 
 _SAFE_ID_CHARS = frozenset("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:-")
+_AGENT_RUN_ID_RE = re.compile(r"arun_[0-9a-f]{32}\Z")
+# Same canonical Agent identity contract the trusted Tool projection enforces.
+_CANONICAL_AGENT_ID_RE = re.compile(
+    r"agent:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*\Z"
+)
 
 TRUSTED_AGENT_SKILL_REQUIRED = frozenset({"app_id", "agent_id", "messages"})
 TRUSTED_AGENT_SKILL_ALLOWED = TRUSTED_AGENT_SKILL_REQUIRED | frozenset(
@@ -174,6 +185,125 @@ def execution_request_with_trace(
         session_id=request.session_id,
         additional_system_context=request.additional_system_context,
         trace_id=trace_id,
+    )
+
+
+AGENT_RUN_CONTROL_REQUIRED = frozenset({"app_id", "agent_id", "run_id"})
+AGENT_RUN_CONTROL_ALLOWED = AGENT_RUN_CONTROL_REQUIRED | frozenset({"reason"})
+AGENT_RUN_RECOVERY_REQUIRED = frozenset({"app_id", "agent_id"})
+AGENT_RUN_RECOVERY_ALLOWED = AGENT_RUN_RECOVERY_REQUIRED | frozenset({"dry_run"})
+
+
+@dataclass(frozen=True, slots=True)
+class TrustedAgentRunControlTarget:
+    """Caller may only name an already-issued run; never owner/workspace/plan."""
+
+    app_id: str
+    agent_id: str
+    run_id: str
+    reason: str = "user_cancelled"
+
+
+@dataclass(frozen=True, slots=True)
+class TrustedAgentRunRecoveryRequest:
+    app_id: str
+    agent_id: str
+    dry_run: bool = False
+
+
+def _customer_app_id(value: Any, *, binding: EngineAgentSkillBinding) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ServiceContractError("invalid_request", "app_id must be a non-empty string.")
+    app_id = value.strip()
+    if binding.app_id != app_id:
+        raise EngineAgentSkillAuthorityError(
+            "agent_skill_binding_unavailable",
+            "Trusted Agent/Skill authority does not match this application.",
+            status_code=503,
+        )
+    return app_id
+
+
+def _customer_agent_id(value: Any) -> str:
+    """Caller may only name a canonical Agent identity; authority is resolved."""
+    if not isinstance(value, str) or not _CANONICAL_AGENT_ID_RE.fullmatch(value):
+        raise ServiceContractError(
+            "invalid_agent_selection",
+            "agent_id must be a bounded canonical Agent identity.",
+        )
+    return value
+
+
+def _server_run_id(value: Any) -> str:
+    if not isinstance(value, str) or not _AGENT_RUN_ID_RE.fullmatch(value):
+        raise ServiceContractError(
+            "invalid_agent_run_id",
+            "run_id must be a server-issued Agent run identity.",
+        )
+    return value
+
+
+def _exact_run_control_mapping(
+    payload: Any, *, allowed: frozenset[str], required: frozenset[str],
+) -> dict[str, Any]:
+    if not isinstance(payload, Mapping):
+        raise ServiceContractError("invalid_request", "Request body must be an object.")
+    data = dict(payload)
+    if set(data) & AUTHORITY_SHAPED_KEYS:
+        raise ServiceContractError(
+            "caller_agent_authority_not_allowed",
+            "Caller input may name an issued run but cannot supply runtime authority.",
+        )
+    if set(data) - allowed:
+        raise ServiceContractError(
+            "invalid_request",
+            "Trusted Agent run control contains unsupported fields.",
+        )
+    if required - set(data):
+        raise ServiceContractError(
+            "invalid_request",
+            "Trusted Agent run control is missing required fields.",
+        )
+    return data
+
+
+def build_trusted_agent_run_control(
+    payload: Any,
+    *,
+    binding: EngineAgentSkillBinding,
+) -> TrustedAgentRunControlTarget:
+    """Parse an owner-scoped status/cancel target for one issued run.
+
+    The caller supplies only server-issued identifiers; the owner scope is
+    resolved from the trusted binding by the service, never from this payload.
+    """
+    data = _exact_run_control_mapping(
+        payload, allowed=AGENT_RUN_CONTROL_ALLOWED, required=AGENT_RUN_CONTROL_REQUIRED,
+    )
+    return TrustedAgentRunControlTarget(
+        app_id=_customer_app_id(data.get("app_id"), binding=binding),
+        agent_id=_customer_agent_id(data.get("agent_id")),
+        run_id=_server_run_id(data.get("run_id")),
+        reason=_parse_cancel_reason(data.get("reason", "user_cancelled")),
+    )
+
+
+def build_trusted_agent_run_recovery(
+    payload: Any,
+    *,
+    binding: EngineAgentSkillBinding,
+) -> TrustedAgentRunRecoveryRequest:
+    """Parse the expired-lease recovery request; a preview is explicit."""
+    data = _exact_run_control_mapping(
+        payload, allowed=AGENT_RUN_RECOVERY_ALLOWED, required=AGENT_RUN_RECOVERY_REQUIRED,
+    )
+    dry_run = data.get("dry_run", False)
+    if type(dry_run) is not bool:
+        raise ServiceContractError("invalid_request", "dry_run must be a boolean.")
+    return TrustedAgentRunRecoveryRequest(
+        app_id=_customer_app_id(data.get("app_id"), binding=binding),
+        agent_id=_customer_agent_id(data.get("agent_id")),
+        dry_run=dry_run,
     )
 
 

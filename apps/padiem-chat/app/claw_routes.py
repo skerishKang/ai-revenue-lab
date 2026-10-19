@@ -70,13 +70,11 @@ import uuid
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from padiem_control_plane.product_tier_routes import (
-    ProductTierLabel,
-    ProductTierRoutesError,
-    active_route_for,
-)
+from .member_grade_access import selected_grade_denial
+from padiem_control_plane.product_tier_routes import ProductTierLabel
 
 from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .control_plane_identity_shadow import (
     IdentityShadowRecord,
     IdentityShadowStore,
@@ -89,6 +87,7 @@ from .history import (
     MAX_CLAW_RUNS,
     MAX_RUN_RESULT_SUMMARY_CHARS,
     HistoryStore,
+    PRODUCT_SCOPE_CHAT,
     validate_conversation_id,
 )
 from .usage_gate import UsageGate
@@ -97,6 +96,7 @@ from kagent.document_export import (
     GeneratedDocumentArtifact,
     build_document_artifact,
 )
+from kagent.contracts import MAX_EXECUTABLE_TASK_CHARS
 from kagent.manual_intake import (
     ContractError,
     ManualIntakeAction,
@@ -120,6 +120,7 @@ from kagent.p01_adapter import (
     P01_FAILURE_DETAIL_TRANSPORT,
     P01_FAILURE_DETAIL_UNKNOWN,
     P01_FAILURE_DETAILS,
+    P01_FAILURE_DETAIL_TOOL_STAGES,
 )
 from kagent.p01_approval_continuation import (
     OWNER_APPROVAL_DECISIONS,
@@ -132,7 +133,6 @@ from .worker_config import P01_COMPOSITION_DIAGNOSTICS
 from .workspace_storage import WorkspaceStorageAccessError, WorkspaceStorageError
 
 MAX_MANUAL_INTAKE_BODY_BYTES = 64 * 1024  # 64 KiB
-MAX_CONTENT_CHARS = 4_000
 MAX_SENDER_CHARS = 120
 
 _NO_STORE_HEADERS = {
@@ -155,6 +155,7 @@ _ACTION_MAP: dict[str, ManualIntakeAction] = {
 }
 
 _BROWSER_TIER_MAP: dict[str, ProductTierLabel] = {
+    "free": ProductTierLabel.FREE,
     "plus": ProductTierLabel.PLUS,
     "pro": ProductTierLabel.PRO,
     "max": ProductTierLabel.MAX,
@@ -217,7 +218,10 @@ _P01_TRANSPORT_ERROR_CODES = frozenset(
 
 def _safe_engine_failure_detail(exc: P01AdapterError) -> str:
     """Project only the closed failure vocabulary to the public route."""
-    if exc.failure_detail in P01_FAILURE_DETAILS:
+    if isinstance(exc.failure_detail, str) and (
+        exc.failure_detail in P01_FAILURE_DETAILS
+        or exc.failure_detail in P01_FAILURE_DETAIL_TOOL_STAGES
+    ):
         return exc.failure_detail
     if isinstance(exc, P01ProjectionError) or exc.code in _P01_CONTRACT_ERROR_CODES:
         return P01_FAILURE_DETAIL_CONTRACT
@@ -359,7 +363,7 @@ async def _resolve_intake_session_reference(
     if not callable(get_conversation):
         return None, _error(503, "conversation_authority_unavailable", "대화 세션 권한을 확인할 수 없습니다.")
     try:
-        conversation = get_conversation(uid, candidate)
+        conversation = get_conversation(uid, candidate, product_scope=PRODUCT_SCOPE_CHAT)
         if inspect.isawaitable(conversation):
             conversation = await conversation
     except Exception:
@@ -374,11 +378,15 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
 
     try:
         data = json.loads(raw_body.decode("utf-8"))
@@ -392,8 +400,6 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     if not isinstance(content, str) or not content.strip():
         return _error(400, "invalid_content", "요청 원문을 입력해 주세요.")
     content_clean = content.strip()
-    if len(content_clean) > MAX_CONTENT_CHARS:
-        return _error(400, "content_too_long", f"요청 원문은 {MAX_CONTENT_CHARS}자 이하로 입력해 주세요.")
 
     raw_channel = str(data.get("channel") or "other").strip().lower()
     channel = _CHANNEL_MAP.get(raw_channel)
@@ -404,6 +410,12 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     action = _ACTION_MAP.get(raw_action)
     if action is None:
         return _error(400, "invalid_action", f"지원되지 않는 작업입니다: {raw_action}")
+
+    # Manual intake is an executable P01/tool task. Use its canonical task
+    # limit on the FULL prefixed task, rather than the retired 4k source limit.
+    # Validate before quota/session/Engine dispatch; do not silently truncate.
+    if len(_build_execute_task(action, content_clean)) > MAX_EXECUTABLE_TASK_CHARS:
+        return _error(400, "content_too_long", "Executable manual request is too long.")
 
     sender_hint: str | None = None
     if "sender_hint" in data and data["sender_hint"] is not None:
@@ -460,11 +472,15 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
 
     try:
         data = json.loads(raw_body.decode("utf-8"))
@@ -478,8 +494,6 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if not isinstance(content, str) or not content.strip():
         return _error(400, "invalid_content", "요청 원문을 입력해 주세요.")
     content_clean = content.strip()
-    if len(content_clean) > MAX_CONTENT_CHARS:
-        return _error(400, "content_too_long", f"요청 원문은 {MAX_CONTENT_CHARS}자 이하로 입력해 주세요.")
 
     raw_channel = str(data.get("channel") or "other").strip().lower()
     channel = _CHANNEL_MAP.get(raw_channel)
@@ -491,6 +505,12 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if action is None:
         return _error(400, "invalid_action", f"지원되지 않는 작업입니다: {raw_action}")
 
+    # Manual intake is an executable P01/tool task. Use its canonical task
+    # limit on the FULL prefixed task, rather than the retired 4k source limit.
+    # Validate before quota/session/Engine dispatch; do not silently truncate.
+    if len(_build_execute_task(action, content_clean)) > MAX_EXECUTABLE_TASK_CHARS:
+        return _error(400, "content_too_long", "Executable manual request is too long.")
+
     sender_hint: str | None = None
     if "sender_hint" in data and data["sender_hint"] is not None:
         raw_sender = str(data["sender_hint"]).strip()
@@ -498,17 +518,24 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             return _error(400, "sender_hint_too_long", f"발신자 힌트는 {MAX_SENDER_CHARS}자 이하로 입력해 주세요.")
         sender_hint = raw_sender or None
 
-    raw_tier = data.get("tier", "plus")
+    raw_tier = data.get("tier", "free")
     if not isinstance(raw_tier, str):
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
     product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
     if product_tier is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-    try:
-        tier_route = active_route_for(product_tier)
-    except ProductTierRoutesError:
-        return _error(503, "tier_unavailable", "AI 등급 설정을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
-    if tier_route is None or not tier_route.model_id:
+    if "tier" in data:
+        tier_denial = await selected_grade_denial(
+            request, current_user_id(request) if auth_ready(request) else None, raw_tier.strip().lower()
+        )
+        if tier_denial is not None:
+            return tier_denial
+    # #4428: resolve the central per-grade route before quota/dispatch. An
+    # absent row preserves the historical static declaration.
+    from .central_model_route_runtime import resolve_claw_tier_model
+
+    claw_route = await resolve_claw_tier_model(request, raw_tier.strip().lower())
+    if not claw_route.ok or not claw_route.model_id:
         return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
 
     try:
@@ -525,8 +552,15 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         router.process(intake_req)
     except ContractError as exc:
         return _error(400, "contract_violation", str(exc))
-    except Exception as exc:
-        return _error(400, "invalid_input", str(exc))
+    except Exception:
+        # Unexpected router/runtime details are never browser-facing. Contract
+        # violations above remain specific; everything else is an internal
+        # execution failure with bounded product copy.
+        return _error(
+            500,
+            "intake_generation_failed",
+            "요청 처리 준비 중 오류가 발생했습니다. 다시 시도해 주세요.",
+        )
 
     # Canonical session reference (#2829): resolved through the conversation
     # authority itself, and it fails closed before quota, tenant, or dispatch.
@@ -556,13 +590,42 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
                 "문서 저장소가 설정되지 않았습니다.",
             )
 
+    # #3382: the adapter is read BEFORE the usage gate because the canonical
+    # USER lane check (subject identity) must happen BEFORE quota consumption.
+    # The usage gate is still applied before the actual P01 dispatch, so the
+    # contract intent is preserved.
+    adapter: P01CoreOrchestrationAdapter | None = getattr(
+        request.app.state, "claw_p01_adapter", None
+    )
+
+    # #3382: the canonical USER subject is resolved BEFORE the usage gate so a
+    # failed revalidation never consumes quota. The subject is derived
+    # SERVER-SIDE from the signed Padiem session (current_user_id → current B54
+    # canonical session → canonical sub_*) and travels only on the P01 wire.
+    # Nothing about the subject, product user, tenant or workspace is read from
+    # the request, and the value is never returned to the browser. When the
+    # identity authority is not bound (legacy/test composition), the lane is
+    # off and the old subjectless contract applies — the Engine admission
+    # rejects the request with 503 entitlement_unavailable.
+    subject_id: str | None = None
+    if adapter is not None and getattr(
+        adapter, "subject_identity_lane", False
+    ) is True:
+        from .b54_canonical_session import resolve_current_b54_canonical_session
+
+        b54_session = await resolve_current_b54_canonical_session(request)
+        if b54_session is None:
+            return _error(
+                403,
+                "canonical_b54_session_unavailable",
+                "인증된 Claw 실행 권한을 확인할 수 없습니다.",
+            )
+        subject_id = b54_session.auth_session.subject.subject_id
+
     denial = await _usage_gate_denial(request)
     if denial is not None:
         return denial
 
-    adapter: P01CoreOrchestrationAdapter | None = getattr(
-        request.app.state, "claw_p01_adapter", None
-    )
     if adapter is None:
         # No composed transport exists, so the consumed authorization is
         # provably un-dispatched: compensate the exact receipt (#2226).
@@ -587,7 +650,10 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     run = create_claw_run("padiem-chat", task_text)
 
     try:
-        outcome = await adapter.execute(run, product_tier=product_tier)
+        outcome = await adapter.execute(
+            run, product_tier=product_tier, subject_id=subject_id,
+            central_route_model_id=claw_route.model_id,
+        )
     except P01AdapterError as exc:
         # Canonical #830 invariant: refund only when B62 can prove the Engine
         # call was never dispatched. Dispatched/ambiguous failures stay counted.
@@ -999,11 +1065,15 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
     if uid is None:
         return _error(401, "unauthorized", "로그인이 필요합니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_APPROVAL_DECISION_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_APPROVAL_DECISION_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     try:
         data = json.loads(raw_body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
@@ -1077,6 +1147,27 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
             headers=_NO_STORE_HEADERS,
         )
 
+    # Cross-Worker single-winner CAS before the first possible Engine side effect.
+    # A stale preflight read never authorizes a second physical continuation.
+    claim = getattr(history_store, "claim_claw_approval_handoff", None)
+    release = getattr(history_store, "release_claw_approval_claim", None)
+    finalize = getattr(history_store, "finalize_claw_approval_claim", None)
+    if not all(callable(method) for method in (claim, release, finalize)):
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    try:
+        claim_token = claim(
+            user_id=uid, run_id=run_id, workspace_id=workspace_id,
+            continuation_ref=str(handoff.get("continuation_ref") or ""),
+            pause_id=str(handoff.get("pause_id") or ""),
+            trusted_request_fingerprint=str(handoff.get("trusted_request_fingerprint") or ""),
+        )
+        if inspect.isawaitable(claim_token):
+            claim_token = await claim_token
+    except Exception:
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    if not isinstance(claim_token, str) or not claim_token.startswith("decision_claim:"):
+        return _error(409, "approval_decision_in_progress", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+
     try:
         outcome = await P01ApprovalContinuationService(continuation_client).decide(
             run_id=run_id,
@@ -1086,8 +1177,17 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
         )
     except P01AdapterError as exc:
         if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
-            # The Engine rejected this submission without consuming the stored
-            # continuation: the handoff stays active and the run keeps waiting.
+            # Engine proved no dispatch: only the matching in-flight token may
+            # release the row for a genuine user retry (never for timeouts).
+            try:
+                released = release(user_id=uid, run_id=run_id,
+                                   workspace_id=workspace_id, claim_token=claim_token)
+                if inspect.isawaitable(released):
+                    released = await released
+            except Exception:
+                released = False
+            if released is not True:
+                return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
             return _error(
                 409,
                 "approval_decision_rejected",
@@ -1102,18 +1202,17 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
     except Exception:
         return _error(502, "engine_execution_failed", "Engine 승인 처리에 실패했습니다.")
 
-    # Every path below has proven Engine consumption (commit) or canonical
-    # denial, so the decided handoff becomes unusable only now.
-    consume = getattr(history_store, "consume_claw_approval_handoff", None)
-    if consume is not None:
-        try:
-            consumed = consume(user_id=uid, run_id=run_id, workspace_id=workspace_id)
-            if inspect.isawaitable(consumed):
-                consumed = await consumed
-        except Exception:
-            return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
-        if consumed is not True:
-            return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
+    # Engine returned a proven canonical outcome. Only this exact winning
+    # pre-dispatch claim may be finalized; unknown outcomes remain claimed.
+    try:
+        consumed = finalize(user_id=uid, run_id=run_id,
+                            workspace_id=workspace_id, claim_token=claim_token)
+        if inspect.isawaitable(consumed):
+            consumed = await consumed
+    except Exception:
+        return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
+    if consumed is not True:
+        return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
 
     status = outcome.projection.status.value
     if outcome.next_continuation_ref is not None:
@@ -1165,6 +1264,39 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
     if isinstance(conversation_id, str) and conversation_id:
         result["conversation_id"] = conversation_id
     return JSONResponse({"ok": True, "result": result}, status_code=200, headers=_NO_STORE_HEADERS)
+
+
+async def claw_pending_result(request: Request) -> JSONResponse:
+    """Only one session-owned pending run; never enumerate runs or dispatch PC."""
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not uid:
+        return _error(401, "unauthorized", "Authentication required")
+    run_id = request.path_params.get("run_id", "")
+    if not isinstance(run_id, str) or not re.fullmatch(r"run_[a-zA-Z0-9]{12,80}", run_id):
+        return _error(404, "run_not_found", "Run not found")
+    history = getattr(request.app.state, "history_store", None)
+    if history is None:
+        return _error(503, "run_history_unavailable", "Run history unavailable")
+    try:
+        row = await history.get_claw_run(uid, run_id)
+        if not isinstance(row, dict) or not row.get("conversation_id"):
+            return _error(404, "run_not_found", "Run not found")
+        cid = row["conversation_id"]
+        status = row.get("status")
+        if status in ("pending", "running"):
+            await _reconcile_local_runner_runs(request, uid, [row])
+            row = await history.get_claw_run(uid, run_id)
+            status = row.get("status")
+        result = {"run_id": run_id, "conversation_id": cid, "status": status}
+        if status == "completed":
+            answer = await history.get_claw_run_result_message(uid, run_id, cid)
+            if not isinstance(answer, str):
+                return _error(503, "run_result_unavailable", "Result unavailable")
+            result["answer"] = answer
+        return JSONResponse({"ok": True, "result": result},
+                            headers=_NO_STORE_HEADERS)
+    except Exception:
+        return _error(503, "run_result_unavailable", "Result unavailable")
 
 
 async def claw_runs_history(request: Request) -> JSONResponse:
@@ -1283,11 +1415,15 @@ async def claw_manual_intake_quote_compare(request: Request) -> JSONResponse:
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
 
     try:
         data = json.loads(raw_body.decode("utf-8"))

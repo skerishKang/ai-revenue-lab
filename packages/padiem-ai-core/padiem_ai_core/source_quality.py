@@ -253,11 +253,27 @@ def _tokens(value: str) -> tuple[str, ...]:
     return tuple(match.group(0).casefold() for match in _TOKEN_RE.finditer(value))
 
 
+# Navigation intent boilerplate is not topical evidence. Suppress these terms
+# only when the query actually requests a website and still has a topical
+# entity to match. Never make an unrelated source relevant on a substring.
+_NAVIGATION_TOKENS = frozenset({
+    "공식", "누리집", "홈페이지", "웹사이트", "사이트", "주소", "링크",
+    "official", "website", "homepage", "site", "url",
+})
+_NAVIGATION_CUES = ("누리집", "홈페이지", "웹사이트", "공식 사이트", "official website", "official site")
+
+
 def _significant_query_tokens(query: str) -> tuple[str, ...]:
     seen: set[str] = set()
+    navigation = any(cue in query.casefold() for cue in _NAVIGATION_CUES)
+    topical = (
+        tuple(token for token in _tokens(query) if token not in _NAVIGATION_TOKENS and token not in _QUERY_STOPWORDS and len(token) >= 2)
+        if navigation else ()
+    )
+    ignored = _NAVIGATION_TOKENS if navigation and topical else frozenset()
     result: list[str] = []
     for token in _tokens(query):
-        if token in _QUERY_STOPWORDS or len(token) < 2 or token in seen:
+        if token in _QUERY_STOPWORDS or token in ignored or len(token) < 2 or token in seen:
             continue
         seen.add(token)
         result.append(token)

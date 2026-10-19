@@ -1,0 +1,71 @@
+/* PADIEM Chat + CLAW: targeted existing-dark-mode contrast and composer finish.
+ * Existing light, glass, cinematic and image layers intentionally untouched. */
+html[data-theme="dark"] {
+  --bg: #10151c; --page-bg: #10151c; --panel: #1a232d; --sidebar: #0e141b;
+  --text: #edf4fa; --muted: #b4c2d0; --line: #405365;
+  --composer-bg: #242e3a; --composer-border: #536778;
+  --user-bubble-bg: #263545; --user-bubble-text: #f2f7fc;
+  --assistant-surface-bg: #1c2835; --card-bg: #202d3a; --card-border: #455b70;
+  --topbar-bg: #121b25; --accent: #9bcdf0; --accent-strong: #d1ebfb;
+}
+html[data-theme="dark"] body { background: #10151c; color: var(--text); }
+html[data-theme="dark"] body .app-shell .sidebar { background: #101b26; border-right-color: #354d61; }
+html[data-theme="dark"] body .app-shell :is(.side-item,.recent-item,.new-chat,.settings-button,.sidebar-account) {
+  color: #e5f0f9;
+}
+html[data-theme="dark"] body .app-shell :is(.side-item,.recent-item,.new-chat,.settings-button):not(:disabled):hover {
+  color: #fff; background: #293e4f;
+}
+html[data-theme="dark"] body .app-shell :is(.recent-section h2,.section-heading-row h2,.sidebar-footer,.sidebar-bottom small,.eyebrow,.assistant-meta,.empty-copy,.composer-note) {
+  color: #bdcdda !important;
+}
+html[data-theme="dark"] body .app-shell .topbar { background: #141e28; border-color: #354e62; }
+html[data-theme="dark"] body .app-shell :is(.brand,.empty-state h1,.assistant-content,.claw-workspace-title) { color: #f0f6fb; }
+html[data-theme="dark"] body .app-shell .composer,
+html[data-theme="dark"] body .app-shell[data-state="chat"] .composer,
+html[data-theme="dark"] body .app-shell[data-state="claw"] .composer {
+  background: #263440 !important;
+  border: 1px solid #597285 !important;
+  border-radius: 24px;
+  box-shadow: 0 10px 34px rgba(0,0,0,.31) !important;
+  color: #f0f7fc;
+}
+html[data-theme="dark"] body .app-shell .composer:focus-within {
+  border-color: #a6d9f8 !important; box-shadow: 0 0 0 3px rgba(150,205,240,.22),0 10px 34px rgba(0,0,0,.31) !important;
+}
+html[data-theme="dark"] body .app-shell .composer textarea,
+html[data-theme="dark"] body .app-shell #messageInput {
+  color: #f5faff !important; caret-color: #f5faff; background: transparent !important;
+}
+html[data-theme="dark"] body .app-shell .composer textarea::placeholder,
+html[data-theme="dark"] body .app-shell #messageInput::placeholder {
+  color: #b9ccdb !important; opacity: 1;
+}
+html[data-theme="dark"] body .app-shell .composer :is(.tool-button,.model-picker,.claw-model-choice select) {
+  color: #e7f3fc !important; background: #334655; border-color: #61788b;
+}
+html[data-theme="dark"] body .app-shell .composer :is(.tool-button,.model-picker):hover:not(:disabled) {
+  background: #405b70;
+}
+html[data-theme="dark"] body .app-shell .composer .send-button:not(:disabled) {
+  color: #132637; background: #a2d5f5; border-color: #a2d5f5;
+}
+html[data-theme="dark"] body .app-shell :is(.message-bubble,.starter,.model-pill,.login-button) {
+  border-color: #435d72; color: #edf6fe;
+}
+html[data-theme="dark"] body .app-shell .assistant-content { color: #ebf4fc !important; }
+html[data-theme="dark"] body .app-shell :is(.settings-dialog,.settings-panel,.dialog-panel,[role="dialog"]) {
+  color: #edf5fc; border-color: #4b6478;
+}
+html[data-theme="dark"] body .app-shell :is(.settings-dialog,.settings-panel) :is(h2,h3,label,p,span) { color: inherit; }
+html[data-theme="dark"] body .app-shell :is(.settings-dialog,.settings-panel) :is(input,select,button:not(.close-button)) {
+  border-color: #607a8e;
+}
+html[data-theme="dark"] body .app-shell :is(.source-card,.rich-block,.output-card,.document-card,.project-card,.project-file-card) {
+  color: #e8f3fb; background: #202f3d; border-color: #4b6375;
+}
+html[data-theme="dark"] body .app-shell :is(.source-card,.rich-block,.output-card,.document-card,.project-card) :is(p,small,time) {
+  color: #c4d5e2;
+}
+html[data-theme="dark"] body .app-shell :is(.error-box,.error-banner) { color: #ffdedb; background: #432b2d; border-color: #a95c62; }
+html[data-theme="dark"] body .app-shell :is(button,input,textarea,select):focus-visible { outline-color: #a2d6f7; outline-offset: 2px; }

@@ -38,6 +38,35 @@ const items = [
 ];
 let t = Core.computeTotals(items, "EXCLUSIVE");
 assert.deepEqual([t.supply, t.vat, t.grand], [1300000, 130000, 1430000], "EXCLUSIVE math");
+assert.deepEqual(
+  Object.keys(t).sort(),
+  ["amounts", "grand", "mode", "subtotal", "supply", "vat"],
+  "STANDARD totals keep the legacy result shape"
+);
+
+const floor10000 = { grandRounding: { mode: "FLOOR", unit: 10000 } };
+const rounded = Core.computeTotals(
+  [{ id: "cgi-summary", name: "ICT환경제어 시스템", qty: 1, unitPrice: 16330000 }],
+  "EXCLUSIVE",
+  floor10000
+);
+assert.equal(rounded.supply, 16330000, "reviewed supply remains exact");
+assert.equal(rounded.vat, 1633000, "reviewed VAT remains exact");
+assert.equal(rounded.rawGrand, 17963000, "raw grand is explicit");
+assert.equal(rounded.grand, 17960000, "FLOOR/10000 matches reviewed 2026 family");
+assert.equal(rounded.roundingAdjustment, -3000, "rounding adjustment is explicit");
+assert.deepEqual(rounded.calculationPolicy, floor10000, "applied policy is explicit");
+assert.equal(Core.computeTotals(items, "EXCLUSIVE", { grandRounding: { mode: "ROUND", unit: 10000 } }), null,
+  "invalid rounding mode fails closed");
+assert.equal(Core.computeTotals(items, "EXCLUSIVE", { grandRounding: { mode: "FLOOR", unit: 3 } }), null,
+  "unbounded rounding unit fails closed");
+
+assert.equal(Core.formatKoreanMoneyWords(17960000), "일천칠백구십육만", "Excel NUMBERSTRING-style reviewed grand");
+assert.equal(Core.formatKoreanMoneyWords(16330000), "일천육백삼십삼만", "formal Korean money words");
+assert.equal(Core.formatKoreanMoneyWords(10000), "일만", "formal one-man retains 일");
+assert.equal(Core.formatKoreanMoneyWords(110000000), "일억일천만", "large groups are deterministic");
+assert.equal(Core.formatKoreanMoneyWords(0), "영", "zero is explicit");
+assert.equal(Core.formatKoreanMoneyWords(-1), null, "negative written money rejected");
 
 /* VAT_INCLUSIVE_CONTRACT — 표시 금액 합계가 곧 합계, 공급가액/부가세 분리 */
 t = Core.computeTotals(items, "INCLUSIVE");
@@ -60,6 +89,79 @@ assert.deepEqual([t.supply, t.vat, t.grand], [0, 0, 0], "empty items");
 t = Core.computeTotals(items, "UNKNOWN_MODE");
 assert.equal(t.mode, "EXCLUSIVE", "unknown mode falls back to EXCLUSIVE");
 
+/* SUMMARY_DETAIL_ROLLUP — detail subtotal is the linked summary unitPrice authority */
+const simpleDraftForRollup = Core.createDefaultDraft();
+const simpleDraftTotals = Core.computeDraftTotals(simpleDraftForRollup);
+assert.deepEqual(
+  [simpleDraftTotals.supply, simpleDraftTotals.vat, simpleDraftTotals.grand],
+  [1300000, 130000, 1430000],
+  "simple QuoteDraft totals remain unchanged"
+);
+
+const detail2026 = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(simpleDraftForRollup)), {
+  items: [{ id: "summary-1", name: "ICT환경제어 시스템", qty: 1, unitPrice: 1 }],
+  detailGroups: [{
+    id: "detail-1",
+    summaryItemId: "summary-1",
+    title: "스마트팜 상세내역",
+    items: [
+      { id: "d1", name: "주장치", section: "1. 스마트팜", qty: 1, unitPrice: 15000000 },
+      { id: "d2", name: "설치 및 잡자재", section: "3. 인건비 및 잡자재", qty: 1, unitPrice: 1330000 }
+    ]
+  }],
+  calculationPolicy: floor10000
+}));
+assert.ok(detail2026, "2026-style detail draft normalizes");
+assert.equal(detail2026.items[0].unitPrice, 1, "stored summary unit price is not silently rewritten");
+const rollup2026 = Core.computeDraftTotals(detail2026);
+assert.equal(rollup2026.detailGroups[0].subtotal, 16330000, "detail subtotal is derived from child lines");
+assert.equal(rollup2026.effectiveItems[0].unitPrice, 16330000, "linked summary effective unit price comes from detail subtotal");
+assert.equal(rollup2026.amounts[0], 16330000, "summary amount uses derived unit price");
+assert.equal(rollup2026.rawGrand, 17963000, "detail rollup feeds existing VAT policy");
+assert.equal(rollup2026.grand, 17960000, "detail rollup feeds existing reviewed rounding policy");
+
+const detail2020 = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(simpleDraftForRollup)), {
+  items: [
+    { id: "summary-a", name: "2층 대예배실 음향", qty: 1, unitPrice: 0 },
+    { id: "summary-b", name: "1층 중예배실 음향", qty: 1, unitPrice: 0 },
+    { id: "summary-c", name: "부속실 음향", qty: 7, unitPrice: 0 }
+  ],
+  detailGroups: [
+    { id: "detail-a", summaryItemId: "summary-a", items: [{ name: "A 상세", qty: 1, unitPrice: 300329000 }] },
+    { id: "detail-b", summaryItemId: "summary-b", items: [{ name: "B 상세", qty: 1, unitPrice: 64657500 }] },
+    { id: "detail-c", summaryItemId: "summary-c", items: [{ name: "C 상세", qty: 1, unitPrice: 4744000 }] }
+  ]
+}));
+const rollup2020 = Core.computeDraftTotals(detail2020);
+assert.deepEqual(
+  rollup2020.effectiveItems.map((item) => item.unitPrice),
+  [300329000, 64657500, 4744000],
+  "multiple detail groups independently derive summary unit prices"
+);
+assert.deepEqual(
+  rollup2020.amounts,
+  [300329000, 64657500, 33208000],
+  "summary quantity multiplies each linked detail subtotal"
+);
+assert.equal(rollup2020.supply, 398194500, "2020 reviewed summary subtotal is reproduced");
+
+const badDetailMissingLink = JSON.parse(JSON.stringify(detail2026));
+badDetailMissingLink.detailGroups[0].summaryItemId = "missing-summary";
+assert.equal(Core.normalizeDraft(badDetailMissingLink), null, "broken detail summary link fails closed");
+const badDetailDuplicateLink = JSON.parse(JSON.stringify(detail2026));
+badDetailDuplicateLink.detailGroups.push({
+  id: "detail-2",
+  summaryItemId: "summary-1",
+  items: [{ name: "중복", qty: 1, unitPrice: 1 }]
+});
+assert.equal(Core.normalizeDraft(badDetailDuplicateLink), null, "duplicate summary link fails closed");
+const badNestedDetail = JSON.parse(JSON.stringify(detail2026));
+badNestedDetail.detailGroups[0].items[0].detailGroups = [];
+assert.equal(Core.normalizeDraft(badNestedDetail), null, "nested detail groups fail closed");
+const badDetailAmount = JSON.parse(JSON.stringify(detail2026));
+badDetailAmount.detailGroups[0].items[0].amount = 15000000;
+assert.equal(Core.normalizeDraft(badDetailAmount), null, "trusted detail amount input fails closed");
+
 /* VALID_UNTIL_CONTRACT — 견적일 + 유효기간 파생, 파싱 실패는 null */
 assert.equal(Core.computeValidUntil("2026-09-27", 30), "2026-10-27", "month rollover");
 assert.equal(Core.computeValidUntil("2026-09-27", "30"), "2026-10-27", "string days");
@@ -80,7 +182,7 @@ assert.equal(draft.schemaVersion, 1, "schema version");
 ["quoteNo", "issueDate", "validDays", "source"].forEach((k) => {
   assert.ok(k in draft.meta, `meta has ${k}`);
 });
-["company", "rep", "bizNo", "address", "phone", "email", "presetId"].forEach((k) => {
+["company", "rep", "contactPerson", "bizNo", "address", "phone", "email", "presetId"].forEach((k) => {
   assert.ok(k in draft.sender, `sender has ${k}`);
 });
 ["company", "person", "address", "email"].forEach((k) => {
@@ -96,6 +198,7 @@ const currentForNew = Core.createDefaultDraft();
 currentForNew.sender = {
   company: "내 회사",
   rep: "홍대표",
+  contactPerson: "김담당",
   bizNo: "123-45-67890",
   address: "광주광역시",
   phone: "010-1234-5678",
@@ -121,9 +224,24 @@ assert.equal(blankNext.meta.validDays, 14, "validity preference preserved");
 assert.deepEqual(blankNext.recipient, { company: "", person: "", address: "", email: "" }, "recipient cleared");
 assert.deepEqual(blankNext.items, [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }], "one blank item");
 assert.equal(blankNext.tax.mode, "EXCLUSIVE", "new quote tax resets to explicit default");
-assert.equal(blankNext.memo, Core.createDefaultDraft().memo, "ordinary default memo restored");
+/* #3479: 새 견적 메모는 truthful blank다. 데모 문구는 계약상 이월되지 않는다. */
+assert.equal(blankNext.memo, "", "new quote memo starts truthful blank, not demo wording");
+assert.notEqual(blankNext.memo, Core.createDefaultDraft().memo, "demo memo never leaks into a new quote");
 assert.equal(currentForNew.recipient.company, "이전 고객", "source draft not mutated");
 assert.equal(currentForNew.items[0].name, "기존 품목", "source items not mutated");
+
+const familyCurrent = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(currentForNew)), {
+  calculationPolicy: floor10000
+}));
+const familyNext = Core.createBlankQuoteDraft(familyCurrent, {
+  quoteNo: "PQ-20260928-003",
+  issueDate: "2026-09-28",
+  source: "manual"
+});
+assert.deepEqual(familyNext.calculationPolicy, floor10000,
+  "new quote preserves the reviewed family calculation policy");
+assert.notEqual(familyNext.calculationPolicy, familyCurrent.calculationPolicy,
+  "new quote receives a normalized policy snapshot rather than shared mutable state");
 
 /* PRINT_READINESS_CONTRACT — 최소 출력 필수값 */
 const printable = Core.createDefaultDraft();
@@ -164,11 +282,65 @@ const partial = Core.normalizeDraft({
 assert.equal(partial.items[0].qty, 2, "partial draft keeps items");
 assert.equal(partial.tax.mode, "INCLUSIVE", "partial draft keeps tax mode");
 assert.equal(partial.meta.validDays, 30, "partial draft fills defaults");
+const detailed = Core.normalizeDraft({
+  schemaVersion: 1,
+  meta: { quoteNo: "Q-DETAIL-1", issueDate: "2026-10-02", validDays: 30, source: "chat", projectName: "스마트팜 환경제어설비" },
+  sender: draft.sender,
+  recipient: draft.recipient,
+  items: [{
+    id: "detail-1",
+    name: "ICT환경제어 시스템",
+    spec: "주장치 및 스마트팜 전용S/W",
+    unit: "식",
+    qty: 1,
+    unitPrice: 16330000,
+    note: "설치 포함"
+  }],
+  tax: { mode: "EXCLUSIVE", rate: 0.1 },
+  memo: ""
+});
+assert.equal(detailed.meta.projectName, "스마트팜 환경제어설비", "optional project name preserved");
+assert.deepEqual(detailed.items[0], {
+  id: "detail-1",
+  name: "ICT환경제어 시스템",
+  qty: 1,
+  unitPrice: 16330000,
+  spec: "주장치 및 스마트팜 전용S/W",
+  unit: "식",
+  note: "설치 포함"
+}, "optional item presentation fields preserved");
+assert.deepEqual(
+  Core.computeTotals(detailed.items, "EXCLUSIVE"),
+  Core.computeTotals([{ id: "detail-1", name: "ICT환경제어 시스템", qty: 1, unitPrice: 16330000 }], "EXCLUSIVE"),
+  "spec/unit/note never change QuoteCore totals"
+);
+const policyDraft = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(draft)), {
+  calculationPolicy: floor10000
+}));
+assert.deepEqual(policyDraft.calculationPolicy, floor10000, "QuoteDraft snapshots reviewed calculation policy");
+assert.equal(
+  Core.computeTotals(policyDraft.items, policyDraft.tax.mode, policyDraft.calculationPolicy).grand,
+  Math.floor(Core.computeTotals(policyDraft.items, policyDraft.tax.mode).grand / 10000) * 10000,
+  "restored draft reproduces the same reviewed rounding"
+);
+assert.equal(
+  Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(draft)), {
+    calculationPolicy: { grandRounding: { mode: "FLOOR", unit: 7 } }
+  })),
+  null,
+  "invalid stored calculation policy fails closed"
+);
+
 assert.equal(Core.normalizeDraft("garbage"), null, "string input rejected");
 assert.equal(Core.normalizeDraft(null), null, "null rejected");
 assert.equal(Core.normalizeDraft({ schemaVersion: 99 }), null, "wrong schema rejected");
+const DEMO_BUSINESS_FACTS = ["샘플 공급사", "대표자명", "000-00-00000", "고객사", "담당자님", "서비스 구축", "운영 지원", "hello@example.com"];
+const containsDemoFactHelper = (value) => DEMO_BUSINESS_FACTS.some((fact) => String(value).includes(fact));
 const badShape = Core.normalizeDraft({ schemaVersion: 1, items: "not-an-array" });
-assert.ok(Array.isArray(badShape.items) && badShape.items.length === 2, "non-array items fall back to defaults");
+/* #3479: 비배열 items 폴백은 truthful blank 1행이다. 데모 품목으로 보충되지 않는다. */
+assert.ok(Array.isArray(badShape.items) && badShape.items.length === 1, "non-array items fall back to one truthful blank row");
+assert.equal(badShape.items[0].name, "", "fallback item row carries no demo name");
+assert.equal(containsDemoFactHelper(JSON.stringify(badShape)), false, "fallback items contain no demo business facts");
 const badItems = Core.normalizeDraft({ schemaVersion: 1, items: [{ qty: -3, unitPrice: "x" }] });
 assert.equal(badItems.items[0].qty, 1, "negative qty falls back");
 assert.equal(badItems.items[0].unitPrice, 0, "garbage price falls back");
@@ -179,9 +351,20 @@ console.log("AMBIGUOUS_MIXED_UNIT_FAILS_SAFE=YES");
 console.log("VAT_EXCLUSIVE_CONTRACT=PASS");
 console.log("VAT_INCLUSIVE_CONTRACT=PASS");
 console.log("VAT_EXEMPT_CONTRACT=PASS");
+console.log("STANDARD_TOTALS_UNCHANGED=PASS");
+console.log("FLOOR_10000_POLICY=PASS");
+console.log("ROUNDING_ADJUSTMENT_EXPLICIT=PASS");
+console.log("KOREAN_WRITTEN_GRAND_FROM_QUOTECORE=PASS");
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("NEW_QUOTE_DOMAIN_CONTRACT=PASS");
 console.log("PRINT_READINESS_CONTRACT=PASS");
 console.log("DRAFT_RESTORE_CONTRACT=PASS");
+console.log("SIMPLE_QUOTE_TOTALS_UNCHANGED=PASS");
+console.log("DETAIL_GROUP_SUBTOTAL=PASS");
+console.log("SUMMARY_UNIT_PRICE_DERIVED_FROM_DETAIL=PASS");
+console.log("SUMMARY_QTY_MULTIPLIES_DETAIL_SUBTOTAL=PASS");
+console.log("MULTIPLE_DETAIL_GROUPS=PASS");
+console.log("BROKEN_DETAIL_LINK_FAIL_CLOSED=YES");
+console.log("NESTED_DETAIL_GROUPS=0");
 console.log("B66_QUOTE_CORE_UNIT=PASS");

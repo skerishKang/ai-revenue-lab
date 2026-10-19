@@ -1,12 +1,21 @@
 from __future__ import annotations
 
 from contextvars import ContextVar
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from .b14_client import B14Client, ChatRuntimeError, _resolve_b62_policy
-from .model_policy import model_policy_is_executable
+from .model_policy import (
+    ADMIN_B14_MODEL_ID,
+    current_request_tier_id,
+    model_policy_is_executable,
+)
 from .usage_gate import UsageDecision
+
+
+@dataclass(slots=True)
+class _DispatchState:
+    started: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -14,6 +23,7 @@ class _Reservation:
     store: Any
     buckets: tuple[tuple[str, str, str, str], ...]
     updated_at: str
+    dispatch: _DispatchState = field(default_factory=_DispatchState)
 
 
 _active_reservation: ContextVar[_Reservation | None] = ContextVar(
@@ -26,10 +36,20 @@ def _clear_reservation() -> None:
     _active_reservation.set(None)
 
 
+def _mark_active_reservation_dispatched() -> None:
+    reservation = _active_reservation.get()
+    if reservation is not None:
+        # Core's bounded Service Binding transport runs post_json in a child
+        # task. Its copied ContextVar shares this marker with the parent, while
+        # setting the ContextVar to None alone would clear only the child.
+        reservation.dispatch.started = True
+    _clear_reservation()
+
+
 async def _refund_active_reservation() -> bool:
     reservation = _active_reservation.get()
     _clear_reservation()
-    if reservation is None:
+    if reservation is None or reservation.dispatch.started:
         return False
 
     refund_bucket = getattr(reservation.store, "_refund", None)
@@ -108,17 +128,26 @@ class DispatchAwareB14Client(B14Client):
 
     Missing Service Bindings and, when the public live deadman switch is armed,
     a non-executable Padiem model policy are local deterministic pre-dispatch
-    failures. Router-owned ``b14/auto`` is executable without a concrete B62
-    model assignment, so it is allowed to reach B14. Non-live B14 test/preflight
-    paths remain available for infrastructure regression without representing a
-    public product route.
+    failures. The legacy generic ``b14/auto`` route is deferred and rejected
+    before dispatch, so it carries no concrete B62 model assignment. Non-live
+    B14 test/preflight paths remain available for infrastructure regression
+    without representing a public product route.
     """
 
     async def _reject_non_executable_policy(self, messages: list[dict[str, str]]) -> None:
         if self.settings.runtime_mode == "mock" or not self.settings.live_enabled:
             return
-        policy = _resolve_b62_policy(messages)
+        policy = _resolve_b62_policy(messages, require_executable=False)
         if model_policy_is_executable(policy.model_id):
+            return
+        # One verified administrator-only dispatch: the Chat route already
+        # proved the global admin on this request before binding this tier, so
+        # the pinned admin model is not a product-tier route the quota gate
+        # should refund. Every other model keeps the rule unchanged.
+        if (
+            policy.model_id == ADMIN_B14_MODEL_ID
+            and current_request_tier_id() == "admin"
+        ):
             return
         await _refund_active_reservation()
         raise ChatRuntimeError(
@@ -147,6 +176,40 @@ class DispatchAwareB14Client(B14Client):
         await self._prepare_stream_dispatch()
         async for event in super().stream_text_auto(messages, *args, **kwargs):
             yield event
+
+    async def _prepare_registered_quote_dispatch(self) -> None:
+        _mark_active_reservation_dispatched()
+
+    async def complete_registered_quote_model(
+        self,
+        messages,
+        *,
+        model,
+        additional_system_context=None,
+        model_parameters=None,
+        product_tier=None,
+    ):
+        """Bypass B62 tier HOLD only; keep B66 runtime/admission boundaries.
+
+        This override is the last hop before the actual B14 POST, so it must
+        forward every field the base path accepts. Dropping ``model_parameters``
+        here would reject the customer's explicit reasoning level in production,
+        where this dispatch-aware client is the installed one, even though the
+        base client and the shared Core carry it correctly (#3977).
+        """
+        try:
+            return await super().complete_registered_quote_model(
+                messages,
+                model=model,
+                additional_system_context=additional_system_context,
+                model_parameters=model_parameters,
+                product_tier=product_tier,
+            )
+        except (ChatRuntimeError, ValueError):
+            # Dispatch clears the receipt first. Only local failures still have
+            # an active reservation; an upstream failure must stay consumed.
+            await _refund_active_reservation()
+            raise
 
     async def complete(self, messages, *args, **kwargs):
         await self._reject_non_executable_policy(messages)

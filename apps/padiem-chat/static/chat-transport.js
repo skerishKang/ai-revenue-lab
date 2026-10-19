@@ -2,6 +2,7 @@
   "use strict";
 
   let orchestrationPauseHandler = null;
+  const calendarTurnIdsByRequest = new WeakMap();
 
   function errorFor(data, fallback) {
     const message = data && data.error && typeof data.error.message === "string" ? data.error.message : fallback;
@@ -64,11 +65,48 @@
     }
   }
 
+  function createCalendarTurnId() {
+    return typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID() : null;
+  }
+
+  function calendarRequestFields(payload) {
+    const result = { ...payload };
+    if (typeof result.timezone !== "string" || !result.timezone) {
+      try { result.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (_) { result.timezone = ""; }
+    }
+    if (typeof result.calendar_turn_id !== "string" || !result.calendar_turn_id) {
+      let stableId = calendarTurnIdsByRequest.get(payload);
+      if (!stableId) {
+        stableId = createCalendarTurnId();
+        if (stableId) calendarTurnIdsByRequest.set(payload, stableId);
+      }
+      if (stableId) result.calendar_turn_id = stableId;
+    }
+    if (!result.calendar_turn_id) delete result.calendar_turn_id;
+    if (!result.timezone) delete result.timezone;
+    return result;
+  }
+
+  function withDeviceSelection(payload) {
+    // One shared preference for Chat and Claw. A hint only: the server
+    // re-verifies the saved target against current authority and connection.
+    const chosen = typeof window.padiemSelectedDeviceId === "function"
+      ? window.padiemSelectedDeviceId()
+      : (typeof window.padiemClawSelectedDeviceId === "function"
+        ? window.padiemClawSelectedDeviceId() : null);
+    const wire = calendarRequestFields(payload);
+    return typeof chosen === "string" && chosen
+      ? { ...wire, device_id: chosen }
+      : wire;
+  }
+
   async function requestCompleted(payload, signal) {
+    const wire = withDeviceSelection(payload);
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(wire),
       signal,
     });
     const data = await response.json().catch(() => null);
@@ -161,14 +199,67 @@
     return syntheticSseResponse(data);
   }
 
+  async function clawLiveEventsAvailable(signal) {
+    // Readiness only. No execution, quota consumption, read ACK, or retry.
+    try {
+      const response = await fetch("/api/claw/general/capabilities", {
+        method: "GET",
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+        signal,
+      });
+      if (!response.ok) return false;
+      const data = await response.json().catch(() => null);
+      return !!(data && data.live_events_available === true);
+    } catch (error) {
+      if (error?.name === "AbortError") throw error;
+      return false; // Conservative completed-path behavior, before dispatch.
+    }
+  }
+
+  async function requestClawGeneral(payload, signal) {
+    // #3539: the B54 Claw general composer runs on the canonical P01 Engine
+    // lane. There is deliberately NO fallback to the standalone B62
+    // /api/chat/stream direct-B14 route: an unavailable P01 lane surfaces as a
+    // bounded error instead of silently changing products.
+    const liveReady = await clawLiveEventsAvailable(signal);
+    const headers = { "Content-Type": "application/json", "Accept": "text/event-stream" };
+    if (liveReady) headers["X-Padiem-Claw-Live"] = "p01-events-v1";
+    // Reuse the existing owner-scoped PC chooser; no manual device ID input.
+    // The selected id is only a hint: canonical Identity/Broker decide authority.
+    const wired = withDeviceSelection(payload);
+    const response = await fetch("/api/claw/general", {
+      method: "POST",
+      headers,
+      body: JSON.stringify(wired),
+      signal,
+    });
+    const contentType = (response.headers.get("content-type") || "").toLowerCase();
+    if (!response.ok || !contentType.startsWith("text/event-stream")) {
+      const data = await response.json().catch(() => null);
+      const error = errorFor(data, "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요.");
+      // #3566: preserve ONLY the closed, source-owned rate-limit classification
+      // for Claw presentation. Never trust a provider message as the category.
+      if (response.status === 502 && data?.error?.code === "engine_execution_failed" &&
+          data?.error?.detail === "engine_provider_rate_limited") {
+        error.clawFailureDetail = "engine_provider_rate_limited";
+      }
+      throw error;
+    }
+    return response;
+  }
+
   async function requestStreaming(payload, signal) {
-    const orchestrated = await tryOrchestration(payload, signal);
+    const wire = withDeviceSelection(payload);
+    // PADIEM Custom is a direct provider lane. It must never be routed
+    // through B14 orchestration, which stays on the PADIEM-provided path.
+    const orchestrated = payload && payload.custom ? null : await tryOrchestration(payload, signal);
     if (orchestrated) return orchestrated;
 
     const response = await fetch("/api/chat/stream", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(wire),
       signal,
     });
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
@@ -180,10 +271,12 @@
   }
 
   window.PadiemChatTransport = Object.freeze({
+    createCalendarTurnId,
     errorFor,
     parseSseFrame,
     readSseEvents,
     requestCompleted,
+    requestClawGeneral,
     requestStreaming,
     orchestrationReady,
     resumeOrchestration,

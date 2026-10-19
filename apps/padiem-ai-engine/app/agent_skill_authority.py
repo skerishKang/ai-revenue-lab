@@ -127,6 +127,30 @@ class EngineAgentSkillBinding:
                 status_code=503,
             )
 
+    def resolve_identity(self, *, agent_id: str) -> str:
+        """Server-owned owner subject for an already-issued run (#4194).
+
+        Validates the canonical Agent identity against the same trusted Tool
+        binding the execution path uses, then returns the binding subject that
+        derives the run owner scope. It creates no plan, grant, authorization,
+        connector scope or entitlement, so run control can never widen what the
+        original execution was allowed to do.
+        """
+        if not isinstance(agent_id, str) or not _CANONICAL_AGENT_ID_RE.fullmatch(agent_id):
+            raise EngineAgentSkillAuthorityError(
+                "invalid_agent_selection",
+                "agent_id must be a canonical versioned Agent identity.",
+            )
+        try:
+            self.tool_binding.resolve_authority(agent_id)
+        except EngineToolProjectionError as exc:
+            raise EngineAgentSkillAuthorityError(
+                exc.code,
+                exc.safe_message,
+                status_code=exc.status_code,
+            ) from exc
+        return self.subject_id
+
     def resolve(
         self,
         *,

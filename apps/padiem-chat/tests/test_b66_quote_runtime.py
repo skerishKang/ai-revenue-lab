@@ -14,6 +14,7 @@ from app.b66_quote_conversation import (
     B66QuoteConversationError,
     B66QuoteConversationInterpreter,
     B66QuoteConversationProjection,
+    MAX_MODEL_WRAPPER_CHARS,
     normalize_conversation_output,
 )
 from app.config import Settings
@@ -107,7 +108,7 @@ class _Interpreter:
     def __init__(self):
         self.calls = []
 
-    async def interpret(self, *, message, skill):
+    async def interpret(self, *, message, skill, model_id=None):
         self.calls.append((message, skill))
         return B66QuoteConversationProjection(
             recipient={
@@ -211,7 +212,7 @@ def test_anonymous_cannot_list_read_or_interpret():
     assert client.get(f"/api/b66/saved-skills/{SAVED_ID}").status_code == 401
     assert client.post(
         "/api/b66/quote/interpret",
-        json={"saved_skill_id": SAVED_ID, "message": "ABC건설에 배관 20개"},
+        json={"saved_skill_id": SAVED_ID, "model_id": "test-fixture/quote-projection", "message": "ABC건설에 배관 20개"},
     ).status_code == 401
     assert store.calls == []
     assert interpreter.calls == []
@@ -247,6 +248,7 @@ def test_conversation_interpretation_returns_variable_candidate_only():
         "/api/b66/quote/interpret",
         json={
             "saved_skill_id": SAVED_ID,
+            "model_id": "test-fixture/quote-projection",
             "message": "ABC건설에 배관 20개, 개당 3만원으로 견적 내줘",
         },
     )
@@ -303,7 +305,7 @@ def test_foreign_skill_never_reaches_interpreter():
     client = _client(store, interpreter, user_id=USER_B)
     response = client.post(
         "/api/b66/quote/interpret",
-        json={"saved_skill_id": SAVED_ID, "message": "ABC건설 견적"},
+        json={"saved_skill_id": SAVED_ID, "model_id": "test-fixture/quote-projection", "message": "ABC건설 견적"},
     )
     assert response.status_code == 404
     assert interpreter.calls == []
@@ -320,13 +322,93 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
             },
             "quoteNo": None,
             "issueDate": None,
-            "items": [{"name": "배관", "qty": 20, "unitPrice": 30000}],
+            "projectName": "스마트팜 환경제어설비",
+            "items": [{
+                "name": "배관",
+                "spec": "40A",
+                "unit": "m",
+                "qty": 20,
+                "unitPrice": 30000,
+                "note": "현장 설치",
+            }],
+            "detailGroups": [{
+                "summaryIndex": 1,
+                "title": "배관 상세",
+                "items": [{
+                    "name": "배관 자재",
+                    "spec": "40A",
+                    "unit": "m",
+                    "qty": 20,
+                    "unitPrice": 25000,
+                    "note": "자재",
+                    "section": "1. 자재",
+                }, {
+                    "name": "설치",
+                    "unit": "식",
+                    "qty": 1,
+                    "unitPrice": 100000,
+                    "section": "2. 인건비",
+                }],
+            }],
             "memo": None,
             "taxMode": None,
             "missing": ["quoteNo", "issueDate"],
         }
     )
-    assert projection.safe_dict()["items"][0]["unitPrice"] == 30000
+    safe = projection.safe_dict()
+    assert safe["projectName"] == "스마트팜 환경제어설비"
+    assert safe["items"][0]["unitPrice"] == 30000
+    assert safe["items"][0]["spec"] == "40A"
+    assert safe["items"][0]["unit"] == "m"
+    assert safe["items"][0]["note"] == "현장 설치"
+    assert safe["detailGroups"][0]["id"] == "detail-group-1"
+    assert safe["detailGroups"][0]["summaryItemId"] == "item-1"
+    assert safe["detailGroups"][0]["title"] == "배관 상세"
+    assert safe["detailGroups"][0]["items"][0]["section"] == "1. 자재"
+    assert safe["detailGroups"][0]["items"][1]["unitPrice"] == 100000
+
+    linked_without_summary_price = normalize_conversation_output(
+        {
+            "recipient": {"company": "ABC건설"},
+            "items": [{"name": "요약 공사", "qty": 1, "unitPrice": None}],
+            "detailGroups": [{
+                "summaryIndex": 1,
+                "items": [
+                    {"name": "자재", "qty": 2, "unitPrice": 50000},
+                    {"name": "설치", "qty": 1, "unitPrice": 30000},
+                ],
+            }],
+            "missing": [],
+        }
+    ).safe_dict()
+    assert linked_without_summary_price["items"][0]["unitPrice"] == 0
+    assert linked_without_summary_price["detailGroups"][0]["summaryItemId"] == "item-1"
+
+    # 요약 단가도 detailGroup 도 없는 item 은 partial 로 보존한다 (#3391).
+    # 값을 추정하거나 0 으로 채우지 않고 missing 으로 다음 입력을 요청한다.
+    partial_summary = normalize_conversation_output(
+        {
+            "recipient": {"company": "ABC건설"},
+            "items": [{"name": "요약 공사", "qty": 1, "unitPrice": None}],
+            "detailGroups": [],
+            "missing": [],
+        }
+    ).safe_dict()
+    assert partial_summary["recipient"]["company"] == "ABC건설"
+    assert partial_summary["items"][0]["name"] == "요약 공사"
+    assert partial_summary["items"][0]["qty"] == 1
+    assert "unitPrice" not in partial_summary["items"][0]
+    assert partial_summary["items"][0].get("unitPrice") != 0
+
+    partial_quantity = normalize_conversation_output(
+        {
+            "recipient": {"company": "ABC건설"},
+            "items": [{"name": "요약 공사", "qty": None, "unitPrice": 1000}],
+            "detailGroups": [],
+            "missing": [],
+        }
+    ).safe_dict()
+    assert partial_quantity["items"] == [{"name": "요약 공사", "unitPrice": 1000}]
 
     with pytest.raises(B66QuoteConversationError, match="unsupported_output_field|forbidden_output_field"):
         normalize_conversation_output(
@@ -344,6 +426,78 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
                 "items": [],
                 "missing": [],
                 "sender": {"company": "공격자"},
+            }
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="forbidden_output_field"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "ABC건설"},
+                "items": [{
+                    "name": "배관",
+                    "qty": 1,
+                    "unitPrice": 1000,
+                    "amount": 1000,
+                }],
+                "missing": [],
+            }
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="forbidden_output_field"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "ABC건설"},
+                "items": [{"name": "요약", "qty": 1, "unitPrice": 1}],
+                "detailGroups": [{
+                    "summaryIndex": 1,
+                    "items": [{"name": "상세", "qty": 1, "unitPrice": 1000, "amount": 1000}],
+                }],
+                "missing": [],
+            }
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="invalid_detail_summary_index"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "ABC건설"},
+                "items": [{"name": "요약", "qty": 1, "unitPrice": 1}],
+                "detailGroups": [{
+                    "summaryIndex": 2,
+                    "items": [{"name": "상세", "qty": 1, "unitPrice": 1000}],
+                }],
+                "missing": [],
+            }
+        )
+
+
+
+def test_normalizer_accepts_only_bounded_json_fence_numeric_text_and_tax_case():
+    fenced = """```json
+{"recipient":{"company":"Synthetic Buyer"},"items":[{"name":"Item A","qty":"2","unitPrice":"1000"}],"taxMode":"exclusive","missing":[]}
+```"""
+    projection = normalize_conversation_output(fenced)
+    safe = projection.safe_dict()
+    assert safe["recipient"]["company"] == "Synthetic Buyer"
+    assert safe["items"][0]["qty"] == 2
+    assert safe["items"][0]["unitPrice"] == 1000
+    assert safe["taxMode"] == "EXCLUSIVE"
+
+    with pytest.raises(B66QuoteConversationError, match="invalid_number"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "Synthetic Buyer"},
+                "items": [{"name": "Item A", "qty": "2 units", "unitPrice": "1000"}],
+                "missing": [],
+            }
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="invalid_tax_mode"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "Synthetic Buyer"},
+                "items": [{"name": "Item A", "qty": "2", "unitPrice": "1000"}],
+                "taxMode": "exclusive plus tax",
+                "missing": [],
             }
         )
 
@@ -399,9 +553,88 @@ async def test_interpreter_calls_model_once_for_fields_only_and_hides_template_c
     context = call["context"]
     assert "금액 합계" in context
     assert "defaultTaxMode" in context
+    assert "optionalPresentationFields" in context
+    assert "projectName" in context
+    assert "items.spec" in context
+    assert "items.unit" in context
+    assert "items.note" in context
+    assert "detailGroups" in context
+    assert "summaryIndex" in context
+    assert "계산하지 말고 unitPrice를 null" in context
+    assert "문맥상 의미가 하나로 확실한 경우에만 해석" in context
+    assert "고객이 확인해야 할 고유 정보가 불명확하면 추측하지 말고" in context
+    assert "수량, 단가, 세금 조건은 임의로 만들거나" in context
+    assert "서비스가 고객에게 다시 질문하게" in context
+    assert "missing은 서비스가 검증된 값에서 직접 계산" in context
+    assert "QuoteCore가 상세 소계를 요약 단가로 파생" in context
+    assert "items[].section" not in context or "section" in context
     assert "template-private" not in context
     assert "테스트상사" not in context
     assert call["attachments"] == ()
+
+
+@pytest.mark.asyncio
+async def test_interpreter_keeps_partial_item_and_reports_missing_unit_price():
+    class PartialClient:
+        def __init__(self):
+            self.calls = []
+
+        async def complete(self, *args, **kwargs):
+            self.calls.append(args)
+            return {"answer": json.dumps(
+                {
+                    "recipient": {"company": "대한건설"},
+                    "items": [{"name": "배관", "qty": 100, "unitPrice": None}],
+                    "detailGroups": [],
+                    "missing": [],
+                },
+                ensure_ascii=False,
+            )}
+
+    client = PartialClient()
+    result = await B66QuoteConversationInterpreter(client).interpret(
+        message="대한건설에 배관 100미터 견적 만들어줘",
+        skill=_skill(),
+    )
+    safe = result.safe_dict()
+    # 이미 알아낸 사실은 보존되고, 없는 단가는 추정/계산되지 않는다.
+    assert safe["recipient"]["company"] == "대한건설"
+    assert safe["items"][0]["name"] == "배관"
+    assert safe["items"][0]["qty"] == 100
+    assert "unitPrice" not in safe["items"][0]
+    assert safe["items"][0].get("unitPrice") != 0
+    # missing 은 서버가 파생하며 모델 주장을 신뢰하지 않는다.
+    assert "unitPrice" in result.missing
+    assert len(client.calls) == 1
+    print("PARTIAL_ITEM_FACTS_PRESERVED=YES")
+    print("MISSING_UNIT_PRICE_CAN_ENTER_FOLLOWUP=YES")
+    print("MODEL_CALCULATES_MISSING_PRICE=NO")
+
+
+@pytest.mark.asyncio
+async def test_interpreter_does_not_report_missing_for_complete_item():
+    class CompleteClient:
+        def __init__(self):
+            self.calls = []
+
+        async def complete(self, *args, **kwargs):
+            self.calls.append(args)
+            return {"answer": json.dumps(
+                {
+                    "recipient": {"company": "대한건설"},
+                    "items": [{"name": "배관", "qty": 100, "unitPrice": 18000}],
+                    "detailGroups": [],
+                    "missing": [],
+                },
+                ensure_ascii=False,
+            )}
+
+    result = await B66QuoteConversationInterpreter(CompleteClient()).interpret(
+        message="대한건설에 배관 100미터, 미터당 18000원",
+        skill=_skill(),
+    )
+    assert "unitPrice" not in result.missing
+    assert result.safe_dict()["items"][0]["unitPrice"] == 18000
 
 
 def test_normalizer_rejects_impossible_calendar_date():
@@ -430,3 +663,232 @@ async def test_interpreter_rejects_non_json_model_answer():
             message="ABC건설 견적",
             skill=_skill(),
         )
+
+
+_EXTRACT_PAYLOAD = {
+    "recipient": {"company": "Synthetic Buyer"},
+    "items": [{"name": "Item A", "qty": 2, "unitPrice": 1000}],
+    "detailGroups": [],
+    "missing": [],
+}
+_EXTRACT_JSON = json.dumps(_EXTRACT_PAYLOAD, ensure_ascii=False)
+
+
+def test_normalizer_recovers_only_one_bounded_safe_wrapper():
+    # A) exact JSON answer
+    exact = normalize_conversation_output(_EXTRACT_JSON).safe_dict()
+    assert exact["recipient"]["company"] == "Synthetic Buyer"
+    assert exact["items"][0]["qty"] == 2
+
+    # B) one whole-answer JSON fence
+    fenced = normalize_conversation_output(f"```json\n{_EXTRACT_JSON}\n```").safe_dict()
+    assert fenced["recipient"]["company"] == "Synthetic Buyer"
+    assert fenced["items"][0]["unitPrice"] == 1000
+
+    # C) bounded prose around one fenced payload
+    wrapped_fence = normalize_conversation_output(
+        f"Here is the extracted JSON:\n```json\n{_EXTRACT_JSON}\n```\nThat is all."
+    ).safe_dict()
+    assert wrapped_fence["recipient"]["company"] == "Synthetic Buyer"
+    assert wrapped_fence["items"][0]["unitPrice"] == 1000
+
+    # D) bounded prose around one raw object
+    wrapped_raw = normalize_conversation_output(
+        f"Extracted quote fields:\n{_EXTRACT_JSON}\nEnd of extraction."
+    ).safe_dict()
+    assert wrapped_raw["recipient"]["company"] == "Synthetic Buyer"
+    assert wrapped_raw["items"][0]["qty"] == 2
+
+    # E) two fenced payloads are ambiguous, not recoverable
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(
+            f"```json\n{_EXTRACT_JSON}\n```\n```json\n{_EXTRACT_JSON}\n```"
+        )
+
+    # F) two raw objects are ambiguous, not recoverable
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(f"{_EXTRACT_JSON}\n{_EXTRACT_JSON}")
+
+    # G) malformed JSON fails truthfully, wrapped or fenced
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(
+            'Result: {"recipient":{},"items":[],"missing":[],}'
+        )
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(
+            '```json\n{"recipient":{},"items":[],"missing":[],}\n```'
+        )
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output('Result: {"recipient":{},"items":[')
+
+    # H) server authority fields stay forbidden through the recovery path
+    for authority_field in ("total", "sender", "template", "vat"):
+        payload = json.dumps(
+            {**_EXTRACT_PAYLOAD, authority_field: {"company": "공격자"}},
+            ensure_ascii=False,
+        )
+        with pytest.raises(
+            B66QuoteConversationError,
+            match="unsupported_output_field|forbidden_output_field",
+        ):
+            normalize_conversation_output(f"Extracted:\n{payload}")
+    with pytest.raises(B66QuoteConversationError, match="forbidden_output_field"):
+        normalize_conversation_output(
+            'Extracted: {"recipient":{},"items":[{"name":"A","qty":1,'
+            '"unitPrice":1,"amount":5}],"missing":[]}'
+        )
+
+    # I) the wrapper budget bounds prefix and suffix together
+    long_prefix = "a" * (MAX_MODEL_WRAPPER_CHARS + 1)
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(f"{long_prefix}{_EXTRACT_JSON}")
+    half = "b" * (MAX_MODEL_WRAPPER_CHARS // 2 + 1)
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(f"{half}{_EXTRACT_JSON}\n{half}")
+
+    # J) structural characters in the wrapper always fail closed
+    for prefix, suffix in (
+        ("[note] ", ""),
+        ("", " }"),
+        ("", " [1]"),
+        ("Here {draft}: ", ""),
+    ):
+        with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+            normalize_conversation_output(f"{prefix}{_EXTRACT_JSON}{suffix}")
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(
+            f"Here {{draft}}:\n```json\n{_EXTRACT_JSON}\n```\nDone."
+        )
+
+
+@pytest.mark.asyncio
+async def test_interpreter_recovers_one_safe_wrapper_with_one_model_call():
+    class WrappedClient:
+        def __init__(self):
+            self.calls = 0
+
+        async def complete(self, *args, **kwargs):
+            self.calls += 1
+            return {
+                "answer": (
+                    "Extracted fields:\n```json\n"
+                    '{"recipient":{"company":"Synthetic Buyer"},'
+                    '"items":[{"name":"Item A","qty":1,"unitPrice":1000}],'
+                    '"detailGroups":[],"missing":["unitPrice"]}\n'
+                    "```\nDone."
+                )
+            }
+
+    client = WrappedClient()
+    result = await B66QuoteConversationInterpreter(client).interpret(
+        message="Synthetic Buyer Item A one unit",
+        skill=_skill(),
+    )
+    safe = result.safe_dict()
+    assert safe["recipient"]["company"] == "Synthetic Buyer"
+    assert safe["items"][0]["unitPrice"] == 1000
+    # 모델이 선언한 missing 은 신뢰하지 않고 서버가 정규화된 사실에서 파생한다.
+    assert "unitPrice" not in result.missing
+    assert client.calls == 1
+    print("SAFE_WRAPPER_MODEL_CALLS=1")
+    print("MODEL_MISSING_CLAIM_TRUSTED=NO")
+
+
+@pytest.mark.asyncio
+async def test_interpreter_fails_truthfully_without_retrying_model():
+    class MalformedClient:
+        def __init__(self):
+            self.calls = 0
+
+        async def complete(self, *args, **kwargs):
+            self.calls += 1
+            return {"answer": 'Extracted: {"recipient":{},"items":[],}'}
+
+    malformed = MalformedClient()
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        await B66QuoteConversationInterpreter(malformed).interpret(
+            message="ABC건설 견적",
+            skill=_skill(),
+        )
+    assert malformed.calls == 1
+
+    class FailingClient:
+        def __init__(self):
+            self.calls = 0
+
+        async def complete(self, *args, **kwargs):
+            self.calls += 1
+            raise RuntimeError("provider unavailable")
+
+    failing = FailingClient()
+    with pytest.raises(RuntimeError, match="provider unavailable"):
+        await B66QuoteConversationInterpreter(failing).interpret(
+            message="ABC건설 견적",
+            skill=_skill(),
+        )
+    assert failing.calls == 1
+    print("MALFORMED_OUTPUT_MODEL_CALLS=1")
+    print("PROVIDER_FAILURE_MODEL_CALLS=1")
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("field", ["name", "qty", "unitPrice"])
+@pytest.mark.parametrize("scope", ["summary", "detail"])
+@pytest.mark.parametrize("absence", ["omitted", "null"])
+async def test_required_partial_facts_remain_absent_and_request_only_missing(field, scope, absence):
+    item = {"name": "Synthetic item", "qty": 4, "unitPrice": 1200}
+    if absence == "null":
+        item[field] = None
+    else:
+        item.pop(field)
+    raw = {"recipient": {"person": "Synthetic recipient"}, "missing": ["memo", "taxMode"]}
+    if scope == "summary":
+        raw["items"] = [item]
+    else:
+        raw["items"] = [{"name": "Synthetic summary", "qty": 1, "unitPrice": None}]
+        raw["detailGroups"] = [{"summaryIndex": 1, "items": [item]}]
+
+    class PartialClient:
+        calls = 0
+
+        async def complete(self, *args, **kwargs):
+            self.calls += 1
+            return {"answer": json.dumps(raw)}
+
+    client = PartialClient()
+    result = await B66QuoteConversationInterpreter(client).interpret(message="Synthetic request", skill=_skill())
+    actual = result.items[0] if scope == "summary" else result.detail_groups[0]["items"][0]
+    assert field not in actual
+    assert actual == {key: value for key, value in item.items() if value is not None}
+    assert result.missing == (field,)
+    assert result.recipient["person"] == "Synthetic recipient"
+    assert client.calls == 1
+
+
+@pytest.mark.parametrize("field,invalid", [
+    ("name", True), ("qty", True), ("qty", False), ("qty", -1), ("qty", 0),
+    ("qty", float("inf")), ("qty", float("nan")), ("unitPrice", True),
+    ("unitPrice", False), ("unitPrice", -1), ("unitPrice", float("inf")),
+    ("unitPrice", float("nan")),
+])
+@pytest.mark.parametrize("scope", ["summary", "detail"])
+def test_invalid_supplied_partial_facts_still_fail_closed(field, invalid, scope):
+    item = {"name": "Synthetic item", "qty": 4, "unitPrice": 1200, field: invalid}
+    raw = {"recipient": {"person": "Synthetic recipient"}}
+    if scope == "summary":
+        raw["items"] = [item]
+    else:
+        raw["items"] = [{"name": "Synthetic summary", "qty": 1, "unitPrice": 0}]
+        raw["detailGroups"] = [{"summaryIndex": 1, "items": [item]}]
+    with pytest.raises(B66QuoteConversationError, match="invalid_text|invalid_number"):
+        normalize_conversation_output(raw)
+
+
+def test_out_of_range_model_number_fails_bounded():
+    """A model number beyond float range must fail as invalid_number (#3522 lineage)."""
+    for field in ("qty", "unitPrice"):
+        raw = {
+            "recipient": {"person": "Synthetic recipient"},
+            "items": [{"name": "Synthetic item", "qty": 1, "unitPrice": 1200, field: 10**400}],
+        }
+        with pytest.raises(B66QuoteConversationError, match="invalid_number"):
+            normalize_conversation_output(raw)

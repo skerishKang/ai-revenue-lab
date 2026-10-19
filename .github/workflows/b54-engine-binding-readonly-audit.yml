@@ -1,0 +1,72 @@
+name: B54 Engine Bindings Immutable Readonly Audit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-bindings-readonly-audit
+  cancel-in-progress: false
+
+jobs:
+  audit-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Checkout current main source, read only
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reject stale or non-main dispatch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+          echo 'B54_READONLY_AUDIT_SOURCE=EXACT_MAIN'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: GET-only immutable Worker versions and served deployment
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test "${CLOUDFLARE_ACCOUNT_ID}" = "9be14bb7b8974e65d0afba647ab16932"
+          readonly_dir="${RUNNER_TEMP}/b54-binding-audit"
+          mkdir -p "${readonly_dir}"
+          chmod 700 "${readonly_dir}"
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/deployments" -o "${readonly_dir}/deployments.json"
+          curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/versions/4d90cf39-ca1b-48b4-977e-dce1ca576d7a" -o "${readonly_dir}/good.json"
+          curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/versions/87ae6263-724e-479a-868a-598fe9bf0d01" -o "${readonly_dir}/bad.json"
+          # Read existing mutable settings into RUNNER_TEMP only; never display raw
+          # JSON/plain_text values or publish it as an artifact.
+          curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/settings" -o "${readonly_dir}/settings.json"
+          python3 .github/scripts/b54_engine_binding_readonly_diff_4383.py \
+            --deployments "${readonly_dir}/deployments.json" \
+            --good-version "${readonly_dir}/good.json" \
+            --bad-version "${readonly_dir}/bad.json" \
+            --settings "${readonly_dir}/settings.json"
+          # Build an ephemeral candidate Wrangler config using exactly the
+          # safe-served six flag values, without ever uploading or printing them.
+          # This is diagnostic evidence, not authorization to deploy.
+          cp apps/padiem-ai-engine/wrangler.toml "${readonly_dir}/wrangler.toml"
+          python3 .github/scripts/b54_engine_preserve_live_vars_4383.py \
+            --wrangler "${readonly_dir}/wrangler.toml" \
+            --version-details "${readonly_dir}/good.json" \
+            --active-version "4d90cf39-ca1b-48b4-977e-dce1ca576d7a" \
+            --stage-served-vars
+          echo 'B54_SAFE_SERVED_FLAGS_RENDERABLE=PASS'
+          echo 'B54_ENGINE_GET_ONLY=YES'
+          echo 'NO_DEPLOY_NO_ROLLBACK_NO_SECRET_MUTATION=YES'

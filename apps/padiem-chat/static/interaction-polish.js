@@ -63,6 +63,24 @@
   const statusNode = ensureStatus();
   ensureStyles();
 
+  // #5014: If the reader was already at the newest turn, keep it visible when
+  // the composer or software keyboard grows. Never jump someone reading back.
+  let followingLatestTurn = true;
+  function updateFollowPreference() {
+    if (window.innerWidth > 920) return;
+    const bottom = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    followingLatestTurn = bottom - window.scrollY < 140;
+  }
+  function keepLatestTurnVisible() {
+    if (window.innerWidth > 920 || !followingLatestTurn || messageList.hidden ||
+        !messageList.querySelector(".message")) return;
+    requestAnimationFrame(() => {
+      if (!followingLatestTurn) return;
+      const bottom = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      window.scrollTo({ top: bottom, behavior: "instant" });
+    });
+  }
+
   function syncComposerClearance() {
     if (!composerWrap) return;
     const height = composerWrap.getBoundingClientRect().height;
@@ -72,14 +90,22 @@
     );
     document.documentElement.style.setProperty("--padiem-composer-clearance", `${clearance}px`);
     composerWrap.dataset.conversationClearance = String(clearance);
+    keepLatestTurnVisible();
   }
 
   function resizeComposerInput() {
-    input.style.height = "auto";
-    const contentHeight = Math.max(COMPOSER_MIN_HEIGHT, input.scrollHeight || COMPOSER_MIN_HEIGHT);
-    const nextHeight = Math.min(COMPOSER_MAX_HEIGHT, contentHeight);
-    input.style.height = `${nextHeight}px`;
-    input.style.overflowY = contentHeight > COMPOSER_MAX_HEIGHT ? "auto" : "hidden";
+    let nextHeight;
+    if (window.PadiemConversationComposer?.resizeTextarea) {
+      nextHeight = window.PadiemConversationComposer.resizeTextarea(input, {
+        minHeight: COMPOSER_MIN_HEIGHT, maxHeight: COMPOSER_MAX_HEIGHT
+      });
+    } else {
+      input.style.height = "auto";
+      const contentHeight = Math.max(COMPOSER_MIN_HEIGHT, input.scrollHeight || COMPOSER_MIN_HEIGHT);
+      nextHeight = Math.min(COMPOSER_MAX_HEIGHT, contentHeight);
+      input.style.height = `${nextHeight}px`;
+      input.style.overflowY = contentHeight > COMPOSER_MAX_HEIGHT ? "auto" : "hidden";
+    }
     form.dataset.composerExpanded = nextHeight > COMPOSER_MIN_HEIGHT + 4 ? "true" : "false";
     queueMicrotask(syncComposerClearance);
   }
@@ -102,6 +128,7 @@
     document.documentElement.style.setProperty("--padiem-visual-viewport-height", `${viewportHeight}px`);
     if (composerWrap) composerWrap.dataset.keyboardInset = String(inset);
     syncComposerClearance();
+    keepLatestTurnVisible();
   }
 
   function phaseText(next) {
@@ -138,7 +165,7 @@
     attachmentButton.disabled = requestBusy;
     if (documentStarter) documentStarter.disabled = requestBusy;
     if (removeAttachment) removeAttachment.disabled = requestBusy;
-    if (!requestBusy) sendButton.disabled = input.value.trim().length === 0;
+    if (!requestBusy) sendButton.disabled = false;
   }
 
   function guardAttachmentControls() {
@@ -281,7 +308,11 @@
 
   messageList.addEventListener("padiem:message-lifecycle", handleLifecycle);
 
-  const requestObserver = new MutationObserver(syncRequestFromDom);
+  window.addEventListener("scroll", updateFollowPreference, { passive: true });
+  const requestObserver = new MutationObserver(() => {
+    syncRequestFromDom();
+    keepLatestTurnVisible();
+  });
   requestObserver.observe(cancelButton, { attributes: true, attributeFilter: ["hidden", "disabled"] });
   requestObserver.observe(input, { attributes: true, attributeFilter: ["disabled"] });
   requestObserver.observe(messageList, { childList: true, subtree: true });

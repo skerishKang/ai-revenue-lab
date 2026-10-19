@@ -123,10 +123,6 @@ html[data-theme="padiem-glass"] .conversation {
   padding-right: clamp(18px, 2.4vw, 34px);
 }
 
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .conversation {
-  background: linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84));
-}
-
 html[data-theme="padiem-glass"] .starter,
 html[data-theme="padiem-glass"] .source-card,
 html[data-theme="padiem-glass"] .rich-block,
@@ -154,11 +150,124 @@ html[data-theme="padiem-glass"] .composer-wrap {
   background: linear-gradient(to bottom, transparent, rgba(187,195,202,.30) 26%, rgba(174,184,192,.58) 100%) !important;
 }
 
-html[data-theme="padiem-glass"] .message-bubble {
-  background: rgba(31, 40, 49, .84);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+/* Owner (2026-10-17), Glass theme only: the user's turn reads like the
+ * assistant's turn. A user message and an answer share ONE typographic voice:
+ * no dark cell, no white-on-dark text, no separate bubble chrome. Both turns
+ * are an avatar plate plus text in the same grid, so the speaker is told apart
+ * by the glyph (person vs "P"), never by a surface colour. This supersedes the
+ * earlier "brighten the bubble one notch" request, which only softened the same
+ * dark cell. Other themes keep their own bubble by design and are untouched.
+ *
+ * Every value below is measured from the answer's own computed style on this
+ * theme (chat plate 32px/r10, claw plate 36px/r11, plus each state's text
+ * metrics), so the two turns match instead of merely appearing similar. The
+ * declarations mirror the answer's rules at equal-or-higher specificity because
+ * @import'ed glass sheets (gutter alignment, brand polish) already put
+ * !important caps on the user turn's width and rail. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 14px;
+  column-gap: 14px;
+  align-items: start;
+  justify-content: stretch;
+  width: auto !important;
+  padding-left: 0 !important;
 }
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
+  grid-template-columns: 32px minmax(0, 1fr) !important;
+  gap: 12px !important;
+  column-gap: 12px !important;
+}
+/* Live proof (2026-10-17, chat.padiem.net): padiem-chat-ui-polish.css keeps
+ * indenting the chat user turn with
+ * padding-left:clamp(34px,7vw,88px)!important at EQUAL specificity, so it wins
+ * on later source order and the user's avatar/text sit 88px right of the
+ * answer's (measured: user-avatar x=443 vs answer x=355 at 1683px viewport).
+ * The repeated class below beats it on specificity alone, independent of
+ * sheet order. Values mirror the answer's measured box (padding 3px 0 0, no
+ * margin). Glass theme, chat state only — claw state is already aligned. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message.user-message {
+  padding: 3px 0 0 !important;
+  margin: 0 !important;
+}
+/* The plate: claw default first, then the chat state's own values. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar {
+  grid-column: 1;
+  grid-row: 1;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: rgba(239, 244, 247, .2);
+  border: 1px solid rgba(255, 255, 255, .3);
+  color: #ffffff;
+  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .user-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 10px !important;
+  background: rgba(73, 84, 94, .52) !important;
+  border: 1px solid rgba(255, 255, 255, .48) !important;
+  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .16) !important;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar svg {
+  width: 17px;
+  height: 17px;
+}
+/* The text keeps the DOM element (and its tests) but loses the cell. The class
+ * is repeated to out-specify the @import'ed gutter sheet's !important caps on
+ * this same element. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .message-bubble.message-bubble {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  font-weight: 400;
+}
+/* Body text mirrors the answer's own metrics. The answer is now one thread —
+ * same 17px, same ink, in both states — so the user's turn follows once. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .message-bubble {
+  color: #111a22;
+  font-size: 17px;
+  line-height: 29.92px;
+}
+@media (max-width: 900px) {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message {
+    grid-template-columns: 32px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    column-gap: 10px !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+/* Narrow phones: the answer text drops to 16px/1.72, so the user's turn
+ * follows it down rather than staying at the desktop metrics. */
+@media (max-width: 640px) {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .message-bubble {
+    font-size: 16px;
+    line-height: 27.52px;
+  }
+}
+/* #1424 anchored the turn to the frame's right edge and capped it at ~88%.
+ * Left-aligned text needs neither, and those caps are overridden above for this
+ * theme only. Base caps for the other themes stay untouched. */
+
 
 html[data-theme="padiem-glass"] .glass-variant-control {
   margin-top: 16px;
@@ -325,7 +434,7 @@ html[data-theme="padiem-glass"] .home-link::before {
   transform: translateY(1px);
 }
 
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .assistant-avatar {
+html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-avatar {
   width: 36px;
   height: 36px;
   border: 1px solid rgba(255, 255, 255, .56) !important;
@@ -335,7 +444,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .assistant-avatar 
   box-shadow: 0 8px 24px rgba(24, 33, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .20) !important;
 }
 
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .assistant-meta {
+html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-meta {
   color: #53606c !important;
   font-family: inherit;
   font-size: 13px;
@@ -386,28 +495,9 @@ html[data-theme="padiem-glass"] .answer-action:focus-visible {
   background: rgba(255, 255, 255, .68) !important;
 }
 
-/* Make the active chat composer readable as a field: muted gray surface,
- * light entered text, and enough contrast for the placeholder/caret. */
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer {
-  padding: 10px 11px 9px;
-  border-color: rgba(255, 255, 255, .38) !important;
-  background: rgba(49, 56, 63, .92) !important;
-  box-shadow: 0 18px 46px rgba(27, 35, 43, .22), inset 0 1px 0 rgba(255, 255, 255, .10) !important;
-}
-
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer textarea {
-  min-height: 52px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(104, 113, 121, .58) !important;
-  color: #ffffff !important;
-  caret-color: #ffffff;
-}
-
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer textarea::placeholder {
-  color: rgba(255, 255, 255, .68) !important;
-}
-
+/* Chat's same glass composer stays visually continuous during typing.
+ * Do not replace its white shell with a dark nested textarea when state=chat.
+ * The shared Chat/Claw composer is ONE stable input, not a second popup. */
 html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-actions {
   margin-top: 8px;
 }
@@ -634,4 +724,131 @@ html[data-theme="padiem-glass"] .glass-shell-frag::after {
   inset: 0;
   border-top: 1px solid rgba(255,255,255,.14);
   border-bottom: 1px solid rgba(45,69,87,.08);
+}
+
+/* Owner-confirmed Plan 4 (2026-10-17, Glass theme, chat state only):
+ * row1 = profile chip + 20px user icon (right-aligned),
+ * row2 = text right-aligned with its right edge on the icon's left edge,
+ * row3 = Codex-style hover-reveal user actions (time/copy/edit).
+ * The answer-side avatar keeps its gray plate (owner: no blue combo); only
+ * the 5 answer-action buttons drop their chrome (26px, no bg/border).
+ * Selectors use the repeated-class + #messageList pattern to beat the
+ * @import'ed polish/accessibility caps independent of sheet order. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message.user-message {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto 20px !important;
+  grid-template-rows: auto auto auto !important;
+  gap: 2px 10px !important;
+  justify-content: end !important;
+  justify-items: end !important;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .message-bubble.message-bubble {
+  grid-column: 1 / span 3 !important;
+  grid-row: 2 !important;
+  justify-self: end !important;
+  width: auto !important;
+  margin-right: 20px !important;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-profile-chip {
+  display: block !important;
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  align-self: center !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  color: #7b8792 !important;
+  white-space: nowrap !important;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-avatar {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: #111a22 !important;
+  display: grid !important;
+  place-items: center !important;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-avatar svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+/* Row3: user actions stay out of the layout until hover/focus; touch
+ * devices (no hover) always show them so copy/edit stay reachable. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-actions {
+  grid-column: 1 / span 3 !important;
+  grid-row: 3 !important;
+  justify-self: end !important;
+  margin: 0 20px 0 0 !important;
+  padding: 0 !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message:hover .user-actions,
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message:focus-within .user-actions {
+  display: flex !important;
+}
+@media (hover: none) {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-actions {
+    display: flex !important;
+  }
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-action-time {
+  font-size: 12px !important;
+  line-height: 1 !important;
+  color: #7b8792 !important;
+  white-space: nowrap !important;
+  margin-right: 2px !important;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-action {
+  appearance: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: 26px !important;
+  height: 26px !important;
+  padding: 0 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: none !important;
+  color: #53606c !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-action:hover {
+  background: rgba(17, 26, 34, .07) !important;
+}
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-action:focus-visible {
+  outline: 2px solid #6557e8 !important;
+  outline-offset: 1px !important;
+}
+/* Answer action bar: drop the 40px chrome to 26px textless icons. The
+ * accessibility-polish 40px min-* floor (0,1,0) and the portrait 38px rule
+ * above both lose to this (1,5,2)+!important pair. */
+html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-action {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  width: 26px !important;
+  height: 26px !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: none !important;
+  color: #53606c !important;
+  font-size: 13px !important;
+}
+html[data-theme="padiem-glass"] .answer-actions {
+  gap: 0 !important;
+  margin-top: 2px !important;
+}
+html[data-theme="padiem-glass"] .answer-action + .answer-action {
+  margin-left: 4px !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
+  gap: 14px !important;
 }

@@ -38,6 +38,8 @@ eq(Candidate.isApprovedCandidate(ready.candidate), false, "candidate is never im
 
 const review = Candidate.buildReviewModel(ready.candidate);
 check(review.alwaysReusedOrDefault.some((x) => x.key === "sender.company"), "fixed/default company facts are reviewable");
+check(review.alwaysReusedOrDefault.some((x) => x.key === "sender.contactPerson"),
+  "the sender contact person default is reviewable in the skill candidate (#3401)");
 check(review.changesEachQuote.some((x) => x.key === "recipient" && x.required === true), "recipient is explicitly variable");
 check(review.changesEachQuote.some((x) => x.key === "items" && x.required === true), "items are explicitly variable");
 eq(review.calculatedByCore.map((x) => x.key), Candidate.CALCULATED_FIELDS, "calculated fields stay locked to QuoteCore");

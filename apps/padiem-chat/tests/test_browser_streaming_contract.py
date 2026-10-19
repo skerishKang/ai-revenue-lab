@@ -43,8 +43,10 @@ def test_text_only_streams_but_attachment_keeps_completed_json() -> None:
     assert "chatTransport.requestStreaming(payload, signal)" in source
     assert "chatTransport.requestCompleted(payload, signal)" in source
     assert "if (attachments) {" in source
-    assert "return await requestCompletedAnswer(" in source
-    assert "return await requestStreamingAnswer(" in source
+    # Success recording for one-click regenerate keeps the same dispatch
+    # shape: completed JSON for attachments, streaming otherwise.
+    assert "await requestCompletedAnswer(" in source
+    assert "await requestStreamingAnswer(" in source
     assert 'fetch("/api/chat/stream"' in transport
     assert 'fetch("/api/chat"' in transport
     assert '"Accept": "text/event-stream"' in transport
@@ -211,7 +213,9 @@ def test_streamed_browser_path_never_renders_provider_route_details() -> None:
 
     assert "route-details" not in stream_source
     assert "provider" not in stream_source
-    assert 'textContent = uiT("ai-response")' in stream_source
+    # Completed/streaming answers keep the brand label only; the repetitive
+    # "AI 응답" line is not rendered. The locale key stays for compatibility.
+    assert 'textContent = uiT("ai-response")' not in stream_source
     assert '"ai-response": "AI 응답"' in LOCALE_PATH.read_text(encoding="utf-8")
 
 
@@ -234,7 +238,10 @@ def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -
     outputs = (APP_PATH.parent / "outputs.js").read_text(encoding="utf-8")
     export = (APP_PATH.parent / "conversation-export.js").read_text(encoding="utf-8")
     assert 'if (!lifecycleApi().isCompleted(article))' in outputs
-    assert 'button.hidden = !outputsReady || !eligible' in outputs
+    # #4462 CTO follow-up: copy/download stay completed-only while the
+    # per-answer save entry stays hidden with the removed saved-answers list.
+    assert 'button.hidden = !outputsReady || !eligible' not in outputs
+    assert 'save.hidden = true' in outputs
     assert 'if (hasIncompleteAssistant()) return [];' in export
     assert 'messageList.addEventListener("padiem:message-lifecycle"' in outputs
     assert 'messageList.addEventListener("padiem:message-lifecycle"' in export

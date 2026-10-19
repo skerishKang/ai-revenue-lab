@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator
+from contextlib import AsyncExitStack
 from dataclasses import dataclass, field
 import json
 from typing import Any, Mapping
@@ -345,13 +347,13 @@ class B14StreamingClient:
         payload = request.to_payload()
         payload["stream"] = True
         timeout = httpx.Timeout(
-            connect=min(self._config.timeout_seconds, 10.0),
+            connect=self._config.timeout_seconds,
             read=self._config.timeout_seconds,
-            write=min(self._config.timeout_seconds, 10.0),
+            write=min(self._config.timeout_seconds, 20.0),
             pool=min(self._config.timeout_seconds, 10.0),
         )
 
-        total_bytes = 0
+        # Bound each SSE frame, not the cumulative healthy provider output.
         buffer = b""
         saw_done = False
         last_route = B14RouteMetadata()
@@ -361,11 +363,14 @@ class B14StreamingClient:
                 timeout=timeout,
                 follow_redirects=False,
             ) as client:
-                async with client.stream(
-                    "POST",
-                    url,
-                    json=payload,
-                ) as response:
+                # Workers Service Bindings and JS Fetch may ignore HTTPX's
+                # per-read timeout. Guard *header arrival only*, not the
+                # entire healthy SSE lifetime, and release the stream on stop.
+                async with AsyncExitStack() as stack:
+                    async with asyncio.timeout(self._config.timeout_seconds):
+                        response = await stack.enter_async_context(
+                            client.stream("POST", url, json=payload)
+                        )
                     status_code = response.status_code
                     _raise_status_error(status_code)
                     content_type = response.headers.get("content-type", "").lower()
@@ -376,27 +381,42 @@ class B14StreamingClient:
                             upstream_status_code=status_code,
                         )
 
-                    async for chunk in response.aiter_bytes():
-                        total_bytes += len(chunk)
-                        if total_bytes > self._config.max_response_bytes:
-                            raise B14ExecutionError(
-                                "upstream_response_too_large",
-                                "Business 14 response exceeded the configured safety limit.",
-                                upstream_status_code=status_code,
+                    # ZCode parity: refresh the idle watchdog for every
+                    # incoming chunk, even on transports without native
+                    # HTTPX read-idle enforcement. Never add a total SSE cap.
+                    incoming = response.aiter_bytes()
+                    while True:
+                        try:
+                            async with asyncio.timeout(self._config.timeout_seconds):
+                                chunk = await anext(incoming)
+                        except StopAsyncIteration:
+                            break
+                        # A transport chunk can contain many short, valid
+                        # frames. Slice it so parser memory remains bounded.
+                        frame_cap = self._config.max_response_bytes
+                        for start in range(0, len(chunk), frame_cap):
+                            frames, buffer = _pop_sse_frames(
+                                buffer + chunk[start:start + frame_cap]
                             )
-                        buffer += chunk
-                        frames, buffer = _pop_sse_frames(buffer)
-                        for raw_frame in frames:
-                            decoded = _decode_sse_frame(raw_frame)
-                            if decoded is None:
-                                continue
-                            event = _parse_data_frame(decoded)
-                            if event.done:
-                                saw_done = True
-                                yield B14StreamEvent(route=last_route, done=True)
-                                return
-                            last_route = event.route
-                            yield event
+                            if len(buffer) > frame_cap or any(
+                                len(frame) + 2 > frame_cap for frame in frames
+                            ):
+                                raise B14ExecutionError(
+                                    "upstream_response_too_large",
+                                    "Business 14 stream frame exceeds parser safety limit.",
+                                    upstream_status_code=status_code,
+                                )
+                            for raw_frame in frames:
+                                decoded = _decode_sse_frame(raw_frame)
+                                if decoded is None:
+                                    continue
+                                event = _parse_data_frame(decoded)
+                                if event.done:
+                                    saw_done = True
+                                    yield B14StreamEvent(route=last_route, done=True)
+                                    return
+                                last_route = event.route
+                                yield event
 
                     if buffer.strip():
                         decoded = _decode_sse_frame(buffer)
@@ -410,6 +430,12 @@ class B14StreamingClient:
                             yield event
         except B14ExecutionError:
             raise
+        except TimeoutError as exc:
+            raise B14ExecutionError(
+                "upstream_timeout",
+                "Business 14 model stream was idle beyond the configured timeout.",
+                retryable=True,
+            ) from exc
         except httpx.TimeoutException as exc:
             raise B14ExecutionError(
                 "upstream_timeout",

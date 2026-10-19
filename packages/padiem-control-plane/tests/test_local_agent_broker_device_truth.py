@@ -177,10 +177,27 @@ def _provision_live_device(durable_object) -> dict:
     return session
 
 
-def test_device_truth_reports_the_live_device_facts_and_never_online() -> None:
+def test_device_truth_reports_the_live_device_facts_and_never_online(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     _storage, _env, durable_object = _rpc_fixture()
     session = _provision_live_device(durable_object)
 
+    # The live-device facts are observed at a deterministic instant inside the
+    # seeded session and credential windows — never at the machine wall clock,
+    # which eventually crosses the fixed 30-day credential TTL (2026-10-04).
+    pinned = BASE + timedelta(minutes=2)
+    runtime_module = importlib.import_module("local_agent_broker_durable_runtime")
+    real_datetime = runtime_module.datetime
+
+    class _PinnedDatetime(real_datetime):
+        @classmethod
+        def now(cls, tz=None):  # type: ignore[override]
+            return pinned if tz is None else pinned.astimezone(tz)
+
+    monkeypatch.setattr(
+        "local_agent_broker_durable_runtime.datetime", _PinnedDatetime, raising=True
+    )
     result = asyncio.run(durable_object.device_truth({"account_ref": ACCOUNT_REF}))
     assert result["ok"] is True
     assert result["available"] is True

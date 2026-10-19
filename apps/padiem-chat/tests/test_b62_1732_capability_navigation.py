@@ -35,8 +35,6 @@ def _buttons() -> dict[str, dict[str, str | None]]:
 def test_deployment_conditional_primary_controls_fail_closed_hidden() -> None:
     buttons = _buttons()
     conditional = {
-        "sidebarSearchButton",
-        "projectsNavButton",
         "loginButton",
         "webSearchStarterButton",
         "webSearchButton",
@@ -47,6 +45,9 @@ def test_deployment_conditional_primary_controls_fail_closed_hidden() -> None:
         assert "hidden" in buttons[identifier], identifier
         assert "disabled" in buttons[identifier], identifier
         assert buttons[identifier].get("aria-disabled") == "true", identifier
+    # #4462: the duplicate sidebar Projects button is removed; the project
+    # surface is the lower projects section + create button only.
+    assert "projectsNavButton" not in buttons
 
     html = INDEX.read_text(encoding="utf-8")
     assert "<span class=\"mini-badge\">준비 중</span>" not in html
@@ -73,7 +74,10 @@ def test_browser_capability_projection_is_bounded_visibility_not_execution_autho
         assert flag in source
     assert 'CustomEvent("padiem:capabilitychange"' in source
     assert "Object.freeze" in source
-    assert "/api/chat" not in source
+    # #5121 adds the PADIEM Custom credential metadata endpoint (key registration
+    # and deletion only). Chat execution itself must stay out of this projection.
+    assert '"/api/chat"' not in source
+    assert '"/api/chat/stream"' not in source
     assert "payload.tool" not in source
     assert "localStorage" not in source
     assert "sessionStorage" not in source
@@ -98,16 +102,49 @@ def test_search_and_research_visibility_separates_deployment_unavailable_from_bu
     assert 'window.addEventListener("padiem:capabilitychange"' in source
 
 
-def test_sidebar_search_is_real_capability_backed_navigation_and_mirrors_busy_state() -> None:
+def test_sidebar_search_is_an_independent_fail_closed_conversation_search_entry() -> None:
+    html = INDEX.read_text(encoding="utf-8")
+    buttons = _buttons()
+    search = buttons["sidebarSearchButton"]
+    # Visible on the second sidebar line beside New Chat. #4471: it now opens
+    # real conversation search, but it is still rendered disabled in markup and
+    # only enabled by conversation-search.js when the owner's history is ready
+    # (fail-closed by default).
+    assert "hidden" not in search
+    assert "disabled" in search
+    assert search.get("aria-disabled") == "true"
+    assert html.index('id="newChatButton"') < html.index('id="sidebarSearchButton"') < html.index('class="side-nav"')
+    assert 'script src="./conversation-search.js" defer' in html
+
+
+def test_sidebar_search_never_touches_web_search_state_or_center_card() -> None:
     source = CAPABILITIES.read_text(encoding="utf-8")
-    assert 'document.getElementById("sidebarSearchButton")' in source
-    assert 'document.getElementById("webSearchButton")' in source
-    assert "sidebarSearchButton.hidden = !available;" in source
-    assert "const busy = webSearchButton.disabled;" in source
-    assert "sidebarSearchButton.disabled = busy;" in source
-    assert "webSearchButton.click();" in source
-    assert "messageInput.focus();" in source
-    assert "mobileClose.click();" in source
+    # The web-search capability projection never reads the sidebar search entry.
+    assert 'getElementById("sidebarSearchButton")' not in source
+    assert "syncSidebarSearch" not in source
+    assert "webSearchButton.click" not in source
+    assert 'attributeFilter: ["disabled", "aria-pressed", "hidden"]' not in source
+
+    # #4471: the conversation-search module owns the sidebar entry and must
+    # never touch web-search controls or the center web card.
+    conversation_search_raw = (STATIC / "conversation-search.js").read_text(encoding="utf-8")
+    # Guard executable code, not the documentation comments that name these
+    # controls to explain the boundary. Strip full-line // comments first.
+    conversation_search = "\n".join(
+        line for line in conversation_search_raw.splitlines() if not line.lstrip().startswith("//")
+    )
+    assert 'getElementById("sidebarSearchButton")' in conversation_search
+    for forbidden in ("webSearchButton", "webSearchStarterButton", "deepResearchButton", "웹에서 찾아줘"):
+        assert forbidden not in conversation_search, forbidden
+    assert "localStorage" not in conversation_search
+    assert "sessionStorage" not in conversation_search
+    assert "document.cookie" not in conversation_search
+
+    # The center web card's status text is only driven by the composer's own
+    # web-search control — never by the sidebar search entry.
+    search_js = SEARCH.read_text(encoding="utf-8")
+    assert "sidebarSearchButton" not in search_js
+    assert 'starterStatus.textContent = webActive ? "다음 질문에서 사용" : "최신 정보 · 출처와 함께"' in search_js
 
 
 def test_auth_status_controls_account_session_visibility_while_health_controls_code_capability() -> None:
@@ -125,15 +162,27 @@ def test_auth_status_controls_account_session_visibility_while_health_controls_c
     server = APP_FACTORY.read_text(encoding="utf-8")
     assert 'Route("/health", health, methods=["GET"])' in server
     assert '"web_tools_ready": web_ready' in server
-    assert '"deep_research_ready": settings.runtime_mode == "b14" and web_ready' in server
+    assert '"deep_research_ready": research_ready' in server
     assert '"auth_configured": settings.auth_mode != "off"' in server
     assert '"history_store_bound": request.app.state.history_store is not None' in server
 
 
-def test_capability_projection_does_not_mutate_server_or_model_surfaces() -> None:
+def test_capability_projection_only_mutates_the_custom_credential_surface() -> None:
     source = CAPABILITIES.read_text(encoding="utf-8")
     assert 'method: "POST"' not in source
     assert 'method: "PATCH"' not in source
-    assert 'method: "DELETE"' not in source
+    # #5121 requires deleting the customer's own PADIEM Custom credential and
+    # nothing else: exactly one DELETE, scoped to the custom credential route,
+    # with no body. Model, tier and deployment surfaces stay read-only.
+    assert source.count('method: "DELETE"') == 1
+    delete_start = source.index("async function deleteCustomKey()")
+    delete_end = source.index("function createCustomSection()", delete_start)
+    delete_source = source[delete_start:delete_end]
+    assert 'method: "DELETE"' in delete_source
+    assert (
+        '"/api/chat/custom/credential?provider=" + encodeURIComponent(provider.provider)'
+        in delete_source
+    )
+    assert "body:" not in delete_source
     assert "b14" not in source.lower()
     assert "control_plane" not in source.lower()

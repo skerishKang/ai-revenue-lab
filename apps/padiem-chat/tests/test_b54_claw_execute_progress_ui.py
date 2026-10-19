@@ -52,6 +52,8 @@ policy change, fake progress, polling, auto-retry, or cancel authority.
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import json
 import re
 import shutil
@@ -176,7 +178,14 @@ def test_exactly_one_explicit_dispatch_path_starts_the_wait() -> None:
     body_check = execute_body.index("if (!body) {")
     start = execute_body.index("beginClawWait();")
     assert guard < body_check < start
-    assert 'const body = (input.value || "").trim();' in execute_body
+    # #3382: the body comes from the live form through the single builder the
+    # duplicate check shares, so assert the read at its new home instead of
+    # pinning the old call-site literal.
+    assert "const executePayload = clawVisibleExecutePayload();" in execute_body
+    assert "const body = executePayload.content;" in execute_body
+    builder = app[app.index("function clawVisibleExecutePayload()"):]
+    builder = builder[: builder.index("\n  }")]
+    assert '(input.value || "").trim()' in builder
 
 
 def test_wait_timer_lifecycle_is_closed() -> None:
@@ -297,7 +306,7 @@ def test_wait_does_not_add_routes_or_touch_the_server() -> None:
     assert app.count('fetch("/api/claw/manual-intake/execute"') == 1
     # The run-history route keeps exactly one consumer (the #2746 surface) and is
     # never used as a progress channel.
-    assert app.count('fetch("/api/claw/runs') == 1
+    assert app.count('fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`') == 1
     block = _wait_block()
     assert "/api/" not in block
 
@@ -391,6 +400,15 @@ function makeEl(tag) {
   el.prepend = (...cs) => cs.forEach((c) => { el.children.unshift(c); c.parentNode = el; });
   el.append = (...cs) => cs.forEach((c) => el.appendChild(c));
   el.replaceChildren = (...cs) => { el.children = []; cs.forEach((c) => el.appendChild(c)); };
+  // #4806 inserts the artifact context relative to #messageList, so the shim
+  // needs the same child-insertion API the real Element exposes.
+  el.insertBefore = (node, ref) => {
+    const at = el.children.indexOf(ref);
+    if (at < 0) el.children.push(node); else el.children.splice(at, 0, node);
+    node.parentNode = el;
+    return node;
+  };
+  el.removeChild = (node) => { el.children = el.children.filter((c) => c !== node); return node; };
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
   el.querySelector = (sel) => el.children.find((c) => c.className && c.className.includes(sel.replace(/^\./, ""))) || null;
@@ -401,6 +419,31 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // #4806 added `messageList.closest(".conversation")` to the real app.js.
+  // This minimal DOM shim must expose the same Element API instead of
+  // crashing every behavioral harness that runs the real source.
+  el.closest = (sel) => {
+    const want = String(sel).replace(/^\./, "");
+    let node = el;
+    while (node) {
+      if (node.className && String(node.className).includes(want)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  };
+  // Assigning .value must model a real user edit: the app separates a new draft
+  // from a re-send of uncertain work by listening to input/change, so the shim
+  // fires those listeners (otherwise a composed-new-task click is not a click
+  // a real user could have made).
+  let rawValue = "";
+  Object.defineProperty(el, "value", {
+    get: () => rawValue,
+    set: (v) => {
+      rawValue = v;
+      (el.listeners.input || []).forEach((fn) => fn({ type: "input", target: el }));
+      (el.listeners.change || []).forEach((fn) => fn({ type: "change", target: el }));
+    },
+  });
   return el;
 }
 
@@ -426,6 +469,14 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty",
   "clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
 ].forEach((id) => add(id, "div"));
+// index.html nests #messageList inside <section class="conversation">, and the
+// real app.js reads that ancestor to decide whether the first turn continues
+// the landing panel (#4806). Model the same nesting instead of returning null.
+if (byId.messageList) {
+  const conversationSection = makeEl("section");
+  conversationSection.className = "conversation";
+  conversationSection.appendChild(byId.messageList);
+}
 
 // Mirror the declared markup: these nodes start hidden.
 byId.clawStatus.hidden = true;
@@ -832,6 +883,9 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
 """
 
 
+# Every named consumer checks immutable fields from the same real app.js
+# behavioral journey. Cache only within this process; never share across CI runs.
+@lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"

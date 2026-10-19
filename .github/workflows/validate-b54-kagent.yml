@@ -9,6 +9,11 @@ on:
       # has to run this suite even when no Claw file moves.
       - 'packages/padiem-ai-core/padiem_ai_core/image_helpers.py'
       - 'packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py'
+      # #5172: the Claw plan boundary uses the shared PC device identity
+      # grammar, so a change to that one contract has to run this suite even
+      # when no Claw file moves.
+      - 'packages/padiem-ai-core/padiem_ai_core/pc_device_identity.py'
+      - 'packages/padiem-ai-core/tests/test_pc_device_identity.py'
       - 'packages/padiem-ai-core/tests/test_pillow_wheel_receipts.py'
       - 'packages/padiem-ai-core/tests/test_image_helpers_3037.py'
       - 'packages/padiem-ai-core/pyproject.toml'
@@ -24,10 +29,15 @@ on:
       # so a declaration change has to run this suite even when no Claw file moves.
       - 'packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py'
       - '.github/workflows/validate-b54-kagent.yml'
+      - '.github/scripts/kagent_parallel_contract_tests.py'
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: validate-b54-kagent-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -200,6 +210,11 @@ jobs:
           set -euo pipefail
           python -m compileall -q src tests
 
+      # The runner discovers the exact original unittest suite, proves a
+      # disjoint complete partition by test IDs, then runs both groups in two
+      # isolated Python processes on this single Linux/Windows GitHub runner.
+      # Each child independently re-discovers and checks the test-ID digest,
+      # preserves all failures and skips, and reports the slowest 50 durations.
       - name: Run KAgent contract tests
         working-directory: apps/korean-ai-code-agent
         shell: bash
@@ -207,4 +222,4 @@ jobs:
           PYTHONPATH: src
         run: |
           set -euo pipefail
-          python -m unittest discover -s tests -v
+          python "$GITHUB_WORKSPACE/.github/scripts/kagent_parallel_contract_tests.py"

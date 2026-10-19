@@ -277,17 +277,29 @@ async def _stream_body(
 
 
 @router.route(_STREAM_PREVIEW_PATH, methods=["POST"])
-async def pilot_stream_preview(request: Request):
-    """Preview one manual, non-fallback platform route as SSE."""
+async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = None):
+    """Preview one manual, non-fallback platform route as SSE.
+
+    Canonical gateway passes already parsed bytes to avoid re-reading JSON via
+    the Cloudflare Python/ASGI bridge; the dedicated preview route still parses
+    its own request under the same existing admission checks.
+    """
     request_id = _request_id()
     iterator: AsyncIterator[StreamEvent] | None = None
 
     try:
-        try:
-            raw = await request.json()
-        except (ValueError, UnicodeDecodeError):
-            return _invalid_json_response(request_id)
+        if parsed_body is not None:
+            raw = parsed_body
+        else:
+            try:
+                raw = await request.json()
+            except (ValueError, UnicodeDecodeError):
+                return _invalid_json_response(request_id)
 
+        # Validate the exact manual ID before synchronous route admission.
+        if isinstance(raw, dict) and isinstance(raw.get("model"), str):
+            from app.pilot.platform_secrets import ensure_route_secrets
+            await ensure_route_secrets(raw["model"])
         body, decision = _validate_preview_body(raw)
 
         # Tests may inject MockTransport through app.state. Production has no
@@ -307,6 +319,8 @@ async def pilot_stream_preview(request: Request):
                 messages=body["messages"],
                 temperature=body.get("temperature"),
                 max_tokens=body.get("max_tokens"),
+                **({"model_parameters": body["model_parameters"]}
+                   if body.get("model_parameters") else {}),
                 transport=transport,
             )
         else:
@@ -341,10 +355,11 @@ async def pilot_stream_preview(request: Request):
         if iterator is not None:
             await _close_iterator(iterator)
         logger.warning(
-            "stream_preview_pre_start_error request_id=%s code=%s status=%d",
+            "stream_preview_pre_start_error request_id=%s code=%s status=%d credential_reason=%s",
             request_id,
             exc.code,
             exc.status_code,
+            getattr(exc, "credential_reason", ""),
         )
         return _error_response(exc, request_id)
     except Exception:

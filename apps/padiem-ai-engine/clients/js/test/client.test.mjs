@@ -111,6 +111,37 @@ test("execute propagates normalized execution context", async () => {
   });
 });
 
+test("Engine JS timeout validator matches canonical 1..3600s and does not reject healthy agent budgets", async () => {
+  const fake = binding(async () =>
+    new Response(
+      JSON.stringify({ ok: true, answer: "done", route: {}, metadata: {} }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    ),
+  );
+  const engine = client(fake);
+
+  for (const seconds of [1, 60, 61, 900, 3600]) {
+    await engine.execute(
+      run({ execution_context: { trace_id: "trace_ctx", timeout_seconds: seconds } }),
+    );
+    const payload = JSON.parse(fake.calls.at(-1).init.body);
+    assert.equal(payload.execution_context.timeout_seconds, seconds);
+  }
+  assert.equal(fake.calls.length, 5);
+
+  for (const invalid of [0, -1, 3601, NaN, Infinity, "900"]) {
+    await assert.rejects(
+      engine.execute(
+        run({ execution_context: { trace_id: "trace_ctx", timeout_seconds: invalid } }),
+      ),
+      (error) =>
+        error instanceof PadiemAiEngineClientError &&
+        error.code === "invalid_engine_request",
+    );
+  }
+  assert.equal(fake.calls.length, 5, "invalid budgets must not reach Engine");
+});
+
 test("execution context requires trace id and rejects unsupported fields", async () => {
   const fake = binding(async () => new Response("{}", { status: 500 }));
   const engine = client(fake);

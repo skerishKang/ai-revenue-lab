@@ -1,22 +1,4 @@
-"""Model catalog for Business 14.
-
-Defines the single Kilo Gateway free route model under owner decision #1933.
-
-Source of truth
----------------
-The entire legacy OpenRouter catalog has been wiped per owner decision #1933.
-Business 14 connects exclusively to the Kilo Gateway free route:
-- Model ID: ``kilo/nvidia-nemotron-3-ultra-550b-a55b-free``
-- Upstream: ``nvidia/nemotron-3-ultra-550b-a55b:free``
-- Provider: Kilo Gateway / NVIDIA
-- Price: $0 / $0 (evidenced free)
-- Rate Limit: 200 requests/hour (fails closed with 429 when exhausted)
-
-Authentication
---------------
-Authentication follows the platform_secret slot (KILO_API_KEY). If unset,
-anonymous requests are permitted for the free tier per Kilo Gateway policy.
-"""
+"""B14 model catalog data types, with entries loaded exclusively from b14_models.json."""
 
 from __future__ import annotations
 
@@ -31,15 +13,6 @@ _KRW_PER_USD_CONFIGURED = 1380.0
 
 KILO_SOURCE_CHECKED_AT = "2026-09-06"
 SNAPSHOT_STATE_CONFIGURED = "configured_snapshot"
-
-TASK_TYPE_REQUIRED_CAPABILITIES: dict[str, frozenset] = {
-    "general": frozenset({"chat"}),
-    "korean": frozenset({"chat"}),
-    "coding": frozenset({"chat", "coding"}),
-    "document": frozenset({"chat"}),
-    "batch": frozenset({"chat"}),
-}
-
 
 @dataclass(frozen=True)
 class CatalogModel:
@@ -108,31 +81,11 @@ class CatalogModel:
         return round(usd * _KRW_PER_USD_CONFIGURED, 1)
 
 
-# Single provider & route under owner decision #1933: Kilo Gateway free route.
-# Rate limit: 200 requests/hour. Fails closed with 429 when exhausted.
-CATALOG_MODELS: list[CatalogModel] = [
-    CatalogModel(
-        model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
-        display_name="Kilo: NVIDIA Nemotron 3 Ultra (free)",
-        provider="Kilo Gateway / NVIDIA",
-        provider_type="platform",
-        input_price_usd_per_1m=0.0,
-        output_price_usd_per_1m=0.0,
-        currency="usd",
-        context_window=1000000,
-        korean_score=4,
-        latency_ms=1500,
-        capabilities=frozenset({"chat", "coding", "free"}),
-        region="외부",
-        sort_order=10,
-        credential_source="platform_secret",
-        platform_provider_id="kilo",
-        source="kilo_official_gateway_models",
-        source_checked_at=KILO_SOURCE_CHECKED_AT,
-        snapshot_state=SNAPSHOT_STATE_CONFIGURED,
-    ),
-]
+# The canonical B14 model registry installs entries from b14_models.json here.
+# The catalog supports multiple providers; availability and rate limits are
+# route/provider-specific, not a universal 200-requests-per-hour catalog rule.
+CATALOG_MODELS: list[CatalogModel] = []
+
 
 def ensure_free_tag_requires_known_zero_price(model: CatalogModel) -> None:
     """Reject a ``free`` capability tag on any model without a known zero price.
@@ -163,7 +116,12 @@ def is_evidenced_free(model: CatalogModel) -> bool:
 for _catalog_model in CATALOG_MODELS:
     ensure_free_tag_requires_known_zero_price(_catalog_model)
 
-CATALOG_BY_ID: dict[str, CatalogModel] = {m.model_id: m for m in CATALOG_MODELS}
+CATALOG_BY_ID: dict[str, CatalogModel] = {}
+
+# Canonical JSON is loaded once before consumers resolve routes or provider metadata.
+from .model_registry_file import install_models as _install_models
+_install_models()
+
 
 
 def get_catalog_models() -> list[CatalogModel]:
@@ -205,103 +163,3 @@ def list_catalog_summaries() -> list[dict]:
         }
         for m in get_catalog_models()
     ]
-
-
-def filter_catalog(
-    required_capabilities: list[str] | None = None,
-    task_type: str | None = None,
-) -> list[CatalogModel]:
-    """Filter catalog models by capabilities and task type.
-
-    ``task_type`` is enforced as a hard capability filter via
-    ``TASK_TYPE_REQUIRED_CAPABILITIES`` (e.g. ``coding`` requires the
-    ``coding`` capability, ``document`` requires ``long_context``).
-    """
-    candidates = get_catalog_models()
-    req_set: set[str] = set(required_capabilities or [])
-    if task_type and task_type in TASK_TYPE_REQUIRED_CAPABILITIES:
-        req_set |= set(TASK_TYPE_REQUIRED_CAPABILITIES[task_type])
-    if req_set:
-        candidates = [m for m in candidates if req_set.issubset(m.capabilities)]
-    return candidates
-
-
-def _configured_cost_ranking_key(model: CatalogModel) -> tuple[int, float]:
-    """Return the frozen configured-cost evidence ordering for one model.
-
-    Known configured prices sort before unknown/partial prices. In particular,
-    unknown must never collapse to the same key as an explicitly evidenced
-    zero-price route.
-    """
-    return ConfiguredCostEvidence(
-        model.input_price_usd_per_1m,
-        model.output_price_usd_per_1m,
-        snapshot_state=model.snapshot_state,
-        currency=model.currency,
-    ).ranking_key()
-
-
-def select_by_optimize(
-    candidates: list[CatalogModel],
-    optimize_for: str,
-    allow_external: bool,
-    provider_order: list[str] | None = None,
-    task_type: str | None = None,
-) -> list[CatalogModel]:
-    """Sort candidates deterministically, best-first.
-
-    Enforced options:
-    - ``provider_order``: providers listed first win (deterministic priority);
-      unlisted providers keep their optimize_for order after listed ones.
-    - ``task_type == "korean"``: korean_score becomes the leading scoring key.
-
-    Ties are broken by sort_order then model_id for determinism.
-    """
-    key_fns = {
-        "cost": lambda m: (
-            0 if is_evidenced_free(m) else 1,
-            *_configured_cost_ranking_key(m),
-            m.sort_order,
-            m.model_id,
-        ),
-        "latency": lambda m: (
-            0 if is_evidenced_free(m) else 1,
-            m.latency_ms,
-            m.sort_order,
-            m.model_id,
-        ),
-        "korean": lambda m: (
-            0 if is_evidenced_free(m) else 1,
-            -m.korean_score,
-            m.sort_order,
-            m.model_id,
-        ),
-        "balanced": lambda m: (
-            0 if is_evidenced_free(m) else 1,
-            -m.korean_score,
-            *_configured_cost_ranking_key(m),
-            m.latency_ms,
-            m.sort_order,
-            m.model_id,
-        ),
-    }
-
-    base_key = key_fns.get(optimize_for, key_fns["balanced"])
-
-    if task_type == "korean" and optimize_for != "korean":
-        inner = base_key
-        base_key = lambda m: (0 if is_evidenced_free(m) else 1, -m.korean_score, *inner(m))  # noqa: E731
-
-    order = list(provider_order or [])
-    if order:
-        def _provider_rank(m: CatalogModel) -> int:
-            try:
-                return order.index(m.provider)
-            except ValueError:
-                return len(order)
-
-        key_fn = lambda m: (_provider_rank(m), *base_key(m))  # noqa: E731
-    else:
-        key_fn = base_key
-
-    return sorted(candidates, key=key_fn)

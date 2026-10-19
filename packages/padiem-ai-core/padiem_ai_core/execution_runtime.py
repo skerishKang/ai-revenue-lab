@@ -14,6 +14,8 @@ from .b14_execution import (
     B14ExecutionResult,
     B14RouteMetadata,
     B14RoutingOptions,
+    NATIVE_MODEL_PARAMETER_FIELDS,
+    _normalize_model_parameters,
 )
 from .contracts import (
     AgentProfile,
@@ -22,11 +24,21 @@ from .contracts import (
     RunStatus,
     UsageMetadata,
 )
+from .dispatch_preinstruction import (
+    render_dispatch_preinstruction,
+    server_wall_clock,
+)
 
-MAX_EXECUTION_MESSAGES = 99
-MAX_EXECUTION_MESSAGE_CHARS = 32_000
-MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 16_000
-MAX_COMPOSED_SYSTEM_CHARS = 32_000
+# Execution messages are provider-native; trusted injected system context
+# retains separate bounds for tool/instruction safety.
+# Deprecated legacy model-prompt constants stay importable, but do not gate AI text.
+MAX_EXECUTION_MESSAGES: int | None = None
+MAX_EXECUTION_MESSAGE_CHARS: int | None = None
+# Model/reference context is provider-native within the existing Engine 6MB
+# request transport. These are byte memory guards, not model token caps.
+MAX_SYSTEM_CONTEXT_BYTES = 5_500_000
+MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
+MAX_COMPOSED_SYSTEM_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _MESSAGE_ROLES = frozenset({"user", "assistant"})
@@ -37,6 +49,11 @@ _MODEL_POLICY_FIELDS = frozenset(
         "allow_external_fallback",
         "provider_order",
         "max_attempts",
+        "max_retries",
+        "product_tier",  # trusted product-side grade carried through Core to B14
+        # #3977: explicitly requested provider-native overrides. Absent means
+        # no such field is sent; there is no synthesized value in this layer.
+        "model_parameters",
     }
 )
 
@@ -57,10 +74,8 @@ def _normalize_messages(
     if isinstance(messages, (str, bytes)):
         raise ValueError("messages must be a sequence of message objects")
     items = tuple(messages)
-    if not 1 <= len(items) <= MAX_EXECUTION_MESSAGES:
-        raise ValueError(
-            f"messages must contain 1 to {MAX_EXECUTION_MESSAGES} items"
-        )
+    if not items:
+        raise ValueError("messages must contain at least one item")
 
     normalized: list[Mapping[str, str]] = []
     for index, message in enumerate(items):
@@ -81,11 +96,6 @@ def _normalize_messages(
                 f"messages[{index}].content must be a non-empty string"
             )
         text = content.strip()
-        if len(text) > MAX_EXECUTION_MESSAGE_CHARS:
-            raise ValueError(
-                f"messages[{index}].content must not exceed "
-                f"{MAX_EXECUTION_MESSAGE_CHARS} characters"
-            )
         normalized.append(MappingProxyType({"role": role, "content": text}))
     return tuple(normalized)
 
@@ -98,30 +108,35 @@ def _normalize_additional_system_context(value: str | None) -> str | None:
     text = value.strip()
     if not text:
         return None
-    if len(text) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS:
+    if len(text.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
         raise ValueError(
-            "additional_system_context exceeds the bounded context limit"
+            "additional_system_context exceeds transport safety envelope"
         )
     return text
 
 
 def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
-    parts: list[str] = []
+    # #4465/#4468: every model call carries the one trusted per-dispatch server
+    # clock, so "오늘/최신" is resolved from the executing server rather than the
+    # model's training cutoff or a browser clock. The product's own instruction
+    # is preserved and still follows it. The context is sampled exactly once
+    # here, which is the single dispatch point for this runtime.
+    parts: list[str] = [render_dispatch_preinstruction(server_wall_clock())]
     if request.agent.system_instruction is not None:
         parts.append(request.agent.system_instruction)
     if request.additional_system_context is not None:
         parts.append(request.additional_system_context)
-    if not parts:
-        return None
     content = "\n\n".join(parts)
-    if len(content) > MAX_COMPOSED_SYSTEM_CHARS:
-        raise ValueError("composed system instruction exceeds B14 message limit")
+    # The mandatory context is counted inside the same transport envelope as
+    # every other part, so it can never push the request past the guard.
+    if len(content.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
+        raise ValueError("composed system instruction exceeds transport safety envelope")
     return content
 
 
 def _normalize_model_policy(
     agent: AgentProfile,
-) -> tuple[str, float, B14RoutingOptions]:
+) -> tuple[str, float | None, B14RoutingOptions]:
     policy = agent.model_policy
     unknown = set(policy) - _MODEL_POLICY_FIELDS
     if unknown:
@@ -138,8 +153,11 @@ def _normalize_model_policy(
             "model_policy.model is required and must be an explicit non-empty model route"
         )
 
-    temperature = policy.get("temperature", 0.2)
-    if isinstance(temperature, bool) or not isinstance(temperature, (int, float)):
+    # No implied 0.2: omitted policy delegates to the selected provider.
+    temperature = policy.get("temperature")
+    if temperature is not None and (
+        isinstance(temperature, bool) or not isinstance(temperature, (int, float))
+    ):
         raise ValueError("model_policy.temperature must be numeric")
 
     provider_order_value = policy.get("provider_order")
@@ -152,6 +170,11 @@ def _normalize_model_policy(
 
     allow_external_fallback = policy.get("allow_external_fallback")
     max_attempts = policy.get("max_attempts")
+    max_retries = policy.get("max_retries")
+    if max_retries is not None and (
+        isinstance(max_retries, bool) or not isinstance(max_retries, int)
+    ):
+        raise ValueError("model_policy.max_retries must be an integer or None")
 
     routing = B14RoutingOptions(
         task_type=agent.task_type,
@@ -162,8 +185,33 @@ def _normalize_model_policy(
         allow_external_fallback=allow_external_fallback,
         provider_order=provider_order,
         max_attempts=max_attempts,
+        max_retries=max_retries,
+        product_tier=policy.get("product_tier"),
     )
-    return model.strip(), float(temperature), routing
+    return model.strip(), (float(temperature) if temperature is not None else None), routing
+
+
+def _native_model_parameters(agent: AgentProfile) -> Mapping[str, Any]:
+    """Return the caller's explicit provider-native overrides, validated.
+
+    #3977: this layer checks the closed wire vocabulary only. Whether the
+    exact served model accepts a value is B14 capability authority and is
+    re-validated on the request body at the gateway, so a value can never be
+    invented, widened or quietly discarded here. An omitted policy key yields an
+    empty mapping, which contributes nothing to the request.
+    """
+    raw = agent.model_policy.get("model_parameters")
+    if raw is None:
+        return MappingProxyType({})
+    if not isinstance(raw, Mapping):
+        raise ValueError("model_policy.model_parameters must be a mapping")
+    unknown = {key for key in raw if key not in NATIVE_MODEL_PARAMETER_FIELDS}
+    if unknown:
+        raise ValueError(
+            "unsupported model_policy.model_parameters fields: "
+            + ", ".join(sorted(map(str, unknown)))
+        )
+    return _normalize_model_parameters(raw)
 
 
 def _error_class_for_b14(code: str) -> ErrorClass:
@@ -284,6 +332,7 @@ class ExecutionRuntimeError(RuntimeError):
         metadata: RunMetadata,
         retryable: bool = False,
         upstream_status_code: int | None = None,
+        diagnostic_class: str | None = None,
     ) -> None:
         super().__init__(safe_message)
         self.code = _safe_identifier("error code", code)
@@ -292,6 +341,11 @@ class ExecutionRuntimeError(RuntimeError):
         self.retryable = bool(retryable)
         self.upstream_status_code = _normalize_upstream_status_code(
             upstream_status_code
+        )
+        self.diagnostic_class = (
+            _safe_identifier("diagnostic class", diagnostic_class)
+            if diagnostic_class is not None
+            else None
         )
 
     def to_public_dict(self) -> dict[str, Any]:
@@ -379,6 +433,7 @@ class ExecutionRuntime:
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
+            model_parameters = _native_model_parameters(request.agent)
             messages = request.messages
             if system_instruction is not None:
                 messages = (
@@ -391,6 +446,7 @@ class ExecutionRuntime:
                 temperature=temperature,
                 max_tokens=request.agent.max_tokens,
                 routing=routing,
+                model_parameters=model_parameters,
             )
         except ValueError:
             metadata = self._metadata(
@@ -428,6 +484,7 @@ class ExecutionRuntime:
                 metadata=metadata,
                 retryable=exc.retryable,
                 upstream_status_code=exc.upstream_status_code,
+                diagnostic_class=exc.diagnostic_class,
             ) from None
         except Exception:
             metadata = self._metadata(

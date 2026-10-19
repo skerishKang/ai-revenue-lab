@@ -66,7 +66,7 @@ from kagent.claw_automation import (
 
 from .claw_automation_execution_bridge import plan_canonical_scheduled_execution
 from .claw_automation_owner_resolution import ResolvedAutomationOwner
-from .history import HistoryStore, validate_conversation_id
+from .history import HistoryStore, PRODUCT_SCOPE_CHAT, validate_conversation_id
 
 # The in-repo precedent vocabulary for scheduled-automation rows on this exact
 # authority (#2833 S2F3A workspace-linkage tests record channel
@@ -142,7 +142,7 @@ async def _resolve_session_reference(
             "conversation authority is unavailable"
         )
     try:
-        conversation = await get_conversation(owner.product_user_id, candidate)
+        conversation = await get_conversation(owner.product_user_id, candidate, product_scope=PRODUCT_SCOPE_CHAT)
     except Exception as exc:
         # A missing/foreign reference and an authority failure share the same
         # non-disclosing fail-closed projection; no history row is written.

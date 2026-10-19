@@ -28,20 +28,11 @@ VIEWPORTS = (
 STATIC_FONT_HOSTS = frozenset({"cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"})
 QUESTION = "제품 표면 인증을 위한 짧은 응답을 보여줘"
 ANSWER = "제품 표면 인증용 결정론적 응답입니다."
+TIER_VALUES = ("free", "plus", "pro", "max")
 
 REQUIRED_EXACT_HEAD_WORKFLOWS = (
     "B62 Padiem Chat CI",
-    "B62 Browser Visual QA",
-    "B62 Accessibility Browser QA",
-    "B62 Auth History Browser QA",
-    "B62 Saved Outputs Browser QA",
-    "B62 Projects Browser QA",
-    "B62 Project Files Browser QA",
-    "B62 Document Browser QA",
-    "B62 Image Browser QA",
-    "B62 Error Retry Browser QA",
-    "B62 Conversation Export Browser QA",
-    "B62 Conversation Delete Browser QA",
+    "B62 Unified Browser QA",
     "P01 Deployment Boundary Guard",
 )
 
@@ -66,10 +57,10 @@ CAPABILITY_MATRIX = (
         "production_active": "NOT_CLAIMED",
     },
     {
-        "surface": "tier_plus_only",
+        "surface": "tier_free_baseline",
         "presentation": "ACTIVE",
-        "default_tier": "plus",
-        "browser_visible": ["plus"],
+        "default_tier": "free",
+        "browser_visible": ["free", "plus", "pro", "max"],
         "backend_active": "SERVER_RESOLVED_SHARED_TIER_CONTRACT",
         "production_active": "NOT_CLAIMED",
     },
@@ -257,18 +248,50 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     await page.keyboard.press("Enter")
     panel = page.locator("#modePresentationPanel")
     await panel.wait_for(state="visible")
-    options = panel.locator("[data-mode-value]")
-    if await options.count() != 1:
-        raise AssertionError(f"Plus-only tier matrix incomplete at {label}")
-    plus = panel.locator('[data-mode-value="plus"]')
-    if await plus.is_disabled():
-        raise AssertionError(f"Plus must be selectable at {label}")
-    if await plus.get_attribute("aria-pressed") != "true":
-        raise AssertionError(f"Plus not selected by default at {label}")
-    if await panel.locator('[data-mode-value="pro"]').count() != 0:
-        raise AssertionError(f"Pro must remain browser-hidden while HOLD at {label}")
-    if await panel.locator('[data-mode-value="max"]').count() != 0:
-        raise AssertionError(f"Max must remain browser-hidden at {label}")
+    tiers = panel.locator(".mode-option-list [data-mode-value]")
+    if await tiers.count() != 4:
+        raise AssertionError(f"four-tier matrix incomplete at {label}")
+    tier_values = await tiers.evaluate_all("els => els.map(el => el.dataset.modeValue)")
+    if tier_values != list(TIER_VALUES):
+        raise AssertionError(f"PADIEM tier matrix changed at {label}: {tier_values!r}")
+    custom_section = panel.locator("section.mode-custom-section")
+    custom_option = custom_section.locator('[data-mode-value="custom"]')
+    if await custom_section.count() != 1 or await custom_option.count() != 1:
+        raise AssertionError(f"PADIEM Custom must be one independent section at {label}")
+    if await panel.locator('.mode-option-list [data-mode-value="custom"]').count() != 0:
+        raise AssertionError(f"PADIEM Custom must not join the PADIEM tier list at {label}")
+    option_values = await panel.locator("[data-mode-value]").evaluate_all(
+        "els => els.map(el => el.dataset.modeValue)"
+    )
+    if sorted(option_values) != sorted(tuple(TIER_VALUES) + ("custom",)):
+        raise AssertionError(f"unexpected model-card rows at {label}: {option_values!r}")
+    if not await custom_option.is_disabled():
+        raise AssertionError(f"PADIEM Custom must require sign-in for a guest at {label}")
+    custom_state = (await custom_option.locator(".mode-option-state").inner_text()).strip()
+    if "로그인 필요" not in custom_state:
+        raise AssertionError(f"PADIEM Custom sign-in state missing at {label}: {custom_state!r}")
+    if await custom_section.locator(".mode-custom-credential").is_visible():
+        raise AssertionError(f"PADIEM Custom key form must stay hidden for a guest at {label}")
+    custom_guest_note = custom_section.locator(".mode-custom-guest-note")
+    if not await custom_guest_note.is_visible():
+        raise AssertionError(f"PADIEM Custom guest note missing at {label}")
+    if "로그인 후 Padiem Custom" not in (await custom_guest_note.inner_text()).strip():
+        raise AssertionError(f"PADIEM Custom guest truth missing at {label}")
+    free = panel.locator('[data-mode-value="free"]')
+    if await free.is_disabled():
+        raise AssertionError(f"Free must be selectable at {label}")
+    if await free.get_attribute("aria-pressed") != "true":
+        raise AssertionError(f"Free not selected by default at {label}")
+    # Owner decision 2026-10-17 / member-tier UI update: higher tiers are now
+    # clickable "업그레이드" cards (not disabled) so the visitor can see the
+    # upgrade guidance. Only actual system failure marks a card disabled.
+    for locked in ("plus", "pro", "max"):
+        row = panel.locator(f'[data-mode-value="{locked}"]')
+        if await row.is_disabled():
+            raise AssertionError(f"{locked} must be clickable (업그레이드) for a signed-out visitor at {label}")
+        state_text = (await row.locator(".mode-option-state").inner_text()).strip()
+        if "업그레이드" not in state_text:
+            raise AssertionError(f"{locked} must show 업그레이드 for a signed-out visitor at {label}: {state_text!r}")
     await page.keyboard.press("Escape")
     if not await panel.is_hidden():
         raise AssertionError(f"tier panel did not close at {label}")
@@ -370,7 +393,7 @@ async def _english_probe(browser) -> dict[str, Any]:
             raise AssertionError(f"English account truth missing: {account_text!r}")
         await page.locator(".model-pill").click()
         truth = (await page.locator("[data-mode-truth]").inner_text()).strip()
-        if "Provider and model routing stays server-managed" not in truth:
+        if "Upgrade is required to use higher-tier models." not in truth:
             raise AssertionError(f"English tier truth boundary missing: {truth!r}")
         return {
             "status": "PASS",

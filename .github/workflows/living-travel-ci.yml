@@ -51,7 +51,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
+          # #3989: keep full Git history for original base..head whitespace gate.
+          # Only Living Travel and its workflow are runtime inputs.
           fetch-depth: 0
+          sparse-checkout: |
+            apps/living-travel/**
+            .github/workflows/living-travel-ci.yml
+          sparse-checkout-cone-mode: false
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -61,15 +68,12 @@ jobs:
           cache-dependency-path: apps/living-travel/pyproject.toml
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
+        run: python -m pip install --disable-pip-version-check -e ".[dev]"
 
-      - name: Run functional test suite
-        run: python -m pytest tests -q
-
-      - name: Run static preview test suite
-        run: python -m pytest pages-preview/tests -q
+      # Keep both original suites, all cases and their original collection roots.
+      # One pytest process avoids repeated import/pytest bootstrap work.
+      - name: Run complete functional and static preview suites
+        run: python -m pytest tests pages-preview/tests -q --durations=30
 
       - name: Startup health smoke
         env:

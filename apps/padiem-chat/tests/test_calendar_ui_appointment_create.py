@@ -271,7 +271,7 @@ def test_every_markup_locale_key_has_a_translation() -> None:
 def test_write_target_is_the_existing_registered_appointment_authority() -> None:
     source = _source()
     assert f'const APPOINTMENT_ROUTE = "{APPOINTMENT_ROUTE}";' in source
-    assert "fetch(APPOINTMENT_ROUTE, {" in source
+    assert "fetch(endpoint, {" in source
     # The route string is declared once and never duplicated as a literal.
     assert source.count(f'"{APPOINTMENT_ROUTE}"') == 1
     # It is the same path the product backend already registers for POST.
@@ -313,10 +313,12 @@ def test_client_payload_keys_match_the_existing_route_contract() -> None:
 
 def test_only_the_two_native_write_methods_exist_in_the_module() -> None:
     source = _source()
-    assert source.count('method: "POST"') == 2
+    assert source.count('method: method') == 2
     assert source.count(f'"{WORK_LOG_ROUTE}"') == 1
     assert source.count(f'"{APPOINTMENT_ROUTE}"') == 1
-    assert not re.search(r"\b(PUT|PATCH|DELETE)\b", source)
+    assert 'method: "DELETE"' in source
+    assert 'method === "PUT"' in source
+    assert not re.search(r"\bPATCH\b", source)
     # The read path stays method-less (GET by default).
     read_block = source.split("async function load() {", 1)[1].split("function selectTab(", 1)[0]
     assert "method:" not in read_block
@@ -358,7 +360,7 @@ def test_no_second_appointment_authority_or_reminder_scheduler() -> None:
     # One appointment route, one appointment builder, one interpreter.
     assert source.count("function buildAppointmentRequest") == 1
     assert source.count("function interpretAppointmentResponse") == 1
-    assert source.count("APPOINTMENT_ROUTE") == 3  # declaration + api export + fetch
+    assert source.count("APPOINTMENT_ROUTE") == 5  # declaration + export + create/edit/delete branches
     # No client-side scheduling, queuing or polling of reminders.
     for forbidden in (
         "setInterval",
@@ -495,6 +497,7 @@ async function fetchImpl(url, opts) {
     if (mode === "network") throw new Error("boom");
     return json(500, { ok: false, error: { code: "appointment_creation_failed" } });
   }
+  if (u.startsWith("/api/calendar/items?")) return json(200, { ok: true, projection: { items: [] } });
   if (u.startsWith("/api/calendar/today") || u.startsWith("/api/calendar/upcoming")) {
     return json(200, { ok: true, projection: { items: [] } });
   }
@@ -561,7 +564,7 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
   checks.OPEN_LOADS_TODAY_ONLY =
     requests.length === 1 &&
     requests[0].method === "GET" &&
-    requests[0].url.indexOf("/api/calendar/today?timezone=") === 0;
+    requests[0].url.indexOf("/api/calendar/items?timezone=") === 0;
   if (!checks.OPEN_LOADS_TODAY_ONLY) fail("OPEN " + JSON.stringify(requests));
   checks.DATE_DEFAULT_IS_EXPLICIT_ZONE_TODAY =
     /^\d{4}-\d{2}-\d{2}$/.test(dateField.value) &&
@@ -613,7 +616,7 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
     body.title === "A사 계약 미팅";
   if (!checks.DATE_ONLY_BODY_IS_DATE_ONLY) fail("DATE_ONLY_BODY " + JSON.stringify(body));
   checks.DATE_ONLY_CREATE_REFRESHES_THE_CURRENT_PROJECTION =
-    requests.slice(before).some((r) => r.method === "GET" && r.url.indexOf("/api/calendar/today") === 0);
+    requests.slice(before).some((r) => r.method === "GET" && r.url.indexOf("/api/calendar/items") === 0);
   if (!checks.DATE_ONLY_CREATE_REFRESHES_THE_CURRENT_PROJECTION) fail("DATE_ONLY_REFRESH " + JSON.stringify(requests.slice(before)));
 
   // 3) all_day: still date-only, and never a fabricated start/end.
@@ -828,7 +831,7 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
 
   // 9) The whole journey stayed inside the three existing calendar routes.
   mode = "created";
-  const allowed = ["/api/calendar/today", "/api/calendar/upcoming", "/api/calendar/appointments", "/api/calendar/work-logs"];
+  const allowed = ["/api/calendar/items", "/api/calendar/today", "/api/calendar/upcoming", "/api/calendar/appointments", "/api/calendar/work-logs"];
   const methods = Array.from(new Set(requests.map((r) => r.method))).sort();
   checks.NO_UNKNOWN_ROUTE_AND_NO_OTHER_METHOD =
     requests.every((r) => allowed.some((prefix) => r.url.indexOf(prefix) === 0)) &&

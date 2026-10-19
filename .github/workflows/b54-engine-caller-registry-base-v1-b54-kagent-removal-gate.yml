@@ -193,7 +193,7 @@ jobs:
             -o "${version_detail}"
           evidence="$(python .github/scripts/b54_engine_caller_registry_base_v1_b54_kagent_removal.py classify \
             --version-detail "${version_detail}" \
-            --active-version "${active_version}")"
+            --active-version="${active_version}")"
           echo "${evidence}"
           printf '%s\n' "${evidence}" | grep -q '^SERVED_VERSION_CLASSIFICATION=YES$'
           disposition="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_DISPOSITION=//p')"
@@ -288,8 +288,8 @@ jobs:
             -o "${version_detail}"
           python .github/scripts/b54_engine_caller_registry_base_v1_b54_kagent_removal.py reconfirm \
             --version-detail "${version_detail}" \
-            --active-version "${current_version}" \
-            --pre-active-version "${PRE_ACTIVE_VERSION_ID}" \
+            --active-version="${current_version}" \
+            --pre-active-version="${PRE_ACTIVE_VERSION_ID}" \
             --pre-legacy-state "${LEGACY_PRE_STATE}"
           echo 'GET_ONLY=PASS'
           echo 'PREWRITE_SERVED_VERSION_RECONFIRMED=YES'
@@ -394,7 +394,7 @@ jobs:
               -o "${version_detail}"
             if python .github/scripts/b54_engine_caller_registry_base_v1_b54_kagent_removal.py verify \
               --version-detail "${version_detail}" \
-              --active-version "${active_version}" \
+              --active-version="${active_version}" \
               --legacy-pre-state "${LEGACY_PRE_STATE}"; then
               verified=yes
               break

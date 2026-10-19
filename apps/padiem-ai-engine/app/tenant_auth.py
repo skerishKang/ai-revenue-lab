@@ -381,10 +381,19 @@ class ControlPlaneTenantAdmissionAdapter:
                     status_code=503,
                 )
             reservation = self._build_reservation(request, tenant, now)
+            reservation_payload = await _maybe_await(
+                self._client.reserve_usage(reservation=reservation.to_public_dict())
+            )
+            # The Control Plane stamps reserved_at when the reservation is
+            # actually created, after the entitlement round-trip above. Validate
+            # that authority timestamp against a fresh post-RPC observation
+            # rather than the pre-entitlement clock captured at method entry.
+            reservation_observed_at = self._clock()
+            _timestamp_value(reservation_observed_at, "reservation_observed_at")
             decision = parse_usage_reservation(
-                await _maybe_await(self._client.reserve_usage(reservation=reservation.to_public_dict())),
+                reservation_payload,
                 reservation=reservation,
-                now=now,
+                now=reservation_observed_at,
             )
             if not decision["admitted"]:
                 allowed = False

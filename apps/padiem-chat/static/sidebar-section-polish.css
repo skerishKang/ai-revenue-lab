@@ -1,0 +1,245 @@
+/* #4890 follow-up. Exactly one shared visual cell for each project/history
+ * action pair; separate native controls retain keyboard, click and menu roles. */
+html body .app-shell .sidebar :is(.project-row, .history-row) {
+  background: rgba(255, 255, 255, .10) !important;
+  border: 1px solid var(--line, rgba(210, 220, 230, .25)) !important;
+  border-radius: 11px;
+  overflow: visible;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row):is(:hover, :focus-within) {
+  background: rgba(255, 255, 255, .16) !important;
+}
+html body .app-shell .sidebar .project-row:has(.project-item[aria-current="true"]) {
+  background: rgba(255, 255, 255, .20) !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row)
+  > :is(.project-item, .history-item, .project-manage, .history-actions),
+html body .app-shell .sidebar .history-row .history-actions > .history-more {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html body .app-shell .sidebar .history-row .history-actions {
+  position: relative;
+}
+/* Keep the contextual delete menu above the row without painting the 3-dot
+ * trigger itself as a distinct permanently raised cell. */
+html body .app-shell .sidebar .history-row .history-actions-menu {
+  background: var(--sidebar, #384551);
+  z-index: 12;
+}
+
+/* The section chevrons share the same header geometry. Expand = down;
+ * collapsed = right. Project create (+) remains pinned to the far right. */
+html body .app-shell .sidebar :is(#projectsSection, #historySection) > .section-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  margin: 12px 10px 8px;
+  padding: 0;
+}
+html body .app-shell .sidebar :is(#projectsSection, #historySection) > .section-heading-row > h2 {
+  margin: 0;
+  padding: 0;
+}
+html body .app-shell .sidebar #projectCreateButton {
+  margin-left: auto;
+}
+.sidebar .sidebar-section-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  opacity: .88;
+  cursor: pointer;
+}
+.sidebar .sidebar-section-toggle > span {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .12s ease;
+}
+.sidebar .recent-section.is-collapsed .sidebar-section-toggle > span {
+  transform: translateX(-2px) rotate(-45deg);
+}
+.sidebar .sidebar-section-toggle:hover,
+.sidebar .sidebar-section-toggle:focus-visible {
+  background: rgba(255,255,255,.12);
+}
+.sidebar .sidebar-section-toggle:focus-visible {
+  outline: 2px solid var(--accent, #8fb7d5);
+  outline-offset: 1px;
+}
+/* State lives on each section; ajax rerenders only update the children, so
+ * collapse never interferes with existing list/empty/auth state handling. */
+.sidebar #projectsSection.is-collapsed :is(#projectsList, #projectsEmpty),
+.sidebar #historySection.is-collapsed :is(#historyList, #historyEmpty) {
+  display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar .sidebar-section-toggle > span { transition: none; }
+}
+
+/* Owner 2026-10-16: retain the original desktop 145px visual height on
+ * every viewport. Grid may change its columns, but never card height.
+ * The document-upload shell and its nested button use the same row height. */
+.app-shell[data-state="home"] .starter-grid {
+  grid-auto-rows: 145px;
+  align-items: stretch;
+}
+.app-shell[data-state="home"] .starter-grid > .starter,
+.app-shell[data-state="home"] .starter-grid > .document-starter-shell,
+.app-shell[data-state="home"] .starter-grid .document-starter-shell > .starter {
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+}
+/* No narrower viewport override: 145px is fixed, including mobile. */
+
+/* 2026-10-16 Owner UI: New Chat is the single-cell reference.
+ * Each entire Project/Recent row paints ONE seamless surface; neither
+ * the primary title nor its settings/ellipsis control paints another cell. */
+html body .app-shell .sidebar :is(.project-row, .history-row) {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0 !important;
+  min-height: 46px;
+  padding: 0;
+  background: rgba(255,255,255,.10) !important;
+  border: 1px solid var(--line, rgba(210,220,230,.25)) !important;
+  border-radius: 11px;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row)
+  > :is(.project-item, .history-item, .project-manage, .history-actions),
+html body .app-shell .sidebar .history-row .history-actions > .history-more {
+  box-sizing: border-box;
+  align-self: center;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  outline-offset: -2px;
+  box-shadow: none !important;
+  transform: none !important;
+  margin: 0 !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-item, .history-item) {
+  flex: 1 1 0;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 10px !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-manage, .history-actions) {
+  flex: 0 0 44px;
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 !important;
+  border-radius: 0 10px 10px 0 !important;
+}
+html body .app-shell .sidebar .project-row > .project-manage {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-size: 0 !important;
+}
+html body .app-shell .sidebar .project-row > .project-manage svg {
+  display: block;
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+  margin: 0 !important;
+  transform: none !important;
+  vertical-align: middle;
+}
+html body .app-shell .sidebar .history-row .history-actions > .history-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 !important;
+}
+html body .app-shell .sidebar .history-row .history-more svg {
+  display: block;
+  width: 19px;
+  height: 19px;
+  margin: 0 !important;
+  transform: none !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row) > :is(.project-manage, .history-actions),
+html body .app-shell .sidebar .history-row .history-more {
+  color: inherit !important;
+}
+html body .app-shell .sidebar :is(.project-row, .history-row)
+  > :is(.project-item, .history-item, .project-manage, .history-actions):hover,
+html body .app-shell .sidebar .history-row .history-more:hover {
+  background: transparent !important;
+}
+
+/* Project (+): inline action at the far right, without the raised tile. */
+html body .app-shell .sidebar #projectsSection #projectCreateButton {
+  display: grid !important;
+  place-items: center !important;
+  align-self: center !important;
+  flex: 0 0 28px !important;
+  margin: 0 0 0 auto !important;
+  padding: 0 !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  height: 28px;
+  min-height: 28px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: inherit !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  line-height: 1 !important;
+}
+
+/* Expanded = minus (−), collapsed = right chevron (›). */
+html body .app-shell .sidebar .sidebar-section-toggle > span {
+  display: block;
+  box-sizing: border-box;
+  width: 12px;
+  height: 2px;
+  border: 0;
+  border-radius: 1px;
+  background: currentColor;
+  transform: none;
+}
+html body .app-shell .sidebar .recent-section.is-collapsed .sidebar-section-toggle > span {
+  width: 9px;
+  height: 9px;
+  border: 0;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  border-radius: 0;
+  background: transparent;
+  transform: translateX(-2px) rotate(45deg);
+}
+
+/* 2026-10-16 owner screenshot: visually invisible backgrounds did not make
+ * cells seamless because the title buttons still inherited the global
+ * .recent-item backdrop blur(18px), unlike their right-hand controls.
+ * Put any glass processing on the shared row, never only on one half. */
+html[data-theme="padiem-glass"] body .app-shell .sidebar
+  :is(.project-row > .project-item, .history-row > .history-item) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}

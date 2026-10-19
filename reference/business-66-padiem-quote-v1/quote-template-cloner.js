@@ -20,23 +20,26 @@
       require("./quote-template.js"),
       require("./quote-template-store.js"),
       require("./quote-template-selection.js"),
-      require("./quote-template-candidate.js")
+      require("./quote-template-candidate.js"),
+      require("./file-intake.js")
     );
   } else {
     root.QuoteTemplateCloner = factory(
       root.QuoteTemplate,
       root.QuoteTemplateStore,
       root.QuoteTemplateSelection,
-      root.QuoteTemplateCandidate
+      root.QuoteTemplateCandidate,
+      root.B66FileIntake
     );
   }
-})(typeof self !== "undefined" ? self : this, function (Template, Store, Selection, Candidate) {
+})(typeof self !== "undefined" ? self : this, function (Template, Store, Selection, Candidate, FileIntake) {
   "use strict";
 
   if (!Template) throw new Error("QuoteTemplate is required");
   if (!Store) throw new Error("QuoteTemplateStore is required");
   if (!Selection) throw new Error("QuoteTemplateSelection is required");
   if (!Candidate) throw new Error("QuoteTemplateCandidate is required");
+  if (!FileIntake) throw new Error("B66FileIntake is required");
 
   var CLONER_SCHEMA_VERSION = 1;
   var DEFAULT_APPROVER = "local-owner";
@@ -135,6 +138,7 @@
 
   function startFromFile(session, preflight, options) {
     var base = session || createSession(options);
+    preflight = FileIntake.validateTemplateSourcePreflight(preflight);
     if (!isPlainObject(preflight)) {
       return fail("invalid_preflight", "preflight result is missing", base);
     }

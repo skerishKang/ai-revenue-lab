@@ -5,8 +5,10 @@ on:
     paths:
       - ".github/workflows/b62-google-oauth-state-binding-gate.yml"
       - ".github/scripts/cloudflare_served_version.py"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/tests/test_cloudflare_served_version.py"
       - ".github/tests/test_b62_google_oauth_state_binding_gate.py"
+      - ".github/tests/test_3709_b62_google_oauth_served_version_cli_adoption.py"
       - "apps/padiem-chat/app/connector_workspace_truth.py"
       - "apps/padiem-chat/app/worker_config.py"
       - "apps/padiem-chat/worker.py"
@@ -162,7 +164,9 @@ jobs:
           )
           resolver_paths = gate.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
           assert ".github/scripts/cloudflare_served_version.py" in resolver_paths
+          assert ".github/scripts/cloudflare_served_version_cli.py" in resolver_paths
           assert ".github/tests/test_cloudflare_served_version.py" in resolver_paths
+          assert ".github/tests/test_3709_b62_google_oauth_served_version_cli_adoption.py" in resolver_paths
           print("B62_GOOGLE_OAUTH_BINDING_GATE_SOURCE=PASS")
           print("PATCH_ERROR_BODY_CAPTURE=YES")
           print("SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO")
@@ -178,7 +182,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check --quiet pytest
-          python -m pytest .github/tests/test_b62_google_oauth_state_binding_gate.py -q
+          python -m pytest             .github/tests/test_b62_google_oauth_state_binding_gate.py             .github/tests/test_3709_b62_google_oauth_served_version_cli_adoption.py             -q
           echo "B62_GOOGLE_OAUTH_STATE_BINDING_GATE_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
@@ -355,13 +359,12 @@ jobs:
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${OAUTH_STATE_WORKER}/subdomain" -o "${oauth_state_subdomain}"
 
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
-          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           jq -e '.success == true and (.result.items | length) > 0' "${versions}" >/dev/null
           jq -e --arg name "${GOOGLE_OAUTH_BINDING}" '[.result.bindings[] | select(.name == $name)] | length == 0' "${settings}" >/dev/null
           jq -e --arg identity "${OAUTH_STATE_WORKER}" '[.result[] | select(.service == $identity)] | length == 0' "${domains}" >/dev/null
           jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${oauth_state_subdomain}" >/dev/null
 
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
           latest="$(jq -r '.result.items[0].id' "${versions}")"
           test "${active}" = "${latest}"
 
@@ -498,8 +501,10 @@ jobs:
           ready=no
           for _ in $(seq 1 30); do
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${deployments}"
-            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
-            if [ -n "${active}" ] && [ "${active}" != "${BEFORE_VERSION}" ] && jq -e '.result.deployments[0].versions | length == 1 and .[0].percentage == 100' "${deployments}" >/dev/null 2>&1; then
+            if ! active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"; then
+              active=""
+            fi
+            if [ -n "${active}" ] && [ "${active}" != "${BEFORE_VERSION}" ]; then
               ready=yes
               break
             fi
@@ -623,8 +628,7 @@ jobs:
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
 
-          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           latest="$(jq -r '.result.items[0].id' "${versions}")"
           test "${active}" = "${latest}"
           jq -e --arg name "${GOOGLE_OAUTH_BINDING}" --arg service "${OAUTH_STATE_WORKER}" '[.result.bindings[] | select(.name == $name and .type == "service" and .service == $service)] | length == 1' "${settings}" >/dev/null
@@ -733,8 +737,10 @@ jobs:
           ready=no
           for _ in $(seq 1 30); do
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${deployments}"
-            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
-            if [ -n "${active}" ] && [ "${active}" != "${BEFORE_VERSION}" ] && jq -e '.result.deployments[0].versions | length == 1 and .[0].percentage == 100' "${deployments}" >/dev/null 2>&1; then
+            if ! active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"; then
+              active=""
+            fi
+            if [ -n "${active}" ] && [ "${active}" != "${BEFORE_VERSION}" ]; then
               ready=yes
               break
             fi

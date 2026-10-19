@@ -758,6 +758,68 @@ class DurableRunStore:
             self._db.execute("ROLLBACK")
             raise
 
+    def mark_started(self, *, command_id: str, started_at: datetime) -> bool:
+        """Durably enter the local ``EXECUTING`` state for one admitted command.
+
+        This is the storage half of the local one-shot for a slice that must not
+        become a second authority. #3611 (`browser.open`) needs "this command has
+        already begun its single local run" to be a *durable* fact, because a
+        process-local consumed set does not survive a Desktop or runner restart.
+
+        The write is one ``BEGIN IMMEDIATE`` transaction and only ever moves a row
+        ``ADMITTED -> EXECUTING``; every other state, and a missing row, return
+        ``False`` so the caller refuses. Two processes racing therefore cannot
+        both win, and after a crash the row still reads ``EXECUTING``.
+
+        ``EXECUTING`` is an **observational local fact and not execution
+        authority**: ``NON_REPLAYABLE_STATES`` covers every state, nothing here
+        admits a command, and ``recover()`` still never re-executes anything — an
+        ambiguous prior execution stays surfaced for reconciliation. This method
+        adds no field, no state and no column; it only lets the existing state
+        machine reach the state it already declares.
+        """
+
+        try:
+            key = _ref(command_id, "command_id")
+        except ContractError as exc:
+            raise DurableRunStoreError(
+                "durable_store_invalid_ref",
+                "command_id is not a safe reference",
+            ) from exc
+        try:
+            stamp = _iso(started_at)
+        except ContractError as exc:
+            raise DurableRunStoreError(
+                "durable_store_invalid_timestamp",
+                "started_at is not a valid timestamp",
+            ) from exc
+        self._db.execute("BEGIN IMMEDIATE")
+        try:
+            existing = self._db.execute(
+                f"SELECT state FROM {_TABLE} WHERE command_id = ?", (key,)
+            ).fetchone()
+            if existing is None or existing[0] != DurableRunState.ADMITTED.value:
+                # Missing, already executing, or already terminal: never a second
+                # local run for this command.
+                self._db.execute("ROLLBACK")
+                return False
+            cursor = self._db.execute(
+                f"UPDATE {_TABLE} SET state = ?, started_at = ? "
+                f"WHERE command_id = ? AND state = ?",
+                (
+                    DurableRunState.EXECUTING.value,
+                    stamp,
+                    key,
+                    DurableRunState.ADMITTED.value,
+                ),
+            )
+            changed = cursor.rowcount == 1
+            self._db.execute("COMMIT")
+            return changed
+        except Exception:
+            self._db.execute("ROLLBACK")
+            raise
+
     def record_terminal(self, record: DurableRunRecord) -> None:
         """Atomically persist a locally terminal outcome for an existing row.
 

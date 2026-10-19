@@ -391,10 +391,28 @@ class B62EngineOrchestrationBridge:
         model_id: str,
         conversation_id: str | None,
         additional_system_context: str | None = None,
+        subject_id: str | None = None,
+        agent_plan: Mapping[str, Any] | None = None,
+        tool_arguments: Mapping[str, Any] | None = None,
+        session_id: str | None = None,
     ) -> dict[str, Any]:
         _safe_id("user_id", user_id)
         trace_id = f"b62_orch_{uuid.uuid4().hex[:24]}"
         agent_id = f"b62_{getattr(skill, 'id', 'auto')}"
+        # A caller-resolved canonical subject may replace the product-local
+        # owner key on the Engine wire only; history/audit rows keep user_id.
+        # Agent plan/tool arguments select one explicit Engine tool lane
+        # (e.g. the Chat PC drive inventory); absent means the default answer
+        # lane, exactly as before.
+        if subject_id is not None:
+            _safe_id("subject_id", subject_id)
+        for name, value in (("agent_plan", agent_plan), ("tool_arguments", tool_arguments)):
+            if value is not None and not isinstance(value, Mapping):
+                raise B62OrchestrationError(
+                    "invalid_engine_request",
+                    "AI 작업 요청 형식이 올바르지 않습니다.",
+                    status_code=500,
+                )
         request: dict[str, Any] = {
             "agent": {
                 "id": _safe_id("agent_id", agent_id),
@@ -409,12 +427,19 @@ class B62EngineOrchestrationBridge:
             "messages": [dict(item) for item in messages],
             "trace_id": trace_id,
             "execution_context": {"trace_id": trace_id},
-            "subject_id": user_id,
+            "subject_id": subject_id if subject_id is not None else user_id,
             "max_retries": 3,
             "require_evidence": False,
             "require_verification": False,
         }
-        if conversation_id is not None:
+        if agent_plan is not None:
+            request["agent_plan"] = dict(agent_plan)
+        if tool_arguments is not None:
+            request["tool_arguments"] = dict(tool_arguments)
+        if session_id is not None:
+            _safe_id("session_id", session_id)
+            request["session_id"] = session_id
+        elif conversation_id is not None:
             request["session_id"] = conversation_id
         if additional_system_context:
             request["additional_system_context"] = additional_system_context
@@ -454,6 +479,10 @@ class B62EngineOrchestrationBridge:
         user_text: str,
         conversation_id: str | None,
         additional_system_context: str | None = None,
+        subject_id: str | None = None,
+        agent_plan: Mapping[str, Any] | None = None,
+        tool_arguments: Mapping[str, Any] | None = None,
+        session_id: str | None = None,
     ) -> B62OrchestrationResult:
         engine_request = self.build_engine_request(
             user_id=user_id,
@@ -462,6 +491,10 @@ class B62EngineOrchestrationBridge:
             model_id=model_id,
             conversation_id=conversation_id,
             additional_system_context=additional_system_context,
+            subject_id=subject_id,
+            agent_plan=agent_plan,
+            tool_arguments=tool_arguments,
+            session_id=session_id,
         )
         try:
             raw = await self._client.orchestrate(engine_request)

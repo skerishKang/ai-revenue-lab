@@ -9,14 +9,17 @@
 - Match? yes/no:
 - Repository/worktree state before validation:
 
-## Independence
+## Independence / lane
 
 - Implementation actor:
 - Validator actor:
+- Validation lane: WINDOWS / UBUNTU / BROWSER / FULL_REGRESSION / OTHER
 - Same actor? **If yes, this report is not independent validation.**
 - Product source modified during validation? yes/no:
 
-If product source was modified, stop and return the new revision to implementation. Do not label the modified run independent `PASSED` evidence.
+Validators run asynchronously; the implementation actor may already be working on another authorized issue.
+
+If a validator finds an attributable defect, that validator may take bounded repair ownership in its own worktree/repair branch. Once it modifies product source it has become a repair/implementation actor for the new revision. Do not label the modified run independent `PASSED` evidence; another independent actor must validate the resulting exact head when independence remains required.
 
 ## Discoverable validation record
 
@@ -129,7 +132,16 @@ A validator does not silently waive a red security signal. Record it and leave d
 ## Validation disposition
 
 ```text
-PASSED / FAILED / BLOCKED / INVALIDATED_BY_NEW_REVISION
+PASSED / FAILED / FIXING / BLOCKED / INVALIDATED_BY_NEW_REVISION
+```
+
+Also report the aggregate coordination state when known:
+
+```text
+VALIDATOR_WINDOWS=
+VALIDATOR_UBUNTU=
+VALIDATOR_BROWSER=
+FULL_VALIDATION=
 ```
 
 Also record the evidence-supported visual gate verdict when applicable, but do not claim owner approval.

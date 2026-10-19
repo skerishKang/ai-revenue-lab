@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Protocol
 
 from . import httpx_compat as httpx
@@ -14,14 +15,19 @@ from padiem_ai_core.web_runtime import (
     MAX_SNIPPET_CHARS,
     MAX_TITLE_CHARS,
     MAX_URL_CHARS,
+    TINYFISH_FETCH_ORIGIN,
+    TINYFISH_SEARCH_ORIGIN,
     DaumWebProvider as CoreDaumWebProvider,
     FirecrawlWebProvider as CoreFirecrawlWebProvider,
     MockWebProvider as CoreMockWebProvider,
     OffWebProvider as CoreOffWebProvider,
+    TinyFishWebProvider as CoreTinyFishWebProvider,
     WebRuntimeConfig,
     WebRuntimeError,
     normalize_public_url as core_normalize_public_url,
 )
+
+from padiem_ai_core.web_priority import TinyFishDaumPriorityWebProvider as CorePriorityWebProvider
 
 from .config import Settings
 from .evidence import Evidence
@@ -84,6 +90,8 @@ def _runtime_error_message(exc: WebRuntimeError) -> str:
         return "웹 도구 설정을 확인할 수 없습니다."
     if exc.code == "web_busy":
         return "웹 검색 사용량이 많습니다. 잠시 후 다시 시도해 주세요."
+    if exc.code == "web_quota_exhausted":
+        return "웹 검색 무료 사용량이 모두 소진되었습니다. 잠시 후 다시 시도해 주세요."
     if exc.code == "web_request_failed":
         return "웹 요청을 처리하지 못했습니다."
     if exc.code == "web_malformed":
@@ -226,6 +234,65 @@ class DaumWebProvider:
         return _from_core_evidence(item)
 
 
+class TinyFishWebProvider:
+    def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
+        if settings.web_provider != "tinyfish" or not settings.tinyfish_api_key:
+            raise ValueError("TinyFish provider requires configured server settings")
+        config = WebRuntimeConfig(
+            provider="tinyfish",
+            tinyfish_api_key=settings.tinyfish_api_key,
+            web_timeout_seconds=settings.web_timeout_seconds,
+        )
+        self._core = CoreTinyFishWebProvider(config, transport=transport)
+
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        try:
+            items = await self._core.search(query, limit=limit)
+        except WebRuntimeError as exc:
+            raise _translate_runtime_error(exc) from exc
+        return [_from_core_evidence(item) for item in items]
+
+    async def fetch(self, url: str) -> Evidence:
+        try:
+            item = await self._core.fetch(url)
+        except WebRuntimeError as exc:
+            raise _translate_runtime_error(exc) from exc
+        return _from_core_evidence(item)
+
+
+class TinyFishDaumWebProvider:
+    """B62 compatibility adapter over the single Core-owned priority policy."""
+
+    def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
+        if settings.web_provider != "tinyfish_daum":
+            raise ValueError("TinyFish/Daum priority requires explicit provider configuration")
+        self._core = CorePriorityWebProvider(
+            tinyfish_key=settings.tinyfish_api_key,
+            daum_key=settings.daum_rest_api_key,
+            timeout_seconds=settings.web_timeout_seconds,
+            transport=transport,
+        )
+
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        try:
+            core_items = await self._core.search(query, limit=limit)
+        except WebRuntimeError as exc:
+            raise _translate_runtime_error(exc) from exc
+        # Source provider remains authoritative; never fabricate provider success.
+        if core_items:
+            print("PADIEM_WEB_SEARCH_ROUTE=" + (
+                "DAUM_ON_402_429" if core_items[0].provider == "daum" else "TINYFISH"
+            ), flush=True)
+        return [_from_core_evidence(item) for item in core_items]
+
+    async def fetch(self, url: str) -> Evidence:
+        try:
+            item = await self._core.fetch(url)
+        except WebRuntimeError as exc:
+            raise _translate_runtime_error(exc) from exc
+        return _from_core_evidence(item)
+
+
 def create_web_provider(
     settings: Settings,
     transport: httpx.AsyncBaseTransport | None = None,
@@ -238,6 +305,10 @@ def create_web_provider(
         provider = FirecrawlWebProvider(settings, transport=transport)
     elif settings.web_provider == "daum":
         provider = DaumWebProvider(settings, transport=transport)
+    elif settings.web_provider == "tinyfish":
+        provider = TinyFishWebProvider(settings, transport=transport)
+    elif settings.web_provider == "tinyfish_daum":
+        provider = TinyFishDaumWebProvider(settings, transport=transport)
     else:
         raise RuntimeError("unreachable web provider configuration")
 

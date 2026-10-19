@@ -98,6 +98,76 @@ assert.equal(copied.recipient.company, "홍길동건설");
 assert.deepEqual(copied.items.map((x) => x.name), ["홈페이지 제작", "유지보수"]);
 assert.equal(Core.computeTotals(copied.items, copied.tax.mode).grand, 2310000);
 
+const detailedPolicyDraft = sampleDraft();
+detailedPolicyDraft.meta.projectName = "스마트팜 환경제어설비";
+detailedPolicyDraft.items = [{
+  id: "item-detail",
+  name: "ICT환경제어 시스템",
+  spec: "주장치 및 스마트팜 전용S/W",
+  unit: "식",
+  qty: 1,
+  unitPrice: 16330000,
+  note: "설치 포함"
+}];
+detailedPolicyDraft.calculationPolicy = { grandRounding: { mode: "FLOOR", unit: 10000 } };
+const detailedEntry = History.createEntry(detailedPolicyDraft, {
+  id: "history-detail",
+  savedAt: "2026-09-27T12:30:00.000Z"
+});
+const detailedCopy = History.copyAsNew(detailedEntry, {
+  now: sequenceDate,
+  quoteNo: "PQ-20260928-009"
+});
+assert.equal(detailedCopy.meta.projectName, "스마트팜 환경제어설비",
+  "copy-as-new preserves project name");
+assert.equal(detailedCopy.items[0].spec, "주장치 및 스마트팜 전용S/W",
+  "copy-as-new preserves item spec");
+assert.equal(detailedCopy.items[0].unit, "식", "copy-as-new preserves item unit");
+assert.equal(detailedCopy.items[0].note, "설치 포함", "copy-as-new preserves item note");
+assert.deepEqual(
+  detailedCopy.calculationPolicy,
+  { grandRounding: { mode: "FLOOR", unit: 10000 } },
+  "copy-as-new preserves reviewed calculation policy"
+);
+assert.equal(
+  Core.computeTotals(
+    detailedCopy.items,
+    detailedCopy.tax.mode,
+    detailedCopy.calculationPolicy
+  ).grand,
+  17960000,
+  "copied history uses the same reviewed QuoteCore policy"
+);
+
+const groupedDraft = sampleDraft();
+groupedDraft.items = [{ id: "summary-old", name: "부속실 음향", qty: 7, unitPrice: 1 }];
+groupedDraft.detailGroups = [{
+  id: "detail-c",
+  summaryItemId: "summary-old",
+  title: "부속실 상세",
+  items: [
+    { id: "child-1", name: "장비", section: "1) 장비", qty: 1, unitPrice: 3644000 },
+    { id: "child-2", name: "인건비", section: "5) 인건비", qty: 1, unitPrice: 1100000 }
+  ]
+}];
+const groupedEntry = History.createEntry(groupedDraft, {
+  id: "history-grouped",
+  savedAt: "2026-09-27T12:40:00.000Z"
+});
+const groupedCopy = History.copyAsNew(groupedEntry, {
+  now: sequenceDate,
+  quoteNo: "PQ-20260928-010"
+});
+assert.equal(groupedCopy.items[0].id, "item-1", "copy-as-new rekeys summary item");
+assert.equal(groupedCopy.detailGroups[0].summaryItemId, "item-1",
+  "copy-as-new remaps detail-group link to new summary id");
+assert.equal(groupedCopy.detailGroups[0].items[0].section, "1) 장비",
+  "copy-as-new preserves detail section headings");
+assert.equal(Core.computeDraftTotals(groupedCopy).effectiveItems[0].unitPrice, 4744000,
+  "copy-as-new preserves detail subtotal authority");
+assert.equal(Core.computeDraftTotals(groupedCopy).amounts[0], 33208000,
+  "copy-as-new preserves summary quantity multiplication");
+
 const originalBefore = JSON.stringify(loaded.draft);
 copied.items[0].name = "변경됨";
 assert.equal(JSON.stringify(loaded.draft), originalBefore, "copy-as-new never mutates the history snapshot");
@@ -176,6 +246,9 @@ console.log("B66_HISTORY_CONTRACT=PASS");
 console.log("RECENT_HISTORY_BOUNDED=YES");
 console.log("HISTORY_TOTALS_DERIVED=YES");
 console.log("HISTORY_COPY_AS_NEW=PASS");
+console.log("HISTORY_DETAIL_FIELDS_PRESERVED=YES");
+console.log("HISTORY_CALCULATION_POLICY_PRESERVED=YES");
+console.log("HISTORY_DETAIL_GROUP_LINK_PRESERVED=YES");
 console.log("HISTORY_SAVE_UPSERT=PASS");
 console.log("SAME_QUOTE_REPEATED_SAVE_DUPLICATES=0");
 console.log("HUMAN_READABLE_QUOTE_NO=YES");

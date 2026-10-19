@@ -5,6 +5,7 @@ import {
   REDACTION_PLACEHOLDER,
   SAFE_LOG_PROJECTION,
   projectBoundedLog,
+  redactEvidenceLine,
   redactLine,
 } from '../src/contract/safe-log-projection.js';
 
@@ -41,6 +42,28 @@ test('#3083 safe log projection redacts common credential shapes', () => {
   }
   assert.equal(redactLine(`aws ${AWS_VALUE}`).includes(AWS_VALUE), false);
   assert.equal(redactLine(`github token ${GITHUB_VALUE}`).includes(GITHUB_VALUE), false);
+});
+
+test('#3472 persisted evidence adds pairing-code masking on top of common redaction', () => {
+  const pairingCode = ['0123456789abcdef', 'fedcba9876543210'].join('');
+  const pairingLine = `pairing material ${pairingCode}`;
+  const bearerLine = `Authorization: Bearer ${BEARER_VALUE}`;
+
+  const projectedPairing = redactEvidenceLine(pairingLine);
+  const projectedBearer = redactEvidenceLine(bearerLine);
+
+  assert.equal(projectedPairing.includes(pairingCode), false);
+  assert.equal(projectedPairing.includes(REDACTION_PLACEHOLDER), true);
+  assert.equal(projectedBearer.includes(BEARER_VALUE), false);
+  assert.equal(projectedBearer.includes(REDACTION_PLACEHOLDER), true);
+
+  // Pairing masking happens before the persistent line bound. A code crossing
+  // the truncation edge must not leave even a prefix of the secret behind.
+  const boundaryLine = `${'x'.repeat(SAFE_LOG_PROJECTION.MAX_LINE_LENGTH - 8)}${pairingCode}`;
+  const boundaryProjected = redactEvidenceLine(boundaryLine);
+  assert.equal(boundaryProjected.includes(pairingCode), false);
+  assert.equal(boundaryProjected.includes(pairingCode.slice(0, 8)), false);
+  assert.equal(boundaryProjected.length <= SAFE_LOG_PROJECTION.MAX_LINE_LENGTH + 20, true);
 });
 
 test('#3083 safe log projection redacts a multi-line private key block', () => {

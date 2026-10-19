@@ -1,0 +1,113 @@
+# B66 Quote Beta demo guide — historical snapshot (2026-10-08)
+
+```text
+DOCUMENT_STATUS = HISTORICAL_ARCHIVE
+CURRENT_CUSTOMER_RUNBOOK = NO
+CURRENT_OPERATING_POLICY = NO
+SOURCE_DOCUMENT = reference/business-66-padiem-quote-v1/DEMO_GUIDE.md
+SNAPSHOT_BASE_MAIN = a43db8163a86fad3d6eb2a83ee127157a27d3526
+```
+
+The original guide below is preserved byte-for-byte as **historical demo
+evidence**, NOT as current customer instructions, certified-PDF procedure, or
+Proof of Production readiness.
+
+Its claims about no authentication/server persistence, image upload, AI
+interpretation, and browser print-to-PDF describe an earlier demo phase and
+must not override the source-verified present-day contracts.
+
+For the current product and source-backed implementation guidance consult
+[B66 product policy](../../products/b66/README.md) and
+[the implementation README](../../../reference/business-66-padiem-quote-v1/README.md).
+For the latest documented CGI customer-run outcome, see issues #3751 and #3733:
+Guided PDF passed, Complete Freeform returned HTTP 502, Partial follow-up was
+untested, and CUSTOMER_READY=NO. These are run-specific observations, not a
+fresh live check.
+
+**The untouched original guide follows.**
+
+---
+
+# B66 · Quote Beta — 데모 운영 가이드 (DEMO GUIDE)
+
+대상: 고객에게 견적 데모를 시연하는 운영자
+화면: 견적서 만들기 (B66 내부 프로젝트 · Issue #3136/#3144)
+이 문서는 **현재 버전의 실제 동작 기준**으로 작성되었습니다.
+
+---
+
+## 1. 실행 방법
+
+방법 A — 로컬 서버 (권장):
+
+```bash
+cd reference/business-66-padiem-quote-v1
+python -m http.server 4173
+```
+
+브라우저에서 `http://127.0.0.1:4173/` 접속.
+
+방법 B — 바로 열기: `index.html`을 더블클릭 (서버·설치·자격증명 불필요).
+
+- 포트 충돌 시: `4174` 등 다른 포트 사용.
+- 권장 화면: 데스크톱 1280px 이상 (좌측 입력 / 우측 견적서 미리보기 2단 배치).
+- 모바일(390px): 열람·입력 모두 지원. 품목 행이 카드형으로 배치되어 단가가 온전히 보입니다.
+
+## 2. 5분 데모 시나리오 (권장 순서)
+
+1. **발신자 확인** — "1. 보내는 사람"에서 프리셋(샘플 공급사 / 직접 입력) 선택, 주소 입력.
+   - 실제 회사 정보를 입력한 뒤 **"이 발신자 저장"**을 누르면 이 브라우저에 저장됩니다.
+2. **받는 사람과 날짜** — 고객사/담당자/고객 주소 입력. 견적일은 오늘, 견적번호는 `PQ-YYYYMMDD-001`로 자동 생성. **유효일**이 견적일+유효기간으로 자동 계산되어 미리보기에 표시됩니다.
+3. **품목 입력** — 2~3개 입력. 직접입력 화면은 콤마 금액(`1,500,000`)을 지원하고, Easy Mode 질문형 단가는 `150만원`, `20만`, `1.5만원`, `2억원`, `3천원`처럼 단일 한국식 축약도 사용할 수 있습니다. `1억5천만원` 같은 복합 단위는 추측하지 않고 다시 입력을 요청합니다.
+4. **부가세 방식 선택** — 3가지:
+   - **별도**: 공급가액에 VAT 10% 추가 (기본값)
+   - **포함**: 표시 금액에 VAT가 포함 — 합계 = 품목 합계, 공급가액/부가세는 합계에서 분리
+   - **면세**: 부가세 없음
+   - 미리보기에 현재 세금 방식이 항상 표시됩니다.
+   - Easy Mode에서 **잘 모르겠어요**를 고른 경우에는 최종 합계를 확정하지 않고 Direct Mode에서 부가세 방식을 반드시 다시 선택하게 합니다. 이 확인 상태는 새로고침해도 현재 견적번호에 한해 유지됩니다.
+   - 이 상태에서는 Direct Mode의 합계/견적서 미리보기도 **세금 확인 전 / 확인 필요 / 확정 전**으로 표시되어 임시 EXCLUSIVE 계산값을 확정 금액처럼 보여주지 않습니다.
+5. **미리보기 → PDF 저장** — 우측 A4 미리보기 확인 후 **"PDF로 저장 / 인쇄"** 클릭. 견적번호·견적일·보내는 상호·받는 곳·품목 또는 부가세 확인이 남아 있으면 인쇄를 시작하지 않고 해당 입력으로 안내합니다. 준비가 끝난 경우에만 저장 안내 토스트와 인쇄창이 열립니다 (아래 3절).
+6. **내 견적서 등록·재사용** — 직접입력 화면의 **"5. 내 견적서"**에서 **"내가 쓰던 견적서 등록"** 클릭: 기존 파일 선택 → 회사정보 확인 → 모양 확인·수정 → 미리보기 → **[이 모양 사용]** → 최종 확인 → **[내 견적서로 저장]** → 저장 완료 후 **"이 견적서로 작성"**. 다음 견적부터는 저장된 내 견적서를 선택하면 회사 기본값과 승인 레이아웃이 적용되고, 거래처·품목·수량·단가만 새로 입력합니다. 모양 초안은 원본을 자동으로 분석하지 않으므로 실제 견적서와 비교해 수정한다는 안내가 화면에 표시됩니다.
+
+## 3. PDF 저장 시 주의사항
+
+인쇄 대화상자(Chrome/Edge 기준)에서:
+
+1. **대상: "PDF로 저장"** 선택.
+2. **추가 설정 → 옵션에서 "머리글 및 바닥글" 체크 해제** — 해제하지 않으면 문서 상단에 날짜·페이지 제목, 하단에 URL·페이지 번호가 인쇄됩니다. "PDF로 저장 / 인쇄"를 누르면 이 안내가 화면에 표시됩니다.
+   - ※ 브라우저 인쇄의 머리글/바닥글은 코드로 강제 해제할 수 없는 **브라우저 제한**입니다. 완전 제거는 다음 단계의 진짜 PDF 생성(jsPDF 등)에서 해결됩니다.
+3. 여백은 "기본", 배율은 100% 유지 (@page 규격으로 A4 10mm 여백 지정).
+4. 품목이 많으면 필요한 만큼 페이지가 자동으로 나뉘고, 표 헤더가 반복되며 합계·비고는 마지막에 인쇄됩니다. **빈 마지막 페이지는 생성되지 않습니다.**
+5. 인쇄에는 견적서 종이(우측 미리보기)만 나옵니다 — 입력 화면은 인쇄되지 않습니다.
+
+## 4. 자동 저장과 새 견적
+
+- 입력 내용(발신자·수신자·주소·품목·부가세 방식·비고)은 **입력하는 즉시 이 브라우저에 자동 저장**됩니다. 새로고침해도 그대로 복원됩니다.
+- **최근 견적에 저장**은 같은 견적번호를 다시 누르면 중복 카드를 만들지 않고 해당 기록을 최신 내용으로 갱신합니다.
+- 공용/공유 PC에서는 상단 **저장 데이터 초기화**를 누르면 확인 후 B66가 저장한 견적·발신자·최근 견적 기록을 초기화할 수 있습니다.
+- **"새 견적"** 버튼은 확인 대화상자 후 새 견적번호/오늘 날짜를 발급합니다. 보내는 사람과 유효기간은 유지하고, 받는 사람과 품목은 다음 고객용 빈 상태로 시작합니다.
+- 저장 데이터가 손상되었거나 구버전 형식이면 앱이 멈추지 않고 기본 데모 상태로 시작합니다.
+
+## 5. 이 데모가 하지 않는 것
+
+- 파일 **선택/preflight**는 동작함(PDF·Office/HWPX·JPG/PNG/WebP). 내 견적서 등록에서 JPG/PNG/WebP는 same-origin 서버 분석까지 연결되며, PDF·Office/HWPX는 현재 수동 확인 방식
+- AI/OCR 추출 없음, 채팅 자동 생성 없음. `내용을 한번에 말하기` 원문은 질문형으로 이어갈 때 참고용으로 남지만 견적 필드에 자동 입력되지 않음
+- 이메일 발송 없음
+- 서버 저장·인증·테넌트 데이터 없음 (모든 데이터는 이 브라우저의 localStorage에만 존재)
+- 자격증명·API 키 불필요
+
+## 6. 문제 해결
+
+- **저장 데이터 초기화**: 화면 상단의 **저장 데이터 초기화** 버튼 사용을 권장합니다. 개발자 도구가 필요한 경우에만 Local Storage의 `quoteBeta.*` 키를 직접 확인합니다.
+- **인쇄 미리보기가 비정상**: 인쇄 대화상자에서 "배율 100%", "여백 기본" 확인.
+
+## 7. 다음 단계 개발 연결점
+
+```text
+직접 입력 / 파일 업로드+OCR / 채팅  →  QuoteDraft(하나의 정규화 객체)
+  → 검증 + 결정론적 계산(수량×단가·공급가액·VAT·총액)
+  → 미리보기  →  PDF  →  (선택) 이메일
+```
+
+금액·날짜 계산의 최종 authority는 AI가 아니라 `quote-core.js`의 결정론적 코드입니다.
+세부 계획은 README.md와 Issue #3136 참조.

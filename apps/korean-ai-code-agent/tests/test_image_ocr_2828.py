@@ -453,13 +453,10 @@ def _noisy_png(size: int = 900) -> bytes:
     import random
 
     generator = random.Random(20260925)
-    image = Image.new("RGB", (size, size))
-    image.putdata(
-        [
-            (generator.randrange(256), generator.randrange(256), generator.randrange(256))
-            for _ in range(size * size)
-        ]
-    )
+    # Native bulk generation avoids millions of Python calls/tuple allocations.
+    # The deterministic RGB payload remains real high-entropy pixel data, so
+    # the PNG still exercises the original oversize admission gate.
+    image = Image.frombytes("RGB", (size, size), generator.randbytes(3 * size * size))
     out = io.BytesIO()
     image.save(out, format="PNG")
     return out.getvalue()
@@ -705,6 +702,16 @@ class MalformedChildOutputTests(unittest.TestCase):
 
 class OversizedInputTests(unittest.TestCase):
     """H: input outside the existing Core image bounds never starts a process."""
+
+    def test_noisy_png_fixture_is_deterministic_and_real(self) -> None:
+        first = _noisy_png(200)
+        self.assertEqual(first, _noisy_png(200))
+        with Image.open(io.BytesIO(first)) as decoded:
+            self.assertEqual(decoded.format, "PNG")
+            self.assertEqual(decoded.mode, "RGB")
+            self.assertEqual(decoded.size, (200, 200))
+            decoded.load()  # Verify that actual PNG pixels, not just a header, decode.
+        self.assertGreater(len(first), 100_000)
 
     def test_oversized_png_is_refused_without_spawning(self) -> None:
         spy = _SpawnSpy()

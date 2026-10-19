@@ -1,0 +1,39 @@
+name: Personal Video Archive CI
+
+# #3768: independently test the still-supported Business 13 MVP on review
+# and after a relevant change lands on main. No provider/API/deploy credentials.
+on:
+  pull_request:
+    paths:
+      - "apps/personal-video-archive/**"
+      - ".github/workflows/personal-video-archive-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/personal-video-archive/**"
+      - ".github/workflows/personal-video-archive-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: personal-video-archive-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  personal-video-archive-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/personal-video-archive
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install MVP and test dependencies
+        run: python -m pip install -e ".[dev]"
+      - name: Run all Business 13 unit, integration and static-preview tests
+        run: python -m pytest -q tests/

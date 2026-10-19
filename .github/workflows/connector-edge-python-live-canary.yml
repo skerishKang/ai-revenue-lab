@@ -1,0 +1,77 @@
+name: Connector Python External Edge Canary (Ephemeral)
+
+# Live account writes are intentionally never triggered by PR/push.
+# A verified 2026-10-14 real edge TLS/101/frame proof is already on #4572.
+# Additional disposable deployments require a fresh explicit operator dispatch.
+on:
+  workflow_dispatch:
+    inputs:
+      authorize_one_ephemeral_edge_canary:
+        description: "Explicitly allow one no-binding Python test Worker and verified deletion"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+# No parallel deployment of a second ephemeral canary in this PR.
+# Do not cancel a live run during teardown.
+concurrency:
+  group: connector-python-live-edge-4139
+  cancel-in-progress: false
+
+jobs:
+  exact-pr-scoped-ephemeral-python-edge:
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      inputs.authorize_one_ephemeral_edge_canary == true &&
+      github.repository == 'skerishKang/ai-revenue-lab' &&
+      github.ref == 'refs/heads/central/4139-claw-connect-integration-261013'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    defaults:
+      run:
+        working-directory: tools/connector-edge-canary
+    steps:
+      - name: Checkout exact review branch without persisting credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Verify reviewed canary source and no authority bindings
+        run: |
+          python - <<'PY'
+          import tomllib
+          from pathlib import Path
+          cfg = tomllib.loads(Path("wrangler.toml").read_text())
+          assert cfg["main"] == "worker.py"
+          assert cfg["compatibility_flags"] == ["python_workers"]
+          for key in ("account_id", "services", "vars", "secrets", "routes",
+                      "durable_objects", "d1_databases", "r2_buckets"):
+              assert key not in cfg, key
+          assert "padiem-chat" not in Path("worker.py").read_text()
+          print("CONNECTOR_EDGE_PYTHON_CANARY_SOURCE=SCOPED")
+          PY
+          python -m unittest discover -s tests -p 'test_*.py' -q
+
+      - name: Deploy test-only Python SDK Worker, verify real edge, delete Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PADIEM_CONNECTOR_TEMP_CANARY_ENABLED: explicitly-scoped
+        run: |
+          uv sync --group dev
+          bash ci_live_edge_probe.sh

@@ -1,6 +1,6 @@
 """Owner decision 2026-09-18 — Poolside binding re-registered metadata-only.
 
-The ``PADIEM_POOLSIDE_API_KEY`` Secrets Store binding is declared again in
+The ``PADIEM_B14_CREDENTIAL_12`` Secrets Store binding is declared again in
 wrangler.toml as metadata only (binding + store_id + secret_name, no secret
 value); the old ``[[unsafe.bindings]]`` form stays prohibited. Poolside
 provider code stays registered, but with the key absent the Worker must
@@ -41,9 +41,9 @@ def test_wrangler_toml_declares_no_unsafe_bindings():
     config = tomllib.loads(WRANGLER_TOML.read_text(encoding="utf-8"))
     assert "unsafe" not in config
     text = WRANGLER_TOML.read_text(encoding="utf-8")
-    assert 'binding = "PADIEM_POOLSIDE_API_KEY"' in text
+    assert 'binding = "PADIEM_B14_CREDENTIAL_12"' in text
     assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' in text
-    assert "PADIEM_POOLSIDE_API_KEY =" not in text
+    assert "PADIEM_B14_CREDENTIAL_12 =" not in text
 
 
 def test_startup_and_registration_succeed_without_poolside_binding(monkeypatch):
@@ -83,28 +83,20 @@ def test_poolside_reports_not_ready_without_crash_or_fallback(monkeypatch):
     assert "credential_binding_name" not in response.text
 
 
-def test_kilo_route_unaffected_without_poolside_binding(monkeypatch):
-    # (c) The keyless Kilo route stays ready and the overall endpoint status
-    # remains "ready" purely because of Kilo.
-    monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.delenv(POOLSIDE_CREDENTIAL_BINDING, raising=False)
-
+def test_no_retired_kilo_route_can_make_poolside_ready(monkeypatch):
+    monkeypatch.setenv("B14_PROVIDER_MODE","live")
+    monkeypatch.delenv(POOLSIDE_CREDENTIAL_BINDING,raising=False)
     with TestClient(create_app()) as client:
-        readiness = client.get("/api/pilot/provider-readiness")
-        models = client.get("/api/pilot/models")
-
+        readiness=client.get("/api/pilot/provider-readiness")
+        models=client.get("/api/pilot/models")
     assert readiness.status_code == 200
-    data = readiness.json()
-    assert data["status"] == "ready"
-    kilo = _provider(data, KILO_PROVIDER_ID)
-    assert kilo["credential_ready"] is True
-    assert kilo["route_ready"] is True
-    assert KILO_MODEL_ID in kilo["models"]
-
-    # The deployed catalog surface must keep serving the Kilo route (the
-    # marker the deploy gate smokes) while Poolside stays unreachable from
-    # the public/auto catalog even though its readiness entry exists.
+    data=readiness.json()
+    assert data["status"] == "not_ready"
+    assert not [e for e in data["providers"] if e["provider_id"] == "kilo"]
+    poolside=_provider(data,POOLSIDE_PROVIDER_ID)
+    assert poolside["credential_ready"] is False
+    assert poolside["route_ready"] is False
     assert models.status_code == 200
-    catalog_ids = [entry["id"] for entry in models.json()["catalog"]]
-    assert KILO_MODEL_ID in catalog_ids
-    assert POOLSIDE_MODEL_ID not in catalog_ids
+    ids={e["id"] for e in models.json()["catalog"]}
+    assert KILO_MODEL_ID not in ids
+    assert POOLSIDE_MODEL_ID in ids

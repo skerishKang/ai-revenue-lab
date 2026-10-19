@@ -12,11 +12,13 @@ RAG chunks into trusted system context.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 import re
 from typing import Protocol
 
+from .contracts import Evidence
+from .document_semantics import DocumentLocator, DocumentSegment
 from .context_policy import (
     ContextFragment,
     ContextPolicy,
@@ -137,6 +139,11 @@ class RetrievedItem:
     source_ref: str
     content: str
     title: str | None = None
+    # Provenance is intentionally excluded from the public constructor.  A
+    # caller/provider cannot attach an exact page by passing arbitrary metadata;
+    # it is minted only by from_document_segment() from canonical parser/index
+    # provenance and then copied downstream unchanged.
+    document_locator: DocumentLocator | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         for name in ("id", "namespace", "source_type", "provider", "source_ref"):
@@ -161,16 +168,62 @@ class RetrievedItem:
                 ),
             )
 
-    def to_public_dict(self) -> dict[str, str | int]:
-        """Return minimal provenance only; private reference data is omitted."""
+    @classmethod
+    def from_document_segment(
+        cls,
+        *,
+        id: str,
+        namespace: str,
+        source_type: str,
+        provider: str,
+        source_ref: str,
+        segment: DocumentSegment,
+        title: str | None = None,
+        content: str | None = None,
+    ) -> "RetrievedItem":
+        """Create a located retrieval item from canonical document provenance.
 
-        return {
+        The locator itself is never accepted as caller input.  Optional chunk
+        content must remain a substring of the canonical segment so retrieval
+        cannot relabel unrelated text with an exact parser-derived page.
+        """
+
+        if not isinstance(segment, DocumentSegment) or segment.locator is None:
+            raise RetrievalContractError(
+                "missing_document_locator",
+                "Located retrieval requires a canonical DocumentSegment locator.",
+            )
+        selected_content = segment.text if content is None else content
+        if not isinstance(selected_content, str) or selected_content not in segment.text:
+            raise RetrievalContractError(
+                "retrieval_locator_content_mismatch",
+                "Located retrieval content must come from the canonical document segment.",
+            )
+        item = cls(
+            id=id,
+            namespace=namespace,
+            source_type=source_type,
+            provider=provider,
+            source_ref=source_ref,
+            content=selected_content,
+            title=title,
+        )
+        object.__setattr__(item, "document_locator", segment.locator)
+        return item
+
+    def to_public_dict(self) -> dict[str, object]:
+        """Return minimal provenance only; private source_ref remains omitted."""
+
+        public: dict[str, object] = {
             "id": self.id,
             "namespace": self.namespace,
             "source_type": self.source_type,
             "provider": self.provider,
             "content_chars": len(self.content),
         }
+        if self.document_locator is not None:
+            public["document_locator"] = self.document_locator.to_public_dict()
+        return public
 
 
 class RetrievalProvider(Protocol):
@@ -247,15 +300,18 @@ class PreparedRetrieval:
 
 
 def _retrieval_fragment(item: RetrievedItem) -> ContextFragment:
+    payload_fields: dict[str, object] = {
+        "namespace": item.namespace,
+        "source_type": item.source_type,
+        "provider": item.provider,
+        "source_ref": item.source_ref,
+        "title": item.title,
+        "content": item.content,
+    }
+    if item.document_locator is not None:
+        payload_fields["document_locator"] = item.document_locator.to_public_dict()
     payload = json.dumps(
-        {
-            "namespace": item.namespace,
-            "source_type": item.source_type,
-            "provider": item.provider,
-            "source_ref": item.source_ref,
-            "title": item.title,
-            "content": item.content,
-        },
+        payload_fields,
         ensure_ascii=False,
         allow_nan=False,
         separators=(",", ":"),
@@ -356,3 +412,31 @@ def prepare_retrieval_context(
         ) from exc
 
     return PreparedRetrieval(items=tuple(selected), context=prepared)
+
+
+def evidence_from_retrieved_item(
+    item: RetrievedItem,
+    *,
+    evidence_id: str,
+    retrieved_at: str,
+    url: str | None = None,
+) -> Evidence:
+    """Project one retrieval result into canonical Evidence without rewriting provenance."""
+
+    if not isinstance(item, RetrievedItem):
+        raise RetrievalContractError(
+            "invalid_retrieval_contract",
+            "Evidence projection requires a RetrievedItem.",
+        )
+    evidence = Evidence(
+        id=evidence_id,
+        title=item.title or item.source_ref,
+        snippet=item.content,
+        retrieved_at=retrieved_at,
+        provider=item.provider,
+        source_type=item.source_type,
+        url=url,
+    )
+    object.__setattr__(evidence, "source_ref", item.source_ref)
+    object.__setattr__(evidence, "document_locator", item.document_locator)
+    return evidence

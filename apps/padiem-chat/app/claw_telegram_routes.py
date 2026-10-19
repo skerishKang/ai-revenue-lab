@@ -51,6 +51,8 @@ from kagent.telegram_contracts import (
     TelegramWebhookProof,
 )
 
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+
 TELEGRAM_WEBHOOK_SECRET_HEADER = "X-Telegram-Bot-Api-Secret-Token"
 _MAX_UPDATE_BODY_BYTES = 256 * 1024
 _FALLBACK_BINDING_REF = "telegram-ingest"
@@ -113,8 +115,14 @@ async def _read_bounded_update(request: Request) -> dict[str, Any] | None:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         return None
-    raw = await request.body()
-    if not raw or len(raw) > _MAX_UPDATE_BODY_BYTES:
+    try:
+        raw = await read_bounded_request_body(
+            request,
+            max_bytes=_MAX_UPDATE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return None
+    if not raw:
         return None
     try:
         decoded = json.loads(raw.decode("utf-8"))

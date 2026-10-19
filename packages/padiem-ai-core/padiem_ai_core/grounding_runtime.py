@@ -14,7 +14,9 @@ from .web_runtime import (
     normalize_public_url,
 )
 
-MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS = 12_000
+# Evidence context is no longer arbitrarily capped at 12k characters.
+# 5.5MB is the downstream transport resource envelope, NOT model capacity.
+MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS = 5_500_000
 MAX_GROUNDED_SOURCES = MAX_RESULTS
 MAX_RESEARCH_QUERIES = 3
 MAX_RESEARCH_SOURCES = 10
@@ -327,6 +329,37 @@ class GroundedResearchRuntime:
         )
         return list(selection.evidence)
 
+    async def prepare_search(
+        self,
+        query: str,
+        *,
+        additional_system_context: str | None,
+        max_total_context_chars: int,
+    ) -> PreparedGrounding:
+        """Core-owned bounded evidence retrieval, without a B14/model invocation.
+
+        Shared by synthesis and the Engine's evidence-only read. The provider,
+        source-quality filter and untrusted-data preamble remain identical.
+        """
+        query = _validated_query(query)
+        try:
+            found = await self._web_provider.search(query, limit=self._policy.max_simple_sources)
+        except WebRuntimeError as exc:
+            raise self._web_error(exc) from exc
+        evidence = self._quality_select(query, found, limit=self._policy.max_simple_sources)
+        # A fixed, bounded diagnostic bucket only; never log the query,
+        # evidence text, URLs, provider response data or credentials.
+        outcome = "PROVIDER_EMPTY" if not found else "QUALITY_FILTER_REJECTED" if not evidence else "QUALITY_SELECTED"
+        print("GROUNDING_SEARCH_EVIDENCE=" + outcome, flush=True)
+        prepared = prepare_combined_grounding_context(
+            evidence,
+            additional_system_context=additional_system_context,
+            max_total_context_chars=max_total_context_chars,
+            policy=self._policy,
+            max_sources=self._policy.max_simple_sources,
+        )
+        return prepared
+
     async def run_search(
         self,
         query: str,
@@ -335,18 +368,10 @@ class GroundedResearchRuntime:
         additional_system_context: str | None,
         max_total_context_chars: int,
     ) -> GroundedSynthesisResult:
-        query = _validated_query(query)
-        try:
-            found = await self._web_provider.search(query, limit=self._policy.max_simple_sources)
-        except WebRuntimeError as exc:
-            raise self._web_error(exc) from exc
-        evidence = self._quality_select(query, found, limit=self._policy.max_simple_sources)
-        prepared = prepare_combined_grounding_context(
-            evidence,
+        prepared = await self.prepare_search(
+            query,
             additional_system_context=additional_system_context,
             max_total_context_chars=max_total_context_chars,
-            policy=self._policy,
-            max_sources=self._policy.max_simple_sources,
         )
         synthesis = await synthesizer(prepared.context)
         return GroundedSynthesisResult(synthesis=synthesis, prepared=prepared)

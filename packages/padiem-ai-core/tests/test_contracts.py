@@ -218,6 +218,9 @@ def test_run_metadata_serializes_tool_event_and_error_without_secret_fields() ->
             "status": "completed",
             "duration_ms": 42,
             "error_class": None,
+            # #5015: the bounded ToolHandlerError stage code is part of the
+            # public tool event so a failed tool keeps its reviewed cause.
+            "error_code": None,
         }
     ]
     assert public["error_class"] == "provider_timeout"

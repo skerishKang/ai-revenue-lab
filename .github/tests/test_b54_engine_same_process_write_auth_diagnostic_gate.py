@@ -623,6 +623,130 @@ def test_cloudflare_credentials_are_the_only_new_env() -> None:
     assert 'test -n "${CLOUDFLARE_ACCOUNT_ID}"' in code
 
 
+
+
+# #3748 / #3881: actual CLI argv parity through both existing subprocess
+# adapters. Source-only suite, no live diagnostic, Cloudflare, Engine or probe.
+
+
+def _assert_3748_same_process_argv(src: str) -> None:
+    assert src.count('--active-version="${pre_version}"') == 1
+    assert src.count('--active-version="${new_version}"') == 1
+    assert '--active-version "${pre_version}"' not in src
+    assert '--active-version "${new_version}"' not in src
+    assert "if: ${{ github.event_name == 'workflow_dispatch' }}" in src
+    assert "DIAGNOSTIC_EXECUTED=NO" in src
+    assert "ONE_OVERLAY_PUT_MAX=YES" in src
+    assert "AUTH_PROBE_REQUESTS_ISSUED=1" in src
+
+
+def _run_3748_version_adapter(adapter: str, *argv: str,
+                              fixture_id: str = "-canonical-rotation-a7",
+                              include_overlay: bool = True,
+                              overlay_type: str = "secret_text") -> subprocess.CompletedProcess[str]:
+    import json
+    import tempfile
+
+    bindings = [
+        {
+            "name": "PADIEM_ENGINE_CALLER_REGISTRY_V1",
+            "type": "secret_text",
+            "text": "SYNTHETIC_BASE_NOT_FOR_OUTPUT",
+        },
+    ]
+    if include_overlay:
+        bindings.append({
+            "name": "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY",
+            "type": overlay_type,
+            "text": "SYNTHETIC_OVERLAY_NOT_FOR_OUTPUT",
+        })
+    payload = {
+        "success": True,
+        "result": {"id": fixture_id, "resources": {"bindings": bindings}},
+    }
+    if adapter == "rotation":
+        script = ROOT / ROTATION_SCRIPT
+        cmd = ["classify", "--version-detail"]
+    elif adapter == "served":
+        script = ROOT / GUARD_SCRIPT
+        cmd = ["verify", "--version-settings"]
+    else:
+        raise AssertionError("unsupported synthetic adapter")
+
+    with tempfile.TemporaryDirectory(prefix="same-process-3748-") as tmp:
+        detail = Path(tmp) / "synthetic-version.json"
+        detail.write_text(json.dumps(payload), encoding="utf-8")
+        args = [sys.executable, str(script), *cmd, str(detail), *argv]
+        if adapter == "served":
+            args.append("--expect-overlay")
+        return subprocess.run(args, text=True, capture_output=True, timeout=15, check=False)
+
+
+def test_3748_same_process_argv_both_workflow_sites_equals_form() -> None:
+    _assert_3748_same_process_argv(_text())
+
+
+def test_3748_same_process_argv_real_both_adapters_accept_leading_hyphen() -> None:
+    assert re.fullmatch(r"[A-Za-z0-9._-]{1,64}", "-canonical-rotation-a7")
+    classify = _run_3748_version_adapter("rotation", "--active-version=-canonical-rotation-a7")
+    assert classify.returncode == 0, classify.stderr
+    assert "B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=ROTATION_REQUIRED" in classify.stdout
+    verify = _run_3748_version_adapter("served", "--active-version=-canonical-rotation-a7")
+    assert verify.returncode == 0, verify.stderr
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in verify.stdout
+    for proc in (classify, verify):
+        assert "SYNTHETIC_BASE_NOT_FOR_OUTPUT" not in (proc.stdout + proc.stderr)
+        assert "SYNTHETIC_OVERLAY_NOT_FOR_OUTPUT" not in (proc.stdout + proc.stderr)
+
+
+def test_3748_same_process_argv_real_both_reject_spaced_option() -> None:
+    for adapter in ("rotation", "served"):
+        proc = _run_3748_version_adapter(
+            adapter, "--active-version", "-canonical-rotation-a7"
+        )
+        assert proc.returncode == 2, (adapter, proc.stderr)
+        assert "expected one argument" in proc.stderr
+        assert "SYNTHETIC_BASE_NOT_FOR_OUTPUT" not in (proc.stdout + proc.stderr)
+
+
+def test_3748_same_process_argv_real_both_reject_identity_mismatch() -> None:
+    for adapter in ("rotation", "served"):
+        proc = _run_3748_version_adapter(
+            adapter, "--active-version=-different-version"
+        )
+        assert proc.returncode == 1, (adapter, proc.stderr)
+        assert "SYNTHETIC_BASE_NOT_FOR_OUTPUT" not in (proc.stdout + proc.stderr)
+
+
+def test_3748_same_process_argv_real_both_fail_closed_overlay_drift() -> None:
+    for adapter in ("rotation", "served"):
+        for kwargs in ({"include_overlay": False}, {"overlay_type": "kv_namespace"}):
+            proc = _run_3748_version_adapter(
+                adapter, "--active-version=-canonical-rotation-a7", **kwargs
+            )
+            assert proc.returncode == 1, (adapter, kwargs, proc.stderr)
+            assert "SYNTHETIC_OVERLAY_NOT_FOR_OUTPUT" not in (proc.stdout + proc.stderr)
+
+
+def test_3748_same_process_argv_mutation_red_then_byte_identical_source() -> None:
+    original = WORKFLOW.read_bytes()
+    source = original.decode("utf-8").replace("\r\n", "\n")
+    _assert_3748_same_process_argv(source)
+    mutations = (
+        ('--active-version="${pre_version}"', '--active-version "${pre_version}"'),
+        ('--active-version="${new_version}"', '--active-version "${new_version}"'),
+    )
+    for good, bad in mutations:
+        mutated = source.replace(good, bad, 1)
+        assert mutated != source
+        try:
+            _assert_3748_same_process_argv(mutated)
+        except AssertionError:
+            pass  # RED: each old-form mutation independently detected
+        else:
+            raise AssertionError("old CLI spaced-token mutation passed the guard")
+    assert WORKFLOW.read_bytes() == original
+
 def main() -> int:
     tests = [value for name, value in sorted(globals().items()) if name.startswith("test_") and callable(value)]
     for test in tests:

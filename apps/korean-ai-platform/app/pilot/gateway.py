@@ -13,6 +13,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import math
 import time
 import uuid
 from typing import Any
@@ -33,6 +34,8 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.provider_timeout_diagnostics import log_gateway_deadline
+from app.pilot.b14_timeout_policy import GATEWAY_WALL_SECONDS
 from app.pilot.registry import get_registry
 from app.pilot.routing import (
     PilotConfigurationState,
@@ -46,7 +49,6 @@ from app.pilot.catalog import (
     CATALOG_MODELS,
     get_catalog_by_id,
     is_evidenced_free,
-    list_catalog_summaries,
 )
 from app.pilot.platform_secrets import (
     any_platform_secret_present,
@@ -58,6 +60,8 @@ from app.pilot import provider as prv
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
 from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
+from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
+from app.pilot.model_registry_file import group_model_ids
 
 # ---------------------------------------------------------------------------
 # Bounded same-route retry for retryable upstream failures (#1982)
@@ -66,17 +70,16 @@ from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
 # (Kilo Gateway's own ~10s limit on free models). Direct/manual routes used
 # to attempt once and give up despite the failure being retryable.
 #
-# Budget: the engine's orchestration budget is 60s. The whole B14 attempt
-# chain (initial + retries + backoffs) is capped at 45s wall time via a
-# per-attempt deadline, leaving >=15s of headroom for engine overhead.
-#   worst typical case: 3 attempts x ~10s (Kilo 504) + 0.5s + 1.0s backoff
-#                     = ~31.5s <= 45s
-#   pathological case : each attempt is hard-capped at the remaining budget
-#                     by asyncio.timeout, so total <= 45s by construction.
+# The 45s budget limits *additional* retry/fallback dispatches, not the
+# initial model inference. For both manual and auto routes the initial
+# attempt is governed by model idle detection and caller cancellation.
+# After it completes, additional physical requests are allowed only when
+# the shared retry window has remaining budget. The old 60s Engine ceiling
+# is an independent caller contract, not a B14 model-generation deadline.
 # ---------------------------------------------------------------------------
 _UPSTREAM_RETRY_MAX_RETRIES = 2
 _UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
-_UPSTREAM_RETRY_BUDGET_SECONDS = 45.0
+_UPSTREAM_RETRY_BUDGET_SECONDS = GATEWAY_WALL_SECONDS
 # Retryable transport classes may be retried on a SAME route for explicit
 # manual routes. The owner-designated auto chain has a total upstream-attempt
 # budget equal to ``decision.max_attempts``: each chain candidate gets at most
@@ -125,12 +128,14 @@ _VALID_ROLES = frozenset({"system", "user", "assistant"})
 _ALLOWED_CHAT_FIELDS = frozenset({
     "model", "messages", "temperature", "max_tokens", "stream", "tools",
     "business14",
+    "reasoning_effort", "top_p", "top_k", "min_p",
+    "presence_penalty", "repetition_penalty",
 })
 _ALLOWED_MESSAGE_FIELDS = frozenset({"role", "content"})
 _ALLOWED_B14_FIELDS = frozenset({
     "task_type", "required_capabilities", "optimize_for",
     "allow_external_fallback", "provider_order", "max_attempts",
-    "max_retries", "allow_paid",
+    "max_retries", "allow_paid", "product_tier",
 })
 _B14_OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
 _B14_TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
@@ -205,15 +210,13 @@ def _validate_body(raw: Any) -> dict:
         raise _InvalidBody("model must be a non-empty string")
 
     model = raw["model"].strip()
-    if len(model) > 200:
-        raise _InvalidBody("model must not exceed 200 characters")
-
-    # messages
+    # Provider/model controls supported context size and message count.
+    # B14 validates the message shape, not a second artificial context cap.
     msgs = raw.get("messages")
     if not isinstance(msgs, list):
         raise _InvalidBody("messages must be a non-empty array")
-    if len(msgs) < 1 or len(msgs) > 100:
-        raise _InvalidBody("messages must have 1–100 items")
+    if not msgs:
+        raise _InvalidBody("messages must be a non-empty array")
 
     validated_messages: list[dict[str, str]] = []
     for i, msg in enumerate(msgs):
@@ -229,8 +232,6 @@ def _validate_body(raw: Any) -> dict:
         if not isinstance(content, str) or not content.strip():
             raise _InvalidBody(f"messages[{i}] content must be a non-empty string")
         content = content.strip()
-        if len(content) > 32000:
-            raise _InvalidBody(f"messages[{i}] content must not exceed 32000 characters")
         validated_messages.append({"role": role, "content": content})
 
     # temperature
@@ -239,16 +240,17 @@ def _validate_body(raw: Any) -> dict:
         if isinstance(temp, bool) or not isinstance(temp, (int, float)):
             raise _InvalidBody("temperature must be a number or null")
         temp = float(temp)
-        if temp < 0.0 or temp > 2.0:
-            raise _InvalidBody("temperature must be between 0.0 and 2.0")
+        if not math.isfinite(temp):
+            raise _InvalidBody("temperature must be finite; provider validates its supported range")
 
-    # max_tokens
+    # max_tokens. None is meaningful: preserve omission so a product may either
+    # request an explicit bounded budget or defer to the provider/model default.
     mt = raw.get("max_tokens")
     if mt is not None:
         if isinstance(mt, bool) or not isinstance(mt, int):
             raise _InvalidBody("max_tokens must be an integer or null")
-        if mt < 1 or mt > 4096:
-            raise _InvalidBody("max_tokens must be between 1 and 4096")
+        if mt < 1:
+            raise _InvalidBody("max_tokens must be positive; provider validates its supported maximum")
 
     # stream
     st = raw.get("stream")
@@ -264,11 +266,24 @@ def _validate_body(raw: Any) -> dict:
             raise _InvalidBody("tools must be an array or null")
         raise ToolsNotSupported()
 
+    # Model-native overrides are opt-in. Reject unsupported vendor fields
+    # instead of silently dropping or guessing an original-model default.
+    from .model_native_parameters import (
+        OPTIONAL_FIELDS, UnsupportedModelParameter, validate_native_parameters,
+    )
+    try:
+        native_options = validate_native_parameters(
+            model, {key: raw[key] for key in OPTIONAL_FIELDS if key in raw}
+        )
+    except UnsupportedModelParameter as exc:
+        raise _InvalidBody(str(exc)) from exc
+
     return {
         "model": model,
         "messages": validated_messages,
-        "temperature": float(temp) if temp is not None else 0.2,
-        "max_tokens": int(mt) if mt is not None else 300,
+        "temperature": float(temp) if temp is not None else None,
+        "max_tokens": int(mt) if mt is not None else None,
+        "model_parameters": native_options,
         "business14": _validate_b14_options(raw.get("business14")),
     }
 
@@ -286,6 +301,12 @@ def _validate_b14_options(raw: Any) -> dict:
         raise _InvalidBody(f"Unexpected business14 fields: {', '.join(sorted(extra))}")
 
     opts: dict = {}
+
+    tier = raw.get("product_tier")
+    if tier is not None:
+        if not isinstance(tier, str) or tier not in ("free", "plus", "pro", "max"):
+            raise _InvalidBody("business14.product_tier must be a supported product tier")
+        opts["product_tier"] = tier
 
     tt = raw.get("task_type")
     if tt is not None:
@@ -377,63 +398,58 @@ def _registered_route_dicts() -> list[dict]:
     for model in sorted(CATALOG_BY_ID.values(), key=lambda m: m.model_id):
         is_public = model.model_id in public_ids
         is_free = is_evidenced_free(model)
+        owner_excluded = excluded_from_owner_customer_selection(model.model_id)
         entries.append({
             "id": model.model_id,
             "provider_id": model.platform_provider_id,
             "upstream_model": model.upstream_model,
+            "capabilities": sorted(model.capabilities),
             "free": is_free,
             "public": is_public,
             "explicit_only": not is_public,
-            "auto_eligible": is_public and is_free,
+            # Preserve registry provenance but never present owner-excluded
+            # models as auto-eligible for B66 or another product consumer.
+            "owner_excluded": owner_excluded,
+            "auto_eligible": is_public and is_free and not owner_excluded,
         })
     return entries
 
 
 def _catalog_summary_dicts() -> list[dict]:
-    """Return catalog models as display dicts with extra Alpha fields."""
-    result = []
-    for m in list_catalog_summaries():
-        model = get_catalog_by_id(m["model_id"])
-        result.append({
-            "id": m["model_id"],
-            "name": m["name"],
-            "provider_id": model.platform_provider_id if model else "unknown",
-            "provider_name": m["provider"],
-            "pilot_available": True,
+    """All approved exact models from B14 JSON, with no synthetic auto option."""
+    return [
+        {
+            "id": m.model_id,
+            "name": m.display_name,
+            "provider_id": m.platform_provider_id,
+            "provider_name": m.provider,
+            "pilot_available": m.enabled,
             "input_krw_per_1k": None,
             "output_krw_per_1k": None,
-            "tags": ["alpha"] + list(m["capabilities"]),
-            "input_price_usd_per_1m": m["input_price_usd_per_1m"],
-            "output_price_usd_per_1m": m["output_price_usd_per_1m"],
-            "korean_score": m["korean_score"],
-            "context_window": m["context_window"],
-        })
-    result.insert(0, {
-        "id": "b14/auto",
-        "name": "Business 14 자동 선택",
-        "provider_id": "b14",
-        "provider_name": "B14 Router",
-        "pilot_available": True,
-        "input_krw_per_1k": None,
-        "output_krw_per_1k": None,
-        "tags": ["alpha", "auto"],
-        "input_price_usd_per_1m": 0,
-        "output_price_usd_per_1m": 0,
-        "korean_score": 0,
-        "context_window": 0,
-    })
-    return result
+            "tags": sorted(m.capabilities),
+            "input_price_usd_per_1m": m.input_price_usd_per_1m,
+            "output_price_usd_per_1m": m.output_price_usd_per_1m,
+            "context_window": m.context_window,
+        }
+        for m in sorted(CATALOG_BY_ID.values(), key=lambda m: m.model_id) if m.enabled
+    ]
 
 
 @router.route("/health", methods=["GET"])
 async def pilot_health(request: Request):
     """Pilot health check. Includes Alpha (platform catalog) and BYOK status."""
+    from .platform_secrets import ensure_all_platform_secrets
+    await ensure_all_platform_secrets()
     state = resolve_configuration()
+    # Health must count the same enabled exact-model catalog as GET /models.
+    # CATALOG_MODELS is the retired public/auto lane and may be empty even
+    # when manual pinned routes in CATALOG_BY_ID are live and selectable.
+    enabled_model_count = len(_catalog_summary_dicts())
 
     b14_info = {
         "provider_mode": runtime_config.provider_mode,
         "has_key": any_platform_secret_present(),
-        "catalog_models": len(list_catalog_summaries()),
+        "catalog_models": enabled_model_count,
         "routing_policy": {
             "id": ROUTING_POLICY_ID,
             "chain": list(B14_AUTO_CHAIN),
@@ -481,7 +497,7 @@ async def pilot_health(request: Request):
             "status": "ok",
             "mode": "b14-live",
             "configured_providers": len(_providers_with_registered_routes()),
-            "configured_models": len(list_catalog_summaries()),
+            "configured_models": enabled_model_count,
             "registered_routes": len(CATALOG_BY_ID),
             "business14": b14_info,
         })
@@ -508,6 +524,7 @@ async def pilot_models(request: Request):
             "mode": "multi-provider",
             "catalog": _catalog_summary_dicts(),
             "registered_routes": _registered_route_dicts(),
+            "model_groups": group_model_ids(),
         })
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
@@ -533,6 +550,7 @@ async def pilot_models(request: Request):
             "mode": "single-provider",
             "catalog": _catalog_summary_dicts(),
             "registered_routes": _registered_route_dicts(),
+            "model_groups": group_model_ids(),
         })
 
     return JSONResponse({
@@ -540,6 +558,7 @@ async def pilot_models(request: Request):
         "configured": False,
         "catalog": _catalog_summary_dicts(),
         "registered_routes": _registered_route_dicts(),
+            "model_groups": group_model_ids(),
     })
 
 
@@ -561,6 +580,8 @@ async def pilot_router_resolve(
         body = _validate_body(raw_body)
 
         model_id = body["model"]
+        from .auto_availability import ensure_generic_auto_enabled
+        ensure_generic_auto_enabled(model_id)
         b14_opts = body.get("business14", {})
 
         if not _is_alpha_model(model_id):
@@ -575,6 +596,13 @@ async def pilot_router_resolve(
                 },
             )
 
+        from .platform_secrets import ensure_route_secrets
+        await ensure_route_secrets(
+            model_id,
+            allow_external_fallback=b14_opts.get(
+                "allow_external_fallback", model_id == "b14/auto"
+            ),
+        )
         decision = rcore.resolve_route(model_id, b14_opts)
 
         return JSONResponse({
@@ -728,6 +756,14 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     model_id = body["model"]
     b14_opts = body.get("business14", {})
 
+    from .platform_secrets import ensure_route_secrets
+    await ensure_route_secrets(
+        model_id,
+        allow_external_fallback=b14_opts.get(
+            "allow_external_fallback", model_id == "b14/auto"
+        ),
+        product_tier=b14_opts.get("product_tier", "free"),
+    )
     decision = rcore.resolve_route(model_id, b14_opts)
 
     candidate = rcore.RouteCandidate(
@@ -751,13 +787,9 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     ] if decision.fallback_allowed else []
 
     max_attempts = decision.max_attempts
-    # #3221/#3212 capability-proof control: preserve the normal #1982
-    # same-route retry default, but allow a bounded caller to explicitly lower
-    # the retry ceiling (including zero). This does not widen the maximum and
-    # does not affect auto-chain fallback semantics.
-    same_route_retry_limit = b14_opts.get(
-        "max_retries", _UPSTREAM_RETRY_MAX_RETRIES
-    )
+    # B14 does not duplicate provider requests by default. Optional retries
+    # require explicit caller opt-in and never widen the configured maximum.
+    same_route_retry_limit = b14_opts.get("max_retries", 0)
 
     start_time = time.monotonic()
     deadline = start_time + _UPSTREAM_RETRY_BUDGET_SECONDS
@@ -778,7 +810,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         }
     ] + fallback_candidates
 
-    async def _invoke_upstream(current: dict[str, str]) -> dict[str, Any]:
+    async def _invoke_upstream_raw(current: dict[str, str]) -> dict[str, Any]:
         if decision.credential_source == "platform_secret":
             return await plat.call_platform_chat_completions(
                 model_id=current["model_id"],
@@ -788,10 +820,34 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 messages=body["messages"],
                 temperature=body.get("temperature"),
                 max_tokens=body.get("max_tokens"),
+                **({"model_parameters": body["model_parameters"]}
+                   if body.get("model_parameters") else {}),
             )
         raise InvalidRequest(
             "non-platform route is not routable (OpenRouter retired, #1933 S2)"
         )
+
+    async def _invoke_upstream(current: dict[str, str]) -> dict[str, Any]:
+        # Bounded physical call evidence, not a model/provider identity log.
+        from app.stack_telemetry import record_stage
+        started = time.perf_counter()
+        try:
+            result = await _invoke_upstream_raw(current)
+        except Exception as exc:
+            code = "timeout" if isinstance(exc, TimeoutError) else "provider_error"
+            # Use only fixed buckets. Never emit provider exception messages.
+            try:
+                safe = getattr(exc, "code", "")
+                if safe in ("upstream_timeout", "gateway_timeout"):
+                    code = "timeout"
+                elif safe in ("upstream_rate_limited", "rate_limited"):
+                    code = "rate_limit"
+            except Exception:
+                pass
+            record_stage("provider.call", False, (time.perf_counter()-started)*1000, code)
+            raise
+        record_stage("provider.call", True, (time.perf_counter()-started)*1000)
+        return result
 
     budget_exhausted = False
     for idx in range(min(max_attempts, len(candidates))):
@@ -820,11 +876,18 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 break
 
             attempt_count += 1
+            # The first physical model attempt (manual OR auto) has no
+            # arbitrary 45s wall cap. Later attempts retain retry budget.
+            attempt_timeout = None if attempt_count == 1 else remaining
             try:
-                async with asyncio.timeout(remaining):
+                async with asyncio.timeout(attempt_timeout):
                     response_data = await _invoke_upstream(current)
             except TimeoutError as exc:
                 # asyncio.timeout hard ceiling fired (adapter timeout did not).
+                # Fixed allowlisted metadata only; never log content or credentials.
+                log_gateway_deadline(
+                    logger, current.get("platform_provider_id") or decision.platform_provider_id,
+                )
                 timeout_error = UpstreamTimeout()
                 timeout_error.__cause__ = exc
                 error: PilotError = timeout_error
@@ -1061,9 +1124,28 @@ async def pilot_chat_completions(
         x_business14_provider_key = request.headers.get("x-business14-provider-key")
         raw_body = await _read_json_body(request)
 
-        body = _validate_body(raw_body)
+        # Explicit stream=true on a registered, manual B14 model reuses the
+        # independently validated SSE preview path. The original raw request
+        # body stays cached on Request; preview performs the canonical
+        # schema/route/secret checks, including no-fallback single-attempt.
+        # No automatic stream=false upgrade or BYOK/b14-auto promotion.
+        # This is a streaming wire opt-in, never an in-memory JSON cap bypass.
+        if (
+            isinstance(raw_body, dict)
+            and raw_body.get("stream") is True
+            and isinstance(raw_body.get("model"), str)
+            and raw_body["model"] != "b14/auto"
+            and _is_alpha_model(raw_body["model"])
+        ):
+            from .stream_gateway import pilot_stream_preview
 
-        # Alpha mode: catalog model or b14/auto
+            return await pilot_stream_preview(request, parsed_body=raw_body)
+
+        body = _validate_body(raw_body)
+        from .auto_availability import ensure_generic_auto_enabled
+        ensure_generic_auto_enabled(body["model"])
+
+        # Alpha mode: catalog model or future b14/auto
         if _is_alpha_model(body["model"]):
             return await _handle_alpha_chat(request_id, body)
 
@@ -1115,9 +1197,10 @@ async def pilot_chat_completions(
 
     except NoSafeRoute as e:
         logger.warning(
-            "pilot_no_safe_route request_id=%s reason=%s",
+            "pilot_no_safe_route request_id=%s reason=%s credential_reason=%s",
             request_id,
             e.reason_code,
+            getattr(e, "credential_reason", ""),
         )
         return JSONResponse(
             status_code=e.status_code,

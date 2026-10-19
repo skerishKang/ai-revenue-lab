@@ -1,0 +1,13 @@
+-- #3936: release a P01 decision reservation the Engine proved it never consumed.
+--
+-- A retry-safe Engine rejection (see kagent.p01_approval_continuation
+-- RETRY_SAFE_RESUME_CODES) means the Engine refused the submission WITHOUT
+-- consuming the stored continuation, so the owner may decide again. The B62
+-- one-shot receipt previously stayed at 'dispatching' forever, which blocked
+-- every later decision for that pause.
+--
+-- Additive only, under the same #3580 B62 owner-scoped private D1 owner:
+-- no new table, no new store, no CHECK change, no destructive change. The
+-- original receipt row and its one-shot dispatch guard remain intact; an
+-- ambiguous (transport-unknown) attempt keeps released_at NULL and stays armed.
+ALTER TABLE claw_web_xlsx_p01_decision_receipts ADD COLUMN released_at TEXT;

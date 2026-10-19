@@ -1,0 +1,513 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
+import re
+from typing import Any
+
+from .contracts import (
+    ContractError,
+    NetworkPolicy,
+    SandboxLeaseRequest,
+    exact_commit_revision,
+)
+from .security import redact_secrets
+
+
+class IsolationPrimitive(str, Enum):
+    MICROVM = "microvm"
+    VM = "vm"
+    CONTAINER = "container"
+    REMOTE_WORKSPACE = "remote_workspace"
+    UNKNOWN = "unknown"
+
+
+_SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/+\-]{0,255}$")
+_SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
+
+# Cloud M1 resource ceiling. These values were previously stated only on
+# SandboxResourceLimits in sandbox_policy.py, which nothing at the enforcement
+# path consumed, so the policy the gate actually validates against could not
+# express a bound while still demanding that a provider enforce one.
+SANDBOX_MAX_CPU_CORES = 4
+SANDBOX_MAX_MEMORY_MB = 8192
+SANDBOX_MAX_DISK_MB = 10240
+SANDBOX_MAX_PROCESS_COUNT = 256
+
+# Server-owned artifact export allowlist (threat model §7).
+SANDBOX_ALLOWED_ARTIFACT_KINDS = ("diff", "test_report", "junit_xml", "log")
+
+# Canonical acceptance control names for numeric limit evidence. Both the gate and
+# the conformance harness use these so an acceptance verdict can only have one
+# meaning across every entry point.
+RESOURCE_LIMITS_REPORTED_CONTROL = "resource_limits_reported"
+RESOURCE_LIMITS_WITHIN_POLICY_CONTROL = "resource_limits_within_policy"
+
+# Terminal escape sequences. The ESC introducer also falls inside the control
+# range below, so an unterminated sequence can never survive as a live escape;
+# what can remain is its payload as inert text ("ESC ] 0 ; t" leaves "0;t"). The
+# tests therefore assert that no escape byte survives, not that no body does.
+_TERMINAL_OSC_RE = re.compile(r"\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)")
+_TERMINAL_CSI_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+_TERMINAL_OTHER_RE = re.compile(r"\x1b[@-_]")
+# CR is stripped with the rest: unlike \n and \t it rewrites already-emitted text
+# on a terminal, which is an output-integrity risk in projected evidence.
+_TERMINAL_CONTROL_RE = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
+
+
+def _ref(value: str, field_name: str, *, limit: int = 256) -> str:
+    if not isinstance(value, str):
+        raise ContractError(f"{field_name} must be a string")
+    value = value.strip()
+    if not value or len(value) > limit or not _SAFE_REF_RE.fullmatch(value):
+        raise ContractError(f"{field_name} has invalid reference syntax")
+    if redact_secrets(value) != value:
+        raise ContractError(f"{field_name} must not contain raw credential material")
+    return value
+
+
+def _bounded_int(value: int, field_name: str, *, minimum: int, maximum: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or not minimum <= value <= maximum:
+        raise ContractError(f"{field_name} must be between {minimum} and {maximum}")
+    return value
+
+
+def _strict_bool(value: bool, field_name: str) -> bool:
+    if not isinstance(value, bool):
+        raise ContractError(f"{field_name} must be boolean")
+    return value
+
+
+@dataclass(frozen=True, slots=True)
+class SandboxSecurityPolicy:
+    """Server-owned Cloud M1 minimum policy, independent of provider brand."""
+
+    network_default: NetworkPolicy = NetworkPolicy.OFF
+    privileged_runtime_allowed: bool = False
+    host_mounts_allowed: bool = False
+    runtime_socket_exposed: bool = False
+    provider_metadata_access_allowed: bool = False
+    host_secret_inheritance_allowed: bool = False
+    workspace_reuse_allowed: bool = False
+    mutable_source_revision_allowed: bool = False
+    max_ttl_seconds: int = 3600
+    max_artifact_bytes: int = 25 * 1024 * 1024
+    max_artifact_count: int = 100
+    max_terminal_output_bytes: int = 2 * 1024 * 1024
+    max_cpu_cores: int = SANDBOX_MAX_CPU_CORES
+    max_memory_mb: int = SANDBOX_MAX_MEMORY_MB
+    max_disk_mb: int = SANDBOX_MAX_DISK_MB
+    max_process_count: int = SANDBOX_MAX_PROCESS_COUNT
+    allowed_artifact_kinds: tuple[str, ...] = SANDBOX_ALLOWED_ARTIFACT_KINDS
+
+    def __post_init__(self) -> None:
+        if self.network_default is not NetworkPolicy.OFF:
+            raise ContractError("Cloud M1 network default must be off")
+        for field_name in (
+            "privileged_runtime_allowed",
+            "host_mounts_allowed",
+            "runtime_socket_exposed",
+            "provider_metadata_access_allowed",
+            "host_secret_inheritance_allowed",
+            "workspace_reuse_allowed",
+            "mutable_source_revision_allowed",
+        ):
+            if getattr(self, field_name) is not False:
+                raise ContractError(f"Cloud M1 {field_name} must be false")
+        object.__setattr__(self, "max_ttl_seconds", _bounded_int(self.max_ttl_seconds, "max_ttl_seconds", minimum=60, maximum=3600))
+        object.__setattr__(self, "max_artifact_bytes", _bounded_int(self.max_artifact_bytes, "max_artifact_bytes", minimum=1024, maximum=100 * 1024 * 1024))
+        object.__setattr__(self, "max_artifact_count", _bounded_int(self.max_artifact_count, "max_artifact_count", minimum=1, maximum=1000))
+        object.__setattr__(self, "max_terminal_output_bytes", _bounded_int(self.max_terminal_output_bytes, "max_terminal_output_bytes", minimum=1024, maximum=20 * 1024 * 1024))
+        object.__setattr__(self, "max_cpu_cores", _bounded_int(self.max_cpu_cores, "max_cpu_cores", minimum=1, maximum=64))
+        object.__setattr__(self, "max_memory_mb", _bounded_int(self.max_memory_mb, "max_memory_mb", minimum=256, maximum=65536))
+        object.__setattr__(self, "max_disk_mb", _bounded_int(self.max_disk_mb, "max_disk_mb", minimum=512, maximum=102400))
+        object.__setattr__(self, "max_process_count", _bounded_int(self.max_process_count, "max_process_count", minimum=16, maximum=2048))
+        if not isinstance(self.allowed_artifact_kinds, tuple) or not self.allowed_artifact_kinds:
+            raise ContractError("allowed_artifact_kinds must be a non-empty tuple of strings")
+        normalized_kinds: list[str] = []
+        for kind in self.allowed_artifact_kinds:
+            normalized_kinds.append(_ref(kind, "allowed artifact kind", limit=64))
+        if len(set(normalized_kinds)) != len(normalized_kinds):
+            raise ContractError("allowed artifact kinds must be unique")
+        object.__setattr__(self, "allowed_artifact_kinds", tuple(normalized_kinds))
+
+    def require_within_bounds(self, applied: SandboxAppliedLimits) -> None:
+        """Refuse any provider that reports limits above the server-owned ceiling.
+
+        ``cpu_limit_enforced`` and friends are a provider's own assertion that it
+        caps something. This checks the number it says it applied, so a capability
+        claim cannot be accepted on the strength of the claim alone.
+        """
+        if not isinstance(applied, SandboxAppliedLimits):
+            raise ContractError("applied limits must be SandboxAppliedLimits")
+        exceeded = [
+            f"{name}={value} > {getattr(self, f'max_{name}')}"
+            for name, value in (
+                ("cpu_cores", applied.cpu_cores),
+                ("memory_mb", applied.memory_mb),
+                ("disk_mb", applied.disk_mb),
+                ("process_count", applied.process_count),
+            )
+            if value > getattr(self, f"max_{name}")
+        ]
+        if exceeded:
+            raise ContractError("provider limits exceed Cloud M1 policy: " + ", ".join(exceeded))
+
+
+@dataclass(frozen=True, slots=True)
+class SandboxAppliedLimits:
+    """What a provider reports it actually applied to one lease.
+
+    A deliberately narrow value object: it carries only the four bounded
+    dimensions Cloud M1 can check numerically, so an adapter cannot smuggle
+    provider-specific runtime metadata through the policy boundary.
+    """
+
+    cpu_cores: int
+    memory_mb: int
+    disk_mb: int
+    process_count: int
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "cpu_cores", _bounded_int(self.cpu_cores, "cpu_cores", minimum=1, maximum=1024))
+        object.__setattr__(self, "memory_mb", _bounded_int(self.memory_mb, "memory_mb", minimum=1, maximum=1_048_576))
+        object.__setattr__(self, "disk_mb", _bounded_int(self.disk_mb, "disk_mb", minimum=1, maximum=10_485_760))
+        object.__setattr__(self, "process_count", _bounded_int(self.process_count, "process_count", minimum=1, maximum=1_048_576))
+
+
+
+@dataclass(frozen=True, slots=True)
+class SandboxProviderCapabilities:
+    provider_id: str
+    isolation_primitive: IsolationPrimitive
+    server_owned_lifecycle: bool
+    exact_revision_materialization: bool
+    checkout_hooks_disabled: bool
+    network_deny_by_default: bool
+    egress_policy_enforced: bool
+    privileged_runtime_disabled: bool
+    host_mounts_disabled: bool
+    runtime_socket_hidden: bool
+    provider_metadata_blocked: bool
+    host_secret_inheritance_disabled: bool
+    dedicated_workspace_per_run: bool
+    cross_run_reuse_disabled: bool
+    cpu_limit_enforced: bool
+    memory_limit_enforced: bool
+    disk_limit_enforced: bool
+    process_limit_enforced: bool
+    ttl_enforced: bool
+    cancellation_kills_workload: bool
+    teardown_guaranteed: bool
+    artifact_allowlist_enforced: bool
+    artifact_size_limit_enforced: bool
+    terminal_output_bounded: bool
+    terminal_output_sanitized: bool
+    image_or_snapshot_provenance: bool
+    run_lease_audit_correlation: bool
+    preview_ports_private_by_default: bool
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "provider_id", _ref(self.provider_id, "provider_id"))
+        if not isinstance(self.isolation_primitive, IsolationPrimitive):
+            try:
+                object.__setattr__(self, "isolation_primitive", IsolationPrimitive(self.isolation_primitive))
+            except (TypeError, ValueError) as exc:
+                raise ContractError("invalid isolation_primitive") from exc
+        for field_name in self.__dataclass_fields__:
+            if field_name in {"provider_id", "isolation_primitive"}:
+                continue
+            _strict_bool(getattr(self, field_name), field_name)
+
+    def safe_dict(self) -> dict[str, Any]:
+        result: dict[str, Any] = {
+            "provider_id": self.provider_id,
+            "isolation_primitive": self.isolation_primitive.value,
+        }
+        for field_name in self.__dataclass_fields__:
+            if field_name in result:
+                continue
+            result[field_name] = getattr(self, field_name)
+        return result
+
+
+_REQUIRED_CAPABILITIES = (
+    "server_owned_lifecycle",
+    "exact_revision_materialization",
+    "checkout_hooks_disabled",
+    "network_deny_by_default",
+    "egress_policy_enforced",
+    "privileged_runtime_disabled",
+    "host_mounts_disabled",
+    "runtime_socket_hidden",
+    "provider_metadata_blocked",
+    "host_secret_inheritance_disabled",
+    "dedicated_workspace_per_run",
+    "cross_run_reuse_disabled",
+    "cpu_limit_enforced",
+    "memory_limit_enforced",
+    "disk_limit_enforced",
+    "process_limit_enforced",
+    "ttl_enforced",
+    "cancellation_kills_workload",
+    "teardown_guaranteed",
+    "artifact_allowlist_enforced",
+    "artifact_size_limit_enforced",
+    "terminal_output_bounded",
+    "terminal_output_sanitized",
+    "image_or_snapshot_provenance",
+    "run_lease_audit_correlation",
+    "preview_ports_private_by_default",
+)
+
+
+@dataclass(frozen=True, slots=True)
+class SandboxProviderAssessment:
+    provider_id: str
+    isolation_primitive: IsolationPrimitive
+    accepted_for_cloud_m1: bool
+    missing_controls: tuple[str, ...]
+    policy_version: str = "claw-cloud-m1-sandbox.v1"
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "provider_id": self.provider_id,
+            "isolation_primitive": self.isolation_primitive.value,
+            "accepted_for_cloud_m1": self.accepted_for_cloud_m1,
+            "missing_controls": list(self.missing_controls),
+            "policy_version": self.policy_version,
+        }
+
+
+class SandboxProviderConformanceGate:
+    def __init__(self, policy: SandboxSecurityPolicy | None = None) -> None:
+        self.policy = policy or SandboxSecurityPolicy()
+
+    def assess(
+        self,
+        capabilities: SandboxProviderCapabilities,
+        *,
+        applied_limits: SandboxAppliedLimits | None = None,
+    ) -> SandboxProviderAssessment:
+        """Canonical Cloud M1 acceptance decision for one candidate provider.
+
+        Numeric limit evidence is part of this decision, not an optional extra:
+        a candidate that claims all four ``*_limit_enforced`` booleans but reports no
+        numbers is not accepted. This is the single authority — the conformance
+        harness and the evidence packs report against it rather than deciding twice.
+        """
+        if not isinstance(capabilities, SandboxProviderCapabilities):
+            raise ContractError("capabilities must be SandboxProviderCapabilities")
+        missing = [
+            field_name
+            for field_name in _REQUIRED_CAPABILITIES
+            if getattr(capabilities, field_name) is not True
+        ]
+        if capabilities.isolation_primitive is IsolationPrimitive.UNKNOWN:
+            missing.append("known_isolation_primitive")
+        if applied_limits is None:
+            missing.append(RESOURCE_LIMITS_REPORTED_CONTROL)
+        else:
+            try:
+                self.policy.require_within_bounds(applied_limits)
+            except ContractError:
+                missing.append(RESOURCE_LIMITS_WITHIN_POLICY_CONTROL)
+        return SandboxProviderAssessment(
+            provider_id=capabilities.provider_id,
+            isolation_primitive=capabilities.isolation_primitive,
+            accepted_for_cloud_m1=not missing,
+            missing_controls=tuple(missing),
+        )
+
+    def require_accepted(
+        self,
+        capabilities: SandboxProviderCapabilities,
+        *,
+        applied_limits: SandboxAppliedLimits | None = None,
+    ) -> SandboxProviderAssessment:
+        assessment = self.assess(capabilities, applied_limits=applied_limits)
+        if not assessment.accepted_for_cloud_m1:
+            raise ContractError(
+                "sandbox provider fails Cloud M1 controls: " + ", ".join(assessment.missing_controls)
+            )
+        return assessment
+
+    def validate_lease_request(self, request: SandboxLeaseRequest) -> None:
+        if not isinstance(request, SandboxLeaseRequest):
+            raise ContractError("request must be SandboxLeaseRequest")
+        if request.network_policy is not self.policy.network_default:
+            raise ContractError("Cloud M1 lease request violates deny-by-default network policy")
+        if request.ttl_seconds > self.policy.max_ttl_seconds:
+            raise ContractError("Cloud M1 lease request exceeds policy TTL")
+        if not request.requested_revision:
+            raise ContractError("Cloud M1 requires an exact immutable requested_revision")
+        # Truthiness alone let a mutable ref such as "main" through while this
+        # gate claimed exact immutability (#2775). Reuse the canonical contract
+        # predicate so the gate and the lease request cannot drift apart.
+        exact_commit_revision(request.requested_revision, "requested_revision")
+
+
+@dataclass(frozen=True, slots=True)
+class SandboxArtifactRef:
+    artifact_id: str
+    kind: str
+    size_bytes: int
+    sha256: str
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "artifact_id", _ref(self.artifact_id, "artifact_id"))
+        object.__setattr__(self, "kind", _ref(self.kind, "kind", limit=64))
+        object.__setattr__(self, "size_bytes", _bounded_int(self.size_bytes, "size_bytes", minimum=0, maximum=100 * 1024 * 1024))
+        digest = self.sha256.strip().lower() if isinstance(self.sha256, str) else ""
+        if not _SHA256_RE.fullmatch(digest):
+            raise ContractError("sha256 must be a lowercase SHA-256 digest")
+        object.__setattr__(self, "sha256", digest)
+
+
+@dataclass(frozen=True, slots=True)
+class SandboxArtifactManifest:
+    run_id: str
+    lease_id: str
+    artifacts: tuple[SandboxArtifactRef, ...]
+    terminal_output_bytes: int
+    terminal_output_sanitized: bool
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "run_id", _ref(self.run_id, "run_id"))
+        object.__setattr__(self, "lease_id", _ref(self.lease_id, "lease_id"))
+        if not isinstance(self.artifacts, tuple) or not all(isinstance(item, SandboxArtifactRef) for item in self.artifacts):
+            raise ContractError("artifacts must be a tuple of SandboxArtifactRef")
+        if len({item.artifact_id for item in self.artifacts}) != len(self.artifacts):
+            raise ContractError("artifact IDs must be unique")
+        object.__setattr__(self, "terminal_output_bytes", _bounded_int(self.terminal_output_bytes, "terminal_output_bytes", minimum=0, maximum=20 * 1024 * 1024))
+        object.__setattr__(self, "terminal_output_sanitized", _strict_bool(self.terminal_output_sanitized, "terminal_output_sanitized"))
+
+    @property
+    def total_artifact_bytes(self) -> int:
+        return sum(item.size_bytes for item in self.artifacts)
+
+    def validate_against(self, policy: SandboxSecurityPolicy) -> None:
+        if not isinstance(policy, SandboxSecurityPolicy):
+            raise ContractError("policy must be SandboxSecurityPolicy")
+        if len(self.artifacts) > policy.max_artifact_count:
+            raise ContractError("artifact count exceeds Cloud M1 policy")
+        allowed_kinds = set(policy.allowed_artifact_kinds)
+        for item in self.artifacts:
+            # Bounding a payload does not make it an allowed payload: an
+            # in-policy-size artifact of an unlisted kind is still an export the
+            # server never authorized (threat model §7).
+            if item.kind not in allowed_kinds:
+                raise ContractError(f"artifact kind is outside the Cloud M1 export allowlist: {item.kind}")
+        if any(item.size_bytes > policy.max_artifact_bytes for item in self.artifacts):
+            raise ContractError("artifact size exceeds Cloud M1 policy")
+        if self.total_artifact_bytes > policy.max_artifact_bytes * policy.max_artifact_count:
+            raise ContractError("total artifact export exceeds Cloud M1 policy")
+        if self.terminal_output_bytes > policy.max_terminal_output_bytes:
+            raise ContractError("terminal output exceeds Cloud M1 policy")
+        if not self.terminal_output_sanitized:
+            raise ContractError("terminal output must be sanitized before export")
+
+    def require_sanitized_output(self, raw_terminal_output: str, policy: SandboxSecurityPolicy) -> str:
+        """Prove the sanitization claim against the bytes it was made from.
+
+        ``terminal_output_sanitized`` is otherwise a boolean a producer asserts.
+        This re-derives the sanitized form, requires it to equal the claimed byte
+        length, and returns it so the caller exports the proven value rather than
+        the raw one.
+        """
+        self.validate_against(policy)
+        sanitized = sanitize_terminal_output(raw_terminal_output, limit=policy.max_terminal_output_bytes)
+        if len(sanitized.encode("utf-8")) != self.terminal_output_bytes:
+            raise ContractError("terminal_output_bytes does not match the sanitized output length")
+        return sanitized
+
+
+def sanitize_terminal_output(raw: str, *, limit: int) -> str:
+    """Strip terminal control sequences, apply the canonical redactor, then bound.
+
+    Control sequences and control characters go first so the text the redactor sees
+    is what a renderer would display, then ``redact_secrets`` runs over that whole
+    string, then the size bound is checked. Redaction coverage is exactly the
+    canonical redactor's pattern set; this function adds no secret heuristics of its
+    own and does not claim to catch arbitrary credential-looking text.
+
+    Oversize output is refused rather than truncated: a truncated projection would
+    silently drop the tail of the evidence a reviewer needed most.
+    """
+    if not isinstance(raw, str):
+        raise ContractError("terminal output must be a string")
+    if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1:
+        raise ContractError("terminal output limit must be a positive integer")
+    stripped = _TERMINAL_OSC_RE.sub("", raw)
+    stripped = _TERMINAL_CSI_RE.sub("", stripped)
+    stripped = _TERMINAL_OTHER_RE.sub("", stripped)
+    stripped = _TERMINAL_CONTROL_RE.sub("", stripped)
+    sanitized = redact_secrets(stripped)
+    if len(sanitized.encode("utf-8")) > limit:
+        raise ContractError("terminal output exceeds Cloud M1 policy")
+    return sanitized
+
+
+@dataclass(frozen=True, slots=True)
+class VerifiedDiffEvidence:
+    run_id: str
+    lease_id: str
+    repository_ref: str
+    input_revision: str
+    changed_files: tuple[str, ...]
+    unified_diff_sha256: str
+    verification_command_id: str
+    verification_exit_code: int
+    verification_output_sha256: str
+    terminal_reason: str
+    final_revision_ref: str | None = None
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "run_id", _ref(self.run_id, "run_id"))
+        object.__setattr__(self, "lease_id", _ref(self.lease_id, "lease_id"))
+        object.__setattr__(self, "repository_ref", _ref(self.repository_ref, "repository_ref"))
+        object.__setattr__(self, "input_revision", _ref(self.input_revision, "input_revision"))
+        if not isinstance(self.changed_files, tuple) or len(self.changed_files) > 100:
+            raise ContractError("changed_files must be a tuple with at most 100 entries")
+        normalized: list[str] = []
+        for path in self.changed_files:
+            if not isinstance(path, str) or not path.strip() or len(path.strip()) > 512 or any(ord(ch) < 32 for ch in path):
+                raise ContractError("changed file path is invalid or unbounded")
+            normalized.append(path.strip())
+        if len(set(normalized)) != len(normalized):
+            raise ContractError("changed file paths must be unique")
+        object.__setattr__(self, "changed_files", tuple(normalized))
+        for field_name in ("unified_diff_sha256", "verification_output_sha256"):
+            value = getattr(self, field_name)
+            digest = value.strip().lower() if isinstance(value, str) else ""
+            if not _SHA256_RE.fullmatch(digest):
+                raise ContractError(f"{field_name} must be a lowercase SHA-256 digest")
+            object.__setattr__(self, field_name, digest)
+        object.__setattr__(self, "verification_command_id", _ref(self.verification_command_id, "verification_command_id"))
+        if isinstance(self.verification_exit_code, bool) or not isinstance(self.verification_exit_code, int) or not -255 <= self.verification_exit_code <= 255:
+            raise ContractError("verification_exit_code must be bounded")
+        object.__setattr__(self, "terminal_reason", _ref(self.terminal_reason, "terminal_reason"))
+        if self.final_revision_ref is not None:
+            object.__setattr__(self, "final_revision_ref", _ref(self.final_revision_ref, "final_revision_ref"))
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "run_id": self.run_id,
+            "lease_id": self.lease_id,
+            "repository_ref": self.repository_ref,
+            "input_revision": self.input_revision,
+            "changed_files": list(self.changed_files),
+            "unified_diff_sha256": self.unified_diff_sha256,
+            "verification_command_id": self.verification_command_id,
+            "verification_exit_code": self.verification_exit_code,
+            "verification_output_sha256": self.verification_output_sha256,
+            "terminal_reason": self.terminal_reason,
+            "final_revision_ref": self.final_revision_ref,
+            "raw_diff_in_projection": False,
+            "raw_terminal_output_in_projection": False,
+        }
+
+
+REAL_SANDBOX_PROVIDER_SELECTED = False
+REAL_SANDBOX_PROVIDER_CALLS = 0
+PRODUCTION_SANDBOX_CLAIM = False

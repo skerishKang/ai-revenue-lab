@@ -460,7 +460,7 @@ class _GoogleClient:
         self.exchanged: list[str] = []
         self.userinfo_tokens: list[str] = []
 
-    async def exchange_code(self, code: str) -> str:
+    async def exchange_code(self, code: str, bridge_origin: str | None = None) -> str:
         self.exchanged.append(code)
         return "server-side-access-token"
 
@@ -525,6 +525,7 @@ class _GoogleSettings:
     google_client_id = "parity-client.apps.googleusercontent.com"
     google_client_secret = "parity-client-secret"
     public_base_url = "https://chat.example.test"
+    b66_quote_base_url = None
     runtime_mode = "mock"
     live_enabled = "false"
 

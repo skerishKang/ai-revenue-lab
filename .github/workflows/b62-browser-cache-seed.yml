@@ -1,0 +1,37 @@
+name: B62 Playwright Chromium Cache Seed
+
+# Deliberately dispatch-only. No extra PR job is created by this helper.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-chromium-cache-seed-main
+  cancel-in-progress: false
+
+jobs:
+  warm-chromium:
+    # Pull requests must never execute the cache publisher as a privileged job.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.5'
+      - name: Restore or publish pinned Chromium
+        id: browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install pinned Chromium into shared browser cache
+        run: uvx --from 'playwright==1.55.0' playwright install chromium
+      - name: Verify the browser cache was populated
+        run: |
+          test -d "$HOME/.cache/ms-playwright"
+          test -n "$(find "$HOME/.cache/ms-playwright" -type f -name chrome -print -quit)"

@@ -40,6 +40,9 @@ def test_sidebar_entry_and_section_exist() -> None:
     assert 'id="clawAutomationError"' in html
     assert 'id="clawAutomationEmpty"' in html
     assert 'id="clawAutomationRetry"' in html
+    # The signed-out note is static markup with a locale key in both languages.
+    assert 'id="automationViewSignedOut"' in html
+    assert 'data-locale-key="claw-automation-signed-out"' in html
     # The section is a real labelled region, not a bare div.
     assert 'aria-labelledby="clawAutomationTitle"' in html
     assert 'id="clawAutomationTitle"' in html
@@ -58,6 +61,7 @@ def test_scheduler_live_disclaimer_is_present_and_persistent() -> None:
     locale = LOCALE_JS.read_text(encoding="utf-8")
     # Both languages carry the disclaimer and the two vocabulary keys.
     assert locale.count('"claw-automation-scheduler-note"') == 2
+    assert locale.count('"claw-automation-signed-out"') == 2
     assert locale.count('"automation-rule-setting"') == 2
     assert locale.count('"automation-rule-quarantined"') == 2
     # The bare on/off keys are gone: the setting is always labelled.
@@ -96,6 +100,7 @@ def test_no_rule_mutation_control_exists_in_the_ui() -> None:
     # mutation verb of any kind.
     block = block.split("#3257 Web Automation Create")[0]
     block = block.split("#3262 owner-gated enable/disable")[0]
+    block = block.split("#3270 bounded edit (name + schedule only)")[0]
     for forbidden in (
         "POST",
         "PUT",
@@ -172,6 +177,15 @@ function makeEl(tag) {
   el.prepend = (...cs) => cs.forEach((c) => { el.children.unshift(c); c.parentNode = el; });
   el.append = (...cs) => cs.forEach((c) => el.appendChild(c));
   el.replaceChildren = (...cs) => { el.children = []; cs.forEach((c) => el.appendChild(c)); };
+  // #4806 inserts the artifact context relative to #messageList, so the shim
+  // needs the same child-insertion API the real Element exposes.
+  el.insertBefore = (node, ref) => {
+    const at = el.children.indexOf(ref);
+    if (at < 0) el.children.push(node); else el.children.splice(at, 0, node);
+    node.parentNode = el;
+    return node;
+  };
+  el.removeChild = (node) => { el.children = el.children.filter((c) => c !== node); return node; };
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
   el.querySelector = (sel) => el.children.find((c) => c.className && c.className.includes(sel.replace(/^\./, ""))) || null;
@@ -184,6 +198,18 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // #4806 added `messageList.closest(".conversation")` to the real app.js.
+  // This minimal DOM shim must expose the same Element API instead of
+  // crashing every behavioral harness that runs the real source.
+  el.closest = (sel) => {
+    const want = String(sel).replace(/^\./, "");
+    let node = el;
+    while (node) {
+      if (node.className && String(node.className).includes(want)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  };
   return el;
 }
 
@@ -206,7 +232,16 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawInbox","clawInboxTitle","clawInboxLoading","clawInboxError","clawInboxEmpty","clawInboxList","clawInboxRetry",
   "automationNavButton","clawAutomation","clawAutomationLoading","clawAutomationError","clawAutomationEmpty",
   "clawAutomationList","clawAutomationRetry",
+  "automationView","automationViewBody","automationViewSignedOut",
 ].forEach((id) => add(id, "div"));
+// index.html nests #messageList inside <section class="conversation">, and the
+// real app.js reads that ancestor to decide whether the first turn continues
+// the landing panel (#4806). Model the same nesting instead of returning null.
+if (byId.messageList) {
+  const conversationSection = makeEl("section");
+  conversationSection.className = "conversation";
+  conversationSection.appendChild(byId.messageList);
+}
 const shell = add("app-shell", "div");
 shell.dataset = { state: "home" };
 const accountContainer = add("sidebar-account", "div");
@@ -285,17 +320,22 @@ function clickAutomationNav() {
   // The Automation entry follows the same signed-in gate as Tasks/Alerts.
   // The gate is read from the DOM after auth resolution, not from the fixture.
   const navDisabled = byId.automationNavButton.disabled === true;
-  const navAria = byId.automationNavButton.getAttribute("aria-disabled");
   if (FIXTURE.mode === "signed_out") {
-    if (!navDisabled) fail("SIGNED_OUT_NAV_ENABLED");
-    if (navAria !== "true") fail("SIGNED_OUT_NAV_ARIA_ENABLED");
-    // Signed out: the section must not be reachable and no rule is fetched.
+    // Owner decision: a visitor may open the Automation page. The data guard is
+    // that no rule request leaves the browser, not an inert sidebar entry.
+    if (navDisabled) fail("SIGNED_OUT_NAV_INERT");
+    clickAutomationNav();
+    await tick(40);
+    if (byId.automationView.hidden !== false) fail("SIGNED_OUT_VIEW_NOT_OPEN");
+    if (shell.dataset.state !== "automation") fail("SIGNED_OUT_SURFACE_NOT_SWITCHED");
+    if (byId.clawAutomation.hidden !== true) fail("SIGNED_OUT_SECTION_LEAKED");
+    if (byId.automationViewSignedOut.hidden !== false) fail("SIGNED_OUT_NOTE_NOT_SHOWN");
+    if (rowCount() !== 0) fail("SIGNED_OUT_MUST_RENDER_NO_ROWS");
     if (ruleCalls !== 0) fail("SIGNED_OUT_RULE_FETCHED");
     console.log(JSON.stringify({ ok: true, rows: 0, ruleCalls }));
     process.exit(0);
   }
   if (navDisabled) fail("SIGNED_IN_NAV_DISABLED");
-  if (navAria !== "false") fail("SIGNED_IN_NAV_ARIA_DISABLED");
 
   if (FIXTURE.mode === "error_then_retry") {
     clickAutomationNav();
@@ -471,7 +511,7 @@ def test_error_state_then_explicit_retry() -> None:
     _run("error_then_retry", auth=_SIGNED_IN, rules=_RULES, fail_first=True)
 
 
-def test_signed_out_entry_stays_disabled() -> None:
+def test_signed_out_entry_is_browsable_but_requests_no_rules() -> None:
     _run("signed_out", auth=_SIGNED_OUT, rules=_RULES)
 
 

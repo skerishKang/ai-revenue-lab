@@ -1,0 +1,23 @@
+{
+  "collapse_in_brand_row": true,
+  "collapse_at_right_end": true,
+  "actions_same_row": true,
+  "search_visible": true,
+  "search_disabled": true,
+  "search_hold_title": "대화 검색 준비 중",
+  "no_general_conversation_text": true,
+  "no_mode_hint_attr": true,
+  "collapse_hides_sidebar": true,
+  "restore_button_appears": true,
+  "expand_restores_sidebar": true,
+  "center_card_exists": true,
+  "center_card_visible": true,
+  "card_text_unchanged_after_search_click": true,
+  "card_text_before": "최신 정보 · 출처와 함께",
+  "card_text_after_web_toggle": "다음 질문에서 사용",
+  "web_toggle_still_works": true,
+  "card_text_stable_second_search_click": true,
+  "narrow_no_horizontal_overflow": true,
+  "narrow_actions_same_row": true,
+  "page_errors": []
+}

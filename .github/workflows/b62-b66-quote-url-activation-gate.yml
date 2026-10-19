@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b62-b66-quote-url-activation-gate.yml"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/b62_b66_quote_url_activation.py"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
       - ".github/tests/test_b62_b66_quote_url_activation.py"
@@ -142,8 +143,7 @@ jobs:
           set -euo pipefail
           deployments="${RUNNER_TEMP}/b62-b66-quote-url-deployments.json"
           curl -fsS             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H "Content-Type: application/json"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments"             -o "${deployments}"
-          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          active="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test -n "${active}"
           echo 'PREMUTATION_SERVED_VERSION_RECORDED=YES'
           echo 'PRODUCTION_MUTATION=0'
@@ -199,8 +199,7 @@ jobs:
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           curl -fsS "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"             -o "${settings}"
           curl -fsS "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments"             -o "${deployments}"
-          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          active="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test -n "${active}"
           printf '%s\n' "${active}" > "${RUNNER_TEMP}/b62-b66-quote-url-premutation-version.txt"
           evidence="$(python .github/scripts/b62_b66_quote_url_activation.py classify             --settings "${settings}" --expected-origin "${EXPECTED_ORIGIN}")"

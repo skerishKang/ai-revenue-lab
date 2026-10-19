@@ -42,6 +42,10 @@ def _write_repo_config(tmp_path: Path) -> Path:
         'main = "worker.py"\n'
         'compatibility_date = "2026-08-25"\n'
         'compatibility_flags = ["python_workers"]\n'
+        'base_dir = ".b66-worker-src"\n'
+        "\n"
+        "[build]\n"
+        'command = "uv run python scripts/build_b66_worker_dependencies.py"\n'
         "\n"
         "[assets]\n"
         'directory = "static"\n'
@@ -107,7 +111,29 @@ def test_live_dump_is_authority_and_repo_mock_vars_do_not_leak(tmp_path):
     assert 'service = "ai-revenue-korean-ai-platform"' in config
     assert 'database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"' in config
     assert 'directory = "static"' in config
+    assert 'base_dir = ".b66-worker-src"' in config
+    assert '[build]' in config
+    assert 'command = "uv run python scripts/build_b66_worker_dependencies.py"' in config
     assert "compatibility_flags = [" in config
+
+
+def test_dashboard_conflict_state_adoption_is_bounded_and_strict_rechecked():
+    """Only an exact Wrangler Dashboard conflict gets one controlled adoption."""
+    text = _read_workflow()
+    step = text.split(
+        "\n      - name: Deploy production code preserving the full binding set", 1
+    )[1].split("\n      - name: Read back exact post-deploy binding and variable state", 1)[0]
+    assert 'grep -Fq "last updated via the script API"' in step
+    assert 'grep -Fq "remote configuration of your Worker set via the Cloudflare Dashboard"' in step
+    assert 'grep -Fq "Aborting the upload operation because of conflicts"' in step
+    assert "STATE_ADOPTION_UPLOADS=1" in step
+    assert step.count("pywrangler deploy") == 3  # initial strict, adoption, final strict
+    assert step.count("--strict") >= 2
+    assert "STATE_ADOPTION_PERFORMED=YES" in step
+    assert "cat \"${RUNNER_TEMP}/b62-deploy-attempt-1.log\" >&2" in step
+    assert "BINDINGS_PRESERVED_EXACTLY=PASS" in text
+    assert "FULL_SECRET_SET_EQUALITY=PASS" in text
+    assert "Auto-rollback to recorded version on any failed step" in text
 
 
 def test_secret_binding_values_are_never_emitted(tmp_path):
@@ -428,3 +454,567 @@ def test_main_cli_reports_version_metadata_preservation(tmp_path, capsys):
         assert rc == 0
         assert expected in capsys.readouterr().out
         output_path.unlink()
+
+
+# #3782: source-only candidate, never a second production deployment path.
+_OWNER_D1_ID = "01d0560b-58f4-4052-991d-dc935f5ecca0"
+
+
+def test_owner_d1_candidate_addition_reuses_live_config_without_changing_anything_else(tmp_path):
+    import tomllib
+
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    config = module.build_production_config(live, _write_repo_config(tmp_path), PUBLIC_URL)
+    candidate = module.build_production_config(
+        live, _write_repo_config(tmp_path), PUBLIC_URL, _OWNER_D1_ID
+    )
+    standard = tomllib.loads(config)
+    added = tomllib.loads(candidate)
+    assert len(added["d1_databases"]) == len(standard["d1_databases"]) + 1
+    assert added["d1_databases"][-1] == {
+        "binding": "BROWSER_CONTROL_OWNER_P01_D1",
+        "database_name": "padiem-browser-owner-p01",
+        "database_id": _OWNER_D1_ID,
+    }
+    assert {key: value for key, value in added.items() if key != "d1_databases"} == {
+        key: value for key, value in standard.items() if key != "d1_databases"
+    }
+    assert added["d1_databases"][:-1] == standard["d1_databases"]
+    module.verify_mutation_zero(candidate, live)
+    assert "PADIEM_CHAT_QUOTA_SALT" not in candidate
+
+
+def test_owner_d1_candidate_refuses_alias_name_collision_and_invalid_uuid(tmp_path):
+    module = _load_module()
+    repo_config = _write_repo_config(tmp_path)
+    for bad in ("not-id", "", "00000000-0000-0000-0000-000000000000", _OWNER_D1_ID.upper()):
+        live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+        with pytest.raises(module.ProductionConfigError):
+            module.build_production_config(live, repo_config, PUBLIC_URL, bad)
+
+    for collision in (
+        {"type": "d1", "name": "BROWSER_CONTROL_OWNER_P01_D1", "id": "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa"},
+        {"type": "d1", "name": "UNEXPECTED_ALIAS", "id": _OWNER_D1_ID},
+        {"type": "secret_text", "name": "BROWSER_CONTROL_OWNER_P01_D1"},
+    ):
+        live = module.parse_live_bindings(_settings_payload(_production_bindings() + [collision]))
+        with pytest.raises(module.ProductionConfigError, match="already exists|aliases"):
+            module.build_production_config(live, repo_config, PUBLIC_URL, _OWNER_D1_ID)
+
+
+def test_owner_d1_candidate_cli_is_explicit_and_not_used_by_normal_deploy(tmp_path, capsys):
+    module = _load_module()
+    import tomllib
+
+    before_path = tmp_path / "settings.json"
+    before_path.write_text(json.dumps(_settings_payload(_production_bindings())), encoding="utf-8")
+    target = tmp_path / "candidate.toml"
+    assert module.main([
+        "--settings", str(before_path), "--repo-config", str(_write_repo_config(tmp_path)),
+        "--public-base-url", PUBLIC_URL, "--output", str(target),
+        "--owner-d1-database-id", _OWNER_D1_ID,
+    ]) == 0
+    printed = capsys.readouterr().out
+    assert "OWNER_P01_D1_CANDIDATE_ADDITION=1" in printed
+    assert _OWNER_D1_ID not in printed
+    assert tomllib.loads(target.read_text(encoding="utf-8"))["d1_databases"][-1]["database_id"] == _OWNER_D1_ID
+
+    workflow = _read_workflow()
+    assert "--owner-d1-database-id" not in workflow
+    assert "BINDINGS_PRESERVED_EXACTLY=PASS" in workflow
+
+
+def test_secrets_store_worker_bindings_are_exactly_preserved(tmp_path):
+    import tomllib
+
+    expected = [
+        {"type": "secrets_store_secret", "name": "TINYFISH_API_KEY",
+         "store_id": "f0b09ca04a7b43248154c773704a5616",
+         "secret_name": "PADIEM_TINY_FISH_API_KEY"},
+        {"type": "secrets_store_secret", "name": "PADIEM_CHAT_DAUM_REST_API_KEY",
+         "store_id": "f0b09ca04a7b43248154c773704a5616",
+         "secret_name": "PADIEM_KAKAO_API_KEY"},
+    ]
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings() + expected))
+    output = module.build_production_config(live, _write_repo_config(tmp_path), PUBLIC_URL)
+    module.verify_mutation_zero(output, live)
+    parsed = tomllib.loads(output)
+    assert parsed["secrets_store_secrets"] == [
+        {"binding": x["name"], "store_id": x["store_id"], "secret_name": x["secret_name"]}
+        for x in expected
+    ]
+    assert "tf-confidential" not in output
+    assert "secret_text" not in output
+
+
+@pytest.mark.parametrize("broken", [
+    {"type": "secrets_store_secret", "name": "TINYFISH_API_KEY",
+     "store_id": "not-a-valid-id", "secret_name": "PADIEM_TINY_FISH_API_KEY"},
+    {"type": "secrets_store_secret", "name": "TINYFISH_API_KEY",
+     "store_id": "f0b09ca04a7b43248154c773704a5616", "secret_name": "bad name"},
+    {"type": "secrets_store_secret", "name": "TINYFISH_API_KEY",
+     "store_id": "f0b09ca04a7b43248154c773704a5616"},
+])
+def test_secrets_store_malformed_binding_fails_closed(broken):
+    module = _load_module()
+    with pytest.raises(module.ProductionConfigError):
+        module.parse_live_bindings(_settings_payload(_production_bindings() + [broken]))
+
+def test_3566_claw_model_predispatch_guest_get_is_existing_deploy_smoke():
+    """No new CI lane or paid model call; fail if opted-in diagnostic disappears."""
+    workflow = _read_workflow()
+    smoke_start = workflow.index("- name: Production smoke")
+    smoke_end = workflow.index("- name: Auto-rollback", smoke_start)
+    smoke = workflow[smoke_start:smoke_end]
+    assert "/api/claw/general/capabilities?diagnostic=pre_dispatch_v1" in smoke
+    assert 'test "${claw_diag_status}" = "200"' in smoke
+    assert '.pre_dispatch_status == "authentication_required"' in smoke
+    assert '.pre_dispatch_scope == "auth_adapter_session_only"' in smoke
+    assert '(keys | sort)' in smoke
+    assert 'echo "CLAW_MODEL_PROVIDER_POSTS=0"' in smoke
+    assert "CLAW_MODEL_PREDISPATCH_GUEST_GET=PASS" in smoke
+    assert "POST /api/claw/general" not in smoke
+
+def test_4194_live_model_timeout_drift_audit_reuses_existing_readonly_step():
+    workflow = _read_workflow()
+    readonly_job = workflow.split("\n  cloudflare-readonly:", 1)[1].split(
+        "\n  deploy-production-code:", 1
+    )[0]
+    assert "b62_stream_model_timeout_readback.py" in readonly_job
+    assert '--settings "${settings}"' in readonly_job
+    assert "--strict" not in readonly_job
+    assert "warn without blocking unrelated releases" in readonly_job
+
+
+def test_4194_stream_model_timeout_readback_aligns_and_warns_without_leak(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str],
+):
+    """Read-only snapshot: 20-second production drift vs 600s source default."""
+    root = Path(__file__).resolve().parents[3]
+    path = root / ".github/scripts/b62_stream_model_timeout_readback.py"
+    spec = importlib.util.spec_from_file_location("b62_stream_model_timeout_readback", path)
+    assert spec is not None and spec.loader is not None
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+
+    def snapshot(bindings: list[dict]) -> Path:
+        target = tmp_path / "safe-settings.json"
+        target.write_text(json.dumps(_settings_payload(bindings)), encoding="utf-8")
+        return target
+
+    legacy = _production_bindings()
+    assert checker.check_timeout_bindings(_settings_payload(legacy)) == "DRIFT"
+    legacy_path = snapshot(legacy)
+    assert checker.main(["--settings", str(legacy_path)]) == 0
+    warning = capsys.readouterr().out
+    assert "B62_STREAM_MODEL_TIMEOUT_PARITY=DRIFT" in warning
+    assert "::warning::B62_STREAM_MODEL_TIMEOUT_REQUIRES_OWNER_REVIEW" in warning
+    assert "B62_TIMEOUT_PRODUCTION_MUTATION=0" in warning
+    assert "PADIEM_CHAT_QUOTA_SALT" not in warning
+    assert checker.main(["--settings", str(legacy_path), "--strict"]) == 2
+    capsys.readouterr()
+
+    corrected = [dict(row) for row in legacy]
+    for row in corrected:
+        if row.get("name") == "PADIEM_CHAT_TIMEOUT_SECONDS":
+            row["text"] = "600"
+    assert checker.check_timeout_bindings(_settings_payload(corrected)) == "ALIGNED_600"
+    assert checker.main(["--settings", str(snapshot(corrected)), "--strict"]) == 0
+    capsys.readouterr()
+
+    absent = [row for row in corrected if row.get("name") != "PADIEM_CHAT_TIMEOUT_SECONDS"]
+    assert checker.check_timeout_bindings(_settings_payload(absent)) == "DEFAULT_600"
+    assert checker.main(["--settings", str(snapshot(absent)), "--strict"]) == 0
+    capsys.readouterr()
+
+    unsafe = [*absent, {"type": "plain_text", "name": "PADIEM_CHAT_TIMEOUT_SECONDS",
+                        "text": "synthetic_private_string_should_never_be_emitted"}]
+    assert checker.main(["--settings", str(snapshot(unsafe))]) == 2
+    output = capsys.readouterr().out
+    assert "B62_STREAM_MODEL_TIMEOUT_PARITY=UNVERIFIED" in output
+    assert "synthetic_private_string_should_never_be_emitted" not in output
+
+def test_live_production_custom_domain_is_retained_in_generated_config(tmp_path):
+    """Strict B62 deploy must not silently unbind the existing public hostname."""
+    import tomllib
+
+    module = _load_module()
+    bindings = _production_bindings()
+    for item in bindings:
+        if item["name"] == "PADIEM_CHAT_PUBLIC_BASE_URL":
+            item["text"] = "https://chat.padiem.net"
+    live = module.parse_live_bindings(_settings_payload(bindings))
+    original = module.build_production_config(live, _write_repo_config(tmp_path), "https://chat.padiem.net")
+    parsed = tomllib.loads(original)
+    assert parsed["name"] == "padiem-chat"
+    assert parsed["base_dir"] == ".b66-worker-src"
+    assert parsed["routes"] == [{"pattern": "chat.padiem.net", "custom_domain": True}]
+    assert parsed["workers_dev"] is True
+    assert parsed["preview_urls"] is True  # Preserve current Production version/preview URLs.
+    assert parsed["assets"]["binding"] == "ASSETS"
+    assert parsed["d1_databases"][0]["binding"] == "PADIEM_CHAT_DB"
+
+    # A non-canonical test origin must never invent a Production Custom Domain.
+    synthetic_live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    synthetic = module.build_production_config(synthetic_live, _write_repo_config(tmp_path), PUBLIC_URL)
+    assert "routes" not in tomllib.loads(synthetic)
+
+
+def test_b62_release_requires_real_custom_domain_readback_before_and_after():
+    workflow = _read_workflow()
+    readonly = workflow.split("\n  cloudflare-readonly:", 1)[1].split("\n  deploy-production-code:", 1)[0]
+    deploy = workflow.split("\n  deploy-production-code:", 1)[1]
+    assert "workers/domains?hostname=chat.padiem.net" in readonly
+    assert "B62_CANONICAL_CUSTOM_DOMAIN=ATTACHED_EXPECTED" in readonly
+    assert "workers/domains?hostname=chat.padiem.net" in deploy
+    assert "B62_CANONICAL_CUSTOM_DOMAIN_STILL_ATTACHED=PASS" in deploy
+    assert '.service == $service' in readonly
+    assert '.enabled == true' in readonly
+    assert "--strict" in deploy
+
+
+# #3933 Hark WEB-FIRST Browser Rendering: existing authority only, default OFF.
+
+
+def _write_repo_config_with_browser(tmp_path: Path) -> Path:
+    config = _write_repo_config(tmp_path)
+    config.write_text(
+        config.read_text(encoding="utf-8") + '\n[browser]\nbinding = "BROWSER"\n',
+        encoding="utf-8",
+    )
+    return config
+
+
+def test_hark_declared_browser_never_silently_provisions_unbound_production(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    config = module.build_production_config(
+        live, _write_repo_config_with_browser(tmp_path), PUBLIC_URL,
+    )
+    assert "[browser]" not in config
+    assert 'PADIEM_CHAT_LIVE_ENABLED = "true"' in config
+    assert "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED" not in config
+    module.verify_mutation_zero(config, live)
+
+
+def test_preexisting_browser_binding_preserved_without_modifying_old_bindings(tmp_path):
+    import tomllib
+    module = _load_module()
+    old = _production_bindings()
+    with_browser = old + [{"type": "browser", "name": "BROWSER"}]
+    live = module.parse_live_bindings(_settings_payload(with_browser))
+    config = module.build_production_config(
+        live, _write_repo_config_with_browser(tmp_path), PUBLIC_URL,
+    )
+    parsed = tomllib.loads(config)
+    assert parsed["browser"] == {"binding": "BROWSER"}
+    assert parsed["d1_databases"][0]["database_id"] == "702bb62b-36f5-41a0-973f-c4f663ee01e6"
+    assert parsed["services"][0]["service"] == "ai-revenue-korean-ai-platform"
+    assert "PADIEM_CHAT_QUOTA_SALT" not in config
+    assert "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED" not in config
+    module.verify_mutation_zero(config, live)
+
+
+def test_existing_browser_without_explicit_repo_source_declaration_is_refused(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(
+        _production_bindings() + [{"type": "browser", "name": "BROWSER"}],
+    ))
+    with pytest.raises(module.ProductionConfigError, match="matching source declaration"):
+        module.build_production_config(live, _write_repo_config(tmp_path), PUBLIC_URL)
+
+
+def test_unknown_browser_alias_and_duplicate_fail_closed():
+    module = _load_module()
+    with pytest.raises(module.ProductionConfigError, match="unexpected live Browser"):
+        module.parse_live_bindings(_settings_payload(
+            _production_bindings() + [{"type": "browser", "name": "UNEXPECTED"}],
+        ))
+    with pytest.raises(module.ProductionConfigError, match="duplicate binding"):
+        module.parse_live_bindings(_settings_payload(
+            _production_bindings() + [
+                {"type": "browser", "name": "BROWSER"},
+                {"type": "browser", "name": "BROWSER"},
+            ],
+        ))
+
+
+def test_hark_browser_explicit_commission_adds_one_and_preserves_live_authority(tmp_path):
+    import tomllib
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    source = _write_repo_config_with_browser(tmp_path)
+    before = module.build_production_config(live, source, PUBLIC_URL)
+    assert "[browser]" not in before
+    commissioned = module.build_production_config(
+        live, source, PUBLIC_URL, commission_hark_browser=True,
+    )
+    old = tomllib.loads(before)
+    new = tomllib.loads(commissioned)
+    assert new.pop("browser") == {"binding": "BROWSER"}
+    assert old == new
+    module.verify_mutation_zero(commissioned, live)
+    assert "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED" not in commissioned
+    assert "PADIEM_WEB_XLSX_QUOTE_WRITE_ENABLED" not in commissioned
+
+
+def test_hark_browser_commission_refuses_live_write_pdf_and_secret_addition(tmp_path, capsys):
+    module = _load_module()
+    def prepare(extra):
+        path = tmp_path / "settings.json"
+        path.write_text(json.dumps(_settings_payload(_production_bindings() + extra)), encoding="utf-8")
+        return path
+    source = _write_repo_config_with_browser(tmp_path)
+    output = tmp_path / "generated.toml"
+    args = ["--repo-config", str(source), "--public-base-url", PUBLIC_URL,
+            "--output", str(output), "--commission-hark-browser"]
+    assert module.main(args + ["--settings", str(prepare([
+        {"name": "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED", "type": "plain_text", "text": "true"},
+    ]))]) == 1
+    assert not output.exists()
+    assert "active Hark flag" in capsys.readouterr().err
+    assert module.main(args + ["--attach-existing-web-secrets-store",
+                               "--settings", str(prepare([]))]) == 1
+    assert "multiple additive authority modes" in capsys.readouterr().err
+
+
+def test_hark_browser_workflow_requires_distinct_authorization_and_immutable_served_verification():
+    workflow = _read_workflow()
+    assert "commission_hark_browser:" in workflow
+    assert "DEPLOY_B62_HARK_BROWSER_FROM_EXACT_MAIN" in workflow
+    assert "--commission-hark-browser" in workflow
+    assert "--expected-add-hark-browser" in workflow
+    assert "HARK_BROWSER_SERVED_IMMUTABLE_BINDING=PASS" in workflow
+    assert "HARK_BROWSER_QUICK_ACTION_CALLS=0" in workflow
+    assert "B62_PRODUCTION_CODE_AUTO_ROLLBACK=EXECUTED" in workflow
+    assert "FULL_SECRET_SET_EQUALITY=PASS" in workflow
+
+
+def test_broker_candidate_cli_adds_only_existing_broker_binding(tmp_path, capsys):
+    """The opt-in is source config generation, never a deployment or new Worker."""
+    import tomllib
+
+    module = _load_module()
+    settings = tmp_path / "live-settings.json"
+    settings.write_text(json.dumps(_settings_payload(_production_bindings())), encoding="utf-8")
+    repo = _write_repo_config(tmp_path)
+
+    def generate(output: Path, *flags: str) -> tuple[dict, str]:
+        args = [
+            "--settings", str(settings), "--repo-config", str(repo),
+            "--public-base-url", PUBLIC_URL, "--output", str(output), *flags,
+        ]
+        assert module.main(args) == 0
+        lines = capsys.readouterr().out
+        assert "CONNECTOR_BROKER_RELEASE_AUTHORIZED=NO" in lines
+        assert output.exists()
+        return tomllib.loads(output.read_text(encoding="utf-8")), lines
+
+    base, base_log = generate(tmp_path / "baseline.toml")
+    candidate, candidate_log = generate(
+        tmp_path / "candidate.toml", "--attach-existing-connector-broker",
+    )
+    assert "CONNECTOR_BROKER_BINDING_CANDIDATE=0" in base_log
+    assert "CONNECTOR_BROKER_BINDING_CANDIDATE=1" in candidate_log
+    previous_services = base["services"]
+    assert candidate["services"] == previous_services + [{
+        "binding": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+        "service": "padiem-local-agent-broker-state",
+    }]
+    candidate["services"] = previous_services
+    # #4719 LOCAL1: the candidate additionally carries exactly the
+    # allowlisted Connector vars; b14/live and all other settings stay verbatim.
+    expected_vars = dict(base["vars"])
+    expected_vars.update(module.CONNECTOR_EXPLICIT_VARS)
+    assert candidate["vars"] == expected_vars
+    candidate["vars"] = base["vars"]
+    assert candidate == base
+    assert 'PADIEM_CHAT_RUNTIME_MODE = "b14"' in (tmp_path / "candidate.toml").read_text()
+    assert 'PADIEM_CHAT_LIVE_ENABLED = "true"' in (tmp_path / "candidate.toml").read_text()
+    for key, value in module.CONNECTOR_EXPLICIT_VARS.items():
+        assert f'{key} = "{value}"' in (tmp_path / "candidate.toml").read_text()
+    assert not hasattr(module, "deploy")
+
+
+@pytest.mark.parametrize("conflict", [
+    ["--commission-hark-browser"],
+    ["--attach-existing-web-secrets-store"],
+    ["--owner-d1-database-id", "77777777-7777-4777-8777-777777777777"],
+])
+def test_broker_candidate_cli_refuses_multiple_additions(tmp_path, capsys, conflict):
+    module = _load_module()
+    settings = tmp_path / "live-settings.json"
+    settings.write_text(json.dumps(_settings_payload(_production_bindings())), encoding="utf-8")
+    repo = _write_repo_config(tmp_path)
+    output = tmp_path / "candidate.toml"
+    rc = module.main([
+        "--settings", str(settings), "--repo-config", str(repo),
+        "--public-base-url", PUBLIC_URL, "--output", str(output),
+        "--attach-existing-connector-broker", *conflict,
+    ])
+    assert rc == 1
+    assert not output.exists()
+    assert "only additive mode" in capsys.readouterr().err.lower()
+
+
+def test_broker_candidate_cli_reuses_identical_existing_binding(tmp_path, capsys):
+    """Retry after a rolled-back upload reuses the residue instead of duplicating."""
+    import tomllib
+
+    module = _load_module()
+    base = _production_bindings()
+    repo = _write_repo_config(tmp_path)
+    for index, extra in (
+        (0, {}),
+        (1, {"environment": "production"}),
+    ):
+        entries = [dict(x) for x in base]
+        entries.append({
+            "type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+            "service": "padiem-local-agent-broker-state", **extra,
+        })
+        settings = tmp_path / f"reuse-{index}.json"
+        settings.write_text(json.dumps(_settings_payload(entries)), encoding="utf-8")
+        output = tmp_path / f"reuse-{index}.toml"
+        assert module.main([
+            "--settings", str(settings), "--repo-config", str(repo),
+            "--public-base-url", PUBLIC_URL, "--output", str(output),
+            "--attach-existing-connector-broker",
+        ]) == 0
+        lines = capsys.readouterr().out
+        assert "CONNECTOR_BROKER_BINDING_REUSED=1" in lines
+        candidate = tomllib.loads(output.read_text(encoding="utf-8"))
+        matches = [s for s in candidate["services"]
+                   if s["binding"] == "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"]
+        assert len(matches) == 1
+        assert matches[0]["service"] == "padiem-local-agent-broker-state"
+
+
+@pytest.mark.parametrize("bad", [
+    {"service": "attacker-worker"},
+    {"environment": "staging"},
+    {"entrypoint": "Other"},
+    {"type": "plain_text", "text": "bad"},
+])
+def test_broker_candidate_cli_refuses_wrong_existing_binding(tmp_path, capsys, bad):
+    module = _load_module()
+    base = _production_bindings()
+    repo = _write_repo_config(tmp_path)
+    entry = {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+             "service": "padiem-local-agent-broker-state"}
+    entry.update(bad)
+    if bad.get("type") == "plain_text":
+        entry.pop("service", None)
+    entries = [dict(x) for x in base] + [entry]
+    settings = tmp_path / "bad.json"
+    settings.write_text(json.dumps(_settings_payload(entries)), encoding="utf-8")
+    output = tmp_path / "bad.toml"
+    assert module.main([
+        "--settings", str(settings), "--repo-config", str(repo),
+        "--public-base-url", PUBLIC_URL, "--output", str(output),
+        "--attach-existing-connector-broker",
+    ]) == 1
+    assert not output.exists()
+
+
+def test_broker_candidate_cli_refuses_wrong_identity(tmp_path, capsys):
+    module = _load_module()
+    base = _production_bindings()
+    repo = _write_repo_config(tmp_path)
+    entries = [dict(x) for x in base]
+    for entry in entries:
+        if entry.get("name") == "IDENTITY_AUTHORITY_SERVICE":
+            entry["service"] = "wrong-service"
+    settings = tmp_path / "wrong_identity.json"
+    settings.write_text(json.dumps(_settings_payload(entries)), encoding="utf-8")
+    output = tmp_path / "wrong_identity.toml"
+    assert module.main([
+        "--settings", str(settings), "--repo-config", str(repo),
+        "--public-base-url", PUBLIC_URL, "--output", str(output),
+        "--attach-existing-connector-broker",
+    ]) == 1
+    assert not output.exists()
+    assert "B62_PRODUCTION_CONFIG_GENERATED=FAIL" in capsys.readouterr().err
+
+
+CLAW_DESKTOP_SECRET_BINDING = {
+    "type": "secrets_store_secret",
+    "name": "CLAW_ENGINE_DESKTOP_SECRET",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "secret_name": "CLAW_ENGINE_DESKTOP_SECRET",
+}
+
+
+def _write_repo_config_with_claw_desktop(tmp_path, *, store_id=None, secret_name=None):
+    path = _write_repo_config(tmp_path)
+    path.write_text(
+        path.read_text(encoding="utf-8")
+        + "\n[[secrets_store_secrets]]\n"
+        'binding = "CLAW_ENGINE_DESKTOP_SECRET"\n'
+        f'store_id = "{store_id or CLAW_DESKTOP_SECRET_BINDING["store_id"]}"\n'
+        f'secret_name = "{secret_name or CLAW_DESKTOP_SECRET_BINDING["secret_name"]}"\n',
+        encoding="utf-8",
+    )
+    return path
+
+
+def test_claw_desktop_secret_attach_adds_exactly_one_existing_reference(tmp_path):
+    import tomllib
+
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    output = module.build_production_config(
+        live, _write_repo_config_with_claw_desktop(tmp_path), PUBLIC_URL,
+        attach_claw_desktop_secret=True,
+    )
+    module.verify_mutation_zero(output, live)
+    assert tomllib.loads(output)["secrets_store_secrets"] == [{
+        "binding": "CLAW_ENGINE_DESKTOP_SECRET",
+        "store_id": "f0b09ca04a7b43248154c773704a5616",
+        "secret_name": "CLAW_ENGINE_DESKTOP_SECRET",
+    }]
+
+
+def test_claw_desktop_secret_already_served_reference_is_preserved_once(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(
+        _settings_payload(_production_bindings() + [CLAW_DESKTOP_SECRET_BINDING])
+    )
+    output = module.build_production_config(
+        live, _write_repo_config_with_claw_desktop(tmp_path), PUBLIC_URL,
+        attach_claw_desktop_secret=True,
+    )
+    assert output.count("[[secrets_store_secrets]]") == 1
+
+
+@pytest.mark.parametrize("store_id,secret_name", [
+    ("00000000000000000000000000000000", "CLAW_ENGINE_DESKTOP_SECRET"),
+    ("f0b09ca04a7b43248154c773704a5616", "OTHER_SECRET"),
+])
+def test_claw_desktop_secret_repo_identity_drift_fails_closed(tmp_path, store_id, secret_name):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    with pytest.raises(module.ProductionConfigError):
+        module.build_production_config(
+            live,
+            _write_repo_config_with_claw_desktop(
+                tmp_path, store_id=store_id, secret_name=secret_name
+            ),
+            PUBLIC_URL,
+            attach_claw_desktop_secret=True,
+        )
+
+
+def test_claw_desktop_secret_name_collision_with_live_authority_fails_closed(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(
+        _production_bindings()
+        + [{"type": "secret_text", "name": "CLAW_ENGINE_DESKTOP_SECRET"}]
+    ))
+    with pytest.raises(module.ProductionConfigError):
+        module.build_production_config(
+            live, _write_repo_config_with_claw_desktop(tmp_path), PUBLIC_URL,
+            attach_claw_desktop_secret=True,
+        )

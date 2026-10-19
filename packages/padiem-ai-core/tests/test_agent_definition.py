@@ -132,3 +132,9 @@ def test_agent_has_no_self_authorization_or_credential_fields() -> None:
     assert not hasattr(agent, "oauth_token")
     assert not hasattr(agent, "provider_credential")
     assert not hasattr(agent, "child_agent_ids")
+
+
+def test_default_agent_run_budget_matches_long_form_context():
+    assert AgentExecutionBudget().max_wall_seconds == 900
+    with pytest.raises(AgentDefinitionError):
+        AgentExecutionBudget(max_wall_seconds=3601)

@@ -1,0 +1,103 @@
+name: COM2 Backup Contract Tests
+
+# #5093 — focused CI for the COM2 backup transfer slice.
+#
+# Scope: the Worker contract/dispatch suite and the operator script suite,
+# including an in-process loopback upload -> verify -> restore-check run, plus
+# the offline tests for the read-only Cloudflare asset snapshot tool, the D1
+# restore verifier and the periodic D1/R2 sync runner.
+# This workflow never deploys, never touches R2/D1/Production and holds no
+# credential. The loopback server and Wrangler fixtures are test doubles; they
+# are not production evidence.
+
+on:
+  pull_request:
+    paths:
+      - "apps/com2-backup/**"
+      - "scripts/ops/com2_backup.py"
+      - "scripts/ops/tests/test_com2_backup.py"
+      - "scripts/ops/com2_backup_schedule.py"
+      - "scripts/ops/tests/test_com2_backup_schedule.py"
+      - "scripts/ops/cloudflare_asset_snapshot.py"
+      - "scripts/ops/tests/test_cloudflare_asset_snapshot.py"
+      - "scripts/ops/d1_restore_verify.py"
+      - "scripts/ops/tests/test_d1_restore_verify.py"
+      - "scripts/ops/com2_periodic_sync.py"
+      - "scripts/ops/tests/test_com2_periodic_sync.py"
+      - "scripts/ops/com2_runtime.py"
+      - "scripts/ops/tests/test_com2_runtime.py"
+      - "scripts/ops/com2_tunnel.py"
+      - "scripts/ops/tests/test_com2_tunnel.py"
+      - "scripts/ops/com2_b62_generation.py"
+      - "scripts/ops/tests/test_com2_b62_generation.py"
+      - ".github/workflows/com2-backup-contract-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: com2-backup-contract-tests-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  python-tests:
+    name: COM2 backup tests (pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Same canonical bootstrap as the Voice STT suites: no project install,
+      # pinned pytest and pytest-asyncio (the dispatch suite is async).
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Run Worker contract and dispatch tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "pytest-asyncio>=0.24,<2" python -m pytest -q apps/com2-backup/tests
+
+      - name: Run operator script tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "cryptography>=42,<50" python -m pytest -q scripts/ops/tests/test_com2_backup.py
+
+      - name: Run unattended backup schedule tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "cryptography>=42,<50" python -m pytest -q scripts/ops/tests/test_com2_backup_schedule.py
+
+      - name: Run read-only asset snapshot tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_cloudflare_asset_snapshot.py
+
+      - name: Run D1 restore verification tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_d1_restore_verify.py
+
+      - name: Run periodic sync runner tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_periodic_sync.py
+
+      - name: Run COM2 runtime supervisor tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_runtime.py
+
+      - name: Run COM2 tunnel ingress tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_tunnel.py
+
+      - name: Run B62 generation pointer tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_b62_generation.py
+
+      - name: Record gate scope
+        run: |
+          echo 'COM2_BACKUP_WORKER_TESTS=EXECUTED'
+          echo 'COM2_BACKUP_OPS_TESTS=EXECUTED'
+          echo 'COM2_BACKUP_SCHEDULE_TESTS=EXECUTED'
+          echo 'CLOUDFLARE_ASSET_SNAPSHOT_TESTS=EXECUTED'
+          echo 'D1_RESTORE_VERIFY_TESTS=EXECUTED'
+          echo 'PERIODIC_SYNC_TESTS=EXECUTED'
+          echo 'COM2_RUNTIME_SUPERVISOR_TESTS=EXECUTED'
+          echo 'COM2_TUNNEL_INGRESS_TESTS=EXECUTED'
+          echo 'B62_GENERATION_POINTER_TESTS=EXECUTED'
+          echo 'LOOPBACK_TRANSFER_E2E=EXECUTED'
+          echo 'PRODUCTION_DEPLOYMENT=0'
+          echo 'PRODUCTION_E2E=0'

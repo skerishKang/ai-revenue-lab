@@ -643,7 +643,11 @@ def test_resolver_is_wired_only_through_the_trusted_authority_seam() -> None:
 
     wrangler = (APP_ROOT / "wrangler.toml").read_text(encoding="utf-8")
     assert 'binding = "ENGINE_IMAGE_STORE"' in wrangler
-    assert wrangler.count('database_id = "') == 6
+    # Six Engine-owned D1 bindings retain their exact Engine DB identity;
+    # the seventh is the independent B62 owner-read verifier database.
+    assert wrangler.count('database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"') == 6
+    assert wrangler.count('database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"') == 1
+    assert wrangler.count('binding = "WEB_XLSX_PRIVATE_B62_D1"') == 1
 
     store_source = (APP_ROOT / "app" / "attachment_byte_store.py").read_text(encoding="utf-8")
     assert "CREATE TABLE" not in store_source.upper()

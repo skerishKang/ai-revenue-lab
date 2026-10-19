@@ -280,7 +280,7 @@ jobs:
 
           verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
-            --active-version "${active_version}" \
+            --active-version="${active_version}" \
             --require-a6-runtime-bindings)"
           printf '%s\n' "${verify_out}"
 

@@ -61,7 +61,7 @@
         "operationId": "engineExecute",
         "summary": "Execute a completed-run (or orchestration) request.",
         "description": "Executes a language-neutral execution request against the Engine runtime. The request body MUST be `application/json` and MUST NOT exceed the safety limit (see `x-engine-max-body-bytes`). Unknown top-level fields and unknown `agent` fields are rejected with `400 invalid_request`.",
-        "x-engine-max-body-bytes": 131072,
+        "x-engine-max-body-bytes": 6000000,
         "requestBody": {
           "required": true,
           "content": {

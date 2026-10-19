@@ -12,21 +12,39 @@ from padiem_ai_engine_client import (
     ENGINE_MULTIMODAL_ATTACHMENTS_PATH,
     ENGINE_ORCHESTRATE_CANCEL_PATH,
     ENGINE_ORCHESTRATE_PATH,
+    ENGINE_RESEARCH_PATH,
+    ENGINE_ORCHESTRATE_STREAM_PATH,
     ENGINE_ORCHESTRATE_RESUME_PATH,
     EngineTransportResponse,
+    EngineStreamTransportResponse,
     PadiemAiEngineClient,
 )
 from padiem_ai_core.b14_multimodal import MAX_B14_IMAGE_BYTES
+from padiem_ai_engine_client.orchestration_stream import MAX_NDJSON_TERMINAL_LINE_BYTES
 
 from .canonical_orchestration_bridge import CanonicalSubjectB62EngineOrchestrationBridge
 from .orchestration_bridge import B62EngineOrchestrationBridge, D1OrchestrationStateStore
+from .service_binding_response import (
+    ServiceBindingResponseError,
+    ServiceBindingResponseTooLarge,
+    read_bounded_service_binding_body,
+    cloudflare_chunk_bytes,
+)
 from .worker_config import binding_value
 
 ENGINE_SERVICE_BINDING_NAME = "ENGINE_SERVICE"
 ORCHESTRATION_ENABLED_ENV = "PADIEM_CHAT_ORCHESTRATION_ENABLED"
 ENGINE_CALLER_ID_ENV = "PADIEM_CHAT_ENGINE_CALLER_ID"
 ENGINE_CALLER_SECRET_ENV = "PADIEM_CHAT_ENGINE_CALLER_SECRET"
-_MAX_ENGINE_RESPONSE_BYTES = 1_048_576
+_MAX_ENGINE_RESPONSE_BYTES = 1_048_576  # small non-model Engine contracts
+_MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES = MAX_NDJSON_TERMINAL_LINE_BYTES
+# Match the Engine's *existing* 6MB model execute ingress safety envelope.
+# The legacy 256KiB was falsely smaller than Claw's guarded 5.5MB context.
+_MAX_ENGINE_MODEL_REQUEST_BYTES = 6_000_000
+_ENGINE_MODEL_PATHS = frozenset({
+    ENGINE_ORCHESTRATE_PATH, ENGINE_ORCHESTRATE_RESUME_PATH,
+    ENGINE_ORCHESTRATE_STREAM_PATH,
+})
 # Text/reference routes keep the original 256 KiB request bound. The canonical
 # multimodal admission route (#3210) carries one bounded base64 image, so it
 # gets its own bound derived from the same core constant the Engine store uses.
@@ -36,6 +54,7 @@ _MAX_ATTACHMENT_REQUEST_BYTES = _MAX_ATTACHMENT_BASE64_CHARS + (8 * 1024)
 _ALLOWED_ENGINE_PATHS = frozenset(
     {
         ENGINE_HEALTH_PATH,
+        ENGINE_RESEARCH_PATH,  # #4469 existing authenticated Engine evidence-only
         ENGINE_ORCHESTRATE_PATH,
         ENGINE_ORCHESTRATE_RESUME_PATH,
         ENGINE_ORCHESTRATE_CANCEL_PATH,
@@ -84,6 +103,7 @@ class CloudflareEngineServiceTransport:
             body_limit = (
                 _MAX_ATTACHMENT_REQUEST_BYTES
                 if parsed.path == ENGINE_MULTIMODAL_ATTACHMENTS_PATH
+                else _MAX_ENGINE_MODEL_REQUEST_BYTES if parsed.path in _ENGINE_MODEL_PATHS
                 else _MAX_ENGINE_REQUEST_BYTES
             )
             if len(body) > body_limit:
@@ -94,16 +114,35 @@ class CloudflareEngineServiceTransport:
                 body_text = body.decode("utf-8")
             except UnicodeDecodeError as exc:
                 raise ValueError("Engine request body must be UTF-8 JSON") from exc
+        # Correlation only: preserve existing caller authentication headers.
+        # The ID has no authority or authorization role.
+        from app.request_telemetry import current_request_id, is_safe_request_id
+        forward_headers = dict(headers)
+        trace = current_request_id()
+        if is_safe_request_id(trace):
+            forward_headers["X-Request-Id"] = trace
         request = self._request_factory(
             url,
             method=normalized_method,
-            headers=dict(headers),
+            headers=forward_headers,
             body=body_text,
         )
         response = await self._binding.fetch(request.js_object)
-        encoded = str(await response.text()).encode("utf-8")
-        if len(encoded) > _MAX_ENGINE_RESPONSE_BYTES:
-            raise ValueError("Engine response exceeded the B62 transport safety limit")
+        try:
+            encoded = await read_bounded_service_binding_body(
+                response,
+                max_bytes=(
+                    _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES
+                    if parsed.path in {ENGINE_ORCHESTRATE_PATH, ENGINE_ORCHESTRATE_RESUME_PATH}
+                    else _MAX_ENGINE_RESPONSE_BYTES
+                ),
+            )
+        except ServiceBindingResponseTooLarge:
+            raise ValueError(
+                "Engine response exceeded the B62 transport safety limit"
+            ) from None
+        except ServiceBindingResponseError as exc:
+            raise ValueError("Engine response could not be read safely") from exc
         response_headers: dict[str, str] = {}
         try:
             content_type = response.headers.get("content-type")
@@ -115,6 +154,92 @@ class CloudflareEngineServiceTransport:
             status=int(response.status),
             body=encoded,
             headers=response_headers,
+        )
+
+
+    async def stream_request(
+        self,
+        *,
+        method: str,
+        url: str,
+        headers: Mapping[str, str],
+        body: bytes | None,
+    ) -> EngineStreamTransportResponse:
+        """Narrow, opt-in NDJSON Engine stream over the existing Service Binding.
+
+        Unlike request(), this never buffers the entire response. The HTTP
+        target is fixed and size/cancel guards stay active while iterating.
+        Existing completed Engine requests cannot silently select this route.
+        """
+        parsed = urlparse(url)
+        expected = urlparse(ENGINE_INTERNAL_ORIGIN)
+        if (
+            parsed.scheme != expected.scheme
+            or parsed.netloc != expected.netloc
+            or parsed.path != ENGINE_ORCHESTRATE_STREAM_PATH
+            or parsed.query or parsed.fragment
+            or method != "POST"
+            or body is None
+            or not isinstance(body, bytes)
+            or len(body) > _MAX_ENGINE_MODEL_REQUEST_BYTES
+        ):
+            raise ValueError("Engine stream target or request is unsupported")
+        try:
+            payload = body.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ValueError("Engine stream request must be UTF-8 JSON") from exc
+        request = self._request_factory(
+            url, method="POST", headers=dict(headers), body=payload,
+        )
+        response = await self._binding.fetch(request.js_object)
+        stream = getattr(response, "body", None)
+        get_reader = getattr(stream, "getReader", None)
+        if not callable(get_reader):
+            # Fail closed. Never fall back to buffered body()/text() and
+            # misrepresent an already-completed answer as a live stream.
+            raise ServiceBindingResponseError("Engine stream body is unavailable")
+
+        async def iter_chunks():
+            try:
+                reader = get_reader()
+            except Exception as exc:
+                raise ServiceBindingResponseError("Engine stream reader unavailable") from exc
+            finished = False
+            try:
+                while True:
+                    result = await reader.read()
+                    if bool(getattr(result, "done", False)):
+                        finished = True
+                        return
+                    chunk = cloudflare_chunk_bytes(getattr(result, "value", None))
+                    # A single giant JS reader chunk is a Worker RAM risk.
+                    # Cumulative healthy NDJSON events are not: Core checks
+                    # each 64KiB event, the 8MiB terminal result and <=128
+                    # lifecycle events. Never add bytes across frames here.
+                    if len(chunk) > MAX_NDJSON_TERMINAL_LINE_BYTES:
+                        raise ServiceBindingResponseTooLarge("Engine stream chunk exceeded safety bound")
+                    for start in range(0, len(chunk), 65_536):
+                        yield chunk[start:start + 65_536]
+            finally:
+                if not finished:
+                    cancel = getattr(reader, "cancel", None)
+                    if callable(cancel):
+                        try:
+                            await cancel()
+                        except Exception:
+                            pass
+                release = getattr(reader, "releaseLock", None)
+                if callable(release):
+                    try:
+                        release()
+                    except Exception:
+                        pass
+
+        content_type = response.headers.get("content-type")
+        return EngineStreamTransportResponse(
+            status=int(response.status),
+            chunks=iter_chunks(),
+            headers={"content-type": str(content_type or "")},
         )
 
 

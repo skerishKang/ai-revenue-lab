@@ -22,6 +22,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/b54-calendar-authority-provision-gate.yml'
+      - '.github/scripts/cloudflare_served_version_cli.py'
       - '.github/tests/test_b54_calendar_authority_provision_gate.py'
       - 'apps/padiem-ai-engine/app/calendar_port_cp_lease.py'
   workflow_dispatch:
@@ -184,21 +185,9 @@ jobs:
           base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
           anchor="${RUNNER_TEMP}/calendar-provision-pre-anchor.json"
           curl -fsS "${auth[@]}" "${base}/deployments" -o "${anchor}"
-          python - "${anchor}" <<'PY'
-          import json, sys
-
-          payload = json.load(open(sys.argv[1], encoding="utf-8"))
-          if payload.get("success") is not True:
-              raise SystemExit("CALENDAR_PRE_ANCHOR=FAIL")
-          deployments = payload.get("result", {}).get("deployments")
-          if not isinstance(deployments, list) or not deployments:
-              raise SystemExit("CALENDAR_PRE_ANCHOR_DEPLOYMENTS=FAIL")
-          versions = deployments[0].get("versions")
-          if not isinstance(versions, list) or len(versions) != 1:
-              raise SystemExit("CALENDAR_PRE_ANCHOR_VERSION_SHAPE=FAIL")
-          print("CALENDAR_PRE_MUTATION_ANCHOR=RECORDED")
-          print("ENGINE_VERSION_ID_OUTPUT=0")
-          PY
+          python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${anchor}" >/dev/null
+          echo 'CALENDAR_PRE_MUTATION_ANCHOR=RECORDED'
+          echo 'ENGINE_VERSION_ID_OUTPUT=0'
 
       - name: Require create-only Calendar target state immediately before mutation
         shell: bash

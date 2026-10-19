@@ -1,0 +1,902 @@
+source-contract	Set up job	﻿2026-10-13T07:24:09.3918443Z Current runner version: '2.337.0'
+source-contract	Set up job	2026-10-13T07:24:09.3954866Z ##[group]Runner Image Provisioner
+source-contract	Set up job	2026-10-13T07:24:09.3956260Z Hosted Compute Agent
+source-contract	Set up job	2026-10-13T07:24:09.3957365Z Version: 20261002.596
+source-contract	Set up job	2026-10-13T07:24:09.3958789Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+source-contract	Set up job	2026-10-13T07:24:09.3960120Z Build Date: 2026-10-02T22:28:27Z
+source-contract	Set up job	2026-10-13T07:24:09.3961506Z Worker ID: {42218d02-ac65-484f-aab6-78e685d56784}
+source-contract	Set up job	2026-10-13T07:24:09.3963160Z Region: eastus2
+source-contract	Set up job	2026-10-13T07:24:09.3964240Z Cloud: Azure
+source-contract	Set up job	2026-10-13T07:24:09.3965370Z ##[endgroup]
+source-contract	Set up job	2026-10-13T07:24:09.3967881Z ##[group]Operating System
+source-contract	Set up job	2026-10-13T07:24:09.3969038Z Ubuntu
+source-contract	Set up job	2026-10-13T07:24:09.3969940Z 24.04.5
+source-contract	Set up job	2026-10-13T07:24:09.3970942Z LTS
+source-contract	Set up job	2026-10-13T07:24:09.3972217Z ##[endgroup]
+source-contract	Set up job	2026-10-13T07:24:09.3973178Z ##[group]Runner Image
+source-contract	Set up job	2026-10-13T07:24:09.3974323Z Image: ubuntu-24.04
+source-contract	Set up job	2026-10-13T07:24:09.3975500Z Version: 20261004.327.1
+source-contract	Set up job	2026-10-13T07:24:09.3977340Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+source-contract	Set up job	2026-10-13T07:24:09.3980337Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+source-contract	Set up job	2026-10-13T07:24:09.3982420Z ##[endgroup]
+source-contract	Set up job	2026-10-13T07:24:09.3984196Z ##[group]GITHUB_TOKEN Permissions
+source-contract	Set up job	2026-10-13T07:24:09.3987160Z Contents: read
+source-contract	Set up job	2026-10-13T07:24:09.3988187Z Metadata: read
+source-contract	Set up job	2026-10-13T07:24:09.3989280Z ##[endgroup]
+source-contract	Set up job	2026-10-13T07:24:09.3992779Z Secret source: Actions
+source-contract	Set up job	2026-10-13T07:24:09.3994376Z Cache mode: write
+source-contract	Set up job	2026-10-13T07:24:09.3996026Z Prepare workflow directory
+source-contract	Set up job	2026-10-13T07:24:09.4733032Z Prepare all required actions
+source-contract	Set up job	2026-10-13T07:24:09.4805309Z Getting action download info
+source-contract	Set up job	2026-10-13T07:24:09.6888620Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+source-contract	Set up job	2026-10-13T07:24:09.7850226Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+source-contract	Set up job	2026-10-13T07:24:09.9619222Z Complete job name: source-contract
+source-contract	Checkout exact dispatch SHA	﻿2026-10-13T07:24:10.0390127Z ##[group]Run actions/checkout@v4
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0391040Z with:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0391729Z   ref: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0392332Z   fetch-depth: 1
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0392787Z   persist-credentials: false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0393320Z   repository: skerishKang/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0397186Z   token: ***
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0397619Z   ssh-strict: true
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0398056Z   ssh-user: git
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0398480Z   clean: true
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0398922Z   sparse-checkout-cone-mode: true
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0399448Z   fetch-tags: false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0399892Z   show-progress: true
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0400331Z   lfs: false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0400786Z   submodules: false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0401235Z   set-safe-directory: true
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0401955Z   allow-unsafe-pr-checkout: false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0402755Z env:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0403187Z   B62_WORKER: padiem-chat
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0403741Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0404437Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0405054Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0405671Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0406267Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0406848Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0407425Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0407981Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.0408580Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1410458Z Syncing repository: skerishKang/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1413518Z ##[group]Getting Git version info
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1414894Z Working directory is '/home/runner/work/ai-revenue-lab/ai-revenue-lab'
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1416720Z [command]/usr/bin/git version
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1498166Z git version 2.55.0
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1525017Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1541492Z Temporarily overriding HOME='/home/runner/work/_temp/4079786f-8b1e-4bec-9061-263b4ba4008d' before making global git config changes
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1545159Z Adding repository directory to the temporary git global config as a safe directory
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1549048Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ai-revenue-lab/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1612093Z Deleting the contents of '/home/runner/work/ai-revenue-lab/ai-revenue-lab'
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1618039Z ##[group]Initializing the repository
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1622915Z [command]/usr/bin/git init /home/runner/work/ai-revenue-lab/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1756001Z hint: Using 'master' as the name for the initial branch. This default branch name
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1757262Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1758200Z hint: to use in all of your new repositories, which will suppress this warning,
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1758944Z hint: call:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1759351Z hint:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1759928Z hint: 	git config --global init.defaultBranch <name>
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1760561Z hint:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1761145Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1762396Z hint: 'development'. The just-created branch can be renamed via this command:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1763143Z hint:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1763568Z hint: 	git branch -m <name>
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1764057Z hint:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1764682Z hint: Disable this message with "git config set advice.defaultBranchName false"
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1769104Z Initialized empty Git repository in /home/runner/work/ai-revenue-lab/ai-revenue-lab/.git/
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1782665Z [command]/usr/bin/git remote add origin https://github.com/skerishKang/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1834247Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1835674Z ##[group]Disabling automatic garbage collection
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1839245Z [command]/usr/bin/git config --local gc.auto 0
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1874959Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1876898Z ##[group]Setting up auth
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1904117Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.1942517Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.2321944Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.2359301Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.2582725Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.2619767Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.2840053Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.2880358Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.2882101Z ##[group]Fetching the repository
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:10.2891507Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.0306063Z From https://github.com/skerishKang/ai-revenue-lab
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.0307714Z  * branch            2235754e14f546f1e31af16484db66b2c9b83235 -> FETCH_HEAD
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.0311194Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.0313078Z ##[group]Determining the checkout info
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.0314638Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.0318307Z [command]/usr/bin/git sparse-checkout disable
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.0377256Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.0410490Z ##[group]Checking out the ref
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.0420152Z [command]/usr/bin/git checkout --progress --force 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7176000Z Note: switching to '2235754e14f546f1e31af16484db66b2c9b83235'.
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7177599Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7178064Z You are in 'detached HEAD' state. You can look around, make experimental
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7179026Z changes and commit them, and you can discard any commits you make in this
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7179964Z state without impacting any branches by switching back to a branch.
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7180534Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7180905Z If you want to create a new branch to retain commits you create, you may
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7181450Z do so (now or later) by using -c with the switch command. Example:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7182162Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7182316Z   git switch -c <new-branch-name>
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7182541Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7182678Z Or undo this operation with:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7182871Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7182984Z   git switch -
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7183143Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7183505Z Turn off this advice by setting config variable advice.detachedHead to false
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7183846Z 
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7184097Z HEAD is now at 2235754 docs(ops): B62 single-owner release guardrails (#4553)
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7207976Z ##[endgroup]
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7319762Z [command]/usr/bin/git log -1 --format=%H
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7349309Z 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7358833Z ##[group]Removing auth
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7363043Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7464963Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7636970Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7665539Z http.https://github.com/.extraheader
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7673318Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7709559Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7931757Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.7962755Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+source-contract	Checkout exact dispatch SHA	2026-10-13T07:24:13.8184971Z ##[endgroup]
+source-contract	Require exact current main for dispatch	﻿2026-10-13T07:24:13.8400792Z ##[group]Run set -euo pipefail
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8401250Z [36;1mset -euo pipefail[0m
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8401906Z [36;1mtest "${GITHUB_REF}" = "refs/heads/main"[0m
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8402326Z [36;1mtest "$(git rev-parse HEAD)" = "${TARGET_SHA}"[0m
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8688873Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8689337Z env:
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8689579Z   B62_WORKER: padiem-chat
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8689914Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8690308Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8690675Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8691061Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8691420Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8691961Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8692305Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8692637Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Require exact current main for dispatch	2026-10-13T07:24:13.8693021Z ##[endgroup]
+source-contract	Run actions/setup-python@v5	﻿2026-10-13T07:24:13.8901812Z ##[group]Run actions/setup-python@v5
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8902228Z with:
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8902480Z   python-version: 3.12
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8902752Z   check-latest: false
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8905376Z   token: ***
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8905640Z   update-environment: true
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8906120Z   allow-prereleases: false
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8906406Z   freethreaded: false
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8906652Z env:
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8906885Z   B62_WORKER: padiem-chat
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8907209Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8907587Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8907940Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8908301Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8908658Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8908992Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8909323Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8909643Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:13.8910033Z ##[endgroup]
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:14.0220903Z ##[group]Installed versions
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:14.0343318Z (node:2322) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:14.0344251Z (Use `node --trace-deprecation ...` to show where the warning was created)
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:14.0344977Z Successfully set up CPython (3.12.15)
+source-contract	Run actions/setup-python@v5	2026-10-13T07:24:14.0345833Z ##[endgroup]
+source-contract	Repository wrangler config must stay mock-only	﻿2026-10-13T07:24:14.0490949Z ##[group]Run python .github/scripts/b62_cloudflare_mock_config_guard.py apps/padiem-chat/wrangler.toml
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0492131Z [36;1mpython .github/scripts/b62_cloudflare_mock_config_guard.py apps/padiem-chat/wrangler.toml[0m
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0570379Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0570793Z env:
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0571033Z   B62_WORKER: padiem-chat
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0571366Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0571987Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0572381Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0572776Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0573156Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0573541Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0573892Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0574223Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0574687Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0575187Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0575655Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0576082Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0576509Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0576940Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.0577315Z ##[endgroup]
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.1608415Z B62_MOCK_CONFIG_GUARD=PASS
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.1609124Z WORKER_NAME=padiem-chat
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.1609617Z RUNTIME=mock
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.1610052Z LIVE_ENABLED=false
+source-contract	Repository wrangler config must stay mock-only	2026-10-13T07:24:14.1610537Z PLAINTEXT_LIVE_OR_SECRET_VARS=0
+source-contract	Prove Cloudflare rollback deployment request shape	﻿2026-10-13T07:24:14.1701147Z ##[group]Run python .github/tests/test_b62_cloudflare_rollback_deployment_request.py
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1702152Z [36;1mpython .github/tests/test_b62_cloudflare_rollback_deployment_request.py[0m
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1769153Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1769561Z env:
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1769840Z   B62_WORKER: padiem-chat
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1770171Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1770563Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1770923Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1771291Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1771859Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1772209Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1772550Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1772872Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1773452Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1773961Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1774428Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1774872Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1775313Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1775757Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.1776125Z ##[endgroup]
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.3496743Z test_body_matches_cloudflare_create_deployment_schema=PASS
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.3497553Z test_invalid_uuid_and_injection_fail_closed=PASS
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.3497987Z test_exact_file_is_created_without_secrets_or_overwrite=PASS
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.3498375Z test_invalid_uuid_never_creates_body=PASS
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.3498757Z test_both_automatic_and_manual_rollback_use_correct_body=PASS
+source-contract	Prove Cloudflare rollback deployment request shape	2026-10-13T07:24:14.3499236Z test_legacy_fail_closed_and_secret_guards_are_unchanged=PASS
+source-contract	Test 504-only public-origin proof with negative controls	﻿2026-10-13T07:24:14.3640536Z ##[group]Run python .github/tests/test_b62_public_origin_504_gate.py
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3641452Z [36;1mpython .github/tests/test_b62_public_origin_504_gate.py[0m
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3715192Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3715549Z env:
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3715758Z   B62_WORKER: padiem-chat
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3716056Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3716399Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3716718Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3717056Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3717418Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3717718Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3718020Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3718302Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3718679Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3719149Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3719572Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3719947Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3720327Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3720710Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.3721035Z ##[endgroup]
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.4094308Z test_successful_cloudflare_metadata_still_required=PASS
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.4095138Z test_only_504_may_use_two_independent_live_origins=PASS
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.4095783Z test_other_http_errors_are_never_accepted=PASS
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.4096488Z test_disabled_malformed_and_failed_metadata_never_accepted=PASS
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.4097283Z test_both_health_responses_must_match_exact_app_and_runtime=PASS
+source-contract	Test 504-only public-origin proof with negative controls	2026-10-13T07:24:14.4098060Z test_workflow_preserves_source_contract_and_rollback=PASS
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	﻿2026-10-13T07:24:14.4167676Z ##[group]Run bash -n .github/scripts/b62_cloudflare_504_readonly_get.sh
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4168219Z [36;1mbash -n .github/scripts/b62_cloudflare_504_readonly_get.sh[0m
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4168693Z [36;1mpython .github/tests/test_b62_cloudflare_504_readonly_get.py[0m
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4230107Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4230471Z env:
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4230670Z   B62_WORKER: padiem-chat
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4230953Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4231305Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4231836Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4232186Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4232502Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4232799Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4233336Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4233615Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4234016Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4234441Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4234864Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4235247Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4235627Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4236009Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4236352Z ##[endgroup]
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4543586Z test_504_only_two_attempts_and_never_post=PASS
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4544223Z test_allowed_endpoint_path_is_b62_worker_only=PASS
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4544731Z test_canonical_domain_query_allowed_without_broadening_worker_paths=PASS
+source-contract	Validate B62 Cloudflare read-only 504 retry contract	2026-10-13T07:24:14.4545335Z test_deploy_gate_only_wraps_readonly_get_and_preserves_mutation_controls=PASS
+source-contract	Run served-version secret set guard regressions	﻿2026-10-13T07:24:14.4607786Z ##[group]Run set -euo pipefail
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4608126Z [36;1mset -euo pipefail[0m
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4608506Z [36;1mpython -m pip install --disable-pip-version-check --quiet pytest[0m
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4609048Z [36;1mpython -m pytest .github/tests/test_b62_served_version_secret_guard.py -q[0m
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4609551Z [36;1mecho "B62_SERVED_VERSION_SECRET_GUARD_TESTS=PASS"[0m
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4609900Z [36;1mecho "PRODUCTION_MUTATION=0"[0m
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4667180Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4667534Z env:
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4667734Z   B62_WORKER: padiem-chat
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4668020Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4668362Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4668673Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4669002Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4669429Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4688799Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4689127Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4689417Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4689787Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4690219Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4690661Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4691037Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4691408Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4692034Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:14.4692364Z ##[endgroup]
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:17.5512670Z ................................                                         [100%]
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:17.5513438Z 32 passed in 0.36s
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:17.5726351Z B62_SERVED_VERSION_SECRET_GUARD_TESTS=PASS
+source-contract	Run served-version secret set guard regressions	2026-10-13T07:24:17.5726934Z PRODUCTION_MUTATION=0
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	﻿2026-10-13T07:24:17.5767129Z ##[group]Run set -euo pipefail
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5767471Z [36;1mset -euo pipefail[0m
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5767849Z [36;1mpython -m pytest .github/tests/test_b62_atomic_web_secrets_3523.py -q[0m
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5768313Z [36;1mecho "B62_WEB_SECRETS_STORE_SOURCE_GUARD=PASS"[0m
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5768637Z [36;1mecho "PRODUCTION_MUTATION=0"[0m
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5834186Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5834540Z env:
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5834744Z   B62_WORKER: padiem-chat
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5835029Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5835364Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5835672Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5836000Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5836473Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5836761Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5837069Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5837388Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5837750Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5838204Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5838624Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5838993Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5839388Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5839783Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.5840105Z ##[endgroup]
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.8318143Z ......                                                                   [100%]
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.8319185Z 6 passed in 0.07s
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.8519471Z B62_WEB_SECRETS_STORE_SOURCE_GUARD=PASS
+source-contract	Prove Owner-approved atomic web Secrets Store addition contract	2026-10-13T07:24:17.8520059Z PRODUCTION_MUTATION=0
+source-contract	Validate new-main upload-vs-served release preflight	﻿2026-10-13T07:24:17.8555023Z ##[group]Run set -euo pipefail
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8555353Z [36;1mset -euo pipefail[0m
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8555744Z [36;1mpython -m pytest .github/tests/test_b62_code_deploy_served_preflight.py -q[0m
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8556220Z [36;1mecho "NEW_MAIN_DEPLOY_PREFLIGHT_TESTS=PASS"[0m
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8556543Z [36;1mecho "PRODUCTION_MUTATION=0"[0m
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8619750Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8620094Z env:
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8620294Z   B62_WORKER: padiem-chat
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8620585Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8620928Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8621240Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8621786Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8622118Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8622420Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8622737Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8623044Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8623404Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8623821Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8624237Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8624626Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8625018Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8625401Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:17.8625721Z ##[endgroup]
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:18.1362910Z ........                                                                 [100%]
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:18.1363575Z 8 passed in 0.09s
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:18.1581420Z NEW_MAIN_DEPLOY_PREFLIGHT_TESTS=PASS
+source-contract	Validate new-main upload-vs-served release preflight	2026-10-13T07:24:18.1582279Z PRODUCTION_MUTATION=0
+source-contract	Validate migration 040 predeploy schema guard contract	﻿2026-10-13T07:24:18.1622576Z ##[group]Run set -euo pipefail
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1623140Z [36;1mset -euo pipefail[0m
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1624240Z [36;1mpython -m pytest .github/tests/test_b62_d1_migration_040_gate.py -q[0m
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1625218Z [36;1mecho "MIGRATION_040_PREDEPLOY_GUARD_TESTS=PASS"[0m
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1626002Z [36;1mecho "PRODUCTION_MUTATION=0"[0m
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1704536Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1705052Z env:
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1705337Z   B62_WORKER: padiem-chat
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1705776Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1706204Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1706682Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1707158Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1707608Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1708044Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1708882Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1709743Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1710230Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1710726Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1711904Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1712738Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1713413Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1713886Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.1714404Z ##[endgroup]
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.4592967Z ........                                                                 [100%]
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.4593930Z 8 passed in 0.11s
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.4797160Z MIGRATION_040_PREDEPLOY_GUARD_TESTS=PASS
+source-contract	Validate migration 040 predeploy schema guard contract	2026-10-13T07:24:18.4798007Z PRODUCTION_MUTATION=0
+source-contract	Owner D1 protected release contract regressions	﻿2026-10-13T07:24:18.4834368Z ##[group]Run set -euo pipefail
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4834859Z [36;1mset -euo pipefail[0m
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4835408Z [36;1mpython3 -m pip install --disable-pip-version-check --quiet pytest pyyaml[0m
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4835932Z [36;1mpython3 -m pytest \[0m
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4836411Z [36;1m  .github/tests/test_b62_owner_d1_release_transaction.py \[0m
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4836956Z [36;1m  .github/tests/test_b62_owner_d1_release_preflight.py \[0m
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4837507Z [36;1m  .github/tests/test_b62_binding_state_guard.py -q[0m
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4838043Z [36;1mecho "OWNER_D1_PROTECTED_RELEASE_SOURCE_CI=PASS"[0m
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4838468Z [36;1mecho "PRODUCTION_MUTATION=0"[0m
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4900169Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4900691Z env:
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4901036Z   B62_WORKER: padiem-chat
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4901416Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4902579Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4903381Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4904241Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4904926Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4905648Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4906279Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4906926Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4907641Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4908645Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4909466Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4910334Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4911174Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4912259Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:18.4912875Z ##[endgroup]
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:19.8157810Z ........................................................................ [ 48%]
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:19.8807891Z ........................................................................ [ 97%]
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:19.8974243Z ...                                                                      [100%]
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:19.8975059Z 147 passed in 0.53s
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:19.9218565Z OWNER_D1_PROTECTED_RELEASE_SOURCE_CI=PASS
+source-contract	Owner D1 protected release contract regressions	2026-10-13T07:24:19.9219044Z PRODUCTION_MUTATION=0
+source-contract	Gate source contract	﻿2026-10-13T07:24:19.9250659Z ##[group]Run set -euo pipefail
+source-contract	Gate source contract	2026-10-13T07:24:19.9251744Z [36;1mset -euo pipefail[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9252085Z [36;1mpython - <<'PY'[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9252333Z [36;1mfrom pathlib import Path[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9252582Z [36;1m[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9253029Z [36;1mworkflow = Path(".github/workflows/b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9253802Z [36;1mgenerator = Path(".github/scripts/b62_cloudflare_production_deploy_config.py").read_text(encoding="utf-8")[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9254722Z [36;1mbinding_guard = Path(".github/scripts/b62_binding_state_guard.py").read_text(encoding="utf-8")[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9255422Z [36;1mserved_guard = Path(".github/scripts/b62_served_version_secret_guard.py").read_text(encoding="utf-8")[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9255926Z [36;1m[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9256233Z [36;1massert "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9256735Z [36;1massert "ROLLBACK_B62_PRODUCTION_CODE_TO_RECORDED_VERSION" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9257263Z [36;1massert workflow.count("environment: " + "production") == 2[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9257697Z [36;1massert 'test "${GITHUB_REF}" = "refs/heads/main"' in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9258112Z [36;1massert "PREMUTATION_EXACT_MAIN_SHA=PASS" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9258466Z [36;1massert "if: failure()" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9258846Z [36;1massert 'B62_PRODUCTION_CODE_AUTO_ROLLBACK=EXECUTED' in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9259236Z [36;1massert '"percentage": 100' in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9259564Z [36;1massert "authentication_required" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9259949Z [36;1massert "connector_ticket_origin_rejected" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9260321Z [36;1massert "B62_PRODUCTION_SMOKE=PASS" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9260658Z [36;1massert "PRODUCTION_MUTATION=0" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9261106Z [36;1massert "PADIEM_CHAT_PUBLIC_BASE_URL: https://chat.padiem.net" in workflow or \[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9261885Z [36;1m    "B62_PUBLIC_BASE_URL: https://chat.padiem.net" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9262391Z [36;1massert "python .github/scripts/b62_binding_state_guard.py" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9262874Z [36;1massert "b62-settings-before-normalized.json" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9263346Z [36;1massert "PUBLIC_BASE_URL_NORMALIZATION=ALREADY_EXPECTED" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9263792Z [36;1massert "INJECTED_EXPECTED_" + "ONLY" not in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9264231Z [36;1massert "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9264681Z [36;1massert "PUBLIC_BASE_URL_INJECTED_BY_DEPLOY=NO" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9265081Z [36;1massert "DEPLOY_MUTATES_LIVE_CONFIG=NO" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9265476Z [36;1massert "test \"${public_state}\" = \"expected\"" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9265877Z [36;1massert "B62_DEPLOY_LIVE_PREREQ=VERIFIED" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9266234Z [36;1massert "deploy-prereq" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9266612Z [36;1massert "B62_D1_MIGRATION_008_SCHEMA=EXACT" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9267089Z [36;1m# #4522: the additive receipt `released_at` column is a hard predeploy[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9267580Z [36;1m# prerequisite for the merged P01 code, probed schema-only before the[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9267978Z [36;1m# upload/activate mutation.[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9268300Z [36;1massert "B62_D1_MIGRATION_040_SCHEMA=EXACT" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9268690Z [36;1massert "MIGRATION_040_PREDEPLOY=EXACT" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9269055Z [36;1massert "RELEASED_AT_PRESENT=PASS" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9269425Z [36;1massert "b62_d1_migration_040_schema.py" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9269880Z [36;1massert "PRAGMA table_info(claw_web_xlsx_p01_decision_receipts)" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9270320Z [36;1massert "APPLICATION_ROW_READ=0" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9270839Z [36;1massert "STATE_ADOPTION_REQUIRED" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9271179Z [36;1massert "STATE_ADOPTION_PERFORMED" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9271733Z [36;1massert "STATE_ADOPTION_UPLOADS" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9272115Z [36;1massert "last updated via the script API" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9272565Z [36;1massert "Aborting the upload operation because of conflicts" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9273090Z [36;1m[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9273397Z [36;1m# #3523: preserve single-version/100%-traffic canonical active evidence.[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9273896Z [36;1m# Strict readonly still proves latest==active; new exact-main deploys[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9274412Z [36;1m# accept a pre-existing unactivated upload but pin both IDs before mutation.[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9275062Z [36;1mreadonly_job = workflow.split("\n  cloudflare-readonly:", 1)[1].split("\n  deploy-production-code:", 1)[0][0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9275707Z [36;1massert "cloudflare_served_version_cli.py resolve-active" in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9276243Z [36;1massert ".result.deployments[0].versions[0].version_id" not in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9276774Z [36;1massert ".result.deployments[0].versions[0].percentage" not in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9277274Z [36;1m# #2898: the latest==active equality authority is the canonical lineage[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9277781Z [36;1m# primitive. It publishes LATEST_VERSION_EQUALS_ACTIVE_VERSION itself and[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9278263Z [36;1m# fails closed by exit code, so the workflow must not restate the[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9278750Z [36;1m# comparison (INLINE_LATEST_ACTIVE_TEST=0) nor manufacture the PASS marker[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9279252Z [36;1m# (SELF_ASSERTED_PASS_MARKER=0), and the primitive must run before the[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9279675Z [36;1m# ACTIVE_VERSION publication it evidences.[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9280111Z [36;1massert 'test "${latest}" = "${active}"' not in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9280586Z [36;1massert "cloudflare_served_version_lineage.py" in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9281033Z [36;1massert "b62_code_deploy_served_preflight.py" in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9281766Z [36;1massert 'if [ "$' + '{{ inputs.mode }}' + '" = "deploy_production_code" ]; then' in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9282353Z [36;1massert 'echo "latest_version=${latest}" >> "${GITHUB_OUTPUT}"' in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9282896Z [36;1massert 'echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION' not in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9283408Z [36;1massert 'echo "active_version=${active}" >> "${GITHUB_OUTPUT}"' in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9283880Z [36;1massert 'echo "ACTIVE_VERSION=${active}"' in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9284512Z [36;1massert readonly_job.index("cloudflare_served_version_lineage.py") < readonly_job.index('echo "ACTIVE_VERSION=${active}"')[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9285150Z [36;1massert "B62_CODE_DEPLOY_READONLY=PASS" in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9285480Z [36;1m[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9285788Z [36;1m# #2898 blocker fix: the readonly job runs the checked-in canonical lineage[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9286313Z [36;1m# primitive, and a job workspace is not shared between jobs, so the job must[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9286847Z [36;1m# check out the exact dispatch source read-only, before it invokes it.[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9287277Z [36;1massert "actions/checkout@v4" in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9287661Z [36;1massert "ref: $" + "{{ inputs.target_sha }}" in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9288080Z [36;1massert "persist-credentials: false" in readonly_job[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9288539Z [36;1massert readonly_job.index("actions/checkout@v4") < readonly_job.index([0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9288966Z [36;1m    "cloudflare_served_version_lineage.py"[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9289251Z [36;1m)[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9289428Z [36;1m[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9302120Z [36;1m# The canonical lineage primitive is a shared authority: a change to it must[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9302715Z [36;1m# retrigger this consumer gate's natural PR CI.[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9303236Z [36;1mtrigger_paths = workflow.split("on:", 1)[1].split("workflow_dispatch:", 1)[0][0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9303809Z [36;1massert ".github/scripts/cloudflare_served_version_cli.py" in trigger_paths[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9304591Z [36;1massert ".github/scripts/cloudflare_served_version_lineage.py" in trigger_paths[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9305017Z [36;1m[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9305277Z [36;1massert "unsupported live binding type" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9305642Z [36;1massert "SECRET_VALUES_READ=0" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9305980Z [36;1massert "SECRET_VALUES_EMITTED=0" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9306320Z [36;1massert "duplicate binding names" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9306629Z [36;1massert "drift" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9306925Z [36;1massert "runtime mode is mock" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9307236Z [36;1massert "tomllib" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9307537Z [36;1massert "deploy does not inject" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9307948Z [36;1massert "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9308420Z [36;1massert "DEPLOY_CONFIG_MUTATION_ZERO=PASS" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9308804Z [36;1massert "verify_mutation_zero" in generator[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9309089Z [36;1m[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9309300Z [36;1massert "bucket_name" in binding_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9309616Z [36;1massert "jurisdiction" in binding_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9309925Z [36;1massert "environment" in binding_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9310268Z [36;1massert "unsupported binding type" in binding_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9310647Z [36;1massert "duplicate binding names" in binding_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9311005Z [36;1massert "SECRET_VALUES_READ=0" in binding_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9311307Z [36;1m[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9311935Z [36;1massert "python .github/scripts/b62_served_version_secret_guard.py capture" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9312574Z [36;1massert "python .github/scripts/b62_served_version_secret_guard.py verify" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9313103Z [36;1massert "b62-served-secret-set-before.json" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9313553Z [36;1massert "PREDEPLOY_SERVED_VERSION_IDENTIFIED=PASS" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9314011Z [36;1massert "POSTDEPLOY_SERVED_VERSION_IDENTIFIED=PASS" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9314432Z [36;1massert "FULL_SECRET_SET_EQUALITY=PASS" in workflow[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9314887Z [36;1mcapture_pos = workflow.rindex("b62_served_version_secret_guard.py capture")[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9315498Z [36;1mdeploy_pos = workflow.rindex("- name: Deploy production code preserving the full binding set")[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9316091Z [36;1mverify_pos = workflow.rindex("b62_served_version_secret_guard.py verify")[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9316536Z [36;1massert capture_pos < deploy_pos < verify_pos[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9316911Z [36;1massert "ambiguous active deployment" in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9317294Z [36;1massert "duplicate binding names" in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9317627Z [36;1massert "type drift" in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9317975Z [36;1massert "missing pre-existing secret" in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9318353Z [36;1massert "PADIEM_CHAT_QUOTA_SALT" in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9318705Z [36;1massert "P01_ENGINE_CREDENTIAL" in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9319069Z [36;1massert "served version id is missing" in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9319439Z [36;1massert "SECRET_VALUES_READ=0" in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9319779Z [36;1massert "SECRET_VALUES_EMITTED=0" in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9320170Z [36;1massert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9320670Z [36;1massert '"text"' not in served_guard[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9321007Z [36;1mprint("B62_SERVED_VERSION_SECRET_GUARD_SOURCE=PASS")[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9321378Z [36;1mprint("B62_PRODUCTION_CODE_GATE_SOURCE=PASS")[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9321903Z [36;1mprint("PRODUCTION_MUTATION=0")[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9322167Z [36;1mPY[0m
+source-contract	Gate source contract	2026-10-13T07:24:19.9383172Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+source-contract	Gate source contract	2026-10-13T07:24:19.9383660Z env:
+source-contract	Gate source contract	2026-10-13T07:24:19.9383875Z   B62_WORKER: padiem-chat
+source-contract	Gate source contract	2026-10-13T07:24:19.9384160Z   IDENTITY_WORKER: padiem-control-plane-identity
+source-contract	Gate source contract	2026-10-13T07:24:19.9384494Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+source-contract	Gate source contract	2026-10-13T07:24:19.9384807Z   B14_WORKER: ai-revenue-korean-ai-platform
+source-contract	Gate source contract	2026-10-13T07:24:19.9385137Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+source-contract	Gate source contract	2026-10-13T07:24:19.9385453Z   P01_ENGINE_WORKER: padiem-ai-engine
+source-contract	Gate source contract	2026-10-13T07:24:19.9385753Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+source-contract	Gate source contract	2026-10-13T07:24:19.9386048Z   D1_BINDING: PADIEM_CHAT_DB
+source-contract	Gate source contract	2026-10-13T07:24:19.9386333Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+source-contract	Gate source contract	2026-10-13T07:24:19.9386699Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Gate source contract	2026-10-13T07:24:19.9387124Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+source-contract	Gate source contract	2026-10-13T07:24:19.9387553Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Gate source contract	2026-10-13T07:24:19.9387930Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Gate source contract	2026-10-13T07:24:19.9388315Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+source-contract	Gate source contract	2026-10-13T07:24:19.9388695Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+source-contract	Gate source contract	2026-10-13T07:24:19.9389021Z ##[endgroup]
+source-contract	Gate source contract	2026-10-13T07:24:19.9684514Z B62_SERVED_VERSION_SECRET_GUARD_SOURCE=PASS
+source-contract	Gate source contract	2026-10-13T07:24:19.9685080Z B62_PRODUCTION_CODE_GATE_SOURCE=PASS
+source-contract	Gate source contract	2026-10-13T07:24:19.9685560Z PRODUCTION_MUTATION=0
+source-contract	Post Run actions/setup-python@v5	﻿2026-10-13T07:24:19.9814271Z Post job cleanup.
+source-contract	Post Run actions/setup-python@v5	2026-10-13T07:24:20.0970233Z (node:2409) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+source-contract	Post Run actions/setup-python@v5	2026-10-13T07:24:20.0970993Z (Use `node --trace-deprecation ...` to show where the warning was created)
+source-contract	Post Checkout exact dispatch SHA	﻿2026-10-13T07:24:20.1145335Z Post job cleanup.
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2042413Z [command]/usr/bin/git version
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2084570Z git version 2.55.0
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2121822Z Temporarily overriding HOME='/home/runner/work/_temp/1c2be713-7d26-41bc-a154-48319a2c60c8' before making global git config changes
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2123264Z Adding repository directory to the temporary git global config as a safe directory
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2126845Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ai-revenue-lab/ai-revenue-lab
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2167091Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2204627Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2468541Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2501271Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2757182Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+source-contract	Post Checkout exact dispatch SHA	2026-10-13T07:24:20.2793486Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+source-contract	Complete job	﻿2026-10-13T07:24:20.3189048Z Cleaning up orphan processes
+source-contract	Complete job	2026-10-13T07:24:20.3478764Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+cloudflare-readonly	Set up job	﻿2026-10-13T07:24:24.5076371Z Current runner version: '2.337.0'
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5104855Z ##[group]Runner Image Provisioner
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5105902Z Hosted Compute Agent
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5106637Z Version: 20261002.596
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5107312Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5108185Z Build Date: 2026-10-02T22:28:27Z
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5108945Z Worker ID: {a5684283-9d16-4029-88b7-f6665bcd6b21}
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5109683Z Region: westcentralus
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5110556Z Cloud: Azure
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5111150Z ##[endgroup]
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5112947Z ##[group]Operating System
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5113641Z Ubuntu
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5114194Z 24.04.5
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5114827Z LTS
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5115433Z ##[endgroup]
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5116108Z ##[group]Runner Image
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5116767Z Image: ubuntu-24.04
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5117363Z Version: 20261004.327.1
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5118605Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5121043Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5122107Z ##[endgroup]
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5123308Z ##[group]GITHUB_TOKEN Permissions
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5125599Z Contents: read
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5126343Z Metadata: read
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5126972Z ##[endgroup]
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5129195Z Secret source: Actions
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5130608Z Cache mode: write
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5131643Z Prepare workflow directory
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5707212Z Prepare all required actions
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.5757549Z Getting action download info
+cloudflare-readonly	Set up job	2026-10-13T07:24:24.8600449Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+cloudflare-readonly	Set up job	2026-10-13T07:24:25.0255000Z Complete job name: cloudflare-readonly
+cloudflare-readonly	Checkout exact dispatch source	﻿2026-10-13T07:24:25.1061486Z ##[group]Run actions/checkout@v4
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1062443Z with:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1062944Z   ref: 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1063578Z   fetch-depth: 1
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1064084Z   persist-credentials: false
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1064646Z   repository: skerishKang/ai-revenue-lab
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1069659Z   token: ***
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1070367Z   ssh-strict: true
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1071013Z   ssh-user: git
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1071539Z   clean: true
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1072016Z   sparse-checkout-cone-mode: true
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1072572Z   fetch-tags: false
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1073036Z   show-progress: true
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1073522Z   lfs: false
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1073961Z   submodules: false
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1074436Z   set-safe-directory: true
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1074971Z   allow-unsafe-pr-checkout: false
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1075873Z env:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1076318Z   B62_WORKER: padiem-chat
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1077042Z   IDENTITY_WORKER: padiem-control-plane-identity
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1077873Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1078524Z   B14_WORKER: ai-revenue-korean-ai-platform
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1079182Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1079832Z   P01_ENGINE_WORKER: padiem-ai-engine
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1080598Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1081205Z   D1_BINDING: PADIEM_CHAT_DB
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1081791Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1082700Z   CLOUDFLARE_API_TOKEN: ***
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1083318Z   CLOUDFLARE_ACCOUNT_ID: ***
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.1083823Z ##[endgroup]
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2166529Z Syncing repository: skerishKang/ai-revenue-lab
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2169169Z ##[group]Getting Git version info
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2170710Z Working directory is '/home/runner/work/ai-revenue-lab/ai-revenue-lab'
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2172613Z [command]/usr/bin/git version
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2226643Z git version 2.55.0
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2247849Z ##[endgroup]
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2262915Z Temporarily overriding HOME='/home/runner/work/_temp/9395aa1e-3b07-4f1d-a889-aee681b46c4c' before making global git config changes
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2265702Z Adding repository directory to the temporary git global config as a safe directory
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2269224Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ai-revenue-lab/ai-revenue-lab
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2341340Z Deleting the contents of '/home/runner/work/ai-revenue-lab/ai-revenue-lab'
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2343357Z ##[group]Initializing the repository
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2344233Z [command]/usr/bin/git init /home/runner/work/ai-revenue-lab/ai-revenue-lab
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2445874Z hint: Using 'master' as the name for the initial branch. This default branch name
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2447202Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2448163Z hint: to use in all of your new repositories, which will suppress this warning,
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2448993Z hint: call:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2449426Z hint:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2449982Z hint: 	git config --global init.defaultBranch <name>
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2450887Z hint:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2451494Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2452442Z hint: 'development'. The just-created branch can be renamed via this command:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2453185Z hint:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2453638Z hint: 	git branch -m <name>
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2454123Z hint:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2454766Z hint: Disable this message with "git config set advice.defaultBranchName false"
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2461105Z Initialized empty Git repository in /home/runner/work/ai-revenue-lab/ai-revenue-lab/.git/
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2471425Z [command]/usr/bin/git remote add origin https://github.com/skerishKang/ai-revenue-lab
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2524272Z ##[endgroup]
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2525496Z ##[group]Disabling automatic garbage collection
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2529797Z [command]/usr/bin/git config --local gc.auto 0
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2566449Z ##[endgroup]
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2567274Z ##[group]Setting up auth
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2575940Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.2613968Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.3009187Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.3056239Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.3317498Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.3358625Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.3608212Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.3652591Z ##[endgroup]
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.3653839Z ##[group]Fetching the repository
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:25.3663280Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:28.9905035Z From https://github.com/skerishKang/ai-revenue-lab
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:28.9907383Z  * branch            2235754e14f546f1e31af16484db66b2c9b83235 -> FETCH_HEAD
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:28.9912412Z ##[endgroup]
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:28.9914377Z ##[group]Determining the checkout info
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:28.9916544Z ##[endgroup]
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:28.9919781Z [command]/usr/bin/git sparse-checkout disable
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:28.9979325Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.0017020Z ##[group]Checking out the ref
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.0023492Z [command]/usr/bin/git checkout --progress --force 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7183023Z Note: switching to '2235754e14f546f1e31af16484db66b2c9b83235'.
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7184553Z 
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7185293Z You are in 'detached HEAD' state. You can look around, make experimental
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7185983Z changes and commit them, and you can discard any commits you make in this
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7186571Z state without impacting any branches by switching back to a branch.
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7186923Z 
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7187178Z If you want to create a new branch to retain commits you create, you may
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7187719Z do so (now or later) by using -c with the switch command. Example:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7188038Z 
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7188196Z   git switch -c <new-branch-name>
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7188418Z 
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7188571Z Or undo this operation with:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7188860Z 
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7188989Z   git switch -
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7189225Z 
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7189553Z Turn off this advice by setting config variable advice.detachedHead to false
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7189935Z 
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7190415Z HEAD is now at 2235754 docs(ops): B62 single-owner release guardrails (#4553)
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7204491Z ##[endgroup]
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7257937Z [command]/usr/bin/git log -1 --format=%H
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7288782Z 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7298782Z ##[group]Removing auth
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7302886Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7340028Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7598526Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7631699Z http.https://github.com/.extraheader
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7638928Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7679505Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7936178Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.7972151Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+cloudflare-readonly	Checkout exact dispatch source	2026-10-13T07:24:29.8227012Z ##[endgroup]
+cloudflare-readonly	Read-only deployed state audit	﻿2026-10-13T07:24:29.8472126Z ##[group]Run set -euo pipefail
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8472774Z [36;1mset -euo pipefail[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8473139Z [36;1mtest -n "${CLOUDFLARE_API_TOKEN}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8473531Z [36;1mtest -n "${CLOUDFLARE_ACCOUNT_ID}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8474416Z [36;1mauth=(-H "Authorization: ***" -H "Content-Type: application/json")[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8475177Z [36;1mapi="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8475754Z [36;1m[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8476090Z [36;1msettings="${RUNNER_TEMP}/b62-settings-readonly.json"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8476929Z [36;1mbash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/settings" "${settings}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8477672Z [36;1mjq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8478347Z [36;1m[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8478707Z [36;1m# #4194: live override may retain 20s although source default is[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8479286Z [36;1m# 600s. This is read-only; warn without blocking unrelated releases[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8479811Z [36;1m# or silently rewriting an Owner-authoritative production binding.[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8480527Z [36;1mpython3 .github/scripts/b62_stream_model_timeout_readback.py \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8480967Z [36;1m  --settings "${settings}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8481525Z [36;1m[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8481868Z [36;1mdeployments="${RUNNER_TEMP}/b62-deployments-readonly.json"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8482477Z [36;1mbash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/deployments" "${deployments}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8483346Z [36;1mactive="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8483975Z [36;1mtest -n "${active}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8484274Z [36;1m[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8484601Z [36;1mversions="${RUNNER_TEMP}/b62-versions-readonly.json"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8485246Z [36;1mbash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions?page=1&per_page=1" "${versions}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8485887Z [36;1mlatest="$(jq -r '.result.items[0].id // empty' "${versions}")"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8486402Z [36;1m# For read-only audit preserve the canonical latest==active guard.[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8486944Z [36;1m# For exact-main NEW code deploy validate both IDs, tolerate an uploaded[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8487510Z [36;1m# undeployed version, then recheck both IDs unchanged before mutation.[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8488058Z [36;1mif [ "cloudflare_readonly" = "deploy_production_code" ]; then[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8488580Z [36;1m  # New exact-main code deploys may supersede an unactivated upload.[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8489102Z [36;1m  # Validate both IDs, then lock both again before mutation below.[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8489617Z [36;1m  python3 .github/scripts/b62_code_deploy_served_preflight.py \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8490049Z [36;1m    --active-version="$active" \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8490656Z [36;1m    --latest-version="$latest"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8490977Z [36;1melse[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8491356Z [36;1m  # Preserve canonical strict lineage for all normal read-only modes.[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8491895Z [36;1m  python3 .github/scripts/cloudflare_served_version_lineage.py \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8492368Z [36;1m    --active-version="${active}" \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8492713Z [36;1m    --latest-version="${latest}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8493028Z [36;1mfi[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8493361Z [36;1mecho "latest_version=${latest}" >> "${GITHUB_OUTPUT}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8493803Z [36;1mecho "active_version=${active}" >> "${GITHUB_OUTPUT}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8494186Z [36;1mecho "ACTIVE_VERSION=${active}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8494499Z [36;1m[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8494883Z [36;1mjq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8495399Z [36;1m  '[.result.bindings[] | select(.name == $name)] as $b |[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8496173Z [36;1m   ($b | length) == 1 and $b[0].type == "service" and $b[0].service == $service' "${settings}" >/dev/null[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8496718Z [36;1mecho "IDENTITY_BINDING=PRESENT_EXPECTED"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8497169Z [36;1mjq -e --arg name "B14_SERVICE" --arg service "${B14_WORKER}" \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8497646Z [36;1m  '[.result.bindings[] | select(.name == $name)] as $b |[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8498108Z [36;1m   ($b | length) == 1 and $b[0].service == $service' "${settings}" >/dev/null[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8498777Z [36;1mjq -e '[.result.bindings[] | select(.type == "d1" and .name == "PADIEM_CHAT_DB")] | length == 1' "${settings}" >/dev/null[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8499540Z [36;1mjq -e '[.result.bindings[] | select(.type == "assets" and .name == "ASSETS")] | length == 1' "${settings}" >/dev/null[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8500575Z [36;1mjq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | .name] | length == (unique | length)' "${settings}" >/dev/null[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8501160Z [36;1m[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8501527Z [36;1mpublic_state="$(python - "${settings}" "${B62_PUBLIC_BASE_URL}" <<'PY'[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8501957Z [36;1mimport json[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8502235Z [36;1mimport sys[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8502497Z [36;1m[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8503054Z [36;1mbindings = json.load(open(sys.argv[1], encoding="utf-8"))["result"]["bindings"][0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8503700Z [36;1mcurrent = [b.get("text") for b in bindings if b.get("name") == "PADIEM_CHAT_PUBLIC_BASE_URL"][0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8504183Z [36;1mif not current:[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8504487Z [36;1m    print("absent")[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8504809Z [36;1melif current == [sys.argv[2]]:[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8505238Z [36;1m    print("expected")[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8505535Z [36;1melse:[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8505808Z [36;1m    print("drift")[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8506103Z [36;1mPY[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8506370Z [36;1m)"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8506727Z [36;1mecho "public_base_url_state=${public_state}" >> "${GITHUB_OUTPUT}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8507239Z [36;1mecho "PADIEM_CHAT_PUBLIC_BASE_URL_STATE=${public_state}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8507660Z [36;1mtest "${public_state}" = "expected"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8507987Z [36;1m[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8508328Z [36;1m# An absent Custom Domain in the generated wrangler config made[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8508860Z [36;1m# strict upload protection must never silently detach chat.padiem.net.[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8509454Z [36;1mdomain_before="${RUNNER_TEMP}/b62-custom-domain-before.json"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8509960Z [36;1mbash .github/scripts/b62_cloudflare_504_readonly_get.sh \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8510943Z [36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains?hostname=chat.padiem.net" \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8511577Z [36;1m  "${domain_before}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8511986Z [36;1mjq -e --arg host "chat.padiem.net" --arg service "${B62_WORKER}" \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8512425Z [36;1m  '.success == true and[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8512800Z [36;1m   ([.result[] | select(.hostname == $host)] | length == 1) and[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8513570Z [36;1m   ([.result[] | select(.hostname == $host and .service == $service and .zone_name == "padiem.net" and .enabled == true and .previews_enabled == false)] | length == 1)' \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8514273Z [36;1m  "${domain_before}" >/dev/null[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8514658Z [36;1mecho "B62_CANONICAL_CUSTOM_DOMAIN=ATTACHED_EXPECTED"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8515033Z [36;1m[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8515372Z [36;1msubdomain="${RUNNER_TEMP}/b62-subdomain-readonly.json"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8515968Z [36;1msubdomain_status="$(curl -sS "${auth[@]}" "${api}/subdomain" -o "${subdomain}" -w '%{http_code}' || true)"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8516609Z [36;1mworkers_health="${RUNNER_TEMP}/b62-workers-dev-health-readonly.json"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8517710Z [36;1mworkers_status="$(curl -sS --connect-timeout 8 --max-time 15 "https://${B62_WORKER}.charliekant.workers.dev/health" -o "${workers_health}" -w '%{http_code}' || true)"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8518512Z [36;1mcustom_health="${RUNNER_TEMP}/b62-custom-health-readonly.json"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8519224Z [36;1mcustom_status="$(curl -sS --connect-timeout 8 --max-time 15 "${B62_PUBLIC_BASE_URL}/health" -o "${custom_health}" -w '%{http_code}' || true)"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8519921Z [36;1mpython .github/scripts/b62_public_origin_504_guard.py \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8520592Z [36;1m  --metadata-status "${subdomain_status}" --metadata-body "${subdomain}" \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8521177Z [36;1m  --workers-status "${workers_status}" --workers-body "${workers_health}" \[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8521722Z [36;1m  --custom-status "${custom_status}" --custom-body "${custom_health}"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8522191Z [36;1mecho "B62_PUBLIC_ORIGIN=CHAT_PADIEM_NET"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8522527Z [36;1m[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8522832Z [36;1mecho "B62_CODE_DEPLOY_READONLY=PASS"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8523190Z [36;1mecho "PRODUCTION_MUTATION=0"[0m
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8776372Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8776925Z env:
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8777221Z   B62_WORKER: padiem-chat
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8777578Z   IDENTITY_WORKER: padiem-control-plane-identity
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8778238Z   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8778630Z   B14_WORKER: ai-revenue-korean-ai-platform
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8779062Z   B62_PUBLIC_BASE_URL: https://chat.padiem.net
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8779434Z   P01_ENGINE_WORKER: padiem-ai-engine
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8779797Z   WORKSPACE_R2_BUCKET: padiem-workspace-files
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8780355Z   D1_BINDING: PADIEM_CHAT_DB
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8780701Z   TARGET_SHA: 2235754e14f546f1e31af16484db66b2c9b83235
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8781446Z   CLOUDFLARE_API_TOKEN: ***
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8781833Z   CLOUDFLARE_ACCOUNT_ID: ***
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:29.8782159Z ##[endgroup]
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.2563942Z CF_B62_READONLY_GET=HTTP_200
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.2926001Z B62_STREAM_MODEL_TIMEOUT_PARITY=ALIGNED_600
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.2926669Z MODEL_TIMEOUT_SOURCE_DEFAULT_SECONDS=600
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.5013408Z B62_TIMEOUT_PRODUCTION_MUTATION=0
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.5014002Z CF_B62_READONLY_GET=HTTP_200
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.7926016Z CF_B62_READONLY_GET=HTTP_200
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8394437Z LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8395227Z SERVED_VERSION_LINEAGE_OUTCOME=PASS
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8395680Z SERVED_VERSION_LINEAGE_REASON=equal
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8396304Z SERVED_VERSION_LINEAGE_ACTIVE_VERSION=e8b432fc-a18c-40ee-8e2e-d39ef7a2fff5
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8397074Z SERVED_VERSION_LINEAGE_LATEST_VERSION=e8b432fc-a18c-40ee-8e2e-d39ef7a2fff5
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8397648Z SERVED_VERSION_LINEAGE_HTTP_CALLS=0
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8398076Z SERVED_VERSION_LINEAGE_ENVELOPE_FETCH=0
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8398529Z SERVED_VERSION_LINEAGE_MUTATION=0
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8399021Z SERVED_VERSION_LINEAGE_SECRET_READ=0
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8473973Z ACTIVE_VERSION=e8b432fc-a18c-40ee-8e2e-d39ef7a2fff5
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8508169Z IDENTITY_BINDING=PRESENT_EXPECTED
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:30.8873457Z PADIEM_CHAT_PUBLIC_BASE_URL_STATE=expected
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:31.0902453Z CF_B62_READONLY_GET=HTTP_200
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:31.0975207Z B62_CANONICAL_CUSTOM_DOMAIN=ATTACHED_EXPECTED
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:33.3057781Z B62_PUBLIC_ORIGIN_PROOF=PASS
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:33.3058555Z B62_PUBLIC_ORIGIN_PROOF_MODE=CONTROL_AND_DATA_PLANE
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:33.3059069Z SECRET_VALUES_OUTPUT=0
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:33.3059437Z PRODUCTION_MUTATION=0
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:33.3109987Z B62_PUBLIC_ORIGIN=CHAT_PADIEM_NET
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:33.3110725Z B62_CODE_DEPLOY_READONLY=PASS
+cloudflare-readonly	Read-only deployed state audit	2026-10-13T07:24:33.3111118Z PRODUCTION_MUTATION=0
+cloudflare-readonly	Post Checkout exact dispatch source	﻿2026-10-13T07:24:33.3268999Z Post job cleanup.
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4159525Z [command]/usr/bin/git version
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4203979Z git version 2.55.0
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4248631Z Temporarily overriding HOME='/home/runner/work/_temp/c5595777-e87b-4543-a3e2-ab300d40afb6' before making global git config changes
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4249988Z Adding repository directory to the temporary git global config as a safe directory
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4257595Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ai-revenue-lab/ai-revenue-lab
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4300598Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4338909Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4614629Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4661998Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4944600Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+cloudflare-readonly	Post Checkout exact dispatch source	2026-10-13T07:24:33.4987204Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+cloudflare-readonly	Complete job	﻿2026-10-13T07:24:33.5414071Z Evaluate and set job outputs
+cloudflare-readonly	Complete job	2026-10-13T07:24:33.5421582Z Set output 'active_version'
+cloudflare-readonly	Complete job	2026-10-13T07:24:33.5423349Z Set output 'latest_version'
+cloudflare-readonly	Complete job	2026-10-13T07:24:33.5423781Z Set output 'public_base_url_state'
+cloudflare-readonly	Complete job	2026-10-13T07:24:33.5424487Z Cleaning up orphan processes
+cloudflare-readonly	Complete job	2026-10-13T07:24:33.5738729Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

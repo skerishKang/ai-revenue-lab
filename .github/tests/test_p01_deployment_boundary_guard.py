@@ -23,6 +23,31 @@ def test_p01_deployment_boundary_guard_reports_no_live_repo_deployments() -> Non
     assert result["external_cloudflare_pages_preview"] == "separate_platform_state_not_repo_owned_production"
 
 
+def test_sparse_checkout_contains_every_tracked_workflow() -> None:
+    """Do not let sparse checkout silently remove a workflow from security audit.
+
+    The Git HEAD tree includes even skip-worktree files, so this is independent
+    of which files actions/checkout materialized in the worktree.
+    """
+    import subprocess
+
+    root = Path(__file__).resolve().parents[2]
+    paths = subprocess.check_output(
+        ["git", "ls-tree", "-r", "--name-only", "HEAD", ".github/workflows"],
+        cwd=root, text=True,
+    ).splitlines()
+    workflows = [
+        p for p in paths
+        if p.endswith((".yml", ".yaml"))
+    ]
+    assert workflows, "P01 tracked workflow audit set must be nonempty"
+    missing = [p for p in workflows if not (root / p).is_file()]
+    assert not missing, f"P01 sparse checkout lost workflow files: {missing}"
+
+    guard = _load_guard()
+    assert guard.audit()["audited_workflow_count"] >= len(workflows)
+
+
 def test_guard_keeps_dry_run_bundle_checks_allowed() -> None:
     guard = _load_guard()
 
@@ -41,6 +66,7 @@ def test_guard_blocks_live_deploy_commands_in_non_release_context() -> None:
 
 def main() -> int:
     test_p01_deployment_boundary_guard_reports_no_live_repo_deployments()
+    test_sparse_checkout_contains_every_tracked_workflow()
     test_guard_keeps_dry_run_bundle_checks_allowed()
     test_guard_blocks_live_deploy_commands_in_non_release_context()
     print("P01_DEPLOYMENT_BOUNDARY_GUARD_TESTS=PASS")

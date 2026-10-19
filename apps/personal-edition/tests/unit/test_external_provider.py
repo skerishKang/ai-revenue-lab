@@ -1119,3 +1119,14 @@ class TestCompositeClassification:
 
     def test_unknown_code_with_unrelated_param_is_provider_error(self):
         assert self._classify("custom_error", "temperature") == ProviderErrorCategory.PROVIDER_ERROR
+
+
+def test_personal_edition_model_defaults_use_600s_request_budget() -> None:
+    """Both configuration and direct adapter must avoid the former 120s cap."""
+    from app.config import Settings
+
+    assert Settings.model_fields["ai_timeout_seconds"].default == 600
+    provider = ExternalProvider(
+        base_url="https://api.example.com/v1", api_key="offline-fake", model="mock"
+    )
+    assert provider._timeout == 600

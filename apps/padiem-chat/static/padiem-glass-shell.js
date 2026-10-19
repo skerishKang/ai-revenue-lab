@@ -23,7 +23,7 @@
   ];
   var ASSEMBLE_START=.02, ASSEMBLE_SPAN=.80;  /* source: ease(clamp((p-.08)/.78)) */
   var DISSOLVE_AT=.90, DISSOLVE_SPAN=.10;     /* source: fragments dissolve ~89% */
-  var RATE_UP=.024, RATE_DOWN=.018;          /* exponential settle: ~2.1s assemble / ~2.8s peel at 1× */
+  var RATE_UP=.028, RATE_DOWN=.0170, RATE_DOWN_FINISH=.0205; /* gentle early peel; timely finish/reassembly */
 
   var field=null, portal=null, veinLayer=null;
   var frags=[];
@@ -267,7 +267,9 @@
        * same wall-clock speed. */
       var dt=lastT?Math.max(0,Math.min(100,now-lastT)):16.7;
       lastT=now;
-      var base=(t>progress?RATE_UP:RATE_DOWN)*speedMul();
+      /* Protect the first reveal frames without extending the clean tail. */
+      var peelRate=progress>.65?RATE_DOWN:RATE_DOWN_FINISH;
+      var base=(t>progress?RATE_UP:peelRate)*speedMul();
       var rate=1-Math.pow(1-Math.min(.95,base),dt/16.7);
       progress+=(t-progress)*rate;
       if(Math.abs(t-progress)<.001) progress=t;

@@ -63,6 +63,51 @@ health, but it cannot make the shell claim a paired, reachable device.
 correlation reference. Values are never returned to the renderer, no credential
 is stored, and no session is minted. #3080 owns the canonical contract.
 
+## Workbench shell (#3598, first slice)
+
+The renderer is a three-pane desktop workbench derived from the ZCode
+information architecture. This is an IA adaptation, **not** a pixel copy and
+**not** a ZCode authority import: Padiem identity, P01 approval, the Local
+Runner, the Execution Broker, Drive/artifact authority, connector authority and
+the existing account/workspace authority are unchanged.
+
+```text
+┌─ top shell ─ current task title · workspace/project context · Settings ─────┐
+│ Navigation  │  Claw task workspace            │  Tools / status             │
+│ New task    │  existing continuation          │  Connection                 │
+│ Search      │  canonical conversation         │  Local Runner               │
+│ Automations │  tool/run + result cards        │  Progress / Approvals       │
+│ Plugins     │                                 │  Artifacts                  │
+│ Projects    │                                 │  Git (placeholder)          │
+│ Sessions    │                                 │                             │
+├─────────────┴─────────────────────────────────┴─────────────────────────────┤
+│ composer: task input · execution/computer-access status · run action        │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+Rules this shell holds to:
+
+- **No fabricated capability.** `New task`, `Automations`, the plugin
+  marketplace, task submission and Git have no backend authority in this slice.
+  They render as visibly non-executable controls (`disabled` +
+  `aria-disabled` + `data-unsupported`) with an honest reason — never as
+  working buttons, and never with invented changed files or progress.
+- **Real state only.** Progress / Approvals / Artifacts are counts projected
+  from the canonical run list the shell already holds. An unavailable canonical
+  source is stated in words; it is never rendered as a zero.
+- **No model/provider selector.** `SUCCESSOR_MODEL_SELECTED=NO`, so the composer
+  shows provider-neutral execution facts (local execution, computer access)
+  only. `MODEL_SELECTOR_ACTIVATION=0`.
+- **Nothing is removed.** Workspace selection, connection/re-check,
+  readiness/pause and Local Runner state are re-placed into the new IA, not
+  deleted.
+- **#3591 search is composed, not reimplemented.** The Search/Projects
+  navigation opens the existing #3583 bounded search surface; the search and
+  filesystem authority stay in the main process.
+- **Responsive.** At narrow widths the navigation rail collapses to an icon
+  strip and the tools rail stacks under the centre, so the centre workspace
+  stays primary.
+
 ## Commands
 
 ```bash

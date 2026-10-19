@@ -3,8 +3,15 @@ from __future__ import annotations
 import asyncio
 from dataclasses import replace
 import json
+from unittest import mock
 import unittest
 
+from padiem_ai_core import (
+    AgentProfile,
+    ExecutionContext,
+    ExecutionRequest,
+    OrchestrationRequest,
+)
 from padiem_ai_core.b14_execution import B14RouteMetadata
 from padiem_ai_core.contracts import RunMetadata, RunStatus
 from padiem_ai_core.execution_runtime import ExecutionResult
@@ -35,12 +42,29 @@ from kagent.p01_adapter import (
     P01_FAILURE_DETAIL_AUTHORIZATION,
     P01_FAILURE_DETAIL_CONTRACT,
     P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
+    P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+    P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+    P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+    P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+    P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+    P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+    P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
     P01_FAILURE_DETAIL_TRANSPORT,
 )
 from kagent.p01_approval_pause_transport import P01PausedWireResult
-from kagent.p01_orchestration_client import P01EngineOrchestrationClient
+from kagent.p01_orchestration_client import (
+    P01EngineOrchestrationClient,
+    _engine_failure_detail,
+)
+import kagent.p01_orchestration_client as p01_orchestration_client_module
 from kagent.runs import ClawRun
 
+
+# #3767: this module used to skip its whole execution port while the canonical
+# declaration held Plus. It now runs against the bounded test-only synthetic Plus
+# route (model_route_fixture); the transports are fakes, so no provider is called.
+from model_route_fixture import SyntheticPlusRouteTestCase  # noqa: E402
 
 _FAKE_CREDENTIAL = "b54-test-credential-" + ("0" * 32)
 _COMPLETED_RUN_ID = "orch_test_001"
@@ -183,6 +207,24 @@ def _paused_public_result(request) -> dict:
     return public
 
 
+def _pc_query_request(request):
+    """The exact Claw PC drive query request the Chat lane builds (#5015)."""
+    from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
+
+    return replace(
+        request,
+        subject_id="sub_" + "a" * 32,
+        agent_plan=AgentPlan(
+            agent_id="agent:padiem:claw-pc-query@1",
+            steps=(AgentPlanStep(
+                step_id="query_drives",
+                objective="Query verified PC filesystem drives",
+                tool_id="claw.pc.query_drives",
+            ),),
+        ),
+    )
+
+
 def _ok_transport(public: dict) -> FakeEngineTransport:
     body = json.dumps({"ok": True, "orchestration": public}, ensure_ascii=False)
     return FakeEngineTransport(EngineTransportResponse(status=200, body=body.encode("utf-8")))
@@ -197,7 +239,7 @@ def _client(transport: FakeEngineTransport) -> PadiemAiEngineClient:
     )
 
 
-class P01EngineOrchestrationClientTests(unittest.TestCase):
+class P01EngineOrchestrationClientTests(SyntheticPlusRouteTestCase):
     def run_port(self, transport: FakeEngineTransport, request):
         port = P01EngineOrchestrationClient(_client(transport))
         return asyncio.run(port.run(request))
@@ -238,9 +280,14 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         self.assertEqual(payload["app_id"], P01_APP_ID)
         self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
         # #2800: derived from the shared declaration, not restated as a model literal.
+        # #3382/#3566: the port pins the single-dispatch retry budget on the wire.
         self.assertEqual(
             payload["agent"]["model_policy"],
-            {"model": active_route_for(ProductTierLabel.PLUS).model_id},
+            {
+                "model": active_route_for(ProductTierLabel.PLUS).model_id,
+                "max_retries": 0,
+                "product_tier": "plus",
+            },
         )
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
@@ -425,7 +472,35 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError) as ctx:
             self.run_port(transport, request)
         self.assertEqual(ctx.exception.code, "p01_engine_request_failed")
-        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_DOWNSTREAM)
+        # #3767: this assertion predates the provider-specific detail split and
+        # pinned the generic downstream bucket while the test never executed.
+        # ``upstream_rate_limited`` is the provider rate-limit lane, so the
+        # bounded detail is that lane's constant -- and the detail is still
+        # drawn from the closed product vocabulary, never from Engine text.
+        self.assertEqual(
+            ctx.exception.failure_detail,
+            P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+        )
+        self.assertIn(
+            ctx.exception.failure_detail,
+            frozenset(
+                {
+                    P01_FAILURE_DETAIL_AUTHENTICATION,
+                    P01_FAILURE_DETAIL_AUTHORIZATION,
+                    P01_FAILURE_DETAIL_CONTRACT,
+                    P01_FAILURE_DETAIL_DOWNSTREAM,
+                    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
+                    P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+                    P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+                    P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+                    P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+                    P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+                    P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+                    P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+                    P01_FAILURE_DETAIL_TRANSPORT,
+                }
+            ),
+        )
         self.assertNotIn("provider", ctx.exception.safe_message.lower())
         self.assertNotIn("secret", ctx.exception.safe_message.lower())
 
@@ -500,6 +575,53 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         self.assertEqual(ctx.exception.code, "p01_authority_field_unsupported")
         self.assertEqual(transport.requests, [])
 
+    def test_pc_query_plan_is_forwarded_before_engine_dispatch(self) -> None:
+        """#5015: the one-step PC drive query plan must reach the Engine.
+
+        Without it the request is refused as unsupported authority before
+        dispatch, which the Chat live relay can only surface as the bounded
+        ``engine_execution_failed`` error.
+        """
+        _, request = _build_request()
+        pc_query = _pc_query_request(request)
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(
+            _client(transport), allow_subject_identity=True
+        )
+
+        asyncio.run(port.run(pc_query))
+
+        self.assertEqual(len(transport.requests), 1)
+        payload = json.loads(transport.requests[0]["body"])
+        self.assertEqual(payload["subject_id"], "sub_" + "a" * 32)
+        self.assertEqual(
+            payload["agent_plan"]["agent_id"], "agent:padiem:claw-pc-query@1"
+        )
+        self.assertEqual(
+            payload["agent_plan"]["steps"][0]["step_id"], "query_drives"
+        )
+        self.assertEqual(
+            payload["agent_plan"]["steps"][0]["tool_id"], "claw.pc.query_drives"
+        )
+        self.assertNotIn("tool_arguments", payload)
+
+    def test_pc_query_plan_with_unexpected_arguments_is_refused(self) -> None:
+        """Only the exact argument-free plan may widen the wire."""
+        _, request = _build_request()
+        pc_query = replace(
+            _pc_query_request(request),
+            tool_arguments={"query_drives": {}},
+        )
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(
+            _client(transport), allow_subject_identity=True
+        )
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            asyncio.run(port.run(pc_query))
+        self.assertEqual(ctx.exception.code, "p01_authority_field_unsupported")
+        self.assertEqual(transport.requests, [])
+
     def test_idempotency_key_is_refused_before_transport(self) -> None:
         _, request = _build_request()
         replayable = replace(
@@ -556,3 +678,274 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def _hand_built_request(model_policy: dict) -> OrchestrationRequest:
+    """Build a port request without the executable-route-dependent factory.
+
+    The shared product-tier declaration is in successor-pending HOLD on the
+    audited main, so the request is assembled directly from Core contracts;
+    the executable-route set is patched per test.
+    """
+    agent = AgentProfile(
+        id=P01_AGENT_ID,
+        title="Padiem Claw",
+        description="B54 repository task execution consumer",
+        system_instruction=None,
+        task_type="coding",
+        optimize_for="balanced",
+        max_tokens=None,
+        allowed_tools=(),
+        required_capabilities=(),
+        context_policy={},
+        model_policy=model_policy,
+        max_steps=1,
+        output_contract={},
+    )
+    execution_request = ExecutionRequest(
+        agent=agent,
+        messages=({"role": "user", "content": "단일 dispatch 검증"},),
+        session_id=_COMPLETED_RUN_ID,
+        trace_id="trace_single_dispatch",
+    )
+    context = ExecutionContext(trace_id="trace_single_dispatch", timeout_seconds=20.0)
+    return OrchestrationRequest(
+        execution_request=execution_request,
+        context=context,
+        app_id=P01_APP_ID,
+        subject_id=None,
+    )
+
+
+class P01SingleDispatchRetryBudgetTests(unittest.TestCase):
+    """#3382/#3566: the port only accepts the single-dispatch retry budget.
+
+    PROVIDER_CALL_COUNT_MAX=1 / RETRY=0 is enforced at the P01 wire boundary,
+    independent of which model route is currently executable.
+    """
+
+    _EXECUTABLE = frozenset({"test/model"})
+
+    def _run_port(self, model_policy: dict):
+        request = _hand_built_request(model_policy)
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(_client(transport))
+        with mock.patch.object(
+            p01_orchestration_client_module,
+            "PADIEM_EXECUTABLE_MODEL_IDS",
+            self._EXECUTABLE,
+        ):
+            asyncio.run(port.run(request))
+        return transport
+
+    def _refused(self, model_policy: dict):
+        request = _hand_built_request(model_policy)
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(_client(transport))
+        with mock.patch.object(
+            p01_orchestration_client_module,
+            "PADIEM_EXECUTABLE_MODEL_IDS",
+            self._EXECUTABLE,
+        ):
+            with self.assertRaises(P01AdapterError) as ctx:
+                asyncio.run(port.run(request))
+        self.assertEqual(ctx.exception.code, "p01_authority_pinning")
+        self.assertEqual(transport.requests, [])
+
+    def test_owner_explicit_models_use_exact_ids_without_auto_fallback(self) -> None:
+        # Non-tier B14 catalog identities are allowed only with explicit
+        # max_retries=0; B14 remains final catalog/provider authority.
+        for model_id in ("agnes-ai/agnes-3.0-flash", "poolside/laguna-s-2.1"):
+            with self.subTest(model_id=model_id):
+                transport = self._run_port({"model": model_id, "max_retries": 0})
+                self.assertEqual(len(transport.requests), 1)
+                payload = json.loads(transport.requests[0]["body"].decode("utf-8"))
+                self.assertEqual(
+                    payload["agent"]["model_policy"],
+                    {"model": model_id, "max_retries": 0},
+                )
+
+    def test_invalid_explicit_or_automatic_choices_are_rejected(self) -> None:
+        for model_id in ("b14/auto", "padiem-profile/plus-hold", "../bad"):
+            with self.subTest(model_id=model_id):
+                self._refused({"model": model_id, "max_retries": 0})
+        # A non-tier route must never bypass authority pinning by omitting the
+        # one-shot budget (the legacy no-retry-key path remains tier-only).
+        self._refused({"model": "agnes-ai/agnes-3.0-flash"})
+
+    def test_single_dispatch_budget_is_pinned_on_the_wire(self) -> None:
+        transport = self._run_port({"model": "test/model", "max_retries": 0})
+        payload = json.loads(transport.requests[0]["body"].decode("utf-8"))
+        self.assertEqual(
+            payload["agent"]["model_policy"],
+            {"model": "test/model", "max_retries": 0},
+        )
+
+    def test_nonzero_retry_budgets_are_refused_before_transport(self) -> None:
+        for retries in (1, 2, True, "0"):
+            with self.subTest(retries=retries):
+                self._refused({"model": "test/model", "max_retries": retries})
+
+    def test_max_retries_without_model_is_refused(self) -> None:
+        self._refused({"max_retries": 0})
+
+    def test_extra_authority_key_beside_max_retries_is_refused(self) -> None:
+        self._refused(
+            {"model": "test/model", "max_retries": 0, "provider_order": ["x"]}
+        )
+
+
+class EngineProviderFailureDetailTests(unittest.TestCase):
+    """#3566 evidence rule: the exact provider terminal class must survive.
+
+    The Engine's bounded orchestrate error envelope carries the enumerated
+    B14 transport code; the port must project that class, not collapse it
+    into a single downstream constant. Values stay enumerated codes only.
+    """
+
+    def test_b14_provider_terminal_classes_are_retained(self) -> None:
+        cases = {
+            "upstream_server_error": P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+            "upstream_timeout": P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+            "upstream_rate_limited": P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+            "upstream_unavailable": P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+            "upstream_auth_error": P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+            "upstream_request_error": P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+            "malformed_upstream": P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+            "empty_upstream_answer": P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+            "upstream_response_too_large": P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+        }
+        for code, expected in cases.items():
+            with self.subTest(code=code):
+                self.assertEqual(_engine_failure_detail(code), expected)
+
+    def test_engine_admission_denial_is_retained(self) -> None:
+        # #3655: the Engine's enumerated trusted-admission denial codes must
+        # surface as ENGINE_ADMISSION_RESULT=DENIED, not the downstream bucket.
+        for code in (
+            "missing_entitlement",
+            "entitlement_denied",
+            "entitlement_expired",
+            "entitlement_app_mismatch",
+            "entitlement_subject_mismatch",
+            "invalid_admission",
+            "invalid_admission_request",
+        ):
+            with self.subTest(code=code):
+                self.assertEqual(
+                    _engine_failure_detail(code),
+                    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
+                )
+
+    def test_engine_boundary_and_unknown_codes_keep_their_buckets(self) -> None:
+        self.assertEqual(
+            _engine_failure_detail("engine_http_error"),
+            P01_FAILURE_DETAIL_TRANSPORT,
+        )
+        self.assertEqual(
+            _engine_failure_detail("service_authentication_failed"),
+            P01_FAILURE_DETAIL_AUTHENTICATION,
+        )
+        self.assertEqual(
+            _engine_failure_detail("service_app_not_authorized"),
+            P01_FAILURE_DETAIL_AUTHORIZATION,
+        )
+        self.assertEqual(
+            _engine_failure_detail("never_seen_code"),
+            P01_FAILURE_DETAIL_DOWNSTREAM,
+        )
+
+
+class P01SelectedPCPlanWireTests(SyntheticPlusRouteTestCase):
+    """Selected-PC hints survive the closed wire without adding tool authority."""
+
+    @staticmethod
+    def _request(kind):
+        _, request = _build_request()
+        request = _pc_query_request(request)
+        if kind == "files":
+            from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
+
+            request = replace(request, agent_plan=AgentPlan(
+                agent_id="agent:padiem:claw-pc-query@1",
+                steps=(
+                    AgentPlanStep(
+                        step_id="list_files", objective="List approved folder",
+                        tool_id="claw.pc.list_files",
+                    ),
+                    AgentPlanStep(
+                        step_id="read_file", objective="Read selected UTF-8 file",
+                        tool_id="claw.pc.read_file",
+                    ),
+                ),
+            ))
+        return request
+
+    def _forward(self, request):
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(
+            _client(transport), allow_subject_identity=True,
+        )
+        asyncio.run(port.run(request))
+        self.assertEqual(len(transport.requests), 1)
+        return json.loads(transport.requests[0]["body"])
+
+    def _refused(self, request):
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(
+            _client(transport), allow_subject_identity=True,
+        )
+        with self.assertRaises(P01AdapterError) as caught:
+            asyncio.run(port.run(request))
+        self.assertEqual(caught.exception.code, "p01_authority_field_unsupported")
+        self.assertEqual(transport.requests, [])
+
+    def test_selected_drive_target_is_forwarded_unchanged(self):
+        arguments = {"query_drives": {"device_id": "office-pc"}}
+        request = replace(self._request("drive"), tool_arguments=arguments)
+        self.assertEqual(self._forward(request)["tool_arguments"], arguments)
+
+    def test_selected_file_loop_target_is_forwarded_unchanged(self):
+        arguments = {"files": {"device_id": "office-pc"}}
+        request = replace(self._request("files"), tool_arguments=arguments)
+        self.assertEqual(self._forward(request)["tool_arguments"], arguments)
+
+    def test_unselected_drive_and_file_plans_keep_the_existing_wire(self):
+        for kind in ("drive", "files"):
+            with self.subTest(kind=kind):
+                self.assertNotIn("tool_arguments", self._forward(self._request(kind)))
+
+    def test_invalid_pc_targets_are_refused_before_transport(self):
+        for kind, key in (("drive", "query_drives"), ("files", "files")):
+            for device_id in (None, True, "", "bad/path", "bad pc", "pc\nother", "x" * 129):
+                with self.subTest(kind=kind, device_id=device_id):
+                    self._refused(replace(
+                        self._request(kind),
+                        tool_arguments={key: {"device_id": device_id}},
+                    ))
+
+    def test_extra_or_wrong_pc_hint_keys_are_refused_before_transport(self):
+        for kind, key, wrong_key in (
+            ("drive", "query_drives", "files"),
+            ("files", "files", "list_files"),
+        ):
+            cases = (
+                {key: {}},
+                {wrong_key: {"device_id": "office-pc"}},
+                {key: {"device_id": "office-pc", "command": "whoami"}},
+                {key: {"device_id": "office-pc"}, "other": {"device_id": "office-pc"}},
+            )
+            for arguments in cases:
+                with self.subTest(kind=kind, arguments=arguments):
+                    self._refused(replace(
+                        self._request(kind), tool_arguments=arguments,
+                    ))
+
+    def test_a_device_hint_does_not_authorize_a_different_plan(self):
+        request = self._request("files")
+        request = replace(
+            request,
+            agent_plan=replace(request.agent_plan, agent_id="agent:padiem:other@1"),
+            tool_arguments={"files": {"device_id": "office-pc"}},
+        )
+        self._refused(request)

@@ -4,9 +4,43 @@
 - Effective reset: 2026-08-14
 - Design authority: `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
 - Evidence authority: `EVIDENCE_REQUIREMENTS.md`
+- Test-scope/delivery authority: `TEST_SCOPE_AND_DELIVERY_POLICY.md`
 - Deployment authority: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - Technology adoption authority: `TECHNOLOGY_ADOPTION_POLICY.md`
+- Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
+- Dated B14 owner decision/evidence ledger: `B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md` (historical issue and implementation status; not a second approval gate)
 
+## 0. Public technical development context — consult local business-governance stage
+
+**Public engineering context:** the repository is maintained with limited development capacity. Actual business stage, customer-facing defaults and deployment priorities must be read from the non-public local Governance directory referenced below. Production URLs and actual operator/customer data require evidence, regardless of engineering stage. Technical access controls and configured platform protections remain facts to verify; an unresolved conflict with the business policy is referred to the Owner for a decision.
+
+### Confidential business-governance source
+
+The repository's business decision authority is stored **outside Git**, on the authorized PC under `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance`. Read the local `README.md` index and the applicable documents in `사업방침/`, then `운영방침/`, when a business/product decision or its technical implementation is involved. The former `사업방침/01_CTO_에이전트_운영규칙.md` is a relocation notice; the active CTO rules are in `운영방침/01_CTO_에이전트_운영규칙.md`. The public technical procedures below explain **how** to implement and validate, but do not replace the local business decision. If the source is inaccessible or apparently contradictory, **ask the Owner**; do not infer a new customer permission policy. Never quote or copy private policy substance back into this public repository.
+
+### 0A. CTO outcome order — one useful result before extra evidence
+
+1. State the **next user-visible or operator-visible behavior to make work** (for example, a single B14 model request returning its real status), and identify only the immediate missing dependency.
+2. Reuse existing source, a configured workflow and prior relevant checks; implement the smallest correction or run the smallest approved real experiment. Do not create more issues/PRs/documents simply because it is possible.
+3. Run the **focused load-bearing regression + required relevant CI**. For a claim about a live integration, run **one** actual bounded integration/smoke check if the environment genuinely permits it. For a straightforward internal model evaluation, one synthetic request (concurrency=1, no auto-retry/fallback) through the *existing approved B14 path* is normally the answer, not a fresh harness or architecture project.
+4. If the real check fails, classify the observed response accurately (HTTP 200/model identity, 401/403, 429, 5xx/timeout, or blocked before POST). Repair only a proven product defect. An actual upstream capacity error is useful negative evidence, **not** a mandate for repeated retries or another CI layer.
+5. Close the bounded implementation/evaluation issue when its stated scope is decided, including a no-go; accumulate remaining owner-facing E2E acceptance on the existing single product verification issue. Do not confuse a merged PR with runtime success.
+
+**Change-to-test discipline:** a new mandatory check must identify `NEW_FAILURE_MODE`, `PROTECTED_CLAIM`, `EXISTING_EVIDENCE_GAP`, and `BLOCKS_CURRENT_GOAL=YES|NO`. If there is no new failure mode or changed relevant surface, it is not another blocker. Historic CI success remains valid for unchanged files/dependencies. Routine one-file fixes do not require multiple independent validators, load tests, live-customer simulation or repeated full-product matrices.
+
+### 0B. Authority and operating permissions
+
+- The one-person Owner has delegated routine CTO source review, merge and deployment decisions within existing configured protection. Do not ask the Owner to repeat approval already recorded, fabricate a second account/reviewer or treat absence of an independent person as proof of a technical denial. Follow actual protection/rulesets and any **named** manual release guard that applies to the particular Worker.
+- A test's **business authorization** and the tool's **actual execution permission** are distinct. If an approved provider evaluation cannot run because a specific tool/platform rejects dispatch before sending, report `NOT_RUN / BLOCKED_AT=<actual layer>`; do not call it a provider failure. Do not evade denial via ad-hoc HTTP, another account, a different API/client/credential or a weakened workflow.
+- Preserve owner/workspace isolation, secret protection, non-destructive migration sequencing, real approval before consequential actions, GitHub required checks and existing release/rollback contracts. These safeguards are targeted, not an excuse to introduce unrelated tests or prevent a safe internal demo.
+
+### 0C. Stage escalation: when to harden
+
+Move to **pilot/customer acceptance** when the Owner names actual external test users, customer data or a handoff; move to **commercial release assurance** when paid customers, billing, commitments, higher-risk persistence/identity integrations or external compliance require it. Use §3A, §3C and the test/deployment policies to tighten only the affected claims. An issue label, GitHub environment name or the presence of a Production hostname does **not** alone change the declared product stage.
+
+### 0D. New ChatGPT/agent conversation continuity
+
+Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this repository**; it does **not automatically load into every fresh ChatGPT conversation**. The ChatGPT **Project Instructions** should include a short durable owner-stage rule and point to `AGENTS.md` + this section. On each repository-aware CTO session, verify these documents and fresh `main` once, then act; do not reconstruct old gates or request another owner approval without a concrete unmet boundary. Active issue/PR comments report task state, not portfolio-wide behavioral authority.
 ## 1. Purpose
 
 AI Revenue Lab separates product authority, design decisions, implementation, validation, CTO review, owner decisions, merge and Production so that fast AI-assisted work does not turn into repeated broad rework.
@@ -19,8 +53,8 @@ A separate rule applies when the work contains a **new art direction or material
 
 1. **User / Product Owner** — product goal, priorities, material product/business decisions, explicit owner visual acceptance where applicable.
 2. **Web CTO** — current remote audit, work contract, architecture/safety boundaries, visual/evidence gates, final technical review.
-3. **Implementation Worker (local model)** — authorized implementation, implementation self-check, Draft PR/report. In the current operating model this is a local model with GitHub access; its local checks are implementation self-checks unless a second actor re-runs them.
-4. **Independent Local Validator** — independent exact-head browser/OS/hardware/local-runtime validation when required, executed by an actor distinct from the Implementation Worker.
+3. **Implementation Worker (local model)** — authorized implementation, focused implementation self-check, `DEV_FAST_GATE`, Draft PR/report. In the current operating model this is a local model with GitHub access; after the fast gate passes it may move to the next authorized issue without waiting for the full validation matrix.
+4. **Independent Local Validator(s)** — asynchronous independent exact-head browser/OS/hardware/local-runtime validation when required, executed by actors distinct from the Implementation Worker. Windows, Ubuntu and browser/full-regression lanes may run concurrently under separate validator ownership.
 
 One actor may perform several non-independent stages. The same actor must not
 claim both implementation and independent Local Validation for the same
@@ -60,6 +94,203 @@ OPERATING_PRODUCT
 The work order identifies what is needed now: visual desirability, UX, deterministic simulation, service-led operation, local runtime, live backend/provider, auth/persistence, security or commercial hardening.
 
 UI, UX, backend/runtime, security, deployment, market-reference, commercial and owner-visual verdicts remain separate.
+
+## 3A. MVP delivery closure and validation budget
+
+The operating system optimizes for **validated delivery**, not maximum possible pre-delivery certainty.
+
+When a customer handoff, pilot, or owner-defined delivery target exists, record the accepted handoff blocker set and primary acceptance journey. From that point, validation may expand only when it protects a concrete claim that can still invalidate the handoff.
+
+A new concern is a handoff blocker only when there is concrete evidence of at least one of:
+
+- primary customer journey unusable or materially incorrect;
+- authentication/authorization bypass;
+- secret, credential, private-data, or material infrastructure leakage;
+- data corruption, uncontrolled destructive behavior, or irreversible external harm;
+- a P0/P1 failure explicitly named in the work contract or customer promise.
+
+The following default to **post-handoff follow-up**, not new blockers:
+
+- speculative edge cases without a reproduction;
+- unrelated legacy debt;
+- broad refactors or architecture cleanup;
+- additional hardening beyond the accepted MVP threat/failure model;
+- optional formats/features not required by the current customer promise;
+- repeated re-testing of unchanged surfaces solely because time passed.
+
+### Validation budget
+
+For an MVP closeout, use this order:
+
+```text
+1. smallest load-bearing focused regression for the changed defect
+2. relevant configured CI for the changed dependency/authority surface
+3. bounded Production smoke of the accepted primary journey after deployment
+4. broader suites only when the change actually crosses those surfaces
+```
+
+Do not start with a repository-wide, product-wide, or all-browser test sweep for a narrow defect unless the change touches shared authority or the work contract explicitly requires that breadth.
+
+If new validation is added after the acceptance matrix is otherwise satisfied, the Web CTO records:
+
+```text
+NEW_VALIDATION=
+PROTECTED_CLAIM=
+WHY_EXISTING_EVIDENCE_IS_INSUFFICIENT=
+HANDOFF_BLOCKING_IF_FAILED=YES|NO
+```
+
+If those fields cannot be answered concretely, the check is non-blocking follow-up work.
+
+### Fixed handoff gate
+
+Before the final blocker fix is merged, identify the smallest explicit handoff gate:
+
+```text
+HANDOFF_BLOCKERS=
+HANDOFF_REQUIRED_CHECKS=
+HANDOFF_PRODUCTION_SMOKE=
+```
+
+Do not silently add new required checks after this point. A later check may join the handoff gate only when it is justified by a new concrete blocker or by a changed high-blast-radius boundary.
+
+Repository CI fan-out may execute more jobs than the handoff requires. Distinguish:
+
+```text
+HANDOFF_REQUIRED_CHECK
+OBSERVATIONAL_NONBLOCKING_CHECK
+```
+
+An automatically triggered unrelated job is not handoff-blocking merely because it exists, is slow, or is still running.
+
+Open P1/P2, hardening, refactor, optional-format, and backlog issues remain non-blocking unless the owner explicitly promotes one or new evidence shows that it invalidates the current customer promise.
+
+### Final Production smoke budget
+
+For a final Production-changing revision, one bounded smoke of the accepted primary journey is the default. Do not repeatedly rerun the same real-account journey without one of:
+
+- a new deployed revision affecting that journey;
+- a failed or ambiguous prior smoke;
+- a newly reproduced blocker affecting that journey.
+
+```text
+UNCHANGED_DEPLOY + PRIOR_CLEAR_PASS != REPEAT_SMOKE_REQUIRED
+```
+
+### Evidence carry-forward after main drift
+
+Evidence still belongs to the exact revision that produced it, but unrelated repository drift does not automatically force full revalidation. The Web CTO first determines whether intervening commits affect the tested behavior, transitive dependency, runtime authority, configuration, deployment target, or user-facing surface.
+
+```text
+UNRELATED_DRIFT != AUTOMATIC_FULL_RETEST
+RELEVANT_DRIFT   = REVALIDATE_AFFECTED_CLAIMS
+```
+
+### MVP terminal rule
+
+When:
+
+```text
+ACCEPTED_HANDOFF_BLOCKERS=0
+FOCUSED_CHANGE_REGRESSION=PASS
+RELEVANT_REQUIRED_CI=PASS
+REQUIRED_PRODUCTION_SMOKE=PASS
+```
+
+the technical disposition is `READY_FOR_CUSTOMER_HANDOFF`.
+
+Exploratory QA may continue after handoff, but it must not delay delivery unless it finds new concrete blocker evidence.
+
+## 3B. Finish-first completion policy
+
+For Padiem platform development, the default active operating mode is **Finish-first** unless the Product Owner explicitly selects another portfolio priority.
+
+```text
+PRIMARY_IMPLEMENTATION_AXIS=1
+SUPPORTING_BLOCKER_LANES<=2
+UNRELATED_IMPLEMENTATION_FANOUT=0
+PARALLEL_VALIDATION=ALLOWED
+PARALLEL_BLOCKER_REMOVAL=ALLOWED
+```
+
+The purpose is to convert already-built source into visible, Production-complete capability rather than maximizing the number of partially completed issues.
+
+A primary axis must describe a user-visible vertical result, not a list of source issues. Record the axis, reference product, current lowest missing dependency, primary blockers, and terminal user result.
+
+For the current Padiem cycle, #3523 defines the axis as Platform -> Engine -> B54 Claw.
+
+Ownership and architecture are decided top-down. Once ownership is known, implementation starts at the lowest missing dependency and moves upward through the vertical slice. Do not keep adding generic capability work when the primary slice is blocked lower in the stack.
+
+Passing a development fast gate releases the actor from waiting on broad unrelated validation, but does not release the actor to unrelated feature work. The actor continues the primary axis, takes one of its concrete blockers, helps reconcile/validate the same axis, or remains idle/background.
+
+A Finish-first axis is not DONE merely because source is implemented, CI is green, or a PR merged.
+
+```text
+SOURCE_COMPLETE=YES
+MERGED_MAIN=YES
+PRODUCTION_ACTIVE=YES
+REFERENCE_PRODUCT_E2E=PASS
+USER_VISIBLE_RESULT=YES
+ROLLBACK_READY=YES
+PRIMARY_BLOCKERS=0
+```
+
+Until then, report `ACTIVE`.
+
+Shared Padiem Platform infrastructure does not collapse products into one another. Product-local work remains with its product owner. A generic defect discovered inside a product is split to the proper Platform/Core/Engine/Control-Plane owner rather than moving the whole product task into that lane.
+
+## 3C. Implementation closeout + batched product verification issues
+
+**Owner decision (2026-10-11): one enduring validation issue per product/release acceptance scope, rather than one lingering verification issue for every finished implementation.** This section controls GitHub issue bookkeeping; it does **not** weaken required pre-merge evidence, authority/security checks or the Finish-first product acceptance gate in §3B.
+
+### Issue types and closure authority
+
+1. **Implementation issue (A, C, D ...):** one bounded code/config/document deliverable. To close it, prove the issue's **implementation acceptance**: reviewed exact-head changes; focused tests; applicable required CI, independent validation (or `NOT_REQUIRED` with reason), security and owner gates; authorized merge to the intended branch. Post the PR, exact head/merge SHA, test result and link to the canonical product validation issue before closing. Use `SOURCE_COMPLETE=YES; PRODUCT_LIVE_E2E=NOT_YET_PROVEN` when applicable. A merged PR alone does **not** close an issue whose original acceptance explicitly required operational activation or end-user delivery. Complete that scope or transparently split the remaining work into the existing validation issue **only if it is genuinely validation rather than missing implementation**; do not silently redefine the owner's deliverable.
+2. **Consolidated verification issue (B):** one **OPEN** issue per product + release/primary user journey, created when the first implementation needs later integrated evidence; **reuse the existing matching issue** before creating a new one. It owns the actual browser/Production E2E evidence and cross-component test matrix, not a second implementation queue. For Hark WEB-FIRST, use existing **#3936** under epic **#3928**; don't create a parallel Hark test ticket for every PR.
+3. **Epic/feature acceptance:** remains open while its own user-visible milestone is incomplete. Closing implementation slices does not imply B/epic closure, operational readiness, production activation, or customer handoff.
+
+### Continuous accumulation: A → B, C → B, D → B
+
+When a new implementation finishes, update B's **single living checklist** with:
+
+- implementation issue/PR and **exact tested SHA / merged SHA**;
+- specific affected **user-visible acceptance claim**, component and target environment;
+- whether the claim is `SOURCE_CI`, `INDEPENDENT_VALIDATION`, `STAGING` or `PRODUCTION_AUTHENTICATED_E2E`;
+- `PENDING | BLOCKED | FAILED | PASS | NOT_REQUIRED`, concrete blocker and immutable **sanitized evidence link**; do not mark `PASS` from an unexecuted workflow or mock;
+- any necessary user-authorized credentials, billable calls, external WRITE/SEND, and rollback boundaries.
+
+Deduplicate an existing test rather than appending identical test instructions for each PR. A, C and D may be closed separately while their remaining **legitimate post-merge integrated checks** accumulate in B. If E2E proves an actual code defect, open or reopen only the **specific repair implementation issue**, with a reproduction and B backlink. Do not multiply generic verification issues.
+
+### Efficient validation and truthful finalization
+
+Run B's consolidated journey after the relevant set of changes is deployed/ready; use one bounded end-to-end run covering the accepted path plus required negative authorization cases. Retest only affected claims if a later revision changes the behavior. **Do not batch or postpone** security checks, exact-head CI, independent validation expressly required **before merge**, irreversible external mutations, or an owner-reserved approval. The §3A handoff gate and §3B Finish-first `AXIS_DONE` remain unchanged.
+
+Close B only when **every required scoped checklist item** has real, reproducible evidence; the tested Production version and applicable owner authorization are identified; required external/browser/file outputs and negative controls pass; and known blocking failures are resolved. A blocked Production tool/credential does not count as PASS. B's issue title/body should identify a **single product release/acceptance journey**, not a rolling repository-wide all-products QA bucket.
+
+**Compact implementation closure record:**
+
+```text
+IMPLEMENTATION_ISSUE=#A
+PR=#NNNN
+TESTED_HEAD_SHA=<exact>
+MERGE_SHA=<exact>
+IMPLEMENTATION_ACCEPTANCE=PASS
+REQUIRED_PREMERGE_GATES=PASS|NOT_REQUIRED_WITH_REASON
+PRODUCT_LIVE_E2E=PENDING|PASS|NOT_APPLICABLE
+CONSOLIDATED_VERIFICATION_ISSUE=#B
+ISSUE_CLOSE_REASON=IMPLEMENTATION_SCOPE_COMPLETE
+```
+
+**Compact B checklist record:**
+
+```text
+SOURCE_ISSUE=#A
+PR=#NNNN
+ACCEPTANCE_CLAIM=<one concrete user-visible contract>
+ENVIRONMENT=PRODUCTION_AUTHENTICATED_E2E
+STATUS=PENDING|BLOCKED|FAILED|PASS|NOT_REQUIRED
+EVIDENCE=<immutable link or blocker>
+```
 
 ## 4. Mandatory design-gate overlay for visual redesign
 
@@ -124,11 +355,50 @@ Canonical details: `TECHNOLOGY_ADOPTION_POLICY.md`.
 
 Technology scans run in parallel with already-approved in-flight implementation. Do not retroactively stop an accepted work order solely because a broader OSS/commercial scan was opened. Apply scan findings to subsequent slices or an explicit component replacement unless CENTRAL records a concrete pause reason.
 
+## 5B. Existing-foundation reassessment before new implementation
+
+Padiem is in a **finish, connect and improve** phase for its established platform foundations. For each newly assigned implementation slice, conduct a **proportionate existing-foundation check first**. This is an execution preflight under this policy, **not** a second technology-adoption authority or a requirement to re-audit an already accepted decision.
+
+Default order:
+
+```text
+FRESH-READ CURRENT AUTHORITY / RUNTIME
+→ IDENTIFY THE ACTUAL GAP OR REPRODUCE THE FAILURE
+→ FIND EXISTING IMPLEMENTATION AND OFFICIAL PLATFORM MECHANISM
+→ REUSE / CONFIGURE / REPAIR / EXTEND THE SMALLEST OWNED SURFACE
+→ RUN FOCUSED CONTRACT AND RELEVANT RUNTIME CHECKS
+→ BUILD NEW MACHINERY ONLY IF A CONCRETE GAP REMAINS
+```
+
+Before proposing a new module, tool, workflow, deployment lane, store, adapter, policy or abstraction:
+
+1. Check the current main/issue/PR and accepted architecture decision, plus the existing owner module, configuration, deployment workflow and reusable guard. Separate **source present**, **runtime wired**, **tested**, and **Production active**; do not infer one from another.
+2. Identify the specific missing user-visible behavior, failed contract or verified defect. For an external service or platform constraint, verify its current official documentation and supported configuration/API/CLI path before inventing a workaround or blaming the provider.
+3. Compare `RETAIN_AS_IS`, `CONFIGURE_OR_CONNECT`, `REPAIR_EXISTING`, `EXTEND_EXISTING`, `ADOPT_OR_ADAPT`, and `BUILD_NEW`. Choose the smallest evidence-backed change. Do not replicate an existing deployment, authorization, model-routing, persistence or validation authority.
+4. Reuse tests, guards, official tooling and rollback procedures where available. A green mock or source test does **not** establish real service integration, live approval, secret/binding preservation, or Production activation.
+5. Scope validation to the changed claim and actual target environment; do not add a Linux/WSL/browser/production matrix merely as ceremony. Preserve required security and release gates, and record a rollback or fail-closed path for changes that can affect live service.
+6. If the preferred solution is `BUILD_NEW`, identify the exact gap existing components cannot meet, why a small repair/extension or upstream capability is insufficient, and the owner of the new component.
+
+A concise work-order or PR note is sufficient; do not create another policy file, issue, checklist bureaucracy or custom framework merely to document this step:
+
+```text
+CURRENT_SOURCE_AND_RUNTIME=
+VERIFIED_GAP_OR_FAILURE=
+OFFICIAL_REFERENCE_IF_RELEVANT=
+EXISTING_REUSE_OR_REPAIR_CANDIDATE=
+DECISION=RETAIN_AS_IS|CONFIGURE_OR_CONNECT|REPAIR_EXISTING|EXTEND_EXISTING|ADOPT_OR_ADAPT|BUILD_NEW
+MINIMAL_CHANGE_AND_PROTECTED_CONTRACT=
+FOCUSED_VERIFICATION_AND_ROLLBACK=
+```
+
+For a trivial correction, fill only the material fields in a sentence or two. If an accepted parent already supplies the evidence, cite it rather than repeating research. This check **does not** retroactively freeze approved in-flight work or expand a fixed MVP handoff gate; it governs the next consequential change and flags only concrete security, data-loss or contract hazards for explicit escalation. Review/update existing canonical documentation only where an actual source-of-truth mismatch is established.
+
 ## 6. Work identity before implementation
 
 Record:
 
 - repository/default branch;
+- machine identity (`MACHINE_IDENTITY`) when the work can run on more than one machine; follow `MULTI_MACHINE_LOCAL_WORKTREE_POLICY.md`;
 - exact current base SHA;
 - branch;
 - Issue/owner/work-order authority;
@@ -171,10 +441,13 @@ The developer:
 - changes only authorized paths;
 - implements only up to the current authorized visual/product gate;
 - does not expand all routes when the work order authorizes only an anchor/archetype slice;
-- runs implementation self-checks and configured CI;
+- runs the smallest relevant implementation self-checks and the work-order `DEV_FAST_GATE`;
+- after `DEV_FAST_GATE=PASS`, records `DEV_ACTOR_RELEASED=YES` and may move immediately to the next authorized issue instead of waiting for Windows/Ubuntu/full-browser validation;
 - records exact base/head, files, diff, commands, exits, pass/fail/skip counts and limitations;
 - identifies legacy/cascade debt encountered;
 - does not self-assign independent validation or final CTO readiness.
+
+The fast gate is not merge approval. It exists to keep implementation throughput independent from slower cross-platform validation.
 
 ## 8A. GitHub report handoff
 
@@ -209,6 +482,8 @@ Follow `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md`.
 
 ## 10. Local Validator responsibilities
 
+Independent validation is **selective**, not automatic for every P0/P1. A bounded deterministic fix defaults to `NOT_REQUIRED` when focused regression + relevant CI can prove the pre-merge claim and live behavior is already covered by the separately authorized post-deploy Production smoke. Require an independent validator when the claim materially depends on a distinct browser/OS/hardware/local-service environment, a high-risk runtime boundary not covered by CI, or an explicit work-contract gate.
+
 When independent validation is required, the validator records:
 
 - expected/actual exact head;
@@ -220,11 +495,42 @@ When independent validation is required, the validator records:
 - console/page/network/asset/overflow failures;
 - artifacts and reproduction evidence.
 
-If the validator changes product source, the modified run is not independent validation of that new revision.
+Validation lanes should be assigned explicitly when relevant:
+
+```text
+VALIDATOR_WINDOWS
+VALIDATOR_UBUNTU
+VALIDATOR_BROWSER
+VALIDATOR_FULL_REGRESSION
+```
+
+They may run in parallel while the implementation worker continues other authorized work. A failing validator owns reproduction and may own a bounded repair in its own worktree/repair branch.
+
+If the validator changes product source, that actor has become a repair/implementation actor for the new revision. The modified run is not independent validation of that new revision; revalidation must occur on the resulting exact head by another independent validator when independence is required.
 
 A completed independent validation is not considered auditable until the related PR contains a discoverable exact-head record naming the validator, result and immutable report/artifact pointer (or a recorded `NOT_REQUIRED` reason). The evidence may live in the private report repository, but the PR must point to it.
 
 ## 11. CI and automated checks
+
+CI uses three distinct gates:
+
+```text
+GATE_A = DEV_FAST_GATE
+  smallest focused checks proving the implementation slice
+  blocks the implementing actor only until PASS
+
+GATE_B = ASYNC_VALIDATION
+  Windows / Ubuntu / browser / full-regression lanes
+  may run in parallel under separate validator actors
+  failures block merge of the affected revision, not unrelated development
+
+GATE_C = FULL_VALIDATION
+  required configured/relevant exact-head checks before merge
+```
+
+A newer PR head should cancel superseded same-PR validation runs where the workflow can do so safely. Draft/synchronize feedback should prefer fast relevant checks; broad cross-platform/full matrices belong to asynchronous validation and the final merge gate rather than the implementation actor's synchronous loop.
+
+Repository-wide test selection and stop rules are defined by `TEST_SCOPE_AND_DELIVERY_POLICY.md` and apply to every Business/app/package.
 
 CI is required when configured/relevant but is never universal completion evidence.
 
@@ -265,6 +571,14 @@ Use expected-head protection where available.
 - no `git worktree remove --force` on Windows while the worktree contains junctions/symlinks/reparse points into shared dependency directories; unlink the reparse point first and verify the target remains intact;
 - no wrong-project Preview/deployment as product evidence;
 - no unverified live-revision claim.
+
+### 13A. Owner-only model/provider decisions
+
+Model/provider selection is not an autonomous Web CTO or worker decision. When a task encounters model selection, replacement, benchmarking, primary/fallback order, provider routing, model-specific credentials/bindings, or activation/deployment, the agent must stop that model work and ask the Product Owner for an explicit current decision.
+
+A model mention, historical approval, worker recommendation, passing benchmark, existing branch, or product blocker does not create model-change authority. Non-model product work may continue when it does not depend on choosing a model.
+
+Canonical contract: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md` and tracking issue `#3571`.
 
 ## 14. Owner visual authority
 
@@ -308,7 +622,7 @@ After authorized merge, verify the configured Git-connected Production against t
 
 ### Verdict record requirement
 
-Before merge, the Web CTO (CENTRAL) must post the filled `CTO_FINAL_REVIEW` checklist as a PR review or PR comment containing the exact head SHA and per-item checklist results (precedent: PR #1900 procedure, work order 2026-09-05). Prose-only assertions of a final-review verdict are not an auditable record.
+Before merge, the Web CTO (CENTRAL) must post an auditable `CTO_FINAL_REVIEW` record as a PR review or PR comment containing the exact head SHA and results for the **applicable** gates. For a tiny bounded fix, a compact exact-head checklist is sufficient; the full template is not a required ceremony. Prose-only verdict assertions with no reviewable fields are not sufficient.
 
 For P0/P1 or otherwise critical PRs, the final review also records the exact-head independent-validator record (or `NOT_REQUIRED` reason), any load-bearing mutation/differential proof requested by the work contract, and the disposition of every external red security/compliance signal.
 
@@ -344,4 +658,5 @@ In particular, a historical product direction document is now an implementation 
 - New/rebuilt Business playbook: `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md`
 - Live visual review: `LIVE_PRODUCTION_UI_REVIEW_POLICY.md`
 - GitHub report handoff: `GITHUB_REPORT_HANDOFF_POLICY.md`
+- Owner-only model/provider decisions: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Templates: `templates/`

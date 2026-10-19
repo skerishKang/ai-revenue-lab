@@ -258,4 +258,71 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # class, exactly like #3094's device_truth: the Claw return leg's source of
     # truth, on the same private Service Binding surface. Still no storage,
     # schema or authority in the entrypoint file.
-    assert len(source.splitlines()) < 223
+    # Issue #3436 B2c adds the read-only device-session authentication
+    # passthrough per entrypoint class, on the same pattern and the same
+    # private Service Binding surface: the canonical broker session verifier
+    # the B62 Desktop conversation read consumes. The verifier itself and its
+    # contract markers live in the durable runtime module and the broker auth
+    # seam — this file only forwards. Still no storage, schema or authority.
+    # Issue #4139 adds the read-only owner-scoped multi-device directory
+    # passthrough per entrypoint class, again on the #3094 device_truth pattern
+    # and the same private Service Binding surface: the multi-PC list the Claw
+    # Connect device selector consumes. The projection, its never-online
+    # vocabulary and its contract markers live in the durable runtime module —
+    # this file still only forwards and holds no storage, schema or authority.
+    # Issue #4139 adds the read-only verified-file-text passthrough per entrypoint
+    # class, on the same #3094 device_truth pattern and the same private Service
+    # Binding surface: the producer half of the merged consumer's
+    # ``read_verified_file_text`` contract. The table, its SQLite schema and its
+    # command/binding/ACK correlation gate live in
+    # ``local_agent_broker_text_results`` — this file still only forwards and
+    # holds no storage, schema or authority. The 4139 installed execution
+    # profile adds one thin store composition and two private RPC passthroughs;
+    # the actual SQLite/auth implementation remains in separate modules.
+    # Update the structural size budget (259 -> 274), preserving its margin.
+    # One required canonical native-PC private RPC delegate was added to this entrypoint.
+    # #5080 adds one thin Android SAF profile store composition and two private
+    # RPC passthroughs per entrypoint class (record/read profile, directory
+    # projection). The SQLite schema, validation and auth stay in
+    # ``local_agent_broker_android_profile``; this file still only composes and
+    # forwards. Update the budget (280 -> 296), preserving its margin.
+    assert len(source.splitlines()) < 296
+
+
+def test_native_pc_terminal_completion_rpc_is_exported_by_the_existing_worker():
+    """The canonical native gateway needs this terminal ACK/complete relay too."""
+    import ast
+
+    root = Path(__file__).resolve().parents[3]
+    worker_path = root / "packages" / "padiem-control-plane" / "local_agent_broker_worker.py"
+    worker = ast.parse(worker_path.read_text(encoding="utf-8"))
+    classes = [node for node in worker.body if isinstance(node, ast.ClassDef)]
+    entry = next(node for node in classes if node.name == "Default")
+    durable = next(node for node in classes if node.name == "LocalAgentBrokerDurableObject")
+
+    exported = [
+        node for node in entry.body
+        if isinstance(node, ast.Assign)
+        and len(node.targets) == 1
+        and isinstance(node.targets[0], ast.Name)
+        and node.targets[0].id == "complete_native_pc_enrollment"
+    ]
+    assert len(exported) == 1
+    value = exported[0].value
+    assert isinstance(value, ast.Attribute)
+    assert value.attr == "complete_native_pc_enrollment"
+    assert isinstance(value.value, ast.Name)
+    assert value.value.id == "CanonicalBrokerPendingPcBindingRPC"
+
+    assert any(
+        isinstance(base, ast.Name) and base.id == "CanonicalBrokerPendingPcLiveRPC"
+        for base in durable.bases
+    )
+    canonical = root / "packages" / "padiem-control-plane" / "padiem_control_plane" / "broker_pending_pc_private_rpc.py"
+    native_mixin = ast.parse(canonical.read_text(encoding="utf-8"))
+    mixins = [node for node in native_mixin.body if isinstance(node, ast.ClassDef)
+              and node.name == "CanonicalBrokerPendingPcLiveRPC"]
+    assert len(mixins) == 1
+    assert sum(isinstance(node, ast.AsyncFunctionDef)
+               and node.name == "complete_native_pc_enrollment"
+               for node in mixins[0].body) == 1

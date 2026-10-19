@@ -153,7 +153,9 @@ function rowData() {
   return registry.projectDriveFolderList.children.map((row) => ({
     name: row.children[0] ? row.children[0].textContent : "",
     space: row.children[1] ? row.children[1].textContent : "",
-    button: row.children[2] || null,
+    modified: row.children[2] ? row.children[2].textContent : "",
+    modifiedHidden: row.children[2] ? Boolean(row.children[2].hidden) : true,
+    button: row.children[3] || null,
   }));
 }
 
@@ -245,6 +247,7 @@ const scenarioRuns = {
     out.recent_first_name = rows[0] ? rows[0].name : null;
     out.recent_first_space = rows[0] ? rows[0].space : null;
     out.recent_second_space = rows[1] ? rows[1].space : null;
+    out.recent_first_modified_hidden = rows[0] ? rows[0].modifiedHidden : null;
 
     route = () => makeResponse(200, foldersBody([]));
     await api.loadFolders("");
@@ -255,6 +258,30 @@ const scenarioRuns = {
     out.search_empty = registry.projectDrivePickerState.textContent;
     out.search_query_in_url = calls.some((call) => call.url.indexOf("query=") !== -1);
     return out;
+  },
+
+  async duplicate_modified() {
+    const api = boot();
+    api.state().projectId = "proj_a";
+    route = () =>
+      makeResponse(200, {
+        folders: [
+          { folder_id: "folder_a", name: "같은이름", space_kind: "my_drive", modified_time: "2026-09-01T00:00:00+00:00" },
+          { folder_id: "folder_b", name: "같은이름", space_kind: "shared_drive", modified_time: "2026-10-05T00:00:00+00:00" },
+        ],
+        more: false,
+        exhaustive: false,
+      });
+    await api.loadFolders("같은이름");
+    const rows = rowData();
+    await sleep();
+    return {
+      rows: rows.length,
+      first_modified: rows[0] ? rows[0].modified : null,
+      second_modified: rows[1] ? rows[1].modified : null,
+      first_modified_hidden: rows[0] ? rows[0].modifiedHidden : null,
+      second_modified_hidden: rows[1] ? rows[1].modifiedHidden : null,
+    };
   },
 
   async picker_errors() {

@@ -5,7 +5,9 @@
 
 ## 1. Revision identity
 
-Every implementation, validation and final-review report records:
+Evidence should be **minimum sufficient for the claim**. The purpose of evidence is to make a decision reviewable, not to maximize report volume.
+
+Every implementation, validation and final-review report records the relevant subset of:
 
 - repository/default branch;
 - exact starting base SHA;
@@ -14,7 +16,7 @@ Every implementation, validation and final-review report records:
 - base/head relationship where relevant;
 - repository/worktree state or branch-only write method.
 
-Evidence belongs to the exact revision it tested unless applicability to a newer revision is explicitly reviewed.
+Evidence belongs to the exact revision it tested unless applicability to a newer revision is explicitly reviewed. Applicability review may carry evidence forward across unrelated drift; it does not require re-executing unchanged journeys.
 
 ## 2. Scope evidence
 
@@ -140,13 +142,16 @@ Do not reject a technology solely because it has a price. Do not accept an OSS p
 
 ## 9. Implementation evidence
 
-The Web Developer report includes:
+For a bounded bug fix, a compact PR report is sufficient when the diff, focused regression and relevant CI make the claim directly reviewable. Do not require a separate long-form report merely because the repository is Padiem/CLAW.
+
+The Web Developer report includes the relevant subset of:
 
 - exact base/head and branch;
 - behavior/contracts changed;
 - current visual gate and whether expansion was authorized;
 - automated commands, status and pass/fail/skip counts;
-- CI references when configured;
+- `DEV_FAST_GATE` command/result and `DEV_ACTOR_RELEASED` status;
+- CI references when configured, distinguishing fast-gate evidence from asynchronous/full validation;
 - self-check/browser evidence clearly labelled non-independent;
 - for fail-open/bypass-prone fixes, the load-bearing regression and mutation/differential proof when practical;
 - trust-boundary coverage when the same runtime value crosses parser/builder/projector/serializer/export/write layers;
@@ -155,6 +160,8 @@ The Web Developer report includes:
 When a defect involves nullable or runtime-shaped input, evidence distinguishes explicit `null`, `undefined`, and a missing required property unless the canonical contract explicitly makes them equivalent.
 
 ## 10. Independent validation evidence
+
+Independent validation is asynchronous with respect to implementation throughput. After `DEV_FAST_GATE=PASS`, the implementation actor may continue to another authorized issue while Windows/Ubuntu/browser/full-regression validators work on the exact PR head.
 
 When required, record:
 
@@ -196,7 +203,9 @@ HTTP 200 alone is not revision identity.
 
 ## 13. CTO final-review evidence
 
-The final review records:
+Final-review depth is proportional to the change. Tiny bounded fixes may use a compact checklist; broad/high-risk changes use the full template.
+
+The final review records the relevant subset of:
 
 - exact reviewed head and current main/base relationship;
 - changed files/scope verdict;

@@ -19,7 +19,7 @@
     models: [],
     lang: "ko-KR",
     isSending: false,
-    maxTokens: 512,
+    maxTokens: null,
     errorCode: null,
     config: null,
   };
@@ -267,8 +267,7 @@
         body: JSON.stringify({
           model: state.activeModel,
           messages: msgs,
-          temperature: 0.2,
-          max_tokens: state.maxTokens,
+          ...(state.maxTokens != null ? { max_tokens: state.maxTokens } : {}),
         }),
       });
 
@@ -330,7 +329,8 @@
     state.config = config;
     state.models = config.models || [];
     state.lang = config.lang || "ko-KR";
-    state.maxTokens = config.maxTokens || 512;
+    state.maxTokens = Number.isInteger(config.maxTokens) && config.maxTokens > 0
+      ? config.maxTokens : null;
     state.errorCode = config.errorCode || null;
 
     if (config.models && config.models.length > 0) {

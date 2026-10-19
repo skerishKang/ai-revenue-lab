@@ -5,21 +5,34 @@
 
 This directory is the operating authority for AI Revenue Lab implementation and review. When historical documents conflict with the current canonical documents below, follow the current documents and preserve historical files only as evidence of the rules that applied at the time.
 
+## Current implementation / verification ownership (2026-10-19)
+
+- [**PADIEM_CURRENT_IMPLEMENTATION_AND_VALIDATION_MAP_20261019.md**](PADIEM_CURRENT_IMPLEMENTATION_AND_VALIDATION_MAP_20261019.md) — 최신 GitHub 기반 구현/운영검증 분리, 공통 Connector 구현 #3580/#5015/#4434/#4976, 검증 원장 #4317/#3936/#4316/#4318/#3099/#4089, 모델·관리자 이슈 종결 및 후속 #5108. 최신 이슈·운영 증거를 우선한다.
+
+## Historical issue / PR reconciliation (2026-10-15)
+
+- [**ISSUE_DOCUMENT_RECONCILIATION_20261015.md**](ISSUE_DOCUMENT_RECONCILIATION_20261015.md) — snapshot of all open Issues / open PRs, canonical product-integration owners, resolved issue transfers, and the no-duplicate-document rule. This is an operational **index**, not a new product policy or a substitute for fresh GitHub/Production evidence.
+- Latest issue/PR state always wins over the date-scoped snapshot. Implementation merges, Worker deploys and owner-device acceptance remain different claims. Private local business/operating governance must be read separately on the authorized COM1 PC; its contents are not reproduced here.
+
+## Chat·Claw 회의/음성/Drive 기술 계약 (2026-10-15)
+
+- [**PADIEM_MEETING_RECORDING_STT_DRIVE_20261015.md**](PADIEM_MEETING_RECORDING_STT_DRIVE_20261015.md) — 한 개의 회의 엔진 + CLAW 대화/왼쪽 회의록 메뉴 2개 진입점, 녹음만/실시간 전사만/동시 실행 3개 모드, 고객 Google Drive 직접 저장, 브라우저 SpeechRecognition과 Google 모델 API/녹음 파일 배치 전사의 엄격한 구분. [기존 단일 제품 이슈 #4647](https://github.com/skerishKang/ai-revenue-lab/issues/4647)를 이어서 사용한다. **기술 설계이며 구현·운영 완료 아님.**
 ## Required reading order
 
 For a numbered internal user-facing web Business, read in this order:
 
 1. `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md` — **mandatory visual/product-design process**: reference translation → anchor → archetypes → full expansion.
 2. `AI_DEVELOPMENT_OPERATING_POLICY.md` — roles, exact-revision work, validation, review and merge boundaries.
-3. `TECHNOLOGY_ADOPTION_POLICY.md` — search internal/OSS/commercial options before substantial custom build; prefer buy/adopt/adapt/sidecar where credible; preserve Padiem product authority.
-4. `ui-ux/UI_UX_VISUAL_DIRECTION_STANDARD.md` — visual thesis, Korean typography, reference fidelity, mobile and cross-state quality standard.
-5. `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md` — practical start/rebuild playbook.
-6. `UI_UX_BACKEND_PHASE_GATES.md` — independent UI/UX/backend/runtime evidence dimensions.
-7. `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md` — canonical source/style/asset structure; no cumulative visual-generation cascade.
-8. `EVIDENCE_REQUIREMENTS.md` — exact-SHA and visual/contact-sheet evidence.
-9. `WORKFLOW_STATUS_MODEL.md` — implementation, visual-gate, owner, merge and Production statuses.
-10. `LIVE_PRODUCTION_UI_REVIEW_POLICY.md` — when live owner review is allowed and when an art-direction reset must pass design gates first.
-11. `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — Git-connected Production and recovery.
+3. `TEST_SCOPE_AND_DELIVERY_POLICY.md` — **repository-wide test budgeting**: focused regression, affected CI only, selective independent validation, bounded Production smoke and stop rules.
+4. `TECHNOLOGY_ADOPTION_POLICY.md` — search internal/OSS/commercial options before substantial custom build; prefer buy/adopt/adapt/sidecar where credible; preserve Padiem product authority.
+5. `ui-ux/UI_UX_VISUAL_DIRECTION_STANDARD.md` — visual thesis, Korean typography, reference fidelity, mobile and cross-state quality standard.
+6. `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md` — practical start/rebuild playbook.
+7. `UI_UX_BACKEND_PHASE_GATES.md` — independent UI/UX/backend/runtime evidence dimensions.
+8. `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md` — canonical source/style/asset structure; no cumulative visual-generation cascade.
+9. `EVIDENCE_REQUIREMENTS.md` — exact-SHA and visual/contact-sheet evidence.
+10. `WORKFLOW_STATUS_MODEL.md` — implementation, visual-gate, owner, merge and Production statuses.
+11. `LIVE_PRODUCTION_UI_REVIEW_POLICY.md` — when live owner review is allowed and when an art-direction reset must pass design gates first.
+12. `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — Git-connected Production and recovery.
 
 Technology-adoption invariant:
 
@@ -30,7 +43,7 @@ SEARCH → REUSE_INTERNAL → BUY / ADOPT / ADAPT → SIDECAR / LOCAL_SERVICE �
 Backend/runtime and repository-boundary authorities remain:
 
 - `BACKEND_MVP_OPERATING_POLICY.md`
-- `EXTERNAL_DEVELOPMENT_PROJECTS_POLICY.md`
+- `EXTERNAL_DEVELOPMENT_PROJECTS_POLICY.md` — external product source/issue authority; Global Classroom currently remains in `skerishKang/global-classroom` with no internal source copy or product-issue duplication
 - `CLOUDFLARE_CREDENTIAL_OPERATIONS.md`
 - `../portfolio/BUSINESS_REGISTRY.md`
 - `../portfolio/BUSINESS_EXPANSION_LINEAGE.md`
@@ -48,9 +61,14 @@ ARCHETYPES_BEFORE_FULL_SITE
 FULL_SURFACE_CONTACT_SHEET_REQUIRED
 NO_CUMULATIVE_VISUAL_VERSION_CASCADE
 OWNER_APPROVAL_SEPARATE
+DEV_FAST_GATE_RELEASES_IMPLEMENTER
+WINDOWS_UBUNTU_BROWSER_VALIDATION_PARALLEL
+FULL_VALIDATION_BEFORE_MERGE
 ```
 
-There is still no mandatory repository-wide `UI → UX → backend` ceremony. The Web CTO selects the smallest evidence slice needed for the product uncertainty. However, **when the work includes a new art direction or material visual redesign, the design gates are mandatory before broad UI expansion.**
+Development throughput also does not wait on a serial full CI matrix. After the scoped `DEV_FAST_GATE` passes, the implementation actor may move to the next authorized issue while Windows/Ubuntu/browser/full validators run in parallel. Required full validation remains a merge gate. See `AI_DEVELOPMENT_OPERATING_POLICY.md` and #3429.
+
+There is still no mandatory repository-wide `UI → UX → backend` ceremony. There is also no repository-wide `run everything` testing ceremony: test scope follows the changed claim and blast radius under `TEST_SCOPE_AND_DELIVERY_POLICY.md`. The Web CTO selects the smallest evidence slice needed for the product uncertainty. However, **when the work includes a new art direction or material visual redesign, the design gates are mandatory before broad UI expansion.**
 
 ## Visual redesign invariant
 

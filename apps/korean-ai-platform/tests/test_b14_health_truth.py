@@ -14,7 +14,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
-from app.pilot.catalog import CATALOG_BY_ID, list_catalog_summaries
+from app.pilot.catalog import CATALOG_BY_ID
+from app.pilot.model_registry_file import read_registry
 from app.pilot.config import pilot_settings
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.registry import reset_registry
@@ -22,14 +23,16 @@ from app.pilot.registry import reset_registry
 PLATFORM_SECRET_ENV_KEYS = (
     "KILO_API_KEY",
     "AGNES_API_KEY",
-    "PADIEM_POOLSIDE_API_KEY",
+    "PADIEM_B14_CREDENTIAL_12",
     "PADIEM_SENSENOVA_API_KEY",
-    "PADIEM_AGNES_API_KEY",
-    "PADIEM_B_AI_API_KEY",
-    "PADIEM_INFRON_API_KEY",
-    "PADIEM_INCEPTION_MERCURY_API_KEY",
-    "PADIEM_ATRIA_API_KEY",
-    "PADIEM_EXLAB_API_KEY",
+    "PADIEM_B14_CREDENTIAL_01",
+    "PADIEM_B14_CREDENTIAL_03",
+    "PADIEM_B14_CREDENTIAL_07",
+    "PADIEM_B14_CREDENTIAL_06",
+    "PADIEM_B14_CREDENTIAL_02",
+    "PADIEM_B14_CREDENTIAL_04",
+    "PADIEM_B14_CREDENTIAL_09",
+    "PADIEM_B14_CREDENTIAL_10",
 )
 
 
@@ -84,44 +87,45 @@ def test_live_with_platform_secret_is_top_level_healthy(client, monkeypatch):
 
     assert response.status_code == 200
     data = response.json()
+    active_catalog = client.get("/api/pilot/models").json()["catalog"]
+    # Previously health reported 0 because it counted the empty public/auto
+    # lane, while the manual exact-model catalog exposed enabled routes.
+    assert active_catalog
+    registry = read_registry()
+    assert len(active_catalog) == sum(
+        bool(model["enabled"] and registry["providers"][model["provider_id"]]["enabled"])
+        for model in registry["models"]
+    )
     assert data["status"] == "ok"
     assert data["mode"] == "b14-live"
-    assert data["configured_providers"] == 9
-    assert data["configured_models"] == len(list_catalog_summaries())
+    assert data["configured_providers"] == len({m["provider_id"] for m in read_registry()["models"] if m["enabled"] and read_registry()["providers"][m["provider_id"]]["enabled"]})
+    assert data["configured_models"] == len(active_catalog)
     assert data["registered_routes"] == len(CATALOG_BY_ID)
     assert data["business14"]["provider_mode"] == "live"
     assert data["business14"]["has_key"] is True
-    assert data["business14"]["catalog_models"] == len(list_catalog_summaries())
+    assert data["business14"]["catalog_models"] == len(active_catalog)
     assert "base_url_host" not in data["business14"]
     assert "site_name" not in data["business14"]
 
 
-def test_live_without_platform_secret_is_still_ready_via_keyless_kilo(client):
-    """Live readiness no longer depends on the OpenRouter key (#1933 S2)."""
+def test_live_without_platform_secret_is_not_ready_after_kilo_removal(client):
     _set_live()
-
     data = client.get("/api/pilot/health").json()
-
-    assert data["status"] == "ok"
-    assert data["mode"] == "b14-live"
+    assert data["status"] == "not_configured"
+    assert data["mode"] == "not_configured"
     assert data["business14"]["provider_mode"] == "live"
     assert data["business14"]["has_key"] is False
 
-
-def test_openrouter_key_alone_is_not_has_key_truth(client):
-    """The OpenRouter key is no longer the live/has_key truth source."""
+def test_openrouter_key_alone_never_makes_b14_live_ready(client):
     _set_live()
-
     data = client.get("/api/pilot/health").json()
-
-    assert data["status"] == "ok"
-    assert data["mode"] == "b14-live"
+    assert data["status"] == "not_configured"
+    assert data["mode"] == "not_configured"
     assert data["business14"]["has_key"] is False
-
 
 def test_placeholder_platform_secret_is_filtered(client, monkeypatch):
     _set_live()
-    monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "test-key")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "test-key")
 
     data = client.get("/api/pilot/health").json()
 
@@ -198,29 +202,17 @@ def test_health_never_exposes_secrets(client, monkeypatch):
 
 
 def test_business14_providers_reflect_registered_route_owners(client):
+    from app.pilot.model_registry_file import read_registry
     _set_live()
-
     data = client.get("/api/pilot/health").json()
-
     providers = data["business14"]["providers"]
-    assert [p["id"] for p in providers] == [
-        "agnes-ai",
-        "atria",
-        "b-ai",
-        "experiential",
-        "inception",
-        "infron",
-        "kilo",
-        "poolside",
-        "sensenova",
-    ]
+    assert [p["id"] for p in providers] == sorted({m["provider_id"] for m in read_registry()["models"] if m["enabled"] and read_registry()["providers"][m["provider_id"]]["enabled"]})
     for entry in providers:
         assert set(entry.keys()) == {"id", "registered", "has_key"}
         assert entry["registered"] is True
         assert isinstance(entry["has_key"], bool)
-    kilo = next(p for p in providers if p["id"] == "kilo")
-    assert kilo["has_key"] is False
-
+    assert not set(("kilo", "b-ai", "infron")) & {p["id"] for p in providers}
+    assert "experiential" in {p["id"] for p in providers}
 
 def test_health_and_models_surfaces_have_zero_openrouter_mentions(client):
     _set_live()
@@ -248,9 +240,10 @@ def test_health_reports_fixed_chain_routing_policy(client):
     ]
 
 
-def test_catalog_auto_lane_is_b14_router_not_a_provider(client):
-    catalog = client.get("/api/pilot/models").json()["catalog"]
-    auto = next(entry for entry in catalog if entry["id"] == "b14/auto")
-
-    assert auto["provider_id"] == "b14"
-    assert auto["provider_name"] == "B14 Router"
+def test_catalog_contains_exact_owner_models_not_a_synthetic_auto_choice(client):
+    from app.pilot.model_registry_file import read_registry
+    data=client.get("/api/pilot/models").json()
+    reg = read_registry()
+    assert {m["id"] for m in data["catalog"]} == {m["id"] for m in reg["models"] if m["enabled"] and reg["providers"][m["provider_id"]]["enabled"]}
+    assert all(m["provider_id"] != "b14" for m in data["catalog"])
+    assert "b14/auto" not in {m["id"] for m in data["catalog"]}

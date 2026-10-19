@@ -100,6 +100,7 @@ def test_pull_request_trigger_covers_gate_test_and_grammar_source() -> None:
     triggers = workflow_document().get("on", workflow_document().get(True))
     paths = triggers["pull_request"]["paths"]
     assert ".github/workflows/b54-calendar-authority-provision-gate.yml" in paths
+    assert ".github/scripts/cloudflare_served_version_cli.py" in paths
     assert ".github/tests/test_b54_calendar_authority_provision_gate.py" in paths
     assert "apps/padiem-ai-engine/app/calendar_port_cp_lease.py" in paths
 
@@ -220,6 +221,17 @@ def test_no_engine_owned_google_oauth_credential_is_provisioned() -> None:
     assert "CONTROL_PLANE_GOOGLE_OAUTH_LONG_LIVED_CREDENTIAL_OWNER=CONTROL_PLANE" in text
     assert "ENGINE_DIRECT_GOOGLE_CREDENTIAL_PROVISIONED=0" in text
     assert "GOOGLE_OAUTH_MUTATION=0" in text
+
+
+def test_pre_mutation_anchor_uses_canonical_served_version_cli_without_id_output() -> None:
+    script = step_by_name("Snapshot the pre-mutation deployment anchor").get("run")
+    assert isinstance(script, str) and script.strip()
+    assert "cloudflare_served_version_cli.py resolve-active" in script
+    assert '--deployments "${anchor}" >/dev/null' in script
+    assert "deployments[0]" not in script
+    assert "versions[0]" not in script
+    assert "CALENDAR_PRE_MUTATION_ANCHOR=RECORDED" in script
+    assert "ENGINE_VERSION_ID_OUTPUT=0" in script
 
 
 def test_create_only_precheck_runs_immediately_before_push() -> None:

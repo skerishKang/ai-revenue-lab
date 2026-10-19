@@ -223,8 +223,10 @@ async def _assert_no_overflow(page: Page, stage: str) -> None:
 
 
 async def _wait_signed_in(page: Page) -> None:
+    # #4462: the duplicate sidebar Projects button is removed; signed-in
+    # project readiness is the visible lower projects section.
     await page.wait_for_function(
-        "expected => document.getElementById('loginButton')?.textContent.trim() === '로그아웃' && document.getElementById('accountName')?.textContent.trim() === expected && document.getElementById('projectsNavButton')?.disabled === false",
+        "expected => document.getElementById('loginButton')?.textContent.trim() === '로그아웃' && document.getElementById('accountName')?.textContent.trim() === expected && document.getElementById('projectsNavButton') === null && document.getElementById('projectsSection')?.hidden === false",
         arg=USER_NAME,
         timeout=7_000,
     )

@@ -47,6 +47,7 @@ except ModuleNotFoundError:  # pragma: no cover - documents extra provides pypdf
 
 import kagent.document_parser_contract as contract
 import kagent.document_parser_isolation as isolation
+import kagent.document_intake as document_intake_module
 from kagent.document_intake import (
     PARSER_ISOLATION_FAILURE_NOTE,
     PARSER_TIMEOUT_NOTE,
@@ -288,6 +289,21 @@ def _hang_command() -> list[str]:
     return [sys.executable, "-c", "import time; time.sleep(30)"]
 
 
+def _parse_with_short_test_timeout(*, name: str, media_type: str, payload: bytes):
+    """Drive the real isolated parser with a 1s budget only in timeout tests.
+
+    Rebinding DEFAULT_PARSER_ISOLATION_POLICY has no effect on a function's
+    already-bound keyword-only default. Patch the private intake import seam,
+    keep the real process/kill ladder, and leave production's 30s default alone.
+    """
+    return isolation.extract_binary_document_isolated(
+        name=name,
+        media_type=media_type,
+        payload=payload,
+        policy=isolation.ParserIsolationPolicy(timeout_seconds=1.0),
+    )
+
+
 class ValidDocumentIsolationTests(unittest.TestCase):
     """A: an admitted document really runs in the isolated child."""
 
@@ -422,11 +438,13 @@ class HardTimeoutTests(unittest.TestCase):
 
     def test_hanging_child_through_intake_document_uses_the_timeout_note(self) -> None:
         spawn, handles = _spawn_running(_hang_command())
-        policy = isolation.ParserIsolationPolicy(timeout_seconds=1.0)
         with mock.patch.object(isolation, "_spawn_parser_child", spawn), mock.patch.object(
-            isolation, "DEFAULT_PARSER_ISOLATION_POLICY", policy
-        ):
+            document_intake_module,
+            "extract_binary_document_isolated",
+            side_effect=_parse_with_short_test_timeout,
+        ) as parser:
             result = intake_document("plan.docx", _minimal_docx())
+        self.assertEqual(parser.call_count, 1)
         self.assertIsNotNone(result)
         self.assertIsNone(result.text)
         self.assertEqual(result.note, PARSER_TIMEOUT_NOTE)
@@ -445,11 +463,13 @@ class HardTimeoutTests(unittest.TestCase):
             path.write_bytes(payload)
 
             spawn, handles = _spawn_running(_hang_command())
-            policy = isolation.ParserIsolationPolicy(timeout_seconds=1.0)
             with mock.patch.object(isolation, "_spawn_parser_child", spawn), mock.patch.object(
-                isolation, "DEFAULT_PARSER_ISOLATION_POLICY", policy
-            ), self.assertRaises(DraftFlowError) as ctx:
+                document_intake_module,
+                "extract_binary_document_isolated",
+                side_effect=_parse_with_short_test_timeout,
+            ) as parser, self.assertRaises(DraftFlowError) as ctx:
                 _read_draft_input(path)
+            self.assertEqual(parser.call_count, 1)
 
             message = ctx.exception.safe_message
             self.assertEqual(ctx.exception.code, "draft_input_invalid")

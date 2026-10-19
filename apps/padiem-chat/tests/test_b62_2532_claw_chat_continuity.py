@@ -7,7 +7,8 @@ separate app. These contracts lock the accepted slice:
   data-state="claw"; only the chat conversation column yields the canvas.
 - CLAW_MESSAGE_INPUT_PRIMARY: #messageInput is the Claw request input;
   the old hero textarea (#clawRequestText) is gone and Enter in the
-  composer routes to the preview flow.
+  composer always routes to the general conversation (#3531); the
+  quotation workflow runs only via the manual form's explicit submit.
 - The workspace stacks above the fixed glass portrait layer (z-index).
 - Contrast regressions from #2114 stay fixed (no stacked opacity, glass
   kicker uses the chat eyebrow ink).
@@ -23,6 +24,9 @@ INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 GLASS_CSS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
+STANDALONE_CSS = (STATIC / "standalone-views.css").read_text(encoding="utf-8")
+CALENDAR_CSS = (STATIC / "calendar.css").read_text(encoding="utf-8")
+LIBRARY_CSS = (STATIC / "library.css").read_text(encoding="utf-8")
 PORTRAIT_CSS = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
 
 
@@ -42,8 +46,9 @@ def test_claw_bottom_composer_visible() -> None:
     # The workspace chrome yields to the conversation in manual view...
     manual_rule = WORKSPACE_CSS.split('.claw-workspace[data-view="manual"] {', 1)[1].split("}", 1)[0]
     assert "display: none" in manual_rule
-    # ...and only the inbox (non-manual) subview hides the conversation.
-    inbox_rule = WORKSPACE_CSS.split('.claw-workspace:not([data-view="manual"]) ~ .conversation {', 1)[1].split("}", 1)[0]
+    # ...and only the inbox/automation (non-manual, non-general) subviews
+    # hide the conversation (#3531: general keeps the primary surface).
+    inbox_rule = WORKSPACE_CSS.split('.claw-workspace:not([data-view="manual"]):not([data-view="general"]) ~ .conversation {', 1)[1].split("}", 1)[0]
     assert "display: none !important" in inbox_rule
     # The intake form now lives inside the composer wrap, above #composerForm.
     wrap = INDEX.split('class="composer-wrap"', 1)[1]
@@ -60,9 +65,11 @@ def test_claw_bottom_composer_visible() -> None:
 def test_claw_message_input_primary() -> None:
     assert 'id="clawRequestText"' not in INDEX
     assert "clawRequestText" not in APP
-    # Composer submit routes to the Claw preview flow while data-state="claw".
-    assert 'shell.dataset.state === "claw" && clawManualForm' in APP
-    assert "clawManualForm.requestSubmit()" in APP
+    # #3531: composer submit always routes to the general Claw conversation,
+    # in every shell state. No claw-state branch may divert the composer into
+    # the quotation workflow.
+    assert "clawManualForm.requestSubmit()" not in APP
+    assert "submitPrompt(input.value)" in APP
     # Preview and execute read the composer value; the API contract is unchanged.
     assert APP.count('const body = (input.value || "").trim();') == 2
     assert 'fetch("/api/claw/manual-intake/preview"' in APP
@@ -96,9 +103,48 @@ def test_no_stacked_opacity_on_claw_surfaces() -> None:
 
 def test_glass_kicker_uses_chat_eyebrow_ink() -> None:
     eyebrow = GLASS_CSS.split("html[data-theme=\"padiem-glass\"] .eyebrow {", 1)[1].split("}", 1)[0]
-    kicker = GLASS_CSS.split('html[data-theme="padiem-glass"] .claw-workspace-kicker {', 1)[1].split("}", 1)[0]
     assert "#334a5b" in eyebrow
-    assert "#334a5b" in kicker
+    # The per-page kicker restatements are gone; one shared rule carries the same
+    # ink for every destination, so the brand lines cannot drift apart again.
+    assert 'html[data-theme="padiem-glass"] .claw-workspace-kicker' not in GLASS_CSS
+    assert 'data-state="calendar"] .calendar-view-kicker' not in CALENDAR_CSS
+    unified = STANDALONE_CSS.split(".claw-workspace-kicker) {", 1)[1].split("}", 1)[0]
+    for declaration in ("#334a5b", "font-size: 10px", "font-weight: 600",
+                        "letter-spacing: 0.16em"):
+        assert declaration in unified, declaration
+    # The brand copy carries its own capitalisation now, so the shared rule must
+    # not force it back to caps.
+    assert "text-transform" not in unified
+
+
+def test_page_eyebrow_shares_the_hero_vertical_origin() -> None:
+    """The brand line must land on the Chat/Claw row at any viewport height."""
+    frame = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
+    decl = frame.split("use the Chat/Claw eyebrow origin", 1)[1].split("!important", 1)[0]
+    padding = [line for line in decl.splitlines() if line.strip().startswith("padding:")][0]
+    assert "calc(clamp(52px, 7.4vh, 88px) - 7px)" in padding
+    assert "78px" not in padding, "a fixed inset cannot track the height-relative hero inset"
+    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    assert locale.count('"connectors-kicker": "Padiem Connectors"') == 2
+    assert locale.count('"automation-view-kicker": "Padiem Automation"') == 2
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    assert ">Padiem Chat</span>" in html
+    assert ">Padiem Claw</span>" in html
+
+
+def test_every_destination_shares_one_glass_eyebrow() -> None:
+    """The Chat/Claw landing is the visual authority for all product panels."""
+    states = [s for s in ("claw", "connectors", "automation", "meeting", "calendar", "library")
+              if f'[data-state="{s}"]' in STANDALONE_CSS]
+    assert len(states) == 6, states
+    classes = [c for c in ("standalone-view-kicker", "calendar-view-kicker",
+                           "library-kicker", "claw-workspace-kicker")
+               if c in STANDALONE_CSS.split("One Glass page eyebrow", 1)[1]]
+    assert len(classes) == 4, classes
+    # Library now carries its own brand rather than borrowing Chat's.
+    library_js = (STATIC / "library.js").read_text(encoding="utf-8")
+    assert 'copy("Padiem Library", "Padiem Library")' in library_js
+    assert 'copy("Padiem Chat", "Padiem Chat")' not in library_js
 
 
 def test_glass_mode_bar_matches_composer_surface() -> None:

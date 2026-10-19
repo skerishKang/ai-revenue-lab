@@ -28,10 +28,14 @@ and no new route, store, schema, or provider call is introduced.
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import json
 import shutil
 import subprocess
 from pathlib import Path
+
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
@@ -50,6 +54,7 @@ RUN_HISTORY_KEYS = (
     "claw-runs-empty",
     "claw-runs-error",
     "claw-runs-download",
+    "claw-runs-show-up-to-30",
     "claw-runs-status-completed",
 )
 
@@ -70,6 +75,7 @@ def test_run_history_surface_is_declared_inside_the_claw_workspace() -> None:
         'id="clawRunHistoryError"',
         'id="clawRunHistoryList"',
         'id="clawRunHistoryEmpty"',
+        'id="clawRunHistoryExpand"',
     ):
         assert token in html
     # The workspace-level heading must stay an h2: the shell keeps one h1.
@@ -92,7 +98,7 @@ def test_accessible_loading_error_empty_and_refresh_states() -> None:
 
 def test_consumes_the_existing_owner_scoped_route_without_new_authority() -> None:
     app = _app_source()
-    assert 'fetch("/api/claw/runs?limit=10"' in app
+    assert 'fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`' in app
     # Reuses the single bounded artifact route rather than a second download path.
     assert "/api/claw/manual-intake/artifact/" in app
     assert app.count("/api/claw/manual-intake/artifact/") == 1
@@ -107,8 +113,9 @@ def test_consumes_the_existing_owner_scoped_route_without_new_authority() -> Non
 def test_presentation_does_not_mint_run_truth_in_the_browser() -> None:
     app = _app_source()
     # No local persistence, no interception, no client-side identity/authority.
-    for token in ("localStorage", "sessionStorage", "indexedDB", "cookieStore", "caches.open", "MutationObserver", "window.fetch ="):
+    for token in ("localStorage", "indexedDB", "cookieStore", "caches.open", "MutationObserver", "window.fetch ="):
         assert token not in app
+    assert_session_storage_is_handoff_only(app)
     for token in ("user_id", "workspace_id", "tenant_id"):
         assert token not in app
     # The client never derives run status: unknown tokens stay raw, never "completed".
@@ -240,6 +247,15 @@ function makeEl(tag) {
   el.prepend = (...cs) => cs.forEach((c) => { el.children.unshift(c); c.parentNode = el; });
   el.append = (...cs) => cs.forEach((c) => el.appendChild(c));
   el.replaceChildren = (...cs) => { el.children = []; cs.forEach((c) => el.appendChild(c)); };
+  // #4806 inserts the artifact context relative to #messageList, so the shim
+  // needs the same child-insertion API the real Element exposes.
+  el.insertBefore = (node, ref) => {
+    const at = el.children.indexOf(ref);
+    if (at < 0) el.children.push(node); else el.children.splice(at, 0, node);
+    node.parentNode = el;
+    return node;
+  };
+  el.removeChild = (node) => { el.children = el.children.filter((c) => c !== node); return node; };
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
   el.querySelector = (sel) => el.children.find((c) => c.className && c.className.includes(sel.replace(/^\./, ""))) || null;
@@ -250,6 +266,18 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // #4806 added `messageList.closest(".conversation")` to the real app.js.
+  // This minimal DOM shim must expose the same Element API instead of
+  // crashing every behavioral harness that runs the real source.
+  el.closest = (sel) => {
+    const want = String(sel).replace(/^\./, "");
+    let node = el;
+    while (node) {
+      if (node.className && String(node.className).includes(want)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  };
   return el;
 }
 
@@ -272,8 +300,16 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawApprovedLoading","clawApprovedError","clawApprovedList","clawApprovedEmpty","clawMemoryReview",
   "tasksNavButton","alertsNavButton","clawInbox","clawInboxTitle","clawInboxLoading","clawInboxError",
   "clawInboxEmpty","clawInboxList","clawInboxRetry","clawRunHistory","clawRunHistoryRefresh",
-  "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty",
+  "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty","clawRunHistoryExpand",
 ].forEach((id) => add(id, "div"));
+// index.html nests #messageList inside <section class="conversation">, and the
+// real app.js reads that ancestor to decide whether the first turn continues
+// the landing panel (#4806). Model the same nesting instead of returning null.
+if (byId.messageList) {
+  const conversationSection = makeEl("section");
+  conversationSection.className = "conversation";
+  conversationSection.appendChild(byId.messageList);
+}
 const shell = add("app-shell", "div");
 shell.dataset = { state: "home" };
 const accountContainer = add("sidebar-account", "div");
@@ -282,6 +318,7 @@ byId.clawChannel.value = "kakao";
 byId.clawAction.options = [{ textContent: "quote" }];
 byId.clawAction.value = "quote";
 byId.clawRunHistoryList.hidden = true;
+byId.clawRunHistoryExpand.hidden = true;
 
 const ARTIFACT_ID = "doc_" + "a".repeat(32);
 const doc = {
@@ -318,7 +355,8 @@ async function fetchImpl(url, opts) {
   if (u.startsWith("/api/claw/memory")) return jsonResponse(200, { ok: true, memories: [] });
   if (u.startsWith("/api/claw/runs")) {
     if (runsStatus !== 200) return jsonResponse(runsStatus, { ok: false, error: { code: "run_history_read_failed" } });
-    return jsonResponse(200, { ok: true, runs: runState.runs });
+    const wanted = Number((u.match(/limit=(\d+)/) || [])[1] || 10);
+    return jsonResponse(200, { ok: true, runs: runState.runs.slice(0, wanted) });
   }
   if (u === "/api/claw/approvals/decision") {
     const body = opts.body ? JSON.parse(opts.body) : {};
@@ -511,12 +549,53 @@ function collectText(root) {
     && collectText(byId.clawRunHistoryList).indexOf("승인 후 완료") >= 0;
   if (!checks.APPROVAL_TERMINAL_REFRESH) fail("APPROVAL_TERMINAL_REFRESH");
 
+  // 14) Hark previous-result continuity: explicit, bounded 10 -> 30 read only.
+  runState = { runs: Array.from({length:12}, (_,i)=>({
+    run_id:"run_older_"+i,channel:"web",action:"document",title:"Prior file "+i,
+    status:"completed",created_at:"2026-10-10T00:00:00Z",
+    result_summary:"saved prior run",artifact:null,
+  })) };
+  const beforeOlder=runCalls();
+  byId.clawRunHistoryRefresh.click();
+  await tick(50);
+  checks.HARK_HISTORY_DEFAULT_10 =
+    byId.clawRunHistoryList.children.length===10
+    && byId.clawRunHistoryExpand.hidden===false
+    && runCalls()===beforeOlder+1
+    && requests.filter(r=>r.url.startsWith("/api/claw/runs")).at(-1).url==="/api/claw/runs?limit=10";
+  if (!checks.HARK_HISTORY_DEFAULT_10) fail("HARK_HISTORY_DEFAULT_10");
+  byId.clawRunHistoryExpand.click();
+  await tick(50);
+  checks.HARK_HISTORY_BOUNDED_30 =
+    byId.clawRunHistoryList.children.length===12
+    && byId.clawRunHistoryExpand.hidden===true
+    && requests.filter(r=>r.url.startsWith("/api/claw/runs")).at(-1).url==="/api/claw/runs?limit=30";
+  if (!checks.HARK_HISTORY_BOUNDED_30) fail("HARK_HISTORY_BOUNDED_30");
+  const afterExpand=runCalls();
+  byId.clawRunHistoryExpand.click();
+  await tick(30);
+  checks.HARK_HISTORY_NO_DUPLICATE_EXPAND=runCalls()===afterExpand;
+  if (!checks.HARK_HISTORY_NO_DUPLICATE_EXPAND) fail("HARK_HISTORY_NO_DUPLICATE_EXPAND");
+  byId.tasksNavButton.click();
+  await tick(50);
+  byId.clawNavButton.click();
+  await tick(50);
+  checks.HARK_HISTORY_SESSION_VIEW_RESET =
+    byId.clawRunHistoryList.children.length===10
+    && byId.clawRunHistoryExpand.hidden===false
+    && requests.filter(r=>r.url.startsWith("/api/claw/runs")).at(-1).url==="/api/claw/runs?limit=10";
+  if (!checks.HARK_HISTORY_SESSION_VIEW_RESET) fail("HARK_HISTORY_SESSION_VIEW_RESET");
+
   console.log(JSON.stringify({ ok: true, requests, checks }));
   process.exit(0);
 })().catch((e) => { console.log(JSON.stringify({ ok: false, error: String((e && e.stack) || e) })); process.exit(0); });
 """
 
 
+# All consumers assert read-only facts from the same completed real app.js
+# behavior journey. Reuse it once per Python module rather than respawning
+# Node for each test; separate pytest processes still run independent checks.
+@lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
@@ -559,6 +638,10 @@ def test_behavioral_run_history_journey() -> None:
         "RUN_HISTORY_WAITING_APPROVAL_UI",
         "APPROVAL_DECISION_BODY_BOUNDED",
         "APPROVAL_TERMINAL_REFRESH",
+        "HARK_HISTORY_DEFAULT_10",
+        "HARK_HISTORY_BOUNDED_30",
+        "HARK_HISTORY_NO_DUPLICATE_EXPAND",
+        "HARK_HISTORY_SESSION_VIEW_RESET",
     ):
         assert checks.get(name) is True, name
     assert checks.get("SENSITIVE_FIELD_DOM_PROJECTION") == 1

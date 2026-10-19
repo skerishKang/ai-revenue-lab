@@ -90,6 +90,16 @@ jobs:
           print("PRODUCTION_MUTATION=0")
           PY
 
+      - name: Run served-version argv parity contract (#3860)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/tests/test_3748_engine_google_oauth_binding_argv.py
+          echo "ENGINE_OAUTH_ARGV_CONTRACT=PASS"
+          echo "LIVE_CLOUDFLARE_GET=0"
+          echo "SECRET_VALUE_OUTPUT=0"
+          echo "PRODUCTION_MUTATION=0"
+
       - name: Require exact current main on push
         if: ${{ github.event_name == 'push' }}
         shell: bash
@@ -145,9 +155,12 @@ jobs:
           version_detail="${RUNNER_TEMP}/engine-version-detail.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
 
+          # #3860 (parent #3748): one canonical argv token. The version-id grammar
+          # accepts a leading hyphen, so the separated form lets argparse read the
+          # id as an option and abort with a usage error before the predicate runs.
           verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
-            --active-version "${active_version}" \
+            --active-version="${active_version}" \
             --require-drive-runtime-bindings)"
           printf '%s\n' "${verify_out}"
 

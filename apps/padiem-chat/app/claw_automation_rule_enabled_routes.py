@@ -53,6 +53,7 @@ from kagent.contracts import ContractError
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_automation_mutation_authority import resolve_automation_owner_mutation_context
 from .claw_automation_rules_routes import (
     _NO_STORE_HEADERS,
@@ -96,8 +97,9 @@ async def read_enabled_flag(request: Request) -> tuple[bool | None, JSONResponse
                 return None, _error(413, "request_body_too_large", "요청 본문이 너무 큽니다.")
         except ValueError:
             return None, _error(400, "invalid_request", "요청을 해석할 수 없습니다.")
-    raw = await request.body()
-    if len(raw) > MAX_BODY_BYTES:
+    try:
+        raw = await read_bounded_request_body(request, max_bytes=MAX_BODY_BYTES)
+    except RequestBodyTooLarge:
         return None, _error(413, "request_body_too_large", "요청 본문이 너무 큽니다.")
     try:
         body = json.loads(raw)

@@ -385,6 +385,36 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                 retryable=exc.status_code >= 500,
             )
 
+        # Subject is trusted Control Plane admission, run id belongs to its
+        # admission-bound logical request. Neither comes from model arguments.
+        from app.claw_desktop_step_driver import CLAW_APP_ID, _ENGINE_DESKTOP_OWNER
+        from app.claw_pc_query_step_driver import CHAT_APP_ID, _PC_QUERY_OWNER
+        desktop_owner = None
+        pc_query_owner = None
+        if binding.app_id in (CLAW_APP_ID, CHAT_APP_ID) and binding.subject_id is not None:
+            run_id = payload.get("session_id") if isinstance(payload, dict) else None
+            if isinstance(run_id, str) and run_id:
+                desktop_owner = (binding.subject_id, run_id)
+                selected_device = None
+                tool_arguments = (
+                    payload.get("tool_arguments") if isinstance(payload, dict) else None
+                )
+                if isinstance(tool_arguments, dict):
+                    # The drive plan keys the target by query_drives; the file
+                    # plan uses the shared files hint. Both carry one device.
+                    for step_id in ("files", "query_drives"):
+                        entry = tool_arguments.get(step_id)
+                        if not isinstance(entry, dict):
+                            continue
+                        candidate = entry.get("device_id")
+                        if isinstance(candidate, str) and 0 < len(candidate) <= 128:
+                            selected_device = candidate
+                            break
+                pc_query_owner = (
+                    binding.subject_id, run_id, binding.app_id, selected_device,
+                )
+        desktop_scope_token = _ENGINE_DESKTOP_OWNER.set(desktop_owner)
+        pc_query_scope_token = _PC_QUERY_OWNER.set(pc_query_owner)
         original_token: Token[OriginalAdmissionBinding | None] = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
         result_token = _ACTIVE_TERMINAL_RESULT.set(None)
         dispatch_evidence = ExecutionDispatchEvidence()
@@ -426,6 +456,8 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
             reset_execution_dispatch_evidence(dispatch_token)
             _ACTIVE_TERMINAL_RESULT.reset(result_token)
             _ACTIVE_ORIGINAL_ADMISSION.reset(original_token)
+            _ENGINE_DESKTOP_OWNER.reset(desktop_scope_token)
+            _PC_QUERY_OWNER.reset(pc_query_scope_token)
 
     async def resume_payload(self, payload: Any):  # noqa: C901 - lifecycle gate must stay linear
         """Resume only with fresh non-widening trusted admission before claim."""

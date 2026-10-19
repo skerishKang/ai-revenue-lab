@@ -302,3 +302,8 @@ def test_core_factory_constructs_without_making_network_call() -> None:
     assert isinstance(provider, AIProvider)
     assert provider.provider_type == "padiem_core"
     assert provider.model == "b14/auto"
+
+
+def test_living_learning_settings_default_uses_600s_model_idle() -> None:
+    """The app-level default must not silently restore the old 20s budget."""
+    assert Settings.model_fields["padiem_core_timeout_seconds"].default == 600.0

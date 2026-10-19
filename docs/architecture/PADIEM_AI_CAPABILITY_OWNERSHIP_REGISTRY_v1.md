@@ -1,3 +1,7 @@
+<!-- B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+> **B14 역할 최신 원칙(2026-10-10):** [원제작사 모델·서빙 제공업체·변형 모델의 공식 사양 및 B14 실행 권한](B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md)을 우선 확인합니다. **B14는 정확히 사용자가 선택한 모델을 해당 업체의 공식 API로 실행**하며, temperature/토큰/리즈닝을 임의 지정하거나 옵션을 조용히 바꾸지 않습니다. 원본 모델의 공식 사양과 실제 API 제공업체의 계약은 별도 증빙합니다. 과거 코드·평가 수치는 이 원칙의 구현 증명이 아닙니다.
+<!-- /B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+
 # Padiem AI Capability Ownership Registry v1
 
 ```text
@@ -47,7 +51,7 @@ If two layers appear to own the same generic policy, implementation stops until 
 | IP-SIDECAR | reusable embedded shell lifecycle, browser-safe bootstrap, host-context envelope, public-safe event projection, host adapter integration contract | product domain meaning, Core semantics, Engine service identity/transport, B14 routing/credentials |
 | IP-ENGINE | trusted cross-runtime service/API projection of accepted Core semantics | competing Core policy engine, product UX, Provider routing |
 | IP-CORE | reusable execution, grounding, permission, retrieval/memory, Evidence, Tool, Skill, Agent and orchestration semantics | product-domain schema/UI, Provider catalog/credentials |
-| B14 Korean AI Platform | Provider/model registry, inference credentials, executable route validation/selection, Provider adapters and actual execution | product memory/domain state, Control Plane identity truth |
+| B14 Korean AI Platform | Provider/model registry, inference credentials, verification of user-selected exact route, official serving-provider parameter fidelity, Provider adapters and actual execution | product memory/domain state, Control Plane identity truth |
 | IP-CONTROL | canonical identity/subject/tenant, entitlement, usage/credits/subscription/audit and neutral cross-product declarations | Provider/model execution, product conversation state, Cloudflare Worker secret/version/deployment/rollback machinery |
 
 ## IP-CORE capability families
@@ -78,7 +82,7 @@ B14 owns Provider/model execution authority:
 
 - Provider/model catalog and registry;
 - inference credentials and trusted binding references;
-- executable route validation/selection;
+- executable user-selected exact route validation; generic Auto selection requires a separate Owner-approved policy and is currently deferred;
 - Provider adapters/upstream transport;
 - completed/streaming/multimodal model execution;
 - route metadata and execution-level retry/fallback policy where explicitly enabled.
@@ -86,9 +90,10 @@ B14 owns Provider/model execution authority:
 Current Padiem product declarations are explicit:
 
 ```text
-Padiem Plus = Laguna
-Padiem Pro  = Nemotron
-Padiem Max  = HOLD
+B14_REGISTERED_MODELS = EXACT_CANONICAL_JSON_ONLY
+PADIEM_PLUS_PRO_MAX_MODEL_GROUPS = EMPTY_IN_CURRENT_B14_REGISTRY
+USER_MODEL_CHOICE = EXACT_ALLOWED_ID
+OWNER_RETIRED_NEMOTRON = NOT_EXECUTABLE
 USER_VISIBLE_AUTO = NO
 SILENT_FALLBACK = NO
 ```

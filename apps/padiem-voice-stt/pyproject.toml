@@ -1,0 +1,13 @@
+[project]
+name = "padiem-voice-stt"
+version = "0.1.0"
+description = "Shared PADIEM Chat/Claw/B66 speech-to-text Cloudflare Worker"
+requires-python = ">=3.13.2"
+dependencies = []
+
+[tool.pywrangler]
+allow-build = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

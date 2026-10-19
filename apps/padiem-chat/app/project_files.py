@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import re
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -21,6 +23,12 @@ def _extracted_media_type(original_media_type: str) -> str:
 
 MAX_PROJECT_FILES = 12
 MAX_PROJECT_TOTAL_CHARS = 160_000
+
+#: #4489 — the Library browses every file an owner stored, one bounded keyset page at a
+#: time. These are HTTP page bounds, not a record cap: no page may grow a response.
+DEFAULT_OWNER_FILES_PAGE = 50
+MAX_OWNER_FILES_PAGE = 100
+_OWNER_FILE_CURSOR_TIME_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$")
 
 
 class ProjectFileError(RuntimeError):
@@ -132,6 +140,81 @@ def _from_row(row: dict[str, Any]) -> ProjectFileRecord:
     )
 
 
+@dataclass(frozen=True, slots=True)
+class OwnerFileProjection:
+    """One stored file plus its project label. It never carries file content."""
+
+    id: str
+    project_id: str
+    project_name: str
+    name: str
+    media_type: str
+    content_chars: int
+    created_at: str
+    updated_at: str
+
+    def public_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "project_id": self.project_id,
+            "project_name": self.project_name,
+            "name": self.name,
+            "media_type": self.media_type,
+            "content_chars": self.content_chars,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+
+class OwnerFileCursorError(ValueError):
+    """Raised for any cursor a caller invented, truncated or replayed across scopes."""
+
+
+def encode_owner_file_cursor(record: OwnerFileProjection) -> str:
+    """Keyset position ``(updated_at, id)`` as an opaque token.
+
+    Deliberately not a caller-composable scope: it carries no user id, no project id
+    list and no limit, so it can never widen whose files a page returns.
+    """
+    raw = f"{record.updated_at}|{record.id}".encode("utf-8")
+    return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+
+
+def decode_owner_file_cursor(value: object) -> tuple[str, str]:
+    if not isinstance(value, str) or not value.strip():
+        raise OwnerFileCursorError("cursor 형식이 올바르지 않습니다.")
+    text = value.strip()
+    if len(text) > 256:
+        raise OwnerFileCursorError("cursor 형식이 올바르지 않습니다.")
+    try:
+        raw = base64.urlsafe_b64decode((text + "=" * (-len(text) % 4)).encode("ascii")).decode("utf-8")
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise OwnerFileCursorError("cursor 형식이 올바르지 않습니다.") from exc
+    updated_at, separator, file_id = raw.partition("|")
+    if not separator or _OWNER_FILE_CURSOR_TIME_RE.fullmatch(updated_at) is None:
+        raise OwnerFileCursorError("cursor 형식이 올바르지 않습니다.")
+    try:
+        validated = validate_file_id(file_id)
+    except ValueError as exc:
+        raise OwnerFileCursorError("cursor 형식이 올바르지 않습니다.") from exc
+    if validated is None:
+        raise OwnerFileCursorError("cursor 형식이 올바르지 않습니다.")
+    return updated_at, validated
+
+
+def _owner_projection_from_row(row: dict[str, Any]) -> OwnerFileProjection:
+    return OwnerFileProjection(
+        id=str(row.get("id", "")),
+        project_id=str(row.get("project_id", "")),
+        project_name=str(row.get("project_name") or ""),
+        name=str(row.get("name", "")),
+        media_type=str(row.get("media_type", "")),
+        content_chars=int(row.get("content_chars") or 0),
+        created_at=str(row.get("created_at", "")),
+        updated_at=str(row.get("updated_at", "")),
+    )
+
+
 class D1ProjectFileStore:
     """D1-backed bounded text-file store. Dynamic values always use binds."""
 
@@ -165,6 +248,42 @@ class D1ProjectFileStore:
             user_id, project_id, MAX_PROJECT_FILES,
         )
         return [_from_row(row) for row in rows]
+
+    async def list_owner_files(
+        self, user_id: str, *, after: tuple[str, str] | None = None, limit: int
+    ) -> list[OwnerFileProjection]:
+        """One keyset page over every file this owner stored, newest update first.
+
+        The position is ``(updated_at, id)``, so a page can neither repeat nor skip a
+        row when writes land between requests. Files are selected by ``f.user_id`` only;
+        the project label joins on the same owner, which keeps another account's project
+        name out of the result and still lists a file whose project row is missing.
+        Content is never selected.
+        """
+        head = (
+            "SELECT f.id AS id, f.project_id AS project_id, f.name AS name, "
+            "f.media_type AS media_type, f.content_chars AS content_chars, "
+            "f.created_at AS created_at, f.updated_at AS updated_at, "
+            "COALESCE(p.name, '') AS project_name "
+            "FROM project_files AS f "
+            "LEFT JOIN projects AS p ON p.id = f.project_id AND p.user_id = f.user_id "
+        )
+        tail = " ORDER BY f.updated_at DESC, f.id DESC LIMIT ?"
+        if after is None:
+            rows = await self._all(head + "WHERE f.user_id = ?" + tail, user_id, limit)
+            return [_owner_projection_from_row(row) for row in rows]
+        after_updated_at, after_id = after
+        rows = await self._all(
+            head
+            + "WHERE f.user_id = ? AND (f.updated_at < ? OR (f.updated_at = ? AND f.id < ?))"
+            + tail,
+            user_id,
+            after_updated_at,
+            after_updated_at,
+            after_id,
+            limit,
+        )
+        return [_owner_projection_from_row(row) for row in rows]
 
     async def get_file(self, user_id: str, project_id: str, file_id: str) -> ProjectFileRecord | None:
         row = await self._first(

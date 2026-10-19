@@ -213,7 +213,12 @@ async def stream_routed_chat_completions(
         saw_done = False
         try:
             async for provider_event in iterator:
-                visible = bool(provider_event.delta_content)
+                # A whitespace-only chunk is not a visible assistant answer.
+                # Keep it uncommitted so an empty upstream completion can
+                # fail closed before the HTTP/SSE response starts (#3554).
+                visible = bool(
+                    provider_event.delta_content and provider_event.delta_content.strip()
+                )
                 if not committed and not visible:
                     buffered.append(provider_event)
                     if provider_event.done:

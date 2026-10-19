@@ -1,5 +1,28 @@
 # Web CTO Final Review
 
+For a tiny bounded fix or MVP closeout, a compact exact-head checklist is sufficient when it covers the fixed handoff gate. Do not require every section below to be populated when it is not applicable.
+
+## Finish-first completion review
+
+When governed by a Finish-first authority:
+
+- Primary authority / issue:
+- Primary axis:
+- Work classification: PRIMARY_BLOCKER / PRIMARY_NONBLOCKING_FOLLOWUP / UNRELATED_BACKLOG
+- Lowest missing dependency before this revision:
+- Lowest missing dependency after this revision:
+- Did this revision start unrelated implementation? must be NO:
+- Source complete:
+- Merged main:
+- Production active:
+- Reference-product E2E:
+- User-visible result:
+- Rollback ready:
+- Remaining primary blockers:
+- Axis state: AXIS_ACTIVE / AXIS_BLOCKED / AXIS_READY_FOR_PRODUCTION / AXIS_PRODUCTION_ACTIVE / AXIS_E2E_PROVEN / AXIS_DONE
+
+Do not mark the axis DONE from a green PR alone.
+
 ## Current remote identity
 
 - Repository:
@@ -93,6 +116,12 @@ Missing required adoption evidence is a `NOT_READY` condition.
 ## Evidence sufficiency
 
 - Implementation self-check:
+- `DEV_FAST_GATE` result:
+- `DEV_ACTOR_RELEASED`:
+- `VALIDATOR_WINDOWS`:
+- `VALIDATOR_UBUNTU`:
+- `VALIDATOR_BROWSER`:
+- `FULL_VALIDATION`:
 - CI:
 - Independent Local Validation required? yes/no:
 - Independent validator different from implementation actor? yes/no/N/A:
@@ -144,6 +173,7 @@ State the smallest correct recovery level.
 
 ```text
 READY / CONDITIONALLY_READY / NOT_READY
+READY_FOR_CUSTOMER_HANDOFF   # only after the fixed handoff gate + required Production smoke pass
 ```
 
 Reason:
@@ -153,6 +183,7 @@ Reason:
 - Merge authorized? yes/no/pending authority:
 - Applicable design gate satisfied? yes/no/N/A:
 - Expected head required for merge:
+- Final required `FULL_VALIDATION=PASS`? yes/no/N/A:
 - Exact-head independent-validation record present or NOT_REQUIRED reason present? yes/no:
 - External red security/compliance signals resolved or explicitly authorized/waived? yes/no/N/A:
 - Deployment rule:

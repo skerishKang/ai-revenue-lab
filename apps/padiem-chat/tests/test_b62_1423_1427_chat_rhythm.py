@@ -5,16 +5,18 @@ ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = ROOT.parents[1]
 ALIGNMENT_CSS = (ROOT / "static/padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
 GUTTER_QA = (REPO_ROOT / ".github/scripts/b62_chat_gutter_visual_qa.py").read_text(encoding="utf-8")
-VISUAL_WORKFLOW = (REPO_ROOT / ".github/workflows/b62-browser-visual-qa.yml").read_text(encoding="utf-8")
+VISUAL_WORKFLOW = (REPO_ROOT / ".github/workflows/b62-browser-qa-unified.yml").read_text(encoding="utf-8")
+VISUAL_TAIL = (REPO_ROOT / ".github/scripts/b62_browser_qa_tail_parallel.py").read_text(encoding="utf-8")
 
 
-def test_1423_outer_surfaces_stay_wide_while_prose_has_readable_measure() -> None:
+def test_1423_assistant_response_and_error_have_bounded_widths() -> None:
     assert "--padiem-chat-reading-measure: 76ch;" in ALIGNMENT_CSS
     assert ".assistant-content {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
-    assert ".error-box {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
+    assert '.assistant-content > .rich-response {' in ALIGNMENT_CSS
+    assert '.assistant-content > .error-box {' in ALIGNMENT_CSS
+    assert "width: calc(100% - 32px - var(--padiem-chat-meta-gap)) !important;" in ALIGNMENT_CSS
     assert ".rich-response-paragraph," in ALIGNMENT_CSS
     assert "max-inline-size: min(var(--padiem-chat-reading-measure), 100%);" in ALIGNMENT_CSS
-    # Wide structured surfaces are intentionally not put behind the prose measure.
     assert ".rich-code-block," not in ALIGNMENT_CSS
     assert ".rich-table-block," not in ALIGNMENT_CSS
 
@@ -44,11 +46,19 @@ def test_1427_responsive_qa_covers_desktop_tablet_and_mobile() -> None:
         '("mobile-390", 390, 844)',
     ):
         assert viewport in GUTTER_QA
-    assert "user bubble right" in GUTTER_QA
+    # #4783 (edbbe75811e) + #4726 (b9ade4b9ed9): the user row and the wide
+    # rich-answer surface share one right boundary, which is the contract this
+    # marker guards. The older "user bubble right" wording no longer exists in
+    # the corrected probe.
+    assert "user row and wide answer share one right boundary" in GUTTER_QA
     assert "assistant meta/content gap out of range" in GUTTER_QA
     assert "horizontal overflow" in GUTTER_QA
-    assert ".github/scripts/b62_chat_gutter_visual_qa.py" in VISUAL_WORKFLOW
-    assert "Shared gutter responsive browser QA" in VISUAL_WORKFLOW
+    # The #3989 unified workflow invokes the bounded visual-tail runner;
+    # gutter QA remains mandatory inside its fail-closed SCRIPTS contract.
+    assert ".github/scripts/b62_browser_qa_tail_parallel.py" in VISUAL_WORKFLOW
+    assert '"b62_chat_gutter_visual_qa.py"' in VISUAL_TAIL
+    assert "B62_VISUAL_TAIL_FAIL_COUNT" in VISUAL_TAIL
+    assert "shared-gutter-report.json" in VISUAL_WORKFLOW
 
 
 def test_child_polish_remains_layout_only() -> None:

@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 import uuid
 from typing import Any
@@ -38,7 +39,12 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
+from app.pilot.provider_timeout_diagnostics import log_provider_timeout
+from app.pilot.b14_timeout_policy import build_provider_http_timeout
+from app.pilot.agnes_429_diagnostics import log_agnes_429
+from app.pilot.exlab_429_diagnostics import log_exlab_429
 from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.platform_secrets import (
     CredentialSource,
@@ -48,17 +54,23 @@ from app.pilot.platform_secrets import (
     resolve_secret,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_completed_text_answer
 
 logger = logging.getLogger("korean-ai-platform.pilot.platform")
 
+# Resource guards, never provider/model generation-token limits.
+# Error bodies and individual SSE frames remain tightly bounded at 1MiB.
 MAX_RESPONSE_BYTES = 1024 * 1024
+# A completed JSON response must be materialized as one dict for existing
+# callers. Use the existing conservative 8MiB maximum as a separate raw-body
+# memory budget (1/16 of the Workers 128MiB isolate), not a 1MiB output cutoff.
+# Parsed JSON / response serialization can amplify memory; prefer SSE for
+# genuinely unbounded free-form model text.
+MAX_COMPLETED_RESPONSE_BYTES = 8 * 1024 * 1024
 MAX_ERROR_BODY_CHARS = 500
 
-_CONNECT_TIMEOUT = 10.0
-_READ_TIMEOUT = 30.0
-_WRITE_TIMEOUT = 10.0
-_POOL_TIMEOUT = 10.0
-
+# All Providers share one phase policy. A Pyodide/Fetch ConnectTimeout
+# label alone does not prove a native TCP handshake delay.
 
 def _mock_response(model_id: str, upstream_model: str, provider: str) -> dict[str, Any]:
     """Clearly-labeled mock response (no upstream call)."""
@@ -122,32 +134,13 @@ def _request_headers(
 ) -> dict[str, str]:
     """Build the fixed Provider auth boundary without credential widening.
 
-    Kilo's historical free lanes keep the shared keyless Provider spec. The
-    owner-selected Space Bunny lane reuses the existing Kilo credential when
-    it is present, while preserving the documented anonymous free-model path
-    when it is absent. Callers cannot supply or override either mode.
+    Kilo's historical free lanes keep the shared keyless Provider spec. No
+    model-scoped auth special-case exists: the retired Space Bunny lane
+    supports no runtime execution and no runtime auth handling (owner final
+    retirement decision, 2026-10-07). Callers cannot supply or override any
+    credential mode.
     """
     headers = {"Content-Type": "application/json"}
-
-    if spec.provider_id == "kilo":
-        from app.pilot.kilo_provider import (
-            KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-            KILO_SPACE_BUNNY_MODEL_ID,
-        )
-
-        if model_id == KILO_SPACE_BUNNY_MODEL_ID:
-            scoped_spec = PlatformProviderSpec(
-                provider_id=spec.provider_id,
-                credential_source=CredentialSource.PLATFORM_SECRET,
-                credential_binding_name=KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-                base_origin=spec.base_origin,
-                allowed_hosts=spec.allowed_hosts,
-                enabled=spec.enabled,
-            )
-            secret = resolve_secret(scoped_spec)
-            if secret:
-                headers["Authorization"] = f"Bearer {secret}"
-            return headers
 
     if spec.credential_source == CredentialSource.NONE:
         return headers
@@ -156,14 +149,77 @@ def _request_headers(
         if not secret:
             if spec.provider_id == "kilo":
                 return headers
-            raise PilotNotConfigured(
-                f"Provider '{spec.provider_id}' secret is not configured "
-                f"(binding {spec.credential_binding_name})."
-            )
+            # Client-facing errors must not disclose provider identities or
+            # internal credential binding names. The error code stays stable.
+            raise PilotNotConfigured("Requested model credential is not configured.")
         headers["Authorization"] = f"Bearer {secret}"
         return headers
-    raise PilotNotConfigured(
-        f"Provider '{spec.provider_id}' credential source is not supported by the platform adapter."
+    raise PilotNotConfigured("Requested model credential configuration is unsupported.")
+
+
+def _tokenharbor_safe_error_family(
+    response: httpx.Response, error_body: bytes
+) -> str:
+    """Only classify allowlisted enum codes. Never log vendor-supplied strings."""
+    if "application/json" not in response.headers.get("content-type", "").casefold():
+        return "not_json"
+    if len(error_body) > 4096:
+        return "unclassified"
+    try:
+        payload = json.loads(error_body)
+    except (ValueError, UnicodeError):
+        return "unclassified"
+    if not isinstance(payload, dict):
+        return "unclassified"
+    error = payload.get("error")
+    code = error.get("code") if isinstance(error, dict) else payload.get("code")
+    if not isinstance(code, str):
+        return "unclassified"
+    return {
+        "invalid_api_key": "invalid_key",
+        "invalid_key": "invalid_key",
+        "permission_denied": "access_denied",
+        "forbidden": "access_denied",
+        "access_denied": "access_denied",
+        "rate_limit_exceeded": "rate_limited",
+        "too_many_failed_authentication_attempts": "rate_limited",
+    }.get(code.casefold(), "unclassified")
+
+
+def _log_tokenharbor_rejection(
+    response: httpx.Response, request_headers: dict[str, str], error_body: bytes
+) -> None:
+    """Safe diagnostic for BOTH completed and streaming TokenHarbor requests."""
+    if not (
+        300 <= response.status_code < 400
+        or response.status_code in (401, 403, 429)
+    ):
+        return
+    # Shape is not proof that the secret equals the locally verified credential.
+    credential_shape = (
+        "expected"
+        if re.fullmatch(
+            r"Bearer thk_[A-Za-z0-9_-]{20,160}",
+            request_headers.get("Authorization", ""),
+        )
+        else "unexpected"
+    )
+    media_type = response.headers.get("content-type", "").casefold()
+    response_format = (
+        "html" if "text/html" in media_type else
+        "json" if "application/json" in media_type else "other"
+    )
+    # An HTML 403 without a challenge header can be a WAF block;
+    # a JSON 403 also does not establish who originated the response.
+    logger.warning(
+        "tokenharbor_auth_diagnostic upstream_http_status=%d "
+        "credential_shape=%s response_format=%s cf_challenge=%s "
+        "error_family=%s",
+        response.status_code,
+        credential_shape,
+        response_format,
+        response.headers.get("cf-mitigated", "").casefold() == "challenge",
+        _tokenharbor_safe_error_family(response, error_body),
     )
 
 
@@ -171,6 +227,11 @@ def _raise_upstream_error(
     status: int, provider_id: str = "", body_text: str = ""
 ) -> None:
     if status in (401, 403):
+        if provider_id == "tokenharbor":
+            raise UpstreamAuthFailed(
+                "TokenHarbor 상위 요청이 거부되었습니다. "
+                "B14 서버 측 공급업체 인증 및 접근 정책을 확인하십시오."
+            )
         raise UpstreamAuthFailed()
     if status == 429:
         if provider_id == "kilo":
@@ -193,6 +254,67 @@ def _raise_upstream_error(
     raise MalformedUpstreamResponse()
 
 
+def _require_owner_allowed_live_model(
+    model_id: str, upstream_model: str, platform_provider_id: str
+) -> None:
+    """Last pre-network gate, even for callers that bypass Router Core.
+
+    Both the public exact ID and fixed upstream/provider tuple are checked.
+    A benign-looking model ID must not disguise an excluded upstream route.
+    Historical direct Poolside (distinct from Kilo Laguna) is not inferred
+    excluded or approved by this function.
+    """
+    # TokenHarbor's credential can access paid routes too. The owner approved
+    # only the DeepSeek free upstream ID, so guard the final pre-network adapter
+    # boundary even when a caller bypasses catalog/router validation.
+    if platform_provider_id == "tokenharbor":
+        allowed_pairs = {
+            "tokenharbor/deepseek-v4.1-flash:free": "deepseek-v4.1-flash:free",
+        }
+        if allowed_pairs.get(model_id) != upstream_model:
+            raise PilotNotConfigured("TokenHarbor route is not an owner-approved free model.")
+
+    upstream = upstream_model.strip().casefold()
+    owner_excluded_upstream = (
+        "nemotron" in upstream
+        or ("poolside" in upstream and "laguna" in upstream
+            and platform_provider_id == "kilo")
+        or ("qwen" in upstream and platform_provider_id == "b-ai")
+        or "motif-3" in upstream
+        or "gpt-5.6-luna" in upstream
+        or excluded_from_owner_customer_selection(upstream_model)
+    )
+    if excluded_from_owner_customer_selection(model_id) or owner_excluded_upstream:
+        raise PilotNotConfigured(
+            "OWNER가 제외한 모델은 이 실행 경로에서 사용할 수 없습니다."
+        )
+
+
+async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONSE_BYTES) -> bytes:
+    """Collect a completed response body with a pre-decode byte cap (#4379).
+
+    Byte resource guard, not a model output ceiling: healthy answers under the
+    cap decode exactly as before. A declared Content-Length over the cap is
+    rejected before any body byte is pulled; otherwise each chunk is checked
+    BEFORE appending, so an oversized chunk is not copied into this helper's
+    accumulator. Upstream decoding and total Worker memory are outside this
+    bound. Raises UpstreamResponseTooLarge (callers must not retry it).
+    """
+    declared = response.headers.get("content-length")
+    if declared is not None:
+        try:
+            if int(declared.strip()) > cap:
+                raise UpstreamResponseTooLarge(cap)
+        except ValueError:
+            pass  # untrusted header; enforce on actual bytes instead
+    buf = bytearray()
+    async for chunk in response.aiter_bytes():
+        if len(chunk) > cap - len(buf):
+            raise UpstreamResponseTooLarge(cap)
+        buf += chunk
+    return bytes(buf)
+
+
 async def call_platform_chat_completions(
     *,
     model_id: str,
@@ -200,9 +322,11 @@ async def call_platform_chat_completions(
     provider: str,
     platform_provider_id: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
-    max_tokens: int | None = 300,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    model_parameters: dict[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
+    session_id: str | None = None,
 ) -> dict[str, Any]:
     """Completed-JSON call to a fixed platform Provider.
 
@@ -222,6 +346,21 @@ async def call_platform_chat_completions(
         )
         return _mock_response(model_id, upstream_model, provider)
 
+    if platform_provider_id == "opencode-go":
+        from .opencode_go_wire import call_go_model
+        if model_parameters:
+            from .errors import InvalidRequest
+            raise InvalidRequest("Unverified model-native parameters for OpenCode Go.")
+        return await call_go_model(
+            model_id=model_id, upstream_model=upstream_model, messages=messages,
+            session_id=session_id, max_tokens=max_tokens, temperature=temperature,
+            transport=transport,
+        )
+    _require_owner_allowed_live_model(
+        model_id, upstream_model, platform_provider_id
+    )
+    from .worker_env import load_request_secret
+    await load_request_secret(spec.credential_binding_name)
     headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
@@ -230,17 +369,24 @@ async def call_platform_chat_completions(
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
+    # Do not invent a generation budget here. Product/runtime policy owns any
+    # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # Re-validate direct adapter calls too. A caller must not bypass the
+    # exact-model vendor API allow-list by skipping the gateway.
+    if model_parameters:
+        from .model_native_parameters import (
+            UnsupportedModelParameter, validate_native_parameters,
+        )
+        from .errors import InvalidRequest
+        try:
+            body.update(validate_native_parameters(model_id, model_parameters))
+        except UnsupportedModelParameter as exc:
+            raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(
-            None,
-            connect=_CONNECT_TIMEOUT,
-            read=_READ_TIMEOUT,
-            write=_WRITE_TIMEOUT,
-            pool=_POOL_TIMEOUT,
-        ),
+        "timeout": build_provider_http_timeout(model_id),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
@@ -248,14 +394,35 @@ async def call_platform_chat_completions(
     start = time.monotonic()
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
-            response = await client.post(
+            async with client.stream(
+                "POST",
                 chat_url,
                 headers=headers,
                 json=body,
                 follow_redirects=False,
-            )
-    except httpx.TimeoutException:
-        raise UpstreamTimeout()
+            ) as response:
+                if response.status_code < 200 or response.status_code >= 300:
+                    error_bytes = await _read_bounded_body(response)
+                    if platform_provider_id == "tokenharbor":
+                        _log_tokenharbor_rejection(response, headers, error_bytes)
+                    error_body = error_bytes.decode("utf-8", "replace")
+                    if platform_provider_id == "agnes-ai" and response.status_code == 429:
+                        log_agnes_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
+                    if platform_provider_id == "experiential" and response.status_code == 429:
+                        log_exlab_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
+                    _raise_upstream_error(
+                        response.status_code, platform_provider_id, error_body
+                    )
+                body_bytes = await _read_bounded_body(response, cap=MAX_COMPLETED_RESPONSE_BYTES)
+    except httpx.TimeoutException as exc:
+        log_provider_timeout(logger, platform_provider_id, exc, "completed")
+        raise UpstreamTimeout() from exc
     except httpx.RequestError as e:
         logger.error(
             "platform_request_error provider=%s error=%s",
@@ -264,13 +431,8 @@ async def call_platform_chat_completions(
         )
         raise UpstreamServerError()
 
-    if response.status_code < 200 or response.status_code >= 300:
-        _raise_upstream_error(
-            response.status_code, platform_provider_id, response.text
-        )
-
     try:
-        response_data = response.json()
+        response_data = json.loads(body_bytes)
     except (json.JSONDecodeError, ValueError):
         raise MalformedUpstreamResponse()
 
@@ -279,9 +441,10 @@ async def call_platform_chat_completions(
     if "choices" not in response_data:
         raise MalformedUpstreamResponse()
 
+    # HTTP 200 with choices but no user-visible text is NOT a valid completion.
+    # A small output budget may exhaust on reasoning alone; never call it success.
+    require_completed_text_answer(response_data)
     choices = response_data["choices"]
-    if not isinstance(choices, list) or len(choices) == 0:
-        raise MalformedUpstreamResponse()
 
     usage = response_data.get("usage")
     prompt_tokens = usage.get("prompt_tokens") if isinstance(usage, dict) else None
@@ -310,7 +473,7 @@ async def call_platform_chat_completions(
         "_upstream_latency_ms": latency_ms,
         "_requested_upstream_model": upstream_model,
         "_actual_response_model": actual_response_model,
-        "_response_bytes": len(response.content),
+        "_response_bytes": len(body_bytes),
     }
 
 
@@ -321,9 +484,11 @@ async def stream_platform_chat_completions(
     provider: str,
     platform_provider_id: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
-    max_tokens: int | None = 300,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    model_parameters: dict[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
+    session_id: str | None = None,
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
 
@@ -354,6 +519,23 @@ async def stream_platform_chat_completions(
             yield event
         return
 
+    if platform_provider_id == "opencode-go":
+        from .opencode_go_wire import stream_go_model
+        if model_parameters:
+            from .errors import InvalidRequest
+            raise InvalidRequest("Unverified model-native parameters for OpenCode Go.")
+        async for event in stream_go_model(
+            model_id=model_id, upstream_model=upstream_model, messages=messages,
+            session_id=session_id, max_tokens=max_tokens, temperature=temperature,
+            transport=transport,
+        ):
+            yield event
+        return
+    _require_owner_allowed_live_model(
+        model_id, upstream_model, platform_provider_id
+    )
+    from .worker_env import load_request_secret
+    await load_request_secret(spec.credential_binding_name)
     headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
@@ -363,24 +545,32 @@ async def stream_platform_chat_completions(
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
+    # Do not invent a generation budget here. Product/runtime policy owns any
+    # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # Re-validate direct adapter calls too. A caller must not bypass the
+    # exact-model vendor API allow-list by skipping the gateway.
+    if model_parameters:
+        from .model_native_parameters import (
+            UnsupportedModelParameter, validate_native_parameters,
+        )
+        from .errors import InvalidRequest
+        try:
+            body.update(validate_native_parameters(model_id, model_parameters))
+        except UnsupportedModelParameter as exc:
+            raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(
-            None,
-            connect=_CONNECT_TIMEOUT,
-            read=_READ_TIMEOUT,
-            write=_WRITE_TIMEOUT,
-            pool=_POOL_TIMEOUT,
-        ),
+        "timeout": build_provider_http_timeout(model_id),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
 
     saw_done = False
+    saw_text = False
+    last_finish_reason: str | None = None
     buffer = b""
-    total_bytes = 0
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
             async with client.stream(
@@ -391,35 +581,67 @@ async def stream_platform_chat_completions(
                 follow_redirects=False,
             ) as response:
                 if response.status_code < 200 or response.status_code >= 300:
-                    # Read the small error body so provider-specific 429
-                    # normalization (#2003) can inspect it.
-                    error_body = (await response.aread()).decode("utf-8", "replace")
+                    # Bound error-body bytes before inspecting provider-specific
+                    # 429 diagnostics; untrusted upstream errors can be huge.
+                    error_bytes = await _read_bounded_body(response)
+                    if platform_provider_id == "tokenharbor":
+                        _log_tokenharbor_rejection(response, headers, error_bytes)
+                    error_body = error_bytes.decode("utf-8", "replace")
+                    if platform_provider_id == "agnes-ai" and response.status_code == 429:
+                        log_agnes_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
+                    if platform_provider_id == "experiential" and response.status_code == 429:
+                        log_exlab_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
                     _raise_upstream_error(
                         response.status_code, platform_provider_id, error_body
                     )
 
-                async for chunk in response.aiter_bytes():
-                    total_bytes += len(chunk)
-                    if total_bytes > MAX_RESPONSE_BYTES:
-                        raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
+                # Bound our accumulator per frame without delaying first-token
+                # delivery by reading ahead to fill a fixed-size HTTP chunk.
+                async for chunk in _iter_sse_bounded_slices(response):
                     buffer += chunk
                     frames, buffer = _pop_sse_frames(buffer)
+                    # Bound a single unfinished event for Worker memory safety,
+                    # not a provider's total multi-event generation length.
+                    if len(buffer) > MAX_RESPONSE_BYTES:
+                        raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
                     for frame in frames:
+                        if len(frame) > MAX_RESPONSE_BYTES:
+                            raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
                         event = _parse_sse_frame(frame)
                         if event is None:
                             continue
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
+                        if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
+                            saw_done = True
                         yield event
                         if event.done:
-                            saw_done = True
                             return
 
                 if buffer.strip():
                     event = _parse_sse_frame(buffer)
                     if event is not None:
-                        yield event
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
                         if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
                             saw_done = True
+                        yield event
     except httpx.TimeoutException as exc:
+        log_provider_timeout(logger, platform_provider_id, exc, "stream")
         raise UpstreamTimeout() from exc
     except httpx.RequestError as exc:
         logger.error(
@@ -432,6 +654,20 @@ async def stream_platform_chat_completions(
     if not saw_done:
         raise MalformedUpstreamResponse()
 
+
+
+async def _iter_sse_bounded_slices(response: httpx.Response):
+    """Yield pieces of each received HTTP block immediately, without read-ahead.
+
+    aiter_bytes(chunk_size=N) waits to fill N bytes, delaying first tokens
+    and hiding a yielded token when the upstream fails after its first chunk.
+    Instead, use the upstream natural stream boundaries, slicing within
+    each received block to keep our incomplete-frame accumulator bounded.
+    This cannot constrain allocations inside HTTPX network decoder itself.
+    """
+    async for block in response.aiter_bytes():
+        for offset in range(0, len(block), 64 * 1024):
+            yield block[offset:offset + 64 * 1024]
 
 def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
     frames: list[bytes] = []
@@ -538,25 +774,5 @@ def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Provider onboarding — generic, one registration per Provider.
-# ---------------------------------------------------------------------------
-from app.pilot.poolside_provider import register_poolside_provider
-from app.pilot.kilo_provider import register_kilo_provider
-from app.pilot.sensenova_provider import register_sensenova_provider
-from app.pilot.agnes_provider import register_agnes_provider
-from app.pilot.bai_provider import register_bai_provider
-from app.pilot.infron_provider import register_infron_provider
-from app.pilot.inception_provider import register_inception_provider
-from app.pilot.atria_provider import register_atria_provider
-from app.pilot.experiential_provider import register_experiential_provider
-
-register_poolside_provider()
-register_kilo_provider()
-register_sensenova_provider()
-register_agnes_provider()
-register_bai_provider()
-register_infron_provider()
-register_inception_provider()
-register_atria_provider()
-register_experiential_provider()
+# Model/provider registration is sourced exclusively from b14_models.json.
+# Loaded by catalog.py; do not call legacy module-local register_* functions here.

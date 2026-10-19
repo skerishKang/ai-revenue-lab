@@ -28,8 +28,8 @@ def test_gate_is_manual_only_for_production_mutation() -> None:
 
 def test_gate_pins_exact_pre_fix_production_versions_and_topology() -> None:
     source = _source()
-    assert "796f9487-b487-424c-bf21-2a4e7ab0784a" in source
-    assert "def2fee1-8e40-471a-b2b9-aafa4da828df" in source
+    assert "b5b5e0f1-96de-4521-8242-86466b4b1803" in source
+    assert "c2217fb5-3a63-4fd5-90d9-431bd94c4a97" in source
     assert "local-agent.padiem.net" in source
     assert "padiem-local-agent-broker-state" in source
     assert "padiem-local-agent-broker-edge" in source

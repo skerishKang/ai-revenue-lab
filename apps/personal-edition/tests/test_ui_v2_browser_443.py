@@ -239,8 +239,14 @@ def _assert_screen_basics(page: Page, base_url: str, path: str) -> dict[str, obj
     page.on("pageerror", on_page_error)
     page.on("request", on_request)
     page.on("response", on_response)
-    response = page.goto(base_url + path, wait_until="networkidle", timeout=15_000)
+    response = page.goto(base_url + path, wait_until="load", timeout=15_000)
     assert response is not None and response.status == 200, path
+    # Wait for rendered fonts/images, not an arbitrary 500 ms of network silence.
+    # decode failures remain fatal via the existing broken-image/HTTP checks.
+    page.evaluate(
+        "async () => { await document.fonts.ready; await Promise.all("
+        "Array.from(document.images, img => img.decode().catch(() => {}))); }"
+    )
     page.wait_for_timeout(120)
 
     metrics = page.evaluate(
@@ -379,10 +385,10 @@ def test_issue_443_exact_viewport_matrix_in_real_chromium(
 
 def _run_flow(page: Page, base_url: str, steps: tuple[tuple[str, str, str], ...]) -> None:
     for start, selector, expected in steps:
-        response = page.goto(base_url + start, wait_until="networkidle", timeout=15_000)
+        response = page.goto(base_url + start, wait_until="load", timeout=15_000)
         assert response is not None and response.status == 200, start
         page.click(selector, timeout=8_000)
-        page.wait_for_load_state("networkidle", timeout=10_000)
+        page.wait_for_load_state("load", timeout=10_000)
         assert _norm_path(page.url) == expected, (start, selector, page.url, expected)
 
 

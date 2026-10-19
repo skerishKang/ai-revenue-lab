@@ -375,7 +375,7 @@ const builtin = Template.serializeTemplate(Template.builtInTemplate());
 const pendingForm = Skill.buildSkill({
   id: "skill-form", name: "S",
   fixedDefaults: {
-    sender: { company: "C", rep: "R", bizNo: "B", address: "A", phone: "P", email: "E", presetId: "saved-skill" },
+    sender: { company: "C", rep: "R", contactPerson: "김담당", bizNo: "B", address: "A", phone: "P", email: "E", presetId: "saved-skill" },
     validDays: 45, taxMode: "INCLUSIVE", memo: "MM"
   },
   variableSchema: { recipient: true, quoteNo: true, issueDate: true, items: true, memo: true, taxMode: true },
@@ -391,6 +391,7 @@ const approvedForm = Skill.buildSkill(Object.assign({}, pendingForm, {
 }));
 const formValues = SkillUi.formValuesFromSkill(approvedForm);
 eq(formValues.sender.company, "C", "form values carry the company default");
+eq(formValues.sender.contactPerson, "김담당", "form values carry the sender contact person default (#3401)");
 eq(formValues.validDays, 45, "form values carry validDays");
 eq(formValues.taxMode, "INCLUSIVE", "form values carry taxMode");
 eq(formValues.memo, "MM", "form values carry memo");

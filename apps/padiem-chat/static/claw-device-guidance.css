@@ -1,0 +1,112 @@
+/* #4139: pre-connection guidance for the Claw "내 컴퓨터" surface.
+   Presentation only — never an execution, pairing or selection surface. */
+.claw-device-guidance {
+  margin: 6px 0 12px;
+  color: var(--text, #243f53);
+  max-width: 820px;
+}
+.claw-device-guidance[hidden],
+.claw-device-guidance-panel[hidden],
+.claw-device-guidance-summary[hidden],
+.claw-device-guidance-recovery[hidden] { display: none !important; }
+.claw-device-guidance-toggle {
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 650;
+  min-height: 44px; /* #4541 touch floor */
+  padding: 8px 14px;
+  color: var(--text, #24435a);
+  background: var(--surface, rgba(255,255,255,.76));
+  border: 1px solid var(--line, rgba(66,106,135,.28));
+  border-radius: 999px;
+  cursor: pointer;
+}
+.claw-device-guidance-toggle::before { content: "?"; margin-right: 8px; font-weight: 700; }
+.claw-device-guidance-panel {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line, rgba(66,106,135,.26));
+  background: var(--surface, rgba(255,255,255,.86));
+  box-shadow: 0 7px 30px rgba(20,51,73,.06);
+}
+.claw-device-guidance-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.claw-device-guidance-head h2 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+.claw-device-guidance-intro,
+.claw-device-guidance-hint,
+.claw-device-guidance-note {
+  margin: 10px 0;
+  font-size: .82rem;
+  line-height: 1.6;
+  color: var(--text-dim, #506a7b);
+}
+.claw-device-guidance-sub {
+  margin: 14px 0 6px;
+  font-size: .84rem;
+  font-weight: 700;
+  color: var(--text, #24435a);
+}
+.claw-device-guidance-close {
+  font: inherit;
+  font-size: .8rem;
+  min-height: 44px;
+  border-radius: 9px;
+  border: 1px solid var(--line, rgba(66,106,135,.3));
+  background: var(--surface, #fff);
+  color: var(--text, #24435a);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.claw-device-guidance-steps,
+.claw-device-guidance-legend,
+.claw-device-guidance-summary-list,
+.claw-device-guidance-recovery-list,
+.claw-device-guidance-trouble-list {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  font-size: .82rem;
+  line-height: 1.65;
+  color: var(--text-dim, #506a7b);
+}
+.claw-device-guidance-steps { list-style: decimal; }
+.claw-device-guidance-summary-list { list-style: none; padding-left: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.claw-device-guidance-summary-list li {
+  font-size: .76rem;
+  color: var(--text-dim, #536e80);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.claw-device-guidance-recovery,
+.claw-device-guidance-summary {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--line, rgba(66,106,135,.22));
+  border-radius: 11px;
+  background: var(--surface, rgba(250,253,255,.5));
+}
+.claw-device-guidance-trouble {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line, rgba(66,106,135,.18));
+}
+.claw-device-guidance :focus-visible { outline: 3px solid var(--focus, #2a7db4); outline-offset: 3px; }
+:root[data-theme="dark"] .claw-device-guidance,
+:root[data-theme="night"] .claw-device-guidance {
+  --text: #e7eef6;
+  --text-dim: #b8c5d4;
+  --line: rgba(218,231,247,.2);
+  --surface: #202b3c;
+}
+@media (max-width: 580px) {
+  .claw-device-guidance-panel { padding: 13px; }
+  .claw-device-guidance-toggle { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .claw-device-guidance * { transition: none !important; animation: none !important; }
+}

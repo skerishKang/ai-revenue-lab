@@ -197,9 +197,27 @@ def test_d1_checkpoint_sequence_and_cli_flag_are_pinned() -> None:
     assert canary.D1_CHECKPOINT_LABELS == frozenset({"SELECT_A", "REPLACE_B", "CLEAR"})
 
 
-def test_a6_source_contract_runs_on_every_main_push() -> None:
+def test_a6_source_contract_runs_on_owned_main_pushes_only() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     assert "\n  push:\n    branches:\n      - main\n" in workflow
     assert "workflow_dispatch:" in workflow
     assert "LIVE_BROWSER_SESSION=0" in workflow
     assert "PRODUCTION_MUTATION=0" in workflow
+
+
+def test_main_push_matches_exact_pr_b67_source_scope() -> None:
+    # #3989: unrelated B62/B14 and docs-only merges must not launch an
+    # unrelated B67 source-only runner. All PR-owned paths remain covered
+    # on main, and workflow_dispatch remains unrestricted/unchanged.
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    pr_region = workflow.split("\n  pull_request:\n", 1)[1].split("\n  push:\n", 1)[0]
+    push_region = workflow.split("\n  push:\n", 1)[1].split("\n  workflow_dispatch:\n", 1)[0]
+    pull_paths = [line.strip() for line in pr_region.splitlines() if line.strip().startswith('- "')]
+    main_paths = [line.strip() for line in push_region.splitlines() if line.strip().startswith('- "')]
+    assert len(pull_paths) == len(main_paths) == 3
+    assert len(set(pull_paths)) == len(pull_paths)
+    assert main_paths == pull_paths
+    assert "branches:\n      - main" in push_region
+    assert "workflow_dispatch:" in workflow
+    assert '"apps/padiem-chat/**"' not in main_paths
+    assert '"packages/padiem-ai-core/**"' not in main_paths

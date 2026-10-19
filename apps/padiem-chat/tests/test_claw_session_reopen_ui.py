@@ -40,11 +40,15 @@ backend change; fail-closed backend behavior and Chat streaming stay untouched.
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import json
 import re
 import shutil
 import subprocess
 from pathlib import Path
+
+from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
@@ -85,6 +89,12 @@ def _execute_body(app: str) -> str:
     return body[: body.index("if (clawExecuteButton) {")]
 
 
+def _payload_source(app: str) -> str:
+    """The single place the execute request shape is assembled."""
+    start = app.index("function clawVisibleExecutePayload()")
+    return app[start : app.index("\n  }", start)]
+
+
 # ── static structural contracts: execute payload ───────────────────────────
 
 
@@ -99,17 +109,28 @@ def test_execute_payload_forwards_the_active_conversation_exactly_once() -> None
     assert app.count("if (typeof activeConversationId === \"string\" && activeConversationId) {") == 1
     assert app.count("executePayload.conversation_id = activeConversationId;") == 1
     assert app.count("body: JSON.stringify(executePayload),") == 1
-    # The forward lives inside the single execute entry point, between the
-    # sender read and the dispatch.
-    assert "const activeConversationId = conversationState.getConversationId();" in body
-    assert "executePayload.conversation_id = activeConversationId;" in body
+    # #3382: the shape is assembled once, in clawVisibleExecutePayload(), and the
+    # single execute entry point only consumes it. That keeps the duplicate-run
+    # key and the dispatched bytes from ever drifting apart.
+    assert "const executePayload = clawVisibleExecutePayload();" in body
     assert "body: JSON.stringify(executePayload)," in body
-    # Payload construction sits after the body guard and before dispatch.
+    payload = _payload_source(app)
+    assert "const activeConversationId = conversationState.getConversationId();" in payload
+    assert "executePayload.conversation_id = activeConversationId;" in payload
+    # Construction order: cooldown/body guards precede the build, the build
+    # precedes the wait timer, and inside it the conversation read precedes the
+    # literal and the guarded forward.
+    # Construction order: the cooldown guard precedes the build, and the wait
+    # timer still starts only after the built payload passed the body check.
     guard_at = body.index("if (clawRetryRemaining() > 0) return;")
+    built_at = body.index("const executePayload = clawVisibleExecutePayload();")
     body_check_at = body.index("if (!body) {")
-    payload_at = body.index("const executePayload = {")
     wait_at = body.index("beginClawWait();")
-    assert guard_at < body_check_at < payload_at < wait_at
+    assert guard_at < built_at < body_check_at < wait_at
+    read_at = payload.index("const activeConversationId = conversationState.getConversationId();")
+    literal_at = payload.index("const executePayload = {")
+    forward_at = payload.index("if (typeof activeConversationId")
+    assert read_at < literal_at < forward_at
     # Base fields keep their legacy shape so omitting conversation_id leaves
     # byte-identical legacy payloads for consumers that predate this issue.
     for field in (
@@ -119,18 +140,26 @@ def test_execute_payload_forwards_the_active_conversation_exactly_once() -> None
         "sender_hint: senderText || null,",
         "tier: selectedProductTier(),",
     ):
-        assert field in body, field
+        assert field in payload, field
+
+
+def test_execute_payload_is_built_in_exactly_one_place() -> None:
+    """The duplicate guard and the wire bytes must not own two definitions."""
+    app = _app_source()
+    assert app.count("function clawVisibleExecutePayload()") == 1
+    assert app.count("const executePayload = clawVisibleExecutePayload();") == 1
+    assert app.count("const executePayload = {") == 1
 
 
 def test_execute_omits_the_field_without_an_active_conversation() -> None:
     """The omit path must be structural: no empty-string sentinel, no null field."""
     app = _app_source()
-    body = _execute_body(app)
+    payload = _payload_source(app)
     # Assignment happens only inside the non-empty-string guard — there is no
     # unconditional `conversation_id:` key in the base payload.
-    base = body[body.index("const executePayload = {") : body.index("if (typeof activeConversationId")]
+    base = payload[payload.index("const executePayload = {") : payload.index("if (typeof activeConversationId")]
     assert "conversation_id" not in base
-    assert "executePayload.conversation_id = activeConversationId;" in body
+    assert "executePayload.conversation_id = activeConversationId;" in payload
 
 
 def test_preview_path_stays_free_of_conversation_authority() -> None:
@@ -182,11 +211,11 @@ def test_browser_never_mints_a_conversation_id() -> None:
         "crypto.",
         '"chat_"',
         "'chat_'",
-        "sessionStorage",
         "localStorage",
         "XMLHttpRequest",
     ):
         assert token not in app, token
+    assert_session_storage_is_handoff_only(app)
 
 
 # ── static structural contracts: run-card session action ───────────────────
@@ -239,7 +268,14 @@ def test_session_action_stays_b54_static_slice_safe() -> None:
     card_block = app.split("claw-run-card-artifact", 1)[1].split("function fetchClawRunHistory", 1)[0]
     assert card_block.count('createElement("button")') == 1
     assert "claw-run-card-download" in card_block
-    assert not re.search(r"open|preview|reopen", card_block, re.IGNORECASE), card_block
+    # #3932 adds a PDF-only read/preview controller, not a session reopening
+    # authority or a second generic document action. Download remains unchanged.
+    assert card_block.count("downloadClawArtifact(artifact.document_id") == 1
+    assert "validHistoricalArtifact?.(artifact)" in card_block
+    assert "viewer?.setHistorical?.(artifact)" in card_block
+    assert "openSavedConversation(sessionConversationId)" not in card_block
+    assert "fetch(" not in card_block and "/api/" not in card_block
+    assert "window.open(" not in card_block and "innerHTML" not in card_block
 
 
 # ── static structural contracts: copy and preserved anchors ────────────────
@@ -315,6 +351,15 @@ function makeEl(tag) {
   el.prepend = (...cs) => cs.forEach((c) => { el.children.unshift(c); c.parentNode = el; });
   el.append = (...cs) => cs.forEach((c) => el.appendChild(c));
   el.replaceChildren = (...cs) => { el.children = []; cs.forEach((c) => el.appendChild(c)); };
+  // #4806 inserts the artifact context relative to #messageList, so the shim
+  // needs the same child-insertion API the real Element exposes.
+  el.insertBefore = (node, ref) => {
+    const at = el.children.indexOf(ref);
+    if (at < 0) el.children.push(node); else el.children.splice(at, 0, node);
+    node.parentNode = el;
+    return node;
+  };
+  el.removeChild = (node) => { el.children = el.children.filter((c) => c !== node); return node; };
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
   el.querySelector = (sel) => el.children.find((c) => c.className && c.className.includes(sel.replace(/^\./, ""))) || null;
@@ -325,6 +370,18 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // #4806 added `messageList.closest(".conversation")` to the real app.js.
+  // This minimal DOM shim must expose the same Element API instead of
+  // crashing every behavioral harness that runs the real source.
+  el.closest = (sel) => {
+    const want = String(sel).replace(/^\./, "");
+    let node = el;
+    while (node) {
+      if (node.className && String(node.className).includes(want)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  };
   return el;
 }
 
@@ -350,6 +407,14 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty",
   "clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
 ].forEach((id) => add(id, "div"));
+// index.html nests #messageList inside <section class="conversation">, and the
+// real app.js reads that ancestor to decide whether the first turn continues
+// the landing panel (#4806). Model the same nesting instead of returning null.
+if (byId.messageList) {
+  const conversationSection = makeEl("section");
+  conversationSection.className = "conversation";
+  conversationSection.appendChild(byId.messageList);
+}
 byId.clawStatus.hidden = true;
 byId.clawWait.hidden = true;
 byId.clawRetryHint.hidden = true;
@@ -639,6 +704,10 @@ function cardWith(summary) {
 """
 
 
+# All consumers assert read-only facts from the same completed real app.js
+# behavior journey. Reuse it once per Python module rather than respawning
+# Node for each test; separate pytest processes still run independent checks.
+@lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
