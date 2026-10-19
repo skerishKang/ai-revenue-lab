@@ -53,7 +53,9 @@ def test_explicit_model_ids_are_used_exactly_once_and_do_not_pick_defaults():
         assert profile.model_policy == {"model": model, "max_retries": 0, "product_tier": "plus"}
         assert profile.max_steps == 1
         assert profile.allowed_tools == ()
-    assert _agent_profile().model_policy == {"model": "opencode-go/muse-spark-1.3-contributor", "max_retries": 0, "product_tier": "plus"}
+    plus_route = ORIGINAL_ACTIVE_ROUTE_FOR(ProductTierLabel.PLUS)
+    plus_model = plus_route.model_id if plus_route is not None else product_tier_routes.PLUS_HOLD_MODEL_ID
+    assert _agent_profile().model_policy == {"model": plus_model, "max_retries": 0, "product_tier": "plus"}
 
 
 def test_factory_threads_one_exact_model_to_engine_request():

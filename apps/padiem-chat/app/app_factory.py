@@ -219,7 +219,9 @@ from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH, local_runner_result
 from .claw_device_directory_routes import (
     CLAW_DEVICE_DIRECTORY_PATH, CLAW_PC_PAUSE_PATH, CLAW_PC_RESUME_PATH,
-    UnconfiguredDeviceDirectorySource, claw_device_directory, claw_pc_pause, claw_pc_resume,
+    CLAW_PC_SELECT_PATH,
+    UnconfiguredDeviceDirectorySource, claw_device_directory, claw_pc_pause,
+    claw_pc_resume, claw_pc_select,
 )
 from .claw_local_access_routes import (
     CLAW_LOCAL_ACCESS_PATH,
@@ -395,6 +397,7 @@ def create_app(
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
     claw_device_directory_source=None,
+    claw_pc_device_selection_store=None,
     b66_pc_access_policy: ProductPcAccessPolicy | None = None,
     claw_local_connect_port=None,
     claw_office_chooser_source=None,
@@ -704,6 +707,7 @@ def create_app(
         Route(CLAW_DEVICE_DIRECTORY_PATH, claw_device_directory, methods=["GET"]),
         Route(CLAW_PC_PAUSE_PATH, claw_pc_pause, methods=["POST"]),
         Route(CLAW_PC_RESUME_PATH, claw_pc_resume, methods=["POST"]),
+        Route(CLAW_PC_SELECT_PATH, claw_pc_select, methods=["POST"]),
         # #3650: the local/nonprod initiating leg. Fail-closed unless the run
         # composition explicitly installs a connect port; the central #3476
         # same-origin guard covers it like every cookie-authenticated POST.
@@ -792,18 +796,25 @@ def create_app(
     app.state.github_oauth_store = github_oauth_store
     app.state.github_oauth_provider = github_oauth_provider
     # #5121: owner-scoped customer-provider keys live in the canonical Chat D1,
-    # sealed with a purpose-separated key derived from the existing session
-    # secret. No second identity, login or secret store is introduced.
+    # sealed with a dedicated encryption secret that is separate from the
+    # session-cookie secret. The session secret is consulted only to read
+    # pre-separation v1 rows, which are then re-sealed under the dedicated key.
+    # A missing or unusable dedicated secret leaves the feature unavailable
+    # (fail closed) instead of silently deriving from the session secret.
     resolved_custom_store = custom_credential_store
     if (
         resolved_custom_store is None
         and d1_binding is not None
-        and isinstance(resolved.session_secret, str)
-        and resolved.session_secret
+        and isinstance(resolved.custom_key_secret, str)
+        and resolved.custom_key_secret
     ):
         try:
             resolved_custom_store = D1CustomProviderCredentialStore(
-                d1_binding, session_secret=resolved.session_secret
+                d1_binding,
+                key_secret=resolved.custom_key_secret,
+                session_secret=resolved.session_secret,
+                previous_key_secrets=resolved.custom_key_previous_secrets,
+                legacy_session_secrets=resolved.custom_key_legacy_session_secrets,
             )
         except Exception:
             resolved_custom_store = None
@@ -1106,6 +1117,7 @@ def create_app(
         if claw_device_directory_source is not None
         else UnconfiguredDeviceDirectorySource()
     )
+    app.state.claw_pc_device_selection_store = claw_pc_device_selection_store
     app.state.claw_local_access_source = (
         claw_local_access_source
         if claw_local_access_source is not None

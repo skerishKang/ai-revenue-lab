@@ -214,6 +214,40 @@ def verified_text_plan_source_from_environment() -> Any | None:
     return source
 
 
+#: #4139 trial: the deployment-supplied private-MeshCentral text material,
+#: resolved with the same ``module:attribute`` factory convention. The trial
+#: swap is the *executor* of the approved READ only; the canonical receipt, the
+#: order and the publisher are the ones the P01 lane already uses.
+MESHCENTRAL_TRIAL_TEXT_SOURCE_ENV = "PADIEM_AGENT_MESHCENTRAL_TRIAL_TEXT_SOURCE"
+
+
+def meshcentral_trial_text_material_from_environment() -> Any | None:
+    """Resolve the deployment's private-MeshCentral trial text material, or None.
+
+    Only a trusted module already importable in this process can supply it. A
+    missing, unimportable or shape-invalid material leaves the trial lane off —
+    never a fallback target, never a synthetic approval and never a file for a
+    request read from the environment.
+    """
+
+    factory_path = os.environ.get(MESHCENTRAL_TRIAL_TEXT_SOURCE_ENV)
+    if not factory_path:
+        return None
+    try:
+        module_name, _, attribute = factory_path.partition(":")
+        if not module_name or not attribute:
+            return None
+        module = __import__(module_name, fromlist=[attribute])
+        material = getattr(module, attribute)()
+    except (ImportError, AttributeError, ValueError, TypeError):
+        return None
+    if not callable(getattr(material, "target_for_admitted_command", None)):
+        return None
+    if not callable(getattr(material, "read_port", None)):
+        return None
+    return material
+
+
 def _browser_open_authority(
     *,
     device: Any,
@@ -891,6 +925,7 @@ def build_resident_host(
     office_renderer: Any | None = None,
     office_p01_plan_source: Any | None = None,
     verified_text_plan_source: Any | None = None,
+    meshcentral_trial_text_material: Any | None = None,
 ) -> LocalAgentResidentRuntimeHost:
     """Construct *the* resident host, once, on the redeemed binding."""
 
@@ -1020,7 +1055,13 @@ def build_resident_host(
     # reaches the broker on the one canonical device route (LOCAL1 #4705),
     # through the same P01-authorized selected-root READ — no second file
     # authority, no second upload path and no ambient switch.
+    # #4139 trial: exactly one executor may answer for an admitted TEXT command.
+    # Two configured materials would shadow each other, so they are refused
+    # rather than silently ordered.
+    if verified_text_plan_source is not None and meshcentral_trial_text_material is not None:
+        raise ContractError("two competing verified text read authorities refused")
     verified_text_lane = None
+    verified_text_authority = None
     if verified_text_plan_source is not None:
         from .local_resident_verified_text_delivery import (
             TrustedP01VerifiedTextFilePlanBridge,
@@ -1042,11 +1083,26 @@ def build_resident_host(
             config=config,
             clock=clock,
         )
+        verified_text_authority = "p01_selected_root"
+    elif meshcentral_trial_text_material is not None:
+        # The trial lane reuses the same canonical receipt, order and publisher
+        # and swaps only the executor of the approved READ: the private,
+        # official-MeshCtrl read over the dedicated tunnel.
+        from .local_agent_meshcentral_resident_lane import (
+            compose_meshcentral_verified_text_delivery,
+        )
+
+        verified_text_lane = compose_meshcentral_verified_text_delivery(
+            material=meshcentral_trial_text_material,
+            config=config,
+        )
+        verified_text_authority = "meshcentral_private_trial"
     # #4139: report the order the resident actually composed, rather than
     # letting the harness infer it from a later poll line.
     _emit(
         event="verified_text_lane",
         configured=verified_text_lane is not None,
+        authority=verified_text_authority,
         pending_before_ack=True,
         read_before_ack=True,
         upload_after_ack=True,
@@ -1185,6 +1241,7 @@ def main(argv: list[str] | None = None) -> int:
                 # host, from the deployment's own P01 material. Absent material
                 # leaves it off; nothing here approves, names or reads a file.
                 verified_text_plan_source=verified_text_plan_source_from_environment(),
+                meshcentral_trial_text_material=meshcentral_trial_text_material_from_environment(),
             )
         except ContractError as exc:
             _emit(

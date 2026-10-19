@@ -151,6 +151,7 @@ _ENGINE_ADMISSION_CODES = frozenset(
 
 
 _BOUNDED_ENGINE_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
+_PC_DEVICE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
 def _bounded_engine_error_code(record: object) -> str:
@@ -564,8 +565,8 @@ class P01EngineOrchestrationClient:
         """Exact Claw-owned PC plan: drive inventory or bounded list+read.
 
         Mirrors ``_is_trusted_capture_request``: a canonical plan with no
-        caller-supplied command. The file plan may carry only the server-side
-        selected device hint; the model never chooses the execution target.
+        caller-supplied command. Both plans may carry only their closed
+        server-selected device hint; the model never chooses the target.
         """
         plan = request.agent_plan
         if not (
@@ -582,29 +583,27 @@ class P01EngineOrchestrationClient:
             and plan.steps[0].step_id == "query_drives"
             and plan.steps[0].tool_id == "claw.pc.query_drives"
         ):
-            return request.tool_arguments is None
-        if (
+            target_key = "query_drives"
+        elif (
             len(plan.steps) == 2
             and plan.steps[0].step_id == "list_files"
             and plan.steps[0].tool_id == "claw.pc.list_files"
             and plan.steps[1].step_id == "read_file"
             and plan.steps[1].tool_id == "claw.pc.read_file"
         ):
-            arguments = request.tool_arguments
-            if arguments is None:
-                return True
-            if not isinstance(arguments, dict) or set(arguments) != {"files"}:
-                return False
-            files = arguments.get("files")
-            if not isinstance(files, dict) or set(files) != {"device_id"}:
-                return False
-            device_id = files.get("device_id")
-            return (
-                isinstance(device_id, str)
-                and 0 < len(device_id) <= 128
-                and all(33 <= ord(ch) <= 126 for ch in device_id)
-            )
-        return False
+            target_key = "files"
+        else:
+            return False
+        arguments = request.tool_arguments
+        if arguments is None:
+            return True
+        if not isinstance(arguments, dict) or set(arguments) != {target_key}:
+            return False
+        target = arguments.get(target_key)
+        if not isinstance(target, dict) or set(target) != {"device_id"}:
+            return False
+        device_id = target.get("device_id")
+        return isinstance(device_id, str) and bool(_PC_DEVICE_ID_RE.fullmatch(device_id))
 
     def _is_trusted_capture_request(self, request: OrchestrationRequest) -> bool:
         """Exact Claw-owned, one-capture plan only; never general tool authority."""

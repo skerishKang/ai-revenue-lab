@@ -21,6 +21,11 @@ MEETING_DIRECT_DRIVE_HOSTS = {
     "apps/padiem-chat/static/meeting-drive-upload.js": frozenset({"www.googleapis.com"}),
     "apps/padiem-chat/static/meeting-capture.js": frozenset({"drive.google.com"}),
 }
+# #5108 admin navigation only: the existing B66 Pages admin origin is reached
+# from the total-admin hub. One reviewed config file, never a global allowlist.
+ADMIN_HUB_NAVIGATION_HOSTS = {
+    "apps/padiem-chat/static/admin-config.js": frozenset({"quick-quote-kr.pages.dev"}),
+}
 
 
 URL_RE = re.compile(r"https?://[^\s\"'<>)}]+", re.IGNORECASE)
@@ -63,6 +68,7 @@ def main() -> None:
                 continue
             seen_hosts.add(host)
             feature_hosts = MEETING_DIRECT_DRIVE_HOSTS.get(relative.as_posix(), frozenset())
+            feature_hosts |= ADMIN_HUB_NAVIGATION_HOSTS.get(relative.as_posix(), frozenset())
             if host not in ALLOWED_LITERAL_HTTP_HOSTS and host not in feature_hosts:
                 violations.append(f"{relative}: unapproved external host {host}: {url}")
 

@@ -26,6 +26,7 @@ build, upload, remote verification and restore checks. It adds:
 | Failure record | `backup-status.json` records failed stage, stable error code, `recoverable`, `operator_action_required`, the failed attempt ids, and `consecutive_failures` |
 | Last success | `last_success_utc` / `last_success_backup_id` are carried forward across failed runs. `status --max-age-hours N` fails only when that explicit bound is given |
 | Generation drift | `--generation-pointer` plus `--generations-dir` resolve the current D1 snapshot from `current_generation.json`; a missing snapshot fails the run instead of backing up an old generation |
+| Chat + Engine coverage | The run follows the generation published by the 04:20 sync and requires both D1 seeds to match it before any build: the published `chat.sqlite3` and `engine.sqlite3`. A stale runtime pointer is recorded as `runtime_lag`; an unknown one fails the run |
 | Restore verification | `restore-verify` is operator-invoked only. It verifies remote integrity, decrypts, extracts into a throwaway directory, verifies every file hash and then removes that directory |
 | Scheduling | `install-task` writes a launcher and registers a Windows task. The time is a required argument; the installer does not choose a cadence |
 
@@ -64,6 +65,37 @@ The operator chose 05:30 for the initial registration because the established
 D1/R2 sync starts at 04:20 and the backup must read the published generation
 after that sync. This is a sequencing choice, not a new retention or cost
 policy.
+
+## D1 generation coverage
+
+The 04:20 sync publishes `snapshots/current_generation.json` and the matching
+`generations/<id>/` directory for `chat` (`padiem-chat-db`) and `engine`
+(`padiem-engine`) together. That publication is the handoff the 05:30 run
+follows; the backup does not need a manually refreshed runtime pointer to find
+the newest pair. Before building, a run validates:
+
+1. the published pointer names both databases and `production_bound` is false;
+2. `chat.sqlite3` and `engine.sqlite3` in the generation directory match the
+   published byte size and SHA-256;
+3. when the runtime pointer names the same generation, the Chat seed it names
+   matches the same size and SHA-256.
+
+When the runtime pointer still names an older generation that exists on disk,
+the run backs up the published generation and records
+`generation.runtime_lag=true` in `backup-status.json`. That is a visible
+runtime lag, not a data contradiction. A runtime pointer naming a generation
+with no published snapshot fails closed.
+
+`backup-status.json` records the validated pair under `databases` and the
+publication/runtime ids under `generation`. Stable failure codes:
+`generation_manifest_missing`, `generation_manifest_invalid`,
+`generation_pointer_mismatch`, `generation_chat_missing`,
+`generation_engine_missing`, `generation_chat_integrity_failed`,
+`generation_engine_integrity_failed`, `generation_chat_seed_missing`,
+`generation_chat_seed_integrity_failed`, `generation_snapshot_missing`. They
+are non-recoverable because a retry cannot fix a stale or incomplete
+generation. A failed run keeps `last_success_utc` and
+`last_success_backup_id` from the previous good backup.
 
 ## Failure handling
 

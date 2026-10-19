@@ -322,7 +322,7 @@ def test_lane_tool_path_stages_chat_run_and_records_answer():
                                   subject=SimpleNamespace(subject_id="sub_" + "a" * 32))
         return session, "sub_" + "a" * 32, "tenant-1"
 
-    async def fake_grant(req, session):
+    async def fake_grant(req, session, *, device_id=None):
         return (object(), "acc-1", "node-1")
 
     old_ready, old_uid = lane.auth_ready, lane.current_user_id
@@ -634,7 +634,7 @@ def test_lane_complete_decision_answers_without_engine():
                                   subject=SimpleNamespace(subject_id="sub_" + "a" * 32))
         return session, "sub_" + "a" * 32, "tenant-1"
 
-    async def fake_grant(req, session):
+    async def fake_grant(req, session, *, device_id=None):
         return (object(), "acc-1", "node-1")
 
     old_ready, old_uid = lane.auth_ready, lane.current_user_id

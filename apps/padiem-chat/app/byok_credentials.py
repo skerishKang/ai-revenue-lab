@@ -20,9 +20,34 @@ from padiem_control_plane.cloudflare_aes_gcm import CloudflareAesGcmPort
 MIN_CUSTOM_KEY_CHARS = 16
 MAX_CUSTOM_KEY_CHARS = 512
 
+# The dedicated key purpose never shares a derived key with the session-cookie
+# secret. v1 is retained for decryption only so pre-separation rows stay
+# readable until their next read re-seals them under v2.
+CUSTOM_KEY_PURPOSE = b"padiem-chat-custom-provider-key-aes-gcm-v2"
+LEGACY_CUSTOM_KEY_PURPOSE = b"padiem-chat-custom-provider-key-aes-gcm-v1"
+MIN_KEY_SECRET_CHARS = 32
+
 
 class CustomProviderSelectionError(ValueError):
     """The explicit provider/model pair is not a supported PADIEM Custom route."""
+
+
+class CustomCredentialDecryptionError(RuntimeError):
+    """Stored ciphertext is unreadable with every configured key.
+
+    The message is fixed and never carries key material, plaintext or the
+    stored envelope.
+    """
+
+
+def _derive_key(secret: str, purpose: bytes) -> bytes:
+    return hmac.digest(secret.encode("utf-8"), purpose, "sha256")
+
+
+def _strong_secret(value: Any, *, name: str) -> str:
+    if not isinstance(value, str) or len(value) < MIN_KEY_SECRET_CHARS:
+        raise ValueError(f"{name} must be at least {MIN_KEY_SECRET_CHARS} characters")
+    return value
 
 
 @dataclass(frozen=True, slots=True)
@@ -81,16 +106,58 @@ def _row(value: Any) -> dict[str, Any] | None:
 
 
 class D1CustomProviderCredentialStore:
-    def __init__(self, db: Any, *, session_secret: str, cipher: Any | None = None):
-        if db is None or not isinstance(session_secret, str) or len(session_secret) < 32:
-            raise ValueError("Trusted D1 and strong product session secret required")
+    def __init__(
+        self,
+        db: Any,
+        *,
+        key_secret: str,
+        session_secret: str | None = None,
+        cipher: Any | None = None,
+        previous_key_secrets: tuple[str, ...] | list[str] = (),
+        legacy_session_secrets: tuple[str, ...] | list[str] = (),
+    ):
+        """Seal customer keys under a dedicated encryption secret.
+
+        ``key_secret`` is mandatory and only its purpose-separated derivation is
+        retained. ``session_secret`` and ``legacy_session_secrets`` are accepted
+        solely to decrypt v1 rows written before the separation; successful
+        reads are re-sealed under the current dedicated key. Raw secrets are
+        never stored on the instance.
+        """
+        if db is None:
+            raise ValueError("Trusted D1 required")
+        current = _strong_secret(key_secret, name="custom key secret")
+
+        keys: list[bytes] = [_derive_key(current, CUSTOM_KEY_PURPOSE)]
+        for secret in previous_key_secrets or ():
+            keys.append(
+                _derive_key(
+                    _strong_secret(secret, name="previous custom key secret"),
+                    CUSTOM_KEY_PURPOSE,
+                )
+            )
+        # The active session secret is the most recent legacy source, so it is
+        # tried first; explicit history follows.
+        legacy = list(legacy_session_secrets or ())
+        if session_secret is not None:
+            legacy.insert(
+                0, _strong_secret(session_secret, name="session secret")
+            )
+        for secret in legacy:
+            keys.append(
+                _derive_key(
+                    _strong_secret(secret, name="legacy session secret"),
+                    LEGACY_CUSTOM_KEY_PURPOSE,
+                )
+            )
+
+        unique: list[bytes] = []
+        for key in keys:
+            if key not in unique:
+                unique.append(key)
         self.db = db
-        # Purpose-separated AES key derived from the server-only product secret.
-        self.key = hmac.digest(
-            session_secret.encode("utf-8"),
-            b"padiem-chat-custom-provider-key-aes-gcm-v1",
-            "sha256",
-        )
+        self.key = unique[0]
+        self._decryption_keys = tuple(unique)
         self.cipher = cipher if cipher is not None else CloudflareAesGcmPort()
 
     @staticmethod
@@ -161,19 +228,89 @@ class D1CustomProviderCredentialStore:
         )
         if not row:
             return None
+        return await self._decrypt_and_reseal(
+            row["sealed_credential"], user_id, provider_id
+        )
+
+    async def _decrypt_and_reseal(
+        self, sealed: Any, user_id: str, provider_id: str
+    ) -> str:
+        aad = self._aad(user_id, provider_id)
         try:
-            data = base64.b64decode(row["sealed_credential"], validate=True)
-            plaintext = await self.cipher.decrypt(
-                key=self.key,
-                iv=data[:12],
-                ciphertext=data[12:],
-                additional_data=self._aad(user_id, provider_id),
-            )
-            value = json.loads(plaintext.decode("utf-8"))
+            data = base64.b64decode(str(sealed), validate=True)
         except Exception:
-            return None
-        key = value.get("api_key") if isinstance(value, dict) else None
-        return key if isinstance(key, str) and key else None
+            raise CustomCredentialDecryptionError(
+                "PADIEM Custom credential could not be decrypted"
+            ) from None
+        if len(data) <= 12:
+            raise CustomCredentialDecryptionError(
+                "PADIEM Custom credential could not be decrypted"
+            )
+
+        value: str | None = None
+        matched_current = False
+        for key in self._decryption_keys:
+            try:
+                plaintext = await self.cipher.decrypt(
+                    key=key,
+                    iv=data[:12],
+                    ciphertext=data[12:],
+                    additional_data=aad,
+                )
+                parsed = json.loads(plaintext.decode("utf-8"))
+            except Exception:
+                continue
+            candidate = parsed.get("api_key") if isinstance(parsed, dict) else None
+            if isinstance(candidate, str) and candidate:
+                value = candidate
+                matched_current = key == self.key
+                break
+
+        if value is None:
+            raise CustomCredentialDecryptionError(
+                "PADIEM Custom credential could not be decrypted"
+            )
+
+        if not matched_current:
+            await self._reseal(sealed, value, user_id, provider_id, aad)
+        return value
+
+    async def _reseal(
+        self,
+        previous_sealed: Any,
+        api_key: str,
+        user_id: str,
+        provider_id: str,
+        aad: bytes,
+    ) -> None:
+        """Move one row to the current key without changing its metadata.
+
+        A concurrent explicit save must win, so the update is conditional on
+        the envelope that was just decrypted. A failed rewrite leaves the row
+        readable through the legacy key ring and is retried on the next read.
+        """
+        iv = self.cipher.random_bytes(12)
+        plaintext = json.dumps(
+            {"api_key": api_key}, separators=(",", ":"), ensure_ascii=True
+        ).encode("utf-8")
+        try:
+            ciphertext = await self.cipher.encrypt(
+                key=self.key, iv=iv, plaintext=plaintext, additional_data=aad
+            )
+            sealed = base64.b64encode(iv + ciphertext).decode("ascii")
+            await self._run(
+                """UPDATE chat_custom_provider_credentials
+                   SET sealed_credential=?
+                   WHERE user_id=? AND provider_id=? AND sealed_credential=?""",
+                sealed,
+                user_id,
+                provider_id,
+                previous_sealed,
+            )
+        except Exception:
+            # Availability of the recovered key wins; the legacy ring remains
+            # usable and the next read retries the migration.
+            return
 
     async def status(self, user_id: str) -> list[dict[str, Any]]:
         if not isinstance(user_id, str) or not user_id:

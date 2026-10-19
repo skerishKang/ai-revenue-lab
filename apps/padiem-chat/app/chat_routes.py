@@ -15,8 +15,8 @@ from .native_calendar_intent import parse_native_calendar_intent, try_native_cal
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
-from .byok_client import CustomProviderError
-from .byok_credentials import CustomProviderSelectionError, resolve_custom_selection
+from .byok_client import CustomProviderError, complete_owner_custom
+from .byok_credentials import CustomProviderSelectionError
 from .config import Settings
 from .conversation_routes import _history_unavailable
 from .documents import (
@@ -166,32 +166,10 @@ async def _complete_custom_chat(
     reference_context: str | None,
 ) -> dict[str, Any]:
     """B14-independent path: owner key -> explicit provider model -> answer."""
-    spec = resolve_custom_selection(selection.provider, selection.model)
-    store = getattr(request.app.state, "custom_credential_store", None)
-    client = getattr(request.app.state, "custom_provider_client", None)
-    if store is None or client is None:
-        raise CustomProviderError(
-            503,
-            "custom_provider_unavailable",
-            "PADIEM Custom을 현재 사용할 수 없습니다.",
-        )
-    try:
-        api_key = await store.api_key(uid, spec.provider_id)
-    except Exception:
-        raise CustomProviderError(
-            503,
-            "custom_credential_unavailable",
-            "PADIEM Custom 자격증명을 확인할 수 없습니다.",
-        )
-    if not api_key:
-        raise CustomProviderError(
-            409,
-            "custom_credential_required",
-            "PADIEM Custom API 키를 먼저 등록해 주세요.",
-        )
-    return await client.complete(
-        spec=spec,
-        api_key=api_key,
+    return await complete_owner_custom(
+        request.app.state,
+        uid=uid,
+        selection=selection,
         messages=messages,
         system_context=reference_context,
     )
@@ -455,10 +433,7 @@ async def api_chat_stream(request: Request):
                 request, user_text=latest_user_text, skill=skill,
                 model_id=selected_model, conversation_id=conversation_id,
                 tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
-                device_id=(
-                    raw.get("device_id")
-                    if isinstance(raw.get("device_id"), str) else None
-                ),
+                device_id=raw.get("device_id"),
             )
         except ChatPCDriveError as exc:
             return JSONResponse(
@@ -897,10 +872,7 @@ async def api_chat(request: Request) -> JSONResponse:
             request, user_text=latest_user_text, skill=skill,
             model_id=selected_model, conversation_id=conversation_id,
             tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
-            device_id=(
-                raw.get("device_id")
-                if isinstance(raw.get("device_id"), str) else None
-            ),
+            device_id=raw.get("device_id"),
         )
         if lane_response is not None:
             return lane_response

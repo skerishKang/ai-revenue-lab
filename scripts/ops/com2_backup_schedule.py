@@ -11,6 +11,9 @@ and restore check. It adds only:
 * a status JSON that records the failed stage, a stable error code,
   recoverability, and the last successful backup even while the current run is
   failing;
+* a generation check that requires both the Chat and Engine D1 seeds to match
+  the published generation pointer, so a backup cannot pass while one database
+  is missing or from a different generation;
 * a freshness check for the last success. The check requires an explicit
   ``--max-age-hours``; no cadence, retention or cost policy is decided here;
 * an operator-invoked restore verification into a throwaway directory;
@@ -25,6 +28,7 @@ restored, and no secret value is written to a status file or a log.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
@@ -60,6 +64,7 @@ DEFAULT_SECRET_STORE = Path(
     )
 )
 GENERATION_KIND = "PADIEM_COM2_B62_GENERATION_V1"
+GENERATION_DATABASES = {"chat": "padiem-chat-db", "engine": "padiem-engine"}
 _GENERATION_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 _TIME_RE = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
 _RETRYABLE_HTTP = re.compile(r"^http_(429|5\d\d)$")
@@ -146,35 +151,143 @@ class BackupConfig:
     generations_dir: Path | None = None
 
 
-def resolve_roots(config: BackupConfig) -> list[Path]:
-    """Return the configured roots, resolving the current D1 generation.
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as reader:
+        for chunk in iter(lambda: reader.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
-    The generation snapshot directory changes with every published generation,
-    so a fixed path would silently back up an old database. A pointer that
-    cannot be resolved fails the run instead of producing a stale backup.
+
+def _read_pointer(path: Path, missing_code: str, invalid_code: str) -> dict[str, Any]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except OSError:
+        raise BACKUP_OPS.OpsError(missing_code)
+    except ValueError:
+        raise BACKUP_OPS.OpsError(invalid_code)
+    if not isinstance(payload, dict):
+        raise BACKUP_OPS.OpsError(invalid_code)
+    return payload
+
+
+def resolve_generation(config: BackupConfig) -> dict[str, Any] | None:
+    """Resolve the D1 generation published by the daily sync.
+
+    The 04:20 sync publishes ``snapshots/current_generation.json`` and the
+    matching ``generations/<id>/`` directory. That publication is the handoff
+    the 05:30 backup follows, so the runner never depends on a manually
+    refreshed runtime pointer to find the newest Chat/Engine pair.
+
+    The runtime pointer is an additional consistency check. When it names the
+    same generation, its Chat seed must match the published record. When it
+    names an older generation that still exists on disk, the run proceeds and
+    records the lag; an unknown generation fails closed.
     """
-    selected: list[Path] = list(config.roots)
-    pointer_present = config.generation_pointer is not None
     directory_present = config.generations_dir is not None
-    if pointer_present != directory_present:
+    pointer_present = config.generation_pointer is not None
+    if pointer_present and not directory_present:
         raise BACKUP_OPS.OpsError("generation_config_incomplete")
-    if pointer_present and directory_present:
-        assert config.generation_pointer is not None and config.generations_dir is not None
-        try:
-            pointer = json.loads(config.generation_pointer.read_text(encoding="utf-8"))
-        except OSError:
-            raise BACKUP_OPS.OpsError("generation_pointer_missing")
-        except ValueError:
+    if not directory_present:
+        return None
+    assert config.generations_dir is not None
+
+    published_path = Path(config.generations_dir).parent / "current_generation.json"
+    published = _read_pointer(
+        published_path,
+        "generation_manifest_missing",
+        "generation_manifest_invalid",
+    )
+    generation = published.get("generation")
+    if not isinstance(generation, str) or not _GENERATION_RE.fullmatch(generation):
+        raise BACKUP_OPS.OpsError("generation_manifest_invalid")
+    if published.get("production_bound") is not False:
+        raise BACKUP_OPS.OpsError("generation_manifest_invalid")
+    snapshot = Path(config.generations_dir) / generation
+    if not snapshot.is_dir():
+        raise BACKUP_OPS.OpsError("generation_snapshot_missing")
+    records = published.get("databases")
+    if not isinstance(records, dict):
+        raise BACKUP_OPS.OpsError("generation_manifest_invalid")
+
+    databases: dict[str, Any] = {}
+    for label, database in GENERATION_DATABASES.items():
+        record = records.get(label)
+        if not isinstance(record, dict):
+            raise BACKUP_OPS.OpsError(f"generation_{label}_missing")
+        if record.get("database") != database:
+            raise BACKUP_OPS.OpsError("generation_manifest_invalid")
+        size = record.get("bytes")
+        sha = record.get("sha256")
+        if isinstance(size, bool) or not isinstance(size, int) or size <= 0:
+            raise BACKUP_OPS.OpsError("generation_manifest_invalid")
+        if (
+            not isinstance(sha, str)
+            or len(sha) != 64
+            or any(c not in "0123456789abcdef" for c in sha)
+        ):
+            raise BACKUP_OPS.OpsError("generation_manifest_invalid")
+        seed = snapshot / f"{label}.sqlite3"
+        if not seed.is_file():
+            raise BACKUP_OPS.OpsError(f"generation_{label}_missing")
+        if seed.stat().st_size != size or _file_sha256(seed) != sha:
+            raise BACKUP_OPS.OpsError(f"generation_{label}_integrity_failed")
+        databases[label] = {
+            "database": database,
+            "file": seed.name,
+            "bytes": size,
+            "sha256": sha,
+            "tables": record.get("tables"),
+        }
+
+    runtime: dict[str, Any] | None = None
+    if config.generation_pointer is not None:
+        pointer = _read_pointer(
+            config.generation_pointer,
+            "generation_pointer_missing",
+            "generation_pointer_invalid",
+        )
+        if pointer.get("kind") != GENERATION_KIND:
             raise BACKUP_OPS.OpsError("generation_pointer_invalid")
-        if not isinstance(pointer, dict) or pointer.get("kind") != GENERATION_KIND:
+        runtime_generation = pointer.get("d1_generation")
+        if (
+            not isinstance(runtime_generation, str)
+            or not _GENERATION_RE.fullmatch(runtime_generation)
+        ):
             raise BACKUP_OPS.OpsError("generation_pointer_invalid")
-        generation = pointer.get("d1_generation")
-        if not isinstance(generation, str) or not _GENERATION_RE.fullmatch(generation):
-            raise BACKUP_OPS.OpsError("generation_pointer_invalid")
-        snapshot = Path(config.generations_dir) / generation
-        if not snapshot.is_dir():
-            raise BACKUP_OPS.OpsError("generation_snapshot_missing")
-        selected.append(snapshot)
+        lag = runtime_generation != generation
+        if lag:
+            if not (Path(config.generations_dir) / runtime_generation).is_dir():
+                raise BACKUP_OPS.OpsError("generation_pointer_mismatch")
+            runtime = {"generation": runtime_generation, "lag": True}
+        else:
+            seed_name = pointer.get("d1_seed")
+            if not isinstance(seed_name, str) or Path(seed_name).name != seed_name:
+                raise BACKUP_OPS.OpsError("generation_pointer_invalid")
+            runtime_seed = Path(config.generation_pointer).parent / seed_name
+            chat = databases["chat"]
+            if not runtime_seed.is_file():
+                raise BACKUP_OPS.OpsError("generation_chat_seed_missing")
+            if (
+                runtime_seed.stat().st_size != chat["bytes"]
+                or _file_sha256(runtime_seed) != chat["sha256"]
+            ):
+                raise BACKUP_OPS.OpsError("generation_chat_seed_integrity_failed")
+            runtime = {"generation": runtime_generation, "lag": False}
+
+    return {
+        "generation": generation,
+        "snapshot": snapshot,
+        "databases": databases,
+        "runtime": runtime,
+    }
+
+
+def _resolve(config: BackupConfig) -> tuple[list[Path], dict[str, Any] | None]:
+    generation = resolve_generation(config)
+    selected: list[Path] = list(config.roots)
+    if generation is not None:
+        selected.append(generation["snapshot"])
 
     resolved: list[Path] = []
     seen: set[Path] = set()
@@ -189,7 +302,17 @@ def resolve_roots(config: BackupConfig) -> list[Path]:
         resolved.append(candidate)
     if not resolved:
         raise BACKUP_OPS.OpsError("no_source_roots")
-    return resolved
+    return resolved, generation
+
+
+def resolve_roots(config: BackupConfig) -> list[Path]:
+    """Return the configured roots, resolving the current D1 generation.
+
+    The generation snapshot directory changes with every published generation,
+    so a fixed path would silently back up an old database. A pointer that
+    cannot be resolved fails the run instead of producing a stale backup.
+    """
+    return _resolve(config)[0]
 
 
 def acquire_lock(state_dir: Path, *, stale_minutes: float, now: float | None = None) -> Path:
@@ -252,6 +375,8 @@ def _base_status(config: BackupConfig, previous: Mapping[str, Any], started: str
         "recoverable": None,
         "operator_action_required": None,
         "source": None,
+        "generation": None,
+        "databases": None,
         "payload": None,
         "remote_verified": False,
         "last_success_utc": previous.get("last_success_utc"),
@@ -315,13 +440,24 @@ def run_once(
     attempt = 0
 
     try:
-        roots = resolve_roots(config)
+        roots, generation = _resolve(config)
         token = os.environ.get(config.token_env, "")
         if not token:
             raise BACKUP_OPS.OpsError("backup_token_env_missing")
         key = ops.encryption_key_from_env(config.key_env)
         base_id = ops.default_backup_id()
         status["source"] = {"roots": len(roots)}
+        runtime_lag = False
+        if generation is not None:
+            status["databases"] = generation["databases"]
+            runtime = generation["runtime"] or {}
+            runtime_lag = bool(runtime.get("lag"))
+            status["generation"] = {
+                "published": generation["generation"],
+                "runtime": runtime.get("generation"),
+                "runtime_lag": runtime_lag,
+            }
+        coverage = "+".join(generation["databases"]) if generation is not None else "none"
     except BACKUP_OPS.OpsError as error:
         return _finish_failure(state_dir, status, "prepare", error.code, log)
     except Exception:
@@ -426,6 +562,8 @@ def run_once(
             "RUN_OK",
             f"backup_id={backup_id}",
             f"remote_verified=true",
+            f"d1={coverage}",
+            f"runtime_lag={str(runtime_lag).lower()}",
             f"attempts={attempt}",
         )
         return 0, status

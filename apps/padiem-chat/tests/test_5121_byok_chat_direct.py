@@ -26,6 +26,7 @@ from app.history import PRODUCT_SCOPE_CHAT
 from app.main import create_app
 
 SESSION_SECRET = "byok-5121-session-secret-not-a-real-credential"
+CUSTOM_KEY_SECRET = "byok-5121-custom-key-secret-not-a-real-credential"
 CUSTOM_KEY = "sk-customer-owned-5121-key-AAAA1111"
 ROTATED_KEY = "sk-customer-owned-5121-key-BBBB2222"
 OWNER = "usr_" + "a" * 32
@@ -43,6 +44,7 @@ def settings() -> Settings:
         google_client_id="5121-client.apps.googleusercontent.com",
         google_client_secret="unit-test-google-secret",
         session_secret=SESSION_SECRET,
+        custom_key_secret=CUSTOM_KEY_SECRET,
         session_max_age_seconds=3600,
     )
 
@@ -215,7 +217,10 @@ def build_app(store=None, recorder=None, d1=None):
     if d1 is None:
         d1 = SQLiteD1()
     credential_store = store or D1CustomProviderCredentialStore(
-        d1, session_secret=SESSION_SECRET, cipher=FakeAuthenticatedCipher()
+        d1,
+        key_secret=CUSTOM_KEY_SECRET,
+        session_secret=SESSION_SECRET,
+        cipher=FakeAuthenticatedCipher(),
     )
     recorder = recorder or ProviderRecorder()
     app = create_app(
@@ -278,7 +283,10 @@ def sse_events(text):
 async def test_store_seals_rotates_and_isolates_owner_keys():
     d1 = SQLiteD1()
     store = D1CustomProviderCredentialStore(
-        d1, session_secret=SESSION_SECRET, cipher=FakeAuthenticatedCipher()
+        d1,
+        key_secret=CUSTOM_KEY_SECRET,
+        session_secret=SESSION_SECRET,
+        cipher=FakeAuthenticatedCipher(),
     )
 
     saved = await store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY, now=100)

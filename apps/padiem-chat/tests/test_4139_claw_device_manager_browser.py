@@ -55,7 +55,9 @@ def open_claw(browser, server, width=1280):
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto(server, wait_until="domcontentloaded")
     page.locator("#clawDeviceManagerToggle").wait_for(state="attached")
-    assert page.locator("#clawDeviceManager").is_hidden()
+    # #5015: the panel is mounted once above the shared composer for both
+    # products (its own container governs visibility), not inside Claw only.
+    assert page.locator("#clawDeviceManager").count() == 1
     # Simulate the Claw presentation state without invoking authenticated
     # backend activation; app.js owns actual navigation and session gates.
     page.evaluate("""() => {
@@ -69,6 +71,29 @@ def open_claw(browser, server, width=1280):
 
 def payload(items):
     return {"ok": True, "available": True, "ownerScoped": True, "devices": items}
+
+
+def route_directory(page, fixture, gets, posts):
+    """One handler for the directory GET and the #5015 selection POST."""
+    def handler(route):
+        if route.request.url.endswith("/select"):
+            body = json.loads(route.request.post_data or "{}")
+            posts.append(body)
+            device = body.get("device_id")
+            route.fulfill(
+                status=200, content_type="application/json",
+                body=json.dumps({
+                    "ok": True, "selectedDeviceId": device,
+                    "selectedUsable": True, "selectedState": "CONNECTED",
+                }),
+            )
+            return
+        gets.append(route.request.method)
+        route.fulfill(
+            status=200, content_type="application/json",
+            body=json.dumps(fixture["devices"], ensure_ascii=False),
+        )
+    page.route("**/api/claw/local-access/devices**", handler)
 
 
 def online(device_id, name):
@@ -88,33 +113,28 @@ def offline(device_id, name):
 @pytest.mark.parametrize("width", [390, 873, 1280])
 def test_device_list_choice_refresh_and_approval_boundary(browser, server, width):
     page, errors = open_claw(browser, server, width)
-    requests = []
+    gets, posts = [], []
     fixture = {"devices": payload([
         online("home", "집 컴퓨터"),
         offline("laptop", "노트북"),
         online("office", "사무실 PC"),
     ])}
-
-    def mock(route):
-        requests.append((route.request.method, route.request.url))
-        route.fulfill(
-            status=200, content_type="application/json",
-            body=json.dumps(fixture["devices"], ensure_ascii=False),
-        )
-
-    page.route("**" + ENDPOINT, mock)
-    # No automatic device lookup in the background.
-    assert not requests
+    route_directory(page, fixture, gets, posts)
+    # At most one authenticated-session restore read; no idle polling.
+    assert len(gets) <= 1 and not posts
     page.locator("#clawDeviceManagerToggle").click()
     page.locator("#clawDeviceManagerList li").first.wait_for()
-    assert len(requests) == 1
-    assert requests[0][0] == "GET"
+    assert gets[-1] == "GET"
+    assert len(gets) <= 2
     assert page.locator("#clawDeviceManagerList li").count() == 3
     assert page.locator("#clawDeviceManagerList li").nth(1).locator("button").is_disabled()
     # Even if a PC is online, the app never picks it without a click.
     assert page.locator('#clawDeviceManagerList [aria-pressed="true"]').count() == 0
     page.locator("#clawDeviceManagerList li").nth(2).locator("button").click()
-    assert page.locator('#clawDeviceManagerList [aria-pressed="true"]').count() == 1
+    page.wait_for_function(
+        """() => document.querySelectorAll('#clawDeviceManagerList [aria-pressed="true"]').length === 1"""
+    )
+    assert posts == [{"device_id": "office"}]
     assert page.locator("#clawDeviceManagerStatus").inner_text().startswith(
         "선택됨."
     )
@@ -130,8 +150,9 @@ def test_device_list_choice_refresh_and_approval_boundary(browser, server, width
          list.children[0].querySelector("strong").textContent === "사무실 PC";
     }""")
     assert page.locator('#clawDeviceManagerList [aria-pressed="true"]').count() == 0
-    assert page.locator("#clawDeviceManagerList li").first.locator("button").is_disabled()
-    assert len(requests) == 2 and all(m == "GET" for m, _ in requests)
+    page.locator("#clawDeviceManagerList li").first.locator("button").is_disabled()
+    assert gets[-1] == "GET"
+    assert len(gets) <= 3
     assert not errors, errors
     page.close()
 
@@ -202,26 +223,29 @@ def test_credential_and_markup_never_injected(browser, server):
 
 def test_owner_switch_hides_previous_devices_and_clear_on_navigation(browser, server):
     page, errors = open_claw(browser, server)
-    fixture = {"body": payload([online("pc1", "계정 A PC")])}
-    page.route("**" + ENDPOINT, lambda route: route.fulfill(
-        status=200, content_type="application/json",
-        body=json.dumps(fixture["body"], ensure_ascii=False),
-    ))
+    fixture = {"devices": payload([online("pc1", "계정 A PC")])}
+    gets, posts = [], []
+    route_directory(page, fixture, gets, posts)
     page.locator("#clawDeviceManagerToggle").click()
     page.locator("#clawDeviceManagerList li").first.wait_for()
     page.locator("#clawDeviceManagerList li button").click()
-    fixture["body"] = payload([offline("pc2", "계정 B PC")])
+    page.wait_for_function(
+        """() => document.querySelectorAll('#clawDeviceManagerList [aria-pressed="true"]').length === 1"""
+    )
+    assert posts == [{"device_id": "pc1"}]
+    fixture["devices"] = payload([offline("pc2", "계정 B PC")])
     page.evaluate('window.dispatchEvent(new CustomEvent("padiem:auth-state", {detail: {authenticated: true}}))')
     page.get_by_text("계정 B PC").wait_for()
     assert page.get_by_text("계정 A PC").count() == 0
     assert page.locator("#clawDeviceManagerList li button").is_disabled()
-    # Navigating out of Claw always closes and invalidates the snapshot.
+    # #5015: the panel is common now, so switching to Chat keeps it available;
+    # the account snapshot was still invalidated and re-read above.
     page.evaluate("""() => {
         document.querySelector(".app-shell").setAttribute("data-state", "chat");
     }""")
-    page.locator("#clawDeviceManager").wait_for(state="hidden")
-    assert page.locator("#clawDeviceManagerPanel").is_hidden()
-    assert page.locator("#clawDeviceManagerToggle").get_attribute("aria-expanded") == "false"
+    page.wait_for_timeout(50)
+    assert page.locator("#clawDeviceManager").is_visible()
+    assert page.get_by_text("계정 B PC").count() == 1
     assert not errors
     page.close()
 

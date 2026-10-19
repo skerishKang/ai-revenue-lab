@@ -79,7 +79,7 @@ def test_free_beam_and_paid_muse_primaries_derive_from_the_shared_contract() -> 
     policy=resolve_model_policy([{"role":"user","content":"안녕하세요"}])
     assert DEFAULT_CHAT_PROFILE=="free"
     assert policy.profile=="free"
-    assert policy.model_id==DEFAULT_B14_MODEL_ID==FREE_B14_MODEL_ID=="opencode-go/beam-free"
+    assert policy.model_id==DEFAULT_B14_MODEL_ID==FREE_B14_MODEL_ID==active_route_for(ProductTierLabel.FREE).model_id
     assert {LOW_B14_MODEL_ID,MEDIUM_B14_MODEL_ID,HIGH_B14_MODEL_ID}=={MUSE_B14_MODEL_ID}
     assert model_policy_is_executable(policy.model_id)
     assert EXECUTABLE_B14_MODEL_IDS==_declared_executable_model_ids() | {FREE_B14_MODEL_ID}
@@ -287,7 +287,7 @@ def test_request_tier_context_is_scoped_to_the_selected_grade() -> None:
 def test_b62_free_is_the_beam_primary_and_paid_grades_use_muse() -> None:
     msgs=[{"role":"user","content":"질문"}]
     free=resolve_tier_policy(msgs,"free")
-    assert free.model_id==FREE_B14_MODEL_ID=="opencode-go/beam-free"
+    assert free.model_id==FREE_B14_MODEL_ID==active_route_for(ProductTierLabel.FREE).model_id
     assert free.profile=="free"
     assert model_policy_is_executable(free.model_id)
     for tier in (ProductTierLabel.PLUS,ProductTierLabel.PRO,ProductTierLabel.MAX):
@@ -297,4 +297,4 @@ def test_free_exact_model_is_not_browser_overridable() -> None:
     with pytest.raises(ModelPolicyError) as exc:
         resolve_tier_policy([{"role": "user", "content": "x"}], "free/custom-model")
     assert exc.value.code == "unknown_product_tier"
-    assert model_policy_is_executable("opencode-go/muse-spark-1.3-contributor") is True
+    assert model_policy_is_executable(active_route_for(ProductTierLabel.PLUS).model_id) is True

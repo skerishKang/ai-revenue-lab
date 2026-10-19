@@ -62,6 +62,7 @@ _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
     {
         "subject_id",
         "agent_plan",
+        "tool_arguments",
         "recovery_policy",
         "max_retries",
         "require_evidence",
@@ -93,6 +94,49 @@ _DECISION_FIELDS = frozenset(
 )
 _CANCEL_ALLOWED = frozenset({"continuation_ref", "reason"})
 
+# #5015: the only authority-adjacent field this client may forward is the
+# server-selected PC device hint on the two canonical PC plans. It is a closed
+# shape, never a model-chosen device or a general tool argument surface.
+_PC_PLAN_AGENT_IDS = frozenset({
+    "agent:padiem:claw-pc-query@1",
+    "agent:padiem:chat-pc-query@1",
+})
+_PC_PLAN_STEPS = MappingProxyType({
+    "query_drives": (("query_drives", "claw.pc.query_drives"),),
+    "files": (
+        ("list_files", "claw.pc.list_files"),
+        ("read_file", "claw.pc.read_file"),
+    ),
+})
+_PC_DEVICE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
+
+
+def _trusted_pc_tool_arguments(agent_plan: Any, tool_arguments: Any) -> bool:
+    """True only for the closed trusted-PC device hint on a canonical plan."""
+    if not isinstance(agent_plan, Mapping) or not isinstance(tool_arguments, Mapping):
+        return False
+    if agent_plan.get("agent_id") not in _PC_PLAN_AGENT_IDS:
+        return False
+    if set(tool_arguments) not in ({"query_drives"}, {"files"}):
+        return False
+    key = next(iter(tool_arguments))
+    steps = agent_plan.get("steps")
+    expected = _PC_PLAN_STEPS[key]
+    if not isinstance(steps, list) or len(steps) != len(expected):
+        return False
+    for step, (step_id, tool_id) in zip(steps, expected):
+        if (
+            not isinstance(step, Mapping)
+            or step.get("step_id") != step_id
+            or step.get("tool_id") != tool_id
+        ):
+            return False
+    entry = tool_arguments[key]
+    if not isinstance(entry, Mapping) or set(entry) != {"device_id"}:
+        return False
+    device_id = entry.get("device_id")
+    return isinstance(device_id, str) and bool(_PC_DEVICE_ID_RE.fullmatch(device_id))
+
 ORCHESTRATION_FIELD_PARITY = MappingProxyType(
     {
         "app_id": "CLIENT_OWNED_AND_INJECTED",
@@ -115,7 +159,7 @@ ORCHESTRATION_FIELD_PARITY = MappingProxyType(
         "compiled_agent_profile": "EXPLICITLY_DEFERRED_AND_REJECTED",
         "tool_authorization": "EXPLICITLY_DEFERRED_AND_REJECTED",
         "tool_runtime": "EXPLICITLY_DEFERRED_AND_REJECTED",
-        "tool_arguments": "EXPLICITLY_DEFERRED_AND_REJECTED",
+        "tool_arguments": "TRUSTED_PC_PLAN_DEVICE_HINT_ONLY",
         "pause": "UNSUPPORTED_AND_NOT_EXPOSED",
     }
 )
@@ -273,11 +317,22 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
     if not isinstance(request, Mapping):
         raise PadiemAiEngineClientError("invalid_engine_request", "Engine request must be an object")
     data = dict(request)
-    if set(data) & _DEFERRED_AUTHORITY_FIELDS:
-        raise PadiemAiEngineClientError(
-            "unsupported_orchestration_field",
-            "Engine authority-bearing fields are not client-supplied in this contract version",
+    deferred = set(data) & _DEFERRED_AUTHORITY_FIELDS
+    if deferred:
+        # The closed trusted-PC device hint is the one reviewed exception; every
+        # other authority-bearing field stays rejected before transport.
+        allowed_deferred = (
+            {"tool_arguments"}
+            if _trusted_pc_tool_arguments(
+                data.get("agent_plan"), data.get("tool_arguments")
+            )
+            else set()
         )
+        if deferred - allowed_deferred:
+            raise PadiemAiEngineClientError(
+                "unsupported_orchestration_field",
+                "Engine authority-bearing fields are not client-supplied in this contract version",
+            )
     if set(data) - allowed:
         raise PadiemAiEngineClientError(
             "invalid_engine_request", "Engine request contains unsupported fields"
@@ -293,6 +348,7 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         "trace_id",
         "subject_id",
         "agent_plan",
+        "tool_arguments",
         "recovery_policy",
         "max_retries",
         "require_evidence",

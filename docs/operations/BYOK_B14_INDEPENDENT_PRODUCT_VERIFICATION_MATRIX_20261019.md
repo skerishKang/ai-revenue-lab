@@ -6,7 +6,7 @@
 
 현재 B14의 모델·Secret·라우팅 오류가 각 제품의 업무 로직 테스트를 불필요하게 중복 차단한다. **제품 기능의 실제 모델 사용 검증과 B14 경유 통합 검증을 분리**하고, 고장 난 경계의 소유자를 식별하여 동일 장애에 대해 Chat/Claw/B66의 검사를 반복하지 않는다.
 
-PADIEM Custom(BYOK)이 구현·검증되면 **고객 소유 자격증명으로 공급사를 직접 호출하는 B14 비경유 실행**을 제품 기능 수용 증거로 인정할 수 있다. BYOK 성공만으로 B14의 모델 선택·등급·폴백 또는 전체 플랫폼 경로 완료를 주장하지 않는다. **현재 BYOK 미구현·미실증 상태에서 PASS를 선기록하지 않는다.**
+PADIEM Custom(BYOK)이 구현·검증되면 **고객 소유 자격증명으로 공급사를 직접 호출하는 B14 비경유 실행**을 제품 기능 수용 증거로 인정할 수 있다. BYOK 성공만으로 B14의 모델 선택·등급·폴백 또는 전체 플랫폼 경로 완료를 주장하지 않는다. **미구현·미실증 경로에서 PASS를 선기록하지 않는다.**
 
 ## 필수 시험 구분
 
@@ -54,3 +54,80 @@ EVIDENCE=테스트/로그/PR/실행 식별자(비밀 제외)
 5. #5108에서 관리자 B14 상태 및 BYOK 연결 상태를 혼동하지 않도록 구분.
 
 이 원칙은 테스트 증거의 귀속과 중복 검사 감소를 위한 기술 절차이며, 새로운 고객 요금/이용 제한 정책을 설정하지 않는다.
+
+## #5002 구현 반영 (2026-10-19)
+
+- `apps/padiem-chat/tests/model_path_manifest.json`이 각 모델 경계 테스트 모듈을
+  `BYOK_DIRECT` / `B14_MANAGED` / `NO_MODEL` / `MOCK`으로 분류하고, conftest가
+  모듈당 정확히 하나의 pytest marker를 부여한다. `test_5002_model_path_classification.py`는
+  `app.b14_client`를 새로 import한 테스트가 분류 없이 `NO_MODEL`로 빠지면 실패한다.
+- `.github/workflows/b62-padiem-chat-ci.yml`의 FULL 제품 회귀는 B14 계약 job을
+  계속 실행하되 그 실패로 `b62-test`를 연쇄 실패시키지 않는다. B14 job의 실패는
+  자체 check로 표시되고, 최초 실패 증거는 #4318에 1회 기록한 뒤 제품 원장은 링크만
+  남긴다. `b14_only`(B14 소스)와 `b14_tests_only`(B14 테스트) 범위는 검토 대상
+  자체가 B14이므로 계속 B14 계약 성공을 요구한다.
+- CI summary는 `PRODUCT_E2E_BYOK`, `PRODUCT_E2E_BYOK_LIVE`, `B14_E2E`를 별도로 출력한다.
+  `PRODUCT_E2E_BYOK=INTEGRATION_MOCK`은 실제 ASGI·D1 저장소를 쓰되 공급사 전송을
+  `MockTransport`로 대체한 통합 증거이며, LIVE 공급사 호출 증거가 아니다.
+  `PRODUCT_E2E_BYOK_LIVE`와 `B14_E2E`는 별도 승인·실행 전까지 `NOT_RUN`이다.
+- 기본 모델 기대값은 `product_tier_routes`의 활성 route에서 파생한다. Free/Plus/Pro/Max의
+  현재 승인 설정은 변경하지 않고, `b14/auto`는 계속 executable 집합 밖이다.
+
+## #5002 제품별 BYOK E2E 자동화 (2026-10-19)
+
+`apps/padiem-chat/tests/test_5002_byok_product_e2e.py`(marker `byok_direct`,
+`PATH=BYOK_DIRECT`)가 실제 ASGI 앱, 실제 `D1HistoryStore`(SQLite + migration
+001/002/042/053), 실제 `D1CustomProviderCredentialStore`를 사용하고 공급사 전송만
+`httpx.MockTransport`로 대체해 다음을 검증한다.
+
+- Chat 일반/스트림 요청의 공급사 호출, 대화 저장, 다음 턴의 서버 저장 이력 복원
+- 테넌트별 키·세션·대화 격리와 타 고객 대화 이어쓰기 거부(공급사 호출 0회)
+- 키 교체·삭제의 즉시 반영과 삭제 후 `custom_credential_required` 거부
+- 공급사 429/5xx 오류 시 오류 코드 매핑, vendor 본문 비노출, 대화 미저장
+- B14 클라이언트·라우터·카탈로그·정책 저장소 실패 주입에서 BYOK 통과(`B14_CALL_COUNT=0`)
+- 같은 주입에서 관리 경로는 502 `b14_injected_failure`로 실제 실패(음성 대조)
+
+| SURFACE | RESULT | 비고 |
+|---|---|---|
+| CHAT | `PRODUCT_E2E_BYOK=INTEGRATION_MOCK` | 공급사는 MockTransport. LIVE 아님 |
+| CLAW | `NOT_RUN` | 구현·테스트는 미병합 PR #5137에 있음. 중복 개발하지 않음 |
+| B66 | `NOT_RUN` | 동일 |
+| B14 | `B14_E2E=NOT_RUN` | BYOK 경로의 B14 호출 0회만 검증 |
+
+`LIVE_VERIFIED=NO`: 승인되지 않은 유료/실제 공급사 호출은 수행하지 않았다.
+
+## #5121 BYOK 암호화 키 독립화 (2026-10-19)
+
+`apps/padiem-chat/app/byok_credentials.py`는 이제 고객 공급사 키를
+`PADIEM_CHAT_CUSTOM_KEY_SECRET`에서 파생한 전용 AES-GCM 키(v2 purpose)로
+봉인한다. 세션 쿠키 Secret은 새 암호문의 키가 아니다.
+
+| Secret/설정 | 역할 |
+|---|---|
+| `PADIEM_CHAT_CUSTOM_KEY_SECRET` | 현재 쓰기·읽기 키. 32자 이상 |
+| `PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS` | 교체된 전용 Secret의 쉼표 목록. v2 복호화 전용 |
+| `PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS` | 분리 이전 session_secret의 쉼표 목록. v1 복호화 전용 |
+
+- 현재 `PADIEM_CHAT_SESSION_SECRET`도 v1 복호화 후보에 자동 포함된다.
+- 읽기 시 현재 키 → 이전 전용 키 → legacy session 키 순서로 시도하고, 이전 키로
+  열린 행은 `sealed_credential`만 현재 키로 재봉인한다. `key_last4`/`created_at`/
+  `updated_at`은 유지한다.
+- AAD는 `padiem-custom:{user_id}:{provider_id}`로 유지된다.
+- 전용 Secret이 없거나 32자 미만이면 저장소를 구성하지 않아
+  `/api/chat/custom/*`와 BYOK 채팅이 503으로 fail-closed 된다.
+- 모든 키로 복호화할 수 없으면 `CustomCredentialDecryptionError`로 503 처리하며
+  원문·키·봉인문은 응답/로그에 포함하지 않는다.
+
+단계적 전환 순서(운영 Secret 등록·배포는 별도 승인 작업):
+
+1. `PADIEM_CHAT_CUSTOM_KEY_SECRET`을 등록한다.
+2. 현재 세션 Secret이 그대로인 상태에서 배포하면 기존 v1 행이 자동으로 읽히고
+   v2로 재봉인된다.
+3. 세션 Secret을 먼저 교체한 경우 이전 값을
+   `PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS`에 넣어 배포한다.
+4. 재봉인이 끝난 것을 확인한 뒤 legacy 목록을 제거한다.
+5. 전용 Secret 교체 시 이전 값을 `PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS`에 둔 채
+   새 값을 배포하고, 이후 이전 값 목록을 제거한다.
+
+검증: `apps/padiem-chat/tests/test_5121_byok_key_separation.py` (`byok_direct`).
+이 문서는 소스·테스트 기준이며, 운영 Secret 등록과 배포 완료를 뜻하지 않는다.

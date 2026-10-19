@@ -246,10 +246,49 @@ jobs:
             test "$MIXED_RESULT" = skipped
             test "$FULL_RESULT" = success
             test "$WORKER_RESULT" = success
-            test "$MM_RESULT" = success
+            # #5002: a product regression must not chain-fail on the
+            # independent B14 contract lane. B14 source changes stay gated:
+            # their own contract failure is the defect under review. Product
+            # scopes still require the B14 lane to execute; a B14 failure is
+            # visible on its own job and owned by #4318.
+            if [ "$SCOPE" = b14_only ]; then
+              test "$MM_RESULT" = success
+            else
+              case "$MM_RESULT" in
+                success|failure) ;;
+                *) echo "B14 contract lane did not execute: $MM_RESULT"; exit 1 ;;
+              esac
+            fi
             test "$QUICK_RESULT" = skipped
             echo 'B62_CI_MODE=FULL'
+            echo "B14_CONTRACT_RESULT=$MM_RESULT"
           fi
+
+      - name: Record independent result boundaries (#5002)
+        if: always()
+        env:
+          LANE: ${{ needs.registry-ci-plan.outputs.lane }}
+          SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}
+          FULL_RESULT: ${{ needs.b62-full-suite.result }}
+          WORKER_RESULT: ${{ needs.b62-worker-suite.result }}
+          MM_RESULT: ${{ needs.b14-multimodal-test.result }}
+        run: |
+          {
+            echo '### Independent product/B14 result boundaries (#5002)'
+            echo ''
+            echo "- LANE=$LANE SCOPE=$SCOPE"
+            echo "- PRODUCT_TEST_REGRESSION=$FULL_RESULT"
+            echo "- PRODUCT_WORKER_REGRESSION=$WORKER_RESULT"
+            if [ "$FULL_RESULT" = success ]; then
+              echo '- PRODUCT_E2E_BYOK=INTEGRATION_MOCK (real ASGI + real D1 history; provider MockTransport, no live call)'
+            else
+              echo "- PRODUCT_E2E_BYOK=NOT_RUN (product regression did not pass: $FULL_RESULT)"
+            fi
+            echo '- PRODUCT_E2E_BYOK_LIVE=NOT_RUN (no approved paid customer-provider call in CI)'
+            echo "- B14_CONTRACT=$MM_RESULT"
+            echo '- B14_E2E=NOT_RUN (B14 contract tests only; live E2E is tracked by #4318)'
+            echo '- FIRST_B14_FAILURE_EVIDENCE=record the first failure once in #4318; product ledgers link it'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   b62-full-suite:
     name: B62 full regression

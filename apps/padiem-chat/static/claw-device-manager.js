@@ -6,8 +6,10 @@
   "use strict";
 
   const ENDPOINT = "/api/claw/local-access/devices";
+  const SELECT_ENDPOINT = "/api/claw/local-access/devices/select";
   const MAX_RESPONSE_BYTES = 32768;
   const READ_TIMEOUT_MS = 12000;
+  const SAVE_TIMEOUT_MS = 12000;
   const COPY = Object.freeze({
     ko: {
       toggle: "내 컴퓨터",
@@ -24,10 +26,15 @@
       empty: "현재 계정에서 확인된 컴퓨터가 없습니다. Claw Connect 설치·연결을 먼저 완료해 주세요.",
       selection: "작업할 컴퓨터를 선택하세요. 선택만으로 파일 작업이 시작되지는 않습니다.",
       selected: "선택됨. 실제 작업은 서버의 권한 확인과 별도 승인 후 진행됩니다.",
+      restored: "저장된 작업 대상을 복원했습니다. 실제 작업은 서버의 권한 확인과 별도 승인 후 진행됩니다.",
+      selectedOffline: "저장된 PC가 오프라인 또는 연결 해제 상태입니다. 다른 PC로 자동 전환하지 않습니다.",
+      selectedMissing: "저장된 PC를 현재 목록에서 확인할 수 없습니다. 작업 대상을 다시 선택해 주세요.",
+      saveFailed: "작업 대상 저장을 확인하지 못했습니다. 다시 선택해 주세요.",
       online: "온라인 · 작업 승인 필요",
       offline: "오프라인",
       revoked: "연결 해제",
       required: "연결 확인 필요",
+      executable: "실행 대상 · 온라인 상태 미확인",
       choose: "작업 대상 후보로 선택",
     },
     en: {
@@ -45,10 +52,15 @@
       empty: "No computers confirmed for this account. Install and pair Claw Connect first.",
       selection: "Choose a computer. Selecting it does not start a local task.",
       selected: "Selected. Any work still requires server authorization and separate approval.",
+      restored: "Restored the saved target. Any work still requires server authorization and separate approval.",
+      selectedOffline: "The saved PC is offline or disconnected. No other PC is substituted automatically.",
+      selectedMissing: "The saved PC is not in the current list. Choose a target again.",
+      saveFailed: "Could not confirm the target selection. Please choose again.",
       online: "Online · approval required",
       offline: "Offline",
       revoked: "Disconnected",
       required: "Connection needs verification",
+      executable: "Execution target · online status unverified",
       choose: "Select as candidate device",
     },
   });
@@ -71,11 +83,12 @@
   // Never display a server-supplied HTML fragment, token or exception detail.
   function install() {
     const shell = document.querySelector(".app-shell");
-    // The active Claw workspace is separate from the ordinary Chat conversation.
-    // Mount here; hidden chat surfaces are not visible in Claw mode.
-    const workspace = document.getElementById("clawWorkspace");
+    // Chat and Claw share one composer surface; mounting above it makes the
+    // same "My computers" panel available in both products without a second
+    // device authority or a product-specific copy.
+    const composer = document.getElementById("composerForm");
     const projector = window.PadiemClawLocalHandoff?.deriveDeviceDirectory;
-    if (!shell || !workspace || typeof projector !== "function") return;
+    if (!shell || !composer || typeof projector !== "function") return;
 
     const root = element("section", "claw-device-manager");
     root.id = "clawDeviceManager";
@@ -109,18 +122,17 @@
     head.append(title, close);
     panel.append(head, help, actions, status, list);
     root.append(toggle, panel);
-    workspace.insertBefore(root, workspace.querySelector(".claw-workspace-tagline") || workspace.firstChild);
+    composer.parentElement.insertBefore(root, composer);
 
     let sequence = 0;
     let pendingController = null;
+    let pendingSelection = null;
+    let selectionSequence = 0;
+    let selectionQueue = Promise.resolve();
     let selectedId = null;
     let lastDirectory = null;
     let opened = false;
     let stateCode = "unavailable";
-
-    function isClaw() {
-      return shell.getAttribute("data-state") === "claw";
-    }
 
     function setStatus(value) {
       stateCode = value;
@@ -131,6 +143,7 @@
     function deviceLabel(device) {
       const t = locale();
       if (device.revoked) return t.revoked;
+      if (device.executable && device.selectable && !device.online) return t.executable;
       if (device.online) return t.online;
       return device.state === "OFFLINE" ? t.offline : t.required;
     }
@@ -150,16 +163,24 @@
         detail.append(name, meta, chip);
         const pick = element("button", "claw-device-manager-select", t.choose);
         pick.type = "button";
-        pick.disabled = !device.online;
+        pick.disabled = !device.selectable;
         pick.setAttribute("aria-pressed", String(Boolean(lastDirectory.canTarget &&
           lastDirectory.selectedDeviceId === device.deviceId)));
         pick.setAttribute("aria-label", t.choose + ": " + (device.deviceName || device.deviceId));
-        pick.addEventListener("click", () => {
+        pick.addEventListener("click", async () => {
           // The latest verified snapshot is only presentation evidence.
-          // This choice stays in memory and never creates an execution grant.
+          // The choice is saved server-side as a PREFERENCE; execution
+          // re-verifies owner, device and Mesh target.
           if (!lastDirectory || !lastDirectory.available) return;
           const candidate = projector(lastEnvelope, device.deviceId);
           if (!candidate.canTarget) return;
+          pick.disabled = true;
+          const saved = await saveSelection(device.deviceId);
+          pick.disabled = !device.selectable;
+          if (!saved) {
+            setStatus("saveFailed");
+            return;
+          }
           selectedId = device.deviceId;
           lastDirectory = candidate;
           setStatus("selected");
@@ -174,6 +195,11 @@
     function reset() {
       if (pendingController) pendingController.abort();
       pendingController = null;
+      if (pendingSelection) pendingSelection.abort();
+      pendingSelection = null;
+      // Any queued/in-flight selection result now belongs to a previous
+      // session generation and must not repaint the new account.
+      selectionSequence += 1;
       panel.removeAttribute("aria-busy");
       sequence += 1; // invalidate any in-flight response or previous owner snapshot
       selectedId = null;
@@ -183,8 +209,51 @@
       list.hidden = true;
     }
 
-    async function load() {
-      if (!opened || !isClaw()) return;
+    async function postSelection(deviceId) {
+      const controller = new AbortController();
+      pendingSelection = controller;
+      const timer = window.setTimeout(() => controller.abort(), SAVE_TIMEOUT_MS);
+      try {
+        const response = await fetch(SELECT_ENDPOINT, {
+          method: "POST",
+          credentials: "same-origin",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ device_id: deviceId }),
+          signal: controller.signal,
+        });
+        if (!response.ok) return false;
+        const data = await response.json().catch(() => null);
+        // Readback: the server must confirm the exact saved identifier.
+        return Boolean(data && data.ok === true && data.selectedDeviceId === deviceId);
+      } catch {
+        return false;
+      } finally {
+        window.clearTimeout(timer);
+        if (pendingSelection === controller) pendingSelection = null;
+      }
+    }
+
+    async function saveSelection(deviceId) {
+      // Serialize writes so rapid consecutive clicks cannot commit out of
+      // order; only the latest click may repaint the selection. A queued
+      // write from a previous account generation never runs.
+      const generation = sequence;
+      const requestSequence = ++selectionSequence;
+      const run = selectionQueue.then(() => (
+        generation === sequence ? postSelection(deviceId) : false
+      ));
+      selectionQueue = run.then(() => undefined, () => undefined);
+      const saved = await run;
+      return requestSequence === selectionSequence && saved === true;
+    }
+
+    async function load(options = {}) {
+      // Opening the panel reads the directory. One authenticated-session
+      // restore also reads it without opening, so a new conversation can use
+      // the saved target; no idle polling is created.
+      const restoreOnly = options && options.restoreOnly === true;
+      if (!opened && !restoreOnly) return;
       // Refreshing also invalidates the previous request. A late response can
       // never repopulate an account-switched or dismissed directory.
       if (pendingController) pendingController.abort();
@@ -207,7 +276,7 @@
           headers: { Accept: "application/json" },
           signal: controller.signal,
         });
-        if (request !== sequence || !opened || !isClaw()) return;
+        if (request !== sequence) return;
         if (response.status === 401 || response.status === 403) {
           selectedId = null;
           setStatus("login");
@@ -224,7 +293,7 @@
           return;
         }
         const rawText = await response.text();
-        if (request !== sequence || !opened || !isClaw()) return;
+        if (request !== sequence) return;
         if (rawText.length > MAX_RESPONSE_BYTES) throw Error("oversize");
         const payload = JSON.parse(rawText);
         // The reviewed unavailable envelope distinguishes "not configured yet"
@@ -248,7 +317,11 @@
           setStatus("unavailable");
           return;
         }
-        const directory = projector(payload, selectedId);
+        // The server-owned preference is the restore source for a new
+        // conversation/reload. It never substitutes another device.
+        const restored = typeof payload.selectedDeviceId === "string" &&
+          payload.selectedDeviceId ? payload.selectedDeviceId : null;
+        const directory = projector(payload, restored);
         if (!directory.available) {
           selectedId = null;
           setStatus("failed");
@@ -264,14 +337,24 @@
             state: d.state,
             usable: d.online,
             revoked: d.revoked,
+            executable: d.executable,
+            selectable: d.selectable,
           })),
         };
         lastDirectory = directory;
         selectedId = directory.canTarget ? directory.selectedDeviceId : null;
-        setStatus(directory.devices.length ? "selection" : "empty");
+        if (restored && directory.canTarget) {
+          setStatus("restored");
+        } else if (restored && payload.selectedState === "NOT_REGISTERED") {
+          setStatus("selectedMissing");
+        } else if (restored) {
+          setStatus("selectedOffline");
+        } else {
+          setStatus(directory.devices.length ? "selection" : "empty");
+        }
         renderDirectory();
       } catch {
-        if (request === sequence && opened && isClaw()) {
+        if (request === sequence) {
           selectedId = null;
           lastEnvelope = null;
           lastDirectory = null;
@@ -311,17 +394,12 @@
     }
 
     function sync() {
-      if (isClaw()) {
-        root.hidden = false;
-        return;
-      }
-      root.hidden = true;
-      if (opened) closePanel();
-      else reset();
+      // The panel is mounted once above the shared composer and is available
+      // in both Chat and Claw. Its own container governs visibility.
+      root.hidden = false;
     }
 
     toggle.addEventListener("click", () => {
-      if (!isClaw()) return;
       if (opened) {
         closePanel();
         return;
@@ -358,14 +436,19 @@
     for (const evt of ["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"]) {
       window.addEventListener(evt, () => {
         reset();
-        if (opened && isClaw()) void load();
+        // One restore read per authenticated session generation. A signed-out
+        // read returns 401 and never becomes a selection.
+        void load({ restoreOnly: true });
       });
     }
-    // Read-only selection for the existing Claw composer transport. This is
-    // UI state, not a device grant; the server rechecks Identity and Broker.
-    window.padiemClawSelectedDeviceId = () => (
-      isClaw() && lastDirectory?.canTarget ? selectedId : null
+    // Selection hint for both product transports. This is a server-restored
+    // preference, not a device grant; every execution rechecks Identity,
+    // Broker and the Mesh target.
+    const selectedDevice = () => (
+      lastDirectory?.canTarget ? selectedId : null
     );
+    window.padiemSelectedDeviceId = selectedDevice;
+    window.padiemClawSelectedDeviceId = selectedDevice;
     new MutationObserver(sync).observe(shell, { attributes: true, attributeFilter: ["data-state"] });
     new MutationObserver(translations).observe(document.documentElement, {
       attributes: true, attributeFilter: ["lang"],
