@@ -84,8 +84,8 @@ class ProductCredentialMode(str, Enum):
     PLATFORM_SECRET_BINDING = "platform_secret_binding"
 
 # Historical HOLD sentinels are identity markers, not active B14 model IDs.
-# The active Free/Plus/Pro/Max primary routes below use Beam. Retaining old
-# HOLD entries documents retired choices; it does not disable a current grade.
+# Current executable routes below select Google for Free and Muse for the
+# paid tiers; historical HOLD choices remain only in the Git history.
 PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"
 PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
