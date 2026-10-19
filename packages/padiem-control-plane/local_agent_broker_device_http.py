@@ -15,15 +15,18 @@ from padiem_control_plane.local_agent_broker_http import (
 )
 from local_agent_broker_text_results import TEXT_RESULT_DEVICE_ROUTE
 from local_agent_broker_installed_profile import PROFILE_DEVICE_ROUTE
+from local_agent_broker_android_profile import ANDROID_PROFILE_DEVICE_ROUTE
 
 #: The single canonical device route surface. The private-service bridge derives
 #: its external reachability from this same exported constant, so a route added
 #: here is reachable end to end and one that is absent fails closed at the outer
 #: edge. #3128 — `/reconcile` carries one restarted runner's durable admitted
 #: correlation to the #3121 broker exit and grants no execution authority.
+#: #5080 — `/android-profile` reuses the same credential and live-session check
+#: to record the owner-selected SAF folder set; it grants no execution.
 _DEVICE_HTTP_ROUTES = frozenset(
     {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/reconcile", "/office-part",
-     TEXT_RESULT_DEVICE_ROUTE, PROFILE_DEVICE_ROUTE}
+     TEXT_RESULT_DEVICE_ROUTE, PROFILE_DEVICE_ROUTE, ANDROID_PROFILE_DEVICE_ROUTE}
 )
 _ENVELOPE_KEYS = frozenset({"method", "route", "content_type", "body_b64", "tls_verified"})
 _MAX_BODY_B64_CHARS = ((MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 2) // 3) * 4
@@ -113,6 +116,7 @@ class LocalAgentBrokerDeviceHttpService:
         office_chunks=None,
         text_results=None,
         execution_profiles=None,
+        android_profiles=None,
         owner_usage_gate=None,
     ) -> None:
         if not callable(rpc_factory):
@@ -134,6 +138,7 @@ class LocalAgentBrokerDeviceHttpService:
         self._office_chunks = office_chunks
         self._text_results = text_results
         self._execution_profiles = execution_profiles
+        self._android_profiles = android_profiles
         if owner_usage_gate is not None and not callable(owner_usage_gate):
             raise ValueError("owner_usage_gate must be callable")
         self._owner_usage_gate = owner_usage_gate
@@ -232,6 +237,35 @@ class LocalAgentBrokerDeviceHttpService:
                 ))
             return _structured_response(LocalAgentBrokerHttpResponse(
                 status=200, body={"ok": True, "execution_profile": stored},
+            ))
+
+        if route == ANDROID_PROFILE_DEVICE_ROUTE:
+            # #5080: same device credential and live-session verifier as
+            # /execution-profile, but the payload is an opaque SAF folder
+            # declaration — no executable, URI or path is accepted.
+            if self._android_profiles is None:
+                return _structured_response(_error(
+                    503, "android_profile_not_configured", "Android profile unavailable"
+                ))
+            try:
+                material = {key: value for key, value in decoded.items()
+                            if key not in ("binding_ref", "credential_b64")}
+                def verified_android_record():
+                    session = self._authenticator.authenticate_device_session(
+                        session_id=material["session_id"],
+                        binding_ref=binding.binding_ref,
+                        credential=credential, now=server_now,
+                    )
+                    return self._android_profiles.record(
+                        material, binding=binding, session=session,
+                    )
+                stored = self._session_open_transaction(verified_android_record)
+            except Exception:
+                return _structured_response(_error(
+                    409, "android_profile_refused", "Android profile refused"
+                ))
+            return _structured_response(LocalAgentBrokerHttpResponse(
+                status=200, body={"ok": True, "android_profile": stored},
             ))
 
         if route == "/office-part":

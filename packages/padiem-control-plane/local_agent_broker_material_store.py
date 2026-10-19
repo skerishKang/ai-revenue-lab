@@ -25,6 +25,13 @@ TXT_RECEIPT_OPERATION = "read"
 TXT_RECEIPT_AUTHORITY_REF = "claw_connector_txt_request_v1"
 TXT_RECEIPT_POLICY_REF = "padiem_txt_selected_root_read_policy_v1"
 TXT_RECEIPT_SUFFIX = ".txt"
+# #5080: the Android SAF lane carries the same canonical approval object model
+# with its own bilateral constants. It is a distinct closed format, not a
+# relaxation of the Windows one: a receipt is validated against exactly the
+# authority/policy its own discriminator names.
+ANDROID_TXT_RECEIPT_FORMAT = "claw-android-saf-txt-read-approval.v1"
+ANDROID_TXT_RECEIPT_AUTHORITY_REF = "claw_connector_android_txt_request_v1"
+ANDROID_TXT_RECEIPT_POLICY_REF = "padiem_android_saf_selected_root_read_policy_v1"
 _TXT_RECEIPT_KEYS = frozenset({
     "format", "evidence_ref", "command_id", "request_id",
     "approval_pause", "approval_decision", "exact_tool_arguments",
@@ -114,21 +121,15 @@ def _relative_txt_path(value: Any, field_name: str) -> str:
     return value
 
 
-def validate_txt_approval_receipt(value: Any) -> dict[str, Any]:
-    """Validate the closed TXT approval envelope shape (no approval granted).
-
-    Structural shape only: exact keys, bounded types, enum constants, digest
-    shapes and parseable timestamps. Digest recomputation, expiry against now,
-    command correlation and one-shot use are verified Resident-side by the
-    plan source before any READ; this store only refuses malformed envelopes.
-    """
+def _validate_txt_receipt(value: Any, *, format: str, authority_ref: str,
+                          policy_ref: str) -> dict[str, Any]:
     receipt = closed_mapping(value, _TXT_RECEIPT_KEYS, "TXT approval receipt")
-    if receipt["format"] != TXT_RECEIPT_FORMAT:
+    if receipt["format"] != format:
         raise ValueError("TXT approval receipt format mismatch")
     _bounded_ref(receipt["evidence_ref"], "receipt.evidence_ref")
     _bounded_ref(receipt["command_id"], "receipt.command_id")
     _bounded_ref(receipt["request_id"], "receipt.request_id")
-    if receipt["local_policy_ref"] != TXT_RECEIPT_POLICY_REF:
+    if receipt["local_policy_ref"] != policy_ref:
         raise ValueError("TXT approval receipt policy mismatch")
     _iso_text(receipt["expires_at"], "receipt.expires_at")
     pause = closed_mapping(receipt["approval_pause"], _TXT_PAUSE_KEYS, "TXT approval pause")
@@ -154,7 +155,7 @@ def validate_txt_approval_receipt(value: Any) -> dict[str, Any]:
         raise ValueError("TXT approval decision does not belong to the pause")
     if decision["outcome"] != TXT_RECEIPT_OUTCOME:
         raise ValueError("TXT approval decision outcome mismatch")
-    if decision["authority_ref"] != TXT_RECEIPT_AUTHORITY_REF:
+    if decision["authority_ref"] != authority_ref:
         raise ValueError("TXT approval decision authority mismatch")
     _bounded_ref(decision["evidence_ref"], "decision.evidence_ref")
     if decision["evidence_ref"] != receipt["evidence_ref"]:
@@ -178,6 +179,34 @@ def validate_txt_approval_receipt(value: Any) -> dict[str, Any]:
         if args[flag] is not False:
             raise ValueError(f"TXT approval arguments {flag} must be false")
     return receipt
+
+
+def validate_txt_approval_receipt(value: Any) -> dict[str, Any]:
+    """Validate the closed Windows TXT approval envelope (grants nothing).
+
+    Structural shape only: exact keys, bounded types, enum constants, digest
+    shapes and parseable timestamps. Digest recomputation, expiry against now,
+    command correlation and one-shot use are verified Resident-side by the
+    plan source before any READ; this store only refuses malformed envelopes.
+    """
+    return _validate_txt_receipt(
+        value, format=TXT_RECEIPT_FORMAT,
+        authority_ref=TXT_RECEIPT_AUTHORITY_REF, policy_ref=TXT_RECEIPT_POLICY_REF,
+    )
+
+
+def validate_android_txt_approval_receipt(value: Any) -> dict[str, Any]:
+    """Validate the closed Android SAF TXT approval envelope (grants nothing).
+
+    The Android agent re-checks the exact command correlation, expiry and
+    one-shot use before touching a SAF document; storing the envelope here is
+    never an execution grant.
+    """
+    return _validate_txt_receipt(
+        value, format=ANDROID_TXT_RECEIPT_FORMAT,
+        authority_ref=ANDROID_TXT_RECEIPT_AUTHORITY_REF,
+        policy_ref=ANDROID_TXT_RECEIPT_POLICY_REF,
+    )
 
 
 def canonical_json(value: dict[str, Any], *, maximum_bytes: int, label: str) -> tuple[str, bytes]:
@@ -239,10 +268,17 @@ class CloudflareDurableObjectCommandMaterialStore:
                 raise ValueError(f"command material {field_name} must remain null")
         approval = material["p01_approval_payload"]
         if approval is not None:
-            # #4139: a closed TXT approval receipt may ride the material.
-            # Storing it grants nothing; the Resident verifies digests, expiry,
+            # #4139/#5080: one closed approval receipt may ride the material.
+            # Storing it grants nothing; the executor verifies digests, expiry,
             # command correlation and one-shot use before any READ.
-            receipt = validate_txt_approval_receipt(approval)
+            if not isinstance(approval, dict):
+                raise ValueError("command approval receipt must be a mapping")
+            if approval.get("format") == TXT_RECEIPT_FORMAT:
+                receipt = validate_txt_approval_receipt(approval)
+            elif approval.get("format") == ANDROID_TXT_RECEIPT_FORMAT:
+                receipt = validate_android_txt_approval_receipt(approval)
+            else:
+                raise ValueError("unsupported command approval receipt format")
             if receipt["command_id"] != command_id:
                 raise ValueError("TXT approval receipt does not belong to this command")
             if receipt["exact_tool_arguments"]["run_id"] != material["run_id"]:

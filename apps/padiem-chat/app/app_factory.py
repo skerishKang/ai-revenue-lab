@@ -744,9 +744,24 @@ def create_app(
             CONNECTOR_TXT_READ_REQUEST_PATH,
             connector_txt_read_request,
         )
+        from .connector_android_read_routes import (
+            CONNECTOR_ANDROID_FOLDERS_PATH,
+            CONNECTOR_ANDROID_READ_REQUEST_PATH,
+            connector_android_folders,
+            connector_android_read_request,
+        )
         routes[-1:-1] = list(reviewed_owner_enrollment_routes(connector_owner_enrollment))
         routes[-1:-1] = [
             Route(CONNECTOR_TXT_READ_REQUEST_PATH, connector_txt_read_request, methods=["POST"]),
+            # #5080: Android adapter over the same approval/enqueue/result
+            # pipeline. Folders are the phone's declared SAF set; the browser
+            # never supplies an account, workspace, credential or SAF URI.
+            Route(CONNECTOR_ANDROID_FOLDERS_PATH, connector_android_folders, methods=["GET"]),
+            Route(
+                CONNECTOR_ANDROID_READ_REQUEST_PATH,
+                connector_android_read_request,
+                methods=["POST"],
+            ),
         ]
         # #4139 Oracle management-host return legs: owner intent, executor
         # poll, executor submit. Verified server-side and appended through
