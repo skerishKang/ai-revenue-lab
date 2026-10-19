@@ -487,11 +487,35 @@ def _mesh_app(binding, *, mesh_row=None, store=None):
 
 
 def _mesh_patches():
+    # The selector uses B62 for browser identity, then the verified B54
+    # session for Connector/Mesh authority. The two sessions must share a
+    # canonical subject and tenant, but must not share a product session ID.
+    from contextlib import contextmanager
+
+    @contextmanager
+    def verified_session_pair():
+        subject = "subject-owner-4139"
+        b62 = SimpleNamespace(
+            session_id="sess-b62", subject=SimpleNamespace(subject_id=subject),
+        )
+        b54 = SimpleNamespace(
+            session_id="sess-b54", tenant_id=WORKSPACE,
+            subject=SimpleNamespace(subject_id=subject),
+        )
+        with (
+            patch("app.pc_work_context._resolve_owner_session",
+                  new=AsyncMock(return_value=(WORKSPACE, b62))),
+            patch(
+                "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+                new=AsyncMock(return_value=SimpleNamespace(auth_session=b54)),
+            ),
+        ):
+            yield
+
     return (
         patch("app.claw_device_directory_routes._resolve_memory_workspace",
               new=AsyncMock(return_value=WORKSPACE)),
-        patch("app.pc_work_context._resolve_owner_session",
-              new=AsyncMock(return_value=(WORKSPACE, SimpleNamespace(session_id="sess-1")))),
+        verified_session_pair(),
     )
 
 
