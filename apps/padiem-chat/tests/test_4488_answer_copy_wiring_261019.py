@@ -1,8 +1,9 @@
-"""#4488 stage 2: the shared answer-copy module is actually wired.
+"""#4488: the shared answer-copy module is actually wired.
 
-B62 user-bubble copy and B66 real-answer copy call one canonical clipboard
-implementation; legacy branches remain only as fallbacks. B66 product files
-stay product-neutral (Shared alias only).
+B62 user-bubble, answer-bar, saved-output, and rich-code copy plus B66
+real-answer copy call one canonical clipboard implementation; legacy branches
+remain only as fallbacks. B66 product files stay product-neutral (Shared alias
+only).
 """
 
 from pathlib import Path
@@ -28,7 +29,34 @@ def test_canonical_exports_copy_contract():
 def test_b62_index_loads_shared_answer_copy():
     html = _read("apps/padiem-chat/static/index.html")
     assert '<script src="./shared-answer-copy.js"></script>' in html
-    assert html.index("./shared-answer-copy.js") < html.index("./app.js")
+    shared_at = html.index("./shared-answer-copy.js")
+    assert shared_at < html.index("./app.js")
+    assert shared_at < html.index("./rich-response.js")
+    assert shared_at < html.index("./outputs.js")
+
+
+def test_b62_answer_actions_use_only_the_shared_copy_execution():
+    for relative in (
+        "apps/padiem-chat/static/outputs.js",
+        "apps/padiem-chat/static/rich-response.js",
+    ):
+        js = _read(relative)
+        assert "window.PadiemAnswerCopy || window.SharedAnswerCopy" in js
+        assert "api.copyText(text)" in js
+        assert "function fallbackCopy" not in js
+        assert "navigator.clipboard" not in js
+        assert "document.execCommand" not in js
+
+
+def test_b62_copy_actions_stay_on_completed_assistant_answers():
+    for relative in (
+        "apps/padiem-chat/static/outputs.js",
+        "apps/padiem-chat/static/rich-response.js",
+    ):
+        js = _read(relative)
+        assert 'messageList.querySelectorAll(".assistant-message").forEach(enhanceAssistantMessage)' in js
+        assert 'article.querySelector(".assistant-content")' in js
+        assert "if (!lifecycleApi().isCompleted(article))" in js
 
 
 def test_b62_user_copy_calls_shared_first():
