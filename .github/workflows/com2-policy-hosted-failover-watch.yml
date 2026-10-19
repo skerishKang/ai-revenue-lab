@@ -1,0 +1,36 @@
+name: COM2 Policy Hosted Failover Watch
+
+# Runs from trusted default branch without fetching PR-controlled code.
+# A delayed COM2 status (including an offline runner) triggers exact-SHA hosted recovery.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+  statuses: write
+
+concurrency:
+  group: com2-policy-hosted-failover-watch
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout trusted watchdog
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts/com2_policy_failover_watch.py
+          sparse-checkout-cone-mode: false
+      - name: Check stale PR policy statuses and trigger exact-SHA hosted backup
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python3 .github/scripts/com2_policy_failover_watch.py
