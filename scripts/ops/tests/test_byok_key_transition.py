@@ -107,7 +107,9 @@ def test_preflight_output_has_no_secret_and_plan_orders_steps(monkeypatch, capsy
     transition.print_plan(result)
     planned = capsys.readouterr().out
     assert "STEP_1_DEPLOY_EXACT_MAIN_BYOK_CODE=PENDING" in planned
-    assert "STEP_4_APPLY_MIGRATION_053=PENDING" in planned
+    assert "STEP_2_APPLY_MIGRATION_053=PENDING" in planned
+    assert "STEP_3_REGISTER_COM2_DPAPI_SECRET=PENDING" in planned
+    assert "STEP_4_UPLOAD_WORKER_SECRET=PENDING" in planned
     assert "NEXT=deploy_exact_main_to_worker_and_refresh_local_release" in planned
 
 

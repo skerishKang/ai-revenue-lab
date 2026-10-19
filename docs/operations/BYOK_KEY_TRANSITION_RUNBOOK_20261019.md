@@ -68,7 +68,20 @@ curl.exe -sS -o NUL -w "%{http_code}`n" https://chat.padiem.net/api/chat/custom/
 - 404: 미배포 (`ABSENT`)
 - HTML 403: Cloudflare WAF 응답이며 라우트 존재 증거가 아니다 (`UNKNOWN`)
 
-### Step 2 — COM2 DPAPI에 전용 키 등록
+### Step 2 — Migration 053 적용
+
+정확한 main 체크아웃에서만 실행한다. 스크립트는 `git rev-parse HEAD`가 `--expected-main`과 같은지 확인한 뒤 additive 테이블을 생성하고 존재를 재확인한다. 테이블을 먼저 만들어 두면 Secret 공급 직후 첫 등록 요청이 테이블 부재로 실패하지 않는다.
+
+```powershell
+py -3 scripts/ops/byok_key_transition.py apply-migration `
+  --expected-main <EXACT_MAIN_SHA> `
+  --account-id <ACCOUNT_ID> `
+  --confirm-apply APPLY_BYOK_053_FROM_EXACT_MAIN
+```
+
+Migration 내용은 `CREATE TABLE IF NOT EXISTS` 하나이며 기존 테이블을 변경·삭제하지 않는다. 현재 기존 행이 0건이므로 legacy 재봉인 대상도 0건이다.
+
+### Step 3 — COM2 DPAPI에 전용 키 등록
 
 `register-local`은 값을 생성해 DPAPI에만 저장하고 원문을 출력하지 않는다. 기존 값이 있으면 `--replace` 없이는 거부한다.
 
@@ -84,7 +97,7 @@ SECRET_LENGTH_OK=YES
 SECRET_VALUES_PRINTED=0
 ```
 
-### Step 3 — 동일 값을 Worker에 공급
+### Step 4 — 동일 값을 Worker에 공급
 
 반드시 기존 hidden-input store를 통해 실행한다. `store.py run`이 DPAPI 값을 자식 환경으로 주입하며 값은 argv에 없다.
 
@@ -95,19 +108,6 @@ py -3 D:\PADIEM-Servers\infrastructure\secret-store\store.py run `
 ```
 
 `--account-id`는 DPAPI/환경에 이미 있으면 생략할 수 있다. 스크립트는 `wrangler secret put`에 stdin으로 값을 전달하고, 출력에서 값을 `[REDACTED]`로 치환한 뒤 `secret list`로 이름만 재확인한다.
-
-### Step 4 — Migration 053 적용
-
-정확한 main 체크아웃에서만 실행한다. 스크립트는 `git rev-parse HEAD`가 `--expected-main`과 같은지 확인한 뒤 additive 테이블을 생성하고 존재를 재확인한다.
-
-```powershell
-py -3 scripts/ops/byok_key_transition.py apply-migration `
-  --expected-main <EXACT_MAIN_SHA> `
-  --account-id <ACCOUNT_ID> `
-  --confirm-apply APPLY_BYOK_053_FROM_EXACT_MAIN
-```
-
-Migration 내용은 `CREATE TABLE IF NOT EXISTS` 하나이며 기존 테이블을 변경·삭제하지 않는다. 현재 기존 행이 0건이므로 legacy 재봉인 대상도 0건이다.
 
 ### Step 5 — 준비 완료 확인
 

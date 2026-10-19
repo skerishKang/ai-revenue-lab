@@ -351,9 +351,9 @@ def print_plan(result: dict[str, Any]) -> None:
     migration = result["d1_migration_053"] == "APPLIED"
     route = result["deployed_byok_route"] == "PRESENT"
     print(f"STEP_1_DEPLOY_EXACT_MAIN_BYOK_CODE={_step_state(route)}")
-    print(f"STEP_2_REGISTER_COM2_DPAPI_SECRET={_step_state(dpapi)}")
-    print(f"STEP_3_UPLOAD_WORKER_SECRET={_step_state(worker)}")
-    print(f"STEP_4_APPLY_MIGRATION_053={_step_state(migration)}")
+    print(f"STEP_2_APPLY_MIGRATION_053={_step_state(migration)}")
+    print(f"STEP_3_REGISTER_COM2_DPAPI_SECRET={_step_state(dpapi)}")
+    print(f"STEP_4_UPLOAD_WORKER_SECRET={_step_state(worker)}")
     print(f"STEP_5_PREFLIGHT_REQUIRE_READY={_step_state(bool(result['ready']))}")
     print("STEP_6_OWNER_BOUNDED_BYOK_VERIFY=PENDING")
     print("STEP_7_LEGACY_RESEAL_HASH_CHECK=" + ("NOT_APPLICABLE" if result["custom_credential_rows"] in (0, "TABLE_MISSING") else "PENDING"))
@@ -364,12 +364,12 @@ def print_plan(result: dict[str, Any]) -> None:
 def _next_action(result: dict[str, Any]) -> str:
     if result["deployed_byok_route"] != "PRESENT":
         return "deploy_exact_main_to_worker_and_refresh_local_release"
+    if result["d1_migration_053"] != "APPLIED":
+        return "apply-migration"
     if result["dpapi_custom_key_secret"] != "PRESENT":
         return "register-local"
     if result["worker_custom_key_secret"] != "PRESENT":
         return "upload-worker"
-    if result["d1_migration_053"] != "APPLIED":
-        return "apply-migration"
     return "owner_bounded_byok_verify"
 
 
