@@ -300,6 +300,20 @@ async def api_chat_stream(request: Request):
     if drive_context:
         reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
 
+    # #5015: the same server-verified PC work context the Claw composer
+    # receives, so a NEW Chat conversation recognizes the account's connected
+    # PC and the one read-only PC tool without a browser-supplied claim. The
+    # context is an observation, never an execution grant.
+    pc_work_text: str | None = None
+    if uid is not None:
+        from .pc_work_context import build_pc_work_context_text
+
+        pc_work_text = await build_pc_work_context_text(request, owner_id=uid)
+        if pc_work_text:
+            reference_context = (
+                reference_context + "\n\n" if reference_context else ""
+            ) + pc_work_text
+
     if request.app.state.usage_gate_enforced:
         usage_gate: UsageGate = request.app.state.usage_gate
         usage_decision = await usage_gate.authorize(
@@ -320,6 +334,10 @@ async def api_chat_stream(request: Request):
                 request, user_text=latest_user_text, skill=skill,
                 model_id=selected_model, conversation_id=conversation_id,
                 tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
+                device_id=(
+                    raw.get("device_id")
+                    if isinstance(raw.get("device_id"), str) else None
+                ),
             )
         except ChatPCDriveError as exc:
             return JSONResponse(
@@ -404,6 +422,12 @@ async def api_chat_stream(request: Request):
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
     if auto_plan is not None and auto_plan.prepared is not None:
         reference_context = auto_plan.prepared.context
+        # The auto-grounding plan replaces the context it was handed; the
+        # verified PC state must still reach this model call (#5015).
+        if pc_work_text:
+            reference_context = (
+                reference_context + "\n\n" if reference_context else ""
+            ) + pc_work_text
 
     client: B14Client = request.app.state.b14_client
     async with chat_request_tier_context(request, raw.get("tier", "free")):
@@ -673,6 +697,19 @@ async def api_chat(request: Request) -> JSONResponse:
     if drive_context:
         reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
 
+    # #5015: the same server-verified PC work context the Claw composer
+    # receives, so a NEW Chat conversation recognizes the account's connected
+    # PC and the one read-only PC tool without a browser-supplied claim. The
+    # context is an observation, never an execution grant.
+    if uid is not None:
+        from .pc_work_context import build_pc_work_context_text
+
+        pc_work_text = await build_pc_work_context_text(request, owner_id=uid)
+        if pc_work_text:
+            reference_context = (
+                reference_context + "\n\n" if reference_context else ""
+            ) + pc_work_text
+
     if request.app.state.usage_gate_enforced:
         usage_gate: UsageGate = request.app.state.usage_gate
         usage_decision = await usage_gate.authorize(
@@ -690,6 +727,10 @@ async def api_chat(request: Request) -> JSONResponse:
             request, user_text=latest_user_text, skill=skill,
             model_id=selected_model, conversation_id=conversation_id,
             tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
+            device_id=(
+                raw.get("device_id")
+                if isinstance(raw.get("device_id"), str) else None
+            ),
         )
         if lane_response is not None:
             return lane_response
