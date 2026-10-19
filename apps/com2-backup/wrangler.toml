@@ -1,10 +1,15 @@
 name = "padiem-com2-backup"
 main = "worker.py"
 compatibility_date = "2026-08-25"
-compatibility_flags = ["python_workers"]
+# ``python_workers`` selects the Python runtime. ``disable_python_external_sdk``
+# makes ``from workers import ...`` resolve to the runtime-provided SDK: plain
+# ``wrangler deploy`` failed validation with ``ModuleNotFoundError: workers``
+# without it (the external SDK is only provisioned by the workers-py toolchain).
+compatibility_flags = ["python_workers", "disable_python_external_sdk"]
 # Private Worker. It is not reachable from the public internet; every route is
 # additionally bearer-authenticated. No custom domain, no workers.dev route.
 workers_dev = false
+preview_urls = false
 
 # Fail-closed deployment gate. This file keeps it OFF. Only an Owner-authorized
 # release may flip it; committing "true" here is not a deployment decision.
