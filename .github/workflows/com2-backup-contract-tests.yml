@@ -56,7 +56,7 @@ jobs:
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "pytest-asyncio>=0.24,<2" python -m pytest -q apps/com2-backup/tests
 
       - name: Run operator script tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_backup.py
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" --with "cryptography>=42,<50" python -m pytest -q scripts/ops/tests/test_com2_backup.py
 
       - name: Run read-only asset snapshot tests
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_cloudflare_asset_snapshot.py
