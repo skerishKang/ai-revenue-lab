@@ -37,10 +37,8 @@ class CustomModelSelection:
     model: str
 
 
-def _validate_custom_selection(raw: dict[str, Any]) -> CustomModelSelection | None:
-    if "custom" not in raw:
-        return None
-    value = raw.get("custom")
+def parse_custom_selection(value: Any) -> CustomModelSelection:
+    """Validate one explicit PADIEM Custom selection shared by every product."""
     if not isinstance(value, dict) or set(value) != {"provider", "model"}:
         raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.")
     provider = value.get("provider")
@@ -48,11 +46,18 @@ def _validate_custom_selection(raw: dict[str, Any]) -> CustomModelSelection | No
     if (not isinstance(provider, str) or not provider.strip()
             or not isinstance(model, str) or not model.strip()):
         raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.")
+    return CustomModelSelection(provider=provider.strip(), model=model.strip())
+
+
+def _validate_custom_selection(raw: dict[str, Any]) -> CustomModelSelection | None:
+    if "custom" not in raw:
+        return None
+    custom = parse_custom_selection(raw.get("custom"))
     if "tier" in raw:
         raise BrowserRequestError(
             "PADIEM 제공 모델과 PADIEM Custom을 한 요청에서 함께 선택할 수 없습니다."
         )
-    return CustomModelSelection(provider=provider.strip(), model=model.strip())
+    return custom
 
 
 def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:

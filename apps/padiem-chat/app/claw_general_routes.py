@@ -61,7 +61,10 @@ from .claw_search_decision import (
 )
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .byok_client import CustomProviderError, complete_owner_custom
+from .byok_credentials import CustomProviderSelectionError
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
+from .request_contract import BrowserRequestError, parse_custom_selection
 from .claw_first_turn_authority import (
     B54VerifiedCodingContextV1,
     FirstTurnAuthorityError,
@@ -1054,6 +1057,72 @@ async def _dispatch_user_txt_request(
     )
 
 
+async def _claw_custom_direct(
+    request: Request,
+    *,
+    uid: str,
+    custom: Any,
+    data: dict[str, Any],
+    user_text: str,
+) -> JSONResponse | Response:
+    """One owner-key text turn without Engine, B14, quota or tool dispatch."""
+    conversation_id, conversation_error = await _resolve_intake_session_reference(
+        request, data,
+    )
+    if conversation_error is not None:
+        return conversation_error
+    try:
+        model_user_text = await _owner_claw_context(request, conversation_id, user_text)
+    except HistoryContextIncomplete:
+        return _error(
+            409,
+            "conversation_context_incomplete",
+            "이전 대화 원문을 복원할 수 없습니다. 새 대화를 시작하거나 원문을 다시 입력해 주세요.",
+        )
+    except Exception:
+        return _error(
+            503,
+            "conversation_authority_unavailable",
+            "대화 문맥을 안전하게 확인할 수 없습니다.",
+        )
+    if len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES:
+        return _error(
+            413,
+            "engine_request_envelope_exceeded",
+            "엔진 전송 안전 한도를 초과했습니다. 더 짧은 대화에서 다시 요청해 주세요.",
+        )
+    try:
+        result = await complete_owner_custom(
+            request.app.state,
+            uid=uid,
+            selection=custom,
+            messages=[{"role": "user", "content": model_user_text}],
+        )
+    except CustomProviderSelectionError as exc:
+        return _error(422, "custom_provider_unsupported", str(exc))
+    except CustomProviderError as exc:
+        return _error(exc.status_code, exc.code, exc.user_message)
+    answer = result.get("answer")
+    if not isinstance(answer, str) or not answer.strip():
+        return _error(
+            502,
+            "malformed_custom_provider_response",
+            "PADIEM Custom 공급사 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.",
+        )
+    run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+    saved_conversation_id = await _record_completed_claw_result(
+        request,
+        run_id=run.run_id,
+        conversation_id=conversation_id,
+        user_text=user_text,
+        answer=answer,
+        authorized_workspace_id=None,
+    )
+    return _claw_general_sse(
+        answer, None, conversation_id=saved_conversation_id or conversation_id,
+    )
+
+
 async def claw_general_execute(request: Request) -> JSONResponse | Response:
     """Run one generic B54 Claw request through the canonical P01 Engine lane (#3539).
 
@@ -1094,6 +1163,49 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     user_text, text_error = _claw_general_user_text(data)
     if text_error is not None:
         return text_error
+
+    # PADIEM Custom is a direct text completion: it cannot drive a PC tool,
+    # desktop op or local file lane, and it never mixes with a PADIEM-managed
+    # tier/model selection. Refuse those combinations before any dispatch.
+    custom = None
+    if "custom" in data:
+        if "tier" in data or "model_id" in data:
+            return _error(
+                422,
+                "custom_selection_conflict",
+                "PADIEM 제공 모델과 PADIEM Custom을 한 요청에서 함께 선택할 수 없습니다.",
+            )
+        try:
+            custom = parse_custom_selection(data.get("custom"))
+        except BrowserRequestError as exc:
+            return _error(422, "custom_provider_invalid", str(exc))
+        if (
+            request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
+            == CLAW_LIVE_REQUEST_MARKER
+        ):
+            return _error(
+                422,
+                "custom_live_unsupported",
+                "PADIEM Custom은 Claw 실시간 실행 스트림과 함께 사용할 수 없습니다.",
+            )
+        if (
+            _requested_local_desktop(user_text)[0]
+            or _requested_local_command(user_text)[0]
+            or _requested_natural_pc_files(user_text)
+            or _requested_natural_pc_query(user_text)[0]
+            or _requested_local_txt_path(user_text)[0]
+        ):
+            return _error(
+                422,
+                "custom_tool_unsupported",
+                "PADIEM Custom은 현재 PC 실행·파일 도구 요청에 사용할 수 없습니다.",
+            )
+        uid = current_user_id(request) if auth_ready(request) else None
+        if not isinstance(uid, str) or not uid:
+            return _error(401, "unauthorized", "로그인이 필요합니다.")
+        return await _claw_custom_direct(
+            request, uid=uid, custom=custom, data=data, user_text=user_text,
+        )
 
     # The desktop grammar is narrower than a shell command, so it is checked
     # first: a span that parses as a desktop op is never executed as one.

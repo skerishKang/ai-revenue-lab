@@ -784,6 +784,7 @@ class B66QuoteConversationInterpreter:
         model_id: str | None = None,
         reasoning_level: str | None = None,
         product_tier: str | None = None,
+        result_origin: str | None = None,
     ) -> B66QuoteConversationProjection:
         if not isinstance(message, str):
             raise B66QuoteConversationError("invalid_message")
@@ -847,5 +848,5 @@ class B66QuoteConversationInterpreter:
         return replace(
             projection,
             missing=_server_missing_fields(projection, skill),
-            result_origin="registered_model_completion",
+            result_origin=result_origin or "registered_model_completion",
         )
