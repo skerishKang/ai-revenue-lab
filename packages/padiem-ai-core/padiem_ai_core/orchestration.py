@@ -279,7 +279,9 @@ _ROUTE_PUBLIC_KEYS = frozenset({
     "estimated_krw",
 })
 _USAGE_PUBLIC_KEYS = frozenset({"input_tokens", "output_tokens", "total_tokens"})
-_TOOL_EVENT_PUBLIC_KEYS = frozenset({"tool_id", "status", "duration_ms", "error_class"})
+_TOOL_EVENT_PUBLIC_KEYS = frozenset({
+    "tool_id", "status", "duration_ms", "error_class", "error_code",
+})
 _RUN_METADATA_PUBLIC_KEYS = frozenset({
     "trace_id",
     "app_id",
@@ -409,6 +411,7 @@ def tool_event_from_public(payload: Any) -> ToolEvent:
             status=status,
             duration_ms=_result_optional_int(block.get("duration_ms"), name="tool_event.duration_ms"),
             error_class=error_class,
+            error_code=block.get("error_code"),
         )
     except OrchestrationError:
         raise
