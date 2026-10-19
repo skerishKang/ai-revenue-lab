@@ -112,7 +112,7 @@ def test_store_requires_a_d1_binding():
 
 def test_migration_declares_the_owner_workspace_scoped_table():
     sql = (Path(__file__).resolve().parents[1] / "migrations"
-           / "052_claw_pc_device_selection.sql").read_text(encoding="utf-8")
+           / "054_claw_pc_device_selection.sql").read_text(encoding="utf-8")
     for fragment in (
         "CREATE TABLE IF NOT EXISTS claw_pc_device_selection",
         "user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE",

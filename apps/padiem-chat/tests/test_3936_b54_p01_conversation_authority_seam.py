@@ -208,6 +208,9 @@ def test_p01_dispatch_arguments_are_a_closed_set() -> None:
 
     assert response.status_code == 200, response.text
     kwargs = adapter.execute.await_args.kwargs
+    # #5015: the only additional dispatch arg is the server-composed PC work
+    # context. It must remain free of conversation/tenant/workspace values; the
+    # closed-set guard below still rejects any other argument.
     assert set(kwargs) <= {
         "product_tier", "subject_id", "selected_model_id",
         "central_route_model_id", "additional_system_context",

@@ -176,19 +176,27 @@ async def claw_device_directory(request: Request) -> JSONResponse:
     workspace_id = await _resolve_memory_workspace(request, uid)
     if not workspace_id:
         return _error(503, "device_directory_workspace_unavailable")
+    return await _read_device_directory(request, uid=uid, workspace_id=workspace_id)
+
+
+async def _read_device_directory(
+    request: Request, *, uid: str, workspace_id: str,
+) -> JSONResponse:
     source = getattr(request.app.state, "claw_device_directory_source", None)
+    broker_reason = None
+    devices = []
     if getattr(source, "configured", False) is not True:
-        return _response({"ok": True, "available": False, "reason": "device_directory_unconfigured"})
-    try:
-        devices = source.list_devices(owner_id=uid, workspace_id=workspace_id, now=datetime.now(timezone.utc))
-        if inspect.isawaitable(devices):
-            devices = await devices
-    except Exception:
-        devices = None
-    if devices is None:
-        return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
-    if not isinstance(devices, list) or len(devices) > _DEVICE_LIMIT:
-        return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
+        broker_reason = "device_directory_unconfigured"
+    else:
+        try:
+            devices = source.list_devices(owner_id=uid, workspace_id=workspace_id, now=datetime.now(timezone.utc))
+            if inspect.isawaitable(devices):
+                devices = await devices
+        except Exception:
+            devices = None
+        if not isinstance(devices, list) or len(devices) > _DEVICE_LIMIT:
+            broker_reason = "device_directory_read_failed"
+            devices = []
     # Closed second serialization boundary: do not leak unexpected source
     # fields even if a future trusted source extends its internal objects.
     safe: list[dict[str, Any]] = []
@@ -227,6 +235,31 @@ async def claw_device_directory(request: Request) -> JSONResponse:
     ):
         return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
     paused = next(iter(pause_values), None)
+    # A Mesh grant proves execution authority, not a Broker heartbeat. Reuse
+    # its stable target id as a separate selectable row without claiming it
+    # is online, and never mint an alias for a raw node reference.
+    from .pc_work_context import resolve_pc_mesh_target
+
+    execution = await resolve_pc_mesh_target(request, owner_id=uid, workspace_id=workspace_id)
+    mesh_id = execution.device_id if execution.ready else None
+    if (
+        isinstance(mesh_id, str) and _DEVICE_ID_PATTERN.fullmatch(mesh_id)
+        and paused is not True
+    ):
+        mesh_row = next((row for row in safe if row["deviceId"] == mesh_id), None)
+        if mesh_row is None and len(safe) < _DEVICE_LIMIT:
+            safe.append({
+                "deviceId": mesh_id, "deviceName": None, "platform": None,
+                "state": "ACTION_REQUIRED", "usable": False,
+                "revoked": False, "expired": False,
+                "executable": True, "selectable": True,
+            })
+        elif mesh_row is not None:
+            mesh_row["executable"] = True
+            # Explicit offline/revoked/expired Broker truth is not overridden.
+            mesh_row["selectable"] = mesh_row["usable"] is True
+    if broker_reason and not safe:
+        return _response({"ok": True, "available": False, "reason": broker_reason})
     # #5015: the saved target is a PREFERENCE, restored per owner/workspace so
     # a new conversation/session sees the same choice. It is never a grant and
     # is never substituted: a stale/offline/revoked stored device is returned
@@ -249,13 +282,15 @@ async def claw_device_directory(request: Request) -> JSONResponse:
         if selected_row is None:
             selected_usable, selected_state = False, "NOT_REGISTERED"
         else:
-            selected_usable, selected_state = selected_row["usable"], selected_row["state"]
+            selected_usable = selected_row.get("selectable", selected_row["usable"])
+            selected_state = selected_row["state"]
     else:
         selected_device_id = None
     return _response({
         "ok": True, "available": True, "ownerScoped": True,
         **({"usagePaused": paused} if paused is not None else {}),
         "devices": sorted(safe, key=lambda row: row["deviceId"]),
+        **({"directoryReason": broker_reason} if broker_reason else {}),
         **({
             "selectedDeviceId": selected_device_id,
             "selectedUsable": selected_usable,
@@ -338,19 +373,11 @@ async def claw_pc_select(request: Request) -> JSONResponse:
     workspace_id = await _resolve_memory_workspace(request, uid)
     if not workspace_id:
         return _error(503, "pc_selection_workspace_unavailable")
-    source = getattr(request.app.state, "claw_device_directory_source", None)
-    if getattr(source, "configured", False) is not True:
-        return _error(503, "device_directory_unconfigured")
-    try:
-        devices = source.list_devices(
-            owner_id=uid, workspace_id=workspace_id, now=datetime.now(timezone.utc),
-        )
-        if inspect.isawaitable(devices):
-            devices = await devices
-    except Exception:
-        devices = None
-    if not isinstance(devices, list) or len(devices) > _DEVICE_LIMIT:
-        return _error(503, "device_directory_read_failed")
+    directory_response = await _read_device_directory(request, uid=uid, workspace_id=workspace_id)
+    directory = json.loads(directory_response.body)
+    if directory.get("available") is not True:
+        return _error(503, directory.get("reason", "device_directory_read_failed"))
+    devices = directory["devices"]
     selected_row = next(
         (row for row in devices
          if isinstance(row, Mapping) and row.get("deviceId") == device_id),
@@ -358,7 +385,10 @@ async def claw_pc_select(request: Request) -> JSONResponse:
     )
     if selected_row is None:
         return _error(403, "pc_selection_not_owned")
-    if selected_row.get("revoked") is True or selected_row.get("usable") is not True:
+    if (
+        selected_row.get("revoked") is True
+        or selected_row.get("selectable", selected_row.get("usable")) is not True
+    ):
         return _error(409, "pc_selection_not_online")
 
     store = getattr(request.app.state, "claw_pc_device_selection_store", None)
@@ -377,7 +407,7 @@ async def claw_pc_select(request: Request) -> JSONResponse:
         "ok": True,
         "selectedDeviceId": device_id,
         "selectedUsable": True,
-        "selectedState": "CONNECTED",
+        "selectedState": selected_row["state"],
     })
 
 

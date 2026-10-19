@@ -395,7 +395,7 @@ def _agent_profile(
         required_capabilities=(),
         context_policy={},
         # max_retries=0 disables a repeated attempt to the SAME model.
-        # It does not disable B14 owner-designated Cat Jam -> tier backup
+        # It does not disable B14 owner-designated primary -> tier backup
         # recovery, which retains the grade and per-attempt evidence.
         model_policy={
             "model": chosen_model, "max_retries": 0,
@@ -464,6 +464,8 @@ class P01RequestFactory:
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
         pc_drive_query: bool = False,
+        pc_files_query: bool = False,
+        pc_files_device_id: str | None = None,
     ) -> P01RequestBundle:
         if run.terminal:
             raise P01AdapterError(
@@ -528,12 +530,47 @@ class P01RequestFactory:
         )
         desktop_plan = None
         desktop_arguments = None
-        if pc_drive_query and desktop_capture:
+        if sum(bool(flag) for flag in (pc_drive_query, pc_files_query, desktop_capture)) > 1:
             raise P01AdapterError(
                 "conflicting_pc_observation",
-                "PC drive query and desktop capture cannot run in one turn.",
+                "PC drive query, PC file tools and desktop capture cannot run in one turn.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
+        if pc_files_query:
+            if not subject_id:
+                raise P01AdapterError(
+                    "pc_files_owner_required",
+                    "PC file tools require a verified canonical owner.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                )
+            if pc_files_device_id is not None and (
+                not isinstance(pc_files_device_id, str)
+                or not 0 < len(pc_files_device_id) <= 128
+                or any(ord(ch) < 33 or ord(ch) > 126 for ch in pc_files_device_id)
+            ):
+                raise P01AdapterError(
+                    "pc_files_device_invalid",
+                    "PC file tools received an invalid selected device.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                )
+            from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
+            desktop_plan = AgentPlan(
+                agent_id="agent:padiem:claw-pc-query@1",
+                steps=(
+                    AgentPlanStep(
+                        step_id="list_files",
+                        objective="List the approved folder on the verified owner PC",
+                        tool_id="claw.pc.list_files",
+                    ),
+                    AgentPlanStep(
+                        step_id="read_file",
+                        objective="Read the requested UTF-8 text file",
+                        tool_id="claw.pc.read_file",
+                    ),
+                ),
+            )
+            if pc_files_device_id is not None:
+                desktop_arguments = {"files": {"device_id": pc_files_device_id}}
         if pc_drive_query:
             if not subject_id:
                 raise P01AdapterError(
@@ -824,6 +861,8 @@ class P01CoreOrchestrationAdapter:
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
         pc_drive_query: bool = False,
+        pc_files_query: bool = False,
+        pc_files_device_id: str | None = None,
         on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
@@ -838,6 +877,8 @@ class P01CoreOrchestrationAdapter:
                 desktop_capture=desktop_capture,
                 desktop_device_id=desktop_device_id,
                 pc_drive_query=pc_drive_query,
+                pc_files_query=pc_files_query,
+                pc_files_device_id=pc_files_device_id,
             )
             projector = ClawOrchestrationProjector(
                 run,

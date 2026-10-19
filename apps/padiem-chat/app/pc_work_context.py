@@ -21,13 +21,19 @@ from __future__ import annotations
 
 import inspect
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
 PC_WORK_CONTEXT_VERSION = "padiem-pc-work-context.v1"
 PC_DRIVE_TOOL_ID = "claw.pc.query_drives"
+PC_LIST_FILES_TOOL_ID = "claw.pc.list_files"
+PC_READ_FILE_TOOL_ID = "claw.pc.read_file"
 PC_DRIVE_TOOL_CAPABILITY = "읽기 전용 파일 시스템 드라이브 목록"
+PC_TOOL_SUMMARY = (
+    f"{PC_DRIVE_TOOL_ID} (드라이브 목록), {PC_LIST_FILES_TOOL_ID} "
+    f"(승인된 폴더 목록), {PC_READ_FILE_TOOL_ID} (UTF-8 텍스트 파일 읽기)"
+)
 MAX_RENDERED_CHARS = 1800
 MAX_DEVICE_NAME_CHARS = 60
 _MAX_RENDERED_DEVICES = 6
@@ -102,6 +108,7 @@ class PcWorkContext:
     execution: PcExecutionTarget = PcExecutionTarget(status=_EXEC_UNCONFIGURED)
     mapping: str = _MAPPING_UNKNOWN
     selected_device_id: str | None = None
+    saved_selection_status: str = SAVED_SELECTION_NONE
 
     @property
     def verified(self) -> bool:
@@ -110,6 +117,16 @@ class PcWorkContext:
     @property
     def usable_count(self) -> int:
         return sum(1 for device in self.devices if device.usable)
+
+    @property
+    def status(self) -> str:
+        """Compatibility alias for the Broker directory status."""
+        return self.broker_status
+
+    @property
+    def target_device_id(self) -> str | None:
+        """Compatibility alias for the single usable Broker device hint."""
+        return self.broker_target_device_id
 
     @property
     def execution_device_id(self) -> str | None:
@@ -124,6 +141,7 @@ class PcWorkContext:
     def tool_available(self) -> bool:
         return (
             self.execution.ready
+            and self.saved_selection_status != SAVED_SELECTION_UNAVAILABLE
             and self.broker_status != _PAUSED
             and self.mapping in (
                 _MAPPING_CONFIRMED, _MAPPING_UNMAPPED, _MAPPING_IDENTITY_UNCONFIRMED,
@@ -236,6 +254,19 @@ async def _resolve_execution_target(
         return PcExecutionTarget(status=_EXEC_NO_TARGET)
     return PcExecutionTarget(
         status=_EXEC_READY, device_id=canonical, pinned=pinned is not None,
+    )
+
+
+async def resolve_pc_mesh_target(
+    request: Any, *, owner_id: str, workspace_id: str,
+) -> PcExecutionTarget:
+    """Read the existing owner-authorized Mesh target without inventing heartbeat."""
+    resolved_workspace, session = await _resolve_owner_session(request, owner_id)
+    if resolved_workspace != workspace_id:
+        return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
+    return await _resolve_execution_target(
+        request, session_id=getattr(session, "session_id", None),
+        selected_device_id=None,
     )
 
 
@@ -393,11 +424,17 @@ def _broker_lines(context: PcWorkContext) -> list[str]:
         )
         more = len(context.devices) - len(shown)
         suffix = f" 외 {more}대" if more > 0 else ""
-        return [f"등록 기기 목록: {len(context.devices)}대 · {labels}{suffix}."]
+        lines = [f"등록 기기 목록: {len(context.devices)}대 · {labels}{suffix}."]
+        if context.usable_count > 1:
+            lines.append(
+                "온라인 PC가 여러 대입니다. 임의로 하나를 고르지 말고, 사용자에게 "
+                "작업 대상을 먼저 확인하세요."
+            )
+        return lines
     if context.broker_status == _PAUSED:
         return ["등록 기기 사용이 일시중지되었습니다. PC 도구를 실행 가능하다고 안내하거나 실행을 시도하지 마세요."]
     if context.broker_status == _OFFLINE:
-        return ["등록 기기는 있으나 연결 상태(heartbeat)가 오프라인입니다. 연결 표시와 실행 권한은 다릅니다."]
+        return ["등록 기기는 있으나 온라인 상태가 확인되지 않았습니다. 연결 표시와 실행 권한은 다릅니다."]
     if context.broker_status == _NO_DEVICE:
         return ["등록 기기 목록에서 확인된 PC가 없습니다. 이 목록의 부재만으로 실행 가능한 PC가 없다고 단정하지 마세요."]
     if context.broker_status == _UNCONFIGURED:
@@ -408,13 +445,22 @@ def _broker_lines(context: PcWorkContext) -> list[str]:
 
 
 def _execution_lines(context: PcWorkContext) -> list[str]:
+    if context.saved_selection_status == SAVED_SELECTION_UNAVAILABLE:
+        return ["저장된 PC 작업 대상의 복원 상태를 확인하지 못했습니다. 다른 PC를 기본 대상으로 추측하거나 PC 작업을 실행 가능하다고 안내하지 마세요."]
     execution = context.execution
     if execution.status != _EXEC_READY:
         if execution.status == _EXEC_NO_TARGET:
-            return ["서버 실행 대상(권한이 있는 PC)이 확인되지 않았습니다. 등록 기기의 연결 표시만으로 도구 실행을 안내하지 마세요."]
-        if execution.status == _EXEC_UNCONFIGURED:
-            return ["PC 실행 구성이 확인되지 않았습니다. 연결 표시와 실행 권한을 구분해 답하세요."]
-        return ["PC 실행 권한의 주체를 확인하지 못했습니다. 실행 가능하다고 안내하지 마세요."]
+            lines = ["서버 실행 대상(권한이 있는 PC)이 확인되지 않았습니다. 등록 기기의 연결 표시만으로 도구 실행을 안내하지 마세요."]
+        elif execution.status == _EXEC_UNCONFIGURED:
+            lines = ["PC 실행 구성이 확인되지 않았습니다. 연결 표시와 실행 권한을 구분해 답하세요."]
+        else:
+            lines = ["PC 실행 권한의 주체를 확인하지 못했습니다. 실행 가능하다고 안내하지 마세요."]
+        # The registered capability set is an observation, not permission.
+        lines.append(
+            "등록된 PC 작업 종류: 드라이브 목록, 승인된 폴더 목록, UTF-8 텍스트 파일 읽기. "
+            "실행 권한·대상은 확인되지 않았으므로 사용 가능하다고 안내하지 마세요."
+        )
+        return lines
     target = execution.device_id
     # A confirmed mapping can use the registered display name; an unconfirmed
     # one must show the exact server execution identity instead.
@@ -429,21 +475,24 @@ def _execution_lines(context: PcWorkContext) -> list[str]:
     if context.mapping == _MAPPING_CONFIRMED:
         lines = [
             f"현재 작업 대상 PC: {target_label} (등록 기기와 일치). "
-            f"서버가 허용하는 PC 도구: {PC_DRIVE_TOOL_ID} "
-            f"({PC_DRIVE_TOOL_CAPABILITY}), 이 대상 PC에서만 실행됩니다."
+            f"서버가 허용하는 PC 도구: {PC_TOOL_SUMMARY}, "
+            "이 대상 PC에서만 실행됩니다."
         ]
+        lines.append(
+            "드라이브·폴더 목록·파일 내용·PC 상태는 도구 실행 결과로만 답하세요."
+        )
     elif context.mapping == _MAPPING_IDENTITY_UNCONFIRMED:
         lines = [
             f"서버 실행 대상 PC: {target}. 등록 기기 1대와의 직접적인 식별자 대응은 "
             "확인되지 않았습니다. 특정 기기에서만 실행된다고 단정하지 마세요. "
-            f"서버가 허용하는 PC 도구: {PC_DRIVE_TOOL_ID} ({PC_DRIVE_TOOL_CAPABILITY})."
+            f"서버가 허용하는 PC 도구: {PC_TOOL_SUMMARY}."
         ]
     elif context.mapping == _MAPPING_UNMAPPED:
         lines = [
             f"서버 실행 대상 PC: {target}. 등록 기기 목록에서 대응하는 기기를 "
             "확인하지 못했습니다. 등록되지 않았다고 단정하지 마세요. 등록 기기가 "
             "여러 대라면 임의로 하나를 고르지 말고 사용자에게 작업 대상을 확인하세요. "
-            f"서버가 허용하는 PC 도구: {PC_DRIVE_TOOL_ID} ({PC_DRIVE_TOOL_CAPABILITY})."
+            f"서버가 허용하는 PC 도구: {PC_TOOL_SUMMARY}."
         ]
     else:
         return [
@@ -473,7 +522,7 @@ def render_pc_work_context(context: PcWorkContext) -> str:
     return "\n".join(lines)[:MAX_RENDERED_CHARS]
 
 
-async def read_saved_device_selection(
+async def _read_saved_device_selection(
     request: Any, *, owner_id: str | None, workspace_id: str | None,
 ) -> "SavedDeviceSelection":
     """Read the saved target preference without guessing on a failed read.
@@ -505,6 +554,22 @@ async def read_saved_device_selection(
     return SavedDeviceSelection(status=SAVED_SELECTION_SELECTED, device_id=value)
 
 
+async def read_saved_device_selection(
+    request: Any, *, owner_id: str | None, workspace_id: str | None,
+) -> SavedDeviceSelection:
+    """Share only the preference read within this exact owner/workspace request."""
+    key = (owner_id, workspace_id)
+    cache = getattr(request, "_padiem_pc_selection_reads", None)
+    if cache is None:
+        cache = {}
+        setattr(request, "_padiem_pc_selection_reads", cache)
+    if key not in cache:
+        cache[key] = await _read_saved_device_selection(
+            request, owner_id=owner_id, workspace_id=workspace_id,
+        )
+    return cache[key]
+
+
 async def load_saved_device_selection(
     request: Any, *, owner_id: str | None, workspace_id: str | None,
 ) -> str | None:
@@ -523,12 +588,21 @@ async def build_pc_work_context_text(
     session_id: str | None = None,
     selected_device_id: str | None = None,
 ) -> str:
-    """Render one context; workspace/session resolution happens inside."""
+    """Restore the request-scoped preference before rendering any new turn."""
+    if owner_id and (workspace_id is None or session_id is None):
+        resolved_workspace, session = await _resolve_owner_session(request, owner_id)
+        workspace_id = workspace_id or resolved_workspace
+        session_id = session_id or getattr(session, "session_id", None)
+    selection = await read_saved_device_selection(
+        request, owner_id=owner_id, workspace_id=workspace_id,
+    )
+    if selected_device_id is None and selection.status == SAVED_SELECTION_SELECTED:
+        selected_device_id = selection.device_id
     context = await resolve_pc_work_context(
         request, owner_id=owner_id, workspace_id=workspace_id,
         session_id=session_id, selected_device_id=selected_device_id,
     )
-    return render_pc_work_context(context)
+    return render_pc_work_context(replace(context, saved_selection_status=selection.status))
 
 
 __all__ = [
@@ -548,4 +622,5 @@ __all__ = [
     "read_saved_device_selection",
     "render_pc_work_context",
     "resolve_pc_work_context",
+    "resolve_pc_mesh_target",
 ]

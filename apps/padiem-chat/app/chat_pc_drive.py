@@ -32,13 +32,13 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .b14_client import B14Client, ChatRuntimeError
-from .control_plane_identity_shadow import resolve_refreshed_session
 from .history import (
     HistoryForbidden,
     HistoryStore,
     PRODUCT_SCOPE_CHAT,
 )
 from .central_model_route_runtime import chat_request_tier_context
+from .pc_work_context import build_pc_work_context_text
 from .public_chat import public_chat_result
 
 _NO_STORE_HEADERS = {
@@ -62,6 +62,8 @@ _CHAT_PC_VERBS = (
     "있", "뭐", "무엇", "확인", "조회", "목록", "리스트", "검색", "찾",
     "보여", "알려", "인벤토리", "어떻",
 )
+_CHAT_PC_FILE_NOUNS = ("파일", "폴더", "디렉터리", "디렉토리", "txt", "문서")
+_CHAT_PC_FILE_VERBS = ("목록", "리스트", "보여", "읽", "내용", "설명", "찾", "열어")
 
 CHAT_PC_DRIVE_COMMAND = (
     "Get-PSDrive -PSProvider FileSystem | "
@@ -122,6 +124,44 @@ def build_chat_pc_agent_plan() -> dict[str, Any]:
     }
 
 
+def is_chat_pc_files_query(user_text: str) -> bool:
+    """Natural-language PC folder/file task for the shared model tools."""
+    if not isinstance(user_text, str) or not user_text:
+        return False
+    if "`" in user_text:
+        return False
+    lowered = user_text.lower()
+    compact = "".join(lowered.split())
+    if not any(marker in compact for marker in _CHAT_PC_MARKERS):
+        return False
+    if not any(noun in lowered for noun in _CHAT_PC_FILE_NOUNS):
+        return False
+    if not any(verb in lowered for verb in _CHAT_PC_FILE_VERBS):
+        return False
+    if any(noun in lowered for noun in _CHAT_PC_DRIVE_NOUNS):
+        return False
+    return True
+
+
+def build_chat_pc_files_agent_plan() -> dict[str, Any]:
+    """The same two-step list/read plan the Claw product sends."""
+    return {
+        "agent_id": CHAT_PC_QUERY_AGENT_ID,
+        "steps": (
+            {
+                "step_id": "list_files",
+                "objective": "List the approved folder on the verified owner PC",
+                "tool_id": "claw.pc.list_files",
+            },
+            {
+                "step_id": "read_file",
+                "objective": "Read the requested UTF-8 text file",
+                "tool_id": "claw.pc.read_file",
+            },
+        ),
+    }
+
+
 def _decision_contract(user_text: str) -> str:
     return (
         "Return one JSON object. Choose claw.pc.query_drives with empty "
@@ -165,37 +205,40 @@ def parse_chat_pc_tool_decision(raw: str) -> dict[str, Any]:
 
 
 async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str]:
-    """b62 canonical session, subject and tenant workspace for this lane.
+    """b62 canonical session, subject and workspace for this lane.
 
-    Same fail-closed shape as the memory workspace rule
-    (claw_memory_routes._resolve_memory_workspace): both identity components
-    absent keeps the legacy owner namespace; a partial setup or a
-    failed/inactive session is unavailable, never a fallback identity.
+    Uses the same authority call as the signed Chat PC endpoint
+    (``resolve_current_auth_session(product_id="b62")``), so the lane's
+    session id is the canonical one the Control Plane owner-scope lookup
+    accepts. The former shadow-session path could resolve a different
+    session value and fail the owner scope even for the signed-in owner.
     """
-    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
     authority = getattr(request.app.state, "control_plane_identity_authority", None)
-    if shadow_store is None and authority is None:
+    if authority is None:
         return None, "", f"owner:{uid}"
-    if shadow_store is None or authority is None:
+    if not callable(getattr(authority, "resolve_current_auth_session", None)):
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
         )
     try:
-        session = await resolve_refreshed_session(
-            authority=authority,
-            store=shadow_store,
-            product_user_id=uid,
+        session = await authority.resolve_current_auth_session(
+            product_id="b62", product_user_id=uid,
         )
     except Exception as exc:
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
         ) from exc
+    from datetime import datetime, timezone
+
     subject_id = getattr(getattr(session, "subject", None), "subject_id", None)
     tenant_id = getattr(session, "tenant_id", None)
     if (
-        not isinstance(subject_id, str)
+        session is None
+        or getattr(session, "product_id", None) != "b62"
+        or not session.is_active(now=datetime.now(timezone.utc))
+        or not isinstance(subject_id, str)
         or _SUBJECT_RE.fullmatch(subject_id) is None
         or not isinstance(tenant_id, str)
         or not tenant_id
@@ -204,7 +247,42 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
         )
-    return session, subject_id, tenant_id
+    # #5088/#5015: the Control Plane owner-scope lookup accepts the shared
+    # B54 canonical session, not a product-local shadow session. Resolve the
+    # same bridge the signed Claw/Chat endpoint uses; the Chat product identity
+    # above and the b62 subject sent to the Engine stay unchanged.
+    from padiem_control_plane.b54_identity_bridge import (
+        resolve_current_b54_canonical_session as resolve_b54_session,
+    )
+
+    try:
+        bridged = await resolve_b54_session(authority, uid)
+    except Exception as exc:
+        raise ChatPCDriveError(
+            "chat_pc_identity_unavailable",
+            "사용자 확인 정보를 사용할 수 없습니다.",
+        ) from exc
+    if (
+        bridged is None
+        or bridged.auth_session.subject.subject_id != subject_id
+        or not isinstance(bridged.auth_session.tenant_id, str)
+        or not bridged.auth_session.tenant_id
+    ):
+        raise ChatPCDriveError(
+            "chat_pc_identity_unavailable",
+            "사용자 확인 정보를 사용할 수 없습니다.",
+        )
+    session = bridged.auth_session
+    tenant_id = session.tenant_id
+    from .claw_memory_routes import _resolve_memory_workspace
+
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if not isinstance(workspace_id, str) or not workspace_id:
+        workspace_id = tenant_id
+    return session, subject_id, workspace_id
 
 
 _MESH_GRANT_LOG = logging.getLogger(__name__)
@@ -332,8 +410,11 @@ async def execute_chat_pc_drive_lane(
     uid = current_user_id(request) if auth_ready(request) else None
     if not uid:
         return None
-    if not is_chat_pc_drive_query(user_text):
+    drive_requested = is_chat_pc_drive_query(user_text)
+    files_requested = is_chat_pc_files_query(user_text)
+    if not drive_requested and not files_requested:
         return None
+    files_only = files_requested and not drive_requested
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     if store is None:
         raise ChatPCDriveError(
@@ -351,7 +432,8 @@ async def execute_chat_pc_drive_lane(
     session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
-        read_saved_device_selection,
+        read_saved_device_selection, render_pc_work_context,
+        resolve_pc_work_context,
     )
 
     saved_selection = await read_saved_device_selection(
@@ -378,7 +460,12 @@ async def execute_chat_pc_drive_lane(
             503,
         )
     if not await _check_mesh_grant(request, session, device_id=device_id):
-        answer = _no_pc_answer()
+        answer = (
+            "검증된 PC 연결을 확인하지 못해 파일 목록을 조회할 수 없습니다. "
+            "PC 연결을 먼저 확인한 뒤 다시 요청해 주세요. "
+            "연결되지 않은 PC의 파일을 추측해서 안내하지 않았습니다."
+            if files_only else _no_pc_answer()
+        )
         saved_id = await _save_pair(
             store, uid=uid, conversation_id=conversation_id,
             user_text=user_text, answer=answer,
@@ -387,11 +474,7 @@ async def execute_chat_pc_drive_lane(
             raise ChatPCDriveError("conversation_not_found", "대화를 찾을 수 없습니다.", 404)
         return answer, saved_id
 
-    # #5015: the decision model receives the same server-verified PC context
-    # the general Chat path gets. It reads both the Broker directory and the
-    # Mesh execution target, so an online badge never becomes tool permission.
-    from .pc_work_context import render_pc_work_context, resolve_pc_work_context
-
+    # #5015: one server-verified context for both the drive and file lanes.
     pc_context = await resolve_pc_work_context(
         request, owner_id=uid, workspace_id=workspace_id,
         session_id=getattr(session, "session_id", None),
@@ -422,6 +505,15 @@ async def execute_chat_pc_drive_lane(
                 403,
             )
     pc_work_text = render_pc_work_context(pc_context)
+
+    if files_only:
+        return await _execute_chat_pc_files_lane(
+            request, store=store, uid=uid, subject_id=subject_id,
+            workspace_id=workspace_id, user_text=user_text, skill=skill,
+            model_id=model_id, conversation_id=conversation_id,
+            device_id=device_id, additional_system_context=pc_work_text,
+        )
+
     decision_contract = _decision_contract(user_text)
     decision_raw = await _complete_with_model(
         request, user_text=user_text, skill=skill,
@@ -509,6 +601,106 @@ async def execute_chat_pc_drive_lane(
     # the model and composed this answer there; the lane records it verbatim
     # instead of adding a second model paraphrase (and a second hallucination
     # surface) on top.
+    composed = answer.strip()
+    saved = await _append_lane_answer(
+        request, store, uid=uid, run_id=lane_run_id, content=composed,
+    )
+    if not saved:
+        raise ChatPCDriveError(
+            "chat_pc_store_unavailable",
+            "대화 기록을 현재 사용할 수 없습니다.",
+        )
+    return composed, staged_conversation_id
+
+
+async def _execute_chat_pc_files_lane(
+    request: Request,
+    *,
+    store: HistoryStore,
+    uid: str,
+    subject_id: str,
+    workspace_id: str,
+    user_text: str,
+    skill: Any,
+    model_id: str,
+    conversation_id: str | None,
+    device_id: str | None,
+    additional_system_context: str | None = None,
+) -> tuple[str, str | None]:
+    """Stage and run the shared two-step list/read plan on the Chat product.
+
+    The model decisions and both tool executions happen in the Engine's PC
+    step driver; this lane only stages the Chat run, passes the server-owned
+    device hint and records the final answer in the original conversation.
+    """
+    from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
+
+    bridge = getattr(request.app.state, "orchestration_bridge", None)
+    if not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready:
+        raise ChatPCDriveError(
+            "chat_pc_files_unavailable",
+            "PC 파일 도구를 현재 사용할 수 없습니다.",
+        )
+    lane_run_id = CHAT_PC_RUN_PREFIX + uuid.uuid4().hex
+    try:
+        staged_conversation_id = await store.record_chat_pc_drive_run(
+            user_id=uid, run_id=lane_run_id, workspace_id=workspace_id,
+            user_text=user_text, conversation_id=conversation_id,
+            action="pc_files_query", title_prefix="PC 파일 탐색: ",
+        )
+    except HistoryForbidden as exc:
+        raise ChatPCDriveError(
+            "conversation_not_found", "대화를 찾을 수 없습니다.", 404,
+        ) from exc
+    except Exception as exc:
+        raise ChatPCDriveError(
+            "chat_pc_store_unavailable",
+            "대화 기록을 현재 사용할 수 없습니다.",
+        ) from exc
+    tool_arguments = (
+        {"files": {"device_id": device_id}} if device_id is not None else None
+    )
+    try:
+        outcome = await bridge.start(
+            user_id=uid,
+            messages=({"role": "user", "content": user_text},),
+            skill=skill,
+            model_id=model_id,
+            user_text=user_text,
+            conversation_id=staged_conversation_id,
+            subject_id=subject_id,
+            session_id=lane_run_id,
+            agent_plan=build_chat_pc_files_agent_plan(),
+            additional_system_context=additional_system_context,
+            tool_arguments=tool_arguments,
+        )
+    except B62OrchestrationError as exc:
+        await _append_lane_notice(
+            request, store, uid=uid, run_id=lane_run_id,
+            content=(
+                "PC 파일 작업을 완료하지 못했습니다. "
+                "같은 요청을 반복하기 전에 PC 연결 상태를 확인해 주세요."
+            ),
+            status="failed",
+        )
+        raise ChatPCDriveError(
+            "chat_pc_engine_unavailable", exc.user_message, exc.status_code,
+        ) from exc
+    answer = outcome.answer if isinstance(outcome.answer, str) else None
+    if not answer or not answer.strip():
+        await _append_lane_notice(
+            request, store, uid=uid, run_id=lane_run_id,
+            content=(
+                "PC 파일 작업을 완료하지 못했습니다. "
+                "같은 요청을 반복하기 전에 PC 연결 상태를 확인해 주세요."
+            ),
+            status="failed",
+        )
+        raise ChatPCDriveError(
+            "chat_pc_engine_unavailable",
+            "AI가 표시할 답변을 만들지 못했습니다.",
+            502,
+        )
     composed = answer.strip()
     saved = await _append_lane_answer(
         request, store, uid=uid, run_id=lane_run_id, content=composed,

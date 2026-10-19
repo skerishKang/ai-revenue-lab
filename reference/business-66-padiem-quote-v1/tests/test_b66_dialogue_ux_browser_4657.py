@@ -38,7 +38,7 @@ ROOT = Path(__file__).resolve().parents[1]
 _EVIDENCE_DIR = os.environ.get("B66_4657_EVIDENCE_DIR")
 EVIDENCE = Path(_EVIDENCE_DIR) if _EVIDENCE_DIR else None
 
-MODEL_ID = "opencode-go/cat-jam-free"
+MODEL_ID = "opencode-go/beam-free"
 DIALOGUE_ID = "chat_" + "a" * 32
 SECOND_DIALOGUE_ID = "chat_" + "b" * 32
 EMAIL = "demo@example.test"
@@ -235,7 +235,7 @@ def _reset_state() -> None:
         "/b66/quote/models": {
             "ok": True,
             "models": [{
-                "model_id": MODEL_ID, "name": "Cat Jam",
+                "model_id": MODEL_ID, "name": "Beam Free",
                 "reasoning_levels": [{"value": "default", "label": "기본(제공자 기본값)"}],
             }],
             "default_model_id": None,

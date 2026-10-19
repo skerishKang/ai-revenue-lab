@@ -454,6 +454,12 @@ def test_client_source_declares_no_second_grammar() -> None:
     import kagent.p01_orchestration_client as client_mod
 
     source = inspect.getsource(client_mod)
-    assert "re.compile" not in source
+    # The client keeps the reviewed bounded Engine error-code classifier and
+    # the closed PC device-hint grammar (#5015). It must not grow a second
+    # subject grammar: no local alphanumeric validation and no duplicate
+    # subject-length rule.
+    assert source.count("re.compile") == 2
+    assert "_BOUNDED_ENGINE_ERROR_CODE_RE" in source
+    assert "_PC_DEVICE_ID_RE" in source
     assert "isalnum" not in source
     assert "len(request.subject_id) > 256" not in source

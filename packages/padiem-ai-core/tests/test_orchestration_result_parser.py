@@ -424,6 +424,60 @@ async def test_pc_plan_and_tool_event_success_result_round_trips() -> None:
     assert result.to_public_dict()["plan"] == plan_payload
 
 
+async def test_pc_list_read_plan_and_two_tool_events_round_trip() -> None:
+    """#4976: the two-step file plan survives the consumer parser intact."""
+    payload = await _public_result()
+    plan_payload = {
+        "agent_id": "agent:padiem:claw-pc-query@1",
+        "steps": [
+            {
+                "step_id": "list_files",
+                "objective": "List the approved folder on the verified owner PC",
+                "tool_id": "claw.pc.list_files",
+                "depends_on": [],
+            },
+            {
+                "step_id": "read_file",
+                "objective": "Read the requested UTF-8 text file",
+                "tool_id": "claw.pc.read_file",
+                "depends_on": ["list_files"],
+            },
+        ],
+    }
+    payload["plan"] = plan_payload
+    payload["execution"]["metadata"]["session_id"] = "run_pc_files_1"
+    payload["execution"]["metadata"]["tool_events"] = [
+        {
+            "tool_id": "claw.pc.list_files",
+            "status": "completed",
+            "duration_ms": 100,
+            "error_class": None,
+            "error_code": None,
+        },
+        {
+            "tool_id": "claw.pc.read_file",
+            "status": "completed",
+            "duration_ms": 120,
+            "error_class": None,
+            "error_code": None,
+        },
+    ]
+
+    result = orchestration_result_from_public(payload)
+
+    assert result.plan is not None
+    assert [step.step_id for step in result.plan.steps] == ["list_files", "read_file"]
+    assert [step.tool_id for step in result.plan.steps] == [
+        "claw.pc.list_files", "claw.pc.read_file",
+    ]
+    assert result.plan.steps[1].depends_on == ("list_files",)
+    assert result.execution_result.metadata.session_id == "run_pc_files_1"
+    assert [event.tool_id for event in result.execution_result.metadata.tool_events] == [
+        "claw.pc.list_files", "claw.pc.read_file",
+    ]
+    assert result.to_public_dict()["plan"] == plan_payload
+
+
 async def test_invalid_plan_dependency_is_rejected() -> None:
     payload = await _public_result()
     payload["plan"] = {

@@ -5,7 +5,11 @@
 
 This directory is the operating authority for AI Revenue Lab implementation and review. When historical documents conflict with the current canonical documents below, follow the current documents and preserve historical files only as evidence of the rules that applied at the time.
 
-## Current issue / PR reconciliation (2026-10-15)
+## Current implementation / verification ownership (2026-10-19)
+
+- [**PADIEM_CURRENT_IMPLEMENTATION_AND_VALIDATION_MAP_20261019.md**](PADIEM_CURRENT_IMPLEMENTATION_AND_VALIDATION_MAP_20261019.md) — 최신 GitHub 기반 구현/운영검증 분리, 공통 Connector 구현 #3580/#5015/#4434/#4976, 검증 원장 #4317/#3936/#4316/#4318/#3099/#4089, 모델·관리자 이슈 종결 및 후속 #5108. 최신 이슈·운영 증거를 우선한다.
+
+## Historical issue / PR reconciliation (2026-10-15)
 
 - [**ISSUE_DOCUMENT_RECONCILIATION_20261015.md**](ISSUE_DOCUMENT_RECONCILIATION_20261015.md) — snapshot of all open Issues / open PRs, canonical product-integration owners, resolved issue transfers, and the no-duplicate-document rule. This is an operational **index**, not a new product policy or a substitute for fresh GitHub/Production evidence.
 - Latest issue/PR state always wins over the date-scoped snapshot. Implementation merges, Worker deploys and owner-device acceptance remain different claims. Private local business/operating governance must be read separately on the authorized COM1 PC; its contents are not reproduced here.

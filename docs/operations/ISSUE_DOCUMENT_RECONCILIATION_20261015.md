@@ -1,3 +1,7 @@
+<!-- HISTORICAL_SNAPSHOT_NOTE_20261019 -->
+> **2026-10-19 정합화:** 이 문서는 2026-10-15 시점 이슈·PR 현황의 역사적 스냅샷입니다. 최신 구현/검증 분리·공통 Connector 범위·종결 상태는 [현재 구현·검증 소유권 인덱스](PADIEM_CURRENT_IMPLEMENTATION_AND_VALIDATION_MAP_20261019.md)를 우선 확인하세요. 아래의 87 OPEN / 59 PR 및 기존 미완료 표현을 최신 현황으로 사용하지 않습니다.
+<!-- /HISTORICAL_SNAPSHOT_NOTE_20261019 -->
+
 # CENTRAL — GitHub OPEN 이슈·PR 및 기준 문서 통합 인덱스 (2026-10-15)
 
 **성격:** GitHub 공개 기술 운영·정리 스냅샷. 비공개 회사 사업방침/고객별 위임/인증 자료를 포함하지 않습니다. **이 인덱스는 개별 이슈의 현재 상태와 CI·운영 배포·사용자 수용을 대체하지 않습니다.** 새 세션에서는 먼저 [AGENTS.md](../../AGENTS.md), 이 [운영 인덱스](README.md), 관련 실제 이슈·PR·Run을 새로 확인합니다.

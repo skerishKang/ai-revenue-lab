@@ -128,10 +128,10 @@ class DispatchAwareB14Client(B14Client):
 
     Missing Service Bindings and, when the public live deadman switch is armed,
     a non-executable Padiem model policy are local deterministic pre-dispatch
-    failures. Router-owned ``b14/auto`` is executable without a concrete B62
-    model assignment, so it is allowed to reach B14. Non-live B14 test/preflight
-    paths remain available for infrastructure regression without representing a
-    public product route.
+    failures. The legacy generic ``b14/auto`` route is deferred and rejected
+    before dispatch, so it carries no concrete B62 model assignment. Non-live
+    B14 test/preflight paths remain available for infrastructure regression
+    without representing a public product route.
     """
 
     async def _reject_non_executable_policy(self, messages: list[dict[str, str]]) -> None:

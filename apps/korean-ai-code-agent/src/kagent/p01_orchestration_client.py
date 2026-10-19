@@ -151,6 +151,7 @@ _ENGINE_ADMISSION_CODES = frozenset(
 
 
 _BOUNDED_ENGINE_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
+_PC_DEVICE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
 def _bounded_engine_error_code(record: object) -> str:
@@ -548,32 +549,61 @@ class P01EngineOrchestrationClient:
                 for step, arguments in request.tool_arguments.items()
             }
         elif self._is_trusted_pc_query_request(request):
-            # #5015: the Engine has a dedicated one-step PC drive query
-            # driver. Without this exact plan the request was refused as
-            # unsupported authority BEFORE dispatch, so the Chat turn only
-            # ever surfaced the bounded `engine_execution_failed` error.
+            # #5015: the Engine has a dedicated PC-query driver. Without this
+            # exact plan the request was refused as unsupported authority
+            # BEFORE dispatch, so the Chat turn only ever surfaced the bounded
+            # `engine_execution_failed` error.
             payload["agent_plan"] = request.agent_plan.to_public_dict()
+            if request.tool_arguments is not None:
+                payload["tool_arguments"] = {
+                    step: dict(arguments)
+                    for step, arguments in request.tool_arguments.items()
+                }
         return payload
 
     def _is_trusted_pc_query_request(self, request: OrchestrationRequest) -> bool:
-        """Exact Claw-owned, one-step PC drive query plan only (#5015).
+        """Exact Claw-owned PC plan: drive inventory or bounded list+read.
 
-        Mirrors ``_is_trusted_capture_request``: a single canonical plan with
-        no caller-supplied tool arguments. Anything else stays refused.
+        Mirrors ``_is_trusted_capture_request``: a canonical plan with no
+        caller-supplied command. Both plans may carry only their closed
+        server-selected device hint; the model never chooses the target.
         """
         plan = request.agent_plan
-        return bool(
+        if not (
             self._allow_subject_identity
             and request.app_id == "b54-padiem-claw"
             and request.subject_id
             and request.execution_request.session_id
             and plan is not None
             and plan.agent_id == "agent:padiem:claw-pc-query@1"
-            and len(plan.steps) == 1
+        ):
+            return False
+        if (
+            len(plan.steps) == 1
             and plan.steps[0].step_id == "query_drives"
             and plan.steps[0].tool_id == "claw.pc.query_drives"
-            and request.tool_arguments is None
-        )
+        ):
+            target_key = "query_drives"
+        elif (
+            len(plan.steps) == 2
+            and plan.steps[0].step_id == "list_files"
+            and plan.steps[0].tool_id == "claw.pc.list_files"
+            and plan.steps[1].step_id == "read_file"
+            and plan.steps[1].tool_id == "claw.pc.read_file"
+        ):
+            target_key = "files"
+        else:
+            return False
+        arguments = request.tool_arguments
+        if arguments is None:
+            return True
+        if not isinstance(arguments, dict) or set(arguments) != {target_key}:
+            return False
+        target = arguments.get(target_key)
+        if not isinstance(target, dict) or set(target) != {"device_id"}:
+            return False
+        device_id = target.get("device_id")
+        return isinstance(device_id, str) and bool(_PC_DEVICE_ID_RE.fullmatch(device_id))
 
     def _is_trusted_capture_request(self, request: OrchestrationRequest) -> bool:
         """Exact Claw-owned, one-capture plan only; never general tool authority."""

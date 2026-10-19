@@ -34,6 +34,7 @@
       offline: "오프라인",
       revoked: "연결 해제",
       required: "연결 확인 필요",
+      executable: "실행 대상 · 온라인 상태 미확인",
       choose: "작업 대상 후보로 선택",
     },
     en: {
@@ -59,6 +60,7 @@
       offline: "Offline",
       revoked: "Disconnected",
       required: "Connection needs verification",
+      executable: "Execution target · online status unverified",
       choose: "Select as candidate device",
     },
   });
@@ -141,6 +143,7 @@
     function deviceLabel(device) {
       const t = locale();
       if (device.revoked) return t.revoked;
+      if (device.executable && device.selectable && !device.online) return t.executable;
       if (device.online) return t.online;
       return device.state === "OFFLINE" ? t.offline : t.required;
     }
@@ -160,7 +163,7 @@
         detail.append(name, meta, chip);
         const pick = element("button", "claw-device-manager-select", t.choose);
         pick.type = "button";
-        pick.disabled = !device.online;
+        pick.disabled = !device.selectable;
         pick.setAttribute("aria-pressed", String(Boolean(lastDirectory.canTarget &&
           lastDirectory.selectedDeviceId === device.deviceId)));
         pick.setAttribute("aria-label", t.choose + ": " + (device.deviceName || device.deviceId));
@@ -173,7 +176,7 @@
           if (!candidate.canTarget) return;
           pick.disabled = true;
           const saved = await saveSelection(device.deviceId);
-          pick.disabled = !device.online;
+          pick.disabled = !device.selectable;
           if (!saved) {
             setStatus("saveFailed");
             return;
@@ -334,6 +337,8 @@
             state: d.state,
             usable: d.online,
             revoked: d.revoked,
+            executable: d.executable,
+            selectable: d.selectable,
           })),
         };
         lastDirectory = directory;

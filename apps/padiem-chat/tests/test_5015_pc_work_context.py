@@ -207,7 +207,7 @@ def test_offline_broker_heartbeat_stays_separate_from_execution_target():
     assert context.execution.status == "ready"
     assert context.mapping == "unmapped"
     rendered = render_pc_work_context(context)
-    assert "heartbeat" in rendered
+    assert "온라인 상태가 확인되지 않았습니다" in rendered
     assert "서버 실행 대상 PC: office-pc" in rendered
 
 
@@ -830,26 +830,49 @@ def test_chat_lane_refuses_a_revoked_saved_target():
     assert bridge.requests == []
 
 
-def test_saved_selection_read_status_distinguishes_none_failure_and_value():
+def _selection_request(store):
     request = request_for(Directory([device()]), owner_state={})
-    request.app.state.claw_pc_device_selection_store = SavedSelection(None)
+    request.app.state.claw_pc_device_selection_store = store
+    return request
+
+
+def test_saved_selection_read_status_distinguishes_none_failure_and_value():
     assert asyncio.run(read_saved_device_selection(
-        request, owner_id=OWNER, workspace_id=WORKSPACE,
+        _selection_request(SavedSelection(None)),
+        owner_id=OWNER, workspace_id=WORKSPACE,
     )).status == SAVED_SELECTION_NONE
-    request.app.state.claw_pc_device_selection_store = SavedSelection("office-pc")
     selected = asyncio.run(read_saved_device_selection(
-        request, owner_id=OWNER, workspace_id=WORKSPACE,
+        _selection_request(SavedSelection("office-pc")),
+        owner_id=OWNER, workspace_id=WORKSPACE,
     ))
     assert selected.status == SAVED_SELECTION_SELECTED
     assert selected.device_id == "office-pc"
-    request.app.state.claw_pc_device_selection_store = SavedSelection(raises=True)
     assert asyncio.run(read_saved_device_selection(
-        request, owner_id=OWNER, workspace_id=WORKSPACE,
+        _selection_request(SavedSelection(raises=True)),
+        owner_id=OWNER, workspace_id=WORKSPACE,
     )).status == SAVED_SELECTION_UNAVAILABLE
-    request.app.state.claw_pc_device_selection_store = None
     assert asyncio.run(read_saved_device_selection(
-        request, owner_id=OWNER, workspace_id=WORKSPACE,
+        _selection_request(None),
+        owner_id=OWNER, workspace_id=WORKSPACE,
     )).status == SAVED_SELECTION_UNCONFIGURED
+
+
+def test_saved_selection_read_is_cached_within_one_request_only():
+    store = SavedSelection("office-pc")
+    request = _selection_request(store)
+    first = asyncio.run(read_saved_device_selection(
+        request, owner_id=OWNER, workspace_id=WORKSPACE,
+    ))
+    store.value = "home-pc"
+    cached = asyncio.run(read_saved_device_selection(
+        request, owner_id=OWNER, workspace_id=WORKSPACE,
+    ))
+    fresh = asyncio.run(read_saved_device_selection(
+        _selection_request(SavedSelection("home-pc")),
+        owner_id=OWNER, workspace_id=WORKSPACE,
+    ))
+    assert first.device_id == cached.device_id == "office-pc"
+    assert fresh.device_id == "home-pc"
 
 
 def test_chat_lane_fails_closed_when_saved_selection_cannot_be_read():
@@ -965,3 +988,79 @@ def test_claw_drive_uses_the_saved_target_and_fails_closed_without_a_mesh_scope(
     assert response.status_code == 409, response.text
     assert response.json()["error"]["code"] == "pc_target_unavailable"
     adapter.execute.assert_not_awaited()
+
+
+# --- main/5116 compatibility: broker-only context (no Mesh lane) -----------
+
+
+class _MainSource:
+    configured = True
+
+    def __init__(self, rows):
+        self.rows = rows
+
+    async def list_devices(self, *, owner_id, workspace_id, now):
+        del owner_id, workspace_id, now
+        return self.rows
+
+
+def _main_request(rows):
+    return SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(
+            claw_device_directory_source=_MainSource(rows),
+        )),
+    )
+
+
+def _main_row(device_id, name, state="CONNECTED", usable=True, **extra):
+    return {
+        "deviceId": device_id, "deviceName": name, "state": state,
+        "usable": usable, **extra,
+    }
+
+
+def _main_resolve(rows, *, owner="usr_owner", workspace="ws-1"):
+    return asyncio.run(resolve_pc_work_context(
+        _main_request(rows), owner_id=owner, workspace_id=workspace,
+        session_id="sess_main",
+    ))
+
+
+def test_single_connected_device_is_the_explicit_target():
+    context = _main_resolve([_main_row("device-1", "Padiem-Command-Center")])
+    assert context.status == "ready"
+    assert context.target_device_id == "device-1"
+    text = render_pc_work_context(context)
+    assert "Padiem-Command-Center" in text
+    assert "온라인" in text
+    assert "승인된 폴더 목록" in text
+
+
+def test_two_usable_devices_are_never_silently_selected():
+    context = _main_resolve([_main_row("device-1", "PC-A"), _main_row("device-2", "PC-B")])
+    assert context.target_device_id is None
+    text = render_pc_work_context(context)
+    assert "여러 대" in text and "임의로 하나를 고르지 말고" in text
+
+
+def test_paused_and_offline_are_distinct_states():
+    paused = _main_resolve([_main_row("device-1", "PC-A", usagePaused=True)])
+    assert paused.status == "paused"
+    assert "일시중지" in render_pc_work_context(paused)
+
+    offline = _main_resolve([_main_row("device-1", "PC-A", state="OFFLINE", usable=False)])
+    assert offline.status == "offline"
+    assert "온라인 상태가 확인되지 않았습니다" in render_pc_work_context(offline)
+
+
+def test_unverified_owner_and_unconfigured_source_fail_closed():
+    unverified = _main_resolve([], owner=None)
+    assert unverified.status == "unverified_owner"
+    assert "확인하지 못해" in render_pc_work_context(unverified)
+
+    no_source = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace()))
+    unconfigured = asyncio.run(resolve_pc_work_context(
+        no_source, owner_id="usr_owner", workspace_id="ws-1", session_id="sess_main",
+    ))
+    assert unconfigured.status == "unconfigured"
+    assert "확인하지 못했습니다" in render_pc_work_context(unconfigured)

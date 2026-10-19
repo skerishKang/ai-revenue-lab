@@ -374,8 +374,24 @@ _PC_QUERY_STREAM_AGENT_IDS = frozenset({
 _PC_QUERY_STREAM_APP_IDS = frozenset({"b54-padiem-claw", "padiem-chat"})
 
 
-def _pc_query_stream_owner(app_id: str, request: Any) -> tuple[str, str] | None:
-    """Trusted owner binding for the streaming PC drive tool (#5015).
+def _pc_query_selected_device(tool_arguments: Any) -> str | None:
+    """The server-provided device hint for the PC tool plan, never model text."""
+    if not isinstance(tool_arguments, dict):
+        return None
+    for target_key in ("query_drives", "files"):
+        if set(tool_arguments) != {target_key}:
+            continue
+        target = tool_arguments.get(target_key)
+        if not isinstance(target, dict) or set(target) != {"device_id"}:
+            return None
+        device = target.get("device_id")
+        if isinstance(device, str) and _PC_DEVICE_ID_PATTERN.fullmatch(device):
+            return device
+    return None
+
+
+def _pc_query_stream_owner(app_id: str, request: Any) -> tuple[str, str, str, str | None] | None:
+    """Trusted owner binding for the streaming PC tool driver (#5015).
 
     Only the exact canonical PC-query plan under its own product identity may
     carry an owner. Every other stream keeps the context unset, exactly as the
@@ -394,7 +410,10 @@ def _pc_query_stream_owner(app_id: str, request: Any) -> tuple[str, str] | None:
         or getattr(plan, "agent_id", None) not in _PC_QUERY_STREAM_AGENT_IDS
     ):
         return None
-    return (subject_id, session_id)
+    return (
+        subject_id, session_id, app_id,
+        _pc_query_selected_device(getattr(request, "tool_arguments", None)),
+    )
 
 
 class OrchestrationEngineService:
@@ -540,14 +559,28 @@ class OrchestrationEngineService:
         if plan.agent_id not in _PC_PLAN_AGENT_IDS:
             return
         step_ids = {step.step_id for step in plan.steps}
+        if tuple(
+            (step.step_id, getattr(step, "tool_id", None))
+            for step in plan.steps
+        ) == (
+            ("list_files", "claw.pc.list_files"),
+            ("read_file", "claw.pc.read_file"),
+        ):
+            # One shared target binds the whole model-selected list/read loop.
+            # It is metadata, not a third executable plan step.
+            step_ids = {"files"}
         for step_id, entry in parsed.items():
-            if step_id not in step_ids or set(entry) - {"device_id"}:
+            if (
+                step_id not in step_ids
+                or not isinstance(entry, Mapping)
+                or set(entry) != {"device_id"}
+            ):
                 raise ServiceContractError(
                     "invalid_tool_arguments",
                     "PC plan tool arguments must contain only a device_id.",
                 )
             device_id = entry.get("device_id")
-            if "device_id" in entry and (
+            if (
                 not isinstance(device_id, str)
                 or not _PC_DEVICE_ID_PATTERN.fullmatch(device_id)
             ):

@@ -3,7 +3,8 @@ from __future__ import annotations
 import asyncio
 import json
 from datetime import datetime, timedelta, timezone
-from unittest.mock import MagicMock
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
@@ -451,3 +452,89 @@ def test_selection_is_owner_scoped_and_absent_for_another_account():
     assert other_data["available"] is True and other_data["devices"] == []
     assert "selectedDeviceId" not in other_data
     assert store.rows == {(OWNER, WORKSPACE): "office"}
+
+
+# ── #5015: Broker-empty / Mesh-target reconciliation in the directory ──────
+
+
+class _MeshTarget:
+    configured = True
+    execution_mode = "mesh"
+
+    def __init__(self, row):
+        self.row = row
+
+    def command_target(self, *, account_ref, device_id=None):
+        del account_ref, device_id
+        return dict(self.row)
+
+
+class _ScopeIdentity:
+    async def resolve_connector_owner_scope(self, *, session_id):
+        del session_id
+        return {"account_ref": "acct-1", "workspace_ref": "ws-connector"}
+
+
+MESH_ONLY = {"account_ref": "acct-1", "device_id": None,
+             "node_ref": "mesh-node", "command_exec": True}
+
+
+def _mesh_app(binding, *, mesh_row=None, store=None):
+    app, settings = make_app(binding, selection_store=store)
+    app.state.oracle_mesh_return_source = _MeshTarget(mesh_row or MESH_ONLY)
+    app.state.control_plane_identity_authority = _ScopeIdentity()
+    return app, settings
+
+
+def _mesh_patches():
+    return (
+        patch("app.claw_device_directory_routes._resolve_memory_workspace",
+              new=AsyncMock(return_value=WORKSPACE)),
+        patch("app.pc_work_context._resolve_owner_session",
+              new=AsyncMock(return_value=(WORKSPACE, SimpleNamespace(session_id="sess-1")))),
+    )
+
+
+def test_mesh_only_target_is_listed_selectable_and_saved():
+    from app.claw_device_directory_routes import CLAW_PC_SELECT_PATH
+    store = SelectionStore()
+    app, settings = _mesh_app(Binding(available=False), store=store)
+    p1, p2 = _mesh_patches()
+    with p1, p2:
+        data = get(app, settings).json()
+        assert data["available"] is True
+        row = next(item for item in data["devices"] if item["deviceId"] == "mesh-node")
+        assert row["state"] == "ACTION_REQUIRED"
+        assert row["usable"] is False
+        assert row["executable"] is True
+        assert row["selectable"] is True
+        assert "selectedDeviceId" not in data
+        saved = post_select(app, settings, body={"device_id": "mesh-node"})
+    assert saved.status_code == 200, saved.text
+    assert store.saves == [(OWNER, WORKSPACE, "mesh-node")]
+
+
+def test_broker_row_keeps_explicit_offline_and_revoked_truth():
+    for row, expected in (
+        (fact("mesh-node"), "OFFLINE"),
+        (fact("mesh-node", state="revoked"), "REVOKED"),
+    ):
+        app, settings = _mesh_app(Binding([row]))
+        p1, p2 = _mesh_patches()
+        with p1, p2:
+            data = get(app, settings).json()
+        item = next(x for x in data["devices"] if x["deviceId"] == "mesh-node")
+        assert item["state"] == expected
+        assert item["executable"] is True
+        assert item["selectable"] is False
+
+
+def test_matching_online_broker_row_is_marked_executable_and_selectable():
+    app, settings = _mesh_app(Binding([active_fact("mesh-node")]))
+    p1, p2 = _mesh_patches()
+    with p1, p2:
+        data = get(app, settings).json()
+    item = next(x for x in data["devices"] if x["deviceId"] == "mesh-node")
+    assert item["state"] == "CONNECTED"
+    assert item["executable"] is True
+    assert item["selectable"] is True

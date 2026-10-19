@@ -112,6 +112,17 @@ def _combine_system_context(*parts: str | None) -> str | None:
     return "\n\n".join(blocks) if blocks else None
 
 
+
+def _combine_system_context(*parts: str | None) -> str | None:
+    """Join optional trusted context blocks in a fixed order.
+
+    Each part is server-composed; a browser-supplied string never reaches this
+    helper. Empty/absent blocks disappear instead of emitting a blank section.
+    """
+    blocks = [part for part in parts if isinstance(part, str) and part]
+    return "\n\n".join(blocks) if blocks else None
+
+
 # NO_EXECUTABLE_ROUTE product HOLD (#3568/#3566): these adapter codes mean the
 # run was refused before any Engine/B14/provider dispatch because the selected
 # tier has no executable route yet. They are product states, not engine
@@ -722,6 +733,40 @@ def _requested_natural_pc_query(user_text: str) -> tuple[bool, str | None]:
     return True, command
 
 
+_PC_FILE_NOUNS = ("파일", "폴더", "디렉터리", "디렉토리", "txt", "문서")
+_PC_FILE_VERBS = ("목록", "리스트", "보여", "읽", "내용", "설명", "찾", "열어")
+
+
+def _requested_natural_pc_files(user_text: str) -> bool:
+    """Natural-language PC folder/file task for the model's file tools.
+
+    This only selects the model-driven PC file plan; the model chooses the
+    folder/file arguments from the verified context and uses the actual tool
+    results. A surface drive question stays on the drive lane, and a backtick
+    command stays on the explicit terminal lane.
+    """
+    if not isinstance(user_text, str) or not user_text:
+        return False
+    if "`" in user_text:
+        return False
+    # An explicit named .txt path keeps the existing single-file TXT lane
+    # (which resolves the deployment-mapped file); the model file plan is for
+    # folder listing + a file chosen from the actual listing.
+    if _requested_local_txt_path(user_text)[0]:
+        return False
+    compact = "".join(user_text.lower().split())
+    if not any(marker in compact for marker in _NATURAL_PC_QUERY_MARKERS):
+        return False
+    lowered = user_text.lower()
+    if not any(noun in lowered for noun in _PC_FILE_NOUNS):
+        return False
+    if not any(verb in lowered for verb in _PC_FILE_VERBS):
+        return False
+    if any(noun in lowered for noun in ("드라이브", "디스크", "drive", "disk")):
+        return False
+    return True
+
+
 _DESKTOP_PC_MARKERS = (
     "내pc", "내컴퓨터", "로컬pc", "로컬컴퓨터", "com1", "mypc", "mycomputer",
 )
@@ -1102,6 +1147,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             request, user_text=user_text, command=command_text, data=data,
         )
 
+    # #4976: a natural-language folder/file task (list then read) uses the
+    # model-selected PC file tools. It is classified before the older
+    # single-command/TXT lanes so a named TXT is read by the model from the
+    # actual listing rather than by a fixed-path shortcut.
+    pc_files_requested = _requested_natural_pc_files(user_text)
+    # The browser hint was already shape-checked once above; the saved target
+    # or the server-verified target replaces it before dispatch.
+    pc_files_device_id = requested_device_id if pc_files_requested else None
+
     # #4139: natural-language PC state query (no backtick). Routes a clear
     # question about the verified PC to a bounded inventory command on that PC.
     natural_pc_requested, natural_pc_command = _requested_natural_pc_query(user_text)
@@ -1119,7 +1173,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         initial_pc_drive_query = False
 
     txt_requested, txt_path = _requested_local_txt_path(user_text)
-    if txt_requested:
+    if txt_requested and not pc_files_requested:
         if txt_path is None:
             return _error(422, "txt_read_path_required",
                           "내 PC에서 읽을 TXT 파일의 상대 경로를 하나 지정해 주세요.")
@@ -1264,13 +1318,14 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             pc_workspace = await _resolve_memory_workspace(request, pc_owner)
         except Exception:
             pc_workspace = None
+        pc_target_requested = initial_pc_drive_query or pc_files_requested
         explicit_pc_device_id = (
-            desktop_device_id
-            if (initial_pc_capture or initial_pc_drive_query) else None
+            desktop_device_id if initial_pc_drive_query
+            else (pc_files_device_id if pc_files_requested else None)
         )
         selected_pc_device_id = explicit_pc_device_id
         if (
-            initial_pc_drive_query
+            pc_target_requested
             and isinstance(pc_workspace, str) and pc_workspace
         ):
             # The saved value is the account's default target. A failed read
@@ -1302,7 +1357,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             session_id=canonical_session_id,
             selected_device_id=selected_pc_device_id,
         )
-        if initial_pc_drive_query and selected_pc_device_id is not None:
+        if pc_target_requested and selected_pc_device_id is not None:
             selected_row = next(
                 (device for device in pc_context.devices
                  if device.device_id == selected_pc_device_id),
@@ -1325,8 +1380,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                     403, "pc_target_mismatch",
                     "선택한 PC가 서버 실행 대상과 일치하지 않습니다. 작업 대상을 다시 선택해 주세요.",
                 )
-            # Carry the SAME effective target into the Engine plan.
-            desktop_device_id = selected_pc_device_id
+            # Carry the SAME effective target into the Engine plan for each
+            # PC lane that this turn selected.
+            if initial_pc_drive_query:
+                desktop_device_id = selected_pc_device_id
+            if pc_files_requested:
+                pc_files_device_id = selected_pc_device_id
         pc_work_text = render_pc_work_context(pc_context)
 
     # #3790: in the production Worker Claw uses the central model
@@ -1520,10 +1579,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # uses, never browser-supplied prior turns, so forged history cannot move the
     # search target. Everything downstream is unchanged when it returns nothing.
     # Private Drive data never enters the public web search judgement/query.
-    if initial_pc_drive_query:
-        # #5015: a PC drive query needs no public web evidence. Skipping the
-        # judgement call keeps this turn from spending a model call (and from
-        # entering the suspended b14/auto chain) before the Engine dispatch.
+    if initial_pc_drive_query or pc_files_requested:
+        # #5015/#4976: a PC drive or file task needs no public web evidence.
+        # Skipping the judgement call keeps this turn from spending a model
+        # call before the Engine PC tool dispatch.
         grounding_context, search_sources = None, ()
     elif drive_context is None:
         grounding_context, search_sources = await _claw_public_search_grounding(
@@ -1538,7 +1597,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # target conversation, workspace and owner session from that row, so an
     # unstaged run can only fail after the model has already started.
     staged_conversation_id: str | None = None
-    if initial_pc_capture or initial_pc_drive_query:
+    if initial_pc_capture or initial_pc_drive_query or pc_files_requested:
         from .claw_memory_routes import _resolve_memory_workspace
         stage_uid = current_user_id(request) if auth_ready(request) else None
         stage = getattr(
@@ -1584,10 +1643,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             live_args["desktop_device_id"] = desktop_device_id
         if initial_pc_drive_query:
             live_args["pc_drive_query"] = True
+        if initial_pc_drive_query:
+            live_args["pc_drive_query"] = True
             if desktop_device_id is not None:
                 # Carries the SAME server-verified target the context named;
                 # the Engine forwards it to the signed Mesh dispatch.
                 live_args["desktop_device_id"] = desktop_device_id
+        if pc_files_requested:
+            live_args["pc_files_query"] = True
+            live_args["pc_files_device_id"] = pc_files_device_id
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:
@@ -1633,8 +1697,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             dispatch_args["desktop_device_id"] = desktop_device_id
         if initial_pc_drive_query:
             dispatch_args["pc_drive_query"] = True
+        if initial_pc_drive_query:
+            dispatch_args["pc_drive_query"] = True
             if desktop_device_id is not None:
                 dispatch_args["desktop_device_id"] = desktop_device_id
+        if pc_files_requested:
+            dispatch_args["pc_files_query"] = True
+            dispatch_args["pc_files_device_id"] = pc_files_device_id
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:

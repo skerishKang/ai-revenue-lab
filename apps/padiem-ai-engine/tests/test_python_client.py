@@ -214,3 +214,61 @@ def test_constructor_rejects_short_credential_and_untrusted_transport():
             caller_id="padiem-chat-b62",
             credential=CREDENTIAL,
         )
+
+
+_PC_DRIVE_PLAN = {
+    "agent_id": "agent:padiem:claw-pc-query@1",
+    "steps": [{"step_id": "query_drives", "tool_id": "claw.pc.query_drives"}],
+}
+_PC_FILE_PLAN = {
+    "agent_id": "agent:padiem:chat-pc-query@1",
+    "steps": [
+        {"step_id": "list_files", "tool_id": "claw.pc.list_files"},
+        {"step_id": "read_file", "tool_id": "claw.pc.read_file"},
+    ],
+}
+
+
+def _orchestration_transport():
+    return FakeTransport(EngineTransportResponse(
+        status=200,
+        body=json.dumps({"ok": True, "orchestration": {"events": []}}).encode(),
+    ))
+
+
+@pytest.mark.asyncio
+async def test_trusted_pc_device_hint_is_forwarded_only_for_the_canonical_plans():
+    for plan, arguments in (
+        (_PC_DRIVE_PLAN, {"query_drives": {"device_id": "office-pc"}}),
+        (_PC_FILE_PLAN, {"files": {"device_id": "office-pc"}}),
+    ):
+        transport = _orchestration_transport()
+        await _client(transport).orchestrate({
+            "agent": AGENT, "messages": MESSAGES,
+            "agent_plan": plan, "tool_arguments": arguments,
+        })
+        payload = json.loads(transport.calls[0]["body"])
+        assert payload["tool_arguments"] == arguments
+
+
+@pytest.mark.asyncio
+async def test_untrusted_tool_arguments_stay_rejected_before_transport():
+    for plan, arguments in (
+        (_PC_DRIVE_PLAN, {"query_drives": {"device_id": "bad/path"}}),
+        (_PC_DRIVE_PLAN, {"query_drives": {"device_id": "office-pc", "x": 1}}),
+        (_PC_DRIVE_PLAN, {"files": {"device_id": "office-pc"}}),
+        ({"agent_id": "agent:padiem:other@1", "steps": []},
+         {"query_drives": {"device_id": "office-pc"}}),
+    ):
+        transport = _orchestration_transport()
+        with pytest.raises(PadiemAiEngineClientError) as raised:
+            await _client(transport).orchestrate({
+                "agent": AGENT, "messages": MESSAGES,
+                "agent_plan": plan, "tool_arguments": arguments,
+            })
+        assert raised.value.code == "unsupported_orchestration_field"
+        assert transport.calls == []
+
+
+def test_field_parity_marks_the_trusted_pc_device_hint():
+    assert ORCHESTRATION_FIELD_PARITY["tool_arguments"] == "TRUSTED_PC_PLAN_DEVICE_HINT_ONLY"
