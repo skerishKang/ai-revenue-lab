@@ -2,7 +2,9 @@
 (() => {
   "use strict";
   const $ = (id) => document.getElementById(id);
-  const B66_ADMIN_ORIGIN = "https://quick-quote-kr.pages.dev";
+  const B66_ADMIN_ORIGIN = String(
+    (window.PADIEM_ADMIN_CONFIG || {}).b66AdminOrigin || ""
+  ).replace(/\/+$/, "");
   const ROLE_LABELS = Object.freeze({ SUPER_ADMIN: "SUPER_ADMIN · 총괄 관리자", ADMIN: "ADMIN · 관리자" });
   const CAPABILITY_ROWS = Object.freeze([
     ["admin_hub", "총관리자 허브"],
@@ -106,7 +108,8 @@
   function showGate(capabilities) {
     $("adminContent").hidden = true;
     $("gatePanel").hidden = false;
-    const legacyB66 = capabilities.b66_platform_admin === true || capabilities.b66_customer_admin === true;
+    const legacyB66 = (capabilities.b66_platform_admin === true || capabilities.b66_customer_admin === true)
+      && B66_ADMIN_ORIGIN !== "";
     $("legacyB66Link").hidden = !legacyB66;
     if (legacyB66) {
       const customer = capabilities.b66_customer_admin === true;

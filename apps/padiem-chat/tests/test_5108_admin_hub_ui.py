@@ -1,4 +1,6 @@
 """#5108 /admin hub contract: reuse the signed session, never add a second login."""
+import subprocess
+import sys
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parents[1] / "static"
@@ -111,3 +113,17 @@ def test_admin_pretty_urls_map_to_workers_assets_files():
     wrangler = read(REPO / "apps" / "padiem-chat" / "wrangler.toml")
     assert "[assets]" in wrangler
     assert 'directory = "static"' in wrangler
+
+
+def test_b66_navigation_origin_is_single_sourced_and_passes_the_origin_audit():
+    config = read(BASE / "admin-config.js")
+    assert "https://quick-quote-kr.pages.dev" in config
+    for name in ("admin.html", "admin.js", "admin-product.js", "admin/b66.html"):
+        assert "quick-quote-kr.pages.dev" not in read(BASE / name), name
+    completed = subprocess.run(
+        [sys.executable, str(REPO / ".github" / "scripts" / "b62_static_origin_audit.py")],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr

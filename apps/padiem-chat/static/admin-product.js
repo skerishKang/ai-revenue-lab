@@ -2,7 +2,9 @@
 (() => {
   "use strict";
   const $ = (id) => document.getElementById(id);
-  const B66_ADMIN_ORIGIN = "https://quick-quote-kr.pages.dev";
+  const B66_ADMIN_ORIGIN = String(
+    (window.PADIEM_ADMIN_CONFIG || {}).b66AdminOrigin || ""
+  ).replace(/\/+$/, "");
   const ROLE_LABELS = Object.freeze({ SUPER_ADMIN: "SUPER_ADMIN · 총괄 관리자", ADMIN: "ADMIN · 관리자" });
   const CONFIG = Object.freeze({
     b14: {
@@ -46,6 +48,7 @@
 
   function b66Links(capabilities) {
     const links = [];
+    if (B66_ADMIN_ORIGIN === "") return links;
     if (capabilities.b66_platform_admin === true) {
       links.push({ title: "B66 모델 권한", href: B66_ADMIN_ORIGIN + "/admin-models.html", copy: "B66 등급별 모델 허용·차단 정책" });
     }
@@ -63,6 +66,10 @@
   function renderLinks(links) {
     const host = $("productLinks");
     host.textContent = "";
+    if (!links.length) {
+      host.append(node("p", "표시할 관리 화면이 없습니다.", "placeholder"));
+      return;
+    }
     for (const link of links) {
       const anchor = node("a", null, "product-link");
       anchor.href = link.href;

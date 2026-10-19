@@ -26,6 +26,5 @@
   }
 
   window.addEventListener("padiem:auth-state", () => void refresh());
-  window.addEventListener("focus", () => void refresh());
   void refresh();
 })();
