@@ -16,7 +16,7 @@ jobs:
   com2-pilot:
     if: github.ref == 'refs/heads/main' && github.actor == 'skerishKang'
     runs-on: [self-hosted, linux, x64, padiem-com2-ci]
-    timeout-minutes: 8
+    timeout-minutes: 20
     steps:
       - name: Check host prerequisites
         shell: bash
@@ -39,3 +39,11 @@ jobs:
           set -euo pipefail
           python3 -m py_compile .github/scripts/pr_contract_guard.py
           echo "COM2_CI_PILOT=PASS"
+      - name: Run existing operating policy guard suites on COM2
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/com2-policy-venv"
+          "$RUNNER_TEMP/com2-policy-venv/bin/python" -m pip install --disable-pip-version-check "pytest>=8,<10" "PyYAML>=6,<7"
+          "$RUNNER_TEMP/com2-policy-venv/bin/python" -m pytest -q docs/operations/tests .github/tests/test_pr_contract_guard.py .github/tests/test_r2_credential_authority_split.py
+          echo "COM2_POLICY_GUARDS=PASS"
