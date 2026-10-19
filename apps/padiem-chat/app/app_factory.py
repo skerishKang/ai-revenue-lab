@@ -9,6 +9,13 @@ from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
+from .android_auth_routes import (
+    android_handoff_claim,
+    android_handoff_confirm,
+    android_handoff_create,
+    android_handoff_status,
+)
+from .android_auth_store import D1AndroidAuthHandoffStore
 from .auth import GoogleOAuthClient
 from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
 from .b66_quote_conversation import B66QuoteConversationInterpreter
@@ -407,6 +414,7 @@ def create_app(
     claw_engine_desktop_secret=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
+    android_handoff_store=None,
     connector_owner_enrollment=None,
     github_oauth_store=None,
     github_oauth_provider=None,
@@ -441,6 +449,13 @@ def create_app(
         Route(ACCESS_PATH, home_product_access, methods=["GET"]),
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
+        # Android 1.0.0 external-browser return contract. The callback above
+        # serves both flows; these routes create, poll, confirm, and claim a
+        # one-time handoff without adding a second account/session authority.
+        Route("/auth/android/handoff", android_handoff_create, methods=["POST"]),
+        Route("/auth/android/handoff/{handoff_id}", android_handoff_status, methods=["GET"]),
+        Route("/auth/android/handoff/{handoff_id}/claim", android_handoff_claim, methods=["POST"]),
+        Route("/auth/android/confirm", android_handoff_confirm, methods=["POST"]),
         Route("/api/auth/password/register", password_register, methods=["POST"]),
         Route("/api/auth/password/login", password_login, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
@@ -823,6 +838,20 @@ def create_app(
         timeout_seconds=min(600.0, resolved.completed_timeout_seconds)
     )
     app.state.history_store = history_store
+    # Android 1.0.0 launches Google sign-in in the external browser, whose
+    # cookies never reach the WebView. The one-time handoff store bridges that
+    # gap inside the canonical Chat D1; it does not mint another identity or a
+    # second session authority. Without D1/session material both flows fail
+    # closed with 503 instead of issuing an unverifiable session.
+    resolved_handoff_store = android_handoff_store
+    if (
+        resolved_handoff_store is None
+        and d1_binding is not None
+        and isinstance(resolved.session_secret, str)
+        and resolved.session_secret
+    ):
+        resolved_handoff_store = D1AndroidAuthHandoffStore(d1_binding)
+    app.state.android_handoff_store = resolved_handoff_store
     # #4657: the B66 customer dialogue surface reuses the canonical history
     # store behind the owner+PRODUCT_SCOPE_B66 adapter. It is the same D1/R2 the
     # Chat/Claw surfaces read — no second database, table or migration. Without

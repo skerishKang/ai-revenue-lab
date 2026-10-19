@@ -127,6 +127,16 @@
             <button class="auth-close" id="authDialogClose" type="button" data-locale-aria-label="auth-close" aria-label="로그인 창 닫기">×</button>
           </div>
           <button class="auth-google" id="googleLoginButton" type="button" data-locale-key="auth-google">Google 계정으로 계속</button>
+          <div class="auth-handoff" id="androidHandoffPanel" hidden>
+            <p class="auth-handoff-title" data-locale-key="auth-android-title">앱 로그인 코드</p>
+            <p class="auth-handoff-code" id="androidHandoffCode"></p>
+            <p class="auth-handoff-note" id="androidHandoffNote" role="status" aria-live="polite" data-locale-key="auth-android-code-help">외부 브라우저의 로그인 확인 화면에 이 8자리 코드를 입력하세요.</p>
+            <div class="auth-handoff-actions">
+              <button class="auth-google" id="androidHandoffOpen" type="button" data-locale-key="auth-android-open">Google 로그인 다시 열기</button>
+              <button class="auth-google" id="androidHandoffCancel" type="button" data-locale-key="auth-android-cancel">취소</button>
+            </div>
+            <p class="auth-error" id="androidHandoffError" role="alert" hidden></p>
+          </div>
           <div class="auth-divider" id="authDivider"><span data-locale-key="auth-or">또는</span></div>
           <form class="auth-form" id="passwordLoginForm">
             <h3 data-locale-key="auth-password-login">아이디로 로그인</h3>

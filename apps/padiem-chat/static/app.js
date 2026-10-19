@@ -41,6 +41,12 @@
   const authDialog = document.getElementById("authDialog");
   const authDialogClose = document.getElementById("authDialogClose");
   const googleLoginButton = document.getElementById("googleLoginButton");
+  const androidHandoffPanel = document.getElementById("androidHandoffPanel");
+  const androidHandoffCode = document.getElementById("androidHandoffCode");
+  const androidHandoffNote = document.getElementById("androidHandoffNote");
+  const androidHandoffOpen = document.getElementById("androidHandoffOpen");
+  const androidHandoffCancel = document.getElementById("androidHandoffCancel");
+  const androidHandoffError = document.getElementById("androidHandoffError");
   const authDivider = document.getElementById("authDivider");
   const passwordLoginForm = document.getElementById("passwordLoginForm");
   const passwordLoginIdentifier = document.getElementById("passwordLoginIdentifier");
@@ -169,6 +175,17 @@
   let activeProjectFileCount = 0;
   let editingProjectId = null;
   let dialogProjectFiles = [];
+
+  // Android 1.0.0 keeps chat.padiem.net in a WebView and completes Google in a
+  // Custom Tab whose cookies never reach the WebView. The WebView therefore
+  // creates a one-time handoff and claims it with a secret held only in this
+  // page's sessionStorage — never in a URL and never in localStorage.
+  const ANDROID_HANDOFF_STORAGE_KEY = "padiem.androidHandoff.v1";
+  const ANDROID_HANDOFF_POLL_MS = 2000;
+  let androidHandoff = null;
+  let androidHandoffTimer = null;
+  let androidHandoffClaiming = false;
+  let androidHandoffStarting = false;
 
 
   function uiT(key, variables = null) {
@@ -1147,6 +1164,8 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    // A completed or concurrent sign-in invalidates any pending Android handoff.
+    if (authenticated && androidHandoff) clearAndroidHandoff();
     // #4488: a decision that began in a previous session generation must never
     // repaint this one, and its still-pending promise must not block the new
     // session from deciding. Auth loss and an account switch both invalidate.
@@ -1323,11 +1342,15 @@
     if (authDivider) authDivider.hidden = !(googleEnabled && passwordEnabled);
     if (passwordLoginForm) passwordLoginForm.hidden = !passwordEnabled;
     if (passwordRegisterSection) passwordRegisterSection.hidden = !passwordEnabled;
+    renderAndroidHandoff();
   }
 
   function openAuthDialog() {
     if (!authDialog) {
-      if (authMethodEnabled("google")) window.location.assign("/auth/google/start");
+      if (authMethodEnabled("google")) {
+        if (isAndroidWebView()) startAndroidHandoff();
+        else window.location.assign("/auth/google/start");
+      }
       return;
     }
     syncAuthDialogMethods();
@@ -1339,6 +1362,262 @@
       authDialog.setAttribute("open", "");
     }
     if (authMethodEnabled("password") && passwordLoginIdentifier) passwordLoginIdentifier.focus();
+  }
+
+  function isAndroidWebView() {
+    const userAgent = navigator.userAgent || "";
+    return /Android/i.test(userAgent) && /\bwv\b/i.test(userAgent);
+  }
+
+  function readStoredAndroidHandoff() {
+    try {
+      const raw = window.sessionStorage.getItem(ANDROID_HANDOFF_STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return null;
+      if (typeof parsed.handoffId !== "string" || !/^aho_[A-Za-z0-9_-]{20,48}$/.test(parsed.handoffId)) return null;
+      if (typeof parsed.claimSecret !== "string" || parsed.claimSecret.length < 16 || parsed.claimSecret.length > 128) return null;
+      if (typeof parsed.userCode !== "string" || !/^[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(parsed.userCode)) return null;
+      if (typeof parsed.authorizationUrl !== "string" || !/^https:\/\//.test(parsed.authorizationUrl)) return null;
+      if (!Number.isFinite(parsed.expiresAt)) return null;
+      return parsed;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function storeAndroidHandoff() {
+    try {
+      if (androidHandoff) {
+        window.sessionStorage.setItem(ANDROID_HANDOFF_STORAGE_KEY, JSON.stringify(androidHandoff));
+      } else {
+        window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY);
+      }
+    } catch (_) {
+      // Storage can be unavailable in hardened WebViews; the in-memory flow still works.
+    }
+  }
+
+  function stopAndroidHandoffPolling() {
+    if (androidHandoffTimer !== null) {
+      window.clearInterval(androidHandoffTimer);
+      androidHandoffTimer = null;
+    }
+  }
+
+  function clearAndroidHandoff() {
+    stopAndroidHandoffPolling();
+    androidHandoffClaiming = false;
+    androidHandoff = null;
+    storeAndroidHandoff();
+    renderAndroidHandoff();
+    setAuthFormError(androidHandoffError);
+  }
+
+  function androidHandoffPhaseKey(phase) {
+    switch (phase) {
+      case "waiting": return "auth-android-waiting";
+      case "confirm": return "auth-android-confirm";
+      case "claiming": return "auth-android-claiming";
+      case "expired": return "auth-android-expired";
+      case "error": return "auth-android-error";
+      default: return "auth-android-code-help";
+    }
+  }
+
+  function renderAndroidHandoff() {
+    if (!androidHandoffPanel) return;
+    if (!androidHandoff) {
+      androidHandoffPanel.hidden = true;
+      return;
+    }
+    androidHandoffPanel.hidden = false;
+    if (androidHandoffCode) androidHandoffCode.textContent = androidHandoff.userCode;
+    if (androidHandoffNote) {
+      const key = androidHandoffPhaseKey(androidHandoff.phase);
+      androidHandoffNote.dataset.localeKey = key;
+      androidHandoffNote.textContent = uiT(key);
+    }
+    const busy = androidHandoff.phase === "claiming";
+    if (androidHandoffOpen) {
+      androidHandoffOpen.hidden = busy;
+      androidHandoffOpen.disabled = busy;
+    }
+    if (androidHandoffCancel) {
+      androidHandoffCancel.hidden = busy;
+      androidHandoffCancel.disabled = busy;
+    }
+  }
+
+  async function claimAndroidHandoff(current) {
+    if (!current || androidHandoffClaiming || androidHandoff !== current) return;
+    androidHandoffClaiming = true;
+    current.phase = "claiming";
+    storeAndroidHandoff();
+    renderAndroidHandoff();
+    let response;
+    try {
+      response = await fetch(`/auth/android/handoff/${encodeURIComponent(current.handoffId)}/claim`, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "X-Padiem-Handoff-Secret": current.claimSecret,
+        },
+        cache: "no-store",
+      });
+    } catch (_) {
+      current.phase = "waiting";
+      storeAndroidHandoff();
+      renderAndroidHandoff();
+      androidHandoffClaiming = false;
+      return;
+    }
+    if (response.ok) {
+      await loadAuthStatus();
+      if (authState.authenticated) {
+        clearAndroidHandoff();
+        closeAuthDialog();
+      } else {
+        current.phase = "error";
+        storeAndroidHandoff();
+        renderAndroidHandoff();
+      }
+      androidHandoffClaiming = false;
+      return;
+    }
+    if (response.status === 410 || response.status === 404) {
+      current.phase = "expired";
+      stopAndroidHandoffPolling();
+    } else if (response.status === 409) {
+      await loadAuthStatus();
+      if (authState.authenticated) {
+        clearAndroidHandoff();
+      } else {
+        current.phase = "error";
+        stopAndroidHandoffPolling();
+      }
+    } else {
+      current.phase = "error";
+      stopAndroidHandoffPolling();
+    }
+    storeAndroidHandoff();
+    renderAndroidHandoff();
+    androidHandoffClaiming = false;
+  }
+
+  async function pollAndroidHandoff() {
+    const current = androidHandoff;
+    if (!current || androidHandoffClaiming) return;
+    if (Date.now() >= current.expiresAt) {
+      current.phase = "expired";
+      stopAndroidHandoffPolling();
+      storeAndroidHandoff();
+      renderAndroidHandoff();
+      return;
+    }
+    let response;
+    try {
+      response = await fetch(`/auth/android/handoff/${encodeURIComponent(current.handoffId)}`, {
+        headers: {
+          "Accept": "application/json",
+          "X-Padiem-Handoff-Secret": current.claimSecret,
+        },
+        cache: "no-store",
+      });
+    } catch (_) {
+      return; // transient; the next tick retries while the page is alive
+    }
+    if (response.status === 404) {
+      current.phase = "error";
+      stopAndroidHandoffPolling();
+      storeAndroidHandoff();
+      renderAndroidHandoff();
+      return;
+    }
+    if (!response.ok) return;
+    const data = await response.json().catch(() => null);
+    if (!data || typeof data.status !== "string") return;
+    if (data.status === "ready") {
+      await claimAndroidHandoff(current);
+      return;
+    }
+    if (data.status === "claimed") {
+      await loadAuthStatus();
+      if (authState.authenticated) clearAndroidHandoff();
+      return;
+    }
+    if (data.status === "expired" || data.status === "cancelled") {
+      current.phase = "expired";
+      stopAndroidHandoffPolling();
+      storeAndroidHandoff();
+      renderAndroidHandoff();
+      return;
+    }
+    current.phase = data.status === "awaiting_confirmation" ? "confirm" : "waiting";
+    storeAndroidHandoff();
+    renderAndroidHandoff();
+  }
+
+  function startAndroidHandoffPolling() {
+    stopAndroidHandoffPolling();
+    if (!androidHandoff || androidHandoff.phase === "expired" || androidHandoff.phase === "error") return;
+    androidHandoffTimer = window.setInterval(() => { pollAndroidHandoff(); }, ANDROID_HANDOFF_POLL_MS);
+  }
+
+  async function startAndroidHandoff() {
+    if (androidHandoffStarting) return;
+    androidHandoffStarting = true;
+    setAuthFormError(androidHandoffError);
+    try {
+      const response = await fetch("/auth/android/handoff", {
+        method: "POST",
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data ||
+          typeof data.handoff_id !== "string" ||
+          typeof data.claim_secret !== "string" ||
+          typeof data.user_code !== "string" ||
+          typeof data.authorization_url !== "string") {
+        throw new Error(uiT("auth-android-error"));
+      }
+      const expiresIn = Number.isFinite(data.expires_in) ? data.expires_in : 600;
+      androidHandoff = {
+        handoffId: data.handoff_id,
+        claimSecret: data.claim_secret,
+        userCode: data.user_code,
+        authorizationUrl: data.authorization_url,
+        expiresAt: Date.now() + Math.max(30, expiresIn - 5) * 1000,
+        phase: "waiting",
+      };
+      storeAndroidHandoff();
+      renderAndroidHandoff();
+      startAndroidHandoffPolling();
+      window.location.assign(androidHandoff.authorizationUrl);
+    } catch (error) {
+      setAuthFormError(
+        androidHandoffError,
+        error instanceof Error && error.message ? error.message : uiT("auth-android-error")
+      );
+    } finally {
+      androidHandoffStarting = false;
+    }
+  }
+
+  function resumeAndroidHandoff() {
+    if (!isAndroidWebView()) return;
+    const stored = readStoredAndroidHandoff();
+    if (!stored) return;
+    if (Date.now() >= stored.expiresAt) {
+      try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}
+      return;
+    }
+    if (stored.phase === "claiming") stored.phase = "waiting";
+    androidHandoff = stored;
+    renderAndroidHandoff();
+    startAndroidHandoffPolling();
+    pollAndroidHandoff();
   }
 
   function closeAuthDialog() {
@@ -2301,9 +2580,28 @@
   }
   if (googleLoginButton) {
     googleLoginButton.addEventListener("click", () => {
-      if (authMethodEnabled("google")) window.location.assign("/auth/google/start");
+      if (!authMethodEnabled("google")) return;
+      if (isAndroidWebView()) {
+        startAndroidHandoff();
+        return;
+      }
+      window.location.assign("/auth/google/start");
     });
   }
+  if (androidHandoffOpen) {
+    androidHandoffOpen.addEventListener("click", () => {
+      if (!androidHandoff) return;
+      window.location.assign(androidHandoff.authorizationUrl);
+    });
+  }
+  if (androidHandoffCancel) {
+    androidHandoffCancel.addEventListener("click", () => { clearAndroidHandoff(); });
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && androidHandoff) {
+      pollAndroidHandoff();
+    }
+  });
   if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
   if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
@@ -2349,6 +2647,7 @@
   });
   window.addEventListener("padiem:localechange", () => {
     applyAuthState(authState);
+    renderAndroidHandoff();
     setNavActive();
     if (projectsReady) renderProjects();
     renderProjectState();
@@ -4668,6 +4967,7 @@
   renderProjectState();
   updateComposer();
   loadAuthStatus();
+  resumeAndroidHandoff();
   // Initial state
   setClawAreaState("idle");
   clearClawArtifact();
