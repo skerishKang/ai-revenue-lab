@@ -29,6 +29,7 @@ from .b66_member_inquiries import (
 from .central_model_admin_identity import D1CentralModelAdminAuthorizer
 from .central_model_policy_d1 import D1CentralModelPolicyStore
 from .central_model_route_d1 import D1CentralModelRouteStore
+from .platform_admin_authority import PlatformAdminAuthority
 from .platform_admin_routes import (
     platform_admin_role_assign,
     platform_admin_role_revoke,
@@ -811,10 +812,24 @@ def create_app(
             )
         except ValueError:
             global_model_admin = None
-    app.state.central_model_admin_authorizer = global_model_admin
     # #5118 integrated administrator roles reuse the signed product session and
     # the existing users/D1 authority; the host supplies the D1-backed store.
     app.state.platform_admin_role_store = platform_admin_role_store
+    # One composed authority feeds the existing central model guard. The B66
+    # customer-data store is deliberately NOT replaced: an integrated ADMIN
+    # manages B66 platform policy but never inherits the customer roster.
+    app.state.platform_admin_authority = (
+        PlatformAdminAuthority(
+            role_store=platform_admin_role_store,
+            legacy_model_admin=global_model_admin,
+            legacy_b66_admin=app.state.b66_member_admin_store,
+        )
+        if platform_admin_role_store is not None else None
+    )
+    app.state.central_model_admin_authorizer = (
+        app.state.platform_admin_authority
+        if app.state.platform_admin_authority is not None else global_model_admin
+    )
     # S2 read-only D1 policy inventory. The allow/block ledger remains
     # stored-only; only the #4428 per-grade routes below are read at dispatch.
     app.state.central_model_policy_store = (

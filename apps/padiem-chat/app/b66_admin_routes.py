@@ -10,6 +10,7 @@ from starlette.responses import JSONResponse
 from .auth_routes import current_user_id
 from .b66_member_admin import MemberConflict, MemberMissing
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .platform_admin_authority import platform_authority_for
 
 _NO_STORE = {"Cache-Control": "no-store, max-age=0"}
 _USER_ID = re.compile(r"usr_[0-9a-f]{32}\Z")
@@ -31,6 +32,27 @@ async def _admin(request: Request) -> tuple[object | None, str | None, JSONRespo
             return None, None, _error(403, "admin_forbidden")
     except Exception:
         return None, None, _error(503, "admin_unavailable")
+    return store, uid, None
+
+
+async def _platform_admin(request: Request) -> tuple[object | None, str | None, JSONResponse | None]:
+    """B66 platform policy: the B66 owner or the integrated platform role.
+
+    Customer roster, inquiry and member-grade routes keep using `_admin`,
+    whose authority is the verified B66 owner account only.
+    """
+    uid = current_user_id(request)
+    if not uid:
+        return None, None, _error(401, "auth_required")
+    store = getattr(request.app.state, "b66_member_admin_store", None)
+    if store is None:
+        return None, None, _error(503, "admin_unavailable")
+    try:
+        allowed = await platform_authority_for(request).is_b66_platform_admin(uid)
+    except Exception:
+        return None, None, _error(503, "admin_unavailable")
+    if allowed is not True:
+        return None, None, _error(403, "admin_forbidden")
     return store, uid, None
 
 
@@ -160,7 +182,7 @@ async def _registered_models(request: Request) -> list[dict] | None:
 
 
 async def b66_admin_model_policy(request: Request) -> JSONResponse:
-    store, actor_id, err = await _admin(request)
+    store, actor_id, err = await _platform_admin(request)
     if err is not None:
         return err
     # A model is assignable only when the trusted B14 resolver actually

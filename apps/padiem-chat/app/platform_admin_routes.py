@@ -12,7 +12,6 @@ Existing product authorities stay independent:
 """
 from __future__ import annotations
 
-import inspect
 import json
 import re
 
@@ -21,6 +20,7 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .platform_admin_authority import platform_authority_for
 from .platform_admin_roles import (
     ROLE_SUPER_ADMIN,
     ROLES,
@@ -50,72 +50,25 @@ def _unauthenticated() -> dict:
         "ok": True,
         "authenticated": False,
         "role": None,
-        "capabilities": {
-            "admin_hub": False,
-            "role_management": False,
-            "b66_customer_admin": False,
-            "central_model_admin": False,
-        },
+        "capabilities": _capabilities(
+            None, b66_customer=False, b66_platform=False
+        ),
     }
 
 
-async def _verify(authority: object, attribute: str, user_id: str) -> bool:
-    verify = getattr(authority, attribute, None)
-    if not callable(verify):
-        return False
-    try:
-        result = verify(user_id=user_id)
-        result = await result if inspect.isawaitable(result) else result
-    except Exception:
-        return False
-    return result is True
-
-
-async def _legacy_super_admin(request: Request, user_id: str) -> bool:
-    authority = getattr(request.app.state, "central_model_admin_authorizer", None)
-    return await _verify(authority, "is_global_model_admin", user_id)
-
-
-async def _b66_customer_admin(request: Request, user_id: str) -> bool:
-    authority = getattr(request.app.state, "b66_member_admin_store", None)
-    verify = getattr(authority, "is_google_admin", None)
-    if not callable(verify):
-        return False
-    try:
-        result = verify(user_id)
-        result = await result if inspect.isawaitable(result) else result
-    except Exception:
-        return False
-    return result is True
-
-
-async def _stored_role(request: Request, user_id: str) -> str | None:
-    store = getattr(request.app.state, "platform_admin_role_store", None)
-    if store is None:
-        raise RuntimeError("platform admin role store is not configured")
-    return await store.role_for(user_id)
-
-
-async def _resolve_role(request: Request, user_id: str) -> tuple[str | None, bool]:
-    """Return the integrated role and the independent central authority result.
-
-    The trusted central operator binding keeps its existing SUPER_ADMIN
-    authority even before any role row exists. A stored role can add an ADMIN;
-    it can never remove that pre-existing authority.
-    """
-    central = await _legacy_super_admin(request, user_id)
-    stored = await _stored_role(request, user_id)
-    if central:
-        return ROLE_SUPER_ADMIN, True
-    return stored, False
-
-
-def _capabilities(role: str | None, *, b66: bool, central: bool) -> dict[str, bool]:
+def _capabilities(
+    role: str | None, *, b66_customer: bool, b66_platform: bool
+) -> dict[str, bool]:
+    # Chat/Claw management is the existing shared B14 model-route surface.
+    # B66 customer data is intentionally not derived from the platform role.
     return {
         "admin_hub": role is not None,
         "role_management": role == ROLE_SUPER_ADMIN,
-        "b66_customer_admin": b66,
-        "central_model_admin": central,
+        "chat_admin": role is not None,
+        "claw_admin": role is not None,
+        "b66_platform_admin": b66_platform,
+        "b66_customer_admin": b66_customer,
+        "central_model_admin": role in ROLES,
     }
 
 
@@ -125,9 +78,11 @@ async def platform_admin_session(request: Request) -> JSONResponse:
     user_id = current_user_id(request)
     if not user_id:
         return JSONResponse(_unauthenticated(), headers=_NO_STORE)
+    authority = platform_authority_for(request)
     try:
-        role, central = await _resolve_role(request, user_id)
-        b66 = await _b66_customer_admin(request, user_id)
+        role = await authority.role_for(user_id)
+        b66_customer = await authority.is_b66_customer_admin(user_id)
+        b66_platform = await authority.is_b66_platform_admin(user_id)
     except Exception:
         return _error(503, "admin_role_store_unavailable")
     return JSONResponse(
@@ -135,7 +90,9 @@ async def platform_admin_session(request: Request) -> JSONResponse:
             "ok": True,
             "authenticated": True,
             "role": role,
-            "capabilities": _capabilities(role, b66=b66, central=central),
+            "capabilities": _capabilities(
+                role, b66_customer=b66_customer, b66_platform=b66_platform
+            ),
         },
         headers=_NO_STORE,
     )
@@ -150,10 +107,10 @@ async def _require_super_admin(
     if not user_id:
         return None, _error(401, "authentication_required")
     try:
-        role, _ = await _resolve_role(request, user_id)
+        allowed = await platform_authority_for(request).is_super_admin(user_id=user_id)
     except Exception:
         return None, _error(503, "admin_role_store_unavailable")
-    if role != ROLE_SUPER_ADMIN:
+    if allowed is not True:
         return None, _error(403, "role_management_forbidden")
     return user_id, None
 

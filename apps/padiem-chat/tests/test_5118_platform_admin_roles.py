@@ -13,6 +13,7 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import _password_user_id, _user_id
 from app.main import create_app
+from app.platform_admin_authority import PlatformAdminAuthority
 from app.platform_admin_roles import (
     AdminRoleTargetMissing,
     D1PlatformAdminRoleStore,
@@ -199,6 +200,76 @@ async def test_role_binding_requires_canonical_identity_and_records_before_after
     assert again.revoked is False
 
 
+@pytest.mark.asyncio
+async def test_platform_authority_matrix_keeps_customer_data_separate():
+    db, ids = seed_db()
+    store = D1PlatformAdminRoleStore(db)
+    await store.assign(
+        actor_user_id=ids["super"], target_user_id=ids["admin"], role="ADMIN"
+    )
+    authority = PlatformAdminAuthority(
+        role_store=store,
+        legacy_model_admin=CentralAdmin(ids["super"]),
+        legacy_b66_admin=B66Admin(ids["member"]),
+    )
+
+    # Integrated ADMIN: platform model management and B66 policy, no customer data.
+    assert await authority.role_for(ids["admin"]) == "ADMIN"
+    assert await authority.is_global_model_admin(user_id=ids["admin"]) is True
+    assert await authority.is_b66_platform_admin(ids["admin"]) is True
+    assert await authority.is_b66_customer_admin(ids["admin"]) is False
+    assert await authority.is_super_admin(user_id=ids["admin"]) is False
+
+    # The legacy B66 owner keeps customer data and B66 policy, never central models.
+    assert await authority.role_for(ids["member"]) is None
+    assert await authority.is_b66_customer_admin(ids["member"]) is True
+    assert await authority.is_b66_platform_admin(ids["member"]) is True
+    assert await authority.is_global_model_admin(user_id=ids["member"]) is False
+
+    # The trusted central operator stays SUPER_ADMIN without a stored row and
+    # does not inherit the B66 owner's customer-data authority.
+    assert await authority.is_super_admin(user_id=ids["super"]) is True
+    assert await authority.is_b66_customer_admin(ids["super"]) is False
+
+    class BrokenStore:
+        async def role_for(self, user_id):
+            raise RuntimeError("migration 052 not applied")
+
+    degraded = PlatformAdminAuthority(
+        role_store=BrokenStore(),
+        legacy_model_admin=CentralAdmin(ids["super"]),
+        legacy_b66_admin=B66Admin(ids["member"]),
+    )
+    assert await degraded.role_for(ids["super"]) == "SUPER_ADMIN"
+    assert await degraded.role_for(ids["admin"]) is None
+    assert await degraded.is_global_model_admin(user_id=ids["admin"]) is False
+
+
+def test_legacy_b66_owner_keeps_customer_admin_without_model_management():
+    _, ids = seed_db()
+    app, settings, _ = build_app(ids, b66_admin_id=ids["member"])
+    member_token = create_session_token(settings, ids["member"])
+
+    session = call(app, settings, "GET", "/api/admin/session", token=member_token)
+    assert session.status_code == 200
+    assert session.json()["role"] is None
+    assert session.json()["capabilities"] == {
+        "admin_hub": False,
+        "role_management": False,
+        "chat_admin": False,
+        "claw_admin": False,
+        "b66_platform_admin": True,
+        "b66_customer_admin": True,
+        "central_model_admin": False,
+    }
+    assert call(
+        app, settings, "GET", "/api/b66/admin/model-policy", token=member_token
+    ).status_code == 200
+    assert call(
+        app, settings, "GET", "/api/admin/models/me", token=member_token
+    ).status_code == 403
+
+
 class CentralAdmin:
     def __init__(self, user_id):
         self.user_id = user_id
@@ -214,8 +285,41 @@ class B66Admin:
     async def is_google_admin(self, user_id):
         return user_id == self.user_id
 
+    async def model_policy(self):
+        return {
+            "revision": 0,
+            "active": False,
+            "tiers": {"FREE": [], "PLUS": [], "PRO": [], "MAX": []},
+            "disabled_models": [],
+        }
 
-def build_app(ids):
+    async def set_model_policy(self, **kwargs):
+        return await self.model_policy()
+
+
+class Resolver:
+    async def list_selectable_models(self):
+        return [
+            {
+                "model_id": "google/gemini-3.5-flash-lite",
+                "name": "Gemini 3.5 Flash Lite",
+            }
+        ]
+
+    async def list_registered_models(self):
+        return [
+            {
+                "model_id": "google/gemini-3.5-flash-lite",
+                "name": "Gemini 3.5 Flash Lite",
+                "provider_id": "google",
+                "b14_enabled": True,
+                "owner_excluded": False,
+                "capabilities": [],
+            }
+        ]
+
+
+def build_app(ids, *, b66_admin_id=None):
     settings = Settings.from_values(
         runtime_mode="mock",
         auth_mode="password",
@@ -228,9 +332,12 @@ def build_app(ids):
         settings=settings,
         history_store=SimpleNamespace(),
         central_model_admin_authorizer=CentralAdmin(ids["super"]),
-        b66_member_admin_store=B66Admin(ids["super"]),
+        b66_member_admin_store=B66Admin(b66_admin_id or ids["super"]),
         platform_admin_role_store=D1PlatformAdminRoleStore(db),
     )
+    app.state.b66_quote_model_resolver = Resolver()
+    app.state.b14_model_choice_resolver = Resolver()
+    app.state.b66_inquiry_store = SimpleNamespace()
     return app, settings, db
 
 
@@ -264,6 +371,9 @@ def test_existing_admin_keeps_central_authority_and_admin_role_does_not_escalate
     assert existing.json()["capabilities"] == {
         "admin_hub": True,
         "role_management": True,
+        "chat_admin": True,
+        "claw_admin": True,
+        "b66_platform_admin": True,
         "b66_customer_admin": True,
         "central_model_admin": True,
     }
@@ -282,22 +392,66 @@ def test_existing_admin_keeps_central_authority_and_admin_role_does_not_escalate
     assert admin.json()["capabilities"] == {
         "admin_hub": True,
         "role_management": False,
+        "chat_admin": True,
+        "claw_admin": True,
+        "b66_platform_admin": True,
         "b66_customer_admin": False,
-        "central_model_admin": False,
+        "central_model_admin": True,
     }
 
-    # The existing product APIs still refuse the integrated ADMIN.
-    b66 = call(app, settings, "GET", "/api/b66/admin/me", token=admin_token)
-    assert b66.status_code == 200
-    assert b66.json()["admin"] is False
+    # ADMIN reaches the existing B14/Chat/Claw model-management gate.
     models = call(app, settings, "GET", "/api/admin/models/me", token=admin_token)
-    assert models.status_code == 403
-    assert models.json()["error"]["code"] == "global_model_admin_forbidden"
+    assert models.status_code == 200
+    assert models.json()["admin"] is True
+    assert models.json()["authority"] == "platform_admin"
     super_models = call(
         app, settings, "GET", "/api/admin/models/me", token=super_token
     )
     assert super_models.status_code == 200
     assert super_models.json()["admin"] is True
+
+    snapshot = call(
+        app, settings, "GET", "/api/admin/models/snapshot", token=admin_token
+    )
+    assert snapshot.status_code == 200
+    assert snapshot.json()["b14"]["models"][0]["model_id"] == (
+        "google/gemini-3.5-flash-lite"
+    )
+    preview = call(
+        app, settings, "POST", "/api/admin/models/preview", token=admin_token,
+        body={
+            "model_id": "google/gemini-3.5-flash-lite",
+            "targets": [{"product_id": "chat", "tier": "PLUS", "action": "allow"}],
+        },
+    )
+    assert preview.status_code == 200
+    assert preview.json()["mode"] == "preview_only"
+
+    # ADMIN reaches B66 platform policy (read and write), never customer data.
+    policy = call(
+        app, settings, "GET", "/api/b66/admin/model-policy", token=admin_token
+    )
+    assert policy.status_code == 200
+    assert policy.json()["models"][0]["model_id"] == "google/gemini-3.5-flash-lite"
+    updated_policy = call(
+        app, settings, "PUT", "/api/b66/admin/model-policy", token=admin_token,
+        body={
+            "expected_revision": 0,
+            "active": False,
+            "tiers": {
+                "FREE": ["google/gemini-3.5-flash-lite"],
+                "PLUS": [], "PRO": [], "MAX": [],
+            },
+            "disabled_models": [],
+        },
+    )
+    assert updated_policy.status_code == 200
+    for customer_path in ("/api/b66/admin/members", "/api/b66/admin/inquiries"):
+        denied_customer = call(app, settings, "GET", customer_path, token=admin_token)
+        assert denied_customer.status_code == 403
+    b66 = call(app, settings, "GET", "/api/b66/admin/me", token=admin_token)
+    assert b66.status_code == 200
+    assert b66.json()["admin"] is False
 
     # ADMIN cannot grant itself or anyone else.
     denied = call(
@@ -317,6 +471,12 @@ def test_existing_admin_keeps_central_authority_and_admin_role_does_not_escalate
     after = call(app, settings, "GET", "/api/admin/session", token=admin_token)
     assert after.status_code == 200
     assert after.json()["role"] is None
+    assert call(
+        app, settings, "GET", "/api/admin/models/me", token=admin_token
+    ).status_code == 403
+    assert call(
+        app, settings, "GET", "/api/b66/admin/model-policy", token=admin_token
+    ).status_code == 403
 
     audit = db.conn.execute(
         "SELECT previous_role, current_role FROM platform_admin_role_audit "
