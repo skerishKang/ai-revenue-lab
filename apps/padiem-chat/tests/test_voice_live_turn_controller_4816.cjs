@@ -180,5 +180,54 @@ t("in-flight submission blocks further sends", function () {
   assert.strictEqual(sends.length, 0);
 });
 
+// #4714 coverage: an active IME composition must block the final without
+// consuming its id, so the same utterance sends once composition ends.
+t("IME composition blocks the final and defers nothing", function () {
+  const states = [];
+  const {c, sends} = make({onStateChange: function (s) { states.push(s); }});
+  c.setMode("live");
+  const gen = c.getState().sessionGeneration;
+  c.setCompositionActive(true);
+  assert.strictEqual(states[states.length - 1].composing, true, "reported as composing");
+  const blocked = c.handleFinal(event("f1", "ime text", gen));
+  assert.strictEqual(blocked.submitted, false);
+  assert.strictEqual(blocked.reason, "ime-active");
+  c.endComposition();
+  assert.strictEqual(states[states.length - 1].composing, false, "composition ended");
+  assert.strictEqual(sends.length, 0, "a blocked final is never replayed automatically");
+  const after = c.handleFinal(event("f1", "ime text", gen));
+  assert.strictEqual(after.submitted, true, "the same final sends once composition ends");
+  assert.strictEqual(sends.length, 1);
+  assert.strictEqual(c.handleFinal(event("f1", "ime text", gen)).submitted, false, "then dedups");
+  assert.strictEqual(sends.length, 1);
+});
+
+// #4714 coverage: the adapter-observed identity is the authority, so a session
+// whose account changes under it must stop sending without setAccountKey().
+t("adapter identity drift blocks the final before send", function () {
+  let user = "u1";
+  const commits = [];
+  const sends = [];
+  const c = api.create({
+    accountKey: "u1",
+    getAccountKey: function () { return user; },
+    getInFlight: function () { return false; },
+    getCanSubmit: function () { return true; },
+    commitText: function (text) { commits.push(text); return true; },
+    submit: function (text) { sends.push(text); return true; },
+  });
+  c.setMode("live");
+  const gen = c.getState().sessionGeneration;
+  const first = c.handleFinal(event("f1", "first", gen));
+  assert.strictEqual(first.submitted, true);
+  assert.strictEqual(c.markAnswerSettled({accountKey: "u1", finalKey: first.finalKey}).ok, true);
+  user = "u2";
+  const drift = c.handleFinal(event("f2", "after switch", gen));
+  assert.strictEqual(drift.submitted, false);
+  assert.strictEqual(drift.reason, "unauthenticated-or-account-mismatch");
+  assert.strictEqual(sends.length, 1, "only the pre-switch turn was sent");
+  assert.strictEqual(commits.length, 1, "no composer commit under the drifted identity");
+});
+
 process.stdout.write(fail === 0 ? "ALL PASS (" + pass + ")\n" : "FAILURES: " + fail + " / " + (pass + fail) + "\n");
 process.exit(fail === 0 ? 0 : 1);
