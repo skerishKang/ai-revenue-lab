@@ -105,6 +105,9 @@ _HOLD_POLICY_MODULES = {
     # real shared product-tier declaration.
     "test_5108_admin_route_projection.py",
     "test_5108_admin_route_revision_visibility.py",
+    # #5108: the Chat route-execution gate is proven against the real shared
+    # product-tier declaration, not the synthetic Plus route.
+    "test_5108_chat_central_route_execution.py",
 }
 
 

@@ -110,4 +110,55 @@ open in that result and are closed here, on top of it, without touching its beha
   this addendum (Windows subprocess import path, touch target sizes, locale copy,
   browser lifecycle contract), so this addendum adds no regression.
 
+## LOCAL C addendum 2 (2026-10-20) — production E2E and one Chat execution gap
+
+Live verification against the production `padiem-chat` Worker (`6c021196`, main
+`7af361422`) and the canonical `padiem-chat-db` D1.
+
+### Production state found
+
+- `050_central_model_tier_routes.sql`: APPLIED, EXACT (all five tables, declared DDL).
+- `052_platform_admin_roles.sql`: MISSING. Applied through the approved migration
+  semantics (binding proven server-side, additive schema only, no row mutation):
+  `platform_admin_roles` + `platform_admin_role_audit` + both indexes created; the
+  existing user and route-ledger rows and their counts are unchanged.
+- The route ledger was at revision 2 with NO route row, i.e. every product/grade
+  still used the static product-tier declaration.
+
+### E2E result per product (route applied to the Plus grade, then rolled back)
+
+| Step | Result |
+| --- | --- |
+| Preview through `/admin-models` | Preview receipt shown, nothing persisted |
+| Apply through `/admin-models` | Revision increased, one route row stored |
+| Claw model list | Only the routed model is offered (`route_source=central`) |
+| Claw real request | 200, real model answer on the routed model |
+| Claw paid-lane pick of the static model | 403 `model_not_available_for_tier` |
+| B66 model list | The grade row shows the routed model, other grades unchanged |
+| B66 real request | 200 and the response names the routed model id |
+| B66 stale model pick | 400 `invalid_model_id` |
+| Rollback to revision 2 | Route rows removed, every product back to the static contract |
+| Audit | apply and rollback recorded with the exact revisions |
+
+### Gap found by the live E2E: Chat refused its own applied route
+
+`POST /api/chat` with the applied `chat/PLUS` route returned
+`503 model_profile_unassigned`. The Chat pre-dispatch executability gate
+(`app/dispatch_quota.py`) and the tier-identity client gate
+(`app/tier_identity_client.py`) only accepted the STATIC shared tier declaration,
+so an applied central route to any other live-ready registered model was refused
+before dispatch. Claw and B66 have no such gate, which is why only Chat failed.
+
+Fix in this branch: `model_policy.model_policy_is_request_executable()` accepts
+the exact model the administrator applied to the bound grade through the signed
+Preview->Apply route contract. The stored route was validated against the live
+B14 catalog (registered + live-ready) at apply time, so the model set is not
+widened, and the grade entitlement is unchanged. A model that is neither the
+declared tier route nor the route applied to the bound grade stays refused.
+
+Tests: `apps/padiem-chat/tests/test_5108_chat_central_route_execution.py` (7 cases,
+B14_MANAGED classification added to the #5002 manifest). Mutation proof: disabling
+the fix fails exactly the three load-bearing cases.
+
+
 
