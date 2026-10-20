@@ -155,9 +155,12 @@ def test_history_snapshot_source_local_includes_101_but_pipeline_rejects_it():
         assert len(snapshot.serialized_json.encode("utf-8")) <= (
             EXPECTED_SERVER_HISTORY_SNAPSHOT_BYTES
         )
-    too_many = {"items": _items(201)}
-    with pytest.raises(QuoteHistoryStoreError):
-        normalize_quote_draft_snapshot(too_many)
+    # #4379: the stored snapshot carries no PADIEM item-count total, so the
+    # item list is kept. The conversation output limit is a separate product
+    # contract and stays.
+    many = {"items": _items(201)}
+    stored_many = normalize_quote_draft_snapshot(many)
+    assert len(json.loads(stored_many.serialized_json)["items"]) == 201
     upstream_rejection = {
         "items": [
             {

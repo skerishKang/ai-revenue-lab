@@ -198,10 +198,12 @@ def test_malformed_snapshot_rejected():
         normalize_quote_draft_snapshot(["not", "an", "object"])
     with pytest.raises(QuoteHistoryStoreError):
         normalize_quote_draft_snapshot({"items": "not-a-list"})
+    # #4379: a stored quote snapshot carries no PADIEM byte total, so a
+    # large memo is stored instead of being refused for its size.
     huge = dict(SNAPSHOT)
     huge["memo"] = "가" * (MAX_SNAPSHOT_JSON_BYTES)
-    with pytest.raises(QuoteHistoryStoreError):
-        normalize_quote_draft_snapshot(huge)
+    stored = normalize_quote_draft_snapshot(huge)
+    assert "가" * (MAX_SNAPSHOT_JSON_BYTES) in stored.serialized_json
 
 
 def test_row_id_shape_is_bounded():

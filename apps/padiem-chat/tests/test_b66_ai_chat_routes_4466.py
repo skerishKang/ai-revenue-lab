@@ -352,7 +352,10 @@ def test_dialogue_reaches_b14_with_prior_turns_exact_model_and_zero_fallback():
     # Exact one-shot: no substitution and no retry widening the customer's cost.
     assert sent["business14"]["allow_external_fallback"] is False
     assert sent["business14"]["max_retries"] == 0
-    assert sent["business14"]["max_attempts"] == 1
+    # #5362 removed the default one-step agent execution ceiling, so no
+    # attempt ceiling is sent. The one-shot contract is the pinned retry
+    # budget above.
+    assert "max_attempts" not in sent["business14"]
     # The conversation carried on screen is the conversation the model receives.
     assert [m["role"] for m in sent["messages"]] == ["system", "user", "assistant", "user"]
     assert [m["content"] for m in sent["messages"][1:]] == [
