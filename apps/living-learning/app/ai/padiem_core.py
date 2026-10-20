@@ -176,7 +176,6 @@ class PadiemCoreProvider:
                 "model": self.model,
                 "temperature": self._temperature,
                 "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         )
         return ExecutionRequest(

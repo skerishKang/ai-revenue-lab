@@ -20,7 +20,8 @@ Request options that the retired scorer consumed (``task_type``,
 ``allow_paid``) remain accepted by the gateway for API compatibility but do
 NOT change chain selection; their names are recorded in ``reason_codes`` as
 ``ignored_options:...``. ``allow_external_fallback`` and ``max_attempts``
-still bound the attempt count.
+are accepted for wire compatibility and no longer bound anything: the chain
+length is the whole budget (#4317).
 
 A chain model that is missing from the catalog registry, or disabled, is a
 deployment defect: :func:`chain_models` fails closed with
@@ -52,8 +53,6 @@ B14_AUTO_CHAIN: tuple[str, ...] = (
     AGNES_MODEL_ID,
     POOLSIDE_MODEL_ID,
 )
-
-MAX_CHAIN_ATTEMPTS = len(B14_AUTO_CHAIN)
 
 # Scorer-era options that the fixed chain accepts but never consults.
 _IGNORED_OPTION_KEYS = frozenset({
@@ -93,7 +92,6 @@ def chain_models() -> list[CatalogModel]:
 
 def resolve_chain_route(
     allow_external_fallback: bool = True,
-    max_attempts: int | None = None,
     requested_options: Mapping[str, Any] | None = None,
 ) -> RouteDecision:
     """Resolve ``b14/auto`` through the owner-designated fixed chain.
@@ -103,6 +101,10 @@ def resolve_chain_route(
     missing secret are reported in ``excluded_candidates`` with reason
     ``provider_secret_missing``. If no chain position has a usable
     credential, raises NoSafeRoute (no upstream call made).
+
+    The chain length is the whole budget: every chain position that has a
+    usable credential may be tried, in chain order, and nothing narrows that
+    list (#4317).
     """
     request_id = _new_request_id()
     models = chain_models()
@@ -151,13 +153,8 @@ def resolve_chain_route(
             }
             for m in candidates[1:]
         ]
-        bound = len(candidates)
-        if max_attempts is not None:
-            bound = min(bound, max(int(max_attempts), 1))
-        effective_max_attempts = min(bound, MAX_CHAIN_ATTEMPTS)
     else:
         fallback_candidates = []
-        effective_max_attempts = 1
 
     reason_codes = [
         f"routing_policy:{ROUTING_POLICY_ID}",
@@ -187,7 +184,6 @@ def resolve_chain_route(
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
         provider_mode=runtime_config.provider_mode,
-        max_attempts=effective_max_attempts,
         credential_source=cred_source,
         platform_provider_id=plat_pid,
     )

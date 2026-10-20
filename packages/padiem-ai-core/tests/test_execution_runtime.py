@@ -132,8 +132,7 @@ def test_agent_policy_maps_to_b14_without_core_provider_selection() -> None:
             "temperature": 0.4,
             "allow_external_fallback": True,
             "provider_order": ["OpenRouter"],
-            "max_attempts": 3,
-        }
+            }
     )
     runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
 
@@ -149,7 +148,6 @@ def test_agent_policy_maps_to_b14_without_core_provider_selection() -> None:
         "optimize_for": "korean",
         "allow_external_fallback": True,
         "provider_order": ["OpenRouter"],
-        "max_attempts": 3,
     }
 
 
@@ -195,7 +193,6 @@ def test_unknown_model_policy_field_fails_closed_before_b14() -> None:
         {"temperature": "hot"},
         {"allow_external_fallback": "yes"},
         {"provider_order": "OpenRouter"},
-        {"max_attempts": 0},
         {"model": ""},
     ],
 )
