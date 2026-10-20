@@ -1,4 +1,7 @@
 from __future__ import annotations
+from padiem_control_plane.product_tier_routes import (
+    FREE_PRIMARY_B14_MODEL_ID,
+)
 
 import asyncio
 import json
@@ -211,7 +214,12 @@ def test_actual_quote_core_budget_reaches_b14_gateway_with_one_provider_timeout(
     ))
     payload = binding.calls[0][1]
     assert payload["business14"]["max_retries"] == 0
-    assert payload["business14"]["max_attempts"] == 1
+    # #4317: the Chat Worker no longer declares a local attempt count,
+    # so B14 decides it. This lane still gets exactly one upstream call
+    # because its exact model is not the Free grade's roster primary,
+    # the only route that carries the owner-pinned grade backup.
+    assert "max_attempts" not in payload["business14"]
+    assert payload["model"] != FREE_PRIMARY_B14_MODEL_ID
     assert payload["business14"]["allow_external_fallback"] is False
 
     repo = Path(__file__).resolve().parents[3]

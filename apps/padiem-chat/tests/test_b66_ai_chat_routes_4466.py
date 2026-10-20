@@ -1,5 +1,8 @@
 """B66 #4466: authenticated model dialogue without assigned CGI Skill."""
 from __future__ import annotations
+from padiem_control_plane.product_tier_routes import (
+    FREE_PRIMARY_B14_MODEL_ID,
+)
 
 import asyncio
 import json
@@ -352,7 +355,12 @@ def test_dialogue_reaches_b14_with_prior_turns_exact_model_and_zero_fallback():
     # Exact one-shot: no substitution and no retry widening the customer's cost.
     assert sent["business14"]["allow_external_fallback"] is False
     assert sent["business14"]["max_retries"] == 0
-    assert sent["business14"]["max_attempts"] == 1
+    # #4317: the Chat Worker no longer declares a local attempt count,
+    # so B14 decides it. This lane still gets exactly one upstream call
+    # because its exact model is not the Free grade's roster primary,
+    # the only route that carries the owner-pinned grade backup.
+    assert "max_attempts" not in sent["business14"]
+    assert sent["model"] != FREE_PRIMARY_B14_MODEL_ID
     # The conversation carried on screen is the conversation the model receives.
     assert [m["role"] for m in sent["messages"]] == ["system", "user", "assistant", "user"]
     assert [m["content"] for m in sent["messages"][1:]] == [

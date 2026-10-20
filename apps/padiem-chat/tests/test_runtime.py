@@ -102,7 +102,9 @@ async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provid
         "task_type": "general",
         "optimize_for": "korean",
         "allow_external_fallback": False,
-        "max_attempts": 1,
+        # #4317: the Chat Worker no longer declares a local attempt count.
+        # This is the Free path, so B14 derives the attempt count from the
+        # owner-pinned Free roster it may traverse.
         "required_capabilities": ["chat"],
         # #4805: the B14 owner-pinned failover boundary carries the exact
         # selected grade, because B14's legacy default is Free and omitting the
