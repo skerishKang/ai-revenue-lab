@@ -1,9 +1,9 @@
-"""Preview-only HTTP/SSE gateway for the Business 14 streaming primitive.
+"""HTTP/SSE gateway for manual B14 routes with owner-tier pre-token fallback.
 
-This router deliberately does not change the canonical
-``/v1/chat/completions`` endpoint. It exposes one bounded preview endpoint for
-manual catalog routes only so HTTP streaming semantics can be validated before
-Router Core fallback, shared Core transport, or B62 streaming are enabled.
+This router does not change the canonical ``/v1/chat/completions`` endpoint.
+It traverses only the finite owner-selected tier roster before the first
+nonblank token; arbitrary catalog fallback stays disabled. After a visible
+token, failures are terminal SSE error events and never switch providers.
 """
 
 from __future__ import annotations
@@ -337,11 +337,11 @@ async def _stream_body(
 
 @router.route(_STREAM_PREVIEW_PATH, methods=["POST"])
 async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = None):
-    """Preview one manual, non-fallback platform route as SSE.
+    """Stream a manual platform route with finite owner-tier pre-token fallback.
 
     Canonical gateway passes already parsed bytes to avoid re-reading JSON via
-    the Cloudflare Python/ASGI bridge; the dedicated preview route still parses
-    its own request under the same existing admission checks.
+    the Cloudflare Python/ASGI bridge; the dedicated route uses the same
+    canonical admission checks and keeps arbitrary external fallback disabled.
     """
     request_id = _request_id()
     iterator: AsyncIterator[StreamEvent] | None = None
