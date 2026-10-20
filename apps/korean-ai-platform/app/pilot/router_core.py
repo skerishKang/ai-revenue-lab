@@ -222,7 +222,8 @@ def resolve_manual_route(
 
     route_id = f"platform:{cm.model_id}"
 
-    owner_tier_pair = model_id == "opencode-go/beam-free"
+    from .tier_fallback import TIER_DEFAULT_B14_MODEL
+    owner_tier_pair = product_tier == "free" and model_id == TIER_DEFAULT_B14_MODEL
     fallback_candidates: list[dict[str, str]] = []
     if owner_tier_pair:
         from .tier_fallback import TIER_FALLBACK_B14_MODELS

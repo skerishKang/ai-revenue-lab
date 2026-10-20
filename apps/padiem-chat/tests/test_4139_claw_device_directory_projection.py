@@ -87,6 +87,43 @@ def test_false_online_claim_cannot_resurrect_expired_or_revoked_device():
         assert project(directory, "office")["canTarget"] is False, patch
 
 
+def test_an_expired_credential_stays_visible_as_its_own_reason():
+    """#3099: the surface must be able to name the real reason.
+
+    An expired credential and a PC that is merely offline are different
+    problems with different fixes. The server already distinguishes them, so
+    the projection must carry the fact to the surface instead of collapsing
+    both into one generic line. It stays presentation only: an expired row
+    stays unselectable.
+    """
+    expired = project(
+        {"available": True, "ownerScoped": True,
+         "devices": [{"deviceId": "office", "state": "OFFLINE", "usable": False,
+                      "expired": True}]},
+        None,
+    )
+    row = expired["devices"][0]
+    assert row["expired"] is True
+    assert row["selectable"] is False
+    assert row["online"] is False
+
+    offline = project(
+        {"available": True, "ownerScoped": True,
+         "devices": [{"deviceId": "office", "state": "OFFLINE", "usable": False}]},
+        None,
+    )
+    assert offline["devices"][0]["expired"] is False
+
+    revoked = project(
+        {"available": True, "ownerScoped": True,
+         "devices": [{"deviceId": "office", "state": "REVOKED", "usable": False,
+                      "revoked": True}]},
+        None,
+    )
+    assert revoked["devices"][0]["revoked"] is True
+    assert revoked["devices"][0]["expired"] is False
+
+
 def test_invalid_and_duplicate_device_identity_reject_whole_directory():
     for items in [
         [online("a"), online("a")],

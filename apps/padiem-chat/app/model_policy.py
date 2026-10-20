@@ -101,6 +101,22 @@ def current_request_tier_id() -> str | None:
         return None
     return tier
 
+
+def current_request_route_model() -> str | None:
+    """Return the exact model the central per-tier route bound to this task.
+
+    #4428/#5108: the value is set only by the server-side central route
+    resolution for the SAME validated grade. The stored route was validated
+    against the live B14 catalog (registered + live-ready) when the
+    administrator applied it, so it never widens the model set beyond an
+    owner-allowed, live-ready model, and it never grants a higher tier.
+    """
+    tier = _REQUEST_TIER_ID.get()
+    if not isinstance(tier, str) or not tier:
+        return None
+    model_id = _REQUEST_ROUTE_MODEL.get()
+    return model_id if isinstance(model_id, str) and model_id else None
+
 # Product tiers are intentionally decoupled from upstream model/provider names.
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
 # Padiem Plus / Padiem Pro / Padiem Max.
@@ -438,3 +454,23 @@ def model_profile_is_assigned(model_id: str) -> bool:
 def model_policy_is_executable(model_id: str) -> bool:
     """Return whether B62 may dispatch this exact product-tier route to B14."""
     return model_id in EXECUTABLE_B14_MODEL_IDS
+
+
+def model_policy_is_request_executable(model_id: str) -> bool:
+    """Return whether B62 may dispatch this exact model for THIS request.
+
+    Two sources are executable:
+    * the shared product-tier declaration (``model_policy_is_executable``);
+    * the exact model the administrator applied to the bound grade through the
+      signed central Preview->Apply route contract. That stored route is
+      validated against the live B14 catalog (registered + live-ready) at apply
+      time, so honouring it executes an owner-allowed, live-ready model and
+      never widens the product's model set.
+
+    #5108: without the second source an applied central route was rejected by
+    the Chat pre-dispatch gate with ``model_profile_unassigned``, so the
+    administrator's applied decision never reached a real Chat request.
+    """
+    if model_policy_is_executable(model_id):
+        return True
+    return current_request_route_model() == model_id

@@ -89,6 +89,17 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-mode-ba
   -webkit-backdrop-filter: blur(24px) saturate(104%);
 }
 
+/* Mobile shell height ----------------------------------------------------- */
+/* The mobile address bar changes the visible viewport height. 100vh is the
+ * LARGEST viewport height, so the shell would stay taller than the screen the
+ * fixed composer is measured against. dvh tracks the real viewport so the
+ * composer, the safe area and the last card share one coordinate system.
+ * The 100vh line stays as the fallback for older engines. This sheet is used
+ * because static/styles.css is byte-pinned to the product reference mirror. */
+@media (max-width: 920px) {
+  .app-shell, .main-panel { min-height: 100vh; min-height: 100dvh; }
+}
+
 /* Settings dialog -------------------------------------------------------- */
 .settings-dialog {
   width: min(620px, calc(100vw - 32px));

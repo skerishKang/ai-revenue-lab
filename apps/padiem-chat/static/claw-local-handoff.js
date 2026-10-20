@@ -353,6 +353,11 @@
         // Not an execution grant: only a server-confirmed canonical fact.
         online: projection.usable && projection.state === "CONNECTED",
         revoked,
+        // The server already distinguishes an expired credential from a PC
+        // that is merely offline. Keeping the fact lets the surface name the
+        // actual reason instead of one generic "needs checking" line. It is
+        // presentation only: an expired row stays unselectable either way.
+        expired: projection.expired === true,
         executable,
         selectable,
       }));
