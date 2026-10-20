@@ -276,7 +276,7 @@ async def api_chat_stream(request: Request):
     # platform-key proxy. Never read tier/upgrade claims from browser state.
     if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
         return JSONResponse(
-            {"error": {"code": "unauthorized", "message": "?? AI? ????? ???? ???."}},
+            {"error": {"code": "unauthorized", "message": "무료 AI를 사용하려면 로그인이 필요합니다."}},
             status_code=401,
         )
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
@@ -731,7 +731,7 @@ async def api_chat(request: Request) -> JSONResponse:
     # platform-key proxy. Never read tier/upgrade claims from browser state.
     if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
         return JSONResponse(
-            {"error": {"code": "unauthorized", "message": "?? AI? ????? ???? ???."}},
+            {"error": {"code": "unauthorized", "message": "무료 AI를 사용하려면 로그인이 필요합니다."}},
             status_code=401,
         )
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
