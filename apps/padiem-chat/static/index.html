@@ -216,6 +216,11 @@
               <button type="button" class="language-option" data-locale-value="en" aria-pressed="false">EN</button>
             </div>
           </section>
+          <section class="settings-section" aria-labelledby="accountTitle" id="accountSettingsSection" hidden>
+            <p class="settings-label">ACCOUNT</p>
+            <h3 id="accountTitle" data-locale-key="account-title">계정</h3>
+            <button class="settings-action" id="passwordChangeOpen" type="button" data-locale-key="password-change-open">비밀번호 변경</button>
+          </section>
           <section class="settings-section settings-help" aria-labelledby="settingsHelpTitle">
             <p class="settings-label">HELP &amp; GUIDE</p>
             <h3 id="settingsHelpTitle" data-locale-key="settings-help-title">문서·사용 안내</h3>
@@ -231,6 +236,25 @@
           </section>
           <div class="settings-footer"><button class="settings-done" type="submit" value="done" data-locale-key="done">완료</button></div>
         </form>
+      </dialog>
+      <dialog class="auth-dialog" id="passwordChangeDialog" aria-labelledby="passwordChangeDialogTitle">
+        <div class="auth-panel">
+          <div class="auth-header">
+            <div><p data-locale-key="auth-kicker">Padiem Account</p><h2 id="passwordChangeDialogTitle" data-locale-key="password-change-title">비밀번호 변경</h2></div>
+            <button class="auth-close" id="passwordChangeDialogClose" type="button" data-locale-aria-label="auth-close" aria-label="닫기">×</button>
+          </div>
+          <form class="auth-form" id="passwordChangeForm">
+            <label for="passwordChangeCurrent" data-locale-key="password-change-current">현재 비밀번호</label>
+            <input id="passwordChangeCurrent" name="current_password" type="password" autocomplete="current-password" maxlength="128" required>
+            <label for="passwordChangeNew" data-locale-key="password-change-new">새 비밀번호</label>
+            <input id="passwordChangeNew" name="new_password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+            <label for="passwordChangeConfirm" data-locale-key="password-change-confirm">새 비밀번호 확인</label>
+            <input id="passwordChangeConfirm" name="new_password_confirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+            <small data-locale-key="auth-password-rule">8자 이상 128자 이하. 이메일(로그인 아이디)은 포함하지 않도록 해 주세요.</small>
+            <p class="auth-error" id="passwordChangeError" role="alert" hidden></p>
+            <button class="auth-primary" id="passwordChangeSubmit" type="submit" data-locale-key="password-change-submit">비밀번호 변경</button>
+          </form>
+        </div>
       </dialog>
       <dialog class="capability-dialog" id="connectorsDialog" aria-labelledby="connectorsDialogTitle">
         <div class="capability-dialog-header">

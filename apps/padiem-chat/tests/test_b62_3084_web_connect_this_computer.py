@@ -867,6 +867,10 @@ ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({
     "/api/claw/automation/rules",
     # #4139: owner-scoped, run-specific GET; no new POST or PC dispatch.
     "/api/claw/runs/",
+    # #5434: the self-service password change of the signed-in account. A POST
+    # that resolves the account from the signed session, verifies the current
+    # password and replaces only that account's credential row.
+    "/api/auth/password/change",
 })
 
 
