@@ -21,6 +21,29 @@ on:
 permissions:
   contents: read
 
+# #5248: `padiem-ai-engine` is ONE production Worker, and both the deploy
+# branch and the rollback branch change its served version. The existing
+# controls below are per-run admission checks, not a mutex: two dispatches for
+# the SAME exact main SHA both pass the exact-SHA test, both pass the
+# confirmation phrase, both enter `environment: production` and both reach the
+# mutation. Nothing in this file stopped deploy-vs-deploy or deploy-vs-rollback
+# from overlapping before this block existed. This group is that mutex.
+#
+# `cancel-in-progress: false` keeps a RUNNING deploy from being cancelled by a
+# later rollback dispatch; a rollback waits for the deploy to finish instead.
+#
+# `queue: max` keeps every pending dispatch in the group. The GitHub default
+# (`queue: single`) holds only ONE pending run per group and a NEW pending run
+# REPLACES the existing pending one, so a queued emergency rollback could be
+# evicted before it ever started. `queue: max` allows up to 100 pending runs.
+# Ordering is FIFO by the time a run started WAITING on the group, not by
+# dispatch time, so a queued run can still fail its own exact-main re-check if
+# main moved in the meantime -- that existing refusal rule is unchanged.
+concurrency:
+  group: b54-engine-production-deploy-gate
+  cancel-in-progress: false
+  queue: max
+
 jobs:
   deploy-production-engine:
     if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'

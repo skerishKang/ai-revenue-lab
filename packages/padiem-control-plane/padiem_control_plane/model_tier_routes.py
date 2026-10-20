@@ -140,10 +140,20 @@ class TierRouteResolution:
 
 def static_tier_route(
     static_primary: str | None, static_fallback: str | None = None,
+    *, blocked_model_ids: frozenset[str] = frozenset(),
 ) -> TierRouteResolution:
+    """Apply explicit model blocks even when no central route row exists."""
     if static_primary is None:
         return TierRouteResolution(False, None, None, "static", "tier_unavailable")
-    return TierRouteResolution(True, static_primary, static_fallback, "static", "allowed")
+    if static_primary not in blocked_model_ids:
+        fallback = (
+            static_fallback
+            if static_fallback not in blocked_model_ids else None
+        )
+        return TierRouteResolution(True, static_primary, fallback, "static", "allowed")
+    if static_fallback is not None and static_fallback not in blocked_model_ids:
+        return TierRouteResolution(True, static_fallback, None, "static", "allowed")
+    return TierRouteResolution(False, None, None, "static", "tier_unavailable")
 
 
 def effective_tier_route(
@@ -168,13 +178,18 @@ def effective_tier_route(
         snapshot = None
     row = snapshot.lookup(product, tier) if snapshot is not None else None
     if row is None:
-        return static_tier_route(static_primary, static_fallback)
+        return static_tier_route(
+            static_primary, static_fallback, blocked_model_ids=blocked_model_ids,
+        )
     if not row.enabled:
         return TierRouteResolution(False, None, None, "central", "central_route_disabled")
     for candidate, fallback in ((row.primary_model_id, row.fallback_model_id),
                                 (row.fallback_model_id, None)):
         if candidate is not None and candidate not in blocked_model_ids:
-            return TierRouteResolution(True, candidate, fallback, "central", "allowed")
+            safe_fallback = (
+                fallback if fallback not in blocked_model_ids else None
+            )
+            return TierRouteResolution(True, candidate, safe_fallback, "central", "allowed")
     return TierRouteResolution(False, None, None, "central", "central_route_unavailable")
 
 

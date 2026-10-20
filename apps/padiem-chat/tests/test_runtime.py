@@ -375,7 +375,7 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert "chatTransport.requestCompleted(payload, signal)" in js
     assert 'fetch("/api/chat"' in transport
     assert "conversationState.setSkill(selectedSkill)" in js
-    assert 'let skill = "auto";' in conversation_state
+    assert 'skill: "auto"' in conversation_state
     assert "OPENROUTER" not in html.upper()
     assert "API_KEY" not in html
     assert "API_KEY" not in js

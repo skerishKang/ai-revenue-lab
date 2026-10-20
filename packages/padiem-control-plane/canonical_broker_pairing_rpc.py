@@ -26,6 +26,60 @@ def _rpc_payload(value, *, code="invalid_durable_pairing_rpc") -> dict:
     return payload
 
 
+def build_durable_pairing_authority(
+    *, storage, state_port, authority_ref, pepper: bytes, issuance_rate_limit: int,
+) -> DurableBrokerPairingAuthority:
+    """The canonical durable pairing authority, composed outside the entrypoint.
+
+    The broker Worker file is a thin composition root, so the pairing authority
+    and its storage schema live here and the entrypoint only asks for one.
+    """
+    if len(pepper) < 16:
+        raise ControlPlaneContractError(
+            "durable_pairing_secret_unconfigured", "canonical Broker secret is unavailable"
+        )
+    if not isinstance(issuance_rate_limit, int) or issuance_rate_limit <= 0:
+        raise ControlPlaneContractError(
+            "durable_pairing_rate_limit_unconfigured",
+            "bounded canonical Broker issuance limit is required",
+        )
+    # Domain-separate pairing-code HMAC from the Broker binding authenticator.
+    pairing_pepper = hashlib.sha256(b"PADIEM\x00CONNECTOR-PAIRING\x00V1\x00" + pepper).digest()
+    broker = StateBackedLocalAgentBrokerAuthority(
+        pepper=pepper, authority_ref=authority_ref, state_port=state_port,
+    )
+    return DurableBrokerPairingAuthority(
+        storage=storage, broker=broker, pepper=pairing_pepper,
+        issuance_rate_limit=issuance_rate_limit,
+    )
+
+
+def armed_durable_pairing_authority(
+    *, env, storage, state_port, authority_ref, pepper: bytes,
+) -> DurableBrokerPairingAuthority | None:
+    """The durable pairing authority when its deployment feature is armed.
+
+    An unarmed broker returns ``None`` so the device-facing redemption route
+    stays unmounted and refuses closed instead of minting anything.
+    """
+    if (
+        str(getattr(env, "LOCAL_AGENT_BROKER_PAIRING_RPC_ENABLED", "")).lower() != "true"
+        or str(getattr(env, "LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED", "")).lower() != "true"
+    ):
+        return None
+    try:
+        limit = int(getattr(env, "LOCAL_AGENT_BROKER_PAIRING_ISSUANCE_RATE_LIMIT", 0))
+    except (TypeError, ValueError):
+        return None
+    try:
+        return build_durable_pairing_authority(
+            storage=storage, state_port=state_port, authority_ref=authority_ref,
+            pepper=pepper, issuance_rate_limit=limit,
+        )
+    except ControlPlaneContractError:
+        return None
+
+
 class CanonicalBrokerPairingRPC:
     def _pairing_feature_enabled(self) -> bool:
         return (
@@ -50,18 +104,10 @@ class CanonicalBrokerPairingRPC:
                 "durable_pairing_rate_limit_unconfigured", "bounded canonical Broker issuance limit is required"
             ) from exc
         pepper = str(getattr(self.env, "LOCAL_AGENT_BROKER_PEPPER", "")).encode("utf-8")
-        if len(pepper) < 16:
-            raise ControlPlaneContractError(
-                "durable_pairing_secret_unconfigured", "canonical Broker secret is unavailable"
-            )
-        # Domain-separate pairing-code HMAC from the Broker binding authenticator.
-        pairing_pepper = hashlib.sha256(b"PADIEM\x00CONNECTOR-PAIRING\x00V1\x00" + pepper).digest()
-        authority_ref = self._runtime.authority_ref()
-        broker = StateBackedLocalAgentBrokerAuthority(
-            pepper=pepper, authority_ref=authority_ref, state_port=self._runtime.state_port,
-        )
-        return DurableBrokerPairingAuthority(
-            storage=self._storage, broker=broker, pepper=pairing_pepper, issuance_rate_limit=limit,
+        return build_durable_pairing_authority(
+            storage=self._storage, state_port=self._runtime.state_port,
+            authority_ref=self._runtime.authority_ref(), pepper=pepper,
+            issuance_rate_limit=limit,
         )
 
     async def install_pairing_schema(self, payload: dict) -> dict:

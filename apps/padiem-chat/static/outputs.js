@@ -187,8 +187,18 @@
   }
 
   function flashTitle(button, key, fallback) {
-    const original = button.title;
-    button.title = localeText(key, fallback);
+    const tooltip = window.PadiemSharedTooltip;
+    const original = button.getAttribute("data-padiem-tooltip") || button.title || "";
+    const next = localeText(key, fallback);
+    if (tooltip && typeof tooltip.label === "function") {
+      // The confirmation rides the shared chip, not a native browser title.
+      tooltip.label(button, next);
+      window.setTimeout(() => {
+        if (button.isConnected) tooltip.label(button, original);
+      }, 1200);
+      return;
+    }
+    button.title = next;
     window.setTimeout(() => {
       if (button.isConnected) button.title = original;
     }, 1200);
@@ -198,11 +208,13 @@
     const button = document.createElement("button");
     button.type = "button";
     button.className = cls;
-    const label = localeText(labelKey, labelFallback);
-    button.setAttribute("aria-label", label);
-    button.title = label;
-    button.dataset.localeAriaLabel = labelKey;
-    button.dataset.localeTitle = labelKey;
+      const label = localeText(labelKey, labelFallback);
+      button.setAttribute("aria-label", label);
+      // Owner 2026-10-20: the hint uses the shared PADIEM chip tooltip, so
+      // the browser's own dark popup never appears beside it.
+      button.setAttribute("data-padiem-tooltip", label);
+      button.dataset.localeAriaLabel = labelKey;
+      button.dataset.localeTitle = labelKey;
     const icon = document.createElement("span");
     icon.className = "answer-action-glyph";
     icon.setAttribute("aria-hidden", "true");
@@ -253,7 +265,7 @@
       button.setAttribute("aria-pressed", "false");
       const label = localeText("answer-listen", "음성 듣기");
       button.setAttribute("aria-label", label);
-      button.title = label;
+      window.PadiemSharedTooltip?.label?.(button, label);
     }
   }
 
@@ -290,7 +302,7 @@
       const label = localeText("answer-listen-stop", "?? ??");
       button.setAttribute("aria-pressed", "true");
       button.setAttribute("aria-label", label);
-      button.title = label;
+      window.PadiemSharedTooltip?.label?.(button, label);
     }
     if (matchingVoiceReady()) {
       playWhenReady();
@@ -328,7 +340,7 @@
     }, 3000);
     button.setAttribute("aria-pressed", "false");
     button.setAttribute("aria-label", "?? ?? ?, ?? ??? ??");
-    button.title = "?? ?? ?, ?? ??? ??";
+    window.PadiemSharedTooltip?.label?.(button, "?? ?? ?, ?? ??? ??");
     // Close the race in which getVoices() becomes populated immediately
     // before the voiceschanged handler was attached.
     wait.onVoices();
@@ -363,6 +375,23 @@
     const actions = document.createElement("div");
     actions.className = "answer-actions";
     actions.setAttribute("aria-label", localeText("answer-actions", "답변 작업"));
+
+    // Owner 2026-10-20: the answer shows the moment it completed, with the
+    // same format, size and colour as the user turn time. A turn with no
+    // known completion time shows no time at all; none is invented.
+    const completedAt = article.dataset.completedAt || "";
+    if (completedAt) {
+      const completed = new Date(completedAt);
+      if (!Number.isNaN(completed.getTime())) {
+        const clock = document.createElement("time");
+        clock.className = "answer-action-time";
+        const stamp = `${String(completed.getHours()).padStart(2, "0")}:${String(completed.getMinutes()).padStart(2, "0")}`;
+        clock.textContent = stamp;
+        clock.setAttribute("datetime", completed.toISOString());
+        clock.setAttribute("data-padiem-tooltip", stamp);
+        actions.appendChild(clock);
+      }
+    }
 
     // Exactly five functions in Glass icon style. No rating controls.
     // A button is rendered only when its capability actually exists.
