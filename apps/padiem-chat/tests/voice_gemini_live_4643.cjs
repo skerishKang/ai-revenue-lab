@@ -65,6 +65,12 @@ function makeFakeWindow(options) {
     message(payload) {
       if (this.onmessage) this.onmessage({ data: JSON.stringify(payload) });
     }
+    messageBinary(payload) {
+      /* The provider's Live frames are binary JSON. The real socket is asked
+       * for ArrayBuffers, so the fake delivers the same shape. */
+      const bytes = new TextEncoder().encode(JSON.stringify(payload));
+      if (this.onmessage) this.onmessage({ data: bytes.buffer });
+    }
     fail() {
       if (this.onerror) this.onerror({});
     }
@@ -231,6 +237,27 @@ test("a live session streams the microphone and reports interim then final", asy
   assert.strictEqual(events.final[0].text, "안녕하세요");
   assert.strictEqual(events.turn.length, 1, "one turn boundary");
   assert.strictEqual(events.turn[0].accepted, true);
+  handle.stop();
+});
+
+test("the binary Live frames carry the transcriptions, not just text frames", async function () {
+  const win = makeFakeWindow();
+  const { callbacks, events } = makeCallbacks();
+  const factory = engine.createRecognizerFactory({ win: win, doc: { querySelector: () => null } });
+  const handle = factory(callbacks, { generation: 1, sessionToken: "tok" });
+  await settle();
+  const socket = win.__sockets[0];
+  assert.strictEqual(socket.binaryType, "arraybuffer", "the socket asks for ArrayBuffers");
+  socket.open();
+  await settle();
+  /* Production sends setupComplete and every transcription event as binary
+   * JSON. A parser that only accepts text frames keeps the input empty. */
+  socket.messageBinary({ setupComplete: {} });
+  socket.messageBinary({ serverContent: { interimInputTranscription: { text: "안녕" } } });
+  assert.deepStrictEqual(events.interim, ["안녕"]);
+  socket.messageBinary({ serverContent: { inputTranscription: { text: "안녕하세요", finished: true } } });
+  assert.strictEqual(events.final.length, 1);
+  assert.strictEqual(events.final[0].text, "안녕하세요");
   handle.stop();
 });
 
