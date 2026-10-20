@@ -5,8 +5,21 @@ Why this module exists
 The browser must never hold a provider key and must never reach the private
 ``padiem-voice-stt`` Worker directly: that Worker is ``workers_dev = false`` and
 is reachable only over a Service Binding from a reviewed product Worker. So the
-recognizer in ``static/voice-stt-wiring.js`` posts audio to this app, and this
-app forwards it over that Service Binding.
+recognizer in ``static/voice-stt-wiring.js`` posts to this app, and this app
+forwards it over that Service Binding.
+
+Two routes share that bridge:
+
+``POST /api/voice/transcribe`` (``/api/claw/voice/transcribe``)
+    One completed audio chunk -> one candidate transcript. This is the
+    reviewed chunk fallback of the provider chain.
+
+``POST /api/voice/live-token`` (``/api/claw/voice/live-token``)
+    One short-lived, model-locked Gemini Live ephemeral token plus the
+    browser-safe session parameters (model, activity-detection window,
+    rotation window). The browser uses that token for exactly one Live
+    session and never holds a long-lived provider key. The long-lived key
+    stays inside the private Worker.
 
 What this module does *not* do
 ------------------------------
@@ -64,10 +77,13 @@ from .same_origin_guard import expected_browser_origin
 __all__ = [
     "IDENTITY_PATH",
     "TRANSCRIBE_PATH",
+    "LIVE_TOKEN_PATH",
     "CLAW_IDENTITY_PATH",
     "CLAW_TRANSCRIBE_PATH",
+    "CLAW_LIVE_TOKEN_PATH",
     "STT_INTERNAL_ORIGIN",
     "STT_TRANSCRIBE_PATH",
+    "STT_LIVE_TOKEN_PATH",
     "VOICE_STT_LANGUAGE",
     "MAX_AUDIO_BASE64_CHARS",
     "MAX_VOICE_TRANSCRIBE_BYTES",
@@ -76,17 +92,21 @@ __all__ = [
     "CloudflareVoiceSttServiceTransport",
     "voice_identity",
     "voice_transcribe",
+    "voice_live_token",
 ]
 
 IDENTITY_PATH = "/api/voice/identity"
 TRANSCRIBE_PATH = "/api/voice/transcribe"
+LIVE_TOKEN_PATH = "/api/voice/live-token"
 CLAW_IDENTITY_PATH = "/api/claw/voice/identity"
 CLAW_TRANSCRIBE_PATH = "/api/claw/voice/transcribe"
+CLAW_LIVE_TOKEN_PATH = "/api/claw/voice/live-token"
 
 #: Internal-only. The browser never learns or addresses this origin/path; only
 #: this module does, and only over the Service Binding.
 STT_INTERNAL_ORIGIN = "https://padiem-voice-stt.internal"
 STT_TRANSCRIBE_PATH = "/internal/v1/voice/transcribe"
+STT_LIVE_TOKEN_PATH = "/internal/v1/voice/live-token"
 
 #: Language is a server constant, never a browser field. "auto" is the STT
 #: contract's own default and avoids pinning a wrong language onto a customer.
@@ -102,17 +122,27 @@ MAX_AUDIO_BASE64_CHARS = 5 * 1024 * 1024
 #: are rejected before they are materialized into memory.
 MAX_VOICE_TRANSCRIBE_BYTES = MAX_AUDIO_BASE64_CHARS + 65536
 
+#: The live-token request carries only one opaque marker field, so the body
+#: budget is a small fixed envelope. The minted token itself comes back in the
+#: response, never in the request.
+MAX_LIVE_TOKEN_REQUEST_BYTES = 8 * 1024
+
 #: The two opaque clues the STT Worker's caller guard reads. They select a
 #: Control Plane session to resolve; they are not themselves an identity.
 CALLER_PRODUCT_HEADER = "x-padiem-product-id"
 CALLER_SESSION_HEADER = "x-padiem-auth-session-id"
 
 _ALLOWED_BROWSER_FIELDS = frozenset({"audio_base64", "mime_type", "utterance_id"})
+_LIVE_TOKEN_BROWSER_FIELDS = frozenset({"sessionId"})
 _BASE64_RE = re.compile(r"^[A-Za-z0-9+/]+={0,2}$")
 _MIME_RE = re.compile(r"^audio/[A-Za-z0-9.+-]{1,60}$")
 _ID_CHARS = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 _MAX_UTTERANCE_ID_CHARS = 96
 _MAX_RESPONSE_BYTES = 131072
+
+#: The live-token request carries only an opaque marker, never an identity.
+#: The real session id travels in the reviewed caller header above.
+_LIVE_TOKEN_BODY = {"sessionId": "padiem-voice-live"}
 
 
 def _error(code: str, status: int) -> JSONResponse:
@@ -146,10 +176,10 @@ async def _canonical_session(request: Request) -> Any | None:
     Both use the same signed PADIEM cookie and existing CP identity authority.
     """
     path = request.url.path
-    if path in (CLAW_IDENTITY_PATH, CLAW_TRANSCRIBE_PATH):
+    if path in (CLAW_IDENTITY_PATH, CLAW_TRANSCRIBE_PATH, CLAW_LIVE_TOKEN_PATH):
         from .b54_canonical_session import resolve_current_b54_canonical_session
         return await resolve_current_b54_canonical_session(request)
-    if path not in (IDENTITY_PATH, TRANSCRIBE_PATH):
+    if path not in (IDENTITY_PATH, TRANSCRIBE_PATH, LIVE_TOKEN_PATH):
         return None
 
     # B62 must never be billed with a B54 grant merely because both products
@@ -384,3 +414,122 @@ class CloudflareVoiceSttServiceTransport:
             response, max_bytes=_MAX_RESPONSE_BYTES
         )
         return status, raw
+
+    async def live_token(
+        self, *, product_id: str, session_id: str
+    ) -> tuple[int, bytes]:
+        """Ask the private Worker to mint one short-lived Live token.
+
+        The long-lived provider key stays inside the private Worker. What
+        crosses this binding is the reviewed opaque caller pair plus the
+        reviewed request shape; the minted credential is single-use and
+        model-locked on the provider side.
+        """
+        request = self._request_factory(
+            STT_INTERNAL_ORIGIN + STT_LIVE_TOKEN_PATH,
+            method="POST",
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                CALLER_PRODUCT_HEADER: product_id,
+                CALLER_SESSION_HEADER: session_id,
+            },
+            body=json.dumps(_LIVE_TOKEN_BODY, ensure_ascii=False),
+        )
+        response = await self._binding.fetch(request.js_object)
+        status = int(response.status)
+        raw = await read_bounded_service_binding_body(
+            response, max_bytes=_MAX_RESPONSE_BYTES
+        )
+        return status, raw
+
+
+async def voice_live_token(request: Request) -> JSONResponse:
+    """Mint one short-lived Live transcription token for the current session.
+
+    The browser must never hold a long-lived provider key, and the private
+    STT Worker must never be reachable from the browser. This route is the
+    same shape as the reviewed transcription bridge: it authenticates the
+    caller with the existing ``padiem_session`` cookie, resolves the
+    canonical Control Plane session for the product that owns the route, and
+    forwards the request over the private Service Binding.
+
+    What the browser receives is a **single-use, model-locked, one-minute
+    start ephemeral token** plus the browser-safe session parameters (model,
+    activity-detection window, rotation window). No key, no account id and no
+    entitlement material crosses this boundary.
+    """
+    settings = getattr(request.app.state, "settings", None) if getattr(request, "app", None) else None
+    expected_origin = expected_browser_origin(settings)
+    origin = request.headers.get("origin") if getattr(request, "headers", None) is not None else None
+    if expected_origin is not None and origin is not None and origin.strip() != expected_origin:
+        return _error("origin_rejected", 403)
+
+    content_type = request.headers.get("content-type") if getattr(request, "headers", None) is not None else None
+    media_type = "" if content_type is None else str(content_type).split(";", 1)[0].strip().lower()
+    if media_type and media_type != "application/json":
+        return _error("unsupported_media_type", 415)
+
+    try:
+        raw_body = await read_bounded_request_body(request, max_bytes=_MAX_LIVE_TOKEN_REQUEST_BYTES)
+    except RequestBodyTooLarge:
+        return _error("request_too_large", 413)
+    try:
+        payload = json.loads(raw_body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+        return _error("invalid_json", 400)
+    if not isinstance(payload, Mapping) or not _LIVE_TOKEN_BROWSER_FIELDS.issuperset(set(payload)):
+        return _error("unsupported_field", 400)
+
+    try:
+        session = await _canonical_session(request)
+    except Exception:
+        session = None
+    if session is None:
+        # No authenticated canonical session: never reach the paid route.
+        return _error("voice_signin_required", 401)
+
+    transport = getattr(request.app.state, "voice_stt_transport", None)
+    if transport is None:
+        return _error("voice_stt_unavailable", 503)
+
+    auth_session = session.auth_session
+    try:
+        status, raw = await transport.live_token(
+            product_id=auth_session.product_id,
+            session_id=auth_session.session_id,
+        )
+    except (ServiceBindingResponseError, ServiceBindingResponseTooLarge):
+        return _error("voice_stt_unavailable", 503)
+    except Exception:
+        return _error("voice_stt_failed", 502)
+
+    if status != 200:
+        # Pass the STT Worker's own bounded code through unchanged so the UI
+        # can stay truthful about cost/authority refusals. Never leak a body.
+        code = "voice_stt_denied"
+        try:
+            parsed = json.loads(raw.decode("utf-8"))
+            candidate = parsed.get("error", {}).get("code")
+            if isinstance(candidate, str) and candidate:
+                code = candidate
+        except Exception:
+            pass
+        return _error(code, 403 if status in (401, 403) else 502)
+
+    try:
+        parsed = json.loads(raw.decode("utf-8"))
+    except Exception:
+        return _error("voice_stt_failed", 502)
+    token = parsed.get("token") if isinstance(parsed, dict) else None
+    if not isinstance(token, str) or not token.strip():
+        return _error("live_token_unavailable", 502)
+
+    payload_out: dict[str, Any] = {"token": token.strip()}
+    expire_time = parsed.get("expireTime")
+    if isinstance(expire_time, str) and expire_time:
+        payload_out["expireTime"] = expire_time
+    session_config = parsed.get("session")
+    if isinstance(session_config, dict):
+        payload_out["session"] = session_config
+    return JSONResponse(payload_out, status_code=200)

@@ -274,7 +274,10 @@
     if (!info || !controller || !key()) return;
     syncIdentity();
     const c = composerStatus();
-    if (c.active || c.generation !== info.composerGeneration ||
+    // The accepted turn may arrive while the microphone run is still open
+    // (Mode 2/3/4 auto-send once per utterance) or right after it stopped.
+    // The run authority is the generation/session pair, not the run state.
+    if (c.generation !== info.composerGeneration ||
         c.sessionToken !== info.sessionToken || info.accountKey !== key() ||
         info.accepted !== true || info.endOfTurn !== true) return;
     const st = controller.getState();

@@ -23,25 +23,30 @@
    * module is that someone. It supplies exactly one thing the composer asked
    * for -- a recognizer factory -- and adds nothing else to the composer.
    *
-   * Transport shape (no redesign of the reviewed pieces):
-   *   getUserMedia -> MediaRecorder -> same-origin POST /api/voice/transcribe
-   *   -> Chat Worker (authenticates the existing `padiem_session` cookie,
-   *      resolves the canonical Control Plane session, calls the private
-   *      `padiem-voice-stt` Worker over its Service Binding)
-   *   -> Groq Whisper, paid only after the STT Worker's own canonical
-   *      caller/tenant/cost guard admits the request.
+   * Provider chain (the order the shared STT contract already declares):
    *
-   * The browser never holds a provider key. The browser never speaks to the
-   * STT Worker directly: that Worker is private and reachable only over a
-   * Service Binding from the Chat Worker.
+   *   1. gemini_live  -- real-time transcription. The browser asks this app for
+   *      a short-lived, model-locked Live token over the same-origin route,
+   *      and this app forwards that request to the private STT Worker over
+   *      its Service Binding. The browser then holds ONE single-use ephemeral
+   *      token for the length of one Live session and never a provider key.
+   *      Interim hypotheses reach the composer input while the user speaks;
+   *      one Live turn is one confirmed sentence.
+   *   2. groq_whisper -- the reviewed chunk fallback. One completed audio
+   *      chunk -> one candidate transcript over the same-origin route.
+   *
+   * The fallback is used only when the live engine cannot run at all in this
+   * browser or session (no token, no WebSocket, refused session). A live
+   * failure *after* words were captured is reported as an error instead, so a
+   * spoken sentence is never silently dropped.
    *
    * Boundaries this file deliberately keeps:
    * - Nothing here sends a chat message. A final transcript is a *candidate*
    *   that the shared adapter places in the existing input; the user reviews
    *   or edits it and presses the existing send button.
-   * - No interim text is invented. Groq transcribes a completed chunk, so the
-   *   interim preview stays empty until a real final arrives rather than
-   *   showing fabricated partial text.
+   * - The browser never holds a provider key and never speaks to the private
+   *   STT Worker directly: that Worker is private and reachable only over a
+   *   Service Binding from the Chat Worker.
    * - The STT Worker deployment gate, the canonical Control Plane bindings and
    *   the `voice.stt.*` entitlement grants are NOT enabled here. Until CENTRAL
    *   activates them the server answers one bounded error and this module
@@ -55,8 +60,10 @@
 
   const TRANSCRIBE_PATH = "/api/voice/transcribe";
   const IDENTITY_PATH = "/api/voice/identity";
+  const LIVE_TOKEN_PATH = "/api/voice/live-token";
   const CLAW_TRANSCRIBE_PATH = "/api/claw/voice/transcribe";
   const CLAW_IDENTITY_PATH = "/api/claw/voice/identity";
+  const CLAW_LIVE_TOKEN_PATH = "/api/claw/voice/live-token";
 
   function routeForShell(doc, chatPath, clawPath) {
     const shell = doc && typeof doc.querySelector === "function" ? doc.querySelector(".app-shell") : null;
@@ -117,7 +124,7 @@
   }
 
   /**
-   * Build the recognizer factory consumed by voice-composer.js.
+   * Build the chunk recognizer factory (the reviewed fallback).
    *
    * The factory signature is the one the composer already calls:
    *   factory({onInterim, onFinal, onError, onEnd}, {generation, sessionToken})
@@ -127,7 +134,7 @@
    * identity and invalidation; this recognizer only reports what it heard and
    * always tears its own capture down on stop.
    */
-  function createRecognizerFactory(deps) {
+  function createChunkRecognizerFactory(deps) {
     deps = deps || {};
     const win = deps.win;
     const doc = deps.doc;
@@ -496,6 +503,135 @@
   }
 
   /**
+   * The live engine, loaded next to this module.
+   *
+   * It is optional so this module keeps working (with the reviewed chunk
+   * fallback) when the live script is absent, e.g. in an isolated harness.
+   */
+  function liveEngine() {
+    const scope = typeof globalThis !== "undefined" ? globalThis : null;
+    return scope && scope.PadiemVoiceLiveTranscript
+      && typeof scope.PadiemVoiceLiveTranscript.createRecognizerFactory === "function"
+      ? scope.PadiemVoiceLiveTranscript
+      : null;
+  }
+
+  /**
+   * Build the recognizer factory consumed by voice-composer.js.
+   *
+   * The composer-facing contract is unchanged:
+   *   factory({onInterim, onFinal, onError, onEnd, onTurnComplete},
+   *           {generation, sessionToken}) -> session handle with .stop()
+   *
+   * The live engine is tried first, because real-time transcription is the
+   * behaviour the product asks for. The reviewed chunk recognizer takes over
+   * only when the live engine reports that it cannot run at all, so a run is
+   * never lost and a spoken sentence is never silently dropped.
+   */
+  function createRecognizerFactory(deps) {
+    deps = deps || {};
+    const win = deps.win;
+    const doc = deps.doc;
+
+    // The identity is verified once for the whole run, so the fallback does
+    // not repeat the request.
+    const chunkDeps = Object.assign({}, deps);
+    delete chunkDeps.verifyIdentity;
+    const chunkFactory = createChunkRecognizerFactory(chunkDeps);
+
+    const live = liveEngine();
+    const liveFactory = live
+      ? live.createRecognizerFactory({
+        win: win,
+        fetchImpl: deps.fetchImpl,
+        mediaDevices: deps.mediaDevices,
+        liveTokenPath: routeForShell(doc, LIVE_TOKEN_PATH, CLAW_LIVE_TOKEN_PATH),
+        WebSocketCtor: deps.WebSocketCtor,
+        now: deps.now,
+        setTimeout: deps.setTimeout,
+        clearTimeout: deps.clearTimeout,
+      })
+      : null;
+
+    return function recognizerFactory(callbacks, runContext) {
+      callbacks = callbacks || {};
+      const run = runContext || {};
+      let active = null;
+      let cancelled = false;
+
+      function attach(providerHandle) {
+        if (!providerHandle || typeof providerHandle.stop !== "function") return false;
+        if (cancelled) {
+          try { providerHandle.stop("cancelled"); } catch (e) { /* already gone */ }
+          return false;
+        }
+        active = providerHandle;
+        return true;
+      }
+
+      function reportError(code) {
+        try { if (typeof callbacks.onError === "function") callbacks.onError(code); }
+        catch (e) { /* swallow */ }
+      }
+
+      function startChunk() {
+        attach(chunkFactory(callbacks, run));
+      }
+
+      function startLive() {
+        if (!liveFactory) {
+          startChunk();
+          return;
+        }
+        const liveCallbacks = {
+          onInterim: callbacks.onInterim,
+          onFinal: callbacks.onFinal,
+          onEnd: callbacks.onEnd,
+          onTurnComplete: callbacks.onTurnComplete,
+          onAutoStopRequested: callbacks.onAutoStopRequested,
+          onError: callbacks.onError,
+          onProviderUnavailable: function () {
+            // The live engine cannot run in this browser or session. Nothing
+            // was transcribed yet, so the reviewed chunk fallback takes the
+            // run over without losing a word.
+            if (cancelled || active !== null) return;
+            startChunk();
+          },
+        };
+        attach(liveFactory(liveCallbacks, run));
+      }
+
+      const handle = {
+        stop: function (reason) {
+          cancelled = true;
+          if (active && typeof active.stop === "function") {
+            try { active.stop(reason); } catch (e) { /* the recognizer is already gone */ }
+          }
+          active = null;
+        },
+      };
+
+      // Verify the current signed-in identity before microphone access.
+      // Direct stand-alone recognizer tests have no identity authority.
+      if (typeof deps.verifyIdentity === "function") {
+        Promise.resolve().then(deps.verifyIdentity).then(function (key) {
+          if (cancelled) return;
+          if (typeof key !== "string" || !key) {
+            reportError(ERROR_CODES.NOT_ALLOWED);
+            return;
+          }
+          startLive();
+        }).catch(function () {
+          if (!cancelled) reportError(ERROR_CODES.NOT_ALLOWED);
+        });
+      } else {
+        startLive();
+      }
+      return handle;
+    };
+  }
+
+  /**
    * Install the wiring: register the recognizer factory and keep the composer
    * informed when the *identity* behind a still-signed-in session changes.
    *
@@ -529,8 +665,11 @@
       fetchImpl: fetchImpl,
       mediaDevices: mediaDevices,
       now: options.now,
+      WebSocketCtor: options.WebSocketCtor,
       verifyIdentity: function () { return verifyIdentity(); },
     });
+    // The live engine needs a WebSocket and a microphone; the chunk fallback
+    // needs a microphone only.
     const canCapture = !!(mediaDevices && typeof win.MediaRecorder === "function");
 
     function registerFactory(available) {
@@ -655,8 +794,11 @@
     CLAW_TRANSCRIBE_PATH: CLAW_TRANSCRIBE_PATH,
     CLAW_IDENTITY_PATH: CLAW_IDENTITY_PATH,
     IDENTITY_PATH: IDENTITY_PATH,
+    LIVE_TOKEN_PATH: LIVE_TOKEN_PATH,
+    CLAW_LIVE_TOKEN_PATH: CLAW_LIVE_TOKEN_PATH,
     ERROR_CODES: ERROR_CODES,
     createRecognizerFactory: createRecognizerFactory,
+    createChunkRecognizerFactory: createChunkRecognizerFactory,
     createVoiceSttWiring: createVoiceSttWiring,
     autoInit: autoInit,
   };

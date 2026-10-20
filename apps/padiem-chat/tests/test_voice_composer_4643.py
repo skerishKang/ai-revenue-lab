@@ -16,9 +16,10 @@ Guarded here, against the REAL shipped files:
   network activity, zero submit, and zero send press;
 - a signed-in session alone does not change that: the gate is
   factory-registered AND authenticated, with no account special-casing;
-- only an authoritative FINAL reaches the existing editable input, exactly
-  once per utterance id; interim text never becomes input; identical speech
-  under a new utterance id is accepted;
+- the live interim is written into the existing editable input while the user
+  speaks and the confirmed FINAL takes that draft's place, exactly once per
+  utterance id; the interim is never a final candidate and never a message;
+  identical speech under a new utterance id is accepted;
 - user-typed text and an active IME composition are preserved: a final that
   arrives mid-composition or while the composer is disabled is held and
   flushed later, and is dropped if the run ends first;
@@ -33,7 +34,7 @@ Markers:
 - MIC_ENTRY_MOUNTED_IN_SHARED_COMPOSER=PASS
 - DEFAULT_OFF_NO_FACTORY_UNAVAILABLE=PASS
 - SIGNED_OUT_GATE_BEFORE_ANY_RUN=PASS
-- INTERIM_PREVIEW_ONLY=PASS
+- INTERIM_LIVE_DRAFT_IN_INPUT=PASS
 - FINAL_ONLY_INTO_EDITABLE_INPUT=PASS
 - DUPLICATE_UTTERANCE_SUPPRESSED=PASS
 - DISTINCT_UTTERANCE_IDENTICAL_SPEECH_ACCEPTED=PASS
@@ -431,7 +432,7 @@ function toolsContains(env, node) {
   };
 }
 
-/* S3: interim is preview only. */
+/* S3: the interim is a live draft in the input (#4643 Owner instruction). */
 {
   const ctx = readyEnv();
   ctx.button.dispatchEvent(new ctx.env.win.Event("click"));
@@ -960,15 +961,22 @@ def test_signin_gate_requires_factory_and_session() -> None:
     assert result["network"] == 0
 
 
-def test_interim_is_preview_only() -> None:
+def test_interim_is_a_live_draft_in_the_input() -> None:
+    """#4643 Owner instruction (2026-10-20): the partial is live in the input.
+
+    This replaces the earlier "interim is preview only" rule, which was
+    written for the chunk-only recognizer that produced no interim at all.
+    The interim is still never a final candidate and never a message: only a
+    confirmed final is proposed or submitted.
+    """
     result = _results["interim_preview"]
-    assert result["first"]["input"] == ""
-    assert result["first"]["preview"] == "견적서"
-    assert result["first"]["preview_hidden"] is False
+    assert result["first"]["input"] == "견적서", "the live partial belongs in the input"
+    assert result["first"]["preview"] == ""
+    assert result["first"]["preview_hidden"] is True
     assert result["first"]["key"] == "voice-interim"
-    assert result["second"]["input"] == ""
-    assert result["second"]["preview"] == "견적서 초안"
-    assert result["input_events"] == 0
+    assert result["second"]["input"] == "견적서 초안", "the live partial replaces its own draft"
+    assert result["second"]["preview"] == ""
+    assert result["input_events"] == 2, "the existing input event must run so Send enablement updates"
     assert result["aria_pressed"] == "true"
     assert result["stop_aria"] == _shipped["ko"]["voice-mic-stop"]
 
@@ -983,7 +991,7 @@ def test_only_the_final_reaches_the_editable_input() -> None:
     assert after["submits"] == 0 and after["send_clicks"] == 0
     edited = result["edited"]
     assert edited["input"] == "사용자가 수정한 내용", "a later interim must not overwrite the user's edit"
-    assert edited["preview"] == "늦은 중간값"
+    assert edited["preview"] == ""
 
 
 def test_a_committed_utterance_keeps_the_microphone_on() -> None:
@@ -1082,15 +1090,20 @@ def test_unsupported_browser_is_bounded_copy() -> None:
 
 
 def test_typed_text_survives_recognizer_end() -> None:
+    """#4643 Owner instruction: stopping the microphone keeps the text.
+
+    The spoken words stay in the input for review. The user's own text is
+    never removed by them.
+    """
     result = _results["typed_preserved"]
     ended = result["ended"]
-    assert ended["input"] == "직접 입력한 문장"
+    assert ended["input"] == "직접 입력한 문장 말하다 만 중간값"
     assert ended["key"] == "voice-ended"
     assert ended["is_shipped_copy"] is True
     assert ended["active"] is False
     assert ended["preview_hidden"] is True
     assert ended["session_stopped"] is True
-    assert result["late"]["input"] == "직접 입력한 문장"
+    assert result["late"]["input"] == "직접 입력한 문장 말하다 만 중간값"
 
 
 def test_locale_projection_uses_the_shipped_table() -> None:
@@ -1114,12 +1127,15 @@ def test_zero_provider_post_and_no_auto_send_or_focus() -> None:
 def test_restart_does_not_bleed_previous_utterances() -> None:
     result = _results["restart_isolation"]
     contaminated = result["contaminated"]
-    assert contaminated["input"] == "", "a stale recognizer must not write into the new run's input"
+    # The first run's spoken text stays in the input when the microphone is
+    # switched off, but the stale recognizer adds nothing to the new run.
+    assert contaminated["input"] == "첫 번째 발화", "a stale recognizer must not write into the new run's input"
+    assert "이전 세션" not in contaminated["input"]
     assert contaminated["preview"] == ""
     assert contaminated["preview_hidden"] is True
     assert contaminated["active_generation"] == 2
     assert result["clean"] == {
-        "input": "두 번째 발화",
+        "input": "첫 번째 발화 두 번째 발화",
         "session_starts": 2,
         "endpoint": "ready",
     }
@@ -1141,10 +1157,10 @@ def test_final_keeps_the_microphone_session_open_until_the_user_stops_it() -> No
     assert committed["session_stopped"] is False
     assert committed["preview_hidden"] is True
     resumed = result["resumed"]
-    assert resumed["input"] == "첫 번째 전사", "the committed transcript stays for review"
+    assert resumed["input"] == "첫 번째 전사 두 번째 발화", "the committed transcript stays for review and the next utterance follows it"
     assert resumed["key"] == "voice-interim"
-    assert resumed["preview"] == "두 번째 발화"
-    assert resumed["preview_hidden"] is False
+    assert resumed["preview"] == ""
+    assert resumed["preview_hidden"] is True
     assert resumed["active"] is True
     assert result["second"] == {"input": "첫 번째 전사 두 번째 전사", "key": "voice-final"}
     ended = result["ended"]

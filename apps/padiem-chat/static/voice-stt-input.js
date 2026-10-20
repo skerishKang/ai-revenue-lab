@@ -27,7 +27,26 @@
    *   skerishKang/global-classroom main
    *   - utils/liveTranscriptTurn.ts  -> mergeLiveTranscriptChunk, createTranscriptTurnBuffer
    *   - hooks/useInterviewLive.ts     -> utterance ids, generation gating, interim/final split
-   * GLOBAL_CLASSROOM_DIRECT_PORT. No redesign of merge or turn-buffer semantics.
+   *   GLOBAL_CLASSROOM_DIRECT_PORT. No redesign of merge or turn-buffer semantics.
+   *
+   * Live draft (#4643 Owner instruction, 2026-10-20)
+   * ----------------------------------------------------
+   * The Owner asked for the Global Classroom behaviour verbatim: while the user
+   * speaks, the recognised text must appear **in the composer input** in real
+   * time, and the confirmed sentence must replace that draft in place without
+   * touching the text the user typed. The previous chunk-only recognizer never
+   * produced an interim at all, so the interim preview line was the whole
+   * interim surface and the input stayed untouched until a final arrived.
+   *
+   * The draft therefore owns exactly the tail it wrote, and nothing else:
+   *   - a write replaces only the tail this adapter last wrote, so any user
+   *     text before it survives;
+   *   - a user edit of that tail makes the adapter append instead of replace,
+   *     so a transcription never erases what the user wrote;
+   *   - the final replaces the draft with the confirmed sentence.
+   *
+   * Interim text is still never a final candidate and never a message: only a
+   * confirmed final can be proposed or submitted.
    */
 
   const STATES = Object.freeze({
@@ -138,12 +157,130 @@
     let stopped = false;
     let destroyed = false;
     let acceptedCount = 0;
+    // Live draft ownership (#4643 Owner instruction).
+    //
+    // ``draftPrefix`` is the input content before the provisional draft,
+    // ``ownedTail`` is the provisional (unconfirmed) text this adapter wrote
+    // and may replace, and ``lastWritten`` is the exact input content this
+    // adapter last produced. With all three, a draft can replace itself, the
+    // confirmed sentence can take the draft's place, and a user edit is never
+    // overwritten.
+    let draftPrefix = "";
+    let ownedTail = "";
+    let lastWritten = null;
 
     function emitState(next) {
       if (destroyed) return state;
       state = next;
       try { cbState(state); } catch (e) { /* swallow */ }
       return state;
+    }
+
+    function readInput() {
+      if (!input) return "";
+      if (typeof input.getValue === "function") return norm(input.getValue());
+      if (typeof input.value !== "undefined") return norm(input.value);
+      return "";
+    }
+
+    function setInput(value) {
+      if (!input) return;
+      if (typeof input.setValue === "function") input.setValue(value);
+      else if (typeof input.value !== "undefined") input.value = value;
+    }
+
+    /** Join a prefix and a new segment without gluing words together. */
+    function joinText(prefix, suffix) {
+      const head = norm(prefix);
+      const tail = norm(suffix);
+      if (!head) return tail;
+      if (!tail) return head;
+      if (/\s$/.test(head)) return head + tail;
+      return head + " " + tail;
+    }
+
+    /**
+     * Write the live draft.
+     *
+     * The draft replaces the provisional text this adapter owns. When the user
+     * changed the input since the last write, the draft stops touching the
+     * input entirely: a transcription may add text, never remove the user's.
+     */
+    function writeDraft(next) {
+      const text = norm(next);
+      if (!text || !input) return null;
+      const current = readInput();
+
+      if (ownedTail) {
+        if (current !== joinText(draftPrefix, ownedTail)) {
+          // The user changed the text this adapter owns: never overwrite it.
+          return null;
+        }
+        const value = joinText(draftPrefix, text);
+        setInput(value);
+        ownedTail = text;
+        lastWritten = value;
+        return value;
+      }
+
+      if (lastWritten !== null && current !== lastWritten) {
+        if (current !== "") {
+          // The user edited the input: the live draft yields to them.
+          return null;
+        }
+        // The input was cleared (for example after a send): start a new base.
+        lastWritten = null;
+      }
+
+      const value = joinText(current, text);
+      setInput(value);
+      draftPrefix = current;
+      ownedTail = text;
+      lastWritten = value;
+      return value;
+    }
+
+    /**
+     * Commit the confirmed sentence.
+     *
+     * The confirmed text takes the place of the provisional draft. When the
+     * user changed the input in the meantime, the confirmed text is appended
+     * instead, so the user's edit is never erased.
+     */
+    function commitDraft(next) {
+      const text = norm(next);
+      if (!text || !input) return null;
+      const current = readInput();
+      let value;
+      if (ownedTail && current === joinText(draftPrefix, ownedTail)) {
+        value = joinText(draftPrefix, text);
+      } else {
+        value = joinText(current, text);
+      }
+      setInput(value);
+      draftPrefix = value;
+      ownedTail = "";
+      lastWritten = value;
+      return value;
+    }
+
+    /**
+     * Drop the provisional draft of an abandoned session.
+     *
+     * A session that is invalidated (sign-out, account switch, Chat/Claw
+     * switch) or that failed leaves no half-transcribed text behind. A user
+     * stop keeps the text: the microphone was switched off, not abandoned.
+     */
+    function dropDraft() {
+      if (!input) return null;
+      const current = readInput();
+      const tail = ownedTail;
+      ownedTail = "";
+      if (!tail) return null;
+      if (current !== joinText(draftPrefix, tail)) return null;
+      setInput(draftPrefix);
+      lastWritten = draftPrefix;
+      return draftPrefix;
     }
 
     function isStale(ctx) {
@@ -163,6 +300,9 @@
       acceptedCount = 0;
       startedAt = Date.now();
       stopped = false;
+      draftPrefix = "";
+      ownedTail = "";
+      lastWritten = null;
       return emitState(STATES.LISTENING) === STATES.LISTENING;
     }
 
@@ -184,6 +324,9 @@
       if (!t) return { ok: false, reason: "empty" };
       turnBuffer.merge(t);
       const preview = turnBuffer.pending;
+      // #4643 Owner instruction: the live partial belongs in the composer
+      // input, not only in a preview line.
+      writeDraft(preview);
       emitState(STATES.INTERIM);
       try { cbInterim(preview, ctx); } catch (e) { /* swallow */ }
       return { ok: true, preview: preview };
@@ -230,7 +373,8 @@
       currentUtteranceId = utteranceId;
       acceptedCount += 1;
       emitState(STATES.FINAL);
-      try { appendToInput(text, "append", stopFlush); } catch (e) { /* swallow */ }
+      // The confirmed sentence takes the place of the live draft.
+      try { commitDraft(text); } catch (e) { /* swallow */ }
       try { cbFinal(text, utteranceId); } catch (e) { /* swallow */ }
       turnBuffer.reset();
       return { ok: true, text: text, utteranceId: utteranceId, acceptedCount: acceptedCount };
@@ -240,6 +384,8 @@
       if (destroyed) return state;
       stopped = true;
       turnBuffer.reset();
+      // The microphone was switched off, not abandoned: the text spoken so far
+      // stays in the input for review.
       emitState(STATES.STOPPED);
       if (reason) { try { cbError(String(reason)); } catch (e) {} }
       return state;
@@ -248,6 +394,7 @@
     function error(code) {
       if (destroyed) return state;
       turnBuffer.reset();
+      try { dropDraft(); } catch (e) { /* swallow */ }
       emitState(STATES.ERROR);
       try { cbError(String(code || "voice_stt_error")); } catch (e) {}
       return state;
@@ -255,6 +402,7 @@
 
     function invalidate(reason) {
       turnBuffer.reset();
+      try { dropDraft(); } catch (e) { /* swallow */ }
       emitState(STATES.STOPPED);
       destroyed = true;
       try { cbError(String(reason || "invalidated")); } catch (e) {}
@@ -265,19 +413,10 @@
       if (destroyed || (stopped && !flush)) return null;
       text = norm(text);
       if (!text) return null;
-      let current = "";
-      if (input && typeof input.getValue === "function") current = norm(input.getValue());
-      else if (input && typeof input.value !== "undefined") current = norm(input.value);
-      let next = current;
+      const current = readInput();
       const modeN = mode || "append";
-      if (modeN === "replace") {
-        next = text;
-      } else {
-        if (current && !/\s$/.test(current)) next = current + " ";
-        next = next + text;
-      }
-      if (input && typeof input.setValue === "function") input.setValue(next);
-      else if (input) input.value = next;
+      const next = modeN === "replace" ? text : joinText(current, text);
+      setInput(next);
       return next;
     }
 

@@ -1113,6 +1113,10 @@
   <script src="./calendar.js"></script>
   <script src="./claw-conversation-artifact-context.js"></script>
   <script src="./voice-stt-input.js"></script>
+  <!-- #4643 live (real-time) transcription engine: the Global Classroom live
+       path, ported. Loaded after the shared adapter because it reuses the
+       reviewed turn buffer, and before the wiring that selects it. -->
+  <script src="./voice-live-transcript.js"></script>
   <script src="./voice-composer.js"></script>
   <script src="./voice-stt-wiring.js"></script>
   <!-- Browser-only TTS output primitive for answer listen/stop. No provider
