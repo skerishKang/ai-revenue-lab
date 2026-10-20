@@ -162,8 +162,16 @@ def test_user_text_cannot_displace_the_sample_or_become_a_system_prompt():
 def test_streaming_dispatch_carries_the_same_trusted_sample_as_completed():
     binding = RecordingBinding(answer="네")
 
+    def stream_handler(request: httpx.Request) -> httpx.Response:
+        binding.calls.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([sse_frame(binding._answer), b"data: [DONE]\n\n"]),
+        )
+
     async def scenario():
-        stream = client(binding=binding, wall_clock=lambda: DISPATCH_SAMPLE)
+        stream = client(stream_handler=stream_handler, wall_clock=lambda: DISPATCH_SAMPLE)
         return [
             event
             async for event in stream.stream_text_auto(
