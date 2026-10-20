@@ -29,6 +29,34 @@ MAX_CHANGES = 20
 MAX_RULES = 2048
 RECEIPT_TTL = timedelta(minutes=5)
 
+# #2505 (owner decision 2026-10-21): Chat and Claw are two screens of one AI
+# product, so the Free/Plus/Pro/Max assignment they read and update is one
+# shared setting. B66 keeps its own independent grade assignment.
+SHARED_GRADE_PRODUCTS = frozenset({"chat", "claw"})
+SHARED_GRADE_PRODUCT = "chat"
+
+
+def canonical_product(product: str) -> str:
+    """The single product identity one grade decision is stored under.
+
+    A shared product resolves to one canonical identity, so a stored row, an
+    administrator write and a runtime read all address the same setting.
+    """
+    if not isinstance(product, str) or not product:
+        return product
+    return SHARED_GRADE_PRODUCT if product in SHARED_GRADE_PRODUCTS else product
+
+
+def product_scope_set(product: str) -> frozenset[str]:
+    """Every product identity one product decision covers.
+
+    A decision on a shared product covers all of its screens; any other
+    product covers only itself.
+    """
+    if isinstance(product, str) and product in SHARED_GRADE_PRODUCTS:
+        return frozenset(SHARED_GRADE_PRODUCTS)
+    return frozenset({product}) if isinstance(product, str) else frozenset()
+
 
 def _err(code: str) -> ControlPlaneContractError:
     return ControlPlaneContractError(code, code)
@@ -133,7 +161,12 @@ class VerifiedModelAdminGrant:
             raise _err("model_admin_grant_expired")
         if self.workspace_id != workspace or action not in self.permissions:
             raise _err("model_admin_forbidden")
-        if self.product is not None and products != {self.product}:
+        # A shared product is one decision for all of its screens, so a
+        # product-scoped grant covers the whole shared group and nothing else.
+        if self.product is not None and any(
+            canonical_product(requested) != canonical_product(self.product)
+            for requested in products
+        ):
             raise _err("model_admin_scope_forbidden")
 
 
@@ -181,7 +214,16 @@ def effective_model(
     if snapshot is None or snapshot.workspace_id != workspace_id or not trusted_policy_fresh:
         return ModelAvailability(False, "policy_unavailable", "unknown", "unknown", None)
     global_action = snapshot.lookup("central", tier, model_id)
-    product_action = snapshot.lookup(product, tier, model_id)
+    product_action = "inherit"
+    for scoped in sorted(product_scope_set(product)):
+        found = snapshot.lookup(scoped, tier, model_id)
+        if found == "block":
+            # A block on any screen of a shared product blocks the shared
+            # setting: the surfaces share one grade assignment.
+            product_action = "block"
+            break
+        if found == "allow":
+            product_action = "allow"
     if model is None or model.model_id != model_id or not model.registered:
         reason = "b14_model_unknown"
     elif not model.owner_allowed:

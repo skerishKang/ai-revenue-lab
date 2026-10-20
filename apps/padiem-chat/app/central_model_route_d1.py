@@ -21,6 +21,8 @@ from padiem_control_plane.model_assignment_policy import (
     MAX_CHANGES,
     CatalogModel,
     VerifiedModelAdminGrant,
+    canonical_product,
+    product_scope_set,
 )
 from padiem_control_plane.model_tier_routes import (
     MAX_ROUTES,
@@ -210,17 +212,21 @@ class D1CentralModelRouteStore:
             ),
         ]
         for change in changes:
+            # #2505: the Chat and Claw surfaces share one grade setting, so a
+            # write to either screen is stored under the shared product and
+            # clears a shadowed legacy alias row for the same grade.
+            scope = sorted(product_scope_set(change.product))
             statements.append(self._stmt(
                 "DELETE FROM central_model_tier_routes WHERE workspace_id=? "
-                "AND product=? AND tier=?",
-                workspace_id, change.product, change.tier,
+                "AND product IN (%s) AND tier=?" % ",".join("?" * len(scope)),
+                workspace_id, *scope, change.tier,
             ))
             if change.action != "reset":
                 statements.append(self._stmt(
                     "INSERT INTO central_model_tier_routes"
                     "(workspace_id,product,tier,primary_model_id,fallback_model_id,enabled) "
                     "VALUES (?,?,?,?,?,?)",
-                    workspace_id, change.product, change.tier,
+                    workspace_id, canonical_product(change.product), change.tier,
                     change.primary_model_id, change.fallback_model_id,
                     1 if change.enabled else 0,
                 ))
