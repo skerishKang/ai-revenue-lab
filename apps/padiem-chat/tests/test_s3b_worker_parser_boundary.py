@@ -136,18 +136,10 @@ def test_intake_gate_rejects_before_the_parser_authority_gate() -> None:
     assert str(info.value) != AUTHORITY_MESSAGE
 
 
-def test_intake_gate_size_limit_still_applies_under_the_worker_gate() -> None:
-    # The shipped binary document ceiling is 1 GiB, so the intake gate is proven
-    # with a patched small ceiling rather than a gigabyte of test bytes.
-    oversize = b"a" * 1025
-    spy = _CoreParserSpy()
-    payload = _b64(oversize)
-    with _worker_runtime(), mock.patch.object(boundary, "extract_binary_document", spy), mock.patch.object(
-        binary_documents_module, "MAX_BINARY_DOCUMENT_BYTES", 1024
-    ):
-        with pytest.raises(BinaryDocumentValidationError):
-            binary_documents_module._decode_payload(payload)
-    assert spy.calls == 0
+def test_the_intake_holds_no_byte_total_symbol() -> None:
+    # #4379: the intake no longer imports the legacy ceiling, so a size
+    # gate cannot be restored silently behind the parser-authority gate.
+    assert not hasattr(binary_documents_module, "MAX_BINARY_DOCUMENT_BYTES")
 
 
 # --- B/M4: project-file binary upload uses the same single policy --------------

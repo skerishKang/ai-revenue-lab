@@ -58,6 +58,25 @@ class Request:
         return self._data
 
 
+class BinaryRequest:
+    """The #4379 frame: 4-byte header length + JSON header + raw bytes."""
+
+    def __init__(self, header, raw, state, *, secret=None):
+        self.app = SimpleNamespace(state=state)
+        encoded = json.dumps(header).encode("utf-8")
+        frame = len(encoded).to_bytes(4, "big") + encoded + raw
+        self.headers = {
+            "content-type": "application/octet-stream",
+            "content-length": str(len(frame)),
+        }
+        if secret is not None:
+            self.headers[routes.ORACLE_MESH_CHANNEL_HEADER] = secret
+        self._data = frame
+
+    async def body(self):
+        return self._data
+
+
 def call(handler, request):
     response = asyncio.run(handler(request))
     return response.status_code, json.loads(response.body), response.headers
@@ -270,6 +289,33 @@ def _submit(state, dispatch_row, *, termination, note, blob: bytes = b""):
     return call(routes.oracle_mesh_read_result, Request(payload, state, secret=SECRET))
 
 
+def _submit_binary(state, dispatch_row, *, termination, note, blob: bytes,
+                   overrides: dict | None = None):
+    nonce = "n" * 32
+    state.history_store.rows[dispatch_row["dispatch_id"]]["nonce_sha256"] = (
+        hashlib.sha256(nonce.encode("utf-8")).hexdigest()
+    )
+    digest = hashlib.sha256(blob).hexdigest()
+    header = {
+        "dispatch_id": dispatch_row["dispatch_id"],
+        "nonce": nonce,
+        "termination": termination,
+        "exit_code": None,
+        "content_utf8": note,
+        "content_sha256": digest,
+        "content_bytes": len(blob),
+        "content_blob_sha256": digest,
+        "content_blob_bytes": len(blob),
+        "content_blob_media_type": "image/jpeg",
+    }
+    if overrides:
+        header.update(overrides)
+    return call(
+        routes.oracle_mesh_read_result,
+        BinaryRequest(header, blob, state, secret=SECRET),
+    )
+
+
 def _retrieve(state, dispatch_id):
     req = Request({}, state)
     req.path_params = {"dispatch_id": dispatch_id}
@@ -366,6 +412,63 @@ def test_capture_is_stored_and_projected_with_its_marker(monkeypatch):
     status, body, _ = _submit(state, row, termination="captured", note=NOTE, blob=JPEG)
     assert status == 409
     assert len(state.history_store.appended) == 1
+
+
+def test_binary_frame_capture_is_stored_byte_for_byte(monkeypatch):
+    # #4379: the screenshot is the body, not a base64 field. The verified
+    # bytes reach the private store unchanged and no base64 copy exists.
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+
+    status, body, _ = _submit_binary(
+        state, row, termination="captured", note=NOTE, blob=JPEG)
+    assert status == 200, body
+    assert state.history_store.originals[row["dispatch_id"]] == JPEG
+    message = state.history_store.appended[0]
+    assert message["status"] == "completed"
+    assert NOTE in message["content"]
+    assert base64.b64encode(JPEG).decode("ascii") not in message["content"]
+
+
+def test_binary_frame_tampered_bytes_are_untrusted(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+
+    evil = b"\xff\xd8\xff\xe0" + b"\x99" * (len(JPEG) - 4)
+    assert len(evil) == len(JPEG)
+    status, body, _ = _submit_binary(
+        state, row, termination="captured", note=NOTE, blob=evil,
+        overrides={"content_blob_sha256": hashlib.sha256(JPEG).hexdigest()},
+    )
+    assert status == 200, body
+    assert state.history_store.originals == {}
+    assert state.history_store.appended[0]["status"] == "failed"
+    assert "무결성 불일치" in state.history_store.appended[0]["content"]
+    assert state.history_store.finished[-1] == (row["dispatch_id"], "failed")
+
+
+def test_binary_frame_never_reaches_a_non_desktop_lane(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    response = asyncio.run(routes.dispatch_oracle_mesh_command_intent(
+        Request({"run_id": RUN, "device_id": None, "confirmed": True}, state),
+        command="hostname.exe",
+        wire={"run_id": RUN, "device_id": None, "confirmed": True},
+    ))
+    created = json.loads(response.body)
+    row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
+
+    status, body, _ = _submit_binary(
+        state, row, termination="not_executed", note=NOTE, blob=JPEG,
+    )
+    assert status == 200, body
+    assert state.history_store.originals == {}
+    assert state.history_store.appended[0]["status"] == "failed"
+    assert "무결성" in state.history_store.appended[0]["content"]
 
 
 def test_act_is_delivered_without_a_store(monkeypatch):

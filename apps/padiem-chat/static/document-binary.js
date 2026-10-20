@@ -2,7 +2,6 @@
   "use strict";
 
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
-  const MAX_BINARY_BYTES = attachmentCapabilities.limits.binaryBytes;
   const MIME_BY_EXTENSION = new Map();
   attachmentCapabilities.binaryDocuments.forEach((format) => {
     const mediaType = format.mediaTypes[0];
@@ -36,7 +35,6 @@
     const mediaType = canonicalMediaType(file);
     if (!mediaType) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).unsupportedFormat);
     if (!file || file.size < 1) throw new Error("빈 문서는 첨부할 수 없습니다.");
-    if (file.size > MAX_BINARY_BYTES) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).binaryTooLarge);
 
     return Object.freeze({
       type: "document",
@@ -66,7 +64,6 @@
 
   const api = Object.freeze({
     formats: Object.freeze(Array.from(MIME_BY_EXTENSION.keys())),
-    maxBytes: MAX_BINARY_BYTES,
     canRead,
     read,
     pendingMeta,

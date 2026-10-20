@@ -397,6 +397,15 @@ async function handlePadiemBridge(request, url, env) {
   if (cookie) headers.set("Cookie", cookie);
   const contentType = request.headers.get("content-type");
   if (contentType) headers.set("Content-Type", contentType);
+  if (upstreamPath === "/api/voice/transcribe") {
+    /* #4379: the raw audio upload names its container and the caller's turn
+       id in headers. They are forwarded for this route only, so no other
+       bridge route can carry them upstream. */
+    for (const name of ["X-Padiem-Audio-Type", "X-Padiem-Utterance-Id"]) {
+      const value = request.headers.get(name);
+      if (value) headers.set(name, value);
+    }
+  }
 
   let body;
   if (request.method !== "GET" && request.method !== "HEAD") {

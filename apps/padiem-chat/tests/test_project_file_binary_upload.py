@@ -177,8 +177,9 @@ def _make_pdf_base64(*, text: str = "Positive PDF Text") -> str:
     return b64encode(pdf.getvalue()).decode()
 
 
-# The shipped binary document ceiling is 1 GiB. The route-level size gate is
-# exercised with a patched small ceiling below instead of a gigabyte of test bytes.
+# The project-file route still bounds the receive spool, which is a resource
+# guard rather than a composer data total. The spool gate is exercised with a
+# patched small ceiling below instead of a gigabyte of test bytes.
 MAX_BINARY_PROJECT_FILE_BASE64_BYTES = 2 * 1024 * 1024
 
 
@@ -409,8 +410,8 @@ async def test_oversized_route_level_is_not_refused_for_its_size():
     app = create_app(cfg, history_store=history, project_file_store=store)
     client = await client_with_session(app, user_profile(owner.id))
     try:
-        # The shipped ceiling is 1 GiB, so the size gate is proven with a
-        # patched small ceiling rather than a gigabyte of test bytes.
+        # The receive spool bound is proven with a patched small ceiling
+        # rather than a gigabyte of test bytes.
         with mock.patch.object(project_file_routes, "MAX_BINARY_DOCUMENT_BYTES", 1024):
             oversized = b64encode(b"x" * 1025).decode()
             response = await post_binary(client, f"/api/projects/{project.id}/files", name="big.pdf", media_type=PDF_MEDIA, base64=oversized)
