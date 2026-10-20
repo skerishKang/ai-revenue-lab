@@ -110,8 +110,6 @@ def _freeform_text(value: Any, field_name: str, *, allow_empty: bool = False) ->
         raise ContractError(f"{field_name} exceeds {MAX_FREEFORM_REQUEST_CHARS} characters")
     if _CONTROL_RE.search(normalized):
         raise ContractError(f"{field_name} contains forbidden control characters")
-    if redact_secrets(normalized) != normalized:
-        raise ContractError(f"{field_name} must not contain credential material")
     return normalized
 
 
