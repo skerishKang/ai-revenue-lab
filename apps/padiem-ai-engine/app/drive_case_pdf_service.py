@@ -80,6 +80,23 @@ async def _await(value: Any) -> Any:
     return await value if isawaitable(value) else value
 
 
+def _version_evidence(source: Any) -> dict[str, Any]:
+    return {
+        "version": source.version,
+        "modified_time": source.modified_time,
+        "md5_checksum": source.md5_checksum,
+        "sha256_checksum": source.sha256_checksum,
+        "head_revision_id": source.head_revision_id,
+    }
+
+
+def _authorization(admission: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "direct_parent_proof": admission.get("ancestry_proof_trusted") is True,
+        "source_type": "drive",
+    }
+
+
 class DriveCasePdfService:
     """Acquire direct-child case PDFs after canonical selected-folder admission."""
 
@@ -417,24 +434,41 @@ class DriveCasePdfService:
 
         source = resource.evidence
         assert source is not None
-        version = {
-            "version": source.version,
-            "modified_time": source.modified_time,
-            "md5_checksum": source.md5_checksum,
-            "sha256_checksum": source.sha256_checksum,
-            "head_revision_id": source.head_revision_id,
-        }
         return {
             "ok": True,
             "file": projected,
             "content_base64": base64.b64encode(payload).decode("ascii"),
             "byte_size": len(payload),
-            "version_evidence": version,
-            "authorization": {
-                "direct_parent_proof": admission.get("ancestry_proof_trusted") is True,
-                "source_type": "drive",
-            },
+            "version_evidence": _version_evidence(source),
+            "authorization": _authorization(admission),
             "contract_version": B67_CASE_PDF_SERVICE_VERSION,
+        }
+
+    async def read_binary(
+        self,
+        *,
+        workspace_ref: str,
+        project_id: str,
+        file_id: object,
+    ) -> dict[str, Any]:
+        """Same authorization as :meth:`read`, with the bytes left un-encoded.
+
+        #4379: the private internal route frames these bytes directly, so a
+        whole PDF never becomes Base64 characters between Engine and Chat.
+        """
+
+        resource, admission, projected, payload = await self._authorized_pdf(
+            workspace_ref=workspace_ref,
+            project_id=project_id,
+            file_id=file_id,
+        )
+        source = resource.evidence
+        assert source is not None
+        return {
+            "file": projected,
+            "payload": payload,
+            "version_evidence": _version_evidence(source),
+            "authorization": _authorization(admission),
         }
 
     async def review_browser_extraction(

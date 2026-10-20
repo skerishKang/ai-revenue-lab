@@ -47,6 +47,7 @@ from app.cloudflare_transport import (
     CloudflareB14ServiceBindingTransport,
     build_b14_execution_configs,
 )
+from app.drive_case_pdf_binary import B67_CASE_PDF_BINARY_PATH
 from app.engine_composition import EngineServices
 from app.idempotency_binding import CloudflareD1IdempotencyAdapter
 from app.idempotency_replay_service import (
@@ -565,6 +566,35 @@ async def _drive_case_pdf_rpc_for_env(env: Any, operation: str, payload: Any) ->
     return await drive_case_pdf_rpc(service, operation=operation, payload=payload)
 
 
+async def _drive_case_pdf_binary_response(env: Any, body: bytes) -> Response:
+    """Serve one authorized B67 case PDF as raw bytes on the internal route.
+
+    #4379: the byte frame replaces the whole-file Base64 the JSON RPC carried.
+    Composition failures degrade to ``service = None`` exactly like the RPC
+    seam, so the route answers the bounded unavailable error and never leaks
+    infrastructure detail. Authorization is the same body-authenticated
+    internal caller gate every other non-health route passes through.
+    """
+
+    from app.drive_case_pdf_binary import drive_case_pdf_binary_read
+    from worker_identity import _drive_case_pdf_service_for_env
+
+    try:
+        service = _drive_case_pdf_service_for_env(env)
+    except Exception:
+        service = None
+    result = await drive_case_pdf_binary_read(service, body=body)
+    return Response(
+        result.body,
+        status=result.status_code,
+        headers={
+            "Content-Type": result.content_type,
+            "Cache-Control": "no-store",
+            "X-Content-Type-Options": "nosniff",
+        },
+    )
+
+
 class Default(WorkerEntrypoint):
     engine_services_factory = staticmethod(_engine_services_for_env)
 
@@ -635,6 +665,7 @@ class Default(WorkerEntrypoint):
             RESEARCH_PATH,
             MEMORY_PATH,
             MEMORY_WRITE_PATH,
+            B67_CASE_PDF_BINARY_PATH,
         } | orchestration_paths | agent_skill_paths | idempotency_paths | tool_paths
         if path not in allowed_paths:
             result = ServiceResponse(
@@ -686,6 +717,9 @@ class Default(WorkerEntrypoint):
             auth_error = _authenticate_non_health_request(self.env, headers, body)
             if auth_error is not None:
                 return auth_error
+
+        if path == B67_CASE_PDF_BINARY_PATH:
+            return await _drive_case_pdf_binary_response(self.env, body)
 
         services = await self.engine_services_factory(self.env)
 

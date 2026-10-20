@@ -1092,18 +1092,34 @@ class Default(WorkerEntrypoint):
                 # #3190: reuse the existing P01_ENGINE_SERVICE binding; no second
                 # Engine binding authority. Missing/malformed binding -> None ->
                 # the Drive case-folder routes fail closed with 503.
+                # #4379: when the same trusted P01 caller surface is configured,
+                # it is passed through so the PDF read can use the Engine byte
+                # route. A binding without caller values keeps the RPC it always
+                # used instead of half-converting, and no new binding, secret or
+                # app identity is consulted here.
                 try:
                     from app.drive_case_folder_engine import (
                         CloudflareDriveCaseFolderEngineClient,
                     )
                     from app.worker_config import P01_ENGINE_SERVICE_BINDING_NAME
 
-                    engine_binding = binding_value(self.env, P01_ENGINE_SERVICE_BINDING_NAME)
-                    drive_case_folder_engine_client = (
-                        CloudflareDriveCaseFolderEngineClient(engine_binding)
-                        if engine_binding is not None
-                        else None
-                    )
+                    drive_p01_config = p01_engine_config_from_worker_bindings(self.env)
+                    if drive_p01_config is not None:
+                        drive_case_folder_engine_client = (
+                            CloudflareDriveCaseFolderEngineClient(
+                                drive_p01_config.service_binding,
+                                caller_id=drive_p01_config.caller_id,
+                                credential=drive_p01_config.credential,
+                                request_factory=Request,
+                            )
+                        )
+                    else:
+                        engine_binding = binding_value(self.env, P01_ENGINE_SERVICE_BINDING_NAME)
+                        drive_case_folder_engine_client = (
+                            CloudflareDriveCaseFolderEngineClient(engine_binding)
+                            if engine_binding is not None
+                            else None
+                        )
                 except Exception:
                     drive_case_folder_engine_client = None
                 _worker_app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
