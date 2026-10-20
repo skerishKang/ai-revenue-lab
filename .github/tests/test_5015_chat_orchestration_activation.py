@@ -277,6 +277,45 @@ def test_the_latest_served_guard_runs_before_the_patch_and_aborts_it():
     assert "/versions?page=1&per_page=1" in guard_block
 
 
+def test_the_latest_served_cli_runs_without_the_settings_argument():
+    """The command must not fall into the --settings usage branch.
+
+    The activation gate calls it with only --deployments and --versions, so a
+    command that is dispatched after the ``--settings`` requirement aborts the
+    gate before the comparison it exists to perform.
+    """
+    import subprocess
+    import sys
+    import tempfile
+
+    version_id = "3f2b1c40-1111-2222-3333-444455556666"
+    deployments = {
+        "success": True,
+        "result": {"deployments": [{
+            "id": "current",
+            "versions": [{"version_id": version_id, "percentage": 100}],
+        }]},
+    }
+    versions = {"success": True, "result": {"items": [{"id": version_id}]}}
+    with tempfile.TemporaryDirectory() as folder:
+        deployments_path = Path(folder) / "deployments.json"
+        versions_path = Path(folder) / "versions.json"
+        deployments_path.write_text(json.dumps(deployments), encoding="utf-8")
+        versions_path.write_text(json.dumps(versions), encoding="utf-8")
+        completed = subprocess.run(
+            [
+                sys.executable, str(HELPER), "verify-latest-served",
+                "--deployments", str(deployments_path),
+                "--versions", str(versions_path),
+            ],
+            capture_output=True, text=True, timeout=60,
+        )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "B62_CLAW_LATEST_SERVED=PASS" in completed.stdout
+    assert "LATEST_EQUALS_ACTIVE=YES" in completed.stdout
+    assert "requires --settings" not in (completed.stdout + completed.stderr)
+
+
 def test_workflow_exposes_the_reviewed_activation_and_rollback_paths() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "activate_chat_orchestration" in text
