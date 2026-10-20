@@ -67,6 +67,10 @@ class ConnectorPlatformTests(unittest.TestCase):
         self.assertEqual(result.text, "x" * 25_000)
         self.assertNotIn("[truncated:", result.text)
 
+    def test_connector_result_preserves_user_owned_original_text(self):
+        original = 'Bearer sk-test-demo-123456789012345678901234567890'
+        self.assertEqual(bounded_connector_result(original).text, original)
+
     def test_skill_declaration_never_grants_tool(self):
         tool = ConnectorTool("search_files", "search", {"type": "object"})
         transport = DeterministicFakeConnectorTransport((tool,))

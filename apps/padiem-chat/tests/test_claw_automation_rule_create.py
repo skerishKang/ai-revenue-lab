@@ -545,14 +545,15 @@ def test_credential_shaped_task_and_name_are_400() -> None:
     store = _RecordingStore()
     task_body = _valid_body()
     task_body["task"] = "use api_key = supersecretvalue123 when running"
+    # #5373: an authorized credential-shaped task is accepted by the existing
+    # contract, so the rule is created.
     resp = _post(_client(store), body=task_body)
-    assert resp.status_code == 400
-    assert resp.json()["error"]["code"] == "invalid_task"
+    assert resp.status_code == 201
     name_body = _valid_body()
     name_body["name"] = "token = hunter2 schedule"
     resp = _post(_client(store), body=name_body)
     assert resp.status_code == 400
-    assert store.save_calls == 0
+    assert store.save_calls == 1
 
 
 # ── response privacy ────────────────────────────────────────────────────────

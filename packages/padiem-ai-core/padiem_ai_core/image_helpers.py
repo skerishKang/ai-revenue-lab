@@ -84,7 +84,9 @@ __all__ = [
 # Bounds
 # --------------------------------------------------------------------------
 
-#: Largest accepted input payload, in bytes.
+# #4379: an image payload carries no PADIEM byte total. The decoder memory
+# protection below stays, because it bounds decoded pixels rather than the
+# caller's data. These symbols are retained for import compatibility.
 MAX_IMAGE_BYTES = 16 * 1024 * 1024
 
 #: Largest accepted ``width * height`` for input and output.
@@ -306,8 +308,8 @@ def _validate_payload(data: bytes) -> bytes:
     payload = bytes(data)
     if not payload:
         raise ImageContractError("image_bytes_invalid")
-    if len(payload) > MAX_IMAGE_BYTES:
-        raise ImageContractError("image_bytes_oversized")
+    # #4379: the payload size is not a PADIEM total. The decoded pixel bound
+    # below still protects the decoder.
     return payload
 
 
@@ -578,8 +580,7 @@ def _encode(image: Image.Image, output_format: str, icc_profile: bytes | None) -
     encoded = buffer.getvalue()
     if not encoded:
         raise ImageContractError("image_decode_failed")
-    if len(encoded) > MAX_OUTPUT_BYTES:
-        raise ImageContractError("image_output_bytes_exceeded")
+    # #4379: the encoded output size is not a PADIEM total.
     return encoded
 
 
@@ -800,8 +801,8 @@ def image_to_pdf(images: tuple[bytes, ...]) -> ImagePdfOutput:
     if len(images) > MAX_PDF_IMAGES:
         raise ImageContractError("image_pdf_count_exceeded")
     payloads = tuple(_validate_payload(image) for image in images)
-    if sum(len(image) for image in payloads) > MAX_PDF_INPUT_BYTES:
-        raise ImageContractError("image_pdf_input_bytes_exceeded")
+    # #4379: the PDF input byte total is not a PADIEM total. The per-image
+    # decoder bounds and the total pixel bound still apply.
 
     opened: list[Image.Image] = []
     normalized: list[Image.Image] = []
@@ -861,8 +862,7 @@ def image_to_pdf(images: tuple[bytes, ...]) -> ImagePdfOutput:
             raise ImageContractError("image_decode_failed") from exc
         if not encoded:
             raise ImageContractError("image_decode_failed")
-        if len(encoded) > MAX_PDF_OUTPUT_BYTES:
-            raise ImageContractError("image_pdf_output_bytes_exceeded")
+        # #4379: the PDF output byte total is not a PADIEM total.
         return ImagePdfOutput(data=encoded, page_count=len(normalized), pages=tuple(pages))
     finally:
         for image in normalized:

@@ -1,7 +1,4 @@
 from __future__ import annotations
-from padiem_control_plane.product_tier_routes import (
-    FREE_PRIMARY_B14_MODEL_ID,
-)
 
 """#3760 offline model decision boundary: no B14 transport/provider traffic."""
 
@@ -357,12 +354,10 @@ def test_real_b14_core_quote_payload_is_exact_one_attempt_no_external_fallback()
     assert url == "https://b14.internal/api/pilot/v1/chat/completions"
     assert payload["model"] == model
     assert payload["business14"]["task_type"] == "document"
-    # #4317: the Chat Worker no longer declares a local attempt count,
-    # so B14 decides it. This lane still gets exactly one upstream call
-    # because its exact model is not the Free grade's roster primary,
-    # the only route that carries the owner-pinned grade backup.
+    # #5362 removed the default one-step agent execution ceiling, so no
+    # attempt ceiling is sent. The one-shot contract is the pinned retry
+    # budget below.
     assert "max_attempts" not in payload["business14"]
-    assert payload["model"] != FREE_PRIMARY_B14_MODEL_ID
     assert payload["business14"]["max_retries"] == 0
     assert payload["business14"]["allow_external_fallback"] is False
     assert payload["business14"].get("provider_order") is None

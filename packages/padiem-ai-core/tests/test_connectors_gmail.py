@@ -340,32 +340,35 @@ def test_inline_attachment_without_provider_ref_is_not_treated_as_message_text()
     assert rendered["projection"]["body_segments"] == []
 
 
-def test_oversized_message_body_is_visibly_review_required() -> None:
-    # kagent: test_oversized_message_body_is_visibly_review_required
+def test_large_message_body_is_projected_in_full() -> None:
+    # #4379: a connector body is not truncated for its size. The full body is
+    # projected and the result is not silently cut.
     port = FakeGmailPort()
-    port.responses.append(message(body="x" * (MESSAGE_BODY_CONTEXT_CHARS + 500)))
+    body = "x" * (MESSAGE_BODY_CONTEXT_CHARS + 500)
+    port.responses.append(message(body=body))
     rendered = run(
         gmail_handlers(port)[GMAIL_GET_MESSAGE_TOOL_ID]({"messageId": "msg_1"})
     )
-    assert rendered["result_status"] == "REVIEW_REQUIRED"
-    assert rendered["body_truncated"] is True
-    assert len(rendered["projection"]["body_segments"][0]["text"]) <= MESSAGE_BODY_CONTEXT_CHARS
+    assert rendered["result_status"] == "OK"
+    assert rendered["body_truncated"] is False
+    assert rendered["projection"]["body_segments"][0]["text"] == body
 
 
-def test_thread_uses_latest_bounded_messages_and_marks_omissions() -> None:
-    # kagent: test_thread_uses_latest_bounded_messages_and_marks_omissions
+def test_thread_projects_every_provider_message() -> None:
+    # #4379: a thread is not cut to a message count. Every provider message is
+    # projected and nothing is omitted.
     port = FakeGmailPort()
     provider_messages = [message(index, thread_id="thread_1") for index in range(1, 11)]
     port.responses.append({"id": "thread_1", "messages": provider_messages})
     rendered = run(
         gmail_handlers(port)[GMAIL_GET_THREAD_TOOL_ID]({"threadId": "thread_1"})
     )
-    assert rendered["result_status"] == "REVIEW_REQUIRED"
+    assert rendered["result_status"] == "OK"
     assert rendered["provider_message_count"] == 10
-    assert rendered["projected_message_count"] == 8
-    assert rendered["omitted_message_count"] == 2
+    assert rendered["projected_message_count"] == 10
+    assert rendered["omitted_message_count"] == 0
     projected_ids = [item["message_id"] for item in rendered["projection"]["messages"]]
-    assert projected_ids[0] == "msg_3"
+    assert projected_ids[0] == "msg_1"
     assert projected_ids[-1] == "msg_10"
     assert rendered["projection"]["bulk_mailbox_dump"] is False
 
@@ -527,17 +530,12 @@ def test_output_never_leaks_binding_or_actor_refs() -> None:
         assert len(rendered.encode("utf-8")) <= MAX_TOOL_OUTPUT_BYTES
 
 
-def test_bounded_envelope_replaces_oversized_output_with_digest() -> None:
-    oversized = {"operation": "messages.list", "blob": "y" * (MAX_TOOL_OUTPUT_BYTES + 10)}
-    replacement = _bounded_envelope(oversized)
-    assert replacement["result_status"] == "REVIEW_REQUIRED"
-    assert replacement["truncated"] is True
-    assert replacement["operation"] == "messages.list"
-    assert re.fullmatch(r"[0-9a-f]{64}", replacement["result_sha256"])
-    encoded_envelope = json.dumps(
-        replacement, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
-    assert len(encoded_envelope) <= MAX_TOOL_OUTPUT_BYTES
+def test_bounded_envelope_keeps_a_large_output() -> None:
+    # #4379: the connector result carries no PADIEM byte total, so a large
+    # provider result is returned in full instead of being replaced by a
+    # digest marker.
+    large = {"operation": "messages.list", "blob": "y" * (MAX_TOOL_OUTPUT_BYTES + 10)}
+    assert _bounded_envelope(large) == large
 
 
 class FakeAsyncGmailPort:

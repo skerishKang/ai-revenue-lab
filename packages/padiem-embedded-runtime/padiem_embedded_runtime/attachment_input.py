@@ -51,15 +51,14 @@ MAX_SELECTIONS = 8
 MAX_NAME_CHARS = 120
 MAX_MEDIA_TYPE_CHARS = 64
 
-# Hard sanity bound for normalization; the shared platform image bound below
-# is a validation hint only, never an authority decision.
+# Hard sanity bound for normalization. #4379: a shared platform image byte
+# bound is no longer declared, so a selection is not labelled as over a bound
+# that does not exist.
 MAX_BYTE_SIZE_HARD = 256 * 1024 * 1024
-SHARED_IMAGE_BOUND_BYTES = 4 * 1024 * 1024
 SHARED_IMAGE_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 
 HINT_SUPPORTED_MEDIA_TYPE = "SUPPORTED_MEDIA_TYPE"
 HINT_UNSUPPORTED_MEDIA_TYPE = "UNSUPPORTED_SHARED_MEDIA_TYPE"
-HINT_OVER_SHARED_BOUND = "OVER_SHARED_IMAGE_BOUND"
 
 LIFECYCLE_STATES = frozenset(
     {"idle", "selecting", "validating", "ready", "uploaded", "failed"}
@@ -195,8 +194,6 @@ def _selection_hints(selection: SelectionDescriptor) -> tuple[str, ...]:
     hints: list[str] = []
     if selection.media_type in SHARED_IMAGE_MEDIA_TYPES:
         hints.append(HINT_SUPPORTED_MEDIA_TYPE)
-        if selection.byte_size > SHARED_IMAGE_BOUND_BYTES:
-            hints.append(HINT_OVER_SHARED_BOUND)
     else:
         hints.append(HINT_UNSUPPORTED_MEDIA_TYPE)
     return tuple(hints)

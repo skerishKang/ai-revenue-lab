@@ -8,6 +8,9 @@ from typing import Any, Callable
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.errors import NoSafeRoute
 
+# #4379: a pilot image carries no PADIEM byte total. The media type, the
+# magic bytes and the base64 shape stay. This symbol is retained for import
+# compatibility.
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
 _ALLOWED_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 _DATA_PREFIXES = {media: f"data:{media};base64," for media in _ALLOWED_MEDIA_TYPES}
@@ -44,16 +47,12 @@ def validate_image_data_url(value: Any) -> str:
         )
     if not payload:
         raise MultimodalContractError("image data must not be empty")
-    if len(payload) > ((MAX_IMAGE_BYTES + 2) // 3) * 4:
-        raise MultimodalContractError("decoded image must not exceed 4 MiB")
     try:
         decoded = base64.b64decode(payload, validate=True)
     except (binascii.Error, ValueError) as exc:
         raise MultimodalContractError("image data must be valid base64") from exc
     if not decoded:
         raise MultimodalContractError("image data must not be empty")
-    if len(decoded) > MAX_IMAGE_BYTES:
-        raise MultimodalContractError("decoded image must not exceed 4 MiB")
     if not _matches_magic(media_type, decoded):
         raise MultimodalContractError("image media type does not match image bytes")
     return f"data:{media_type};base64,{payload}"

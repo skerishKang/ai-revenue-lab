@@ -696,11 +696,13 @@ def test_xlsx_extracts_values_and_archive_dtd_is_rejected_before_openpyxl() -> N
     assert "private" not in str(dtd.value)
 
 
-def test_binary_size_bound_fails_without_echoing_payload() -> None:
-    payload = b"PRIVATE" + b"x" * MAX_BINARY_DOCUMENT_BYTES
+def test_binary_over_the_old_size_bound_is_not_refused_for_its_size() -> None:
+    # #4379: a binary document carries no PADIEM byte total. The media
+    # validation still refuses the payload and still never echoes it.
+    payload = b"PRIVATE" + b"x" * (MAX_BINARY_DOCUMENT_BYTES + 1)
     with pytest.raises(DocumentNormalizationError) as exc:
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=payload)
-    assert exc.value.code == "binary_too_large"
+    assert exc.value.code != "binary_too_large"
     assert "PRIVATE" not in str(exc.value)
 
 

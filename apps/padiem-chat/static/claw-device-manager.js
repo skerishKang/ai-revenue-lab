@@ -154,9 +154,45 @@
     let selectionSequence = 0;
     let selectionQueue = Promise.resolve();
     let selectedId = null;
+    let savedTargetId = null;
     let lastDirectory = null;
     let opened = false;
     let stateCode = "unavailable";
+    let readCompleted = false;
+
+    // The shared directory snapshot. The composer status control reads this
+    // instead of opening a second connection to the directory endpoint, so
+    // this module stays the only reader and the only device authority.
+    function publishDirectory() {
+      const directory = lastDirectory;
+      const snapshot = {
+        readCompleted: readCompleted,
+        available: Boolean(directory && directory.available),
+        reason: directory ? directory.reason : null,
+        statusCode: stateCode,
+        // The server-owned preference and the device it resolves to are both
+        // published, so a consumer can tell "no target chosen" from "the
+        // chosen target is gone".
+        savedTargetId: savedTargetId,
+        selectedDeviceId: directory ? directory.selectedDeviceId : null,
+        canTarget: Boolean(directory && directory.canTarget),
+        devices: confirmedDevices().map((device) => ({
+          deviceId: device.deviceId,
+          deviceName: device.deviceName,
+          platform: device.platform,
+          state: device.state,
+          online: device.online === true,
+          revoked: device.revoked === true,
+          expired: device.expired === true,
+          executable: device.executable === true,
+          selectable: device.selectable === true,
+        })),
+      };
+      window.PadiemClawDeviceDirectory = snapshot;
+      if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
+        window.dispatchEvent(new CustomEvent("padiem:claw-device-directory", { detail: snapshot }));
+      }
+    }
 
     function setStatus(value) {
       stateCode = value;
@@ -287,12 +323,17 @@
       panel.removeAttribute("aria-busy");
       sequence += 1; // invalidate any in-flight response or previous owner snapshot
       selectedId = null;
+      savedTargetId = null;
       lastEnvelope = null;
       lastDirectory = null;
       list.replaceChildren();
       list.hidden = true;
       // A new account generation starts from the not-connected guidance again.
       renderEntry();
+      // The shared snapshot returns to "not read yet", so no consumer can
+      // show a connection that belongs to the previous owner.
+      readCompleted = false;
+      publishDirectory();
     }
 
     async function postSelection(deviceId) {
@@ -407,6 +448,7 @@
         // conversation/reload. It never substitutes another device.
         const restored = typeof payload.selectedDeviceId === "string" &&
           payload.selectedDeviceId ? payload.selectedDeviceId : null;
+        savedTargetId = restored;
         const directory = projector(payload, restored);
         if (!directory.available) {
           selectedId = null;
@@ -450,7 +492,15 @@
       } finally {
         window.clearTimeout(timer);
         if (pendingController === controller) pendingController = null;
-        if (request === sequence) panel.removeAttribute("aria-busy");
+        if (request === sequence) {
+          panel.removeAttribute("aria-busy");
+          // Every read attempt publishes its own result, so the shared
+          // snapshot never keeps a state that the server did not confirm.
+          // A superseded read publishes nothing: its owner generation is
+          // already gone.
+          readCompleted = true;
+          publishDirectory();
+        }
       }
     }
 

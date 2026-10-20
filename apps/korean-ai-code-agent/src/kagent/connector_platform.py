@@ -184,11 +184,11 @@ def bounded_connector_result(text: str, *, is_error: bool = False) -> ConnectorC
     #4379: the result used to be cut at 20,000 characters and replaced with a
     "[truncated: ...]" marker, so a connector that really returned a long
     document lost its content after the call had already been paid for. The
-    secret redaction is unchanged; nothing is shortened or dropped.
+    user-authorized result text is preserved exactly; log redaction belongs at the diagnostic boundary.
     """
     if not isinstance(text, str):
         raise ContractError("connector result text must be a string")
-    normalized = redact_secrets(text)
+    normalized = text
     if normalized.strip() == "":
         normalized = "The connector returned no content. Nothing was found, so there is nothing here to answer from."
     return ConnectorCallResult(text=normalized, is_error=is_error, truncated=False)
