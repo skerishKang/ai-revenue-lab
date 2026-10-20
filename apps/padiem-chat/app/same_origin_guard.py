@@ -250,6 +250,16 @@ class SameOriginGuardMiddleware:
         media_type = content_type.split(";", 1)[0].strip().lower()
         if media_type == _JSON_MEDIA_TYPE:
             return None
+        # Project originals are raw binary, still subject to the same
+        # cookie, fixed-origin and route-local owner checks.
+        if (
+            scope.get("method") == "POST"
+            and media_type == "application/octet-stream"
+            and len(path.split("/")) == 5
+            and path.startswith("/api/projects/")
+            and path.endswith("/files")
+        ):
+            return None
         # No body and no declared type (e.g. an empty POST/DELETE) is fine;
         # any declared non-JSON type, or a body without a JSON type, is not.
         if media_type or _body_present(scope):
