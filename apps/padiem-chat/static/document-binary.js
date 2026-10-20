@@ -38,16 +38,12 @@
     if (!file || file.size < 1) throw new Error("빈 문서는 첨부할 수 없습니다.");
     if (file.size > MAX_BINARY_BYTES) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).binaryTooLarge);
 
-    const buffer = await file.arrayBuffer();
-    if (buffer.byteLength !== file.size || buffer.byteLength < 1 || buffer.byteLength > MAX_BINARY_BYTES) {
-      throw new Error("문서 크기를 안전하게 확인하지 못했습니다.");
-    }
     return Object.freeze({
       type: "document",
       name: file.name || `document${extensionOf(file.name)}`,
       mediaType,
       file,
-      byteSize: buffer.byteLength,
+      byteSize: file.size,
     });
   }
 
