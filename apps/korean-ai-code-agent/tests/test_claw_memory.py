@@ -65,6 +65,21 @@ def make_party_candidate(workspace_id: str = "ws-a") -> ClawMemoryCandidate:
 
 
 class ClawMemoryContractTests(unittest.TestCase):
+    def test_long_raw_excerpt_and_business_text_are_not_rejected(self):
+        source = ClawMemorySourceRef(
+            source_id="src-long", workspace_id="ws-a", origin=ClawSourceOrigin.PASTE,
+            body_sha256=sha256_text("a" * 9000), created_at=T0,
+            raw_excerpt="a" * 9000,
+        )
+        self.assertEqual(len(source.raw_excerpt), 9000)
+        candidate = ClawMemoryCandidate(
+            candidate_id="cand-long", workspace_id="ws-a", kind=ClawMemoryKind.PARTY,
+            payload={"name": "b" * 6000, "role": "customer"},
+            source=source, created_at=T0,
+        )
+        self.assertEqual(candidate.payload["name"], "b" * 6000)
+
+
     def test_party_item_price_records_are_workspace_scoped(self):
         party = ClawPartyMemory(
             memory_id="mem-p1",

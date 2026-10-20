@@ -64,8 +64,6 @@ def _text(value: str, name: str, *, limit: int = _MAX_TEXT_CHARS) -> str:
     value = value.strip()
     if not value:
         raise ClawMemoryError(f"{name} is required")
-    if len(value) > limit:
-        raise ClawMemoryError(f"{name} exceeds {limit} characters")
     if _CONTROL_RE.search(value):
         raise ClawMemoryError(f"{name} contains control characters")
     return value
