@@ -397,6 +397,31 @@ def test_model_error_is_not_reported_as_a_search_error() -> None:
     assert response.json()["error"]["code"] != "no_evidence"
 
 
+def test_a_current_office_holder_never_answers_without_evidence() -> None:
+    """A current office holder keeps the honest failure, never the fallback."""
+    provider = EmptyProvider()
+    app, config, seen = build_app(provider)
+    response = post(
+        app, config, "/api/chat", {"messages": messages("현재 대통령"), "mode": "auto"}
+    )
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "no_evidence"
+    assert seen == []
+
+
+def test_an_external_event_schedule_never_answers_without_evidence() -> None:
+    """The schedule of an external event keeps the honest failure."""
+    provider = EmptyProvider()
+    app, config, seen = build_app(provider)
+    response = post(
+        app, config, "/api/chat",
+        {"messages": messages("이번 주 무슨 요일에 축제가 열려?"), "mode": "auto"},
+    )
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "no_evidence"
+    assert seen == []
+
+
 # --- conversation continuity --------------------------------------------------
 
 def test_fallback_keeps_the_conversation_and_the_model_grade() -> None:

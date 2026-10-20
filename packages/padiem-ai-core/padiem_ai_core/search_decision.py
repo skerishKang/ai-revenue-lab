@@ -76,6 +76,7 @@ _FRESHNESS = (
     "this month",
     "this year",
     "live",
+    "tonight",
 )
 
 _VOLATILE_FACTS = (
@@ -256,13 +257,65 @@ def _looks_like_arithmetic(text: str) -> bool:
 _CLOCK_CLAUSE_SEPARATORS = (
     "근데", "그런데", "그리고", "그래서", "but", "and", ",", "，", "。", ";", "；",
 )
-_CLOCK_QUESTION_PATTERNS = (
-    re.compile(r"몇\s*시(?!에)"),          # "몇 시야" (now), not "몇 시에" (an event)
-    re.compile(r"(?:현재|지금)\s*시간"),
-    re.compile(r"무슨\s*요일"),
-    re.compile(r"what\s+day", re.IGNORECASE),
-    re.compile(r"what(?:'s| is)\s+the\s+date", re.IGNORECASE),
-    re.compile(r"what\s+time", re.IGNORECASE),
+# A pure clock question asks for the current date, weekday or time AS SUCH.
+# "오늘 무슨 요일이야?" is a clock question; "무슨 요일에 축제가 열려?" asks for
+# the schedule of an external event and stays a web-evidence request.
+_CLOCK_EVENT_TIME_FORM = re.compile(
+    r"(?:며칠|무슨\s*요일|무슨\s*날짜|몇\s*시|몇\s*시간)\s*에"
+)
+# The English form is the self-referential one: "What time is it?" asks for the
+# clock, "What time is the concert tonight?" asks for an external schedule.
+_CLOCK_QUESTION_SUFFIX_EN = re.compile(
+    r"(?:what\s+time\s+is\s+it|what'?s\s+the\s+time|what\s+day\s+is\s+it"
+    r"|what'?s\s+(?:today'?s\s+)?(?:the\s+)?date"
+    r"|what\s+day\s+of\s+the\s+week\s+is\s+it)"
+    r"\s*[?.!]*$",
+    re.IGNORECASE,
+)
+# An external event, a business schedule or a booking time is a web fact even
+# when the question mentions today, tonight or a weekday.
+_EXTERNAL_SCHEDULE_MARKERS = (
+    "축제",
+    "공연",
+    "콘서트",
+    "경기",
+    "회의",
+    "약속",
+    "일정",
+    "모임",
+    "행사",
+    "상영",
+    "발매",
+    "세미나",
+    "워크숍",
+    "전시",
+    "영화",
+    "항공",
+    "기차",
+    "영업",
+    "휴무",
+    "개장",
+    "마감",
+    "출발",
+    "도착",
+    "concert",
+    "festival",
+    "game",
+    "match",
+    "meeting",
+    "appointment",
+    "schedule",
+    "event",
+    "movie",
+    "film",
+    "screening",
+    "flight",
+    "train",
+    "show",
+    "workshop",
+    "seminar",
+    "opening",
+    "closing",
 )
 
 
@@ -280,24 +333,36 @@ def _is_local_clock_question(normalized: str) -> bool:
     """Whether the request only asks for the current date, weekday or time.
 
     A self-contained clock question is answered by the server clock that the
-    dispatch pre-instruction already provides. A request that also names a
-    current external fact (weather, news, rates, an office holder) is not a
-    clock question and keeps the existing web-evidence path.
+    dispatch pre-instruction already provides. A request that names a current
+    external fact (weather, news, rates, an office holder) or an external
+    event/schedule (a festival, a concert, business hours) is not a clock
+    question and keeps the existing web-evidence path.
     """
     if _contains_any(normalized, _VOLATILE_FACTS) or _contains_any(
         normalized, _CURRENT_OFFICE
     ):
         return False
+    if _contains_any(normalized, _EXTERNAL_SCHEDULE_MARKERS):
+        return False
     clause = _last_clause(normalized)
     if not clause:
         return False
+    # "무슨 요일에 축제가 열려?" asks for an external schedule, not the clock.
+    if _CLOCK_EVENT_TIME_FORM.search(clause):
+        return False
+    if _CLOCK_QUESTION_SUFFIX_EN.search(clause):
+        return True
     if "요일" in clause:
         return True
     if "며칠" in clause and "걸" not in clause:
         return True
     if "날짜" in clause and _contains_any(clause, ("오늘", "내일", "어제", "지금", "현재")):
         return True
-    return any(pattern.search(clause) for pattern in _CLOCK_QUESTION_PATTERNS)
+    if re.search(r"몇\s*시(?!에)", clause):
+        return True
+    if re.search(r"(?:현재|지금)\s*시간", clause):
+        return True
+    return False
 
 
 def decide_search(text: str, *, task_id: str | None = None) -> SearchDecision:
@@ -331,11 +396,13 @@ def decide_search(text: str, *, task_id: str | None = None) -> SearchDecision:
         # A freshness word alone does not prove the answer needs the web: the
         # search is still attempted, but a request that neither names a current
         # external fact nor asks for information may continue as a normal answer
-        # when no usable evidence is found.
+        # when no usable evidence is found. A current office holder always
+        # needs evidence, so it never takes that fallback.
         return SearchDecision(
             SearchDisposition.MUST_SEARCH, "freshness_sensitive", query,
             evidence_required=(
                 _contains_any(normalized, _VOLATILE_FACTS)
+                or _contains_any(normalized, _CURRENT_OFFICE)
                 or _contains_any(normalized, _INFORMATION_REQUEST)
             ),
         )

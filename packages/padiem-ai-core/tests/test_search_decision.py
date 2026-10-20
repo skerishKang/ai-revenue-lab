@@ -112,6 +112,40 @@ def test_a_local_text_transformation_is_not_hijacked_by_a_lookup_word() -> None:
     assert decision.requires_search is False
 
 
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "이번 주 무슨 요일에 축제가 열려?",
+        "What time is the concert tonight?",
+    ],
+)
+def test_an_external_event_or_schedule_is_not_a_clock_question(prompt: str) -> None:
+    # The day or time of an external event is a web fact, not the server clock.
+    decision = decide_search(prompt)
+    assert decision.disposition is SearchDisposition.MUST_SEARCH
+    assert decision.requires_search is True
+    assert decision.evidence_required is True
+    assert decision.reason != "local_clock_fact"
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "현재 대통령",
+        "현재 CEO",
+    ],
+)
+def test_a_current_office_holder_never_takes_the_no_evidence_fallback(
+    prompt: str,
+) -> None:
+    # A current office holder is a current external fact: the answer must never
+    # continue without retrieved evidence.
+    decision = decide_search(prompt)
+    assert decision.disposition is SearchDisposition.MUST_SEARCH
+    assert decision.evidence_required is True
+    assert decision.reason != "local_clock_fact"
+
+
 def test_blank_input_is_rejected() -> None:
     with pytest.raises(ValueError, match="non-empty"):
         decide_search("   ")
