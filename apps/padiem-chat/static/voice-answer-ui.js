@@ -53,6 +53,7 @@
     b.type = "button";
     b.className = "voice-answer-listen";
     b.setAttribute("aria-label", playText());
+    window.PadiemSharedTooltip?.label?.(b, playText());
     b.setAttribute("aria-pressed", "false");
     b.textContent = playText();
     b.disabled = !tts.isSupported();
@@ -64,6 +65,7 @@
       currentButton = b;
       b.setAttribute("aria-pressed", "true");
       b.setAttribute("aria-label", stopText());
+      window.PadiemSharedTooltip?.label?.(b, stopText());
       b.textContent = stopText();
       speakText(text);
     });
