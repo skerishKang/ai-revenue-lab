@@ -440,9 +440,17 @@ class CloudflareDriveCaseFolderEngineClient:
             raise self._malformed(PDF_CANDIDATES_OPERATION)
         return {"files": files, "more": result["more"], "direct_child_only": True}
 
-    async def read_pdf(
+    async def read_pdf_bytes(
         self, *, workspace_ref: str, project_id: str, file_id: object
-    ) -> dict[str, Any]:
+    ) -> tuple[dict[str, Any], bytes]:
+        """One authorized case PDF as raw bytes plus its file projection.
+
+        #4379 hop-2: the browser reads these bytes directly, so this seam no
+        longer re-encodes a whole PDF into a JSON string on the way out. The
+        revision and ancestry evidence is still validated -- it is trust input,
+        not browser payload, so it is checked and then dropped.
+        """
+
         bounded_file_id = _bounded_text(file_id, MAX_PDF_FILE_ID_CHARS)
         if bounded_file_id is None:
             raise DriveCaseFolderEngineError(
@@ -452,7 +460,7 @@ class CloudflareDriveCaseFolderEngineClient:
             workspace_ref=workspace_ref, project_id=project_id, file_id=bounded_file_id
         )
         if frame is None:
-            return await self._read_pdf_over_rpc(
+            return await self._read_pdf_bytes_over_rpc(
                 workspace_ref=workspace_ref, project_id=project_id, file_id=bounded_file_id
             )
         header, payload = frame
@@ -483,13 +491,9 @@ class CloudflareDriveCaseFolderEngineClient:
         if _bounded_text(header.get("contract_version"), 128) != PDF_BINARY_CONTRACT_VERSION:
             raise self._malformed(PDF_READ_OPERATION)
 
-        return {
-            "file": file_body,
-            "content_base64": base64.b64encode(payload).decode("ascii"),
-            "byte_size": byte_size,
-            "version_evidence": self._pdf_version_body(header.get("version_evidence")),
-            "authorization": self._pdf_authorization_body(header.get("authorization")),
-        }
+        self._pdf_version_body(header.get("version_evidence"))
+        self._pdf_authorization_body(header.get("authorization"))
+        return file_body, payload
 
     async def _pdf_read_frame(
         self, *, workspace_ref: str, project_id: str, file_id: str
@@ -554,9 +558,15 @@ class CloudflareDriveCaseFolderEngineClient:
             raise self._malformed(PDF_READ_OPERATION)
         return _decode_binary_pdf_frame(raw)
 
-    async def _read_pdf_over_rpc(
+    async def _read_pdf_bytes_over_rpc(
         self, *, workspace_ref: str, project_id: str, file_id: str
-    ) -> dict[str, Any]:
+    ) -> tuple[dict[str, Any], bytes]:
+        """Legacy fallback: the Engine still answers base64 here, we decode once.
+
+        Only this inbound RPC wire carries base64; the bytes handed to the
+        caller are raw, so no second encode happens on the way out.
+        """
+
         result = await self._call(
             PDF_READ_OPERATION,
             {"workspace_ref": workspace_ref, "project_id": project_id, "file_id": file_id},
@@ -585,17 +595,12 @@ class CloudflareDriveCaseFolderEngineClient:
         if len(payload) != byte_size or not payload.startswith(b"%PDF-"):
             raise self._malformed(PDF_READ_OPERATION)
 
-        authorization = self._pdf_authorization_body(result.get("authorization"))
+        self._pdf_authorization_body(result.get("authorization"))
         if _bounded_text(result.get("contract_version"), 128) is None:
             raise self._malformed(PDF_READ_OPERATION)
+        self._pdf_version_body(result.get("version_evidence"))
 
-        return {
-            "file": file_body,
-            "content_base64": encoded,
-            "byte_size": byte_size,
-            "version_evidence": self._pdf_version_body(result.get("version_evidence")),
-            "authorization": authorization,
-        }
+        return file_body, payload
 
     @staticmethod
     def _pdf_version_body(value: object) -> dict[str, Any]:

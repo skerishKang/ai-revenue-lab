@@ -241,7 +241,11 @@ def binary_client(binding, *, caller_id=CALLER_ID, credential=CREDENTIAL, factor
 
 def read(client=None, binding=None, **kwargs):
     client = client or binary_client(binding)
-    return run(client.read_pdf(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID, file_id=FILE_ID, **kwargs))
+    return run(
+        client.read_pdf_bytes(
+            workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID, file_id=FILE_ID, **kwargs
+        )
+    )
 
 
 def response_for(body: bytes, *, status: int = 200, content_type=OCTET_STREAM) -> FakeResponse:
@@ -264,7 +268,7 @@ def error(code: str, action) -> DriveCaseFolderEngineError:
 
 def test_byte_route_reads_the_pdf_without_touching_the_rpc() -> None:
     binding = FakeEngineBinding(fetch_response=response_for(frame(header())))
-    body = read(binding=binding)
+    file_body, payload = read(binding=binding)
 
     assert binding.rpc_calls == []
     assert len(binding.fetch_calls) == 1
@@ -281,10 +285,9 @@ def test_byte_route_reads_the_pdf_without_touching_the_rpc() -> None:
     assert headers["x-padiem-engine-caller"] == CALLER_ID
     assert headers["x-padiem-engine-credential"] == CREDENTIAL
     assert headers["accept"] == "application/octet-stream"
-    assert base64.b64decode(body["content_base64"], validate=True) == PDF_BYTES
-    assert body["byte_size"] == len(PDF_BYTES)
-    assert body["version_evidence"] == VERSION_EVIDENCE
-    assert body["authorization"] == {"direct_parent_proof": True, "source_type": "drive"}
+    assert payload == PDF_BYTES
+    assert len(payload) == len(PDF_BYTES)
+    assert file_body == FILE_PROJECTION
 
 
 def test_binary_and_rpc_paths_answer_identically() -> None:
@@ -302,9 +305,9 @@ def test_payload_that_is_not_text_survives_byte_for_byte() -> None:
             frame(header(byte_size=len(payload), sha256=hashlib.sha256(payload).hexdigest()), payload)
         )
     )
-    body = read(binding=binding)
-    assert base64.b64decode(body["content_base64"], validate=True) == payload
-    assert body["byte_size"] == len(payload)
+    _, body = read(binding=binding)
+    assert body == payload
+    assert len(body) == len(payload)
 
 
 def test_streamed_chunks_are_reassembled_under_the_same_bound() -> None:
@@ -313,8 +316,8 @@ def test_streamed_chunks_are_reassembled_under_the_same_bound() -> None:
     binding = FakeEngineBinding()
     binding.fetch_response = FakeResponse(status=200, content_type=OCTET_STREAM)
     binding.fetch_response.body = _Stream([encoded[:middle], encoded[middle:]])
-    body = read(binding=binding)
-    assert base64.b64decode(body["content_base64"], validate=True) == PDF_BYTES
+    _, body = read(binding=binding)
+    assert body == PDF_BYTES
 
 
 # --- legacy fallback --------------------------------------------------------
@@ -322,21 +325,21 @@ def test_streamed_chunks_are_reassembled_under_the_same_bound() -> None:
 
 def test_absent_route_falls_back_to_the_rpc_exactly_once() -> None:
     binding = FakeEngineBinding(fetch_response=refusal("not_found", 404))
-    body = read(binding=binding)
+    _, body = read(binding=binding)
 
     assert len(binding.fetch_calls) == 1
     assert binding.rpc_calls == [
         (PDF_READ_OPERATION, {"workspace_ref": WORKSPACE_REF, "project_id": PROJECT_ID, "file_id": FILE_ID})
     ]
-    assert base64.b64decode(body["content_base64"], validate=True) == PDF_BYTES
+    assert body == PDF_BYTES
 
 
 def test_binding_without_a_trusted_transport_stays_on_the_rpc() -> None:
     binding = FakeEngineBinding()
-    body = read(CloudflareDriveCaseFolderEngineClient(binding))
+    _, body = read(CloudflareDriveCaseFolderEngineClient(binding))
     assert binding.fetch_calls == []
     assert [operation for operation, _ in binding.rpc_calls] == [PDF_READ_OPERATION]
-    assert base64.b64decode(body["content_base64"], validate=True) == PDF_BYTES
+    assert body == PDF_BYTES
 
 
 @pytest.mark.parametrize(
@@ -353,10 +356,10 @@ def test_a_partial_transport_never_sends_a_partial_identity(overrides: dict) -> 
     binding = FakeEngineBinding(fetch_response=response_for(frame(header())))
     kwargs = {"caller_id": CALLER_ID, "credential": CREDENTIAL, "factory": True}
     kwargs.update(overrides)
-    body = read(binary_client(binding, **kwargs))
+    _, body = read(binary_client(binding, **kwargs))
     assert binding.fetch_calls == []
     assert [operation for operation, _ in binding.rpc_calls] == [PDF_READ_OPERATION]
-    assert body["byte_size"] == len(PDF_BYTES)
+    assert len(body) == len(PDF_BYTES)
 
 
 def test_404_without_the_not_found_contract_does_not_retry() -> None:
@@ -507,12 +510,13 @@ def test_legacy_rpc_shares_the_revision_grammar() -> None:
 
     Drive sends ``version`` as an integer: a real integer revision is accepted
     and a string revision is refused on the Base64 RPC exactly as on the byte
-    route.
+    route. The evidence itself is trust input, so it is validated and dropped
+    instead of travelling back to the browser.
     """
 
     integer_binding = FakeEngineBinding()
-    body = read(CloudflareDriveCaseFolderEngineClient(integer_binding))
-    assert body["version_evidence"]["version"] == 7
+    _, accepted = read(CloudflareDriveCaseFolderEngineClient(integer_binding))
+    assert accepted == PDF_BYTES
 
     for mutated in ({"version": "7.7"}, {"version": True}, {"version": -1}):
         payload = {
@@ -534,10 +538,12 @@ def test_legacy_rpc_shares_the_revision_grammar() -> None:
 
 def test_binary_response_never_echoes_private_refs() -> None:
     binding = FakeEngineBinding(fetch_response=response_for(frame(header())))
-    rendered = json.dumps(read(binding=binding))
+    file_body, payload = read(binding=binding)
+    rendered = json.dumps(file_body, ensure_ascii=False)
     assert WORKSPACE_REF not in rendered
     assert PROJECT_ID not in rendered
     assert "object_key" not in rendered
+    assert payload == PDF_BYTES
 
 
 def test_other_operations_still_use_their_own_rpcs() -> None:
