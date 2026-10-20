@@ -23,7 +23,7 @@ from starlette.routing import Router
 
 from app.pilot.errors import InvalidRequest, PilotError, StreamNotSupported
 from app.pilot.catalog import get_catalog_by_id
-from app.pilot.gateway import _validate_body
+from app.pilot.gateway import _platform_caller_denial, _validate_body
 from app.pilot.routing_policy import ROUTING_POLICY_ID
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.platform import stream_platform_chat_completions
@@ -337,6 +337,13 @@ async def pilot_auto_stream_preview(request: Request):
     iterator: AsyncIterator[RouterStreamEvent] | None = None
 
     try:
+        # The b14/auto lane spends platform-owned Provider credentials. Refuse an
+        # unproven caller before any credential is resolved or any Provider
+        # request is built.
+        denial = await _platform_caller_denial(request, gateway_request_id)
+        if denial is not None:
+            return denial
+
         try:
             raw = await request.json()
         except (ValueError, UnicodeDecodeError):

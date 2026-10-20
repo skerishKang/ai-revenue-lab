@@ -19,6 +19,8 @@ from padiem_ai_core.b14_execution import (
 )
 from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
 
+from app.b14_service_proof import service_proof_headers
+
 B14_INTERNAL_ORIGIN = "https://b14.internal"
 # #4379: the model request body has no PADIEM aggregate ceiling. The request is
 # read in full and the total is never refused; the platform's own request limit
@@ -182,6 +184,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         *,
         binding: Any,
         request_factory: Callable[..., Any],
+        proof_secret: str | None = None,
     ) -> None:
         if binding is None:
             raise ValueError("B14 service binding is required")
@@ -189,6 +192,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
             raise ValueError("request_factory must be callable")
         self._binding = binding
         self._request_factory = request_factory
+        self._proof_secret = proof_secret
 
     @staticmethod
     def _validate_target(url: httpx.URL) -> None:
@@ -237,6 +241,11 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
             headers={
                 "Content-Type": "application/json",
                 **_correlation_header(),
+                # B14 spends platform-owned Provider credentials on this lane.
+                # The proof binds this exact body to this deployment.
+                **service_proof_headers(
+                    self._proof_secret, body_text.encode("utf-8"),
+                ),
             },
             body=body_text,
         )

@@ -326,6 +326,29 @@ def _agent_skill_service_for_env(
     )
 
 
+async def _resolve_b14_proof_secret(env: Any) -> str | None:
+    """Resolve the deployment-owned B14 caller proof secret, or None.
+
+    The value lives only in Cloudflare Secrets Store. It is never logged and
+    never falls back to another credential.
+    """
+    binding = _binding_value(env, "PADIEM_B14_SERVICE_PROOF_SECRET")
+    if isinstance(binding, str):
+        return binding or None
+    getter = getattr(binding, "get", None)
+    if not callable(getter):
+        return None
+    try:
+        resolved = getter()
+        if hasattr(resolved, "__await__"):
+            resolved = await resolved
+    except Exception:
+        return None
+    if isinstance(resolved, str) and resolved:
+        return resolved
+    return None
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
     """Legacy compatibility composition; never the Production authority.
 
@@ -380,6 +403,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     transport = CloudflareB14ServiceBindingTransport(
         binding=binding,
         request_factory=Request,
+        # B14 spends platform-owned Provider credentials on its catalog
+        # execution lane; prove this server-to-server caller before dispatch.
+        proof_secret=await _resolve_b14_proof_secret(env),
     )
     completed_config, stream_config = build_b14_execution_configs(
         timeout_seconds=_b14_timeout_seconds_for_env(env),
