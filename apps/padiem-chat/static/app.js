@@ -508,7 +508,12 @@
     window.PadiemSharedTooltip?.bind?.(fragment);
     messageList.appendChild(fragment);
   }
-  function addAssistantShell(label) {
+  // The runtime status chip has one owner (message-lifecycle.js). A finished
+  // answer releases the "answer preparing" chip, and a real status (a Claw P01
+  // stage, a failure) is never removed by accident. The calls go through the
+  // global because a single-function harness evaluates this file's function in
+  // a bare scope.
+  function addAssistantShell(label, runtimeState) {
     const fragment = document.getElementById("assistantMessageTemplate").content.cloneNode(true);
     const article = fragment.querySelector(".assistant-message");
     // #3931: identify the product whose conversation is currently rendered.
@@ -516,6 +521,7 @@
     const productLabel = article.querySelector("[data-assistant-product]");
     if (productLabel) productLabel.textContent = shell.dataset.state === "claw" ? "Padiem Claw" : "Padiem Chat";
     article.querySelector("[data-runtime-label]").textContent = label;
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, runtimeState || "preparing");
     messageList.appendChild(fragment);
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
     return article;
@@ -530,7 +536,7 @@
     content.appendChild(typing);
   }
   function renderStoredAssistant(text, stored) {
-    const article = addAssistantShell(uiT("stored-conversation"));
+    const article = addAssistantShell(uiT("stored-conversation"), "status");
     // A restored turn shows a time only when the store actually carries one.
     // Older records have no per-message time, and none is invented for them.
     const storedAt = stored && typeof stored.completed_at === "string" ? stored.completed_at : "";
@@ -558,7 +564,11 @@
     // The repetitive runtime line is removed: only a truthful non-default
     // state (mock preview) or an explicit skill title is shown.
     const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : "";
-    article.querySelector("[data-runtime-label]").textContent = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
+    const answerLabel = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
+    article.querySelector("[data-runtime-label]").textContent = answerLabel;
+    // A completed answer carries no runtime status: the chip is released
+    // instead of staying on "answer preparing".
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, answerLabel, "status");
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
@@ -659,6 +669,8 @@
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+    // A failure is a real status: the chip stays visible with its own copy.
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error"), "status");
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
@@ -668,6 +680,8 @@
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+    // A failure is a real status: the chip stays visible with its own copy.
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error"), "status");
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
@@ -677,6 +691,7 @@
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = uiT("generation-cancelled");
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("generation-cancelled"), "status");
     content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
@@ -2108,6 +2123,10 @@
   }
 
   function applyStreamDone(article, data, answer, outboundMessages, contextSnapshot) {
+    // The answer is complete: the "answer preparing" chip is released here.
+    // A chip that already carries a real status (a Claw P01 stage, a skill
+    // title) is kept, and a failure keeps its own status.
+    window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
     // Chat/Claw separation: the completion belongs to the product that submitted it, even
     // when the user navigated to the other product while it was in flight.
     conversationState.setProduct?.(contextSnapshot.product);
@@ -2186,6 +2205,8 @@
       const paragraph = document.createElement("p");
       paragraph.textContent = result.answer;
       content.appendChild(paragraph);
+      // The durable run answered: the preparing chip is released as well.
+      window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
       conversationState.setProduct?.(product);
       conversationState.commitAssistant(outboundMessages, result.answer);
       conversationState.setProduct?.(conversationProduct);
@@ -2229,7 +2250,10 @@
       status.textContent = window.PadiemClawRecoveryTruth.copy(state, document.documentElement.lang);
       content?.appendChild(status);
       const marker = article.querySelector("[data-runtime-label]");
-      if (marker) marker.textContent = status.textContent;
+      if (marker) {
+        marker.textContent = status.textContent;
+        window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, status.textContent, "status");
+      }
       PadiemChatLifecycle.set(article, state === "waiting_for_approval"
         ? MESSAGE_LIFECYCLE.WAITING_APPROVAL
         : state === "cancelled" ? MESSAGE_LIFECYCLE.CANCELLED : MESSAGE_LIFECYCLE.FAILED);
@@ -2254,7 +2278,12 @@
             return false;
           }
           const marker = article.querySelector("[data-runtime-label]");
-          if (label && marker) marker.textContent = label;
+          // A Claw P01 stage is a real status: it replaces the preparing chip
+          // and is kept when the run completes.
+          if (label && marker) {
+            marker.textContent = label;
+            window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, "status");
+          }
           return false;
         }
         if (!["delta", "done", "error"].includes(frame.event)) return false;
@@ -2418,7 +2447,7 @@
     const controller = new AbortController();
     activeRequestController = controller;
     updateComposer();
-    const article = addAssistantShell(uiT("answer-preparing"));
+    const article = addAssistantShell(uiT("answer-preparing"), "preparing");
     activeRequestArticle = article;
     renderTyping(article);
     try {
