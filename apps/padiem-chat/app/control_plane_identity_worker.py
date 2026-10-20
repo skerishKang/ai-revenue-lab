@@ -292,6 +292,33 @@ class CloudflareControlPlaneIdentityAuthority:
         )
         return self._session_from_wire(wire)
 
+    async def revoke_auth_session(self, *, product_id: str, session_id: str) -> AuthSessionSnapshot:
+        """Revoke exactly one canonical auth session in the Control Plane (#5225).
+
+        The canonical session store is the single revocation authority. The
+        caller names the product and the one session id; the private authority
+        resolves the row, checks the product scope, and materializes the
+        canonical terminal REVOKE transition itself. No other session of the
+        same subject is affected.
+        """
+
+        if not isinstance(product_id, str) or not product_id:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        if not isinstance(session_id, str) or not session_id:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        wire = _closed_session(
+            await self._rpc(
+                "revoke_auth_session",
+                {"product_id": product_id, "session_id": session_id},
+                "session",
+            )
+        )
+        return self._session_from_wire(wire)
+
     async def resolve_current_auth_session(
         self, *, product_id: str, product_user_id: str
     ) -> AuthSessionSnapshot:
