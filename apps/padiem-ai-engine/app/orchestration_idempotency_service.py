@@ -10,8 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from padiem_ai_core import request_fingerprint
-from padiem_ai_core.execution_context import ExecutionContext
+from padiem_ai_core.execution_context import ExecutionContext, request_fingerprint
 
 from app.idempotency_identity import (
     canonical_logical_execution_fingerprint,
