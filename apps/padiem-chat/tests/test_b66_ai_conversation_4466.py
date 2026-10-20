@@ -440,12 +440,19 @@ def test_invalid_persisted_state_is_rejected(mutate):
         normalize_conversation_state(state)
 
 
-def test_history_is_bounded_to_the_last_turns():
+def test_history_keeps_every_turn_and_the_full_text():
+    # #4379: the conversation used to keep only the last eight turns and cut
+    # each message at 2,000 characters, so the next turn answered from a
+    # partial conversation.
     state = empty_state()
     for index in range(12):
         state = append_history(state, f"질문{index}", f"답변{index}")
-    assert len(state["history"]) == 8
+    assert len(state["history"]) == 24
     assert state["history"][-1]["content"] == "답변11"
+    long_text = "가" * 5_000
+    state = append_history(state, long_text, long_text)
+    assert state["history"][-1]["content"] == long_text
+    assert state["history"][-2]["content"] == long_text
 
 
 def test_state_summary_exposes_facts_but_never_the_message_log():

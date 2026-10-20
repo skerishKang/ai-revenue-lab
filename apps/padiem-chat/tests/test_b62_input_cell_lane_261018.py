@@ -120,6 +120,6 @@ def test_the_claw_conversation_clearance_tracks_the_measured_composer() -> None:
         CLAW,
         '.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .conversation',
     )
-    assert "var(--padiem-composer-clearance" in rule, rule
+    assert "padding-bottom: calc(" in rule and "var(--padiem-composer-clearance" in rule, rule
     assert "var(--padiem-visual-keyboard-inset" in rule, rule
     assert "padding-bottom: 218px" not in rule, "a constant inset cannot track a growing composer"

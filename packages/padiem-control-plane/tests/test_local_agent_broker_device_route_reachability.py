@@ -305,6 +305,12 @@ def test_reconcile_route_reaches_canonical_reconciliation_through_the_private_ed
             # #5080: the authenticated Android SAF folder declaration route.
             # It is the same private edge and the same canonical list.
             "/android-profile",
+
+            # #5080: the device-facing one-time enrollment redemption, reachable
+
+            # on the same private edge for the same reason as every other route.
+
+            "/v1/broker/pairings/redeem",
             # #5080: the server-owned broker admission transition. Before this
             # the route existed only on the inner handler, so a real device was
             # refused at the outer edge and could never obtain the admission and

@@ -2,7 +2,22 @@
 
 Static and network-free. Space Bunny survives only as historical identity
 constants, not as a registered model/provider. Padiem has no canonical
-text/vision primary or executable Plus route pending owner decision.
+text/vision primary pending owner decision.
+
+The two product-tier authorities are asserted separately, because they are NOT
+the same surface:
+
+* ``packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py``
+  is the LIVE route contract that Chat, Claw and Control Plane resolve
+  through. After the owner decisions #5009 (Plus/Pro/Max Muse primary) and
+  #5218 (Free Google priority, active-only product tier declaration) it holds
+  one EXECUTABLE route per tier and no legacy successor-pending hold route.
+* ``apps/korean-ai-platform/app/pilot/tier_registry_v1.py`` is the legacy
+  governance projection (the live contract states it is "not the live route").
+  It still carries the #3568 Plus hold and its historical data-only routes.
+
+The previous single shared assertion demanded the legacy hold shape in BOTH
+files, which stopped matching the live contract when #5218 landed.
 """
 
 from __future__ import annotations
@@ -80,15 +95,67 @@ def test_kilo_catalog_fully_retires_space_bunny_to_historical_metadata() -> None
     assert "VISION_PRIMARY_MODEL_ID = None" in canonical_text
 
 
-def test_product_tiers_and_registry_hold_plus_space_bunny() -> None:
-    for path in (PRODUCT_TIERS, TIER_REGISTRY):
-        text = path.read_text(encoding="utf-8")
-        assert 'route_id="plus.hold.v1"' in text
-        assert "model_id=PLUS_HOLD_MODEL_ID" in text
-        assert 'model_id="kilo/stealth-space-bunny-alpha"' in text
-        assert 'upstream_model="stealth/space-bunny-alpha"' in text
-        assert "HOLD_AS_DATA_ONLY" in text
-        assert 'model_id="agnes-ai/agnes-3.0-flash"' in text
+def _live_route_table(text: str) -> str:
+    """The live route table of the canonical product-tier contract.
+
+    Only the route table is scanned for "must not appear" assertions. The
+    retired-model and HOLD-identity constants outside the table may legitimately
+    name a historical model.
+    """
+    marker = "PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = ("
+    assert marker in text, "live product-tier route table not found"
+    return text.split(marker, 1)[1]
+
+
+def test_legacy_tier_registry_keeps_the_plus_hold_and_space_bunny_data_only() -> None:
+    """The legacy governance projection still holds the #3568 Plus posture."""
+    text = TIER_REGISTRY.read_text(encoding="utf-8")
+    assert 'route_id="plus.hold.v1"' in text
+    assert "model_id=PLUS_HOLD_MODEL_ID" in text
+    assert 'model_id="kilo/stealth-space-bunny-alpha"' in text
+    assert 'upstream_model="stealth/space-bunny-alpha"' in text
+    assert "HOLD_AS_DATA_ONLY" in text
+    assert 'model_id="agnes-ai/agnes-3.0-flash"' in text
+
+
+def test_live_product_tier_contract_is_active_only_without_the_legacy_plus_hold() -> None:
+    """The live route contract carries the owner-decided routes only.
+
+    #5009 / #5218: one EXECUTABLE route per tier (Free Google, paid tiers
+    Muse). The successor-pending Plus hold route and the superseded Space
+    Bunny / Agnes routes are not live routes and must not reappear in the
+    route table.
+    """
+    text = PRODUCT_TIERS.read_text(encoding="utf-8")
+
+    # The owner-decided paid-tier route is executable and explicit.
+    assert 'route_id=f"{label.value.split()[-1].lower()}.muse-spark.v1"' in text
+    assert "model_id=MUSE_B14_MODEL_ID" in text
+    assert 'provider_id="opencode-go"' in text
+    assert 'evidence="Owner Plus/Pro/Max Muse primary decision #5009."' in text
+
+    # The historical HOLD identity survives as an identity marker only, and
+    # the data-only status is still part of the contract vocabulary.
+    assert 'PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"' in text
+    assert "HOLD_AS_DATA_ONLY" in text
+
+    # The authority boundary between the two product-tier surfaces is explicit.
+    assert "is a separate legacy governance projection, not the live route" in text
+
+    table = _live_route_table(text)
+    assert 'route_id="plus.hold.v1"' not in table, (
+        "the legacy successor-pending Plus hold route must not be a live route"
+    )
+    assert "model_id=PLUS_HOLD_MODEL_ID" not in table, (
+        "a HOLD identity marker must not be declared as a live route model"
+    )
+    assert "kilo/stealth-space-bunny-alpha" not in table, (
+        "Space Bunny is historical data only and must not be a live route"
+    )
+    assert "stealth/space-bunny-alpha" not in table
+    assert "agnes-ai/agnes-3.0-flash" not in table, (
+        "the superseded Agnes route must not be a live route"
+    )
 
 
 def test_a9_and_a12_smokes_source_the_canonical_pin() -> None:

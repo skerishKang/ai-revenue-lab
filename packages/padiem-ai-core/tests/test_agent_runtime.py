@@ -178,7 +178,12 @@ def test_bounded_agent_runtime_executes_tool_then_completes() -> None:
     assert result.tool_calls == 1
     assert len(result.tool_events) == 1
     assert result.tool_events[0].status is RunStatus.COMPLETED
-    assert driver.contexts[1].tool_results[0].output_copy() == {
+    # #4379: the runtime keeps only a reference; the driver resolves the
+    # original result through the ledger.
+    assert len(driver.contexts[1].tool_result_refs) == 1
+    assert asyncio.run(
+        driver.contexts[1].resolve_tool_result(driver.contexts[1].tool_result_refs[0])
+    ).output_copy() == {
         "result": "found:alpha"
     }
     public = result.to_public_dict()

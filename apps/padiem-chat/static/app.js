@@ -137,6 +137,23 @@
   const projectFileStatus = document.getElementById("projectFileStatus");
   const chatTransport = window.PadiemChatTransport;
   const conversationState = window.PadiemChatConversationState;
+  // Chat/Claw separation: Chat(B62) and Claw(B54) share one conversation panel, but never one
+  // conversation. Each product owns its own rendered turns, its own
+  // conversation id and its own skill. A product switch parks the current
+  // product's turns in memory and restores the other product's turns, and a
+  // product's conversation id is never sent on the other product's request.
+  // Nothing is deleted: the server-owned conversation records stay untouched.
+  const PRODUCT_CHAT = "chat";
+  const PRODUCT_CLAW = "claw";
+  const productViews = {
+    chat: { nodes: [], continuousThread: false },
+    claw: { nodes: [], continuousThread: false },
+  };
+  let conversationProduct = PRODUCT_CHAT;
+  // The Claw artifact index belongs to one Claw conversation only. The owner
+  // conversation id it was last requested for is remembered so a product
+  // switch never repeats the same read.
+  let clawArtifactShownFor = "";
   const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const binaryDocuments = window.PadiemBinaryDocuments;
@@ -312,10 +329,57 @@
     if (tasksEntry) tasksEntry.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsEntry) alertsEntry.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
+  // Chat/Claw separation: park the turns the panel currently shows for the active product.
+  // The nodes stay in memory with their listeners, so the other product's
+  // conversation is restored exactly as it was.
+  function parkProductTurns() {
+    const view = productViews[conversationProduct];
+    view.nodes = Array.from(messageList.children);
+    const panel = messageList.closest(".conversation");
+    view.continuousThread = panel?.dataset.continuousThread === "true";
+  }
+  function restoreProductTurns(product) {
+    const view = productViews[product];
+    messageList.replaceChildren();
+    for (const node of view.nodes) messageList.appendChild(node);
+    const panel = messageList.closest(".conversation");
+    if (panel) {
+      if (view.continuousThread) panel.dataset.continuousThread = "true";
+      else delete panel.dataset.continuousThread;
+    }
+  }
+  // Show the other product's conversation in the shared panel. The parked
+  // product keeps its turns, its conversation id and its saved record; only
+  // the visible panel changes.
+  function switchConversationProduct(nextProduct) {
+    const target = nextProduct === PRODUCT_CLAW ? PRODUCT_CLAW : PRODUCT_CHAT;
+    if (conversationProduct === target) return;
+    parkProductTurns();
+    conversationState.setProduct?.(target);
+    conversationProduct = target;
+    restoreProductTurns(target);
+    const hasTurns = messageList.children.length > 0;
+    messageList.hidden = !hasTurns;
+    emptyState.hidden = hasTurns;
+    // The Claw artifact index belongs to the Claw conversation only.
+    if (target === PRODUCT_CLAW) {
+      const clawConversationId = conversationState.getConversationId(PRODUCT_CLAW);
+      if (clawConversationId && clawArtifactShownFor !== clawConversationId) {
+        clawArtifactShownFor = clawConversationId;
+        conversationArtifactContext?.show?.(clawConversationId);
+      }
+    } else {
+      clawArtifactShownFor = "";
+      conversationArtifactContext?.clear?.();
+    }
+  }
   // The first user turn extends the original landing panel. Older saved
   // threads still open directly on messages instead of replaying the hero.
   function showConversation({ preserveClaw = false, restoreSaved = false } = {}) {
     const conversationPanel = messageList.closest(".conversation");
+    // Chat/Claw separation: a Chat send shows the Chat conversation. The switch happens
+    // before the landing rule is read, so the rule sees the right product.
+    if (!preserveClaw) switchConversationProduct(PRODUCT_CHAT);
     const startingOnLanding = !restoreSaved
       && !emptyState.hidden
       && messageList.childElementCount === 0
@@ -444,7 +508,12 @@
     window.PadiemSharedTooltip?.bind?.(fragment);
     messageList.appendChild(fragment);
   }
-  function addAssistantShell(label) {
+  // The runtime status chip has one owner (message-lifecycle.js). A finished
+  // answer releases the "answer preparing" chip, and a real status (a Claw P01
+  // stage, a failure) is never removed by accident. The calls go through the
+  // global because a single-function harness evaluates this file's function in
+  // a bare scope.
+  function addAssistantShell(label, runtimeState) {
     const fragment = document.getElementById("assistantMessageTemplate").content.cloneNode(true);
     const article = fragment.querySelector(".assistant-message");
     // #3931: identify the product whose conversation is currently rendered.
@@ -452,6 +521,7 @@
     const productLabel = article.querySelector("[data-assistant-product]");
     if (productLabel) productLabel.textContent = shell.dataset.state === "claw" ? "Padiem Claw" : "Padiem Chat";
     article.querySelector("[data-runtime-label]").textContent = label;
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, runtimeState || "preparing");
     messageList.appendChild(fragment);
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
     return article;
@@ -466,7 +536,7 @@
     content.appendChild(typing);
   }
   function renderStoredAssistant(text, stored) {
-    const article = addAssistantShell(uiT("stored-conversation"));
+    const article = addAssistantShell(uiT("stored-conversation"), "status");
     // A restored turn shows a time only when the store actually carries one.
     // Older records have no per-message time, and none is invented for them.
     const storedAt = stored && typeof stored.completed_at === "string" ? stored.completed_at : "";
@@ -494,7 +564,11 @@
     // The repetitive runtime line is removed: only a truthful non-default
     // state (mock preview) or an explicit skill title is shown.
     const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : "";
-    article.querySelector("[data-runtime-label]").textContent = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
+    const answerLabel = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
+    article.querySelector("[data-runtime-label]").textContent = answerLabel;
+    // A completed answer carries no runtime status: the chip is released
+    // instead of staying on "answer preparing".
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, answerLabel, "status");
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
@@ -576,6 +650,9 @@
     }
     retry.addEventListener("click", async () => {
       article.remove();
+      // Chat/Claw separation: the retry replays the product's own request, never the other
+      // product's conversation id.
+      conversationState.setProduct?.(retryContext.product || conversationProduct);
       conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
       renderProjectState();
@@ -592,6 +669,8 @@
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+    // A failure is a real status: the chip stays visible with its own copy.
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error"), "status");
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
@@ -601,6 +680,8 @@
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+    // A failure is a real status: the chip stays visible with its own copy.
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error"), "status");
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
@@ -610,6 +691,7 @@
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = uiT("generation-cancelled");
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("generation-cancelled"), "status");
     content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
@@ -974,20 +1056,22 @@
     try {
       const projectBinary = projectBinaryMediaType(file);
       let payload;
-      if (projectBinary && binaryDocuments && typeof binaryDocuments.read === "function") {
-        const documentFile = await binaryDocuments.read(file);
-        payload = { name: documentFile.name, media_type: documentFile.mediaType, base64: documentFile.base64 };
-      } else if (projectBinary) {
-        throw new Error(attachmentCopy().unsupportedFormat);
+      if (projectBinary) {
+        // Send binary directly; do not materialize a Base64 JSON copy.
+        payload = null;
       } else {
         const documentFile = await readDocumentFile(file);
         payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
       }
-      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const requestOptions = projectBinary
+        ? { method: "POST", headers: {
+            "Content-Type": "application/octet-stream", "Accept": "application/json",
+            "X-Padiem-Filename": encodeURIComponent(file.name),
+            "X-Padiem-Media-Type": projectBinary,
+          }, body: file }
+        : { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(payload) };
+      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, requestOptions);
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.file) {
         const message = data && data.error && typeof data.error.message === "string" ? data.error.message : uiT("project-file-save-failed");
@@ -1020,7 +1104,7 @@
     }
   }
 
-  function resetConversation(preserveProject = true) {
+  function resetConversationView(preserveProject = true) {
     conversationEpoch += 1;
     lastCompletedAnswerRequest = null;
     if (activeRequestController) {
@@ -1030,6 +1114,10 @@
       activeRequestArticle = null;
     }
     inFlight = false;
+    // Chat/Claw separation: a new conversation resets the visible product only. The other
+    // product's conversation stays exactly as it was and is restored when
+    // the user returns to it. Server-owned records are never deleted here.
+    conversationState.setProduct?.(conversationProduct);
     conversationState.reset();
     if (!preserveProject) {
       activeProject = null;
@@ -1039,6 +1127,9 @@
     messageList.replaceChildren();
     messageList.hidden = true;
     delete messageList.closest(".conversation")?.dataset.continuousThread;
+    productViews[conversationProduct].nodes = [];
+    productViews[conversationProduct].continuousThread = false;
+    clawArtifactShownFor = "";
     conversationArtifactContext?.clear?.();
     emptyState.hidden = false;
     shell.dataset.state = "home";
@@ -1055,18 +1146,35 @@
     closeSidebar();
     input.focus();
   }
+  // Chat/Claw separation: the sidebar Chat entry returns to the Chat conversation while the
+  // user is in the Claw workspace, so the Chat conversation is restored
+  // instead of being lost. Inside the Chat state the same entry still starts
+  // a brand-new Chat conversation. Every other caller resets the view
+  // directly, because a sign-out, a project change or a delete must clear
+  // the conversation no matter which product is on screen.
+  function resetConversation(preserveProject = true) {
+    if (conversationProduct === PRODUCT_CLAW && shell.dataset.state === "claw") {
+      switchConversationProduct(PRODUCT_CHAT);
+      shell.dataset.state = "chat";
+      setNavActive();
+      closeSidebar();
+      input.focus();
+      return;
+    }
+    resetConversationView(preserveProject);
+  }
   function selectProject(project) {
     if (!projectsReady || !project || inFlight) return;
     activeProject = project;
     activeProjectFileCount = 0;
-    resetConversation(true);
+    resetConversationView(true);
     refreshActiveProjectFileCount();
   }
   function exitProject() {
     if (inFlight) return;
     activeProject = null;
     activeProjectFileCount = 0;
-    resetConversation(false);
+    resetConversationView(false);
   }
   function openProjectDialog(project = null) {
     if (!projectsReady || !authState.authenticated || inFlight) return;
@@ -1857,7 +1965,7 @@
         throw new Error(message);
       }
       const deletedActiveConversation = conversationState.getConversationId() === id;
-      if (deletedActiveConversation) resetConversation(true);
+      if (deletedActiveConversation) resetConversationView(true);
       await loadRecentConversations();
       if (deletedActiveConversation) {
         input.focus();
@@ -1894,23 +2002,34 @@
       const restoredProject = savedProjectId ? await ensureProject(savedProjectId) : null;
       if (savedProjectId && !restoredProject) throw new Error(uiT("conversation-project-load-failed"));
       clearAttachment();
+      // Chat/Claw separation: the saved thread is loaded into the product that owns it. The
+      // other product's conversation is parked, never deleted, and its
+      // conversation id is never reused for this thread.
+      const isVerifiedClawThread = clawConversationIds.has(data.conversation.id);
+      const targetProduct = isVerifiedClawThread ? PRODUCT_CLAW : PRODUCT_CHAT;
+      parkProductTurns();
       messageList.replaceChildren();
-      conversationState.reset();
-      conversationState.setConversationId(data.conversation.id);
+      messageList.hidden = true;
+      conversationState.resetProduct?.(targetProduct);
+      conversationState.setProduct?.(targetProduct);
+      conversationProduct = targetProduct;
+      conversationState.setConversationId(data.conversation.id, targetProduct);
       activeProject = restoredProject;
       activeProjectFileCount = 0;
       renderProjectState();
       if (activeProject) refreshActiveProjectFileCount();
-      const isVerifiedClawThread = clawConversationIds.has(data.conversation.id);
       if (isVerifiedClawThread) openClawWorkspace();
       showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
       conversationArtifactContext?.show?.(data.conversation.id);
+      if (isVerifiedClawThread) clawArtifactShownFor = data.conversation.id;
       data.conversation.messages.forEach((item) => {
         if (!item || typeof item.content !== "string") return;
         if (item.role === "user") addUserMessage(item.content, null, { restored: true });
         if (item.role === "assistant") renderStoredAssistant(item.content, item);
-        if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content });
+        if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content }, targetProduct);
       });
+      // The rendered turns belong to the product that owns this thread.
+      productViews[targetProduct].nodes = Array.from(messageList.children);
       // A restored conversation opens on its newest turn with follow resumed,
       // on the same shared Chat/Claw control.
       window.__padiemConversationMotion?.resume?.();
@@ -1986,8 +2105,12 @@
   async function requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, signal) {
     const data = await chatTransport.requestCompleted(payload, signal);
     renderAnswer(article, data);
+    // Chat/Claw separation: the completion belongs to the product that submitted it, even
+    // when the user navigated to the other product while it was in flight.
+    conversationState.setProduct?.(contextSnapshot.product);
     conversationState.commitAssistant(outboundMessages, data.answer);
     if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
+    conversationState.setProduct?.(conversationProduct);
     if (typeof data.project_id === "string") {
       const resolvedProject = projectById(data.project_id) || contextSnapshot.project;
       if (resolvedProject) activeProject = resolvedProject;
@@ -2002,8 +2125,16 @@
   }
 
   function applyStreamDone(article, data, answer, outboundMessages, contextSnapshot) {
+    // The answer is complete: the "answer preparing" chip is released here.
+    // A chip that already carries a real status (a Claw P01 stage, a skill
+    // title) is kept, and a failure keeps its own status.
+    window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
+    // Chat/Claw separation: the completion belongs to the product that submitted it, even
+    // when the user navigated to the other product while it was in flight.
+    conversationState.setProduct?.(contextSnapshot.product);
     conversationState.commitAssistant(outboundMessages, answer);
     if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
+    conversationState.setProduct?.(conversationProduct);
     // #4469: render the terminal sources the backend already validated and sent
     // (https url + title + retrieved_at). Nothing here trusts or re-requests
     // them; the bounded renderer in claw-answer-sources.js stays the single
@@ -2041,17 +2172,19 @@
 
   // Transport completion does not imply a completed durable PC run.
   const resolvedPcRuns = new Set();
-  async function waitForAcceptedPcRun(article, handle, outboundMessages, signal) {
+  async function waitForAcceptedPcRun(article, handle, outboundMessages, signal, product) {
     const { run_id: runId, conversation_id: conversationId } = handle;
     const owner = authState.user;
     if (!runId || !conversationId) return;
+    // Chat/Claw separation: the pending run belongs to the product that submitted it, so
+    // the guard compares that product's own conversation id.
     for (;;) {
       if (signal.aborted || !article.isConnected || authState.authenticated !== true
           || authState.user !== owner
-          || conversationState.getConversationId?.() !== conversationId) return;
+          || conversationState.getConversationId?.(product) !== conversationId) return;
       await new Promise((resolve) => window.setTimeout(resolve, 2000));
       if (signal.aborted || !article.isConnected || authState.user !== owner
-          || conversationState.getConversationId?.() !== conversationId) return;
+          || conversationState.getConversationId?.(product) !== conversationId) return;
       const response = await fetch(
         "/api/claw/runs/" + encodeURIComponent(runId) + "/pending-result",
         { headers: { Accept: "application/json" }, cache: "no-store", signal }
@@ -2060,7 +2193,7 @@
       const data = await response.json();
       const result = data?.result;
       if (!result || result.run_id !== runId || result.conversation_id !== conversationId) return;
-      if (authState.user !== owner || conversationState.getConversationId?.() !== conversationId
+      if (authState.user !== owner || conversationState.getConversationId?.(product) !== conversationId
           || !article.isConnected || signal.aborted) return;
       if (result.status === "pending" || result.status === "running") continue;
       if (result.status !== "completed" || typeof result.answer !== "string") {
@@ -2074,7 +2207,11 @@
       const paragraph = document.createElement("p");
       paragraph.textContent = result.answer;
       content.appendChild(paragraph);
+      // The durable run answered: the preparing chip is released as well.
+      window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
+      conversationState.setProduct?.(product);
       conversationState.commitAssistant(outboundMessages, result.answer);
+      conversationState.setProduct?.(conversationProduct);
       PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
       if (authState.authenticated) loadRecentConversations();
       return;
@@ -2115,7 +2252,10 @@
       status.textContent = window.PadiemClawRecoveryTruth.copy(state, document.documentElement.lang);
       content?.appendChild(status);
       const marker = article.querySelector("[data-runtime-label]");
-      if (marker) marker.textContent = status.textContent;
+      if (marker) {
+        marker.textContent = status.textContent;
+        window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, status.textContent, "status");
+      }
       PadiemChatLifecycle.set(article, state === "waiting_for_approval"
         ? MESSAGE_LIFECYCLE.WAITING_APPROVAL
         : state === "cancelled" ? MESSAGE_LIFECYCLE.CANCELLED : MESSAGE_LIFECYCLE.FAILED);
@@ -2140,7 +2280,12 @@
             return false;
           }
           const marker = article.querySelector("[data-runtime-label]");
-          if (label && marker) marker.textContent = label;
+          // A Claw P01 stage is a real status: it replaces the preparing chip
+          // and is kept when the run completes.
+          if (label && marker) {
+            marker.textContent = label;
+            window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, "status");
+          }
           return false;
         }
         if (!["delta", "done", "error"].includes(frame.event)) return false;
@@ -2198,9 +2343,9 @@
             && typeof data.run_id === "string"
             && typeof data.conversation_id === "string") {
           const pendingConversationId = data.conversation_id;
-          conversationState.setConversationId(pendingConversationId);
+          conversationState.setConversationId(pendingConversationId, contextSnapshot.product);
           PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
-          void waitForAcceptedPcRun(article, data, outboundMessages, signal)
+          void waitForAcceptedPcRun(article, data, outboundMessages, signal, contextSnapshot.product)
             .catch(() => { if (article.isConnected && !signal.aborted) {
               PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
             } });
@@ -2262,15 +2407,13 @@
     setNote(uiT("answer-cancelled-note"), "error");
   }
 
-  // #4317: product-capabilities.js is loaded AFTER app.js. Initialise the
-  // browser's ordinary Chat tier to the universally available signed-in Free
-  // lane once all scripts are ready; preserve an explicit tier choice afterwards.
-  // This updates the visible mode selector but never sends a model request.
-  window.addEventListener("load", () => {
-    if (window.PadiemTierSelection?.get?.() === "plus") {
-      window.PadiemTierSelection.set("free");
-    }
-  }, { once: true });
+  // #4317: product-capabilities.js is loaded AFTER app.js and owns the tier
+  // state. The universally available signed-in Free lane stays the default for
+  // an account that never chose a tier.
+  // #5222: an account that DID choose a tier keeps that choice across a
+  // reload, so this page must not reset the selection to Free behind the
+  // account's back. The restored value is always re-validated by the server
+  // (member grade + administrator gate) before it is used.
 
   function selectedProductTier() {
     // Both Chat and the shared Claw first-use composer honor the visible
@@ -2306,10 +2449,14 @@
     const controller = new AbortController();
     activeRequestController = controller;
     updateComposer();
-    const article = addAssistantShell(uiT("answer-preparing"));
+    const article = addAssistantShell(uiT("answer-preparing"), "preparing");
     activeRequestArticle = article;
     renderTyping(article);
     try {
+      // #5222: wait for the account's tier restore to settle before the tier
+      // is read, so a request never leaves with a tier that was not verified
+      // for this account yet.
+      await window.PadiemTierSelection?.ready?.();
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
       // #4745: retain the exact user-turn claim for a manual retry. A new
       // submitPrompt receives a new contextSnapshot, so a separate identical
@@ -2465,13 +2612,19 @@
     const prompt = text.trim();
     if (!prompt || inFlight) return;
     if (!requireSessionForModelUse()) return;
-    if (selectedSkill) conversationState.setSkill(selectedSkill);
-    const attachmentSnapshot = selectedAttachment;
-    const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
     // #3539: snapshot the canonical lane before changing presentation;
     // #3931: keep a general Claw request in the same Claw conversation.
     // Neither UI state nor the selected model ID may authorize fallback.
     const clawGeneralRequest = clawGeneralRequestActive();
+    // Chat/Claw separation: the lane decides the product. The conversation id, the turn
+    // store and the skill all come from that product's own slot, so a Claw
+    // request never carries the Chat conversation id and a Chat request never
+    // carries the Claw one. This is an immutable submit-time snapshot.
+    const product = clawGeneralRequest ? PRODUCT_CLAW : PRODUCT_CHAT;
+    conversationState.setProduct?.(product);
+    if (selectedSkill) conversationState.setSkill(selectedSkill);
+    const attachmentSnapshot = selectedAttachment;
+    const contextSnapshot = { product, conversationId: conversationState.getConversationId(product), project: activeProject };
     // PADIEM Custom is Chat-only and text-only. Refuse here, with the typed
     // prompt preserved, instead of letting the server reject a mixed request.
     const customSelected = Boolean(window.PadiemCustomSelection?.get?.());
@@ -2619,7 +2772,7 @@
     try {
       await fetch("/api/auth/logout", { method: "POST", headers: { "Accept": "application/json" } });
     } finally {
-      resetConversation(false);
+      resetConversationView(false);
       clearProjectsUI();
       await loadAuthStatus();
     }
@@ -3500,6 +3653,9 @@
   function openClawInbox(kind) {
     if (!clawWorkspace || !clawInbox || !authState.authenticated) return;
     shell.dataset.state = "claw";
+    // Chat/Claw separation: the Claw inbox is a Claw view. The Claw conversation is shown
+    // again, the Chat conversation stays parked.
+    switchConversationProduct(PRODUCT_CLAW);
     clawWorkspace.dataset.view = "inbox";
     clawWorkspace.dataset.inboxKind = kind;
     clawInbox.hidden = false;
@@ -4048,10 +4204,13 @@
     // explicitly enters it via openClawManual.
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
+    // Chat/Claw separation: Claw shows the Claw conversation. The Chat turns are parked and
+    // restored when the user returns to Chat.
+    switchConversationProduct(PRODUCT_CLAW);
     clawWorkspace.dataset.view = "general";
     // The shared Chat first-use hero also introduces Claw when the
     // existing conversation has not started. Do not reset live messages.
-    if (messageList.hidden && !messageList.hasChildNodes()) emptyState.hidden = false;
+    if (messageList.hidden && messageList.children.length === 0) emptyState.hidden = false;
     delete clawWorkspace.dataset.inboxKind;
     if (clawInbox) clawInbox.hidden = true;
     if (clawAutomation) clawAutomation.hidden = true;
@@ -4069,6 +4228,8 @@
     // form and its workflow chrome are never shown by default.
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
+    // Chat/Claw separation: the document workflow belongs to the Claw conversation.
+    switchConversationProduct(PRODUCT_CLAW);
     clawWorkspace.dataset.view = "manual";
     delete clawWorkspace.dataset.inboxKind;
     if (clawInbox) clawInbox.hidden = true;
@@ -5077,7 +5238,7 @@
         // Server-echoed canonical handle only (#2916): reuse it as the single
         // session authority; never build a second id here.
         if (typeof result.conversation_id === "string" && result.conversation_id) {
-          conversationState.setConversationId(result.conversation_id);
+          conversationState.setConversationId(result.conversation_id, PRODUCT_CLAW);
         }
         if (
           result.status === "waiting_approval"

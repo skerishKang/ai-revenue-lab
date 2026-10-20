@@ -264,7 +264,6 @@ def test_legacy_guided_slot_remains_readable_without_transcript(source):
 @pytest.mark.parametrize("bad", [
     [{"role": "admin", "content": "x"}],
     [{"role": "user", "content": "<script>"}] * 81,
-    [{"role": "assistant", "content": "x" * 9001}],
     [{"role": "user", "content": ""}],
     [{"role": "assistant", "content": "valid", "owner_id": B}],
 ])
@@ -272,6 +271,21 @@ def test_bounded_transcript_strict_no_unknown_fields(source, bad):
     payload = sample()
     payload.update(conversationId="gdt_" + "a" * 32, transcript=bad)
     assert _client(source[1]).put("/api/b66/guided-draft", json=payload).status_code in (400, 413)
+
+
+def test_guided_transcript_keeps_a_long_assistant_answer(source):
+    # #4379: a transcript message longer than 9,000 characters used to be
+    # refused, so a long assistant answer failed the whole guided draft.
+    long_text = "가" * 20_000
+    payload = sample()
+    payload.update(
+        conversationId="gdt_" + "a" * 32,
+        transcript=[{"role": "assistant", "content": long_text}],
+    )
+    response = _client(source[1]).put("/api/b66/guided-draft", json=payload)
+    assert response.status_code == 200
+    saved = _client(source[1]).get("/api/b66/guided-draft").json()["state"]
+    assert saved["transcript"][0]["content"] == long_text
 
 
 def test_guided_transcript_id_scope_fails_closed(source):

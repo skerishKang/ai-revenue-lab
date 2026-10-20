@@ -130,6 +130,8 @@ async def run_mobile(page: Page) -> dict:
         image_path = OUT_DIR / image_name
         if not image_path.is_file() or image_path.stat().st_size == 0:
             raise AssertionError(f'mobile screenshot evidence missing or empty: {image_name}')
+        if image_path.read_bytes()[:8] != bytes.fromhex('89504e470d0a1a0a'):
+            raise AssertionError(f'mobile screenshot evidence is not a PNG: {image_name}')
 
     if unexpected_hosts:
         raise AssertionError(f"unexpected external browser hosts: {sorted(unexpected_hosts)}")

@@ -23,6 +23,7 @@ from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
 from .agent_planner import AgentPlan, AgentPlanStep, validate_agent_plan
 from .agent_profile_adapter import CompiledAgentProfile
 from .agent_progress import AgentProgressTracker
+from .agent_tool_result_ledger import ToolResultLedger, ToolResultRef
 from .agent_runtime import (
     AgentRunRequest,
     AgentRunResult,
@@ -67,8 +68,12 @@ class PlanBackedStepDriver:
         step_idx = context.step_index - 1
         if step_idx >= len(self._plan.steps):
             # All plan steps completed; synthesize final answer from results
-            if context.tool_results:
-                last_res = context.tool_results[-1]
+            if context.tool_result_refs:
+                # #4379: the driver reads the result it needs through its
+                # authorized reference instead of receiving every payload.
+                last_res = await context.resolve_tool_result(
+                    context.tool_result_refs[-1]
+                )
                 ans = f"Plan completed. Tool '{last_res.tool_id}' finished with status: {last_res.event.status.value}."
             else:
                 ans = "Plan completed successfully."
@@ -117,12 +122,14 @@ class AgentPlanExecutor:
         tool_arguments: Mapping[str, Mapping[str, Any]] | None = None,
         initial_step_index: int = 1,
         initial_tool_results: tuple[ToolExecutionResult, ...] = (),
+        initial_tool_result_refs: tuple[ToolResultRef, ...] = (),
         initial_tool_events: tuple[ToolEvent, ...] = (),
         trace_id: str | None = None,
         plan_id: str | None = None,
         run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
         checkpoint_hook: Callable[[int], bool | Awaitable[bool]] | None = None,
         progress: AgentProgressTracker | None = None,
+        result_ledger: ToolResultLedger | None = None,
     ) -> AgentRunResult:
         # 1. Authoritative plan validation against compiled profile
         validated_plan = validate_agent_plan(
@@ -146,6 +153,7 @@ class AgentPlanExecutor:
             run_guard=run_guard,
             checkpoint_hook=checkpoint_hook,
             progress=progress,
+            result_ledger=result_ledger,
         )
 
         # 4. Execute bounded agent loop
@@ -157,6 +165,7 @@ class AgentPlanExecutor:
             run_id=run_id,
             initial_step_index=initial_step_index,
             initial_tool_results=initial_tool_results,
+            initial_tool_result_refs=initial_tool_result_refs,
             initial_tool_events=initial_tool_events,
             trace_id=trace_id,
             plan_id=plan_id,

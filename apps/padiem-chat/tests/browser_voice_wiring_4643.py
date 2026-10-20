@@ -76,8 +76,7 @@ def run(port: int) -> dict:
                 # init segment. The provider cannot decode a bare fragment.
                 prefix = ""
                 try:
-                    body = json.loads(route.request.post_data or "{}")
-                    raw = base64.b64decode(body.get("audio_base64") or "")
+                    raw = route.request.post_data_buffer
                     prefix = raw[:4].decode("latin-1")
                 except Exception:
                     prefix = ""

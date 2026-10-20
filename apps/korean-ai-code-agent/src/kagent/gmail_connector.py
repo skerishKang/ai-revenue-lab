@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import base64
 import binascii
-import hashlib
 import json
 from email.header import decode_header, make_header
 from email.utils import getaddresses, parseaddr
@@ -11,7 +10,6 @@ from typing import Any, Protocol
 from urllib.parse import quote
 
 from .connector_platform import (
-    MAX_CONNECTOR_RESULT_CHARS,
     ConnectorAuthKind,
     ConnectorCallResult,
     ConnectorCatalogueEntry,
@@ -386,24 +384,15 @@ def _project_message(
 
 
 def _json_connector_result(envelope: dict[str, Any], *, is_error: bool = False) -> ConnectorCallResult:
+    """Return the full connector envelope.
+
+    #4379: an envelope larger than the connector result ceiling used to be
+    replaced by a digest summary, so the whole mail content was lost even
+    though the provider call had already succeeded. The envelope now reaches
+    the caller exactly as projected.
+    """
     text = json.dumps(envelope, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    if len(text) <= MAX_CONNECTOR_RESULT_CHARS:
-        return bounded_connector_result(text, is_error=is_error)
-    digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
-    compact = {
-        "provider": "gmail",
-        "operation": envelope.get("operation"),
-        "binding_ref": envelope.get("binding_ref"),
-        "result_status": "REVIEW_REQUIRED",
-        "reason": "bounded Gmail projection exceeded the connector result envelope",
-        "result_sha256": digest,
-        "raw_credentials_present": False,
-        "mail_content_trusted": False,
-    }
-    return bounded_connector_result(
-        json.dumps(compact, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
-        is_error=is_error,
-    )
+    return bounded_connector_result(text, is_error=is_error)
 
 
 class GmailReadTransport:

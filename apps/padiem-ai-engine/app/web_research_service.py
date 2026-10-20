@@ -107,7 +107,7 @@ def _judge_profile(model_policy: Mapping[str, Any]) -> AgentProfile:
         system_instruction=_JUDGE_INSTRUCTION,
         task_type="general",
         optimize_for="balanced",
-        max_tokens=256,
+        max_tokens=None,
         allowed_tools=(),
         required_capabilities=(),
         model_policy=dict(model_policy),
@@ -408,7 +408,7 @@ class WebResearchEngineService:
                 ),
                 task_type="general",
                 optimize_for="balanced",
-                max_tokens=240,
+                max_tokens=None,
                 allowed_tools=(),
                 required_capabilities=(),
                 # The planner must use the request's server-validated explicit

@@ -100,8 +100,22 @@ def test_live_stream_active_beam_propagates_provider_error_and_refunds():
             calls += 1
             return httpx.Response(500, content=b"upstream failure")
 
+        class ServiceTransport:
+            async def post_json(self, url, payload):
+                nonlocal calls
+                calls += 1
+                return 503, b'{"error":{"code":"upstream_error"}}'
+
+        # Both transports are supplied on purpose. The Free Beam route
+        # (opencode-go/beam-free) completes first and re-emits the answer as a
+        # single delta, while any other Free route streams. Whichever branch
+        # the current route table selects, the upstream is called exactly once
+        # and its failure must surface as the same public code. The assertion
+        # therefore pins the product contract instead of depending on the route
+        # state or on a lookup of the non-existent b14.internal host.
         client = DispatchAwareB14Client(
             live_settings(),
+            service_transport=ServiceTransport(),
             stream_transport=httpx.MockTransport(handler),
             require_service_binding=True,
         )
@@ -111,8 +125,12 @@ def test_live_stream_active_beam_propagates_provider_error_and_refunds():
                 pass
 
         assert info.value.status_code == 502
-        assert info.value.code == "upstream_unavailable"
-        assert calls == 0
+        # A 5xx upstream is classified upstream_server_error and surfaces as
+        # the public provider_server_error, exactly like the completed lane
+        # above and like the streaming taxonomy asserted in
+        # test_2550_stream_fail_taxonomy.py.
+        assert info.value.code == "provider_server_error"
+        assert calls == 1
         assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False
 

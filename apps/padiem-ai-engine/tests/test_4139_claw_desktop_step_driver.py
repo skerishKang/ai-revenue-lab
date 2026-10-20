@@ -4,6 +4,10 @@ from types import SimpleNamespace
 
 import pytest
 
+from padiem_ai_core.agent_runtime import AgentStepContext
+from padiem_ai_core.contracts import RunStatus, ToolEvent
+from padiem_ai_core.tool_runtime import ToolExecutionResult
+
 from app.claw_desktop_step_driver import (
     DesktopStepContractError, StructuredDesktopStepDriver,
 )
@@ -19,16 +23,16 @@ def test_model_selects_next_tool_from_real_jpeg_observation():
         assert kwargs["observations"][0]["image_jpeg"].startswith(b"\xff\xd8\xff")
         return {"action": "tool", "tool_id": "claw.desktop.click",
                 "arguments": {"x": 42, "y": 80}}
-    result = SimpleNamespace(
+    result = ToolExecutionResult(
         tool_id="claw.desktop.capture",
-        output_copy=lambda: {"capture_receipt": "owned-capture"},
-        event=SimpleNamespace(to_public_dict=lambda: {"status": "succeeded"}),
+        output={"capture_receipt": "owned-capture"},
+        event=ToolEvent(tool_id="claw.desktop.capture", status=RunStatus.COMPLETED),
     )
     driver = StructuredDesktopStepDriver(
         select_step=model, read_capture=image_loader,
         allowed_tool_ids=frozenset({"claw.desktop.click"}),
     )
-    context = SimpleNamespace(tool_results=(result,))
+    context = AgentStepContext.with_results(run_id="run_4139", step_index=1, input_text="x", results=(result,))
     choice = asyncio.run(driver.next_step(context, compiled_profile=None))
     assert choice.invocation.tool_id == "claw.desktop.click"
     assert choice.invocation.arguments_copy() == {"x": 42, "y": 80}
@@ -42,17 +46,17 @@ def test_unowned_capture_does_not_invoke_model_or_tool():
     async def model(**kwargs):
         calls.append(1)
         return {"action": "complete", "answer": "done"}
-    result = SimpleNamespace(
+    result = ToolExecutionResult(
         tool_id="claw.desktop.capture",
-        output_copy=lambda: {"capture_receipt": "foreign"},
-        event=SimpleNamespace(to_public_dict=lambda: {}),
+        output={"capture_receipt": "foreign"},
+        event=ToolEvent(tool_id="claw.desktop.capture", status=RunStatus.COMPLETED),
     )
     driver = StructuredDesktopStepDriver(
         select_step=model, read_capture=image_loader,
         allowed_tool_ids=frozenset({"claw.desktop.click"}),
     )
     with pytest.raises(DesktopStepContractError, match="unavailable"):
-        asyncio.run(driver.next_step(SimpleNamespace(tool_results=(result,)), None))
+        asyncio.run(driver.next_step(AgentStepContext.with_results(run_id="run_4139", step_index=1, input_text="x", results=(result,)), None))
     assert calls == []
 
 
@@ -223,23 +227,25 @@ def test_production_desktop_driver_feeds_jpeg_to_b14_and_selects_pc_input():
         request_factory=Request, secret="s" * 32,
         model_id="existing/registered",
     )
-    result = SimpleNamespace(
+    result = ToolExecutionResult(
         tool_id="claw.desktop.capture",
-        output_copy=lambda: {
+        output={
             "capture_receipt": "dispatch_current",
             "dispatch_id": "dispatch_current",
             "result_sha256": digest,
             "run_id": "run_current",
             "execution_confirmed": True,
         },
-        event=SimpleNamespace(to_public_dict=lambda: {"status": "succeeded"}),
+        event=ToolEvent(tool_id="claw.desktop.capture", status=RunStatus.COMPLETED),
     )
     token = _ENGINE_DESKTOP_OWNER.set(("subject_current", "run_current"))
     try:
         decision = asyncio.run(driver.next_step(
-            SimpleNamespace(
-                input_text="Open Notepad", tool_results=(result,),
-            ), compiled_profile=None,
+            AgentStepContext.with_results(
+                run_id="run_4139", step_index=1,
+                input_text="Open Notepad", results=(result,),
+            ),
+            compiled_profile=None,
         ))
     finally:
         _ENGINE_DESKTOP_OWNER.reset(token)

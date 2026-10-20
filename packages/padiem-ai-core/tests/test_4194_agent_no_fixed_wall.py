@@ -338,8 +338,10 @@ def test_default_budget_has_no_total_ceiling_and_validates_an_opt_in_one() -> No
     assert AgentExecutionBudget().max_total_seconds is None
     assert AgentExecutionBudget().max_wall_seconds == 900
     assert AgentExecutionBudget(max_total_seconds=86_400).max_total_seconds == 86_400
+    # #4379: an opt-in total ceiling has no PADIEM maximum either.
+    assert AgentExecutionBudget(max_total_seconds=2_000_000).max_total_seconds == 2_000_000
 
-    for invalid in (0, -1, 86_401, True, 1.5):
+    for invalid in (0, -1, True, 1.5):
         with pytest.raises(AgentDefinitionError):
             AgentExecutionBudget(max_total_seconds=invalid)
 

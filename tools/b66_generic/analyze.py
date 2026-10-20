@@ -19,6 +19,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import mmap
+import tempfile
 import re
 import stat
 import sys
@@ -91,11 +93,11 @@ def _resolve_mc_children(container) -> list:
 # The analyzer cannot import Core directly: ``test_b66_generic_compile.py`` runs this file as a bare
 # script (``[sys.executable, "…/analyze.py", …]``) with no install step, so a hard Core import would
 # be an undeclared runtime dependency for a tool that is deliberately stdlib-only.
-MAX_BINARY_DOCUMENT_BYTES = 2 * 1024 * 1024          # Core MAX_BINARY_DOCUMENT_BYTES
+MAX_BINARY_DOCUMENT_BYTES = 1 * 1024 * 1024 * 1024          # B66 large-file policy, Core may serve smaller in-memory routes
 MAX_OOXML_ENTRIES = 256                              # Core MAX_OOXML_ENTRIES
 MAX_OOXML_MEMBER_NAME_CHARS = 255                    # Core MAX_OOXML_MEMBER_NAME_CHARS
-MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024  # Core MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES = 8 * 1024 * 1024  # Core MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES
+MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024 * 1024  # B66 per-member cap equals total disk intake budget
+MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES = 1 * 1024 * 1024 * 1024  # B66 total expanded bytes budget
 #: ``FileIntakePolicy.max_expansion_ratio``. A declared uncompressed size is a claim, not a bound, so
 #: the compressed -> uncompressed ratio is capped independently of the byte ceilings above.
 MAX_EXPANSION_RATIO = 200.0
@@ -192,9 +194,11 @@ class BoundedOOXML:
     read is an already-admitted lookup rather than a fresh act of trust.
     """
 
-    def __init__(self, archive, infos_by_name):
+    def __init__(self, archive, infos_by_name, *, backing=None, mapped=None):
         self._archive = archive
         self._infos = infos_by_name
+        self._backing = backing
+        self._mapped = mapped
 
     def __enter__(self):
         return self
@@ -203,7 +207,13 @@ class BoundedOOXML:
         self.close()
 
     def close(self) -> None:
-        self._archive.close()
+        try:
+            self._archive.close()
+        finally:
+            if self._mapped is not None:
+                self._mapped.close()
+            if self._backing is not None:
+                self._backing.close()
 
     def names(self) -> list:
         return sorted(self._infos)
@@ -253,30 +263,38 @@ def open_bounded_ooxml(path: Path) -> tuple:
     if not size or size > MAX_BINARY_DOCUMENT_BYTES:
         raise ArchivePolicyError("ooxml_archive_size", "OOXML archive size is out of bounds.")
 
-    with path.open("rb") as handle:
-        # Read in chunks and stop past the ceiling: ``handle.read(bound + 1)`` would pre-allocate the
-        # whole 2 MiB for a workbook that is a few kilobytes, which is exactly the kind of silent
-        # pre-payment a bound is supposed to prevent.
-        chunks = []
-        seen = 0
-        while seen <= MAX_BINARY_DOCUMENT_BYTES:
-            want = min(64 * 1024, MAX_BINARY_DOCUMENT_BYTES + 1 - seen)
-            part = handle.read(want)
-            if not part:
-                break
-            chunks.append(part)
-            seen += len(part)
-        raw = b"".join(chunks)
-    if len(raw) > MAX_BINARY_DOCUMENT_BYTES:
-        raise ArchivePolicyError("ooxml_archive_size", "OOXML archive size is out of bounds.")
-
-    # Admit and analyze the *same* bounded bytes used for source.sha256/source.size.
-    # Re-opening the path allows a concurrently replaced workbook to bypass the
-    # raw-size admission gate or make the evidence hash describe different bytes.
+    # Spool the exact source snapshot to disk rather than preloading it into RAM.
+    # The mmap is read-only and keeps source hash and parsed ZIP bytes identical.
+    backing = tempfile.TemporaryFile(mode="w+b")
     try:
-        archive = zipfile.ZipFile(BytesIO(raw))
-    except (zipfile.BadZipFile, OSError, ValueError) as exc:
-        raise ArchivePolicyError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
+        with path.open("rb") as handle:
+            seen = 0
+            while seen <= MAX_BINARY_DOCUMENT_BYTES:
+                want = min(64 * 1024, MAX_BINARY_DOCUMENT_BYTES + 1 - seen)
+                part = handle.read(want)
+                if not part:
+                    break
+                backing.write(part)
+                seen += len(part)
+        if seen > MAX_BINARY_DOCUMENT_BYTES:
+            raise ArchivePolicyError("ooxml_archive_size", "OOXML archive size is out of bounds.")
+        backing.flush()
+        mapped = mmap.mmap(backing.fileno(), 0, access=mmap.ACCESS_READ)
+        try:
+            archive = zipfile.ZipFile(backing)
+        except (zipfile.BadZipFile, OSError, ValueError) as exc:
+            mapped.close()
+            raise ArchivePolicyError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
+    except BaseException:
+        backing.close()
+        raise
+
+    def close_archive_resources():
+        try:
+            archive.close()
+        finally:
+            mapped.close()
+            backing.close()
 
     try:
         infos = archive.infolist()
@@ -335,20 +353,20 @@ def open_bounded_ooxml(path: Path) -> tuple:
                     name,
                 )
     except ArchivePolicyError:
-        archive.close()
+        close_archive_resources()
         raise
     except (zipfile.BadZipFile, OSError, ValueError, RuntimeError) as exc:
-        archive.close()
+        close_archive_resources()
         raise ArchivePolicyError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
 
     # Checked after the walk so it sees the whole directory, exactly as KAgent's budget does.
     if aggregate_expansion_violation(total_uncompressed, total_compressed):
-        archive.close()
+        close_archive_resources()
         raise ArchivePolicyError(
             "ooxml_expansion_ratio", "OOXML archive aggregate expansion ratio exceeds the limit."
         )
 
-    return raw, BoundedOOXML(archive, infos_by_name)
+    return mapped, BoundedOOXML(archive, infos_by_name, backing=backing, mapped=mapped)
 
 
 # ────────────────────────────── XLSX ──────────────────────────────

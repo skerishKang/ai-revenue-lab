@@ -18,8 +18,9 @@ _TOOL_ID_RE = re.compile(r"^tool:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0
 _CONNECTOR_ID_RE = re.compile(r"^connector:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$")
 _SAFE_TAG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 MAX_EVENT_METADATA_KEYS = 16
+# #4379: a tool event metadata string is no longer refused because of its
+# length. The key count stays bounded; the value is not shortened or dropped.
 MAX_EVENT_STRING_CHARS = 1_000
-
 
 class ToolLifecycleError(ValueError):
     def __init__(self, code: str, safe_message: str) -> None:
@@ -78,8 +79,6 @@ def _scalar_metadata(metadata: Mapping[str, object] | None) -> dict[str, str | i
             raise ToolLifecycleError("invalid_tool_lifecycle_event", "event metadata values must be scalar")
         if isinstance(value, float) and (value != value or value in (float("inf"), float("-inf"))):
             raise ToolLifecycleError("invalid_tool_lifecycle_event", "event metadata floats must be finite")
-        if isinstance(value, str) and len(value) > MAX_EVENT_STRING_CHARS:
-            raise ToolLifecycleError("tool_event_budget_exceeded", "event metadata string exceeds the bounded event limit")
         result[safe_key] = value
     return result
 
