@@ -22,6 +22,19 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
     def setUp(self):
         self.paths = planner.load_paths()
 
+    def test_b14_attempt_policy_only_skips_browser_journeys(self):
+        paths = {
+            "apps/padiem-chat/app/b14_client.py",
+            "apps/padiem-chat/tests/test_owner_tier_fallback_dispatch_261015.py",
+        }
+        statuses = {path: "modified" for path in paths}
+        selected = planner.choose_lanes(paths, self.paths, statuses=statuses, expected_files=len(paths))
+        self.assertTrue(selected)
+        self.assertFalse(any(selected.values()))
+        mixed = paths | {"apps/padiem-chat/static/app.js"}
+        actual = planner.choose_lanes(mixed, self.paths, statuses={path: "modified" for path in mixed}, expected_files=len(mixed))
+        self.assertTrue(any(actual.values()))
+
     def test_one_workflow_owns_all_16_original_jobs_and_manual_selection(self):
         self.assertEqual(len(self.paths), 16)
         master = MASTER.read_text(encoding="utf-8")
