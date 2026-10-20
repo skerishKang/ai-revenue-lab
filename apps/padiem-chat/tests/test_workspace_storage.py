@@ -8,7 +8,6 @@ import pytest
 from app.workspace_storage import (
     DOCX_MEDIA_TYPE,
     GENERATED_DOCUMENT_RETENTION_DAYS,
-    SINGLE_FILE_MAX_BYTES,
     WorkspaceDocumentStore,
     WorkspaceStorageAccessError,
     WorkspaceStorageError,
@@ -210,18 +209,37 @@ async def test_expired_generated_document_is_deleted_and_not_returned() -> None:
     assert saved.document_id not in metadata.rows
 
 
-async def test_single_file_bound_is_enforced_before_r2_write() -> None:
+async def test_an_empty_body_is_refused_before_r2_write() -> None:
     storage, _, r2 = store()
 
     with pytest.raises(ValueError):
         await storage.put_generated_docx(
             tenant_id=TENANT,
-            filename="too-large.docx",
-            body=b"x" * (SINGLE_FILE_MAX_BYTES + 1),
+            filename="empty.docx",
+            body=b"",
             now=NOW,
         )
 
     assert r2.put_calls == []
+
+
+async def test_a_body_past_the_released_ceiling_is_still_stored() -> None:
+    # #4379: the 10 MiB total was a PADIEM capacity claim, not a platform
+    # request limit, and the D1 metadata column no longer carries it either.
+    storage, metadata, r2 = store()
+    body = b"x" * (10 * 1024 * 1024 + 1)
+
+    saved = await storage.put_generated_docx(
+        tenant_id=TENANT,
+        filename="large.docx",
+        body=body,
+        now=NOW,
+    )
+
+    assert saved.byte_length == len(body)
+    assert len(r2.put_calls) == 1
+    assert r2.put_calls[0][1] == body
+    assert metadata.rows[saved.document_id].byte_length == len(body)
 
 
 async def test_r2_write_failure_fails_closed_without_metadata_row() -> None:
