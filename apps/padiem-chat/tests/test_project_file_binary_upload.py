@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import httpx
 import pytest
 from pypdf import PdfWriter, PdfReader
+from unittest import mock
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.binary_documents import parse_binary_document_item, BinaryDocumentValidationError
@@ -17,6 +18,7 @@ from app.config import Settings
 from app.documents import DocumentValidationError
 from app.history import ProjectProfile, UserProfile
 from app.main import create_app
+from app import project_file_routes
 from app.project_files import (
     BINARY_PROJECT_FILE_MEDIA,
     D1ProjectFileStore,
@@ -173,6 +175,8 @@ def _make_pdf_base64(*, text: str = "Positive PDF Text") -> str:
     return b64encode(pdf.getvalue()).decode()
 
 
+# The shipped binary document ceiling is 1 GiB. The route-level size gate is
+# exercised with a patched small ceiling below instead of a gigabyte of test bytes.
 MAX_BINARY_PROJECT_FILE_BASE64_BYTES = 2 * 1024 * 1024
 
 
@@ -403,8 +407,11 @@ async def test_oversized_route_level_413():
     app = create_app(cfg, history_store=history, project_file_store=store)
     client = await client_with_session(app, user_profile(owner.id))
     try:
-        oversized = b64encode(b"x" * (MAX_BINARY_PROJECT_FILE_BASE64_BYTES + 1)).decode()
-        response = await post_binary(client, f"/api/projects/{project.id}/files", name="big.pdf", media_type=PDF_MEDIA, base64=oversized)
+        # The shipped ceiling is 1 GiB, so the size gate is proven with a
+        # patched small ceiling rather than a gigabyte of test bytes.
+        with mock.patch.object(project_file_routes, "MAX_BINARY_DOCUMENT_BYTES", 1024):
+            oversized = b64encode(b"x" * 1025).decode()
+            response = await post_binary(client, f"/api/projects/{project.id}/files", name="big.pdf", media_type=PDF_MEDIA, base64=oversized)
         assert response.status_code == 413, f"expected 413 got {response.status_code}: {response.json()}"
     finally:
         await client.aclose()
