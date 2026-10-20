@@ -93,4 +93,3 @@ jobs:
           path: .tmp/b62-mobile-touch-target-qa
           if-no-files-found: error
           retention-days: 14
-
