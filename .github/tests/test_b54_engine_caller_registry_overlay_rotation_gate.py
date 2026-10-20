@@ -1317,7 +1317,14 @@ def test_workflow_never_touches_b62_live_config_or_padiem_chat() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "b62-claw-live-config-activation-gate" not in text
     assert "CONFIRM_ACTIVATE_B62_CLAW_LIVE_CONFIG" not in text
-    assert "padiem-chat" not in text
+    # The Chat product app id is documented in the canonical payload comment
+    # (app authorization only). No workflow CODE may name the Chat worker or
+    # dispatch anything at it: this gate only PUTs the Engine overlay secret.
+    code_text = "\n".join(
+        line for line in text.splitlines() if not line.lstrip().startswith("#")
+    )
+    assert "padiem-chat" not in code_text
+    assert "padiem-chat" in text
     assert "deploy-production-engine" not in text
     pr_paths = re.search(r"pull_request:\s*\n\s*paths:\n((?:\s+- .*\n)+)", text)
     assert pr_paths is not None
