@@ -20,6 +20,10 @@ _CONNECTOR_ID_RE = re.compile(r"^connector:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-
 _CAPABILITY_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,255}$")
 
+# #4379: an Agent definition carries no PADIEM item-count or length maximum.
+# The identifier grammar, the duplicate check and the non-empty check stay, so a
+# definition is still validated; it is simply no longer refused for being
+# large. These symbols are retained for import compatibility.
 MAX_TITLE_CHARS = 160
 MAX_DESCRIPTION_CHARS = 1_000
 MAX_INSTRUCTION_CHARS = 12_000
@@ -113,13 +117,18 @@ class AgentExecutionBudget:
                 )
 
 
-def _bounded_text(name: str, value: str, *, maximum: int) -> str:
+def _bounded_text(name: str, value: str, *, maximum: int | None = None) -> str:
+    """Validate one definition text.
+
+    #4379: ``maximum=None`` means no PADIEM length ceiling. The string type,
+    the non-empty rule and the surrounding shape checks stay.
+    """
     if not isinstance(value, str):
         raise AgentDefinitionError(f"{name} must be a string")
     normalized = value.strip()
     if not normalized:
         raise AgentDefinitionError(f"{name} is required")
-    if len(normalized) > maximum:
+    if maximum is not None and len(normalized) > maximum:
         raise AgentDefinitionError(f"{name} exceeds {maximum} characters")
     return normalized
 
@@ -134,12 +143,14 @@ def _validate_unique_ids(
     name: str,
     values: tuple[str, ...],
     *,
-    maximum: int,
+    maximum: int | None = None,
     pattern: re.Pattern[str],
 ) -> None:
+    # #4379: an item count is a caller choice, not a PADIEM ceiling. The
+    # identifier grammar and the duplicate check still apply.
     if not isinstance(values, tuple):
         raise AgentDefinitionError(f"{name} must be a tuple")
-    if len(values) > maximum:
+    if maximum is not None and len(values) > maximum:
         raise AgentDefinitionError(f"{name} exceeds maximum size {maximum}")
     if len(values) != len(set(values)):
         raise AgentDefinitionError(f"{name} contains duplicates")
@@ -173,17 +184,17 @@ class BoundedAgentDefinition:
         object.__setattr__(
             self,
             "title",
-            _bounded_text("title", self.title, maximum=MAX_TITLE_CHARS),
+            _bounded_text("title", self.title),
         )
         object.__setattr__(
             self,
             "description",
-            _bounded_text("description", self.description, maximum=MAX_DESCRIPTION_CHARS),
+            _bounded_text("description", self.description),
         )
         object.__setattr__(
             self,
             "instruction",
-            _bounded_text("instruction", self.instruction, maximum=MAX_INSTRUCTION_CHARS),
+            _bounded_text("instruction", self.instruction),
         )
         object.__setattr__(
             self,
@@ -191,29 +202,26 @@ class BoundedAgentDefinition:
             _safe_ref("output_contract_ref", self.output_contract_ref),
         )
 
+        # #4379: the item counts are a caller choice, not a PADIEM ceiling.
+        # The identifier grammar and the duplicate check still apply.
         _validate_unique_ids(
             "skill_package_ids",
             self.skill_package_ids,
-            maximum=MAX_SKILL_IDS,
             pattern=_SKILL_ID_RE,
         )
         _validate_unique_ids(
             "allowed_tool_ids",
             self.allowed_tool_ids,
-            maximum=MAX_TOOL_IDS,
             pattern=_TOOL_ID_RE,
         )
         _validate_unique_ids(
             "connector_requirement_ids",
             self.connector_requirement_ids,
-            maximum=MAX_CONNECTOR_IDS,
             pattern=_CONNECTOR_ID_RE,
         )
 
         if not isinstance(self.required_capabilities, tuple):
             raise AgentDefinitionError("required_capabilities must be a tuple")
-        if len(self.required_capabilities) > MAX_CAPABILITIES:
-            raise AgentDefinitionError("required_capabilities exceeds maximum size")
         if len(self.required_capabilities) != len(set(self.required_capabilities)):
             raise AgentDefinitionError("required_capabilities contains duplicates")
         if any(
@@ -238,8 +246,6 @@ class BoundedAgentDefinition:
 
         if not isinstance(self.approval_checkpoints, tuple):
             raise AgentDefinitionError("approval_checkpoints must be a tuple")
-        if len(self.approval_checkpoints) > MAX_APPROVAL_CHECKPOINTS:
-            raise AgentDefinitionError("approval_checkpoints exceeds maximum size")
         if len(self.approval_checkpoints) != len(set(self.approval_checkpoints)):
             raise AgentDefinitionError("approval_checkpoints contains duplicates")
         if any(
