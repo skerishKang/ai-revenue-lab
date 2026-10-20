@@ -115,13 +115,13 @@ def build_chat_pc_agent_plan() -> dict[str, Any]:
     """Thin Chat adapter: the shared drive tool under the Chat agent id."""
     return {
         "agent_id": CHAT_PC_QUERY_AGENT_ID,
-        "steps": (
+        "steps": [
             {
                 "step_id": "query_drives",
                 "objective": "Query verified PC filesystem drives",
                 "tool_id": CHAT_PC_QUERY_TOOL_ID,
             },
-        ),
+        ],
     }
 
 
@@ -148,7 +148,7 @@ def build_chat_pc_files_agent_plan() -> dict[str, Any]:
     """The same two-step list/read plan the Claw product sends."""
     return {
         "agent_id": CHAT_PC_QUERY_AGENT_ID,
-        "steps": (
+        "steps": [
             {
                 "step_id": "list_files",
                 "objective": "List the approved folder on the verified owner PC",
@@ -159,7 +159,7 @@ def build_chat_pc_files_agent_plan() -> dict[str, Any]:
                 "objective": "Read the requested UTF-8 text file",
                 "tool_id": "claw.pc.read_file",
             },
-        ),
+        ],
     }
 
 
