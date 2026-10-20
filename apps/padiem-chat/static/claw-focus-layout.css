@@ -1003,10 +1003,20 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   max-height: none;
   overflow-y: visible;
   overscroll-behavior-y: auto;
-  /* The landing scrolls with the document, so it reserves the fixed composer
+  /* Must track the composer's measured height, not a constant. The composer
+   * grows with the attachment tray, the model row and the cancel/status row,
+   * and a fixed inset leaves the last turn sitting under the glass input.
+   * The software-keyboard inset is added because the fixed composer is raised
+   * by exactly that amount while the keyboard is open.
+   * #5014: the scroll padding is the same reservation, so a message that is
+   * scrolled into view stops above the input instead of under it.
+   * The landing scrolls with the document, so it reserves the fixed composer
    * area at its own end, exactly like the Chat lane. */
   padding-bottom: calc(
     var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)
+  );
+  scroll-padding-bottom: calc(
+    var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
   );
 }
 @media (max-width: 620px) {
@@ -1139,8 +1149,13 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     right: 9px;
     bottom: 8px;
   }
-  /* The landing keeps the same measured clearance as the Chat lane. */
-  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation {
+  /* Last turn belongs above the fixed composer even as its measured height
+   * changes for attachments or the mobile software keyboard.
+   * #5014: this rule has to out-specify the general Claw conversation rule
+   * above, otherwise the extra phone gap never applies and the reserved
+   * space stays at the desktop value.
+   * The landing keeps the same measured clearance as the Chat lane. */
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .conversation {
     scroll-padding-bottom: calc(
       var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
     );
