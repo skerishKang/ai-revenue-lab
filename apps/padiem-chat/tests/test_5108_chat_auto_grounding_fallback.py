@@ -31,6 +31,7 @@ from app.grounding import GroundedChatService
 from app.main import create_app
 import app.model_policy as model_policy_module
 from app.model_policy import DEFAULT_B14_MODEL_ID
+from app.task_modes import get_task_mode
 from app.web_tools import WebToolError
 
 BASE = "https://chat.example.test"
@@ -154,23 +155,6 @@ def install_provider(app, provider) -> None:
     app.state.auto_grounding = AutoGroundingService(provider)
 
 
-def parse_public_sse(text: str) -> list[tuple[str, dict]]:
-    events: list[tuple[str, dict]] = []
-    for frame in text.replace("\r\n", "\n").split("\n\n"):
-        if not frame.strip():
-            continue
-        event = "message"
-        data = None
-        for line in frame.splitlines():
-            if line.startswith("event:"):
-                event = line.split(":", 1)[1].strip()
-            elif line.startswith("data:"):
-                data = line.split(":", 1)[1].strip()
-        if data is not None:
-            events.append((event, json.loads(data)))
-    return events
-
-
 class OwnerHistory:
     def __init__(self):
         self.saved: list[tuple] = []
@@ -292,21 +276,23 @@ def test_clock_question_with_an_empty_search_provider_still_answers() -> None:
     assert provider.search_calls == []
 
 
-def test_clock_question_streams_a_normal_answer_and_done() -> None:
-    """The streaming contract keeps delta/done and shows no source."""
+def test_stream_grounding_plan_for_a_clock_question_carries_no_evidence() -> None:
+    """The streaming lane's grounding plan stays empty for a clock question.
+
+    The streaming endpoint consumes this plan. A clock question is not a
+    web-evidence request, so the plan carries no prepared evidence and the
+    provider is never asked.
+    """
     provider = RecordingProvider()
-    app, config, seen = build_app(provider)
-    response = post(
-        app, config, "/api/chat/stream",
-        {"messages": messages("오늘 무슨 요일이야?"), "mode": "auto"},
-    )
-    assert response.status_code == 200, response.text
-    events = parse_public_sse(response.text)
-    assert [event for event, _ in events] == ["delta", "done"]
-    done = events[-1][1]
-    assert done["done"] is True
-    assert "evidence" not in done
-    assert "answer_status" not in done
+    service = AutoGroundingService(provider)
+    plan = asyncio.run(service.prepare(
+        messages("오늘 무슨 요일이야?"),
+        skill=get_task_mode(),
+        additional_system_context=None,
+    ))
+    assert plan.prepared is None
+    assert plan.searched is False
+    assert plan.decision.requires_search is False
     assert provider.search_calls == []
 
 
@@ -329,18 +315,34 @@ def test_automatic_search_without_usable_evidence_continues_normally() -> None:
     assert len(seen) == 1
 
 
-def test_automatic_search_without_evidence_streams_a_normal_answer() -> None:
-    """The streaming contract keeps the turn alive on the same fallback."""
+def test_stream_grounding_plan_after_the_fallback_carries_no_evidence() -> None:
+    """The streaming lane keeps the turn alive on the same fallback."""
     provider = EmptyProvider()
-    app, config, seen = build_app(provider)
-    response = post(
-        app, config, "/api/chat/stream",
-        {"messages": messages(BARE_FRESHNESS), "mode": "auto"},
-    )
-    assert response.status_code == 200, response.text
-    events = parse_public_sse(response.text)
-    assert [event for event, _ in events] == ["delta", "done"]
-    assert "evidence" not in events[-1][1]
+    service = AutoGroundingService(provider)
+    plan = asyncio.run(service.prepare(
+        messages(BARE_FRESHNESS),
+        skill=get_task_mode(),
+        additional_system_context=None,
+    ))
+    # The search ran and found nothing; the plan stays empty, so the streaming
+    # endpoint answers normally and shows no source.
+    assert len(provider.search_calls) == 1
+    assert plan.prepared is None
+    assert plan.searched is False
+    assert plan.decision.requires_search is True
+
+
+def test_stream_grounding_plan_still_carries_the_evidence_when_found() -> None:
+    """A successful automatic search still prepares the evidence."""
+    provider = RecordingProvider()
+    service = AutoGroundingService(provider)
+    plan = asyncio.run(service.prepare(
+        messages(WEATHER),
+        skill=get_task_mode(),
+        additional_system_context=None,
+    ))
+    assert plan.prepared is not None
+    assert plan.searched is True
     assert len(provider.search_calls) == 1
 
 
