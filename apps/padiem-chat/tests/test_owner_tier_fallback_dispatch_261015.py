@@ -60,7 +60,15 @@ def test_chat_does_not_pin_owner_tier_dispatch_to_one_attempt():
         model="google/gemini-3.1-flash-lite",
         required_capabilities=("free",),
         product_tier="free",
+        tier_stream_fallback=True,
     )
     assert profile.model_policy["allow_external_fallback"] is False
     assert "max_attempts" not in profile.model_policy
     assert profile.model_policy["product_tier"] == "free"
+    completed = b14_client._agent_profile(
+        skill=b14_client.get_task_mode(),
+        model="google/gemini-3.1-flash-lite",
+        required_capabilities=("free",),
+        product_tier="free",
+    )
+    assert completed.model_policy["max_attempts"] == 1
