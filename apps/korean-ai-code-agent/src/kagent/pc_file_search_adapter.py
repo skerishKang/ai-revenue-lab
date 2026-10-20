@@ -39,7 +39,7 @@ adapter serves a local ES CLI on the PC and a remote device call elsewhere.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import os
 import subprocess
 from typing import Any, Callable, Mapping, Protocol, Sequence
@@ -61,6 +61,17 @@ DEFAULT_EVERYTHING_CLI_PATHS: tuple[str, ...] = (
 #: the model input/output: the caller owns that limit, and the result reports
 #: truncation truthfully instead of hiding it.
 MAX_SEARCH_RESULTS = 500
+
+#: How many rows beyond the caller's limit are fetched, to learn whether the
+#: search space really holds more results than the request. One extra row is
+#: enough and keeps the request bounded.
+TRUNCATION_PROBE_ROWS = 1
+
+#: The encoding the ES CLI writes its results in. ES writes UTF-8, so the
+#: output is decoded as UTF-8 and never as the host's preferred encoding:
+#: a Korean filename must survive the boundary unchanged, and a byte that is
+#: not UTF-8 is a contract failure, never a mojibake name.
+EVERYTHING_OUTPUT_ENCODING = "utf-8"
 
 
 class PcFileSearchError(RuntimeError):
@@ -161,21 +172,74 @@ class PcFileSearchPort(Protocol):
     ) -> Sequence[str]: ...
 
 
+#: How a searcher process is run. The timeout is keyword-only, so a caller
+#: cannot pass it by accident and the default runner and an injected runner
+#: share exactly one call shape.
+ProcessRunner = Callable[..., "tuple[int, str, str]"]
+
+
 def _default_process_runner(
     argv: Sequence[str], *, timeout: int
 ) -> tuple[int, str, str]:
-    """Run a searcher process. Returns (exit code, stdout, stderr)."""
+    """Run a searcher process. Returns (exit code, stdout, stderr).
+
+    The output is decoded as UTF-8, because that is what the ES CLI writes.
+    Decoding with the host's preferred encoding would turn a Korean file name
+    into mojibake on a non-UTF-8 host, so the encoding is fixed here instead
+    of being inherited from the machine.
+    """
     try:
         completed = subprocess.run(  # noqa: S603 - fixed argv, no shell
             list(argv),
             capture_output=True,
-            text=True,
             timeout=timeout,
             check=False,
         )
     except (OSError, subprocess.SubprocessError) as exc:
         raise PcFileSearchError("the local searcher could not be executed") from exc
-    return completed.returncode, completed.stdout or "", completed.stderr or ""
+    return (
+        completed.returncode,
+        _decode_everything_output(completed.stdout),
+        _decode_everything_output(completed.stderr),
+    )
+
+
+def _decode_everything_output(raw: bytes | str | None) -> str:
+    """Decode ES output as UTF-8.
+
+    A byte that is not UTF-8 is a contract failure: returning a mojibake
+    name would be worse than reporting the search as failed.
+    """
+    if raw is None:
+        return ""
+    if isinstance(raw, str):
+        return raw
+    try:
+        return raw.decode(EVERYTHING_OUTPUT_ENCODING)
+    except UnicodeDecodeError as exc:
+        raise PcFileSearchError(
+            "the local searcher returned output that is not valid UTF-8"
+        ) from exc
+
+
+def everything_search_argument(text: str) -> str:
+    """The search text in the official ES command-line form.
+
+    The official CLI documents that a double quote in the search text is
+    written as a triple quote: one pair of double quotes only escapes spaces
+    and is stripped again by ES. A newline or a NUL would end the argument
+    and is refused outright.
+
+    The official ``-search*`` form makes **the rest of the command line** a
+    literal search, so it only holds while the search text is the last
+    argument. The caller therefore puts it last, and this helper only makes
+    the text itself safe.
+    """
+    if not isinstance(text, str):
+        raise PcFileSearchError("the search text must be a string")
+    if "\n" in text or "\r" in text or "\x00" in text:
+        raise PcFileSearchError("the search text must be a single line")
+    return text.replace('"', '"""')
 
 
 class EverythingEsCliSearchPort:
@@ -198,8 +262,14 @@ class EverythingEsCliSearchPort:
     * ``-timeout <ms>`` — wait for the Everything database to load before
       searching. Without it ES silently returns no results when the database
       is not loaded, which would look like an empty match.
-    * ``-search*`` — the remaining command line is a literal search text, so
-      a user query can never turn into an Everything filter.
+    * ``-search*`` — the **rest of the command line** is a literal search
+      text. That is the official form, and it has two preconditions this
+      adapter enforces rather than assumes: the switch has to be the last
+      one, so no later switch can be swallowed as search text, and the text
+      itself has to be quoted the way the official syntax requires. The
+      literal form is what keeps a user query from turning into an
+      Everything filter; it is not a licence to treat the text as safe
+      input without the escaping below.
 
     ES exit code 7 (the IPC query failed) is an index that cannot answer, not
     a failed match.
@@ -214,7 +284,7 @@ class EverythingEsCliSearchPort:
         self,
         *,
         executable: str | None = None,
-        runner: Callable[[Sequence[str], int], tuple[int, str, str]] | None = None,
+        runner: ProcessRunner | None = None,
         timeout: int = 10,
         index_wait_ms: int = 2000,
     ) -> None:
@@ -237,7 +307,7 @@ class EverythingEsCliSearchPort:
             return PcFileSearcherStatus(installed=False, index_ready=False)
         try:
             code, _stdout, _stderr = self._runner(
-                [executable, "-get-everything-version"], self._timeout,
+                [executable, "-get-everything-version"], timeout=self._timeout,
             )
         except PcFileSearchError:
             return PcFileSearcherStatus(installed=True, index_ready=False)
@@ -247,18 +317,26 @@ class EverythingEsCliSearchPort:
     def search(
         self, *, query: str, root: str, limit: int
     ) -> Sequence[str]:
+        """Query the index and return the raw result rows.
+
+        ``limit`` is the maximum number of rows to fetch, not the number of
+        results the caller will keep: the caller asks for one row more than
+        it needs, so it can tell whether more results exist.
+        """
         executable = self._resolve_executable()
         if executable is None:
             raise PcFileSearchError("the local searcher is not installed")
+        search_text = everything_search_argument(query)
         argv = [
             executable,
             "-path", root,
             "-n", str(max(1, limit)),
             "-full-path",
             "-timeout", str(self._index_wait_ms),
-            "-search*", query,
+            # The literal form only holds while it is the last switch.
+            "-search*", search_text,
         ]
-        code, stdout, _stderr = self._runner(argv, self._timeout)
+        code, stdout, _stderr = self._runner(argv, timeout=self._timeout)
         if code == self.ES_EXIT_IPC_FAILED:
             raise PcFileSearchIndexNotReady(
                 "the local index could not answer the query"
@@ -335,7 +413,13 @@ def search_pc_files(
     port: PcFileSearchPort,
     limit: int = MAX_SEARCH_RESULTS,
 ) -> PcFileSearchResult:
-    """Search the verified folder and return the existing file item contract."""
+    """Search the verified folder and return the existing file item contract.
+
+    The result never holds more than ``limit`` entries, and ``truncated`` is
+    true only when the search space really holds more results than the
+    request: the port is asked for one row beyond the limit, so "more
+    results" is an observation and never an assumption.
+    """
     if not isinstance(scope, PcFileSearchScope):
         raise PcFileSearchError("scope must be PcFileSearchScope")
     if not isinstance(query, str) or not query.strip():
@@ -349,8 +433,9 @@ def search_pc_files(
     if not status.index_ready:
         return PcFileSearchResult(status=SEARCH_INDEX_NOT_READY, query=query)
 
+    probe_limit = limit + TRUNCATION_PROBE_ROWS
     try:
-        rows = port.search(query=query, root=scope.root, limit=limit)
+        rows = port.search(query=query, root=scope.root, limit=probe_limit)
     except PcFileSearchIndexNotReady:
         return PcFileSearchResult(status=SEARCH_INDEX_NOT_READY, query=query)
     except PcFileSearchError:
@@ -358,10 +443,11 @@ def search_pc_files(
     except Exception:
         return PcFileSearchResult(status=SEARCH_SEARCH_FAILED, query=query)
 
+    rows = list(rows or ())
     resolved_root = os.path.realpath(scope.root)
     entries: list[PcFileSearchEntry] = []
     excluded = 0
-    for row in rows or ():
+    for row in rows:
         resolved = _resolve_inside(scope.root, row if isinstance(row, str) else "")
         if resolved is None:
             excluded += 1
@@ -383,17 +469,21 @@ def search_pc_files(
         return PcFileSearchResult(
             status=SEARCH_NO_RESULTS, excluded_count=excluded, query=query,
         )
+    # The caller asked for `limit` rows; the extra probe row only proves
+    # whether more results exist.
+    kept = entries[:limit]
     return PcFileSearchResult(
         status=SEARCH_OK,
-        entries=tuple(entries),
+        entries=tuple(kept),
         excluded_count=excluded,
-        truncated=len(entries) >= limit,
+        truncated=len(entries) > limit or len(rows) >= probe_limit,
         query=query,
     )
 
 
 __all__ = [
     "DEFAULT_EVERYTHING_CLI_PATHS",
+    "EVERYTHING_OUTPUT_ENCODING",
     "EverythingEsCliSearchPort",
     "MAX_SEARCH_RESULTS",
     "PcFileSearchEntry",
@@ -403,10 +493,13 @@ __all__ = [
     "PcFileSearchResult",
     "PcFileSearchScope",
     "PcFileSearcherStatus",
+    "ProcessRunner",
     "SEARCH_INDEX_NOT_READY",
     "SEARCH_NOT_INSTALLED",
     "SEARCH_NO_RESULTS",
     "SEARCH_OK",
     "SEARCH_SEARCH_FAILED",
+    "TRUNCATION_PROBE_ROWS",
+    "everything_search_argument",
     "search_pc_files",
 ]
