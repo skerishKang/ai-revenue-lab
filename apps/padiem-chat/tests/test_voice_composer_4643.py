@@ -960,30 +960,40 @@ def test_signin_gate_requires_factory_and_session() -> None:
     assert result["network"] == 0
 
 
-def test_interim_is_preview_only() -> None:
+def test_the_live_transcript_appears_in_the_input_box() -> None:
+    """#4643 M1: the words appear in the input box while the user speaks.
+
+    The Owner instruction for M1 replaced the preview-only contract for the
+    input box. The preview line must not repeat the same words, so the input
+    is the single place the live transcript is shown.
+    """
     result = _results["interim_preview"]
-    assert result["first"]["input"] == ""
-    assert result["first"]["preview"] == "견적서"
-    assert result["first"]["preview_hidden"] is False
+    assert result["first"]["input"] == "견적서"
+    assert result["first"]["preview"] == "", "the preview must not repeat the input"
+    assert result["first"]["preview_hidden"] is True
     assert result["first"]["key"] == "voice-interim"
-    assert result["second"]["input"] == ""
-    assert result["second"]["preview"] == "견적서 초안"
-    assert result["input_events"] == 0
+    assert result["second"]["input"] == "견적서 초안"
+    assert result["input_events"] == 2, "each live write is a real input change"
     assert result["aria_pressed"] == "true"
     assert result["stop_aria"] == _shipped["ko"]["voice-mic-stop"]
 
 
-def test_only_the_final_reaches_the_editable_input() -> None:
+def test_the_final_merges_into_the_existing_input_and_the_edit_survives() -> None:
+    """#4643 M1: the confirmed sentence is reflected into the existing input.
+
+    The user's own text is never overwritten: a later live transcript is added
+    after what the user corrected, never over it.
+    """
     result = _results["final_review"]
     after = result["after"]
-    assert after["input"] == "직접 입력한 문장 견적서 초안을 만들어 주세요"
+    assert after["input"].endswith("견적서 초안을 만들어 주세요")
     assert after["preview_hidden"] is True and after["preview_text"] == ""
     assert after["key"] == "voice-final"
     assert after["input_events"] == ["input"], "the existing input event must run so Send enablement updates"
     assert after["submits"] == 0 and after["send_clicks"] == 0
     edited = result["edited"]
-    assert edited["input"] == "사용자가 수정한 내용", "a later interim must not overwrite the user's edit"
-    assert edited["preview"] == "늦은 중간값"
+    assert edited["input"].startswith("사용자가 수정한 내용"), "a later interim must not overwrite the user's edit"
+    assert edited["preview"] == "", "the preview must not repeat the input"
 
 
 def test_a_committed_utterance_keeps_the_microphone_on() -> None:
@@ -1141,10 +1151,11 @@ def test_final_keeps_the_microphone_session_open_until_the_user_stops_it() -> No
     assert committed["session_stopped"] is False
     assert committed["preview_hidden"] is True
     resumed = result["resumed"]
-    assert resumed["input"] == "첫 번째 전사", "the committed transcript stays for review"
+    assert resumed["input"].startswith(committed["input"]), "the committed transcript stays for review"
+    assert resumed["input"] != committed["input"], "a later live transcript continues after it"
     assert resumed["key"] == "voice-interim"
-    assert resumed["preview"] == "두 번째 발화"
-    assert resumed["preview_hidden"] is False
+    assert resumed["preview"] == "", "the preview must not repeat the input"
+    assert resumed["preview_hidden"] is True, "the preview stays empty while the input carries the words"
     assert resumed["active"] is True
     assert result["second"] == {"input": "첫 번째 전사 두 번째 전사", "key": "voice-final"}
     ended = result["ended"]

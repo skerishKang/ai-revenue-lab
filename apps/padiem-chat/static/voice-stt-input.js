@@ -23,11 +23,15 @@
    * This module only turns a verified transcription event into one input-candidate
    * and lets the user approve and send it.
    *
-   * Source of the transcription algorithm (port, logic unchanged):
-   *   skerishKang/global-classroom main
-   *   - utils/liveTranscriptTurn.ts  -> mergeLiveTranscriptChunk, createTranscriptTurnBuffer
-   *   - hooks/useInterviewLive.ts     -> utterance ids, generation gating, interim/final split
-   * GLOBAL_CLASSROOM_DIRECT_PORT. No redesign of merge or turn-buffer semantics.
+   * PROVENANCE of the transcription algorithm — GLOBAL_CLASSROOM_DIRECT_PORT:
+   *   static/voice-live-transcript-turn.js carries utils/liveTranscriptTurn.ts
+   *   of skerishKang/global-classroom @ ffa27e6a verbatim, and it is the only
+   *   copy in this app. Merge, turn boundary, chunk-cut and session constants
+   *   are read from that authority instead of being restated here, because a
+   *   second copy of this logic is the defect Global Classroom issue #87 fixed.
+   *   - hooks/useInterviewLive.ts -> utterance ids, generation gating,
+   *     interim/final split (PADIEM-specific seams kept below).
+   * No redesign of merge or turn-buffer semantics.
    */
 
   const STATES = Object.freeze({
@@ -39,55 +43,59 @@
     ERROR: "error",
   });
 
-  /* #87 constants, verbatim from global-classroom/utils/liveTranscriptTurn.ts */
-  const LIVE_VAD_SILENCE_MS = 1300;
-  const LIVE_SESSION_ROTATE_MS = 9 * 60 * 1000 + 20 * 1000;
-  const GROQ_MIN_CHUNK_MS = 4000;
-  const GROQ_SILENCE_CUT_MS = 700;
-  const GROQ_MAX_CHUNK_MS = 20000;
-  const TRANSCRIPT_TURN_STALL_MS = 2500;
+  /**
+   * The authority is loaded by index.html before this file, and reached through
+   * CommonJS in the Node harnesses. It is deliberately not re-implemented here:
+   * a second copy of the #87 turn logic is exactly what drifted before.
+   */
+  const turnAuthority = (function loadTurnAuthority() {
+    const host = typeof globalThis !== "undefined" ? globalThis : null;
+    if (host && host.PadiemVoiceLiveTranscriptTurn) return host.PadiemVoiceLiveTranscriptTurn;
+    if (typeof require === "function") {
+      try {
+        return require("./voice-live-transcript-turn.js");
+      } catch (e) { /* reported by the fail-closed throw below */ }
+    }
+    return null;
+  })();
+
+  if (!turnAuthority) {
+    throw new Error("voice_live_transcript_turn_authority_missing");
+  }
+
+  /* #87 values come from the authority, never from a copy in this file. */
+  const LIVE_TRANSCRIBE_MODEL = turnAuthority.LIVE_TRANSCRIBE_MODEL;
+  const LIVE_VAD_SILENCE_MS = turnAuthority.LIVE_VAD_SILENCE_MS;
+  const LIVE_SESSION_ROTATE_MS = turnAuthority.LIVE_SESSION_ROTATE_MS;
+  const LIVE_AUDIO_HANDOFF_FRAMES = turnAuthority.LIVE_AUDIO_HANDOFF_FRAMES;
+  const LIVE_TAIL_FLUSH_DRAIN_MS = turnAuthority.LIVE_TAIL_FLUSH_DRAIN_MS;
+  const GROQ_MIN_CHUNK_MS = turnAuthority.GROQ_MIN_CHUNK_MS;
+  const GROQ_SILENCE_CUT_MS = turnAuthority.GROQ_SILENCE_CUT_MS;
+  const GROQ_MAX_CHUNK_MS = turnAuthority.GROQ_MAX_CHUNK_MS;
+  const TRANSCRIPT_TURN_STALL_MS = turnAuthority.TRANSCRIPT_TURN_STALL_MS;
 
   function norm(value) {
     return value == null ? "" : String(value);
   }
 
   /**
-   * Port of global-classroom `mergeLiveTranscriptChunk`. Cumulative vs. delta
-   * hypotheses are both accepted without duplicating an already-seen
-   * prefix/suffix.
+   * Thin adapter over the authority's `mergeLiveTranscriptChunk`. The original's
+   * TypeScript signature guarantees strings; a browser caller can hand this
+   * boundary null or undefined, so the coercion lives here rather than growing a
+   * fallback the original never had. Merge semantics are the original's.
    */
   function mergeLiveTranscriptChunk(previous, incoming) {
-    const p = norm(previous);
-    const inc = norm(incoming);
-    if (!inc) return p;
-    if (!p) return inc;
-    if (inc.startsWith(p)) return inc;
-    if (p.endsWith(inc)) return p;
-    return p + inc;
+    return norm(
+      turnAuthority.mergeLiveTranscriptChunk(norm(previous), norm(incoming)),
+    );
   }
 
   /**
-   * Port of global-classroom `createTranscriptTurnBuffer`. One turn accrues
-   * chunks; only `finishTurn()` commits a single final row. Calling it twice
-   * cannot duplicate a row because `pending` is cleared on commit.
+   * The authority's turn buffer, used unchanged: merging chunks never emits a
+   * row, only the turn boundary commits one, and a repeated boundary cannot
+   * duplicate it.
    */
-  function createTranscriptTurnBuffer() {
-    let pending = "";
-    return {
-      get pending() { return pending; },
-      merge(chunk) {
-        if (!chunk) return pending;
-        pending = mergeLiveTranscriptChunk(pending, String(chunk));
-        return pending;
-      },
-      finishTurn() {
-        const text = pending.trim();
-        pending = "";
-        return text || null;
-      },
-      reset() { pending = ""; },
-    };
-  }
+  const createTranscriptTurnBuffer = turnAuthority.createTranscriptTurnBuffer;
 
   function makeToken() {
     return Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
@@ -139,6 +147,86 @@
     let destroyed = false;
     let acceptedCount = 0;
 
+    /* #4643 M1: the live transcript belongs in the input box itself, so the
+     * user sees the words appear while they speak. This run owns one voice
+     * region: the suffix it wrote. Text the user typed before the run is the
+     * base and is never dropped, and a user edit during the run (the composer
+     * only trusts real user input events) becomes the new base instead of
+     * being overwritten. */
+    let voiceBase = null;
+    let voiceText = "";
+    let regionProvisional = false;
+
+    function currentInputValue() {
+      if (input && typeof input.getValue === "function") return norm(input.getValue());
+      if (input && typeof input.value !== "undefined") return norm(input.value);
+      return "";
+    }
+
+    function writeInputValue(value) {
+      if (input && typeof input.setValue === "function") input.setValue(value);
+      else if (input) input.value = value;
+      return value;
+    }
+
+    function joinVoiceText(base, text) {
+      const head = norm(base);
+      const tail = norm(text);
+      if (!head) return tail;
+      if (!tail) return head;
+      return /\s$/.test(head) ? head + tail : head + " " + tail;
+    }
+
+    function voiceBaseFor(current) {
+      if (voiceBase === null) return current;
+      const expected = joinVoiceText(voiceBase, voiceText);
+      if (current !== expected) {
+        /* The user changed the text while the run was live. Their text is the
+         * base now; the stale voice region is not restored over it. */
+        return current;
+      }
+      return voiceBase;
+    }
+
+    function writeLiveInput(text) {
+      if (destroyed || stopped) return null;
+      const current = currentInputValue();
+      voiceBase = voiceBaseFor(current);
+      voiceText = norm(text);
+      regionProvisional = true;
+      return writeInputValue(joinVoiceText(voiceBase, voiceText));
+    }
+
+    function writeFinalInput(text) {
+      const current = currentInputValue();
+      const base = voiceBaseFor(current);
+      const next = joinVoiceText(base, norm(text));
+      writeInputValue(next);
+      /* The committed text is the user's text now, so the next utterance in
+       * this run continues after it instead of replacing it. */
+      voiceBase = next;
+      voiceText = "";
+      regionProvisional = false;
+      return next;
+    }
+
+    /**
+     * A live transcript that never became a confirmed sentence is not user
+     * input. When the run ends without a final -- the recognizer stopped, the
+     * sign-out revoked the run, the microphone was denied -- the provisional
+     * region is removed again and the user is left with exactly what they
+     * typed. A final that lands after the stop is written normally.
+     */
+    function rollbackLiveInput() {
+      if (!regionProvisional) return null;
+      regionProvisional = false;
+      voiceText = "";
+      const base = voiceBase === null ? "" : voiceBase;
+      voiceBase = base;
+      writeInputValue(base);
+      return base;
+    }
+
     function emitState(next) {
       if (destroyed) return state;
       state = next;
@@ -184,9 +272,12 @@
       if (!t) return { ok: false, reason: "empty" };
       turnBuffer.merge(t);
       const preview = turnBuffer.pending;
+      /* #4643 M1: the live words go into the input box while the user speaks. */
+      let live = null;
+      try { live = writeLiveInput(preview); } catch (e) { /* the preview still shows */ }
       emitState(STATES.INTERIM);
       try { cbInterim(preview, ctx); } catch (e) { /* swallow */ }
-      return { ok: true, preview: preview };
+      return { ok: true, preview: preview, live: live };
     }
 
     function commitFinal(opts) {
@@ -230,7 +321,11 @@
       currentUtteranceId = utteranceId;
       acceptedCount += 1;
       emitState(STATES.FINAL);
-      try { appendToInput(text, "append", stopFlush); } catch (e) { /* swallow */ }
+      /* #4643 M1: the confirmed sentence replaces the live region it came
+       * from and continues after whatever the user had already typed. */
+      try { writeFinalInput(text); } catch (e) {
+        try { appendToInput(text, "append", stopFlush); } catch (e2) { /* swallow */ }
+      }
       try { cbFinal(text, utteranceId); } catch (e) { /* swallow */ }
       turnBuffer.reset();
       return { ok: true, text: text, utteranceId: utteranceId, acceptedCount: acceptedCount };
@@ -239,6 +334,7 @@
     function stop(reason) {
       if (destroyed) return state;
       stopped = true;
+      rollbackLiveInput();
       turnBuffer.reset();
       emitState(STATES.STOPPED);
       if (reason) { try { cbError(String(reason)); } catch (e) {} }
@@ -247,6 +343,7 @@
 
     function error(code) {
       if (destroyed) return state;
+      rollbackLiveInput();
       turnBuffer.reset();
       emitState(STATES.ERROR);
       try { cbError(String(code || "voice_stt_error")); } catch (e) {}
@@ -254,6 +351,7 @@
     }
 
     function invalidate(reason) {
+      rollbackLiveInput();
       turnBuffer.reset();
       emitState(STATES.STOPPED);
       destroyed = true;
@@ -286,6 +384,9 @@
     function getSessionToken() { return sessionToken; }
     function getAcceptedCount() { return acceptedCount; }
     function getCurrentUtteranceId() { return currentUtteranceId; }
+    /* #4643 M1: this adapter writes the live transcript into the input box,
+     * so the composer must not repeat the same words in its preview line. */
+    function writesLiveInput() { return true; }
 
     return {
       STATES: STATES,
@@ -305,6 +406,7 @@
       getSessionToken: getSessionToken,
       getAcceptedCount: getAcceptedCount,
       getCurrentUtteranceId: getCurrentUtteranceId,
+      writesLiveInput: writesLiveInput,
     };
   }
 
@@ -313,9 +415,14 @@
     mergeLiveTranscriptChunk: mergeLiveTranscriptChunk,
     createTranscriptTurnBuffer: createTranscriptTurnBuffer,
     createVoiceInputAdapter: createVoiceInputAdapter,
+    /** The same authority object, so no consumer needs a third copy. */
+    authority: turnAuthority,
     constants: Object.freeze({
+      LIVE_TRANSCRIBE_MODEL: LIVE_TRANSCRIBE_MODEL,
       LIVE_VAD_SILENCE_MS: LIVE_VAD_SILENCE_MS,
       LIVE_SESSION_ROTATE_MS: LIVE_SESSION_ROTATE_MS,
+      LIVE_AUDIO_HANDOFF_FRAMES: LIVE_AUDIO_HANDOFF_FRAMES,
+      LIVE_TAIL_FLUSH_DRAIN_MS: LIVE_TAIL_FLUSH_DRAIN_MS,
       GROQ_MIN_CHUNK_MS: GROQ_MIN_CHUNK_MS,
       GROQ_SILENCE_CUT_MS: GROQ_SILENCE_CUT_MS,
       GROQ_MAX_CHUNK_MS: GROQ_MAX_CHUNK_MS,

@@ -127,9 +127,11 @@ from .auth_routes import (
 from .auto_grounding import AutoGroundingService
 from .voice_stt_routes import IDENTITY_PATH as VOICE_IDENTITY_PATH
 from .voice_stt_routes import TRANSCRIBE_PATH as VOICE_TRANSCRIBE_PATH
+from .voice_stt_routes import LIVE_TOKEN_PATH as VOICE_LIVE_TOKEN_PATH
 from .voice_stt_routes import CLAW_IDENTITY_PATH as CLAW_VOICE_IDENTITY_PATH
 from .voice_stt_routes import CLAW_TRANSCRIBE_PATH as CLAW_VOICE_TRANSCRIBE_PATH
-from .voice_stt_routes import voice_identity, voice_transcribe
+from .voice_stt_routes import CLAW_LIVE_TOKEN_PATH as CLAW_VOICE_LIVE_TOKEN_PATH
+from .voice_stt_routes import voice_identity, voice_transcribe, voice_live_token
 from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_office_preview_routes import (
@@ -460,8 +462,10 @@ def create_app(
         Route("/api/auth/status", auth_status, methods=["GET"]),
         Route(VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
         Route(VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
+        Route(VOICE_LIVE_TOKEN_PATH, voice_live_token, methods=["POST"]),
         Route(CLAW_VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
         Route(CLAW_VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
+        Route(CLAW_VOICE_LIVE_TOKEN_PATH, voice_live_token, methods=["POST"]),
         Route(ACCESS_PATH, home_product_access, methods=["GET"]),
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
