@@ -299,9 +299,28 @@ async def _owner_claw_context(
     )
 
 
+def _accepts_assistant_message_id(append: Any) -> bool:
+    """Whether a store's append_exchange accepts the run-scoped answer id.
+
+    A store that predates the correlation keeps its existing contract: the
+    exchange is still stored, and the run simply stays uncorrelated (so the
+    owner-scoped lookup reports it as unavailable instead of guessing).
+    """
+    try:
+        parameters = inspect.signature(append).parameters
+    except (TypeError, ValueError):
+        return False
+    if "assistant_message_id" in parameters:
+        return True
+    return any(
+        parameter.kind is inspect.Parameter.VAR_KEYWORD
+        for parameter in parameters.values()
+    )
+
+
 async def _save_claw_exchange(
     request: Request, *, conversation_id: str | None, user_text: str,
-    answer: str,
+    answer: str, assistant_message_id: str | None = None,
 ) -> str | None:
     """Exact completed exchange only; unavailable history does not replay P01."""
     if (not isinstance(answer, str) or not answer.strip()
@@ -328,7 +347,17 @@ async def _save_claw_exchange(
                 return None
         # Only the bounded, visibly labeled stored preview is persisted. The
         # complete P01 result was already delivered to the caller unchanged.
-        saved = append(uid, conversation_id, user_text, answer, project_id, product_scope=PRODUCT_SCOPE_CHAT)
+        # #5015: the run-scoped answer id is passed only to a store that
+        # supports it, so a store without that correlation keeps its existing
+        # contract instead of losing the whole exchange.
+        if assistant_message_id is not None and _accepts_assistant_message_id(append):
+            saved = append(
+                uid, conversation_id, user_text, answer, project_id,
+                product_scope=PRODUCT_SCOPE_CHAT,
+                assistant_message_id=assistant_message_id,
+            )
+        else:
+            saved = append(uid, conversation_id, user_text, answer, project_id, product_scope=PRODUCT_SCOPE_CHAT)
         if inspect.isawaitable(saved):
             saved = await saved
         if not isinstance(saved, str):
@@ -340,6 +369,7 @@ async def _save_claw_exchange(
 
 async def _append_staged_claw_answer(
     request: Request, *, run_id: str, conversation_id: str, answer: str,
+    message_id: str | None = None,
 ) -> bool:
     """Append only the verified answer to an already-staged owner run.
 
@@ -356,12 +386,17 @@ async def _append_staged_claw_answer(
         return False
     from .claw_local_task_result_projection import result_message_id
     try:
+        # #5015: a model-only run stores its verified answer under the
+        # run-scoped id, so the owner-scoped lookup can correlate the stored
+        # completion record with the actual message. A staged run that carries
+        # a dispatch correlation keeps the projection identity instead.
+        resolved_id = message_id or result_message_id(
+            conversation_id=conversation_id, command_id=run_id,
+            revision_ref="general_answer",
+        )
         appended = append(
             user_id=uid, run_id=run_id,
-            message_id=result_message_id(
-                conversation_id=conversation_id, command_id=run_id,
-                revision_ref="general_answer",
-            ),
+            message_id=resolved_id,
             summary=answer, content=answer, status="completed",
         )
         if inspect.isawaitable(appended):
@@ -412,16 +447,25 @@ async def _record_completed_claw_result(
     """
     saved_conversation_id: str | None
     staged_answer_saved = True
+    # #5015: the verified answer of a model-only run is stored under the
+    # run-scoped message id, so the owner-scoped lookup can compare the stored
+    # completion record with the actual assistant message of this run.
+    from .history import general_answer_message_id
+    try:
+        answer_message_id = general_answer_message_id(run_id)
+    except Exception:
+        answer_message_id = None
     if staged_conversation_id is not None:
         saved_conversation_id = staged_conversation_id
         staged_answer_saved = await _append_staged_claw_answer(
             request, run_id=run_id, conversation_id=staged_conversation_id,
-            answer=answer,
+            answer=answer, message_id=answer_message_id,
         )
     else:
         saved_conversation_id = await _save_claw_exchange(
             request, conversation_id=conversation_id,
             user_text=user_text, answer=answer,
+            assistant_message_id=answer_message_id,
         )
     # #3933 S1: link the reserved first-turn grant to its verified outcome.
     # Best-effort provenance only: a grant-store failure must never conceal
