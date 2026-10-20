@@ -227,7 +227,6 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
     "apps/padiem-ai-engine/worker.py": frozenset(
         {
             "B14ExecutionClient",
-            "B14ExecutionConfig",
             "B14StreamingClient",
             "ExecutionRuntime",
             "StreamingExecutionRuntime",
@@ -236,7 +235,6 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
     "apps/padiem-ai-engine/worker_identity.py": frozenset(
         {
             "B14ExecutionClient",
-            "B14ExecutionConfig",
             "B14StreamingClient",
             "ExecutionRuntime",
             "StreamingExecutionRuntime",

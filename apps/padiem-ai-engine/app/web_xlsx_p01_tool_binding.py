@@ -158,8 +158,8 @@ def build_web_xlsx_p01_tool_binding(
     policy = TrustedAgentRuntimePolicy(
         context_policy_ref="context:default", model_policy_ref="model:auto",
         output_contract_ref="output:text@1",
-        task_type="general", optimize_for="balanced", max_tokens=128,
-        max_steps_cap=2, context_policy={}, model_policy={}, output_contract={},
+        task_type="general", optimize_for="balanced", max_tokens=None,
+        max_steps_cap=None, context_policy={}, model_policy={}, output_contract={},
         tool_bindings=(ToolRuntimeBinding(
             canonical_tool_id=CANONICAL_TOOL, runtime_tool_id=RUNTIME_TOOL,
         ),),

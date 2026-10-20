@@ -12,12 +12,19 @@ from urllib.parse import urlsplit
 import httpx
 
 from padiem_ai_core import B14_CHAT_COMPLETIONS_PATH, B14_STREAM_PREVIEW_PATH
+from padiem_ai_core.b14_execution import (
+    B14ExecutionConfig,
+    MAX_B14_RESPONSE_BYTES,
+    MAX_CONFIGURED_B14_RESPONSE_BYTES,
+)
 from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
 
 from app.b14_service_proof import service_proof_headers
 
 B14_INTERNAL_ORIGIN = "https://b14.internal"
-MAX_OUTBOUND_B14_REQUEST_BYTES = 256 * 1024
+# #4379: the model request body has no PADIEM aggregate ceiling. The request is
+# read in full and the total is never refused; the platform's own request limit
+# and the provider's context window are the real bounds.
 _ALLOWED_B14_PATHS = frozenset(
     {
         B14_CHAT_COMPLETIONS_PATH,
@@ -141,6 +148,34 @@ def _correlation_header() -> dict[str, str]:
     return {"X-Request-Id": value} if value is not None else {}
 
 
+def build_b14_execution_configs(*, timeout_seconds: float) -> tuple[
+    B14ExecutionConfig, B14ExecutionConfig
+]:
+    """Return the Engine's completed-response and stream-frame B14 budgets.
+
+    The two clients bound different things and must not share one number:
+
+    * the completed client materializes one JSON body, so it uses the shared
+      Worker memory budget that B14 itself applies to a completed answer;
+    * the streaming client bounds a single SSE frame only. The cumulative model
+      answer is never capped, exactly as on the B14 server side.
+
+    Sharing the smaller frame bound with the completed client made the Engine
+    refuse healthy model answers that Chat/Claw accept (#4379).
+    """
+    completed = B14ExecutionConfig(
+        base_url=B14_INTERNAL_ORIGIN,
+        timeout_seconds=timeout_seconds,
+        max_response_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
+    )
+    streaming = B14ExecutionConfig(
+        base_url=B14_INTERNAL_ORIGIN,
+        timeout_seconds=timeout_seconds,
+        max_response_bytes=MAX_B14_RESPONSE_BYTES,
+    )
+    return completed, streaming
+
+
 class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
     """Fixed Service Binding bridge used by Core B14 clients."""
 
@@ -172,6 +207,18 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         ):
             raise httpx.RequestError("Business 14 internal target is invalid.")
 
+    @staticmethod
+    async def _read_request_body(request: httpx.Request) -> bytes:
+        """Read the whole model request. There is no aggregate byte ceiling.
+
+        #4379: the Engine used to refuse any model request larger than 256 KB,
+        so a large context could never reach the model even though the product
+        side accepted it. The body is read exactly as before and the total is
+        never refused: the platform's own request limit and the provider's
+        context window are the real bounds.
+        """
+        return bytes(await request.aread())
+
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
         if request.method != "POST":
             raise httpx.RequestError(
@@ -179,12 +226,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
             )
         try:
             self._validate_target(request.url)
-            raw_body = bytes(await request.aread())
-            if len(raw_body) > MAX_OUTBOUND_B14_REQUEST_BYTES:
-                raise httpx.RequestError(
-                    "Business 14 request exceeded the Engine transport limit.",
-                    request=request,
-                )
+            raw_body = await self._read_request_body(request)
             body_text = raw_body.decode("utf-8")
         except httpx.RequestError:
             raise

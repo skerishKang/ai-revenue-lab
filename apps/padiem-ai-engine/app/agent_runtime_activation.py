@@ -219,7 +219,8 @@ class _Fixture:
             output_contract_ref="output:a5@1",
             skill_package_ids=(),
             allowed_tool_ids=(_CANONICAL_TOOL,),
-            execution_budget=AgentExecutionBudget(max_steps=2, max_tool_calls=1, max_skill_calls=0),
+            # The synthetic probe must terminate deterministically and stay provider-free.
+        execution_budget=AgentExecutionBudget(max_steps=2, max_tool_calls=1, max_skill_calls=0),
         )
         policy = TrustedAgentRuntimePolicy(
             context_policy_ref="context:default",

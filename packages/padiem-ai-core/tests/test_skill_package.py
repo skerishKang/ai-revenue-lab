@@ -89,12 +89,17 @@ def test_duplicate_tools_and_connectors_fail_closed() -> None:
         )
 
 
-def test_budget_is_bounded() -> None:
+def test_budget_has_no_padiem_maximum() -> None:
+    # #4379: an explicit skill budget has no PADIEM maximum.
     with pytest.raises(SkillPackageError):
         SkillExecutionBudget(max_steps=0)
 
     with pytest.raises(SkillPackageError):
-        SkillExecutionBudget(max_wall_seconds=10_000)
+        SkillExecutionBudget(max_wall_seconds=0)
+
+    assert SkillExecutionBudget(max_steps=1000).max_steps == 1000
+    assert SkillExecutionBudget(max_tool_calls=1000).max_tool_calls == 1000
+    assert SkillExecutionBudget(max_wall_seconds=86_400).max_wall_seconds == 86_400
 
 
 def test_approval_hook_must_be_typed_and_unique() -> None:
@@ -120,5 +125,6 @@ def test_package_has_no_self_approval_or_grant_fields() -> None:
 
 def test_default_skill_run_budget_matches_long_form_agent():
     assert SkillExecutionBudget().max_wall_seconds == 900
+    assert SkillExecutionBudget(max_wall_seconds=86_400).max_wall_seconds == 86_400
     with pytest.raises(SkillPackageError):
-        SkillExecutionBudget(max_wall_seconds=3601)
+        SkillExecutionBudget(max_wall_seconds=0)

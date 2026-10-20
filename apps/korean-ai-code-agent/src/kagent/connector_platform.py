@@ -8,7 +8,8 @@ from typing import Any, Protocol
 from .contracts import ContractError
 from .security import redact_secrets
 
-MAX_CONNECTOR_RESULT_CHARS = 20_000
+# #4379: a connector result is no longer cut at a fixed character count. The
+# provider response bounds itself; nothing here shortens the result.
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,511}$")
 _SAFE_TOOL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:\-/]{0,255}$")
 
@@ -173,25 +174,24 @@ class ConnectorCallResult:
     def __post_init__(self) -> None:
         if not isinstance(self.text, str):
             raise ContractError("connector result text must be a string")
-        if len(self.text) > MAX_CONNECTOR_RESULT_CHARS + 256:
-            raise ContractError("connector result exceeds bounded result envelope")
         if not isinstance(self.is_error, bool) or not isinstance(self.truncated, bool):
             raise ContractError("connector result flags must be boolean")
 
 
 def bounded_connector_result(text: str, *, is_error: bool = False) -> ConnectorCallResult:
+    """Return the connector result exactly as the connector produced it.
+
+    #4379: the result used to be cut at 20,000 characters and replaced with a
+    "[truncated: ...]" marker, so a connector that really returned a long
+    document lost its content after the call had already been paid for. The
+    secret redaction is unchanged; nothing is shortened or dropped.
+    """
     if not isinstance(text, str):
         raise ContractError("connector result text must be a string")
     normalized = redact_secrets(text)
     if normalized.strip() == "":
         normalized = "The connector returned no content. Nothing was found, so there is nothing here to answer from."
-    if len(normalized) <= MAX_CONNECTOR_RESULT_CHARS:
-        return ConnectorCallResult(text=normalized, is_error=is_error, truncated=False)
-    return ConnectorCallResult(
-        text=f"{normalized[:MAX_CONNECTOR_RESULT_CHARS]}\n\n[truncated: connector returned {len(normalized)} characters]",
-        is_error=is_error,
-        truncated=True,
-    )
+    return ConnectorCallResult(text=normalized, is_error=is_error, truncated=False)
 
 
 class ConnectorTransport(Protocol):

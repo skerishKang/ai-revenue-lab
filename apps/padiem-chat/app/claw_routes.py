@@ -404,12 +404,12 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     raw_channel = str(data.get("channel") or "other").strip().lower()
     channel = _CHANNEL_MAP.get(raw_channel)
     if channel is None:
-        return _error(400, "invalid_channel", f"지원되지 않는 채널입니다: {raw_channel}")
+        return _error(400, "invalid_channel", "지원되지 않는 채널입니다.")
 
     raw_action = str(data.get("action") or "quote").strip().lower()
     action = _ACTION_MAP.get(raw_action)
     if action is None:
-        return _error(400, "invalid_action", f"지원되지 않는 작업입니다: {raw_action}")
+        return _error(400, "invalid_action", "지원되지 않는 작업입니다.")
 
     # Manual intake is an executable P01/tool task. Use its canonical task
     # limit on the FULL prefixed task, rather than the retired 4k source limit.
@@ -498,12 +498,12 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     raw_channel = str(data.get("channel") or "other").strip().lower()
     channel = _CHANNEL_MAP.get(raw_channel)
     if channel is None:
-        return _error(400, "invalid_channel", f"지원되지 않는 채널입니다: {raw_channel}")
+        return _error(400, "invalid_channel", "지원되지 않는 채널입니다.")
 
     raw_action = str(data.get("action") or "quote").strip().lower()
     action = _ACTION_MAP.get(raw_action)
     if action is None:
-        return _error(400, "invalid_action", f"지원되지 않는 작업입니다: {raw_action}")
+        return _error(400, "invalid_action", "지원되지 않는 작업입니다.")
 
     # Manual intake is an executable P01/tool task. Use its canonical task
     # limit on the FULL prefixed task, rather than the retired 4k source limit.

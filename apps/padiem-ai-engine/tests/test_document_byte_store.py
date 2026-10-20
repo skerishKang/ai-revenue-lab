@@ -37,7 +37,6 @@ from app.document_byte_store import (  # noqa: E402
 from app.document_reference import DOC_REFERENCE_PATTERN  # noqa: E402
 from padiem_ai_core.document_normalization import (  # noqa: E402
     MAX_BINARY_DOCUMENT_BYTES,
-    MAX_TEXT_DOCUMENT_BYTES,
 )
 
 FIXED_NOW = datetime(2026, 9, 19, 12, 0, 0, tzinfo=timezone.utc)
@@ -146,15 +145,11 @@ def test_document_media_allowlist_matches_core() -> None:
     assert "application/x-hwp" not in expected
 
 
-def test_text_ceiling_enforced_from_core_constants() -> None:
+def test_text_above_legacy_96k_ceiling_is_admitted_within_store_budget() -> None:
     store = _scoped()
-    assert MAX_TEXT_DOCUMENT_BYTES > 0
-    with pytest.raises(DocumentByteStoreError) as too_big:
-        _admit(store, data=b"x" * (MAX_TEXT_DOCUMENT_BYTES + 1))
-    assert too_big.value.code == "document_too_large"
-    assert too_big.value.status_code == 413
-    ok = _admit(store, data=b"x" * MAX_TEXT_DOCUMENT_BYTES)
-    assert ok.byte_size == MAX_TEXT_DOCUMENT_BYTES
+    payload = b"x" * (128 * 1024)
+    admitted = _admit(store, data=payload)
+    assert admitted.byte_size == len(payload)
 
 
 def test_binary_ceiling_enforced_and_class_ceiling_is_the_document_bound() -> None:

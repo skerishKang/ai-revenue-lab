@@ -31,8 +31,13 @@ def test_execution_context_rejects_unbounded_values():
         ExecutionContext(trace_id="trace", idempotency_key="bad key")
     with pytest.raises(ValueError):
         ExecutionContext(trace_id="trace", timeout_seconds=0.5)
-    with pytest.raises(ValueError):
-        ExecutionContext(trace_id="trace", timeout_seconds=3601)
+
+
+def test_execution_context_accepts_a_long_running_timeout():
+    # #4379: the declared execution timeout had a PADIEM ceiling of one hour.
+    # A long job is bounded by the platform and by cancellation instead.
+    context = ExecutionContext(trace_id="trace", timeout_seconds=86_400.0)
+    assert context.timeout_seconds == 86_400.0
 
 
 def test_fingerprint_is_deterministic_across_mapping_order():
