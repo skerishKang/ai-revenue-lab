@@ -93,11 +93,11 @@ def _resolve_mc_children(container) -> list:
 # The analyzer cannot import Core directly: ``test_b66_generic_compile.py`` runs this file as a bare
 # script (``[sys.executable, "…/analyze.py", …]``) with no install step, so a hard Core import would
 # be an undeclared runtime dependency for a tool that is deliberately stdlib-only.
-MAX_BINARY_DOCUMENT_BYTES = 2 * 1024 * 1024          # Core MAX_BINARY_DOCUMENT_BYTES
+MAX_BINARY_DOCUMENT_BYTES = 1 * 1024 * 1024 * 1024          # B66 large-file policy, Core may serve smaller in-memory routes
 MAX_OOXML_ENTRIES = 256                              # Core MAX_OOXML_ENTRIES
 MAX_OOXML_MEMBER_NAME_CHARS = 255                    # Core MAX_OOXML_MEMBER_NAME_CHARS
-MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024  # Core MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES = 8 * 1024 * 1024  # Core MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES
+MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024 * 1024  # B66 per-member cap equals total disk intake budget
+MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES = 1 * 1024 * 1024 * 1024  # B66 total expanded bytes budget
 #: ``FileIntakePolicy.max_expansion_ratio``. A declared uncompressed size is a claim, not a bound, so
 #: the compressed -> uncompressed ratio is capped independently of the byte ceilings above.
 MAX_EXPANSION_RATIO = 200.0

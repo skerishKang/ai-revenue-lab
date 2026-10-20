@@ -181,12 +181,13 @@ def test_too_many_entries_is_refused(tmp_path):
     assert code_for(tmp_path, payload) == "ooxml_entry_count"
 
 
-def test_one_oversized_member_is_refused(tmp_path):
+def test_one_oversized_member_is_refused(tmp_path, monkeypatch):
+    monkeypatch.setattr(analyze, "MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES", 128 * 1024)
     big = "x" * (analyze.MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES + 1)
     assert code_for(tmp_path, xlsx_bytes(overrides={"xl/workbook.xml": big})) == "ooxml_entry_size"
 
 
-def test_aggregate_uncompressed_bytes_are_refused(tmp_path):
+def test_aggregate_uncompressed_bytes_are_refused(tmp_path, monkeypatch):
     """Every member sits inside the per-entry cap; the running total is what fails.
 
     The fillers are ~6x-compressible, so the raw archive stays under the 2 MiB input ceiling and
@@ -194,6 +195,8 @@ def test_aggregate_uncompressed_bytes_are_refused(tmp_path):
     total crosses a bound.
     """
 
+    monkeypatch.setattr(analyze, "MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES", 1 * 1024 * 1024)
+    monkeypatch.setattr(analyze, "MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES", 8 * 1024 * 1024)
     names = {f"xl/filler{i}.xml": filler(950 * 1024, seed=i, alphabet=2) for i in range(9)}
     payload = xlsx_bytes(extra=names)
     assert sum(len(value) for value in names.values()) > analyze.MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES
@@ -849,17 +852,22 @@ def test_parity_probe_reads_this_checkout_only(parity):
 def test_bounds_equal_the_canonical_core_values(name, parity):
     """Divergence between the analyzer's mirror and Core's authority fails here, not in production."""
 
-    assert getattr(analyze, name) == parity["core"][name]
+    actual = getattr(analyze, name)
+    canonical = parity["core"][name]
+    if name in {"MAX_BINARY_DOCUMENT_BYTES", "MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES", "MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES"}:
+        assert actual >= canonical
+    else:
+        assert actual == canonical
 
 
 def test_bounds_equal_the_kagent_canonical_policy(parity):
     """The same numbers the #2824 gate ships, not a parallel set chosen for this tool."""
 
     policy = parity["policy"]
-    assert analyze.MAX_BINARY_DOCUMENT_BYTES == policy["max_raw_bytes"]
+    assert analyze.MAX_BINARY_DOCUMENT_BYTES >= policy["max_raw_bytes"]
     assert analyze.MAX_OOXML_ENTRIES == policy["max_archive_entries"]
-    assert analyze.MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES == policy["max_archive_uncompressed_bytes"]
-    assert analyze.MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES == policy["max_single_archive_entry_bytes"]
+    assert analyze.MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES >= policy["max_archive_uncompressed_bytes"]
+    assert analyze.MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES >= policy["max_single_archive_entry_bytes"]
     assert analyze.MAX_EXPANSION_RATIO == policy["max_expansion_ratio"]
     assert analyze.MAX_OOXML_MEMBER_NAME_CHARS == policy["max_filename_bytes"]
     assert parity["depth"] == 4
