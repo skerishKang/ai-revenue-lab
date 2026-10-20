@@ -70,8 +70,8 @@ from app.pilot.model_registry_file import group_model_ids
 # (Kilo Gateway's own ~10s limit on free models). Direct/manual routes used
 # to attempt once and give up despite the failure being retryable.
 #
-# The 45s budget limits *additional* retry/fallback dispatches, not the
-# initial model inference. For both manual and auto routes the initial
+# The provider-aligned retry budget limits *additional* retry/fallback
+# dispatches, not the initial model inference. For both manual and auto routes the initial
 # attempt is governed by model idle detection and caller cancellation.
 # After it completes, additional physical requests are allowed only when
 # the shared retry window has remaining budget. The old 60s Engine ceiling
