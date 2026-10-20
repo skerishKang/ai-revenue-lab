@@ -32,6 +32,8 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[2]
 ZOOM = ROOT / ".github/scripts/b62_glass_zoom_visual_qa.py"
 TAIL = ROOT / ".github/scripts/b62_browser_qa_tail_parallel.py"
+PLANNER = ROOT / ".github/scripts/b62_browser_qa_path_plan.py"
+CANARY = ROOT / ".github/workflows/com2-b62-generic-browser-canary.yml"
 
 if "playwright.async_api" not in sys.modules:
     _playwright = types.ModuleType("playwright")
@@ -208,6 +210,42 @@ class VisualTailFailureEvidenceContract(unittest.TestCase):
             output.index("B62_VISUAL_TAIL_FAILURE=b62_glass_zoom_visual_qa.py"),
             output.index("B62_VISUAL_TAIL_EXECUTED=3"),
         )
+
+
+class VisualTailScopeSelectionContract(unittest.TestCase):
+    """A change to a lane's own script must select that lane.
+
+    The generic Browser lane runs the visual-tail suites itself, so a change
+    to one of them has to select the hosted Browser QA lane and the COM2
+    Generic Browser canary.  The hosted planner covers the lane-owned suites
+    through PLAN_FILES, and the COM2 canary through its changed-file filter.
+    """
+
+    LANE_SCRIPTS = (
+        ".github/scripts/b62_browser_visual_qa.py",
+        ".github/scripts/b62_glass_shell_visual_qa.py",
+        ".github/scripts/b62_glass_zoom_visual_qa.py",
+        ".github/scripts/b62_chat_gutter_visual_qa.py",
+        ".github/scripts/b62_browser_qa_tail_parallel.py",
+    )
+
+    def test_the_hosted_planner_selects_every_lane_for_a_lane_script_change(self):
+        source = PLANNER.read_text(encoding="utf-8")
+        for script in self.LANE_SCRIPTS:
+            self.assertIn(f'"{script}"', source, script)
+
+    def test_the_com2_generic_browser_canary_selects_its_own_scripts(self):
+        source = CANARY.read_text(encoding="utf-8")
+        for script in self.LANE_SCRIPTS:
+            self.assertIn(f"p=='{script}'", source, script)
+        # The existing product-surface clauses stay in place.
+        self.assertIn("p.startswith('apps/padiem-chat/')", source)
+
+    def test_the_canary_still_requires_an_open_same_repository_pr_head(self):
+        source = CANARY.read_text(encoding="utf-8")
+        self.assertIn("p['state']=='open'", source)
+        self.assertIn("p['head']['sha']==sha", source)
+        self.assertIn("p['head']['repo']['full_name']==repo", source)
 
 
 if __name__ == "__main__":
