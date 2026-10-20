@@ -776,12 +776,7 @@
   async function selectImage(file) {
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error(attachmentCopy().unsupportedFormat);
     if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error(attachmentCopy().imageTooLarge);
-    const dataUrl = await readAsDataUrl(file);
-    const expectedPrefix = `data:${file.type};base64,`;
-    if (typeof dataUrl !== "string" || !dataUrl.startsWith(expectedPrefix)) throw new Error(uiT("image-format-invalid"));
-    const base64 = dataUrl.slice(expectedPrefix.length);
-    if (!base64) throw new Error(uiT("image-data-empty"));
-    return { type: "image", name: file.name || "image", mediaType: file.type, base64, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
+    return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
   async function selectAttachment(file) {
     if (!file) return;
@@ -800,6 +795,9 @@
   }
   function attachmentPayload(attachment) {
     if (!attachment) return undefined;
+    if (attachment.file) {
+      return [{ type: attachment.type, name: attachment.name, media_type: attachment.mediaType, file: attachment.file }];
+    }
     if (attachment.type === "image") {
       return [{ type: "image", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
     }

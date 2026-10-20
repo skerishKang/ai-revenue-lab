@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 from typing import Any
 
@@ -234,7 +235,7 @@ async def api_chat_stream(request: Request):
         return _too_large_response()
 
     try:
-        raw = json.loads(body.decode("utf-8"))
+        raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = _validate_payload(raw)
         if custom is None:
             # No-tier browser clients are Free; validate legacy slash syntax
@@ -247,7 +248,7 @@ async def api_chat_stream(request: Request):
             )
         else:
             selected_model = custom.model
-    except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
+    except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
 
@@ -659,6 +660,25 @@ async def api_chat_stream(request: Request):
     )
 
 
+def _decode_completed_binary_attachment(body: bytes) -> dict[str, Any]:
+    """One bounded binary original plus JSON request metadata; no browser Base64."""
+    if len(body) < 6:
+        raise ValueError("invalid binary attachment frame")
+    header_size = int.from_bytes(body[:4], "big")
+    if not 0 < header_size <= 65536 or len(body) <= 4 + header_size:
+        raise ValueError("invalid binary attachment frame")
+    raw = json.loads(body[4:4 + header_size].decode("utf-8"))
+    if not isinstance(raw, dict) or not isinstance(raw.get("attachments"), list) or len(raw["attachments"]) != 1:
+        raise ValueError("invalid binary attachment metadata")
+    item = raw["attachments"][0]
+    if not isinstance(item, dict) or set(item) != {"type", "name", "media_type"}:
+        raise ValueError("invalid binary attachment metadata")
+    if item["type"] not in ("image", "document"):
+        raise ValueError("invalid binary attachment type")
+    item["base64"] = base64.b64encode(body[4 + header_size:]).decode("ascii")
+    return raw
+
+
 async def api_chat(request: Request) -> JSONResponse:
     content_length = request.headers.get("content-length")
     if content_length:
@@ -673,7 +693,7 @@ async def api_chat(request: Request) -> JSONResponse:
         return _too_large_response()
 
     try:
-        raw = json.loads(body.decode("utf-8"))
+        raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = _validate_payload(raw)
         if custom is None:
             # No-tier browser clients are Free; validate legacy slash syntax
@@ -686,7 +706,7 @@ async def api_chat(request: Request) -> JSONResponse:
             )
         else:
             selected_model = custom.model
-    except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
+    except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
 
