@@ -212,8 +212,6 @@ def normalize_text_document(*, name: Any, media_type: Any, text: Any) -> Normali
     safe_name, safe_media = validate_document_identity(name=name, media_type=media_type, source_kind="text")
     normalized = normalize_document_text(text)
     byte_size = len(normalized.encode("utf-8"))
-    if byte_size > MAX_TEXT_DOCUMENT_BYTES:
-        raise DocumentNormalizationError("text_bytes_too_large", "Text document exceeds the byte limit.")
     return NormalizedDocument(
         name=safe_name,
         media_type=safe_media,
