@@ -76,6 +76,15 @@ async def request(app, settings, *, owner=OWNER, method="GET", path="/api/claw/o
                                  base_url=ORIGIN) as c:
         if method == "GET":
             return await c.get(path, headers=h)
+        if path == "/api/claw/office/web-sources" and isinstance(payload, dict) and set(payload) == {"name", "base64"}:
+            try:
+                raw = base64.b64decode(payload["base64"], validate=True)
+            except (ValueError, base64.binascii.Error):
+                raw = None
+            if raw is not None:
+                h["Content-Type"] = "application/octet-stream"
+                h["X-Padiem-Filename"] = __import__("urllib.parse", fromlist=["quote"]).quote(payload["name"], safe="")
+                return await c.post(path, headers=h, content=raw)
         return await c.post(path, headers=h, json=payload)
 
 
