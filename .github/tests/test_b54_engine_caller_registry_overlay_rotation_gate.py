@@ -78,6 +78,12 @@ TELEGRAM_APP_ID = "b54-padiem-claw-telegram"
 CALENDAR_APP_ID = "b54-padiem-claw-calendar"
 XLSX_READ_APP_ID = "padiem-web-xlsx-p01"
 XLSX_WRITE_APP_ID = "padiem-web-xlsx-write-p01"
+# #5015: the Chat product's own Engine app id. The Chat P01 bridge composes
+# the Engine client with app_id="padiem-chat"; the Engine refuses any request
+# whose app id is not in this caller's allowed list, so the Chat product's PC
+# lane could not reach the Engine at all. App authorization only: it lets the
+# request reach the Engine and enables nothing by itself.
+CHAT_PRODUCT_APP_ID = "padiem-chat"
 CANONICAL_APP_IDS = (
     CLAW_APP_ID,
     DRIVE_APP_ID,
@@ -85,6 +91,7 @@ CANONICAL_APP_IDS = (
     CALENDAR_APP_ID,
     XLSX_READ_APP_ID,
     XLSX_WRITE_APP_ID,
+    CHAT_PRODUCT_APP_ID,
 )
 FOREIGN_APP_ID = "b62"
 BASE_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
@@ -237,8 +244,9 @@ def test_script_constants_exact() -> None:
     assert set(helper.LEGACY_TRIO_NAMES) == set(LEGACY_TRIO_NAMES)
     assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
     # Explicit bounded connector READ authority: Claw, Drive, Telegram, Calendar,
-    # the Hark WEB-FIRST XLSX READ Engine tool app (#3936), and the independent
-    # Hark WEB-FIRST XLSX WRITE Engine tool app (#3933).
+    # the Hark WEB-FIRST XLSX READ Engine tool app (#3936), the independent
+    # Hark WEB-FIRST XLSX WRITE Engine tool app (#3933), and the Chat product's
+    # own app id (#5015). Every entry is app authorization only.
     assert helper.ALLOWED_APP_IDS == CANONICAL_APP_IDS
     assert helper.ALLOWED_APP_IDS == (
         CLAW_APP_ID,
@@ -247,8 +255,13 @@ def test_script_constants_exact() -> None:
         CALENDAR_APP_ID,
         XLSX_READ_APP_ID,
         XLSX_WRITE_APP_ID,
+        CHAT_PRODUCT_APP_ID,
     )
     assert helper.ALLOWED_APP_IDS[0] == CLAW_APP_ID
+    # The existing Claw authorities are preserved and exactly one app id is added.
+    assert set(helper.ALLOWED_APP_IDS) - set(CANONICAL_APP_IDS) == set()
+    assert len(helper.ALLOWED_APP_IDS) == len(set(helper.ALLOWED_APP_IDS))
+    assert FOREIGN_APP_ID not in helper.ALLOWED_APP_IDS
     assert helper.OVERLAY_VERSION == 1
     assert helper.MIN_CREDENTIAL_BYTES == 32
     assert helper.MAX_CREDENTIAL_BYTES == 512
@@ -361,6 +374,7 @@ def test_build_overlay_payload_is_canonical_single_caller() -> None:
                 CALENDAR_APP_ID,
                 XLSX_READ_APP_ID,
                 XLSX_WRITE_APP_ID,
+                CHAT_PRODUCT_APP_ID,
             ],
         },
     }
