@@ -323,6 +323,7 @@ def _agent_profile(
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
     product_tier: str | None = None,
+    tier_stream_fallback: bool = False,
 ) -> AgentProfile:
     """Convert B62-owned TaskMode/model policy into the locked Core contract."""
 
@@ -347,7 +348,9 @@ def _agent_profile(
             # Arbitrary catalog-wide fallback stays disabled. This does not
             # block the owner-pinned tier grade backup in the B14 gateway.
             "allow_external_fallback": False,
-            # Owner-tier candidate count is determined by the route decision.
+            # Leave existing completed-response contracts unchanged. The SSE
+            # lane uses the owner-tier roster rather than a one-attempt pin.
+            **({} if tier_stream_fallback else {"max_attempts": 1}),
             **({"product_tier": product_tier} if product_tier is not None else {}),
             **({"max_retries": max_retries} if max_retries is not None else {}),
             # Only an explicitly requested native parameter enters the policy.
@@ -373,6 +376,7 @@ def _execution_request(
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
     product_tier: str | None = None,
+    tier_stream_fallback: bool = False,
 ) -> ExecutionRequest:
     return ExecutionRequest(
         agent=_agent_profile(
@@ -382,6 +386,7 @@ def _execution_request(
             max_retries=max_retries,
             model_parameters=model_parameters,
             product_tier=product_tier,
+            tier_stream_fallback=tier_stream_fallback,
         ),
         messages=tuple(dict(message) for message in messages),
         additional_system_context=_trusted_dispatch_context(
@@ -580,6 +585,7 @@ class B14Client:
             required_capabilities=("free",),
             additional_system_context=bounded_context,
             dispatch_sample=self._dispatch_wall_clock(),
+            tier_stream_fallback=True,
         )
         inner_stream = self._stream_core(request)
         try:
@@ -658,6 +664,7 @@ class B14Client:
             additional_system_context=bounded_context,
             dispatch_sample=self._dispatch_wall_clock(),
             product_tier=tier,
+            tier_stream_fallback=True,
         )
         inner_stream = self._stream_core(request)
         try:
