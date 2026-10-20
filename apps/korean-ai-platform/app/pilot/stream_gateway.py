@@ -112,7 +112,6 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
     # security/cancellation contract bounded.
     if (
         decision.route_mode != "manual"
-        or decision.fallback_allowed
         or decision.max_attempts != 1
     ):
         raise StreamNotSupported()
