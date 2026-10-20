@@ -187,7 +187,10 @@ class FakeB14:
     "policy",
     [
         {"model": "b14/auto", "unknown": True},
-        {"model": "b14/auto", "max_attempts": 99},
+        # #4317: the attempt budget is a positive count, not a capped constant,
+        # so a large budget is valid and a non-positive one is not.
+        {"model": "b14/auto", "max_attempts": 0},
+        {"model": "b14/auto", "max_attempts": True},
     ],
 )
 async def test_invalid_core_model_policy_fails_before_b14(policy) -> None:
@@ -204,6 +207,29 @@ async def test_invalid_core_model_policy_fails_before_b14(policy) -> None:
     assert response.status_code == 400
     assert response.body["error"]["code"] == "invalid_execution_request"
     assert b14.calls == []
+
+
+@pytest.mark.asyncio
+async def test_a_large_attempt_budget_reaches_b14_instead_of_being_rejected() -> None:
+    """#4317: the attempt budget is a positive count, not a capped constant.
+
+    B14 bounds the real walk by the candidates the declared grade allows, so
+    a large declared budget is forwarded rather than refused here. The
+    remaining guard is that the budget must be a positive integer.
+    """
+    payload = valid_payload()
+    payload["agent"]["model_policy"] = {"model": "b14/auto", "max_attempts": 99}
+    b14 = FakeB14()
+    service = EngineService(
+        runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
+        b14_service_bound=True,
+    )
+
+    response = await service.execute_payload(payload)
+
+    assert response.status_code == 200
+    assert len(b14.calls) == 1
+    assert b14.calls[0].routing.max_attempts == 99
 
 
 # #3566 / #3382: inert, syntactically valid identifiers used only to prove the
