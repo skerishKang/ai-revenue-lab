@@ -130,7 +130,7 @@ class UrllibEngineTransport:
 
     def __init__(self, base_url: str, *, timeout_seconds: float | None = TRANSPORT_TIMEOUT_SECONDS) -> None:
         self._base_url = _validated_base_url(base_url, ENV_ENGINE_BASE_URL)
-        self._timeout = float(timeout_seconds)
+        self._timeout = None if timeout_seconds is None else float(timeout_seconds)
 
     def map_url(self, url: str) -> str:
         parsed = urllib.parse.urlsplit(url)

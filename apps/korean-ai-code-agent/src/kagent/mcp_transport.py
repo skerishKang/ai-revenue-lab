@@ -56,7 +56,7 @@ class TrustedMcpAuthority(Protocol):
         actor_ref: str,
         connector_id: str,
         endpoint: str,
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> tuple[dict[str, Any], ...]:
         ...
 
@@ -69,7 +69,7 @@ class TrustedMcpAuthority(Protocol):
         endpoint: str,
         tool_name: str,
         args: dict[str, Any],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> TrustedMcpCallResponse:
         ...
 
