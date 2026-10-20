@@ -10,6 +10,8 @@
 
 html[data-theme="padiem-glass"] {
   color-scheme: light;
+  /* The canvas keeps the page colour, so the first frame is not white. */
+  background-color: #aeb6bf;
   --padiem-glass-background-image: none;
   --bg: #aeb6bf;
   --page-bg: #aeb6bf;

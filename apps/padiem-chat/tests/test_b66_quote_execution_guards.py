@@ -211,7 +211,10 @@ def test_actual_quote_core_budget_reaches_b14_gateway_with_one_provider_timeout(
     ))
     payload = binding.calls[0][1]
     assert payload["business14"]["max_retries"] == 0
-    assert payload["business14"]["max_attempts"] == 1
+    # #5362 removed the default one-step agent execution ceiling, so no
+    # attempt ceiling is sent. The one-shot contract is the pinned retry
+    # budget above.
+    assert "max_attempts" not in payload["business14"]
     assert payload["business14"]["allow_external_fallback"] is False
 
     repo = Path(__file__).resolve().parents[3]

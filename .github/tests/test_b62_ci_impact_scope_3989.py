@@ -34,6 +34,11 @@ def fake_event(event_type="pull_request"):
 
 
 class B62ScopeTests(unittest.TestCase):
+    def test_b14_attempt_policy_uses_focused_lane(self):
+        paths = [file("apps/padiem-chat/app/b14_client.py"), file("apps/padiem-chat/tests/test_owner_tier_fallback_dispatch_261015.py")]
+        self.assertEqual(module.impact_scope(paths), module.B14_ATTEMPT_ONLY)
+        self.assertEqual(module.impact_scope(paths + [file("apps/padiem-chat/app/chat_routes.py")]), module.CHAT_ONLY)
+
     def test_exact_isolated_parser_sources_use_focused_ci(self):
         isolated = [
             file("packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py"),
