@@ -83,6 +83,7 @@ jobs:
           python -m unittest discover -s .github/tests -p test_3989_b62_glass_timing_ownership.py -v
           python -m unittest discover -s .github/tests -p test_b62_visual_timing_starved_attribution.py -v
           python -m unittest discover -s .github/tests -p test_b62_glass_zoom_visual_tail_contract.py -v
+          python -m unittest discover -s .github/tests -p test_b62_post_certification_action_settle.py -v
       - name: Select jobs for changed PR paths
         id: classify
         env:
