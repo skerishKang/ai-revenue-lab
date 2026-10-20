@@ -11,7 +11,7 @@ from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body, open_bounded_spooled_request
 from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item, _translate_binary_error
 from padiem_ai_core.document_normalization import DocumentNormalizationError, MAX_BINARY_DOCUMENT_BYTES
-from padiem_ai_core.document_parser_boundary import parse_binary_document_via_authority
+from padiem_ai_core.document_parser_boundary import parse_binary_document_via_authority, production_worker_runtime
 from .documents import DocumentValidationError, validate_document_fields
 from .history import HistoryStore, validate_project_id
 from .project_files import (
@@ -196,7 +196,9 @@ async def project_files_collection(request: Request) -> JSONResponse:
         try:
             name = unquote(encoded_name, encoding="utf-8", errors="strict")
             async with open_bounded_spooled_request(request, max_bytes=MAX_BINARY_DOCUMENT_BYTES) as spool:
-                source = spool if media_type == "application/pdf" else spool.read()
+                # Local Core PDF parsing can use the seekable spool directly.
+                # The Worker isolated-parser wire contract still requires bytes.
+                source = spool if media_type == "application/pdf" and not production_worker_runtime() else spool.read()
                 parsed = parse_binary_document_via_authority(
                     name=name, media_type=media_type, payload=source,
                 )
