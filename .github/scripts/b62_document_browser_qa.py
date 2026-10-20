@@ -124,6 +124,16 @@ async def _run_view(
         parsed = urlparse(request.url)
         if request.method == "POST" and parsed.path in {"/api/chat", "/api/chat/stream"}:
             payload: Any = None
+            raw_body = request.post_data_buffer
+            if raw_body and request.headers.get("content-type", "").startswith("application/octet-stream"):
+                if len(raw_body) < 5:
+                    raise AssertionError("binary chat frame too short")
+                header_size = int.from_bytes(raw_body[:4], "big")
+                if not 0 < header_size <= 65536 or len(raw_body) <= header_size + 4:
+                    raise AssertionError("invalid binary chat frame")
+                payload = json.loads(raw_body[4:4 + header_size].decode("utf-8"))
+                chat_posts.append({"path": parsed.path, "payload": payload, "binary": raw_body[4 + header_size:]})
+                return
             if request.post_data:
                 try:
                     payload = json.loads(request.post_data)
@@ -269,11 +279,10 @@ async def _run_view(
     binary_document = attachments[0]
     if binary_document.get("type") != "document" or binary_document.get("name") != BINARY_NAME:
         raise AssertionError(f"binary document metadata mismatch: {binary_document!r}")
-    if binary_document.get("media_type") != BINARY_MIME or "text" in binary_document:
-        raise AssertionError(f"binary document variant must carry base64, not text: {binary_document!r}")
-    encoded = binary_document.get("base64")
-    if not isinstance(encoded, str) or base64.b64decode(encoded, validate=True) != binary_payload:
-        raise AssertionError("binary document payload did not round-trip exactly")
+    if binary_document.get("media_type") != BINARY_MIME or "text" in binary_document or "base64" in binary_document:
+        raise AssertionError(f"binary document metadata must not carry encoded content: {binary_document!r}")
+    if binary_post.get("binary") != binary_payload:
+        raise AssertionError("binary document original did not round-trip exactly")
     for payload in (text_payload, binary_request):
         if any(key in payload for key in ("model", "provider", "route", "business14")):
             raise AssertionError(f"browser payload must not select model/provider routing: {payload!r}")

@@ -48,6 +48,16 @@ async def _run_view(
         parsed = urlparse(request.url)
         if request.method == "POST" and parsed.path in {"/api/chat", "/api/chat/stream"}:
             payload: Any = None
+            raw_body = request.post_data_buffer
+            if raw_body and request.headers.get("content-type", "").startswith("application/octet-stream"):
+                if len(raw_body) < 5:
+                    raise AssertionError("binary chat frame too short")
+                header_size = int.from_bytes(raw_body[:4], "big")
+                if not 0 < header_size <= 65536 or len(raw_body) <= header_size + 4:
+                    raise AssertionError("invalid binary chat frame")
+                payload = json.loads(raw_body[4:4 + header_size].decode("utf-8"))
+                chat_posts.append({"path": parsed.path, "payload": payload, "binary": raw_body[4 + header_size:]})
+                return
             if request.post_data:
                 try:
                     payload = json.loads(request.post_data)
@@ -155,11 +165,12 @@ async def _run_view(
         "type": "image",
         "name": IMAGE_NAME,
         "media_type": IMAGE_MIME,
-        "base64": IMAGE_BASE64,
     }
     for key, value in expected.items():
         if image.get(key) != value:
             raise AssertionError(f"image payload mismatch for {key}: {image!r}")
+    if "base64" in image or post.get("binary") != base64.b64decode(IMAGE_BASE64):
+        raise AssertionError("image request must carry exact unencoded bytes")
     if any(key in payload for key in ("model", "provider", "route", "business14")):
         raise AssertionError(f"browser payload must not select model/provider routing: {payload!r}")
     if payload.get("tool"):
