@@ -250,6 +250,14 @@ class SameOriginGuardMiddleware:
         media_type = content_type.split(";", 1)[0].strip().lower()
         if media_type == _JSON_MEDIA_TYPE:
             return None
+        # XLSX originals are sent as raw octet streams to the exact
+        # cookie-authenticated office source route. Keep Origin enforcement.
+        if (
+            scope.get("method") == "POST"
+            and path == "/api/claw/office/web-sources"
+            and media_type == "application/octet-stream"
+        ):
+            return None
         # Project originals are raw binary, still subject to the same
         # cookie, fixed-origin and route-local owner checks.
         if (
