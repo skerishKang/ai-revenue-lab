@@ -305,7 +305,6 @@ _DELIVERY_KINDS_SERVED = frozenset({"external_connector"})
 #: Existing catalogue authority for this adapter's connector identity.
 _SUPPORTED_CONNECTOR_IDS = ("telegram",)
 
-_MAX_DOCUMENT_SEND_TIMEOUT_SECONDS = 30
 _MAX_PROVIDER_ERROR_CODE = 10_000
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 
@@ -471,11 +470,17 @@ def _provider_int(value: Any, field_name: str) -> int:
     return value
 
 
-def _bounded_timeout(value: Any) -> int:
-    """Same bounded timeout rule the existing provider seam enforces."""
+def _bounded_timeout(value: Any) -> int | None:
+    """The provider seam timeout rule.
 
+    #4379: a document send carries no PADIEM client deadline. None means the
+    provider's own timeout applies.
+    """
+
+    if value is None:
+        return None
     if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 60:
-        raise ContractError("document send timeout must be between 1 and 60 seconds")
+        raise ContractError("document send timeout must be a positive number or None")
     return value
 
 
@@ -741,7 +746,7 @@ class TelegramArtifactDeliveryAdapter:
                 document_bytes=material.document_bytes,
                 filename=material.record.filename,
                 mime_type=material.record.media_type,
-                timeout_seconds=_bounded_timeout(_MAX_DOCUMENT_SEND_TIMEOUT_SECONDS),
+                timeout_seconds=_bounded_timeout(None),
             )
         except ContractError:
             raise

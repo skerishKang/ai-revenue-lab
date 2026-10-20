@@ -148,13 +148,10 @@ class LocalAgentContractTests(unittest.TestCase):
             dirty_worktree_before=False,
             dirty_worktree_after=False,
         )
-        # The local agent output character bound stays for now: the Windows
-        # executor's own pipe capture bound and the public truncation flag are
-        # one contract. The wall-clock ceiling is the #4379 removal.
-        self.assertEqual(len(result.stdout), 8192)
-        self.assertEqual(len(result.stderr), 8192)
-        self.assertTrue(result.stdout_truncated)
-        self.assertTrue(result.stderr_truncated)
+        # #4379: the local agent output is not cut to a character total and
+        # the result no longer claims a truncation.
+        self.assertEqual(len(result.stdout), 9000)
+        self.assertEqual(len(result.stderr), 9000)
 
     def test_non_windows_fake_runtime_is_not_claimed_complete(self):
         mac_profile = profile(platform=LocalAgentPlatform.MACOS)
