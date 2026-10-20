@@ -32,8 +32,28 @@ def pc_tool_target_fingerprint(
     """Bind a validated PC execution target into a replay-safe digest.
 
     Only server-validated arguments reach this function, so the digest changes
-    exactly when the execution would run against a different PC. No or empty
-    arguments keep the pre-#5015 identity shape.
+    exactly when the execution would run against a different PC.
+
+    Target-less identity policy (#5015), stated here because nothing else in
+    this repository carries a target on a continuation:
+
+    * No target means *no extension*, never a match. ``None`` shortens the
+      digest; it is not compared against another ``None`` to decide that two
+      executions target the same PC.
+    * A paused execution carries no target field. ``ContinuationExecutionIdentity``
+      and ``execution_request_identity_payload`` stay in their pre-#5015 shape, so
+      every continuation — PC or not — keeps the digest form it was created with.
+      The one authority that proves a resumed execution runs on the same PC is the
+      server-issued pause: ``tool_invocation_digest(invocation)`` hashes the exact
+      ``{device_id}`` arguments, and ``_assert_resumed_invocation_matches`` refuses
+      anything else.
+    * A PC run that ever paused would store a target-bearing run digest while the
+      closed resume wire can only produce a target-free one, so
+      ``require_non_widening_resume_admission`` answers 409. That is fail-closed by
+      design; opening the resume wire would have to extend the digest too.
+    * A malformed target yields no fingerprint at all instead of a weaker
+      target-free one, so an invalid request can never be replayed as a
+      target-less sibling under the same key.
     """
     if not tool_arguments:
         return None
