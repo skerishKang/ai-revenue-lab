@@ -313,3 +313,72 @@ def test_the_reserved_space_is_measured_not_an_arbitrary_inset():
     manager = (STATIC / "claw-device-manager.js").read_text(encoding="utf-8")
     assert "composerColumn.insertBefore(panel, composerArea)" in manager
     assert "root.append(toggle, panel)" not in manager
+
+
+WORKBENCH_BOX = """() => {
+  const conv = document.querySelector('.conversation');
+  const rect = conv.getBoundingClientRect();
+  return {
+    top: rect.top, bottom: rect.bottom, height: rect.height,
+    flexBasis: getComputedStyle(conv).flexBasis,
+    documentHeight: document.documentElement.scrollHeight,
+    viewportHeight: window.innerHeight,
+  };
+}"""
+
+
+def open_claw_view(page, url: str, view: str) -> None:
+    page.goto(url, wait_until="domcontentloaded")
+    page.wait_for_timeout(900)
+    page.evaluate(
+        """(view) => {
+          const shell = document.querySelector('.app-shell');
+          const ws = document.getElementById('clawWorkspace');
+          shell.setAttribute('data-state', 'claw');
+          ws.hidden = false;
+          ws.setAttribute('data-view', view);
+          const form = document.getElementById('clawManualForm');
+          if (form) form.hidden = view !== 'manual';
+          const empty = document.getElementById('emptyState');
+          if (empty) empty.hidden = true;
+        }""",
+        view,
+    )
+    page.wait_for_timeout(500)
+
+
+@requires_browser
+@pytest.mark.parametrize("width,height", [(1920, 1080), (1440, 900), (1024, 768), (820, 900), (390, 844)])
+def test_the_claw_workbench_canvas_stays_inside_the_viewport(browser, server, width, height):
+    """The workbench canvas is bounded by the column, never by its content.
+
+    The shared .conversation rule carries a percentage flex basis. Against the
+    auto-height content column that percentage cannot be resolved, so the base
+    size fell back to the content height: the column grew past the viewport and
+    the last turn ended below the fold, under the fixed input.
+    """
+    page = browser.new_page(viewport={"width": width, "height": height})
+    open_claw_view(page, server, "manual")
+    measured = page.evaluate(WORKBENCH_BOX)
+    assert measured["documentHeight"] <= measured["viewportHeight"] + 1, measured
+    assert measured["bottom"] <= measured["viewportHeight"] + 1, measured
+    assert measured["flexBasis"] == "0px", measured
+    page.close()
+
+
+@requires_browser
+@pytest.mark.parametrize("width,height", [(1440, 900), (390, 844)])
+def test_the_claw_landing_keeps_scrolling_with_the_document(browser, server, width, height):
+    """The first-use landing keeps its document-scrolling lane."""
+    page = browser.new_page(viewport={"width": width, "height": height})
+    open_claw_view(page, server, "general")
+    measured = page.evaluate(WORKBENCH_BOX)
+    assert measured["flexBasis"] == "0%", measured
+    page.close()
+
+
+def test_the_workbench_canvas_uses_a_content_independent_flex_basis():
+    """The canvas base size may not follow the content height again."""
+    workspace = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+    assert 'data-view="general"] ~ .conversation)) .conversation' in workspace
+    assert "flex: 1 1 0;" in workspace

@@ -36,6 +36,17 @@
 .app-shell[data-state="claw"] .conversation .empty-state {
   display: none;
 }
+/* #5014: the workbench canvas is bounded by the column, so its flex base size
+ * must not be derived from the content height. The shared .conversation rule
+ * uses a percentage basis (flex: 1 -> 1 1 0%); against the auto-height
+ * content column that percentage cannot resolve, so the base size falls back
+ * to the content height and the column grows past the viewport (the canvas box
+ * then ends below the fold and the fixed composer overlaps the last message).
+ * A unitless zero basis keeps the canvas inside the viewport box; the landing
+ * view keeps the document-scrolling lane it has always had. */
+.app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
+  flex: 1 1 0;
+}
 .app-shell[data-state="claw"] .claw-workspace[data-view="manual"] {
   display: none;
 }
