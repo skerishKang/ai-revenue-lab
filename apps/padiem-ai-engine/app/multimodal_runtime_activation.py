@@ -374,7 +374,6 @@ def valid_payload(app_id: str, ref: str = _VALID_REF) -> dict[str, Any]:
             "model_policy": {
                 "model": "b14/auto",
                 "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         },
         "messages": [{"role": "user", "content": "synthetic a6 probe"}],

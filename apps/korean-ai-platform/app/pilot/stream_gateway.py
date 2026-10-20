@@ -108,8 +108,8 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
 
     decision = rcore.resolve_route(model_id, b14_opts)
     # Only the existing owner-selected tier roster may be traversed. Arbitrary
-    # catalog fallback remains disabled; traversal is finite and bounded by the
-    # canonical route decision's max_attempts and eligible_fallback fields.
+    # catalog fallback remains disabled; traversal is finite and bounded by
+    # the canonical route decision's eligible_fallback field.
     owner_tier_fallback = any(
         code.startswith("owner_selected_tier_fallback:")
         for code in decision.reason_codes
@@ -120,13 +120,8 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
         raise StreamNotSupported()
     if decision.fallback_allowed and not owner_tier_fallback:
         raise StreamNotSupported()
-    if (
-        isinstance(decision.max_attempts, bool)
-        or not isinstance(decision.max_attempts, int)
-        or decision.max_attempts < 1
-        or decision.max_attempts > 1 + len(decision.eligible_fallback)
-    ):
-        raise StreamNotSupported()
+    # #4317: there is no attempt budget to validate. The streaming lane walks
+    # the candidates the declared product grade allows, in order.
 
     return body, decision
 
@@ -174,7 +169,6 @@ def _decision_for_attempt(
     changes: dict[str, Any] = {
         "fallback_allowed": bool(remaining),
         "eligible_fallback": remaining,
-        "max_attempts": 1 + len(remaining),
     }
     if candidate is not None:
         registered = get_catalog_by_id(candidate["model_id"])
@@ -391,13 +385,11 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
             raise InvalidRequest("Invalid streaming transport configuration.")
 
         fallback_candidates = list(decision.eligible_fallback)
-        allowed_attempts = min(
-            decision.max_attempts,
-            1 + len(fallback_candidates),
-        )
+        # #4317: every candidate the declared product grade allows is tried,
+        # in order. There is no attempt ceiling to apply here.
         attempt_candidates: list[dict[str, str] | None] = [
             None,
-            *fallback_candidates[: max(0, allowed_attempts - 1)],
+            *fallback_candidates,
         ]
 
         for attempt_index, candidate in enumerate(attempt_candidates):

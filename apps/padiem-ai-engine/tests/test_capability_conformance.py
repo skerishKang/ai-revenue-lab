@@ -160,7 +160,6 @@ def _agent() -> dict[str, object]:
         "model_policy": {
             "model": "b14/auto",
             "allow_external_fallback": False,
-            "max_attempts": 1,
         },
     }
 

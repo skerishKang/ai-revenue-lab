@@ -509,7 +509,7 @@ def test_multimodal_runtime_still_runs_without_a_native_parameter() -> None:
     [
         {"model": "test/route"},
         {"model": "test/route", "temperature": 0.7},
-        {"model": "test/route", "max_attempts": 1, "max_retries": 0},
+        {"model": "test/route", "max_retries": 0},
         {"model": "b14/auto", "allow_external_fallback": True},
     ],
 )
@@ -561,8 +561,7 @@ def test_auto_route_consumer_shape_is_unchanged() -> None:
             required_capabilities=("free",),
             optimize_for="balanced",
             allow_external_fallback=True,
-            max_attempts=2,
-        ),
+            ),
     )
     payload = request.to_payload()
     assert "reasoning_effort" not in payload
@@ -571,7 +570,6 @@ def test_auto_route_consumer_shape_is_unchanged() -> None:
         "required_capabilities": ["free"],
         "optimize_for": "balanced",
         "allow_external_fallback": True,
-        "max_attempts": 2,
     }
 
 
