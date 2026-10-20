@@ -14,8 +14,12 @@
  *
  * 두 가지 MediaRecorder 타이밍을 모두 검증한다:
  *   sync  - ondataavailable/onstop이 동기로 호출되는 단순 fake
- *   async - 실제 브라우저처럼 ondataavailable/onstop/FileReader/fetch가 모두
+ *   async - 실제 브라우저처럼 ondataavailable/onstop/fetch가 모두
  *           stop() 반환 이후에 도착하는 fake
+ *
+ * #4379: 업로드 본문은 base64 JSON이 아니라 Blob 원본이다. transcribe fake는
+ * octet-stream 본문과 X-Padiem-Audio-Type/X-Padiem-Utterance-Id 헤더가
+ * 아니면 415로 거부하므로, base64로 되돌아가는 회귀가 이 파일에서 잡힌다.
  */
 "use strict";
 
@@ -115,20 +119,6 @@ function flattenParts(blob) {
   if (blob && Array.isArray(blob.parts)) return blob.parts.map(flattenParts).join("|");
   return String(blob);
 }
-function FakeFileReader(timing) {
-  this.onload = null;
-  this.onerror = null;
-  this.result = null;
-  const self = this;
-  this.readAsDataURL = function (blob) {
-    const payload = blob ? flattenParts(blob) : "";
-    const finish = function () {
-      self.result = "data:audio/webm;base64," + Buffer.from(payload, "utf8").toString("base64");
-      if (self.onload) self.onload();
-    };
-    if (timing === "async") setTimeout(finish, 3); else finish();
-  };
-}
 function FakeAudioContext(env) {
   this.createMediaStreamSource = function () { return { connect: function () {} }; };
   this.createAnalyser = function () {
@@ -191,6 +181,8 @@ function makeEnv(config) {
   const doc = makeDoc();
   const fetchCalls = [];
   const audioPayloads = [];
+  const audioHeaders = [];
+  let legacyJsonUploads = 0;
   const mic = doc.getElementById("easyVoiceMic");
   const composer = doc.getElementById("easyComposer");
   const send = doc.getElementById("easySend");
@@ -221,17 +213,30 @@ function makeEnv(config) {
         return;
       }
       if (path === "/api/padiem/voice/transcribe") {
-        let parsed = {};
-        try { parsed = JSON.parse(init.body || "{}"); } catch (e) {}
-        const payload = Buffer.from(String(parsed.audio_base64 || ""), "base64").toString("utf8");
+        const headers = (init && init.headers) || {};
+        const isBinary = init && init.body && Array.isArray(init.body.parts) &&
+          String(headers["Content-Type"] || "").split(";", 1)[0] === "application/octet-stream";
+        if (!isBinary) {
+          // #4379: the JSON/base64 shape must never come back. The real route
+          // only answers invalid_json/invalid_audio for it; refuse it here.
+          legacyJsonUploads += 1;
+          resolve(new Response(JSON.stringify({ error: { code: "unsupported_media_type" } }), { status: 415, headers: { "content-type": "application/json" } }));
+          return;
+        }
+        const payload = flattenParts(init.body);
         audioPayloads.push(payload);
+        audioHeaders.push({
+          audioType: String(headers["X-Padiem-Audio-Type"] || ""),
+          utteranceId: String(headers["X-Padiem-Utterance-Id"] || ""),
+        });
         if (!payload.startsWith(INIT)) {
           // 헤더 없는 WebM 조각은 실제 제공자에서도 디코딩되지 않는다.
           invalidAudioCount += 1;
           resolve(new Response(JSON.stringify({ error: { code: "invalid_audio" } }), { status: 400, headers: { "content-type": "application/json" } }));
           return;
         }
-        resolve(new Response(JSON.stringify({ text: TRANSCRIPT, utterance_id: parsed.utterance_id }), { status: 200, headers: { "content-type": "application/json" } }));
+        const utteranceId = String(headers["X-Padiem-Utterance-Id"] || "");
+        resolve(new Response(JSON.stringify({ text: TRANSCRIPT, utterance_id: utteranceId }), { status: 200, headers: { "content-type": "application/json" } }));
         return;
       }
       resolve(new Response(JSON.stringify({ ok: false }), { status: 404, headers: { "content-type": "application/json" } }));
@@ -244,7 +249,7 @@ function makeEnv(config) {
 
   const env = {
     doc: doc, fetchCalls: fetchCalls, recorders: [], timing: timing,
-    speaking: false, audioPayloads: audioPayloads,
+    speaking: false, audioPayloads: audioPayloads, audioHeaders: audioHeaders,
   };
   // 0은 client의 `chunkStartedAt ? ...` 가드에서 "미시작"으로 읽히므로
   // 실제 performance.now()처럼 0이 아닌 값에서 시작한다.
@@ -277,6 +282,7 @@ function makeEnv(config) {
   env.sendCount = function () { return sendClickedCount; };
   env.submittedTexts = function () { return submittedTexts.slice(); };
   env.invalidAudioCount = function () { return invalidAudioCount; };
+  env.legacyJsonUploadCount = function () { return legacyJsonUploads; };
   env.finishAnswer = function () { inputHandlerLive = true; send.disabled = false; };
   env.transcribeCalls = function () { return fetchCalls.filter(function (c) { return c.url === "/api/padiem/voice/transcribe"; }); };
   return env;
@@ -302,7 +308,7 @@ function assert(cond, msg) {
 
 async function startWiring(env) {
   globalThis.document = env.doc;
-  globalThis.FileReader = function () { FakeFileReader.call(this, env.timing); };
+  // No FileReader stub: the raw-body upload must not need one (#4379).
   const wiring = loadModule().createB66VoiceWiring({ win: env.win, doc: env.doc, now: env.now });
   if (!wiring) throw new Error("wiring 생성 실패");
   return wiring;
@@ -335,9 +341,12 @@ async function driveChunk(env) {
 
 function assertAllUploadsHaveInit(env) {
   const payloads = env.audioPayloads;
+  assert(env.legacyJsonUploadCount() === 0, "[" + env.timing + "] base64 JSON 업로드 없음 (원본 Blob 전송)");
   assert(payloads.length === env.transcribeCalls().length, "[" + env.timing + "] 업로드 수와 transcribe 호출 수 일치");
   assert(payloads.length > 0, "[" + env.timing + "] transcribe 업로드 존재");
   assert(payloads.every(function (p) { return p.startsWith(INIT); }), "[" + env.timing + "] 모든 업로드가 WebM init 세그먼트로 시작");
+  assert(env.audioHeaders.every(function (h) { return h.audioType === "audio/webm"; }), "[" + env.timing + "] 모든 업로드가 오디오 타입 헤더를 전달");
+  assert(env.audioHeaders.every(function (h) { return /^u\d+-/.test(h.utteranceId); }), "[" + env.timing + "] 모든 업로드가 utterance id 헤더를 전달");
   assert(env.invalidAudioCount() === 0, "[" + env.timing + "] invalid_audio 거부 없음");
 }
 
@@ -387,9 +396,11 @@ async function scenarioModeA(env) {
   assert(rec.probe.chunksAtStop >= 1, "[" + env.timing + "] stop 직전 조각 보유");
   assert(rec.probe.requestDataCalls === 1, "[" + env.timing + "] stop 시 requestData 1회");
   assert(rec.probe.onstopCalls === 1, "[" + env.timing + "] onstop 1회 → flushChunk(true, true) 실행");
-  const body = JSON.parse(env.transcribeCalls()[0].init.body);
-  assert(/^u1-/.test(body.utterance_id), "[" + env.timing + "] transcribe 에 utterance_id 전달");
-  assert(body.audio_base64.length > 0, "[" + env.timing + "] transcribe 에 오디오 base64 전달");
+  const call = env.transcribeCalls()[0];
+  assert(call.init.headers["Content-Type"] === "application/octet-stream", "[" + env.timing + "] transcribe 본문은 octet-stream");
+  assert(call.init.body instanceof FakeBlob && call.init.body.parts.length > 0, "[" + env.timing + "] transcribe 본문은 원본 Blob");
+  assert(/^u1-/.test(env.audioHeaders[0].utteranceId), "[" + env.timing + "] transcribe 에 utterance_id 전달");
+  assert(env.audioHeaders[0].audioType === "audio/webm", "[" + env.timing + "] transcribe 에 오디오 타입 전달");
   wiring.destroy();
 }
 
