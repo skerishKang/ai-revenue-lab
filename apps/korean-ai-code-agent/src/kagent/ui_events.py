@@ -8,7 +8,6 @@ import re
 from typing import Any
 
 from .contracts import ContractError
-from .security import redact_secrets
 
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
@@ -27,8 +26,6 @@ def _text(value: str, field_name: str, *, limit: int) -> str:
     value = value.strip()
     if not value or len(value) > limit or _CONTROL_RE.search(value):
         raise ContractError(f"{field_name} must be bounded non-empty text")
-    if redact_secrets(value) != value:
-        raise ContractError(f"{field_name} must not contain raw credential material")
     return value
 
 

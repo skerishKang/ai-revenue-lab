@@ -456,10 +456,12 @@ class CloudflareEngineAdmissionAuthorityStore:
                 self._sql.exec(
                     "SELECT issued_at FROM engine_entitlement_snapshot "
                     "WHERE product_id=? AND subject_type=? AND subject_id=? "
+                    "AND revision=? "
                     "ORDER BY issued_at DESC LIMIT 1",
                     snapshot.product_id,
                     subject.subject_type.value,
                     subject.subject_id,
+                    snapshot.revision,
                 )
             )
             if (
@@ -469,7 +471,7 @@ class CloudflareEngineAdmissionAuthorityStore:
             ):
                 raise _error(
                     "stale_entitlement_snapshot",
-                    "new entitlement revision must move issued_at forward",
+                    "entitlement revision must move issued_at forward",
                 )
             self._sql.exec(
                 "INSERT INTO engine_entitlement_snapshot "

@@ -5,6 +5,10 @@ from playwright.sync_api import sync_playwright
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 SCRIPTS = (
+    # #4643: the shared voice turn authority loads first. voice-stt-input.js
+    # reads the merge and turn-boundary rules from it and fails closed when it
+    # is absent, exactly like index.html orders it.
+    "voice-live-transcript-turn.js",
     "voice-stt-input.js", "voice-composer.js",
     "voice-live-turn-controller.js", "voice-tts-output.js",
     "voice-ui-menu.js", "voice-answer-ui.js", "voice-call-ui.js",

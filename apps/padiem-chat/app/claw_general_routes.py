@@ -93,14 +93,15 @@ from .history import HISTORY_PREVIEW_SUFFIX, HistoryContextIncomplete, validate_
 
 # This is the existing Chat HTTP resource envelope, not a provider/model cap.
 # The separate P01 Engine ingress guard remains in force until #4383 is resolved.
-MAX_CLAW_GENERAL_BODY_BYTES = 6_000_000
+# #4379: the Claw request body carries no PADIEM byte total. The reader
+# stays incremental.
+MAX_CLAW_GENERAL_BODY_BYTES: int | None = None
 # Kept importable for older clients; None means no Claw-general pilot text cap.
 MAX_CLAW_GENERAL_MESSAGE_CHARS: int | None = None
 MAX_CLAW_GENERAL_MESSAGES: int | None = None
-# Model capability is not constrained by this number: the canonical Engine
-# still enforces a finite 6MB serialized HTTP request memory-safety envelope.
-# Reserve transport overhead for agent/route metadata; never silently truncate.
-P01_ENGINE_REQUEST_ENVELOPE_BYTES = 5_500_000
+# #4379: the owned prior context is not cut to a PADIEM transport envelope.
+# The Engine applies its own request contract; nothing is silently truncated.
+P01_ENGINE_REQUEST_ENVELOPE_BYTES: int | None = None
 CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
 CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
@@ -1134,12 +1135,6 @@ async def _claw_custom_direct(
             "conversation_authority_unavailable",
             "대화 문맥을 안전하게 확인할 수 없습니다.",
         )
-    if len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES:
-        return _error(
-            413,
-            "engine_request_envelope_exceeded",
-            "엔진 전송 안전 한도를 초과했습니다. 더 짧은 대화에서 다시 요청해 주세요.",
-        )
     try:
         result = await complete_owner_custom(
             request.app.state,
@@ -1417,10 +1412,6 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # Explicit transport/resource failure before quota; do not silently
     # truncate the owned prior context or present an Engine ingress guard as a
     # provider model-token ceiling. Full serialized Engine checks stay active.
-    if len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES:
-        return _error(413, "engine_request_envelope_exceeded",
-                      "엔진 전송 안전 한도를 초과했습니다. 더 짧은 대화에서 다시 요청해 주세요.")
-
     # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
     # usage gate and before any P01/Engine dispatch, so a failed revalidation
     # never consumes quota and never reaches a provider.

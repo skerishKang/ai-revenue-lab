@@ -547,19 +547,32 @@ class SqliteDurabilityTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             SqliteClawAutomationStore("   ")
 
-    def test_secret_bearing_rule_name_is_rejected_before_persistence(self) -> None:
+    def test_secret_bearing_rule_name_is_persisted_unchanged(self) -> None:
         store = SqliteClawAutomationStore(":memory:")
-        with self.assertRaises(ContractError):
+        name = "gho_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        rule(
+            "secret_rule", "workspace_a",
+        ).__class__(
+            rule_id="secret_rule", workspace_id="workspace_a",
+            name=name,
+            schedule=ClawScheduleExpression(ClawScheduleKind.CRON, "0 9 * * *"),
+            target_source=ClawAutomationTarget.TASKS,
+            output_type=ClawAutomationOutputType.ALERT,
+        )
+        store.save_rule(
             rule(
                 "secret_rule", "workspace_a",
             ).__class__(
                 rule_id="secret_rule", workspace_id="workspace_a",
-                name="gho_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                name=name,
                 schedule=ClawScheduleExpression(ClawScheduleKind.CRON, "0 9 * * *"),
                 target_source=ClawAutomationTarget.TASKS,
                 output_type=ClawAutomationOutputType.ALERT,
             )
-        self.assertEqual(store.list_rules("workspace_a"), [])
+        )
+        stored = store.list_rules("workspace_a")
+        self.assertEqual(len(stored), 1)
+        self.assertEqual(stored[0].name, name)
 
 
 if __name__ == "__main__":

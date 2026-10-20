@@ -6,8 +6,6 @@ from enum import Enum
 import re
 from typing import Any, TypeVar
 
-from .security import redact_secrets
-
 
 class ContractError(ValueError):
     pass
@@ -203,8 +201,8 @@ class ClawTaskIntent:
         return {
             "contract_version": "claw-task-intent.v1",
             "task_id": self.task_id,
-            "task": redact_secrets(self.task),
-            "repository_ref": redact_secrets(self.repository_ref),
+            "task": self.task,
+            "repository_ref": self.repository_ref,
             "execution_mode": self.execution_mode.value,
             "requested_revision": self.requested_revision,
             "source_surface": self.source_surface,
@@ -283,7 +281,7 @@ class SandboxLeaseRequest:
             "contract_version": "sandbox-lease-request.v1",
             "run_id": self.run_id,
             "execution_mode": self.execution_mode.value,
-            "repository_ref": redact_secrets(self.repository_ref),
+            "repository_ref": self.repository_ref,
             "requested_revision": self.requested_revision,
             "resource_class": self.resource_class.value,
             "ttl_seconds": self.ttl_seconds,
@@ -451,7 +449,7 @@ class RunProjection:
             "task_id": self.task_id,
             "status": self.status.value,
             "execution_mode": self.execution_mode.value,
-            "summary": redact_secrets(self.summary),
+            "summary": self.summary,
             "changed_files": list(self.changed_files),
             "approval_required": self.approval_required,
             "terminal": self.status.terminal,

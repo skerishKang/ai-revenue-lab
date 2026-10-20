@@ -32,7 +32,6 @@ import re
 from typing import Any
 
 from .contracts import ContractError
-from .security import redact_secrets
 
 CONTRACT_VERSION = "claw-memory.v1"
 

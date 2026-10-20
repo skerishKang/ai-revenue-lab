@@ -9,7 +9,6 @@ from typing import Any
 from .contracts import ContractError
 from .ops_finance import CashTimingRecommendation
 from .ops_inbox import ExecutiveInboxCard, InboxCardStatus, InboxPriority
-from .security import redact_secrets
 
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$")
@@ -27,8 +26,6 @@ def _text(value: str, field_name: str, *, limit: int) -> str:
     value = value.strip()
     if not value or len(value) > limit or any(ord(ch) < 32 for ch in value):
         raise ContractError(f"{field_name} must be bounded non-empty text")
-    if redact_secrets(value) != value:
-        raise ContractError(f"{field_name} must not contain credential material")
     return value
 
 

@@ -184,7 +184,7 @@ def test_invalid_and_oversized_base64_fail_closed_without_echo() -> None:
 
     too_large = b"x" * (MAX_BINARY_DOCUMENT_BYTES + 1)
     encoded = _b64(too_large)
-    with pytest.raises(AttachmentValidationError, match="2 MiB 이하") as oversized:
+    with pytest.raises(AttachmentValidationError, match="1 GiB 이하") as oversized:
         parse_attachments([{"type": "document", "name": "x.pdf", "media_type": PDF_MIME, "base64": encoded}])
     assert encoded[:100] not in str(oversized.value)
 

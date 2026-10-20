@@ -132,6 +132,53 @@ async def _save_terminal_history(
         return conversation_id
 
 
+async def _run_pc_lane(
+    request: Request,
+    *,
+    user_text: str,
+    skill: Any,
+    model_id: str,
+    tier: str,
+    conversation_id: str | None,
+    device_id: Any,
+) -> tuple[str | None, str | None]:
+    """Run the existing PC drive/file lane for this turn, if it applies.
+
+    The lane itself decides whether the turn is a PC request, resolves the
+    server-verified target, and owns the plan, the grant checks and the answer
+    persistence. A turn that is not a PC request returns ``(None, None)`` and
+    the caller continues with the ordinary orchestration path.
+    """
+    from .chat_pc_drive import ChatPCDriveError, execute_chat_pc_drive_lane
+
+    try:
+        outcome = await execute_chat_pc_drive_lane(
+            request,
+            user_text=user_text,
+            skill=skill,
+            model_id=model_id,
+            conversation_id=conversation_id,
+            tier=tier,
+            device_id=device_id if isinstance(device_id, str) else None,
+        )
+    except ChatPCDriveError as exc:
+        raise _PcLaneRefusal(exc.code, exc.user_message, exc.status_code) from exc
+    if outcome is None:
+        return None, None
+    answer, lane_conversation_id = outcome
+    return answer, lane_conversation_id
+
+
+class _PcLaneRefusal(Exception):
+    """A bounded refusal from the existing PC lane."""
+
+    def __init__(self, code: str, message: str, status_code: int) -> None:
+        super().__init__(code)
+        self.code = code
+        self.message = message
+        self.status_code = status_code
+
+
 async def api_orchestration(request: Request) -> JSONResponse:
     bridge = _bridge(request)
     if bridge is None:
@@ -180,6 +227,37 @@ async def api_orchestration(request: Request) -> JSONResponse:
             )
 
     user_text = _latest_user(messages)
+    # #5015: a browser turn may reach this surface instead of the Chat stream
+    # route. The generic bridge call below carries NO PC plan and NO selected
+    # target, so a PC request could never reach the existing PC file lane: the
+    # Engine would run a plan without the PC query steps, and the selected PC
+    # would never be part of the request. Reuse the existing PC module (the
+    # same one the Chat stream route uses) so the PC plan, the server-verified
+    # target and the existing Mesh grant checks stay exactly where they are.
+    # No second executor, no second target store, no browser-chosen target.
+    try:
+        pc_lane_answer, pc_lane_conversation_id = await _run_pc_lane(
+            request,
+            user_text=user_text,
+            skill=skill,
+            model_id=policy.model_id,
+            tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
+            conversation_id=conversation_id,
+            device_id=raw.get("device_id"),
+        )
+    except _PcLaneRefusal as exc:
+        return _error(exc.code, exc.message, exc.status_code)
+    if pc_lane_answer is not None:
+        # The PC lane already persisted the verified exchange in its own
+        # conversation, so the answer is not stored a second time here.
+        payload: dict[str, Any] = {
+            "orchestration": {"status": "completed", "source": "pc_file_lane"},
+            "answer": pc_lane_answer,
+            "decision_status": "completed",
+        }
+        if pc_lane_conversation_id is not None:
+            payload["conversation_id"] = pc_lane_conversation_id
+        return JSONResponse(payload, headers={"Cache-Control": "no-store"})
     try:
         result = await bridge.start(
             user_id=uid,

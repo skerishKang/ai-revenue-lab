@@ -7,7 +7,10 @@ const EXECUTE_PATH = "/internal/v1/execute";
 // the two values was refused here, before the Engine could ever admit it.
 // tests/test_ingress_budget_source_contract.py pins these literals to the
 // Python constants, so the two sides cannot drift apart again.
-const MAX_REQUEST_BODY_BYTES = 6_000_000;
+// #4379: the model request carries no PADIEM byte total. null means the
+// platform's own request limit is the only ceiling. The read stays
+// incremental, so the body is never materialized past that limit.
+const MAX_REQUEST_BODY_BYTES = null;
 const MAX_INGRESS_CREDENTIAL_CHARS = 512;
 // One completed Engine answer is collected under the same finite Worker memory
 // budget as the B14/Core completed-JSON contract
@@ -107,7 +110,7 @@ async function readBoundedBytes(stream, maxBytes) {
       const { done, value } = await reader.read();
       if (done) break;
       const chunk = value instanceof Uint8Array ? value : new Uint8Array(value);
-      if (total + chunk.byteLength > maxBytes) {
+      if (maxBytes !== null && total + chunk.byteLength > maxBytes) {
         try {
           await reader.cancel();
         } catch {
@@ -239,7 +242,7 @@ export async function handleIngress(request, env) {
     if (!Number.isFinite(parsed) || parsed < 0) {
       return jsonError(400, "invalid_request", "Request body length is invalid.");
     }
-    if (parsed > MAX_REQUEST_BODY_BYTES) {
+    if (MAX_REQUEST_BODY_BYTES !== null && parsed > MAX_REQUEST_BODY_BYTES) {
       return jsonError(413, "request_too_large", "Request body exceeds the ingress safety limit.");
     }
   }
