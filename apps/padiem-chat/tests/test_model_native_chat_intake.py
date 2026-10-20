@@ -20,7 +20,7 @@ def test_browser_contract_forwards_messages_past_old_count_and_character_caps():
     assert validated == messages
     assert len(validated) == 41
     assert validated[-1]["content"] == long_text
-    assert MAX_BROWSER_BODY_BYTES == 6_000_000
+    assert MAX_BROWSER_BODY_BYTES == 1024 * 1024 * 1024 + 65536
 
 
 def test_browser_contract_retains_role_field_and_empty_message_guards():

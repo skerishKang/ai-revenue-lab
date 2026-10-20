@@ -137,10 +137,14 @@ def test_intake_gate_rejects_before_the_parser_authority_gate() -> None:
 
 
 def test_intake_gate_size_limit_still_applies_under_the_worker_gate() -> None:
-    oversize = b"a" * (3 * 1024 * 1024)
+    # The shipped binary document ceiling is 1 GiB, so the intake gate is proven
+    # with a patched small ceiling rather than a gigabyte of test bytes.
+    oversize = b"a" * 1025
     spy = _CoreParserSpy()
     payload = _b64(oversize)
-    with _worker_runtime(), mock.patch.object(boundary, "extract_binary_document", spy):
+    with _worker_runtime(), mock.patch.object(boundary, "extract_binary_document", spy), mock.patch.object(
+        binary_documents_module, "MAX_BINARY_DOCUMENT_BYTES", 1024
+    ):
         with pytest.raises(BinaryDocumentValidationError):
             binary_documents_module._decode_payload(payload)
     assert spy.calls == 0
