@@ -776,6 +776,7 @@
   }
   async function selectImage(file) {
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error(attachmentCopy().unsupportedFormat);
+    if (file.size < 1) throw new Error(uiT("image-data-empty"));
     return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
   async function selectAttachment(file) {

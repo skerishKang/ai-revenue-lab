@@ -44,9 +44,15 @@ def test_the_real_image_and_document_controls_are_untouched() -> None:
     # cannot keep satisfying a bare substring.
     attachments = (APP / "attachments.py").read_text(encoding="utf-8")
     binary = (APP / "binary_documents.py").read_text(encoding="utf-8")
+    app_js = (STATIC / "app.js").read_text(encoding="utf-8")
+    binary_js = (STATIC / "document-binary.js").read_text(encoding="utf-8")
     core = (
         REPO / "packages/padiem-ai-core/padiem_ai_core/document_normalization.py"
     ).read_text(encoding="utf-8")
+    # #4379 removes byte totals, not the empty-payload rules that travelled on the
+    # same source line as a total, so each rejection is pinned where it now stands.
+    assert 'if (file.size < 1) throw new Error(uiT("image-data-empty"));' in app_js
+    assert "if (!file || file.size < 1) throw new Error(" in binary_js
     for marker, minimum in (
         ("not in ALLOWED_IMAGE_MEDIA_TYPES:", 2),
         ("not _matches_magic(media_type, data)", 1),
