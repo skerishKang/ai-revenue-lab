@@ -258,6 +258,14 @@ class SameOriginGuardMiddleware:
             and media_type == "application/octet-stream"
         ):
             return None
+        # Voice audio is a raw browser POST on two exact authenticated routes.
+        # The Origin check above and each route's canonical session remain mandatory.
+        if (
+            scope.get("method") == "POST"
+            and path in ("/api/voice/transcribe", "/api/claw/voice/transcribe")
+            and media_type == "application/octet-stream"
+        ):
+            return None
         # Project originals are raw binary, still subject to the same
         # cookie, fixed-origin and route-local owner checks.
         if (
