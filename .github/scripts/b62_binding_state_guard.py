@@ -199,6 +199,12 @@ _ENGINE_4139_DESKTOP_ADDITIONS = frozenset({
     ("secrets_store_secret", "CLAW_ENGINE_DESKTOP_SECRET",
      "f0b09ca04a7b43248154c773704a5616", "CLAW_ENGINE_DESKTOP_SECRET"),
 })
+# #5224: the Engine's one deployment-owned B14 caller-proof reference. The
+# Engine signs its B14 dispatch with it; the value is never read.
+_ENGINE_5224_SERVICE_PROOF_ADDITION = (
+    "secrets_store_secret", "PADIEM_B14_SERVICE_PROOF_SECRET",
+    "f0b09ca04a7b43248154c773704a5616", "PADIEM_B14_SERVICE_PROOF_SECRET",
+)
 _B62_GRAFANA_PUBLIC_ADDITIONS = frozenset({
     ("plain_text", "PADIEM_GRAFANA_OTLP_ENDPOINT",
      "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs"),
@@ -317,7 +323,8 @@ def assert_exact_b14_service_proof_added_only(before: object, after: object) -> 
 
 
 def assert_engine_4194_exact_rollout(
-    before: object, after: object, *, allow_4139_desktop_bindings: bool = False
+    before: object, after: object, *, allow_4139_desktop_bindings: bool = False,
+    allow_5224_service_proof_binding: bool = False,
 ) -> None:
     """Preserve ALL previous bindings; permit only exact reviewed additions.
 
@@ -331,6 +338,9 @@ def assert_engine_4194_exact_rollout(
     if allow_4139_desktop_bindings:
         required = required | _ENGINE_4139_DESKTOP_ADDITIONS
         allowed = allowed | _ENGINE_4139_DESKTOP_ADDITIONS
+    if allow_5224_service_proof_binding:
+        required = required | {_ENGINE_5224_SERVICE_PROOF_ADDITION}
+        allowed = allowed | {_ENGINE_5224_SERVICE_PROOF_ADDITION}
     if not required.issubset(current):
         raise BindingStateError("Engine #4194 required exact binding identities missing")
     removed = prior - current
@@ -606,6 +616,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-engine-4194-rollout", action="store_true")
     parser.add_argument("--expected-engine-4139-desktop-rollout", action="store_true",
                         help="#4139: #4194 identities plus the exact Engine->Chat desktop service and secret reference")
+    parser.add_argument("--expected-engine-desktop-rollout-5224-proof", action="store_true",
+                        help="#5224: #4139 identities plus the one Engine B14 caller-proof reference")
     parser.add_argument("--expected-add-grafana-telemetry", action="store_true",
                         help="only one canonical Grafana Secrets Store binding, no values")
     parser.add_argument("--expected-add-oracle-mesh", action="store_true",
@@ -631,6 +643,7 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_web_secrets_store,
             args.expected_engine_4194_rollout,
             args.expected_engine_4139_desktop_rollout,
+            args.expected_engine_desktop_rollout_5224_proof,
             args.expected_add_grafana_telemetry,
             args.expected_add_oracle_mesh,
             args.expected_add_claw_desktop_secret,
@@ -647,6 +660,14 @@ def main(argv: list[str] | None = None) -> int:
                 raise BindingStateError("Engine #4139 mode refuses unrelated authorization arguments")
             assert_engine_4194_exact_rollout(
                 _load(args.before), _load(args.after), allow_4139_desktop_bindings=True
+            )
+        elif args.expected_engine_desktop_rollout_5224_proof:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("Engine #5224 proof mode refuses unrelated authorization arguments")
+            assert_engine_4194_exact_rollout(
+                _load(args.before), _load(args.after),
+                allow_4139_desktop_bindings=True,
+                allow_5224_service_proof_binding=True,
             )
         elif args.expected_engine_4194_rollout:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
@@ -726,6 +747,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     if args.expected_engine_4139_desktop_rollout:
         print("ENGINE_4139_DESKTOP_EXACT_ADDITIONS_AND_PREEXISTING_BINDINGS_PRESERVED=PASS")
+    elif args.expected_engine_desktop_rollout_5224_proof:
+        print("ENGINE_5224_SERVICE_PROOF_EXACT_ADDITIONS_AND_PREEXISTING_BINDINGS_PRESERVED=PASS")
     elif args.expected_engine_4194_rollout:
         print("ENGINE_4194_EXACT_ADDITIONS_AND_PREEXISTING_BINDINGS_PRESERVED=PASS")
     elif args.check_connector_baseline:
