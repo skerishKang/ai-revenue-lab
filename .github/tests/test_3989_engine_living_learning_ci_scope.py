@@ -57,11 +57,10 @@ class TestEngineLLPathOwnership:
             ".github/workflows/padiem-ai-engine-ci.yml",
         )
 
-    def test_living_learning_owns_its_product_and_core(self):
+    def test_living_learning_is_independent_from_core_only_changes(self):
         declared = changed_paths(workflow(LIVING_PATH))
         assert declared == (
             "apps/living-learning/**",
-            "packages/padiem-ai-core/**",
             "scripts/experiments/benchmark_padiem_search_providers.py",
             "scripts/experiments/benchmark_padiem_fetch_providers.py",
             SELF_PATH,
@@ -76,7 +75,6 @@ class TestEngineLLPathOwnership:
         for required in (
             "Engine network-free tests",
             "Padiem AI Core full tests",
-            "Living Learning Core-reuse regression",
             "JavaScript Service Binding client tests",
             "Real Worker/Pyodide Drive external transport probe",
             "Python Worker bundle dry-run",
@@ -102,7 +100,7 @@ class TestEngineLLPathOwnership:
             "ll_test_only": (("apps/living-learning/tests/test_session.py",), (False, True)),
             "engine_only": (("apps/padiem-ai-engine/app/service.py",), (True, False)),
             "engine_worker_only": (("apps/padiem-ai-engine/worker.py",), (True, False)),
-            "core_only": (("packages/padiem-ai-core/padiem_ai_core/tool_runtime.py",), (True, True)),
+            "core_only": (("packages/padiem-ai-core/padiem_ai_core/tool_runtime.py",), (True, False)),
             "mixed_engine_ll": (("apps/living-learning/app/factory.py", "apps/padiem-ai-engine/app/services.py"), (True, True)),
             "mixed_core_ll": (("packages/padiem-ai-core/padiem_ai_core/execution_runtime.py", "apps/living-learning/app/provider.py"), (True, True)),
             "docs_only": (("docs/operations/CI_3989_ENGINE_LL_ROUTING.md",), (False, False)),
@@ -116,25 +114,10 @@ class TestEngineLLPathOwnership:
 
 
 
-    def test_engine_core_ll_parallel_runner_keeps_both_fail_closed_suites(self):
+    def test_engine_core_stays_independent_from_living_learning(self):
         engine = ENGINE_PATH.read_text(encoding="utf-8")
-        script = (ROOT / ".github/scripts/engine_core_ll_parallel_3989.sh").read_text(encoding="utf-8")
-        assert "name: Padiem AI Core full tests and Living Learning Core-reuse regression" in engine
-        assert "run: bash .github/scripts/engine_core_ll_parallel_3989.sh" in engine
-        for required in (
-            "uv run --extra dev python -m pytest -q",
-            "python -m pip install --disable-pip-version-check -r requirements-padiem-core.txt",
-            "python -m pip install --disable-pip-version-check -e '.[dev]'",
-            "python -m pip install --disable-pip-version-check 'jsonschema>=4.23,<5'",
-            "python -m pip check",
-            "python -m pytest -q",
-            "export LL_PROVIDER_TYPE=mock",
-            'wait "$core_pid"',
-            'wait "$ll_pid"',
-            'if [[ "$core_status" -ne 0 || "$ll_status" -ne 0 ]]',
-            "ENGINE_CORE_LL_PARALLEL=PASS",
-        ):
-            assert required in script
+        assert "Living Learning Core-reuse regression" not in engine
+        assert "run: uv run --extra dev python -m pytest -q" in engine
 
     def test_policy_guard_enforces_scope_contract(self):
         text = POLICY_PATH.read_text(encoding="utf-8")
