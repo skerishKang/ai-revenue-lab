@@ -64,8 +64,6 @@ def _text(value: str, name: str, *, limit: int = _MAX_TEXT_CHARS) -> str:
     value = value.strip()
     if not value:
         raise ClawMemoryError(f"{name} is required")
-    if len(value) > limit:
-        raise ClawMemoryError(f"{name} exceeds {limit} characters")
     if _CONTROL_RE.search(value):
         raise ClawMemoryError(f"{name} contains control characters")
     return value
@@ -213,7 +211,7 @@ class ClawMemorySourceRef:
             "created_at": self.created_at.isoformat(),
         }
         if include_raw and self.raw_excerpt is not None:
-            data["raw_excerpt"] = redact_secrets(self.raw_excerpt)
+            data["raw_excerpt"] = self.raw_excerpt
         return data
 
 
@@ -350,7 +348,7 @@ class ClawPartyMemory:
             "memory_id": self.memory_id,
             "workspace_id": self.workspace_id,
             "kind": ClawMemoryKind.PARTY.value,
-            "name": redact_secrets(self.name),
+            "name": self.name,
             "role": self.role.value,
             "preferred_contact_method": self.preferred_contact_method,
             "delivery_preference": self.delivery_preference,
@@ -392,7 +390,7 @@ class ClawItemMemory:
             "memory_id": self.memory_id,
             "workspace_id": self.workspace_id,
             "kind": ClawMemoryKind.ITEM.value,
-            "item_name": redact_secrets(self.item_name),
+            "item_name": self.item_name,
             "item_kind": self.item_kind.value,
             "sku": self.sku,
             "unit": self.unit,
@@ -455,7 +453,7 @@ class ClawPriceMemory:
             "unit_price": str(self.unit_price),
             "currency": self.currency,
             "quoted_at": self.quoted_at.isoformat(),
-            "quote_note": redact_secrets(self.quote_note) if self.quote_note else None,
+            "quote_note": self.quote_note if self.quote_note else None,
             "source_id": self.source_id,
             "updated_at": self.updated_at.isoformat(),
         }
@@ -501,7 +499,7 @@ class ClawFollowupTask:
             "task_id": self.task_id,
             "workspace_id": self.workspace_id,
             "member_id": self.member_id,
-            "title": redact_secrets(self.title),
+            "title": self.title,
             "status": self.status.value,
             "due_date": self.due_date.isoformat() if self.due_date else None,
             "source_id": self.source_id,
@@ -567,7 +565,7 @@ class ClawAlert:
             "workspace_id": self.workspace_id,
             "kind": self.kind.value,
             "severity": self.severity.value,
-            "title": redact_secrets(self.title),
+            "title": self.title,
             "status": self.status.value,
             "visible_to_all": self.visible_to_all,
             "visible_to_members": list(self.visible_to_members),

@@ -21,6 +21,14 @@ This repository contains **public development and engineering policy**, not the 
 - **Decision order:** latest explicit Owner instruction → local non-public business policy for business/product decisions → GitHub development/technical operating policies → dated issue history. Do not publish the business documents or reproduce their substantive contents in GitHub Issues, PRs or code.
 - If this folder cannot be accessed, or the Owner's decision conflicts with an existing technical gate and the resolution is not specified, explain the exact uncertainty and **ask the Owner**. Do not independently create new business exclusions, customer-facing required approval steps, or permissions grants. Actual runtime/code/OS behavior must still be reported truthfully.
 
+## Web Claw execution identity (Owner decision 2026-10-20)
+
+- **Web Claw is a locally executing computer AI agent controlled through the web.** The authenticated web conversation coordinates with the user's authorized Connector, which executes local file, shell and application tasks; it is not a cloud-only chatbot. Do not import arbitrary cloud-chat content restrictions to locally authorized work.
+- The product's normal connection UX is **Connect computer -> Confirm**, not CLI commands, copied pairing codes, repeated login or manual agent registration. Continue to report real connector and authentication states accurately.
+- An authorized user and their agent must be able to use that user's original business content, including credentials supplied for a requested operation. Avoid blanket refusal, masking, truncation or arbitrary quantity limits in authorized work. Prefer invoking secrets locally rather than unnecessarily transmitting them to model providers; do not publish secrets in shared diagnostics.
+- Enforce actual account/workspace/device authorization before local execution and cross-tenant reads. Real technical and mandatory legal restrictions are reported with evidence, not invented as prelaunch customer restrictions.
+- Canonical public implementation guidance: `docs/architecture/WEB_CLAW_LOCAL_AGENT_EXECUTION_PRINCIPLE_20261020.md`. Private business and operating decisions remain only in COM1 Governance.
+
 ## Every session: evidence-based blocker resolution
 
 - **Session entry:** On a new repository-aware agent/CTO session, read this `AGENTS.md` and the relevant current local private Governance documents through the authorized COM1 connection before making business/product decisions. Record what was actually read; if the private source is unavailable, state `NOT_READ` and the specific access limitation. A fresh general ChatGPT conversation does **not** automatically import this file; mirror this minimal rule in ChatGPT Project Instructions. Do not claim automatic loading or a completed read without evidence.

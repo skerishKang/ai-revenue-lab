@@ -71,4 +71,4 @@ def test_chat_does_not_pin_owner_tier_dispatch_to_one_attempt():
         required_capabilities=("free",),
         product_tier="free",
     )
-    assert completed.model_policy["max_attempts"] == 1
+    assert "max_attempts" not in completed.model_policy
