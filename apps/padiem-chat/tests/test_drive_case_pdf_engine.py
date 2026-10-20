@@ -100,7 +100,7 @@ def read_response():
         "content_base64": base64.b64encode(PDF_BYTES).decode("ascii"),
         "byte_size": len(PDF_BYTES),
         "version_evidence": {
-            "version": "v-1",
+            "version": 7,
             "modified_time": "2026-10-01T00:00:00Z",
             "md5_checksum": None,
             "sha256_checksum": "a" * 64,
