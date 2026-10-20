@@ -174,7 +174,7 @@ class ClawResumeProjector:
                 )
             self._run.transition(
                 ClawRunStatus.RUNNING,
-                summary=redact_secrets(event.message or "승인 후 실행 재개"),
+                summary=(event.message or "승인 후 실행 재개"),
             )
             self._resume_seen = True
             return
@@ -186,7 +186,7 @@ class ClawResumeProjector:
                 )
             self._run.transition(
                 ClawRunStatus.WAITING_APPROVAL,
-                summary=redact_secrets(event.message or "추가 승인 대기"),
+                summary=(event.message or "추가 승인 대기"),
             )
             return
         if kind is OrchestrationEventKind.RUN_COMPLETED:
@@ -197,19 +197,19 @@ class ClawResumeProjector:
                 )
             self._run.transition(
                 ClawRunStatus.COMPLETED,
-                summary=redact_secrets(event.message or "작업 완료"),
+                summary=(event.message or "작업 완료"),
             )
             return
         if kind is OrchestrationEventKind.RUN_FAILED:
             self._run.transition(
                 ClawRunStatus.FAILED,
-                summary=redact_secrets(event.message or "P01 재개 실행 실패"),
+                summary=(event.message or "P01 재개 실행 실패"),
             )
             return
         if kind is OrchestrationEventKind.RUN_CANCELLED:
             self._run.transition(
                 ClawRunStatus.CANCELLED,
-                summary=redact_secrets(event.message or "P01 재개 실행 취소"),
+                summary=(event.message or "P01 재개 실행 취소"),
             )
 
 

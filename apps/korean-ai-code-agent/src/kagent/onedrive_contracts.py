@@ -37,7 +37,7 @@ def _optional_ref(value: str | None, field_name: str) -> str | None:
 def _bounded_text(value: str, field_name: str, limit: int) -> str:
     if not isinstance(value, str):
         raise ContractError(f"{field_name} must be text")
-    normalized = redact_secrets(value.strip())
+    normalized = value.strip()
     if len(normalized) > limit:
         raise ContractError(f"{field_name} exceeds {limit} characters")
     return normalized
@@ -64,7 +64,7 @@ def _nonnegative_int(value: int, field_name: str) -> int:
 def _etag_hash(etag: str) -> str:
     if not isinstance(etag, str) or not etag.strip():
         raise ContractError("etag must be non-empty text")
-    normalized = redact_secrets(etag.strip())
+    normalized = etag.strip()
     if len(normalized) > 1024:
         raise ContractError("etag exceeds bound")
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
@@ -200,11 +200,11 @@ class OneDriveItemProjection:
             raise ContractError("OneDrive item exceeds Padiem file bound")
         if not isinstance(self.etag, str) or not self.etag.strip() or len(self.etag.strip()) > 1024:
             raise ContractError("OneDrive item requires bounded eTag")
-        object.__setattr__(self, "etag", redact_secrets(self.etag.strip()))
+        object.__setattr__(self, "etag", self.etag.strip())
         if self.ctag is not None:
             if not isinstance(self.ctag, str) or not self.ctag.strip() or len(self.ctag.strip()) > 1024:
                 raise ContractError("cTag must be bounded text")
-            object.__setattr__(self, "ctag", redact_secrets(self.ctag.strip()))
+            object.__setattr__(self, "ctag", self.ctag.strip())
         if self.modified_at is not None:
             object.__setattr__(self, "modified_at", _aware(self.modified_at, "modified_at"))
         if not isinstance(self.deleted, bool):
