@@ -117,12 +117,17 @@ def test_the_claw_conversation_clearance_tracks_the_measured_composer() -> None:
     document-scrolling surface above the fixed composer: the conversation
     lane (home, chat and the Claw landing), the Claw workbench canvas and
     the Claw workspace strip.
+
+    The fixed composer is also raised by exactly the software-keyboard inset
+    while the keyboard is open, so the rule adds that inset to the measured
+    clearance instead of replacing it.
     """
     rule = _body(
         CLAW,
         '.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .conversation',
     )
-    assert "var(--padiem-composer-clearance" in rule, rule
+    assert "padding-bottom: calc(" in rule and "var(--padiem-composer-clearance" in rule, rule
+    assert "var(--padiem-visual-keyboard-inset" in rule, rule
     assert "padding-bottom: 218px" not in rule, "a constant inset cannot track a growing composer"
     # No arbitrary pixel inset may stand in for the measured composer.
     for constant in ("padding-bottom: 280px", "max-height: calc(100dvh - 92px)"):

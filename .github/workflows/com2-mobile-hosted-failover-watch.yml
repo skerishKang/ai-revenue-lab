@@ -1,0 +1,34 @@
+name: COM2 Mobile Hosted Failover Watch
+# Hosted trusted default-branch watchdog; no PR source checkout or execution.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+  statuses: write
+concurrency:
+  group: com2-mobile-hosted-failover-watch
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts/com2_policy_failover_watch.py
+            .github/scripts/com2_mobile_failover_watch.py
+            .github/tests/test_com2_mobile_failover_watch.py
+          sparse-checkout-cone-mode: false
+      - name: Verify mobile watchdog contract
+        run: python3 -m unittest discover -s .github/tests -p test_com2_mobile_failover_watch.py -v
+      - name: Dispatch hosted fallback only for stale selected mobile PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python3 .github/scripts/com2_mobile_failover_watch.py

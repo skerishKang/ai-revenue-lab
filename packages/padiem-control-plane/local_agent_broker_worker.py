@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Callable, TypeVar
 from workers import DurableObject, Response, WorkerEntrypoint
-from canonical_broker_pairing_rpc import CanonicalBrokerPairingRPC
+from canonical_broker_pairing_rpc import CanonicalBrokerPairingRPC, armed_durable_pairing_authority
 from canonical_broker_pending_pc_private_rpc import CanonicalBrokerPendingPcLiveRPC, CanonicalBrokerPendingPcBindingRPC
 from padiem_control_plane.local_agent_broker_http import DurableLocalAgentSessionRecord, LocalAgentMaterialResolutionRequest
 from local_agent_broker_device_http import LocalAgentBrokerDeviceHttpService
@@ -42,6 +42,7 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
             storage=ctx.storage, state_port=self._runtime.state_port,
             authority_ref=self._runtime.authority_ref())
         self.android_profiles = BrokerAndroidSafProfileStore(storage=ctx.storage, state_port=self._runtime.state_port, authority_ref=self._runtime.authority_ref())
+        # #5080: the device-facing enrollment redemption authority, composed outside.
         self._device_http = LocalAgentBrokerDeviceHttpService(
             state_port=self._runtime.state_port,
             pepper=str(env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
@@ -55,6 +56,9 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
             execution_profiles=self.execution_profiles,
             android_profiles=self.android_profiles,
             owner_usage_gate=self._runtime.owner_usage.paused,
+            pairing_authority=armed_durable_pairing_authority(
+                env=env, storage=ctx.storage, state_port=self._runtime.state_port,
+                authority_ref=self._runtime.authority_ref(), pepper=str(env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8")),
         )
 
     def _authority_ref(self) -> str:

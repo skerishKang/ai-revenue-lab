@@ -67,6 +67,7 @@ jobs:
       - name: Regression check for QA path ownership and scoped base visual behavior
         run: |
           python -m unittest discover -s .github/tests -p test_b62_browser_qa_unified.py -v
+          python -m unittest discover -s .github/tests -p test_com2_b62_touch_auto_contract.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_visual_leaf_smoke.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_owner_leaf_browser_base.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_headless_shell_install.py -v

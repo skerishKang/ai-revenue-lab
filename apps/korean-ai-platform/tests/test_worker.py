@@ -110,6 +110,9 @@ class TestWranglerConfig:
             "PADIEM_B14_CREDENTIAL_13": "PADIEM_TOKEN_HARBOR_API_KEY",
             "PADIEM_B14_CREDENTIAL_14": "PADIEM_ZANSLAB_API_KEY",
             "PADIEM_GRAFANA_OTLP_TOKEN": "PADIEM_GRAFANA_OTLP_TOKEN",
+            # #5224 deployment-owned server-to-server caller proof for the
+            # platform-credential execution lane. Metadata only, like the rest.
+            "PADIEM_B14_SERVICE_PROOF_SECRET": "PADIEM_B14_SERVICE_PROOF_SECRET",
         }
         assert {b["binding"]: b["secret_name"] for b in bindings} == expected_secret_targets
         for binding in expected_secret_targets:

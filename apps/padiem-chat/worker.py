@@ -58,6 +58,7 @@ from app.claw_artifact_delivery_receipt_store import (
 )
 from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
+from app.b14_service_proof import service_proof_headers
 from app.b66_search_boundary import authorized_b66_fact_search_binding
 from app.b66_registered_model_boundary import (
     B14QuoteExactModelExecutor,
@@ -93,6 +94,7 @@ from app.saved_outputs import D1SavedOutputStore
 from app.usage_gate import D1UsageCounterStore, UsageGate
 from app.worker_config import (
     B14_SERVICE_BINDING_NAME,
+    B14_SERVICE_PROOF_SECRET_BINDING_NAME,
     B66_PDF_RENDERER_SERVICE_BINDING_NAME,
     D1_BINDING_NAME,
     GOOGLE_OAUTH_SERVICE_BINDING_NAME,
@@ -102,6 +104,7 @@ from app.worker_config import (
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
+    resolve_secret_binding,
     resolve_web_secrets_store_keys,
     settings_from_worker_bindings,
     p01_engine_config_from_worker_bindings,
@@ -264,10 +267,11 @@ class CloudflareB14ServiceTransport:
     configuration — not the hostname — selects the target Worker.
     """
 
-    def __init__(self, binding: Any):
+    def __init__(self, binding: Any, proof_secret: str | None = None):
         if binding is None:
             raise ValueError("B14 service binding is required")
         self.binding = binding
+        self.proof_secret = proof_secret
 
     async def get_json(self, path: str) -> tuple[int, bytes]:
         """Read only two fixed B14 model authority endpoints over Service Binding."""
@@ -299,14 +303,18 @@ class CloudflareB14ServiceTransport:
                 trace_headers["X-Request-Id"] = value
         except ImportError:
             pass
+        raw_body = json.dumps(payload, ensure_ascii=False)
         request = Request(
             url,
             method="POST",
             headers={
                 "Content-Type": "application/json",
                 **trace_headers,
+                # B14 spends platform-owned Provider credentials on this lane.
+                # The proof binds this exact body to this deployment.
+                **service_proof_headers(self.proof_secret, raw_body.encode("utf-8")),
             },
-            body=json.dumps(payload, ensure_ascii=False),
+            body=raw_body,
         )
         response = await self.binding.fetch(request.js_object)
         status = int(response.status)
@@ -407,10 +415,11 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
 class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
     """Progressive httpx transport backed by the fixed B14 Service Binding."""
 
-    def __init__(self, binding: Any):
+    def __init__(self, binding: Any, proof_secret: str | None = None):
         if binding is None:
             raise ValueError("B14 service binding is required")
         self.binding = binding
+        self.proof_secret = proof_secret
 
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
         try:
@@ -434,7 +443,14 @@ class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
             service_request = Request(
                 str(request.url),
                 method="POST",
-                headers={"Content-Type": "application/json", **trace_headers},
+                headers={
+                    "Content-Type": "application/json",
+                    **trace_headers,
+                    # B14 spends platform-owned Provider credentials on this lane.
+                    **service_proof_headers(
+                        self.proof_secret, body_text.encode("utf-8"),
+                    ),
+                },
                 body=body_text,
             )
         except Exception as exc:
@@ -809,6 +825,12 @@ class Default(WorkerEntrypoint):
                 )
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
+                # B14 spends platform-owned Provider credentials on its catalog
+                # execution lane. The deployment-owned proof secret lets B14
+                # verify this server-to-server caller before it resolves one.
+                b14_proof_secret = await resolve_secret_binding(
+                    self.env, B14_SERVICE_PROOF_SECRET_BINDING_NAME,
+                )
                 b66_pdf_binding = binding_value(self.env, B66_PDF_RENDERER_SERVICE_BINDING_NAME)
                 # #4643: private STT Worker Service Binding. Absent until CENTRAL
                 # adds it, which keeps every /api/voice/* route fail-closed.
@@ -841,12 +863,12 @@ class Default(WorkerEntrypoint):
                     else None
                 )
                 service_transport = (
-                    CloudflareB14ServiceTransport(b14_binding)
+                    CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)
                     if b14_binding is not None
                     else None
                 )
                 stream_transport = (
-                    CloudflareB14StreamingServiceTransport(b14_binding)
+                    CloudflareB14StreamingServiceTransport(b14_binding, b14_proof_secret)
                     if b14_binding is not None
                     else None
                 )

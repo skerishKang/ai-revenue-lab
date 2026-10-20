@@ -435,8 +435,8 @@ html[data-theme="padiem-glass"] .home-link::before {
 }
 
 html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: 1px solid rgba(255, 255, 255, .56) !important;
   border-radius: 10px;
   background: rgba(56, 65, 74, .72) !important;
@@ -453,7 +453,7 @@ html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="c
   text-transform: none !important;
 }
 
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .demo-label {
+html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label {
   border-color: rgba(54, 68, 79, .10) !important;
   background: rgba(72, 84, 94, .08) !important;
   color: #78838c !important;
@@ -726,17 +726,18 @@ html[data-theme="padiem-glass"] .glass-shell-frag::after {
   border-bottom: 1px solid rgba(45,69,87,.08);
 }
 
-/* Owner-confirmed Plan 4 (2026-10-17, Glass theme, chat state only):
- * row1 = profile chip + 20px user icon (right-aligned),
- * row2 = text right-aligned with its right edge on the icon's left edge,
- * row3 = Codex-style hover-reveal user actions (time/copy/edit).
- * The answer-side avatar keeps its gray plate (owner: no blue combo); only
- * the 5 answer-action buttons drop their chrome (26px, no bg/border).
+/* Owner-confirmed Plan 4 (2026-10-17, Glass theme, chat state only),
+ * revised 2026-10-20: row1 = profile chip + 32px initial avatar (right
+ * aligned, name -> avatar order kept), row2 = text right aligned with its
+ * right edge on the avatar's left edge, row3 = user actions (time/copy/edit)
+ * which are now always visible instead of hover-revealed. The user avatar
+ * matches the answer-side "P" avatar geometry and plate (owner: no blue
+ * combo); the 5 answer-action buttons keep their chrome-free 26px icons.
  * Selectors use the repeated-class + #messageList pattern to beat the
  * @import'ed polish/accessibility caps independent of sheet order. */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message.user-message {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto 20px !important;
+  grid-template-columns: minmax(0, 1fr) auto 32px !important;
   grid-template-rows: auto auto auto !important;
   gap: 2px 10px !important;
   justify-content: end !important;
@@ -754,30 +755,39 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
   grid-column: 2 !important;
   grid-row: 1 !important;
   align-self: center !important;
-  font-size: 12px !important;
+  font-family: inherit;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: .01em !important;
   line-height: 1 !important;
-  color: #7b8792 !important;
+  color: #53606c !important;
   white-space: nowrap !important;
 }
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-avatar {
   grid-column: 3 !important;
   grid-row: 1 !important;
-  width: 20px !important;
-  height: 20px !important;
-  border-radius: 0 !important;
-  background: none !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  color: #111a22 !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 10px !important;
+  background: rgba(56, 65, 74, .72) !important;
+  border: 1px solid rgba(255, 255, 255, .56) !important;
+  box-shadow: 0 8px 24px rgba(24, 33, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .20) !important;
+  color: #fff !important;
   display: grid !important;
   place-items: center !important;
+  font-family: inherit;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: .05em !important;
+  overflow: hidden !important;
 }
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-avatar svg {
-  width: 14px !important;
-  height: 14px !important;
+  width: 17px !important;
+  height: 17px !important;
 }
-/* Row3: user actions stay out of the layout until hover/focus; touch
- * devices (no hover) always show them so copy/edit stay reachable. */
+/* Owner 2026-10-20: the copy/edit affordances are always visible on desktop
+ * and on mobile. Hover only emphasises the icon, it no longer reveals it. */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-actions {
   grid-column: 1 / span 3 !important;
   grid-row: 3 !important;
@@ -786,15 +796,9 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
   padding: 0 !important;
   align-items: center !important;
   gap: 4px !important;
-}
-html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message:hover .user-actions,
-html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message:focus-within .user-actions {
   display: flex !important;
-}
-@media (hover: none) {
-  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-actions {
-    display: flex !important;
-  }
+  flex-wrap: wrap !important;
+  max-width: 100% !important;
 }
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-action-time {
   font-size: 12px !important;
@@ -842,12 +846,16 @@ html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-
   color: #53606c !important;
   font-size: 13px !important;
 }
+/* The answer meta row follows the user turn row: the same 4px row gap and the
+ * same 2px time margin, so the completion time and the first icon sit at the
+ * same distance in both turns. The sibling margin is dropped because the row
+ * gap now provides that distance. */
 html[data-theme="padiem-glass"] .answer-actions {
-  gap: 0 !important;
+  gap: 4px !important;
   margin-top: 2px !important;
 }
 html[data-theme="padiem-glass"] .answer-action + .answer-action {
-  margin-left: 4px !important;
+  margin-left: 0 !important;
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
   gap: 14px !important;

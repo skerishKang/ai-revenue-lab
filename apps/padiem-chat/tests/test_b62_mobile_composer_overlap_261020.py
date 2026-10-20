@@ -109,7 +109,7 @@ def test_computer_entry_reuses_the_existing_directory_endpoint_and_copy():
     source = MANAGER_JS.read_text(encoding="utf-8")
     assert 'const ENDPOINT = "/api/claw/local-access/devices";' in source
     assert "컴퓨터와 연결해 보세요" in source
-    assert "내 컴퓨터의 파일과 프로그램을 PADIEM에서 사용할 수 있어요." in source
+    assert "내 컴퓨터의 파일과 프로그램을 Padiem에서 사용할 수 있어요." in source
     # The connected state names the real PC and reuses the existing state copy.
     assert "toggleTitle.textContent = device.deviceName || device.deviceId;" in source
     assert "toggleState.textContent = deviceLabel(device);" in source

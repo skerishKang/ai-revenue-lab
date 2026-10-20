@@ -60,6 +60,9 @@ _ENV_KEYS = frozenset({
     "PADIEM_B14_CREDENTIAL_13",
     "PADIEM_B14_CREDENTIAL_11",
     "PADIEM_B14_CREDENTIAL_14",
+    # Deployment-owned server-to-server caller proof for the platform-credential
+    # execution lanes. The value lives only in Cloudflare Secrets Store.
+    "PADIEM_B14_SERVICE_PROOF_SECRET",
     "B14_PROVIDER_MODE",
 })
 

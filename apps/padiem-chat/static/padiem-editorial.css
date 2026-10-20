@@ -249,8 +249,8 @@
 }
 
 .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
   font-size: 12px;
   box-shadow:
@@ -270,7 +270,7 @@
   text-transform: uppercase;
 }
 
-.app-shell[data-state="chat"] .demo-label {
+.app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label {
   padding: 3px 8px 2px;
   border: 1px solid rgba(255, 255, 255, .10);
   border-radius: 6px;

@@ -10,8 +10,49 @@
     WAITING_APPROVAL: "waiting_for_approval",
   });
 
+  // The runtime status chip has one owner. The caller writes the visible
+  // text; this API owns the chip state (data-runtime-state) and its
+  // visibility, so a completed answer releases the "answer preparing" chip
+  // and a real status (a Claw P01 stage, a failure) is never removed.
+  const RUNTIME_LABEL_STATE = Object.freeze({ PREPARING: "preparing", STATUS: "status" });
+
+  function runtimeLabelMarker(article) {
+    return article && article.querySelector ? article.querySelector("[data-runtime-label]") : null;
+  }
+
+  // Applies the chip state. An empty text releases the chip completely: the
+  // text is cleared, the chip is hidden and the locale binding is dropped so
+  // a language change cannot refill a released chip.
+  function applyRuntimeLabel(article, text, state) {
+    const marker = runtimeLabelMarker(article);
+    if (!marker) return;
+    if (typeof text === "string") {
+      const value = text.trim();
+      if (!value) {
+        marker.textContent = "";
+        marker.hidden = true;
+        marker.removeAttribute("data-locale-key");
+        delete marker.dataset.runtimeState;
+        return;
+      }
+      marker.textContent = value;
+    }
+    marker.hidden = false;
+    if (state) marker.dataset.runtimeState = state;
+  }
+
+  // A finished answer releases the preparing chip. A chip that already
+  // carries a real status stays exactly as it is.
+  function releasePreparingRuntimeLabel(article) {
+    const marker = runtimeLabelMarker(article);
+    if (!marker) return;
+    if (marker.dataset.runtimeState !== RUNTIME_LABEL_STATE.PREPARING) return;
+    applyRuntimeLabel(article, "", RUNTIME_LABEL_STATE.STATUS);
+  }
+
   window.PadiemChatLifecycle = Object.freeze({
     states,
+    runtimeLabelStates: RUNTIME_LABEL_STATE,
     isCompleted(article) {
       return Boolean(article && article.dataset.lifecycle === states.COMPLETED);
     },
@@ -23,6 +64,8 @@
         detail: { state },
       }));
     },
+    applyRuntimeLabel,
+    releasePreparingRuntimeLabel,
   });
 
   const orchestrationKinds = Object.freeze({
@@ -49,6 +92,10 @@
   });
 
   const kindValues = new Set(Object.values(orchestrationKinds));
+  // Chat/Claw separation: the bounded orchestration lane is the Chat lane (/api/chat). Its
+  // turns and its conversation id belong to the Chat product, so a resumed
+  // Chat run never writes into the Claw conversation.
+  const CHAT_PRODUCT = "chat";
   const safeId = /^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$/;
   const publicCopy = Object.freeze({
     run_started: "작업을 시작했어요.",
@@ -472,12 +519,13 @@
     content.appendChild(paragraph);
     const label = article.querySelector("[data-runtime-label]");
     // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
-    // The repetitive "AI 응답" line is removed on completion.
-    if (label && label.textContent === "AI 응답") label.textContent = "";
+    // A finished answer releases the preparing chip; a real status stays.
+    if (label && label.textContent === "AI 응답") applyRuntimeLabel(article, "", RUNTIME_LABEL_STATE.STATUS);
+    else releasePreparingRuntimeLabel(article);
     const conversationState = window.PadiemChatConversationState;
     if (conversationState) {
-      conversationState.commitAssistant(requestPayload.messages, data.answer);
-      if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
+      conversationState.commitAssistant(requestPayload.messages, data.answer, CHAT_PRODUCT);
+      if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id, CHAT_PRODUCT);
     }
     window.PadiemChatLifecycle.set(article, states.COMPLETED);
     revealArticleIfFollowing(article);
@@ -491,7 +539,10 @@
     paragraph.textContent = message;
     content.appendChild(paragraph);
     const label = article.querySelector("[data-runtime-label]");
-    if (label) label.textContent = state === "approval_denied" ? "진행하지 않음" : "작업 취소됨";
+    if (label) {
+      label.textContent = state === "approval_denied" ? "진행하지 않음" : "작업 취소됨";
+      applyRuntimeLabel(article, label.textContent, RUNTIME_LABEL_STATE.STATUS);
+    }
     if (state === "orchestration_cancelled") {
       window.PadiemChatLifecycle.set(article, states.CANCELLED);
     } else {

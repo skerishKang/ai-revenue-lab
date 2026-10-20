@@ -188,7 +188,8 @@
       button.setAttribute("data-voice-state", !ready ? "unavailable" : active ? "active" : "ready");
       const copyKey = active ? STATUS_KEYS.MIC_STOP : STATUS_KEYS.MIC_START;
       button.setAttribute("aria-label", text(copyKey));
-      button.setAttribute("title", text("voice-mic"));
+      // Owner 2026-10-20: the hint uses the shared PADIEM chip tooltip.
+      button.setAttribute("data-padiem-tooltip", text("voice-mic"));
       button.setAttribute("data-locale-aria-label", copyKey);
       button.setAttribute("data-locale-title", "voice-mic");
       if (nodes.label) nodes.label.textContent = text("voice-mic");

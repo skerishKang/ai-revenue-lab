@@ -87,9 +87,30 @@
   // Administrator entry visibility is proven per session by the server-side
   // global model admin gate; it is never derived from a username or grade.
   let adminAvailable = false;
+  // #5222: "adminVerified" means the server PROVED this account is (not) an
+  // administrator. A probe that could not complete stays unverified, so a
+  // temporary failure is never cached as a denial and never destroys the
+  // account's stored preference.
+  let adminVerified = false;
   let adminProbeInFlight = null;
   let adminProbeAt = 0;
   const ADMIN_PROBE_TTL_MS = 60000;
+  // A probe that could not complete is cached only briefly and retried soon,
+  // so a temporary failure never pins the administrator lane as a denial.
+  const ADMIN_PROBE_UNVERIFIED_TTL_MS = 2000;
+  const ADMIN_PROBE_RETRY_MS = 5000;
+  let adminProbeRetryTimer = null;
+  // #5222: the account's last explicitly selected tier. It lives on the server
+  // under the signed session's own account, so the browser never names the
+  // account and one account can never inherit another account's selection.
+  const MODEL_SELECTION_PATH = "/api/account/model-selection";
+  let accountSelection = null;
+  // Monotonic auth generation: a response that belongs to an older session is
+  // never applied to the current one.
+  let authEpoch = 0;
+  // Monotonic explicit-choice sequence: a server read that started before the
+  // user's own choice must never undo that choice.
+  let selectionWriteSeq = 0;
 
   // PADIEM Custom (BYOK) is a customer-owned provider key lane. It is a
   // separate selection from the PADIEM-provided tiers, never derived from a
@@ -433,21 +454,112 @@
     document.head.appendChild(link);
   }
 
-  function selectTier(tier) {
-    if (tier === "admin") {
-      if (!adminAvailable) return false;
-      selectedTier = tier;
-      customSelection = null;
-      syncModeCopy();
-      window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier } }));
-      return true;
-    }
-    if (!availableTiers().includes(tier)) return false;
+  function commitTier(tier, { force = false, keepCustom = false } = {}) {
+    if (!force && selectedTier === tier) return false;
     selectedTier = tier;
-    customSelection = null;
+    // #5222: restoring the account's own tier never cancels the customer's
+    // separate PADIEM Custom (BYOK) selection.
+    if (!keepCustom) customSelection = null;
     syncModeCopy();
     window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier } }));
     return true;
+  }
+
+  function selectTier(tier) {
+    if (tier === "admin") {
+      if (!adminAvailable) return false;
+      commitTier(tier, { force: true });
+      return true;
+    }
+    if (!availableTiers().includes(tier)) return false;
+    commitTier(tier, { force: true });
+    return true;
+  }
+
+  // #5222: an explicit user choice replaces the account's stored preference.
+  // Restoring the account's own preference never writes one back.
+  async function persistAccountSelection(tier) {
+    if (!auth.authenticated) return false;
+    const ticket = authEpoch;
+    selectionWriteSeq += 1;
+    try {
+      const response = await nativeFetch(MODEL_SELECTION_PATH, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        cache: "no-store",
+        credentials: "same-origin",
+        body: JSON.stringify({ tier }),
+      });
+      if (ticket !== authEpoch) return false;
+      if (response.status === 403) {
+        // The server refused this tier for this account. The central policy
+        // wins: re-read the authoritative state instead of keeping a tier the
+        // account may not use.
+        void refreshAuth();
+        return false;
+      }
+      if (!response.ok) return false;
+      const data = await response.json().catch(() => null);
+      if (ticket !== authEpoch) return false;
+      if (data && data.ok === true) {
+        accountSelection = data.selection && typeof data.selection === "object"
+          ? data.selection
+          : null;
+      }
+      return true;
+    } catch (_) {
+      // A transient write failure never clears the stored preference; the next
+      // successful read still returns the account's own last choice.
+      return false;
+    }
+  }
+
+  function applyAccountSelection(payload) {
+    const restorable = payload && typeof payload.restorable_tier === "string"
+      ? payload.restorable_tier
+      : "";
+    let next = "free";
+    if (restorable === "admin") {
+      // The administrator lane is executable only after the server verified
+      // this account; an unverified probe never presents it as usable.
+      if (adminAvailable && adminVerified) next = "admin";
+    } else if (restorable && availableTiers().includes(restorable)) {
+      next = restorable;
+    }
+    commitTier(next, { keepCustom: true });
+  }
+
+  async function refreshAccountSelection(epoch) {
+    const ticket = epoch === undefined ? authEpoch : epoch;
+    // A read that started before an explicit user choice must never undo it.
+    const writeTicket = selectionWriteSeq;
+    try {
+      const response = await nativeFetch(MODEL_SELECTION_PATH, {
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+        credentials: "same-origin",
+      });
+      if (ticket !== authEpoch || writeTicket !== selectionWriteSeq) return null;
+      if (!response.ok) return null;
+      const data = await response.json().catch(() => null);
+      if (ticket !== authEpoch || writeTicket !== selectionWriteSeq) return null;
+      if (!data || data.ok !== true) return null;
+      accountSelection = data.selection && typeof data.selection === "object"
+        ? data.selection
+        : null;
+      applyAccountSelection(data);
+      return data;
+    } catch (_) {
+      // A transient read failure never destroys the stored preference: it stays
+      // on the server for this account and returns with the next read.
+      return null;
+    }
+  }
+
+  function tierSelectionReady() {
+    // The restore for the current auth generation has settled. A request that
+    // waits for this never leaves with a tier that was not verified yet.
+    return authRefreshTail.then(() => undefined, () => undefined);
   }
 
   function customCopy() {
@@ -932,6 +1044,7 @@
     button.addEventListener("click", () => {
       if (tier === "admin") {
         if (!selectTier(tier)) return;
+        void persistAccountSelection(tier);
         closeModePanel({ restoreFocus: true });
         return;
       }
@@ -947,6 +1060,7 @@
         return;
       }
       if (!selectTier(tier)) return;
+      void persistAccountSelection(tier);
       closeModePanel({ restoreFocus: true });
     });
     return button;
@@ -1036,18 +1150,23 @@
     }
   }
 
-  async function refreshAdminPresence() {
+  async function refreshAdminPresence(epoch) {
     // The B62 product's own operator authority (/api/b66/admin/me) reports
     // the verified Google admin with HTTP 200 {ok, admin} — guests and
     // ordinary members simply get admin:false, so no error text is needed.
+    // #5222: a probe that could not complete is reported as unknown, never as
+    // a denial, so a temporary failure neither hides nor destroys anything.
     if (!auth.authenticated) {
       adminAvailable = false;
+      adminVerified = false;
       adminProbeInFlight = null;
       adminProbeAt = 0;
       syncAdminOption();
       return false;
     }
-    if (Date.now() - adminProbeAt < ADMIN_PROBE_TTL_MS) {
+    const ticket = epoch === undefined ? authEpoch : epoch;
+    const ttl = adminVerified ? ADMIN_PROBE_TTL_MS : ADMIN_PROBE_UNVERIFIED_TTL_MS;
+    if (Date.now() - adminProbeAt < ttl) {
       return adminAvailable;
     }
     if (adminProbeInFlight) {
@@ -1073,28 +1192,52 @@
           cache: "no-store",
           signal: controller ? controller.signal : undefined,
         });
-        if (!response.ok) return false;
+        if (!response.ok) return "unknown";
         const data = await response.json().catch(() => null);
-        return !!(data && data.ok === true && data.admin === true);
+        if (!data || data.ok !== true) return "unknown";
+        const state = typeof data.state === "string" ? data.state : "";
+        if (state === "admin") return "admin";
+        if (state === "not_admin" || state === "guest") return "not_admin";
+        if (state === "unavailable") return "unknown";
+        if (typeof data.admin === "boolean") return data.admin === true ? "admin" : "not_admin";
+        return "unknown";
       } catch (_) {
-        return false;
+        return "unknown";
       } finally {
         window.clearTimeout(timer);
       }
     })();
     adminProbeInFlight = probe;
+    let state = "unknown";
     try {
-      adminAvailable = await probe;
-      adminProbeAt = Date.now();
+      state = await probe;
     } finally {
       adminProbeInFlight = null;
     }
+    if (ticket !== authEpoch) return adminAvailable;
+    adminAvailable = state === "admin";
+    adminVerified = state === "admin" || state === "not_admin";
+    adminProbeAt = Date.now();
     if (!adminAvailable && selectedTier === "admin") {
-      selectedTier = "free";
-      window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier: selectedTier } }));
+      // The administrator lane is not executable right now. The account's
+      // stored preference stays on the server and returns with the next
+      // verified administrator probe.
+      commitTier("free");
     }
     syncAdminOption();
+    if (!adminAvailable && !adminVerified) {
+      scheduleAdminProbeRetry();
+    }
     return adminAvailable;
+  }
+
+  function scheduleAdminProbeRetry() {
+    if (adminProbeRetryTimer !== null) return;
+    adminProbeRetryTimer = window.setTimeout(() => {
+      adminProbeRetryTimer = null;
+      if (!auth.authenticated) return;
+      void refreshAuth();
+    }, ADMIN_PROBE_RETRY_MS);
   }
 
   function toggleModePanel() {
@@ -1206,8 +1349,18 @@
       nextAuth = EMPTY_AUTH;
     }
     auth = nextAuth;
+    authEpoch += 1;
+    const epoch = authEpoch;
     if (!auth.authenticated) clearCustomState();
-    await refreshAdminPresence();
+    await refreshAdminPresence(epoch);
+    if (auth.authenticated) {
+      // #5222: restore this account's own last selection, after the server
+      // re-verified the member grade and the administrator lane.
+      await refreshAccountSelection(epoch);
+    } else {
+      // A signed-out browser keeps no account selection.
+      accountSelection = null;
+    }
     const selectionValid = selectedTier === "admin"
       ? adminAvailable
       : availableTiers().includes(selectedTier);
@@ -1280,11 +1433,19 @@
     if (customAuthEventState === authenticated) return;
     customAuthEventState = authenticated;
     if (!authenticated) {
+      // #5222: a signed-out browser keeps no account selection. The other
+      // account's stored preference stays on the server for that account only.
+      accountSelection = null;
+      commitTier("free");
       clearCustomState();
       syncCustomSection();
+      void refreshAuth();
       return;
     }
     void refreshCustomStatus();
+    // A new sign-in is a different account: re-read the server state so this
+    // account's own stored preference is restored, never the previous one.
+    void refreshAuth();
   });
 
   window.PadiemProductCapabilities = Object.freeze({
@@ -1296,10 +1457,16 @@
   });
   window.PadiemTierSelection = Object.freeze({
     get: () => selectedTier,
-    set: (tier) => selectTier(String(tier || "").toLowerCase()),
+    set: (tier) => {
+      const value = String(tier || "").toLowerCase();
+      if (!selectTier(value)) return false;
+      void persistAccountSelection(value);
+      return true;
+    },
     available: () => availableTiers(),
     open: openModePanel,
     close: () => closeModePanel({ restoreFocus: true }),
+    ready: tierSelectionReady,
   });
   window.PadiemCustomSelection = Object.freeze({
     get: () => (customSelection

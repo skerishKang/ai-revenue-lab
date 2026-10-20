@@ -67,13 +67,13 @@ def test_model_selects_drive_tool_as_first_step_then_sees_result():
         return {"action": "complete", "answer": "실행 계정에서 C: 드라이브를 확인했습니다."}
 
     driver = StructuredPCQueryStepDriver(select_step=select_step)
-    context = AgentStepContext(run_id="run_5015", step_index=1, input_text="내 PC 드라이브 목록을 알려줘", tool_results=())
+    context = AgentStepContext.with_results(run_id="run_5015", step_index=1, input_text="내 PC 드라이브 목록을 알려줘", results=())
     decision = asyncio.run(driver.next_step(context, object()))
     assert decision.invocation == ToolInvocation(tool_id=PC_DRIVES_TOOL_ID, arguments={})
     result = ToolExecutionResult(tool_id=PC_DRIVES_TOOL_ID,
         output={"output": "drive inventory observed", "exit_code": None},
         event=ToolEvent(tool_id=PC_DRIVES_TOOL_ID, status=RunStatus.COMPLETED))
-    context2 = AgentStepContext(run_id="run_5015", step_index=2, input_text="내 PC 드라이브 목록을 알려줘", tool_results=(result,))
+    context2 = AgentStepContext.with_results(run_id="run_5015", step_index=2, input_text="내 PC 드라이브 목록을 알려줘", results=(result,))
     final = asyncio.run(driver.next_step(context2, object()))
     assert final.answer == "실행 계정에서 C: 드라이브를 확인했습니다."
     assert seen[1][0]["output"]["output"] == "drive inventory observed"
@@ -84,7 +84,7 @@ def test_model_cannot_select_unauthorized_tool():
         return {"action": "tool", "tool_id": "claw.desktop.click", "arguments": {}}
 
     driver = StructuredPCQueryStepDriver(select_step=select_step)
-    context = AgentStepContext(run_id="run_5015", step_index=1, input_text="list drives", tool_results=())
+    context = AgentStepContext.with_results(run_id="run_5015", step_index=1, input_text="list drives", results=())
     with pytest.raises(PCQueryStepError):
         asyncio.run(driver.next_step(context, object()))
 
@@ -162,8 +162,8 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
 
     driver = StructuredPCQueryStepDriver(select_step=select_step)
     first = asyncio.run(driver.next_step(
-        AgentStepContext(run_id="run_5015", step_index=1,
-                         input_text="폴더 목록을 보고 TXT를 읽어줘", tool_results=()),
+        AgentStepContext.with_results(run_id="run_5015", step_index=1,
+                         input_text="폴더 목록을 보고 TXT를 읽어줘", results=()),
         object(),
     ))
     assert first.invocation == ToolInvocation(
@@ -180,9 +180,8 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
         event=ToolEvent(tool_id=PC_LIST_FILES_TOOL_ID, status=RunStatus.COMPLETED),
     )
     second = asyncio.run(driver.next_step(
-        AgentStepContext(run_id="run_5015", step_index=2,
-                         input_text="폴더 목록을 보고 TXT를 읽어줘",
-                         tool_results=(list_result,)),
+        AgentStepContext.with_results(run_id="run_5015", step_index=2,
+                         input_text="폴더 목록을 보고 TXT를 읽어줘", results=(list_result,)),
         object(),
     ))
     assert second.invocation == ToolInvocation(
@@ -195,9 +194,8 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
         event=ToolEvent(tool_id=PC_READ_FILE_TOOL_ID, status=RunStatus.COMPLETED),
     )
     final = asyncio.run(driver.next_step(
-        AgentStepContext(run_id="run_5015", step_index=3,
-                         input_text="폴더 목록을 보고 TXT를 읽어줘",
-                         tool_results=(list_result, read_result)),
+        AgentStepContext.with_results(run_id="run_5015", step_index=3,
+                         input_text="폴더 목록을 보고 TXT를 읽어줘", results=(list_result, read_result)),
         object(),
     ))
     assert final.answer == "읽은 내용: PADIEM TEST CONTENT"
@@ -212,9 +210,8 @@ def test_file_tool_arguments_are_closed():
         }
 
     driver = StructuredPCQueryStepDriver(select_step=select_step)
-    context = AgentStepContext(
-        run_id="run_5015", step_index=1, input_text="read", tool_results=(),
-    )
+    context = AgentStepContext.with_results(
+        run_id="run_5015", step_index=1, input_text="read", results=())
     with pytest.raises(PCQueryStepError):
         asyncio.run(driver.next_step(context, object()))
 
@@ -365,7 +362,7 @@ def test_plan_target_is_injected_into_the_selected_tool():
     driver = StructuredPCQueryStepDriver(
         select_step=select_step, static_arguments={"device_id": "office-pc"},
     )
-    context = AgentStepContext(run_id="run_5015", step_index=1, input_text="list drives", tool_results=())
+    context = AgentStepContext.with_results(run_id="run_5015", step_index=1, input_text="list drives", results=())
     decision = asyncio.run(driver.next_step(context, object()))
     assert decision.invocation == ToolInvocation(
         tool_id=PC_DRIVES_TOOL_ID, arguments={"device_id": "office-pc"},
@@ -382,7 +379,7 @@ def test_model_cannot_choose_or_change_the_execution_target():
     driver = StructuredPCQueryStepDriver(
         select_step=select_step, static_arguments={"device_id": "office-pc"},
     )
-    context = AgentStepContext(run_id="run_5015", step_index=1, input_text="list drives", tool_results=())
+    context = AgentStepContext.with_results(run_id="run_5015", step_index=1, input_text="list drives", results=())
     with pytest.raises(PCQueryStepError):
         asyncio.run(driver.next_step(context, object()))
 

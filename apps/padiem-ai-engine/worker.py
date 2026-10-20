@@ -8,14 +8,13 @@ shared Padiem AI Core.
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, Callable
 from urllib.parse import urlparse
 
 from workers import Request, Response, WorkerEntrypoint
 
 from padiem_ai_core import (
     B14ExecutionClient,
-    B14ExecutionConfig,
     B14StreamingClient,
     ExecutionRuntime,
     StreamingExecutionRuntime,
@@ -45,8 +44,8 @@ from app.cloudflare_request_body import (
     read_bounded_worker_request_body,
 )
 from app.cloudflare_transport import (
-    B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
+    build_b14_execution_configs,
 )
 from app.engine_composition import EngineServices
 from app.idempotency_binding import CloudflareD1IdempotencyAdapter
@@ -113,6 +112,29 @@ def _binding_value(env: Any, name: str) -> Any | None:
         return getattr(env, name)
     except (AttributeError, TypeError):
         return None
+
+
+def _tool_result_ledger_factory_for_env(env: Any) -> Callable[[str, str | None], Any] | None:
+    """Build the durable tool result ledger factory, or None without a binding.
+
+    #4379: the ledger is owner-scoped, so a reference from another subject can
+    never resolve this run's payload. A missing binding leaves the Core's
+    process-local ledger in place.
+    """
+    # #4379: the tool result table lives in the same provisioned Engine
+    # database, so the existing D1 binding carries it. No new binding and no
+    # new provision gate is required.
+    binding = _binding_value(env, ENGINE_IDEMPOTENCY_BINDING_NAME)
+    if binding is None:
+        return None
+    from app.agent_tool_result_ledger import D1ToolResultLedger
+    from app.agent_durable_d1 import agent_run_owner_scope
+
+    def factory(app_id: str, subject_id: str | None) -> Any:
+        owner_scope = agent_run_owner_scope(app_id, subject_id or "anonymous")
+        return D1ToolResultLedger(binding, owner_scope=owner_scope)
+
+    return factory
 
 
 def _env_text(env: Any, name: str) -> str | None:
@@ -304,6 +326,29 @@ def _agent_skill_service_for_env(
     )
 
 
+async def _resolve_b14_proof_secret(env: Any) -> str | None:
+    """Resolve the deployment-owned B14 caller proof secret, or None.
+
+    The value lives only in Cloudflare Secrets Store. It is never logged and
+    never falls back to another credential.
+    """
+    binding = _binding_value(env, "PADIEM_B14_SERVICE_PROOF_SECRET")
+    if isinstance(binding, str):
+        return binding or None
+    getter = getattr(binding, "get", None)
+    if not callable(getter):
+        return None
+    try:
+        resolved = getter()
+        if hasattr(resolved, "__await__"):
+            resolved = await resolved
+    except Exception:
+        return None
+    if isinstance(resolved, str) and resolved:
+        return resolved
+    return None
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
     """Legacy compatibility composition; never the Production authority.
 
@@ -358,13 +403,15 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     transport = CloudflareB14ServiceBindingTransport(
         binding=binding,
         request_factory=Request,
+        # B14 spends platform-owned Provider credentials on its catalog
+        # execution lane; prove this server-to-server caller before dispatch.
+        proof_secret=await _resolve_b14_proof_secret(env),
     )
-    config = B14ExecutionConfig(
-        base_url=B14_INTERNAL_ORIGIN,
+    completed_config, stream_config = build_b14_execution_configs(
         timeout_seconds=_b14_timeout_seconds_for_env(env),
     )
-    b14_client = B14ExecutionClient(config, transport=transport)
-    b14_stream_client = B14StreamingClient(config, transport=transport)
+    b14_client = B14ExecutionClient(completed_config, transport=transport)
+    b14_stream_client = B14StreamingClient(stream_config, transport=transport)
     idempotency_adapter = _idempotency_adapter_for_env(env)
 
     def runtime_factory(app_id: str) -> ExecutionRuntime:
@@ -394,6 +441,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             runtime_factory=runtime_factory,
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
+            # #4379: the durable ledger owns the tool payloads, so a long run
+            # does not retain every tool output in the Worker.
+            tool_result_ledger_factory=_tool_result_ledger_factory_for_env(env),
         ),
         research=WebResearchEngineService(
             research_runtime_factory=research_runtime_factory,

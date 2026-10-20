@@ -130,10 +130,10 @@ class AgentPlan:
                 "invalid_agent_plan",
                 "steps must be a tuple",
             )
-        if not 1 <= len(self.steps) <= MAX_AGENT_PLAN_STEPS:
+        if not self.steps:
             raise AgentPlannerError(
                 "agent_plan_budget_exceeded",
-                f"plan must contain 1 to {MAX_AGENT_PLAN_STEPS} steps",
+                "plan must contain at least one step",
             )
         if any(not isinstance(step, AgentPlanStep) for step in self.steps):
             raise AgentPlannerError(
@@ -214,12 +214,17 @@ def validate_agent_plan(
             "compiled profile does not belong to the requested Agent",
         )
 
-    max_steps = min(
-        MAX_AGENT_PLAN_STEPS,
-        definition.execution_budget.max_steps,
-        compiled_profile.runtime_profile.max_steps,
-    )
-    if len(plan.steps) > max_steps:
+    # #4379: a plan is not refused because of a PADIEM step ceiling. The
+    # planner's own dependency bound stays; a stored step budget, when a
+    # caller set one explicitly, still applies.
+    step_caps = [
+        cap for cap in (
+            definition.execution_budget.max_steps,
+            compiled_profile.runtime_profile.max_steps,
+        ) if cap is not None
+    ]
+    max_steps = min(step_caps) if step_caps else None
+    if max_steps is not None and len(plan.steps) > max_steps:
         raise AgentPlannerError(
             "agent_plan_budget_exceeded",
             "plan exceeds the trusted Agent step budget",
@@ -237,7 +242,10 @@ def validate_agent_plan(
                 "plan references a tool outside the trusted compiled profile",
             )
 
-    if planned_tool_calls > definition.execution_budget.max_tool_calls:
+    max_tool_calls = definition.execution_budget.max_tool_calls
+    if max_tool_calls is not None and planned_tool_calls > max_tool_calls:
+        # #4379: a tool-call count is no longer a PADIEM ceiling unless a
+        # caller opts into one.
         raise AgentPlannerError(
             "agent_plan_budget_exceeded",
             "plan exceeds the trusted Agent tool-call budget",

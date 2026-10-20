@@ -180,7 +180,9 @@ def test_success_echo_reuses_only_the_server_conversation_id() -> None:
     body = _execute_body(app)
     # Exactly one gated write, driven by result.conversation_id only — no
     # fallback to the pre-request id, no local derivation.
-    assert app.count("conversationState.setConversationId(result.conversation_id);") == 1
+    # Chat/Claw separation: the write is scoped to the Claw product, so a Claw echo can never
+    # overwrite the Chat conversation id.
+    assert app.count("conversationState.setConversationId(result.conversation_id, PRODUCT_CLAW);") == 1
     assert (
         app.count('if (typeof result.conversation_id === "string" && result.conversation_id) {') == 1
     )

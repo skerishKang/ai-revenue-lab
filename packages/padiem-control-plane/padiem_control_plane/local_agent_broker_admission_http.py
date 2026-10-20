@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import json
 import re
+import secrets
 from typing import Any, Callable
 
 from .local_agent_broker_http import (
@@ -14,6 +15,10 @@ from .local_agent_broker_http import (
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _ROUTE_ADMISSION = "/admission"
+#: The device-visible name of the server-owned admission transition. The canonical
+#: device HTTP surface derives its route allowlist from this constant, so the route
+#: that the physical device transport already posts to is the one that is mounted.
+ADMISSION_DEVICE_ROUTE = _ROUTE_ADMISSION
 _ADMISSION_REQUEST_KEYS = frozenset(
     {"session_id", "binding_ref", "credential_b64", "command_id", "request_fingerprint", "request_id", "now"}
 )
@@ -86,6 +91,21 @@ def _iso(value: datetime) -> str:
     return _aware(value, "timestamp").isoformat().replace("+00:00", "Z")
 
 
+def server_owned_admission_references() -> tuple[str, str]:
+    """Mint one distinct ``(admission_ref, evidence_ref)`` pair for one admission.
+
+    The canonical Broker refuses a re-used admission or evidence reference, so the
+    deployed composition needs a fresh pair per admitted command rather than a
+    caller-supplied or sequence-derived value. These are opaque evidence handles:
+    they carry no argv, credential or execution authority.
+    """
+
+    return (
+        f"admission.{secrets.token_hex(16)}",
+        f"evidence.{secrets.token_hex(16)}",
+    )
+
+
 class AdmissionEnabledLocalAgentBrokerHttpHandler(LocalAgentBrokerHttpHandler):
     """M2e handler plus one server-owned canonical broker admission transition.
 
@@ -130,8 +150,12 @@ class AdmissionEnabledLocalAgentBrokerHttpHandler(LocalAgentBrokerHttpHandler):
             return LocalAgentBrokerHttpResponse(200, auth_result)
 
         admission_ref, evidence_ref = self._references()
-        result = self._rpc_result(
-            self._rpc.admit_command(
+        # #5080: admission is a queued -> admitted state mutation on the same
+        # deployable storage transaction #3123 wrapped for the acknowledgement,
+        # so a device HTTP admission never leaves the durable broker state
+        # half-written between the command row and its admission ledger.
+        def admit() -> Any:
+            return self._rpc.admit_command(
                 {
                     "admission_ref": admission_ref,
                     "evidence_ref": evidence_ref,
@@ -143,7 +167,10 @@ class AdmissionEnabledLocalAgentBrokerHttpHandler(LocalAgentBrokerHttpHandler):
                     "request_id": request_id,
                     "now": _iso(server_now),
                 }
-            ),
+            )
+
+        result = self._rpc_result(
+            admit() if self._session_open_transaction is None else self._session_open_transaction(admit),
             "admission",
         )
         if result["ok"] is False:
