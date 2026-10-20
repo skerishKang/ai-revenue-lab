@@ -235,6 +235,11 @@ def _carries_assistant_text(sql: str, values: tuple) -> bool:
     return any(isinstance(value, str) and "ASSISTANT-ORIGINAL" in value for value in values)
 
 
+def _fails_conversation_timestamp(sql: str, values: tuple) -> bool:
+    """Fault that fails the conversation timestamp update, after the rows landed."""
+    return sql.startswith("UPDATE conversations SET updated_at")
+
+
 # ---------------------------------------------------------------------------
 # Chat: the exchange append
 # ---------------------------------------------------------------------------
@@ -309,6 +314,29 @@ async def test_first_exchange_failure_leaves_no_empty_conversation() -> None:
     assert [dict(row)["id"] for row in after] == [dict(row)["id"] for row in before]
     assert _messages(conn) == []
     assert bucket.objects == {}
+
+
+@pytest.mark.asyncio
+async def test_a_failure_after_the_rows_landed_keeps_the_r2_original() -> None:
+    """A failure after the rows landed must not strip their R2 original.
+
+    The stored preview is a truncated marker; the canonical full original lives
+    in R2. If a later statement fails and the cleanup removes the original of a
+    row that did land, that row can never be restored for the model again.
+    """
+    conn = _database()
+    store, bucket = _history_store(conn, fault=_fails_conversation_timestamp)
+
+    with pytest.raises(sqlite3.IntegrityError):
+        await store.append_exchange(OWNER, CONVERSATION, USER_TEXT, ASSISTANT_TEXT, product_scope=PRODUCT_SCOPE_CHAT)
+
+    # The rows did land, so their full originals must still be there.
+    rows = _messages(conn)
+    assert len(rows) == 2
+    assert len(bucket.objects) == 2
+    # And the stored conversation is still restorable for the model.
+    context = await store.get_conversation_model_context(OWNER, CONVERSATION, product_scope=PRODUCT_SCOPE_CHAT)
+    assert [message["content"] for message in context["messages"]] == [USER_TEXT, ASSISTANT_TEXT]
 
 
 @pytest.mark.asyncio
