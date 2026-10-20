@@ -193,8 +193,32 @@ async def _execute_extraction(
     )
 
 
+async def _platform_caller_denial(request: Request) -> JSONResponse | None:
+    """Refuse a B66 extraction dispatch from an unproven caller.
+
+    The extraction lane executes through the canonical B14 gateway and spends
+    platform-owned Provider credentials, so it is reachable only by a proven
+    server-to-server caller. Mock mode performs no Provider call and spends no
+    platform credential.
+    """
+    from app.pilot.b14_runtime_config import runtime_config as cfg
+
+    if cfg.is_mock:
+        return None
+
+    from app.pilot.service_proof import service_proof_denial
+
+    denial = await service_proof_denial(request, await request.body())
+    if denial is None:
+        return None
+    return _error(denial.code, status=denial.status_code)
+
+
 @router.route(EXTRACT_IMAGE_PATH, methods=["POST"])
 async def extract_image(request: Request) -> JSONResponse:
+    denial = await _platform_caller_denial(request)
+    if denial is not None:
+        return denial
     payload = await _bounded_json(request)
     if payload is None:
         return _error("invalid_request")
@@ -234,6 +258,9 @@ async def extract_image(request: Request) -> JSONResponse:
 
 @router.route(EXTRACT_DOCUMENT_PATH, methods=["POST"])
 async def extract_document(request: Request) -> JSONResponse:
+    denial = await _platform_caller_denial(request)
+    if denial is not None:
+        return denial
     payload = await _bounded_json(request)
     if payload is None:
         return _error("invalid_request")

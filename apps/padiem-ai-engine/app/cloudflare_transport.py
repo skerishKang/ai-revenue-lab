@@ -14,6 +14,8 @@ import httpx
 from padiem_ai_core import B14_CHAT_COMPLETIONS_PATH, B14_STREAM_PREVIEW_PATH
 from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
 
+from app.b14_service_proof import service_proof_headers
+
 B14_INTERNAL_ORIGIN = "https://b14.internal"
 MAX_OUTBOUND_B14_REQUEST_BYTES = 256 * 1024
 _ALLOWED_B14_PATHS = frozenset(
@@ -147,6 +149,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         *,
         binding: Any,
         request_factory: Callable[..., Any],
+        proof_secret: str | None = None,
     ) -> None:
         if binding is None:
             raise ValueError("B14 service binding is required")
@@ -154,6 +157,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
             raise ValueError("request_factory must be callable")
         self._binding = binding
         self._request_factory = request_factory
+        self._proof_secret = proof_secret
 
     @staticmethod
     def _validate_target(url: httpx.URL) -> None:
@@ -195,6 +199,11 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
             headers={
                 "Content-Type": "application/json",
                 **_correlation_header(),
+                # B14 spends platform-owned Provider credentials on this lane.
+                # The proof binds this exact body to this deployment.
+                **service_proof_headers(
+                    self._proof_secret, body_text.encode("utf-8"),
+                ),
             },
             body=body_text,
         )

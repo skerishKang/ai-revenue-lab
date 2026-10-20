@@ -27,7 +27,7 @@ from app.pilot.errors import (
     StreamNotSupported,
     UnsupportedModel,
 )
-from app.pilot.gateway import _validate_body
+from app.pilot.gateway import _platform_caller_denial, _validate_body
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.stream_types import (
     StreamEvent,
@@ -287,6 +287,13 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
     iterator: AsyncIterator[StreamEvent] | None = None
 
     try:
+        # The preview lane spends platform-owned Provider credentials. Refuse an
+        # unproven caller before any credential is resolved or any Provider
+        # request is built.
+        denial = await _platform_caller_denial(request, request_id)
+        if denial is not None:
+            return denial
+
         if parsed_body is not None:
             raw = parsed_body
         else:
