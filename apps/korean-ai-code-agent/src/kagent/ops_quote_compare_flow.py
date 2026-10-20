@@ -465,15 +465,15 @@ class SupplierQuoteComparisonOutcome:
             suppliers.append(
                 {
                     "supplier_id": item.supplier_id,
-                    "supplier_label": redact_secrets(self.label(item.supplier_id)),
-                    "item_label": redact_secrets(self.item_labels.get(item.supplier_id, "")),
+                    "supplier_label": self.label(item.supplier_id),
+                    "item_label": self.item_labels.get(item.supplier_id, ""),
                     "quote_id": item.quote_id,
                     "quote_version": item.quote_version,
                     "total": item.total.safe_dict(),
                     "promised_delivery_date": (
                         item.promised_delivery_date.isoformat() if item.promised_delivery_date else None
                     ),
-                    "payment_terms_label": redact_secrets(terms.label if terms else ""),
+                    "payment_terms_label": terms.label if terms else "",
                     "due_days": item.due_days,
                     "prepaid": item.prepaid,
                     "price_rank": item.price_rank,
@@ -481,7 +481,7 @@ class SupplierQuoteComparisonOutcome:
                     "cashflow_rank": item.cashflow_rank,
                     "score_basis_points": item.score_basis_points,
                     "unknown_fields": list(item.unknown_fields),
-                    "evidence_ref": redact_secrets(evidence),
+                    "evidence_ref": evidence,
                 }
             )
         return {
@@ -496,7 +496,7 @@ class SupplierQuoteComparisonOutcome:
             "supplier_count": len(suppliers),
             "suppliers": suppliers,
             "recommended_supplier_id": self.recommended_supplier_id,
-            "recommended_supplier_label": redact_secrets(self.label(self.recommended_supplier_id)),
+            "recommended_supplier_label": self.label(self.recommended_supplier_id),
             "reason_codes": list(self.analysis.reason_codes),
             "advisory_only": True,
             "negotiation": self._negotiation_dict(),
