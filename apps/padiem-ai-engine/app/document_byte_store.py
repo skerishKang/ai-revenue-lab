@@ -52,7 +52,6 @@ from padiem_ai_core.document_normalization import (
     BINARY_DOCUMENT_MEDIA,
     MAX_BINARY_DOCUMENT_BYTES,
     MAX_DOCUMENT_NAME_CHARS,
-    MAX_TEXT_DOCUMENT_BYTES,
     TEXT_DOCUMENT_MEDIA,
 )
 
@@ -64,8 +63,11 @@ from app.document_reference import DOC_REFERENCE_PATTERN
 SUPPORTED_DOCUMENT_MEDIA_TYPES = frozenset(TEXT_DOCUMENT_MEDIA) | frozenset(
     BINARY_DOCUMENT_MEDIA
 )
+# Text content is no longer rejected at a separate 96KiB product threshold.
+# Keep the current byte-store transport budget until its large-file storage
+# contract is moved off in-memory bytes and Base64.
 _DOCUMENT_SIZE_BY_MEDIA: dict[str, int] = {
-    **{media: MAX_TEXT_DOCUMENT_BYTES for media in TEXT_DOCUMENT_MEDIA},
+    **{media: MAX_BINARY_DOCUMENT_BYTES for media in TEXT_DOCUMENT_MEDIA},
     **{media: MAX_BINARY_DOCUMENT_BYTES for media in BINARY_DOCUMENT_MEDIA},
 }
 MAX_STORED_DOCUMENT_BYTES = MAX_BINARY_DOCUMENT_BYTES
