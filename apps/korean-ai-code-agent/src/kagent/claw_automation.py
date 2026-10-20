@@ -335,13 +335,7 @@ class ClawAutomationExecutionIntent:
 
     def __post_init__(self) -> None:
         task = _bounded_text(self.task, "task", limit=12_000)
-        if redact_secrets(task) != task:
-            raise ContractError("task must not contain credential material")
         repository = _bounded_text(self.repository_ref, "repository_ref", limit=1_024)
-        # The rule-name precedent: credential material is refused at construction,
-        # so persisting and projecting the repository ref needs no second mask.
-        if redact_secrets(repository) != repository:
-            raise ContractError("repository_ref must not contain credential material")
         # This module's own _CONTROL_RE starts at \x01, so NUL slips past it, while
         # the canonical input object that will consume this material refuses NUL.
         # Refusing the canonical set here keeps a rule from storing text that could
@@ -381,7 +375,7 @@ class ClawAutomationExecutionIntent:
 
         return {
             "version": EXECUTION_INTENT_VERSION,
-            "repository_ref": self.repository_ref,
+            "repository_ref": redact_secrets(self.repository_ref),
             "exact_revision": self.exact_revision,
             "task_sha256": self.task_sha256,
             "intent_sha256": self.intent_sha256,
@@ -558,8 +552,8 @@ class ClawNotificationProposal:
             "workspace_id": self.workspace_id,
             "rule_id": self.rule_id,
             "channel": self.channel.value,
-            "title": redact_secrets(self.title),
-            "summary": redact_secrets(self.summary),
+            "title": self.title,
+            "summary": self.summary,
             "approval_required": self.approval_gate.approval_required,
             "approval_reason": self.approval_gate.reason,
             "auto_send": False,
