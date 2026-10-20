@@ -1,0 +1,84 @@
+/* Shared PADIEM chip tooltip.
+ *
+ * Owner decision (2026-10-20): every hover hint in Chat/Claw uses the same
+ * small rounded chip that the "answer preparing" / mode status chips already
+ * use, instead of the browser's default dark popup.
+ *
+ * Visual contract:
+ *   - small rounded pill, thin soft border, faint shadow, optional soft glass
+ *   - 12px / weight 500, same label type family as the status chips
+ *   - 6-8px away from the icon it describes
+ *   - visible within 100-150ms of pointer entry, gone quickly on leave
+ *   - light and dark surfaces both covered
+ *
+ * The component is shared: Chat, Claw and any later surface reuse
+ * shared-tooltip.js instead of growing a second tooltip system.
+ */
+
+.padiem-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1400;
+  max-width: 260px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .34);
+  background: rgba(56, 65, 74, .92);
+  color: #fff;
+  font-family: var(--font-label, "SUIT Variable", system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: .01em;
+  text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(3px);
+  box-shadow:
+    0 6px 18px rgba(17, 25, 33, .22),
+    inset 0 1px 0 rgba(255, 255, 255, .16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: opacity .12s ease, transform .12s ease;
+}
+
+.padiem-tooltip[data-padiem-tooltip-state="visible"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.padiem-tooltip[data-padiem-tooltip-state="hidden"] {
+  opacity: 0;
+  transform: translateY(3px);
+}
+
+/* Light surfaces keep the same chip geometry with a light plate. */
+html[data-theme="light"] .padiem-tooltip,
+html[data-theme="padiem-home"] .padiem-tooltip {
+  border-color: rgba(26, 34, 48, .10);
+  background: rgba(255, 255, 255, .94);
+  color: #1a2230;
+  box-shadow:
+    0 6px 18px rgba(26, 34, 48, .12),
+    inset 0 1px 0 rgba(255, 255, 255, .8);
+}
+
+html[data-theme="cinematic"] .padiem-tooltip {
+  border-color: rgba(255, 255, 255, .28);
+  background: rgba(18, 22, 28, .92);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .padiem-tooltip {
+    transition: none;
+  }
+}
+
+/* The anchor keeps its own focus ring; the tooltip never replaces it. */
+[data-padiem-tooltip] {
+  position: relative;
+}

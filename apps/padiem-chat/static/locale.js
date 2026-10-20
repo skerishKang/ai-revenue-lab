@@ -619,8 +619,20 @@
     ].forEach(([attribute, target, datasetKey]) => {
       document.querySelectorAll(`[${attribute}]`).forEach((element) => {
         const key = element.dataset[datasetKey];
-        if (key) element.setAttribute(target, text(key, lang));
+        if (!key) return;
+        // Owner 2026-10-20: an element that carries the shared PADIEM chip
+        // tooltip keeps its hint on the chip. Writing a native title here
+        // would show the browser popup next to the chip.
+        if (attribute === "data-locale-title" && element.hasAttribute("data-padiem-tooltip")) return;
+        element.setAttribute(target, text(key, lang));
       });
+    });
+    // The shared chip label follows the locale like any other hint.
+    document.querySelectorAll("[data-padiem-tooltip][data-locale-title]").forEach((element) => {
+      const key = element.dataset.localeTitle;
+      if (!key) return;
+      element.setAttribute("data-padiem-tooltip", text(key, lang));
+      element.removeAttribute("title");
     });
     setCombinedHeading(lang);
     const input = document.getElementById("messageInput");
@@ -670,7 +682,7 @@
     const attachmentInput = document.getElementById("attachmentFileInput");
     if (attachmentInput) attachmentInput.accept = attachmentCapabilities.accept;
     const attachmentButton = document.getElementById("attachmentButton");
-    if (attachmentButton) attachmentButton.title = capabilityCopy.fileButtonTitle;
+    if (attachmentButton) window.PadiemSharedTooltip?.label?.(attachmentButton, capabilityCopy.fileButtonTitle);
   }
 
   function syncGlassCopy(lang) {

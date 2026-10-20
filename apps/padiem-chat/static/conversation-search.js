@@ -105,7 +105,7 @@
     const label = available
       ? copy("대화 검색", "Search conversations")
       : copy("대화 검색 준비 중", "Conversation search coming soon");
-    sidebarSearchButton.setAttribute("title", label);
+    window.PadiemSharedTooltip?.label?.(sidebarSearchButton, label);
     sidebarSearchButton.setAttribute("aria-label", label);
   }
 
