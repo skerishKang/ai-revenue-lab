@@ -8,7 +8,7 @@ shared Padiem AI Core.
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, Callable
 from urllib.parse import urlparse
 
 from workers import Request, Response, WorkerEntrypoint
@@ -112,6 +112,29 @@ def _binding_value(env: Any, name: str) -> Any | None:
         return getattr(env, name)
     except (AttributeError, TypeError):
         return None
+
+
+def _tool_result_ledger_factory_for_env(env: Any) -> Callable[[str, str | None], Any] | None:
+    """Build the durable tool result ledger factory, or None without a binding.
+
+    #4379: the ledger is owner-scoped, so a reference from another subject can
+    never resolve this run's payload. A missing binding leaves the Core's
+    process-local ledger in place.
+    """
+    # #4379: the tool result table lives in the same provisioned Engine
+    # database, so the existing D1 binding carries it. No new binding and no
+    # new provision gate is required.
+    binding = _binding_value(env, ENGINE_IDEMPOTENCY_BINDING_NAME)
+    if binding is None:
+        return None
+    from app.agent_tool_result_ledger import D1ToolResultLedger
+    from app.agent_durable_d1 import agent_run_owner_scope
+
+    def factory(app_id: str, subject_id: str | None) -> Any:
+        owner_scope = agent_run_owner_scope(app_id, subject_id or "anonymous")
+        return D1ToolResultLedger(binding, owner_scope=owner_scope)
+
+    return factory
 
 
 def _env_text(env: Any, name: str) -> str | None:
@@ -392,6 +415,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             runtime_factory=runtime_factory,
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
+            # #4379: the durable ledger owns the tool payloads, so a long run
+            # does not retain every tool output in the Worker.
+            tool_result_ledger_factory=_tool_result_ledger_factory_for_env(env),
         ),
         research=WebResearchEngineService(
             research_runtime_factory=research_runtime_factory,

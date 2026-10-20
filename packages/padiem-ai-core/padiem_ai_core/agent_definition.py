@@ -82,13 +82,15 @@ class AgentExecutionBudget:
     max_total_seconds: int | None = None  # opt-in explicit ceiling; None = no wall
 
     def __post_init__(self) -> None:
+        # #4379: an explicit budget is a caller choice, so it has no PADIEM
+        # maximum. The type, the sign and the inactivity window stay.
         limits = {
-            "max_steps": (self.max_steps, 1, 64),
-            "max_tool_calls": (self.max_tool_calls, 0, 128),
-            "max_skill_calls": (self.max_skill_calls, 0, 64),
-            "max_wall_seconds": (self.max_wall_seconds, 1, 3_600),
+            "max_steps": (self.max_steps, 1),
+            "max_tool_calls": (self.max_tool_calls, 0),
+            "max_skill_calls": (self.max_skill_calls, 0),
+            "max_wall_seconds": (self.max_wall_seconds, 1),
         }
-        for name, (value, minimum, maximum) in limits.items():
+        for name, (value, minimum) in limits.items():
             if value is None and name in {
                 "max_steps", "max_tool_calls", "max_skill_calls",
             }:
@@ -96,17 +98,18 @@ class AgentExecutionBudget:
                 continue
             if isinstance(value, bool) or not isinstance(value, int):
                 raise AgentDefinitionError(f"{name} must be an integer")
-            if value < minimum or value > maximum:
+            if value < minimum:
                 raise AgentDefinitionError(
-                    f"{name} must be between {minimum} and {maximum}"
+                    f"{name} must be at least {minimum}"
                 )
         total = self.max_total_seconds
         if total is not None:
+            # #4379: an explicit total wall clock has no PADIEM maximum either.
             if isinstance(total, bool) or not isinstance(total, int):
                 raise AgentDefinitionError("max_total_seconds must be an integer")
-            if not 1 <= total <= 86_400:
+            if total < 1:
                 raise AgentDefinitionError(
-                    "max_total_seconds must be between 1 and 86400"
+                    "max_total_seconds must be at least 1"
                 )
 
 

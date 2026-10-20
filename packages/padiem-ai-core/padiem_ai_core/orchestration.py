@@ -826,6 +826,7 @@ class OrchestrationRunner:
         event_sink: Callable[[OrchestrationEvent], Any] | None = None,
         agent_run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
         agent_checkpoint_hook: Callable[[int], bool | Awaitable[bool]] | None = None,
+        agent_result_ledger: ToolResultLedger | None = None,
     ) -> None:
         if not hasattr(runtime, "run") or not callable(getattr(runtime, "run", None)):
             raise OrchestrationError("invalid_runtime", "runtime must provide a callable run method")
@@ -840,6 +841,11 @@ class OrchestrationRunner:
         if agent_checkpoint_hook is not None and not callable(agent_checkpoint_hook):
             raise OrchestrationError("invalid_agent_checkpoint", "trusted checkpoint hook must be callable")
         self._agent_checkpoint_hook = agent_checkpoint_hook
+        if agent_result_ledger is not None and not hasattr(agent_result_ledger, "resolve"):
+            raise OrchestrationError("invalid_agent_result_ledger", "trusted result ledger must be callable")
+        # #4379: the ledger owns the tool payloads so a long run does not retain
+        # every tool output in the Worker.
+        self._agent_result_ledger = agent_result_ledger
 
     def _deliver_event(self, evt: OrchestrationEvent) -> None:
         """Deliver one emitted event to the optional synchronous event sink.
@@ -1069,6 +1075,7 @@ class OrchestrationRunner:
                         run_guard=self._agent_run_guard,
                         checkpoint_hook=self._agent_checkpoint_hook,
                         progress=agent_progress,
+                        result_ledger=self._agent_result_ledger,
                     ),
                     tracker=agent_progress,
                     idle_seconds=request.context.timeout_seconds,
@@ -1615,12 +1622,16 @@ class OrchestrationRunner:
                         step_driver=getattr(request, "agent_step_driver", None),
                         initial_step_index=pause.step_index,
                         initial_tool_results=request.initial_tool_results,
+                        initial_tool_result_refs=getattr(
+                            request, "initial_tool_result_refs", ()
+                        ),
                         initial_tool_events=request.initial_tool_events,
                         trace_id=trace_id,
                         plan_id=request.agent_plan.agent_id,
                         run_guard=self._agent_run_guard,
                         checkpoint_hook=self._agent_checkpoint_hook,
                         progress=resume_progress,
+                        result_ledger=self._agent_result_ledger,
                     ),
                     tracker=resume_progress,
                     idle_seconds=request.context.timeout_seconds,

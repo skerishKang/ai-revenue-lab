@@ -613,8 +613,8 @@ def conversation_prompt(state: dict) -> str:
         f"아직 필요한 항목: {', '.join(data['missing']) if data['missing'] else '없음'}\n"
         + ("최근 대화:\n" + "\n".join(history_lines) if history_lines else "")
     )
-    # #4379: the system prompt is never cut. A truncated prompt silently
-    # removed the known facts and the earlier conversation from the model.
+    # #4379: the assembled system prompt is never cut. A truncated prompt
+    # silently removed the known facts and the earlier conversation.
     return prompt
 
 

@@ -122,17 +122,27 @@ class AgentDelegationRequest:
                 raise AgentDelegationError("invalid_agent_delegation", f"{name} must not contain duplicates")
             object.__setattr__(self, name, normalized)
         bounds = (
-            ("max_steps", self.max_steps, 1, 64),
-            ("max_tool_calls", self.max_tool_calls, 0, 64),
-            ("max_wall_seconds", self.max_wall_seconds, 1, 3_600),
-            ("depth", self.depth, 1, MAX_DELEGATION_DEPTH),
+            ("max_steps", self.max_steps, 1),
+            ("max_tool_calls", self.max_tool_calls, 0),
+            ("max_wall_seconds", self.max_wall_seconds, 1),
         )
-        for name, value, low, high in bounds:
+        for name, value, low in bounds:
             if value is None and name in {"max_steps", "max_tool_calls"}:
                 # #4379: no count ceiling unless a caller opts in.
                 continue
-            if isinstance(value, bool) or not isinstance(value, int) or not low <= value <= high:
-                raise AgentDelegationError("delegation_budget_exceeded", f"{name} must be between {low} and {high}")
+            if isinstance(value, bool) or not isinstance(value, int) or value < low:
+                raise AgentDelegationError("delegation_budget_exceeded", f"{name} must be at least {low}")
+        # The delegation depth stays bounded: it is a structural recursion
+        # guard, not a limit on how much work a run may do.
+        if (
+            isinstance(self.depth, bool)
+            or not isinstance(self.depth, int)
+            or not 1 <= self.depth <= MAX_DELEGATION_DEPTH
+        ):
+            raise AgentDelegationError(
+                "delegation_budget_exceeded",
+                f"depth must be between 1 and {MAX_DELEGATION_DEPTH}",
+            )
 
     @property
     def fingerprint(self) -> str:

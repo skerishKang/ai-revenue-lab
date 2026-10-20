@@ -219,18 +219,15 @@ class AgentProfile:
             or self.max_tokens <= 0
         ):
             raise ValueError("max_tokens must be a positive integer or None")
-        if (
-            self.max_steps is not None
-            and (
-                isinstance(self.max_steps, bool)
-                or not isinstance(self.max_steps, int)
-                or not 1 <= self.max_steps <= 100
-            )
+        if self.max_steps is not None and (
+            isinstance(self.max_steps, bool)
+            or not isinstance(self.max_steps, int)
+            or self.max_steps < 1
         ):
-            # #4379: None means no step ceiling. The model decides when the
-            # work is done; the inactivity watchdog and cancellation still end
-            # a stuck run.
-            raise ValueError("max_steps must be between 1 and 100, or None")
+            # #4379: None means no step ceiling and an explicit ceiling has
+            # no PADIEM maximum. The model decides when the work is done; the
+            # inactivity watchdog and cancellation still end a stuck run.
+            raise ValueError("max_steps must be a positive integer or None")
         object.__setattr__(self, "allowed_tools", _tuple_of_identifiers("allowed_tools", self.allowed_tools))
         object.__setattr__(self, "required_capabilities", _tuple_of_identifiers("required_capabilities", self.required_capabilities))
         object.__setattr__(self, "context_policy", _freeze(self.context_policy))

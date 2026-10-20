@@ -66,11 +66,12 @@ class TrustedSkillRuntimePolicy:
         if self.max_steps_cap is not None and (
             isinstance(self.max_steps_cap, bool)
             or not isinstance(self.max_steps_cap, int)
-            or not 1 <= self.max_steps_cap <= 100
+            or self.max_steps_cap < 1
         ):
-            # #4379: None means no step ceiling.
+            # #4379: None means no step ceiling and an explicit ceiling has
+            # no PADIEM maximum.
             raise SkillRuntimeAdapterError(
-                "max_steps_cap must be between 1 and 100, or None"
+                "max_steps_cap must be a positive integer or None"
             )
 
         if not isinstance(self.tool_bindings, tuple):
