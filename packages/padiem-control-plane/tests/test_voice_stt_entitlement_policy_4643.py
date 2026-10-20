@@ -11,6 +11,7 @@ from padiem_control_plane.engine_entitlement_producer import (
 )
 from padiem_control_plane.voice_stt_entitlement_policy import (
     VoiceSttPolicy,
+    VoiceSttAllPlansLiveTokenPolicy,
     VoiceSttAllPlansMode1Policy,
     VoiceSttTenantScope,
     voice_stt_grants_for_session,
@@ -182,3 +183,66 @@ def test_all_plans_mode1_cannot_extend_products_or_issue_live_token():
         replace(all_plans_mode1(), products=frozenset({"b62", "b66"}))
     with pytest.raises(ControlPlaneContractError):
         replace(all_plans_mode1(), products=frozenset({"b62"}))
+
+
+# ---------------------------------------------------------------------------
+# #4643 live-token baseline (Owner 2026-10-20)
+#
+# The real-time transcription of Global Classroom opens a Live session with a
+# short-lived token the private STT Worker mints. That is a separate,
+# explicitly reviewed policy: the Mode 1 baseline above keeps granting
+# transcription only, and its own contract is unchanged.
+# ---------------------------------------------------------------------------
+
+
+def all_plans_live_token():
+    return VoiceSttAllPlansLiveTokenPolicy(
+        revision="live_token_owner_test",
+        effective_at=NOW - timedelta(hours=1),
+        expires_at=NOW + timedelta(hours=1),
+    )
+
+
+@pytest.mark.parametrize("product", ["b62", "b54-padiem-claw"])
+def test_all_plans_live_token_grants_the_reviewed_live_token_capability(product):
+    actor = session(product=product)
+    grants = voice_stt_grants_for_session(actor, policy=all_plans_live_token(), now=NOW)
+    assert [(g.key, g.allowed, g.limit) for g in grants] == [
+        ("voice.stt.transcribe", True, None),
+        ("voice.stt.live_token", True, 1),
+    ]
+    snap = produce_authenticated_user_engine_entitlement(
+        actor, now=NOW, voice_policy=all_plans_live_token(),
+    )
+    assert snap.resolve("voice.stt.live_token").limit == 1
+    assert snap.resolve("voice.stt.transcribe").limit is None
+    assert snap.resolve("orchestration.run").allowed is True
+
+
+@pytest.mark.parametrize("actor", [
+    session(tenant=None),
+    session(product="b66"),
+    session(subject_type=SubjectType.ACCOUNT),
+    session(state=AuthSessionState.REVOKED),
+])
+def test_all_plans_live_token_never_waives_identity_or_tenant_scope(actor):
+    assert voice_stt_grants_for_session(
+        actor, policy=all_plans_live_token(), now=NOW,
+    ) == ()
+
+
+def test_all_plans_live_token_still_denies_expired_or_uninstalled_policy():
+    actor = session()
+    assert voice_stt_grants_for_session(
+        actor, policy=None, now=NOW,
+    ) == ()
+    assert voice_stt_grants_for_session(
+        actor, policy=all_plans_live_token(), now=NOW - timedelta(hours=3),
+    ) == ()
+
+
+def test_all_plans_live_token_cannot_extend_products():
+    with pytest.raises(ControlPlaneContractError):
+        replace(all_plans_live_token(), products=frozenset({"b62", "b66"}))
+    with pytest.raises(ControlPlaneContractError):
+        replace(all_plans_live_token(), products=frozenset({"b62"}))

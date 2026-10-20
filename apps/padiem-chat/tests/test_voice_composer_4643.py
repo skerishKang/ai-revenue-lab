@@ -319,6 +319,7 @@ function makeFactory(env) {
       },
       interim: function (text) { callbacks.onInterim(text); },
       final: function (payload) { callbacks.onFinal(payload); },
+      turnComplete: function (event) { callbacks.onTurnComplete(event); },
       error: function (code) { callbacks.onError(code); },
       end: function () { callbacks.onEnd(); },
     };
@@ -751,6 +752,42 @@ function toolsContains(env, node) {
   R.final_keeps_mic_on = { committed, resumed, second, ended, late };
 }
 
+/* S20: a confirmed turn is an accepted turn while the run is still open. */
+{
+  const ctx = readyEnv();
+  const accepted = [];
+  // The accepted-turn event names the account it belongs to, so the composer
+  // needs the voice identity before a turn can be accepted.
+  ctx.env.win.dispatchEvent(new ctx.env.win.Event("padiem:voice-identity", {
+    detail: { identityKey: "account-one" },
+  }));
+  ctx.env.win.addEventListener("padiem:voice-accepted-turn", function (event) {
+    accepted.push(event && event.detail);
+  });
+  ctx.button.dispatchEvent(new ctx.env.win.Event("click"));
+  // The confirmed utterance arrives while the microphone run is still open.
+  emit(ctx.env, 0, "final", { text: "첫 번째 발화", utteranceId: "u1" });
+  emit(ctx.env, 0, "turnComplete", { accepted: true, endOfTurn: true, finalId: "u1" });
+  const live = {
+    accepted: accepted.length,
+    detail: accepted[0] ? {
+      accepted: accepted[0].accepted,
+      endOfTurn: accepted[0].endOfTurn,
+      finalId: accepted[0].finalId,
+      accountKey: accepted[0].accountKey,
+    } : null,
+    active: ctx.composer.getStatus().active,
+    input: ctx.env.input.value,
+    session_stops: ctx.env.log.sessionStops.length,
+  };
+  // A stale run's turn is never accepted.
+  ctx.button.dispatchEvent(new ctx.env.win.Event("click"));
+  ctx.button.dispatchEvent(new ctx.env.win.Event("click"));
+  emit(ctx.env, 0, "turnComplete", { accepted: true, endOfTurn: true, finalId: "old-u" });
+  const stale = { accepted: accepted.length };
+  R.accepted_turn_while_open = { live, stale };
+}
+
 /* S19: a recognizer that ends synchronously inside its own factory. */
 {
   const env = buildEnv();
@@ -1111,6 +1148,28 @@ def test_locale_projection_uses_the_shipped_table() -> None:
     assert result["after"]["key"] == "voice-ready"
     assert result["after"]["aria_is_en"] is True
     assert result["after"]["label_is_en"] is True
+
+
+def test_a_confirmed_turn_is_accepted_while_the_microphone_run_is_open() -> None:
+    """#4643: Mode 2/3/4 need one accepted turn per utterance, not per stop.
+
+    The microphone stays open for the next utterance, so an accepted turn must
+    not wait for the run to stop. The event itself carries no send: the shared
+    mode gate decides whether it is submitted.
+    """
+    result = _results["accepted_turn_while_open"]
+    live = result["live"]
+    assert live["accepted"] == 1, "the confirmed turn was not accepted while the run was open"
+    assert live["detail"] == {
+        "accepted": True,
+        "endOfTurn": True,
+        "finalId": "u1",
+        "accountKey": "account-one",
+    }
+    assert live["active"] is True, "the microphone run must stay open for the next utterance"
+    assert live["input"] == "첫 번째 발화"
+    assert live["session_stops"] == 0
+    assert result["stale"]["accepted"] == 1, "a stale run must not be accepted"
 
 
 def test_zero_provider_post_and_no_auto_send_or_focus() -> None:
