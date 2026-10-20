@@ -190,6 +190,9 @@ def test_a_current_office_holder_never_takes_the_no_evidence_fallback(
         "무슨 요일에 파이팅 열려?",
         "영화는 몇 시에 시작해요?",
         "콘서트 언제 열려?",
+        "공연은 몇 시에 시작해?",
+        "행사 시작 시각 알려줘",
+        "팝콘 언제 팔려?",
         "What time is the concert tonight?",
     ],
 )
@@ -202,6 +205,24 @@ def test_a_published_event_schedule_needs_web_evidence(prompt: str) -> None:
     assert decision.requires_search is True
     assert decision.evidence_required is True
     assert decision.reason == "external_event_schedule"
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "회의록 요약해줘",
+        "공연 문장 번역해줘",
+        "영화 시나리오 작성해줘",
+        "팝콘 레시피 알려줘",
+    ],
+)
+def test_an_event_word_alone_never_forces_a_web_search(prompt: str) -> None:
+    # Only the published time of an event is a web fact. A request that merely
+    # mentions the event keeps the ordinary processing path.
+    decision = decide_search(prompt)
+    assert decision.disposition is SearchDisposition.NO_SEARCH
+    assert decision.requires_search is False
+    assert decision.evidence_required is False
 
 
 @pytest.mark.parametrize(

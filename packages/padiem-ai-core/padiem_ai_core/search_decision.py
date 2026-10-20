@@ -321,6 +321,29 @@ _EXTERNAL_SCHEDULE_MARKERS = (
     "closing",
     "ticket",
 )
+# The published time or day of an event is a web fact only when the request
+# asks for that time. A request that merely mentions the event ("회의록
+# 요약해줘", "공연 문장 번역해줘", "영화 시나리오 작성해줘", "팝콘 레시피
+# 알려줘") keeps the ordinary processing path and is never forced to search.
+_SCHEDULE_QUESTION_FORMS = (
+    "몇 시",
+    "몇 시간",
+    "몇 분",
+    "무슨 요일",
+    "무슨 날짜",
+    "언제",
+    "시작",
+    "끝나",
+    "열려",
+    "상영",
+    "what time",
+    "when",
+    "what day",
+    "start",
+    "ends",
+    "open",
+    "screening",
+)
 # A current condition (rain, snow, fog) is a web fact when the request asks
 # about it. The casual remark form ("비 오는구나") stays ordinary conversation.
 _CURRENT_CONDITION_CUES = (
@@ -454,10 +477,13 @@ def decide_search(text: str, *, task_id: str | None = None) -> SearchDecision:
         )
 
     # The published day or time of an external event, a business schedule or a
-    # booking is a web fact, never the server clock. Without this the request
-    # fell through to "no external evidence trigger" and the product answered a
-    # third-party schedule from memory.
-    if _contains_any(normalized, _EXTERNAL_SCHEDULE_MARKERS):
+    # booking is a web fact, never the server clock. It only counts as a web
+    # question when the request asks for that time: a request that merely
+    # mentions the event keeps the ordinary processing path.
+    if (
+        _contains_any(normalized, _EXTERNAL_SCHEDULE_MARKERS)
+        and _contains_any(normalized, _SCHEDULE_QUESTION_FORMS)
+    ):
         return SearchDecision(
             SearchDisposition.MUST_SEARCH, "external_event_schedule", query,
             evidence_required=True,
