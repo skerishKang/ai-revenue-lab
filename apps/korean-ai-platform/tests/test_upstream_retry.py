@@ -364,7 +364,7 @@ def test_auto_initial_attempt_is_not_force_stopped(client, monkeypatch):
 
     def forced_auto(model_id, options):
         manual = original_resolve_route(model_id, options)
-        return replace(manual, route_mode="auto", fallback_allowed=False, max_attempts=1)
+        return replace(manual, route_mode="auto", fallback_allowed=False)
 
     monkeypatch.setattr(gw.rcore, "resolve_route", forced_auto)
     monkeypatch.setattr(gw, "_UPSTREAM_RETRY_BUDGET_SECONDS", 0.04)
