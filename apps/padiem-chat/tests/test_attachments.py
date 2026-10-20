@@ -75,7 +75,7 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
         assert "max_tokens" not in seen["body"]
         assert seen["body"]["business14"]["required_capabilities"] == ["chat"]
         assert seen["body"]["business14"]["allow_external_fallback"] is False
-        assert seen["body"]["business14"]["max_attempts"] == 1
+        assert "max_attempts" not in seen["body"]["business14"]
         assert "attachments" not in response.json()
     else:
         assert response.status_code == 422

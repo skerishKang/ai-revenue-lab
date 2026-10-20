@@ -46,7 +46,7 @@ from padiem_ai_core.agent_approval import tool_invocation_digest
 from padiem_ai_core.contracts import ErrorClass
 from padiem_ai_core.execution_runtime import ExecutionRuntimeError
 from padiem_ai_core.pc_device_identity import is_pc_device_id
-from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, ToolInvocation
+from padiem_ai_core.tool_runtime import ToolInvocation
 
 from app.execution_context_wire import parse_execution_context
 from app.hark_office_p01_receipt import (
@@ -54,7 +54,6 @@ from app.hark_office_p01_receipt import (
     prepare_approved_office_read_receipt,
 )
 from app.tool_projection import (
-    MAX_WIRE_TOOL_ARGUMENTS_BYTES,
     EngineToolBinding,
     EngineToolProjectionError,
     json_size,
@@ -519,7 +518,6 @@ class OrchestrationEngineService:
                 "tool_arguments contains too many entries.",
             )
         parsed: dict[str, dict[str, Any]] = {}
-        total = 0
         for key, item in value.items():
             if not isinstance(key, str) or not _IDENTIFIER_RE.fullmatch(key):
                 raise ServiceContractError(
@@ -533,24 +531,15 @@ class OrchestrationEngineService:
                 )
             arguments = dict(item)
             try:
-                size = json_size(arguments)
+                json_size(arguments)
             except EngineToolProjectionError:
                 raise ServiceContractError(
                     "invalid_tool_arguments",
                     "tool_arguments must contain JSON-compatible values only.",
                 ) from None
-            if size > MAX_TOOL_ARGUMENT_BYTES:
-                raise ServiceContractError(
-                    "invalid_tool_arguments",
-                    "tool_arguments step entry exceeds the bounded argument size.",
-                )
-            total += size
+            # #4379: the orchestration wire carries no PADIEM byte total for
+            # tool arguments. The JSON shape and the step identifier rules stay.
             parsed[key] = arguments
-        if total > MAX_WIRE_TOOL_ARGUMENTS_BYTES:
-            raise ServiceContractError(
-                "tool_arguments_too_large",
-                "tool_arguments exceed the bounded orchestration argument budget.",
-            )
         return parsed
 
     @staticmethod

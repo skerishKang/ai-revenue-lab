@@ -56,11 +56,6 @@ def _objective(value: str) -> str:
             "plan step objective must be a non-empty string",
         )
     result = value.strip()
-    if len(result) > MAX_AGENT_PLAN_OBJECTIVE_CHARS:
-        raise AgentPlannerError(
-            "agent_plan_budget_exceeded",
-            "plan step objective exceeds the bounded planner limit",
-        )
     return result
 
 
@@ -86,11 +81,6 @@ class AgentPlanStep:
         dependencies = tuple(
             _identifier("dependency step id", item) for item in self.depends_on
         )
-        if len(dependencies) > MAX_AGENT_PLAN_DEPENDENCIES:
-            raise AgentPlannerError(
-                "agent_plan_budget_exceeded",
-                "plan step has too many dependencies",
-            )
         if len(set(dependencies)) != len(dependencies):
             raise AgentPlannerError(
                 "invalid_agent_plan",
@@ -130,10 +120,10 @@ class AgentPlan:
                 "invalid_agent_plan",
                 "steps must be a tuple",
             )
-        if not 1 <= len(self.steps) <= MAX_AGENT_PLAN_STEPS:
+        if not self.steps:
             raise AgentPlannerError(
                 "agent_plan_budget_exceeded",
-                f"plan must contain 1 to {MAX_AGENT_PLAN_STEPS} steps",
+                "plan must contain at least one step",
             )
         if any(not isinstance(step, AgentPlanStep) for step in self.steps):
             raise AgentPlannerError(
@@ -223,8 +213,8 @@ def validate_agent_plan(
             compiled_profile.runtime_profile.max_steps,
         ) if cap is not None
     ]
-    max_steps = min([MAX_AGENT_PLAN_STEPS, *step_caps]) if step_caps else MAX_AGENT_PLAN_STEPS
-    if len(plan.steps) > max_steps:
+    max_steps = min(step_caps) if step_caps else None
+    if max_steps is not None and len(plan.steps) > max_steps:
         raise AgentPlannerError(
             "agent_plan_budget_exceeded",
             "plan exceeds the trusted Agent step budget",
@@ -263,9 +253,4 @@ def validate_agent_plan_input(input_text: str) -> str:
             "planner input must be a non-empty string",
         )
     result = input_text.strip()
-    if len(result) > MAX_AGENT_PLAN_INPUT_CHARS:
-        raise AgentPlannerError(
-            "agent_plan_budget_exceeded",
-            "planner input exceeds the bounded input limit",
-        )
     return result

@@ -103,10 +103,23 @@
 
   async function requestCompleted(payload, signal) {
     const wire = withDeviceSelection(payload);
+    const attachment = Array.isArray(wire.attachments) && wire.attachments.length === 1 ? wire.attachments[0] : null;
+    const binary = attachment && attachment.file;
+    let body = JSON.stringify(wire);
+    let contentType = "application/json";
+    if (binary) {
+      const metadata = { ...wire, attachments: [{ type: attachment.type, name: attachment.name, media_type: attachment.media_type }] };
+      const header = new TextEncoder().encode(JSON.stringify(metadata));
+      if (header.byteLength > 65536) throw new Error("첨부 메타데이터가 너무 큽니다.");
+      const prefix = new Uint8Array(4);
+      new DataView(prefix.buffer).setUint32(0, header.byteLength, false);
+      body = new Blob([prefix, header, binary], { type: "application/octet-stream" });
+      contentType = "application/octet-stream";
+    }
     const response = await fetch("/api/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify(wire),
+      headers: { "Content-Type": contentType, "Accept": "application/json" },
+      body,
       signal,
     });
     const data = await response.json().catch(() => null);

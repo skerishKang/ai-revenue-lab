@@ -229,11 +229,12 @@ def test_non_canonical_tool_id_rejected(tool_id: str):
     assert excinfo.value.code == "invalid_tool_request"
 
 
-def test_oversized_arguments_rejected_before_core():
+def test_large_arguments_reach_the_core():
+    # #4379: the caller's tool arguments are not refused for their size. The
+    # JSON shape and the identifier grammar still apply.
     big = "x" * (MAX_TOOL_ARGUMENT_BYTES + 10)
-    with pytest.raises(EngineToolProjectionError) as excinfo:
-        parse_tool_execution_request(make_wire(arguments={"query": big}))
-    assert excinfo.value.code == "tool_arguments_too_large"
+    wire = parse_tool_execution_request(make_wire(arguments={"query": big}))
+    assert wire.arguments["query"] == big
 
 
 def test_non_json_arguments_rejected():
@@ -348,7 +349,9 @@ def test_effective_resources_narrows_only():
     entry = binding.resolve_tool(CANONICAL_SEARCH)
     effective = binding.effective_resources(entry)
     assert effective.timeout_seconds == 2
-    assert effective.argument_bytes <= MAX_TOOL_ARGUMENT_BYTES
+    # #4379: the effective resources carry no PADIEM aggregate byte ceiling.
+    assert effective.argument_bytes is None
+    assert effective.output_bytes is None
 
 
 # ---------------------------------------------------------------------------

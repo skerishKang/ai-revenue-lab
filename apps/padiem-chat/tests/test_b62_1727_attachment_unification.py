@@ -32,7 +32,8 @@ def test_binary_reader_exports_pure_attachment_api():
     assert "read," in BINARY_JS
     assert 'type: "document"' in BINARY_JS
     assert "mediaType," in BINARY_JS
-    assert "base64," in BINARY_JS
+    assert "file," in BINARY_JS
+    assert "base64," not in BINARY_JS
     assert "byteSize:" in BINARY_JS
 
 

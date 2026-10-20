@@ -175,7 +175,7 @@ async def test_mock_web_search_plus_b14_produces_grounded_envelope_and_one_syste
     upstream = seen["body"]
     assert upstream["model"] == DEFAULT_B14_MODEL_ID
     assert upstream["business14"]["allow_external_fallback"] is False
-    assert upstream["business14"]["max_attempts"] == 1
+    assert "max_attempts" not in upstream["business14"]
     assert upstream["business14"]["required_capabilities"] == ["chat"]
     assert "max_tokens" not in upstream
     system_messages = [item for item in upstream["messages"] if item["role"] == "system"]

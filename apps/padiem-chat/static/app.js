@@ -45,6 +45,8 @@
   const androidHandoffCode = document.getElementById("androidHandoffCode");
   const androidHandoffNote = document.getElementById("androidHandoffNote");
   const androidHandoffOpen = document.getElementById("androidHandoffOpen");
+  const androidHandoffCopy = document.getElementById("androidHandoffCopy");
+  const androidHandoffCopied = document.getElementById("androidHandoffCopied");
   const androidHandoffCancel = document.getElementById("androidHandoffCancel");
   const androidHandoffError = document.getElementById("androidHandoffError");
   const authDivider = document.getElementById("authDivider");
@@ -776,12 +778,7 @@
   async function selectImage(file) {
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error(attachmentCopy().unsupportedFormat);
     if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error(attachmentCopy().imageTooLarge);
-    const dataUrl = await readAsDataUrl(file);
-    const expectedPrefix = `data:${file.type};base64,`;
-    if (typeof dataUrl !== "string" || !dataUrl.startsWith(expectedPrefix)) throw new Error(uiT("image-format-invalid"));
-    const base64 = dataUrl.slice(expectedPrefix.length);
-    if (!base64) throw new Error(uiT("image-data-empty"));
-    return { type: "image", name: file.name || "image", mediaType: file.type, base64, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
+    return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
   async function selectAttachment(file) {
     if (!file) return;
@@ -800,6 +797,9 @@
   }
   function attachmentPayload(attachment) {
     if (!attachment) return undefined;
+    if (attachment.file) {
+      return [{ type: attachment.type, name: attachment.name, media_type: attachment.mediaType, file: attachment.file }];
+    }
     if (attachment.type === "image") {
       return [{ type: "image", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
     }
@@ -1586,9 +1586,21 @@
       androidHandoffNote.textContent = uiT(key);
     }
     const busy = androidHandoff.phase === "claiming";
+    // The external browser is only useful while the Google sign-in itself
+    // is still pending. Once the profile is bound the user only has to
+    // enter the code, and re-opening Google would repeat that
+    // procedure for nothing.
+    const awaitingLogin = androidHandoff.phase === "waiting";
     if (androidHandoffOpen) {
-      androidHandoffOpen.hidden = busy;
-      androidHandoffOpen.disabled = busy;
+      androidHandoffOpen.hidden = busy || !awaitingLogin;
+      androidHandoffOpen.disabled = busy || !awaitingLogin;
+    }
+    if (androidHandoffCopy) {
+      androidHandoffCopy.hidden = busy;
+      androidHandoffCopy.disabled = busy;
+    }
+    if (androidHandoffCopied) {
+      androidHandoffCopied.hidden = true;
     }
     if (androidHandoffCancel) {
       androidHandoffCancel.hidden = busy;
@@ -2798,6 +2810,37 @@
     androidHandoffOpen.addEventListener("click", () => {
       if (!androidHandoff) return;
       window.location.assign(androidHandoff.authorizationUrl);
+    });
+  }
+  if (androidHandoffCopy) {
+    androidHandoffCopy.addEventListener("click", async () => {
+      if (!androidHandoff) return;
+      const code = androidHandoff.userCode || "";
+      if (!code) return;
+      let copied = false;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(code);
+          copied = true;
+        }
+      } catch (error) {
+        copied = false;
+      }
+      if (!copied && androidHandoffCode) {
+        // Fall back to selecting the code so it can still be copied.
+        try {
+          const range = document.createRange();
+          range.selectNodeContents(androidHandoffCode);
+          const selection = window.getSelection();
+          if (selection) {
+            selection.removeAllRanges();
+            selection.addRange(range);
+          }
+        } catch (error) {}
+      }
+      if (androidHandoffCopied) {
+        androidHandoffCopied.hidden = false;
+      }
     });
   }
   if (androidHandoffCancel) {

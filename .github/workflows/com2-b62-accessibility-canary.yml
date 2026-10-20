@@ -1,30 +1,34 @@
 name: COM2 B62 Accessibility Canary
 # Isolated non-required canary; existing hosted Structured Answer browser QA remains unchanged.
 on:
-  workflow_run:
-    workflows: ["COM2 PR Policy Trigger"]
-    types: [completed]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Exact open same-repository PR head SHA (40 lowercase hex)
+        required: true
+        type: string
 permissions:
   contents: read
   pull-requests: read
   statuses: write
 concurrency:
-  group: com2-b62-accessibility-canary-${{ github.event.workflow_run.head_sha }}
+  group: com2-b62-accessibility-canary-${{ inputs.sha }}
   cancel-in-progress: true
 jobs:
-  accessibility:
+  gate:
     if: >-
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
-    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
-    timeout-minutes: 10
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      selected: ${{ steps.target.outputs.selected }}
+      sha: ${{ steps.target.outputs.sha }}
     steps:
       - name: Select open exact-head same-repo PR and Accessibility QA scope
         id: target
         env:
           GH_TOKEN: ${{ github.token }}
-          EXPECTED: ${{ github.event.workflow_run.head_sha }}
+          EXPECTED: ${{ inputs.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -51,28 +55,34 @@ jobs:
           )"
           echo "selected=$selected" >> "$GITHUB_OUTPUT"
           echo "sha=$EXPECTED" >> "$GITHUB_OUTPUT"
+  accessibility:
+    needs: gate
+    if: ${{ needs.gate.outputs.selected == 'true' }}
+    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
+    timeout-minutes: 10
+    steps:
       - name: Checkout exact source, no persisted credentials
-        if: steps.target.outputs.selected == 'true'
+        if: needs.gate.outputs.selected == 'true'
         uses: actions/checkout@v4
         with:
-          ref: ${{ steps.target.outputs.sha }}
+          ref: ${{ needs.gate.outputs.sha }}
           persist-credentials: false
           clean: true
           path: sandbox-input
       - name: Execute offline read-only COM2 Accessibility browser QA
         id: test
-        if: steps.target.outputs.selected == 'true'
+        if: needs.gate.outputs.selected == 'true'
         shell: bash
         env:
-          SHA: ${{ steps.target.outputs.sha }}
+          SHA: ${{ needs.gate.outputs.sha }}
         run: |
           set -euo pipefail
           sudo -n /usr/local/sbin/padiem-ci-b62-accessibility-check "$SHA"
       - name: Publish non-required accessibility canary status on exact PR HEAD
-        if: ${{ always() && steps.target.outputs.selected == 'true' && steps.target.outputs.sha != '' }}
+        if: ${{ always() && needs.gate.outputs.selected == 'true' && needs.gate.outputs.sha != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
-          SHA: ${{ steps.target.outputs.sha }}
+          SHA: ${{ needs.gate.outputs.sha }}
           RESULT: ${{ steps.test.outcome }}
         shell: bash
         run: |

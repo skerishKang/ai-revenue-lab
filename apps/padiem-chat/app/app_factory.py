@@ -313,6 +313,7 @@ from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
 from .same_origin_guard import SameOriginGuardMiddleware
+from .session_revocation_guard import SessionRevocationGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
 from .owner_model_preview_routes import claw_verified_model_choices, owner_model_name_preview
 from .saved_outputs import SavedOutputStore
@@ -850,6 +851,12 @@ def create_app(
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
     app = Starlette(routes=routes)
+    # #5225: the canonical session guard resolves the Control Plane session
+    # behind the session cookie once per request. It is added first so it stays
+    # the innermost of the three layers: the same-origin guard refuses a
+    # cross-origin mutation before any canonical authority read happens, and
+    # the telemetry layer stays outermost so it still records guard rejections.
+    app.add_middleware(SessionRevocationGuardMiddleware)
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
     # recording guard rejections.
@@ -1045,11 +1052,11 @@ def create_app(
             _auth_abuse_store = None
     app.state.auth_abuse_gate = AuthAbuseGate(resolved, _auth_abuse_store)
 
-    # An explicitly injected B14 transport is the existing network-free regression seam.
-    # It cannot occur through browser input or Worker bindings. Production/ordinary runtime
-    # (transport=None) always enforces the gate; quota-specific integration tests also
-    # enforce it by supplying a usage store.
-    app.state.usage_gate_enforced = not (transport is not None and usage_store is None)
+    # AI usage quotas are disabled by default during development.
+    # Explicitly injected quota stores retain opt-in policy coverage.
+    # Development-stage AI usage is provider-governed, not locally quota-gated.
+    # Explicitly injected quota stores keep the opt-in policy/test seam available.
+    app.state.usage_gate_enforced = usage_store is not None
     # Fail closed until CP supplies verified user Drive WRITE grant and owner-scoped upload session.
     app.state.meeting_drive_upload_session_port = meeting_drive_upload_session_port
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)

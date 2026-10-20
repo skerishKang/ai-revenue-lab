@@ -136,6 +136,11 @@ on:
         required: false
         type: boolean
         default: false
+      attach_existing_b14_service_proof_secret:
+        description: "#5224: attach only the one deployment-owned B14 caller-proof Secrets Store reference (no value, no other changes)"
+        required: false
+        type: boolean
+        default: false
       attach_existing_connector_broker:
         description: "Explicitly add the existing LOCAL_AGENT_BROKER Service Binding while preserving b14/live settings"
         required: false
@@ -772,6 +777,7 @@ jobs:
       ATTACH_GRAFANA_TELEMETRY: ${{ inputs.attach_existing_grafana_telemetry }}
       ATTACH_ORACLE_MESH: ${{ inputs.attach_existing_oracle_mesh }}
       ATTACH_CLAW_DESKTOP_SECRET: ${{ inputs.attach_existing_claw_desktop_secret }}
+      ATTACH_B14_SERVICE_PROOF_SECRET: ${{ inputs.attach_existing_b14_service_proof_secret }}
       ATTACH_EXISTING_CONNECTOR_BROKER: ${{ inputs.attach_existing_connector_broker }}
       ACTIVATE_CLAW_PUBLIC_SEARCH: ${{ inputs.activate_claw_public_search }}
       PRESERVE_B66_MEMBERSHIP_SECRET: ${{ inputs.preserve_existing_b66_membership_secret }}
@@ -800,6 +806,18 @@ jobs:
             test "${COMMISSION_HARK_BROWSER}" = "false"
             test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
             test "${ATTACH_ORACLE_MESH}" = "false"
+            test "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "false"
+          fi
+          if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
+            test "${P01_SSE_RECOVERY_OFF}" != "true"
+            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
+            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
+            test "${ATTACH_ORACLE_MESH}" = "false"
+            test "${ATTACH_CLAW_DESKTOP_SECRET}" = "false"
           fi
           if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
             test "${P01_SSE_RECOVERY_OFF}" != "true"
@@ -835,6 +853,9 @@ jobs:
           elif [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ]; then
             test "${CONFIRMATION}" = "DEPLOY_B62_CLAW_DESKTOP_SECRET_ATTACH_FROM_EXACT_MAIN"
             echo "CLAW_DESKTOP_SECRET_STORE_EXACT_METADATA_OWNER_AUTHORIZED=PASS"
+          elif [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
+            test "${CONFIRMATION}" = "DEPLOY_B62_B14_SERVICE_PROOF_SECRET_ATTACH_FROM_EXACT_MAIN"
+            echo "B14_SERVICE_PROOF_SECRET_STORE_EXACT_METADATA_OWNER_AUTHORIZED=PASS"
           elif [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             test "${CONFIRMATION}" = "DEPLOY_B62_CLAW_PUBLIC_WEB_SEARCH_FROM_EXACT_MAIN"
             echo "CLAW_PUBLIC_SEARCH_OWNER_AUTHORIZED=PASS"
@@ -1334,6 +1355,16 @@ jobs:
             test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
             extra_args=(--attach-existing-claw-desktop-secret)
           fi
+          if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
+            test "${ATTACH_ORACLE_MESH}" = "false"
+            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
+            test "${ATTACH_CLAW_DESKTOP_SECRET}" = "false"
+            extra_args=(--attach-existing-b14-service-proof-secret)
+          fi
           if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
             test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
@@ -1482,6 +1513,9 @@ jobs:
           if [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ]; then
             verify_args=(--expected-add-claw-desktop-secret)
           fi
+          if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
+            verify_args=(--expected-add-b14-service-proof-secret)
+          fi
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
             verify_args=(--expected-add-web-secrets-store)
           fi
@@ -1501,7 +1535,7 @@ jobs:
             "${verify_args[@]}" \
             --before "${normalized_before}" \
             --after "${settings}"
-          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ] || [ "${ATTACH_ORACLE_MESH}" = "true" ] || [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ] || [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ] || [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ] || [ "${ATTACH_ORACLE_MESH}" = "true" ] || [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ] || [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ] || [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ] || [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
             echo "BINDINGS_PRESERVED_AND_APPROVED_ADDED=PASS"
           else
             echo "BINDINGS_PRESERVED_EXACTLY=PASS"
@@ -1553,6 +1587,14 @@ jobs:
               --after "${detail}"
             jq -e '.result.resources.bindings | any(.name == "CLAW_ENGINE_DESKTOP_SECRET" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "CLAW_ENGINE_DESKTOP_SECRET")' "${detail}" >/dev/null
             echo "CLAW_DESKTOP_SECRET_SERVED_IMMUTABLE_BINDING=PASS"
+          fi
+          if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
+            python .github/scripts/b62_binding_state_guard.py \
+              --expected-add-b14-service-proof-secret \
+              --before "${RUNNER_TEMP}/b62-version-before.json" \
+              --after "${detail}"
+            jq -e '.result.resources.bindings | any(.name == "PADIEM_B14_SERVICE_PROOF_SECRET" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "PADIEM_B14_SERVICE_PROOF_SECRET")' "${detail}" >/dev/null
+            echo "B14_SERVICE_PROOF_SECRET_SERVED_IMMUTABLE_BINDING=PASS"
           fi
           if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             python .github/scripts/b62_binding_state_guard.py \
@@ -1611,6 +1653,9 @@ jobs:
           fi
           if [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ]; then
             verify_args=(--allow-add-existing-claw-desktop-secret)
+          fi
+          if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
+            verify_args=(--allow-add-existing-b14-service-proof-secret)
           fi
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
             verify_args=(--allow-add-existing-web-secrets-store)

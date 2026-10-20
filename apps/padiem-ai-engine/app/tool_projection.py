@@ -46,8 +46,8 @@ from padiem_ai_core.tool_resource_policy import (
     resolve_tool_resources,
 )
 from padiem_ai_core.tool_runtime import (
-    MAX_TOOL_ARGUMENT_BYTES,
     ToolAuthorizationContext,
+    ToolExecutionResult,
     ToolRuntime,
 )
 
@@ -66,7 +66,6 @@ ENGINE_TOOL_CONTRACT_VERSION = f"{ENGINE_TOOL_CONTRACT_FAMILY}/{ENGINE_TOOL_CONT
 # guard, not a limit on the amount a tool may return.
 MAX_PUBLIC_OUTPUT_DEPTH = 64
 MAX_BOUND_TOOL_AGENTS = 64
-MAX_WIRE_TOOL_ARGUMENTS_BYTES = 64 * 1024
 MAX_PENDING_TOOL_CONTINUATIONS = 256
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
@@ -405,6 +404,35 @@ def _reject_wired_authority(data: Mapping[str, Any]) -> None:
         )
 
 
+def _require_json_arguments(value: Any, *, depth: int = 0) -> None:
+    """Reject a value that is not JSON data.
+
+    The size is not checked (#4379); only the shape is, so a caller cannot hand
+    the Core a value it could never serialize.
+    """
+    if depth > 64:
+        raise EngineToolProjectionError(
+            "invalid_tool_arguments", "Tool arguments must be a JSON object."
+        )
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise EngineToolProjectionError(
+                    "invalid_tool_arguments", "Tool arguments must be a JSON object."
+                )
+            _require_json_arguments(item, depth=depth + 1)
+        return
+    if isinstance(value, (list, tuple)):
+        for item in value:
+            _require_json_arguments(item, depth=depth + 1)
+        return
+    raise EngineToolProjectionError(
+        "invalid_tool_arguments", "Tool arguments must be a JSON object."
+    )
+
+
 def parse_tool_execution_request(payload: Any) -> ToolExecutionWire:
     """Parse one bounded tool execution request; unknown fields fail closed."""
     if not isinstance(payload, Mapping):
@@ -437,11 +465,10 @@ def parse_tool_execution_request(payload: Any) -> ToolExecutionWire:
             "arguments must be a JSON object.",
         )
     arguments = dict(arguments)
-    if json_size(arguments) > MAX_TOOL_ARGUMENT_BYTES:
-        raise EngineToolProjectionError(
-            "tool_arguments_too_large",
-            "Tool arguments exceed the bounded Core argument ceiling.",
-        )
+    # #4379: the caller's tool arguments are not refused for their size. The
+    # JSON shape and the identifier grammar still apply, and the settled result
+    # is owned by the durable tool result ledger.
+    _require_json_arguments(arguments)
     return ToolExecutionWire(app_id=app_id, agent_id=agent_id, tool_id=tool_id, arguments=arguments)
 
 

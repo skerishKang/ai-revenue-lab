@@ -124,6 +124,16 @@ async def _run_view(
         parsed = urlparse(request.url)
         if request.method == "POST" and parsed.path in {"/api/chat", "/api/chat/stream"}:
             payload: Any = None
+            raw_body = request.post_data_buffer
+            if raw_body and request.headers.get("content-type", "").startswith("application/octet-stream"):
+                if len(raw_body) < 5:
+                    raise AssertionError("binary chat frame too short")
+                header_size = int.from_bytes(raw_body[:4], "big")
+                if not 0 < header_size <= 65536 or len(raw_body) <= header_size + 4:
+                    raise AssertionError("invalid binary chat frame")
+                payload = json.loads(raw_body[4:4 + header_size].decode("utf-8"))
+                chat_posts.append({"path": parsed.path, "payload": payload, "binary": raw_body[4 + header_size:]})
+                return
             if request.post_data:
                 try:
                     payload = json.loads(request.post_data)
@@ -132,6 +142,24 @@ async def _run_view(
             chat_posts.append({"path": parsed.path, "payload": payload})
 
     page.on("request", record_request)
+    # Capture outbound Blob bytes in page: Playwright may omit Blob POST post_data.
+    await page.add_init_script("""
+    (() => {
+      const originalFetch = window.fetch;
+      window.__b62RawUploads = [];
+      window.fetch = function(input, init) {
+        if (input === '/api/chat' && init && init.body instanceof Blob) {
+          init.body.arrayBuffer().then(buffer => {
+            const bytes = new Uint8Array(buffer);
+            const size = new DataView(buffer).getUint32(0, false);
+            const metadata = JSON.parse(new TextDecoder().decode(bytes.slice(4, 4 + size)));
+            window.__b62RawUploads.push({payload: metadata, binary: Array.from(bytes.slice(4 + size))});
+          });
+        }
+        return originalFetch.apply(this, arguments);
+      };
+    })();
+    """)
 
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
     await page.locator("#messageInput").wait_for(state="visible")
@@ -260,6 +288,12 @@ async def _run_view(
     binary_post = chat_posts[1]
     if binary_post["path"] != "/api/chat":
         raise AssertionError(f"binary bridge must dispatch one completed /api/chat: {binary_post!r}")
+    if binary_post["payload"] is None:
+        captured = await page.evaluate("window.__b62RawUploads")
+        if not captured:
+            raise AssertionError("browser did not capture binary upload")
+        binary_post["payload"] = captured[-1]["payload"]
+        binary_post["binary"] = bytes(captured[-1]["binary"])
     binary_request = binary_post["payload"]
     if not isinstance(binary_request, dict):
         raise AssertionError(f"binary request payload missing: {binary_request!r}")
@@ -269,11 +303,10 @@ async def _run_view(
     binary_document = attachments[0]
     if binary_document.get("type") != "document" or binary_document.get("name") != BINARY_NAME:
         raise AssertionError(f"binary document metadata mismatch: {binary_document!r}")
-    if binary_document.get("media_type") != BINARY_MIME or "text" in binary_document:
-        raise AssertionError(f"binary document variant must carry base64, not text: {binary_document!r}")
-    encoded = binary_document.get("base64")
-    if not isinstance(encoded, str) or base64.b64decode(encoded, validate=True) != binary_payload:
-        raise AssertionError("binary document payload did not round-trip exactly")
+    if binary_document.get("media_type") != BINARY_MIME or "text" in binary_document or "base64" in binary_document:
+        raise AssertionError(f"binary document metadata must not carry encoded content: {binary_document!r}")
+    if binary_post.get("binary") != binary_payload:
+        raise AssertionError("binary document original did not round-trip exactly")
     for payload in (text_payload, binary_request):
         if any(key in payload for key in ("model", "provider", "route", "business14")):
             raise AssertionError(f"browser payload must not select model/provider routing: {payload!r}")

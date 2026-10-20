@@ -1,7 +1,7 @@
 """#2800: the shared tier declaration must not be able to change without running Claw.
 
 Claw owns no route literal: `p01_adapter` and `p01_orchestration_client` ask
-`active_route_for()` what Plus and Pro resolve to, so a declaration edit alone moves Claw's
+`active_route_for()` what each product tier resolves to, so a declaration edit alone moves Claw's
 live behaviour. Before this child, `Validate B54 KAgent` listed only two broker modules under
 `packages/padiem-control-plane`, so that edit ran no Claw test at all.
 
@@ -89,13 +89,19 @@ class TierRouteConsumerCoverageTests(unittest.TestCase):
 
         expected = {
             route.model_id
-            for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO)
+            for label in ProductTierLabel
             for route in [active_route_for(label)]
             if route is not None and route.model_id is not None
         }
         self.assertEqual(set(PADIEM_EXECUTABLE_MODEL_IDS), expected)
         # Owner #5009: Plus and Pro share the Muse Spark 1.3 primary.
-        self.assertEqual(expected, {MUSE_B14_MODEL_ID})
+        self.assertEqual(
+            {
+                active_route_for(ProductTierLabel.PLUS).model_id,
+                active_route_for(ProductTierLabel.PRO).model_id,
+            },
+            {MUSE_B14_MODEL_ID},
+        )
 
     def test_owner_policy_invariants_hold_while_consumers_derive(self):
         # Asserted rather than assumed, because this child makes Claw lean harder on them.

@@ -129,7 +129,7 @@ async def test_ephemeral_document_is_untrusted_single_system_context_and_not_pub
     assert upstream["model"] == DEFAULT_B14_MODEL_ID
     assert upstream["business14"]["required_capabilities"] == ["chat"]
     assert upstream["business14"]["allow_external_fallback"] is False
-    assert upstream["business14"]["max_attempts"] == 1
+    assert "max_attempts" not in upstream["business14"]
 
     public = response.json()
     assert public["attachments"] == [{
