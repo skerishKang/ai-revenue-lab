@@ -1,5 +1,8 @@
 # AI Development Operating Policy
 
+> Web Claw is a locally executing computer agent accessed through a web interface. Its canonical execution, original-content and connector principles are in [Web Claw Local Agent Execution Principle](../architecture/WEB_CLAW_LOCAL_AGENT_EXECUTION_PRINCIPLE_20261020.md). Do not reinterpret web delivery as a reason for cloud-chat-only feature limits or blanket redaction. The authorized connector executes local tasks; preserve actual account/device authorization.
+
+
 - Status: **CANONICAL REPOSITORY OPERATING POLICY**
 - Effective reset: 2026-08-14
 - Design authority: `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
