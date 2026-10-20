@@ -30,7 +30,7 @@ def _profile_and_temperature(agent):
     assert agent.model_policy["model"] == MODEL_ID
     assert "temperature" not in agent.model_policy
     assert agent.model_policy["allow_external_fallback"] is False
-    assert agent.model_policy["max_attempts"] == 1
+    assert "max_attempts" not in agent.model_policy
     model, temperature, routing = _normalize_model_policy(agent)
     assert model == MODEL_ID
     assert temperature is None

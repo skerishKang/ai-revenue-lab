@@ -66,7 +66,7 @@ async def test_service_binding_transport_wins_and_preserves_explicit_agnes_paylo
     assert payload["model"] == DEFAULT_B14_MODEL_ID
     assert payload["business14"]["required_capabilities"] == ["chat"]
     assert payload["business14"]["allow_external_fallback"] is False
-    assert payload["business14"]["max_attempts"] == 1
+    assert "max_attempts" not in payload["business14"]
     assert "provider" not in payload
     assert "authorization" not in {key.lower() for key in payload}
     assert result["runtime"] == "b14"
