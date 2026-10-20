@@ -1,8 +1,10 @@
 # AI Revenue Lab
 
-AI Revenue Lab is a private product and research repository for testing a specific business hypothesis:
+AI Revenue Lab is a public development and engineering repository for testing a specific business hypothesis:
 
 > Abundant AI production can do more than reduce cost; it can make new personalized digital products and revenue models economically viable.
+
+This repository publishes development and engineering source and policy only. PADIEM's internal business and operating governance is **not** published here; read the root [`AGENTS.md`](AGENTS.md) for the non-public governance location and the decision order.
 
 ## Documentation entrypoints
 
