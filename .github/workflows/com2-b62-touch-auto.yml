@@ -3,7 +3,7 @@ name: COM2 B62 Touch Auto Canary
 # Does not change the 16 hosted QA jobs or any required status context.
 on:
   workflow_run:
-    workflows: ["B62 Unified Browser QA"]
+    workflows: ["COM2 PR Policy Trigger"]
     types: [completed]
 permissions:
   contents: read
@@ -20,12 +20,12 @@ jobs:
     runs-on: [self-hosted, linux, x64, padiem-com2-ci]
     timeout-minutes: 10
     steps:
-      - name: Resolve open same-repository PR and confirmed hosted mobile lane
+      - name: Resolve open same-repository PR and select touch scope
         id: target
         env:
           GH_TOKEN: ${{ github.token }}
           EXPECTED: ${{ github.event.workflow_run.head_sha }}
-          UPSTREAM_RUN: ${{ github.event.workflow_run.id }}
+
         shell: bash
         run: |
           set -euo pipefail
@@ -41,12 +41,20 @@ jobs:
           print(valid[0]["number"])
           PY
           )"
-          jobs="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$url/actions/runs/$UPSTREAM_RUN/jobs?per_page=100")"
-          selected="$(JOBS="$jobs" python3 - <<'PY'
+          # Trusted API metadata only; never run PR-provided planner on the host.
+          files="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$url/pulls/$PR/files?per_page=100")"
+          selected="$(FILES="$files" python3 - <<'PY'
           import json,os
-          jobs=json.loads(os.environ["JOBS"])["jobs"]
-          matches=[j for j in jobs if j["name"]=="mobile-touch-target-qa"]
-          print("true" if len(matches)==1 and matches[0]["conclusion"]=="success" else "false")
+          rows=json.loads(os.environ['FILES'])
+          # For PRs beyond first-page capacity run conservatively. Every uncertain
+          # source change selects the isolated canary rather than silently skipping.
+          paths={p.get('filename','') for p in rows} | {p.get('previous_filename','') for p in rows}
+          chosen=len(rows)>=100 or any(
+              (p.startswith('apps/padiem-chat/') and not p.startswith('apps/padiem-chat/tests/'))
+              or p=='.github/scripts/b62_mobile_touch_target_qa.py'
+              for p in paths
+          )
+          print('true' if chosen else 'false')
           PY
           )"
           echo "selected=$selected" >> "$GITHUB_OUTPUT"
