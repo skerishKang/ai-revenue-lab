@@ -13,11 +13,10 @@ from .contracts import ContractError
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
 _MAX_ARG_COUNT = 64
 _MAX_ARG_LENGTH = 2048
-# #4379: the local agent run carries no PADIEM wall-clock total.
-# The output character bound stays for now: the Windows executor's own pipe
-# capture bound and the public ``stdout_truncated`` flag are one contract and
-# have to change together.
-_MAX_OUTPUT_CHARS = 8192
+# #4379: the local agent run carries no PADIEM wall-clock total, and the
+# command output is returned as the process produced it. The Windows executor
+# still drains the pipes chunk by chunk, so a large output never blocks the
+# child process.
 _MAX_TIMEOUT_SECONDS: int | None = None
 
 
@@ -70,14 +69,15 @@ def _argv(value: tuple[str, ...]) -> tuple[str, ...]:
     return tuple(normalized)
 
 
-def _bounded_output(value: str) -> tuple[str, bool]:
+def _command_output(value: str) -> str:
+    """Return the command output unchanged.
+
+    #4379: a local agent result carries no PADIEM character total, so the
+    output is never cut and the result never claims a truncation.
+    """
     if not isinstance(value, str):
         raise ContractError("command output must be text")
-    if _MAX_OUTPUT_CHARS is None:
-        return value, False
-    if len(value) <= _MAX_OUTPUT_CHARS:
-        return value, False
-    return value[:_MAX_OUTPUT_CHARS], True
+    return value
 
 
 class LocalAgentPlatform(str, Enum):
@@ -204,9 +204,6 @@ class LocalCommandResult:
     cancelled: bool
     dirty_worktree_before: bool
     dirty_worktree_after: bool
-    stdout_truncated: bool = field(default=False, init=False)
-    stderr_truncated: bool = field(default=False, init=False)
-
     def __post_init__(self) -> None:
         for field_name in ("request_id", "run_id", "device_id", "root_ref"):
             object.__setattr__(self, field_name, _ref(getattr(self, field_name), field_name))
@@ -224,12 +221,9 @@ class LocalCommandResult:
             raise ContractError("cancelled command must not claim an exit code")
         if not isinstance(self.dirty_worktree_before, bool) or not isinstance(self.dirty_worktree_after, bool):
             raise ContractError("dirty worktree flags must be boolean")
-        stdout, stdout_truncated = _bounded_output(self.stdout)
-        stderr, stderr_truncated = _bounded_output(self.stderr)
-        object.__setattr__(self, "stdout", stdout)
-        object.__setattr__(self, "stderr", stderr)
-        object.__setattr__(self, "stdout_truncated", stdout_truncated)
-        object.__setattr__(self, "stderr_truncated", stderr_truncated)
+        # #4379: the output is kept exactly as the process produced it.
+        object.__setattr__(self, "stdout", _command_output(self.stdout))
+        object.__setattr__(self, "stderr", _command_output(self.stderr))
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -243,8 +237,6 @@ class LocalCommandResult:
             "cancelled": self.cancelled,
             "stdout_chars": len(self.stdout),
             "stderr_chars": len(self.stderr),
-            "stdout_truncated": self.stdout_truncated,
-            "stderr_truncated": self.stderr_truncated,
             "dirty_worktree_before": self.dirty_worktree_before,
             "dirty_worktree_after": self.dirty_worktree_after,
             "automatic_git_clean_reset": False,

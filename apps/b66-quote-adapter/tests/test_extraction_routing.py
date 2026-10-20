@@ -577,10 +577,12 @@ class B66GovernedRouteTests(unittest.TestCase):
             [{"field": "memo", "page": None, "snippet": None, "confidence": None}],
         )
 
-        too_many = with_evidence([{"field": f"f{i}"} for i in range(201)])
-        result = normalize_from_model(too_many)
-        self.assertFalse(result["ok"])
-        self.assertEqual(result["code"], "too_much_evidence")
+        # #4379: the evidence carries no PADIEM item-count total, so a long
+        # evidence list is kept entry by entry.
+        many_entries = with_evidence([{"field": f"f{i}"} for i in range(201)])
+        result = normalize_from_model(many_entries)
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(len(result["extraction"]["evidence"]), 201)
 
         for evidence_value, code in [
             ([{"page": 1}], "invalid_evidence_field"),
