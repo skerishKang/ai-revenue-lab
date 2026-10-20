@@ -21,6 +21,8 @@ from app.claw_pc_query_step_driver import (
     _make_pc_file_handler,
 )
 
+from kagent import pc_query_adapter as product_adapter
+
 RUN_ID = "run_5015_projection"
 SUBJECT = "sub_" + "5" * 32
 PRODUCT = "b54-padiem-claw"
@@ -77,7 +79,9 @@ def _install_wire(monkeypatch, output: str) -> None:
             }
         raise AssertionError("unexpected mode " + str(mode))
 
-    monkeypatch.setattr(driver, "_signed_files_call", fake_call)
+    # The file lane lives in the product adapter since #5151, so the wire
+    # double is installed where the implementation resolves it.
+    monkeypatch.setattr(product_adapter, "signed_files_call", fake_call)
     monkeypatch.setattr(asyncio, "sleep", _no_sleep)
 
 
