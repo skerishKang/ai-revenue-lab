@@ -18,6 +18,10 @@ Distinct outcomes
     the local searcher is not present on this PC.
 ``index_not_ready``
     the searcher is present but its index cannot answer yet.
+``unsupported``
+    the searcher is present but its version cannot honour the literal search
+    contract: it is older than Everything 1.5, or its version could not be
+    confirmed. The search is not run in this state.
 ``search_failed``
     the searcher ran and failed.
 ``no_results``
@@ -41,6 +45,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import os
+import re
 import subprocess
 from typing import Any, Callable, Mapping, Protocol, Sequence
 
@@ -48,6 +53,7 @@ from typing import Any, Callable, Mapping, Protocol, Sequence
 SEARCH_OK = "ok"
 SEARCH_NOT_INSTALLED = "not_installed"
 SEARCH_INDEX_NOT_READY = "index_not_ready"
+SEARCH_UNSUPPORTED = "unsupported"
 SEARCH_SEARCH_FAILED = "search_failed"
 SEARCH_NO_RESULTS = "no_results"
 
@@ -67,11 +73,26 @@ MAX_SEARCH_RESULTS = 500
 #: enough and keeps the request bounded.
 TRUNCATION_PROBE_ROWS = 1
 
-#: The encoding the ES CLI writes its results in. ES writes UTF-8, so the
-#: output is decoded as UTF-8 and never as the host's preferred encoding:
-#: a Korean filename must survive the boundary unchanged, and a byte that is
-#: not UTF-8 is a contract failure, never a mojibake name.
+#: The code page the port asks the ES CLI to convert its output to. ES writes
+#: to a console with WriteConsole, but to a pipe or a file with WriteFile
+#: after converting to its current code page; without the switch a Korean
+#: filename becomes ``?`` on an ANSI code page. The ES CLI parses
+#: ``-cp``/``-code-page`` itself, and an ES that does not know the switch fails
+#: the run ("Unknown switch") instead of quietly returning those bytes.
+EVERYTHING_OUTPUT_CODE_PAGE = 65001
+
+#: The encoding requested from the ES CLI. The port asks for the UTF-8 code
+#: page above and the output is decoded as UTF-8 here, never as the host's
+#: preferred encoding: a Korean filename must survive the boundary unchanged,
+#: and a byte that is not UTF-8 is a contract failure, never a mojibake name.
 EVERYTHING_OUTPUT_ENCODING = "utf-8"
+
+#: The minimum Everything version this adapter can query. Everything 1.5 is
+#: the first release with the search-text character entities the literal form
+#: uses (`&sp:`, `&quot:`, `&#42:`), so an older version is never searched.
+#: The version is checked before every search; a version that cannot be
+#: confirmed is also reported as unsupported.
+EVERYTHING_MINIMUM_VERSION: tuple[int, int] = (1, 5)
 
 
 class PcFileSearchError(RuntimeError):
@@ -80,6 +101,10 @@ class PcFileSearchError(RuntimeError):
 
 class PcFileSearchIndexNotReady(PcFileSearchError):
     """The local index exists but cannot answer yet (not an empty result)."""
+
+
+class PcFileSearchUnsupported(PcFileSearchError):
+    """The searcher's version cannot honour this search contract."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -105,10 +130,16 @@ class PcFileSearchScope:
 
 @dataclass(frozen=True, slots=True)
 class PcFileSearcherStatus:
-    """What the local searcher can tell us about itself."""
+    """What the local searcher can tell us about itself.
+
+    ``supported`` is the version gate: this adapter's literal search needs
+    Everything 1.5 or newer. It defaults to ``True`` for ports that do not
+    report a version; the ES port always sets it explicitly.
+    """
 
     installed: bool
     index_ready: bool
+    supported: bool = True
 
 
 @dataclass(frozen=True, slots=True)
@@ -183,10 +214,10 @@ def _default_process_runner(
 ) -> tuple[int, str, str]:
     """Run a searcher process. Returns (exit code, stdout, stderr).
 
-    The output is decoded as UTF-8, because that is what the ES CLI writes.
-    Decoding with the host's preferred encoding would turn a Korean file name
-    into mojibake on a non-UTF-8 host, so the encoding is fixed here instead
-    of being inherited from the machine.
+    The output is decoded as UTF-8 because the port asks the ES CLI for that
+    code page (``-code-page 65001``). Decoding with the host's preferred
+    encoding would turn a Korean file name into mojibake on a non-UTF-8 host,
+    so the encoding is fixed here instead of being inherited from the machine.
     """
     try:
         completed = subprocess.run(  # noqa: S603 - fixed argv, no shell
@@ -205,7 +236,7 @@ def _default_process_runner(
 
 
 def _decode_everything_output(raw: bytes | str | None) -> str:
-    """Decode ES output as UTF-8.
+    """Decode ES output as UTF-8, the code page the port requested.
 
     A byte that is not UTF-8 is a contract failure: returning a mojibake
     name would be worse than reporting the search as failed.
@@ -222,24 +253,64 @@ def _decode_everything_output(raw: bytes | str | None) -> str:
         ) from exc
 
 
+_VERSION_PATTERN = re.compile(r"(\d+)\.(\d+)")
+
+
+def _parse_everything_version(output: str) -> tuple[int, int] | None:
+    """The major.minor version ES printed, or None if it is unreadable."""
+    match = _VERSION_PATTERN.search(output or "")
+    if match is None:
+        return None
+    return int(match.group(1)), int(match.group(2))
+
+
+#: Characters that carry meaning in the Everything search syntax, mapped to
+#: the official character entities that force a literal match. The entities
+#: are the documented ones from the Everything search syntax, ending in a
+#: colon (`&sp:`, `&vert:`, `&#42:`), not an HTML semicolon; ES 1.5 is
+#: required for them. `-search*` only stops *switch* parsing: the search
+#: grammar still applies to the text (space joins terms, `|` is OR, `!` is
+#: NOT, `:` starts a modifier or function, `*` and `?` are wildcards), so
+#: each of these is escaped. A space becomes one literal space (`&sp:`), not
+#: a term separator. `&` is escaped as well so a user query cannot spell an
+#: entity by accident.
+_SEARCH_LITERAL_ENTITIES: tuple[tuple[str, str], ...] = (
+    ("&", "&#38:"),
+    ("\\", "&#92:"),
+    (" ", "&sp:"),
+    ("\t", "&#9:"),
+    ("|", "&vert:"),
+    ("!", "&excl:"),
+    ("<", "&lt:"),
+    (">", "&gt:"),
+    ('"', "&quot:"),
+    ("*", "&#42:"),
+    ("?", "&#63:"),
+    (":", "&#58:"),
+)
+_SEARCH_LITERAL_MAP: dict[str, str] = dict(_SEARCH_LITERAL_ENTITIES)
+
+
 def everything_search_argument(text: str) -> str:
-    """The search text in the official ES command-line form.
+    """Render one search text as a literal Everything search.
 
-    The official CLI documents that a double quote in the search text is
-    written as a triple quote: one pair of double quotes only escapes spaces
-    and is stripped again by ES. A newline or a NUL would end the argument
-    and is refused outright.
-
-    The official ``-search*`` form makes **the rest of the command line** a
-    literal search, so it only holds while the search text is the last
-    argument. The caller therefore puts it last, and this helper only makes
-    the text itself safe.
+    The official `-search*` form makes **the rest of the command line** the
+    search text, which only stops *switch* parsing: the search grammar still
+    applies, so a user query like ``a|b`` or ``ext:txt`` would otherwise turn
+    into an OR or a filter. Every character with search-syntax meaning is
+    therefore replaced with its official character entity (Everything 1.5),
+    which the syntax documents as a literal match. The literal tail only
+    holds while the search text is the last argument, so the caller keeps
+    ``-search*`` last. A newline, a carriage return or a NUL byte would end
+    the argument and is refused outright.
     """
     if not isinstance(text, str):
         raise PcFileSearchError("the search text must be a string")
     if "\n" in text or "\r" in text or "\x00" in text:
         raise PcFileSearchError("the search text must be a single line")
-    return text.replace('"', '"""')
+    return "".join(
+        _SEARCH_LITERAL_MAP.get(character, character) for character in text
+    )
 
 
 class EverythingEsCliSearchPort:
@@ -251,22 +322,35 @@ class EverythingEsCliSearchPort:
     that is reported as ``not_installed`` / ``index_not_ready`` instead of an
     empty result.
 
-    The switches are the documented ES ones:
+    The version is checked before every search: the literal search uses the
+    Everything 1.5 character entities, so an older searcher — or one whose
+    version cannot be confirmed — is reported as ``unsupported`` and is never
+    asked to search.
 
-    * ``-get-everything-version`` — the service answers, so the index is
-      reachable. ES exit code 8 means the Everything window was not found,
-      i.e. the client is not running.
+    The switches are the ES CLI ones. ``-code-page`` is accepted by ES itself
+    but is not in the current README's option list, so it is called out here
+    instead of being presented as one of the documented query switches.
+
+    * ``-get-everything-version`` — the service answers with its
+      ``major.minor.revision.build`` version, which is the gate above. ES exit
+      code 8 means the Everything window was not found, i.e. the client is not
+      running.
     * ``-path <folder>`` — search inside the verified folder only.
     * ``-n <count>`` — the request's result limit.
     * ``-full-path`` — the results are printed as full paths.
     * ``-timeout <ms>`` — wait for the Everything database to load before
       searching. Without it ES silently returns no results when the database
       is not loaded, which would look like an empty match.
+    * ``-code-page 65001`` — a console is written with WriteConsole, but a
+      pipe or a file is written with WriteFile after converting to ES's
+      current code page. Asking for UTF-8 is what makes the UTF-8 decoding
+      here correct for a Korean file name.
     * ``-search*`` — the **rest of the command line** is a literal search
       text. That is the official form, and it has two preconditions this
       adapter enforces rather than assumes: the switch has to be the last
-      one, so no later switch can be swallowed as search text, and the text
-      itself has to be quoted the way the official syntax requires. The
+      one, so no later switch can be swallowed as search text, and every
+      character with search-syntax meaning has to be escaped as its official
+      character entity first (see ``everything_search_argument``). The
       literal form is what keeps a user query from turning into an
       Everything filter; it is not a licence to treat the text as safe
       input without the escaping below.
@@ -304,15 +388,33 @@ class EverythingEsCliSearchPort:
     def status(self) -> PcFileSearcherStatus:
         executable = self._resolve_executable()
         if executable is None:
-            return PcFileSearcherStatus(installed=False, index_ready=False)
+            return PcFileSearcherStatus(
+                installed=False, index_ready=False, supported=False,
+            )
+        return self._probe(executable)
+
+    def _probe(self, executable: str) -> PcFileSearcherStatus:
+        """Ask the service for its version; this never runs a search.
+
+        A version that cannot be positively confirmed as Everything 1.5 or
+        newer is reported as unsupported, never assumed to be usable.
+        """
         try:
-            code, _stdout, _stderr = self._runner(
+            code, stdout, _stderr = self._runner(
                 [executable, "-get-everything-version"], timeout=self._timeout,
             )
         except PcFileSearchError:
-            return PcFileSearcherStatus(installed=True, index_ready=False)
-        # The service must answer for the index to be queryable at all.
-        return PcFileSearcherStatus(installed=True, index_ready=code == 0)
+            return PcFileSearcherStatus(
+                installed=True, index_ready=False, supported=False,
+            )
+        version = _parse_everything_version(stdout) if code == 0 else None
+        if version is None or version < EVERYTHING_MINIMUM_VERSION:
+            return PcFileSearcherStatus(
+                installed=True, index_ready=False, supported=False,
+            )
+        return PcFileSearcherStatus(
+            installed=True, index_ready=True, supported=True,
+        )
 
     def search(
         self, *, query: str, root: str, limit: int
@@ -326,6 +428,12 @@ class EverythingEsCliSearchPort:
         executable = self._resolve_executable()
         if executable is None:
             raise PcFileSearchError("the local searcher is not installed")
+        # The version gate is re-checked here, so a direct caller cannot reach
+        # a searcher whose version does not support the literal form.
+        if not self._probe(executable).supported:
+            raise PcFileSearchUnsupported(
+                "the local searcher does not support this search contract"
+            )
         search_text = everything_search_argument(query)
         argv = [
             executable,
@@ -333,6 +441,8 @@ class EverythingEsCliSearchPort:
             "-n", str(max(1, limit)),
             "-full-path",
             "-timeout", str(self._index_wait_ms),
+            # Piped output follows this code page, not the host default.
+            "-code-page", str(EVERYTHING_OUTPUT_CODE_PAGE),
             # The literal form only holds while it is the last switch.
             "-search*", search_text,
         ]
@@ -419,6 +529,9 @@ def search_pc_files(
     true only when the search space really holds more results than the
     request: the port is asked for one row beyond the limit, so "more
     results" is an observation and never an assumption.
+
+    A searcher whose version cannot honour the literal contract is reported
+    as ``unsupported`` and is never asked to search.
     """
     if not isinstance(scope, PcFileSearchScope):
         raise PcFileSearchError("scope must be PcFileSearchScope")
@@ -430,12 +543,16 @@ def search_pc_files(
     status = port.status()
     if not status.installed:
         return PcFileSearchResult(status=SEARCH_NOT_INSTALLED, query=query)
+    if not status.supported:
+        return PcFileSearchResult(status=SEARCH_UNSUPPORTED, query=query)
     if not status.index_ready:
         return PcFileSearchResult(status=SEARCH_INDEX_NOT_READY, query=query)
 
     probe_limit = limit + TRUNCATION_PROBE_ROWS
     try:
         rows = port.search(query=query, root=scope.root, limit=probe_limit)
+    except PcFileSearchUnsupported:
+        return PcFileSearchResult(status=SEARCH_UNSUPPORTED, query=query)
     except PcFileSearchIndexNotReady:
         return PcFileSearchResult(status=SEARCH_INDEX_NOT_READY, query=query)
     except PcFileSearchError:
@@ -483,6 +600,8 @@ def search_pc_files(
 
 __all__ = [
     "DEFAULT_EVERYTHING_CLI_PATHS",
+    "EVERYTHING_MINIMUM_VERSION",
+    "EVERYTHING_OUTPUT_CODE_PAGE",
     "EVERYTHING_OUTPUT_ENCODING",
     "EverythingEsCliSearchPort",
     "MAX_SEARCH_RESULTS",
@@ -493,12 +612,14 @@ __all__ = [
     "PcFileSearchResult",
     "PcFileSearchScope",
     "PcFileSearcherStatus",
+    "PcFileSearchUnsupported",
     "ProcessRunner",
     "SEARCH_INDEX_NOT_READY",
     "SEARCH_NOT_INSTALLED",
     "SEARCH_NO_RESULTS",
     "SEARCH_OK",
     "SEARCH_SEARCH_FAILED",
+    "SEARCH_UNSUPPORTED",
     "TRUNCATION_PROBE_ROWS",
     "everything_search_argument",
     "search_pc_files",

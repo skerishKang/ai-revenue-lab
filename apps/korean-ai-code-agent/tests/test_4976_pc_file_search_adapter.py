@@ -6,8 +6,9 @@ can be handed to the existing read path. The fixture port below stands in for
 the local index: it is a test double, not a second search engine.
 
 The ES CLI path is verified through the **real** default runner with only the
-subprocess boundary replaced, so the argv, the timeout contract, the output
-encoding and the row parsing are all exercised as they run on a PC.
+subprocess boundary replaced, so the argv, the timeout contract, the requested
+output code page, the output encoding, the version gate and the row parsing
+are all exercised as they run on a PC.
 
 A search success here is an offline adapter proof. It is not a PC
 connection, not an index build, and not an operational transition.
@@ -28,11 +29,13 @@ from kagent.pc_file_search_adapter import (
     PcFileSearchError,
     PcFileSearchScope,
     PcFileSearcherStatus,
+    PcFileSearchUnsupported,
     SEARCH_INDEX_NOT_READY,
     SEARCH_NOT_INSTALLED,
     SEARCH_NO_RESULTS,
     SEARCH_OK,
     SEARCH_SEARCH_FAILED,
+    SEARCH_UNSUPPORTED,
     search_pc_files,
 )
 
@@ -320,7 +323,95 @@ def test_the_everything_port_reports_a_missing_installation(tmp_path: Path) -> N
     port = EverythingEsCliSearchPort(executable=str(tmp_path / "no-es.exe"))
     status = port.status()
     assert status.installed is False
+    assert status.supported is False
     assert status.index_ready is False
+
+
+# --- the Everything version gate -------------------------------------------
+
+
+def _versioned_runner(version_output: str, calls: list[list[str]], rows: list[str]):
+    def runner(argv, *, timeout):
+        calls.append(list(argv))
+        if "-get-everything-version" in argv:
+            return 0, version_output, ""
+        return 0, "".join(row + "\n" for row in rows), ""
+
+    return runner
+
+
+def test_an_everything_older_than_15_is_unsupported_and_never_searched(
+    tmp_path: Path,
+) -> None:
+    """1.4 has no character entities, so the literal search is not run."""
+    root = tmp_path / "allowed"
+    root.mkdir()
+    _make_tree(root)
+    executable = tmp_path / "es.exe"
+    executable.write_text("", encoding="utf-8")
+    calls: list[list[str]] = []
+
+    port = EverythingEsCliSearchPort(
+        executable=str(executable),
+        runner=_versioned_runner("1.4.1.1005\n", calls, [str(root / "한글 파일.txt")]),
+    )
+    status = port.status()
+    assert status.installed is True
+    assert status.supported is False
+    assert status.index_ready is False
+
+    result = search_pc_files(scope=_scope(root), query=QUERY, port=port)
+
+    assert result.status == SEARCH_UNSUPPORTED
+    assert result.ok is False
+    assert result.entries == ()
+    with pytest.raises(PcFileSearchUnsupported):
+        port.search(query=QUERY, root=str(root), limit=5)
+    assert all("-search*" not in call for call in calls)
+
+
+def test_a_version_that_cannot_be_read_is_unsupported_and_never_searched(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "allowed"
+    root.mkdir()
+    executable = tmp_path / "es.exe"
+    executable.write_text("", encoding="utf-8")
+    calls: list[list[str]] = []
+
+    port = EverythingEsCliSearchPort(
+        executable=str(executable),
+        runner=_versioned_runner("not a version\n", calls, []),
+    )
+    result = search_pc_files(scope=_scope(root), query=QUERY, port=port)
+
+    assert port.status().supported is False
+    assert result.status == SEARCH_UNSUPPORTED
+    assert all("-search*" not in call for call in calls)
+
+
+def test_a_version_check_failure_is_unsupported_and_never_searched(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "allowed"
+    root.mkdir()
+    executable = tmp_path / "es.exe"
+    executable.write_text("", encoding="utf-8")
+    calls: list[list[str]] = []
+
+    def runner(argv, *, timeout):
+        calls.append(list(argv))
+        raise PcFileSearchError("the local searcher could not be executed")
+
+    port = EverythingEsCliSearchPort(executable=str(executable), runner=runner)
+    status = port.status()
+    assert status.installed is True
+    assert status.supported is False
+
+    result = search_pc_files(scope=_scope(root), query=QUERY, port=port)
+
+    assert result.status == SEARCH_UNSUPPORTED
+    assert all("-search*" not in call for call in calls)
 
 
 def test_the_everything_port_queries_the_existing_index(tmp_path: Path) -> None:
@@ -331,18 +422,20 @@ def test_the_everything_port_queries_the_existing_index(tmp_path: Path) -> None:
     def runner(argv, *, timeout):
         calls.append(list(argv))
         if "-get-everything-version" in argv:
-            return 0, "1.4.3\n", ""
+            return 0, "1.5.0.1391\n", ""
         return 0, str(tmp_path / "한글 파일.txt") + "\n", ""
 
     port = EverythingEsCliSearchPort(executable=str(executable), runner=runner)
     status = port.status()
     assert status.installed is True
+    assert status.supported is True
     assert status.index_ready is True
 
     rows = port.search(query="한글", root=str(tmp_path), limit=10)
     assert rows == [str(tmp_path / "한글 파일.txt")]
 
-    argv = calls[1]
+    # The version probe precedes the query; the query is the last call.
+    argv = calls[-1]
     # The documented ES switches: the search stays inside the verified folder,
     # the request limit is passed on, and the query is a literal search text.
     assert "-path" in argv
@@ -351,6 +444,9 @@ def test_the_everything_port_queries_the_existing_index(tmp_path: Path) -> None:
     assert argv[argv.index("-n") + 1] == "10"
     assert "-full-path" in argv
     assert "-timeout" in argv
+    # ES writes a pipe in its current code page; the adapter asks for UTF-8.
+    assert "-code-page" in argv
+    assert argv[argv.index("-code-page") + 1] == "65001"
     assert "-search*" in argv
     assert argv[-1] == "한글"
     # The literal form only holds while it is the last switch, so no later
@@ -364,7 +460,7 @@ def test_the_everything_port_reports_a_failed_query(tmp_path: Path) -> None:
 
     def runner(argv, *, timeout):
         if "-get-everything-version" in argv:
-            return 0, "1.4.3\n", ""
+            return 0, "1.5.0\n", ""
         return 1, "", "index error"
 
     port = EverythingEsCliSearchPort(executable=str(executable), runner=runner)
@@ -373,8 +469,14 @@ def test_the_everything_port_reports_a_failed_query(tmp_path: Path) -> None:
         port.search(query="한글", root=str(tmp_path), limit=10)
 
 
-def test_an_unreachable_everything_service_is_not_an_empty_result(tmp_path: Path) -> None:
-    """ES exit code 8 (no Everything window) means the index cannot answer."""
+def test_an_unreachable_everything_service_is_unsupported_not_an_empty_result(
+    tmp_path: Path,
+) -> None:
+    """ES exit code 8 (no Everything window) leaves the version unconfirmed.
+
+    The searcher is never assumed to be usable: it is reported as unsupported
+    and is not searched, rather than as an empty result.
+    """
     executable = tmp_path / "es.exe"
     executable.write_text("", encoding="utf-8")
 
@@ -384,6 +486,8 @@ def test_an_unreachable_everything_service_is_not_an_empty_result(tmp_path: Path
     port = EverythingEsCliSearchPort(executable=str(executable), runner=runner)
     status = port.status()
     assert status.installed is True
+    # The version could not be confirmed, so it is not assumed to be usable.
+    assert status.supported is False
     assert status.index_ready is False
 
 
@@ -396,7 +500,7 @@ def test_a_failed_index_query_is_reported_as_index_not_ready(tmp_path: Path) -> 
 
     def runner(argv, *, timeout):
         if "-get-everything-version" in argv:
-            return 0, "1.4.3\n", ""
+            return 0, "1.5.0\n", ""
         return 7, "", "failed to send an Everything IPC query"
 
     port = EverythingEsCliSearchPort(executable=str(executable), runner=runner)
@@ -410,10 +514,31 @@ def test_a_failed_index_query_is_reported_as_index_not_ready(tmp_path: Path) -> 
 # --- the official ES search-text form --------------------------------------
 
 
-def test_a_double_quote_in_the_search_text_is_escaped_the_official_way() -> None:
-    """The official syntax writes a literal double quote as a triple quote."""
-    assert adapter.everything_search_argument('a"b') == 'a"""b'
-    assert adapter.everything_search_argument("한글 파일") == "한글 파일"
+def test_a_search_text_is_escaped_with_the_official_character_entities() -> None:
+    """Every search-syntax character becomes its documented literal entity.
+
+    The official entity terminator is a colon, not an HTML semicolon, and the
+    entities are Everything 1.5 syntax. The ES CLI accepts both ``-search*``
+    and ``-code-page`` in the same release.
+    """
+    assert adapter.everything_search_argument('a"b') == "a&quot:b"
+    assert adapter.everything_search_argument("한글 파일") == "한글&sp:파일"
+    assert (
+        adapter.everything_search_argument(r'a b"c|d!e<f>g*h?i:j&k\l')
+        == "a&sp:b&quot:c&vert:d&excl:e&lt:f&gt:g&#42:h&#63:i&#58:j&#38:k&#92:l"
+    )
+    assert adapter.everything_search_argument("탭\t문자") == "탭&#9:문자"
+
+
+def test_the_escaped_search_text_needs_no_windows_argv_quoting() -> None:
+    """The escaped text holds no space, tab or quote, so the argv stays literal.
+
+    ``-search*`` copies the rest of the raw command line; if the escaping left
+    a space or a quote, the Windows argument quoting would put those bytes
+    into the search text and the literal form would no longer hold.
+    """
+    escaped = adapter.everything_search_argument('a b"c d\te')
+    assert not any(character.isspace() or character == '"' for character in escaped)
 
 
 def test_a_search_text_that_could_end_the_command_line_is_refused() -> None:
@@ -430,15 +555,21 @@ def test_the_search_text_is_escaped_in_the_actual_argv(tmp_path: Path) -> None:
     def runner(argv, *, timeout):
         calls.append(list(argv))
         if "-get-everything-version" in argv:
-            return 0, "1.4.3\n", ""
+            return 0, "1.5.0\n", ""
         return 0, "", ""
 
     port = EverythingEsCliSearchPort(executable=str(executable), runner=runner)
     port.search(query='이름"따옴표', root=str(tmp_path), limit=5)
 
-    argv = calls[0]
-    assert argv[-1] == '이름"""따옴표'
+    # The version probe is the first call; the query is the last one.
+    argv = calls[-1]
+    assert argv[-1] == "이름&quot:따옴표"
     assert argv[-2] == "-search*"
+    # Piped output follows the requested code page, which is the one decoded
+    # as UTF-8 above; without it the same Korean text would arrive as an ANSI
+    # code page's bytes and fail (or worse, become a mojibake name).
+    assert argv[argv.index("-code-page") + 1] == "65001"
+    assert argv.index("-code-page") < argv.index("-search*")
 
 
 # --- the default runner path (only the subprocess boundary is replaced) ----
@@ -459,7 +590,7 @@ def test_the_default_runner_is_used_with_the_keyword_timeout(
     def fake_run(argv, **kwargs):
         seen.append({"argv": list(argv), **kwargs})
         if "-get-everything-version" in argv:
-            return SimpleNamespace(returncode=0, stdout=b"1.4.3\n", stderr=b"")
+            return SimpleNamespace(returncode=0, stdout=b"1.5.0\n", stderr=b"")
         return SimpleNamespace(returncode=0, stdout=b"", stderr=b"")
 
     monkeypatch.setattr(adapter.subprocess, "run", fake_run)
@@ -484,10 +615,12 @@ def test_the_default_runner_decodes_utf8_and_keeps_a_korean_file_name(
     root.mkdir()
     created = _make_tree(root)
     payload = (str(created["korean"]) + "\n").encode("utf-8")
+    seen: list[list[str]] = []
 
     def fake_run(argv, **kwargs):
+        seen.append(list(argv))
         if "-get-everything-version" in argv:
-            return SimpleNamespace(returncode=0, stdout=b"1.4.3\n", stderr=b"")
+            return SimpleNamespace(returncode=0, stdout=b"1.5.0\n", stderr=b"")
         return SimpleNamespace(returncode=0, stdout=payload, stderr=b"")
 
     monkeypatch.setattr(adapter.subprocess, "run", fake_run)
@@ -497,6 +630,12 @@ def test_the_default_runner_decodes_utf8_and_keeps_a_korean_file_name(
     assert result.status == SEARCH_OK
     assert [entry.relative_path for entry in result.entries] == ["한글 파일.txt"]
     assert result.entries[0].name == "한글 파일.txt"
+    # The decoding is correct because the same run asked ES for that code
+    # page; the two halves are one contract, not two separate choices.
+    assert seen[-1][seen[-1].index("-code-page") + 1] == str(
+        adapter.EVERYTHING_OUTPUT_CODE_PAGE
+    )
+    assert adapter.EVERYTHING_OUTPUT_ENCODING == "utf-8"
 
 
 def test_output_that_is_not_utf8_is_a_failure_and_not_a_mojibake_name(
@@ -509,7 +648,7 @@ def test_output_that_is_not_utf8_is_a_failure_and_not_a_mojibake_name(
 
     def fake_run(argv, **kwargs):
         if "-get-everything-version" in argv:
-            return SimpleNamespace(returncode=0, stdout=b"1.4.3\n", stderr=b"")
+            return SimpleNamespace(returncode=0, stdout=b"1.5.0\n", stderr=b"")
         return SimpleNamespace(
             returncode=0, stdout=b"\xff\xfe bad bytes\n", stderr=b"",
         )
