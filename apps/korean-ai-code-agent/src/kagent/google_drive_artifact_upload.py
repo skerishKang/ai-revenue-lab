@@ -97,7 +97,7 @@ class AuthorizedDriveMultipartCreatePort(Protocol):
     def create_file_multipart(
         self, *, binding_ref: str, actor_ref: str, path: str,
         query: dict[str, str], body: bytes,
-        content_type: str, timeout_seconds: int,
+        content_type: str, timeout_seconds: int | None,
     ) -> dict[str, Any]: ...
 
 

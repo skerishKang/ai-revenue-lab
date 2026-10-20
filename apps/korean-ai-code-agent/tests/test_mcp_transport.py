@@ -45,7 +45,7 @@ class TrustedMcpTransportTests(unittest.TestCase):
         self.assertEqual(call["actor_ref"], "actor_1")
         self.assertEqual(call["connector_id"], "notion")
         self.assertEqual(call["endpoint"], "https://mcp.notion.com/mcp")
-        self.assertEqual(call["timeout_seconds"], 30)
+        self.assertIsNone(call["timeout_seconds"])
         self.assertNotIn("token", call)
         self.assertNotIn("access_token", call)
         self.assertNotIn("refresh_token", call)

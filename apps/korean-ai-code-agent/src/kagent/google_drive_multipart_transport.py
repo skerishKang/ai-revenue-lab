@@ -65,7 +65,7 @@ class StdlibGoogleDriveMultipartCreatePort:
     def create_file_multipart(
         self, *, binding_ref: str, actor_ref: str, path: str,
         query: dict[str, str], body: bytes, content_type: str,
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> dict[str, Any]:
         # Refuse invalid instructions BEFORE asking the secret-bearing port.
         if (type(binding_ref) is not str or not _REF.fullmatch(binding_ref)

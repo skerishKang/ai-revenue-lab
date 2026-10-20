@@ -72,7 +72,9 @@ DRIVE_FULL_AUTH_SCOPE = "drive.full"
 DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3"
 
 # Reviewed B54 bounds (google_drive_connector.py:14-27).
-REQUEST_TIMEOUT_SECONDS = 30
+# #4379: a provider request carries no PADIEM client deadline. None
+# means the provider's own timeout applies.
+REQUEST_TIMEOUT_SECONDS: int | None = None
 PAGE_SIZE = 25
 MAX_DRIVE_QUERY_CHARS = 1_000
 FILE_FIELDS = (
@@ -156,7 +158,7 @@ class DriveReadPort(Protocol):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
         ...
@@ -170,7 +172,7 @@ class DriveReadPort(Protocol):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> str | Awaitable[str]:
         ...
@@ -198,7 +200,6 @@ def drive_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(DRIVE_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=DRIVE_LIST_RECENT_FILES_TOOL_ID,
@@ -212,7 +213,6 @@ def drive_read_tool_specs() -> tuple[ToolSpec, ...]:
             approval_policy=ApprovalPolicy.NOT_REQUIRED,
             input_schema={"type": "object", "properties": {}, "additionalProperties": False},
             auth_scope=(DRIVE_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=DRIVE_GET_FILE_METADATA_TOOL_ID,
@@ -231,7 +231,6 @@ def drive_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(DRIVE_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=DRIVE_READ_FILE_CONTENT_TOOL_ID,
@@ -251,7 +250,6 @@ def drive_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(DRIVE_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
     )
 
