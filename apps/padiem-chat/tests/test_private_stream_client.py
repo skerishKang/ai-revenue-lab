@@ -103,7 +103,7 @@ def test_private_stream_uses_core_contract_and_manual_free_only_payload():
         assert seen["stream"] is True
         assert seen["model"] == MODEL
         assert seen["business14"]["allow_external_fallback"] is False
-        assert seen["business14"]["max_attempts"] == 1
+        assert "max_attempts" not in seen["business14"]
         assert seen["business14"]["required_capabilities"] == ["free"]
         assert seen["messages"][0]["role"] == "system"
         assert "PROJECT CONTEXT" in seen["messages"][0]["content"]
