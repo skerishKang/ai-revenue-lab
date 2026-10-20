@@ -77,13 +77,33 @@ def test_the_reader_helper_still_bounds_a_route_that_declares_a_total() -> None:
     assert 'async def open_bounded_spooled_request(request: Any, *, max_bytes: int' in helper
 
 
-def test_the_remaining_total_is_the_d1_schema_check_and_is_not_silently_dropped() -> None:
-    # Custody still fails closed at the row, which is the residual PADIEM total on
-    # this surface. Removing it is a migration plus a Production D1 apply, so it is
-    # asserted here rather than quietly deleted with the application ceiling.
-    migration = (MIGRATIONS / "027_b66_template_source.sql").read_text(encoding="utf-8")
-    assert "byte_length >= 1" in migration
-    assert "byte_length <= 10485760" in migration
+def test_the_ceiling_is_released_only_by_a_forward_migration_that_keeps_the_floor() -> None:
+    # #4379: the D1 schema CHECK was the last PADIEM byte total on this surface.
+    # The released migrations keep their own text; one forward rebuild carries
+    # every row across and keeps the non-empty rule instead of dropping it with
+    # the ceiling.
+    released = (MIGRATIONS / "027_b66_template_source.sql").read_text(encoding="utf-8")
+    assert "byte_length >= 1 AND byte_length <= 10485760" in released
+
+    forward = (MIGRATIONS / "060_byte_length_capacity_ceiling_release.sql").read_text(encoding="utf-8")
+    assert "10485760" not in forward
+    assert forward.count("byte_length INTEGER NOT NULL CHECK (byte_length > 0)") == 1
+    assert forward.count("byte_length INTEGER NOT NULL CHECK (byte_length >= 1)") == 1
+    assert forward.count("size_bytes INTEGER NOT NULL CHECK (size_bytes > 0)") == 1
+    for table in ("claw_document_metadata", "claw_conversation_artifact_index", "b66_template_source"):
+        # Copy before drop: an absent or unreadable source aborts the rebuild
+        # before any table is destroyed.
+        assert forward.index(f"INSERT INTO {table}_next") < forward.index(f"DROP TABLE {table};")
+        assert f"ALTER TABLE {table}_next RENAME TO {table};" in forward
+    for index in (
+        "idx_claw_document_metadata_tenant_active",
+        "idx_claw_conversation_artifact_owner",
+        "idx_b66_template_source_owner_workspace_status",
+    ):
+        assert f"CREATE INDEX IF NOT EXISTS {index}" in forward
+    # The released migrations are not rewritten by the forward migration.
+    for name in ("008_claw_document_metadata.sql", "026_claw_conversation_artifact_index.sql"):
+        assert "10485760" in (MIGRATIONS / name).read_text(encoding="utf-8"), name
 
 
 def test_the_quote_asset_ceiling_is_a_separate_review_item_and_stays_put() -> None:

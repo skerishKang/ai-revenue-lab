@@ -80,6 +80,10 @@ def classify_schema(payload: object) -> str:
 
     table_sql = _normalized_sql(table_row.get("sql"))
     index_sql = _normalized_sql(index_row.get("sql"))
+    # #4379 releases the 10 MiB byte ceiling by a forward rebuild, so the same
+    # pre-deploy probe must accept the table on both sides of that release. The
+    # structural contract the B62 code depends on is still pinned: the column has
+    # a CHECK and it still refuses a zero-length row.
     required_table_fragments = (
         "document_id text primary key",
         "tenant_id text not null",
@@ -88,7 +92,6 @@ def classify_schema(payload: object) -> str:
         "media_type text not null",
         "byte_length integer not null check",
         "byte_length > 0",
-        "byte_length <= 10485760",
         "created_at text not null",
         "expires_at text not null",
         "deleted_at text",

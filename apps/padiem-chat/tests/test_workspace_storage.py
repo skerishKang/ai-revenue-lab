@@ -284,16 +284,24 @@ async def test_caller_cannot_supply_object_key_or_document_id() -> None:
     assert method_params is None
 
 
-def test_d1_metadata_schema_stores_no_binary_body_and_enforces_10mb_limit() -> None:
-    migration = (Path(__file__).resolve().parents[1] / "migrations" / "008_claw_document_metadata.sql").read_text()
+def test_d1_metadata_schema_stores_no_binary_body_and_releases_the_byte_ceiling() -> None:
+    migrations = Path(__file__).resolve().parents[1] / "migrations"
+    migration = (migrations / "008_claw_document_metadata.sql").read_text()
 
     assert "claw_document_metadata" in migration
     assert "tenant_id TEXT NOT NULL" in migration
     assert "object_key TEXT NOT NULL UNIQUE" in migration
     assert "byte_length INTEGER NOT NULL" in migration
+    # #4379: 008 keeps its released text; the capacity ceiling is released by
+    # the forward rebuild, which must carry the non-empty rule across.
     assert "10485760" in migration
     lowered = migration.lower()
     assert "blob" not in lowered
     assert "document_bytes" not in lowered
     assert "refresh_token" not in lowered
     assert "access_token" not in lowered
+
+    forward = (migrations / "060_byte_length_capacity_ceiling_release.sql").read_text()
+    assert "DROP TABLE claw_document_metadata;" in forward
+    assert "byte_length INTEGER NOT NULL CHECK (byte_length > 0)" in forward
+    assert "10485760" not in forward
