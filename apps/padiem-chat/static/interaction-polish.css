@@ -141,43 +141,53 @@
 
 
 /* #5014: Chat phone home should leave room for the composer above the fold.
- * Scope to Chat only; Claw has its own compact 2x2 connection layout. */
+ * Scope to Chat only; Claw has its own compact 2x2 connection layout.
+ * The first screen runs in the "home" state, so the compaction has to cover
+ * it as well: the phone landing was rendered with the desktop card sizes and
+ * the last card row ended under the fixed input. */
 @media (max-width: 620px) {
-  .app-shell[data-state="chat"] .conversation:has(#emptyState:not([hidden])) {
+  .app-shell:is([data-state="home"], [data-state="chat"]) .conversation:has(#emptyState:not([hidden])) {
     min-height: auto !important;
     padding-top: 16px !important;
-    padding-bottom: var(--padiem-composer-clearance, 230px) !important;
+    /* #5014: the reserved bottom space and the scroll padding stay owned by
+     * the shared rule above, so the software keyboard inset is included. */
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) {
+  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) {
     min-height: 0 !important;
     height: auto !important;
     padding-block: 8px 16px !important;
     margin-block: 0 !important;
     align-content: start;
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) h1 {
+  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) h1 {
     font-size: clamp(25px, 7vw, 34px) !important;
     line-height: 1.22 !important;
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) .empty-copy {
+  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) .empty-copy {
     margin-top: 8px !important;
+  }
+  /* The explanatory copy of a live thread keeps its existing phone size. The
+   * first screen keeps the accessible 15px floor, so the compact landing never
+   * shrinks the sentence that explains the surface below 15px. */
+  .app-shell[data-state="chat"] #emptyState:not([hidden]) .empty-copy {
     font-size: 13px !important;
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter-grid {
+  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) .starter-grid {
     margin-top: 16px !important;
     gap: 8px !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter {
+  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) .starter {
     min-height: 84px !important;
     padding: 11px !important;
   }
-  .app-shell[data-state="chat"] #emptyState:not([hidden]) .starter small {
+  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) .starter small {
     display: none;
   }
-  .app-shell[data-state="chat"] .conversation {
-    scroll-padding-bottom: calc(var(--padiem-composer-clearance, 230px) + 16px);
-  }
+  /* #5014: the shared scroll padding above already carries the composer
+   * clearance and the software keyboard inset. A second copy here would drop
+   * the keyboard inset on a phone, so the landing scrolls behind a raised
+   * input with less room than it actually needs. */
 }
 
 /* Phase 1 turn parity: the manual Claw result card keeps its DOM and execution

@@ -996,9 +996,14 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
    * grows with the attachment tray, the model row and the cancel/status row,
    * and a fixed inset leaves the last turn sitting under the glass input.
    * The software-keyboard inset is added because the fixed composer is raised
-   * by exactly that amount while the keyboard is open. */
+   * by exactly that amount while the keyboard is open.
+   * #5014: the scroll padding is the same reservation, so a message that is
+   * scrolled into view stops above the input instead of under it. */
   padding-bottom: calc(
     var(--padiem-composer-clearance, 218px) + var(--padiem-visual-keyboard-inset, 0px)
+  );
+  scroll-padding-bottom: calc(
+    var(--padiem-composer-clearance, 218px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
   );
 }
 @media (max-width: 620px) {
@@ -1132,8 +1137,11 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     bottom: 8px;
   }
   /* Last turn belongs above the fixed composer even as its measured height
-   * changes for attachments or the mobile software keyboard. */
-  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation {
+   * changes for attachments or the mobile software keyboard.
+   * #5014: this rule has to out-specify the general Claw conversation rule
+   * above, otherwise the extra phone gap never applies and the reserved
+   * space stays at the desktop value. */
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .conversation {
     scroll-padding-bottom: calc(
       var(--padiem-composer-clearance, 218px) + var(--padiem-visual-keyboard-inset, 0px) + 24px
     );

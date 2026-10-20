@@ -27,12 +27,15 @@
   // the general/manual workbench, so it must follow and offer the jump control
   // exactly like Chat. The Claw workbench (inbox = tasks/alerts) is not a
   // conversation surface and is excluded here.
+  // #5014: the Chat first screen ("home") is the same conversation panel with
+  // the starter cards instead of turns, and it shares the same fixed
+  // composer, so it follows the same reservation.
   function inConversation(){
     if (!shell || document.documentElement.getAttribute("data-theme") !== "padiem-glass") {
       return false;
     }
     var state = shell.dataset.state;
-    if (state === "chat") return true;
+    if (state === "home" || state === "chat") return true;
     if (state === "claw") {
       var workspace = document.getElementById("clawWorkspace");
       return !workspace || workspace.dataset.view !== "inbox";
@@ -67,16 +70,21 @@
     return window.scrollY || document.documentElement.scrollTop || 0;
   }
 
-  function composerHeight(){
-    if (!composerWrap) return 0;
-    return Math.ceil(composerWrap.getBoundingClientRect().height || 0);
+  /* #5014: the composer lane measures the fixed input and publishes the
+   * reserved clearance. The conversation lane only READS that value: two
+   * writers with different floors used to race for the same custom property,
+   * so the reserved space could differ from the band the input actually
+   * occupies. Until the composer lane publishes, the stylesheet default
+   * applies and the follow threshold falls back to its own minimum. */
+  function publishedClearance(){
+    var raw = window.getComputedStyle(document.documentElement)
+      .getPropertyValue("--padiem-composer-clearance");
+    var value = parseFloat(raw);
+    return isFinite(value) && value > 0 ? value : 0;
   }
 
   function syncComposerClearance(){
-    var root = document.documentElement;
-    var clearance = Math.max(220, composerHeight() + 64);
-    root.style.setProperty("--padiem-composer-clearance", clearance + "px");
-    return clearance;
+    return publishedClearance();
   }
 
   function remainingToEnd(){
@@ -141,7 +149,6 @@
 
   function scrollPageToEnd(behavior){
     if (!inConversation()) return;
-    syncComposerClearance();
     markProgrammaticScroll();
     var conv = scrollableConversation();
     if (conv) {
@@ -152,6 +159,103 @@
       top: Math.max(0, documentHeight() - window.innerHeight),
       behavior: behavior || "auto"
     });
+  }
+
+  /* #5014: the fixed composer overlays the bottom of the conversation surface.
+   * The reserved clearance lets the newest content scroll ABOVE the input, but
+   * the surface also has to OPEN there: a first screen whose last card row or
+   * last turn already starts under the glass input reads as a broken layout.
+   * The landing moves by the SMALLEST scroll that clears the composer, so the
+   * greeting stays visible whenever the content still fits above the input.
+   * A reader who scrolled back is never moved, because this only runs while
+   * following. */
+  function landingBreathingRoom(){
+    /* The breathing room is the one the surface already declares for itself:
+     * the scroll padding sits the reserved clearance plus a small gap above
+     * the input, so the landing reuses that gap instead of a second
+     * hard-coded number. */
+    if (!conversation) return 0;
+    var style = window.getComputedStyle(conversation);
+    var padding = parseFloat(style.paddingBottom);
+    var scrollPadding = parseFloat(style.scrollPaddingBottom);
+    if (!isFinite(padding) || !isFinite(scrollPadding)) return 0;
+    return Math.max(0, Math.round(scrollPadding - padding));
+  }
+
+  function lowestContentBottom(root){
+    /* The lowest painted edge of the conversation content. Hidden subtrees are
+     * skipped as a whole, so a hidden section costs one measurement. */
+    var best = null;
+    var stack = [];
+    for (var i = 0; i < root.children.length; i += 1) stack.push(root.children[i]);
+    while (stack.length) {
+      var el = stack.pop();
+      var rect = el.getBoundingClientRect();
+      if (!rect || (rect.width < 1 && rect.height < 1)) continue;
+      var style = window.getComputedStyle(el);
+      if (!style || style.display === "none" || style.visibility === "hidden") continue;
+      if (style.position === "fixed") continue;
+      if (best === null || rect.bottom > best) best = rect.bottom;
+      for (var j = 0; j < el.children.length; j += 1) stack.push(el.children[j]);
+    }
+    return best;
+  }
+
+  function landingScrollSurface(){
+    /* The panel is its own scrollport on a desktop frame. A phone surface
+     * scrolls the document instead, so the landing has to move whichever
+     * surface actually scrolls. */
+    var conv = scrollableConversation();
+    if (conv) {
+      return {
+        current: conv.scrollTop,
+        limit: Math.max(0, conv.scrollHeight - conv.clientHeight),
+        apply: function(value){
+          conv.scrollTo({ top: value, behavior: "auto" });
+        }
+      };
+    }
+    return {
+      current: window.scrollY || document.documentElement.scrollTop || 0,
+      limit: Math.max(0, documentHeight() - window.innerHeight),
+      apply: function(value){
+        window.scrollTo({ top: Math.max(0, value), behavior: "auto" });
+      }
+    };
+  }
+
+  function landLatestContent(){
+    if (!inConversation()) return;
+    if (!followLatest) return;
+    if (!conversation || !composerWrap) return;
+    var composerRect = composerWrap.getBoundingClientRect();
+    var limit = composerRect.top - landingBreathingRoom();
+    var bottom = lowestContentBottom(conversation);
+    if (bottom === null) return;
+    var needed = bottom - limit;
+    if (needed <= 1) return;
+    var surface = landingScrollSurface();
+    var target = Math.min(surface.current + needed, surface.limit);
+    if (target <= surface.current + 1) return;
+    markProgrammaticScroll();
+    surface.apply(target);
+  }
+
+  /* #5014: "follow the latest content" means two different things. A live
+   * thread follows its newest turn to the end. A first screen has no turn, so
+   * it follows its last card to the first position that clears the input. */
+  function isLandingSurface(){
+    if (!messageList || messageList.children.length > 0) return false;
+    var empty = document.getElementById("emptyState");
+    return Boolean(empty && !empty.hasAttribute("hidden"));
+  }
+
+  function followLatestContent(){
+    if (isLandingSurface()) {
+      landLatestContent();
+      return;
+    }
+    scrollPageToEnd("auto");
   }
 
   function latestUserMessage(){
@@ -169,7 +273,6 @@
     }
     followLatest = true;
     syncFollowState();
-    syncComposerClearance();
     markProgrammaticScroll();
     user.scrollIntoView({
       block: "start",
@@ -191,7 +294,7 @@
         return;
       }
       if (anchorTurn) anchorNewestTurn();
-      else if (force || followLatest) scrollPageToEnd("auto");
+      else if (force || followLatest) followLatestContent();
       syncJumpButton();
     });
   }
@@ -210,6 +313,7 @@
     lastScrollY = currentScrollTop();
     syncFollowState();
     syncJumpButton();
+    landLatestContent();
   }
 
   function addedNodeContainsUser(node){
@@ -256,10 +360,8 @@
 
   function observeComposer(){
     if (!composerWrap) return;
-    syncComposerClearance();
     if (!window.ResizeObserver || composerObserver) return;
     composerObserver = new ResizeObserver(function(){
-      syncComposerClearance();
       syncJumpButton();
       if (followLatest && inConversation()) queueFollow(false, false);
     });
@@ -314,10 +416,23 @@
     }
     window.addEventListener("wheel", handlePointerWheel, { passive: true });
     window.addEventListener("resize", function(){
-      syncComposerClearance();
       syncJumpButton();
       if (followLatest && inConversation()) queueFollow(false, false);
     });
+    /* #5014: the first screen has to open with the newest content already
+     * clear of the fixed composer. The web fonts and the device directory
+     * change the measured composer height after the first paint, so the
+     * landing runs again once the document is complete. */
+    window.addEventListener("load", function(){
+      landLatestContent();
+    });
+    if (document.fonts && typeof document.fonts.ready === "object") {
+      document.fonts.ready.then(function(){
+        landLatestContent();
+      });
+    }
+
+    landLatestContent();
 
     window.__padiemConversationMotion = {
       isFollowingLatest: function(){ return followLatest; },
