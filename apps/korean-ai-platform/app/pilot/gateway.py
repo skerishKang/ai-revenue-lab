@@ -112,6 +112,39 @@ async def _read_json_body(request: Request) -> Any:
         raise _InvalidBody("Request body must be valid JSON") from exc
 
 
+async def _platform_caller_denial(
+    request: Request, request_id: str
+) -> JSONResponse | None:
+    """Refuse a platform-credential dispatch from an unproven caller.
+
+    The catalog lane spends the platform's own Provider credentials, so it is
+    reachable only by a proven server-to-server caller. Mock mode performs no
+    Provider call and spends no platform credential, so the billing boundary
+    does not exist there. BYOK never reaches this check: it uses the caller's
+    own key and is handled by the separate legacy lane.
+    """
+    from .b14_runtime_config import runtime_config as cfg
+
+    if cfg.is_mock:
+        return None
+
+    from .service_proof import service_proof_denial, service_proof_message
+
+    denial = await service_proof_denial(request, await request.body())
+    if denial is None:
+        return None
+    return JSONResponse(
+        status_code=denial.status_code,
+        content={
+            "error": {
+                "code": denial.code,
+                "message": service_proof_message(),
+                "request_id": request_id,
+            }
+        },
+    )
+
+
 def _log_unexpected_error(event: str, request_id: str, exc: Exception) -> None:
     message = redact_sensitive(str(exc))[:240]
     logger.error(
@@ -340,8 +373,8 @@ def _validate_b14_options(raw: Any) -> dict:
 
     ma = raw.get("max_attempts")
     if ma is not None:
-        if isinstance(ma, bool) or not isinstance(ma, int) or ma < 1 or ma > 5:
-            raise _InvalidBody("business14.max_attempts must be an integer between 1 and 5")
+        if isinstance(ma, bool) or not isinstance(ma, int) or ma < 1:
+            raise _InvalidBody("business14.max_attempts must be a positive integer")
         opts["max_attempts"] = ma
 
     mr = raw.get("max_retries")
@@ -1147,6 +1180,12 @@ async def pilot_chat_completions(
 
         # Alpha mode: catalog model or future b14/auto
         if _is_alpha_model(body["model"]):
+            # Platform-owned credentials are spent on this lane. Refuse an
+            # unproven caller before any credential is resolved or any
+            # Provider request is built.
+            denial = await _platform_caller_denial(request, request_id)
+            if denial is not None:
+                return denial
             return await _handle_alpha_chat(request_id, body)
 
         # BYOK mode (legacy flow — unchanged)

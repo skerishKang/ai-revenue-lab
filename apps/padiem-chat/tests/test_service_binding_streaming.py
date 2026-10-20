@@ -18,6 +18,7 @@ from padiem_ai_core.b14_execution import (
     MAX_B14_RESPONSE_BYTES,
     MAX_CONFIGURED_B14_RESPONSE_BYTES,
 )
+from app.b14_service_proof import service_proof_headers
 from app.service_binding_response import (
     ServiceBindingResponseError,
     ServiceBindingResponseTooLarge,
@@ -180,6 +181,7 @@ def _load_worker_completed_type():
         "MAX_B14_RESPONSE_BYTES": MAX_B14_RESPONSE_BYTES,
         "MAX_CONFIGURED_B14_RESPONSE_BYTES": MAX_CONFIGURED_B14_RESPONSE_BYTES,
         "read_bounded_service_binding_body": read_bounded_service_binding_body,
+        "service_proof_headers": service_proof_headers,
         "ServiceBindingResponseTooLarge": ServiceBindingResponseTooLarge,
         "ServiceBindingResponseError": ServiceBindingResponseError,
     }
@@ -220,6 +222,7 @@ def _load_worker_streaming_types():
         "Request": FakeRequest,
         "httpx": httpx,
         "cloudflare_chunk_bytes": cloudflare_chunk_bytes,
+        "service_proof_headers": service_proof_headers,
         "ServiceBindingResponseError": ServiceBindingResponseError,
     }
     exec(compile(ast.fix_missing_locations(module), str(WORKER_PATH), "exec"), namespace)
@@ -733,7 +736,7 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
     assert "await response.text()" not in completed
     assert "read_bounded_service_binding_body" in completed
     assert "MAX_CONFIGURED_B14_RESPONSE_BYTES" in completed
-    assert "CloudflareB14ServiceTransport(b14_binding)" in WORKER_PATH.read_text(
+    assert "CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)" in WORKER_PATH.read_text(
         encoding="utf-8"
     )
     for forbidden in (".text()", ".json()", ".arrayBuffer()"):
@@ -790,3 +793,6 @@ def test_completed_bridge_does_not_reject_healthy_two_mib_response():
     assert payload == expected
     assert reader.cancel_count == 0
     assert reader.release_count == 1
+
+
+

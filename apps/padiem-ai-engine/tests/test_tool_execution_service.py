@@ -717,7 +717,7 @@ class _CapturedRequest(Exception):
 class _FakeRunner:
     captured: list = []
 
-    def __init__(self, runtime=None, idempotency=None):
+    def __init__(self, runtime=None, idempotency=None, **_kwargs):
         pass
 
     async def run(self, request):

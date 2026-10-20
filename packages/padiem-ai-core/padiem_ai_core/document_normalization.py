@@ -212,8 +212,6 @@ def normalize_text_document(*, name: Any, media_type: Any, text: Any) -> Normali
     safe_name, safe_media = validate_document_identity(name=name, media_type=media_type, source_kind="text")
     normalized = normalize_document_text(text)
     byte_size = len(normalized.encode("utf-8"))
-    if byte_size > MAX_TEXT_DOCUMENT_BYTES:
-        raise DocumentNormalizationError("text_bytes_too_large", "Text document exceeds the byte limit.")
     return NormalizedDocument(
         name=safe_name,
         media_type=safe_media,
@@ -995,23 +993,29 @@ class PdfInspection:
         }
 
 
-def _open_pdf_reader(payload: bytes) -> Any:
-    if not payload.startswith(b"%PDF-"):
+def _open_pdf_reader(payload: Any) -> Any:
+    if hasattr(payload, "seek") and hasattr(payload, "read"):
+        payload.seek(0)
+        magic = payload.read(5)
+        payload.seek(0)
+        source = payload
+    else:
+        magic = payload[:5]
+        source = BytesIO(payload)
+    if magic != b"%PDF-":
         raise DocumentNormalizationError("pdf_magic_mismatch", "PDF magic does not match the declared media type.")
     try:
         from pypdf import PdfReader
     except ModuleNotFoundError as exc:
         raise DocumentNormalizationError("document_dependency_unavailable", "PDF extraction dependency is unavailable.") from exc
     try:
-        reader = PdfReader(BytesIO(payload), strict=True)
+        reader = PdfReader(source, strict=True)
     except Exception as exc:
         raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from exc
     if reader.is_encrypted:
         raise DocumentNormalizationError("pdf_encrypted", "Encrypted PDF documents are not supported.")
     if len(reader.pages) < 1:
         raise DocumentNormalizationError("pdf_no_pages", "PDF contains no readable pages.")
-    if len(reader.pages) > MAX_PDF_PAGES:
-        raise DocumentNormalizationError("pdf_page_limit", "PDF exceeds the page limit.")
     return reader
 
 
@@ -1092,7 +1096,7 @@ def normalize_pdf_inspection(inspection: PdfInspection) -> NormalizedDocument:
     if (
         isinstance(inspection.page_count, bool)
         or not isinstance(inspection.page_count, int)
-        or not 1 <= inspection.page_count <= MAX_PDF_PAGES
+        or inspection.page_count < 1
         or not isinstance(inspection.pages, tuple)
         or len(inspection.pages) != inspection.page_count
     ):
@@ -1206,23 +1210,16 @@ def _extract_xlsx_text(payload: bytes) -> str:
     try:
         if len(workbook.sheetnames) < 1:
             raise DocumentNormalizationError("xlsx_no_sheets", "XLSX contains no worksheets.")
-        if len(workbook.sheetnames) > MAX_XLSX_SHEETS:
-            raise DocumentNormalizationError("xlsx_sheet_limit", "XLSX exceeds the worksheet limit.")
         parts: list[str] = []
         nonempty_cells = 0
         for worksheet in workbook.worksheets:
             max_row = int(worksheet.max_row or 0)
             max_column = int(worksheet.max_column or 0)
-            if max_row > MAX_XLSX_ROWS or max_column > MAX_XLSX_COLUMNS:
-                raise DocumentNormalizationError("xlsx_dimension_limit", "XLSX worksheet dimensions exceed the allowed range.")
-            for row in worksheet.iter_rows(max_row=min(max_row, MAX_XLSX_ROWS), max_col=min(max_column, MAX_XLSX_COLUMNS)):
+            for row in worksheet.iter_rows():
                 for cell in row:
                     value = _cell_text(cell.value)
                     if not value:
                         continue
-                    nonempty_cells += 1
-                    if nonempty_cells > MAX_XLSX_NONEMPTY_CELLS:
-                        raise DocumentNormalizationError("xlsx_cell_limit", "XLSX contains too many non-empty cells.")
                     _append_bounded(parts, f"[{worksheet.title}!{cell.coordinate}] {value}")
         text = "\n".join(parts).strip()
         if not text:
@@ -1234,12 +1231,26 @@ def _extract_xlsx_text(payload: bytes) -> str:
 
 def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> NormalizedDocument:
     safe_name, safe_media = validate_document_identity(name=name, media_type=media_type, source_kind="binary")
-    if not isinstance(payload, (bytes, bytearray)):
-        raise DocumentNormalizationError("invalid_binary_payload", "Binary document payload must be bytes.")
-    binary = bytes(payload)
-    if not binary:
+    file_payload = (
+        safe_media == "application/pdf"
+        and not isinstance(payload, (bytes, bytearray))
+        and callable(getattr(payload, "seek", None))
+        and callable(getattr(payload, "tell", None))
+        and callable(getattr(payload, "read", None))
+    )
+    if not file_payload and not isinstance(payload, (bytes, bytearray)):
+        raise DocumentNormalizationError("invalid_binary_payload", "Binary document payload must be bytes or a seekable PDF file.")
+    if file_payload:
+        payload.seek(0, 2)
+        byte_size = payload.tell()
+        payload.seek(0)
+        binary = payload
+    else:
+        binary = bytes(payload)
+        byte_size = len(binary)
+    if not byte_size:
         raise DocumentNormalizationError("empty_document", "Document payload is empty.")
-    if len(binary) > MAX_BINARY_DOCUMENT_BYTES:
+    if byte_size > MAX_BINARY_DOCUMENT_BYTES:
         raise DocumentNormalizationError("binary_too_large", "Binary document exceeds the byte limit.")
 
     if safe_media == "application/pdf":
@@ -1260,6 +1271,6 @@ def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> Norm
         name=safe_name,
         media_type=safe_media,
         text=normalized,
-        byte_size=len(binary),
+        byte_size=byte_size,
         source_kind="binary",
     )

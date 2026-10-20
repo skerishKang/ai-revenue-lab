@@ -173,6 +173,7 @@ def _synthetic_binding(tool_proxy: _SyntheticToolProxy) -> EngineAgentSkillBindi
         output_contract_ref=PREVIEW_OUTPUT_CONTRACT_REF,
         skill_package_ids=(),
         allowed_tool_ids=(PREVIEW_CANONICAL_TOOL_ID,),
+        # The synthetic preview probe must terminate deterministically and stay provider-free.
         execution_budget=AgentExecutionBudget(max_steps=2, max_tool_calls=1, max_skill_calls=0),
     )
     policy = TrustedAgentRuntimePolicy(

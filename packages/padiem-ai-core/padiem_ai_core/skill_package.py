@@ -68,21 +68,28 @@ def _unique_tuple(name: str, values: tuple[str, ...], *, maximum: int) -> tuple[
 
 @dataclass(frozen=True, slots=True)
 class SkillExecutionBudget:
-    max_steps: int = 8
-    max_tool_calls: int = 8
+    # #4379: a skill no longer carries a PADIEM step or tool-call ceiling by
+    # default. The inactivity window stays: it ends a skill that stops making
+    # progress instead of a skill that legitimately runs long.
+    max_steps: int | None = None
+    max_tool_calls: int | None = None
     max_wall_seconds: int = 900  # skills share the supervised agent run budget
 
     def __post_init__(self) -> None:
+        # #4379: an explicit skill budget is a caller choice, so it has no
+        # PADIEM maximum. The type, the sign and the inactivity window stay.
         limits = {
-            "max_steps": (self.max_steps, 1, 64),
-            "max_tool_calls": (self.max_tool_calls, 0, 128),
-            "max_wall_seconds": (self.max_wall_seconds, 1, 3_600),
+            "max_steps": (self.max_steps, 1),
+            "max_tool_calls": (self.max_tool_calls, 0),
+            "max_wall_seconds": (self.max_wall_seconds, 1),
         }
-        for name, (value, minimum, maximum) in limits.items():
+        for name, (value, minimum) in limits.items():
+            if value is None and name in {"max_steps", "max_tool_calls"}:
+                continue
             if isinstance(value, bool) or not isinstance(value, int):
                 raise SkillPackageError(f"{name} must be an integer")
-            if value < minimum or value > maximum:
-                raise SkillPackageError(f"{name} must be between {minimum} and {maximum}")
+            if value < minimum:
+                raise SkillPackageError(f"{name} must be at least {minimum}")
 
 
 @dataclass(frozen=True, slots=True)

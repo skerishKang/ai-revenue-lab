@@ -15,6 +15,12 @@ from .android_auth_routes import (
     android_handoff_create,
     android_handoff_status,
 )
+from .account_model_selection_routes import (
+    MODEL_SELECTION_PATH,
+    account_model_selection_get,
+    account_model_selection_put,
+)
+from .account_model_selection_store import D1AccountModelSelectionStore
 from .android_auth_store import D1AndroidAuthHandoffStore
 from .auth import GoogleOAuthClient
 from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
@@ -289,6 +295,7 @@ from .history import HistoryStore
 from .project_file_routes import (
     owner_files_collection,
     project_file_detail,
+    project_file_original,
     project_files_collection,
 )
 from .drive_case_folder_routes import (
@@ -428,6 +435,7 @@ def create_app(
     central_model_route_store=None,
     custom_credential_store=None,
     custom_provider_client=None,
+    account_model_selection_store=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -495,6 +503,7 @@ def create_app(
         Route("/api/project-files", owner_files_collection, methods=["GET"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
+        Route("/api/projects/{project_id}/files/{file_id}/original", project_file_original, methods=["GET"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
         Route(
             "/api/projects/{project_id}/drive-case-folder",
@@ -551,6 +560,10 @@ def create_app(
         Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
         Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),
+        # #5222 account-scoped last selected AI tier. One signed-in account owns
+        # one stored preference; the browser never names the account.
+        Route(MODEL_SELECTION_PATH, account_model_selection_get, methods=["GET"]),
+        Route(MODEL_SELECTION_PATH, account_model_selection_put, methods=["PUT"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
         Route(B66_PC_DIRECTORY_PATH, b66_pc_directory, methods=["GET"]),
         Route(B66_PC_TXT_READ_PATH, b66_pc_txt_read_request, methods=["POST"]),
@@ -912,6 +925,13 @@ def create_app(
     # Missing D1 or migrations fails closed rather than serving a demo roster.
     app.state.b66_member_admin_store = (b66_member_admin_store if b66_member_admin_store is not None
         else D1B66MemberAdminStore(d1_binding, admin_email=b66_admin_google_email) if d1_binding is not None else None)
+    # #5222 the account-scoped last selected AI tier reuses the same D1. Without
+    # the table the route fails closed with 503 and the browser keeps its
+    # server-verified default; it never invents a stored preference.
+    app.state.account_model_selection_store = (
+        account_model_selection_store if account_model_selection_store is not None
+        else D1AccountModelSelectionStore(d1_binding) if d1_binding is not None else None
+    )
     app.state.project_file_store = project_file_store
     app.state.saved_output_store = saved_output_store
     # Separate deployment gate: migrate and audit the D1 schema before enabling.
