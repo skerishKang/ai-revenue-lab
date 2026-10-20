@@ -26,6 +26,11 @@ MAX_AUTH_RESPONSE_BYTES = 128 * 1024
 # cookie-bound OAuth state can never be replayed as a handoff state or back.
 ANDROID_HANDOFF_STATE_PURPOSE = "padiem-chat/android-handoff-state/v1"
 _ANDROID_HANDOFF_ID_RE = re.compile(r"^aho_[A-Za-z0-9_-]{20,48}$")
+# #5225: the canonical session id minted by the Control Plane identity
+# authority. The shape is the canonical contract's own bounded safe-identifier
+# grammar, so a malformed claim invalidates the cookie instead of degrading
+# into an unbound session.
+_CANONICAL_SESSION_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -74,25 +79,74 @@ def _verify_token(secret: str, purpose: str, token: str, now: int | None = None)
         return None
 
 
-def create_session_token(settings: Settings, user_id: str, now: int | None = None) -> str:
+@dataclass(frozen=True, slots=True)
+class SessionClaims:
+    """The server-verified claims of one signed Padiem session cookie.
+
+    ``user_id`` is the product user the cookie authenticates.  ``canonical_session_id``
+    is the id of the canonical Control Plane session that was established for
+    exactly that login.  It is the handle a logout revokes, so it is present on
+    every session minted while the canonical identity authority is bound.
+    """
+
+    user_id: str
+    canonical_session_id: str | None
+
+
+def create_session_token(
+    settings: Settings,
+    user_id: str,
+    now: int | None = None,
+    *,
+    canonical_session_id: str | None = None,
+) -> str:
     if not settings.session_secret:
         raise AuthError(503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     issued = int(time.time()) if now is None else now
+    payload: dict[str, Any] = {"v": 1, "uid": user_id, "exp": issued + settings.session_max_age_seconds}
+    if canonical_session_id is not None:
+        payload["sid"] = canonical_session_id
     return _signed_token(
         settings.session_secret,
         "padiem-chat/session/v1",
-        {"v": 1, "uid": user_id, "exp": issued + settings.session_max_age_seconds},
+        payload,
     )
 
 
-def decode_session_token(settings: Settings, token: str | None, now: int | None = None) -> str | None:
+def decode_session_claims(
+    settings: Settings,
+    token: str | None,
+    now: int | None = None,
+) -> SessionClaims | None:
+    """Decode the signed session cookie into its verified claims.
+
+    The signature and the expiry are the only offline authority, exactly as
+    before.  The optional ``sid`` claim is the canonical Control Plane session
+    this login established; it is verified for shape here and its liveness is
+    resolved from the canonical authority by the request-time session guard.
+    A malformed ``sid`` invalidates the whole token instead of degrading it
+    into an unbound session.
+    """
+
     if not token or not settings.session_secret:
         return None
     payload = _verify_token(settings.session_secret, "padiem-chat/session/v1", token, now=now)
     if not payload or payload.get("v") != 1:
         return None
     uid = payload.get("uid")
-    return uid if isinstance(uid, str) and uid.startswith("usr_") and len(uid) <= 80 else None
+    if not isinstance(uid, str) or not uid.startswith("usr_") or len(uid) > 80:
+        return None
+    sid = payload.get("sid")
+    if sid is None:
+        return SessionClaims(user_id=uid, canonical_session_id=None)
+    if not isinstance(sid, str) or not _CANONICAL_SESSION_ID_RE.fullmatch(sid):
+        return None
+    return SessionClaims(user_id=uid, canonical_session_id=sid)
+
+
+def decode_session_token(settings: Settings, token: str | None, now: int | None = None) -> str | None:
+    claims = decode_session_claims(settings, token, now=now)
+    return claims.user_id if claims is not None else None
 
 
 def create_oauth_state(settings: Settings, now: int | None = None) -> tuple[str, str]:
