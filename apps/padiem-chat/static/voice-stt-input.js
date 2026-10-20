@@ -147,6 +147,86 @@
     let destroyed = false;
     let acceptedCount = 0;
 
+    /* #4643 M1: the live transcript belongs in the input box itself, so the
+     * user sees the words appear while they speak. This run owns one voice
+     * region: the suffix it wrote. Text the user typed before the run is the
+     * base and is never dropped, and a user edit during the run (the composer
+     * only trusts real user input events) becomes the new base instead of
+     * being overwritten. */
+    let voiceBase = null;
+    let voiceText = "";
+    let regionProvisional = false;
+
+    function currentInputValue() {
+      if (input && typeof input.getValue === "function") return norm(input.getValue());
+      if (input && typeof input.value !== "undefined") return norm(input.value);
+      return "";
+    }
+
+    function writeInputValue(value) {
+      if (input && typeof input.setValue === "function") input.setValue(value);
+      else if (input) input.value = value;
+      return value;
+    }
+
+    function joinVoiceText(base, text) {
+      const head = norm(base);
+      const tail = norm(text);
+      if (!head) return tail;
+      if (!tail) return head;
+      return /\s$/.test(head) ? head + tail : head + " " + tail;
+    }
+
+    function voiceBaseFor(current) {
+      if (voiceBase === null) return current;
+      const expected = joinVoiceText(voiceBase, voiceText);
+      if (current !== expected) {
+        /* The user changed the text while the run was live. Their text is the
+         * base now; the stale voice region is not restored over it. */
+        return current;
+      }
+      return voiceBase;
+    }
+
+    function writeLiveInput(text) {
+      if (destroyed || stopped) return null;
+      const current = currentInputValue();
+      voiceBase = voiceBaseFor(current);
+      voiceText = norm(text);
+      regionProvisional = true;
+      return writeInputValue(joinVoiceText(voiceBase, voiceText));
+    }
+
+    function writeFinalInput(text) {
+      const current = currentInputValue();
+      const base = voiceBaseFor(current);
+      const next = joinVoiceText(base, norm(text));
+      writeInputValue(next);
+      /* The committed text is the user's text now, so the next utterance in
+       * this run continues after it instead of replacing it. */
+      voiceBase = next;
+      voiceText = "";
+      regionProvisional = false;
+      return next;
+    }
+
+    /**
+     * A live transcript that never became a confirmed sentence is not user
+     * input. When the run ends without a final -- the recognizer stopped, the
+     * sign-out revoked the run, the microphone was denied -- the provisional
+     * region is removed again and the user is left with exactly what they
+     * typed. A final that lands after the stop is written normally.
+     */
+    function rollbackLiveInput() {
+      if (!regionProvisional) return null;
+      regionProvisional = false;
+      voiceText = "";
+      const base = voiceBase === null ? "" : voiceBase;
+      voiceBase = base;
+      writeInputValue(base);
+      return base;
+    }
+
     function emitState(next) {
       if (destroyed) return state;
       state = next;
@@ -192,9 +272,12 @@
       if (!t) return { ok: false, reason: "empty" };
       turnBuffer.merge(t);
       const preview = turnBuffer.pending;
+      /* #4643 M1: the live words go into the input box while the user speaks. */
+      let live = null;
+      try { live = writeLiveInput(preview); } catch (e) { /* the preview still shows */ }
       emitState(STATES.INTERIM);
       try { cbInterim(preview, ctx); } catch (e) { /* swallow */ }
-      return { ok: true, preview: preview };
+      return { ok: true, preview: preview, live: live };
     }
 
     function commitFinal(opts) {
@@ -238,7 +321,11 @@
       currentUtteranceId = utteranceId;
       acceptedCount += 1;
       emitState(STATES.FINAL);
-      try { appendToInput(text, "append", stopFlush); } catch (e) { /* swallow */ }
+      /* #4643 M1: the confirmed sentence replaces the live region it came
+       * from and continues after whatever the user had already typed. */
+      try { writeFinalInput(text); } catch (e) {
+        try { appendToInput(text, "append", stopFlush); } catch (e2) { /* swallow */ }
+      }
       try { cbFinal(text, utteranceId); } catch (e) { /* swallow */ }
       turnBuffer.reset();
       return { ok: true, text: text, utteranceId: utteranceId, acceptedCount: acceptedCount };
@@ -247,6 +334,7 @@
     function stop(reason) {
       if (destroyed) return state;
       stopped = true;
+      rollbackLiveInput();
       turnBuffer.reset();
       emitState(STATES.STOPPED);
       if (reason) { try { cbError(String(reason)); } catch (e) {} }
@@ -255,6 +343,7 @@
 
     function error(code) {
       if (destroyed) return state;
+      rollbackLiveInput();
       turnBuffer.reset();
       emitState(STATES.ERROR);
       try { cbError(String(code || "voice_stt_error")); } catch (e) {}
@@ -262,6 +351,7 @@
     }
 
     function invalidate(reason) {
+      rollbackLiveInput();
       turnBuffer.reset();
       emitState(STATES.STOPPED);
       destroyed = true;
@@ -294,6 +384,9 @@
     function getSessionToken() { return sessionToken; }
     function getAcceptedCount() { return acceptedCount; }
     function getCurrentUtteranceId() { return currentUtteranceId; }
+    /* #4643 M1: this adapter writes the live transcript into the input box,
+     * so the composer must not repeat the same words in its preview line. */
+    function writesLiveInput() { return true; }
 
     return {
       STATES: STATES,
@@ -313,6 +406,7 @@
       getSessionToken: getSessionToken,
       getAcceptedCount: getAcceptedCount,
       getCurrentUtteranceId: getCurrentUtteranceId,
+      writesLiveInput: writesLiveInput,
     };
   }
 

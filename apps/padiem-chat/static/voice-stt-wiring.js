@@ -23,13 +23,19 @@
    * module is that someone. It supplies exactly one thing the composer asked
    * for -- a recognizer factory -- and adds nothing else to the composer.
    *
-   * Transport shape (no redesign of the reviewed pieces):
-   *   getUserMedia -> MediaRecorder -> same-origin POST /api/voice/transcribe
-   *   -> Chat Worker (authenticates the existing `padiem_session` cookie,
-   *      resolves the canonical Control Plane session, calls the private
-   *      `padiem-voice-stt` Worker over its Service Binding)
-   *   -> Groq Whisper, paid only after the STT Worker's own canonical
-   *      caller/tenant/cost guard admits the request.
+   * Provider order (the shared STT contract, and Global Classroom's chain):
+   *   1. Gemini Live, real-time streaming transcription.
+   *      browser -> POST /api/voice/live-token (same origin)
+   *      -> Chat Worker (authenticates the existing `padiem_session` cookie,
+   *         resolves the canonical Control Plane session, calls the private
+   *         `padiem-voice-stt` Worker over its Service Binding)
+   *      -> one short-lived, model-locked ephemeral token back to the browser
+   *      -> browser <-> Gemini Live WebSocket, real-time interim and final
+   *         transcription, no audio ever stored.
+   *   2. Groq Whisper, the recorded-chunk fallback, used ONLY after a real
+   *      Gemini Live connection failure inside the same microphone run.
+   *      getUserMedia -> MediaRecorder -> same-origin POST /api/voice/transcribe
+   *      -> the same private STT Worker over the same Service Binding.
    *
    * The browser never holds a provider key. The browser never speaks to the
    * STT Worker directly: that Worker is private and reachable only over a
@@ -39,9 +45,13 @@
    * - Nothing here sends a chat message. A final transcript is a *candidate*
    *   that the shared adapter places in the existing input; the user reviews
    *   or edits it and presses the existing send button.
-   * - No interim text is invented. Groq transcribes a completed chunk, so the
-   *   interim preview stays empty until a real final arrives rather than
-   *   showing fabricated partial text.
+   * - No interim text is invented. Gemini Live interim text is shown only
+   *   when the provider actually emits it; the Groq fallback transcribes a
+   *   completed chunk, so its interim preview stays empty until a real final
+   *   arrives rather than showing fabricated partial text.
+   * - No connection while the microphone is off. The Live session, the
+   *   microphone stream and the rotation timer exist only inside one
+   *   microphone run and are released when that run ends.
    * - The STT Worker deployment gate, the canonical Control Plane bindings and
    *   the `voice.stt.*` entitlement grants are NOT enabled here. Until CENTRAL
    *   activates them the server answers one bounded error and this module
@@ -55,8 +65,10 @@
 
   const TRANSCRIBE_PATH = "/api/voice/transcribe";
   const IDENTITY_PATH = "/api/voice/identity";
+  const LIVE_TOKEN_PATH = "/api/voice/live-token";
   const CLAW_TRANSCRIBE_PATH = "/api/claw/voice/transcribe";
   const CLAW_IDENTITY_PATH = "/api/claw/voice/identity";
+  const CLAW_LIVE_TOKEN_PATH = "/api/claw/voice/live-token";
 
   function routeForShell(doc, chatPath, clawPath) {
     const shell = doc && typeof doc.querySelector === "function" ? doc.querySelector(".app-shell") : null;
@@ -523,7 +535,7 @@
     let identityRefreshSeq = 0;
     const identityListeners = [];
 
-    const factory = createRecognizerFactory({
+    const groqFactory = createRecognizerFactory({
       win: win,
       doc: doc,
       fetchImpl: fetchImpl,
@@ -531,9 +543,36 @@
       now: options.now,
       verifyIdentity: function () { return verifyIdentity(); },
     });
+
+    /* #4643: Gemini Live is the default provider and the recorded-chunk Groq
+     * path is its fallback. The fallback is only entered after a real Live
+     * connection failure inside the same microphone run, never in parallel, so
+     * the two providers are never billed for the same speech. */
+    const geminiApi = win.PadiemVoiceGeminiLive || null;
+    const geminiFactory = geminiApi && typeof geminiApi.createRecognizerFactory === "function"
+      ? geminiApi.createRecognizerFactory({
+          win: win,
+          doc: doc,
+          fetchImpl: fetchImpl,
+          mediaDevices: mediaDevices,
+          now: options.now,
+          fallbackFactory: groqFactory,
+          liveTokenPath: function (targetDoc) {
+            return routeForShell(targetDoc, LIVE_TOKEN_PATH, CLAW_LIVE_TOKEN_PATH);
+          },
+        })
+      : null;
+    const factory = geminiFactory || groqFactory;
     const canCapture = !!(mediaDevices && typeof win.MediaRecorder === "function");
 
     function registerFactory(available) {
+      /* Another owner (a browser test double, another product lane) may have
+       * registered a recognizer after this module did. The wiring never
+       * detaches a foreign factory: it only owns the one it installed. */
+      if (typeof composer.getRecognizerFactory === "function") {
+        const current = composer.getRecognizerFactory();
+        if (current && current !== factory) return;
+      }
       composer.registerRecognizerFactory(available && canCapture ? factory : null);
     }
 
@@ -655,6 +694,8 @@
     CLAW_TRANSCRIBE_PATH: CLAW_TRANSCRIBE_PATH,
     CLAW_IDENTITY_PATH: CLAW_IDENTITY_PATH,
     IDENTITY_PATH: IDENTITY_PATH,
+    LIVE_TOKEN_PATH: LIVE_TOKEN_PATH,
+    CLAW_LIVE_TOKEN_PATH: CLAW_LIVE_TOKEN_PATH,
     ERROR_CODES: ERROR_CODES,
     createRecognizerFactory: createRecognizerFactory,
     createVoiceSttWiring: createVoiceSttWiring,

@@ -273,7 +273,14 @@
     }
 
     function handleInterim(preview) {
-      state.interim = typeof preview === "string" ? preview : "";
+      /* #4643 M1: the shared adapter writes the live transcript into the input
+       * box, so the preview line must not repeat the same words. A run without
+       * the live input (a provider that has no interim at all) keeps the
+       * preview. */
+      const live = run && run.adapter && typeof run.adapter.writesLiveInput === "function"
+        ? run.adapter.writesLiveInput() === true
+        : false;
+      state.interim = live ? "" : (typeof preview === "string" ? preview : "");
       render();
     }
 
@@ -747,6 +754,10 @@
       toggle: toggle,
       invalidate: invalidate,
       setRecognizerFactory: setRecognizerFactory,
+      /* #4643: the wiring stage must be able to tell whether the recognizer
+       * it would install is still the one in place, so it never detaches a
+       * factory another owner registered. */
+      getRecognizerFactory: function () { return factory; },
       handleIdentityKey: handleIdentityKey,
       destroy: destroy,
       getStatus: getStatus,
@@ -796,6 +807,14 @@
     createVoiceComposer: createVoiceComposer,
     init: init,
     registerRecognizerFactory: registerRecognizerFactory,
+    /* #4643: the wiring stage needs to know whether the recognizer it would
+     * install is still the one in place, so it never detaches a factory
+     * another owner registered. */
+    getRecognizerFactory: function () {
+      return controller && typeof controller.getRecognizerFactory === "function"
+        ? controller.getRecognizerFactory()
+        : null;
+    },
     autoInit: autoInit,
     getController: function () { return controller; },
   };
