@@ -284,6 +284,11 @@ def test_device_service_boundary_truth() -> None:
         # the same canonical surface; it grants no execution and adds no
         # second credential verifier.
         "/text-result",
+        # #5080: the device-facing one-time enrollment redemption. A device
+        # with no broker credential yet proves possession of the one-time
+        # pairing code with the canonical pairing proof; the credential is
+        # returned exactly once and the scope comes from the stored challenge.
+        "/v1/broker/pairings/redeem",
     )
     assert PRIVATE_SERVICE_BOUNDARY is True
     assert CANONICAL_BINDING_AUTH_REUSED is True
