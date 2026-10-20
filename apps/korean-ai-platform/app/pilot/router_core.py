@@ -264,6 +264,13 @@ def resolve_manual_route(
     elif not allow_external_fallback:
         reason_codes.append("external_fallback_disabled")
 
+    default_attempts = (
+        1 + len(fallback_candidates)
+        if owner_tier_pair
+        else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3))
+    )
+    effective_attempts = min(default_attempts, max_attempts) if max_attempts is not None else default_attempts
+
     return RouteDecision(
         route_mode=RouteMode.MANUAL.value,
         selected_provider=cm.provider,
@@ -279,7 +286,7 @@ def resolve_manual_route(
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
         provider_mode=runtime_config.provider_mode,
-        max_attempts=min(max_attempts, (1 + len(fallback_candidates)) if owner_tier_pair else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3))) if max_attempts is not None else ((1 + len(fallback_candidates)) if owner_tier_pair else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3))),
+        max_attempts=effective_attempts,
         credential_source=cred_source,
         platform_provider_id=plat_pid,
     )
