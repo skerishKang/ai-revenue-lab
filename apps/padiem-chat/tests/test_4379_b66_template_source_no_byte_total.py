@@ -106,9 +106,35 @@ def test_the_ceiling_is_released_only_by_a_forward_migration_that_keeps_the_floo
         assert "10485760" in (MIGRATIONS / name).read_text(encoding="utf-8"), name
 
 
-def test_the_quote_asset_ceiling_is_a_separate_review_item_and_stays_put() -> None:
-    # CENTRAL keeps the B66 quote structural limits separate from this slice, so
-    # this lane must not reach into the sibling intake by mistake.
+def test_the_quote_asset_ceiling_is_released_on_both_sides_at_once() -> None:
+    # CENTRAL assigned the B66 quote asset ceiling to this lane. Releasing one
+    # side alone would turn a clean 400 into a database failure, so the app
+    # total and the D1 CHECK have to move together.
     quote_assets = (APP / "b66_quote_assets.py").read_text(encoding="utf-8")
-    assert "MAX_B66_QUOTE_ASSET_BYTES = 256 * 1024" in quote_assets
-    assert "> MAX_B66_QUOTE_ASSET_BYTES" in quote_assets
+    assert "MAX_B66_QUOTE_ASSET_BYTES" not in quote_assets
+    assert not re.search(r"len\(body\)\s*>\s*MAX_B66_QUOTE_ASSET_BYTES", quote_assets)
+    assert not re.search(r"byte_length\s*>\s*MAX_B66_QUOTE_ASSET_BYTES", quote_assets)
+    # The real controls stay: the empty body, the media-type magic, the
+    # non-empty metadata rule and the approved status.
+    assert quote_assets.count("if not body:") == 1
+    assert quote_assets.count("if not _magic_matches(media_type, body):") == 1
+    assert quote_assets.count("or meta.byte_length < 1") == 1
+    assert quote_assets.count('or meta.status != "approved"') == 1
+
+    released = (MIGRATIONS / "022_b66_quote_asset.sql").read_text(encoding="utf-8")
+    assert "byte_length >= 1 AND byte_length <= 262144" in released
+
+    forward = (
+        MIGRATIONS / "061_b66_quote_asset_byte_length_ceiling_release.sql"
+    ).read_text(encoding="utf-8")
+    assert "262144" not in forward
+    assert forward.count("byte_length INTEGER NOT NULL CHECK (byte_length >= 1)") == 1
+    # Copy before drop: an absent or unreadable source aborts the rebuild
+    # before any table is destroyed.
+    assert forward.index("INSERT INTO b66_quote_asset_next") < forward.index(
+        "DROP TABLE b66_quote_asset;"
+    )
+    assert "ALTER TABLE b66_quote_asset_next RENAME TO b66_quote_asset;" in forward
+    assert "CREATE INDEX IF NOT EXISTS idx_b66_quote_asset_owner_workspace_status" in forward
+    # The released migration is not rewritten by the forward migration.
+    assert "262144" in released
