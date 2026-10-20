@@ -219,7 +219,9 @@ def test_plus_production_composition_reaches_engine_service_binding_once() -> No
     assert payload["agent"]["task_type"] == "coding"
     assert payload["agent"]["required_capabilities"] == []
     assert payload["agent"]["max_tokens"] is None
-    assert payload["execution_context"]["timeout_seconds"] == 900.0
+    # #4379: the production composition carries no PADIEM execution deadline,
+    # so the wire sends an explicit null instead of the old 900s default.
+    assert payload["execution_context"]["timeout_seconds"] is None
     serialized = json.dumps(payload, ensure_ascii=False)
     assert VALID_CREDENTIAL not in serialized
     assert "provider" not in payload["agent"]
