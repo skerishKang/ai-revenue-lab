@@ -14,8 +14,9 @@ product adapter, and the previous private names stay importable until the
 consumers have moved. The Engine keeps one thing of its own: assembling its
 own ``EngineToolBinding`` around the product contract.
 
-The file lane and the prompt moved here from this module in #5151, after the
-connector lane's #5175 change to the same lines had merged. There is one
+The file lane and the prompt moved here from this module in #5151. This is a
+stacked PR on the still-unmerged connector lane PR #5175, so the move sits on
+top of that lane's projection fix instead of replacing it. There is one
 implementation of each: the product adapter's.
 """
 
