@@ -16,7 +16,11 @@ from contextlib import asynccontextmanager
 
 from starlette.requests import Request
 
-from padiem_control_plane.model_assignment_policy import ModelPolicySnapshot, TIERS
+from padiem_control_plane.model_assignment_policy import (
+    ModelPolicySnapshot,
+    TIERS,
+    product_scope_set,
+)
 from padiem_control_plane.model_tier_routes import (
     TierRouteResolution,
     TierRouteSnapshot,
@@ -70,6 +74,9 @@ async def _blocked_models_from_store(
     Runtime route selection reads blocks so an operator's explicit block is
     never silently routed around. A policy read failure imposes no extra
     restriction: only the already validated central route remains in force.
+
+    #2505: the Chat and Claw surfaces share one grade setting, so a block on
+    either screen of the shared product blocks the shared setting for both.
     """
     read = getattr(store, "snapshot", None)
     if not callable(read):
@@ -81,9 +88,10 @@ async def _blocked_models_from_store(
         return frozenset()
     if not isinstance(snapshot, ModelPolicySnapshot) or snapshot.workspace_id != WORKSPACE:
         return frozenset()
+    blocked_scope = frozenset({"central"}) | product_scope_set(product)
     return frozenset(
         rule.model_id for rule in snapshot.rules
-        if rule.action == "block" and rule.tier == tier and rule.product in ("central", product)
+        if rule.action == "block" and rule.tier == tier and rule.product in blocked_scope
     )
 
 

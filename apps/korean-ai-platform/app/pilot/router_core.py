@@ -36,7 +36,10 @@ from app.pilot.catalog import (
     get_catalog_models,
 )
 from app.pilot.b14_runtime_config import runtime_config
-from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
+from app.pilot.owner_model_exclusions import (
+    excluded_from_owner_customer_selection,
+    free_candidate_excluded_from_execution,
+)
 from app.pilot.errors import NoSafeRoute, RoutingError
 
 
@@ -240,7 +243,7 @@ def resolve_manual_route(
             raise NoSafeRoute(reason_code="invalid_product_tier", message="Unsupported product tier.", upstream_called=False)
         for candidate_id in TIER_FALLBACK_B14_MODELS[product_tier]:
             target = get_catalog_by_id(candidate_id)
-            if target is not None and target.enabled and not excluded_from_owner_customer_selection(target.model_id) and _platform_secret_present(target):
+            if target is not None and target.enabled and not excluded_from_owner_customer_selection(target.model_id) and not free_candidate_excluded_from_execution(target.model_id) and _platform_secret_present(target):
                 fallback_candidates.append({
                     "model_id": target.model_id,
                     "upstream_model": target.upstream_model,
@@ -263,6 +266,7 @@ def resolve_manual_route(
             for m in all_models
             if m.model_id != model_id
             and not excluded_from_owner_customer_selection(m.model_id)
+            and not free_candidate_excluded_from_execution(m.model_id)
             and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
         ][:3]  # limit to top 3 fallback candidates
 

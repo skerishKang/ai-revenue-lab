@@ -14,7 +14,10 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from padiem_control_plane.model_assignment_policy import ModelPolicySnapshot
+from padiem_control_plane.model_assignment_policy import (
+    ModelPolicySnapshot,
+    product_scope_set,
+)
 
 from .auth_routes import current_user_id
 from .b14_client import B14Client
@@ -54,8 +57,12 @@ def _product_is_configured(snapshot: ModelPolicySnapshot, product_id: str) -> bo
     with zero product grants would deny every current customer instead of
     enforcing an owner decision.  An explicit product rule is the opt-in
     boundary; once present the guard stays fail-closed for unassigned models.
+
+    #2505: the Chat and Claw screens share one product, so a rule on either
+    screen arms the shared setting for both of them.
     """
-    return any(rule.product == product_id for rule in snapshot.rules)
+    scope = product_scope_set(product_id)
+    return any(rule.product in scope for rule in snapshot.rules)
 
 
 class SimpleB14CatalogSource:
