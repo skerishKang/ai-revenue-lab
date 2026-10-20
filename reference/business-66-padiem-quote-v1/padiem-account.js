@@ -1301,7 +1301,7 @@
     /* canonical /api/padiem/auth/status 의 methods.password === true 인 경우에만 로그인 요청을 보낸다. */
     if (!passwordLoginAvailable()) {
       applyAuthMethods(null);
-      setAuthError("아이디/이메일 로그인은 현재 제공되지 않습니다. 구글 로그인을 이용해 주세요.");
+      setAuthError("이메일 로그인은 현재 제공되지 않습니다. 구글 로그인을 이용해 주세요.");
       return;
     }
     const identifier = byId("padiemLoginIdentifier");
@@ -1311,7 +1311,7 @@
 
     const identifierValue = identifier.value.trim();
     if (!identifierValue || !password.value) {
-      setAuthError("아이디 또는 이메일과 비밀번호를 입력해 주세요.");
+      setAuthError("이메일과 비밀번호를 입력해 주세요.");
       (identifierValue ? password : identifier).focus();
       return;
     }
