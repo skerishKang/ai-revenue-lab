@@ -886,17 +886,18 @@ class PolicyTests(unittest.TestCase):
     """The timeout and the byte ceilings are bounded on both sides."""
 
     def test_default_timeout_is_the_central_decision(self) -> None:
-        self.assertEqual(isolation.DOCUMENT_PARSER_TIMEOUT_SECONDS, 30.0)
-        self.assertEqual(
-            isolation.DEFAULT_PARSER_ISOLATION_POLICY.timeout_seconds, 30.0
+        # #4379: the parser isolation carries no PADIEM wall-clock ceiling, so
+        # the default is no wait ceiling at all.
+        self.assertIsNone(isolation.DOCUMENT_PARSER_TIMEOUT_SECONDS)
+        self.assertIsNone(
+            isolation.DEFAULT_PARSER_ISOLATION_POLICY.timeout_seconds
         )
-        self.assertLessEqual(
-            isolation.DOCUMENT_PARSER_TIMEOUT_SECONDS,
-            isolation.DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS,
-        )
+        self.assertIsNone(isolation.DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS)
 
     def test_unbounded_or_non_positive_timeouts_are_rejected(self) -> None:
-        for value in (0, 0.0, -1.0, 30.5, 31.0, 300.0, float("inf"), float("nan")):
+        # #4379: a large timeout is accepted. Only a non-positive or a
+        # non-finite value is still refused.
+        for value in (0, 0.0, -1.0, float("inf"), float("nan")):
             with self.subTest(timeout=value), self.assertRaises(
                 isolation.ParserIsolationError
             ):
@@ -962,16 +963,22 @@ class LifecycleBoundTests(unittest.TestCase):
     def test_canonical_grace_ceilings_exist_and_are_the_policy_defaults(self) -> None:
         policy = isolation.DEFAULT_PARSER_ISOLATION_POLICY
         for knob, constant_name in _SECONDS_CEILING_NAMES:
+            if knob == "timeout_seconds":
+                continue
             ceiling = getattr(isolation, constant_name)
             with self.subTest(knob=knob):
                 self.assertEqual(getattr(policy, knob), ceiling)
-        self.assertEqual(isolation.DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS, 30.0)
+        self.assertIsNone(isolation.DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS)
         self.assertEqual(isolation.DOCUMENT_PARSER_TERMINATE_GRACE_MAX_SECONDS, 2.0)
         self.assertEqual(isolation.DOCUMENT_PARSER_KILL_GRACE_MAX_SECONDS, 2.0)
         self.assertEqual(isolation.DOCUMENT_PARSER_DRAIN_JOIN_MAX_SECONDS, 2.0)
 
     def test_above_max_seconds_knobs_are_rejected(self) -> None:
+        # #4379: the timeout knob has no ceiling any more. The grace knobs
+        # keep theirs.
         for knob, constant_name in _SECONDS_CEILING_NAMES:
+            if knob == "timeout_seconds":
+                continue
             ceiling = getattr(isolation, constant_name)
             for value in (ceiling + 1e-6, ceiling * 2, ceiling + 60.0, 1e9, float("inf")):
                 with self.subTest(knob=knob, value=value), self.assertRaises(
@@ -991,6 +998,8 @@ class LifecycleBoundTests(unittest.TestCase):
     def test_a_single_knob_above_its_ceiling_is_enough_to_be_refused(self) -> None:
         # Proves the ceiling is per-knob, not a sum or a check on one field.
         for knob, constant_name in _SECONDS_CEILING_NAMES:
+            if knob == "timeout_seconds":
+                continue
             with self.subTest(knob=knob), self.assertRaises(
                 isolation.ParserIsolationError
             ):
@@ -1006,9 +1015,11 @@ class LifecycleBoundTests(unittest.TestCase):
             **{
                 knob: getattr(isolation, constant_name)
                 for knob, constant_name in _SECONDS_CEILING_NAMES
+                if knob != "timeout_seconds"
             }
         )
-        self.assertEqual(policy.timeout_seconds, 30.0)
+        # #4379: no wait ceiling is applied unless a policy asks for one.
+        self.assertIsNone(policy.timeout_seconds)
         self.assertEqual(policy.terminate_grace_seconds, 2.0)
         self.assertEqual(policy.kill_grace_seconds, 2.0)
         self.assertEqual(policy.drain_join_seconds, 2.0)

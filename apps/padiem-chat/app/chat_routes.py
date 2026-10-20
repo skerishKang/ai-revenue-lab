@@ -225,7 +225,10 @@ async def api_chat_stream(request: Request):
     content_length = request.headers.get("content-length")
     if content_length:
         try:
-            if int(content_length) > MAX_BROWSER_BODY_BYTES:
+            if (
+                MAX_BROWSER_BODY_BYTES is not None
+                and int(content_length) > MAX_BROWSER_BODY_BYTES
+            ):
                 return _too_large_response()
         except ValueError:
             return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
@@ -683,7 +686,10 @@ async def api_chat(request: Request) -> JSONResponse:
     content_length = request.headers.get("content-length")
     if content_length:
         try:
-            if int(content_length) > MAX_BROWSER_BODY_BYTES:
+            if (
+                MAX_BROWSER_BODY_BYTES is not None
+                and int(content_length) > MAX_BROWSER_BODY_BYTES
+            ):
                 return _too_large_response()
         except ValueError:
             return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
