@@ -866,6 +866,8 @@ def main(argv: list[str] | None = None) -> int:
         return _main_replacement_served_version_read(args)
     if args.command == "replacement-served-version-final":
         return _main_replacement_served_version_final(args)
+    if args.command == "verify-latest-served":
+        return _main_verify_latest_served(args)
     if not args.settings:
         print(f"usage: {args.command} requires --settings", file=sys.stderr)
         return 2
@@ -880,8 +882,6 @@ def main(argv: list[str] | None = None) -> int:
         return _main_plan_chat_orchestration(args)
     if args.command == "verify-chat-orchestration":
         return _main_verify_chat_orchestration(args)
-    if args.command == "verify-latest-served":
-        return _main_verify_latest_served(args)
 
     if not args.engine_service or not args.r2_bucket:
         print(f"usage: {args.command} requires --engine-service and --r2-bucket", file=sys.stderr)

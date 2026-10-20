@@ -85,6 +85,7 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-static-ui",
     "b62-ui-mixed-tests",  # #4459 exact changed-test runner; required b62-test fan-in
     "b62-core-parser-focused",  # #5341 opt-in isolated parser focused contract
+    "b62-b14-attempt-focused",  # B14 outbound attempt-policy targeted regression
     "b14-multimodal-test",
 }
 
@@ -133,6 +134,7 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
     aggregate = document["jobs"]["b62-test"]
     assert "b62-ui-mixed-tests" in aggregate["needs"]
     assert "b62-core-parser-focused" in aggregate["needs"]
+    assert "b62-b14-attempt-focused" in aggregate["needs"]
     assert "MIXED_RESULT" in aggregate["steps"][0]["env"]
 
 

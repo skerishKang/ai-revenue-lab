@@ -205,15 +205,22 @@ def _canonical_json(value: Any) -> str:
 
 
 def truncate_observation_name(name: str) -> str:
-    """Bounded deterministic name truncation (Python strings are code points)."""
-    return name[:MAX_ELEMENT_NAME_CHARS]
+    """Return the accessible name unchanged.
+
+    #4379: the observation carries no PADIEM length total, so an accessible
+    name is not cut. The function keeps its name for import compatibility.
+    """
+    return name
 
 
 def observation_element_ref(sequence: int) -> str:
     """Stable per-snapshot element ref, derived from document order only."""
-    if not isinstance(sequence, int) or isinstance(sequence, bool) or not 1 <= sequence <= MAX_OBSERVATION_ELEMENTS:
+    # #4379: the observation carries no PADIEM element-count total. The
+    # el-NNNN reference format stays, so the sequence is bounded by that
+    # format rather than by a platform-wide element count.
+    if not isinstance(sequence, int) or isinstance(sequence, bool) or sequence < 1:
         raise BrowserObservationRefusal(
-            "contract_violation", "element ref sequence must be within the projection bounds"
+            "contract_violation", "element ref sequence must be a positive integer"
         )
     return f"el-{sequence:04d}"
 
@@ -319,8 +326,7 @@ def _validate_element(raw: Any, sequence: int) -> BoundedObservationElement:
         # accessible name never carries the typed value on this surface.
         if name != MASKED_CREDENTIAL_NAME:
             _refuse("credential field must project the masked marker as its name")
-    elif len(name) > MAX_ELEMENT_NAME_CHARS:
-        _refuse("name must be at most 64 characters")
+    # #4379: the accessible name carries no character total.
 
     bounds = raw["bounds"]
     if not isinstance(bounds, Mapping) or set(bounds) != {"x", "y", "width", "height"}:
@@ -407,8 +413,7 @@ def validate_trusted_page_observation(payload: Mapping[str, Any]) -> BoundedPage
     raw_elements = payload["elements"]
     if not isinstance(raw_elements, list):
         _refuse("elements must be a list")
-    if len(raw_elements) > MAX_OBSERVATION_ELEMENTS:
-        _refuse(f"observation may carry at most {MAX_OBSERVATION_ELEMENTS} elements")
+    # #4379: the observation carries no PADIEM element-count total.
     elements = tuple(
         _validate_element(raw, sequence) for sequence, raw in enumerate(raw_elements, start=1)
     )
@@ -422,11 +427,7 @@ def validate_trusted_page_observation(payload: Mapping[str, Any]) -> BoundedPage
         omitted_elements=omitted_elements,
         truncated=truncated,
     )
-    if observation.serialized_bytes() > MAX_SERIALIZED_OBSERVATION_BYTES:
-        raise BrowserObservationRefusal(
-            "projection_exceeds_byte_budget",
-            f"bounded observation exceeds {MAX_SERIALIZED_OBSERVATION_BYTES} serialized bytes",
-        )
+    # #4379: the observation carries no PADIEM serialized-byte total.
     return observation
 
 
@@ -439,8 +440,8 @@ def build_bounded_page_observation(
     """Project trusted-host material into the exact agent-facing wire shape.
 
     Mirrors the Desktop host contract: deterministic document-order projection
-    with derived element refs, credential masking, and the byte budget enforced
-    by deterministic whole-element truncation (fail-closed never cuts bytes).
+    with derived element refs and credential masking. #4379: no element is
+    dropped and nothing is cut to fit a byte budget.
     """
 
     if not isinstance(projection_id, str) or not PROJECTION_ID_RE.fullmatch(projection_id):
@@ -473,8 +474,7 @@ def build_bounded_page_observation(
         missing = source_keys - set(raw)
         if missing:
             _refuse(f"source element is missing bounded keys: {sorted(missing)!r}")
-        if len(projected) >= MAX_OBSERVATION_ELEMENTS:
-            break
+        # #4379: no element is dropped for the element count.
         role = raw["role"]
         credential_field = raw["credential_field"]
         name = MASKED_CREDENTIAL_NAME if credential_field else truncate_observation_name(raw["name"])
@@ -505,16 +505,6 @@ def build_bounded_page_observation(
         "credential_value_included": False,
         "dom_api_exposed": False,
     }
-    encoded = _canonical_json(payload).encode("utf-8")
-    while len(encoded) > MAX_SERIALIZED_OBSERVATION_BYTES and payload["elements"]:
-        payload["elements"].pop()
-        payload["element_count"] = len(payload["elements"])
-        payload["truncated"] = True
-        truncated = True
-        encoded = _canonical_json(payload).encode("utf-8")
-    if len(encoded) > MAX_SERIALIZED_OBSERVATION_BYTES:
-        raise BrowserObservationRefusal(
-            "projection_exceeds_byte_budget",
-            f"bounded observation exceeds {MAX_SERIALIZED_OBSERVATION_BYTES} serialized bytes",
-        )
+    # #4379: the observation carries no PADIEM serialized-byte total, so no
+    # element is dropped to fit a byte budget and no observation is cut.
     return payload

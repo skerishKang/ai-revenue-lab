@@ -1,0 +1,170 @@
+/* B62 Padiem Chat / B54 Padiem Claw — the computer connection status control
+ * in the shared composer.
+ *
+ * A quiet status chip in the top-right corner of the message input frame. It
+ * is presentation only: the server owns the state and the existing device
+ * directory panel owns every management action.
+ *
+ * The control is absolutely positioned inside the composer, so it never adds
+ * height to the fixed input area. The reserved text gutter is measured from
+ * the control itself (--composer-pc-status-gutter), so the message text and
+ * the send control are never covered by it.
+ */
+/* The shared tooltip sheet gives every [data-padiem-tooltip] anchor
+ * `position: relative`, so the composer anchor keeps its own placement. */
+#composerForm .composer-pc-status {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The visible pill. The transparent button around it keeps a 44px touch
+ * target on a phone without drawing a 44px control on the desktop frame. */
+.composer-pc-status-face {
+  --pc-status-surface: rgba(255, 255, 255, .72);
+  --pc-status-text: var(--muted, #53606c);
+  --pc-status-line: var(--line, rgba(66, 106, 135, .26));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 26px;
+  min-width: 104px;
+  padding: 0 10px;
+  border: 1px solid var(--pc-status-line);
+  border-radius: 999px;
+  background: var(--pc-status-surface);
+  color: var(--pc-status-text);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+}
+.composer-pc-status:hover .composer-pc-status-face {
+  --pc-status-surface: rgba(255, 255, 255, .92);
+}
+.composer-pc-status:active .composer-pc-status-face {
+  --pc-status-surface: rgba(255, 255, 255, 1);
+}
+.composer-pc-status:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+.composer-pc-status-label { pointer-events: none; }
+.composer-pc-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+}
+.composer-pc-status-icon svg { width: 14px; height: 14px; display: block; }
+.composer-pc-status-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--muted, #53606c);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted, #53606c) 22%, transparent);
+}
+.composer-pc-status[data-state="connected"] .composer-pc-status-dot {
+  background: var(--success, #1a6b3a);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--success, #1a6b3a) 24%, transparent);
+}
+.composer-pc-status[data-state="check"] .composer-pc-status-dot {
+  background: var(--danger, #b3261e);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger, #b3261e) 22%, transparent);
+}
+
+/* The message text keeps the room the control occupies, so the input area is
+ * never covered by it. The gutter is measured from the rendered control.
+ *
+ * The rule repeats the composer ancestor chain on purpose: the per-theme
+ * composer sheets set the textarea padding with `!important` (the strongest
+ * one is `html[data-theme] body .app-shell[data-state] #composerForm >
+ * #messageInput`), so a plain class selector would lose and the message text
+ * would run under the control. Every compound here is a different element, so
+ * the descendant combinators stay valid, and the id count keeps this rule the
+ * winner in every theme. */
+html body .app-shell[data-state] .composer-wrap #composerForm[data-pc-status="ready"] > #messageInput {
+  padding-right: var(--composer-pc-status-gutter, 0px) !important;
+}
+
+/* Dark surfaces: the chip reads on the charcoal composer. */
+html[data-theme="dark"] .composer-pc-status-face,
+html[data-theme="cinematic"] .composer-pc-status-face,
+html[data-theme="night"] .composer-pc-status-face {
+  --pc-status-surface: rgba(255, 255, 255, .10);
+  --pc-status-text: rgba(255, 255, 255, .76);
+  --pc-status-line: rgba(255, 255, 255, .20);
+}
+html[data-theme="dark"] .composer-pc-status:hover .composer-pc-status-face,
+html[data-theme="cinematic"] .composer-pc-status:hover .composer-pc-status-face,
+html[data-theme="night"] .composer-pc-status:hover .composer-pc-status-face {
+  --pc-status-surface: rgba(255, 255, 255, .18);
+}
+
+/* The bright Glass composer keeps the same chip treatment as the other
+ * composer controls on that surface. */
+html[data-theme="padiem-glass"] .composer-pc-status-face,
+html[data-theme="padiem-home"] .composer-pc-status-face,
+html[data-theme="light"] .composer-pc-status-face {
+  --pc-status-surface: rgba(255, 255, 255, .62);
+  --pc-status-text: #25333e;
+  --pc-status-line: rgba(255, 255, 255, .70);
+}
+html[data-theme="padiem-glass"] .composer-pc-status:hover .composer-pc-status-face,
+html[data-theme="padiem-home"] .composer-pc-status:hover .composer-pc-status-face,
+html[data-theme="light"] .composer-pc-status:hover .composer-pc-status-face {
+  --pc-status-surface: rgba(255, 255, 255, .90);
+}
+html[data-theme="padiem-glass"] .composer-pc-status:focus-visible,
+html[data-theme="padiem-home"] .composer-pc-status:focus-visible,
+html[data-theme="light"] .composer-pc-status:focus-visible {
+  outline-color: rgba(47, 111, 153, .55);
+}
+
+/* Phone: a compact monitor mark with the status dot. The control keeps a
+ * 44px touch target while the visible pill stays small, and it never shares
+ * the row with the file, search, model, microphone or send controls. */
+@media (max-width: 620px) {
+  .composer-pc-status {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .composer-pc-status-face {
+    min-width: 34px;
+    height: 30px;
+    padding: 0 8px;
+  }
+  .composer-pc-status-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .composer-pc-status * { transition: none !important; animation: none !important; }
+}

@@ -509,11 +509,13 @@ def test_non_bytes_payload_is_refused() -> None:
     assert _code(excinfo) == "image_bytes_invalid"
 
 
-def test_oversized_input_bytes_are_refused_before_decode(monkeypatch) -> None:
+def test_input_over_the_old_byte_bound_reaches_the_decoder(monkeypatch) -> None:
+    # #4379: an image payload carries no PADIEM byte total, so an input past
+    # the former bound is decoded instead of being refused for its size.
     opened: list[bytes] = []
     original_open = Image.open
 
-    def spy(source, *args, **kwargs):  # pragma: no cover - must not be reached
+    def spy(source, *args, **kwargs):
         opened.append(bytes(source.getvalue()) if hasattr(source, "getvalue") else b"")
         return original_open(source, *args, **kwargs)
 
@@ -521,8 +523,8 @@ def test_oversized_input_bytes_are_refused_before_decode(monkeypatch) -> None:
     with pytest.raises(ImageContractError) as excinfo:
         inspect_image(b"\x89PNG\r\n\x1a\n" + b"\x00" * (MAX_IMAGE_BYTES + 1))
 
-    assert _code(excinfo) == "image_bytes_oversized"
-    assert opened == []
+    assert _code(excinfo) != "image_bytes_oversized"
+    assert opened != []
 
 
 def test_oversized_pixel_count_is_refused() -> None:
@@ -549,12 +551,13 @@ def test_oversized_resize_target_is_refused() -> None:
     assert _code(excinfo) == "image_output_pixels_exceeded"
 
 
-def test_oversized_output_bytes_are_refused(monkeypatch) -> None:
+def test_output_is_not_refused_for_its_size(monkeypatch) -> None:
+    # #4379: the encoded output carries no PADIEM byte total, so the result
+    # is returned even when it is larger than the former bound.
     monkeypatch.setattr(helpers, "MAX_OUTPUT_BYTES", 8)
-    with pytest.raises(ImageContractError) as excinfo:
-        transform_image(_png((32, 32), color=(7, 11, 13)), output_format="PNG")
+    encoded = transform_image(_png((32, 32), color=(7, 11, 13)), output_format="PNG")
 
-    assert _code(excinfo) == "image_output_bytes_exceeded"
+    assert encoded
 
 
 @pytest.mark.parametrize(
@@ -900,10 +903,10 @@ def test_image_to_pdf_empty_and_oversized_sequences_fail_closed() -> None:
 
 
 def test_image_to_pdf_total_bounds_fail_closed(monkeypatch) -> None:
+    # #4379: the PDF input byte total is not a PADIEM total. The decoded
+    # pixel total stays, because it bounds decoded memory.
     monkeypatch.setattr(helpers, "MAX_PDF_INPUT_BYTES", 1)
-    with pytest.raises(ImageContractError) as total_bytes:
-        image_to_pdf((_png(),))
-    assert _code(total_bytes) == "image_pdf_input_bytes_exceeded"
+    assert image_to_pdf((_png(),)).page_count == 1
 
     monkeypatch.setattr(helpers, "MAX_PDF_INPUT_BYTES", MAX_PDF_INPUT_BYTES)
     monkeypatch.setattr(helpers, "MAX_PDF_TOTAL_PIXELS", 1)
@@ -912,8 +915,7 @@ def test_image_to_pdf_total_bounds_fail_closed(monkeypatch) -> None:
     assert _code(total_pixels) == "image_pdf_total_pixels_exceeded"
 
 
-def test_image_to_pdf_output_bound_fail_closed(monkeypatch) -> None:
+def test_image_to_pdf_output_is_not_refused_for_its_size(monkeypatch) -> None:
+    # #4379: the PDF output carries no PADIEM byte total.
     monkeypatch.setattr(helpers, "MAX_PDF_OUTPUT_BYTES", 8)
-    with pytest.raises(ImageContractError) as excinfo:
-        image_to_pdf((_png(),))
-    assert _code(excinfo) == "image_pdf_output_bytes_exceeded"
+    assert image_to_pdf((_png(),)).data

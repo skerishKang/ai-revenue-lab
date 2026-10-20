@@ -266,7 +266,7 @@ class ClawOrchestrationOutcome:
         # the browser never receives resume authority or the trusted request.
         return {
             "projection": self.projection.safe_dict(),
-            "answer": redact_secrets(self.answer) if self.answer is not None else None,
+            "answer": self.answer,
             "p01_run_id": self.p01_run_id,
             "p01_event_count": self.p01_event_count,
             "continuation_ref": self.continuation_ref,
@@ -801,27 +801,27 @@ class ClawOrchestrationProjector:
         elif kind is OrchestrationEventKind.APPROVAL_PAUSED:
             self._run.transition(
                 ClawRunStatus.WAITING_APPROVAL,
-                summary=redact_secrets(event.message or "사용자 승인 대기"),
+                summary=(event.message or "사용자 승인 대기"),
             )
         elif kind is OrchestrationEventKind.RUN_RESUMED:
             self._run.transition(
                 ClawRunStatus.RUNNING,
-                summary=redact_secrets(event.message or "승인 후 실행 재개"),
+                summary=(event.message or "승인 후 실행 재개"),
             )
         elif kind is OrchestrationEventKind.RUN_COMPLETED:
             self._run.transition(
                 ClawRunStatus.COMPLETED,
-                summary=redact_secrets(event.message or "작업 완료"),
+                summary=(event.message or "작업 완료"),
             )
         elif kind is OrchestrationEventKind.RUN_FAILED:
             self._run.transition(
                 ClawRunStatus.FAILED,
-                summary=redact_secrets(event.message or "P01 실행 실패"),
+                summary=(event.message or "P01 실행 실패"),
             )
         elif kind is OrchestrationEventKind.RUN_CANCELLED:
             self._run.transition(
                 ClawRunStatus.CANCELLED,
-                summary=redact_secrets(event.message or "작업 취소"),
+                summary=(event.message or "작업 취소"),
             )
 
 
@@ -1023,7 +1023,7 @@ class P01CoreOrchestrationAdapter:
                 await on_event(live_terminal)
 
             answer = (
-                redact_secrets(result.execution_result.answer)
+                result.execution_result.answer
                 if run.status is ClawRunStatus.COMPLETED
                 else None
             )

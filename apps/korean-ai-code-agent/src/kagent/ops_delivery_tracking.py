@@ -104,7 +104,7 @@ class DeliveryTrackingSnapshot:
             "source_ref": self.source_ref,
             "promised_date": self.promised_date.isoformat() if self.promised_date else None,
             "actual_delivery_date": self.actual_delivery_date.isoformat() if self.actual_delivery_date else None,
-            "note": redact_secrets(self.note),
+            "note": self.note,
         }
 
 

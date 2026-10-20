@@ -26,6 +26,8 @@ from .document_semantics import (
 MAX_DOCUMENT_NAME_CHARS = 120
 MAX_DOCUMENT_CHARS = MAX_SEGMENT_TEXT_CHARS
 MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
+# #4379: a binary document carries no PADIEM byte total. The symbol is
+# retained for import compatibility and is no longer enforced.
 MAX_BINARY_DOCUMENT_BYTES = 2 * 1024 * 1024
 #: Largest drawable extent, in HWPUNIT, this Core accepts for a picture block.
 #: One HWPUNIT is 1/7200 inch, so this is roughly 138 inches: far beyond any
@@ -322,7 +324,10 @@ def _bounded_ooxml_repackage(payload: bytes) -> bytes:
 
 
 def validate_ooxml_archive(payload: bytes) -> None:
-    if not isinstance(payload, (bytes, bytearray)) or not payload or len(payload) > MAX_BINARY_DOCUMENT_BYTES:
+    # #4379: the archive byte total is not a PADIEM total. The entry count,
+    # the per-entry and the total uncompressed bounds below stay: they are
+    # the decompression-bomb protection, not a caller's data total.
+    if not isinstance(payload, (bytes, bytearray)) or not payload:
         raise DocumentNormalizationError("ooxml_archive_size", "OOXML archive size is out of bounds.")
     try:
         with ZipFile(BytesIO(bytes(payload))) as archive:
@@ -1027,8 +1032,7 @@ def inspect_pdf(*, name: Any, media_type: Any, payload: Any) -> PdfInspection:
     if not isinstance(payload, (bytes, bytearray)) or not payload:
         raise DocumentNormalizationError("invalid_binary_payload", "PDF payload must be non-empty bytes.")
     binary = bytes(payload)
-    if len(binary) > MAX_BINARY_DOCUMENT_BYTES:
-        raise DocumentNormalizationError("binary_too_large", "Binary document exceeds the byte limit.")
+    # #4379: a binary document carries no PADIEM byte total.
     reader = _open_pdf_reader(binary)
     try:
         page_count = len(reader.pages)
@@ -1087,7 +1091,7 @@ def normalize_pdf_inspection(inspection: PdfInspection) -> NormalizedDocument:
     if (
         isinstance(inspection.byte_size, bool)
         or not isinstance(inspection.byte_size, int)
-        or not 1 <= inspection.byte_size <= MAX_BINARY_DOCUMENT_BYTES
+        or inspection.byte_size < 1
     ):
         raise DocumentNormalizationError(
             "invalid_pdf_inspection",
@@ -1250,8 +1254,7 @@ def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> Norm
         byte_size = len(binary)
     if not byte_size:
         raise DocumentNormalizationError("empty_document", "Document payload is empty.")
-    if byte_size > MAX_BINARY_DOCUMENT_BYTES:
-        raise DocumentNormalizationError("binary_too_large", "Binary document exceeds the byte limit.")
+    # #4379: a document payload carries no PADIEM byte total.
 
     if safe_media == "application/pdf":
         text = _extract_pdf_text(binary)

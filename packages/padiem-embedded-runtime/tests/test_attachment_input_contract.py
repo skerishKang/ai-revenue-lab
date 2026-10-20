@@ -5,7 +5,6 @@ from __future__ import annotations
 import unittest
 
 from padiem_embedded_runtime.attachment_input import (
-    HINT_OVER_SHARED_BOUND,
     HINT_SUPPORTED_MEDIA_TYPE,
     HINT_UNSUPPORTED_MEDIA_TYPE,
     MAX_SELECTIONS,
@@ -92,7 +91,9 @@ class PresentSelectionsTests(unittest.TestCase):
         self.assertEqual(presentation.status, STATUS_READY)
         big, notes = presentation.selections
         self.assertIn(HINT_SUPPORTED_MEDIA_TYPE, big.hints)
-        self.assertIn(HINT_OVER_SHARED_BOUND, big.hints)
+        # #4379: a shared platform image byte bound is no longer
+        # declared, so a large selection is not labelled as over one.
+        self.assertNotIn("OVER_SHARED_IMAGE_BOUND", big.hints)
         self.assertEqual(notes.hints, (HINT_UNSUPPORTED_MEDIA_TYPE,))
 
     def test_selection_bound_is_enforced(self) -> None:

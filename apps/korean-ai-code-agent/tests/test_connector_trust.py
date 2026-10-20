@@ -188,6 +188,7 @@ class ConnectorTrustTests(unittest.TestCase):
             signature_timestamp=None,
             replay=ReplayDisposition.NEW,
         )
+        self.assertEqual(event.body_text, "token=supersecretvalue")
         rendered = event.safe_dict()
         self.assertFalse(rendered["body_trusted"])
         self.assertNotIn("supersecretvalue", rendered["body_text"])

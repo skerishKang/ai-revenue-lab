@@ -69,15 +69,17 @@ class B66FileIntakeTests(unittest.TestCase):
         self.assertFalse(empty["ok"])
         self.assertEqual(empty["error"]["code"], "invalid_base64")
 
-        too_large = handle_intake_payload(
+        # #4379: an intake document carries no PADIEM byte total. The
+        # document validation still refuses the payload and never echoes it.
+        over_the_old_bound = handle_intake_payload(
             {
                 "name": "quote.pdf",
                 "media_type": "application/pdf",
                 "base64": b64(b"x" * (2 * 1024 * 1024 + 1)),
             }
         )
-        self.assertFalse(too_large["ok"])
-        self.assertEqual(too_large["error"]["code"], "document_too_large")
+        self.assertFalse(over_the_old_bound["ok"])
+        self.assertNotEqual(over_the_old_bound["error"]["code"], "document_too_large")
 
     def test_legacy_hwp_and_media_extension_mismatch(self) -> None:
         legacy = handle_intake_payload(
@@ -272,7 +274,9 @@ class B66FileIntakeTests(unittest.TestCase):
         self.assertFalse(bad["ok"])
         self.assertEqual(bad["error"]["code"], "image_magic_mismatch")
 
-    def test_image_size_cap(self) -> None:
+    def test_image_is_not_refused_for_its_size(self) -> None:
+        # #4379: an intake image carries no PADIEM byte total. The media type
+        # magic check still applies.
         result = handle_intake_payload(
             {
                 "name": "quote.jpg",
@@ -280,8 +284,9 @@ class B66FileIntakeTests(unittest.TestCase):
                 "base64": b64(b"\xff\xd8\xff" + b"x" * (4 * 1024 * 1024)),
             }
         )
-        self.assertFalse(result["ok"])
-        self.assertEqual(result["error"]["code"], "image_too_large")
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["result"]["kind"], "image_candidate")
+        self.assertEqual(result["result"]["byte_size"], 4 * 1024 * 1024 + 3)
 
     def test_source_has_no_provider_model_or_arbitrary_url_surface(self) -> None:
         source = Path(__file__).resolve().parents[1].joinpath("app", "file_intake.py").read_text(

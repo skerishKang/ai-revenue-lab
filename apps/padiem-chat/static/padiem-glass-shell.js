@@ -28,6 +28,9 @@
   var field=null, portal=null, veinLayer=null;
   var frags=[];
   var progress=1, raf=0, lastT=0;
+  /* Observed step cadence, used to keep the stall guard proportional to the
+   * renderer instead of a fixed cap. */
+  var lastGap=16.7;
   var mx=.5, my=.5;
   var imgL=0, imgT=0, imgW=0, imgH=0;
   var fieldW=0, fieldH=0, fieldTop=68;
@@ -265,7 +268,14 @@
       /* frame-rate independent exponential approach: the source rates are
        * normalized to a 60fps step so 120Hz/headless/low-power renders the
        * same wall-clock speed. */
-      var dt=lastT?Math.max(0,Math.min(100,now-lastT)):16.7;
+      /* A renderer slower than 10fps must still advance the animation at
+       * wall-clock speed, or the 1x peel stretches past its designed
+       * duration. The stall guard therefore follows the observed step
+       * cadence instead of a fixed cap, so a healthy renderer keeps the
+       * original 100ms bound unchanged. */
+      var gap=lastT?Math.max(0,now-lastT):16.7;
+      var dt=Math.min(gap,Math.max(100,lastGap*3));
+      lastGap=gap;
       lastT=now;
       /* Protect the first reveal frames without extending the clean tail. */
       var peelRate=progress>.65?RATE_DOWN:RATE_DOWN_FINISH;
