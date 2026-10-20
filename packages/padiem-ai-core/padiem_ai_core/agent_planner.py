@@ -56,11 +56,6 @@ def _objective(value: str) -> str:
             "plan step objective must be a non-empty string",
         )
     result = value.strip()
-    if len(result) > MAX_AGENT_PLAN_OBJECTIVE_CHARS:
-        raise AgentPlannerError(
-            "agent_plan_budget_exceeded",
-            "plan step objective exceeds the bounded planner limit",
-        )
     return result
 
 
@@ -86,11 +81,6 @@ class AgentPlanStep:
         dependencies = tuple(
             _identifier("dependency step id", item) for item in self.depends_on
         )
-        if len(dependencies) > MAX_AGENT_PLAN_DEPENDENCIES:
-            raise AgentPlannerError(
-                "agent_plan_budget_exceeded",
-                "plan step has too many dependencies",
-            )
         if len(set(dependencies)) != len(dependencies):
             raise AgentPlannerError(
                 "invalid_agent_plan",
@@ -263,9 +253,4 @@ def validate_agent_plan_input(input_text: str) -> str:
             "planner input must be a non-empty string",
         )
     result = input_text.strip()
-    if len(result) > MAX_AGENT_PLAN_INPUT_CHARS:
-        raise AgentPlannerError(
-            "agent_plan_budget_exceeded",
-            "planner input exceeds the bounded input limit",
-        )
     return result
