@@ -1010,8 +1010,6 @@ def _open_pdf_reader(payload: bytes) -> Any:
         raise DocumentNormalizationError("pdf_encrypted", "Encrypted PDF documents are not supported.")
     if len(reader.pages) < 1:
         raise DocumentNormalizationError("pdf_no_pages", "PDF contains no readable pages.")
-    if len(reader.pages) > MAX_PDF_PAGES:
-        raise DocumentNormalizationError("pdf_page_limit", "PDF exceeds the page limit.")
     return reader
 
 
@@ -1092,7 +1090,7 @@ def normalize_pdf_inspection(inspection: PdfInspection) -> NormalizedDocument:
     if (
         isinstance(inspection.page_count, bool)
         or not isinstance(inspection.page_count, int)
-        or not 1 <= inspection.page_count <= MAX_PDF_PAGES
+        or inspection.page_count < 1
         or not isinstance(inspection.pages, tuple)
         or len(inspection.pages) != inspection.page_count
     ):
@@ -1206,23 +1204,16 @@ def _extract_xlsx_text(payload: bytes) -> str:
     try:
         if len(workbook.sheetnames) < 1:
             raise DocumentNormalizationError("xlsx_no_sheets", "XLSX contains no worksheets.")
-        if len(workbook.sheetnames) > MAX_XLSX_SHEETS:
-            raise DocumentNormalizationError("xlsx_sheet_limit", "XLSX exceeds the worksheet limit.")
         parts: list[str] = []
         nonempty_cells = 0
         for worksheet in workbook.worksheets:
             max_row = int(worksheet.max_row or 0)
             max_column = int(worksheet.max_column or 0)
-            if max_row > MAX_XLSX_ROWS or max_column > MAX_XLSX_COLUMNS:
-                raise DocumentNormalizationError("xlsx_dimension_limit", "XLSX worksheet dimensions exceed the allowed range.")
-            for row in worksheet.iter_rows(max_row=min(max_row, MAX_XLSX_ROWS), max_col=min(max_column, MAX_XLSX_COLUMNS)):
+            for row in worksheet.iter_rows():
                 for cell in row:
                     value = _cell_text(cell.value)
                     if not value:
                         continue
-                    nonempty_cells += 1
-                    if nonempty_cells > MAX_XLSX_NONEMPTY_CELLS:
-                        raise DocumentNormalizationError("xlsx_cell_limit", "XLSX contains too many non-empty cells.")
                     _append_bounded(parts, f"[{worksheet.title}!{cell.coordinate}] {value}")
         text = "\n".join(parts).strip()
         if not text:

@@ -213,9 +213,12 @@ When configured, the product may expose owner-scoped:
 - Projects and project instructions;
 - bounded project files;
 - Saved Outputs;
-- signed server-owned sessions.
+- signed server-owned sessions;
+- the account's last explicitly selected AI tier.
 
 Saved Outputs are user-selected library records. They are not automatically injected into later chats or treated as hidden model memory.
+
+The last selected AI tier is a UI preference, not model authority. It is stored per signed account on the server (the browser never names the account, and the browser-persistence privacy contract keeps it out of `localStorage` / `sessionStorage`), and the server re-verifies the member grade and the administrator gate on every read and on every model request. A stored tier the account may no longer use is not applied, and a temporarily unavailable authority is never treated as a denial.
 
 Browser-supplied product identifiers never bypass server-side ownership checks.
 

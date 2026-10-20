@@ -160,6 +160,7 @@ def resolve_manual_route(
     model_id: str,
     allow_external_fallback: bool = False,
     product_tier: str = "free",
+    max_attempts: int | None = None,
 ) -> RouteDecision:
     """Resolve a manual route for a specific model ID.
 
@@ -263,6 +264,13 @@ def resolve_manual_route(
     elif not allow_external_fallback:
         reason_codes.append("external_fallback_disabled")
 
+    default_attempts = (
+        1 + len(fallback_candidates)
+        if owner_tier_pair
+        else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3))
+    )
+    effective_attempts = min(default_attempts, max_attempts) if max_attempts is not None else default_attempts
+
     return RouteDecision(
         route_mode=RouteMode.MANUAL.value,
         selected_provider=cm.provider,
@@ -278,7 +286,7 @@ def resolve_manual_route(
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
         provider_mode=runtime_config.provider_mode,
-        max_attempts=(1 + len(fallback_candidates)) if owner_tier_pair else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3)),
+        max_attempts=effective_attempts,
         credential_source=cred_source,
         platform_provider_id=plat_pid,
     )
@@ -314,6 +322,7 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
         model_id,
         allow_external_fallback=allow_external_fallback,
         product_tier=opts.get("product_tier", "free"),
+        max_attempts=opts.get("max_attempts"),
     )
 
 

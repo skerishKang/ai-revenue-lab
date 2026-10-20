@@ -846,12 +846,16 @@ html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-
   color: #53606c !important;
   font-size: 13px !important;
 }
+/* The answer meta row follows the user turn row: the same 4px row gap and the
+ * same 2px time margin, so the completion time and the first icon sit at the
+ * same distance in both turns. The sibling margin is dropped because the row
+ * gap now provides that distance. */
 html[data-theme="padiem-glass"] .answer-actions {
-  gap: 0 !important;
+  gap: 4px !important;
   margin-top: 2px !important;
 }
 html[data-theme="padiem-glass"] .answer-action + .answer-action {
-  margin-left: 4px !important;
+  margin-left: 0 !important;
 }
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
   gap: 14px !important;

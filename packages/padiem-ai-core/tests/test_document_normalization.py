@@ -356,9 +356,10 @@ def test_pdf_bad_magic_encryption_page_limit_and_scanned_only_fail_closed() -> N
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=_blank_pdf(encrypted=True))
     assert encrypted.value.code == "pdf_encrypted"
 
+    # Historical PDF page ceiling removed; blank pages still have no readable native text.
     with pytest.raises(DocumentNormalizationError) as pages:
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=_blank_pdf(pages=MAX_PDF_PAGES + 1))
-    assert pages.value.code == "pdf_page_limit"
+    assert pages.value.code == "pdf_empty_text"
 
     with pytest.raises(DocumentNormalizationError) as scanned:
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=_blank_pdf())
