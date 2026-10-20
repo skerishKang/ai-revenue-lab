@@ -27,6 +27,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import html
+import json
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any, Mapping
@@ -260,6 +261,37 @@ async def android_handoff_status(request: Request) -> Response:
     )
 
 
+async def _optional_user_code(request: Request) -> str | None:
+    """The one-time confirmation code, when a device confirms its own handoff.
+
+    The claim route already authenticates the caller with the one-time claim
+    secret. When the handoff is still awaiting confirmation, a device that
+    holds that secret may also present the confirmation code so the sign-in can
+    finish without the user typing the code into the external browser. The
+    code is verified against the stored hash exactly like the browser form, and
+    a request without a code keeps the previous pending behaviour.
+    """
+    try:
+        raw = await request.body()
+    except Exception:
+        return None
+    if not raw:
+        return None
+    try:
+        value = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError, TypeError, ValueError):
+        return None
+    if not isinstance(value, dict) or set(value) != {"user_code"}:
+        return None
+    code = value.get("user_code")
+    if not isinstance(code, str):
+        return None
+    canonical = _canonical_code(code)
+    if len(canonical) != _ANDROID_HANDOFF_CODE_LENGTH:
+        return None
+    return canonical
+
+
 async def android_handoff_claim(request: Request) -> Response:
     record, error = await _authorized_record(request)
     if error is not None or record is None:
@@ -275,6 +307,30 @@ async def android_handoff_claim(request: Request) -> Response:
         return _json_error(409, "android_handoff_claimed", "이미 사용된 로그인입니다. 앱에서 다시 시도해 주세요.")
     if record.status == HANDOFF_STATUS_CANCELLED:
         return _json_error(410, "android_handoff_expired", "로그인 시간이 만료되었습니다. 앱에서 다시 시도해 주세요.")
+    if record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION:
+        # #5080: the device that holds the one-time claim secret may confirm
+        # its own handoff, so the Android app can finish the sign-in and return
+        # to the app by itself instead of the user typing the code into the
+        # external browser. The code is still verified against the stored hash,
+        # the browser code form stays available as the fallback, and the claim
+        # secret is still required exactly as before.
+        user_code = await _optional_user_code(request)
+        if user_code is None:
+            return _json_error(409, "android_handoff_pending", "\uc0ac\uc6a9\uc758 \ud638\uc774 \uc2dc\uc9c4\uc774 \uc544\uc9c1 \uc644\ub8cc\ub418\uc9c0 \uc54a\uc5c8\uc2b5\ub2c8\ub2e4.")
+        code_hash = _hash_user_code(
+            settings, record.handoff_id, _canonical_code(user_code),
+        )
+        try:
+            confirmed = await store.confirm(
+                record.handoff_id, code_hash=code_hash, now_iso=now_iso,
+            )
+        except Exception:
+            return _json_error(503, "android_handoff_unavailable", "\ud734\ub2c8\ud3f8\uc5d0 \uc131\uadfc\uc9c0\ub85c \uacbd\ub85c\uac00 \uc544\uc9c1 \uc900\ubc30\ub418\uc9c0 \uc54a\uc5c8\uc2b5\ub2c8\ub2e4.")
+        if not confirmed:
+            return _json_error(409, "android_handoff_pending", "\uc0ac\uc6a9\uc758 \ud638\uc774 \uc2dc\uc9c4\uc774 \uc544\uc9c1 \uc644\ub8cc\ub418\uc9c0 \uc54a\uc5c8\uc2b5\ub2c8\ub2e4.")
+        refreshed = await store.get(record.handoff_id)
+        if refreshed is not None:
+            record = refreshed
     if record.status != HANDOFF_STATUS_READY:
         return _json_error(409, "android_handoff_pending", "로그인이 아직 확인되지 않았습니다.")
     claim_secret = _header_value(
