@@ -23,8 +23,8 @@ from .b66_registered_model_boundary import (
 _MODELS_PATH = "/api/pilot/models"
 _READINESS_PATH = "/api/pilot/provider-readiness"
 _OWNER_POLICY = "OWNER_REGISTERED_AND_ALLOWED"
-_MAX_REGISTRY_BODY = 131072
-_MAX_REGISTRY_ROWS = 256
+# #4379: the B14 registry body and row count are no longer capped here.
+# B14 and the platform bound them; a PADIEM ceiling only emptied B66's list.
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}\Z")
 
 
@@ -50,9 +50,16 @@ class B14RegisteredModelView(Protocol):
 
 
 def _parse_bounded_response(status: object, raw: object) -> dict[str, Any]:
+    """Parse one B14 registry or readiness response.
+
+    #4379: the response used to be refused above 128 KB and the registry above
+    256 rows, so a larger B14 registry silently emptied B66's model list. The
+    B14 response size and the row count are now bounded by the platform and by
+    B14 itself, not by a PADIEM ceiling.
+    """
     if (
         type(status) is not int or status != 200 or not isinstance(raw, bytes)
-        or len(raw) == 0 or len(raw) > _MAX_REGISTRY_BODY
+        or len(raw) == 0
     ):
         raise B66ModelRouteError("selection_unavailable")
     try:
@@ -65,11 +72,7 @@ def _parse_bounded_response(status: object, raw: object) -> dict[str, Any]:
 
 
 def _dict_rows(value: object) -> list[dict[str, Any]]:
-    if (
-        not isinstance(value, list)
-        or len(value) > _MAX_REGISTRY_ROWS
-        or any(not isinstance(row, dict) for row in value)
-    ):
+    if not isinstance(value, list) or any(not isinstance(row, dict) for row in value):
         raise B66ModelRouteError("selection_unavailable")
     return value
 

@@ -211,7 +211,17 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
 
     async def b14_handler(request: httpx.Request) -> httpx.Response:
         seen.append(json.loads(request.content))
-        return httpx.Response(200, json=completion_payload())
+        # The stream route streams SSE frames from B14. A completed JSON body on
+        # the streaming endpoint is not a valid upstream stream, so the fixture
+        # answers with the frames the route consumes.
+        return httpx.Response(
+            200,
+            headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([
+                stream_frame(completion_payload()["choices"][0]["message"]["content"]),
+                b"data: [DONE]\n\n",
+            ]),
+        )
 
     app = create_app(
         Settings(
@@ -241,7 +251,7 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
     assert len(seen) == 1
     assert seen[0]["model"] == DEFAULT_B14_MODEL_ID
     assert seen[0]["business14"]["allow_external_fallback"] is False
-    assert seen[0]["business14"]["max_attempts"] == 1
+    assert "max_attempts" not in seen[0]["business14"]
     assert "웹 근거 사용 규칙" in seen[0]["messages"][0]["content"]
 
 

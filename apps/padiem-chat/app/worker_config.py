@@ -37,6 +37,10 @@ WORKER_BINDING_NAMES = frozenset({
 })
 D1_BINDING_NAME = "PADIEM_CHAT_DB"
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
+# Deployment-owned server-to-server proof secret for the B14 platform-credential
+# execution lane. The value lives only in Cloudflare Secrets Store; the browser
+# never holds it and it is never part of a request body.
+B14_SERVICE_PROOF_SECRET_BINDING_NAME = "PADIEM_B14_SERVICE_PROOF_SECRET"
 # #4643: the Service Binding this Chat Worker uses to reach the private
 # `padiem-voice-stt` Worker. The browser never holds this binding; it posts to
 # /api/voice/transcribe and this Worker forwards. No entry exists in
@@ -129,6 +133,34 @@ def binding_value(env: Any, key: str) -> Any:
     if isinstance(env, Mapping):
         return env.get(key)
     return getattr(env, key, None)
+
+
+async def resolve_secret_binding(env: Any, name: str) -> str | None:
+    """Resolve one trusted Worker secret binding without exposing its value.
+
+    A missing, unreadable, or empty binding resolves to None so the caller
+    fails closed on its own boundary instead of crashing the Worker. The
+    resolved value is returned to the caller only; it is never logged.
+    """
+    bound = binding_value(env, name)
+    if bound is None:
+        return None
+    if isinstance(bound, str):
+        return bound or None
+    getter = getattr(bound, "get", None)
+    if not callable(getter):
+        return None
+    try:
+        pending = getter()
+        if inspect.isawaitable(pending):
+            pending = await pending
+    except Exception:
+        # Never chain or publish the binding exception: it may carry secret
+        # material, account identifiers, or internal endpoints.
+        return None
+    if isinstance(pending, str) and pending:
+        return pending
+    return None
 
 
 async def resolve_web_secrets_store_keys(env: Any) -> dict[str, str]:

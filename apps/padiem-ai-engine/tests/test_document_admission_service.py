@@ -337,14 +337,15 @@ def test_media_outside_document_allowlists_fails_closed_from_store(
     assert store.calls == []  # the store refused the write: media authority proven fail-closed
 
 
-def test_text_ceiling_is_enforced_from_core_constants() -> None:
+def test_text_above_legacy_96k_ceiling_is_admitted_within_store_budget() -> None:
     service, store, _authority = _service()
-    too_big = base64.b64encode(b"x" * (1024 * 1024)).decode("ascii")
-    response = _admit(service, _payload(media_type="text/plain", document_base64=too_big))
+    payload = b"x" * (128 * 1024)
+    encoded = base64.b64encode(payload).decode("ascii")
+    response = _admit(service, _payload(media_type="text/plain", document_base64=encoded))
 
-    assert response.status_code == 413
-    assert response.body["error"]["code"] == "document_too_large"
-    assert store.calls == []
+    assert response.status_code == 200
+    assert len(store.calls) == 1
+    assert store.calls[0]["data"] == payload
 
 
 # --- availability / scope failures ----------------------------------------------------

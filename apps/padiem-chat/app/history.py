@@ -72,6 +72,41 @@ PRODUCT_SCOPE_CHAT = "b62-chat"
 PRODUCT_SCOPE_B66 = "b66-quote"
 KNOWN_PRODUCT_SCOPES = frozenset({PRODUCT_SCOPE_CHAT, PRODUCT_SCOPE_B66})
 
+# #5226 — one statement appends a turn, and it allocates the sequence numbers
+# itself. The sequence is read inside the same write transaction that performs
+# the insert, so a concurrent append to the same conversation can never claim a
+# sequence_number another append already took, and a turn can never be half
+# written: the user row and the assistant row are the same statement, so they
+# land together or not at all. The pre-existing `UNIQUE(conversation_id,
+# sequence_number)` stays the schema authority; this is what stops two writers
+# from racing into it.
+#
+# The `next_sequence` CTE is read once for the statement, so the user row takes
+# `n` and the assistant row takes `n + 1` — adjacent, with no gap and no
+# duplicated number. `COALESCE(MAX(...), -1) + 1` keeps a first turn at 0.
+_APPEND_EXCHANGE_SQL = (
+    "WITH next_sequence AS ("
+    " SELECT COALESCE(MAX(sequence_number), -1) + 1 AS n"
+    " FROM messages WHERE conversation_id = ?"
+    ") "
+    "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) "
+    "SELECT ?, ?, n, 'user', ?, ? FROM next_sequence "
+    "UNION ALL "
+    "SELECT ?, ?, n + 1, 'assistant', ?, ? FROM next_sequence"
+)
+
+#: #5226 — the same atomic sequence rule for a single stored turn (the Claw
+#: pending user turn). One statement, one sequence, allocated under the write
+#: lock, so two pending runs on one conversation never collide.
+_APPEND_USER_MESSAGE_SQL = (
+    "WITH next_sequence AS ("
+    " SELECT COALESCE(MAX(sequence_number), -1) + 1 AS n"
+    " FROM messages WHERE conversation_id = ?"
+    ") "
+    "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) "
+    "SELECT ?, ?, n, 'user', ?, ? FROM next_sequence"
+)
+
 
 def _require_product_scope(value: object) -> str:
     """Fail closed: only a known server-owned scope may address conversations."""
@@ -944,7 +979,6 @@ class D1HistoryStore:
             if project_id is not None and await self.get_project(user_id, project_id) is None:
                 raise HistoryForbidden("project is not owned by current user")
             cid = _chat_id()
-            sequence = 0
         else:
             owned = await self._first(
                 "SELECT id, project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
@@ -958,12 +992,10 @@ class D1HistoryStore:
             stored_project = str(owned.get("project_id")) if owned.get("project_id") is not None else None
             if stored_project != project_id:
                 raise HistoryForbidden("conversation project mismatch")
-            row = await self._first("SELECT MAX(sequence_number) AS max_sequence FROM messages WHERE conversation_id=?", cid)
-            raw_seq = None if row is None else row.get("max_sequence")
-            sequence = int(raw_seq) + 1 if raw_seq is not None else 0
 
         user_msg_id, answer_msg_id = _message_id(), _message_id()
         r2_keys: list[str] = []
+        persisted = False
         try:
             for msg_id, raw in ((user_msg_id, user_text.strip()), (answer_msg_id, assistant_text.strip())):
                 key = await self._put_full_message(cid, msg_id, raw)
@@ -976,20 +1008,40 @@ class D1HistoryStore:
                     "INSERT INTO conversations (id, user_id, project_id, title, created_at, updated_at, product_scope) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     cid, user_id, project_id, _title_from_user_text(user_content), now, now, scope,
                 )
+            # #5226: the whole exchange is one statement, so the user row and the
+            # assistant row land together and the two sequence numbers are
+            # allocated inside the same write transaction. Two concurrent
+            # appends to one conversation therefore cannot collide on
+            # `UNIQUE(conversation_id, sequence_number)` and cannot leave a
+            # half-written turn behind.
             await self._run(
-                "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) VALUES (?, ?, ?, 'user', ?, ?)",
-                user_msg_id, cid, sequence, user_content, now,
+                _APPEND_EXCHANGE_SQL,
+                cid,
+                user_msg_id, cid, user_content, now,
+                answer_msg_id, cid, assistant_content, now,
             )
-            await self._run(
-                "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) VALUES (?, ?, ?, 'assistant', ?, ?)",
-                answer_msg_id, cid, sequence + 1, assistant_content, now,
-            )
+            persisted = True
+            await self._run("UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?", now, cid, user_id)
+            if project_id is not None:
+                await self._run("UPDATE projects SET updated_at=? WHERE id=? AND user_id=?", now, project_id, user_id)
         except Exception:
-            await self._delete_full_keys(r2_keys)
+            # The R2 original is removed only when its D1 row never landed. A row
+            # that DID land keeps its R2 original, so a stored message never
+            # degrades into a preview-only row with a missing full text, and a
+            # failed append leaves no orphan R2 object behind.
+            if not persisted:
+                await self._delete_full_keys(r2_keys)
+                if creating:
+                    # A first turn that never landed must not leave an empty
+                    # conversation behind.
+                    try:
+                        await self._run(
+                            "DELETE FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+                            cid, user_id, scope,
+                        )
+                    except Exception:
+                        pass
             raise
-        await self._run("UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?", now, cid, user_id)
-        if project_id is not None:
-            await self._run("UPDATE projects SET updated_at=? WHERE id=? AND user_id=?", now, project_id, user_id)
         return cid
 
     async def record_txt_pending_run(
@@ -1008,7 +1060,6 @@ class D1HistoryStore:
         project_id = None
         if creating:
             cid = _chat_id()
-            sequence = 0
         else:
             owned = await self._first(
                 "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
@@ -1017,15 +1068,10 @@ class D1HistoryStore:
             if not owned:
                 raise HistoryForbidden("conversation is not owned by current user")
             project_id = owned.get("project_id")
-            found = await self._first(
-                "SELECT MAX(sequence_number) AS max_sequence FROM messages WHERE conversation_id=?",
-                cid,
-            )
-            number = found.get("max_sequence") if isinstance(found, dict) else None
-            sequence = int(number) + 1 if number is not None else 0
         now = _now_iso()
         msg_id = _message_id()
         key = await self._put_full_message(cid, msg_id, user_text.strip())
+        persisted = False
         try:
             if creating:
                 await self._run(
@@ -1033,11 +1079,14 @@ class D1HistoryStore:
                     "VALUES (?,?,NULL,?,?,?,?)",
                     cid, user_id, _title_from_user_text(content), now, now, PRODUCT_SCOPE_CHAT,
                 )
+            # #5226: the same atomic sequence rule as a Chat exchange — the
+            # turn number is allocated inside the write that stores the turn.
             await self._run(
-                "INSERT INTO messages (id,conversation_id,sequence_number,role,content,created_at) "
-                "VALUES (?,?,?,'user',?,?)",
-                msg_id, cid, sequence, content, now,
+                _APPEND_USER_MESSAGE_SQL,
+                cid,
+                msg_id, cid, content, now,
             )
+            persisted = True
             await self.record_claw_run(
                 user_id=user_id, run_id=run_id, channel="web",
                 action="txt_read", title=("Claw: " + content)[:MAX_HISTORY_TITLE_CHARS],
@@ -1048,7 +1097,8 @@ class D1HistoryStore:
                 now, cid, user_id,
             )
         except Exception:
-            if key is not None:
+            # Only a turn that never landed may lose its R2 original.
+            if not persisted and key is not None:
                 await self._delete_full_keys([key])
             raise
         return cid
@@ -1109,7 +1159,6 @@ class D1HistoryStore:
         project_id = None
         if creating:
             cid = _chat_id()
-            sequence = 0
         else:
             owned = await self._first(
                 "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
@@ -1118,15 +1167,10 @@ class D1HistoryStore:
             if not owned:
                 raise HistoryForbidden("conversation is not owned by current user")
             project_id = owned.get("project_id")
-            found = await self._first(
-                "SELECT MAX(sequence_number) AS max_sequence FROM messages WHERE conversation_id=?",
-                cid,
-            )
-            number = found.get("max_sequence") if isinstance(found, dict) else None
-            sequence = int(number) + 1 if number is not None else 0
         now = _now_iso()
         msg_id = _message_id()
         key = await self._put_full_message(cid, msg_id, user_text.strip())
+        persisted = False
         try:
             if creating:
                 await self._run(
@@ -1134,11 +1178,13 @@ class D1HistoryStore:
                     "VALUES (?,?,NULL,?,?,?,?)",
                     cid, user_id, _title_from_user_text(content), now, now, PRODUCT_SCOPE_CHAT,
                 )
+            # #5226: the same atomic sequence rule as a Chat exchange.
             await self._run(
-                "INSERT INTO messages (id,conversation_id,sequence_number,role,content,created_at) "
-                "VALUES (?,?,?,'user',?,?)",
-                msg_id, cid, sequence, content, now,
+                _APPEND_USER_MESSAGE_SQL,
+                cid,
+                msg_id, cid, content, now,
             )
+            persisted = True
             await self.record_claw_run(
                 user_id=user_id, run_id=run_id, channel="web",
                 action=action, title=(title_prefix + content)[:MAX_HISTORY_TITLE_CHARS],
@@ -1149,7 +1195,8 @@ class D1HistoryStore:
                 now, cid, user_id,
             )
         except Exception:
-            if key is not None:
+            # Only a turn that never landed may lose its R2 original.
+            if not persisted and key is not None:
                 await self._delete_full_keys([key])
             raise
         return cid
