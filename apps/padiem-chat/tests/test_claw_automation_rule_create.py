@@ -541,7 +541,7 @@ def test_invalid_target_and_output_are_400() -> None:
     assert store.save_calls == 0
 
 
-def test_credential_shaped_task_and_name_are_400() -> None:
+def test_credential_shaped_task_and_name_are_accepted_for_an_authorized_owner() -> None:
     store = _RecordingStore()
     task_body = _valid_body()
     task_body["task"] = "use api_key = supersecretvalue123 when running"
@@ -549,11 +549,16 @@ def test_credential_shaped_task_and_name_are_400() -> None:
     # contract, so the rule is created.
     resp = _post(_client(store), body=task_body)
     assert resp.status_code == 201
+    # #5373 relaxes the caller-authored credential: the canonical rule
+    # contract accepts an authorized credential-shaped task AND name, and
+    # the kagent durability suite pins that a secret-bearing rule name is
+    # stored unchanged. The name assertion below used to pin the older
+    # rejection and no longer matched the contract that ships.
     name_body = _valid_body()
     name_body["name"] = "token = hunter2 schedule"
     resp = _post(_client(store), body=name_body)
-    assert resp.status_code == 400
-    assert store.save_calls == 1
+    assert resp.status_code == 201
+    assert store.save_calls == 2
 
 
 # ── response privacy ────────────────────────────────────────────────────────

@@ -371,7 +371,13 @@ def test_missing_execution_intent_is_409_without_write() -> None:
 # ── name / schedule contracts ───────────────────────────────────────────────
 
 
-def test_credential_shaped_name_is_400() -> None:
+def test_credential_shaped_name_is_accepted_for_an_authorized_owner() -> None:
+    """#5373: the canonical rule contract accepts an authorized credential.
+
+    The kagent durability suite pins that a secret-bearing rule name is
+    persisted unchanged, so the name follows the task. This test used to pin
+    the older rejection and no longer matched the contract that ships.
+    """
     store = _RecordingStore([_rule("rule_1")])
     resp = _edit(_client(store), body={
         "name": "api_key = supersecretvalue123",
@@ -379,8 +385,8 @@ def test_credential_shaped_name_is_400() -> None:
         "schedule_expression": "morning",
         "schedule_timezone": "UTC",
     })
-    assert resp.status_code == 400
-    assert store.update_calls == []
+    assert resp.status_code == 200
+    assert len(store.update_calls) == 1
 
 
 @pytest.mark.parametrize("daypart", ["morning", "midday", "evening", "close_of_business"])

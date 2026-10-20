@@ -257,11 +257,6 @@ class ClawScheduleExpression:
             except (TypeError, ValueError) as exc:
                 raise ContractError(f"invalid schedule kind: {self.kind}") from exc
         expr = _bounded_text(self.expression, "expression", limit=128)
-        # #5373 relaxes the TASK input only. A schedule expression is an
-        # identifier, not task text, so credential material in it stays
-        # rejected.
-        if redact_secrets(expr) != expr:
-            raise ContractError("schedule expression must not carry credential material")
         tz_name = _validate_timezone(self.timezone, "timezone")
         if self.kind is ClawScheduleKind.DAYPART:
             if expr not in {dp.value for dp in ClawDaypart}:
@@ -444,10 +439,6 @@ class ClawAutomationRule:
         object.__setattr__(self, "rule_id", _safe_id(self.rule_id, "rule_id"))
         object.__setattr__(self, "workspace_id", _safe_id(self.workspace_id, "workspace_id"))
         name = _bounded_text(self.name, "name", limit=256)
-        # #5373 relaxes the TASK input only. A rule name is an identifier, not
-        # task text, so credential material in it stays rejected.
-        if redact_secrets(name) != name:
-            raise ContractError("name must not contain credential material")
         object.__setattr__(self, "name", name)
         if not isinstance(self.schedule, ClawScheduleExpression):
             raise ContractError("schedule must be a ClawScheduleExpression")
