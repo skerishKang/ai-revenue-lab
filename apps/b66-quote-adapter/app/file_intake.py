@@ -15,7 +15,6 @@ from pathlib import PurePath
 from typing import Any, Callable
 
 from padiem_ai_core.document_normalization import (
-    MAX_BINARY_DOCUMENT_BYTES,
     NormalizedDocument,
     validate_document_identity,
 )
@@ -31,6 +30,8 @@ MODEL_DEPENDENCY = False
 PROVIDER_IDS_IN_ADAPTER = 0
 
 _REQUIRED_FIELDS = frozenset({"name", "media_type", "base64"})
+# #4379: an intake payload carries no PADIEM byte total. This symbol is
+# retained for import compatibility.
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
 _IMAGE_MEDIA: dict[str, frozenset[str]] = {
     "image/jpeg": frozenset({".jpg", ".jpeg"}),
@@ -90,23 +91,17 @@ def _safe_name(value: Any) -> str:
 
 def _decode_payload(
     value: Any,
-    *,
-    max_bytes: int,
-    too_large_code: str,
 ) -> bytes:
+    # #4379: an intake payload carries no PADIEM byte total. The base64 shape,
+    # the non-empty rule and the media-type magic check stay.
     if not isinstance(value, str) or not value:
         raise B66FileIntakeError("invalid_base64")
-    max_encoded = ((max_bytes + 2) // 3) * 4 + 4
-    if len(value) > max_encoded:
-        raise B66FileIntakeError(too_large_code)
     try:
         decoded = base64.b64decode(value, validate=True)
     except (binascii.Error, ValueError) as exc:
         raise B66FileIntakeError("invalid_base64") from exc
     if not decoded:
         raise B66FileIntakeError("empty_file")
-    if len(decoded) > max_bytes:
-        raise B66FileIntakeError(too_large_code)
     return decoded
 
 
@@ -187,19 +182,7 @@ def handle_intake_payload(
         name = _safe_name(payload.get("name"))
         media_type = payload.get("media_type")
         category = _category(name, media_type)
-        raw = _decode_payload(
-            payload.get("base64"),
-            max_bytes=(
-                MAX_IMAGE_BYTES
-                if category == "image"
-                else MAX_BINARY_DOCUMENT_BYTES
-            ),
-            too_large_code=(
-                "image_too_large"
-                if category == "image"
-                else "document_too_large"
-            ),
-        )
+        raw = _decode_payload(payload.get("base64"))
 
         if category == "image":
             if not _image_magic_matches(str(media_type), raw):

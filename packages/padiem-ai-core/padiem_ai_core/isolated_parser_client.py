@@ -133,11 +133,7 @@ def _bounded_binary_payload(payload: Any) -> bytes:
     binary = bytes(payload)
     if not binary:
         raise DocumentNormalizationError("empty_document", "Document payload is empty.")
-    if len(binary) > MAX_BINARY_DOCUMENT_BYTES:
-        raise DocumentNormalizationError(
-            "binary_too_large",
-            "Binary document exceeds the byte limit.",
-        )
+    # #4379: a binary document carries no PADIEM byte total.
     return binary
 
 
@@ -149,11 +145,8 @@ def _encode_request(*, name: str, media_type: str, payload: bytes) -> bytes:
         "payload_b64": base64.b64encode(payload).decode("ascii"),
     }
     raw = json.dumps(envelope, separators=(",", ":"), sort_keys=True).encode("utf-8")
-    if len(raw) > ISOLATED_PARSER_MAX_REQUEST_BYTES:
-        raise DocumentNormalizationError(
-            "isolated_parser_request_unbounded",
-            "Isolated parser request exceeds the size ceiling.",
-        )
+    # #4379: the parser request carries no PADIEM byte total. The parser
+    # process applies its own contract to what it accepts.
     return raw
 
 

@@ -88,7 +88,9 @@ class ReferenceHostJourneyTests(unittest.TestCase):
         normal = self.paths["selections_normal"]
         self.assertEqual(normal["status"], "ready")
         png = [s for s in normal["selections"] if s["name"] == "photo.png"][0]
-        self.assertIn("OVER_SHARED_IMAGE_BOUND", png["hints"])
+        # #4379: no shared platform image byte bound is declared, so the
+        # selection is not labelled as over one.
+        self.assertNotIn("OVER_SHARED_IMAGE_BOUND", png["hints"])
         degraded = self.paths["selections_degraded"]
         self.assertEqual(degraded["status"], "degraded")
         self.assertEqual(degraded["dropped_count"], 2)

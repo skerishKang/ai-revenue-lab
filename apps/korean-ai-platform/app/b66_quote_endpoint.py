@@ -30,6 +30,10 @@ router = Router()
 
 EXTRACT_IMAGE_PATH = "/v1/quote/extract-image"
 EXTRACT_DOCUMENT_PATH = "/v1/quote/extract-document"
+# #4379: the endpoint declares no PADIEM byte total for an image or for the
+# request that carries it. The media type, the magic bytes, the JSON shape
+# and the required field set stay. These symbols are retained for import
+# compatibility.
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
 MAX_REQUEST_BYTES = 6 * 1024 * 1024
 _REQUIRED_FIELDS = frozenset({"name", "media_type", "base64"})
@@ -60,15 +64,10 @@ async def _bounded_json(request: Request) -> dict[str, Any] | None:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         return None
-    raw_length = request.headers.get("content-length")
-    if raw_length:
-        try:
-            if int(raw_length) > MAX_REQUEST_BYTES:
-                raise ValueError
-        except ValueError:
-            return None
+    # #4379: the request body carries no PADIEM byte total. The content type
+    # and the JSON shape are still required.
     body = await request.body()
-    if not body or len(body) > MAX_REQUEST_BYTES:
+    if not body:
         return None
     try:
         payload = json.loads(body)
@@ -80,17 +79,12 @@ async def _bounded_json(request: Request) -> dict[str, Any] | None:
 def _decode_image(value: Any) -> bytes:
     if not isinstance(value, str) or not value:
         raise ValueError("invalid_base64")
-    max_encoded = ((MAX_IMAGE_BYTES + 2) // 3) * 4 + 4
-    if len(value) > max_encoded:
-        raise ValueError("image_too_large")
     try:
         raw = base64.b64decode(value, validate=True)
     except (binascii.Error, ValueError) as exc:
         raise ValueError("invalid_base64") from exc
     if not raw:
         raise ValueError("empty_file")
-    if len(raw) > MAX_IMAGE_BYTES:
-        raise ValueError("image_too_large")
     return raw
 
 

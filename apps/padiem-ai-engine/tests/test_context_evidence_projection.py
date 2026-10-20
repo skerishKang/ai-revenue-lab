@@ -94,11 +94,17 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # provider or Production authority is introduced, and no declared-metadata
 # bound, decision or error code changes. Only the two pins for the changed files
 # move; the other two are unchanged.
+# Re-pinned for #4379: the PADIEM self-imposed binary document byte total
+# was removed, so the two pins for the changed files move. No new parser,
+# archive walk, process, network, filesystem, OCR, provider or Production
+# authority is introduced. The OOXML entry count, the per-entry and the total
+# uncompressed bounds stay: they are the decompression-bomb protection and are
+# not a caller's data total. The other two pins are unchanged.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "b5f806d5cfdff3a07d3bb5ada1a83fa862a5db290f1e0a882689fffb6f30258f",
+    CORE_PACKAGE / "document_normalization.py": "2999a3f95192d9e7a0e8513592df825b1dd99ec8dbb22328e74bc84a155d8d5a",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
-    CORE_TESTS / "test_document_normalization.py": "2faa1a4dda08c719335f3a78d050df400ae9368fbe64d1fc7a4bd893fcf705da",
+    CORE_TESTS / "test_document_normalization.py": "48e92deeaefd71012a317b8334f2aa3a8b1f8722f543d23f82845d640eca4d79",
 }
 
 REF = "doc_s3doc0000000000b"
