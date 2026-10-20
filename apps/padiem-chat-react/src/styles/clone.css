@@ -1,0 +1,190 @@
+/*
+ * #5298 — clone-only layer.
+ *
+ * Everything above this file is the operational design system, reused as-is.
+ * This layer only carries what the React shell needs on top of it: the React
+ * mount point, the fixture-mode notice, and the first-screen layout reservation
+ * that keeps the clone from jumping while React hydrates.
+ */
+
+#root {
+  min-height: 100vh;
+}
+
+/*
+ * The operational app paints its sidebar and composer from server-rendered
+ * markup. The clone renders them from React, so the same amount of space has
+ * to be reserved before the first paint. Without this the sidebar rows and the
+ * fixed composer appear one frame late, which is the same class of defect that
+ * #5297 tracks for the operational product.
+ */
+.clone-app-shell {
+  min-height: 100vh;
+}
+
+/* The fixture notice makes it explicit that no live answer is produced yet. */
+.clone-fixture-note {
+  margin: 6px 8px 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/*
+ * Anchored dropdown.
+ *
+ * The operational stylesheets give the top bar and the conversation panel the
+ * same stacking level, so a dropdown that stays inside the top bar cannot be
+ * raised above the conversation. The dropdown is rendered at the document root
+ * and positioned from its anchor, which leaves the operational cascade alone.
+ */
+.clone-popover {
+  position: fixed;
+  z-index: 9999;
+  min-width: 200px;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 2px;
+}
+
+.clone-popover--model {
+  min-width: 260px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.clone-popover > [role="group"] {
+  display: grid;
+  gap: 2px;
+}
+
+.clone-model-option {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.clone-model-option:hover {
+  background: var(--accent-soft);
+}
+
+.clone-model-option[aria-selected="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.clone-model-option strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.clone-model-option small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.clone-theme-option {
+  min-height: 40px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+}
+
+.clone-theme-option:hover {
+  background: var(--accent-soft);
+}
+
+.clone-theme-option[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
+/* Topbar right cluster: theme + account controls. */
+.clone-topbar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* The clone badge that states the answers come from a local fixture. */
+.clone-fixture-badge {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .78);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+html[data-theme="dark"] .clone-fixture-badge,
+html[data-theme="cinematic"] .clone-fixture-badge {
+  background: rgba(255, 255, 255, .08);
+  color: inherit;
+}
+
+.clone-topbar-button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .78);
+  color: #50515a;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+html[data-theme="dark"] .clone-topbar-button,
+html[data-theme="cinematic"] .clone-topbar-button {
+  background: rgba(255, 255, 255, .08);
+  color: inherit;
+}
+
+.clone-topbar-anchor {
+  position: relative;
+}
+
+/* Sidebar conversation search result list. */
+.clone-search-results {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  margin: 4px 10px 8px;
+}
+
+@media (max-width: 620px) {
+  .clone-topbar-button {
+    min-height: 38px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
