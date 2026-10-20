@@ -2376,15 +2376,13 @@
     setNote(uiT("answer-cancelled-note"), "error");
   }
 
-  // #4317: product-capabilities.js is loaded AFTER app.js. Initialise the
-  // browser's ordinary Chat tier to the universally available signed-in Free
-  // lane once all scripts are ready; preserve an explicit tier choice afterwards.
-  // This updates the visible mode selector but never sends a model request.
-  window.addEventListener("load", () => {
-    if (window.PadiemTierSelection?.get?.() === "plus") {
-      window.PadiemTierSelection.set("free");
-    }
-  }, { once: true });
+  // #4317: product-capabilities.js is loaded AFTER app.js and owns the tier
+  // state. The universally available signed-in Free lane stays the default for
+  // an account that never chose a tier.
+  // #5222: an account that DID choose a tier keeps that choice across a
+  // reload, so this page must not reset the selection to Free behind the
+  // account's back. The restored value is always re-validated by the server
+  // (member grade + administrator gate) before it is used.
 
   function selectedProductTier() {
     // Both Chat and the shared Claw first-use composer honor the visible
@@ -2424,6 +2422,10 @@
     activeRequestArticle = article;
     renderTyping(article);
     try {
+      // #5222: wait for the account's tier restore to settle before the tier
+      // is read, so a request never leaves with a tier that was not verified
+      // for this account yet.
+      await window.PadiemTierSelection?.ready?.();
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
       // #4745: retain the exact user-turn claim for a manual retry. A new
       // submitPrompt receives a new contextSnapshot, so a separate identical
