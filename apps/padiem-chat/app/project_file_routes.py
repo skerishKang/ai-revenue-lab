@@ -8,7 +8,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response, StreamingResponse
 
 from .auth_routes import auth_ready, current_user_id
-from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body, open_bounded_spooled_request
 from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item, _translate_binary_error
 from padiem_ai_core.document_normalization import DocumentNormalizationError, MAX_BINARY_DOCUMENT_BYTES
 from padiem_ai_core.document_parser_boundary import parse_binary_document_via_authority
@@ -189,10 +189,15 @@ async def project_files_collection(request: Request) -> JSONResponse:
 
     is_binary_upload = request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream"
     try:
-        body = await read_bounded_request_body(
-            request,
-            max_bytes=MAX_BINARY_PROJECT_FILE_BASE64_BYTES if not is_binary_upload else MAX_BINARY_DOCUMENT_BYTES,
-        )
+        if is_binary_upload:
+            async with open_bounded_spooled_request(request, max_bytes=MAX_BINARY_DOCUMENT_BYTES) as spool:
+                # Canonical parser currently requires bytes; spool reception avoids
+                # duplicate expanding bytearray allocations until that contract changes.
+                body = spool.read()
+        else:
+            body = await read_bounded_request_body(
+                request, max_bytes=MAX_BINARY_PROJECT_FILE_BASE64_BYTES,
+            )
     except RequestBodyTooLarge:
         return JSONResponse({"error": {"code": "invalid_document", "message": "문서 요청이 너무 큽니다."}}, status_code=413)
     try:
