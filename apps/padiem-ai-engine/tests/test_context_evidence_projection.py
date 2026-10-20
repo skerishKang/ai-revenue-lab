@@ -95,10 +95,10 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # bound, decision or error code changes. Only the two pins for the changed files
 # move; the other two are unchanged.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "1bfaea2fb294d66f2307ee93d2299a05dc17d7e74fc9bcb93b2c7e9253d73978",
+    CORE_PACKAGE / "document_normalization.py": "e62edfb84285e41e34fb48f25db94c5d3f4d1b9d642afacaad6dc107a1791bc1",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
-    CORE_TESTS / "test_document_normalization.py": "c1de17a7584cfb011e6b9f9351a7bf9c0debbe00fc77e603661f6e63fc7d0cd2",
+    CORE_TESTS / "test_document_normalization.py": "2faa1a4dda08c719335f3a78d050df400ae9368fbe64d1fc7a4bd893fcf705da",
 }
 
 REF = "doc_s3doc0000000000b"
