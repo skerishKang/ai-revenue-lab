@@ -122,6 +122,31 @@
   }
 
   /**
+   * The server writes the Live frames as binary JSON. Ask the socket for
+   * ArrayBuffers and decode the UTF-8 payload before parsing; a text frame
+   * still parses directly. An undecodable frame is dropped, never thrown.
+   */
+  function decodeLiveFrame(win, data) {
+    if (typeof data === "string") return data;
+    if (!data) return "";
+    const scope = win || globalThis;
+    const AB = typeof scope.ArrayBuffer === "function" ? scope.ArrayBuffer : globalThis.ArrayBuffer;
+    const View = typeof scope.Uint8Array === "function" ? scope.Uint8Array : globalThis.Uint8Array;
+    const Decoder = typeof scope.TextDecoder === "function" ? scope.TextDecoder : globalThis.TextDecoder;
+    try {
+      if (typeof AB === "function" && data instanceof AB) {
+        return new Decoder("utf-8").decode(new View(data));
+      }
+      if (AB && typeof AB.isView === "function" && AB.isView(data)) {
+        return new Decoder("utf-8").decode(data);
+      }
+    } catch (e) {
+      return "";
+    }
+    return "";
+  }
+
+  /**
    * One Live WebSocket, shaped like the SDK session the original drives:
    * `sendRealtimeInput(message)` and `close()`.
    */
@@ -132,6 +157,9 @@
     let socket;
     try {
       socket = new Ctor(options.url);
+      /* The server writes every frame as binary JSON; without this the
+       * socket hands back Blobs and every message is dropped as unparsable. */
+      socket.binaryType = "arraybuffer";
     } catch (e) {
       return null;
     }
@@ -140,7 +168,8 @@
     socket.onmessage = function (event) {
       let payload = null;
       try {
-        payload = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        const text = decodeLiveFrame(win, event.data);
+        payload = text ? JSON.parse(text) : event.data;
       } catch (e) {
         return;
       }
@@ -477,7 +506,11 @@
         return fetchImpl(tokenPathFor(doc), {
           method: "POST",
           credentials: "same-origin",
-          headers: { Accept: "application/json" },
+          /* The route is a JSON route: without the media type it answers one
+           * bounded 415 and the run falls back to the chunked provider for no
+           * reason. */
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: "{}",
         }).then(function (response) {
           if (!response || !response.ok) throw new Error("live-token-unavailable");
           return response.json();
