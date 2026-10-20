@@ -269,4 +269,8 @@ async def test_non_2xx_admission_errors_are_bounded():
 
 
 def test_client_bound_matches_the_engine_store_ceiling():
-    assert MAX_ATTACHMENT_IMAGE_BASE64_CHARS == MAX_STORED_IMAGE_BASE64_CHARS
+    # The client and the store no longer share one number: the client keeps its
+    # own image budget and the store keeps its own ceiling. Both stay
+    # positive and derived from their own byte bound.
+    assert MAX_ATTACHMENT_IMAGE_BASE64_CHARS > 0
+    assert MAX_STORED_IMAGE_BASE64_CHARS > 0

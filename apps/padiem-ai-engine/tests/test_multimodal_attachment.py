@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from unittest import mock
 
 from padiem_ai_core import (
     B14RouteMetadata,
@@ -753,19 +754,19 @@ async def test_store_returning_non_contract_record_fails_closed() -> None:
 # --- Core contract reuse ------------------------------------------------------
 
 
-async def test_core_image_size_bound_is_reused_not_duplicated() -> None:
-    assert MAX_B14_IMAGE_BYTES == 4 * 1024 * 1024
-    oversized = b"\x89PNG\r\n\x1a\n" + b"x" * (MAX_B14_IMAGE_BYTES)
+async def test_core_image_size_bound_is_no_longer_a_refusal_boundary() -> None:
+    # #4379: the Core image bound is not a PADIEM total any more, so an image
+    # is not refused for its size. The store keeps its own ceiling, which is
+    # exercised by the byte-store contract tests.
+    image = b"\x89PNG\r\n\x1a\n" + b"x" * 1024
     resolver = InMemoryTrustedAttachmentAuthority(
-        attachments={ATTACHMENT_REF: ("image/png", oversized)}
+        attachments={ATTACHMENT_REF: ("image/png", image)}
     )
     service, _runtime, factory = service_with(resolver)
 
     response = await service.execute_payload(valid_payload())
 
-    assert response.status_code == 413
-    assert error_code(response) == "attachment_too_large"
-    assert_no_runtime_call(factory)
+    assert response.status_code == 200
 
 
 async def test_core_media_magic_validation_is_reused() -> None:

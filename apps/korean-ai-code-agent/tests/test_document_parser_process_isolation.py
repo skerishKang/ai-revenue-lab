@@ -677,12 +677,15 @@ class BoundedChildResultTests(unittest.TestCase):
         self.assertEqual(result.outcome, isolation.ParserOutcome.FAILED)
 
     def test_oversized_input_is_refused_without_spawning(self) -> None:
-        oversized = b"%PDF-" + b"\x00" * (2 * 1024 * 1024)
-        spy = _SpawnSpy()
-        with mock.patch.object(isolation, "_spawn_parser_child", spy):
-            result = isolation.extract_binary_document_isolated(
-                name="plan.pdf", media_type=PDF_MEDIA, payload=oversized
-            )
+        # The refusal is driven by the current input bound, so the test does
+        # not build a multi-gigabyte payload.
+        oversized = b"%PDF-" + b"\x00" * 1024
+        with mock.patch.object(isolation, "MAX_BINARY_DOCUMENT_BYTES", 16):
+            spy = _SpawnSpy()
+            with mock.patch.object(isolation, "_spawn_parser_child", spy):
+                result = isolation.extract_binary_document_isolated(
+                    name="plan.pdf", media_type=PDF_MEDIA, payload=oversized
+                )
         self.assertEqual(spy.calls, 0)
         self.assertEqual(result.outcome, isolation.ParserOutcome.FAILED)
         self.assertEqual(result.reason_code, contract.PARSER_INPUT_REASON_CODE)
