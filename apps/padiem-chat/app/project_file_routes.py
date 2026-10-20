@@ -5,7 +5,7 @@ import inspect
 from urllib.parse import unquote
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
+from starlette.responses import JSONResponse, Response, StreamingResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -260,17 +260,40 @@ async def project_file_original(request: Request) -> Response:
         obj = await _r2_call(bucket, "get", _project_original_object_key(uid, pid, fid))
         if obj is None:
             return _not_found()
-        array_buffer = getattr(obj, "arrayBuffer", None)
-        if callable(array_buffer):
-            payload = array_buffer()
-            if inspect.isawaitable(payload):
-                payload = await payload
-            as_bytes = getattr(payload, "to_bytes", None)
-            payload = as_bytes() if callable(as_bytes) else bytes(payload)
-        else:
-            payload = bytes(getattr(obj, "body", obj))
         media = "application/pdf" if record.media_type == "extracted/pdf" else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        return Response(bytes(payload), media_type=media, headers={
+        body = getattr(obj, "body", None)
+
+        async def original_chunks():
+            # Prefer R2's native streaming body, never concatenate to one payload.
+            if body is not None and hasattr(body, "__aiter__"):
+                async for chunk in body:
+                    yield bytes(chunk)
+            elif body is not None and hasattr(body, "getReader"):
+                reader = body.getReader()
+                try:
+                    while True:
+                        item = reader.read()
+                        if inspect.isawaitable(item):
+                            item = await item
+                        if item.get("done"):
+                            break
+                        yield bytes(item["value"])
+                finally:
+                    release = getattr(reader, "releaseLock", None)
+                    if callable(release):
+                        release()
+            else:
+                array_buffer = getattr(obj, "arrayBuffer", None)
+                if callable(array_buffer):
+                    payload = array_buffer()
+                    if inspect.isawaitable(payload):
+                        payload = await payload
+                    as_bytes = getattr(payload, "to_bytes", None)
+                    yield as_bytes() if callable(as_bytes) else bytes(payload)
+                else:
+                    yield bytes(body if body is not None else obj)
+
+        return StreamingResponse(original_chunks(), media_type=media, headers={
             "Cache-Control": "private, no-store",
             "X-Content-Type-Options": "nosniff",
         })
