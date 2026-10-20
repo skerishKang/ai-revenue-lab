@@ -273,13 +273,13 @@ def pc_query_agent_definition(agent_id: str) -> BoundedAgentDefinition:
         output_contract_ref="output:text@1",
         allowed_tool_ids=(PC_DRIVES_CANONICAL_TOOL_ID, PC_LIST_FILES_CANONICAL_TOOL_ID,
                           PC_READ_FILE_CANONICAL_TOOL_ID),
-        execution_budget=AgentExecutionBudget(max_steps=4, max_tool_calls=2))
+        execution_budget=AgentExecutionBudget())
 
 
 def pc_query_agent_policy() -> TrustedAgentRuntimePolicy:
     return TrustedAgentRuntimePolicy(context_policy_ref="context:default", model_policy_ref="model:auto",
-        output_contract_ref="output:text@1", task_type="general", optimize_for="balanced", max_tokens=1024,
-        max_steps_cap=4, context_policy={}, model_policy={}, output_contract={},
+        output_contract_ref="output:text@1", task_type="general", optimize_for="balanced", max_tokens=None,
+        max_steps_cap=None, context_policy={}, model_policy={}, output_contract={},
         tool_bindings=(
             ToolRuntimeBinding(canonical_tool_id=PC_DRIVES_CANONICAL_TOOL_ID, runtime_tool_id=PC_DRIVES_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_LIST_FILES_CANONICAL_TOOL_ID, runtime_tool_id=PC_LIST_FILES_TOOL_ID),
@@ -369,8 +369,11 @@ class StructuredPCQueryStepDriver:
         self._static_arguments = dict(static_arguments or {})
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
+        # #4379: the driver resolves the results it needs through their
+        # authorized references instead of receiving every payload up front.
+        resolved = await context.resolve_tool_results()
         observations = [{"tool_id": result.tool_id, "event": result.event.to_public_dict(),
-                        "output": result.output_copy()} for result in context.tool_results]
+                        "output": result.output_copy()} for result in resolved]
         decision = await self._select_step(context=context, compiled_profile=compiled_profile,
                                            observations=tuple(observations))
         if not isinstance(decision, Mapping):

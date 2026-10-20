@@ -58,10 +58,14 @@ class ConnectorPlatformTests(unittest.TestCase):
         self.assertFalse(result.is_error)
         self.assertFalse(result.truncated)
 
-    def test_bounded_result_truncates_visibly(self):
+    def test_bounded_result_keeps_a_long_result_intact(self):
+        # #4379: a connector result is no longer cut at 20,000 characters. The
+        # provider call had already been paid for, so the result must arrive
+        # exactly as the connector produced it.
         result = bounded_connector_result("x" * 25_000)
-        self.assertTrue(result.truncated)
-        self.assertIn("[truncated:", result.text)
+        self.assertFalse(result.truncated)
+        self.assertEqual(result.text, "x" * 25_000)
+        self.assertNotIn("[truncated:", result.text)
 
     def test_skill_declaration_never_grants_tool(self):
         tool = ConnectorTool("search_files", "search", {"type": "object"})

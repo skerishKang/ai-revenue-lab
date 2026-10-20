@@ -11,7 +11,10 @@ _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _IDEMPOTENCY_KEY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$")
 
 MIN_TIMEOUT_SECONDS = 1.0
-MAX_TIMEOUT_SECONDS = 3600.0  # allow long-running agent work; cancellations remain active
+# #4379: the declared execution timeout has no PADIEM ceiling any more. A
+# long-running agent job is bounded by the platform's own request lifetime and
+# by the caller cancelling it, not by a fixed one-hour wall.
+MAX_TIMEOUT_SECONDS = 3600.0  # retained for import compatibility; not enforced
 
 
 class IdempotencyConflictError(RuntimeError):
@@ -55,9 +58,9 @@ def _normalize_timeout(value: float) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValueError("timeout_seconds must be numeric")
     timeout = float(value)
-    if timeout < MIN_TIMEOUT_SECONDS or timeout > MAX_TIMEOUT_SECONDS:
+    if timeout < MIN_TIMEOUT_SECONDS:
         raise ValueError(
-            f"timeout_seconds must be between {MIN_TIMEOUT_SECONDS:g} and {MAX_TIMEOUT_SECONDS:g}"
+            f"timeout_seconds must be at least {MIN_TIMEOUT_SECONDS:g}"
         )
     return timeout
 

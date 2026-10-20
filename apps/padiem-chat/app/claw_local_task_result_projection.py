@@ -36,7 +36,8 @@ PROJECTABLE_STATES = frozenset({"acknowledged", "expired"})
 _ACKNOWLEDGED = "acknowledged"
 _EXPIRED = "expired"
 _MAX_CONTENT_CHARS = 1_000
-_MAX_FILE_TEXT_BYTES = 768  # First synthetic TXT only; never generic stdout.
+# #4379: the local file result is no longer capped at 768 bytes. The result
+# keeps its sha256 integrity proof and its control-character rule.
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _EXECUTION_TERMINATIONS = frozenset({"exited", "cancelled", "timed_out"})
@@ -124,11 +125,13 @@ def verify_broker_file_text(
     except UnicodeEncodeError:
         raise LocalTaskResultError("file_text_unverified", "file result UTF-8 malformed") from None
     if (
-        len(raw) > _MAX_FILE_TEXT_BYTES
-        or any(ord(ch) < 32 and ch not in "\n\r\t" for ch in value)
+        any(ord(ch) < 32 and ch not in "\n\r\t" for ch in value)
         or type(receipt["content_sha256"]) is not str
         or receipt["content_sha256"] != hashlib.sha256(raw).hexdigest()
     ):
+        # #4379: the 768-byte ceiling is gone. A local run that really wrote a
+        # larger file used to be refused as unverified and the result was lost.
+        # The sha256 integrity proof and the control-character rule stay.
         raise LocalTaskResultError("file_text_unverified", "file result integrity invalid")
     return "text", value
 
@@ -340,8 +343,10 @@ def decide_local_task_result(*, origin: LocalTaskOrigin, observation: LocalRunne
     if verified_text is not None and (
         observation.state != _ACKNOWLEDGED or observation.termination != "exited"
         or observation.exit_code != 0 or type(verified_text) is not str
-        or len(verified_text.encode("utf-8")) > _MAX_FILE_TEXT_BYTES
     ):
+        # #4379: the 768-byte ceiling is gone. The correlation, the canonical
+        # termination and the text type still have to hold; the file size no
+        # longer decides whether a real local result is accepted.
         raise LocalTaskResultError("file_text_unverified", "file text cannot belong to this result")
     message_id = result_message_id(
         conversation_id=conversation_id,

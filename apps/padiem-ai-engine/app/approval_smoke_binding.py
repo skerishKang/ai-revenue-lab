@@ -101,7 +101,8 @@ def build_approval_smoke_binding() -> EngineToolBinding:
         instruction="Run only the synthetic approval confirmation tool.",
         output_contract_ref="output:text@1",
         allowed_tool_ids=(APPROVAL_SMOKE_CANONICAL_TOOL_ID,),
-        execution_budget=AgentExecutionBudget(),
+        # The provider-free approval smoke agent must terminate deterministically.
+        execution_budget=AgentExecutionBudget(max_steps=2, max_tool_calls=1, max_skill_calls=0),
     )
     policy = TrustedAgentRuntimePolicy(
         context_policy_ref="context:default",
