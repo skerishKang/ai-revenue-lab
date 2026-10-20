@@ -46,7 +46,7 @@ def _revision(value: str) -> str:
 def _safe_summary(value: str) -> str:
     if not isinstance(value, str) or len(value) > 2000:
         raise ContractError("summary must be a bounded string")
-    return redact_secrets(value.strip())
+    return value.strip()
 
 
 @dataclass(frozen=True, slots=True)
