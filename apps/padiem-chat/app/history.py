@@ -188,6 +188,8 @@ class HistoryStore(Protocol):
     async def upsert_google_user(self, subject: str, email: str, name: str, picture: str) -> UserProfile: ...
     async def register_password_user(self, username: str, email: str, name: str, password_hash: str) -> UserProfile: ...
     async def find_password_credential(self, identifier: str) -> PasswordCredential | None: ...
+    async def find_password_credential_by_user_id(self, user_id: str) -> PasswordCredential | None: ...
+    async def update_password_credential(self, user_id: str, password_hash: str) -> None: ...
     async def record_password_failure(self, user_id: str, failed_attempts: int, locked_until: str | None) -> None: ...
     async def reset_password_failures(self, user_id: str) -> None: ...
     async def get_user(self, user_id: str) -> UserProfile | None: ...
@@ -788,6 +790,60 @@ class D1HistoryStore:
     async def reset_password_failures(self, user_id: str) -> None:
         await self._run(
             "UPDATE password_credentials SET failed_attempts=0, locked_until=NULL, updated_at=? WHERE user_id=?",
+            _now_iso(),
+            user_id,
+        )
+
+    async def find_password_credential_by_user_id(
+        self, user_id: str
+    ) -> PasswordCredential | None:
+        """The credential row of one already known account.
+
+        #5434: a self-service password change resolves the account from the
+        signed session, never from a request-supplied identifier, so the
+        lookup is keyed by the server-owned user id.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        row = await self._first(
+            "SELECT u.id, u.email, u.display_name, u.picture_url, c.username, c.password_hash, "
+            "c.failed_attempts, c.locked_until "
+            "FROM password_credentials c JOIN users u ON u.id=c.user_id "
+            "WHERE c.user_id=? LIMIT 1",
+            user_id,
+        )
+        if row is None:
+            return None
+        return PasswordCredential(
+            user=UserProfile(
+                str(row.get("id", "")),
+                str(row.get("email", "")),
+                str(row.get("display_name", "")),
+                str(row.get("picture_url", "")),
+            ),
+            username=str(row.get("username", "")),
+            password_hash=str(row.get("password_hash", "")),
+            failed_attempts=max(0, int(row.get("failed_attempts", 0))),
+            locked_until=str(row.get("locked_until")) if row.get("locked_until") else None,
+        )
+
+    async def update_password_credential(
+        self, user_id: str, password_hash: str
+    ) -> None:
+        """Replace the stored hash of one account and clear its failure state.
+
+        #5434: only the hash, the failure counter and the lock move. The
+        account id, the role rows, the membership rows and every other
+        account-owned record stay exactly as they were.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(password_hash, str) or not password_hash:
+            raise HistoryError("password_hash is required")
+        await self._run(
+            "UPDATE password_credentials SET password_hash=?, failed_attempts=0, "
+            "locked_until=NULL, updated_at=? WHERE user_id=?",
+            password_hash,
             _now_iso(),
             user_id,
         )

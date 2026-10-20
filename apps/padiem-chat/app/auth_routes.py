@@ -77,6 +77,8 @@ def password_auth_ready(request: Request) -> bool:
         and store is not None
         and callable(getattr(store, "register_password_user", None))
         and callable(getattr(store, "find_password_credential", None))
+        and callable(getattr(store, "find_password_credential_by_user_id", None))
+        and callable(getattr(store, "update_password_credential", None))
         and callable(getattr(store, "record_password_failure", None))
         and callable(getattr(store, "reset_password_failures", None))
     )
@@ -106,6 +108,30 @@ def _unavailable() -> JSONResponse:
         {"error": {"code": "auth_unavailable", "message": "로그인을 현재 사용할 수 없습니다."}},
         status_code=503,
     )
+
+
+async def _account_method(store: HistoryStore | None, user_id: str) -> str:
+    """The signed-in account's own authentication method.
+
+    #5434: the account settings offer the password change only for an
+    account that actually owns a password credential. The fact comes from the
+    server's own credential row, never from the browser, and a failed lookup
+    stays "unknown" so the UI never offers a change it cannot prove.
+    """
+    lookup = (
+        getattr(store, "find_password_credential_by_user_id", None)
+        if store is not None
+        else None
+    )
+    if not callable(lookup):
+        return "unknown"
+    try:
+        credential = await lookup(user_id)
+    except Exception:
+        return "unknown"
+    if credential is None:
+        return "google"
+    return "password"
 
 
 async def auth_status(request: Request) -> JSONResponse:
@@ -155,6 +181,7 @@ async def auth_status(request: Request) -> JSONResponse:
     )
     if authenticated:
         payload["member_grade"] = await verified_member_grade(request, uid)
+        payload["account_method"] = await _account_method(store, uid)
     # Keep the legacy unavailable payload stable. Once auth is actually ready,
     # expose a bounded presentation state so the browser does not infer expiry.
     if ready:
@@ -766,6 +793,118 @@ async def password_login(request: Request) -> JSONResponse:
     )
 
 
+async def _revoke_canonical_session(request: Request) -> str | None:
+    """Revoke the canonical session behind this cookie.
+
+    Returns ``None`` when the session is ended (or was already gone), or a
+    stable error code when the revocation could not be confirmed. #5225: the
+    signed cookie is a stateless bearer value, so the canonical session has to
+    be revoked server-side before a stored copy of the cookie stops working.
+
+    Shared by the logout and by the #5434 self-service password change, which
+    ends the session it changed the credential for.
+    """
+    settings: Settings = request.app.state.settings
+    claims = decode_session_claims(settings, request.cookies.get(SESSION_COOKIE))
+    canonical_session_id = claims.canonical_session_id if claims is not None else None
+    if not canonical_session_id:
+        return None
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    revoke = getattr(authority, "revoke_auth_session", None) if authority is not None else None
+    if not callable(revoke):
+        return "session_revocation_unavailable"
+    try:
+        await revoke(
+            product_id=PADIEM_CHAT_PRODUCT_ID,
+            session_id=canonical_session_id,
+        )
+    except Exception as exc:
+        if getattr(exc, "code", "") != "canonical_auth_session_not_found":
+            # The canonical session is still active, so the stored cookie
+            # would keep working.
+            return "session_revocation_failed"
+        # The canonical session is already gone, so the stored cookie can no
+        # longer authenticate anything. The outcome is already true.
+    return None
+
+
+async def password_change(request: Request) -> JSONResponse:
+    """Change the signed-in account's own password (#5434).
+
+    The account is resolved from the signed session only. A request body can
+    never name the account to change, so one signed-in account can never
+    change another account's password. The current password is verified
+    against the stored hash first, the new password is validated by the same
+    server policy the signup uses, and only the hash, the failure counter and
+    the lock of that one credential row move.
+
+    The session that changed the credential is ended afterwards, so the browser
+    proves the new password by signing in again and a stored copy of the old
+    session stops working.
+    """
+    if not password_auth_ready(request) or not auth_ready(request):
+        return _unavailable()
+    user_id = current_user_id(request)
+    if not user_id:
+        return _auth_error(401, "authentication_required", "로그인이 필요합니다.")
+    data = await _json_body(request)
+    if data is None or set(data) != {"current_password", "new_password"}:
+        return _auth_error(400, "invalid_request", "비밀번호 변경 정보를 확인해 주세요.")
+    current_password = data.get("current_password")
+    new_password = data.get("new_password")
+    if not isinstance(current_password, str) or not isinstance(new_password, str):
+        return _auth_error(400, "invalid_request", "비밀번호 변경 정보를 확인해 주세요.")
+
+    store: HistoryStore = request.app.state.history_store
+    try:
+        credential = await store.find_password_credential_by_user_id(user_id)
+    except Exception:
+        return _auth_error(503, "auth_storage_error", "계정 정보를 확인하지 못했습니다.")
+    if credential is None:
+        # A Google-only account has no password credential to change, and the
+        # existing Google login rule stays exactly as it was.
+        return _auth_error(
+            400,
+            "password_change_unavailable",
+            "이 계정은 Google 로그인 계정이라 비밀번호를 변경할 수 없습니다.",
+        )
+
+    if not verify_password(current_password, credential.password_hash):
+        # The current password is the proof of ownership. A wrong one never
+        # reaches the hash and never changes any stored value.
+        return _auth_error(401, "invalid_credentials", "현재 비밀번호가 올바르지 않습니다.")
+
+    try:
+        validated = validate_password(new_password, identifier=credential.user.email)
+    except PasswordAuthError as exc:
+        return _auth_error(400, exc.code, exc.message)
+    if verify_password(new_password, credential.password_hash):
+        return _auth_error(
+            400,
+            "password_unchanged",
+            "새 비밀번호는 현재 비밀번호와 달라야 합니다.",
+        )
+    encoded = hash_password(validated)
+
+    # End the session first: a session that cannot be ended leaves the
+    # credential untouched, so the user can simply try again.
+    failure = await _revoke_canonical_session(request)
+    if failure is not None:
+        return _auth_error(
+            503,
+            failure,
+            "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
+        )
+    try:
+        await store.update_password_credential(user_id, encoded)
+    except Exception:
+        return _auth_error(503, "auth_storage_error", "비밀번호를 저장하지 못했습니다.")
+
+    response = JSONResponse({"ok": True})
+    response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+    return response
+
+
 async def logout(request: Request) -> JSONResponse:
     """Revoke the canonical session behind this cookie, then clear the cookie.
 
@@ -783,35 +922,13 @@ async def logout(request: Request) -> JSONResponse:
     must not be reported as successful.
     """
 
-    settings: Settings = request.app.state.settings
-    claims = decode_session_claims(settings, request.cookies.get(SESSION_COOKIE))
-    canonical_session_id = claims.canonical_session_id if claims is not None else None
-    if canonical_session_id:
-        authority = getattr(request.app.state, "control_plane_identity_authority", None)
-        revoke = getattr(authority, "revoke_auth_session", None) if authority is not None else None
-        if not callable(revoke):
-            return _auth_error(
-                503,
-                "session_revocation_unavailable",
-                "로그아웃을 완료하지 못했습니다. 다시 시도해 주세요.",
-            )
-        try:
-            await revoke(
-                product_id=PADIEM_CHAT_PRODUCT_ID,
-                session_id=canonical_session_id,
-            )
-        except Exception as exc:
-            if getattr(exc, "code", "") != "canonical_auth_session_not_found":
-                # The canonical session is still active, so the stored cookie
-                # would keep working. Report the failure honestly instead of
-                # deleting the cookie and claiming a logout that did not happen.
-                return _auth_error(
-                    503,
-                    "session_revocation_failed",
-                    "로그아웃을 완료하지 못했습니다. 다시 시도해 주세요.",
-                )
-            # The canonical session is already gone, so the stored cookie can no
-            # longer authenticate anything. The logout outcome is already true.
+    failure = await _revoke_canonical_session(request)
+    if failure is not None:
+        return _auth_error(
+            503,
+            failure,
+            "로그아웃을 완료하지 못했습니다. 다시 시도해 주세요.",
+        )
     response = JSONResponse({"ok": True})
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response

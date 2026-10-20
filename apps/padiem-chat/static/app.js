@@ -27,6 +27,16 @@
   const settingsButton = document.getElementById("settingsButton");
   const settingsDialog = document.getElementById("settingsDialog");
   const settingsCloseButton = document.getElementById("settingsCloseButton");
+  const accountSettingsSection = document.getElementById("accountSettingsSection");
+  const passwordChangeOpen = document.getElementById("passwordChangeOpen");
+  const passwordChangeDialog = document.getElementById("passwordChangeDialog");
+  const passwordChangeDialogClose = document.getElementById("passwordChangeDialogClose");
+  const passwordChangeForm = document.getElementById("passwordChangeForm");
+  const passwordChangeCurrent = document.getElementById("passwordChangeCurrent");
+  const passwordChangeNew = document.getElementById("passwordChangeNew");
+  const passwordChangeConfirm = document.getElementById("passwordChangeConfirm");
+  const passwordChangeError = document.getElementById("passwordChangeError");
+  const passwordChangeSubmit = document.getElementById("passwordChangeSubmit");
   const attachmentFileInput = document.getElementById("attachmentFileInput");
   const attachmentButton = document.getElementById("attachmentButton");
   const attachmentTray = document.getElementById("attachmentTray");
@@ -1304,6 +1314,11 @@
     if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
       window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated } }));
     }
+    // #5434: the password change is offered only for an account that owns a
+    // password credential. The server owns that fact.
+    if (accountSettingsSection) {
+      accountSettingsSection.hidden = !(authenticated && authState.account_method === "password");
+    }
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),
@@ -1837,6 +1852,66 @@
       );
     } finally {
       passwordRegisterSubmit.disabled = false;
+    }
+  }
+
+  // #5434: the signed-in account changes its own password. The account is
+  // never named by the browser: the server resolves it from the session.
+  function openPasswordChangeDialog() {
+    if (!passwordChangeDialog) return;
+    setAuthFormError(passwordChangeError);
+    if (passwordChangeCurrent) passwordChangeCurrent.value = "";
+    if (passwordChangeNew) passwordChangeNew.value = "";
+    if (passwordChangeConfirm) passwordChangeConfirm.value = "";
+    if (typeof passwordChangeDialog.showModal === "function") passwordChangeDialog.showModal();
+    else passwordChangeDialog.setAttribute("open", "");
+    passwordChangeCurrent?.focus();
+  }
+
+  function closePasswordChangeDialog() {
+    if (!passwordChangeDialog) return;
+    if (passwordChangeDialog.open && typeof passwordChangeDialog.close === "function") passwordChangeDialog.close();
+    else passwordChangeDialog.removeAttribute("open");
+  }
+
+  async function submitPasswordChange(event) {
+    event.preventDefault();
+    if (!passwordChangeForm) return;
+    setAuthFormError(passwordChangeError);
+    const currentPassword = passwordChangeCurrent?.value || "";
+    const newPassword = passwordChangeNew?.value || "";
+    const confirmPassword = passwordChangeConfirm?.value || "";
+    if (!currentPassword || !newPassword) {
+      setAuthFormError(passwordChangeError, uiT("password-change-incomplete"));
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setAuthFormError(passwordChangeError, uiT("password-change-mismatch"));
+      return;
+    }
+    passwordChangeSubmit.disabled = true;
+    try {
+      await passwordAuthRequest("/api/auth/password/change", {
+        current_password: currentPassword,
+        new_password: newPassword,
+      });
+      // The server ends the session it changed the credential for, so the
+      // browser signs in again with the new password.
+      if (passwordChangeCurrent) passwordChangeCurrent.value = "";
+      if (passwordChangeNew) passwordChangeNew.value = "";
+      if (passwordChangeConfirm) passwordChangeConfirm.value = "";
+      closePasswordChangeDialog();
+      closeSettings();
+      await loadAuthStatus();
+      if (authDialog && !authDialog.open) openAuthDialog();
+      setAuthFormError(passwordLoginError, uiT("password-change-done"));
+    } catch (error) {
+      setAuthFormError(
+        passwordChangeError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+    } finally {
+      passwordChangeSubmit.disabled = false;
     }
   }
 
@@ -2836,6 +2911,15 @@
   });
   if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
   if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
+  if (passwordChangeForm) passwordChangeForm.addEventListener("submit", submitPasswordChange);
+  if (passwordChangeOpen) passwordChangeOpen.addEventListener("click", openPasswordChangeDialog);
+  if (passwordChangeDialogClose) passwordChangeDialogClose.addEventListener("click", closePasswordChangeDialog);
+  if (passwordChangeDialog) {
+    passwordChangeDialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closePasswordChangeDialog();
+    });
+  }
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
     submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
     closeSidebar();

@@ -120,6 +120,15 @@ class MemoryStore:
             return None
         return self.credentials.get(identifier.lower())
 
+    async def find_password_credential_by_user_id(self, user_id):
+        for cred in self.credentials.values():
+            if cred.user.id == user_id:
+                return cred
+        return None
+
+    async def update_password_credential(self, user_id, password_hash):
+        raise AssertionError("password changes are not the boundary under test")
+
     async def record_password_failure(self, user_id, failed_attempts, locked_until):
         return None
 
