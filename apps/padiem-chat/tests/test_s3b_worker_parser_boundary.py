@@ -147,8 +147,6 @@ def test_intake_gate_size_limit_still_applies_under_the_worker_gate() -> None:
     ):
         with pytest.raises(BinaryDocumentValidationError):
             binary_documents_module._decode_payload(payload)
-        except BinaryDocumentValidationError:
-            pass
     assert spy.calls == 0
 
 
