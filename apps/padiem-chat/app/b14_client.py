@@ -348,9 +348,7 @@ def _agent_profile(
             # Arbitrary catalog-wide fallback stays disabled. This does not
             # block the owner-pinned tier grade backup in the B14 gateway.
             "allow_external_fallback": False,
-            # Leave existing completed-response contracts unchanged. The SSE
-            # lane uses the owner-tier roster rather than a one-attempt pin.
-            **({} if tier_stream_fallback else {"max_attempts": 1}),
+            # No local attempt pin; upstream routing applies its own policy.
             **({"product_tier": product_tier} if product_tier is not None else {}),
             **({"max_retries": max_retries} if max_retries is not None else {}),
             # Only an explicitly requested native parameter enters the policy.

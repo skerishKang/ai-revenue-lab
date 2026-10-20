@@ -17,7 +17,7 @@ def test_b62_task_modes_are_product_presets_and_skill_is_compatibility_alias():
     assert mode.description == mode.short_description
     assert mode.allowed_tools == ()
     assert mode.required_capabilities == ()
-    assert mode.max_steps == 1
+    assert mode.max_steps is None
     assert task_mode_public_metadata(mode) == {"id": "explain", "title": "쉽게 설명"}
 
 
