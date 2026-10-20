@@ -168,3 +168,16 @@ html[data-theme="light"] .composer-pc-status:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .composer-pc-status * { transition: none !important; animation: none !important; }
 }
+
+/* #5297: the device band is the composer's first child and a script mounts it
+ * after the first paint, so on a bottom-anchored wrap it pushed the whole fixed
+ * input upward. The band is reserved here with the mounted block's own declared
+ * geometry and retires as soon as that block exists, so the settled layout keeps
+ * exactly one band and no extra height. */
+.app-shell:is([data-state="home"], [data-state="chat"])
+  .composer-wrap:not(:has(> #clawDeviceManager))::before {
+  content: "";
+  display: block;
+  min-height: 44px;
+  margin: 10px 0 12px;
+}
