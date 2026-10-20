@@ -113,6 +113,43 @@ def test_a_local_text_transformation_is_not_hijacked_by_a_lookup_word() -> None:
 
 
 @pytest.mark.parametrize(
+    ("prompt", "expected"),
+    [
+        # 1. the current date, weekday and time are server-clock facts
+        ("오늘 며칠이야?", SearchDisposition.NO_SEARCH),
+        ("오늘 무슨 요일이야?", SearchDisposition.NO_SEARCH),
+        ("지금 몇 시야?", SearchDisposition.NO_SEARCH),
+        ("What time is it?", SearchDisposition.NO_SEARCH),
+        # 2. a published event schedule is a web fact
+        ("몇 시에 경기가 시작해?", SearchDisposition.MUST_SEARCH),
+        ("What time is the concert tonight?", SearchDisposition.MUST_SEARCH),
+        # 3. the latest news is a web fact
+        ("오늘 AI 뉴스 알려줘", SearchDisposition.MUST_SEARCH),
+        # 4. a current office holder is a web fact
+        ("현재 대통령", SearchDisposition.MUST_SEARCH),
+        # 5. the weather is a web fact
+        ("오늘 날씨 어때?", SearchDisposition.MUST_SEARCH),
+        ("지금 비 와?", SearchDisposition.MUST_SEARCH),
+        # 6. a price is a web fact
+        ("파스 주가는 얼마지?", SearchDisposition.MUST_SEARCH),
+        # 7. ordinary conversation is not
+        ("고마워", SearchDisposition.NO_SEARCH),
+        ("비 오는구나", SearchDisposition.NO_SEARCH),
+        # 8. a document transformation is not
+        ("이 문장 번역해줘", SearchDisposition.NO_SEARCH),
+        ("rewrite this paragraph", SearchDisposition.NO_SEARCH),
+    ],
+)
+def test_the_search_intent_classes_stay_separated(
+    prompt: str, expected: SearchDisposition,
+) -> None:
+    decision = decide_search(prompt)
+    assert decision.disposition is expected
+    if expected is SearchDisposition.MUST_SEARCH:
+        assert decision.evidence_required is True
+
+
+@pytest.mark.parametrize(
     "prompt",
     [
         "이번 주 무슨 요일에 축제가 열려?",
@@ -144,6 +181,79 @@ def test_a_current_office_holder_never_takes_the_no_evidence_fallback(
     assert decision.disposition is SearchDisposition.MUST_SEARCH
     assert decision.evidence_required is True
     assert decision.reason != "local_clock_fact"
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "몇 시에 경기가 시작해?",
+        "무슨 요일에 파이팅 열려?",
+        "영화는 몇 시에 시작해요?",
+        "콘서트 언제 열려?",
+        "What time is the concert tonight?",
+    ],
+)
+def test_a_published_event_schedule_needs_web_evidence(prompt: str) -> None:
+    # The published day or time of an external event is a web fact. It used to
+    # fall through to "no external evidence trigger" and the product answered a
+    # third-party schedule from memory.
+    decision = decide_search(prompt)
+    assert decision.disposition is SearchDisposition.MUST_SEARCH
+    assert decision.requires_search is True
+    assert decision.evidence_required is True
+    assert decision.reason == "external_event_schedule"
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "지금 비 와?",
+        "지금 비 와요?",
+        "지금 눈 와?",
+        "is it raining in Seoul right now",
+    ],
+)
+def test_a_current_condition_question_needs_web_evidence(prompt: str) -> None:
+    # A current condition asked as a question is a web fact. It used to be
+    # classified so that a failed search could continue as a normal answer, and
+    # the product could state the current weather without evidence.
+    decision = decide_search(prompt)
+    assert decision.disposition is SearchDisposition.MUST_SEARCH
+    assert decision.requires_search is True
+    assert decision.evidence_required is True
+    assert decision.reason == "current_condition_question"
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "비 오는구나",
+        "지금 비 온다",
+    ],
+)
+def test_a_current_condition_remark_never_requires_evidence(prompt: str) -> None:
+    # A remark about the weather is not a request for verified weather. The
+    # search may still be attempted, but a failed search may continue as an
+    # ordinary answer, and it never asserts the current weather as fact.
+    decision = decide_search(prompt)
+    assert decision.evidence_required is False
+    if decision.disposition is SearchDisposition.NO_SEARCH:
+        assert decision.requires_search is False
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "몇 시에 만나요?",
+        "내일 몇 시에 모임이야?",
+    ],
+)
+def test_the_users_own_plan_is_not_a_published_schedule(prompt: str) -> None:
+    # The user's own appointment belongs to the product's calendar lane, not to
+    # a published web schedule.
+    decision = decide_search(prompt)
+    assert decision.disposition is SearchDisposition.NO_SEARCH
+    assert decision.requires_search is False
 
 
 def test_blank_input_is_rejected() -> None:

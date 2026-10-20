@@ -273,37 +273,40 @@ _CLOCK_QUESTION_SUFFIX_EN = re.compile(
     re.IGNORECASE,
 )
 # An external event, a business schedule or a booking time is a web fact even
-# when the question mentions today, tonight or a weekday.
+# when the question mentions today, tonight or a weekday. The plan words
+# ("약속", "모임") stay out: the user's own appointment is not a published
+# schedule and belongs to the product's own calendar lane.
 _EXTERNAL_SCHEDULE_MARKERS = (
     "축제",
     "공연",
     "콘서트",
     "경기",
     "회의",
-    "약속",
-    "일정",
-    "모임",
     "행사",
     "상영",
+    "상영회",
     "발매",
     "세미나",
     "워크숍",
     "전시",
+    "전시회",
     "영화",
     "항공",
     "기차",
+    "파티",
+    "파이팅",
+    "팝콘",
+    "티켓",
     "영업",
     "휴무",
     "개장",
     "마감",
-    "출발",
-    "도착",
+    "열려",
     "concert",
     "festival",
     "game",
     "match",
     "meeting",
-    "appointment",
     "schedule",
     "event",
     "movie",
@@ -316,7 +319,57 @@ _EXTERNAL_SCHEDULE_MARKERS = (
     "seminar",
     "opening",
     "closing",
+    "ticket",
 )
+# A current condition (rain, snow, fog) is a web fact when the request asks
+# about it. The casual remark form ("비 오는구나") stays ordinary conversation.
+_CURRENT_CONDITION_CUES = (
+    "비가",
+    "비 와",
+    "비 와요",
+    "비올",
+    "눈이",
+    "눈 와",
+    "눈 와요",
+    "소나기",
+    "천둥",
+    "안개",
+    "폭염",
+    "한파",
+    "우박",
+    "서리",
+    "영하",
+    "영싱",
+    "흐림",
+    "맑음",
+    "습도",
+    "raining",
+    "rains",
+    "snowing",
+    "snows",
+    "foggy",
+    "cloudy",
+    "sunny",
+    "temperature",
+    "humidity",
+    "thunder",
+)
+# The interrogative forms that turn a current condition into a real question.
+# The information-request markers already carry the Korean and English question
+# vocabulary; the explicit question forms cover the rest.
+_QUESTION_FORMS = (
+    "?",
+    "is it",
+    "is there",
+    "are there",
+    "does it",
+    "do i",
+    "do you",
+    "will it",
+    "tell me",
+    "find out",
+)
+
 
 
 def _last_clause(text: str) -> str:
@@ -344,6 +397,8 @@ def _is_local_clock_question(normalized: str) -> bool:
         return False
     if _contains_any(normalized, _EXTERNAL_SCHEDULE_MARKERS):
         return False
+    if _is_current_condition_question(normalized):
+        return False
     clause = _last_clause(normalized)
     if not clause:
         return False
@@ -365,6 +420,20 @@ def _is_local_clock_question(normalized: str) -> bool:
     return False
 
 
+def _is_current_condition_question(normalized: str) -> bool:
+    """Whether the request asks about a current external condition.
+
+    "지금 비 와?" asks for the weather right now, so it is a web-evidence
+    question. "비 오는구나" is an ordinary remark and stays one.
+    """
+    if not _contains_any(normalized, _CURRENT_CONDITION_CUES):
+        return False
+    if _contains_any(normalized, _QUESTION_FORMS):
+        return True
+    return _contains_any(normalized, _INFORMATION_REQUEST)
+
+
+
 def decide_search(text: str, *, task_id: str | None = None) -> SearchDecision:
     """Classify whether a user request needs current external web evidence.
 
@@ -382,6 +451,26 @@ def decide_search(text: str, *, task_id: str | None = None) -> SearchDecision:
     if _contains_any(normalized, _EXPLICIT_SEARCH) or _LOOKUP_REPORT.search(normalized):
         return SearchDecision(
             SearchDisposition.MUST_SEARCH, "explicit_search_request", query
+        )
+
+    # The published day or time of an external event, a business schedule or a
+    # booking is a web fact, never the server clock. Without this the request
+    # fell through to "no external evidence trigger" and the product answered a
+    # third-party schedule from memory.
+    if _contains_any(normalized, _EXTERNAL_SCHEDULE_MARKERS):
+        return SearchDecision(
+            SearchDisposition.MUST_SEARCH, "external_event_schedule", query,
+            evidence_required=True,
+        )
+
+    # A current condition (rain, snow, fog) asked as a question is a web fact
+    # too. Without this the freshness branch treated it as a request that may
+    # continue as a normal answer, and the product could state the current
+    # weather without any evidence.
+    if _is_current_condition_question(normalized):
+        return SearchDecision(
+            SearchDisposition.MUST_SEARCH, "current_condition_question", query,
+            evidence_required=True,
         )
 
     # A calendar/clock question is answered by the server clock, never by the
@@ -443,7 +532,8 @@ def decide_search(text: str, *, task_id: str | None = None) -> SearchDecision:
 
     if _contains_any(normalized, _EXTERNAL_FACT_CUES):
         return SearchDecision(
-            SearchDisposition.SHOULD_SEARCH, "external_fact_verification", query
+            SearchDisposition.SHOULD_SEARCH, "external_fact_verification", query,
+            evidence_required=True,
         )
 
     if _contains_any(normalized, _STABLE_CONCEPT_CUES):
@@ -452,4 +542,8 @@ def decide_search(text: str, *, task_id: str | None = None) -> SearchDecision:
             evidence_required=False,
         )
 
-    return SearchDecision(SearchDisposition.NO_SEARCH, "no_external_evidence_trigger", query)
+    # No web evidence is requested at all, so no answer depends on it.
+    return SearchDecision(
+        SearchDisposition.NO_SEARCH, "no_external_evidence_trigger", query,
+        evidence_required=False,
+    )

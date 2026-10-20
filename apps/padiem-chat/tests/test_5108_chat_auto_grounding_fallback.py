@@ -422,6 +422,18 @@ def test_an_external_event_schedule_never_answers_without_evidence() -> None:
     assert seen == []
 
 
+def test_a_current_weather_question_never_answers_without_evidence() -> None:
+    """The current weather is never answered from the model's own memory."""
+    provider = EmptyProvider()
+    app, config, seen = build_app(provider)
+    response = post(
+        app, config, "/api/chat", {"messages": messages("지금 비 와?"), "mode": "auto"}
+    )
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "no_evidence"
+    assert seen == []
+
+
 # --- conversation continuity --------------------------------------------------
 
 def test_fallback_keeps_the_conversation_and_the_model_grade() -> None:
