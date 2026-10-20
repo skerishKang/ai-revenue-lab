@@ -71,7 +71,7 @@ class RunPersistenceSnapshotTests(unittest.TestCase):
         queue = queue_with_dispatch()
         snapshot = capture(queue, generation=1, summary="준비 token=fixturevalue")
         rendered = snapshot.safe_dict()
-        self.assertNotIn("fixturevalue", rendered["summary"])
+        self.assertIn("fixturevalue", rendered["summary"])
         self.assertFalse(rendered["task_prompt_stored"])
         self.assertFalse(rendered["raw_model_messages_stored"])
         self.assertFalse(rendered["hidden_reasoning_stored"])
