@@ -89,7 +89,6 @@ def valid_payload(ref: str = ATTACHMENT_REF, app_id: str = APP_ID) -> dict[str, 
             "model_policy": {
                 "model": "b14/auto",
                 "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         },
         "messages": [{"role": "user", "content": "이 사진을 설명해줘"}],
