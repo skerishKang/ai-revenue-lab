@@ -69,6 +69,12 @@ _OOXML_CODES = {
 
 
 def _decode_payload(payload: Any) -> bytes:
+    if isinstance(payload, bytes):
+        if not payload:
+            raise BinaryDocumentValidationError("Empty document")
+        if len(payload) > MAX_BINARY_DOCUMENT_BYTES:
+            raise BinaryDocumentValidationError("Binary document too large")
+        return payload
     if not isinstance(payload, str) or not payload:
         raise BinaryDocumentValidationError("문서 데이터가 올바르지 않습니다.")
     if len(payload) > ((MAX_BINARY_DOCUMENT_BYTES + 2) // 3) * 4:
@@ -104,7 +110,7 @@ def _translate_binary_error(exc: DocumentNormalizationError, media_type: Any) ->
 
 
 def parse_binary_document_item(item: Any) -> DocumentAttachment:
-    if not isinstance(item, dict) or set(item) != {"type", "name", "media_type", "base64"}:
+    if not isinstance(item, dict) or set(item) not in ({"type", "name", "media_type", "base64"}, {"type", "name", "media_type", "raw_bytes"}):
         raise BinaryDocumentValidationError("지원하지 않는 바이너리 문서 첨부 항목이 있습니다.")
     if item.get("type") != "document":
         raise BinaryDocumentValidationError("문서 첨부 형식이 올바르지 않습니다.")
@@ -116,7 +122,7 @@ def parse_binary_document_item(item: Any) -> DocumentAttachment:
         )
     except DocumentNormalizationError as exc:
         raise _translate_binary_error(exc, item.get("media_type")) from exc
-    payload = _decode_payload(item.get("base64"))
+    payload = _decode_payload(item.get("raw_bytes") if "raw_bytes" in item else item.get("base64"))
     try:
         document = parse_binary_document_via_authority(
             name=item.get("name"),

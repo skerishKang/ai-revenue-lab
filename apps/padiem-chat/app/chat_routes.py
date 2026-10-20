@@ -675,7 +675,7 @@ def _decode_completed_binary_attachment(body: bytes) -> dict[str, Any]:
         raise ValueError("invalid binary attachment metadata")
     if item["type"] not in ("image", "document"):
         raise ValueError("invalid binary attachment type")
-    item["base64"] = base64.b64encode(body[4 + header_size:]).decode("ascii")
+    item["raw_bytes"] = body[4 + header_size:]
     return raw
 
 

@@ -27,6 +27,20 @@ def encoded(data: bytes) -> str:
     return base64.b64encode(data).decode("ascii")
 
 
+def test_native_image_bytes_remain_raw_until_provider_data_url():
+    from app.chat_routes import _decode_completed_binary_attachment
+
+    metadata = {"attachments": [{"type": "image", "name": "photo.png", "media_type": "image/png"}]}
+    header = json.dumps(metadata).encode("utf-8")
+    frame = len(header).to_bytes(4, "big") + header + PNG
+    parsed = _decode_completed_binary_attachment(frame)
+    assert "raw_bytes" in parsed["attachments"][0]
+    assert "base64" not in parsed["attachments"][0]
+    image = parse_attachments(parsed["attachments"])[0]
+    assert image.binary_data == PNG
+    assert image.data_url.endswith(encoded(PNG))
+
+
 def attachment(media_type="image/png", data=PNG, name="photo.png"):
     return {
         "type": "image",
