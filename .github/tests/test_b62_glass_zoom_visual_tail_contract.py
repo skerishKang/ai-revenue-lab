@@ -2,7 +2,7 @@
 latency, and a failing suite's assertion must survive the COM2 runner's bounded
 diagnostic window.
 
-Two contracts:
+Three contracts:
 
 1. ``b62_glass_zoom_visual_qa.py`` dispatches the scroll-up wheel and reads the
    measurement start clock.  Dispatching is a host-to-page round trip, so
@@ -17,13 +17,26 @@ Two contracts:
    keeps every suite and its hard failure fan-in.  The COM2 runner only keeps
    the last N log lines, so a failing suite's assertion has to be repeated
    after all suites have printed, otherwise the failure text is lost.
+
+3. The Glass Zoom suite measures the conversation motion clock, not the chat
+   transport.  COM2 run 39498783280 failed it exactly at the suite's unchanged
+   15 s answer wait (``Page.wait_for_function: Timeout 15000ms exceeded``) on
+   the 1-CPU offline container, while the identical suite passes on the 2-core
+   hosted lane at the same head (21.77 s, ``B62_VISUAL_TAIL_FAIL_COUNT=0``).
+   The answer therefore comes from the same kind of in-page route mock the
+   sibling suites already use, and the wait budget, the predicate, the real
+   clicks and the 200 ms / 2500 ms thresholds stay untouched.
 """
 from __future__ import annotations
 
 import ast
+import asyncio
 import importlib.util
+import json
+import os
 from pathlib import Path
 import sys
+import tempfile
 import types
 import unittest
 from unittest.mock import patch
@@ -31,10 +44,15 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 ZOOM = ROOT / ".github/scripts/b62_glass_zoom_visual_qa.py"
+TIMING = ROOT / ".github/scripts/b62_visual_timing.py"
 TAIL = ROOT / ".github/scripts/b62_browser_qa_tail_parallel.py"
 PLANNER = ROOT / ".github/scripts/b62_browser_qa_path_plan.py"
 CANARY = ROOT / ".github/workflows/com2-b62-generic-browser-canary.yml"
 CONTRACT_TEST = ".github/tests/test_b62_glass_zoom_visual_tail_contract.py"
+
+# The text the suite's answer wait requires, and the text the mock runtime
+# answers with.
+PREVIEW_MARKER = "지금은 미리보기 환경입니다"
 
 if "playwright.async_api" not in sys.modules:
     _playwright = types.ModuleType("playwright")
@@ -43,6 +61,39 @@ if "playwright.async_api" not in sys.modules:
     _playwright.async_api = _async_api
     sys.modules["playwright"] = _playwright
     sys.modules["playwright.async_api"] = _async_api
+
+# Sibling CI contract tests install their own partial `playwright.async_api`
+# stub and whichever is collected first owns sys.modules, so the names this
+# suite imports are added to whatever module object is already registered.
+_api = sys.modules.get("playwright.async_api")
+if _api is None:
+    _api = types.ModuleType("playwright.async_api")
+    _playwright = sys.modules.setdefault("playwright", types.ModuleType("playwright"))
+    _playwright.async_api = _api
+    sys.modules["playwright.async_api"] = _api
+for _name in ("Browser", "BrowserContext", "Locator", "Page", "Route", "async_playwright"):
+    if not hasattr(_api, _name):
+        setattr(_api, _name, object)
+
+# Importing the suite would otherwise create its evidence directory under
+# the read-only checkout of the plan job.
+os.environ.setdefault(
+    "B62_QA_OUT_DIR", tempfile.mkdtemp(prefix="b62-zoom-tail-contract-")
+)
+
+
+def _load_module(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+# The suite imports its timing helper as a sibling module, exactly as it does
+# when it runs from its own directory.
+_load_module("b62_visual_timing", TIMING)
+zoom = _load_module("b62_glass_zoom_qa", ZOOM)
 
 _spec = importlib.util.spec_from_file_location("b62_qa_tail", TAIL)
 tail = importlib.util.module_from_spec(_spec)
@@ -55,6 +106,79 @@ def _function(tree: ast.Module, name: str) -> ast.AsyncFunctionDef:
         for node in ast.walk(tree)
         if isinstance(node, ast.AsyncFunctionDef) and node.name == name
     )
+
+
+def _preview_wait_call(source: str) -> ast.Call:
+    """The answer wait whose predicate requires the preview text."""
+
+    tree = ast.parse(source)
+    capture = _function(tree, "_capture")
+    for node in ast.walk(capture):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "wait_for_function"
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and PREVIEW_MARKER in node.args[0].value
+        ):
+            return node
+    raise AssertionError("the preview answer wait is missing")
+
+
+def _preview_wait_budget(source: str) -> int:
+    node = _preview_wait_call(source)
+    for keyword in node.keywords:
+        if keyword.arg == "timeout":
+            return int(keyword.value.value)
+    raise AssertionError("the preview answer wait has no explicit timeout")
+
+
+def _capture_order(source: str) -> tuple[int, int]:
+    """Statement indexes of the route-mock install and of the real send click."""
+
+    tree = ast.parse(source)
+    capture = _function(tree, "_capture")
+    install = -1
+    send = -1
+    for index, statement in enumerate(capture.body):
+        dumped = ast.dump(statement)
+        if install < 0 and "_install_preview_stream" in dumped:
+            install = index
+        if send < 0 and "sendButton" in dumped and "click" in dumped:
+            send = index
+    return install, send
+
+
+class _FakeRequest:
+    def __init__(self, post_data: str) -> None:
+        self.post_data = post_data
+
+
+class _FakeRoute:
+    def __init__(self, post_data: str = "{}") -> None:
+        self.request = _FakeRequest(post_data)
+        self.status: int | None = None
+        self.content_type: str | None = None
+        self.body: str | None = None
+        self.headers: dict | None = None
+
+    async def fulfill(self, *, status, content_type, body, headers=None) -> None:
+        self.status = status
+        self.content_type = content_type
+        self.body = body
+        self.headers = headers or {}
+
+
+class _FakePage:
+    def __init__(self) -> None:
+        self.patterns: list[str] = []
+        self.handlers: dict[str, object] = {}
+
+    async def route(self, pattern: str, handler) -> None:
+        self.patterns.append(pattern)
+        self.handlers[pattern] = handler
+
 
 
 def _canary_selector(workflow_source: str):
@@ -213,6 +337,94 @@ class GlassZoomPauseClockContract(unittest.TestCase):
             "latest-answer growth was not followed",
         ):
             self.assertIn(message, source)
+
+
+class GlassZoomAnswerSourceContract(unittest.TestCase):
+    """The answer must not be a live server round trip inside the measurement.
+
+    COM2 run 39498783280 failed the Glass Zoom suite exactly at the suite's
+    unchanged 15 s answer wait (``Page.wait_for_function: Timeout 15000ms
+    exceeded``) on the 1-CPU offline container, while the identical suite
+    passes on the 2-core hosted lane at the same head (21.77 s,
+    ``B62_VISUAL_TAIL_FAIL_COUNT=0``).  The suite measures the conversation
+    motion clock, so the answer is served from the same kind of in-page route
+    mock the sibling suites already use.  The wait budget, the predicate, the
+    real clicks and the 200 ms / 2500 ms thresholds stay untouched.
+    """
+
+    def test_the_answer_is_served_by_an_in_page_route_mock(self):
+        page = _FakePage()
+        requests: list[dict] = []
+        asyncio.run(zoom._install_preview_stream(page, requests))
+        self.assertEqual(page.patterns, ["**/api/chat/stream"])
+        route = _FakeRoute('{"mode": "auto", "messages": []}')
+        asyncio.run(page.handlers["**/api/chat/stream"](route))
+        self.assertEqual(route.status, 200)
+        self.assertTrue(str(route.content_type).startswith("text/event-stream"))
+        body = str(route.body)
+        # The mock runtime's own SSE frame shape.
+        self.assertIn("event: delta\n", body)
+        self.assertIn("event: done\n", body)
+        delta = json.loads(body.split("event: delta\ndata: ", 1)[1].split("\n\n", 1)[0])
+        self.assertIn(PREVIEW_MARKER, delta["delta"])
+        done = json.loads(body.split("event: done\ndata: ", 1)[1].split("\n\n", 1)[0])
+        self.assertTrue(done["done"])
+        # The product's own chat request is still the request that is answered.
+        self.assertEqual(requests, [{"mode": "auto", "messages": []}])
+
+    def test_the_mocked_answer_carries_the_text_the_wait_requires(self):
+        source = ZOOM.read_text(encoding="utf-8")
+        # The answered text and the waited-for text are the same marker, so the
+        # wait can still succeed without the live server.
+        self.assertIn(PREVIEW_MARKER, zoom.PREVIEW_ANSWER)
+        self.assertIn(PREVIEW_MARKER, source)
+
+    def test_the_answer_wait_budget_and_predicate_are_unchanged(self):
+        source = ZOOM.read_text(encoding="utf-8")
+        # The 15 s budget is not relaxed; only the answer's origin changed.
+        self.assertEqual(_preview_wait_budget(source), 15_000)
+        predicate = _preview_wait_call(source).args[0].value
+        self.assertIn(PREVIEW_MARKER, predicate)
+        self.assertIn("#messageList .assistant-content", predicate)
+        # The real click on the send button stays a click.
+        install, send = _capture_order(source)
+        self.assertGreaterEqual(install, 0)
+        self.assertGreaterEqual(send, 0)
+
+    def test_the_route_mock_is_installed_before_the_send(self):
+        source = ZOOM.read_text(encoding="utf-8")
+        install, send = _capture_order(source)
+        self.assertGreaterEqual(install, 0, "the answer route mock must be installed")
+        self.assertGreaterEqual(send, 0, "the real send click must stay")
+        self.assertLess(install, send)
+
+    def test_mutations_are_detected(self):
+        source = ZOOM.read_text(encoding="utf-8")
+        # 1. A widened answer budget is detected.
+        widened = source.replace("timeout=15_000,", "timeout=30_000,")
+        self.assertNotEqual(widened, source)
+        self.assertNotEqual(_preview_wait_budget(widened), 15_000)
+
+        # 2. A removed route-mock install is detected.
+        removed = source.replace("    await _install_preview_stream(page, chat_requests)\n", "")
+        self.assertNotEqual(removed, source)
+        install, _send = _capture_order(removed)
+        self.assertEqual(install, -1)
+
+        # 3. An answer that lost the preview marker is detected, because the
+        #    wait could then never succeed.
+        with patch.object(zoom, "PREVIEW_ANSWER", "답변이 아직 준비되지 않았습니다."):
+            payload = zoom._preview_stream_payload()
+        self.assertNotIn(PREVIEW_MARKER, payload)
+
+        # 4. A wait predicate that no longer watches the assistant content is
+        #    detected: the wait would observe the wrong surface.
+        changed = source.replace("#messageList .assistant-content", "#messageList .user-content")
+        self.assertNotEqual(changed, source)
+        self.assertNotIn(
+            "#messageList .assistant-content",
+            _preview_wait_call(changed).args[0].value,
+        )
 
 
 class VisualTailFailureEvidenceContract(unittest.TestCase):
