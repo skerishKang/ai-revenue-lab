@@ -1,0 +1,66 @@
+name: COM2 B62 Touch Canary
+# Trusted main-only dispatch. Existing hosted 16 browser QA jobs remain unchanged.
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Open same-repository PR number
+        required: true
+        type: string
+      expected_sha:
+        description: Exact 40-character PR head SHA
+        required: true
+        type: string
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: com2-b62-touch-canary
+  cancel-in-progress: false
+jobs:
+  touch:
+    if: github.ref == 'refs/heads/main' && github.actor == 'skerishKang'
+    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
+    timeout-minutes: 10
+    steps:
+      - name: Validate exact same-repository PR head
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ inputs.pr_number }}
+          EXPECTED: ${{ inputs.expected_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$PR" =~ ^[1-9][0-9]{0,7}$ ]]
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          data="$(curl --fail --silent --show-error \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR}" \
+            | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["head"]["sha"],d["state"],d["head"]["repo"]["full_name"])')"
+          [[ "$data" == "$EXPECTED open $GITHUB_REPOSITORY" ]]
+          echo "sha=$EXPECTED" >> "$GITHUB_OUTPUT"
+      - name: Checkout exact source without credentials
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.sha }}
+          persist-credentials: false
+          clean: true
+          path: sandbox-input
+      - name: Run offline read-only COM2 Chromium touch lane
+        env:
+          SHA: ${{ steps.target.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo -n /usr/local/sbin/padiem-ci-b62-touch-check "$SHA" | tee "$RUNNER_TEMP/b62-touch-canary.log"
+          grep -q '^CI_5210_QA_OK$' "$RUNNER_TEMP/b62-touch-canary.log"
+      - name: Save bounded non-secret evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: com2-b62-touch-canary
+          path: ${{ runner.temp }}/b62-touch-canary.log
+          if-no-files-found: ignore
+          retention-days: 7

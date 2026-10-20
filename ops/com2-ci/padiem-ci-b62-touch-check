@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Trusted root-owned entrypoint; never source or execute PR code on the runner host.
+set -euo pipefail
+[[ "${1:-}" =~ ^[0-9a-f]{40}$ ]]
+src=/opt/padiem-ci/_work/ai-revenue-lab/ai-revenue-lab/sandbox-input
+image=padiem-b62-touch-ci:5210
+test -d "$src/.git"
+test "$(stat -c %U "$src")" = padiem-ci
+test "$(stat -c %U /usr/local/sbin/padiem-ci-b62-touch-check)" = root
+test "$(stat -c %a /usr/local/sbin/padiem-ci-b62-touch-check)" = 700
+test "$(/usr/bin/docker image inspect "$image" --format '{{.Id}}')" = 'sha256:2b253b7763a23dee61b6d9eb643a2b0e00373492565e06dd4afc6eeb4aab4c24'
+test "$(/usr/bin/git -C "$src" rev-parse HEAD)" = "$1"
+exec /usr/bin/docker run --rm --pull=never --network=none --read-only \
+  --cap-drop=ALL --security-opt=no-new-privileges --user=pwuser \
+  --pids-limit=160 --memory=2g --cpus=2 --tmpfs=/tmp:rw,nosuid,nodev,size=256m \
+  --shm-size=256m --mount "type=bind,source=$src,target=/work,readonly" \
+  --mount type=bind,source=/usr/local/share/padiem-ci/b62-touch-run.sh,target=/runner/run.sh,readonly \
+  "$image" bash /runner/run.sh
