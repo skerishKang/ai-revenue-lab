@@ -80,22 +80,28 @@ def browser():
         instance.close()
 
 
-def test_one_writer_owns_the_fixed_composer_band():
+def test_both_clearance_writers_use_the_same_floor_and_gap():
     """Two writers with different floors raced for the same custom property.
 
-    The composer lane measures the fixed input and publishes the reserved
-    space. The conversation lane only reads that value, so the band the input
-    occupies and the band the conversation reserves can never disagree.
+    The composer lane owns the ongoing publication and this lane publishes
+    the same reservation as soon as it boots, because the composer lane is
+    injected later and the stylesheet default alone does not cover a grown
+    composer. The two writers therefore have to declare the same floor and
+    the same gap, and this contract keeps them equal.
     """
     polish = POLISH_JS.read_text(encoding="utf-8")
     motion = MOTION_JS.read_text(encoding="utf-8")
-    # The composer lane owns the measurement and the publication.
-    assert "MIN_CONVERSATION_CLEARANCE" in polish
-    assert "COMPOSER_CLEARANCE_GAP" in polish
-    assert 'setProperty("--padiem-composer-clearance"' in polish
-    # The conversation lane reads it and never writes a competing value.
-    assert 'getPropertyValue("--padiem-composer-clearance")' in motion
-    assert 'setProperty("--padiem-composer-clearance"' not in motion
+
+    def constants(text: str) -> tuple[int, int]:
+        floor = re.search(r"MIN_CONVERSATION_CLEARANCE\s*=\s*(\d+)", text)
+        gap = re.search(r"COMPOSER_CLEARANCE_GAP\s*=\s*(\d+)", text)
+        assert floor is not None and gap is not None, text[:400]
+        return int(floor.group(1)), int(gap.group(1))
+
+    assert constants(polish) == constants(motion), (constants(polish), constants(motion))
+    # The reservation follows the measured composer and the keyboard inset.
+    assert "var(--padiem-visual-keyboard-inset, 0px)" in POLISH_CSS.read_text(encoding="utf-8")
+    assert 'setProperty("--padiem-composer-clearance"' in motion
 
 
 def test_no_lane_declares_a_second_reserved_bottom_space():
