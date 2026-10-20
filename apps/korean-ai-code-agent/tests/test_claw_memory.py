@@ -273,6 +273,8 @@ class ClawMemoryContractTests(unittest.TestCase):
         source = make_source()
         self.assertNotIn("raw_excerpt", source.safe_dict())
         self.assertIn("raw_excerpt", source.safe_dict(include_raw=True))
+        self.assertEqual(source.safe_dict(include_raw=True)["raw_excerpt"], RAW_BODY)
+        self.assertEqual(source.safe_dict(include_raw=False).get("raw_excerpt"), None)
 
     def test_cross_workspace_candidate_and_access_fail_closed(self):
         with self.assertRaises(ClawMemoryError):
