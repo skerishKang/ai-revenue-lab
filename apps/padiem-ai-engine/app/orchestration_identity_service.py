@@ -33,8 +33,10 @@ from app.orchestration_service import (
     _parse_approval_decision_submission,
     _parse_continuation_ref,
     _parse_recovery_policy,
+    _pc_tool_arguments_gate,
 )
 from app.service import ServiceContractError, ServiceResponse, _service_error, build_execution_request
+from app.tool_projection import EngineToolProjectionError
 
 
 _ORCHESTRATE_ALLOWED_FIELDS = frozenset(
@@ -55,6 +57,18 @@ _ORCHESTRATE_ALLOWED_FIELDS = frozenset(
     }
 )
 _RESUME_ALLOWED_FIELDS = _ORCHESTRATE_ALLOWED_FIELDS | {"continuation_ref", "decision"}
+
+
+def _wire_allowed_fields(payload: Any) -> frozenset[str]:
+    """The closed identity-bound run wire, plus ``tool_arguments`` for a PC run.
+
+    The extra field is admitted from the gate's own product/plan test, never
+    from a caller-declared flag, so every non-PC payload is rejected exactly as
+    before.
+    """
+    if _pc_tool_arguments_gate(payload) is None:
+        return _ORCHESTRATE_ALLOWED_FIELDS
+    return _ORCHESTRATE_ALLOWED_FIELDS | {"tool_arguments"}
 
 
 def _reject_unknown_fields(payload: Mapping[str, Any], *, allowed: frozenset[str]) -> None:
@@ -140,7 +154,7 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
         if not isinstance(payload, Mapping):
             return _service_error("invalid_request", "Request body must be an object.", status_code=400)
         try:
-            _reject_unknown_fields(payload, allowed=_ORCHESTRATE_ALLOWED_FIELDS)
+            _reject_unknown_fields(payload, allowed=_wire_allowed_fields(payload))
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         app_id = payload.get("app_id")
@@ -162,6 +176,18 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             max_retries = int(payload.get("max_retries", 3))
             require_evidence = bool(payload.get("require_evidence", False))
             require_verification = bool(payload.get("require_verification", False))
+            # Trusted tool authority is attached for the gated PC plan only.
+            # Adding it for every registered app would widen what the
+            # identity-bound lane executes beyond this fix's scope.
+            tool_kwargs = (
+                {}
+                if _pc_tool_arguments_gate(payload) is None
+                else self._tool_request_kwargs(
+                    app_id=app_id,
+                    plan=plan,
+                    raw_tool_arguments=payload.get("tool_arguments"),
+                )
+            )
             orch_req = OrchestrationRequest(
                 execution_request=exec_req,
                 context=ctx,
@@ -172,7 +198,14 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
                 max_retries=max_retries,
                 require_evidence=require_evidence,
                 require_verification=require_verification,
+                **tool_kwargs,
             )
+            attached = self._attach_pc_query_step_driver(
+                app_id=app_id, orch_req=orch_req, exec_req=exec_req,
+            )
+            if isinstance(attached, ServiceResponse):
+                return attached
+            orch_req = attached
             runtime = self._runtime_factory(app_id)
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
             result = await runner.run(orch_req)
@@ -183,6 +216,8 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
                 status_code=409,
             )
         except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except OrchestrationError as exc:
             status_code = 422 if exc.code in {"invalid_plan", "authority_widening_rejected"} else 400
@@ -303,6 +338,8 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
                 )
             record = claimed_record
         except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except (TypeError, ValueError):
             return _service_error("invalid_request", "Resume request is invalid.", status_code=400)

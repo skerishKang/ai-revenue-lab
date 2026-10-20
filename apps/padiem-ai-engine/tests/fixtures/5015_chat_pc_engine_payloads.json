@@ -1,0 +1,108 @@
+{
+  "_provenance": {
+    "chat_builders": [
+      "app.chat_pc_drive.build_chat_pc_agent_plan",
+      "app.chat_pc_drive.build_chat_pc_files_agent_plan",
+      "app.orchestration_bridge.B62EngineOrchestrationBridge.build_engine_request",
+      "padiem_ai_engine_client.client._run_payload (produces the HTTP body)"
+    ],
+    "normalization": "trace_id pinned; nothing else rewritten"
+  },
+  "drives": {
+    "additional_system_context": "PC 작업 지침",
+    "agent": {
+      "description": "Padiem Chat request",
+      "id": "b62_general",
+      "max_tokens": 1024,
+      "model_policy": {
+        "model": "google/gemini-3.1-flash-lite"
+      },
+      "optimize_for": "korean",
+      "system_instruction": "Answer briefly.",
+      "task_type": "general",
+      "title": "Padiem Chat"
+    },
+    "agent_plan": {
+      "agent_id": "agent:padiem:chat-pc-query@1",
+      "steps": [
+        {
+          "objective": "Query verified PC filesystem drives",
+          "step_id": "query_drives",
+          "tool_id": "claw.pc.query_drives"
+        }
+      ]
+    },
+    "app_id": "padiem-chat",
+    "execution_context": {
+      "trace_id": "b62_orch_5015fixture"
+    },
+    "max_retries": 3,
+    "messages": [
+      {
+        "content": "내 PC에 어떤 드라이브가 있어?",
+        "role": "user"
+      }
+    ],
+    "require_evidence": false,
+    "require_verification": false,
+    "session_id": "chat_pc_dddddddddddddddddddddddddddddddd",
+    "subject_id": "sub_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "tool_arguments": {
+      "query_drives": {
+        "device_id": "dev_cccccccccccccccccccccccccccccccc"
+      }
+    },
+    "trace_id": "b62_orch_5015fixture"
+  },
+  "files": {
+    "additional_system_context": "PC 작업 지침",
+    "agent": {
+      "description": "Padiem Chat request",
+      "id": "b62_general",
+      "max_tokens": 1024,
+      "model_policy": {
+        "model": "google/gemini-3.1-flash-lite"
+      },
+      "optimize_for": "korean",
+      "system_instruction": "Answer briefly.",
+      "task_type": "general",
+      "title": "Padiem Chat"
+    },
+    "agent_plan": {
+      "agent_id": "agent:padiem:chat-pc-query@1",
+      "steps": [
+        {
+          "objective": "List the approved folder on the verified owner PC",
+          "step_id": "list_files",
+          "tool_id": "claw.pc.list_files"
+        },
+        {
+          "objective": "Read the requested UTF-8 text file",
+          "step_id": "read_file",
+          "tool_id": "claw.pc.read_file"
+        }
+      ]
+    },
+    "app_id": "padiem-chat",
+    "execution_context": {
+      "trace_id": "b62_orch_5015fixture"
+    },
+    "max_retries": 3,
+    "messages": [
+      {
+        "content": "내 PC의 MeshCentralTrial 폴더에서 파일 목록을 보고 txt 내용을 읽어줘",
+        "role": "user"
+      }
+    ],
+    "require_evidence": false,
+    "require_verification": false,
+    "session_id": "chat_pc_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "subject_id": "sub_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "tool_arguments": {
+      "files": {
+        "device_id": "dev_cccccccccccccccccccccccccccccccc"
+      }
+    },
+    "trace_id": "b62_orch_5015fixture"
+  }
+}
