@@ -28,6 +28,7 @@ jobs:
         working-directory: apps/padiem-chat
     steps:
       - name: Verify exact PR head
+        working-directory: .
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ inputs.pr_number }}
