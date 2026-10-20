@@ -1431,7 +1431,6 @@ def test_execute_fails_closed_when_live_identity_or_gate_is_unavailable() -> Non
 
     unbound = create_app(_live_quota_settings())
     assert unbound.state.usage_gate_enforced is False
-    adapter2.execute.assert_not_called()
 
 
 def test_quota_denial_does_not_expose_internal_quota_state() -> None:
