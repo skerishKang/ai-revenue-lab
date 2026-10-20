@@ -14,8 +14,8 @@ Automatic (D14, #2044):
     No scorer is consulted; task_type / required_capabilities /
     optimize_for / provider_order / allow_paid are accepted but ignored
     (recorded as ignored_options in reason_codes).
-  - allow_external_fallback=False → one attempt; max_attempts bounds the
-    chain walk (capped at the chain length).
+  - allow_external_fallback=False → one attempt; otherwise the chain walk is
+    the chain length. No attempt count narrows it (#4317).
   - Fallback on: timeout, transport failure, HTTP 429, HTTP 5xx
   - No fallback on: HTTP 400/401/403/404/409/422/any other 4xx,
     malformed request, malformed upstream response, missing key,
@@ -109,7 +109,11 @@ class RouteDecision:
     evidence_status: str
     request_id: str
     provider_mode: str
-    max_attempts: int
+    # There is no attempt limit here. The number of candidates one dispatch
+    # may try is the number of candidates the declared product grade allows:
+    # the selected model plus ``eligible_fallback``. B14 walks that list in
+    # order, advances only on a recoverable provider error, visits each
+    # candidate once, and stops when the list is exhausted (#4317).
     credential_source: str = ""  # platform_secret (OpenRouter retired, D14 #2044)
     platform_provider_id: str = ""
 
@@ -160,7 +164,6 @@ def resolve_manual_route(
     model_id: str,
     allow_external_fallback: bool = False,
     product_tier: str = "free",
-    max_attempts: int | None = None,
 ) -> RouteDecision:
     """Resolve a manual route for a specific model ID.
 
@@ -171,6 +174,11 @@ def resolve_manual_route(
     selected primary with trusted product grade instead receives
     exactly one preselected grade fallback on recoverable provider failure.
     The generic allow_external_fallback flag does not disable this fixed pair.
+
+    The number of candidates this route may try is the number of candidates
+    it allows: the selected model plus its eligible fallback list. No separate
+    attempt count narrows that list, so a grade with more allowed candidates
+    is tried in full without any numeric ceiling to maintain (#4317).
     """
     request_id = _new_request_id()
     # Owner exclusions override historical B14 registration in live mode.
@@ -264,13 +272,6 @@ def resolve_manual_route(
     elif not allow_external_fallback:
         reason_codes.append("external_fallback_disabled")
 
-    default_attempts = (
-        1 + len(fallback_candidates)
-        if owner_tier_pair
-        else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3))
-    )
-    effective_attempts = min(default_attempts, max_attempts) if max_attempts is not None else default_attempts
-
     return RouteDecision(
         route_mode=RouteMode.MANUAL.value,
         selected_provider=cm.provider,
@@ -286,7 +287,6 @@ def resolve_manual_route(
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
         provider_mode=runtime_config.provider_mode,
-        max_attempts=effective_attempts,
         credential_source=cred_source,
         platform_provider_id=plat_pid,
     )
@@ -313,7 +313,6 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
         allow_external_fallback = opts.get("allow_external_fallback", True)
         return resolve_chain_route(
             allow_external_fallback=allow_external_fallback,
-            max_attempts=opts.get("max_attempts"),
             requested_options=opts,
         )
 
@@ -322,7 +321,6 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
         model_id,
         allow_external_fallback=allow_external_fallback,
         product_tier=opts.get("product_tier", "free"),
-        max_attempts=opts.get("max_attempts"),
     )
 
 

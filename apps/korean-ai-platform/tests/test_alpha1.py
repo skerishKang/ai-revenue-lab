@@ -303,7 +303,8 @@ class TestManualRoute:
         d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
         assert d.fallback_allowed is False
         assert d.eligible_fallback == []
-        assert d.max_attempts == 1
+        # #4317: with no eligible fallback the primary is the only
+        # candidate, so the walk is a single attempt without a count.
         assert "external_fallback_disabled" in d.reason_codes
 
     def test_manual_route_explicit_fallback_enabled(self, two_model_catalog):
@@ -378,7 +379,7 @@ class TestAutoRoute:
         assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
-        assert data["max_attempts"] == 1
+        assert data["attempt_candidates"] == 1
 
     def test_resolve_unknown_model_400(self, client):
         resp = client.post(
@@ -1673,7 +1674,7 @@ class TestManualRouteDefaultFallback:
         assert data["route_mode"] == "manual"
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
-        assert data["max_attempts"] == 1
+        assert data["attempt_candidates"] == 1
         assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_empty_business14_resolve(self, client):
@@ -1690,7 +1691,7 @@ class TestManualRouteDefaultFallback:
         data = resp.json()
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
-        assert data["max_attempts"] == 1
+        assert data["attempt_candidates"] == 1
         assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_explicit_false_resolve(self, client):
@@ -1707,7 +1708,7 @@ class TestManualRouteDefaultFallback:
         data = resp.json()
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
-        assert data["max_attempts"] == 1
+        assert data["attempt_candidates"] == 1
 
     def test_manual_model_explicit_true_resolve(self, client, two_model_catalog):
         """manual model, allow_external_fallback=true → fallback candidates populated."""
@@ -1723,7 +1724,7 @@ class TestManualRouteDefaultFallback:
         data = resp.json()
         assert data["fallback_allowed"] is True
         assert len(data["eligible_fallback"]) > 0
-        assert data["max_attempts"] > 1
+        assert data["attempt_candidates"] > 1
         assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_no_business14_chat_one_attempt(self, client):

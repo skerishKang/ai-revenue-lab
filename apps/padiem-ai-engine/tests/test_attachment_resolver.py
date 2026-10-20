@@ -485,7 +485,7 @@ def _payload(ref: str, app_id: str = APP_ID) -> dict[str, Any]:
             "optimize_for": "korean",
             "max_tokens": 512,
             "required_capabilities": ["chat", "image"],
-            "model_policy": {"model": "b14/auto", "allow_external_fallback": False, "max_attempts": 1},
+            "model_policy": {"model": "b14/auto", "allow_external_fallback": False},
         },
         "messages": [{"role": "user", "content": "이 사진을 설명해줘"}],
         "attachment_ref": ref,

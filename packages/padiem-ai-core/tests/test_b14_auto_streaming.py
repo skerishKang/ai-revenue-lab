@@ -65,8 +65,7 @@ def auto_request(
             required_capabilities=("free",),
             optimize_for="balanced",
             allow_external_fallback=True,
-            max_attempts=2,
-        ),
+            ),
     )
 
 
@@ -152,7 +151,6 @@ def test_auto_stream_uses_fixed_staged_endpoint_and_preserves_routing_options():
         optimize_for="korean",
         allow_external_fallback=True,
         provider_order=("OpenRouter (free router)", "Stealth"),
-        max_attempts=2,
     )
     client = B14StreamingClient(
         B14ExecutionConfig(BASE_URL),
@@ -172,8 +170,7 @@ def test_auto_stream_uses_fixed_staged_endpoint_and_preserves_routing_options():
             "optimize_for": "korean",
             "allow_external_fallback": True,
             "provider_order": ["OpenRouter (free router)", "Stealth"],
-            "max_attempts": 2,
-        },
+            },
         "stream": True,
     }
     assert events[0].delta_content == "자동"
@@ -236,7 +233,7 @@ def test_existing_manual_stream_still_rejects_auto_and_fallback_before_network()
     explicit_with_fallback = B14ChatRequest(
         messages=({"role": "user", "content": "안녕하세요"},),
         model="openrouter/free",
-        routing=B14RoutingOptions(allow_external_fallback=True, max_attempts=2),
+        routing=B14RoutingOptions(allow_external_fallback=True),
     )
     with pytest.raises(B14ExecutionError) as fallback_exc:
         asyncio.run(manual_collect(explicit_with_fallback))
