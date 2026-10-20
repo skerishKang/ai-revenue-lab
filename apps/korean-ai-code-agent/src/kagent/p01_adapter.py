@@ -266,7 +266,7 @@ class ClawOrchestrationOutcome:
         # the browser never receives resume authority or the trusted request.
         return {
             "projection": self.projection.safe_dict(),
-            "answer": redact_secrets(self.answer) if self.answer is not None else None,
+            "answer": self.answer,
             "p01_run_id": self.p01_run_id,
             "p01_event_count": self.p01_event_count,
             "continuation_ref": self.continuation_ref,
@@ -1023,7 +1023,7 @@ class P01CoreOrchestrationAdapter:
                 await on_event(live_terminal)
 
             answer = (
-                redact_secrets(result.execution_result.answer)
+                result.execution_result.answer
                 if run.status is ClawRunStatus.COMPLETED
                 else None
             )
