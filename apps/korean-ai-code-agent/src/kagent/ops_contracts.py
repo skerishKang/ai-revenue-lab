@@ -218,7 +218,7 @@ class ArtifactRef:
         return {
             "artifact_id": self.artifact_id,
             "kind": self.kind,
-            "display_name": redact_secrets(self.display_name),
+            "display_name": self.display_name,
             "content_sha256": self.content_sha256,
         }
 
@@ -318,7 +318,7 @@ class LineItem:
     def safe_dict(self) -> dict[str, Any]:
         return {
             "line_id": self.line_id,
-            "description": redact_secrets(self.description),
+            "description": self.description,
             "quantity": format(self.quantity, "f"),
             "unit": self.unit,
             "item_id": self.item_id,
@@ -743,9 +743,9 @@ class WorkflowEvidenceRecord:
             "object_id": self.object_id,
             "object_version": self.object_version,
             "origin": self.origin.value,
-            "source_ref": redact_secrets(self.source_ref),
-            "summary": redact_secrets(self.summary),
+            "source_ref": self.source_ref,
+            "summary": self.summary,
             "recorded_at": self.recorded_at.isoformat().replace("+00:00", "Z"),
             "authoritative": self.authoritative,
-            "metadata": {key: redact_secrets(value) for key, value in self.metadata},
+            "metadata": dict(self.metadata),
         }

@@ -28,10 +28,10 @@
   ]);
 
   const limits = Object.freeze({
-    imageBytes: 4 * 1024 * 1024,
+    imageBytes: 1024 * 1024 * 1024,
     textBytes: 96 * 1024,
     textChars: 40000,
-    binaryBytes: 2 * 1024 * 1024,
+    binaryBytes: 1024 * 1024 * 1024,
   });
 
   const allDocuments = Object.freeze([...textDocuments, ...binaryDocuments]);

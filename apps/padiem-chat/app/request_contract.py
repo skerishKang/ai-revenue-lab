@@ -12,7 +12,9 @@ from .web_tools import MAX_QUERY_CHARS, normalize_public_url
 
 # #4379: a browser request body carries no PADIEM byte total. The reader
 # stays incremental, so the body is never materialized past the platform's
-# own request limit.
+# own request limit. The main branch raised this constant to a very large
+# finite value; a finite value is still a PADIEM total, so the limit is
+# removed instead of enlarged.
 MAX_BROWSER_BODY_BYTES: int | None = None
 # Deprecated model-input caps remain importable for compatibility; no product
 # pilot count/character ceiling applies before B14. HTTP body safety is separate.

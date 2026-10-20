@@ -1,6 +1,6 @@
 """Authenticated B66 customer template source custody routes (#3884 Slice 1).
 
-    POST /api/b66/template-sources            (upload original, JSON+base64)
+    POST /api/b66/template-sources            (native binary; legacy JSON+base64 accepted)
     GET  /api/b66/template-sources            (owner-scoped list)
     GET  /api/b66/template-sources/{id}       (authenticated original download)
 
@@ -147,10 +147,19 @@ async def b66_template_source_upload(request: Request) -> Response:
         return _error(400, "template_source_body_invalid",
                       "원본 양식 본문을 해석할 수 없습니다.")
 
-    try:
-        body = json.loads(raw_body.decode("utf-8"))
-    except (UnicodeDecodeError, ValueError):
-        return _error(400, "template_source_body_invalid",
+    # Native binary upload: original bytes stay bytes end-to-end. The
+    # legacy JSON+Base64 intake remains readable for older clients.
+    is_binary = request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream"
+    if is_binary:
+        body = {
+            "filename": request.headers.get("x-padiem-template-filename"),
+            "media_type": request.headers.get("x-padiem-template-media-type"),
+        }
+    else:
+        try:
+            body = json.loads(raw_body.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError):
+            return _error(400, "template_source_body_invalid",
                       "원본 양식 본문을 해석할 수 없습니다.")
 
     if _reject_client_owner(body):
@@ -170,7 +179,7 @@ async def b66_template_source_upload(request: Request) -> Response:
         return _error(400, "template_source_filename_invalid",
                       "원본 양식 파일 이름이 올바르지 않습니다.")
 
-    payload = _decode_payload(body.get("content_base64"))
+    payload = raw_body if is_binary else _decode_payload(body.get("content_base64"))
     if payload is None or not payload:
         return _error(400, "template_source_body_invalid",
                       "원본 양식 본문을 해석할 수 없습니다.")

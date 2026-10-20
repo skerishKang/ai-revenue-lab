@@ -45,7 +45,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
-MAX_B66_TEMPLATE_SOURCE_BYTES = 10 * 1024 * 1024
+MAX_B66_TEMPLATE_SOURCE_BYTES = 1024 * 1024 * 1024
 MAX_TEMPLATE_SOURCE_LIST = 50
 MAX_ORIGINAL_FILENAME_CHARS = 200
 # OOXML containers (XLSX/DOCX) are ZIP packages, not bare ZIP magic. These caps

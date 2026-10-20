@@ -150,7 +150,7 @@ def test_routing_options_serialize_current_b14_contract_exactly() -> None:
         ({"task_type": "medical"}, "task_type"),
         ({"optimize_for": "best"}, "optimize_for"),
         ({"max_attempts": 0}, "max_attempts"),
-        ({"max_attempts": 6}, "max_attempts"),
+        ({"max_attempts": -1}, "max_attempts"),
         ({"max_attempts": True}, "max_attempts"),
         ({"allow_external_fallback": "yes"}, "allow_external_fallback"),
         ({"required_capabilities": ["free", "free"]}, "duplicates"),
@@ -160,6 +160,18 @@ def test_routing_options_serialize_current_b14_contract_exactly() -> None:
 def test_routing_options_fail_closed_before_network(kwargs, match: str) -> None:
     with pytest.raises(ValueError, match=match):
         B14RoutingOptions(**kwargs)
+
+
+def test_routing_options_accept_a_budget_above_the_removed_ceiling() -> None:
+    """#4317: the attempt budget is a positive count, not a capped constant.
+
+    B14 bounds the real walk by the candidates the declared product grade
+    allows, so a ceiling here only rejected a budget that covers that list.
+    B14's own gateway has always accepted any positive budget.
+    """
+    options = B14RoutingOptions(max_attempts=6)
+    assert options.max_attempts == 6
+    assert options.to_dict()["max_attempts"] == 6
 
 
 def test_request_requires_an_explicit_model() -> None:

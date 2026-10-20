@@ -10,7 +10,7 @@ from .b14_execution import B14ChatRequest
 # #4379: a B14 image carries no PADIEM byte total, and a multimodal message
 # carries no PADIEM part total. The media type, the magic bytes, the base64
 # shape, the "exactly one image" rule and the text part rule stay.
-MAX_B14_IMAGE_BYTES = 4 * 1024 * 1024
+MAX_B14_IMAGE_BYTES = 1024 * 1024 * 1024
 MAX_B14_MULTIMODAL_PARTS = 4
 _ALLOWED_IMAGE_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 _ALLOWED_ROLES = frozenset({"system", "user", "assistant"})

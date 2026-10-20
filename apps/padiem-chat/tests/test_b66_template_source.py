@@ -801,6 +801,26 @@ def test_upload_success_returns_only_projected_fields():
     assert len(store.upload_calls) == 1
 
 
+def test_native_binary_template_upload_preserves_original_bytes():
+    store = RouteStore()
+    client = _client(store=store)
+    original = _real_xlsx_bytes()
+    response = client.post(
+        "/api/b66/template-sources",
+        content=original,
+        headers={
+            "Content-Type": "application/octet-stream",
+            "X-Padiem-Template-Filename": "quotation.xlsx",
+            "X-Padiem-Template-Media-Type": (
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ),
+        },
+    )
+    assert response.status_code == 201, response.text
+    assert len(store.upload_calls) == 1
+    assert response.json()["template_source"]["byte_length"] == len(original)
+
+
 def test_upload_rejects_invalid_base64_media_type_and_body():
     store = RouteStore()
     client = _client(store=store)
