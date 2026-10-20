@@ -127,7 +127,9 @@ def test_request_policy_keeps_living_learning_as_retry_authority() -> None:
     assert agent.allowed_tools == ()
     assert agent.model_policy["model"] == "b14/auto"
     assert agent.model_policy["allow_external_fallback"] is False
-    assert agent.model_policy["max_attempts"] == 1
+    # #4317: the policy carries no attempt budget. B14 walks the candidates the
+    # declared product grade allows, so the provider cannot pin a count.
+    assert "max_attempts" not in agent.model_policy
     assert request.trace_id is None
 
     user_message = json.loads(request.messages[0]["content"])

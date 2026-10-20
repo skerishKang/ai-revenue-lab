@@ -34,6 +34,7 @@ ZOOM = ROOT / ".github/scripts/b62_glass_zoom_visual_qa.py"
 TAIL = ROOT / ".github/scripts/b62_browser_qa_tail_parallel.py"
 PLANNER = ROOT / ".github/scripts/b62_browser_qa_path_plan.py"
 CANARY = ROOT / ".github/workflows/com2-b62-generic-browser-canary.yml"
+CONTRACT_TEST = ".github/tests/test_b62_glass_zoom_visual_tail_contract.py"
 
 if "playwright.async_api" not in sys.modules:
     _playwright = types.ModuleType("playwright")
@@ -54,6 +55,81 @@ def _function(tree: ast.Module, name: str) -> ast.AsyncFunctionDef:
         for node in ast.walk(tree)
         if isinstance(node, ast.AsyncFunctionDef) and node.name == name
     )
+
+
+def _canary_selector(workflow_source: str):
+    """Rebuild the canary's changed-file selector from its AST.
+
+    The workflow writes the selector as one Python assignment inside a heredoc
+    over the PR's changed-file paths.  Parsing it into prefix clauses and exact
+    path clauses keeps the contract independent of the literal form -- both
+    ``p == 'x'`` and ``p in ('x', 'y')`` are accepted -- without executing
+    workflow code.
+    """
+    assignments = [
+        line.strip()
+        for line in workflow_source.splitlines()
+        if line.strip().startswith("hit=")
+    ]
+    if len(assignments) != 1:
+        raise AssertionError(
+            f"expected exactly one selector assignment, got {len(assignments)}"
+        )
+    body = ast.parse(assignments[0][len("hit="):], mode="eval").body
+    if not isinstance(body, ast.BoolOp) or not isinstance(body.op, ast.Or):
+        raise AssertionError("the selector must be an `or` of scope clauses")
+
+    prefixes: set[str] = set()
+    exacts: set[str] = set()
+    fanout = None
+    for node in ast.walk(body):
+        if isinstance(node, ast.Compare):
+            left = node.left
+            is_len_rows = (
+                isinstance(left, ast.Call)
+                and isinstance(left.func, ast.Name)
+                and left.func.id == "len"
+                and isinstance(left.args[0], ast.Name)
+                and left.args[0].id == "rows"
+            )
+            if is_len_rows and isinstance(node.ops[0], ast.GtE):
+                fanout = node.comparators[0].value
+                continue
+            if not (isinstance(left, ast.Name) and left.id == "p"):
+                continue
+            for op, comparator in zip(node.ops, node.comparators):
+                if isinstance(op, ast.Eq) and isinstance(comparator, ast.Constant):
+                    exacts.add(comparator.value)
+                elif isinstance(op, ast.In) and isinstance(comparator, ast.Tuple):
+                    for element in comparator.elts:
+                        if not isinstance(element, ast.Constant):
+                            raise AssertionError("non-literal path in the selector")
+                        exacts.add(element.value)
+                else:
+                    raise AssertionError(f"unsupported clause on p: {ast.dump(node)}")
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "startswith"
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "p"
+        ):
+            prefixes.add(node.args[0].value)
+
+    if not prefixes or not exacts or not isinstance(fanout, int):
+        raise AssertionError(
+            f"incomplete selector: prefixes={sorted(prefixes)} exacts={sorted(exacts)} fanout={fanout}"
+        )
+
+    def select(paths):
+        paths = set(paths)
+        if len(paths) >= fanout:
+            return True
+        return any(
+            any(p.startswith(prefix) for prefix in prefixes) or p in exacts for p in paths
+        )
+
+    return select
 
 
 class GlassZoomPauseClockContract(unittest.TestCase):
@@ -235,11 +311,22 @@ class VisualTailScopeSelectionContract(unittest.TestCase):
             self.assertIn(f'"{script}"', source, script)
 
     def test_the_com2_generic_browser_canary_selects_its_own_scripts(self):
-        source = CANARY.read_text(encoding="utf-8")
+        selector = _canary_selector(CANARY.read_text(encoding="utf-8"))
         for script in self.LANE_SCRIPTS:
-            self.assertIn(f"p=='{script}'", source, script)
+            self.assertTrue(selector({script}), script)
+            self.assertTrue(selector({script, "docs/README.md"}), script)
+        # #5425 added the lane contract test itself, so a QA-only change to it
+        # still selects the canary.
+        self.assertTrue(selector({CONTRACT_TEST}), CONTRACT_TEST)
         # The existing product-surface clauses stay in place.
-        self.assertIn("p.startswith('apps/padiem-chat/')", source)
+        self.assertTrue(selector({"apps/padiem-chat/static/app.css"}))
+        self.assertTrue(selector({"packages/padiem-ai-core/x.py"}))
+        self.assertTrue(selector({"packages/padiem-control-plane/x.py"}))
+        self.assertTrue(selector({"apps/korean-ai-code-agent/x.py"}))
+        self.assertTrue(selector({"apps/padiem-ai-engine/clients/python/x.py"}))
+        # A change outside the lane does not select it.
+        self.assertFalse(selector({"apps/padiem-ai-engine/app/main.py"}))
+        self.assertFalse(selector({"docs/operations/NOTE.md"}))
 
     def test_the_canary_still_requires_an_open_same_repository_pr_head(self):
         source = CANARY.read_text(encoding="utf-8")

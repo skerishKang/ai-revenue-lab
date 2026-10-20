@@ -67,10 +67,12 @@ def test_full_chain_selects_agnes_first(monkeypatch):
         f"selected:{AGNES_MODEL_ID}",
     ]
     assert d.fallback_allowed is True
-    assert d.max_attempts == 2
+    # #4317: the chain length is the whole budget; there is no attempt
+    # count to narrow it.
+    assert len(d.eligible_fallback) + 1 == 2
     assert [f["model_id"] for f in d.eligible_fallback] == [
         POOLSIDE_MODEL_ID,
-    ]
+       ]
     assert all(f["reason"] == "fixed_chain_fallback" for f in d.eligible_fallback)
     assert all(f["route_id"] == f"platform:{f['model_id']}" for f in d.eligible_fallback)
     assert [f["platform_provider_id"] for f in d.eligible_fallback] == ["poolside"]
@@ -103,7 +105,7 @@ def test_no_secrets_raises_no_safe_route():
 def test_mock_mode_resolves_fixed_chain_without_provider_secrets():
     d = rp.resolve_chain_route()
     assert d.selected_model == AGNES_MODEL_ID
-    assert d.max_attempts == 2
+    assert len(d.eligible_fallback) + 1 == 2
     assert d.eligible_fallback[0]["model_id"] == POOLSIDE_MODEL_ID
     assert d.credential_available is False
     assert d.evidence_status == "resolved_not_called"
@@ -113,16 +115,24 @@ def test_allow_external_fallback_false_is_single_attempt(monkeypatch):
     _set_all_secrets(monkeypatch)
     d = rp.resolve_chain_route(allow_external_fallback=False)
     assert d.fallback_allowed is False
+    # #4317: with no eligible fallback the candidate list holds only the
+    # primary, so the walk is a single attempt without any attempt count.
     assert d.eligible_fallback == []
-    assert d.max_attempts == 1
     assert "external_fallback_disabled" in d.reason_codes
 
 
-def test_max_attempts_bounds_chain_walk(monkeypatch):
+def test_the_chain_length_is_the_whole_budget(monkeypatch):
+    """#4317: an attempt count no longer narrows the chain walk.
+
+    The chain has two positions and both are candidates. Nothing can shorten
+    that list, so there is no numeric ceiling to keep in step with it.
+    """
     _set_all_secrets(monkeypatch)
-    assert rp.resolve_chain_route(max_attempts=2).max_attempts == 2
-    assert rp.resolve_chain_route(max_attempts=99).max_attempts == 2
-    assert rp.resolve_chain_route().max_attempts == 2
+    d = rp.resolve_chain_route()
+    assert [f["model_id"] for f in d.eligible_fallback] == [POOLSIDE_MODEL_ID]
+    assert len(d.eligible_fallback) + 1 == len(rp.B14_AUTO_CHAIN)
+    # The option is accepted for wire compatibility and changes nothing.
+    assert not hasattr(d, "max_attempts")
 
 
 def test_scorer_options_are_accepted_but_ignored(monkeypatch):
@@ -189,4 +199,4 @@ def test_resolve_endpoint_reports_fixed_chain(client, monkeypatch):
     assert body["selected_model"] == AGNES_MODEL_ID
     assert body["selected_route_id"] == f"platform:{AGNES_MODEL_ID}"
     assert "routing_policy:fixed_chain_v1" in body["reason_codes"]
-    assert body["max_attempts"] == 2
+    assert body["attempt_candidates"] == 2

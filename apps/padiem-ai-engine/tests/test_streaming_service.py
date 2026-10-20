@@ -35,7 +35,6 @@ def valid_payload(model: str = "b14/auto") -> dict:
             "model_policy": {
                 "model": model,
                 "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         },
         "messages": [{"role": "user", "content": "안녕"}],

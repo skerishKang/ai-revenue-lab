@@ -81,9 +81,8 @@ _UPSTREAM_RETRY_MAX_RETRIES = 2
 _UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
 _UPSTREAM_RETRY_BUDGET_SECONDS = GATEWAY_WALL_SECONDS
 # Retryable transport classes may be retried on a SAME route for explicit
-# manual routes. The owner-designated auto chain has a total upstream-attempt
-# budget equal to ``decision.max_attempts``: each chain candidate gets at most
-# one call so that Agnes -> Poolside remains a two-call maximum.
+# manual routes. The owner-designated auto chain gives each chain candidate at
+# most one call, so a chain stays a two-call maximum for its two positions.
 _SAME_ROUTE_RETRYABLE_CODES = frozenset({
     "upstream_timeout",
     "upstream_server_error",
@@ -373,9 +372,11 @@ def _validate_b14_options(raw: Any) -> dict:
 
     ma = raw.get("max_attempts")
     if ma is not None:
+        # #4317: the option is accepted for wire compatibility and no longer
+        # bounds anything. The number of candidates one dispatch may try is
+        # the number of candidates the declared product grade allows.
         if isinstance(ma, bool) or not isinstance(ma, int) or ma < 1:
             raise _InvalidBody("business14.max_attempts must be a positive integer")
-        opts["max_attempts"] = ma
 
     mr = raw.get("max_retries")
     if mr is not None:
@@ -651,7 +652,9 @@ async def pilot_router_resolve(
             "credential_status": decision.credential_status,
             "evidence_status": decision.evidence_status,
             "provider_mode": decision.provider_mode,
-            "max_attempts": decision.max_attempts,
+            # #4317: the candidates this route may try, in order. The count is
+            # the whole budget; there is no separate attempt ceiling.
+            "attempt_candidates": 1 + len(decision.eligible_fallback),
         })
 
     except NoSafeRoute as e:
@@ -815,7 +818,9 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         for fc in decision.eligible_fallback
     ] if decision.fallback_allowed else []
 
-    max_attempts = decision.max_attempts
+    # #4317: the candidate list is the whole budget. Every candidate the
+    # declared product grade allows is tried, in order, and nothing narrows
+    # that list.
     # B14 does not duplicate provider requests by default. Optional retries
     # require explicit caller opt-in and never widen the configured maximum.
     same_route_retry_limit = b14_opts.get("max_retries", 0)
@@ -879,7 +884,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         return result
 
     budget_exhausted = False
-    for idx in range(min(max_attempts, len(candidates))):
+    for idx in range(len(candidates)):
         if budget_exhausted:
             break
         current = candidates[idx]
@@ -982,8 +987,9 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             })
 
             # Same-route bounded retry for explicit manual routes (#1982).
-            # fixed_chain_v1 treats max_attempts as the total upstream call
-            # budget, so auto candidates advance without a same-route retry.
+            # The candidate list is the whole budget, so a same-route retry
+            # stays inside its own explicit limit and auto candidates advance
+            # without a same-route retry.
             # Non-retryable classes (auth, bad request) never reach a retry:
             # they are not in _SAME_ROUTE_RETRYABLE_CODES and the
             # fallback-prohibited check below breaks on the first attempt.
@@ -1011,7 +1017,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
 
             if not rcore.is_error_fallback_allowed(error.code):
                 break
-            if idx + 1 >= max_attempts or idx >= len(candidates) - 1:
+            if idx >= len(candidates) - 1:
                 break
             advance_to_next_candidate = True
             break  # -> next fallback candidate

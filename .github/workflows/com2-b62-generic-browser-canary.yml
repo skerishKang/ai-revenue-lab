@@ -46,7 +46,7 @@ jobs:
           import json,os
           rows=json.loads(os.environ['FILES'])
           paths={x.get('filename','') for x in rows} | {x.get('previous_filename','') for x in rows}
-          hit=len(rows)>=100 or any(p.startswith('apps/padiem-chat/') or p.startswith('packages/padiem-ai-core/') or p.startswith('packages/padiem-control-plane/') or p.startswith('apps/korean-ai-code-agent/') or p.startswith('apps/padiem-ai-engine/clients/python/') or p=='.github/scripts/b62_projects_browser_qa.py' or p=='.github/scripts/b62_browser_visual_qa.py' or p=='.github/scripts/b62_glass_shell_visual_qa.py' or p=='.github/scripts/b62_glass_zoom_visual_qa.py' or p=='.github/scripts/b62_chat_gutter_visual_qa.py' or p=='.github/scripts/b62_browser_qa_tail_parallel.py' for p in paths)
+          hit=len(rows)>=100 or any(p.startswith('apps/padiem-chat/') or p.startswith('packages/padiem-ai-core/') or p.startswith('packages/padiem-control-plane/') or p.startswith('apps/korean-ai-code-agent/') or p.startswith('apps/padiem-ai-engine/clients/python/') or p in ('.github/scripts/b62_projects_browser_qa.py', '.github/scripts/b62_browser_visual_qa.py', '.github/scripts/b62_glass_shell_visual_qa.py', '.github/scripts/b62_glass_zoom_visual_qa.py', '.github/scripts/b62_chat_gutter_visual_qa.py', '.github/scripts/b62_browser_qa_tail_parallel.py', '.github/tests/test_b62_glass_zoom_visual_tail_contract.py') for p in paths)
           print('true' if hit else 'false')
           PY
           )"

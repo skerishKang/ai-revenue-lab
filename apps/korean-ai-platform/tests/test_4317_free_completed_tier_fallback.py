@@ -43,24 +43,25 @@ def _ready(monkeypatch):
 
 
 def test_the_completed_chat_option_set_resolves_the_whole_owner_roster(monkeypatch):
-    """Without an attempt pin, B14 derives the count from the allowed candidates."""
+    """The allowed candidate list is the whole budget, with no attempt count."""
     _ready(monkeypatch)
     decision = router_core.resolve_route(TIER_DEFAULT_B14_MODEL, dict(COMPLETED_CHAT_OPTIONS))
     assert decision.route_mode == "manual"
     assert decision.selected_model == TIER_DEFAULT_B14_MODEL
     assert decision.fallback_allowed is True
-    assert decision.max_attempts == 1 + len(FREE_ROSTER)
     assert [item["model_id"] for item in decision.eligible_fallback] == list(FREE_ROSTER)
     assert "owner_selected_tier_fallback:free" in decision.reason_codes
+    # There is no attempt count on the decision any more.
+    assert not hasattr(decision, "max_attempts")
 
 
-def test_an_explicit_caller_cap_still_wins(monkeypatch):
-    """A lane that must not substitute another model keeps its one-attempt cap."""
+def test_an_explicit_attempt_count_cannot_narrow_the_owner_roster(monkeypatch):
+    """#4317: a caller-declared count no longer shortens the owner roster."""
     _ready(monkeypatch)
     decision = router_core.resolve_route(
         TIER_DEFAULT_B14_MODEL, dict(COMPLETED_CHAT_OPTIONS, max_attempts=1),
     )
-    assert decision.max_attempts == 1
+    assert decision.fallback_allowed is True
     assert [item["model_id"] for item in decision.eligible_fallback] == list(FREE_ROSTER)
 
 
@@ -216,3 +217,85 @@ def test_the_gateway_does_not_advance_on_a_non_recoverable_failure(client, monke
     # Exactly one provider call: no substitution on a non-recoverable error.
     assert len(calls) == 1
     assert calls[0]["model_id"] == TIER_DEFAULT_B14_MODEL
+
+
+def test_a_roster_longer_than_four_is_walked_in_full_with_no_numeric_cap(
+    client, monkeypatch
+):
+    """#4317: more allowed candidates means more attempts, with no ceiling.
+
+    The Free grade ships three backups today. The mechanism must not carry a
+    number that a longer roster would have to raise, so this drives a longer
+    roster and proves every candidate is tried in order.
+    """
+    from app.pilot import b14_runtime_config as rcfg
+    from app.pilot import platform as plat
+    from app.pilot import tier_fallback
+
+    long_roster = (
+        "google/gemma-4-26b-a4b-it",
+        "google/gemini-3.5-flash-lite",
+        "google/gemma-4-31b-it",
+        "agnes-ai/agnes-3.0-flash",
+        "poolside/laguna-s-2.1",
+        "inception/mercury-2.5",
+    )
+    assert len(long_roster) > 3
+    monkeypatch.setattr(
+        tier_fallback, "TIER_FALLBACK_B14_MODELS",
+        {**tier_fallback.TIER_FALLBACK_B14_MODELS, "free": long_roster},
+    )
+    _ready(monkeypatch)
+
+    rcfg.provider_mode = "live"
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-free-agnes-0123456789abcdef")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-free-poolside-0123456789abcdef")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_11", "sk-free-inception-0123456789abcdef")
+
+    original = plat.call_platform_chat_completions
+    calls: list[str] = []
+
+    async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages,
+                   temperature=0.2, max_tokens=300, transport=None):
+        calls.append(model_id)
+        if len(calls) <= len(long_roster):
+            raise UpstreamServerError()
+        return {
+            "id": "cmpl-long-roster",
+            "object": "chat.completion",
+            "model": upstream_model,
+            "choices": [{
+                "index": 0,
+                "message": {"role": "assistant", "content": "OK"},
+                "finish_reason": "stop",
+            }],
+            "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
+            "_live": True,
+            "_requested_upstream_model": upstream_model,
+            "_actual_response_model": upstream_model,
+        }
+
+    plat.call_platform_chat_completions = fake
+    try:
+        response = client.post(
+            "/api/pilot/v1/chat/completions",
+            json={
+                "model": TIER_DEFAULT_B14_MODEL,
+                "messages": [{"role": "user", "content": "hi"}],
+                "business14": dict(COMPLETED_CHAT_OPTIONS),
+            },
+        )
+    finally:
+        plat.call_platform_chat_completions = original
+
+    assert response.status_code == 200
+    # The primary plus every roster candidate, each visited exactly once, and
+    # the last one answered.
+    expected = [TIER_DEFAULT_B14_MODEL, *long_roster]
+    assert calls == expected
+    assert len(set(calls)) == len(calls)
+    business = response.json()["business14"]
+    assert business["fallback_used"] is True
+    assert business["attempt_count"] == len(expected)
+    assert business["selected_model"] == long_roster[-1]
