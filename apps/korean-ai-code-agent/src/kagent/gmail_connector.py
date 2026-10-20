@@ -115,7 +115,7 @@ class AuthorizedGmailHttpPort(Protocol):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> dict[str, Any]:
         ...

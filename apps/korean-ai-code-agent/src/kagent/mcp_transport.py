@@ -14,7 +14,9 @@ from .connector_platform import (
 from .contracts import ContractError
 
 MAX_MCP_TOOLS = 128
-REQUEST_TIMEOUT_SECONDS = 30
+# #4379: an MCP provider request carries no PADIEM client deadline. None
+# means the provider's own timeout applies.
+REQUEST_TIMEOUT_SECONDS: int | None = None
 _TOOL_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:\-/]{0,255}$")
 
 

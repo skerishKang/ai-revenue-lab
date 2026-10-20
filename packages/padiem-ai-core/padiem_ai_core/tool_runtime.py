@@ -600,7 +600,9 @@ class ToolRuntime:
             mark_execution_dispatch_started()
             raw_output = await asyncio.wait_for(
                 registered.handler(arguments),
-                timeout=float(spec.timeout_seconds),
+                # #4379: a Tool call has no PADIEM deadline. None waits for the
+        # call to finish.
+        timeout=spec.timeout_seconds,
             )
         except asyncio.TimeoutError as exc:
             duration_ms = max(0, int((time.monotonic() - started) * 1000))

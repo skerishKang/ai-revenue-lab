@@ -54,9 +54,11 @@ def _safe_idempotency_key(value: str) -> str:
     return value
 
 
-def _normalize_timeout(value: float) -> float:
+def _normalize_timeout(value: float | None) -> float | None:
+    if value is None:
+        return None
     if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise ValueError("timeout_seconds must be numeric")
+        raise ValueError("timeout_seconds must be numeric or None")
     timeout = float(value)
     if timeout < MIN_TIMEOUT_SECONDS:
         raise ValueError(
@@ -98,12 +100,16 @@ class ExecutionContext:
 
     ``trace_id`` is observability metadata, not authorization.
     ``idempotency_key`` is replay identity, not authorization.
-    ``timeout_seconds`` is a bounded execution budget.
+    ``timeout_seconds`` is an optional execution budget. None declares no
+    total, so the run is bounded by the platform and by cancellation.
     """
 
     trace_id: str
     idempotency_key: str | None = None
-    timeout_seconds: float = 900.0  # default agent run: 15 minutes
+    # #4379: the declared execution budget has no PADIEM default. None
+    # means the run is bounded by the platform's own request lifetime and by
+    # the caller cancelling it.
+    timeout_seconds: float | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "trace_id", _safe_identifier("trace_id", self.trace_id))

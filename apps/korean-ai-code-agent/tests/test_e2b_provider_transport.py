@@ -43,7 +43,6 @@ from kagent.e2b_provider_transport import (
     E2B_CREDENTIAL_HEADER_NAME,
     E2B_CREATE_PATH,
     E2B_DELETE_PATH_TEMPLATE,
-    E2B_DOCUMENTED_CREATE_TIMEOUT_SECONDS,
     E2B_LIST_PATH,
     E2B_LIVE_EXECUTION_READY,
     E2B_LIVE_TRANSPORT_COMPOSITION_ROOT_WIRED,
@@ -53,6 +52,7 @@ from kagent.e2b_provider_transport import (
     E2B_PLAN_CONTINUOUS_MAX_SECONDS,
     E2B_STATUS_CREATED,
     E2B_TRANSPORT_REAL_CALLS_IN_TEST_OR_CI,
+    E2B_TRANSPORT_TIMEOUT_SECONDS,
     E2B_WIRE_FIELD_MAP,
     E2B_WIRE_OMITTED_KEYS,
     E2BHttpResponse,
@@ -420,7 +420,9 @@ class WireEncodingTests(unittest.TestCase):
                          {"run_id", "repository_ref", "requested_revision"})
 
     def test_timeout_is_always_written_never_inherited(self) -> None:
-        self.assertEqual(E2B_DOCUMENTED_CREATE_TIMEOUT_SECONDS, 15)
+        # #4379: the adapter pins no client deadline, so the provider's own
+        # documented default applies.
+        self.assertIsNone(E2B_TRANSPORT_TIMEOUT_SECONDS)
         for ttl in (60, 900, SANDBOX_LEASE_MAX_TTL_SECONDS):
             with self.subTest(ttl=ttl):
                 self.assertEqual(encode_e2b_create_body(launch_payload(timeout=ttl))["timeout"], ttl)

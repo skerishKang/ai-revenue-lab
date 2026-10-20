@@ -101,7 +101,7 @@ class AuthorizedGoogleDriveHttpPort(Protocol):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> dict[str, Any]:
         ...
 
@@ -113,7 +113,7 @@ class AuthorizedGoogleDriveHttpPort(Protocol):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> str:
         ...
 
