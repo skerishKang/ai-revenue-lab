@@ -176,10 +176,13 @@ def test_invalid_base64_mime_or_magic_rejected(client, url):
     assert response.status_code == 422
 
 
-def test_decoded_image_over_4_mib_rejected_without_network():
-    too_large = b"\x89PNG\r\n\x1a\n" + (b"x" * MAX_IMAGE_BYTES)
-    with pytest.raises(ValueError, match="4 MiB"):
-        validate_image_data_url(data_url("image/png", too_large))
+def test_decoded_image_over_the_old_4_mib_bound_is_accepted():
+    # #4379: a pilot image carries no PADIEM byte total. The media type and
+    # the magic bytes are still verified, and no network call is made.
+    over_the_old_bound = b"\x89PNG\r\n\x1a\n" + (b"x" * (MAX_IMAGE_BYTES + 1))
+    assert validate_image_data_url(data_url("image/png", over_the_old_bound)) == (
+        data_url("image/png", over_the_old_bound)
+    )
 
 
 def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch):

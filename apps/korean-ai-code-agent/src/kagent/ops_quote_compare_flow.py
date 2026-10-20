@@ -444,14 +444,14 @@ class SupplierQuoteComparisonOutcome:
         return {
             "negotiation_id": draft.negotiation_id,
             "supplier_id": draft.supplier_id,
-            "supplier_label": redact_secrets(self.label(draft.supplier_id)),
+            "supplier_label": self.label(draft.supplier_id),
             "quote_id": draft.quote_id,
             "quote_version": draft.quote_version,
             "version": draft.version,
             "current_total": target.current_total.safe_dict(),
             "target_total": target.target_total.safe_dict(),
             "basis": target.basis,
-            "message": redact_secrets(draft.message),
+            "message": draft.message,
             "status": "draft_only",
             "send_performed": False,
         }

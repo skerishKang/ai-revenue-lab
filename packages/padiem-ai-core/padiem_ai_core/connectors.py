@@ -49,6 +49,10 @@ GMAIL_BASE_URL = "https://gmail.googleapis.com/gmail/v1"
 
 # Bounds ported verbatim from kagent gmail_contracts.py:15-19 and
 # gmail_connector.py:37-45.
+# #4379: a connector projection carries no PADIEM total. The Gmail
+# projection, the thread projection and the attachment manifest are no longer
+# refused or truncated for their size. These symbols are retained for import
+# compatibility and are no longer enforced.
 MAX_MESSAGE_BODY_CHARS = 20_000
 MAX_THREAD_MESSAGES = 8
 MAX_THREAD_BODY_CHARS = 60_000
@@ -199,11 +203,11 @@ def _optional_ref(value: str | None, field_name: str) -> str | None:
     return _safe_ref(value, field_name)
 
 
-def _bounded_text(value: str, field_name: str, limit: int) -> str:
+def _bounded_text(value: str, field_name: str, limit: int | None) -> str:
     if not isinstance(value, str):
         raise GmailContractError(f"{field_name} must be a string")
     normalized = value.strip()
-    if len(normalized) > limit:
+    if limit is not None and len(normalized) > limit:
         raise GmailContractError(f"{field_name} exceeds {limit} characters")
     return normalized
 
@@ -266,7 +270,7 @@ class GmailBodySegment:
             except (TypeError, ValueError) as exc:
                 raise GmailContractError("invalid Gmail body kind") from exc
         object.__setattr__(
-            self, "text", _bounded_text(self.text, "body text", MAX_MESSAGE_BODY_CHARS)
+            self, "text", _bounded_text(self.text, "body text", None)
         )
 
     def safe_dict(self) -> dict[str, Any]:
@@ -373,17 +377,15 @@ class GmailMessageProjection:
             not isinstance(segment, GmailBodySegment) for segment in self.body_segments
         ):
             raise GmailContractError("body_segments must contain GmailBodySegment values")
-        total_chars = sum(len(segment.text) for segment in self.body_segments)
-        if total_chars > MAX_MESSAGE_BODY_CHARS:
-            raise GmailContractError("message body exceeds bounded context size")
+        # #4379: the projected body carries no character total.
         label_ids = tuple(_safe_ref(value, "label_id") for value in self.label_ids)
         if len(label_ids) != len(set(label_ids)):
             raise GmailContractError("label_ids must be unique")
         object.__setattr__(self, "label_ids", label_ids)
-        if len(self.attachments) > MAX_ATTACHMENTS_PER_MESSAGE or any(
+        if any(
             not isinstance(item, GmailAttachmentManifest) for item in self.attachments
         ):
-            raise GmailContractError("attachments exceed bounded manifest")
+            raise GmailContractError("attachments must contain manifest values")
         if any(item.message_id != self.message_id for item in self.attachments):
             raise GmailContractError("attachment message_id must match message")
         object.__setattr__(
@@ -417,19 +419,13 @@ class GmailThreadProjection:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "thread_id", _safe_ref(self.thread_id, "thread_id"))
-        if not self.messages or len(self.messages) > MAX_THREAD_MESSAGES:
-            raise GmailContractError("thread must contain between 1 and bounded maximum messages")
+        if not self.messages:
+            raise GmailContractError("thread must contain at least one message")
         if any(not isinstance(message, GmailMessageProjection) for message in self.messages):
             raise GmailContractError("messages must contain GmailMessageProjection values")
         if any(message.thread_id != self.thread_id for message in self.messages):
             raise GmailContractError("message thread_id must match thread")
-        body_chars = sum(
-            len(segment.text)
-            for message in self.messages
-            for segment in message.body_segments
-        )
-        if body_chars > MAX_THREAD_BODY_CHARS:
-            raise GmailContractError("thread body exceeds bounded context size")
+        # #4379: the projected thread body carries no character total.
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -581,18 +577,20 @@ def _walk_payload(
     part: dict[str, Any],
     *,
     message_id: str,
-    remaining_chars: int,
+    remaining_chars: int | None,
     attachments: list[GmailAttachmentManifest],
 ) -> tuple[list[GmailBodySegment], int, bool, bool]:
-    """Return segments, chars-used, body-truncated, attachment-manifest-truncated."""
-    if remaining_chars <= 0:
+    """Return segments, chars-used, body-truncated, attachment-manifest-truncated.
+
+    ``remaining_chars=None`` means the body is projected in full. #4379: a
+    connector body is not truncated for its size.
+    """
+    if remaining_chars is not None and remaining_chars <= 0:
         return [], 0, True, False
 
     if _is_attachment_part(part):
         attachment = _attachment_manifest(part, message_id)
         if attachment is None:
-            return [], 0, False, True
-        if len(attachments) >= MAX_ATTACHMENTS_PER_MESSAGE:
             return [], 0, False, True
         attachments.append(attachment)
         return [], 0, False, False
@@ -611,14 +609,16 @@ def _walk_payload(
             child_segments, child_used, child_body_truncated, child_attachment_truncated = _walk_payload(
                 child,
                 message_id=message_id,
-                remaining_chars=max(0, remaining_chars - used),
+                remaining_chars=(
+                    None if remaining_chars is None else max(0, remaining_chars - used)
+                ),
                 attachments=attachments,
             )
             segments.extend(child_segments)
             used += child_used
             body_truncated = body_truncated or child_body_truncated
             attachment_truncated = attachment_truncated or child_attachment_truncated
-            if used >= remaining_chars:
+            if remaining_chars is not None and used >= remaining_chars:
                 body_truncated = body_truncated or any(
                     isinstance(item, dict) for item in child_parts[index + 1 :]
                 )
@@ -634,8 +634,8 @@ def _walk_payload(
         text = _html_to_text(text)
     if not text:
         return [], 0, False, False
-    truncated = len(text) > remaining_chars
-    bounded = text[:remaining_chars]
+    truncated = remaining_chars is not None and len(text) > remaining_chars
+    bounded = text if remaining_chars is None else text[:remaining_chars]
     kind = GmailBodyKind.PLAIN if mime.lower() == "text/plain" else GmailBodyKind.HTML_TEXT
     return [GmailBodySegment(kind=kind, text=bounded)], len(bounded), truncated, False
 
@@ -643,7 +643,7 @@ def _walk_payload(
 def _project_message(
     provider_message: dict[str, Any],
     *,
-    body_char_limit: int,
+    body_char_limit: int | None,
 ) -> tuple[GmailMessageProjection, dict[str, bool]]:
     message_id = provider_message.get("id")
     thread_id = provider_message.get("threadId")
@@ -663,7 +663,7 @@ def _project_message(
     segments, _used, body_truncated, attachment_truncated = _walk_payload(
         payload,
         message_id=message_id.strip(),
-        remaining_chars=max(0, body_char_limit),
+        remaining_chars=body_char_limit,
         attachments=attachments,
     )
     label_ids_raw = provider_message.get("labelIds", [])
@@ -705,26 +705,13 @@ def _project_message(
 
 
 def _bounded_envelope(envelope: dict[str, Any]) -> dict[str, Any]:
-    """Bound the final JSON output to Core MAX_TOOL_OUTPUT_BYTES.
+    """Return the final JSON output.
 
-    Oversized envelopes are replaced by a visible REVIEW_REQUIRED marker with a
-    content digest instead of raising or leaking unbounded provider output.
+    #4379: the connector result carries no PADIEM byte total. A large
+    provider result is returned in full; the settled result is owned by the
+    durable tool result ledger, so it is not dropped after the fact.
     """
-    encoded = json.dumps(
-        envelope, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
-    if len(encoded) <= MAX_TOOL_OUTPUT_BYTES:
-        return envelope
-    return {
-        "provider": "gmail",
-        "operation": envelope.get("operation"),
-        "result_status": "REVIEW_REQUIRED",
-        "truncated": True,
-        "reason": "bounded Gmail projection exceeded the Core tool output bound",
-        "result_sha256": hashlib.sha256(encoded).hexdigest(),
-        "mail_content_trusted": False,
-        "raw_credentials_present": False,
-    }
+    return envelope
 
 
 async def _port_get(
@@ -834,7 +821,7 @@ def build_gmail_read_handlers(
             query={"format": "full"},
             max_response_bytes=MAX_PROVIDER_MESSAGE_BYTES,
         )
-        projection, flags = _project_message(body, body_char_limit=MESSAGE_BODY_CONTEXT_CHARS)
+        projection, flags = _project_message(body, body_char_limit=None)
         review_required = any(flags.values())
         return _bounded_envelope(
             {
@@ -874,9 +861,11 @@ def build_gmail_read_handlers(
                 }
             )
         valid_messages = [item for item in provider_messages if isinstance(item, dict)]
-        omitted = max(0, len(valid_messages) - MAX_THREAD_MESSAGES)
-        selected = valid_messages[-MAX_THREAD_MESSAGES:]
-        remaining = THREAD_BODY_CONTEXT_CHARS
+        # #4379: a thread is not cut to a message count and its body is not
+        # cut to a character total. Every provider message is projected.
+        omitted = 0
+        selected = valid_messages
+        remaining = None
         projections: list[GmailMessageProjection] = []
         body_truncated = False
         attachment_truncated = False
@@ -884,11 +873,12 @@ def build_gmail_read_handlers(
         for item in selected:
             projection, flags = _project_message(
                 item,
-                body_char_limit=min(MESSAGE_BODY_CONTEXT_CHARS, remaining),
+                body_char_limit=remaining,
             )
             projections.append(projection)
             used = sum(len(segment.text) for segment in projection.body_segments)
-            remaining = max(0, remaining - used)
+            if remaining is not None:
+                remaining = max(0, remaining - used)
             body_truncated = body_truncated or flags["body_truncated"]
             attachment_truncated = attachment_truncated or flags[
                 "attachment_manifest_truncated"
