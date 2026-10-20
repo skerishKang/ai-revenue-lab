@@ -9,7 +9,7 @@ from starlette.responses import JSONResponse, Response
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item, _translate_binary_error
-from padiem_ai_core.document_normalization import DocumentNormalizationError
+from padiem_ai_core.document_normalization import DocumentNormalizationError, MAX_BINARY_DOCUMENT_BYTES
 from padiem_ai_core.document_parser_boundary import parse_binary_document_via_authority
 from .documents import DocumentValidationError, validate_document_fields
 from .history import HistoryStore, validate_project_id
@@ -178,7 +178,7 @@ async def project_files_collection(request: Request) -> JSONResponse:
     try:
         body = await read_bounded_request_body(
             request,
-            max_bytes=MAX_BINARY_PROJECT_FILE_BASE64_BYTES if not is_binary_upload else 2 * 1024 * 1024,
+            max_bytes=MAX_BINARY_PROJECT_FILE_BASE64_BYTES if not is_binary_upload else MAX_BINARY_DOCUMENT_BYTES,
         )
     except RequestBodyTooLarge:
         return JSONResponse({"error": {"code": "invalid_document", "message": "문서 요청이 너무 큽니다."}}, status_code=413)
