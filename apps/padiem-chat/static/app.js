@@ -745,14 +745,6 @@
     attachmentSize.textContent = formatBytes(selectedAttachment.byteSize);
     attachmentTray.hidden = false;
   }
-  function readAsDataUrl(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.addEventListener("load", () => resolve(reader.result), { once: true });
-      reader.addEventListener("error", () => reject(new Error(uiT("image-read-failed"))), { once: true });
-      reader.readAsDataURL(file);
-    });
-  }
   function readAsText(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
