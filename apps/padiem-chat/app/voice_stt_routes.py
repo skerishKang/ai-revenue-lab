@@ -269,21 +269,33 @@ async def voice_transcribe(request: Request) -> JSONResponse:
 
     content_type = request.headers.get("content-type") if getattr(request, "headers", None) is not None else None
     media_type = "" if content_type is None else str(content_type).split(";", 1)[0].strip().lower()
-    if media_type and media_type != "application/json":
+    if media_type not in ("application/json", "application/octet-stream"):
         return _error("unsupported_media_type", 415)
 
     try:
-        raw_body = await read_bounded_request_body(request, max_bytes=MAX_VOICE_TRANSCRIBE_BYTES)
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=(3 * 1024 * 1024 if media_type == "application/octet-stream" else MAX_VOICE_TRANSCRIBE_BYTES),
+        )
     except RequestBodyTooLarge:
         return _error("request_too_large", 413)
-    try:
-        payload = json.loads(raw_body.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
-        return _error("invalid_json", 400)
-    try:
-        mime_type, audio_base64 = _read_audio(payload)
-    except ValueError as exc:
-        return _error(str(exc), 400)
+    if media_type == "application/octet-stream":
+        if not raw_body:
+            return _error("invalid_audio", 400)
+        raw_mime = request.headers.get("x-padiem-audio-type", "audio/webm").split(";", 1)[0].strip()
+        if not _MIME_RE.fullmatch(raw_mime):
+            return _error("invalid_audio", 400)
+        payload = {"utterance_id": request.headers.get("x-padiem-utterance-id", "")}
+        mime_type, audio_base64 = raw_mime, base64.b64encode(raw_body).decode("ascii")
+    else:
+        try:
+            payload = json.loads(raw_body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+            return _error("invalid_json", 400)
+        try:
+            mime_type, audio_base64 = _read_audio(payload)
+        except ValueError as exc:
+            return _error(str(exc), 400)
 
     try:
         session = await _canonical_session(request)

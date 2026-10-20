@@ -184,7 +184,8 @@ def test_no_new_file_backend_routes_or_storage_in_app_js() -> None:
                     found.add(template)
     assert EXPECTED_PROJECT_API_TEMPLATES <= found
     assert source.count("/files") == 3  # GET list, POST upload, DELETE (unchanged)
-    assert "payload = { name: documentFile.name, media_type: documentFile.mediaType, base64: documentFile.base64 };" in source
+    assert '"Content-Type": "application/octet-stream"' in source
+    assert 'body: file' in source
     assert "payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };" in source
     assert "console." not in source
 

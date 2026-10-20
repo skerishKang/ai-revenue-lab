@@ -36,7 +36,7 @@ def test_composer_does_not_hard_code_format_truth_in_html():
     assert '<input id="attachmentFileInput" type="file" hidden />' in INDEX_HTML
     assert 'id="documentFormatsToggle"' in INDEX_HTML
     assert 'id="documentFormatsPanel"' in INDEX_HTML
-    assert 'id="attachmentButton" data-padiem-tooltip="파일 첨부"' in INDEX_HTML
+    assert 'id="attachmentButton" data-padiem-tooltip="파일 첨부" aria-label="파일 첨부"' in INDEX_HTML
     assert 'id="attachmentButton" title=' not in INDEX_HTML
     assert '<script src="./shared-tooltip.js"></script>' in INDEX_HTML
     assert 'id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.' in INDEX_HTML

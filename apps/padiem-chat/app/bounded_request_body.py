@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from typing import Any
+from tempfile import SpooledTemporaryFile
+from contextlib import asynccontextmanager
 
 
 class RequestBodyTooLarge(ValueError):
@@ -57,3 +59,33 @@ async def read_bounded_request_body(request: Any, *, max_bytes: int) -> bytes:
     if len(raw_bytes) > max_bytes:
         raise RequestBodyTooLarge("request body exceeded the byte limit")
     return raw_bytes
+
+
+@asynccontextmanager
+async def open_bounded_spooled_request(request: Any, *, max_bytes: int, spool_threshold: int = 256 * 1024):
+    """Receive binary request chunks into a seekable temporary file.
+
+    The existing parser still expects bytes; this avoids building an additional
+    ever-growing Python bytearray while receiving the upload.
+    """
+    if isinstance(max_bytes, bool) or not isinstance(max_bytes, int) or max_bytes < 1:
+        raise ValueError("max_bytes must be a positive integer")
+    declared = getattr(request, "headers", {}).get("content-length")
+    if declared is not None:
+        try:
+            declared_size = int(declared)
+        except (TypeError, ValueError):
+            declared_size = None
+        if declared_size is not None and declared_size > max_bytes:
+            raise RequestBodyTooLarge("request body exceeded the byte limit")
+    with SpooledTemporaryFile(max_size=spool_threshold, mode="w+b") as file:
+        total = 0
+        async for chunk in request.stream():
+            if not isinstance(chunk, (bytes, bytearray, memoryview)):
+                raise TypeError("request stream yielded non-bytes")
+            total += len(chunk)
+            if total > max_bytes:
+                raise RequestBodyTooLarge("request body exceeded the byte limit")
+            file.write(chunk)
+        file.seek(0)
+        yield file
