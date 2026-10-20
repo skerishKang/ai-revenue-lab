@@ -37,10 +37,16 @@ jobs:
           repo=os.environ["GITHUB_REPOSITORY"]
           sha=os.environ["EXPECTED"]
           valid=[p for p in json.loads(os.environ["RESPONSE"]) if p["state"]=="open" and p["head"]["sha"]==sha and p["head"]["repo"]["full_name"]==repo]
-          if len(valid)!=1: raise SystemExit("Expected exactly one current same-repository PR")
+          if len(valid)!=1:
+              print("skip")
+              raise SystemExit(0)
           print(valid[0]["number"])
           PY
           )"
+          if [[ "$PR" == skip ]]; then
+            echo "selected=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           # Trusted API metadata only; never run PR-provided planner on the host.
           files="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$url/pulls/$PR/files?per_page=100")"
           selected="$(FILES="$files" python3 - <<'PY'
