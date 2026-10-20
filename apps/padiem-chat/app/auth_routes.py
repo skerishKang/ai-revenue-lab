@@ -48,6 +48,7 @@ from .password_auth import (
     hash_password,
     normalize_display_name,
     normalize_email,
+    normalize_login_identifier,
     normalize_username,
     verify_password,
     validate_password,
@@ -554,6 +555,16 @@ async def _identifier_failure_window(
     return window if isinstance(window, AuthAbuseWindow) else UNAVAILABLE_WINDOW
 
 
+def _display_name_fallback(login_identifier: str) -> str:
+    """The display name used when a registration supplies no name.
+
+    The login identifier is the email address, so its readable part is the
+    local part. This is a presentation default only; it never becomes an
+    account authority.
+    """
+    return login_identifier.partition("@")[0] or login_identifier
+
+
 def _session_response(settings: Settings, profile, *, canonical_session_id: str | None = None) -> JSONResponse:
     session = create_session_token(
         settings, profile.id, canonical_session_id=canonical_session_id
@@ -571,19 +582,29 @@ async def password_register(request: Request) -> JSONResponse:
         return _auth_error(400, "invalid_request", "회원가입 정보를 확인해 주세요.")
 
     try:
-        username = normalize_username(data.get("username"))
-        email = normalize_email(data.get("email"))
-        display_name = normalize_display_name(data.get("name"), fallback=username)
-        password = validate_password(data.get("password"), username=username)
+        # #5424: the email address is the single login identifier. The
+        # credential keeps storing that identifier in its own subject column,
+        # so the canonical id derivation and the "password:" compatibility
+        # subject are unchanged. A client-supplied "username" is no longer
+        # part of the signup contract and is ignored on purpose.
+        login_identifier = normalize_login_identifier(data.get("email"))
+        display_name = normalize_display_name(
+            data.get("name"), fallback=_display_name_fallback(login_identifier)
+        )
+        password = validate_password(
+            data.get("password"), identifier=login_identifier
+        )
         encoded = hash_password(password)
     except PasswordAuthError as exc:
         return _auth_error(400, exc.code, exc.message)
 
     store: HistoryStore = request.app.state.history_store
     try:
+        # The credential subject and the account email are the one identifier
+        # now, so the stored username column holds the normalized email.
         profile = await store.register_password_user(
-            username,
-            email,
+            login_identifier,
+            login_identifier,
             display_name,
             encoded,
         )
@@ -591,7 +612,7 @@ async def password_register(request: Request) -> JSONResponse:
         return _auth_error(
             409,
             "account_exists",
-            "이미 사용 중인 아이디 또는 이메일입니다.",
+            "이미 사용 중인 이메일입니다.",
         )
     except Exception:
         return _auth_error(
@@ -609,7 +630,7 @@ async def password_register(request: Request) -> JSONResponse:
             request,
             product_user_id=profile.id,
             provider="password",
-            provider_subject=username,
+            provider_subject=login_identifier,
             authenticated_at=authenticated_at,
             expires_at=expires_at,
             ensure_personal_tenant=True,
@@ -618,10 +639,10 @@ async def password_register(request: Request) -> JSONResponse:
         canonical_session_id = None
     # Preserve B62's recently merged canonical-session registration fix.
     try:
-        registered_credential = await store.find_password_credential(username)
+        registered_credential = await store.find_password_credential(login_identifier)
         if (isinstance(registered_credential, PasswordCredential)
                 and registered_credential.user.id == profile.id
-                and registered_credential.username == username):
+                and registered_credential.username == login_identifier):
             await establish_b54_canonical_session_after_login(
                 request, registered_credential,
             )
@@ -646,6 +667,9 @@ async def password_login(request: Request) -> JSONResponse:
     try:
         if not isinstance(identifier_raw, str):
             raise PasswordAuthError("invalid_credentials", "invalid")
+        # The email address is the login identifier (#5424). An account that
+        # was registered before the unification keeps signing in with the ID
+        # it was created with, so the legacy grammar is still accepted here.
         identifier = (
             normalize_email(identifier_raw)
             if "@" in identifier_raw
@@ -708,7 +732,7 @@ async def password_login(request: Request) -> JSONResponse:
         return _auth_error(
             401,
             "invalid_credentials",
-            "아이디 또는 비밀번호가 올바르지 않습니다.",
+            "이메일 또는 비밀번호가 올바르지 않습니다.",
         )
 
     try:

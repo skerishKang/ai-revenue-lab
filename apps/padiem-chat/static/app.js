@@ -57,7 +57,6 @@
   const passwordLoginSubmit = document.getElementById("passwordLoginSubmit");
   const passwordRegisterSection = document.getElementById("passwordRegisterSection");
   const passwordRegisterForm = document.getElementById("passwordRegisterForm");
-  const passwordRegisterUsername = document.getElementById("passwordRegisterUsername");
   const passwordRegisterEmail = document.getElementById("passwordRegisterEmail");
   const passwordRegisterName = document.getElementById("passwordRegisterName");
   const passwordRegisterPassword = document.getElementById("passwordRegisterPassword");
@@ -1832,7 +1831,6 @@
     passwordRegisterSubmit.disabled = true;
     try {
       await passwordAuthRequest("/api/auth/password/register", {
-        username: passwordRegisterUsername.value,
         email: passwordRegisterEmail.value,
         name: passwordRegisterName.value,
         password: passwordRegisterPassword.value,
