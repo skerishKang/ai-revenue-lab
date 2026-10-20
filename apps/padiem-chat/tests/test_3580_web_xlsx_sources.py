@@ -157,7 +157,9 @@ async def test_unsafe_upload_shapes_and_fake_xlsx_never_touch_r2():
         {"name": "quote.xlsx", "base64": encoded, "approved": True},
     ):
         resp = await request(app, settings, method="POST", payload=data)
-        assert resp.status_code in (400, 422)
+        # Raw upload requires octet-stream; legacy JSON and malformed Base64
+        # are rejected at the origin/media gate before touching R2.
+        assert resp.status_code in (400, 415, 422)
     assert r2.objects == {}
     assert meta.rows == {}
 
