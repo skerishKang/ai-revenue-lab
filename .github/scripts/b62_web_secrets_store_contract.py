@@ -58,6 +58,24 @@ def expected_claw_desktop_bindings() -> dict[str, dict[str, str]]:
     }
 
 
+# #5224: the deployment-owned caller-proof identity for the B14
+# platform-credential execution lane. Same account store, one exact identity,
+# never a value. B62 signs its B14 dispatch with it; B14 verifies it before it
+# resolves a platform-owned Provider credential.
+B14_SERVICE_PROOF_SECRET_NAME = "PADIEM_B14_SERVICE_PROOF_SECRET"
+
+
+def expected_b14_service_proof_bindings() -> dict[str, dict[str, str]]:
+    return {
+        B14_SERVICE_PROOF_SECRET_NAME: {
+            "type": "secrets_store_secret",
+            "name": B14_SERVICE_PROOF_SECRET_NAME,
+            "store_id": WEB_SECRET_STORE_ID,
+            "secret_name": B14_SERVICE_PROOF_SECRET_NAME,
+        }
+    }
+
+
 def require_exact_web_secrets_store(
     current_bindings: list[dict], *, allow_absent: bool
 ) -> dict[str, dict[str, str]]:

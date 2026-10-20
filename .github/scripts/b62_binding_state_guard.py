@@ -21,6 +21,7 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 from b62_web_secrets_store_contract import (
+    expected_b14_service_proof_bindings,
     expected_claw_desktop_bindings,
     expected_oracle_mesh_bindings,
     expected_web_secret_bindings,
@@ -213,6 +214,11 @@ _CLAW_DESKTOP_APPROVED_ADDITIONS = frozenset(
     (b["type"], b["name"], b["store_id"], b["secret_name"])
     for b in expected_claw_desktop_bindings().values()
 )
+# #5224: the one deployment-owned B14 caller-proof reference, never its value.
+_B14_SERVICE_PROOF_APPROVED_ADDITIONS = frozenset(
+    (b["type"], b["name"], b["store_id"], b["secret_name"])
+    for b in expected_b14_service_proof_bindings().values()
+)
 
 
 def assert_exact_b66_membership_secret_only(before: object, after: object) -> None:
@@ -286,6 +292,26 @@ def assert_exact_claw_desktop_added_only(before: object, after: object) -> None:
     if removed or unexpected_added:
         raise BindingStateError(
             "Claw desktop binding authority drift detected; "
+            f"removed_count={len(removed)} unexpected_added_count={len(unexpected_added)}"
+        )
+
+
+def assert_exact_b14_service_proof_added_only(before: object, after: object) -> None:
+    """Only the one exact B14 caller-proof Secret reference may be added.
+
+    Every previously served binding must remain identical; the approved
+    reference may already be present to keep idempotent code-only redeploys
+    valid.
+    """
+    prior = set(canonical_state(before))
+    current = set(canonical_state(after))
+    if not _B14_SERVICE_PROOF_APPROVED_ADDITIONS.issubset(current):
+        raise BindingStateError("canonical B14 service proof Secret binding missing")
+    removed = prior - current
+    unexpected_added = (current - prior) - _B14_SERVICE_PROOF_APPROVED_ADDITIONS
+    if removed or unexpected_added:
+        raise BindingStateError(
+            "B14 service proof binding authority drift detected; "
             f"removed_count={len(removed)} unexpected_added_count={len(unexpected_added)}"
         )
 
@@ -586,6 +612,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="#4139: only the two canonical Oracle Mesh Secrets Store references")
     parser.add_argument("--expected-add-claw-desktop-secret", action="store_true",
                         help="#4139: only the one canonical shared Engine/Chat desktop reference")
+    parser.add_argument("--expected-add-b14-service-proof-secret", action="store_true",
+                        help="#5224: only the one canonical B14 caller-proof reference")
     parser.add_argument("--expected-add-hark-browser", action="store_true")
     parser.add_argument("--expected-add-connector-broker", action="store_true")
     parser.add_argument("--expected-add-claw-public-search", action="store_true")
@@ -606,6 +634,7 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_grafana_telemetry,
             args.expected_add_oracle_mesh,
             args.expected_add_claw_desktop_secret,
+            args.expected_add_b14_service_proof_secret,
             args.expected_add_hark_browser,
             args.expected_add_connector_broker,
             args.expected_add_claw_public_search,
@@ -635,6 +664,10 @@ def main(argv: list[str] | None = None) -> int:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Claw desktop additive mode refuses unrelated authority flags")
             assert_exact_claw_desktop_added_only(_load(args.before), _load(args.after))
+        elif args.expected_add_b14_service_proof_secret:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("B14 service proof additive mode refuses unrelated authority flags")
+            assert_exact_b14_service_proof_added_only(_load(args.before), _load(args.after))
         elif args.expected_add_claw_public_search:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Claw search mode refuses unrelated authority flags")
