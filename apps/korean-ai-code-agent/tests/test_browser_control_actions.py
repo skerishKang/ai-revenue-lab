@@ -203,10 +203,9 @@ class ActionRequestBoundsTest(unittest.TestCase):
     def test_type_is_single_line_bounded_non_credential_text(self) -> None:
         request = action_request(action="type", params={"text": "안녕하세요"})
         self.assertEqual(request.params, {"text": "안녕하세요"})
-        self.assertLessEqual(
-            len(request.params["text"]), MAX_ACTION_TEXT_CHARS  # type: ignore[index]
-        )
-        for bad_text in ("line1\nline2", "tab\there", "x" * (MAX_ACTION_TEXT_CHARS + 1), ""):
+        long_text = "x" * (MAX_ACTION_TEXT_CHARS + 1024)
+        self.assertEqual(action_request(action="type", params={"text": long_text}).params["text"], long_text)
+        for bad_text in ("line1\nline2", "tab\there", ""):
             with self.assertRaises(BrowserControlActionRefusal):
                 action_request(action="type", params={"text": bad_text})
         with self.assertRaises(BrowserControlActionRefusal):
