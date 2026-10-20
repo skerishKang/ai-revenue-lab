@@ -39,13 +39,18 @@ class ApprovalHook(str, Enum):
     BEFORE_LONG_RUNNING_AGENT = "before_long_running_agent"
 
 
-def _require_non_empty_text(name: str, value: str, *, max_chars: int) -> str:
+def _require_non_empty_text(name: str, value: str, *, max_chars: int | None = None) -> str:
+    """Validate one Skill package text.
+
+    #4379: ``max_chars=None`` means no PADIEM length ceiling. The string type
+    and the non-empty rule still apply.
+    """
     if not isinstance(value, str):
         raise SkillPackageError(f"{name} must be a string")
     normalized = value.strip()
     if not normalized:
         raise SkillPackageError(f"{name} is required")
-    if len(normalized) > max_chars:
+    if max_chars is not None and len(normalized) > max_chars:
         raise SkillPackageError(f"{name} exceeds {max_chars} characters")
     return normalized
 
@@ -130,7 +135,6 @@ class ReusableSkillPackage:
             _require_non_empty_text(
                 "description",
                 self.description,
-                max_chars=MAX_DESCRIPTION_CHARS,
             ),
         )
         object.__setattr__(
@@ -139,7 +143,6 @@ class ReusableSkillPackage:
             _require_non_empty_text(
                 "instruction",
                 self.instruction,
-                max_chars=MAX_INSTRUCTION_CHARS,
             ),
         )
         object.__setattr__(

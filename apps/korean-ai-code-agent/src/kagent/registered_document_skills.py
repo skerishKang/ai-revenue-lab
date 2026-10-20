@@ -278,7 +278,7 @@ CUSTOMER_QUOTE_SKILL = ReusableSkillPackage(
     context_policy_ref="context:default",
     model_policy_ref="model:auto",
     execution_budget=SkillExecutionBudget(
-        max_steps=2, max_tool_calls=0, max_wall_seconds=120
+        max_steps=None, max_tool_calls=0, max_wall_seconds=900
     ),
     approval_hooks=(ApprovalHook.BEFORE_EXTERNAL_SIDE_EFFECT,),
 )
@@ -301,7 +301,7 @@ PURCHASE_ORDER_SKILL = ReusableSkillPackage(
     context_policy_ref="context:default",
     model_policy_ref="model:auto",
     execution_budget=SkillExecutionBudget(
-        max_steps=2, max_tool_calls=0, max_wall_seconds=120
+        max_steps=None, max_tool_calls=0, max_wall_seconds=900
     ),
     approval_hooks=(ApprovalHook.BEFORE_EXTERNAL_SIDE_EFFECT,),
 )

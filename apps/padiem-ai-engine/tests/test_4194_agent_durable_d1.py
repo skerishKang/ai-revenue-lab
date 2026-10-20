@@ -18,6 +18,7 @@ from tests.test_agent_skill_service import Fixture, APP_ID, SUBJECT_ID
 from tests.test_agent_skill_continuation import ContinuationFixture, _pause, APP_ID as CONT_APP
 
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "0011_engine_agent_durable_runs.sql"
+WIDENED_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "0013_engine_agent_run_checkpoint_step.sql"
 FP = "a" * 64
 
 
@@ -67,6 +68,54 @@ def sql(tmp_path):
     db.executescript(MIGRATION.read_text(encoding="utf-8"))
     yield db, path
     db.close()
+
+
+@pytest.fixture
+def sql_widened(tmp_path):
+    path = tmp_path / "engine-d1-widened.sqlite"
+    db = sqlite3.connect(path, isolation_level=None)
+    db.row_factory = sqlite3.Row
+    db.executescript(MIGRATION.read_text(encoding="utf-8"))
+    db.executescript(WIDENED_MIGRATION.read_text(encoding="utf-8"))
+    yield db, path
+    db.close()
+
+
+async def test_d1_checkpoint_beyond_the_old_step_range_keeps_the_run_alive(sql):
+    # #4379: the checkpoint step is a progress record, not a PADIEM ceiling.
+    # The 0011 schema still carries the 0..64 CHECK, so the run records the
+    # range-capped value and continues instead of failing at step 65.
+    db, _ = sql
+    clock = Clock()
+    ledger = D1AgentRunLedger(SQLiteD1(db), clock=clock)
+    lease = await ledger.start(
+        run_id="run-wide", owner_scope="ownerA", request_fingerprint=FP,
+        worker_id="host1", lease_seconds=60,
+    )
+    assert await ledger.checkpoint(lease, completed_step=101)
+    row = db.execute(
+        "SELECT checkpoint_step FROM padiem_engine_agent_runs_v1 WHERE run_id=?",
+        ("run-wide",),
+    ).fetchone()
+    assert row["checkpoint_step"] == 64
+
+
+async def test_d1_checkpoint_records_the_true_step_on_the_widened_schema(sql_widened):
+    # #4379: with the duplicated range removed from the schema, the recorded
+    # progress is the step the run actually reached.
+    db, _ = sql_widened
+    clock = Clock()
+    ledger = D1AgentRunLedger(SQLiteD1(db), clock=clock)
+    lease = await ledger.start(
+        run_id="run-wide", owner_scope="ownerA", request_fingerprint=FP,
+        worker_id="host1", lease_seconds=60,
+    )
+    assert await ledger.checkpoint(lease, completed_step=101)
+    row = db.execute(
+        "SELECT checkpoint_step FROM padiem_engine_agent_runs_v1 WHERE run_id=?",
+        ("run-wide",),
+    ).fetchone()
+    assert row["checkpoint_step"] == 101
 
 
 async def test_d1_run_persists_across_adapter_recreation_and_fences_others(sql):
