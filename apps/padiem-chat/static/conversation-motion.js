@@ -70,12 +70,17 @@
     return window.scrollY || document.documentElement.scrollTop || 0;
   }
 
-  /* #5014: the composer lane measures the fixed input and publishes the
-   * reserved clearance. The conversation lane only READS that value: two
-   * writers with different floors used to race for the same custom property,
-   * so the reserved space could differ from the band the input actually
-   * occupies. Until the composer lane publishes, the stylesheet default
-   * applies and the follow threshold falls back to its own minimum. */
+  /* #5014: the fixed input and the conversation reserve the same band, so the
+   * reservation has to follow the measured composer height in both lanes.
+   * The composer lane owns the ongoing publication, but it is injected later
+   * than this module, and the stylesheet default alone does not cover a grown
+   * composer (a phone composer is taller than the default). This lane
+   * therefore publishes the same reservation as soon as it boots, with the
+   * same floor and the same gap, and a source contract keeps the two writers
+   * equal. */
+  var MIN_CONVERSATION_CLEARANCE = 230;
+  var COMPOSER_CLEARANCE_GAP = 64;
+
   function publishedClearance(){
     var raw = window.getComputedStyle(document.documentElement)
       .getPropertyValue("--padiem-composer-clearance");
@@ -84,7 +89,15 @@
   }
 
   function syncComposerClearance(){
-    return publishedClearance();
+    if (!composerWrap) return publishedClearance();
+    var height = Math.ceil(composerWrap.getBoundingClientRect().height || 0);
+    var clearance = Math.max(
+      MIN_CONVERSATION_CLEARANCE,
+      Math.ceil((isFinite(height) ? height : 0) + COMPOSER_CLEARANCE_GAP)
+    );
+    document.documentElement.style.setProperty("--padiem-composer-clearance", clearance + "px");
+    composerWrap.dataset.conversationClearance = String(clearance);
+    return clearance;
   }
 
   function remainingToEnd(){
@@ -360,8 +373,10 @@
 
   function observeComposer(){
     if (!composerWrap) return;
+    syncComposerClearance();
     if (!window.ResizeObserver || composerObserver) return;
     composerObserver = new ResizeObserver(function(){
+      syncComposerClearance();
       syncJumpButton();
       if (followLatest && inConversation()) queueFollow(false, false);
     });
@@ -416,6 +431,7 @@
     }
     window.addEventListener("wheel", handlePointerWheel, { passive: true });
     window.addEventListener("resize", function(){
+      syncComposerClearance();
       syncJumpButton();
       if (followLatest && inConversation()) queueFollow(false, false);
     });
@@ -424,14 +440,17 @@
      * change the measured composer height after the first paint, so the
      * landing runs again once the document is complete. */
     window.addEventListener("load", function(){
+      syncComposerClearance();
       landLatestContent();
     });
     if (document.fonts && typeof document.fonts.ready === "object") {
       document.fonts.ready.then(function(){
+        syncComposerClearance();
         landLatestContent();
       });
     }
 
+    syncComposerClearance();
     landLatestContent();
 
     window.__padiemConversationMotion = {
