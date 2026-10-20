@@ -23,7 +23,6 @@ from .p01_adapter import (
     _trace_id_for,
 )
 from .runs import ClawRun, RunStateError
-from .security import redact_secrets
 
 
 class P01ResumePort(Protocol):

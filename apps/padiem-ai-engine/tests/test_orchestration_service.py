@@ -468,13 +468,15 @@ async def test_inner_request_bound_is_the_model_budget_not_128_kib(path, prepare
     assert inside.status_code == 400, inside.body
     assert inside.body["error"]["code"] == "invalid_json"
 
+    # #4379: the model routes carry no PADIEM request body total, so a body
+    # past the former 6MB budget is parsed instead of being refused.
     outside = await getattr(service, preparer)(
         method="POST", path=path, content_type="application/json",
-        body=b"x" * (MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES + 1),
+        body=b"x" * (6_000_001),
     )
     assert isinstance(outside, ServiceResponse)
-    assert outside.status_code == 413, outside.body
-    assert outside.body["error"]["code"] == "request_too_large"
+    assert outside.status_code == 400, outside.body
+    assert outside.body["error"]["code"] == "invalid_json"
 
 
 async def test_orchestrate_stream_rejects_method_not_allowed() -> None:

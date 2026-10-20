@@ -53,7 +53,6 @@ from .p01_approval_pause_transport import (
 from .p01_orchestration_client import PADIEM_EXECUTABLE_MODEL_IDS
 from .p01_resume import ClawResumeProjector
 from .runs import ClawRun, RunStateError
-from .security import redact_secrets
 
 APPROVAL_DECISION_APPROVE = "approve"
 APPROVAL_DECISION_DENY = "deny"
@@ -633,7 +632,7 @@ class P01ApprovalContinuationService:
         wire = resumed.pause_wire
         next_pause_id = _wire_pause_field(wire, "continuation_id")
         answer = (
-            redact_secrets(result.execution_result.answer)
+            result.execution_result.answer
             if run.status is ClawRunStatus.COMPLETED
             else None
         )

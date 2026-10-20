@@ -283,13 +283,46 @@ test("appendToInput supports {getValue, setValue} handle", () => {
   assert.equal(v, "start final");
 });
 
-test("interim never mutates input until commitFinal", () => {
+// #4643 M1: the live partial is written into the composer input while the
+// user speaks, and the confirmed sentence takes that draft's place. This
+// replaces the earlier "interim never mutates the input" rule, which was
+// written for the chunk-only recognizer that produced no interim at all.
+// The interim is still never a final candidate and never a message.
+test("interim writes a live draft into the input", () => {
   const input = makeInput();
   const a = adapter.createVoiceInputAdapter({ input });
   a.start();
   a.feedInterim("partial");
-  assert.equal(input.value, "");
+  assert.equal(input.value, "partial");
   a.feedInterim("partial more");
+  assert.equal(input.value, "partial more");
+  // The confirmed sentence takes the draft's place.
+  const r = a.commitFinal({ text: "partial more confirmed", utteranceId: "u1" });
+  assert.equal(r.ok, true);
+  assert.equal(input.value, "partial more confirmed");
+});
+
+test("the live draft never overwrites the user's own text", () => {
+  const input = makeInput();
+  const a = adapter.createVoiceInputAdapter({ input });
+  input.value = "typed by user";
+  a.start();
+  a.feedInterim("spoken");
+  assert.equal(input.value, "typed by user spoken");
+  // The user edits the text while the run is live: the stale voice region is
+  // not restored over it.
+  input.value = "typed by user, corrected";
+  a.feedInterim("spoken more");
+  assert.equal(input.value, "typed by user, corrected spoken more");
+});
+
+test("an abandoned run rolls its provisional draft back", () => {
+  const input = makeInput();
+  const a = adapter.createVoiceInputAdapter({ input });
+  a.start();
+  a.feedInterim("half spoken");
+  assert.equal(input.value, "half spoken");
+  a.invalidate("signed-out");
   assert.equal(input.value, "");
 });
 

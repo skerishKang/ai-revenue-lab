@@ -110,11 +110,15 @@ XLSX_READ_APP = "padiem-web-xlsx-p01"
 # authorizes the WRITE tool request before the tool service runs. This is an
 # app-authorization entry only; the WRITE tool itself stays default OFF.
 XLSX_WRITE_APP = "padiem-web-xlsx-write-p01"
-# #2645 + connector READ extensions + #3936 + #3933: the canonical overlay app
-# authority is exactly this set, in order.
+# #5015: the Chat product's own app id. Its P01 bridge composes the Engine
+# client as ``app_id=padiem-chat``, so the Engine must authorize that app before
+# any plan, run or PC dispatch exists. App authorization only.
+CHAT_APP = "padiem-chat"
+# #2645 + connector READ extensions + #3936 + #3933 + #5015: the canonical
+# overlay app authority is exactly this set, in order.
 ALLOWED_APPS = (
     ALLOWED_APP, DRIVE_APP, TELEGRAM_APP, CALENDAR_APP,
-    XLSX_READ_APP, XLSX_WRITE_APP,
+    XLSX_READ_APP, XLSX_WRITE_APP, CHAT_APP,
 )
 BASE_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
@@ -180,9 +184,10 @@ def test_canonical_app_and_credential_authority_pinned() -> None:
         CALENDAR_APP,
         XLSX_READ_APP,
         XLSX_WRITE_APP,
+        CHAT_APP,
     )
-    assert len(rotation.ALLOWED_APP_IDS) == 6
-    assert len(set(rotation.ALLOWED_APP_IDS)) == 6
+    assert len(rotation.ALLOWED_APP_IDS) == 7
+    assert len(set(rotation.ALLOWED_APP_IDS)) == 7
     payload = rotation.build_overlay_payload(credential="n" * 40)
     assert payload["caller"]["allowed_app_ids"] == [
         ALLOWED_APP,
@@ -191,6 +196,7 @@ def test_canonical_app_and_credential_authority_pinned() -> None:
         CALENDAR_APP,
         XLSX_READ_APP,
         XLSX_WRITE_APP,
+        CHAT_APP,
     ]
     assert payload["caller"]["caller_id"] == NEW_CALLER_ID
     # Credential authority names are unchanged (values are never touched here).

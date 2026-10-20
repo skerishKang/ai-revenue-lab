@@ -52,7 +52,6 @@ from .ops_contracts import (
     SupplierQuoteLine,
     SupplierQuoteStatus,
 )
-from .security import redact_secrets
 
 DETERMINISTIC_COMPARE = True
 LLM_PRICE_INVENTION = False

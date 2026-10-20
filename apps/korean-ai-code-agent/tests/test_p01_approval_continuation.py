@@ -509,6 +509,24 @@ class ApprovalContinuationServiceTests(SyntheticPlusRouteTestCase, unittest.Isol
             with self.subTest(field=forbidden):
                 self.assertNotIn(forbidden, payload)
 
+    async def test_completed_answer_preserves_the_owner_original(self) -> None:
+        original = "재개 완료 token=supersecretvalue"
+        client = _FakeEngineResumeClient(
+            result=_result(
+                [
+                    OrchestrationEventKind.RUN_STARTED,
+                    OrchestrationEventKind.RUN_RESUMED,
+                    OrchestrationEventKind.RUN_COMPLETED,
+                ],
+                answer=original,
+            )
+        )
+        outcome = await self._decide(client)
+
+        self.assertEqual(outcome.projection.status, ClawRunStatus.COMPLETED)
+        self.assertEqual(outcome.answer, original)
+        self.assertEqual(outcome.safe_dict()["answer"], original)
+
     async def test_completion_without_run_resumed_evidence_is_refused(self) -> None:
         client = _FakeEngineResumeClient(
             result=_result(

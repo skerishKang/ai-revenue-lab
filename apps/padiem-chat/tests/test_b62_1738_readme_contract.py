@@ -14,9 +14,9 @@ def test_readme_matches_ephemeral_and_persistent_document_boundaries() -> None:
     assert "JPEG / PNG / WebP" in README
     assert "TXT / Markdown / CSV / JSON" in README
     assert "PDF / DOCX / PPTX / XLSX" in README
-    assert "4 MiB" in README and "96 KiB" in README and "40,000" in README and "2 MiB" in README
+    assert "1 GiB" in README and "96 KiB" in README and "40,000" in README
     assert "Project files are a distinct persistence capability" in README
-    for token in ("imageBytes: 4 * 1024 * 1024", "textBytes: 96 * 1024", "textChars: 40000", "binaryBytes: 2 * 1024 * 1024"):
+    for token in ("imageBytes: 1024 * 1024 * 1024", "textBytes: 96 * 1024", "textChars: 40000", "binaryBytes: 1024 * 1024 * 1024"):
         assert token in capabilities
 
 

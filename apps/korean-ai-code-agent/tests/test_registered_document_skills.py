@@ -212,9 +212,9 @@ class FreeFormIntakeContractTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             SkillRequestIntake(123)
 
-    def test_credential_material_in_request_text_is_rejected(self):
-        with self.assertRaises(ContractError):
-            SkillRequestIntake("견적서 작성해줘 sk-" + "A" * 24)
+    def test_credential_looking_request_text_is_carried_unchanged(self):
+        intake = SkillRequestIntake("견적서 작성해줘 sk-" + "A" * 24)
+        self.assertEqual(intake.request_text, "견적서 작성해줘 sk-" + "A" * 24)
 
     def test_invalid_doc_type_and_channel_are_rejected(self):
         with self.assertRaises(ContractError):

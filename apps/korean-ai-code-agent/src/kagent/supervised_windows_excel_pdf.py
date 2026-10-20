@@ -20,7 +20,8 @@ from .xlsx_fidelity_route import MAX_XLSX_BYTES, XlsxRoute, classify_xlsx
 
 MAX_PDF_BYTES = 8 * 1024 * 1024
 MIN_TIMEOUT_SECONDS = 5
-MAX_TIMEOUT_SECONDS = 120
+# #4379: the supervised Excel/PDF run carries no PADIEM wall-clock ceiling.
+MAX_TIMEOUT_SECONDS: int | None = None
 
 
 @dataclass(frozen=True)
@@ -37,8 +38,9 @@ class SupervisedWindowsExcelPdfRenderer:
     launcher: Callable[..., JobBoundProcess] = launch_job_bound_process
 
     def __post_init__(self) -> None:
+        # #4379: no PADIEM wall-clock ceiling. The positive lower bound stays.
         if (type(self.timeout_seconds) is not int
-                or not MIN_TIMEOUT_SECONDS <= self.timeout_seconds <= MAX_TIMEOUT_SECONDS
+                or self.timeout_seconds < MIN_TIMEOUT_SECONDS
                 or not callable(self.launcher)):
             raise ContractError("bounded supervised Windows Excel configuration required")
 

@@ -333,7 +333,7 @@ def _company_profile_store(request: Request) -> Any | None:
 
 
 async def _json(
-    request: Request, *, max_body_bytes: int = MAX_BODY_BYTES
+    request: Request, *, max_body_bytes: int | None = MAX_BODY_BYTES
 ) -> dict[str, Any] | JSONResponse:
     # The quote interpreter carries a model-bound user prompt. Do not apply
     # the 16KiB B66 metadata/administration request limit to that payload.

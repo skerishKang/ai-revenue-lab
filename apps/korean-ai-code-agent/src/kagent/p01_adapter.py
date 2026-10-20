@@ -38,7 +38,6 @@ from .p01_approval_pause_transport import (
     P01PausedWireResult,
 )
 from .runs import ClawRun, RunStateError
-from .security import redact_secrets
 
 
 P01_APP_ID = "b54-padiem-claw"
