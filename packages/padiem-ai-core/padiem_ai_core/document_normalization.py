@@ -995,15 +995,23 @@ class PdfInspection:
         }
 
 
-def _open_pdf_reader(payload: bytes) -> Any:
-    if not payload.startswith(b"%PDF-"):
+def _open_pdf_reader(payload: Any) -> Any:
+    if hasattr(payload, "seek") and hasattr(payload, "read"):
+        payload.seek(0)
+        magic = payload.read(5)
+        payload.seek(0)
+        source = payload
+    else:
+        magic = payload[:5]
+        source = BytesIO(payload)
+    if magic != b"%PDF-":
         raise DocumentNormalizationError("pdf_magic_mismatch", "PDF magic does not match the declared media type.")
     try:
         from pypdf import PdfReader
     except ModuleNotFoundError as exc:
         raise DocumentNormalizationError("document_dependency_unavailable", "PDF extraction dependency is unavailable.") from exc
     try:
-        reader = PdfReader(BytesIO(payload), strict=True)
+        reader = PdfReader(source, strict=True)
     except Exception as exc:
         raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from exc
     if reader.is_encrypted:
@@ -1225,12 +1233,26 @@ def _extract_xlsx_text(payload: bytes) -> str:
 
 def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> NormalizedDocument:
     safe_name, safe_media = validate_document_identity(name=name, media_type=media_type, source_kind="binary")
-    if not isinstance(payload, (bytes, bytearray)):
-        raise DocumentNormalizationError("invalid_binary_payload", "Binary document payload must be bytes.")
-    binary = bytes(payload)
-    if not binary:
+    file_payload = (
+        safe_media == "application/pdf"
+        and not isinstance(payload, (bytes, bytearray))
+        and callable(getattr(payload, "seek", None))
+        and callable(getattr(payload, "tell", None))
+        and callable(getattr(payload, "read", None))
+    )
+    if not file_payload and not isinstance(payload, (bytes, bytearray)):
+        raise DocumentNormalizationError("invalid_binary_payload", "Binary document payload must be bytes or a seekable PDF file.")
+    if file_payload:
+        payload.seek(0, 2)
+        byte_size = payload.tell()
+        payload.seek(0)
+        binary = payload
+    else:
+        binary = bytes(payload)
+        byte_size = len(binary)
+    if not byte_size:
         raise DocumentNormalizationError("empty_document", "Document payload is empty.")
-    if len(binary) > MAX_BINARY_DOCUMENT_BYTES:
+    if byte_size > MAX_BINARY_DOCUMENT_BYTES:
         raise DocumentNormalizationError("binary_too_large", "Binary document exceeds the byte limit.")
 
     if safe_media == "application/pdf":
@@ -1251,6 +1273,6 @@ def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> Norm
         name=safe_name,
         media_type=safe_media,
         text=normalized,
-        byte_size=len(binary),
+        byte_size=byte_size,
         source_kind="binary",
     )
