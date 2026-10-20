@@ -188,53 +188,56 @@ async def project_files_collection(request: Request) -> JSONResponse:
         return JSONResponse({"files": [item.public_dict() for item in files]})
 
     is_binary_upload = request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream"
-    try:
-        if is_binary_upload:
+    if is_binary_upload:
+        encoded_name = request.headers.get("x-padiem-filename")
+        media_type = request.headers.get("x-padiem-media-type")
+        if not encoded_name or len(encoded_name) > 512 or media_type not in BINARY_PROJECT_FILE_MEDIA:
+            return JSONResponse({"error": {"code": "invalid_document"}}, status_code=422)
+        try:
+            name = unquote(encoded_name, encoding="utf-8", errors="strict")
             async with open_bounded_spooled_request(request, max_bytes=MAX_BINARY_DOCUMENT_BYTES) as spool:
-                # Canonical parser currently requires bytes; spool reception avoids
-                # duplicate expanding bytearray allocations until that contract changes.
-                body = spool.read()
-        else:
-            body = await read_bounded_request_body(
-                request, max_bytes=MAX_BINARY_PROJECT_FILE_BASE64_BYTES,
-            )
+                source = spool if media_type == "application/pdf" else spool.read()
+                parsed = parse_binary_document_via_authority(
+                    name=name, media_type=media_type, payload=source,
+                )
+                created = await store.create_file(
+                    uid, pid, parsed.name, _extracted_media_type(parsed.media_type), parsed.text,
+                )
+                workspace_store = getattr(request.app.state, "workspace_document_store", None)
+                bucket = getattr(workspace_store, "r2_bucket", None)
+                if bucket is None:
+                    await store.delete_file(uid, pid, created.id)
+                    return _unavailable()
+                try:
+                    spool.seek(0)
+                    # R2 Python binding receives bytes; avoid a second parse-time
+                    # copy for PDFs while preserving the existing storage contract.
+                    await _r2_call(
+                        bucket, "put", _project_original_object_key(uid, pid, created.id),
+                        spool.read(), httpMetadata={"contentType": media_type},
+                    )
+                except Exception:
+                    await store.delete_file(uid, pid, created.id)
+                    return _unavailable()
+                return JSONResponse({"file": created.public_dict()}, status_code=201)
+        except RequestBodyTooLarge:
+            return JSONResponse({"error": {"code": "invalid_document"}}, status_code=413)
+        except (ValueError, DocumentNormalizationError, DocumentValidationError, ProjectFileLimitError) as exc:
+            return JSONResponse({"error": {"code": "invalid_document", "message": str(exc)}}, status_code=422)
+        except Exception:
+            return _unavailable()
+    try:
+        body = await read_bounded_request_body(
+            request, max_bytes=MAX_BINARY_PROJECT_FILE_BASE64_BYTES,
+        )
     except RequestBodyTooLarge:
         return JSONResponse({"error": {"code": "invalid_document", "message": "문서 요청이 너무 큽니다."}}, status_code=413)
     try:
-        if is_binary_upload:
-            encoded_name = request.headers.get("x-padiem-filename")
-            media_type = request.headers.get("x-padiem-media-type")
-            if not encoded_name or len(encoded_name) > 512 or media_type not in BINARY_PROJECT_FILE_MEDIA:
-                raise ValueError("Invalid binary project document headers")
-            name = unquote(encoded_name, encoding="utf-8", errors="strict")
-            try:
-                parsed = parse_binary_document_via_authority(name=name, media_type=media_type, payload=body)
-            except DocumentNormalizationError as exc:
-                raise ValueError(str(_translate_binary_error(exc, media_type))) from exc
-            name, media_type, text = parsed.name, _extracted_media_type(parsed.media_type), parsed.text
-        else:
-            raw = json.loads(body.decode("utf-8"))
-            if not isinstance(raw, dict):
-                raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
-            name, media_type, text = _parse_project_file_item(raw)
-        created = await store.create_file(uid, pid, name, media_type, text)
-        if is_binary_upload:
-            # Retain the immutable original alongside the extracted D1 project text.
-            # R2 keys are server-derived; the client never controls the storage path.
-            workspace_store = getattr(request.app.state, "workspace_document_store", None)
-            bucket = getattr(workspace_store, "r2_bucket", None)
-            if bucket is None:
-                await store.delete_file(uid, pid, created.id)
-                return _unavailable()
-            try:
-                await _r2_call(
-                    bucket, "put",
-                    _project_original_object_key(uid, pid, created.id), body,
-                    httpMetadata={"contentType": request.headers["x-padiem-media-type"]},
-                )
-            except Exception:
-                await store.delete_file(uid, pid, created.id)
-                return _unavailable()
+        raw = json.loads(body.decode("utf-8"))
+        if not isinstance(raw, dict):
+            raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
+        name, media_type, text = _parse_project_file_item(raw)
+    created = await store.create_file(uid, pid, name, media_type, text)
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError, BinaryDocumentValidationError) as exc:
         return JSONResponse({"error": {"code": "invalid_document", "message": str(exc) or "문서 형식이 올바르지 않습니다."}}, status_code=422)
     except ProjectFileLimitError as exc:
