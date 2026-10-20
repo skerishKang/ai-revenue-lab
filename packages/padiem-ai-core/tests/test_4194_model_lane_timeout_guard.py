@@ -73,9 +73,9 @@ def test_owned_model_response_lanes_keep_600s_source_defaults(rel, owner, member
 def test_b14_provider_chunk_idle_clock_is_not_45s_retry_budget():
     rel = "apps/korean-ai-platform/app/pilot/b14_timeout_policy.py"
     assert literal_default(rel, owner=None, member="READ_SECONDS") == 600.0
-    assert literal_default(rel, owner=None, member="GATEWAY_WALL_SECONDS") == 45.0
+    assert "GATEWAY_WALL_SECONDS = READ_SECONDS" in source(rel)
     s = source(rel)
-    assert "the initial attempt" in s
+    assert "initial attempt" in s.lower()
     assert "read=READ_SECONDS" in s
     assert "connect=CONNECT_SECONDS" in s
     assert "CONNECT_SECONDS = READ_SECONDS" in s
