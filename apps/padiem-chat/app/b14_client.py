@@ -347,7 +347,7 @@ def _agent_profile(
             # Arbitrary catalog-wide fallback stays disabled. This does not
             # block the owner-pinned tier grade backup in the B14 gateway.
             "allow_external_fallback": False,
-            "max_attempts": 1,
+            # Owner-tier candidate count is determined by the route decision.
             **({"product_tier": product_tier} if product_tier is not None else {}),
             **({"max_retries": max_retries} if max_retries is not None else {}),
             # Only an explicitly requested native parameter enters the policy.
