@@ -95,6 +95,6 @@ def test_b14_accepts_positive_attempt_budget_above_five():
 
 @pytest.mark.parametrize("value", [0, -1, True, 1.5, "50"])
 def test_b14_rejects_invalid_attempt_budget(value):
-    from app.pilot.gateway import _validate_b14_options
-    with pytest.raises(ValueError):
+    from app.pilot.gateway import _InvalidBody, _validate_b14_options
+    with pytest.raises(_InvalidBody):
         _validate_b14_options({"max_attempts": value})
