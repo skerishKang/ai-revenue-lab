@@ -258,6 +258,10 @@ class SameOriginGuardMiddleware:
             and media_type == "application/octet-stream"
         ):
             return None
+        # B66 customer template originals use raw bytes on one owner-scoped route.
+        # The exact Origin and authenticated session checks above still apply.
+        if scope.get("method") == "POST" and path == "/api/b66/template-sources" and media_type == "application/octet-stream":
+            return None
         # Standalone Chat accepts one bounded binary attachment with JSON metadata.
         # Origin and canonical session checks are unchanged.
         if scope.get("method") == "POST" and path == "/api/chat" and media_type == "application/octet-stream":
