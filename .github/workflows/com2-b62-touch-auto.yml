@@ -2,23 +2,24 @@ name: COM2 B62 Touch Auto Canary
 # Trusted default-branch follow-up to the existing hosted browser lane.
 # Does not change the 16 hosted QA jobs or any required status context.
 on:
-  workflow_run:
-    workflows: ["COM2 PR Policy Trigger"]
-    types: [completed]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Exact open same-repository PR head SHA (40 lowercase hex)
+        required: true
+        type: string
 permissions:
   contents: read
   pull-requests: read
   statuses: write
   actions: write
 concurrency:
-  group: com2-b62-touch-auto-${{ github.event.workflow_run.head_sha }}
+  group: com2-b62-touch-auto-${{ inputs.sha }}
   cancel-in-progress: true
 jobs:
   touch:
     if: >-
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
+      github.event_name == 'workflow_dispatch'
     runs-on: [self-hosted, linux, x64, padiem-com2-ci]
     timeout-minutes: 10
     steps:
@@ -26,7 +27,7 @@ jobs:
         id: target
         env:
           GH_TOKEN: ${{ github.token }}
-          EXPECTED: ${{ github.event.workflow_run.head_sha }}
+          EXPECTED: ${{ inputs.sha }}
 
         shell: bash
         run: |
