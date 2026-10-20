@@ -49,6 +49,10 @@
   });
 
   const kindValues = new Set(Object.values(orchestrationKinds));
+  // Chat/Claw separation: the bounded orchestration lane is the Chat lane (/api/chat). Its
+  // turns and its conversation id belong to the Chat product, so a resumed
+  // Chat run never writes into the Claw conversation.
+  const CHAT_PRODUCT = "chat";
   const safeId = /^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$/;
   const publicCopy = Object.freeze({
     run_started: "작업을 시작했어요.",
@@ -476,8 +480,8 @@
     if (label && label.textContent === "AI 응답") label.textContent = "";
     const conversationState = window.PadiemChatConversationState;
     if (conversationState) {
-      conversationState.commitAssistant(requestPayload.messages, data.answer);
-      if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
+      conversationState.commitAssistant(requestPayload.messages, data.answer, CHAT_PRODUCT);
+      if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id, CHAT_PRODUCT);
     }
     window.PadiemChatLifecycle.set(article, states.COMPLETED);
     revealArticleIfFollowing(article);

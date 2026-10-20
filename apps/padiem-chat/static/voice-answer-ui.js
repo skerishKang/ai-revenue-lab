@@ -1,4 +1,4 @@
-// #4816: answer listen/stop for M3 ("\ub3d9\uc758 + \uc758\uc2dd \ud5c8\ub3d9").
+// #4816: answer listen/stop for M3 ("문자 + 음성 재생").
 // Existing browser speechSynthesis only; explicit user click starts playback.
 // Auto-speaks newly arrived answers only while M3 is the active mode.
 (function (win, doc) {
@@ -13,9 +13,21 @@
   let pendingSpeech = [];
   let lastAutoText = "";
   const ko = () => /^ko/i.test(doc.documentElement.lang || "ko");
-  const playText = () => ko() ? "\uc758\uc2dd\uc758\ubc1c \ud1b5\ud55c" : "Listen";
-  const stopText = () => ko() ? "\uc758\uc2dd \uc815\ubcf4" : "Stop audio";
-  const errorText = () => ko() ? "\uc758\uc2dd \uc7ac\ub300 \ubd88\uac00" : "Speech unavailable";
+  // Chat/Claw separation: the listen/stop/error copy comes from the existing locale
+  // catalogue. The previous inline Korean literals were corrupted escape
+  // sequences that rendered as "의식의발 통한" instead of a real label.
+  function localeText(key, fallback) {
+    try {
+      if (win.__padiemLocale && typeof win.__padiemLocale.text === "function") {
+        const value = win.__padiemLocale.text(key);
+        if (value && value !== key) return value;
+      }
+    } catch (_) {}
+    return fallback;
+  }
+  const playText = () => localeText("answer-listen", ko() ? "음성 듣기" : "Listen");
+  const stopText = () => localeText("answer-listen-stop", ko() ? "음성 정지" : "Stop listening");
+  const errorText = () => localeText("voice-speech-unavailable", ko() ? "음성 재생 불가" : "Speech unavailable");
 
   function resetButton() {
     if (currentButton) {
