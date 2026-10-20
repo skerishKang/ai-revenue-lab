@@ -23,6 +23,18 @@ from padiem_control_plane.product_tier_routes import (
 
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 
+# The B62 error contract keeps the two provider-failure classes apart, and
+# each public code owns exactly one Korean user-facing sentence:
+#   - the provider was reached and answered 5xx -> provider_server_error
+#   - the provider could not be reached at all   -> upstream_unavailable
+# The sentences are pinned here so the code, the test expectation and the
+# copy cannot drift apart, and so neither code can silently take over the
+# other one's message.
+PROVIDER_SERVER_ERROR_MESSAGE = (
+    "AI 모델 제공자 측에서 일시적 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+)
+UPSTREAM_UNAVAILABLE_MESSAGE = "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요."
+
 
 class ReservationStore:
     def __init__(self):
@@ -130,6 +142,54 @@ def test_live_stream_active_beam_propagates_provider_error_and_refunds():
         # above and like the streaming taxonomy asserted in
         # test_2550_stream_fail_taxonomy.py.
         assert info.value.code == "provider_server_error"
+        assert info.value.user_message == PROVIDER_SERVER_ERROR_MESSAGE
+        assert calls == 1
+        assert len(store.refunds) == 0
+        assert await _refund_active_reservation() is False
+
+    asyncio.run(scenario())
+
+
+def test_live_stream_unreachable_provider_stays_upstream_unavailable():
+    """A provider that cannot be reached keeps the connection-failure code.
+
+    `upstream_unavailable` is reserved for a transport that never reached the
+    provider. Both transports fail at the transport level on purpose, so the
+    outcome is the same whichever branch the current route table selects. The
+    two public codes must never collapse into one another, and each keeps its
+    own Korean message.
+    """
+
+    async def scenario():
+        store = ReservationStore()
+        await reserve(store)
+        calls = 0
+
+        async def handler(request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            raise httpx.ConnectError("b14 transport unreachable", request=request)
+
+        class ServiceTransport:
+            async def post_json(self, url, payload):
+                nonlocal calls
+                calls += 1
+                raise httpx.ConnectError("b14 binding unreachable")
+
+        client = DispatchAwareB14Client(
+            live_settings(),
+            service_transport=ServiceTransport(),
+            stream_transport=httpx.MockTransport(handler),
+            require_service_binding=True,
+        )
+
+        with pytest.raises(ChatRuntimeError) as info:
+            async for _ in client.stream_text_auto(MESSAGES):
+                pass
+
+        assert info.value.status_code == 502
+        assert info.value.code == "upstream_unavailable"
+        assert info.value.user_message == UPSTREAM_UNAVAILABLE_MESSAGE
         assert calls == 1
         assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False
