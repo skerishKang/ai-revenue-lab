@@ -32,16 +32,6 @@
     return expected;
   }
 
-  function arrayBufferToBase64(buffer) {
-    const bytes = new Uint8Array(buffer);
-    const chunkSize = 0x8000;
-    let binary = "";
-    for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-      binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
-    }
-    return btoa(binary);
-  }
-
   async function read(file) {
     const mediaType = canonicalMediaType(file);
     if (!mediaType) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).unsupportedFormat);
