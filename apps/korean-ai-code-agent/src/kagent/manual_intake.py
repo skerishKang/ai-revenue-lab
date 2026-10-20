@@ -180,7 +180,7 @@ class ManualIntakeResult:
             "channel": self.channel.value,
             "action": self.action.value,
             "title": self.title,
-            "result_text": redact_secrets(self.result_text),
+            "result_text": self.result_text,
             "artifacts": [
                 {
                     "artifact_id": a.artifact_id,
