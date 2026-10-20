@@ -270,6 +270,19 @@ def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch):
         )
 
     monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
+    from types import SimpleNamespace
+    original_catalog = stream_gateway.get_catalog_by_id
+    def fixture_catalog(model_id):
+        if model_id == fallback["model_id"]:
+            return SimpleNamespace(model_id=fallback["model_id"], enabled=True,
+                provider=fallback["provider"], upstream_model=fallback["upstream_model"],
+                platform_provider_id=fallback["platform_provider_id"])
+        return original_catalog(model_id)
+    monkeypatch.setattr(stream_gateway, "get_catalog_by_id", fixture_catalog)
+    original_credential = stream_gateway.rcore._credential_status_for
+    monkeypatch.setattr(stream_gateway.rcore, "_credential_status_for",
+        lambda cm: (True, "key_available", "platform_secret", "test-fixture")
+        if cm.model_id == fallback["model_id"] else original_credential(cm))
     attempts = []
 
     async def fake_stream(**kwargs):
@@ -325,6 +338,19 @@ def test_owner_tier_fallback_is_not_tried_after_first_visible_token(monkeypatch)
         )
 
     monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
+    from types import SimpleNamespace
+    original_catalog = stream_gateway.get_catalog_by_id
+    def fixture_catalog(model_id):
+        if model_id == fallback["model_id"]:
+            return SimpleNamespace(model_id=fallback["model_id"], enabled=True,
+                provider=fallback["provider"], upstream_model=fallback["upstream_model"],
+                platform_provider_id=fallback["platform_provider_id"])
+        return original_catalog(model_id)
+    monkeypatch.setattr(stream_gateway, "get_catalog_by_id", fixture_catalog)
+    original_credential = stream_gateway.rcore._credential_status_for
+    monkeypatch.setattr(stream_gateway.rcore, "_credential_status_for",
+        lambda cm: (True, "key_available", "platform_secret", "test-fixture")
+        if cm.model_id == fallback["model_id"] else original_credential(cm))
     attempts = []
 
     async def fake_stream(**kwargs):

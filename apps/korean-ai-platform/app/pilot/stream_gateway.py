@@ -175,15 +175,28 @@ def _decision_for_attempt(
         "max_attempts": 1 + len(remaining),
     }
     if candidate is not None:
+        registered = get_catalog_by_id(candidate["model_id"])
+        if (
+            registered is None
+            or not registered.enabled
+            or registered.provider != candidate["provider"]
+            or registered.upstream_model != candidate["upstream_model"]
+            or registered.platform_provider_id != candidate["platform_provider_id"]
+            or candidate["route_id"] != f"platform:{registered.model_id}"
+        ):
+            raise InvalidRequest("Invalid owner-tier fallback route.")
+        available, status, source, provider_id = rcore._credential_status_for(registered)
+        if not available or source != "platform_secret" or not provider_id:
+            raise InvalidRequest("Owner-tier fallback credential unavailable.")
         changes.update(
-            selected_provider=candidate["provider"],
-            selected_model=candidate["model_id"],
-            selected_upstream_model=candidate["upstream_model"],
+            selected_provider=registered.provider,
+            selected_model=registered.model_id,
+            selected_upstream_model=registered.upstream_model,
             selected_route_id=candidate["route_id"],
-            credential_available=True,
-            credential_status="key_available",
-            credential_source="platform_secret",
-            platform_provider_id=candidate["platform_provider_id"],
+            credential_available=available,
+            credential_status=status,
+            credential_source=source,
+            platform_provider_id=provider_id,
         )
     return replace(decision, **changes)
 
