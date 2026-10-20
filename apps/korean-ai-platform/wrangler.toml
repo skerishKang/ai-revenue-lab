@@ -128,6 +128,15 @@ binding = "PADIEM_B14_CREDENTIAL_14"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_ZANSLAB_API_KEY"
 
+# Deployment-owned server-to-server caller proof for the platform-credential
+# execution lanes. This is an internal proof key, never a Provider credential:
+# it only authenticates a PADIEM server-to-server dispatch before the platform
+# credential is resolved. The value never enters this repository or a response.
+[[secrets_store_secrets]]
+binding = "PADIEM_B14_SERVICE_PROOF_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_B14_SERVICE_PROOF_SECRET"
+
 # The owner-managed registry must be loaded from /session/metadata/app/pilot.
 [[rules]]
 type = "Text"
