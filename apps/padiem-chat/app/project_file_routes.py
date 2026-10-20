@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import json
+from urllib.parse import unquote
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
-from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item
+from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item, _translate_binary_error
+from padiem_ai_core.document_normalization import DocumentNormalizationError
+from padiem_ai_core.document_parser_boundary import parse_binary_document_via_authority
 from .documents import DocumentValidationError, validate_document_fields
 from .history import HistoryStore, validate_project_id
 from .project_files import (
@@ -171,18 +174,31 @@ async def project_files_collection(request: Request) -> JSONResponse:
             return _unavailable()
         return JSONResponse({"files": [item.public_dict() for item in files]})
 
+    is_binary_upload = request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream"
     try:
         body = await read_bounded_request_body(
             request,
-            max_bytes=MAX_BINARY_PROJECT_FILE_BASE64_BYTES,
+            max_bytes=MAX_BINARY_PROJECT_FILE_BASE64_BYTES if not is_binary_upload else 2 * 1024 * 1024,
         )
     except RequestBodyTooLarge:
         return JSONResponse({"error": {"code": "invalid_document", "message": "문서 요청이 너무 큽니다."}}, status_code=413)
     try:
-        raw = json.loads(body.decode("utf-8"))
-        if not isinstance(raw, dict):
-            raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
-        name, media_type, text = _parse_project_file_item(raw)
+        if is_binary_upload:
+            encoded_name = request.headers.get("x-padiem-filename")
+            media_type = request.headers.get("x-padiem-media-type")
+            if not encoded_name or len(encoded_name) > 512 or media_type not in BINARY_PROJECT_FILE_MEDIA:
+                raise ValueError("Invalid binary project document headers")
+            name = unquote(encoded_name, encoding="utf-8", errors="strict")
+            try:
+                parsed = parse_binary_document_via_authority(name=name, media_type=media_type, payload=body)
+            except DocumentNormalizationError as exc:
+                raise ValueError(str(_translate_binary_error(exc, media_type))) from exc
+            name, media_type, text = parsed.name, _extracted_media_type(parsed.media_type), parsed.text
+        else:
+            raw = json.loads(body.decode("utf-8"))
+            if not isinstance(raw, dict):
+                raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
+            name, media_type, text = _parse_project_file_item(raw)
         created = await store.create_file(uid, pid, name, media_type, text)
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError, BinaryDocumentValidationError) as exc:
         return JSONResponse({"error": {"code": "invalid_document", "message": str(exc) or "문서 형식이 올바르지 않습니다."}}, status_code=422)

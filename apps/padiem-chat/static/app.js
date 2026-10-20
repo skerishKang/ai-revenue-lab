@@ -1056,20 +1056,22 @@
     try {
       const projectBinary = projectBinaryMediaType(file);
       let payload;
-      if (projectBinary && binaryDocuments && typeof binaryDocuments.read === "function") {
-        const documentFile = await binaryDocuments.read(file);
-        payload = { name: documentFile.name, media_type: documentFile.mediaType, base64: documentFile.base64 };
-      } else if (projectBinary) {
-        throw new Error(attachmentCopy().unsupportedFormat);
+      if (projectBinary) {
+        // Send binary directly; do not materialize a Base64 JSON copy.
+        payload = null;
       } else {
         const documentFile = await readDocumentFile(file);
         payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
       }
-      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const requestOptions = projectBinary
+        ? { method: "POST", headers: {
+            "Content-Type": "application/octet-stream", "Accept": "application/json",
+            "X-Padiem-Filename": encodeURIComponent(file.name),
+            "X-Padiem-Media-Type": projectBinary,
+          }, body: file }
+        : { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(payload) };
+      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, requestOptions);
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.file) {
         const message = data && data.error && typeof data.error.message === "string" ? data.error.message : uiT("project-file-save-failed");
