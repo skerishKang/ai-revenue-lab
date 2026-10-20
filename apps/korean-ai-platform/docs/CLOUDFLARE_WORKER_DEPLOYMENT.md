@@ -110,6 +110,26 @@ Runtime variables (set via Cloudflare Dashboard → Worker → Variables):
 - Keys never appear in logs, responses, or stack traces
 - GitHub repository contains NO credentials
 
+## Platform-Credential Dispatch Boundary (#5224)
+
+The Worker is published on the public `workers.dev` subdomain, so every mounted
+route is anonymously reachable. The platform-owned provider credential is the
+Owner's cost, so the routes that spend it accept internal Service Binding
+callers only.
+
+- Accepted callers: the B62 Chat and B54 Engine products, over the existing
+  `B14_SERVICE` Cloudflare Service Binding, on the canonical internal origin
+  `https://b14.internal`.
+- A public edge request that reaches a platform-credential route is rejected
+  with `401` and error code `unauthorized_platform_dispatch` **before** any
+  provider dispatch, so the provider POST count stays at zero.
+- The BYOK branch is unchanged: it spends the caller's own
+  `X-Business14-Provider-Key` and keeps the existing public customer API and
+  the existing Cloudflare deployment configuration.
+- Read-only surfaces (`/api/pilot/health`, `/api/pilot/models`,
+  `/api/pilot/router/resolve`, `/api/pilot/provider-readiness`) stay public and
+  never perform a provider call.
+
 ## Security Headers
 
 Static assets and Worker responses both include:

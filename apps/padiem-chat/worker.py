@@ -262,7 +262,30 @@ class CloudflareB14ServiceTransport:
     Routing authority is the fixed `B14_SERVICE` binding. The URL is still fully
     qualified because the Fetcher API expects an absolute URL, but service-binding
     configuration — not the hostname — selects the target Worker.
+
+    Every B14 call is sent on the canonical internal Service Binding origin
+    (`https://b14.internal`). B14 authorizes platform-credential dispatch only
+    for its internal Service Binding callers, so the product call must carry
+    that origin instead of the public `workers.dev` address (#5224).
     """
+
+    # Canonical internal Service Binding origin for B14 (#5224).
+    B14_INTERNAL_ORIGIN = "https://b14.internal"
+
+    @staticmethod
+    def _internal_service_url(url: str) -> str:
+        """Rewrite one B14 URL onto the canonical internal Service Binding origin.
+
+        Only the origin changes. The path and query are the B14 route contract
+        and are preserved exactly.
+        """
+        text = str(url)
+        _, sep, tail = text.partition("://")
+        if not sep:
+            tail = text
+        else:
+            tail = "/" + tail.partition("/")[2]
+        return CloudflareB14ServiceTransport.B14_INTERNAL_ORIGIN + (tail or "/")
 
     def __init__(self, binding: Any):
         if binding is None:
@@ -277,7 +300,7 @@ class CloudflareB14ServiceTransport:
         ):
             raise ValueError("unsupported B14 model-authority read endpoint")
         request = Request(
-            "https://b14.internal" + path,
+            self.B14_INTERNAL_ORIGIN + path,
             method="GET",
         )
         response = await self.binding.fetch(request.js_object)
@@ -300,7 +323,7 @@ class CloudflareB14ServiceTransport:
         except ImportError:
             pass
         request = Request(
-            url,
+            self._internal_service_url(url),
             method="POST",
             headers={
                 "Content-Type": "application/json",
@@ -407,6 +430,20 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
 class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
     """Progressive httpx transport backed by the fixed B14 Service Binding."""
 
+    # Canonical internal Service Binding origin for B14 (#5224).
+    B14_INTERNAL_ORIGIN = "https://b14.internal"
+
+    @staticmethod
+    def _internal_service_url(url: str) -> str:
+        """Rewrite one B14 URL onto the canonical internal Service Binding origin."""
+        text = str(url)
+        _, sep, tail = text.partition("://")
+        if not sep:
+            tail = text
+        else:
+            tail = "/" + tail.partition("/")[2]
+        return CloudflareB14StreamingServiceTransport.B14_INTERNAL_ORIGIN + (tail or "/")
+
     def __init__(self, binding: Any):
         if binding is None:
             raise ValueError("B14 service binding is required")
@@ -432,7 +469,7 @@ class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
             except ImportError:
                 pass
             service_request = Request(
-                str(request.url),
+                self._internal_service_url(str(request.url)),
                 method="POST",
                 headers={"Content-Type": "application/json", **trace_headers},
                 body=body_text,

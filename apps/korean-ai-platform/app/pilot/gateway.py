@@ -31,7 +31,12 @@ from app.pilot.errors import (
     PilotError,
     StreamNotSupported,
     ToolsNotSupported,
+    UnauthorizedPlatformDispatch,
     UpstreamTimeout,
+)
+from app.pilot.dispatch_authorization import (
+    DispatchAuthorization,
+    authorize_platform_dispatch,
 )
 from app.pilot.redaction import redact_sensitive
 from app.pilot.provider_timeout_diagnostics import log_gateway_deadline
@@ -741,9 +746,16 @@ def _build_b14_live_metadata(
     }
 
 
-async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
+async def _handle_alpha_chat(
+    request_id: str,
+    body: dict,
+    authorization: DispatchAuthorization,
+) -> JSONResponse:
     """Handle a chat completions request in Alpha (platform catalog) mode.
 
+    - ``authorization`` is mandatory and is decided before this function runs.
+      A request that may not spend the platform-owned credential is rejected
+      here, before any secret resolution and before any provider dispatch.
     - Detects mock vs live mode from B14_PROVIDER_MODE
     - In mock mode: returns canned response, zero upstream calls
     - In live mode: calls the platform provider with fallback logic
@@ -752,6 +764,9 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     - Unknown exceptions fail closed (no fallback)
     """
     from app.pilot.b14_runtime_config import runtime_config as cfg
+
+    if not authorization.allowed:
+        raise UnauthorizedPlatformDispatch()
 
     model_id = body["model"]
     b14_opts = body.get("business14", {})
@@ -1147,7 +1162,11 @@ async def pilot_chat_completions(
 
         # Alpha mode: catalog model or future b14/auto
         if _is_alpha_model(body["model"]):
-            return await _handle_alpha_chat(request_id, body)
+            return await _handle_alpha_chat(
+                request_id,
+                body,
+                authorize_platform_dispatch(request),
+            )
 
         # BYOK mode (legacy flow — unchanged)
         api_key = _validate_provider_key(x_business14_provider_key)

@@ -25,6 +25,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Router
 
 from app.pilot import gateway as pilot_gateway
+from app.pilot.dispatch_authorization import authorize_platform_dispatch
 
 router = Router()
 
@@ -115,8 +116,13 @@ async def _execute_extraction(
     filename: str,
     media_type: str,
     byte_size: int,
+    authorization: Any,
 ) -> JSONResponse:
     """Execute one canonical B66 extraction request and validate its response."""
+
+    if not authorization.allowed:
+        # An anonymous public request never reaches the platform credential.
+        return _error("unauthorized_platform_dispatch", status=401)
 
     try:
         validated_body = pilot_gateway._validate_body(chat_body)
@@ -127,7 +133,9 @@ async def _execute_extraction(
 
     request_id = "b66_" + uuid.uuid4().hex[:16]
     try:
-        upstream = await pilot_gateway._handle_alpha_chat(request_id, validated_body)
+        upstream = await pilot_gateway._handle_alpha_chat(
+            request_id, validated_body, authorization,
+        )
     except Exception:
         return _error("b14_execution_failed", status=502)
 
@@ -195,6 +203,12 @@ async def _execute_extraction(
 
 @router.route(EXTRACT_IMAGE_PATH, methods=["POST"])
 async def extract_image(request: Request) -> JSONResponse:
+    # #5224: an anonymous public request is rejected before any extraction
+    # work, so the platform-owned credential can never be spent.
+    authorization = authorize_platform_dispatch(request)
+    if not authorization.allowed:
+        return _error("unauthorized_platform_dispatch", status=401)
+
     payload = await _bounded_json(request)
     if payload is None:
         return _error("invalid_request")
@@ -229,11 +243,18 @@ async def extract_image(request: Request) -> JSONResponse:
         filename=name.strip(),
         media_type=media_type,
         byte_size=len(image_bytes),
+        authorization=authorization,
     )
 
 
 @router.route(EXTRACT_DOCUMENT_PATH, methods=["POST"])
 async def extract_document(request: Request) -> JSONResponse:
+    # #5224: an anonymous public request is rejected before any intake work,
+    # so the platform-owned credential can never be spent.
+    authorization = authorize_platform_dispatch(request)
+    if not authorization.allowed:
+        return _error("unauthorized_platform_dispatch", status=401)
+
     payload = await _bounded_json(request)
     if payload is None:
         return _error("invalid_request")
@@ -297,4 +318,5 @@ async def extract_document(request: Request) -> JSONResponse:
         filename=name,
         media_type=media_type,
         byte_size=byte_size,
+        authorization=authorization,
     )

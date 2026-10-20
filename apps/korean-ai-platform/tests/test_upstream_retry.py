@@ -25,6 +25,7 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot import gateway as gw
 from app.pilot import platform as plat
+from app.pilot.dispatch_authorization import DispatchAuthorization
 from app.pilot.errors import UpstreamAuthFailed, UpstreamServerError, UpstreamTimeout
 
 MODEL_ID = "agnes-ai/agnes-3.0-flash"
@@ -348,7 +349,11 @@ async def test_manual_initial_request_propagates_parent_cancellation(monkeypatch
 
     monkeypatch.setattr(plat, "call_platform_chat_completions", fake)
     task = asyncio.create_task(gw._handle_alpha_chat(
-        "cancel_test", {"model": MODEL_ID, "messages": [{"role": "user", "content": "offline"}]}
+        "cancel_test",
+        {"model": MODEL_ID, "messages": [{"role": "user", "content": "offline"}]},
+        # #5224: platform dispatch requires an authorization decision. This
+        # test exercises cancellation of an already authorized internal call.
+        DispatchAuthorization(allowed=True, reason="test_internal_call", status_code=200),
     ))
     await asyncio.wait_for(entered.wait(), timeout=1.0)
     task.cancel()

@@ -47,6 +47,28 @@ class PlaceholderKeyRejected(PilotError):
         )
 
 
+class UnauthorizedPlatformDispatch(PilotError):
+    """Anonymous or insufficiently authorized request reached the platform path.
+
+    The platform-owned provider credential is the Owner's cost, so a request
+    that is not an internal Service Binding call is rejected before any
+    provider dispatch. The BYOK branch is unaffected: it spends the caller's
+    own key.
+    """
+
+    def __init__(self, message: str = "") -> None:
+        if not message:
+            message = (
+                "플랫폼 소유 Provider 실행 권한이 없습니다. "
+                "이 경로는 내부 Service Binding 호출만 허용됩니다."
+            )
+        super().__init__(
+            code="unauthorized_platform_dispatch",
+            message=message,
+            status_code=401,
+        )
+
+
 class UnsupportedModel(PilotError):
     def __init__(self, model_id: str) -> None:
         super().__init__(

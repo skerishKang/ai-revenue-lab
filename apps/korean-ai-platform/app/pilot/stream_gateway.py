@@ -25,8 +25,10 @@ from app.pilot.errors import (
     MalformedUpstreamResponse,
     PilotError,
     StreamNotSupported,
+    UnauthorizedPlatformDispatch,
     UnsupportedModel,
 )
+from app.pilot.dispatch_authorization import authorize_platform_dispatch
 from app.pilot.gateway import _validate_body
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.stream_types import (
@@ -288,6 +290,13 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
     iterator: AsyncIterator[StreamEvent] | None = None
 
     try:
+        # #5224: a public anonymous request must not reach the platform-owned
+        # credential. The decision is taken before any secret resolution and
+        # before any provider dispatch.
+        authorization = authorize_platform_dispatch(request)
+        if not authorization.allowed:
+            raise UnauthorizedPlatformDispatch()
+
         if parsed_body is not None:
             raw = parsed_body
         else:

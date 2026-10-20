@@ -21,7 +21,13 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Router
 
-from app.pilot.errors import InvalidRequest, PilotError, StreamNotSupported
+from app.pilot.errors import (
+    InvalidRequest,
+    PilotError,
+    StreamNotSupported,
+    UnauthorizedPlatformDispatch,
+)
+from app.pilot.dispatch_authorization import authorize_platform_dispatch
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.gateway import _validate_body
 from app.pilot.routing_policy import ROUTING_POLICY_ID
@@ -337,6 +343,13 @@ async def pilot_auto_stream_preview(request: Request):
     iterator: AsyncIterator[RouterStreamEvent] | None = None
 
     try:
+        # #5224: a public anonymous request must not reach the platform-owned
+        # credential. The decision is taken before any secret resolution and
+        # before any provider dispatch.
+        authorization = authorize_platform_dispatch(request)
+        if not authorization.allowed:
+            raise UnauthorizedPlatformDispatch()
+
         try:
             raw = await request.json()
         except (ValueError, UnicodeDecodeError):
