@@ -306,7 +306,14 @@ def test_a_non_pc_plan_still_gets_no_tool_authority(monkeypatch):
 
 
 def test_the_pc_files_plan_keeps_its_shared_target_without_a_hint(monkeypatch):
-    """The two-step list/read plan is canonical too, with one shared target."""
+    """The two-step list/read plan is canonical too, with one shared target.
+
+    The captured request is the claim, not the response code. A recorder that
+    always succeeds reports 200 for a request that carries no tool authority
+    at all, so this asserts the attachment itself: the trusted tool authority,
+    the tool runtime and the owner-selected PC step driver must be present on
+    the request Core receives.
+    """
     tool = SyntheticPcTool()
     service = _service(app_id=CHAT_APP_ID, agent_id=CHAT_PC_QUERY_AGENT_ID, tool=tool)
     payload = _payload(device_id=None)
@@ -329,5 +336,22 @@ def test_the_pc_files_plan_keeps_its_shared_target_without_a_hint(monkeypatch):
     response = _run(monkeypatch, service, payload)
 
     assert response.status_code == 200, response.body
-    assert RecordingRunner.requests[0].agent_plan.agent_id == CHAT_PC_QUERY_AGENT_ID
+    assert len(RecordingRunner.requests) == 1
+    request = RecordingRunner.requests[0]
+    # Core's plan bridge needs all five of these. Without them the plan runs
+    # with no trusted authority and the PC tool is never reachable.
+    assert request.agent_definition is not None
+    assert request.compiled_agent_profile is not None
+    assert request.tool_authorization is not None
+    assert request.tool_runtime is not None
+    # The owner-selected step driver, not Core's plan-backed default.
+    assert request.agent_step_driver is not None
+    assert request.agent_plan.agent_id == CHAT_PC_QUERY_AGENT_ID
+    assert tuple(step.step_id for step in request.agent_plan.steps) == (
+        "list_files",
+        "read_file",
+    )
+    # No hint means no named target; the owner scope resolves the pinned one.
+    assert request.tool_arguments == {}
+    # The recorder replaces the runner, so the tool itself is never called here.
     assert tool.calls == []
