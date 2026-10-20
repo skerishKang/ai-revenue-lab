@@ -111,10 +111,15 @@ def test_the_claw_conversation_clearance_tracks_the_measured_composer() -> None:
     status/cancel row (+25px). Chat already reads the runtime
     `--padiem-composer-clearance`; the Claw workbench rule pinned 218px, so a
     grown composer left the user's last turn sitting under the glass input.
+
+    The fixed composer is also raised by exactly the software-keyboard inset
+    while the keyboard is open, so the rule adds that inset to the measured
+    clearance instead of replacing it.
     """
     rule = _body(
         CLAW,
         '.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .conversation',
     )
-    assert "padding-bottom: var(--padiem-composer-clearance" in rule, rule
+    assert "var(--padiem-composer-clearance" in rule, rule
+    assert "var(--padiem-visual-keyboard-inset" in rule, rule
     assert "padding-bottom: 218px" not in rule, "a constant inset cannot track a growing composer"
