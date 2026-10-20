@@ -40,25 +40,24 @@ def test_the_glass_stylesheets_are_linked_in_the_first_paint():
     assert "data-padiem-glass-portrait" in head
 
 
-def test_the_glass_stylesheets_are_the_last_stylesheets_in_the_head():
+def test_the_glass_stylesheets_keep_their_runtime_cascade_position():
+    """theme-init.js appended them to <head> while the parser was still at the
+    script tag, so they sat ahead of styles.css. The static links must sit in
+    that same position, otherwise the glass variables start winning ties they
+    did not win before and the chat gutter moves."""
     head = _index().split("</head>", 1)[0]
-    positions = [
-        head.rindex('href="./padiem-glass.css"'),
-        head.rindex('href="./padiem-glass-portrait.css"'),
-    ]
-    last_other = max(
-        head.rindex(f'href="./{name}"')
-        for name in (
-            "styles.css",
-            "padiem-themes.css",
-            "padiem-chat-ui-polish.css",
-            "padiem-dark-contrast.css",
-            "interaction-polish.css",
-        )
-    )
-    # the glass sheets must keep winning the cascade, exactly as they did when
-    # they were appended to the end of <head> at runtime
-    assert min(positions) > last_other
+    glass = head.index('href="./padiem-glass.css"')
+    portrait = head.index('href="./padiem-glass-portrait.css"')
+    styles = head.index('href="./styles.css"')
+    assert glass < styles
+    assert portrait < styles
+    for name in (
+        "padiem-themes.css",
+        "padiem-chat-ui-polish.css",
+        "padiem-dark-contrast.css",
+        "interaction-polish.css",
+    ):
+        assert glass < head.index(f'href="./{name}"')
 
 
 def test_the_theme_initializer_runs_after_the_glass_links():

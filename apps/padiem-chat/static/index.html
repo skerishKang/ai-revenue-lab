@@ -7,6 +7,15 @@
   <meta name="theme-color" content="#04070d" />
   <link rel="icon" href="data:," />
   <title>Padiem Chat</title>
+  <!-- #5080 the glass theme belongs to the first paint. theme-init.js used to
+       append these two stylesheets at runtime, which put them ahead of
+       styles.css in the cascade and left the page background changing once the
+       late CSS arrived. Linking them here keeps that same cascade position and
+       makes the background steady from the first frame. The theme-init.js guard
+       below finds these links and does not inject a second copy. -->
+  <link rel="stylesheet" href="./padiem-glass.css" data-padiem-glass-theme="true" />
+  <link rel="stylesheet" href="./padiem-glass-portrait.css" data-padiem-glass-portrait="true" />
+  <script src="./theme-init.js"></script>
   <meta name="description" data-locale-content="meta-description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./owner-model-preview.css" />
@@ -65,14 +74,6 @@
        The data attribute keeps interaction-polish.js from injecting a
        duplicate sheet. -->
   <link rel="stylesheet" href="./interaction-polish.css" data-interaction-polish-styles="true" />
-  <!-- #5080 the glass theme belongs to the first paint. theme-init.js used to
-       append these two stylesheets after the document had already painted, so the
-       page background changed once the late CSS arrived and the portrait mask
-       swept in over 560ms. Linking them here keeps the background steady, and the
-       theme-init.js guard below sees these links and does not inject a copy. -->
-  <link rel="stylesheet" href="./padiem-glass.css" data-padiem-glass-theme="true" />
-  <link rel="stylesheet" href="./padiem-glass-portrait.css" data-padiem-glass-portrait="true" />
-  <script src="./theme-init.js"></script>
 </head>
 <body>
   <div class="app-shell" data-state="home">
