@@ -239,6 +239,45 @@ async def project_files_collection(request: Request) -> JSONResponse:
     return JSONResponse({"file": created.public_dict()}, status_code=201)
 
 
+async def project_file_original(request: Request) -> Response:
+    """Owner/project-scoped binary retrieval by opaque file ID, never by R2 key."""
+    uid, pid, error = await _identity(request)
+    if error is not None:
+        return error
+    try:
+        fid = validate_file_id(request.path_params.get("file_id"))
+    except ValueError:
+        return _not_found()
+    store: ProjectFileStore = request.app.state.project_file_store
+    try:
+        record = await store.get_file(uid, pid, fid)
+        if record is None or record.media_type not in {"extracted/pdf", "extracted/docx"}:
+            return _not_found()
+        workspace_store = getattr(request.app.state, "workspace_document_store", None)
+        bucket = getattr(workspace_store, "r2_bucket", None)
+        if bucket is None:
+            return _unavailable()
+        obj = await _r2_call(bucket, "get", _project_original_object_key(uid, pid, fid))
+        if obj is None:
+            return _not_found()
+        array_buffer = getattr(obj, "arrayBuffer", None)
+        if callable(array_buffer):
+            payload = array_buffer()
+            if inspect.isawaitable(payload):
+                payload = await payload
+            as_bytes = getattr(payload, "to_bytes", None)
+            payload = as_bytes() if callable(as_bytes) else bytes(payload)
+        else:
+            payload = bytes(getattr(obj, "body", obj))
+        media = "application/pdf" if record.media_type == "extracted/pdf" else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        return Response(bytes(payload), media_type=media, headers={
+            "Cache-Control": "private, no-store",
+            "X-Content-Type-Options": "nosniff",
+        })
+    except Exception:
+        return _unavailable()
+
+
 async def project_file_detail(request: Request):
     uid, pid, error = await _identity(request)
     if error is not None:
