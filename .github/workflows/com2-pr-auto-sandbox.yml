@@ -23,7 +23,7 @@ jobs:
       github.event.workflow_run.head_repository.full_name == github.repository &&
       github.event.workflow_run.pull_requests[0].number != null
     name: COM2 auto PR policy sandbox
-    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Resolve exact still-open PR head
@@ -63,7 +63,42 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sudo -n /usr/local/sbin/padiem-ci-full-policy-check
+          # Trusted inline Dockerfile, not the PR checkout. Build dependencies in
+          # a separate image; the untrusted PR test runtime has no network,
+          # writable repository, elevated capabilities, or GitHub token.
+          docker build --tag padiem-policy-hosted:5338 - <<'DOCKERFILE'
+          FROM python:3.12.15-slim
+          RUN apt-get update && apt-get install -y --no-install-recommends git \
+              && rm -rf /var/lib/apt/lists/* \
+              && pip install --no-cache-dir pytest==9.1.1 PyYAML==6.0.3
+          DOCKERFILE
+          src="$GITHUB_WORKSPACE/sandbox-input"
+          test -d "$src/.git"
+          test "$(git -C "$src" rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
+          policy() {
+            docker run --rm --pull=never --network=none --read-only \
+              --cap-drop=ALL --security-opt=no-new-privileges \
+              --pids-limit=128 --memory=768m --cpus=1 --user=65534 \
+              --mount "type=bind,source=$src,target=/src,readonly" \
+              --tmpfs /tmp:rw,nosuid,nodev,size=128m \
+              -e GIT_CONFIG_COUNT=1 -e GIT_CONFIG_KEY_0=safe.directory \
+              -e GIT_CONFIG_VALUE_0=/src -w /src \
+              --entrypoint python padiem-policy-hosted:5338 "$@"
+          }
+          policy -m pytest -p no:cacheprovider -q docs/operations/tests \
+            .github/tests/test_3989_engine_living_learning_ci_scope.py \
+            .github/tests/test_pr_contract_guard.py \
+            .github/tests/test_r2_credential_authority_split.py \
+            .github/tests/test_b62_pr_preview_trigger_scope.py \
+            .github/tests/test_b62_worker_deploy_trigger_scope.py \
+            .github/tests/test_cross_lane_test_dependency_guard.py \
+            .github/tests/test_frozen_source_checkout_byte_guard.py \
+            .github/tests/test_verify_import_origin.py \
+            tools/b66_generic/tests/test_b66_generic_archive_bounds.py \
+            .github/tests/test_3989_operations_guard_pytest_batch.py
+          policy .github/scripts/cross_lane_test_dependency_guard.py
+          policy .github/scripts/frozen_source_checkout_byte_guard.py
+          policy .github/scripts/com2_b62_browser_planner_regression.py
           echo "COM2_AUTO_PR_FULL_POLICY=PASS"
 
       - name: Publish exact PR HEAD full policy result
