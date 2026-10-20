@@ -46,7 +46,7 @@ def _optional_ref(value: str | None, field_name: str) -> str | None:
 def _bounded_text(value: str, field_name: str, limit: int) -> str:
     if not isinstance(value, str):
         raise ContractError(f"{field_name} must be a string")
-    normalized = redact_secrets(value.strip())
+    normalized = value.strip()
     if len(normalized) > limit:
         raise ContractError(f"{field_name} exceeds {limit} characters")
     return normalized

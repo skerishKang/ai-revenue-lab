@@ -28,7 +28,7 @@ MAX_DOCUMENT_CHARS = MAX_SEGMENT_TEXT_CHARS
 MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
 # #4379: a binary document carries no PADIEM byte total. The symbol is
 # retained for import compatibility and is no longer enforced.
-MAX_BINARY_DOCUMENT_BYTES = 2 * 1024 * 1024
+MAX_BINARY_DOCUMENT_BYTES = 1024 * 1024 * 1024
 #: Largest drawable extent, in HWPUNIT, this Core accepts for a picture block.
 #: One HWPUNIT is 1/7200 inch, so this is roughly 138 inches: far beyond any
 #: page, and bounded so a caller-supplied size can never inflate the section

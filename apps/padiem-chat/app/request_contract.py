@@ -10,7 +10,7 @@ from .task_modes import TaskMode, get_task_mode
 from .tool_presentations import ToolPresentationDescriptor, get_tool_presentation
 from .web_tools import MAX_QUERY_CHARS, normalize_public_url
 
-MAX_BROWSER_BODY_BYTES = 6_000_000
+MAX_BROWSER_BODY_BYTES = 1024 * 1024 * 1024 + 65536
 # Deprecated model-input caps remain importable for compatibility; no product
 # pilot count/character ceiling applies before B14. HTTP body safety is separate.
 MAX_MESSAGES: int | None = None

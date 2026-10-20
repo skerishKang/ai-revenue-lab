@@ -46,7 +46,7 @@ def _sha256(value: str, field_name: str) -> str:
 def _bounded_text(value: str, field_name: str, limit: int = MAX_KAKAO_TEXT_CHARS) -> str:
     if not isinstance(value, str):
         raise ContractError(f"{field_name} must be text")
-    normalized = redact_secrets(value.strip())
+    normalized = value.strip()
     if not normalized or len(normalized) > limit:
         raise ContractError(f"{field_name} must contain 1..{limit} characters")
     return normalized

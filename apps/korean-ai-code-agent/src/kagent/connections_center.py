@@ -49,7 +49,7 @@ def _aware(value: datetime, field_name: str) -> datetime:
 def _text(value: str, field_name: str, maximum: int) -> str:
     if not isinstance(value, str):
         raise ContractError(f"{field_name} must be text")
-    normalized = redact_secrets(value.strip())
+    normalized = value.strip()
     if not normalized or len(normalized) > maximum:
         raise ContractError(f"{field_name} must be bounded non-empty text")
     return normalized
