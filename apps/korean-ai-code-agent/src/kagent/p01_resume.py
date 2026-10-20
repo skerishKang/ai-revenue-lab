@@ -42,7 +42,7 @@ class ClawResumeOutcome:
     def safe_dict(self) -> dict[str, object]:
         return {
             "projection": self.projection.safe_dict(),
-            "answer": redact_secrets(self.answer) if self.answer is not None else None,
+            "answer": self.answer,
             "p01_run_id": self.p01_run_id,
             "p01_event_count": self.p01_event_count,
             "decision_id": self.decision_id,
@@ -322,7 +322,7 @@ class P01ApprovalResumeAdapter:
                 )
 
             answer = (
-                redact_secrets(result.execution_result.answer)
+                result.execution_result.answer
                 if run.status is ClawRunStatus.COMPLETED
                 else None
             )
