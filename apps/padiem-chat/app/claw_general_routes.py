@@ -118,17 +118,6 @@ def _combine_system_context(*parts: str | None) -> str | None:
     return "\n\n".join(blocks) if blocks else None
 
 
-
-def _combine_system_context(*parts: str | None) -> str | None:
-    """Join optional trusted context blocks in a fixed order.
-
-    Each part is server-composed; a browser-supplied string never reaches this
-    helper. Empty/absent blocks disappear instead of emitting a blank section.
-    """
-    blocks = [part for part in parts if isinstance(part, str) and part]
-    return "\n\n".join(blocks) if blocks else None
-
-
 # NO_EXECUTABLE_ROUTE product HOLD (#3568/#3566): these adapter codes mean the
 # run was refused before any Engine/B14/provider dispatch because the selected
 # tier has no executable route yet. They are product states, not engine
