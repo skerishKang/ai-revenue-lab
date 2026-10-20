@@ -111,6 +111,10 @@ def test_the_claw_conversation_clearance_tracks_the_measured_composer() -> None:
     status/cancel row (+25px). Chat already reads the runtime
     `--padiem-composer-clearance`; the Claw workbench rule pinned 218px, so a
     grown composer left the user's last turn sitting under the glass input.
+
+    The fixed composer is also raised by exactly the software-keyboard inset
+    while the keyboard is open, so the rule adds that inset to the measured
+    clearance instead of replacing it.
     """
     rule = _body(
         CLAW,
