@@ -164,18 +164,45 @@
     }
   }
 
-  function routeTile(productId, modelId, fallback) {
+  // #2505: Chat and Claw are two screens of one AI product, so the central
+  // grade setting they share is stored and read once.
+  const SHARED_ROUTE_PRODUCT = "chat";
+  const SHARED_ROUTE_LABEL = "Chat·Claw 공통";
+
+  function sharedRouteRows() {
+    // One row per grade: the shared row wins, and a legacy alias row still
+    // governs its own grade until a shared row is written for that grade.
+    const shared = new Map();
+    const alias = new Map();
+    for (const row of state.routeRows) {
+      if (row.product === SHARED_ROUTE_PRODUCT) shared.set(row.tier, row);
+      else if (row.product === "claw" && !alias.has(row.tier)) alias.set(row.tier, row);
+    }
+    const rows = new Map(shared);
+    for (const [tier, row] of alias) {
+      if (!rows.has(tier)) rows.set(tier, row);
+    }
+    return [...rows.values()];
+  }
+
+  function routeRowsFor(productId) {
+    if (productId === "chat" || productId === "claw") return sharedRouteRows();
+    return state.routeRows.filter((row) => row.product === productId);
+  }
+
+  function routeTile(productId, modelId, fallback, label) {
     // The central per-product/per-grade route ledger is the runtime-enforced
     // placement of a model. Show the administrator where this exact model is
     // actually assigned instead of a fixed "not wired" label.
-    const rows = state.routeRows.filter((row) => row.product === productId);
+    const name = label || PRODUCTS[productId].name;
+    const rows = routeRowsFor(productId);
     const placed = rows.filter((row) =>
       row.primary_model_id === modelId || row.fallback_model_id === modelId);
     const note = fallback && fallback.detail ? " · " + fallback.detail : "";
     if (!placed.length) {
       if (!rows.length) return fallback;
       return {
-        name: PRODUCTS[productId].name,
+        name: name,
         status: "미배정",
         detail: "중앙 등급별 실행 경로에 이 모델 배정 없음" + note,
         kind: "unknown",
@@ -185,14 +212,14 @@
       // An explicit product-policy OFF stays visible: a central route
       // assignment never hides a blocked model.
       return {
-        name: PRODUCTS[productId].name,
+        name: name,
         status: fallback.status,
         detail: "중앙 등급별 실행 경로 배정 있음 · " + fallback.detail,
         kind: "blocked",
       };
     }
     return {
-      name: PRODUCTS[productId].name,
+      name: name,
       status: placed.map((row) => row.tier + (
         row.primary_model_id === modelId ? " 기본" : " 폴백")).join(" · "),
       detail: "중앙 등급별 실행 경로 배정" + note,
@@ -221,8 +248,8 @@
         name: "Padiem Chat", status: "미연결",
         detail: "실제 배정 여부 미확인", kind: "unknown"}),
       routeTile("claw", modelId, {
-        name: "Claw", status: "미연결",
-        detail: "제품별 최종 실행 허용 미확인", kind: "unknown"}),
+        name: SHARED_ROUTE_LABEL, status: "미연결",
+        detail: "Chat·Claw 등급 배정 공유", kind: "unknown"}, SHARED_ROUTE_LABEL),
     ];
     const b66 = state.products?.b66;
     let b66Tile;
@@ -298,6 +325,11 @@
   }
 
   function routeConfigured(product, tier) {
+    // One shared grade setting: the Claw column reads the same central row
+    // the Chat column reads.
+    if (product === "chat" || product === "claw") {
+      return sharedRouteRows().find((row) => row.tier === tier) || null;
+    }
     return state.routeRows.find((row) => row.product === product && row.tier === tier) || null;
   }
 
@@ -343,7 +375,7 @@
     const productSelect = $("routeProduct");
     if (!productSelect.options.length) {
       for (const key of ROUTE_PRODUCTS) {
-        const option = node("option", PRODUCTS[key].name);
+        const option = node("option", key === "claw" ? SHARED_ROUTE_LABEL : PRODUCTS[key].name);
         option.value = key;
         productSelect.append(option);
       }
@@ -371,7 +403,7 @@
         const effective = configured || routeStatic(product, tier);
         const row = node("button", null, "route-row");
         row.type = "button";
-        row.append(node("span", PRODUCTS[product].name), node("span", tier));
+        row.append(node("span", product === "claw" ? SHARED_ROUTE_LABEL : PRODUCTS[product].name), node("span", tier));
         row.append(node("span", modelName(effective?.primary_model_id)));
         row.append(node("span", modelName(effective?.fallback_model_id)));
         const status = !configured ? "정적 기본값" : configured.enabled ? "중앙 설정" : "사용 안 함";
