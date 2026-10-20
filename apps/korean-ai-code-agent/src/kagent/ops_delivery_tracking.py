@@ -8,7 +8,6 @@ from typing import Any
 from .contracts import ContractError
 from .ops_contracts import BusinessObjectKind, DeliveryStatus, PurchaseOrder, PurchaseOrderStatus
 from .ops_ledger import BusinessObjectEnvelope, InMemoryOpsLedger
-from .security import redact_secrets
 
 
 class DeliveryExceptionKind(str, Enum):

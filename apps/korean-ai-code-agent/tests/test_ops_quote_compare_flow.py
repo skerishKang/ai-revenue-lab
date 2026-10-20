@@ -570,7 +570,7 @@ class ModuleBoundaryTests(unittest.TestCase):
     def test_only_the_existing_ops_authority_is_imported(self):
         self.assertEqual(
             self._relative_imports(),
-            {".contracts", ".ops_comparison", ".ops_contracts", ".security"},
+            {".contracts", ".ops_comparison", ".ops_contracts"},
         )
 
     def test_no_outbound_send_is_ever_called(self):
