@@ -189,11 +189,13 @@ def prerequisite_sources() -> dict[str, str]:
     return sources
 
 
-def _rebuild_scope(text: str) -> dict[str, dict[str, int]]:
-    """Prove 060 rebuilds exactly the three reviewed tables, copy before drop."""
+def _rebuild_scope(
+    text: str, tables: tuple = TABLES, name: str = "060"
+) -> dict[str, dict[str, int]]:
+    """Prove a release rebuilds exactly the reviewed tables, copy before drop."""
     statements = _statements(text)
     scope: dict[str, dict[str, int]] = {}
-    for entry in TABLES:
+    for entry in tables:
         table = entry["table"]
         index = entry["index"]
         positions: dict[str, int] = {}
@@ -210,10 +212,10 @@ def _rebuild_scope(text: str) -> dict[str, dict[str, int]]:
                 if re.search(pattern, statement, re.IGNORECASE)
             ]
             if len(found) != 1:
-                raise GateError(f"060 must {label} {table} exactly once")
+                raise GateError(f"{name} must {label} {table} exactly once")
             positions[label] = found[0]
         if positions["copy"] > positions["drop"]:
-            raise GateError(f"060 must copy {table} before dropping it")
+            raise GateError(f"{name} must copy {table} before dropping it")
         scope[table] = positions
 
     touched = set()
@@ -224,18 +226,18 @@ def _rebuild_scope(text: str) -> dict[str, dict[str, int]]:
             statement,
         ):
             touched.add(match.group(2))
-    expected = {entry["table"] for entry in TABLES} | {
-        f"{entry['table']}_next" for entry in TABLES
+    expected = {entry["table"] for entry in tables} | {
+        f"{entry['table']}_next" for entry in tables
     }
     if touched != expected:
-        raise GateError("060 touches a table outside the reviewed rebuild scope")
+        raise GateError(f"{name} touches a table outside the reviewed rebuild scope")
     upper = re.sub(r"\s+", " ", text).upper()
     for forbidden in (
         "DELETE FROM", "UPDATE ", "REPLACE INTO", "TRUNCATE", "ATTACH ",
         "DETACH ", "CREATE TRIGGER", "CREATE VIEW", "DROP INDEX", "DROP COLUMN",
     ):
         if forbidden in upper:
-            raise GateError(f"060 contains a forbidden statement: {forbidden.strip()}")
+            raise GateError(f"{name} contains a forbidden statement: {forbidden.strip()}")
     return scope
 
 
