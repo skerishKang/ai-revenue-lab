@@ -391,3 +391,45 @@ def test_an_unauthorized_tool_call_is_refused_without_a_provider_call() -> None:
     assert result.approval_pause is not None
     assert result.approval_pause.step_index == 1
     assert tool_runtime.calls == []
+
+
+def test_stop_fences_run_before_next_tool_dispatch() -> None:
+    """A revoked owner run must never dispatch the tool the model just selected."""
+    async def scenario() -> None:
+        definition = _definition(execution_budget=AgentExecutionBudget(
+            max_steps=None, max_tool_calls=None, max_skill_calls=None,
+            max_wall_seconds=60,
+        ))
+        compiled = _compiled(definition, max_steps_cap=None)
+        active = True
+        calls = 0
+
+        class _StopWhileDeciding:
+            async def next_step(self, context, compiled_profile):
+                nonlocal active
+                active = False  # User STOP/revoked lease after model dispatch.
+                return AgentStepDecision.use_tool(
+                    ToolInvocation(tool_id="tool.lookup", arguments={"query": "alpha"})
+                )
+
+        async def run_guard():
+            nonlocal calls
+            calls += 1
+            return active
+
+        tool_runtime = _tool_runtime()
+        runtime = BoundedAgentRuntime(
+            step_driver=_StopWhileDeciding(), tool_runtime=tool_runtime,
+            run_guard=run_guard, id_factory=lambda: "fixed",
+        )
+        with pytest.raises(Exception) as stopped:
+            await runtime.run(AgentRunRequest(
+                definition=definition, compiled_profile=compiled,
+                authorization=_authorization(compiled), input_text="Work.",
+                run_id="run.stop",
+            ))
+        assert getattr(stopped.value, "code", None) == "agent_run_fenced"
+        assert calls >= 2
+        assert tool_runtime.calls == []
+
+    asyncio.run(scenario())
