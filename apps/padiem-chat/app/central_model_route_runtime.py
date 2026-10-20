@@ -128,9 +128,14 @@ async def resolve_tier_route_view_from_stores(
     """
     if tier not in TIERS:
         raise ValueError("invalid route tier")
+    # The policy ledger is independent of the route ledger. A route read
+    # outage must not silently remove a policy block that remains readable.
+    blocked_model_ids = await _blocked_models_from_store(policy_store, product, tier)
     snapshot = await _read_route_snapshot(route_store)
     if snapshot is None:
-        return static_tier_route(static_primary, static_fallback), 0
+        return static_tier_route(
+            static_primary, static_fallback, blocked_model_ids=blocked_model_ids,
+        ), 0
     resolution = effective_tier_route(
         snapshot,
         workspace_id=WORKSPACE,
@@ -138,7 +143,7 @@ async def resolve_tier_route_view_from_stores(
         tier=tier,
         static_primary=static_primary,
         static_fallback=static_fallback,
-        blocked_model_ids=await _blocked_models_from_store(policy_store, product, tier),
+        blocked_model_ids=blocked_model_ids,
     )
     revision = _applied_revision(snapshot) if resolution.source == "central" else 0
     return resolution, revision
