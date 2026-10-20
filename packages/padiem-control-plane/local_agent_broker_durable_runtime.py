@@ -22,6 +22,7 @@ from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAg
 
 from local_agent_broker_material_store import CloudflareDurableObjectCommandMaterialStore, closed_mapping
 from local_agent_broker_owner_usage import BrokerOwnerUsageStore
+from local_agent_broker_device_diagnostics import BrokerDeviceDiagnosticsStore
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState,
     CloudflareDurableObjectSerializedStateBackend,
@@ -121,6 +122,9 @@ class LocalAgentBrokerDurableRuntime:
         self.state_port = SerializedLocalAgentBrokerStatePort(backend=self.backend)
         self.owner_usage = BrokerOwnerUsageStore(storage, self.authority_ref())
         self.http_state = CloudflareDurableObjectHttpSessionState(storage)
+        self.diagnostics_store = BrokerDeviceDiagnosticsStore(
+            storage, self.authority_ref()
+        )
         self.material_store = CloudflareDurableObjectCommandMaterialStore(
             storage,
             state_port=self.state_port,
@@ -514,6 +518,10 @@ class LocalAgentBrokerDurableRuntime:
             },
             "session": None,
             "heartbeat_last_seen_at": None,
+            # #3099: the device's own local observations, as a display-only
+            # hint. It is never consulted for canonical_state, the online
+            # projection or any admission decision.
+            "device_diagnostics": self.diagnostics_store.hint_for(binding.device_id),
         }
         if session is not None:
             facts["session"] = {
@@ -530,6 +538,29 @@ class LocalAgentBrokerDurableRuntime:
             if last_seen_at is not None:
                 facts["heartbeat_last_seen_at"] = _iso_utc(last_seen_at)
         return facts
+
+    def record_device_diagnostics(
+        self,
+        *,
+        device_id: str,
+        account_ref: str,
+        workspace_ref: str,
+        hint: Any,
+        observed_at: str,
+    ) -> dict:
+        """#3099: store one bounded, display-only local diagnostic hint.
+
+        A refused or rolled-back hint changes no stored state. The hint is
+        never consulted for the canonical state, the online projection or
+        any admission decision.
+        """
+        return self.diagnostics_store.record(
+            device_id=device_id,
+            account_ref=account_ref,
+            workspace_ref=workspace_ref,
+            hint=hint,
+            observed_at=observed_at,
+        )
 
     def device_directory(self, payload: dict) -> dict:
         """#4139 — the owner-scoped, read-only multi-device directory.

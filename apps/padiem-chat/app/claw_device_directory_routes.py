@@ -22,6 +22,7 @@ from .auth_routes import auth_ready, current_user_id
 from .same_origin_guard import expected_browser_origin
 from .claw_memory_routes import _resolve_memory_workspace
 from .claw_local_access_source import CanonicalClawLocalAccessTruthSource
+from .pc_device_diagnostics_projection import project_device_diagnostic
 from .pc_work_context import (
     PC_SCOPE_OWNER_UNAVAILABLE,
     PcConnectorScope,
@@ -133,6 +134,13 @@ class BrokerDeviceDirectorySource:
             online = state is DeviceLifecycle.ONLINE
             revoked = state is DeviceLifecycle.REVOKED
             expired = state is DeviceLifecycle.CREDENTIAL_EXPIRED
+            # #3099: the device's own local observations, projected for
+            # display only. It never changes the canonical state, the online
+            # projection, the executable flag or the selectable flag, and a
+            # hint that belongs to another device is dropped.
+            diagnostic = project_device_diagnostic(
+                facts.get("device_diagnostics"), device_id=device_id
+            )
             items.append({
                 "deviceId": device_id,
                 "deviceName": None,
@@ -141,6 +149,7 @@ class BrokerDeviceDirectorySource:
                 "usable": online,
                 "revoked": revoked,
                 "expired": expired,
+                **({"diagnostic": diagnostic} if diagnostic is not None else {}),
                 **({"usagePaused": paused} if paused is not None else {}),
             })
         if callable(self._android_profiles) and items and binding_refs:
@@ -284,6 +293,12 @@ async def _read_device_directory(
             "deviceId": ident, "deviceName": device_name, "platform": platform,
             "state": state, "usable": usable, "revoked": revoked, "expired": expired,
         }
+        # #3099: the device's own local observations, carried as a bounded
+        # display-only hint. It never changes the canonical state, the
+        # online projection or the selectable flag above.
+        diagnostic = row.get("diagnostic")
+        if diagnostic is not None:
+            entry["diagnostic"] = diagnostic
         if platform == "android":
             # #5080: only the one capability this adapter implements, and only
             # for a row the Broker actually declared as Android.

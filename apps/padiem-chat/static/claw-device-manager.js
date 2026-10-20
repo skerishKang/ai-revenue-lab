@@ -38,6 +38,8 @@
       expired: "인증이 만료되었습니다 · 다시 연결해 주세요",
       required: "연결 확인 필요",
       executable: "실행 대상 준비 · 온라인 상태 미확인",
+      diagnosticStale: "진단 정보를 확인할 수 없습니다 · 최신 정보가 없습니다",
+      diagnosticUnavailable: "진단 정보를 확인할 수 없습니다 · 이 PC가 아직 정보를 보내지 않았습니다",
       choose: "작업 대상 후보로 선택",
     },
     en: {
@@ -67,6 +69,8 @@
       expired: "Credential expired · reconnect",
       required: "Connection needs verification",
       executable: "Execution target ready · online status unverified",
+      diagnosticStale: "Diagnostic information unavailable · no recent report",
+      diagnosticUnavailable: "Diagnostic information unavailable · this PC has not reported yet",
       choose: "Select as candidate device",
     },
   });
@@ -176,6 +180,61 @@
       return device.state === "OFFLINE" ? t.offline : t.required;
     }
 
+    // #3099: the device's own local observations, shown as the problem and
+    // the fix the user can apply. A hint is display only: it never changes
+    // the canonical state, the online projection or the selectable flag, and
+    // it never carries a path, a secret or a log line.
+    const DIAGNOSTIC_REASON = {
+      agent_source: {
+        not_installed: "설치된 에이전트 파일을 찾을 수 없습니다",
+        invalid: "설치된 에이전트 파일이 올바르지 않습니다",
+      },
+      autostart: {
+        disabled: "Windows 자동 시작이 꺼져 있습니다",
+      },
+      resident: {
+        stopped: "상주 실행기가 실행 중지 상태입니다",
+      },
+    };
+    const DIAGNOSTIC_FIX = {
+      install_agent: "설치 프로그램으로 에이전트를 다시 설치해 주세요",
+      repair_agent_source: "설치 프로그램에서 에이전트 경로를 다시 지정해 주세요",
+      enable_autostart: "Windows 자동 시작을 켜 주세요",
+      start_connector: "커넥터를 다시 실행해 주세요",
+    };
+
+    function diagnosticLine(device, t) {
+      const diagnostic = device.diagnostic;
+      if (!diagnostic || typeof diagnostic !== "object") return null;
+      if (diagnostic.status === "stale") {
+        const stale = element("p", "claw-device-manager-diagnostic", t.diagnosticStale);
+        stale.dataset.diagnosticStatus = "stale";
+        return stale;
+      }
+      if (diagnostic.status === "unavailable") {
+        const unavailable = element("p", "claw-device-manager-diagnostic", t.diagnosticUnavailable);
+        unavailable.dataset.diagnosticStatus = "unavailable";
+        return unavailable;
+      }
+      const checks = diagnostic.checks && typeof diagnostic.checks === "object"
+        ? diagnostic.checks : {};
+      const fixes = diagnostic.fixes && typeof diagnostic.fixes === "object"
+        ? diagnostic.fixes : {};
+      const problems = [];
+      for (const key of Object.keys(DIAGNOSTIC_REASON)) {
+        const state = checks[key];
+        const reason = typeof state === "string" ? DIAGNOSTIC_REASON[key][state] : null;
+        if (!reason) continue;
+        const fixCode = fixes[key];
+        const fix = typeof fixCode === "string" ? DIAGNOSTIC_FIX[fixCode] : null;
+        problems.push(fix ? reason + " · " + fix : reason);
+      }
+      if (!problems.length) return null;
+      const line = element("p", "claw-device-manager-diagnostic", problems.join(" / "));
+      line.dataset.diagnosticStatus = "reported";
+      return line;
+    }
+
     // The directory rows the server confirmed for this owner. This module stays
     // the only reader of that endpoint, so the entry line below and the panel
     // below always describe the same server-confirmed snapshot.
@@ -245,6 +304,8 @@
         const chip = element("span", "claw-device-manager-state", deviceLabel(device));
         chip.dataset.state = device.state;
         detail.append(name, meta, chip);
+        const diagnostic = diagnosticLine(device, t);
+        if (diagnostic) detail.append(diagnostic);
         const pick = element("button", "claw-device-manager-select", t.choose);
         pick.type = "button";
         pick.disabled = !device.selectable;

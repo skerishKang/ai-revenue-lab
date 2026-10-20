@@ -553,7 +553,61 @@ class ConnectApp:
             if time.monotonic() >= next_restart_at:
                 if not self._user_paused and not self._supervisor.is_running():
                     self.start_registered_resident()
+                # #3099: the local observations ride the tick that already
+                # exists. No new timer and no new server channel.
+                self._write_local_diagnostics()
                 next_restart_at = time.monotonic() + 15.0
+
+    def _local_diagnostic_checks(self) -> dict[str, str] | None:
+        """The three local observations, in the closed local vocabulary.
+
+        A fact the Connector cannot read is ``unknown``. It is never turned
+        into a confirmed negative, and a user pause is not a fault.
+        """
+        from .local_diagnostics_report import normalize_local_checks
+
+        agent_source = "unknown"
+        try:
+            from .agent_preflight import agent_preflight
+
+            preflight = agent_preflight(state_dir=self._state_dir)
+            status = preflight.get("agent_status")
+            agent_source = {
+                "ok": "ready",
+                "agent_source_not_configured": "not_installed",
+                "agent_source_invalid": "invalid",
+                "agent_source_config_invalid": "invalid",
+                "agent_source_conflict": "invalid",
+            }.get(status if isinstance(status, str) else "", "unknown")
+        except Exception:
+            agent_source = "unknown"
+        try:
+            autostart = "enabled" if self._autostart.is_enabled() else "disabled"
+        except Exception:
+            autostart = "unknown"
+        if self._user_paused:
+            # A user pause is a decision, not a failure. Reporting it as
+            # "stopped" would blame the user for their own choice.
+            resident = "unknown"
+        else:
+            try:
+                resident = "running" if self._supervisor.is_running() else "stopped"
+            except Exception:
+                resident = "unknown"
+        return normalize_local_checks({
+            "agent_source": agent_source,
+            "autostart": autostart,
+            "resident": resident,
+        })
+
+    def _write_local_diagnostics(self) -> None:
+        """Publish the local observations the Resident hands to the Broker."""
+        from .local_diagnostics_report import write_local_diagnostics
+
+        checks = self._local_diagnostic_checks()
+        if checks is None:
+            return
+        write_local_diagnostics(self._state_dir, checks=checks)
 
     def run(self, *, explicit_connect: bool = False) -> int:
         """Start the tray. Returns the process exit code.

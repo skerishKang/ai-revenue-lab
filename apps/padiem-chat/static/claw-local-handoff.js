@@ -96,12 +96,59 @@
     };
   }
 
+  // #3099: the bounded local diagnostic hint a device reported about
+  // itself. Only the closed status, the three closed labels and the closed
+  // fix codes survive. Anything else - a path, a secret, a log line, an
+  // unknown label - is dropped, so the surface can only ever show what the
+  // vocabulary defines.
+  const DIAGNOSTIC_KEYS = ["agent_source", "autostart", "resident"];
+  const DIAGNOSTIC_STATUSES = ["reported", "stale", "unavailable"];
+  const DIAGNOSTIC_STATES = {
+    agent_source: ["ready", "not_installed", "invalid", "unknown"],
+    autostart: ["enabled", "disabled", "unknown"],
+    resident: ["running", "stopped", "unknown"],
+  };
+  const DIAGNOSTIC_FIXES = [
+    "install_agent", "repair_agent_source", "enable_autostart", "start_connector",
+  ];
+
+  function normalizeDiagnostic(raw) {
+    if (!_isPlainObject(raw)) return null;
+    const status = typeof raw.status === "string" ? raw.status : "";
+    if (!DIAGNOSTIC_STATUSES.includes(status)) return null;
+    if (status === "unavailable") {
+      return Object.freeze({status, checks: Object.freeze({}), fixes: Object.freeze({})});
+    }
+    if (status === "stale") {
+      // The observation stopped advancing. The values are kept out of the
+      // surface: an old observation is not a current one.
+      return Object.freeze({status, checks: Object.freeze({}), fixes: Object.freeze({})});
+    }
+    const source = _isPlainObject(raw.checks) ? raw.checks : {};
+    const checks = {};
+    for (const key of DIAGNOSTIC_KEYS) {
+      const value = source[key];
+      if (typeof value !== "string" || !DIAGNOSTIC_STATES[key].includes(value)) return null;
+      checks[key] = value;
+    }
+    const fixSource = _isPlainObject(raw.fixes) ? raw.fixes : {};
+    const fixes = {};
+    for (const key of DIAGNOSTIC_KEYS) {
+      const value = fixSource[key];
+      if (typeof value === "string" && DIAGNOSTIC_FIXES.includes(value)) fixes[key] = value;
+    }
+    return Object.freeze({
+      status,
+      checks: Object.freeze(checks),
+      fixes: Object.freeze(fixes),
+    });
+  }
+
   /**
    * Fail-closed normaliser over the canonical server/device projection.
    * Never throws; an unreadable projection is ACTION_REQUIRED + not usable.
    */
-  function normalizeDeviceProjection(raw) {
-    const source = _isPlainObject(raw) ? raw : {};
+  function normalizeDeviceProjection(raw) {    const source = _isPlainObject(raw) ? raw : {};
     const claimed = typeof source.state === "string" ? source.state.trim().toUpperCase() : "";
     const canonical = CANONICAL_DEVICE_STATES.includes(claimed) ? claimed : null;
 
@@ -360,6 +407,11 @@
         expired: projection.expired === true,
         executable,
         selectable,
+        // #3099: the device's own local observations, as a display-only
+        // hint. It never carries a path, a secret or a log line, and it
+        // never changes the canonical state, the online projection or the
+        // selectable flag.
+        diagnostic: normalizeDiagnostic(item.diagnostic),
       }));
     }
 
@@ -712,6 +764,7 @@
     FORBIDDEN_USER_JARGON,
     FIXTURES,
     normalizeDeviceProjection,
+    normalizeDiagnostic,
     deriveDeviceDirectory,
     consumeHandoffEnvelope,
     deriveHandoffViewModel,
