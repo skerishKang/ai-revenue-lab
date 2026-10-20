@@ -200,22 +200,23 @@ def _session_cookie(response: httpx.Response) -> str:
     raise AssertionError("session cookie was not issued")
 
 
-async def _register(client: httpx.AsyncClient, username: str = "owner.test") -> httpx.Response:
+async def _register(client: httpx.AsyncClient, account: str = "owner.test") -> httpx.Response:
+    # #5424: the email address is the single login identifier, so the
+    # registration and the login both use it.
     return await client.post(
         "/api/auth/password/register",
         json={
-            "username": username,
-            "email": f"{username}@example.test",
+            "email": f"{account}@example.test",
             "name": "Owner Test",
             "password": "correct horse battery staple",
         },
     )
 
 
-async def _login(client: httpx.AsyncClient, username: str = "owner.test") -> httpx.Response:
+async def _login(client: httpx.AsyncClient, account: str = "owner.test") -> httpx.Response:
     return await client.post(
         "/api/auth/password/login",
-        json={"identifier": username, "password": "correct horse battery staple"},
+        json={"identifier": f"{account}@example.test", "password": "correct horse battery staple"},
     )
 
 

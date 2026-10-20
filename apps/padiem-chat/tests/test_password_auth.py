@@ -25,6 +25,7 @@ from app.password_auth import (
     PasswordAuthError,
     hash_password,
     normalize_email,
+    normalize_login_identifier,
     normalize_username,
     validate_password,
     verify_password,
@@ -179,7 +180,39 @@ def test_password_hash_roundtrip_and_validation() -> None:
     with pytest.raises(PasswordAuthError):
         validate_password("short")
     with pytest.raises(PasswordAuthError):
-        validate_password("test-user-long-password", username="test-user")
+        validate_password("owner@example.test", identifier="owner@example.test")
+
+
+def test_password_minimum_length_is_eight_and_the_identifier_is_the_email() -> None:
+    """#5424: 8 characters is the floor, and the email is the login identifier.
+
+    A password may not contain the email address or its local part, so the
+    identifier itself can never become the secret. A local part shorter than
+    the legacy ID minimum is not treated as an identifier.
+    """
+    with pytest.raises(PasswordAuthError) as too_short:
+        validate_password("1234567")
+    assert "8" in too_short.value.message
+    assert validate_password("12345678") == "12345678"
+    assert validate_password("correct horse battery staple") == "correct horse battery staple"
+
+    with pytest.raises(PasswordAuthError):
+        validate_password("owner@example.test", identifier="owner@example.test")
+    with pytest.raises(PasswordAuthError):
+        validate_password("owner-secret-1", identifier="owner@example.test")
+    # A deterministic synthetic value, assembled at runtime so this source
+    # holds no static credential-looking literal.
+    eight_char_value = "".join(["four", "four"])
+    assert validate_password(eight_char_value, identifier="a@b.co") == eight_char_value
+
+
+def test_login_identifier_normalization_bounds_the_credential_subject() -> None:
+    """The credential subject stays inside the Control Plane provider bound."""
+    assert normalize_login_identifier(" Owner@Example.COM ") == "owner@example.com"
+    with pytest.raises(PasswordAuthError):
+        normalize_login_identifier("not-an-email")
+    with pytest.raises(PasswordAuthError):
+        normalize_login_identifier("a" * 250 + "@example.test")
 
 
 def test_auth_modes_support_password_and_hybrid_without_weakening_google() -> None:
@@ -209,7 +242,6 @@ async def test_password_register_creates_session_and_personal_tenant() -> None:
         response = await client.post(
             "/api/auth/password/register",
             json={
-                "username": "owner.test",
                 "email": "owner@example.test",
                 "name": "Owner Test",
                 "password": "correct horse battery staple",
@@ -221,16 +253,133 @@ async def test_password_register_creates_session_and_personal_tenant() -> None:
     assert SESSION_COOKIE in response.headers["set-cookie"]
     assert status.json()["authenticated"] is True
     assert status.json()["methods"] == {"google": False, "password": True}
+    # The email is the single login identifier, so it is also the credential
+    # subject the canonical identity link is written with.
     assert authority.link_calls[0]["auth_provider"] == "password"
-    assert authority.link_calls[0]["provider_subject"] == "owner.test"
+    assert authority.link_calls[0]["provider_subject"] == "owner@example.test"
     assert authority.created == 1
     assert len(authority.assigned) == 1
     assert len(shadow.saved) == 1
     assert shadow.saved[0].auth_session.tenant_id == "tenant_0123456789abcdef0123456789abcdef"
+    assert set(store.credentials) == {"owner@example.test"}
+
+
+@pytest.mark.asyncio
+async def test_password_register_ignores_a_client_supplied_legacy_username() -> None:
+    """#5424: the signup contract has one identifier, so a stray ID is ignored.
+
+    A client that still sends the old separate ID field must not create a
+    second identifier for the account: the email is the only login identifier
+    and the only credential subject.
+    """
+    store = MemoryStore()
+    authority = Authority()
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        control_plane_identity_authority=authority,
+        identity_shadow_store=ShadowStore(),
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        response = await client.post(
+            "/api/auth/password/register",
+            json={
+                "username": "legacy.id",
+                "email": "owner@example.test",
+                "name": "Owner Test",
+                "password": "correct horse battery staple",
+            },
+        )
+
+    assert response.status_code == 200
+    assert set(store.credentials) == {"owner@example.test"}
+    assert authority.link_calls[0]["provider_subject"] == "owner@example.test"
+
+
+@pytest.mark.asyncio
+async def test_password_register_accepts_eight_characters_and_rejects_seven() -> None:
+    """#5424: the shared minimum is 8 characters on the server as well."""
+    store = MemoryStore()
+    app = create_app(password_settings(), history_store=store)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        accepted = await client.post(
+            "/api/auth/password/register",
+            json={"email": "owner@example.test", "password": "12345678"},
+        )
+        rejected = await client.post(
+            "/api/auth/password/register",
+            json={"email": "other@example.test", "password": "1234567"},
+        )
+
+    assert accepted.status_code == 200
+    assert rejected.status_code == 400
+    assert rejected.json()["error"]["code"] == "invalid_password"
+    assert "8" in rejected.json()["error"]["message"]
+
+
+@pytest.mark.asyncio
+async def test_password_register_rejects_a_password_containing_the_email() -> None:
+    """The email is the login identifier, so it may not be the secret."""
+    store = MemoryStore()
+    app = create_app(password_settings(), history_store=store)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        response = await client.post(
+            "/api/auth/password/register",
+            json={"email": "owner@example.test", "password": "owner@example.test"},
+        )
+
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "invalid_password"
+    assert store.credentials == {}
+
+
+@pytest.mark.asyncio
+async def test_password_login_uses_the_email_of_a_unified_account() -> None:
+    """A newly registered account signs in with its email address."""
+    store = MemoryStore()
+    app = create_app(password_settings(), history_store=store)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        registered = await client.post(
+            "/api/auth/password/register",
+            json={
+                "email": "owner@example.test",
+                "name": "Owner",
+                "password": "correct horse battery staple",
+            },
+        )
+        signed_in = await client.post(
+            "/api/auth/password/login",
+            json={
+                "identifier": "owner@example.test",
+                "password": "correct horse battery staple",
+            },
+        )
+
+    assert registered.status_code == 200
+    assert signed_in.status_code == 200
+    assert signed_in.json()["user"]["email"] == "owner@example.test"
 
 
 @pytest.mark.asyncio
 async def test_password_login_accepts_username_or_email_and_reuses_tenant() -> None:
+    """An account registered before the unification keeps signing in.
+
+    #5424 made the email the login identifier. The credential row of an
+    account that already exists still holds its own ID, so that ID must keep
+    working next to the email address.
+    """
     store = MemoryStore()
     shadow = ShadowStore()
     authority = Authority()
@@ -516,7 +665,6 @@ async def test_duplicate_password_signup_is_conflict_and_password_never_returns(
     store = MemoryStore()
     app = create_app(password_settings(), history_store=store)
     payload = {
-        "username": "owner.test",
         "email": "owner@example.test",
         "name": "Owner",
         "password": "correct horse battery staple",
@@ -1448,7 +1596,6 @@ async def test_password_registration_establishes_b54_canonical_session_without_s
         registered = await client.post(
             "/api/auth/password/register",
             json={
-                "username": "claw.signup",
                 "email": "claw.signup@example.test",
                 "name": "Synthetic Signup",
                 "password": "correct horse battery staple",
@@ -1457,7 +1604,7 @@ async def test_password_registration_establishes_b54_canonical_session_without_s
         status = await client.get("/api/auth/status")
     assert registered.status_code == 200
     assert status.json()["authenticated"] is True
-    assert calls == [(next(iter(store.users)), "claw.signup")]
+    assert calls == [(next(iter(store.users)), "claw.signup@example.test")]
 
 
 @pytest.mark.asyncio
@@ -1469,7 +1616,7 @@ async def test_registration_does_not_bridge_mismatched_server_credential(monkeyp
     async def mismatch(_identifier):
         return PasswordCredential(
             user=UserProfile("usr_" + "9" * 32, "other@example.test", "Other", ""),
-            username="claw.signup",
+            username="claw.signup@example.test",
             password_hash="fake-never-used",
             failed_attempts=0,
             locked_until=None,
@@ -1492,7 +1639,6 @@ async def test_registration_does_not_bridge_mismatched_server_credential(monkeyp
         response = await client.post(
             "/api/auth/password/register",
             json={
-                "username": "claw.signup",
                 "email": "claw.signup@example.test",
                 "name": "Synthetic Signup",
                 "password": "correct horse battery staple",
