@@ -235,16 +235,18 @@ def test_native_poll_and_material_are_gated_by_durable_owner_off() -> None:
 
     _, _, _, service = _service_fixture(owner_usage_gate=usage)
     body = _session_body(session_id="session.usage.1")
-    for route in ("/poll", "/material"):
+    # #5080: admitting is starting queued work, so the server-owned admission
+    # transition is gated exactly like the two routes that expose the work.
+    for route in ("/poll", "/material", "/admission"):
         result = service.handle(_envelope(body, route=route))
         assert result["status"] == 409, (route, result)
         assert result["body"]["error"]["code"] == "owner_pc_paused"
-    assert calls == [("account.http.1", "workspace.http.1")] * 2
+    assert calls == [("account.http.1", "workspace.http.1")] * 3
     # The original privileged channel remains authenticated; OFF does not
-    # revoke the credential, and only the two new-work routes are gated.
+    # revoke the credential, and only the three new-work routes are gated.
     result = service.handle(_envelope(body, route="/session"))
     assert result["status"] == 200, result
-    assert calls == [("account.http.1", "workspace.http.1")] * 2
+    assert calls == [("account.http.1", "workspace.http.1")] * 3
     paused["value"] = False
     resumed_poll = service.handle(_envelope(body, route="/poll"))
     assert resumed_poll["body"].get("error", {}).get("code") != "owner_pc_paused"
@@ -261,6 +263,11 @@ def test_native_usage_unavailable_fails_closed_without_minting_online() -> None:
 def test_device_service_boundary_truth() -> None:
     assert DEVICE_HTTP_ROUTES == (
         "/acknowledge",
+        # #5080: the server-owned queued -> admitted transition. A device posts
+        # to it after /material and reads the admission and evidence references
+        # out of the response; the request schema has no field for either, so a
+        # device can never supply its own admission authority.
+        "/admission",
         # #5080: one more authenticated route on the same canonical surface.
         # It records the phone's owner-selected SAF folder set; it grants no
         # execution, exposes no URI and adds no second credential verifier.
