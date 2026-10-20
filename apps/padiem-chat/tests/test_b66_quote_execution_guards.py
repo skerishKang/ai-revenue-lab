@@ -106,7 +106,9 @@ def test_exact_quote_local_failure_refunds_before_any_service_post(failure):
     elif failure == "messages":
         kwargs["messages"] = [{"role": "assistant", "content": "invalid"}]
     elif failure == "context":
-        kwargs["additional_system_context"] = "x" * (MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES + 1)
+        # #4379: the provider context carries no PADIEM byte total, so the
+        # local refusal is the shape rule instead of a size rule.
+        kwargs["additional_system_context"] = 123
     elif failure == "invalid_shape":
         kwargs["messages"] = [{"role": "user", "content": "valid", "unsupported_field": "reject"}]
     elif failure == "serialization":

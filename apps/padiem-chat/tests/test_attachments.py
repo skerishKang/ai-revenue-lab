@@ -192,12 +192,15 @@ async def test_image_attachment_and_web_tool_combination_is_not_implicitly_suppo
     assert response.status_code == 422
 
 
-def test_decoded_image_over_4_mib_rejected_without_exposing_payload():
-    too_large = b"\x89PNG\r\n\x1a\n" + (b"x" * MAX_IMAGE_BYTES)
-    raw = [attachment("image/png", too_large, "large.png")]
-    with pytest.raises(ValueError, match="4 MiB") as exc:
-        parse_attachments(raw)
-    assert raw[0]["base64"] not in str(exc.value)
+def test_decoded_image_over_the_old_total_is_accepted():
+    # #4379: a composer image carries no PADIEM byte total. The media type
+    # and the magic bytes are still verified, and the platform request limit
+    # is the only ceiling, so a payload over the former 1 GiB maximum parses.
+    over_the_old_bound = b"\x89PNG\r\n\x1a\n" + (b"x" * (MAX_IMAGE_BYTES + 1))
+    image = parse_attachments(
+        [{"type": "image", "name": "large.png", "media_type": "image/png", "raw_bytes": over_the_old_bound}]
+    )[0]
+    assert image.byte_size == len(over_the_old_bound)
 
 
 @pytest.mark.asyncio
@@ -240,7 +243,7 @@ def test_frontend_exposes_generic_file_control_without_losing_image_support():
     assert "<span>파일</span>" in html
     assert "파일 업로드" in html
     assert "지원 형식" in html
-    assert "const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;" in js
+    assert "MAX_IMAGE_BYTES" not in js
     assert "const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;" in js
     assert "ALLOWED_IMAGE_TYPES" in js
     assert "ALLOWED_DOCUMENT_TYPES" in js

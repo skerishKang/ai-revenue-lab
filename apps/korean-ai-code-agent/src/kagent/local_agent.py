@@ -13,8 +13,11 @@ from .contracts import ContractError
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
 _MAX_ARG_COUNT = 64
 _MAX_ARG_LENGTH = 2048
-_MAX_OUTPUT_CHARS = 8192
-_MAX_TIMEOUT_SECONDS = 900
+# #4379: the local agent run carries no PADIEM wall-clock total, and the
+# command output is returned as the process produced it. The Windows executor
+# still drains the pipes chunk by chunk, so a large output never blocks the
+# child process.
+_MAX_TIMEOUT_SECONDS: int | None = None
 
 
 def _ref(value: str, field_name: str) -> str:
@@ -66,12 +69,15 @@ def _argv(value: tuple[str, ...]) -> tuple[str, ...]:
     return tuple(normalized)
 
 
-def _bounded_output(value: str) -> tuple[str, bool]:
+def _command_output(value: str) -> str:
+    """Return the command output unchanged.
+
+    #4379: a local agent result carries no PADIEM character total, so the
+    output is never cut and the result never claims a truncation.
+    """
     if not isinstance(value, str):
         raise ContractError("command output must be text")
-    if len(value) <= _MAX_OUTPUT_CHARS:
-        return value, False
-    return value[:_MAX_OUTPUT_CHARS], True
+    return value
 
 
 class LocalAgentPlatform(str, Enum):
@@ -159,12 +165,13 @@ class LocalCommandRequest:
         object.__setattr__(self, "argv", _argv(self.argv))
         object.__setattr__(self, "cwd_relative", _relative_windows_path(self.cwd_relative))
         object.__setattr__(self, "requested_at", _aware(self.requested_at, "requested_at"))
+        # #4379: no PADIEM wall-clock ceiling. The positive lower bound stays.
         if (
             isinstance(self.timeout_seconds, bool)
             or not isinstance(self.timeout_seconds, int)
-            or not 1 <= self.timeout_seconds <= _MAX_TIMEOUT_SECONDS
+            or self.timeout_seconds < 1
         ):
-            raise ContractError("timeout_seconds must be between 1 and 900")
+            raise ContractError("timeout_seconds must be at least 1 second")
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -197,9 +204,6 @@ class LocalCommandResult:
     cancelled: bool
     dirty_worktree_before: bool
     dirty_worktree_after: bool
-    stdout_truncated: bool = field(default=False, init=False)
-    stderr_truncated: bool = field(default=False, init=False)
-
     def __post_init__(self) -> None:
         for field_name in ("request_id", "run_id", "device_id", "root_ref"):
             object.__setattr__(self, field_name, _ref(getattr(self, field_name), field_name))
@@ -217,12 +221,9 @@ class LocalCommandResult:
             raise ContractError("cancelled command must not claim an exit code")
         if not isinstance(self.dirty_worktree_before, bool) or not isinstance(self.dirty_worktree_after, bool):
             raise ContractError("dirty worktree flags must be boolean")
-        stdout, stdout_truncated = _bounded_output(self.stdout)
-        stderr, stderr_truncated = _bounded_output(self.stderr)
-        object.__setattr__(self, "stdout", stdout)
-        object.__setattr__(self, "stderr", stderr)
-        object.__setattr__(self, "stdout_truncated", stdout_truncated)
-        object.__setattr__(self, "stderr_truncated", stderr_truncated)
+        # #4379: the output is kept exactly as the process produced it.
+        object.__setattr__(self, "stdout", _command_output(self.stdout))
+        object.__setattr__(self, "stderr", _command_output(self.stderr))
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -236,8 +237,6 @@ class LocalCommandResult:
             "cancelled": self.cancelled,
             "stdout_chars": len(self.stdout),
             "stderr_chars": len(self.stderr),
-            "stdout_truncated": self.stdout_truncated,
-            "stderr_truncated": self.stderr_truncated,
             "dirty_worktree_before": self.dirty_worktree_before,
             "dirty_worktree_after": self.dirty_worktree_after,
             "automatic_git_clean_reset": False,

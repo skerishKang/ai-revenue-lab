@@ -178,7 +178,8 @@ test("H. wrong path, method, media type, and oversized body are rejected before 
   assert.equal(mediaResp.status, 415);
   assert.equal(third.calls.length, 0);
 
-  // oversized body
+  // A body past the former 6MB model request total is not refused for its
+  // size any more (#4379): the ingress declares no PADIEM byte total.
   const fourth = fakeEnv();
   const big = new Request(EXECUTE_URL, {
     method: "POST",
@@ -186,8 +187,8 @@ test("H. wrong path, method, media type, and oversized body are rejected before 
     body: "x".repeat(6_000_001),
   });
   const sizeResp = await handleIngress(big, fourth.env);
-  assert.equal(sizeResp.status, 413);
-  assert.equal(fourth.calls.length, 0);
+  assert.notEqual(sizeResp.status, 413);
+  assert.equal(fourth.calls.length, 1);
 });
 
 test("I. forwards only to the fixed ENGINE binding", async () => {
@@ -683,7 +684,7 @@ function chunkStream(chunks, counters) {
   });
 }
 
-test("R1. declared Content-Length oversized -> 413 before reading the body stream", async () => {
+test("R1. a declared Content-Length past the former total is read, not refused", async () => {
   const counters = { pulls: 0, cancelled: false };
   const stream = chunkStream([new Uint8Array(6_000_001)], counters);
   const request = new Request(EXECUTE_URL, {
@@ -699,20 +700,17 @@ test("R1. declared Content-Length oversized -> 413 before reading the body strea
   const { calls, env } = fakeEnv();
   const response = await handleIngress(request, env);
 
-  assert.equal(response.status, 413);
-  assert.equal(JSON.parse(await response.text()).error.code, "request_too_large");
-  assert.equal(calls.length, 0);
-  // The precheck rejects before the body stream is materially consumed:
-  // at most the runtime's own initial pull, never an overflow cancel.
-  assert.equal(counters.cancelled, false);
-  assert.ok(counters.pulls <= 1);
+  // #4379: the ingress declares no PADIEM model-request byte total, so the
+  // body is read and forwarded instead of being refused with 413.
+  assert.notEqual(response.status, 413);
+  assert.equal(calls.length, 1);
 });
 
-test("R2. chunked/unknown-length request over limit -> cancelled at the crossing chunk, later chunks unread", async () => {
+test("R2. chunked/unknown-length request over the former limit is read, not refused", async () => {
   const counters = { pulls: 0, cancelled: false };
   const big = new Uint8Array(2 * 1024 * 1024);
-  // 8 MiB total against the 6,000,000-byte model request budget: the third
-  // chunk is the one that crosses.
+  // #4379: the ingress declares no PADIEM model-request byte total, so the
+  // whole chunked body is read and forwarded.
   const stream = chunkStream([big, big, big], counters);
   const request = new Request(EXECUTE_URL, {
     method: "POST",
@@ -726,17 +724,10 @@ test("R2. chunked/unknown-length request over limit -> cancelled at the crossing
   const { calls, env } = fakeEnv();
   const response = await handleIngress(request, env);
 
-  assert.equal(response.status, 413);
-  assert.equal(JSON.parse(await response.text()).error.code, "request_too_large");
-  assert.equal(calls.length, 0);
-  assert.equal(counters.cancelled, true);
-  // Two 2 MiB chunks are consumed (4 MiB fits); the third must remain
-  // undelivered: the stream is cancelled at the first crossing chunk.
-  assert.equal(counters.cancelled, true);
-  // Two 2 MiB chunks are consumed; the third read is the one that crosses,
-  // so the stream is cancelled there and no further pull is honored.
-  assert.equal(counters.pulledAfterCancel, undefined);
-  assert.ok(counters.pulls <= 3);
+  assert.notEqual(response.status, 413);
+  assert.equal(calls.length, 1);
+  // The body is read to the end instead of being cut at a byte budget.
+  assert.ok(counters.pulls >= 3);
 });
 
 test("R3. Engine response exactly MAX_RESPONSE_BYTES -> forwarded intact", async () => {

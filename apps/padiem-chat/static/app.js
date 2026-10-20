@@ -165,7 +165,6 @@
     [".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
   ]);
 
-  const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;
   const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;
   const MAX_DOCUMENT_CHARS = attachmentCapabilities.limits.textChars;
   const ALLOWED_IMAGE_TYPES = new Set(attachmentCapabilities.images.flatMap((format) => format.mediaTypes));
@@ -777,7 +776,7 @@
   }
   async function selectImage(file) {
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error(attachmentCopy().unsupportedFormat);
-    if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error(attachmentCopy().imageTooLarge);
+    if (file.size < 1) throw new Error(uiT("image-data-empty"));
     return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
   async function selectAttachment(file) {

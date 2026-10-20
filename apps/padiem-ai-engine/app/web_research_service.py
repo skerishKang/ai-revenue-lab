@@ -218,7 +218,11 @@ def _additional_system_context(value: Any) -> str | None:
     text = value.strip()
     if not text:
         return None
-    if len(text) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS:
+    # #4379: the additional system context carries no PADIEM character total.
+    if (
+        MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS is not None
+        and len(text) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS
+    ):
         raise ResearchContractError(
             "invalid_research_request",
             "additional_system_context exceeds the bounded context limit.",

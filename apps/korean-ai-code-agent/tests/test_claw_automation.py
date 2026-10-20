@@ -125,6 +125,22 @@ class ClawAutomationTests(unittest.TestCase):
         allowed = {ot.value for ot in ClawAutomationOutputType}
         self.assertEqual(allowed, {"alert", "draft", "report", "task_proposal"})
 
+    def test_rule_name_and_schedule_expression_are_carried_unchanged(self) -> None:
+        rule = ClawAutomationRule(
+            rule_id="rule_002",
+            workspace_id="ws_main",
+            name="token=should_not_be_here 일일 점검",
+            schedule=ClawScheduleExpression(
+                kind=ClawScheduleKind.DAYPART,
+                expression="morning",
+            ),
+            target_source=ClawAutomationTarget.TASKS,
+            output_type=ClawAutomationOutputType.ALERT,
+            enabled=True,
+        )
+        self.assertEqual(rule.name, "token=should_not_be_here 일일 점검")
+        self.assertEqual(rule.schedule.expression, "morning")
+
     def test_recipient_ref_rejects_credential_leak(self) -> None:
         with self.assertRaises(ContractError):
             ClawNotificationPreference(

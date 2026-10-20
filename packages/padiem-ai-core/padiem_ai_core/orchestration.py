@@ -107,6 +107,23 @@ from .tool_resource_policy import EffectiveToolResources, ToolResourcePolicy, re
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 
 
+def _agent_idle_window(request: Any) -> float:
+    """The agent lane's inactivity window.
+
+    #4379: the declared execution budget no longer defaults to a PADIEM total,
+    so the inactivity window comes from the agent's own budget. The window
+    still fails a run that produces no verified progress; it never caps the
+    total elapsed time of a progressing run.
+    """
+
+    definition = getattr(request, "agent_definition", None)
+    budget = getattr(definition, "execution_budget", None)
+    window = getattr(budget, "max_wall_seconds", None)
+    if isinstance(window, bool) or not isinstance(window, (int, float)):
+        return 900.0
+    return float(window)
+
+
 class OrchestrationError(ValueError):
     """Raised when an orchestration boundary or contract invariant is violated."""
 
@@ -1078,7 +1095,11 @@ class OrchestrationRunner:
                         result_ledger=self._agent_result_ledger,
                     ),
                     tracker=agent_progress,
-                    idle_seconds=request.context.timeout_seconds,
+                    # #4379: the declared execution budget no longer defaults
+                    # to a PADIEM total. The agent lane's inactivity window is
+                    # the agent's own budget window, so the liveness watchdog
+                    # stays.
+                    idle_seconds=request.context.timeout_seconds or _agent_idle_window(request),
                 )
 
                 if bridge_res.terminal_reason is AgentTerminalReason.APPROVAL_REQUIRED:
@@ -1634,7 +1655,9 @@ class OrchestrationRunner:
                         result_ledger=self._agent_result_ledger,
                     ),
                     tracker=resume_progress,
-                    idle_seconds=request.context.timeout_seconds,
+                    # #4379: the agent lane's inactivity window is the agent's
+                    # own budget window, not a declared total.
+                    idle_seconds=request.context.timeout_seconds or _agent_idle_window(request),
                 )
 
                 if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:

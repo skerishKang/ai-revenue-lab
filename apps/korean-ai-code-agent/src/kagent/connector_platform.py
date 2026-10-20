@@ -40,8 +40,6 @@ def _bounded_text(value: str, field_name: str, limit: int) -> str:
     normalized = value.strip()
     if len(normalized) > limit:
         raise ContractError(f"{field_name} exceeds {limit} characters")
-    if redact_secrets(normalized) != normalized:
-        normalized = redact_secrets(normalized)
     return normalized
 
 

@@ -148,9 +148,9 @@ class CustomerQuoteSendTests(unittest.TestCase):
             sender.send(request=req, binding=self.binding(req), decision=decision())
         self.assertFalse(REAL_CUSTOMER_QUOTE_SEND_CONFIGURED)
 
-    def test_secret_like_message_or_recipient_is_rejected_before_binding(self):
-        with self.assertRaises(ContractError):
-            request_for(body="api_key=should_not_be_here")
+    def test_secret_like_message_is_carried_unchanged_but_recipient_ref_is_rejected(self):
+        request = request_for(body="api_key=should_not_be_here")
+        self.assertEqual(request.body, "api_key=should_not_be_here")
         with self.assertRaises(ContractError):
             request_for(recipient_ref="token=should_not_be_here")
 

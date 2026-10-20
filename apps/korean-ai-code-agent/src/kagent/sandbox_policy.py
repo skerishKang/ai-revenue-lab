@@ -39,7 +39,6 @@ from .sandbox_conformance import (
     REAL_SANDBOX_PROVIDER_CALLS,
     PRODUCTION_SANDBOX_CLAIM,
 )
-from .security import redact_secrets
 
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")

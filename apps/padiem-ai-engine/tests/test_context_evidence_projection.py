@@ -100,8 +100,14 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # authority is introduced. The OOXML entry count, the per-entry and the total
 # uncompressed bounds stay: they are the decompression-bomb protection and are
 # not a caller's data total. The other two pins are unchanged.
+# Re-pinned for #4379: the Core binary-document byte total was removed, and
+# the main branch then replaced the remaining constant with a very large
+# value. Neither is enforced any more, so the pin for the changed Core
+# document file moves. The OOXML entry count, the per-entry and the total
+# uncompressed bounds stay: they are the decompression-bomb protection and are
+# not a caller's data total. The other two pins are unchanged.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "2999a3f95192d9e7a0e8513592df825b1dd99ec8dbb22328e74bc84a155d8d5a",
+    CORE_PACKAGE / "document_normalization.py": "b2ac8863c4b172e5b89176cd91f9a6c1f12bea0f9c7c8d626714867a2df8db05",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
     CORE_TESTS / "test_document_normalization.py": "48e92deeaefd71012a317b8334f2aa3a8b1f8722f543d23f82845d640eca4d79",

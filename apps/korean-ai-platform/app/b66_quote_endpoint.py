@@ -34,7 +34,7 @@ EXTRACT_DOCUMENT_PATH = "/v1/quote/extract-document"
 # request that carries it. The media type, the magic bytes, the JSON shape
 # and the required field set stay. These symbols are retained for import
 # compatibility.
-MAX_IMAGE_BYTES = 4 * 1024 * 1024
+MAX_IMAGE_BYTES = 1024 * 1024 * 1024
 MAX_REQUEST_BYTES = 6 * 1024 * 1024
 _REQUIRED_FIELDS = frozenset({"name", "media_type", "base64"})
 _IMAGE_MEDIA = frozenset({"image/jpeg", "image/png", "image/webp"})

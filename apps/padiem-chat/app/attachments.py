@@ -8,7 +8,10 @@ from typing import Any
 from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item
 from .documents import DocumentAttachment, DocumentValidationError, parse_document_item
 
-MAX_IMAGE_BYTES = 4 * 1024 * 1024
+# #4379: an attached image carries no PADIEM byte total. The platform
+# request limit and the provider limit are the real ceilings. The symbol is
+# retained for import compatibility and is no longer enforced.
+MAX_IMAGE_BYTES = 1024 * 1024 * 1024
 MAX_IMAGE_NAME_CHARS = 120
 ALLOWED_IMAGE_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 
@@ -67,7 +70,7 @@ def _parse_image(item: dict[str, Any]) -> ImageAttachment:
             raise AttachmentValidationError("Unsupported image format")
         name = _safe_name(item.get("name"))
         data = item.get("raw_bytes")
-        if not isinstance(data, bytes) or not data or len(data) > MAX_IMAGE_BYTES or not _matches_magic(media_type, data):
+        if not isinstance(data, bytes) or not data or not _matches_magic(media_type, data):
             raise AttachmentValidationError("Invalid image bytes")
         return ImageAttachment(name=name, media_type=media_type, binary_data=data, byte_size=len(data))
     if set(item) != {"type", "name", "media_type", "base64"}:
@@ -79,16 +82,12 @@ def _parse_image(item: dict[str, Any]) -> ImageAttachment:
     payload = item.get("base64")
     if not isinstance(payload, str) or not payload:
         raise AttachmentValidationError("사진 데이터가 올바르지 않습니다.")
-    if len(payload) > ((MAX_IMAGE_BYTES + 2) // 3) * 4:
-        raise AttachmentValidationError("사진은 4 MiB 이하만 첨부할 수 있습니다.")
     try:
         decoded = base64.b64decode(payload, validate=True)
     except (binascii.Error, ValueError) as exc:
         raise AttachmentValidationError("사진 데이터가 올바르지 않습니다.") from exc
     if not decoded:
         raise AttachmentValidationError("빈 사진은 첨부할 수 없습니다.")
-    if len(decoded) > MAX_IMAGE_BYTES:
-        raise AttachmentValidationError("사진은 4 MiB 이하만 첨부할 수 있습니다.")
     if not _matches_magic(media_type, decoded):
         raise AttachmentValidationError("사진 형식과 실제 파일 내용이 일치하지 않습니다.")
     return ImageAttachment(name=name, media_type=media_type, base64_data=payload, byte_size=len(decoded))

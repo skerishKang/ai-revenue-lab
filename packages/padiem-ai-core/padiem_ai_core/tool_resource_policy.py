@@ -95,7 +95,8 @@ def resolve_tool_resources(spec: ToolSpec, policy: ToolResourcePolicy | None = N
     """Resolve the effective resources of one Tool.
 
     #4379: the result carries no PADIEM aggregate byte ceiling. The trusted
-    policy may still narrow one tool, and the ToolSpec timeout still applies.
+    policy may still narrow one tool, and its ceiling governs a Tool that
+    declares no timeout.
     """
     if not isinstance(spec, ToolSpec):
         raise ToolResourcePolicyError("invalid_tool_resource_spec", "spec must be ToolSpec")
@@ -103,7 +104,9 @@ def resolve_tool_resources(spec: ToolSpec, policy: ToolResourcePolicy | None = N
 
     argument_bytes = active.max_argument_bytes
     output_bytes = active.max_output_bytes
-    timeout_seconds = min(float(spec.timeout_seconds), float(active.max_timeout_seconds))
+    spec_timeout = None if spec.timeout_seconds is None else float(spec.timeout_seconds)
+    policy_timeout = float(active.max_timeout_seconds)
+    timeout_seconds = policy_timeout if spec_timeout is None else min(spec_timeout, policy_timeout)
 
     if timeout_seconds <= 0:
         raise ToolResourcePolicyError("invalid_effective_resources", "effective Tool resources are invalid")
@@ -116,6 +119,7 @@ def resolve_tool_resources(spec: ToolSpec, policy: ToolResourcePolicy | None = N
         narrowed=(
             argument_bytes is not None
             or output_bytes is not None
-            or timeout_seconds < float(spec.timeout_seconds)
+            or spec_timeout is None
+            or timeout_seconds < spec_timeout
         ),
     )
