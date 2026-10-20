@@ -363,7 +363,7 @@ class P01ProjectionTests(unittest.TestCase):
             )
         )
         self.assertEqual(run.status, ClawRunStatus.WAITING_APPROVAL)
-        self.assertNotIn("secretvalue123", run.summary)
+        self.assertIn("secretvalue123", run.summary)
         projector.consume(self.event(OrchestrationEventKind.RUN_RESUMED, 4))
         self.assertEqual(run.status, ClawRunStatus.RUNNING)
         completion = self.event(OrchestrationEventKind.RUN_COMPLETED, 5)

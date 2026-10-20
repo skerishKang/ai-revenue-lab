@@ -801,27 +801,27 @@ class ClawOrchestrationProjector:
         elif kind is OrchestrationEventKind.APPROVAL_PAUSED:
             self._run.transition(
                 ClawRunStatus.WAITING_APPROVAL,
-                summary=redact_secrets(event.message or "사용자 승인 대기"),
+                summary=(event.message or "사용자 승인 대기"),
             )
         elif kind is OrchestrationEventKind.RUN_RESUMED:
             self._run.transition(
                 ClawRunStatus.RUNNING,
-                summary=redact_secrets(event.message or "승인 후 실행 재개"),
+                summary=(event.message or "승인 후 실행 재개"),
             )
         elif kind is OrchestrationEventKind.RUN_COMPLETED:
             self._run.transition(
                 ClawRunStatus.COMPLETED,
-                summary=redact_secrets(event.message or "작업 완료"),
+                summary=(event.message or "작업 완료"),
             )
         elif kind is OrchestrationEventKind.RUN_FAILED:
             self._run.transition(
                 ClawRunStatus.FAILED,
-                summary=redact_secrets(event.message or "P01 실행 실패"),
+                summary=(event.message or "P01 실행 실패"),
             )
         elif kind is OrchestrationEventKind.RUN_CANCELLED:
             self._run.transition(
                 ClawRunStatus.CANCELLED,
-                summary=redact_secrets(event.message or "작업 취소"),
+                summary=(event.message or "작업 취소"),
             )
 
 

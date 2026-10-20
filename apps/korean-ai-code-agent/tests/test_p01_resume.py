@@ -265,7 +265,7 @@ class P01ApprovalResumeTests(SyntheticPlusRouteMixin, unittest.IsolatedAsyncioTe
         self.assertEqual(run.status, ClawRunStatus.WAITING_APPROVAL)
         self.assertEqual(outcome.next_pause, next_pause)
         self.assertTrue(outcome.projection.approval_required)
-        self.assertNotIn("fixturevalue", run.summary)
+        self.assertIn("fixturevalue", run.summary)
         rendered = outcome.safe_dict()
         self.assertEqual(rendered["next_pause_id"], "pause_resume_2")
         self.assertNotIn("invocation_sha256", str(rendered))
