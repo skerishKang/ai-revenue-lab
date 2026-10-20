@@ -6,18 +6,30 @@ name: B62 D1 Migration 060 Gate
 # source is live in main; this gate is the only reviewed path that releases the
 # ceiling in a live database.
 #
+# 061 is the ordered second step of the same release: it releases the 256 KiB
+# byte ceiling that 022 declared on the B66 quote asset metadata. 060 and 061
+# are two separate migrations and they are applied in order. This gate is
+# reused for 061 instead of standing up a second deployment system: the same
+# reviewed helper primitives, the same live database resolution, the same
+# recovery read and the same fail-closed error handling, with one extra rule.
+# The extra rule is the order guard, and it lives in the reviewed script: 061
+# is only emitted for a database whose 060 tables are already in the released
+# shape, so a database where 060 has not been applied is refused and 061 can
+# never run first.
+#
 # It reuses the existing B62 D1 operational pattern: the live database id is
 # resolved server-side from the padiem-chat Worker PADIEM_CHAT_DB binding, the
-# migration is the reviewed 060 file and nothing else, the run is pinned to an
-# exact current main SHA, and the mutation needs a separate owner-authorized
-# dispatch with an exact confirmation phrase.
+# migration is the reviewed 060 or 061 file and nothing else, the run is pinned
+# to an exact current main SHA, and the mutation needs a separate owner-
+# authorized dispatch with an exact confirmation phrase.
 #
 # The gate never deploys a Worker, never mutates a binding, never applies
 # another migration, never reads row content and never emits a database
 # identifier. It fails closed on any state it does not own:
-#   missing  -> the 008/026/027 prerequisites are not in place yet
+#   missing  -> the prerequisite tables are not in place yet
 #   drift    -> the live schema is not the reviewed shape
-#   pre_060  -> the reviewed release applies exactly once
+#   pre_060  -> the reviewed 060 release applies exactly once
+#   pre_061  -> 060 is released and the reviewed 061 release applies exactly once
 #   exact    -> already released, the run is a verified no-op
 
 on:
@@ -25,16 +37,20 @@ on:
     paths:
       - ".github/workflows/b62-d1-migration-060-gate.yml"
       - ".github/scripts/b62_d1_migration_060_schema.py"
+      - ".github/scripts/b62_d1_migration_061_schema.py"
       - ".github/scripts/b54_claw_artifact_schema_026.py"
       - ".github/tests/test_b62_d1_migration_060_gate.py"
+      - ".github/tests/test_b62_d1_migration_061_gate.py"
       - "apps/padiem-chat/migrations/060_byte_length_capacity_ceiling_release.sql"
+      - "apps/padiem-chat/migrations/061_b66_quote_asset_byte_length_ceiling_release.sql"
       - "apps/padiem-chat/migrations/008_claw_document_metadata.sql"
+      - "apps/padiem-chat/migrations/022_b66_quote_asset.sql"
       - "apps/padiem-chat/migrations/026_claw_conversation_artifact_index.sql"
       - "apps/padiem-chat/migrations/027_b66_template_source.sql"
   workflow_dispatch:
     inputs:
       mode:
-        description: "Migration 060 gate mode"
+        description: "Migration 060/061 gate mode"
         required: true
         type: choice
         default: repository_preflight
@@ -42,6 +58,7 @@ on:
           - repository_preflight
           - cloudflare_readonly
           - apply_migration_060
+          - apply_migration_061
       target_sha:
         description: "Exact current main SHA"
         required: true
@@ -104,13 +121,18 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check --quiet pytest
           python -m pytest .github/tests/test_b62_d1_migration_060_gate.py -q
+          python -m pytest .github/tests/test_b62_d1_migration_061_gate.py -q
 
       - name: Replay the reviewed 060 source contract
         run: python .github/scripts/b62_d1_migration_060_schema.py offline
 
+      - name: Replay the reviewed 061 source contract
+        run: python .github/scripts/b62_d1_migration_061_schema.py offline
+
       - name: Source-only evidence
         run: |
           echo 'B62_D1_MIGRATION_060_SOURCE_CONTRACT=PASS'
+          echo 'B62_D1_MIGRATION_061_SOURCE_CONTRACT=PASS'
           echo 'PRODUCTION_MUTATION=0'
 
   cloudflare-readonly:
@@ -122,6 +144,7 @@ jobs:
       contents: read
     outputs:
       schema_state: ${{ steps.schema.outputs.schema_state }}
+      schema_state_061: ${{ steps.schema_061.outputs.schema_state_061 }}
       db_fingerprint: ${{ steps.binding.outputs.db_fingerprint }}
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -228,6 +251,27 @@ jobs:
                   raise SystemExit('row count is unreadable')
           print('B62_D1_MIGRATION_060_ROW_COUNTS_READ=PASS')
           PY
+          echo 'ROW_CONTENT_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Read only the 061 schema disposition
+        id: schema_061
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          query="${RUNNER_TEMP}/b62-d1-061-schema-query.json"
+          response="${RUNNER_TEMP}/b62-d1-061-schema-before.json"
+          python3 .github/scripts/b62_d1_migration_061_schema.py query "${query}"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${response}"
+          evidence="$(python3 .github/scripts/b62_d1_migration_061_schema.py classify "${response}")"
+          echo "${evidence}"
+          state="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_D1_MIGRATION_061_SCHEMA=//p' | tr '[:upper:]' '[:lower:]')"
+          case "${state}" in missing|pre_061|exact|drift) ;; *) echo 'invalid 061 schema classifier state' >&2; exit 1;; esac
+          echo "schema_state_061=${state}" >> "${GITHUB_OUTPUT}"
+          echo 'D1_SCHEMA_QUERY=READ_ONLY'
           echo 'ROW_CONTENT_READ=0'
           echo 'PRODUCTION_MUTATION=0'
 
@@ -440,6 +484,247 @@ jobs:
             -o "${RUNNER_TEMP}/b62-d1-060-fk-after.json"
           python3 .github/scripts/b62_d1_migration_060_schema.py check-fk \
             "${RUNNER_TEMP}/b62-d1-060-fk-before.json" "${RUNNER_TEMP}/b62-d1-060-fk-after.json"
+          echo 'WORKER_DEPLOYED=0'
+          echo 'BINDING_MUTATION=0'
+          echo 'UNRELATED_MIGRATION_APPLY=0'
+          echo 'ROW_CONTENT_READ=0'
+
+  apply-migration-061:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_migration_061' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      READONLY_SCHEMA_STATE: ${{ needs.cloudflare-readonly.outputs.schema_state }}
+      READONLY_SCHEMA_STATE_061: ${{ needs.cloudflare-readonly.outputs.schema_state_061 }}
+      READONLY_DB_FINGERPRINT: ${{ needs.cloudflare-readonly.outputs.db_fingerprint }}
+    steps:
+      - name: Require explicit migration authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "APPLY_B62_D1_MIGRATION_061_FROM_EXACT_MAIN"
+          # The order guard: 061 is the second step, so 060 must already be
+          # released and the quote asset table must still carry its ceiling.
+          case "${READONLY_SCHEMA_STATE}" in
+            exact) ;;
+            pre_060)
+              echo 'Refusing mutation: 061 is the ordered second step and 060 has not been applied yet.' >&2
+              exit 1
+              ;;
+            missing)
+              echo 'Refusing mutation: the prerequisite tables are not in place.' >&2
+              exit 1
+              ;;
+            drift)
+              echo 'Refusing mutation: the existing metadata schema is not the reviewed shape.' >&2
+              exit 1
+              ;;
+            *)
+              echo 'Refusing mutation: no trustworthy readonly schema disposition.' >&2
+              exit 1
+              ;;
+          esac
+          case "${READONLY_SCHEMA_STATE_061}" in
+            pre_061) ;;
+            exact)
+              echo 'Refusing mutation: the reviewed release is already applied.' >&2
+              exit 1
+              ;;
+            missing)
+              echo 'Refusing mutation: the B66 quote asset table is not in place.' >&2
+              exit 1
+              ;;
+            drift)
+              echo 'Refusing mutation: the existing quote asset schema is not the reviewed shape.' >&2
+              exit 1
+              ;;
+            *)
+              echo 'Refusing mutation: no trustworthy readonly 061 schema disposition.' >&2
+              exit 1
+              ;;
+          esac
+          echo 'B62_D1_MIGRATION_061_AUTHORIZATION=PASS'
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - name: Re-resolve the live D1 binding immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-d1-061-premutation.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+          DB_ID="$(python - "${settings}" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding='utf-8'))
+          bindings = payload.get('result', {}).get('bindings', []) if payload.get('success') is True else []
+          hits = [b for b in bindings if b.get('type') == 'd1' and b.get('name') == sys.argv[2]]
+          if len(hits) != 1:
+              raise SystemExit('expected exactly one live PADIEM_CHAT_DB binding')
+          database_id = hits[0].get('id')
+          if not isinstance(database_id, str) or not re.fullmatch(r'[0-9a-fA-F-]{32,36}', database_id):
+              raise SystemExit('live PADIEM_CHAT_DB binding has invalid database id')
+          print(database_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          fingerprint="$(printf %s "${DB_ID}" | sha256sum | cut -d' ' -f1)"
+          test -n "${READONLY_DB_FINGERPRINT}"
+          if [ "${fingerprint}" != "${READONLY_DB_FINGERPRINT}" ]; then
+            echo 'D1_BINDING_CHANGED_AFTER_READONLY=STOP' >&2
+            exit 1
+          fi
+          echo 'D1_BINDING_IDENTITY_STABLE=PASS'
+
+      - name: Recheck identical schema immediately before SQL mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          python3 .github/scripts/b62_d1_migration_060_schema.py query "${RUNNER_TEMP}/b62-d1-060-premutation-query.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${RUNNER_TEMP}/b62-d1-060-premutation-query.json" \
+            -o "${RUNNER_TEMP}/b62-d1-060-premutation.json"
+          evidence="$(python3 .github/scripts/b62_d1_migration_060_schema.py classify "${RUNNER_TEMP}/b62-d1-060-premutation.json")"
+          echo "${evidence}"
+          state="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_D1_MIGRATION_060_SCHEMA=//p' | tr '[:upper:]' '[:lower:]')"
+          test "${state}" = "${READONLY_SCHEMA_STATE}"
+          python3 .github/scripts/b62_d1_migration_061_schema.py query "${RUNNER_TEMP}/b62-d1-061-premutation-query.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${RUNNER_TEMP}/b62-d1-061-premutation-query.json" \
+            -o "${RUNNER_TEMP}/b62-d1-061-premutation.json"
+          evidence_061="$(python3 .github/scripts/b62_d1_migration_061_schema.py classify "${RUNNER_TEMP}/b62-d1-061-premutation.json")"
+          echo "${evidence_061}"
+          state_061="$(printf '%s\n' "${evidence_061}" | sed -n 's/^B62_D1_MIGRATION_061_SCHEMA=//p' | tr '[:upper:]' '[:lower:]')"
+          test "${state_061}" = "${READONLY_SCHEMA_STATE_061}"
+          echo "PREMUTATION_SCHEMA_STATE=${state}"
+          echo "PREMUTATION_SCHEMA_STATE_061=${state_061}"
+          echo 'PREMUTATION_SCHEMA_STATE_STABLE=PASS'
+
+      - name: Read aggregate row counts and foreign-key state before the release
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          python3 .github/scripts/b62_d1_migration_061_schema.py counts "${RUNNER_TEMP}/b62-d1-061-counts-before-query.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${RUNNER_TEMP}/b62-d1-061-counts-before-query.json" \
+            -o "${RUNNER_TEMP}/b62-d1-061-counts-before.json"
+          python3 .github/scripts/b62_d1_migration_061_schema.py fk "${RUNNER_TEMP}/b62-d1-061-fk-before-query.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${RUNNER_TEMP}/b62-d1-061-fk-before-query.json" \
+            -o "${RUNNER_TEMP}/b62-d1-061-fk-before.json"
+          echo 'ROW_CONTENT_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Apply exactly migration 061 once
+        if: ${{ env.READONLY_SCHEMA_STATE == 'exact' && env.READONLY_SCHEMA_STATE_061 == 'pre_061' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          apply="${RUNNER_TEMP}/b62-d1-061-apply.json"
+          response="${RUNNER_TEMP}/b62-d1-061-apply-response.json"
+          # The apply payload is the reviewed 061 file itself, and the helper
+          # refuses to emit it unless the 060 tables are already released and
+          # the quote asset table still carries its ceiling.
+          python3 .github/scripts/b62_d1_migration_061_schema.py apply \
+            "${RUNNER_TEMP}/b62-d1-060-premutation.json" \
+            "${RUNNER_TEMP}/b62-d1-061-premutation.json" \
+            "${apply}"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${apply}" -o "${response}"
+          python3 .github/scripts/b62_d1_migration_061_schema.py check-apply "${response}"
+          echo 'B62_D1_MIGRATION_061=APPLIED'
+          echo 'PRODUCTION_MUTATION=1'
+
+      - name: Record no-op when migration 061 is already applied
+        if: ${{ env.READONLY_SCHEMA_STATE_061 == 'exact' }}
+        run: |
+          echo 'B62_D1_MIGRATION_061=SKIPPED_ALREADY_APPLIED'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Read back the released schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          query="${RUNNER_TEMP}/b62-d1-061-post-query.json"
+          response="${RUNNER_TEMP}/b62-d1-061-post.json"
+          python3 .github/scripts/b62_d1_migration_061_schema.py query "${query}"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${response}"
+          python3 .github/scripts/b62_d1_migration_061_schema.py classify "${response}" \
+            | tee "${RUNNER_TEMP}/b62-d1-061-post-verdict.txt"
+          grep -qx 'B62_D1_MIGRATION_061_SCHEMA=EXACT' "${RUNNER_TEMP}/b62-d1-061-post-verdict.txt"
+          echo 'B62_D1_MIGRATION_061_POST_APPLY=EXACT'
+          echo 'ROW_CONTENT_READ=0'
+          echo 'D1_IDENTIFIER_OUTPUT=0'
+
+      - name: Verify the B66 file storage path after the release
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The B66 quote asset path is the unique object key, the owner index
+          # and the owner foreign key. The live table must still carry all
+          # three after the rebuild.
+          python3 .github/scripts/b62_d1_migration_061_schema.py storage-path \
+            "${RUNNER_TEMP}/b62-d1-061-post.json"
+          echo 'B66_QUOTE_ASSET_STORAGE_PATH=VERIFIED'
+          echo 'ROW_CONTENT_READ=0'
+          echo 'D1_IDENTIFIER_OUTPUT=0'
+
+      - name: Verify row preservation and foreign keys after the release
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          python3 .github/scripts/b62_d1_migration_061_schema.py counts "${RUNNER_TEMP}/b62-d1-061-counts-after-query.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${RUNNER_TEMP}/b62-d1-061-counts-after-query.json" \
+            -o "${RUNNER_TEMP}/b62-d1-061-counts-after.json"
+          python3 .github/scripts/b62_d1_migration_061_schema.py check-counts \
+            "${RUNNER_TEMP}/b62-d1-061-counts-before.json" "${RUNNER_TEMP}/b62-d1-061-counts-after.json"
+          python3 .github/scripts/b62_d1_migration_061_schema.py fk "${RUNNER_TEMP}/b62-d1-061-fk-after-query.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${RUNNER_TEMP}/b62-d1-061-fk-after-query.json" \
+            -o "${RUNNER_TEMP}/b62-d1-061-fk-after.json"
+          python3 .github/scripts/b62_d1_migration_061_schema.py check-fk \
+            "${RUNNER_TEMP}/b62-d1-061-fk-before.json" "${RUNNER_TEMP}/b62-d1-061-fk-after.json"
           echo 'WORKER_DEPLOYED=0'
           echo 'BINDING_MUTATION=0'
           echo 'UNRELATED_MIGRATION_APPLY=0'
