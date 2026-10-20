@@ -76,6 +76,24 @@ class MemoryStore:
     async def find_password_credential(self, identifier):
         return self.credentials.get(identifier)
 
+    async def find_password_credential_by_user_id(self, user_id):
+        for cred in self.credentials.values():
+            if cred.user.id == user_id:
+                return cred
+        return None
+
+    async def update_password_credential(self, user_id, password_hash):
+        for username, cred in tuple(self.credentials.items()):
+            if cred.user.id == user_id:
+                self.credentials[username] = PasswordCredential(
+                    user=cred.user,
+                    username=cred.username,
+                    password_hash=password_hash,
+                    failed_attempts=0,
+                    locked_until=None,
+                )
+                return
+
     async def record_password_failure(self, user_id, failed_attempts, locked_until):
         return None
 

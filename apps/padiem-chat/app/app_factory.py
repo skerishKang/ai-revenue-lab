@@ -121,6 +121,7 @@ from .auth_routes import (
     google_callback,
     google_start,
     logout,
+    password_change,
     password_login,
     password_register,
 )
@@ -478,6 +479,7 @@ def create_app(
         Route("/auth/android/confirm", android_handoff_confirm, methods=["POST"]),
         Route("/api/auth/password/register", password_register, methods=["POST"]),
         Route("/api/auth/password/login", password_login, methods=["POST"]),
+        Route("/api/auth/password/change", password_change, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route(MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session, methods=["POST"]),
