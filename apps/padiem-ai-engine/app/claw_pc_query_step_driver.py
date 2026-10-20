@@ -3,8 +3,8 @@
 The product adapter (``kagent.pc_query_adapter``) owns the PC tool contract:
 the product identities, the tool ids/scopes/specs, the signed product
 callback, the drive-query execution and the step policy. The Engine keeps
-only what it is responsible for — the durable run, the long-running wait and
-the recovery — and consumes the product contract through its existing
+only what it is responsible for ??the durable run, the long-running wait and
+the recovery ??and consumes the product contract through its existing
 injection point (``tool_binding_resolver`` / ``pc_query_step_driver_factory``).
 
 Two parts of the previous product logic stay in this module for now, and both

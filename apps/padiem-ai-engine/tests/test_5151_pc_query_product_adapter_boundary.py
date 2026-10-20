@@ -21,6 +21,8 @@ from pathlib import Path
 
 import pytest
 
+from padiem_ai_core.agent_tool_result_ledger import InMemoryToolResultLedger
+
 from app import claw_pc_query_step_driver as engine_driver
 from app.claw_pc_query_step_driver import (
     PC_DRIVES_TOOL_ID,
@@ -137,7 +139,14 @@ def test_step_policy_uses_the_trusted_plan_target_and_refuses_a_model_device() -
     )
 
     class _Context:
-        tool_results: tuple = ()
+        tool_result_refs: tuple = ()
+        result_ledger = InMemoryToolResultLedger()
+
+        async def resolve_tool_results(self):
+            return ()
+
+        async def resolve_tool_result(self, ref):
+            return await self.result_ledger.resolve(ref)
 
     decision = _run(driver.next_step(_Context(), None))
     assert decision.invocation is not None

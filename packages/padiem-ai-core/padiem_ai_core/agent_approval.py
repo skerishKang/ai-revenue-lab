@@ -108,8 +108,10 @@ class ApprovalPause:
             raise AgentApprovalError("requirement must be ApprovalRequirement")
         if isinstance(self.step_index, bool) or not isinstance(self.step_index, int):
             raise AgentApprovalError("step_index must be an integer")
-        if not 1 <= self.step_index <= 64:
-            raise AgentApprovalError("step_index must be between 1 and 64")
+        if self.step_index < 1:
+            # #4379: a step index is not a PADIEM quantity. A long run may
+            # pause at any step number; the pause TTL still expires it.
+            raise AgentApprovalError("step_index must be a positive integer")
         created_at = _aware("created_at", self.created_at)
         expires_at = _aware("expires_at", self.expires_at)
         if expires_at <= created_at:

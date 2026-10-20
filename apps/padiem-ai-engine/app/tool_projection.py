@@ -59,10 +59,12 @@ ENGINE_TOOL_CONTRACT_FAMILY = "padiem.engine.tools"
 ENGINE_TOOL_CONTRACT_MAJOR = 1
 ENGINE_TOOL_CONTRACT_VERSION = f"{ENGINE_TOOL_CONTRACT_FAMILY}/{ENGINE_TOOL_CONTRACT_MAJOR}.0"
 
-MAX_PUBLIC_TOOL_OUTPUT_BYTES = 32_768
-MAX_PUBLIC_OUTPUT_STRING_CHARS = 2_048
-MAX_PUBLIC_OUTPUT_NODES = 512
-MAX_PUBLIC_OUTPUT_LIST_ITEMS = 64
+# #4379: the public tool projection no longer shortens or drops a tool result.
+# A secret-shaped key is still redacted and a non-identifier key is still
+# sanitized, but a long string, a long list and a large result now reach the
+# caller exactly as the tool produced them. The depth bound is a structural
+# guard, not a limit on the amount a tool may return.
+MAX_PUBLIC_OUTPUT_DEPTH = 64
 MAX_BOUND_TOOL_AGENTS = 64
 MAX_WIRE_TOOL_ARGUMENTS_BYTES = 64 * 1024
 MAX_PENDING_TOOL_CONTINUATIONS = 256
@@ -461,11 +463,18 @@ def _sanitize_output_key(key: Any) -> str:
     return "field"
 
 
-def _redact_recursive(value: Any, state: dict[str, int | bool]) -> Any:
-    if state["nodes"] >= MAX_PUBLIC_OUTPUT_NODES:
-        state["truncated"] = True
+def _redact_recursive(value: Any, depth: int = 0) -> Any:
+    """Redact secrets in place without shortening or dropping the result.
+
+    #4379: the public projection used to cut every string at 2,048 characters,
+    every list at 64 items and replaced a result larger than 32 KB with
+    ``None``. A tool that really produced a long answer was therefore lost
+    after it had already executed. Only the secret redaction and the key
+    sanitization remain. The depth bound is a structural guard against a
+    self-referential structure, not a limit on how much a tool may return.
+    """
+    if depth > MAX_PUBLIC_OUTPUT_DEPTH:
         return None
-    state["nodes"] += 1
     if isinstance(value, Mapping):
         projected: dict[str, Any] = {}
         for key, item in list(value.items()):
@@ -473,17 +482,11 @@ def _redact_recursive(value: Any, state: dict[str, int | bool]) -> Any:
             if isinstance(key, str) and _SECRET_KEY_RE.search(key):
                 projected[safe_key] = REDACTED_TOOL_VALUE
                 continue
-            projected[safe_key] = _redact_recursive(item, state)
+            projected[safe_key] = _redact_recursive(item, depth + 1)
         return projected
     if isinstance(value, (list, tuple)):
-        items = list(value)[:MAX_PUBLIC_OUTPUT_LIST_ITEMS]
-        if len(list(value)) > MAX_PUBLIC_OUTPUT_LIST_ITEMS:
-            state["truncated"] = True
-        return [_redact_recursive(item, state) for item in items]
+        return [_redact_recursive(item, depth + 1) for item in value]
     if isinstance(value, str):
-        if len(value) > MAX_PUBLIC_OUTPUT_STRING_CHARS:
-            state["truncated"] = True
-            return value[:MAX_PUBLIC_OUTPUT_STRING_CHARS] + "[truncated]"
         return value
     if isinstance(value, bool) or isinstance(value, int):
         return value
@@ -498,8 +501,9 @@ def project_redacted_tool_output(output: Any) -> tuple[Any, bool]:
     """Project one settled Core tool output through the single redaction filter.
 
     Values under secret-shaped keys never cross the Engine boundary
-    (TOOL_RESULT_SECRET_LEAK = 0) and the public projection is bounded well
-    under the Core output ceiling.
+    (TOOL_RESULT_SECRET_LEAK = 0). Nothing else is shortened or dropped: a tool
+    result reaches the caller exactly as it was produced, and the second return
+    value reports whether any part of it had to be withheld.
     """
     if isinstance(output, Mapping):
         source: Any = dict(output)
@@ -507,15 +511,8 @@ def project_redacted_tool_output(output: Any) -> tuple[Any, bool]:
         source = [dict(item) if isinstance(item, Mapping) else item for item in output]
     else:
         source = output
-    state: dict[str, int | bool] = {"nodes": 0, "truncated": False}
-    projected = _redact_recursive(source, state)
-    try:
-        size = json_size(projected)
-    except EngineToolProjectionError:
-        return None, True
-    if size > MAX_PUBLIC_TOOL_OUTPUT_BYTES:
-        return None, True
-    return projected, bool(state["truncated"])
+    projected = _redact_recursive(source)
+    return projected, False
 
 
 _LIFECYCLE_BY_STATUS: dict[RunStatus, ToolLifecycleKind] = {

@@ -431,6 +431,7 @@ class OrchestrationEngineService:
         approved_office_read_sink: ApprovedOfficeReadReceiptSink | None = None,
         desktop_step_driver_factory: Callable[[str], Any] | None = None,
         pc_query_step_driver_factory: Callable[[str], Any] | None = None,
+        tool_result_ledger_factory: Callable[[str, str | None], Any] | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
@@ -442,6 +443,8 @@ class OrchestrationEngineService:
             raise ValueError("approved_office_read_sink must provide record_verified_office_read")
         if approval_decision_verifier is not None and not callable(getattr(approval_decision_verifier, "verify", None)):
             raise ValueError("approval_decision_verifier must provide verify()")
+        if tool_result_ledger_factory is not None and not callable(tool_result_ledger_factory):
+            raise ValueError("tool_result_ledger_factory must be callable")
         if continuation_store is not None:
             for method in ("issue", "resolve", "claim", "commit", "release", "cancel"):
                 if not callable(getattr(continuation_store, method, None)):
@@ -458,6 +461,10 @@ class OrchestrationEngineService:
             # Default in-memory store always supports atomic cancel
             self._continuation_store_supports_atomic_cancel = True
         self._runtime_factory = runtime_factory
+        # #4379: the durable ledger owns the tool payloads. The runtime keeps
+        # only references, so a long run does not retain every tool output in
+        # the Worker.
+        self._tool_result_ledger_factory = tool_result_ledger_factory
         self._b14_service_bound = bool(b14_service_bound)
         self._idempotency_adapter = idempotency_adapter
         self._approval_decision_verifier = approval_decision_verifier
@@ -924,6 +931,19 @@ class OrchestrationEngineService:
 
         return app_id, orch_req, exec_req, _execution_request_fingerprint(app_id=app_id, request=exec_req)
 
+    def _tool_result_ledger(self, app_id: str, subject_id: str | None) -> Any | None:
+        """The durable ledger for one run, or None when the host has no store.
+
+        The ledger is owner-scoped, so a reference from another subject can
+        never resolve this run's payload.
+        """
+        if self._tool_result_ledger_factory is None:
+            return None
+        try:
+            return self._tool_result_ledger_factory(app_id, subject_id)
+        except Exception:
+            return None
+
     async def orchestrate_payload(
         self, payload: Any, *, trusted_office_run_id: str | None = None,
     ) -> ServiceResponse:
@@ -1008,7 +1028,12 @@ class OrchestrationEngineService:
 
         try:
             runtime = self._runtime_factory(app_id)
-            runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
+            runner = OrchestrationRunner(
+                runtime=runtime, idempotency=self._idempotency_adapter,
+                agent_result_ledger=self._tool_result_ledger(
+                    app_id, getattr(orch_req, "subject_id", None),
+                ),
+            )
             result = await runner.run(orch_req)
         except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
             response = self._orchestration_run_error_response(exc)
@@ -1211,7 +1236,12 @@ class OrchestrationEngineService:
 
         try:
             runtime = self._runtime_factory(app_id)
-            runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
+            runner = OrchestrationRunner(
+                runtime=runtime, idempotency=self._idempotency_adapter,
+                agent_result_ledger=self._tool_result_ledger(
+                    app_id, getattr(resume_req, "subject_id", None),
+                ),
+            )
             result = await runner.resume(resume_req)
         except OrchestrationError as exc:
             if exc.code == "approval_denied":
