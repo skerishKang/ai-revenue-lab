@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import inspect
 from urllib.parse import unquote
 
 from starlette.requests import Request
@@ -25,6 +26,18 @@ from .project_files import (
     encode_owner_file_cursor,
     validate_file_id,
 )
+
+def _project_original_object_key(user_id: str, project_id: str, file_id: str) -> str:
+    # All identifiers originate from an authenticated session and validated IDs.
+    return f"projects/{user_id}/{project_id}/originals/{file_id}"
+
+
+async def _r2_call(bucket, method: str, *args, **kwargs):
+    result = getattr(bucket, method)(*args, **kwargs)
+    if inspect.isawaitable(result):
+        return await result
+    return result
+
 
 MAX_PROJECT_FILE_BODY_BYTES = 160_000
 MAX_BINARY_PROJECT_FILE_BASE64_BYTES = ((2 * 1024 * 1024 + 2) // 3) * 4 + 4  # 2 MiB binary cap, base64-expanded
@@ -200,6 +213,23 @@ async def project_files_collection(request: Request) -> JSONResponse:
                 raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
             name, media_type, text = _parse_project_file_item(raw)
         created = await store.create_file(uid, pid, name, media_type, text)
+        if is_binary_upload:
+            # Retain the immutable original alongside the extracted D1 project text.
+            # R2 keys are server-derived; the client never controls the storage path.
+            workspace_store = getattr(request.app.state, "workspace_document_store", None)
+            bucket = getattr(workspace_store, "r2_bucket", None)
+            if bucket is None:
+                await store.delete_file(uid, pid, created.id)
+                return _unavailable()
+            try:
+                await _r2_call(
+                    bucket, "put",
+                    _project_original_object_key(uid, pid, created.id), body,
+                    httpMetadata={"contentType": request.headers["x-padiem-media-type"]},
+                )
+            except Exception:
+                await store.delete_file(uid, pid, created.id)
+                return _unavailable()
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError, BinaryDocumentValidationError) as exc:
         return JSONResponse({"error": {"code": "invalid_document", "message": str(exc) or "문서 형식이 올바르지 않습니다."}}, status_code=422)
     except ProjectFileLimitError as exc:
@@ -231,6 +261,15 @@ async def project_file_detail(request: Request):
         return JSONResponse({"file": record.public_dict()})
 
     try:
+        # An original exists only for the new raw-binary project upload path.
+        record = await store.get_file(uid, pid, fid)
+        if record is None:
+            return _not_found()
+        if record.media_type in {"extracted/pdf", "extracted/docx"}:
+            workspace_store = getattr(request.app.state, "workspace_document_store", None)
+            bucket = getattr(workspace_store, "r2_bucket", None)
+            if bucket is not None:
+                await _r2_call(bucket, "delete", _project_original_object_key(uid, pid, fid))
         deleted = await store.delete_file(uid, pid, fid)
     except Exception:
         return _unavailable()
