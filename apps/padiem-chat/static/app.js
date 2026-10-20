@@ -776,12 +776,7 @@
   async function selectImage(file) {
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error(attachmentCopy().unsupportedFormat);
     if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error(attachmentCopy().imageTooLarge);
-    const dataUrl = await readAsDataUrl(file);
-    const expectedPrefix = `data:${file.type};base64,`;
-    if (typeof dataUrl !== "string" || !dataUrl.startsWith(expectedPrefix)) throw new Error(uiT("image-format-invalid"));
-    const base64 = dataUrl.slice(expectedPrefix.length);
-    if (!base64) throw new Error(uiT("image-data-empty"));
-    return { type: "image", name: file.name || "image", mediaType: file.type, base64, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
+    return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
   async function selectAttachment(file) {
     if (!file) return;
@@ -800,6 +795,9 @@
   }
   function attachmentPayload(attachment) {
     if (!attachment) return undefined;
+    if (attachment.file) {
+      return [{ type: attachment.type, name: attachment.name, media_type: attachment.mediaType, file: attachment.file }];
+    }
     if (attachment.type === "image") {
       return [{ type: "image", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
     }
@@ -1056,20 +1054,22 @@
     try {
       const projectBinary = projectBinaryMediaType(file);
       let payload;
-      if (projectBinary && binaryDocuments && typeof binaryDocuments.read === "function") {
-        const documentFile = await binaryDocuments.read(file);
-        payload = { name: documentFile.name, media_type: documentFile.mediaType, base64: documentFile.base64 };
-      } else if (projectBinary) {
-        throw new Error(attachmentCopy().unsupportedFormat);
+      if (projectBinary) {
+        // Send binary directly; do not materialize a Base64 JSON copy.
+        payload = null;
       } else {
         const documentFile = await readDocumentFile(file);
         payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
       }
-      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const requestOptions = projectBinary
+        ? { method: "POST", headers: {
+            "Content-Type": "application/octet-stream", "Accept": "application/json",
+            "X-Padiem-Filename": encodeURIComponent(file.name),
+            "X-Padiem-Media-Type": projectBinary,
+          }, body: file }
+        : { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(payload) };
+      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, requestOptions);
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.file) {
         const message = data && data.error && typeof data.error.message === "string" ? data.error.message : uiT("project-file-save-failed");

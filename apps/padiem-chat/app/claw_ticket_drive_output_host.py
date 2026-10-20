@@ -16,11 +16,11 @@ from typing import Any, Sequence
 from padiem_ai_core.drive_capability import DriveFileProjection
 from padiem_ai_core.ephemeral_work_ticket import EphemeralExecutionWorkTicket
 
-from app.claw_drive_ticket_output_composition import (
+from .claw_drive_ticket_output_composition import (
     TicketOutputCompositionError,
     upload_completed_output_with_verified_ticket,
 )
-from app.claw_durable_drive_output_pipeline import (
+from .claw_durable_drive_output_pipeline import (
     ClawDurableDriveOutputPipeline,
     DurableArtifactRegistration,
     OwnerRunArtifactHistory,

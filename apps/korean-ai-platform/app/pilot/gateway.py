@@ -70,8 +70,8 @@ from app.pilot.model_registry_file import group_model_ids
 # (Kilo Gateway's own ~10s limit on free models). Direct/manual routes used
 # to attempt once and give up despite the failure being retryable.
 #
-# The 45s budget limits *additional* retry/fallback dispatches, not the
-# initial model inference. For both manual and auto routes the initial
+# The provider-aligned retry budget limits *additional* retry/fallback
+# dispatches, not the initial model inference. For both manual and auto routes the initial
 # attempt is governed by model idle detection and caller cancellation.
 # After it completes, additional physical requests are allowed only when
 # the shared retry window has remaining budget. The old 60s Engine ceiling
@@ -110,6 +110,39 @@ async def _read_json_body(request: Request) -> Any:
         return json.loads(raw)
     except (TypeError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise _InvalidBody("Request body must be valid JSON") from exc
+
+
+async def _platform_caller_denial(
+    request: Request, request_id: str
+) -> JSONResponse | None:
+    """Refuse a platform-credential dispatch from an unproven caller.
+
+    The catalog lane spends the platform's own Provider credentials, so it is
+    reachable only by a proven server-to-server caller. Mock mode performs no
+    Provider call and spends no platform credential, so the billing boundary
+    does not exist there. BYOK never reaches this check: it uses the caller's
+    own key and is handled by the separate legacy lane.
+    """
+    from .b14_runtime_config import runtime_config as cfg
+
+    if cfg.is_mock:
+        return None
+
+    from .service_proof import service_proof_denial, service_proof_message
+
+    denial = await service_proof_denial(request, await request.body())
+    if denial is None:
+        return None
+    return JSONResponse(
+        status_code=denial.status_code,
+        content={
+            "error": {
+                "code": denial.code,
+                "message": service_proof_message(),
+                "request_id": request_id,
+            }
+        },
+    )
 
 
 def _log_unexpected_error(event: str, request_id: str, exc: Exception) -> None:
@@ -350,12 +383,8 @@ def _validate_b14_options(raw: Any) -> dict:
             isinstance(mr, bool)
             or not isinstance(mr, int)
             or mr < 0
-            or mr > _UPSTREAM_RETRY_MAX_RETRIES
         ):
-            raise _InvalidBody(
-                "business14.max_retries must be an integer between 0 and "
-                f"{_UPSTREAM_RETRY_MAX_RETRIES}"
-            )
+            raise _InvalidBody("business14.max_retries must be a non-negative integer")
         opts["max_retries"] = mr
 
     ap = raw.get("allow_paid")
@@ -1147,6 +1176,12 @@ async def pilot_chat_completions(
 
         # Alpha mode: catalog model or future b14/auto
         if _is_alpha_model(body["model"]):
+            # Platform-owned credentials are spent on this lane. Refuse an
+            # unproven caller before any credential is resolved or any
+            # Provider request is built.
+            denial = await _platform_caller_denial(request, request_id)
+            if denial is not None:
+                return denial
             return await _handle_alpha_chat(request_id, body)
 
         # BYOK mode (legacy flow — unchanged)

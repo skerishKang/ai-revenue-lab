@@ -39,6 +39,15 @@ secret_name = "CLAW_ENGINE_DESKTOP_SECRET"
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
 
+# Deployment-owned server-to-server proof secret for the B14 platform-credential
+# execution lane. B14 spends platform-owned Provider credentials there, so this
+# Worker proves it is an approved PADIEM caller before the dispatch is built.
+# The value lives only in Cloudflare Secrets Store and never reaches a browser.
+[[secrets_store_secrets]]
+binding = "PADIEM_B14_SERVICE_PROOF_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_B14_SERVICE_PROOF_SECRET"
+
 # #4139: one existing PADIEM Identity and canonical Broker for Chat/Claw.
 # The Connector's product route is ON by default. Account/device ownership
 # still comes from the existing canonical authorities, not from the socket.

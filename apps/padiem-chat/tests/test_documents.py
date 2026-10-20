@@ -282,6 +282,11 @@ class FakeStatement:
         return None
 
     async def run(self):
+        if self.sql.startswith("INSERT INTO project_files"):
+            # #5226: the store writes the row through a statement that returns
+            # the inserted id, so the fake reports the same result the D1
+            # binding does instead of an empty one.
+            return {"results": [{"id": self.values[0]}], "meta": {"changes": 1}}
         return {"results": []}
 
 

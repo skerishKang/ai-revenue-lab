@@ -39,6 +39,9 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "no_b14_service_proof: do not sign the request as an approved server-to-server caller; observe the refusal boundary directly",
+]
 filterwarnings = [
     "ignore:Using .httpx. with .starlette.testclient",
     "ignore:Setting per-request cookies",

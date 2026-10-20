@@ -329,11 +329,22 @@ class D1ProjectFileStore:
             document = validate_document_fields(name, media_type, text)
         fid = _file_id()
         now = _now_iso()
-        await self._run(
+        # #5226: the project-ownership condition is part of the INSERT itself.
+        # A separate read-then-write pair leaves a window in which a project
+        # that is not this owner's (or no longer exists) could still receive the
+        # row. Selecting the project row inside the same statement keeps the
+        # save-time condition and the write in one atomic step, so a concurrent
+        # add can never bypass it.
+        written = await self._run(
             "INSERT INTO project_files (id, project_id, user_id, name, media_type, content_text, content_chars, created_at, updated_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            fid, project_id, user_id, document.name, document.media_type, document.text, len(document.text), now, now,
+            "SELECT ?, p.id, ?, ?, ?, ?, ?, ?, ? FROM projects p "
+            "WHERE p.id = ? AND p.user_id = ? "
+            "RETURNING id",
+            fid, user_id, document.name, document.media_type, document.text, len(document.text), now, now,
+            project_id, user_id,
         )
+        if not _rows_from_result(written):
+            raise ProjectFileError("project is not owned by current user")
         return ProjectFileRecord(
             id=fid, project_id=project_id, name=document.name, media_type=document.media_type,
             content_text=document.text, content_chars=len(document.text), created_at=now, updated_at=now,

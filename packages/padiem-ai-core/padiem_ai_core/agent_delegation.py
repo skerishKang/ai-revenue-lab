@@ -60,14 +60,27 @@ def _bounded_reason(value: str) -> str:
     return result
 
 
+def _widens(child: int | None, parent: int | None) -> bool:
+    """Whether a child budget asks for more than the parent allows.
+
+    #4379: ``None`` means "no count ceiling". An unbounded parent allows any
+    child, while an unbounded child under a bounded parent is a widening.
+    """
+    if parent is None:
+        return False
+    if child is None:
+        return True
+    return child > parent
+
+
 def delegation_fingerprint(
     *,
     parent_agent_id: str,
     child_agent_id: str,
     allowed_tools: tuple[str, ...],
     capabilities: tuple[str, ...],
-    max_steps: int,
-    max_tool_calls: int,
+    max_steps: int | None,
+    max_tool_calls: int | None,
     max_wall_seconds: int,
 ) -> str:
     payload = {
@@ -91,8 +104,8 @@ class AgentDelegationRequest:
     reason: str
     allowed_tools: tuple[str, ...] = ()
     capabilities: tuple[str, ...] = ()
-    max_steps: int = 1
-    max_tool_calls: int = 0
+    max_steps: int | None = None
+    max_tool_calls: int | None = None
     max_wall_seconds: int = 900  # explicit parent inheritance still rejects budget widening
     depth: int = 1
 
@@ -109,14 +122,27 @@ class AgentDelegationRequest:
                 raise AgentDelegationError("invalid_agent_delegation", f"{name} must not contain duplicates")
             object.__setattr__(self, name, normalized)
         bounds = (
-            ("max_steps", self.max_steps, 1, 64),
-            ("max_tool_calls", self.max_tool_calls, 0, 64),
-            ("max_wall_seconds", self.max_wall_seconds, 1, 3_600),
-            ("depth", self.depth, 1, MAX_DELEGATION_DEPTH),
+            ("max_steps", self.max_steps, 1),
+            ("max_tool_calls", self.max_tool_calls, 0),
+            ("max_wall_seconds", self.max_wall_seconds, 1),
         )
-        for name, value, low, high in bounds:
-            if isinstance(value, bool) or not isinstance(value, int) or not low <= value <= high:
-                raise AgentDelegationError("delegation_budget_exceeded", f"{name} must be between {low} and {high}")
+        for name, value, low in bounds:
+            if value is None and name in {"max_steps", "max_tool_calls"}:
+                # #4379: no count ceiling unless a caller opts in.
+                continue
+            if isinstance(value, bool) or not isinstance(value, int) or value < low:
+                raise AgentDelegationError("delegation_budget_exceeded", f"{name} must be at least {low}")
+        # The delegation depth stays bounded: it is a structural recursion
+        # guard, not a limit on how much work a run may do.
+        if (
+            isinstance(self.depth, bool)
+            or not isinstance(self.depth, int)
+            or not 1 <= self.depth <= MAX_DELEGATION_DEPTH
+        ):
+            raise AgentDelegationError(
+                "delegation_budget_exceeded",
+                f"depth must be between 1 and {MAX_DELEGATION_DEPTH}",
+            )
 
     @property
     def fingerprint(self) -> str:
@@ -211,9 +237,17 @@ def authorize_agent_delegation(
 
     parent_budget = parent_definition.execution_budget
     child_budget = child_definition.execution_budget
-    if request.max_steps > parent_budget.max_steps or request.max_tool_calls > parent_budget.max_tool_calls or request.max_wall_seconds > parent_budget.max_wall_seconds:
+    if (
+        _widens(request.max_steps, parent_budget.max_steps)
+        or _widens(request.max_tool_calls, parent_budget.max_tool_calls)
+        or request.max_wall_seconds > parent_budget.max_wall_seconds
+    ):
         raise AgentDelegationError("delegation_budget_widening", "delegated execution budget exceeds parent budget")
-    if child_budget.max_steps > parent_budget.max_steps or child_budget.max_tool_calls > parent_budget.max_tool_calls or child_budget.max_wall_seconds > parent_budget.max_wall_seconds:
+    if (
+        _widens(child_budget.max_steps, parent_budget.max_steps)
+        or _widens(child_budget.max_tool_calls, parent_budget.max_tool_calls)
+        or child_budget.max_wall_seconds > parent_budget.max_wall_seconds
+    ):
         raise AgentDelegationError("delegation_budget_widening", "child execution budget exceeds parent budget")
 
     return DelegatedAgentAuthority(

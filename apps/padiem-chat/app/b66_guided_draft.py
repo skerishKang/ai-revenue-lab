@@ -19,6 +19,8 @@ from .history import _title_from_user_text
 
 MAX_STATE_BYTES = 131072
 MAX_TRANSCRIPT_MESSAGES = 80
+# #4379: the guided transcript keeps the full message text. The symbol is
+# retained for import compatibility and is no longer enforced.
 MAX_TRANSCRIPT_MESSAGE_CHARS = 9000
 GUIDED_ID_RE = re.compile(r"^gdt_[0-9a-f]{32}$")
 SCHEMA = "b66.guided-draft.v1"
@@ -33,8 +35,13 @@ class GuidedDraftError(ValueError):
     pass
 
 
-def _safe_text(value: Any, *, limit: int = 240) -> str:
-    if not isinstance(value, str) or len(value) > limit:
+def _safe_text(value: Any, *, limit: int | None = 240) -> str:
+    """Validate one guided text value.
+
+    ``limit=None`` means no character ceiling (#4379: the guided transcript
+    keeps the full conversation). Every other call keeps its own field bound.
+    """
+    if not isinstance(value, str) or (limit is not None and len(value) > limit):
         raise GuidedDraftError("invalid guided text")
     value.encode("utf-8")  # Reject lone Unicode surrogates.
     return value
@@ -63,6 +70,12 @@ def _finite_number(value: Any, *, positive: bool = False) -> int | float | None:
 
 
 def normalize_guided_transcript(raw: Any) -> list[dict]:
+    """Accept the guided transcript exactly as the conversation produced it.
+
+    #4379: a transcript message longer than 9,000 characters used to be
+    refused, so a long assistant answer failed the whole guided draft. Only
+    the shape (role and text) is checked now.
+    """
     if raw is None:
         return []
     if not isinstance(raw, list) or len(raw) > MAX_TRANSCRIPT_MESSAGES:
@@ -72,7 +85,7 @@ def normalize_guided_transcript(raw: Any) -> list[dict]:
         row = _object(item, {"role", "content"})
         if row.get("role") not in ("user", "assistant"):
             raise GuidedDraftError("guided transcript role invalid")
-        text = _safe_text(row.get("content"), limit=MAX_TRANSCRIPT_MESSAGE_CHARS)
+        text = _safe_text(row.get("content"), limit=None)
         if not text:
             raise GuidedDraftError("empty guided transcript text")
         items.append({"role": row["role"], "content": text})
