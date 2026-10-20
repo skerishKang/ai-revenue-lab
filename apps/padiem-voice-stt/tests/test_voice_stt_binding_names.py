@@ -109,10 +109,12 @@ def test_binding_report_matches_expected_state():
         # #4139: the two Oracle Mesh Secrets Store references are Chat's own
         # (names only, same store); they add no provider key to this Worker.
         # #5050: the Claw Engine desktop proof binding is also Chat-owned.
+        # #5320: the B14 server-to-server caller proof binding is Chat-owned.
         "chat_worker_secret_bindings": [
             "CLAW_ENGINE_DESKTOP_SECRET",
             "ORACLE_MESH_CHANNEL_SECRET",
             "ORACLE_MESH_OWNERSHIP_MAP",
+            "PADIEM_B14_SERVICE_PROOF_SECRET",
             "PADIEM_EXLAB_API_KEY",
             "PADIEM_GITHUB_APP_CLIENT_SECRET",
             "PADIEM_GRAFANA_OTLP_TOKEN",
