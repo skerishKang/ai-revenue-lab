@@ -195,7 +195,7 @@ class HistoryStore(Protocol):
     async def search_conversations(self, user_id: str, query: str, *, product_scope: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS) -> list[dict[str, Any]]: ...
     async def get_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> dict[str, Any] | None: ...
     async def delete_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> bool: ...
-    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str) -> str: ...
+    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str, assistant_message_id: str | None = None) -> str: ...
     async def list_projects(self, user_id: str) -> list[ProjectProfile]: ...
     async def get_project(self, user_id: str, project_id: str) -> ProjectProfile | None: ...
     async def create_project(self, user_id: str, name: str, instructions: str) -> ProjectProfile: ...
@@ -265,6 +265,33 @@ def _chat_id() -> str:
 
 def _message_id() -> str:
     return "msg_" + uuid.uuid4().hex
+
+
+#: #5015: the run-scoped id of the assistant message that a model-only Claw run
+#: stores for exactly that run. It is derived from the server-owned run id, so
+#: the owner-scoped lookup can correlate the stored completion record with the
+#: actual message without a schema change and without ever matching a later
+#: turn's text.
+GENERAL_ANSWER_MESSAGE_SUFFIX = "_general_answer"
+
+
+def general_answer_message_id(run_id: str) -> str:
+    """The one message id a model-only run owns for its verified answer."""
+    if not isinstance(run_id, str) or not run_id:
+        raise HistoryError("run_id is required")
+    message_id = run_id + GENERAL_ANSWER_MESSAGE_SUFFIX
+    if len(message_id) > 128:
+        raise HistoryError("run-scoped answer message id is not bounded")
+    return message_id
+
+
+def _message_reference(value: object) -> str:
+    """Validate a caller-supplied message id as a bounded safe reference."""
+    if not isinstance(value, str) or not value or len(value) > 128:
+        raise HistoryError("message id must be a bounded safe reference")
+    if any(not (ch.isalnum() or ch in "_-") for ch in value):
+        raise HistoryError("message id must be a bounded safe reference")
+    return value
 
 
 def _project_id() -> str:
@@ -968,7 +995,7 @@ class D1HistoryStore:
         )
         return True
 
-    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str) -> str:
+    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str, assistant_message_id: str | None = None) -> str:
         scope = _require_product_scope(product_scope)
         user_content = _bounded_text(user_text, "user_text")
         assistant_content = _bounded_text(assistant_text, "assistant_text")
@@ -993,7 +1020,15 @@ class D1HistoryStore:
             if stored_project != project_id:
                 raise HistoryForbidden("conversation project mismatch")
 
-        user_msg_id, answer_msg_id = _message_id(), _message_id()
+        # #5015: a model-only run stores its verified answer under a run-scoped
+        # message id, so the owner-scoped lookup can correlate the stored
+        # completion record with the actual message. The default stays the
+        # random id, and an explicit id is never taken from a browser value.
+        user_msg_id = _message_id()
+        answer_msg_id = (
+            _message_reference(assistant_message_id)
+            if assistant_message_id is not None else _message_id()
+        )
         r2_keys: list[str] = []
         persisted = False
         try:
@@ -1553,6 +1588,62 @@ class D1HistoryStore:
             message_id, len(part_prefix), part_prefix,
         )
         return "\n".join(row["content"] for row in rows) if rows else None
+
+    async def get_claw_run_result(
+        self, user_id: str, run_id: str, conversation_id: str,
+    ) -> dict[str, str] | None:
+        """The owner's completed run result, correlated to the actual message.
+
+        Two proven sources, and never a summary substitution:
+
+        * a completed Mesh / Local Runner command run resolves through the
+          dispatch correlation to the assistant message that holds the verified
+          PC command result (``pc_command_result``);
+        * a completed model-only run resolves through the run-scoped answer
+          message the general lane stored for exactly that run
+          (``model_reply``).
+
+        Both branches are bounded by the owner's own run row, its conversation
+        and the message row itself, so a later turn's text can never be
+        returned for an older run. An unverified run returns ``None`` so the
+        caller keeps its truthful state instead of claiming a success.
+        """
+        command_answer = await self.get_claw_run_result_message(
+            user_id, run_id, conversation_id
+        )
+        if isinstance(command_answer, str) and command_answer:
+            return {"answer": command_answer, "answer_source": "pc_command_result"}
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        run_row = await self._first(
+            "SELECT id, status, conversation_id FROM claw_run_history "
+            "WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if not isinstance(run_row, dict):
+            return None
+        # Only a run the store itself recorded as completed may answer. An
+        # unverified or still-running run stays unverified.
+        if run_row.get("status") != "completed":
+            return None
+        if run_row.get("conversation_id") != conversation_id:
+            return None
+        message_id = general_answer_message_id(run_id)
+        rows = await self._all(
+            "SELECT m.id, m.content FROM messages m JOIN conversations c "
+            "ON c.id=m.conversation_id WHERE m.id=? AND m.role='assistant' "
+            "AND m.conversation_id=? AND c.user_id=? AND c.product_scope=? "
+            "ORDER BY m.sequence_number LIMIT 16",
+            message_id, conversation_id, user_id, PRODUCT_SCOPE_CHAT,
+        )
+        if not rows:
+            return None
+        return {
+            "answer": "\n".join(row["content"] for row in rows),
+            "answer_source": "model_reply",
+        }
 
     async def append_local_task_result(
         self,

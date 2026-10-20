@@ -2212,6 +2212,16 @@
         PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
         return;
       }
+      // #5015: only a verified PC command result may replace this article as
+      // the run's completed PC result. A model reply is not a PC execution:
+      // the model's own answer stays in place, and it is never presented as a
+      // completed PC run.
+      if (result.answer_source !== "pc_command_result") {
+        if (result.answer_source === "model_reply") {
+          PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
+        }
+        return;
+      }
       if (resolvedPcRuns.has(runId)) return;
       resolvedPcRuns.add(runId);
       const content = article.querySelector(".assistant-content");
