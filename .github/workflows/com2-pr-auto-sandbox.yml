@@ -66,9 +66,13 @@ jobs:
           # Trusted inline Dockerfile, not the PR checkout. Build dependencies in
           # a separate image; the untrusted PR test runtime has no network,
           # writable repository, elevated capabilities, or GitHub token.
-          docker build --tag padiem-policy-hosted:5338 - <<'DOCKERFILE'
-          FROM python:3.12.15-slim
-          RUN apt-get update && apt-get install -y --no-install-recommends git \
+          # The base image is digest-pinned so the required policy runtime cannot
+          # drift under a mutable tag, and the build is time-bounded so a stalled
+          # registry pull cannot consume the whole job budget and leave the
+          # required status permanently pending.
+          timeout 300 docker build --tag padiem-policy-hosted:5338 - <<'DOCKERFILE'
+          FROM python:3.12.15-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+          RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git \
               && rm -rf /var/lib/apt/lists/* \
               && pip install --no-cache-dir pytest==9.1.1 PyYAML==6.0.3
           DOCKERFILE
