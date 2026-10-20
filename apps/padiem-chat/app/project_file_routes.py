@@ -237,7 +237,7 @@ async def project_files_collection(request: Request) -> JSONResponse:
         if not isinstance(raw, dict):
             raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
         name, media_type, text = _parse_project_file_item(raw)
-    created = await store.create_file(uid, pid, name, media_type, text)
+        created = await store.create_file(uid, pid, name, media_type, text)
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError, BinaryDocumentValidationError) as exc:
         return JSONResponse({"error": {"code": "invalid_document", "message": str(exc) or "문서 형식이 올바르지 않습니다."}}, status_code=422)
     except ProjectFileLimitError as exc:
