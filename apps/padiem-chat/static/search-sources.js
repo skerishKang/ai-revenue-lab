@@ -66,17 +66,17 @@
     deepResearchButton.classList.toggle("is-active", researchActive);
 
     if (webReady) {
-      webSearchButton.title = webActive
+      window.PadiemSharedTooltip?.label?.(webSearchButton, webActive
         ? "웹 검색 사용 중 · 누르면 해제합니다"
-        : "다음 질문을 웹에서 찾아 출처와 함께 답합니다";
+        : "다음 질문을 웹에서 찾아 출처와 함께 답합니다");
       if (starterStatus) starterStatus.textContent = webActive ? "다음 질문에서 사용" : "최신 정보 · 출처와 함께";
     } else {
-      webSearchButton.title = "";
+      window.PadiemSharedTooltip?.label?.(webSearchButton, "");
     }
 
-    deepResearchButton.title = researchReady
+    window.PadiemSharedTooltip?.label?.(deepResearchButton, researchReady
       ? (researchActive ? "심층 리서치 사용 중 · 누르면 해제합니다" : "여러 검색과 출처를 비교해 다음 질문에 답합니다")
-      : "";
+      : "");
   }
 
   function setActiveTool(toolId, next = true, announce = true) {

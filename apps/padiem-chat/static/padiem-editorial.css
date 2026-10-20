@@ -239,8 +239,8 @@
 }
 
 .app-shell:is([data-state="chat"],[data-state="claw"]) .assistant-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
   font-size: 12px;
   box-shadow:

@@ -159,10 +159,11 @@
   wave.type = "button";
   wave.id = "voiceWaveformButton";
   wave.className = "voice-waveform-button";
-  wave.setAttribute("aria-label", ko() ? "\uc758\uc2dd" : "Voice");
-  wave.setAttribute("data-locale-aria-label", "voice-mode");
-  wave.setAttribute("title", ko() ? "\uc758\uc2dd \ubb5c\ub9e5" : "Voice modes");
-  wave.setAttribute("data-locale-title", "voice-mode");
+    wave.setAttribute("aria-label", ko() ? "\uc758\uc2dd" : "Voice");
+    wave.setAttribute("data-locale-aria-label", "voice-mode");
+    // Owner 2026-10-20: the hint uses the shared PADIEM chip tooltip.
+    wave.setAttribute("data-padiem-tooltip", ko() ? "\uc758\uc2dd \ubc30\ub9e5" : "Voice modes");
+    wave.setAttribute("data-locale-title", "voice-mode");
   wave.setAttribute("aria-expanded", "false");
   wave.setAttribute("aria-haspopup", "menu");
   const svgNs = "http://www.w3.org/2000/svg";

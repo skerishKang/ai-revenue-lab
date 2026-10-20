@@ -347,7 +347,24 @@
     }
     setNavActive();
   }
-  function addUserMessage(text, attachment) {
+  /* Owner 2026-10-20: the user avatar shows the first character of the
+   * signed-in account name. The name -> avatar order is unchanged and the
+   * initial is read from the live account display name, never hardcoded. */
+  function accountInitial(name) {
+    const text = String(name || "").trim();
+    if (!text) return "";
+    const first = Array.from(text)[0] || "";
+    return first.toLocaleUpperCase();
+  }
+
+  /* One clock format for both turns: the user turn and the answer row. */
+  function formatClockTime(value) {
+    const date = value instanceof Date && !Number.isNaN(value.getTime()) ? value : new Date();
+    return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  }
+
+  function addUserMessage(text, attachment, options) {
+    const restored = Boolean(options && options.restored);
     const fragment = document.getElementById("userMessageTemplate").content.cloneNode(true);
     const bubble = fragment.querySelector(".message-bubble");
     bubble.textContent = text;
@@ -361,23 +378,37 @@
     // Plan 4 (Glass only, shown via CSS): profile chip mirrors the signed-in
     // account name at send time; hidden account (signed out) drops the chip.
     const chip = fragment.querySelector(".user-profile-chip");
+    const avatar = fragment.querySelector(".user-avatar");
     if (chip) {
       const name = accountName && !accountName.hidden ? accountName.textContent.trim() : "";
-      if (name) chip.textContent = name;
-      else chip.remove();
+      if (name) {
+        chip.textContent = name;
+        // The small person glyph becomes the account-name initial in the
+        // same 32x32 plate the Padiem "P" avatar uses.
+        if (avatar) avatar.textContent = accountInitial(name);
+      } else {
+        chip.remove();
+      }
     }
-    // Codex-style hover-reveal (Glass only): send-time stamp + copy/edit.
+    // Owner 2026-10-20: the stamp belongs to the live turn. A restored
+    // conversation carries no stored per-message time, so no time is
+    // invented for it.
     const clock = fragment.querySelector(".user-action-time");
     if (clock) {
-      const now = new Date();
-      const stamp = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-      clock.textContent = stamp;
-      clock.setAttribute("datetime", now.toISOString());
-      clock.title = stamp;
+      if (restored) {
+        clock.remove();
+      } else {
+        const now = new Date();
+        const stamp = formatClockTime(now);
+        clock.textContent = stamp;
+        clock.setAttribute("datetime", now.toISOString());
+        clock.setAttribute("data-padiem-tooltip", stamp);
+      }
     }
     const copyBtn = fragment.querySelector(".user-action-copy");
     if (copyBtn) {
       copyBtn.setAttribute("aria-label", uiT("answer-copy"));
+      copyBtn.setAttribute("data-padiem-tooltip", uiT("answer-copy"));
       copyBtn.addEventListener("click", () => {
         const done = copyBtn.querySelector("span") || copyBtn;
         const prev = done.textContent;
@@ -402,12 +433,15 @@
     }
     const editBtn = fragment.querySelector(".user-action-edit");
     if (editBtn) {
+      editBtn.setAttribute("data-padiem-tooltip", editBtn.getAttribute("aria-label") || "");
       editBtn.addEventListener("click", () => {
         input.value = text;
         input.focus();
         input.dispatchEvent(new Event("input", { bubbles: true }));
       });
     }
+    // One shared chip tooltip for every hint on this turn.
+    window.PadiemSharedTooltip?.bind?.(fragment);
     messageList.appendChild(fragment);
   }
   function addAssistantShell(label) {
@@ -431,8 +465,12 @@
     typing.append(document.createElement("i"), document.createElement("i"), document.createElement("i"));
     content.appendChild(typing);
   }
-  function renderStoredAssistant(text) {
+  function renderStoredAssistant(text, stored) {
     const article = addAssistantShell(uiT("stored-conversation"));
+    // A restored turn shows a time only when the store actually carries one.
+    // Older records have no per-message time, and none is invented for them.
+    const storedAt = stored && typeof stored.completed_at === "string" ? stored.completed_at : "";
+    if (storedAt) article.dataset.completedAt = storedAt;
     const content = article.querySelector(".assistant-content");
     const paragraph = document.createElement("p");
     paragraph.textContent = text;
@@ -783,7 +821,7 @@
       manage.textContent = uiT("manage");
       manage.prepend(sidebarActionIcon("settings"));
       manage.setAttribute("aria-label", uiT("project-manage-aria", { name: project.name }));
-      manage.title = uiT("project-manage-aria", { name: project.name });
+      window.PadiemSharedTooltip?.label?.(manage, uiT("project-manage-aria", { name: project.name }));
       manage.addEventListener("click", () => openProjectDialog(project));
       row.append(button, manage);
       projectsList.appendChild(row);
@@ -1750,7 +1788,7 @@
         more.className = "history-more";
         const moreLabel = uiT("manage") + ": " + conversation.title;
         more.setAttribute("aria-label", moreLabel);
-        more.title = moreLabel;
+        window.PadiemSharedTooltip?.label?.(more, moreLabel);
         more.append(sidebarActionIcon("more"));
         const menu = document.createElement("div");
         menu.className = "history-actions-menu";
@@ -1759,7 +1797,7 @@
         remove.className = "history-delete history-menu-delete";
         remove.append(sidebarActionIcon("trash"), document.createTextNode(uiT("delete")));
         remove.setAttribute("aria-label", uiT("conversation-delete-aria", { title: conversation.title }));
-        remove.title = uiT("conversation-delete-aria", { title: conversation.title });
+        window.PadiemSharedTooltip?.label?.(remove, uiT("conversation-delete-aria", { title: conversation.title }));
         remove.addEventListener("click", async () => {
           await deleteConversation(conversation.id, conversation.title);
           // Dialog close must return focus to a visible action, not an item
@@ -1869,8 +1907,8 @@
       conversationArtifactContext?.show?.(data.conversation.id);
       data.conversation.messages.forEach((item) => {
         if (!item || typeof item.content !== "string") return;
-        if (item.role === "user") addUserMessage(item.content, null);
-        if (item.role === "assistant") renderStoredAssistant(item.content);
+        if (item.role === "user") addUserMessage(item.content, null, { restored: true });
+        if (item.role === "assistant") renderStoredAssistant(item.content, item);
         if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content });
       });
       // A restored conversation opens on its newest turn with follow resumed,
@@ -1990,6 +2028,12 @@
     if (authState.authenticated) {
       loadRecentConversations();
       if (projectsReady) loadProjects();
+    }
+    // Owner 2026-10-20: the answer carries the moment it completed. It is
+    // turn metadata on the rendered message, not a second storage structure,
+    // and it is stamped once the stream is done.
+    if (!article.dataset.completedAt) {
+      article.dataset.completedAt = new Date().toISOString();
     }
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });

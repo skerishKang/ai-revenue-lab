@@ -6,10 +6,14 @@ import json
 from typing import Any, Callable
 
 from padiem_control_plane.contracts import ControlPlaneContractError
+from padiem_control_plane.local_agent_broker_admission_http import (
+    ADMISSION_DEVICE_ROUTE,
+    AdmissionEnabledLocalAgentBrokerHttpHandler,
+    server_owned_admission_references,
+)
 from padiem_control_plane.local_agent_broker_auth import StateBackedLocalAgentBindingAuthenticator
 from padiem_control_plane.local_agent_broker_http import (
     MAX_LOCAL_AGENT_HTTP_BODY_BYTES,
-    LocalAgentBrokerHttpHandler,
     LocalAgentBrokerHttpResponse,
     TrustedLocalAgentHttpAuthContext,
 )
@@ -24,9 +28,14 @@ from local_agent_broker_android_profile import ANDROID_PROFILE_DEVICE_ROUTE
 #: correlation to the #3121 broker exit and grants no execution authority.
 #: #5080 — `/android-profile` reuses the same credential and live-session check
 #: to record the owner-selected SAF folder set; it grants no execution.
+#: #5080 — `/admission` is the server-owned queued -> admitted transition the
+#: device already posts to after `/material`. It was the one canonical broker
+#: transition never mounted on this surface, which left a real device unable to
+#: obtain the admission and evidence references its own `/acknowledge` requires.
+#: The references come from the injected server-owned factory, never the device.
 _DEVICE_HTTP_ROUTES = frozenset(
-    {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/reconcile", "/office-part",
-     TEXT_RESULT_DEVICE_ROUTE, PROFILE_DEVICE_ROUTE, ANDROID_PROFILE_DEVICE_ROUTE}
+    {"/session", "/poll", "/material", ADMISSION_DEVICE_ROUTE, "/heartbeat", "/acknowledge", "/reconcile",
+     "/office-part", TEXT_RESULT_DEVICE_ROUTE, PROFILE_DEVICE_ROUTE, ANDROID_PROFILE_DEVICE_ROUTE}
 )
 _ENVELOPE_KEYS = frozenset({"method", "route", "content_type", "body_b64", "tls_verified"})
 _MAX_BODY_B64_CHARS = ((MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 2) // 3) * 4
@@ -86,12 +95,13 @@ def _content_type_is_json(value: Any) -> bool:
 
 
 class LocalAgentBrokerDeviceHttpService:
-    """Private service-bound composition for the five outbound Local Agent routes.
+    """Private service-bound composition for the canonical device HTTP routes.
 
     Public callers never provide the trusted auth context. The service derives
     account/workspace identity from the canonical persisted device binding after
     verifying the raw credential with the existing broker authority, then invokes
-    the already-closed M2e HTTP handler.
+    the already-closed M2e HTTP handler — extended only by the server-owned
+    admission transition, whose references the device can never supply.
 
     `session_open_transaction` is required (#3129, generalized by #3123): the
     deployable composition must supply a transaction-capable callable (a
@@ -118,6 +128,7 @@ class LocalAgentBrokerDeviceHttpService:
         execution_profiles=None,
         android_profiles=None,
         owner_usage_gate=None,
+        admission_reference_factory: Callable[[], tuple[str, str]] = server_owned_admission_references,
     ) -> None:
         if not callable(rpc_factory):
             raise ValueError("rpc_factory must be callable")
@@ -125,6 +136,8 @@ class LocalAgentBrokerDeviceHttpService:
             raise ValueError("session_open_transaction must be a transaction-capable callable")
         if not callable(clock) and clock is not None:
             raise ValueError("clock must be callable")
+        if not callable(admission_reference_factory):
+            raise ValueError("admission_reference_factory must be callable")
         self._authenticator = StateBackedLocalAgentBindingAuthenticator(
             pepper=pepper,
             authority_ref=authority_ref,
@@ -142,6 +155,7 @@ class LocalAgentBrokerDeviceHttpService:
         if owner_usage_gate is not None and not callable(owner_usage_gate):
             raise ValueError("owner_usage_gate must be callable")
         self._owner_usage_gate = owner_usage_gate
+        self._admission_reference_factory = admission_reference_factory
 
     def _server_now(self) -> datetime:
         value = self._clock()
@@ -199,7 +213,11 @@ class LocalAgentBrokerDeviceHttpService:
         # and BEFORE ANY queued command/material can leave the Broker.
         # Heartbeat and completion acknowledgements remain available, so
         # an in-flight command can finish without exposing new work.
-        if route in ("/poll", "/material") and self._owner_usage_gate is not None:
+        # #5080: /admission is in this set because admitting is the act of
+        # starting queued work — the runtime's own admit_command wrapper
+        # refuses it while the owner is paused, and the device HTTP path must
+        # not become the bypass.
+        if route in ("/poll", "/material", ADMISSION_DEVICE_ROUTE) and self._owner_usage_gate is not None:
             try:
                 paused = self._owner_usage_gate(binding.account_ref, binding.workspace_ref)
                 if type(paused) is not bool:
@@ -308,12 +326,13 @@ class LocalAgentBrokerDeviceHttpService:
             authenticated=True,
             tls_verified=True,
         )
-        handler = LocalAgentBrokerHttpHandler(
+        handler = AdmissionEnabledLocalAgentBrokerHttpHandler(
             rpc=self._rpc_factory(),
             state=self._http_state,
             material_resolver=self._material_resolver,
             clock=lambda: server_now,
             session_open_transaction=self._session_open_transaction,
+            admission_reference_factory=self._admission_reference_factory,
         )
         response = handler.handle(
             method=envelope["method"],
@@ -331,6 +350,8 @@ class LocalAgentBrokerDeviceHttpService:
             "canonical_binding_auth_reused": True,
             "self_asserted_account_workspace_authority": False,
             "m2e_handler_reused": True,
+            "server_owned_admission_refs": True,
+            "client_admission_authority": False,
             "second_credential_verifier": False,
             "admin_broker_rpc_public": False,
             "raw_device_secret_logged": False,
