@@ -56,12 +56,34 @@ FREE_FALLBACK_B14_MODEL_ID = "google/gemma-4-26b-a4b-it"
 # pending and tracked by each route's evidence.
 MUSE_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
 MUSE_B14_UPSTREAM_MODEL = "muse-spark-1.3-contributor"
+# #2505 (owner decision 2026-10-21): an OpenCode Go free model is never an
+# execution candidate, so it leaves every designated per-grade roster. The
+# paid OpenCode Go model stays; only the free family is excluded.
 TIER_FALLBACK_B14_MODELS = {
-    "max": ("opencode-go/longcat-2.5-preview-free", "opencode-go/muse-spark-1.3-contributor"),
-    "pro": ("opencode-go/longcat-2.5-preview-free", "google/gemma-4-31b-it"),
-    "plus": ("opencode-go/longcat-2.5-preview-free", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
+    "max": ("opencode-go/muse-spark-1.3-contributor",),
+    "pro": ("google/gemma-4-31b-it",),
+    "plus": ("google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
     "free": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
 }
+
+# Owner decision 2026-10-21 (#2505): OpenCode Go free models are not execution
+# candidates. The provider prefix and the ``-free`` suffix identify the
+# family; no other provider's free model is affected by this decision.
+FREE_CANDIDATE_PROVIDER = "opencode-go"
+
+
+def is_free_execution_candidate(model_id: str | None) -> bool:
+    """Whether one model identity is an excluded free execution candidate.
+
+    Used by the shared grade route contract so an administrator can never
+    bind an excluded free model to a grade, and so a stored row can never
+    serve one either.
+    """
+    if not isinstance(model_id, str) or not model_id:
+        return False
+    provider, separator, tail = model_id.strip().casefold().partition("/")
+    return bool(separator) and provider == FREE_CANDIDATE_PROVIDER and tail.endswith("-free")
+
 
 # A declared grade's fallback is a specific owner choice, not b14/auto or
 # permission for an unrelated/paid model. B14 verifies live registration,
@@ -144,6 +166,10 @@ def _validate_route(route: ProductTierRoute, tier: ProductTierLabel) -> None:
         _require(
             route.model_id not in RETIRED_PRODUCT_MODEL_IDS,
             f"{where}: retired model may never be executable",
+        )
+        _require(
+            not is_free_execution_candidate(route.model_id),
+            f"{where}: an excluded free model may never be executable",
         )
     else:
         documented = (route.hold_reason or "") + (route.retired_reason or "")
