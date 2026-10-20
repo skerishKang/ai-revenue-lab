@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 from datetime import datetime, timezone
 import json
+import re
 from typing import Any, Callable
 
 from padiem_control_plane.contracts import ControlPlaneContractError
@@ -21,6 +22,16 @@ from local_agent_broker_text_results import TEXT_RESULT_DEVICE_ROUTE
 from local_agent_broker_installed_profile import PROFILE_DEVICE_ROUTE
 from local_agent_broker_android_profile import ANDROID_PROFILE_DEVICE_ROUTE
 
+#: #5080 the device-facing one-time enrollment redemption. A device that has no
+#: broker credential yet reaches it with the canonical pairing possession proof
+#: over the one-time pairing code. The credential is returned exactly once, and
+#: the account, workspace, consent and owner scope always come from the stored
+#: challenge, never from the request.
+PAIRING_REDEEM_DEVICE_ROUTE = "/v1/broker/pairings/redeem"
+_PAIRING_REDEEM_REQUEST_KEYS = frozenset({"challenge_id", "device_id", "proof_ref", "now"})
+_PAIRING_PROOF_REF = re.compile(r"^pairing-proof:[0-9a-f]{64}$")
+_SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
+
 #: The single canonical device route surface. The private-service bridge derives
 #: its external reachability from this same exported constant, so a route added
 #: here is reachable end to end and one that is absent fails closed at the outer
@@ -34,8 +45,8 @@ from local_agent_broker_android_profile import ANDROID_PROFILE_DEVICE_ROUTE
 #: obtain the admission and evidence references its own `/acknowledge` requires.
 #: The references come from the injected server-owned factory, never the device.
 _DEVICE_HTTP_ROUTES = frozenset(
-    {"/session", "/poll", "/material", ADMISSION_DEVICE_ROUTE, "/heartbeat", "/acknowledge", "/reconcile",
-     "/office-part", TEXT_RESULT_DEVICE_ROUTE, PROFILE_DEVICE_ROUTE, ANDROID_PROFILE_DEVICE_ROUTE}
+    {"/session", "/poll", "/material", ADMISSION_DEVICE_ROUTE, "/heartbeat", "/acknowledge", "/reconcile", "/office-part",
+     TEXT_RESULT_DEVICE_ROUTE, PROFILE_DEVICE_ROUTE, ANDROID_PROFILE_DEVICE_ROUTE, PAIRING_REDEEM_DEVICE_ROUTE}
 )
 _ENVELOPE_KEYS = frozenset({"method", "route", "content_type", "body_b64", "tls_verified"})
 _MAX_BODY_B64_CHARS = ((MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 2) // 3) * 4
@@ -129,6 +140,7 @@ class LocalAgentBrokerDeviceHttpService:
         android_profiles=None,
         owner_usage_gate=None,
         admission_reference_factory: Callable[[], tuple[str, str]] = server_owned_admission_references,
+        pairing_authority: Any = None,
     ) -> None:
         if not callable(rpc_factory):
             raise ValueError("rpc_factory must be callable")
@@ -156,12 +168,119 @@ class LocalAgentBrokerDeviceHttpService:
             raise ValueError("owner_usage_gate must be callable")
         self._owner_usage_gate = owner_usage_gate
         self._admission_reference_factory = admission_reference_factory
+        if pairing_authority is not None:
+            for method in ("enrollment_binding", "redeem_enrollment"):
+                if not callable(getattr(pairing_authority, method, None)):
+                    raise ValueError(
+                        "pairing_authority must implement enrollment_binding and redeem_enrollment"
+                    )
+        self._pairing_authority = pairing_authority
 
     def _server_now(self) -> datetime:
         value = self._clock()
         if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
             raise ValueError("device HTTP server clock must return timezone-aware datetime")
         return value.astimezone(timezone.utc)
+
+    def _handle_pairing_redeem(self, decoded: dict[str, Any]) -> LocalAgentBrokerHttpResponse:
+        """#5080: the device-facing one-time enrollment redemption.
+
+        The device holds no broker credential yet. It proves possession of the
+        one-time pairing code with the canonical pairing proof, and the
+        canonical consent-bound enrollment redemption mints the credential
+        exactly once. The account, workspace, consent and owner scope always
+        come from the stored challenge, never from the request body.
+        """
+        if self._pairing_authority is None:
+            return _error(
+                503,
+                "local_agent_http_pairing_unavailable",
+                "Local Agent broker pairing is not configured",
+            )
+        try:
+            payload = _closed_mapping(
+                decoded, _PAIRING_REDEEM_REQUEST_KEYS, "pairing redeem request",
+            )
+            challenge_id = payload["challenge_id"]
+            device_id = payload["device_id"]
+            proof_ref = payload["proof_ref"]
+            if not isinstance(challenge_id, str) or _SAFE_REF.fullmatch(challenge_id) is None:
+                raise ValueError("challenge_id is not a bounded safe reference")
+            if not isinstance(device_id, str) or _SAFE_REF.fullmatch(device_id) is None:
+                raise ValueError("device_id is not a bounded safe reference")
+            if not isinstance(proof_ref, str) or _PAIRING_PROOF_REF.fullmatch(proof_ref) is None:
+                raise ValueError("pairing proof must be a canonical HMAC-SHA256 proof reference")
+            server_now = self._server_now()
+        except (TypeError, ValueError):
+            return _error(
+                400, "local_agent_http_invalid_request",
+                "Local Agent broker request is invalid",
+            )
+        try:
+            enrollment, credential = self._session_open_transaction(
+                lambda: self._redeem_enrollment_once(
+                    challenge_id=challenge_id,
+                    device_id=device_id,
+                    proof_ref=proof_ref,
+                    server_now=server_now,
+                )
+            )
+        except ControlPlaneContractError:
+            # An unknown, expired or already redeemed challenge is refused
+            # without revealing whether the challenge ever existed.
+            return _error(
+                404, "local_agent_http_route_not_found",
+                "Local Agent broker route was not found",
+            )
+        except (KeyError, TypeError, ValueError):
+            return _error(
+                400, "local_agent_http_invalid_request",
+                "Local Agent broker request is invalid",
+            )
+        if (
+            getattr(enrollment, "device_id", None) != device_id
+            or getattr(enrollment, "challenge_id", None) != challenge_id
+        ):
+            return _error(
+                400, "local_agent_http_invalid_request",
+                "Local Agent broker request is invalid",
+            )
+        if not isinstance(credential, bytes) or not credential:
+            return _error(
+                503, "local_agent_http_dependency_unavailable",
+                "Local Agent broker dependency is unavailable",
+            )
+        return LocalAgentBrokerHttpResponse(
+            status=200,
+            body={
+                "ok": True,
+                "enrollment": enrollment.safe_dict(),
+                "credential_b64": base64.b64encode(credential).decode("ascii"),
+                "credential_returned_once": True,
+            },
+        )
+
+    def _redeem_enrollment_once(
+        self, *, challenge_id: str, device_id: str, proof_ref: str, server_now: datetime,
+    ) -> tuple[Any, bytes]:
+        """Read the stored binding and redeem under exactly that binding.
+
+        The consent, owner, account and workspace scope are read from the
+        stored challenge, so a device can never select its own scope.
+        """
+        binding = self._pairing_authority.enrollment_binding(
+            challenge_id=challenge_id, now=server_now,
+        )
+        return self._pairing_authority.redeem_enrollment(
+            challenge_id=challenge_id,
+            device_id=device_id,
+            proof_ref=proof_ref,
+            consent_ref=binding.consent_ref,
+            owner_ref=binding.owner_ref,
+            account_ref=binding.account_ref,
+            workspace_ref=binding.workspace_ref,
+            now=server_now,
+        )
 
     def handle(self, envelope: dict[str, Any]) -> dict[str, Any]:
         try:
@@ -192,6 +311,12 @@ class LocalAgentBrokerDeviceHttpService:
                 raise ValueError("body must be a JSON object")
         except (UnicodeDecodeError, json.JSONDecodeError, TypeError, ValueError):
             return _structured_response(_error(400, "local_agent_http_invalid_json", "Local Agent broker request body is invalid"))
+
+        if route == PAIRING_REDEEM_DEVICE_ROUTE:
+            # #5080: a device that holds no broker credential yet. It is
+            # authenticated by the canonical pairing possession proof over the
+            # one-time pairing code, not by a broker credential.
+            return _structured_response(self._handle_pairing_redeem(decoded))
 
         try:
             binding_ref = decoded["binding_ref"]
