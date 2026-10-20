@@ -42,12 +42,14 @@ def _safe_name(value: Any) -> str:
 class ImageAttachment:
     name: str
     media_type: str
-    base64_data: str = field(repr=False)
+    base64_data: str = field(default="", repr=False)
     byte_size: int = 0
+    binary_data: bytes | None = field(default=None, repr=False)
 
     @property
     def data_url(self) -> str:
-        return f"data:{self.media_type};base64,{self.base64_data}"
+        encoded = base64.b64encode(self.binary_data).decode("ascii") if self.binary_data is not None else self.base64_data
+        return f"data:{self.media_type};base64,{encoded}"
 
     def public_dict(self) -> dict[str, Any]:
         return {
@@ -59,6 +61,15 @@ class ImageAttachment:
 
 
 def _parse_image(item: dict[str, Any]) -> ImageAttachment:
+    if set(item) == {"type", "name", "media_type", "raw_bytes"}:
+        media_type = item.get("media_type")
+        if media_type not in ALLOWED_IMAGE_MEDIA_TYPES:
+            raise AttachmentValidationError("Unsupported image format")
+        name = _safe_name(item.get("name"))
+        data = item.get("raw_bytes")
+        if not isinstance(data, bytes) or not data or len(data) > MAX_IMAGE_BYTES or not _matches_magic(media_type, data):
+            raise AttachmentValidationError("Invalid image bytes")
+        return ImageAttachment(name=name, media_type=media_type, binary_data=data, byte_size=len(data))
     if set(item) != {"type", "name", "media_type", "base64"}:
         raise AttachmentValidationError("지원하지 않는 첨부 파일 항목이 있습니다.")
     media_type = item.get("media_type")
@@ -86,7 +97,8 @@ def _parse_image(item: dict[str, Any]) -> ImageAttachment:
 def _parse_document(item: dict[str, Any]) -> DocumentAttachment:
     has_text = "text" in item
     has_base64 = "base64" in item
-    if has_text == has_base64:
+    has_raw = "raw_bytes" in item
+    if sum((has_text, has_base64, has_raw)) != 1:
         raise AttachmentValidationError("문서는 텍스트 또는 바이너리 데이터 중 하나만 보낼 수 있습니다.")
     if has_text:
         try:
