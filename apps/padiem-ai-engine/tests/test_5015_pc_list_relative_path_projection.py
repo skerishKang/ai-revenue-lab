@@ -244,10 +244,15 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
             "arguments": {"path": row["relative_path"]},
         }
 
+    context = AgentStepContext.with_results(
+        run_id=RUN_ID,
+        step_index=2,
+        input_text="폴더 목록을 보고 TXT를 읽어줘",
+        results=(observed,),
+    )
+
     step = asyncio.run(StructuredPCQueryStepDriver(select_step=select_step).next_step(
-        AgentStepContext(run_id=RUN_ID, step_index=2,
-                         input_text="폴더 목록을 보고 TXT를 읽어줘",
-                         tool_results=(observed,)),
+        context,
         object(),
     ))
 
