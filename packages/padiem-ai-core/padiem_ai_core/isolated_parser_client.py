@@ -272,13 +272,21 @@ class IsolatedParserClient:
             source_kind="binary",
         )
         binary = _bounded_binary_payload(payload)
-        request = _encode_request(name=safe_name, media_type=safe_media, payload=binary)
+        # An explicitly binary-capable trusted transport receives original bytes.
+        # Existing JSON-only transports retain their published wire contract.
+        exchange_binary = getattr(self._transport, "exchange_binary", None)
+        request = None if callable(exchange_binary) else _encode_request(
+            name=safe_name, media_type=safe_media, payload=binary,
+        )
         # Raise the bounded failure *after* the except block so the raw
         # exception is never left on ``__context__``/``__cause__`` either.
         transport_failed = False
         raw: Any = None
         try:
-            raw = self._transport.exchange(request)  # type: ignore[attr-defined]
+            if callable(exchange_binary):
+                raw = exchange_binary(name=safe_name, media_type=safe_media, payload=binary)
+            else:
+                raw = self._transport.exchange(request)  # type: ignore[attr-defined]
         except DocumentNormalizationError:
             raise
         except Exception:

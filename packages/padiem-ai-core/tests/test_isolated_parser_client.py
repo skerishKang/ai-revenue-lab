@@ -255,6 +255,24 @@ def test_request_envelope_is_bounded_json_with_identity_and_payload_only() -> No
         assert leaked not in lowered
 
 
+def test_binary_capable_transport_receives_original_bytes_without_base64() -> None:
+    class BinaryTransport:
+        def __init__(self) -> None:
+            self.calls = []
+
+        def exchange(self, request: bytes) -> bytes:
+            raise AssertionError("legacy JSON exchange must not be used")
+
+        def exchange_binary(self, *, name: str, media_type: str, payload: bytes) -> bytes:
+            self.calls.append((name, media_type, payload))
+            return _success_envelope()
+
+    transport = BinaryTransport()
+    result = _parse(IsolatedParserClient(transport=transport))
+    assert result.byte_size == len(VALID_PAYLOAD)
+    assert transport.calls == [(VALID_NAME, VALID_MEDIA, VALID_PAYLOAD)]
+
+
 # --- C: success response is canonical bounded document material ----------------
 
 
