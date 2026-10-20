@@ -492,11 +492,15 @@
       } finally {
         window.clearTimeout(timer);
         if (pendingController === controller) pendingController = null;
-        if (request === sequence) panel.removeAttribute("aria-busy");
-        // Every read attempt publishes its own result, so the shared snapshot
-        // never keeps a state that the server did not confirm.
-        readCompleted = true;
-        publishDirectory();
+        if (request === sequence) {
+          panel.removeAttribute("aria-busy");
+          // Every read attempt publishes its own result, so the shared
+          // snapshot never keeps a state that the server did not confirm.
+          // A superseded read publishes nothing: its owner generation is
+          // already gone.
+          readCompleted = true;
+          publishDirectory();
+        }
       }
     }
 
@@ -561,16 +565,11 @@
       }
     });
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState !== "visible") return;
-      if (!opened) {
-        // The composer status reads the shared snapshot, so a closed panel
-        // still refreshes the directory when the reader comes back to the tab.
-        void load({ restoreOnly: true });
-        return;
+      if (document.visibilityState === "visible" && opened) {
+        // Returning from pairing may change device truth; GET only.
+        selectedId = null;
+        void load();
       }
-      // Returning from pairing may change device truth; GET only.
-      selectedId = null;
-      void load();
     });
     window.addEventListener("pageshow", (event) => {
       if (event.persisted && opened) {
@@ -585,14 +584,6 @@
         // read returns 401 and never becomes a selection.
         void load({ restoreOnly: true });
       });
-    }
-    // The auth state can already have been announced before this module
-    // loaded, so the event above was missed. The account element carries the
-    // announced state, so it tells the two cases apart and the shared
-    // snapshot never stays "not read yet" for the whole session.
-    const account = document.querySelector(".sidebar-account");
-    if (account && account.dataset.accountState) {
-      void load({ restoreOnly: true });
     }
     // Selection hint for both product transports. This is a server-restored
     // preference, not a device grant; every execution rechecks Identity,

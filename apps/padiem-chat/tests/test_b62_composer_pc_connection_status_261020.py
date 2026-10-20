@@ -59,6 +59,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 class Server(http.server.ThreadingHTTPServer):
     daemon_threads = True
+    # The composer opens many assets at once. The default 5 slot listen
+    # backlog refuses connections in the middle of that burst, and a refused
+    # script never runs, so the surfaces this file reads would be missing.
+    request_queue_size = 128
 
 
 @pytest.fixture(scope="module")
@@ -132,6 +136,31 @@ def _ask_the_directory_module_to_read(page) -> None:
         "window.dispatchEvent(new CustomEvent('padiem:auth-state',"
         " { detail: { authenticated: true } }))"
     )
+
+
+def _wait_state(page, state: str) -> None:
+    """Wait for the composer control to show the expected server truth."""
+    page.wait_for_function(
+        """(expected) => {
+          const button = document.getElementById('composerPcStatus');
+          return button ? button.dataset.state === expected : false;
+        }""",
+        arg=state,
+        timeout=10_000,
+    )
+
+
+def _open(page, server) -> None:
+    """Open the composer and wait for the surfaces the assertions read.
+
+    The static test server refuses connections during the asset burst, so a
+    late script can arrive after the navigation. The assertions wait for the
+    real surfaces instead of a fixed delay.
+    """
+    page.goto(server, wait_until="domcontentloaded")
+    page.locator("#composerPcStatus").wait_for(state="attached", timeout=15_000)
+    page.locator("#clawDeviceManagerToggle").wait_for(state="attached", timeout=15_000)
+    page.wait_for_timeout(300)
 
 
 # ---------------------------------------------------------------------------
@@ -285,10 +314,9 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     page.on("pageerror", lambda error: errors.append(str(error)))
 
     _route_directory(page, _directory([]))
-    page.goto(server, wait_until="domcontentloaded")
-    page.wait_for_timeout(700)
+    _open(page, server)
     _ask_the_directory_module_to_read(page)
-    page.wait_for_timeout(700)
+    _wait_state(page, "disconnected")
     measured = page.evaluate(MEASURE)
     assert measured["present"] is True
     assert measured["state"] == "disconnected"
@@ -299,7 +327,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _unroute_directory(page)
     _route_directory(page, _directory([_device("CONNECTED", True)]))
     _ask_the_directory_module_to_read(page)
-    page.wait_for_timeout(700)
+    _wait_state(page, "connected")
     connected = page.evaluate(MEASURE)
     assert connected["state"] == "connected"
     assert connected["label"] == "PC 연결됨"
@@ -307,7 +335,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _unroute_directory(page)
     _route_directory(page, _directory([_device("REVOKED", False, revoked=True)]))
     _ask_the_directory_module_to_read(page)
-    page.wait_for_timeout(700)
+    _wait_state(page, "check")
     revoked = page.evaluate(MEASURE)
     assert revoked["state"] == "check"
     assert revoked["label"] == "PC 연결 확인"
@@ -317,7 +345,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _unroute_directory(page)
     _route_directory(page, {"ok": False}, status=503)
     _ask_the_directory_module_to_read(page)
-    page.wait_for_timeout(700)
+    _wait_state(page, "check")
     failed = page.evaluate(MEASURE)
     assert failed["state"] == "check"
     assert failed["label"] == "PC 연결 확인"
@@ -349,10 +377,9 @@ def test_the_claw_execution_target_decides_the_state(browser, server) -> None:
             selected="office",
         ),
     )
-    page.goto(server, wait_until="domcontentloaded")
-    page.wait_for_timeout(700)
+    _open(page, server)
     _ask_the_directory_module_to_read(page)
-    page.wait_for_timeout(700)
+    _wait_state(page, "disconnected")
     measured = page.evaluate(MEASURE)
     assert measured["state"] == "disconnected"
     assert measured["label"] == "컴퓨터 연결"
@@ -367,8 +394,7 @@ def test_the_click_opens_the_existing_management_panel(browser, server) -> None:
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     _route_directory(page, _directory([_device("CONNECTED", True)]))
-    page.goto(server, wait_until="domcontentloaded")
-    page.wait_for_timeout(700)
+    _open(page, server)
     page.click("#composerPcStatus")
     page.wait_for_timeout(900)
     opened = page.evaluate(
@@ -403,10 +429,9 @@ def test_the_control_covers_neither_the_text_nor_the_other_controls(browser, ser
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     _route_directory(page, _directory([_device("CONNECTED", True)]))
-    page.goto(server, wait_until="domcontentloaded")
-    page.wait_for_timeout(700)
+    _open(page, server)
     _ask_the_directory_module_to_read(page)
-    page.wait_for_timeout(700)
+    _wait_state(page, "connected")
     measured = page.evaluate(MEASURE)
     button = measured["button"]
     assert button is not None
@@ -427,8 +452,7 @@ def test_the_control_does_not_change_the_fixed_composer_height(browser, server, 
     """The composer clearance measured by #5014 must not move."""
     page = browser.new_page(viewport={"width": width, "height": 844})
     _route_directory(page, _directory([_device("CONNECTED", True)]))
-    page.goto(server, wait_until="domcontentloaded")
-    page.wait_for_timeout(900)
+    _open(page, server)
     before = page.evaluate(MEASURE)
     removed = page.evaluate(
         """() => {
@@ -438,5 +462,10 @@ def test_the_control_does_not_change_the_fixed_composer_height(browser, server, 
           return form.getBoundingClientRect().height;
         }"""
     )
+    page.wait_for_timeout(300)
+    after = page.evaluate(
+        """() => document.getElementById('composerForm').getBoundingClientRect().height"""
+    )
     assert abs(before["formHeight"] - removed) <= 1, (before["formHeight"], removed)
+    assert abs(before["formHeight"] - after) <= 1, (before["formHeight"], after)
     page.close()
