@@ -8,7 +8,6 @@ import re
 from typing import Any, TypeVar
 
 from .contracts import ContractError
-from .security import redact_secrets
 
 
 class BusinessObjectKind(str, Enum):
