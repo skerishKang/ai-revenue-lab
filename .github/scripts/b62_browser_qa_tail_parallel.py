@@ -73,6 +73,19 @@ def main() -> int:
         if rc:
             failed.append(name)
         print(f"B62_VISUAL_TAIL_STATUS_{name}={'FAIL' if rc else 'PASS'}", flush=True)
+    # A failing suite's assertion has to survive the bounded diagnostic window
+    # the COM2 runner keeps (the last N log lines only), so repeat the failing
+    # case's evidence tail after every suite has already printed.  The suite
+    # itself is unchanged; only the failure evidence is repeated.
+    for name, rc, seconds, output in results:
+        if not rc:
+            continue
+        print(
+            f"=== B62_VISUAL_TAIL_FAILURE={name} exit={rc} seconds={seconds:.2f} ===",
+            flush=True,
+        )
+        for line in (output or "").strip().splitlines()[-12:]:
+            print(f"B62_VISUAL_TAIL_FAILURE_LINE={line}", flush=True)
     print(f"B62_VISUAL_TAIL_EXECUTED={len(results)}", flush=True)
     print(f"B62_VISUAL_TAIL_FAIL_COUNT={len(failed)}", flush=True)
     return 1 if failed else 0

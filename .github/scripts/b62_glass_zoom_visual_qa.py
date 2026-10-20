@@ -120,18 +120,27 @@ async def _scroll_to_end(page: Page) -> None:
     )
 
 
-async def _wheel_up(page: Page, delta: int) -> None:
-    """Wheel over the surface that owns the scroll, so the user signal lands."""
-    await page.evaluate(
+async def _wheel_up(page: Page, delta: int) -> float:
+    """Wheel over the surface that owns the scroll, so the user signal lands.
+
+    Returns the page-clock timestamp of the dispatch itself.  Dispatching the
+    wheel is a host-to-page round trip, so reading the measurement start in a
+    second round trip would add that host latency to the measured pause
+    window and put the 200ms ceiling out of reach on a loaded runner.
+    Capturing the clock inside the same in-page evaluation keeps the window a
+    measurement of the product's pause latency alone.
+    """
+    return await page.evaluate(
         """
         (delta) => {
           const doc = document.documentElement;
           const conv = document.querySelector(".conversation");
           if (conv && conv.scrollHeight > conv.clientHeight + 1) {
             conv.dispatchEvent(new WheelEvent("wheel", { deltaY: delta, bubbles: true }));
-            return;
+          } else {
+            window.dispatchEvent(new WheelEvent("wheel", { deltaY: delta, bubbles: true }));
           }
-          window.dispatchEvent(new WheelEvent("wheel", { deltaY: delta, bubbles: true }));
+          return performance.now();
         }
         """,
         delta,
@@ -286,14 +295,16 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     await page.wait_for_timeout(600)
     # Dispatch the wheel at the surface that owns the scroll, so the page-level
     # listener sees the same signal regardless of which container scrolls.
-    await _wheel_up(page, -520)
+    # The dispatch returns the page clock of the wheel itself, so the measured
+    # window is the product's pause latency and not the host's dispatch
+    # round-trip, which on a loaded runner is longer than the whole budget.
+    wheel_observed = await _wheel_up(page, -520)
     # Detect the pause on the page clock instead of sampling a fixed host
     # sleep: on a loaded CI runner the old 180ms sleep + read round-trip could
     # land either before the wheel was processed (false "did not pause") or
     # at an uncontrolled time.  The pause must still arrive within the
     # original ~180ms budget (200ms ceiling absorbs only the deterministic
     # ~one-tick in-page detection granularity, not the former host slack).
-    wheel_observed = await page.evaluate("performance.now()")
     pause_wait = await wait_state_settled(
         page,
         started_ms=wheel_observed,
