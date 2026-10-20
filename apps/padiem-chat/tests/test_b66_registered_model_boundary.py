@@ -354,7 +354,10 @@ def test_real_b14_core_quote_payload_is_exact_one_attempt_no_external_fallback()
     assert url == "https://b14.internal/api/pilot/v1/chat/completions"
     assert payload["model"] == model
     assert payload["business14"]["task_type"] == "document"
-    assert payload["business14"]["max_attempts"] == 1
+    # #5362 removed the default one-step agent execution ceiling, so no
+    # attempt ceiling is sent. The one-shot contract is the pinned retry
+    # budget below.
+    assert "max_attempts" not in payload["business14"]
     assert payload["business14"]["max_retries"] == 0
     assert payload["business14"]["allow_external_fallback"] is False
     assert payload["business14"].get("provider_order") is None
