@@ -41,8 +41,10 @@ from .config import Settings
 from .model_policy import ModelPolicyError, model_supports, resolve_request_model_policy
 from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
-# Provider context is bounded by the existing 6MB HTTP envelope, not a 14k model cap.
-MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES = 5_500_000
+# #4379: the provider context carries no PADIEM byte total. The provider and
+# the platform apply their own limits. These symbols are retained for import
+# compatibility and are no longer enforced.
+MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES: int | None = None
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES  # import compatibility
 
 # Product identity policy. Padiem Chat is a general Korean-first assistant;
@@ -282,7 +284,10 @@ def _bounded_context(value: str | None) -> str | None:
     if not isinstance(value, str):
         raise ValueError("additional system context must be a string")
     extra = value.strip()
-    if len(extra.encode("utf-8")) > MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES:
+    if (
+        MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES is not None
+        and len(extra.encode("utf-8")) > MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES
+    ):
         raise ValueError("additional system context exceeds transport safety envelope")
     return extra or None
 

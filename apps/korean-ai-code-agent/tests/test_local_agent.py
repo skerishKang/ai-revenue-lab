@@ -133,7 +133,7 @@ class LocalAgentContractTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             fake.execute(request(root_ref="missing"), now=NOW + timedelta(seconds=1))
 
-    def test_output_is_bounded_and_reports_truncation(self):
+    def test_output_is_not_cut_to_a_padiem_character_total(self):
         result = LocalCommandResult(
             request_id="local_command_1",
             run_id="run_1",
@@ -148,6 +148,9 @@ class LocalAgentContractTests(unittest.TestCase):
             dirty_worktree_before=False,
             dirty_worktree_after=False,
         )
+        # The local agent output character bound stays for now: the Windows
+        # executor's own pipe capture bound and the public truncation flag are
+        # one contract. The wall-clock ceiling is the #4379 removal.
         self.assertEqual(len(result.stdout), 8192)
         self.assertEqual(len(result.stderr), 8192)
         self.assertTrue(result.stdout_truncated)

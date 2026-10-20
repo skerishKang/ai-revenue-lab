@@ -1803,17 +1803,16 @@ class PolicyAndLifecycleBoundTests(unittest.TestCase):
     """M: every lifecycle and byte knob is bounded above, and unhookable."""
 
     def test_default_timeout_is_the_central_decision(self) -> None:
-        self.assertEqual(isolation.IMAGE_OCR_TIMEOUT_SECONDS, 120.0)
-        self.assertEqual(
-            isolation.DEFAULT_OCR_ISOLATION_POLICY.timeout_seconds, 120.0
-        )
-        self.assertLessEqual(
-            isolation.IMAGE_OCR_TIMEOUT_SECONDS,
-            isolation.IMAGE_OCR_TIMEOUT_MAX_SECONDS,
-        )
+        # #4379: the OCR isolation carries no PADIEM wall-clock ceiling, so the
+        # default is no wait ceiling at all.
+        self.assertIsNone(isolation.IMAGE_OCR_TIMEOUT_SECONDS)
+        self.assertIsNone(isolation.DEFAULT_OCR_ISOLATION_POLICY.timeout_seconds)
+        self.assertIsNone(isolation.IMAGE_OCR_TIMEOUT_MAX_SECONDS)
 
     def test_unbounded_or_non_positive_timeouts_are_rejected(self) -> None:
-        for value in (0, 0.0, -1.0, 120.5, 300.0, float("inf"), float("nan")):
+        # #4379: a large timeout is accepted. Only a non-positive or a
+        # non-finite value is still refused.
+        for value in (0, 0.0, -1.0, float("inf"), float("nan")):
             with self.subTest(timeout=value), self.assertRaises(
                 isolation.OcrIsolationError
             ):
@@ -1821,7 +1820,6 @@ class PolicyAndLifecycleBoundTests(unittest.TestCase):
 
     def test_above_max_seconds_knobs_are_rejected(self) -> None:
         for knob, constant_name in (
-            ("timeout_seconds", "IMAGE_OCR_TIMEOUT_MAX_SECONDS"),
             ("terminate_grace_seconds", "IMAGE_OCR_TERMINATE_GRACE_MAX_SECONDS"),
             ("kill_grace_seconds", "IMAGE_OCR_KILL_GRACE_MAX_SECONDS"),
             ("drain_join_seconds", "IMAGE_OCR_DRAIN_JOIN_MAX_SECONDS"),

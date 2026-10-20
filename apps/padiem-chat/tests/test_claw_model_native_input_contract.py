@@ -33,8 +33,10 @@ def test_general_claw_parser_does_not_reject_old_turn_or_character_caps():
     messages.append({"role": "user", "content": LONG})
     text, error = _claw_general_user_text({"messages": messages})
     assert error is None and text == LONG
-    assert MAX_CLAW_GENERAL_BODY_BYTES == 6_000_000
-    assert P01_ENGINE_REQUEST_ENVELOPE_BYTES == 5_500_000
+    # #4379: the Claw request body and the model context carry no PADIEM
+    # byte total.
+    assert MAX_CLAW_GENERAL_BODY_BYTES is None
+    assert P01_ENGINE_REQUEST_ENVELOPE_BYTES is None
 
 
 @pytest.mark.parametrize("messages", [
@@ -99,10 +101,12 @@ def test_claw_owned_saved_history_does_not_silently_keep_only_12_or_4k(monkeypat
     assert len(owned) > 4000
 
 
-def test_existing_p01_ingress_limit_is_explicit_not_model_token_ceiling():
+def test_the_p01_context_is_not_cut_to_a_padiem_byte_total():
+    # #4379: the owned prior context is not cut to a PADIEM byte total, so
+    # the route declares no envelope ceiling of its own.
     source = (Path(__file__).resolve().parents[1] / "app/claw_general_routes.py").read_text(encoding="utf-8")
-    assert 'len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES' in source
-    assert '"engine_request_envelope_exceeded"' in source
+    assert "P01_ENGINE_REQUEST_ENVELOPE_BYTES: int | None = None" in source
+    assert 'len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES' not in source
 
 
 def test_manual_ui_does_not_reapply_independent_4000_character_limit():

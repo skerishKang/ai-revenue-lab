@@ -65,14 +65,16 @@ async def test_b66_quote_wire_allows_more_than_legacy_16_kib_without_model_dispa
     from app.b66_quote_routes import _json, MAX_BODY_BYTES, MAX_BROWSER_BODY_BYTES
 
     assert MAX_BODY_BYTES == 16 * 1024
-    assert MAX_BROWSER_BODY_BYTES == 1024 * 1024 * 1024 + 65536
+    # #4379: the browser request carries no PADIEM byte total.
+    assert MAX_BROWSER_BODY_BYTES is None
     payload = {
         "saved_skill_id": "fictional_skill",
         "model_id": "google/gemini-3.5-flash-lite",
         "message": "Synthetic pipe quote " * 3500,
     }
     wire = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    assert 16 * 1024 < len(wire) < MAX_BROWSER_BODY_BYTES
+    # #4379: the browser request carries no PADIEM byte total.
+    assert 16 * 1024 < len(wire)
 
     def request_for_wire():
         async def receive():

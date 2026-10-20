@@ -14,9 +14,9 @@ from .web_runtime import (
     normalize_public_url,
 )
 
-# Evidence context is no longer arbitrarily capped at 12k characters.
-# 5.5MB is the downstream transport resource envelope, NOT model capacity.
-MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS = 5_500_000
+# #4379: the grounded evidence context carries no PADIEM character total.
+# The provider and the platform apply their own limits.
+MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS: int | None = None
 MAX_GROUNDED_SOURCES = MAX_RESULTS
 MAX_RESEARCH_QUERIES = 3
 MAX_RESEARCH_SOURCES = 10
@@ -45,7 +45,7 @@ class GroundingRuntimeError(RuntimeError):
 
 @dataclass(frozen=True, slots=True)
 class GroundingPolicy:
-    max_context_chars: int = MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS
+    max_context_chars: int | None = MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS
     max_simple_sources: int = MAX_GROUNDED_SOURCES
     max_research_queries: int = MAX_RESEARCH_QUERIES
     max_research_sources: int = MAX_RESEARCH_SOURCES
@@ -56,7 +56,6 @@ class GroundingPolicy:
 
     def __post_init__(self) -> None:
         bounds = (
-            ("max_context_chars", self.max_context_chars, 256, MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS),
             ("max_simple_sources", self.max_simple_sources, 1, MAX_GROUNDED_SOURCES),
             ("max_research_queries", self.max_research_queries, 1, MAX_RESEARCH_QUERIES),
             ("max_research_sources", self.max_research_sources, 1, MAX_RESEARCH_SOURCES),
@@ -68,8 +67,15 @@ class GroundingPolicy:
                 raise ValueError(f"{name} must be between {low} and {high}")
         if not isinstance(self.preamble, str) or not self.preamble.strip():
             raise ValueError("preamble must be a non-empty string")
-        if self.max_context_chars < len(self.preamble.rstrip()) + 64:
-            raise ValueError("max_context_chars is too small for the grounding preamble")
+        if self.max_context_chars is not None:
+            if (
+                isinstance(self.max_context_chars, bool)
+                or not isinstance(self.max_context_chars, int)
+                or self.max_context_chars < 256
+            ):
+                raise ValueError("max_context_chars must be an integer of at least 256")
+            if self.max_context_chars < len(self.preamble.rstrip()) + 64:
+                raise ValueError("max_context_chars is too small for the grounding preamble")
         if not isinstance(self.source_quality_policy, SourceQualityPolicy):
             raise ValueError("source_quality_policy must be SourceQualityPolicy")
 
@@ -159,11 +165,16 @@ def prepare_grounding_context(
     policy = policy or GroundingPolicy()
     hard_limit = policy.max_context_chars if max_context_chars is None else max_context_chars
     source_limit = policy.max_simple_sources if max_sources is None else max_sources
-    if (
+    # #4379: a None budget means no PADIEM context total. A caller that
+    # declares a budget keeps it, and the policy may still narrow it.
+    if hard_limit is not None and (
         isinstance(hard_limit, bool)
         or not isinstance(hard_limit, int)
         or hard_limit < 1
-        or hard_limit > policy.max_context_chars
+        or (
+            policy.max_context_chars is not None
+            and hard_limit > policy.max_context_chars
+        )
     ):
         raise GroundingRuntimeError("context_budget_exceeded", "grounding context budget is invalid", 422)
     if (
@@ -174,7 +185,7 @@ def prepare_grounding_context(
     ):
         raise GroundingRuntimeError("context_budget_exceeded", "grounding source budget is invalid", 422)
     preamble = policy.preamble.rstrip()
-    if hard_limit < len(preamble) + 64:
+    if hard_limit is not None and hard_limit < len(preamble) + 64:
         raise GroundingRuntimeError("context_budget_exceeded", "grounding context budget is too small", 422)
 
     usable = [item for item in evidence_items if isinstance(item, Evidence)][:source_limit]
@@ -186,17 +197,23 @@ def prepare_grounding_context(
     for item in usable:
         index = len(accepted) + 1
         separator = "\n\n"
-        remaining = hard_limit - len(context) - len(separator)
-        if remaining <= 0:
+        remaining = (
+            None if hard_limit is None else hard_limit - len(context) - len(separator)
+        )
+        if remaining is not None and remaining <= 0:
             break
 
         full_block = _source_block(index, item, item.snippet)
-        if len(full_block) <= remaining:
+        if remaining is None or len(full_block) <= remaining:
             context += separator + full_block
             accepted.append(item)
             continue
 
         empty_block = _source_block(index, item, "")
+        if remaining is None:
+            context += separator + full_block
+            accepted.append(item)
+            continue
         if len(empty_block) >= remaining:
             break
 
@@ -218,7 +235,7 @@ def prepare_grounding_context(
 
     if not accepted:
         raise GroundingRuntimeError("no_evidence", "no usable evidence fits the context budget", 404)
-    if len(context) > hard_limit:
+    if hard_limit is not None and len(context) > hard_limit:
         raise RuntimeError("grounding context exceeded hard limit")
     return PreparedGrounding(context=context, evidence=tuple(accepted))
 
@@ -227,21 +244,28 @@ def prepare_combined_grounding_context(
     evidence_items: Sequence[Evidence],
     *,
     additional_system_context: str | None,
-    max_total_context_chars: int,
+    max_total_context_chars: int | None,
     policy: GroundingPolicy | None = None,
     max_sources: int | None = None,
 ) -> PreparedGrounding:
     policy = policy or GroundingPolicy()
-    if (
+    # #4379: a None total budget means no PADIEM context total. A caller that
+    # declares a budget keeps it.
+    if max_total_context_chars is not None and (
         isinstance(max_total_context_chars, bool)
         or not isinstance(max_total_context_chars, int)
         or max_total_context_chars < 256
     ):
         raise GroundingRuntimeError("context_budget_exceeded", "total context budget is invalid", 422)
     project_context = additional_system_context.strip() if isinstance(additional_system_context, str) else ""
-    evidence_budget = min(policy.max_context_chars, max_total_context_chars)
-    if project_context:
-        evidence_budget = min(evidence_budget, max_total_context_chars - len(project_context) - 2)
+    budgets = [
+        value
+        for value in (policy.max_context_chars, max_total_context_chars)
+        if value is not None
+    ]
+    evidence_budget = min(budgets) if budgets else None
+    if project_context and evidence_budget is not None:
+        evidence_budget = min(evidence_budget, evidence_budget - len(project_context) - 2)
     prepared = prepare_grounding_context(
         evidence_items,
         policy=policy,
@@ -249,7 +273,7 @@ def prepare_combined_grounding_context(
         max_sources=max_sources,
     )
     combined = prepared.context if not project_context else f"{project_context}\n\n{prepared.context}"
-    if len(combined) > max_total_context_chars:
+    if max_total_context_chars is not None and len(combined) > max_total_context_chars:
         raise GroundingRuntimeError("context_budget_exceeded", "combined context exceeds product budget", 422)
     return PreparedGrounding(context=combined, evidence=prepared.evidence)
 

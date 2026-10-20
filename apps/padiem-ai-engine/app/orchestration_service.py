@@ -1534,7 +1534,10 @@ class OrchestrationEngineService:
         # be the same budget. At 128 KiB a model request between the two was
         # read whole and then refused here, which made the outer budget
         # fictional. Non-model routes keep MAX_REQUEST_BODY_BYTES.
-        if len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES:
+        if (
+            MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is not None
+            and len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+        ):
             return _service_error("request_too_large", "Request body exceeds the safety limit.", status_code=413)
         try:
             payload = json.loads(raw.decode("utf-8"))
@@ -1743,7 +1746,10 @@ class OrchestrationEngineService:
         # be the same budget. At 128 KiB a model request between the two was
         # read whole and then refused here, which made the outer budget
         # fictional. Non-model routes keep MAX_REQUEST_BODY_BYTES.
-        if len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES:
+        if (
+            MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is not None
+            and len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+        ):
             return _service_error("request_too_large", "Request body exceeds the safety limit.", status_code=413)
         try:
             payload = json.loads(raw.decode("utf-8"))

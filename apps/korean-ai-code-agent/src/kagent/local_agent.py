@@ -13,8 +13,12 @@ from .contracts import ContractError
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
 _MAX_ARG_COUNT = 64
 _MAX_ARG_LENGTH = 2048
+# #4379: the local agent run carries no PADIEM wall-clock total.
+# The output character bound stays for now: the Windows executor's own pipe
+# capture bound and the public ``stdout_truncated`` flag are one contract and
+# have to change together.
 _MAX_OUTPUT_CHARS = 8192
-_MAX_TIMEOUT_SECONDS = 900
+_MAX_TIMEOUT_SECONDS: int | None = None
 
 
 def _ref(value: str, field_name: str) -> str:
@@ -69,6 +73,8 @@ def _argv(value: tuple[str, ...]) -> tuple[str, ...]:
 def _bounded_output(value: str) -> tuple[str, bool]:
     if not isinstance(value, str):
         raise ContractError("command output must be text")
+    if _MAX_OUTPUT_CHARS is None:
+        return value, False
     if len(value) <= _MAX_OUTPUT_CHARS:
         return value, False
     return value[:_MAX_OUTPUT_CHARS], True
@@ -159,12 +165,13 @@ class LocalCommandRequest:
         object.__setattr__(self, "argv", _argv(self.argv))
         object.__setattr__(self, "cwd_relative", _relative_windows_path(self.cwd_relative))
         object.__setattr__(self, "requested_at", _aware(self.requested_at, "requested_at"))
+        # #4379: no PADIEM wall-clock ceiling. The positive lower bound stays.
         if (
             isinstance(self.timeout_seconds, bool)
             or not isinstance(self.timeout_seconds, int)
-            or not 1 <= self.timeout_seconds <= _MAX_TIMEOUT_SECONDS
+            or self.timeout_seconds < 1
         ):
-            raise ContractError("timeout_seconds must be between 1 and 900")
+            raise ContractError("timeout_seconds must be at least 1 second")
 
     def safe_dict(self) -> dict[str, Any]:
         return {

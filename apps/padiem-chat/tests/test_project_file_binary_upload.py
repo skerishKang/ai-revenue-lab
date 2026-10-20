@@ -9,10 +9,12 @@ from types import SimpleNamespace
 
 import httpx
 import pytest
+from unittest import mock
 from pypdf import PdfWriter, PdfReader
 from unittest import mock
 
 from app.auth import SESSION_COOKIE, create_session_token
+from app import project_file_routes  # noqa: E402
 from app.binary_documents import parse_binary_document_item, BinaryDocumentValidationError
 from app.config import Settings
 from app.documents import DocumentValidationError
@@ -397,8 +399,8 @@ async def test_projection_contains_no_base64_secrets():
 
 
 @pytest.mark.asyncio
-async def test_oversized_route_level_413():
-    """CENTRAL FIX B: route-level actual HTTP request, verified 413."""
+async def test_oversized_route_level_is_not_refused_for_its_size():
+    """#4379: the route carries no PADIEM byte total for the upload."""
     store = MemoryProjectFileStore()
     history = MemoryProjectStore()
     owner = await history.add_user("owner-oversize")
