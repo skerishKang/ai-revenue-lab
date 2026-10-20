@@ -77,8 +77,11 @@ def test_malformed_zip_fails_closed(extractor) -> None:
         extractor(b"not-a-zip")
 
 
-def test_archive_byte_limit_fails_closed_before_zip_parsing() -> None:
-    with pytest.raises(OOXMLExtractionError, match="archive size out of bounds"):
+def test_archive_over_the_old_byte_total_is_not_refused_for_its_size() -> None:
+    # #4379: an OOXML archive carries no PADIEM byte total. The archive is
+    # parsed and the malformed-archive rule refuses it. The per-entry and the
+    # total uncompressed bounds stay as the decompression-bomb protection.
+    with pytest.raises(OOXMLExtractionError, match="malformed OOXML ZIP archive"):
         extract_docx_text(b"x" * (MAX_ARCHIVE_BYTES + 1))
 
 
