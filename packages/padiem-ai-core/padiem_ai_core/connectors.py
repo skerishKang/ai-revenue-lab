@@ -57,7 +57,9 @@ MAX_MESSAGE_BODY_CHARS = 20_000
 MAX_THREAD_MESSAGES = 8
 MAX_THREAD_BODY_CHARS = 60_000
 MAX_ATTACHMENTS_PER_MESSAGE = 10
-REQUEST_TIMEOUT_SECONDS = 30
+# #4379: a provider request carries no PADIEM client deadline. None
+# means the provider's own timeout applies.
+REQUEST_TIMEOUT_SECONDS: int | None = None
 SEARCH_RESULT_LIMIT = 10
 MESSAGE_BODY_CONTEXT_CHARS = min(8_000, MAX_MESSAGE_BODY_CHARS)
 THREAD_BODY_CONTEXT_CHARS = min(12_000, MAX_THREAD_BODY_CHARS)
@@ -97,7 +99,7 @@ class GmailReadPort(Protocol):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
         ...
@@ -124,7 +126,6 @@ def gmail_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(GMAIL_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=GMAIL_GET_MESSAGE_TOOL_ID,
@@ -145,7 +146,6 @@ def gmail_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(GMAIL_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=GMAIL_GET_THREAD_TOOL_ID,
@@ -166,7 +166,6 @@ def gmail_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(GMAIL_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
     )
 
