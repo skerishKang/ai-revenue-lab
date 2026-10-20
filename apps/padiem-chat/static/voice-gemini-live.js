@@ -477,7 +477,11 @@
         return fetchImpl(tokenPathFor(doc), {
           method: "POST",
           credentials: "same-origin",
-          headers: { Accept: "application/json" },
+          /* The route is a JSON route: without the media type it answers one
+           * bounded 415 and the run falls back to the chunked provider for no
+           * reason. */
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: "{}",
         }).then(function (response) {
           if (!response || !response.ok) throw new Error("live-token-unavailable");
           return response.json();

@@ -207,6 +207,9 @@ test("a live session streams the microphone and reports interim then final", asy
   assert.strictEqual(win.__fetches.length, 1, "one token request");
   assert.strictEqual(win.__fetches[0].init.method, "POST");
   assert.strictEqual(win.__fetches[0].init.credentials, "same-origin");
+  /* The token route is a JSON route: without the media type it answers 415
+   * and the run falls back to the chunked provider for no reason. */
+  assert.strictEqual(win.__fetches[0].init.headers["Content-Type"], "application/json");
   const socket = win.__sockets[0];
   socket.open();
   await settle();
