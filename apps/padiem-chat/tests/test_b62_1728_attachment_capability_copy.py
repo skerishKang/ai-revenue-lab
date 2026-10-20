@@ -15,10 +15,9 @@ def test_attachment_capabilities_are_single_browser_truth_source():
     assert "window.PadiemAttachmentCapabilities" in CAPABILITIES_JS
     for label in ["JPEG", "PNG", "WebP", "TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
         assert f'label: "{label}"' in CAPABILITIES_JS
-    assert "imageBytes: 1024 * 1024 * 1024" in CAPABILITIES_JS
-    assert "textBytes: 96 * 1024" in CAPABILITIES_JS
-    assert "textChars: 40000" in CAPABILITIES_JS
-    assert "binaryBytes: 1024 * 1024 * 1024" in CAPABILITIES_JS
+    # #4379: the capability projection carries no byte, character or item total.
+    for token in ("limits", "imageBytes", "textBytes", "textChars", "binaryBytes", "GiB", "KiB", "40,000"):
+        assert token not in CAPABILITIES_JS
     assert "idleNote:" in CAPABILITIES_JS
     assert "fileButtonTitle:" in CAPABILITIES_JS
     assert "unsupportedFormat:" in CAPABILITIES_JS
@@ -56,29 +55,30 @@ def test_locale_derives_attachment_copy_without_clobbering_runtime_state():
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in LOCALE_JS
 
 
-def test_app_uses_capabilities_for_limits_formats_idle_copy_and_errors():
+def test_app_uses_capabilities_for_formats_idle_copy_and_errors():
     assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in APP_JS
-    assert "const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;" in APP_JS
-    assert "const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;" in APP_JS
-    assert "const MAX_DOCUMENT_CHARS = attachmentCapabilities.limits.textChars;" in APP_JS
+    # #4379: the composer rejects an attachment for its format, not its size.
+    for token in ("MAX_IMAGE_BYTES", "MAX_DOCUMENT_BYTES", "MAX_DOCUMENT_CHARS",
+                  "textTooLarge", "textTooLong", "imageTooLarge"):
+        assert token not in APP_JS
     assert "attachmentCapabilities.images.flatMap" in APP_JS
     assert "attachmentCapabilities.textDocuments.flatMap" in APP_JS
     assert "return activeProject ?" in APP_JS and "attachmentCopy().idleNote" in APP_JS
     assert "throw new Error(attachmentCopy().unsupportedFormat)" in APP_JS
-    assert "throw new Error(attachmentCopy().textTooLarge)" in APP_JS
-    assert "throw new Error(attachmentCopy().textTooLong)" in APP_JS
-    assert "throw new Error(attachmentCopy().imageTooLarge)" in APP_JS
+    assert 'if (file.size < 1) throw new Error(uiT("empty-document"));' in APP_JS
+    assert 'if (file.size < 1) throw new Error(uiT("image-data-empty"));' in APP_JS
     assert 'window.addEventListener("padiem:localechange"' in APP_JS
     assert "setNote(idleNote());" in APP_JS
     assert "DEFAULT_NOTE" not in APP_JS
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in APP_JS
 
 
-def test_binary_reader_derives_formats_and_limit_from_capabilities():
+def test_binary_reader_derives_formats_from_capabilities_without_a_byte_total():
     assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in BINARY_JS
-    assert "attachmentCapabilities.limits.binaryBytes" in BINARY_JS
+    for token in ("MAX_BINARY_BYTES", "maxBytes", "binaryTooLarge", "limits"):
+        assert token not in BINARY_JS
     assert "attachmentCapabilities.binaryDocuments.forEach" in BINARY_JS
-    assert "attachmentCapabilities.copy(document.documentElement.lang).binaryTooLarge" in BINARY_JS
+    assert "attachmentCapabilities.copy(document.documentElement.lang).unsupportedFormat" in BINARY_JS
     assert "2 * 1024 * 1024" not in BINARY_JS
 
 
@@ -95,7 +95,9 @@ def test_readme_matches_current_ephemeral_composer_contract():
     assert "JPEG / PNG / WebP" in README
     assert "TXT / Markdown / CSV / JSON" in README
     assert "PDF / DOCX / PPTX / XLSX" in README
-    assert "raw binary payload up to 1 GiB" in README
+    assert "raw binary payload up to 1 GiB" not in README
+    assert "up to 96 KiB and 40,000 decoded text characters" not in README
+    assert "the browser sets no byte, character or size total" in README
     assert "existing completed `/api/chat` attachment contract" in README
     assert "frontend does not reimplement document extraction" in README
     assert "PDF, DOCX, PPTX and XLSX extraction are **not supported yet**" not in README

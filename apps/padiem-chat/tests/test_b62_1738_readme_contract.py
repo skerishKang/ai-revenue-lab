@@ -14,10 +14,13 @@ def test_readme_matches_ephemeral_and_persistent_document_boundaries() -> None:
     assert "JPEG / PNG / WebP" in README
     assert "TXT / Markdown / CSV / JSON" in README
     assert "PDF / DOCX / PPTX / XLSX" in README
-    assert "1 GiB" in README and "96 KiB" in README and "40,000" in README
+    # #4379: the composer README states formats only, never a size total.
+    for token in ("1 GiB", "96 KiB", "40,000"):
+        assert token not in README
+    assert "the browser sets no byte, character or size total" in README
     assert "Project files are a distinct persistence capability" in README
-    for token in ("imageBytes: 1024 * 1024 * 1024", "textBytes: 96 * 1024", "textChars: 40000", "binaryBytes: 1024 * 1024 * 1024"):
-        assert token in capabilities
+    for token in ("imageBytes", "textBytes", "textChars", "binaryBytes"):
+        assert token not in capabilities
 
 
 def test_readme_matches_streaming_and_completed_transport_boundary() -> None:

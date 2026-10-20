@@ -165,9 +165,6 @@
     [".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
   ]);
 
-  const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;
-  const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;
-  const MAX_DOCUMENT_CHARS = attachmentCapabilities.limits.textChars;
   const ALLOWED_IMAGE_TYPES = new Set(attachmentCapabilities.images.flatMap((format) => format.mediaTypes));
   const ALLOWED_DOCUMENT_TYPES = new Set(attachmentCapabilities.textDocuments.flatMap((format) => format.mediaTypes));
   const DOCUMENT_EXTENSION_TYPES = new Map(
@@ -766,18 +763,17 @@
   async function readDocumentFile(file) {
     const mediaType = documentMediaType(file);
     if (!mediaType) throw new Error(attachmentCopy().unsupportedFormat);
-    if (file.size < 1 || file.size > MAX_DOCUMENT_BYTES) throw new Error(attachmentCopy().textTooLarge);
+    if (file.size < 1) throw new Error(uiT("empty-document"));
     const raw = await readAsText(file);
     if (typeof raw !== "string") throw new Error(uiT("document-read-failed"));
     const text = raw.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
     if (!text.trim()) throw new Error(uiT("empty-document"));
-    if (text.length > MAX_DOCUMENT_CHARS) throw new Error(attachmentCopy().textTooLong);
     if (text.includes("\u0000")) throw new Error(uiT("binary-document"));
     return { type: "document", name: file.name || "document.txt", mediaType, text, byteSize: file.size };
   }
   async function selectImage(file) {
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error(attachmentCopy().unsupportedFormat);
-    if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error(attachmentCopy().imageTooLarge);
+    if (file.size < 1) throw new Error(uiT("image-data-empty"));
     return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
   async function selectAttachment(file) {

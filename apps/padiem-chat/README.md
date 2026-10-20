@@ -144,14 +144,12 @@ The browser does not supply Provider keys or arbitrary upstream origins. Ordinar
 
 Composer attachments are request-scoped product inputs and are distinct from persistent Project files. Browser capability truth is centralized in `static/attachment-capabilities.js`.
 
-Current bounded composer contract:
+Current composer contract (the browser sets no byte, character or size total; `#4379`):
 
 ```text
-Images:      JPEG / PNG / WebP, one attachment, up to 1 GiB
-Text docs:   TXT / Markdown / CSV / JSON, one attachment,
-             up to 96 KiB and 40,000 decoded text characters
-Binary docs: PDF / DOCX / PPTX / XLSX, one attachment,
-             raw binary payload up to 1 GiB
+Images:      JPEG / PNG / WebP, one attachment
+Text docs:   TXT / Markdown / CSV / JSON, one attachment
+Binary docs: PDF / DOCX / PPTX / XLSX, one attachment
 ```
 
 Binary extraction remains server-side behind the existing completed `/api/chat` attachment contract; the frontend does not reimplement document extraction.
