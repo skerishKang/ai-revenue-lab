@@ -71,9 +71,9 @@ def test_user_turn_mirrors_the_answer_typography_in_both_states():
 
 def test_plan4_three_column_grid_and_chip_geometry_stay_pinned():
     turn = " ".join(blocks_with("#messageList .user-message.user-message"))
-    assert "grid-template-columns: minmax(0, 1fr) auto 20px !important" in turn
+    assert "grid-template-columns: minmax(0, 1fr) auto 32px !important" in turn
     chip = " ".join(blocks_with("#messageList .user-message .user-profile-chip"))
-    assert "color: #7b8792 !important" in chip
+    assert "color: #53606c !important" in chip
 
 
 def test_superseded_dark_bubble_literals_stay_removed():

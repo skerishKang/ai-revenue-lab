@@ -295,6 +295,7 @@ from .history import HistoryStore
 from .project_file_routes import (
     owner_files_collection,
     project_file_detail,
+    project_file_original,
     project_files_collection,
 )
 from .drive_case_folder_routes import (
@@ -502,6 +503,7 @@ def create_app(
         Route("/api/project-files", owner_files_collection, methods=["GET"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
+        Route("/api/projects/{project_id}/files/{file_id}/original", project_file_original, methods=["GET"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
         Route(
             "/api/projects/{project_id}/drive-case-folder",
