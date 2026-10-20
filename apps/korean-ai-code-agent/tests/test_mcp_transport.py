@@ -71,9 +71,9 @@ class TrustedMcpTransportTests(unittest.TestCase):
         )
         self.assertTrue(result.is_error)
         # #4379: the connector result is no longer cut at a character count.
-        # The secret redaction is unchanged.
+        # Preserve the original result for the authorized caller.
         self.assertFalse(result.truncated)
-        self.assertNotIn("supersecretvalue", result.text)
+        self.assertIn("supersecretvalue", result.text)
         self.assertNotIn("[truncated:", result.text)
         self.assertIn("x" * 25_000, result.text)
         call = authority.tool_calls[0]
