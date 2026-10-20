@@ -135,7 +135,10 @@ html[data-theme="padiem-glass"] body .starter[data-skill="plan"] .starter-icon::
  */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
   padding-top: clamp(24px, 4vh, 44px) !important;
-  padding-bottom: var(--padiem-composer-clearance, 240px) !important;
+  /* #5014: the reserved bottom space belongs to the shared composer clearance
+   * (interaction-polish.css). A second copy here would drop the software
+   * keyboard inset, because the fixed composer is raised by exactly that
+   * amount while the keyboard is open. */
   background: linear-gradient(155deg, rgba(248, 250, 251, .74), rgba(233, 238, 241, .68)) !important;
   box-shadow:
     0 20px 58px rgba(28, 36, 44, .13),
