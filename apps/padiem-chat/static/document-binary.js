@@ -52,14 +52,11 @@
     if (buffer.byteLength !== file.size || buffer.byteLength < 1 || buffer.byteLength > MAX_BINARY_BYTES) {
       throw new Error("문서 크기를 안전하게 확인하지 못했습니다.");
     }
-    const base64 = arrayBufferToBase64(buffer);
-    if (!base64) throw new Error("문서 데이터가 비어 있습니다.");
-
     return Object.freeze({
       type: "document",
       name: file.name || `document${extensionOf(file.name)}`,
       mediaType,
-      base64,
+      file,
       byteSize: buffer.byteLength,
     });
   }

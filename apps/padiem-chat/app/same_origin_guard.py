@@ -258,6 +258,10 @@ class SameOriginGuardMiddleware:
             and media_type == "application/octet-stream"
         ):
             return None
+        # Standalone Chat accepts one bounded binary attachment with JSON metadata.
+        # Origin and canonical session checks are unchanged.
+        if scope.get("method") == "POST" and path == "/api/chat" and media_type == "application/octet-stream":
+            return None
         # Voice audio is a raw browser POST on two exact authenticated routes.
         # The Origin check above and each route's canonical session remain mandatory.
         if (
