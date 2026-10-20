@@ -72,6 +72,23 @@ def completion_payload(answer: str = "2026년 10월 20일 월요일입니다.") 
     }
 
 
+def sse_frame(answer: str = "2026년 10월 20일 월요일입니다.") -> bytes:
+    """One SSE frame in the shape the streaming lane expects."""
+    payload = {
+        "id": "stream_5108",
+        "object": "chat.completion.chunk",
+        "model": DEFAULT_B14_MODEL_ID,
+        "choices": [{"index": 0, "delta": {"content": answer}, "finish_reason": None}],
+        "business14": {
+            "request_id": "b14req_5108",
+            "route_mode": "manual",
+            "selected_provider": "Poolside",
+            "selected_model": DEFAULT_B14_MODEL_ID,
+        },
+    }
+    return b"data: " + json.dumps(payload, ensure_ascii=False).encode("utf-8") + b"\n\n"
+
+
 class RecordingProvider:
     """A provider that records the queries and returns usable evidence."""
 
@@ -187,9 +204,19 @@ def build_app(provider, *, handler=None, store=None):
     seen: list[dict] = []
 
     async def b14_handler(request: httpx.Request) -> httpx.Response:
-        seen.append(json.loads(request.content))
+        payload = json.loads(request.content)
+        seen.append(payload)
         if handler is not None:
             return await handler(request)
+        # Answer in the shape the requested lane expects. The completed lane
+        # reads one JSON body; the streaming lane reads SSE frames. The test
+        # does not depend on which lane the resolved model selects.
+        if payload.get("stream") is True:
+            return httpx.Response(
+                200,
+                headers={"content-type": "text/event-stream"},
+                content=sse_frame(),
+            )
         return httpx.Response(200, json=completion_payload())
 
     config = settings()
