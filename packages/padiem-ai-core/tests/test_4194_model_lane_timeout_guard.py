@@ -75,7 +75,7 @@ def test_b14_provider_chunk_idle_clock_is_not_45s_retry_budget():
     assert literal_default(rel, owner=None, member="READ_SECONDS") == 600.0
     assert "GATEWAY_WALL_SECONDS = READ_SECONDS" in source(rel)
     s = source(rel)
-    assert "the initial attempt" in s
+    assert "GATEWAY_WALL_SECONDS == READ_SECONDS" in s
     assert "read=READ_SECONDS" in s
     assert "connect=CONNECT_SECONDS" in s
     assert "CONNECT_SECONDS = READ_SECONDS" in s
