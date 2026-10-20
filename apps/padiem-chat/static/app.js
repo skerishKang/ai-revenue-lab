@@ -800,12 +800,6 @@
     if (attachment.file) {
       return [{ type: attachment.type, name: attachment.name, media_type: attachment.mediaType, file: attachment.file }];
     }
-    if (attachment.type === "image") {
-      return [{ type: "image", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
-    }
-    if (typeof attachment.base64 === "string" && attachment.base64) {
-      return [{ type: "document", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
-    }
     return [{ type: "document", name: attachment.name, media_type: attachment.mediaType, text: attachment.text }];
   }
 
