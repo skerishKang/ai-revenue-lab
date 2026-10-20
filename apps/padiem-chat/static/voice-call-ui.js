@@ -1,4 +1,4 @@
-// #4816: M4 "\uc758\uc2dd \ud1b5\ud55c" presentation layer over the shared turn state machine.
+// #4816: M4 "음성 통화" presentation layer over the shared turn state machine.
 // Same conversation ID, model choice and account authority are preserved; no new
 // conversation and no duplicate model request is created on view switch.
 (function (win, doc) {
@@ -14,15 +14,28 @@
     return composerAPI && composerAPI.getController ? composerAPI.getController() : null;
   }
   function isKo() { return /^ko/i.test(doc.documentElement.lang || "ko-KR"); }
+  // Voice copy: the call copy comes from the existing locale catalogue. The
+  // previous inline Korean literals were corrupted escape sequences that
+  // rendered as a meaningless phrase instead of a real label.
+  function localeText(key, fallback) {
+    try {
+      if (win.__padiemLocale && typeof win.__padiemLocale.text === "function") {
+        const value = win.__padiemLocale.text(key);
+        if (value && value !== key) return value;
+      }
+    } catch (_) {}
+    return fallback;
+  }
+  const STATE_LABEL_KEYS = Object.freeze({
+    listening: "voice-call-listening",
+    interim: "voice-call-transcribing",
+    final: "voice-call-final",
+    stopped: "voice-call-stopped",
+    error: "voice-call-error",
+    idle: "voice-call-idle",
+  });
   function voiceLabel(state) {
-    switch (state) {
-      case "listening": return isKo() ? "\ud1b5\ud55c \ub4f1\ub85d\ubc1c\ubcf4" : "Listening";
-      case "interim": return isKo() ? "\uc774\ud504\ub97c \ud480\uc774\ubcf4" : "Transcribing";
-      case "final": return isKo() ? "\uc7ac\ucc38\ub41c \ubb3c\ud130" : "Final transcript";
-      case "stopped": return isKo() ? "\ub4f1\ub85d\ubc1c\ubcf4" : "Stopped";
-      case "error": return isKo() ? "\uc7ac\ub300" : "Error";
-      default: return isKo() ? "\ub300\uae30\ub9ac" : "Idle";
-    }
+    return localeText(STATE_LABEL_KEYS[state] || STATE_LABEL_KEYS.idle, isKo() ? "대기" : "Idle");
   }
 
   function refreshChip() {
@@ -40,7 +53,7 @@
     panel.className = "voice-call-panel";
     panel.setAttribute("role", "dialog");
     panel.setAttribute("aria-modal", "true");
-    panel.setAttribute("aria-label", isKo() ? "\uc758\uc2dd \ud1b5\ud55c" : "Voice call");
+    panel.setAttribute("aria-label", localeText("voice-mode-call", isKo() ? "음성 통화" : "Voice call"));
     const stateEl = doc.createElement("div");
     stateEl.className = "voice-call-panel__state";
     stateEl.id = "voiceCallState";
@@ -52,20 +65,20 @@
     muteBtn.id = "voiceCallMute";
     muteBtn.type = "button";
     muteBtn.setAttribute("aria-pressed", "false");
-    muteBtn.textContent = isKo() ? "\uc788\uc6a9\uae08" : "Mute";
+    muteBtn.textContent = localeText("voice-call-mute", isKo() ? "음소거" : "Mute");
     panel.appendChild(muteBtn);
 
     const endBtn = doc.createElement("button");
     endBtn.className = "voice-call-panel__btn voice-call-panel__btn--end";
     endBtn.id = "voiceCallEnd";
     endBtn.type = "button";
-    endBtn.textContent = isKo() ? "\ud1b5\ud55c \ubd88\ud130" : "End call";
+    endBtn.textContent = localeText("voice-call-end", isKo() ? "통화 종료" : "End call");
     panel.appendChild(endBtn);
 
     const details = doc.createElement("details");
     details.className = "voice-call-panel__transcript open";
     const summary = doc.createElement("summary");
-    summary.textContent = isKo() ? "\ub17c\ubb3c \ubcf8\uae30" : "View transcript";
+    summary.textContent = localeText("voice-call-transcript", isKo() ? "대화 내용 보기" : "View transcript");
     details.appendChild(summary);
     const transcriptDiv = doc.createElement("div");
     transcriptDiv.id = "voiceCallTranscript";

@@ -187,13 +187,21 @@ def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> N
 
 def test_new_chat_aborts_active_stream_and_epoch_blocks_stale_mutation() -> None:
     source = _source()
-    reset_start = source.index("  function resetConversation(")
-    reset_end = source.index("  function selectProject(", reset_start)
+    reset_start = source.index("  function resetConversationView(")
+    reset_end = source.index("  function resetConversation(", reset_start)
     reset_source = source[reset_start:reset_end]
 
     assert "conversationEpoch += 1;" in reset_source
     assert "activeRequestController.abort();" in reset_source
     assert "activeRequestController = null;" in reset_source
+
+    # Chat/Claw separation: the sidebar Chat entry returns to the Chat conversation while the
+    # Claw workspace is open, and otherwise starts a new Chat conversation.
+    entry_start = source.index("  function resetConversation(")
+    entry_end = source.index("  function selectProject(", entry_start)
+    entry_source = source[entry_start:entry_end]
+    assert "switchConversationProduct(PRODUCT_CHAT);" in entry_source
+    assert "resetConversationView(preserveProject);" in entry_source
 
     request_start = source.index("  async function requestAnswer(")
     request_end = source.index("  async function submitPrompt(", request_start)

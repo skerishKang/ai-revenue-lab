@@ -4,6 +4,9 @@ ROOT = Path(__file__).resolve().parents[1]
 HTML = (ROOT / "static/index.html").read_text(encoding="utf-8")
 THEME_JS = (ROOT / "static/theme.js").read_text(encoding="utf-8")
 THEMES_CSS = (ROOT / "static/padiem-themes.css").read_text(encoding="utf-8")
+GLASS_CSS = (ROOT / "static/padiem-glass-portrait.css").read_text(encoding="utf-8")
+SURFACES_CSS = (ROOT / "static/padiem-surfaces.css").read_text(encoding="utf-8")
+EDITORIAL_CSS = (ROOT / "static/padiem-editorial.css").read_text(encoding="utf-8")
 APP_JS = (ROOT / "static/app.js").read_text(encoding="utf-8")
 
 VALID_THEMES = ["light", "dark", "cinematic", "padiem-home"]
@@ -188,3 +191,50 @@ def test_bright_theme_assistant_answer_subtree_contrast():
     for theme in ["dark", "cinematic"]:
         forbidden = f'html[data-theme="{theme}"] .app-shell[data-state="chat"] .assistant-content .rich-response'
         assert forbidden not in THEMES_CSS, f"unexpected dark answer-subtree override for {theme}"
+
+
+def _rule_block(css: str, selector: str) -> str:
+    index = css.find(selector)
+    assert index >= 0, selector
+    return css[index : css.find("}", index)]
+
+
+def test_bright_theme_status_badge_is_readable_in_chat_and_claw():
+    # Status badge: the runtime status badge (.demo-label) carried near-white text on
+    # a bright page in the Claw shell, because every readable override was
+    # scoped to .app-shell[data-state="chat"]. The same rule now covers both
+    # product states, and the dark/cinematic surfaces keep their near-white
+    # badge on their dark background.
+    bright = {
+        "light": THEMES_CSS,
+        "padiem-home": THEMES_CSS,
+    }
+    for theme, css in bright.items():
+        selector = (
+            f'html[data-theme="{theme}"] '
+            '.app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label'
+        )
+        assert selector in css, f"missing bright status badge override {selector}"
+        block = _rule_block(css, selector)
+        assert "color:" in block, selector
+        assert "!important" in block, selector
+        # The Chat-only selector was the source of the defect.
+        chat_only = f'html[data-theme="{theme}"] .app-shell[data-state="chat"] .demo-label'
+        assert chat_only not in css, chat_only
+    glass = (
+        'html[data-theme="padiem-glass"] '
+        '.app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label'
+    )
+    assert glass in GLASS_CSS, "missing glass status badge override"
+    glass_block = _rule_block(GLASS_CSS, glass)
+    assert "color:" in glass_block and "!important" in glass_block
+    assert (
+        'html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .demo-label'
+        not in GLASS_CSS
+    )
+    # The shared editorial badge shape covers both product states.
+    assert ".app-shell:is([data-state=\"chat\"],[data-state=\"claw\"]) .demo-label {" in EDITORIAL_CSS
+    assert '.app-shell[data-state="chat"] .demo-label {' not in EDITORIAL_CSS
+    # The unscoped dark-surface badge stays: dark and cinematic themes still
+    # need a near-white badge on their dark background.
+    assert ".demo-label {" in SURFACES_CSS

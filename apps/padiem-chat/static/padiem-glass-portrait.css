@@ -453,7 +453,7 @@ html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="c
   text-transform: none !important;
 }
 
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .demo-label {
+html[data-theme="padiem-glass"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label {
   border-color: rgba(54, 68, 79, .10) !important;
   background: rgba(72, 84, 94, .08) !important;
   color: #78838c !important;
