@@ -161,6 +161,28 @@ def test_mock_preview_is_sse_manual_route_with_done_and_metadata():
     assert metadata["route_evidence_status"] == "mock_no_upstream_call"
 
 
+def test_advertised_tier_fallback_is_never_executed_under_single_attempt(monkeypatch):
+    """A tier roster can advertise fallback while the caller permits only one attempt."""
+    from dataclasses import replace
+    from app.pilot import stream_gateway
+
+    original = stream_gateway.rcore.resolve_route
+
+    def resolve_with_tier_pair(model_id, opts):
+        return replace(original(model_id, opts), fallback_allowed=True)
+
+    monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
+    response = _client().post(STREAM_URL, json=_payload(
+        business14={"allow_external_fallback": False, "max_attempts": 1},
+    ))
+    assert response.status_code == 200, response.text
+    frames = _json_data_frames(response.text)
+    assert frames and "data: [DONE]" in response.text
+    assert frames[0]["business14"]["attempt_count"] == 1
+    assert frames[0]["business14"]["fallback_used"] is False
+    assert frames[0]["business14"]["fallback_allowed"] is False
+
+
 def test_canonical_stream_true_does_not_promote_auto_route():
     client = _client()
     response = client.post(CHAT_URL, json=_payload(model="b14/auto"))
