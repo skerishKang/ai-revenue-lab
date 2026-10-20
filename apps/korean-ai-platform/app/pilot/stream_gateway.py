@@ -36,6 +36,7 @@ from app.pilot.stream_types import (
 )
 from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
+from app.pilot.stream_error_contract import public_stream_error
 
 logger = logging.getLogger("korean-ai-platform.pilot.stream-preview")
 
@@ -49,12 +50,13 @@ def _request_id() -> str:
 
 
 def _error_response(exc: PilotError, request_id: str) -> JSONResponse:
+    code, status_code, message = public_stream_error(exc)
     return JSONResponse(
-        status_code=exc.status_code,
+        status_code=status_code,
         content={
             "error": {
-                "code": exc.code,
-                "message": exc.message,
+                "code": code,
+                "message": message,
                 "request_id": request_id,
             }
         },
@@ -261,10 +263,11 @@ def _encode_stream_error(
     attempt_count: int = 1,
     fallback_used: bool = False,
 ) -> bytes:
+    code, _, message = public_stream_error(exc)
     payload = {
         "error": {
-            "code": exc.code,
-            "message": exc.message,
+            "code": code,
+            "message": message,
             "request_id": request_id,
             "after_stream_start": True,
         },
