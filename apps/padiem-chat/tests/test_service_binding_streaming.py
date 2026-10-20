@@ -296,7 +296,6 @@ def _request() -> B14ChatRequest:
         model=MODEL,
         routing=B14RoutingOptions(
             allow_external_fallback=False,
-            max_attempts=1,
         ),
     )
 
@@ -361,7 +360,6 @@ def _runtime_request() -> ExecutionRequest:
             model_policy={
                 "model": MODEL,
                 "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         ),
         messages=({"role": "user", "content": "안녕하세요"},),
@@ -421,7 +419,7 @@ def test_service_binding_stream_delivers_first_event_before_final_chunk():
         assert payload["stream"] is True
         assert payload["model"] == MODEL
         assert payload["business14"]["allow_external_fallback"] is False
-        assert payload["business14"]["max_attempts"] == 1
+        assert "max_attempts" not in payload["business14"]
         assert "authorization" not in {key.lower() for key in request.options["headers"]}
         assert body.get_reader_count == 1
         assert reader.cancel_count == 1

@@ -222,13 +222,13 @@ class B14RoutingOptions:
     optimize_for: str | None = None
     allow_external_fallback: bool | None = None
     provider_order: tuple[str, ...] | None = None
-    # Total upstream call budget for one dispatch. None leaves the budget to
-    # B14, which derives it from the candidates the declared product grade
-    # actually allows. A fixed ceiling here is an artificial limit, not a
-    # safety boundary: B14 already advances only on a recoverable provider
-    # error, visits each candidate once, and keeps the same-route retry
-    # budget separate (#4317).
-    max_attempts: int | None = None
+    # There is no upstream call budget here. The number of candidates one
+    # dispatch may try is the number of candidates the declared product grade
+    # allows, and B14 owns that list: it advances to the next candidate only
+    # on a recoverable provider error, visits each candidate once, and stops
+    # when the list is exhausted. A number declared here could only narrow
+    # that list, so the field is gone (#4317).
+
     # B14 same-route retry ceiling for one dispatch. The gateway accepts
     # business14.max_retries in [0, 2] and defaults to 2 when the field is
     # omitted, so None keeps the historical behavior while an explicit 0
@@ -272,18 +272,6 @@ class B14RoutingOptions:
             _normalize_string_tuple("provider_order", self.provider_order),
         )
 
-        if self.max_attempts is not None and (
-            isinstance(self.max_attempts, bool)
-            or not isinstance(self.max_attempts, int)
-            or self.max_attempts < 1
-        ):
-            # #4317: the attempt budget is a positive count, not a capped
-            # constant. B14 bounds the real walk by the candidates the
-            # declared grade allows, so a ceiling here would only reject a
-            # budget that covers that candidate list. B14's own gateway has
-            # always accepted any positive budget.
-            raise ValueError("max_attempts must be a positive integer")
-
         if self.max_retries is not None and (
             isinstance(self.max_retries, bool)
             or not isinstance(self.max_retries, int)
@@ -303,8 +291,6 @@ class B14RoutingOptions:
             out["allow_external_fallback"] = self.allow_external_fallback
         if self.provider_order is not None:
             out["provider_order"] = list(self.provider_order)
-        if self.max_attempts is not None:
-            out["max_attempts"] = self.max_attempts
         if self.max_retries is not None:
             out["max_retries"] = self.max_retries
         if self.product_tier is not None:
