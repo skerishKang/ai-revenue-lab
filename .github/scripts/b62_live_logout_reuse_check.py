@@ -20,7 +20,6 @@ unexpected transport error or an unexpected status is a BLOCK, never a PASS.
 """
 from __future__ import annotations
 
-import http.cookiejar
 import json
 import os
 import re
@@ -117,7 +116,10 @@ def run() -> int:
     if not username or not password:
         print("B62_LOGOUT_REUSE_CHECK=BLOCKED_NO_APPROVED_QA_CREDENTIAL")
         return 3
-    opener = build_opener(http.cookiejar.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    # No cookie processor: every request carries exactly the cookie this check
+    # wants to prove something about, and the issued session cookie is read
+    # from the response header in memory only.
+    opener = build_opener()
     try:
         # 1. Two independent logins of the same account: the first session and a
         #    second "device" session. Both are normal, unaffected logins.
@@ -201,6 +203,42 @@ def run() -> int:
         print("B62_QA_CUSTOMER_DATA_OR_RAW_RESPONSE_LOGGED=0")
 
 
+class _FakeResponse:
+    """Minimal offline response double for the source-only contract test."""
+
+    def __init__(self, status: int, body: bytes, set_cookie: str = ""):
+        self.status = status
+        self._body = body
+        self.headers = {"set-cookie": set_cookie}
+
+    def read(self, _limit: int) -> bytes:
+        return self._body
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exc) -> bool:
+        return False
+
+
+class _FakeOpener:
+    """Records the requests this check would send and replays fixed responses."""
+
+    def __init__(self, status: int, body: dict, set_cookie: str = ""):
+        self.status = status
+        self.body = body
+        self.set_cookie = set_cookie
+        self.requests: list[Request] = []
+
+    def open(self, request: Request, timeout: int | None = None):
+        self.requests.append(request)
+        return _FakeResponse(
+            self.status,
+            json.dumps(self.body).encode("utf-8"),
+            self.set_cookie,
+        )
+
+
 def self_test() -> int:
     assert ORIGIN == "https://chat.padiem.net"
     assert SESSION_COOKIE == "padiem_session"
@@ -211,6 +249,26 @@ def self_test() -> int:
     assert _session_cookie_value("padiem_session=abc; Path=/; HttpOnly") == "abc"
     assert _session_cookie_value("other=1; Path=/") is None
     assert _session_cookie_value("") is None
+
+    # The request path itself is exercised offline: a wrong opener, a missing
+    # cookie header or a missing Origin on a mutation would break the live
+    # check, so the source-only contract proves them here.
+    opener = _FakeOpener(200, {"ok": True}, "padiem_session=issued; Path=/; HttpOnly")
+    status, body, cookie = bounded_call(
+        opener, LOGIN, method="POST", payload={"identifier": "qa", "password": "secret"}
+    )
+    assert status == 200 and body.get("ok") is True and cookie == "issued"
+    sent = opener.requests[0]
+    assert sent.get_method() == "POST"
+    assert sent.get_header("Origin") == ORIGIN
+    assert sent.get_header("Content-type") == "application/json"
+
+    opener = _FakeOpener(200, {"ok": True})
+    status, _, _ = bounded_call(opener, CONVERSATIONS, cookie="stored")
+    assert status == 200
+    assert opener.requests[0].get_header("Cookie") == "padiem_session=stored"
+    assert opener.requests[0].get_header("Origin") is None
+
     print("B62_LOGOUT_REUSE_CANARY_SOURCE=PASS")
     return 0
 
