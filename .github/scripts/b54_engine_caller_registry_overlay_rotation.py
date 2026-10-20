@@ -149,6 +149,14 @@ ALLOWED_APP_IDS = (
     # grant and the Chat WRITE route remain separately gated and default OFF.
     # WRITE approval is never merged with, or reachable from, the READ app.
     "padiem-web-xlsx-write-p01",
+    # #5015 Chat product app id. The Chat product reaches the Engine through
+    # its own P01 bridge, which composes the Engine client with app_id
+    # "padiem-chat" (apps/padiem-chat/app/worker_orchestration.py). Without this
+    # entry the Engine refuses that request with service_app_not_authorized
+    # before any plan, run or PC dispatch exists. This entry is APP
+    # AUTHORIZATION ONLY: it lets the request reach the Engine; every Engine
+    # execution, tool, WRITE, approval and PC grant stays independently gated.
+    "padiem-chat",
 )
 OVERLAY_VERSION = 1
 
