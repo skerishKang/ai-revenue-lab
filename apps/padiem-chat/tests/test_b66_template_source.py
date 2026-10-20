@@ -1048,19 +1048,9 @@ async def test_real_sqlite_d1_migration_and_r2_custody_round_trip():
         stored = conn.execute("SELECT user_id, workspace_id, sha256 FROM b66_template_source").fetchone()
         assert stored["user_id"] == USER_A and stored["workspace_id"] == WORKSPACE_A
         assert stored["sha256"] == hashlib.sha256(original).hexdigest()
-
-        # #4379: nothing in the application refuses this file for its size, so the
-        # D1 schema CHECK is the only PADIEM total left on this surface. Custody
-        # still fails closed and the no-orphan policy reclaims the R2 object.
-        oversized = b"%PDF-1.4\n" + b"x" * (10 * 1024 * 1024 + 1) + b"\n%%EOF\n"
-        with pytest.raises(B66TemplateSourceError, match="storage failed"):
-            await store.put_template_source(
-                user_id=USER_B, workspace_id=WORKSPACE_B,
-                media_type="application/pdf",
-                original_filename="참고서.pdf", body=oversized
-            )
-        assert store.r2_bucket.delete_calls, "the refused object must not be orphaned"
-        assert conn.execute("SELECT COUNT(*) FROM b66_template_source").fetchone()[0] == 1
+        # #4379: the byte ceiling this table used to declare is released by the
+        # forward migration 060, which the dedicated guard test exercises against
+        # the whole schema. Nothing on this surface refuses a file for its size.
     finally:
         conn.close()
 
@@ -1074,6 +1064,8 @@ def test_migration_027_stores_metadata_only_and_uses_unique_sequence():
     assert "user_id TEXT NOT NULL REFERENCES users(id)" in migration
     assert "workspace_id TEXT NOT NULL" in migration
     assert "object_key TEXT NOT NULL UNIQUE" in migration
+    # 027 is a released migration and keeps its own text; #4379 releases the
+    # ceiling by a forward rebuild instead of rewriting this file.
     assert "10485760" in migration
     assert "'uploaded'" in migration
     lowered = migration.lower()
