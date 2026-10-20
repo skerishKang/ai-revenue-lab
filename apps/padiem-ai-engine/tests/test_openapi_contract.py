@@ -77,7 +77,9 @@ def test_execute_required_agent_fields_match_source(spec: dict):
 
 def test_execute_max_body_bytes_match_source(spec: dict):
     post = spec["paths"][EXECUTE_PATH]["post"]
-    assert post["x-engine-max-body-bytes"] == MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+    # #4379: the model request publishes no PADIEM byte total.
+    assert post["x-engine-max-body-bytes"] is None
+    assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is None
 
 
 def test_execute_documents_every_emitted_status(spec: dict):

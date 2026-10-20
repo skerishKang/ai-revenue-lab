@@ -416,7 +416,10 @@ def test_grounding_context_has_hard_cap_and_response_sources_match_context_sourc
     ]
     prepared = prepare_grounding_context(items)
     context = prepared.context
-    assert len(context) <= MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS
+    # #4379: the grounded evidence context is not cut to a PADIEM character
+    # total, so every evidence item is projected.
+    assert len(context) > 5_000
+    assert len(prepared.evidence) == len(items)
     assert 1 <= len(prepared.evidence) <= 5
     assert context == build_grounding_context(items)
     for index, item in enumerate(prepared.evidence, start=1):

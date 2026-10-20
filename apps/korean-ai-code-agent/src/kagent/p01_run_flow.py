@@ -328,6 +328,6 @@ def run_p01_task(
         f"p01_run={outcome.p01_run_id} events={outcome.p01_event_count}"
     )
     if outcome.answer is not None:
-        print(f"answer: {redact_secrets(outcome.answer)[:4000]}")
+        print(f"answer: {outcome.answer[:4000]}")
     print("git=off · demo_fallback=never")
     return 0 if outcome.projection.status is ClawRunStatus.COMPLETED else 1

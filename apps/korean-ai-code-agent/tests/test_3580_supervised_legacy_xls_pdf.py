@@ -90,7 +90,9 @@ class LegacyXlsPdfTests(unittest.TestCase):
             self.assertTrue(fake.jobs[0].closed)
 
     def test_timeouts_and_untrusted_paths_cannot_be_injected(self):
-        for t in (0, 1, 121, True, 8.5):
+        # #4379: the wall-clock ceiling is gone, so 121 is accepted. The
+        # positive lower bound and the type rule stay.
+        for t in (0, 1, True, 8.5):
             with self.subTest(timeout=t):
                 with self.assertRaises(ContractError):
                     SupervisedWindowsLegacyXlsPdfRenderer(timeout_seconds=t)

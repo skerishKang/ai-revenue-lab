@@ -32,7 +32,7 @@ PROVIDER_IDS_IN_ADAPTER = 0
 _REQUIRED_FIELDS = frozenset({"name", "media_type", "base64"})
 # #4379: an intake payload carries no PADIEM byte total. This symbol is
 # retained for import compatibility.
-MAX_IMAGE_BYTES = 4 * 1024 * 1024
+MAX_IMAGE_BYTES = 1024 * 1024 * 1024
 _IMAGE_MEDIA: dict[str, frozenset[str]] = {
     "image/jpeg": frozenset({".jpg", ".jpeg"}),
     "image/png": frozenset({".png"}),

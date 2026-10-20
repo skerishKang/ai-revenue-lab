@@ -71,7 +71,7 @@ UNKNOWN = "UNKNOWN"
 # Intake-side bounds reused from the B14/file-intake contract.
 # #4379: an image carries no PADIEM byte total. The native text bound below
 # stays. This symbol is retained for import compatibility.
-MAX_IMAGE_BYTES = 4 * 1024 * 1024
+MAX_IMAGE_BYTES = 1024 * 1024 * 1024
 MAX_EXTRACTION_TEXT_CHARS = 32000
 # Validation bounds below mirror the deployed browser contract
 # ``reference/business-66-padiem-quote-v1/quote-extraction.js`` exactly.

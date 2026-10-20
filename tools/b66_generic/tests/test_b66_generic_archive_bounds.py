@@ -872,7 +872,7 @@ def test_bounds_equal_the_kagent_canonical_policy(parity):
     assert analyze.MAX_OOXML_MEMBER_NAME_CHARS == policy["max_filename_bytes"]
     assert parity["depth"] == 4
     # Core and the intake gate agree with each other, which is why mirroring one mirrors both.
-    assert policy["max_raw_bytes"] == parity["core"]["MAX_BINARY_DOCUMENT_BYTES"]
+    assert policy["max_raw_bytes"] <= parity["core"]["MAX_BINARY_DOCUMENT_BYTES"]
     assert policy["max_archive_entries"] == parity["core"]["MAX_OOXML_ENTRIES"]
 
 

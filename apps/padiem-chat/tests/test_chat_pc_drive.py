@@ -47,6 +47,84 @@ def test_chat_file_detector_and_two_step_plan():
     ]
 
 
+def test_chat_pc_plans_survive_the_engine_client_authority_gate():
+    """#5015: both real plan builders must reach the transport intact.
+
+    The client's closed trusted-PC check only accepts a list ``steps``, so a
+    tuple plan was refused before transport even though the wire JSON is
+    identical. Drive the real builders through the real bridge request and
+    the real client into a recording fake transport; no request leaves.
+    """
+    from padiem_ai_engine_client import (
+        EngineTransportResponse,
+        PadiemAiEngineClient,
+    )
+
+    from app.chat_pc_drive import build_chat_pc_files_agent_plan
+
+    device_id = "node/meshdomain1/owner-pc"
+    cases = (
+        (build_chat_pc_agent_plan(), {"query_drives": {"device_id": device_id}}),
+        (
+            build_chat_pc_files_agent_plan(),
+            {"files": {"device_id": device_id}},
+        ),
+    )
+    skill = SimpleNamespace(
+        id="auto",
+        title="Padiem Chat",
+        description="Padiem Chat request",
+        system_instruction=None,
+        task_type="general",
+        optimize_for="balanced",
+        max_tokens=None,
+    )
+
+    class RecordingTransport:
+        def __init__(self):
+            self.calls = []
+
+        async def request(self, **kwargs):
+            self.calls.append(kwargs)
+            return EngineTransportResponse(
+                status=200,
+                body=json.dumps(
+                    {"ok": True, "orchestration": {"status": "queued"}}
+                ).encode("utf-8"),
+                headers={"content-type": "application/json"},
+            )
+
+    async def exercise():
+        for plan, tool_arguments in cases:
+            transport = RecordingTransport()
+            client = PadiemAiEngineClient(
+                transport=transport,
+                app_id="padiem-chat",
+                caller_id="padiem-chat",
+                credential="x" * 64,
+            )
+            engine_request = B62EngineOrchestrationBridge.build_engine_request(
+                user_id="usr_5015",
+                messages=({"role": "user", "content": "내 PC 파일을 읽어 줘"},),
+                skill=skill,
+                model_id="unused",
+                conversation_id=None,
+                subject_id="sub_" + "a" * 32,
+                agent_plan=plan,
+                tool_arguments=tool_arguments,
+                session_id="chat_pcq_5015",
+            )
+            await client.orchestrate(engine_request)
+            assert len(transport.calls) == 1
+            sent = json.loads(transport.calls[0]["body"])
+            assert sent["agent_plan"]["steps"] == [
+                dict(step) for step in plan["steps"]
+            ]
+            assert sent["tool_arguments"] == tool_arguments
+
+    asyncio.run(exercise())
+
+
 def test_chat_owner_uses_the_canonical_b62_session(monkeypatch):
     """The lane must present the same canonical session as the signed endpoint."""
     from app.chat_pc_drive import _resolve_chat_owner

@@ -58,19 +58,25 @@ def _declared_length(request: Any) -> int | None:
     return value if value >= 0 else None
 
 
-async def read_bounded_worker_request_body(request: Any, *, max_bytes: int) -> bytes:
+async def read_bounded_worker_request_body(request: Any, *, max_bytes: int | None) -> bytes:
     """Read one request body without ever retaining more than max_bytes.
 
     A valid oversized Content-Length is refused before opening the stream.
     Missing/chunked/malformed lengths are governed by the same incremental byte
     counter. Real workerd requests therefore never use the full-buffer fallback.
+
+    #4379: ``max_bytes=None`` means the route declares no PADIEM byte total.
+    The reader stays incremental, so the platform's own request limit is the
+    only ceiling.
     """
 
-    if isinstance(max_bytes, bool) or not isinstance(max_bytes, int) or max_bytes < 1:
-        raise ValueError("max_bytes must be a positive integer")
+    if max_bytes is not None and (
+        isinstance(max_bytes, bool) or not isinstance(max_bytes, int) or max_bytes < 1
+    ):
+        raise ValueError("max_bytes must be a positive integer or None")
 
     declared = _declared_length(request)
-    if declared is not None and declared > max_bytes:
+    if max_bytes is not None and declared is not None and declared > max_bytes:
         raise RequestBodyTooLarge("request body exceeded the byte limit")
 
     body = getattr(request, "body", None)
@@ -95,7 +101,7 @@ async def read_bounded_worker_request_body(request: Any, *, max_bytes: int) -> b
                 except Exception as exc:
                     await _cancel_reader(reader)
                     raise RequestBodyReadError("request stream yielded unreadable bytes") from exc
-                if total + len(chunk) > max_bytes:
+                if max_bytes is not None and total + len(chunk) > max_bytes:
                     await _cancel_reader(reader)
                     raise RequestBodyTooLarge("request body exceeded the byte limit")
                 if chunk:
@@ -124,6 +130,6 @@ async def read_bounded_worker_request_body(request: Any, *, max_bytes: int) -> b
         raw = str(text).encode("utf-8")
     except Exception as exc:
         raise RequestBodyReadError("request body could not be read") from exc
-    if len(raw) > max_bytes:
+    if max_bytes is not None and len(raw) > max_bytes:
         raise RequestBodyTooLarge("request body exceeded the byte limit")
     return raw

@@ -20,7 +20,6 @@ from .ops_contracts import (
     SupplierQuoteRequest,
 )
 from .ops_ledger import InMemoryOpsLedger
-from .security import redact_secrets
 
 
 class InboxCardKind(str, Enum):

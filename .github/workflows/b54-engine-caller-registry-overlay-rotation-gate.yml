@@ -28,17 +28,21 @@ name: B54 Engine Caller Registry Overlay Rotation Gate
 #                                   "b54-padiem-claw-telegram",
 #                                   "b54-padiem-claw-calendar",
 #                                   "padiem-web-xlsx-p01",
-#                                   "padiem-web-xlsx-write-p01"]}}
+#                                   "padiem-web-xlsx-write-p01",
+#                                   "padiem-chat"]}}
 #
 # The app list started as the single Claw reader (#2375), gained the canonical
 # Drive reader (#2645) and Telegram reader (#2721), the canonical Calendar
-# reader (#2952), the Hark WEB-FIRST XLSX READ Engine tool app (#3936), and the
-# independent Hark WEB-FIRST XLSX WRITE Engine tool app (#3933); each extension
-# is additive and re-proven by the P01 caller-id parity contract. The #3933
-# WRITE entry is an app-authorization entry ONLY: it lets the WRITE tool request
-# reach the Engine tool service, and it enables nothing — the Engine WRITE
-# binding, its durable continuation store, its owner WRITE grant and the Chat
-# WRITE route all stay independently gated and default OFF.
+# reader (#2952), the Hark WEB-FIRST XLSX READ Engine tool app (#3936), the
+# independent Hark WEB-FIRST XLSX WRITE Engine tool app (#3933), and the Chat
+# product's own app id (#5015); each extension is additive and re-proven by the
+# P01 caller-id parity contract. The #3933 WRITE entry is an app-authorization
+# entry ONLY: it lets the WRITE tool request reach the Engine tool service, and
+# it enables nothing — the Engine WRITE binding, its durable continuation store,
+# its owner WRITE grant and the Chat WRITE route all stay independently gated
+# and default OFF. The #5015 Chat entry is app authorization only as well: it
+# lets the Chat product's own P01 request reach the Engine; every Engine
+# execution, tool, approval and PC grant stays independently gated.
 #
 # Served-version proof (not the settings plane): a secret PUT may create or
 # activate a NEW Worker version, so pre- and post-mutation readback is proven on

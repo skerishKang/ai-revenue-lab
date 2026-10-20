@@ -15,7 +15,6 @@ import re
 from typing import Any, Mapping, Sequence
 
 from .contracts import ContractError
-from .core import redact_secrets
 from .document_export import (
     HWPX_EXPORT_DECISION,
     LEGACY_HWP_EXPORT_DECISION,

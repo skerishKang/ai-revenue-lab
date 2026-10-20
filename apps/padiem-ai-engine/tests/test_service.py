@@ -397,11 +397,13 @@ async def test_http_contract_bounds_body_and_content_type() -> None:
         content_type="application/json; charset=utf-8",
         body=raw,
     )
+    # #4379: the model route carries no PADIEM request body total, so an
+    # oversized body is no longer refused with 413.
     too_large = await service.handle(
         method="POST",
         path=EXECUTE_PATH,
         content_type="application/json",
-        body=b"x" * (MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES + 1),
+        body=b"x" * (6_000_001),
     )
     bad_media = await service.handle(
         method="POST", path=EXECUTE_PATH, content_type="text/plain", body=raw
@@ -411,8 +413,8 @@ async def test_http_contract_bounds_body_and_content_type() -> None:
     )
 
     assert ok.status_code == 200
-    assert too_large.status_code == 413
-    assert too_large.body["error"]["code"] == "request_too_large"
+    assert too_large.status_code == 400
+    assert too_large.body["error"]["code"] == "invalid_json"
     assert bad_media.status_code == 415
     assert bad_json.status_code == 400
 
@@ -426,7 +428,7 @@ async def test_model_execute_accepts_long_unicode_payload_before_provider_withou
     payload = valid_payload()
     payload["messages"] = [{"role": "user", "content": raw_user_text}]
     raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    assert MAX_REQUEST_BODY_BYTES < len(raw) < MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+    assert MAX_REQUEST_BODY_BYTES < len(raw)
     response = await service.handle(
         method="POST", path=EXECUTE_PATH, content_type="application/json", body=raw
     )
@@ -437,7 +439,8 @@ async def test_model_execute_accepts_long_unicode_payload_before_provider_withou
 
 def test_model_ingress_does_not_change_other_engine_route_memory_guards() -> None:
     assert MAX_REQUEST_BODY_BYTES == 128 * 1024
-    assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES == 6_000_000
+    # #4379: the model routes carry no PADIEM request body total.
+    assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is None
     from pathlib import Path
     worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
     # Three model-orchestration paths share the existing 6MB model ingress;

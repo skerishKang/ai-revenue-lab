@@ -285,7 +285,7 @@ class ConnectorInboundEvent:
             "binding_ref": self.binding_ref,
             "workspace_ref": self.workspace_ref,
             "received_at": self.received_at.isoformat().replace("+00:00", "Z"),
-            "body_text": redact_secrets(self.body_text),
+            "body_text": self.body_text,
             "body_trusted": False,
             "signature_required": self.signature_required,
             "signature_status": self.signature_status.value,

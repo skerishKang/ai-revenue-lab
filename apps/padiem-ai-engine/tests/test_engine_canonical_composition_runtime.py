@@ -442,21 +442,20 @@ class _StreamRequest:
         self.body = _StreamBody(self.reader)
 
 
-def test_legacy_worker_rejects_chunked_oversize_during_read(identity_modules) -> None:
+def test_legacy_worker_does_not_refuse_a_model_body_for_its_size(identity_modules) -> None:
+    # #4379: the model route carries no PADIEM request body total, so a
+    # chunked body past the former 6MB budget is read instead of being
+    # refused with 413. The non-model route ceilings stay.
     legacy, _identity = identity_modules
-    from app.service import MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
 
     request = _StreamRequest(
         "/internal/v1/execute",
-        [b"x" * MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES, b"y", b"never-read"],
+        [b"x" * 6_000_000, b"y", b"never-read"],
     )
     response = asyncio.run(legacy.Default(ctx=None, env=_identity_env()).fetch(request))
 
-    assert response.status == 413
-    assert _body(response)["error"]["code"] == "request_too_large"
-    assert request.reader.read_calls == 2
-    assert request.reader.cancel_calls == 1
-    assert request.reader.release_calls == 1
+    assert response.status != 413
+    assert request.reader.cancel_calls == 0
 
 
 def test_legacy_memory_route_keeps_32k_ceiling_during_read(identity_modules) -> None:
