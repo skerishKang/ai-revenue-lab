@@ -203,7 +203,7 @@
       "auth-android-claiming": "로그인을 확인하는 중입니다…", "auth-android-expired": "로그인 시간이 만료되었습니다. 다시 시도해 주세요.",
       "auth-android-error": "로그인을 확인하지 못했습니다. 다시 시도해 주세요.", "auth-android-open": "Google 로그인 다시 열기", "auth-android-copy": "로그인 코드 복사", "auth-android-copied": "로그인 코드를 복사했습니다.", "auth-android-cancel": "취소",
       "auth-create-account": "새 계정 만들기", "auth-email-login-id": "이메일 (로그인 아이디)", "auth-name": "이름", "auth-register": "회원가입",
-      "auth-password-rule": "8~128자. 이메일(로그인 아이디)을 포함하지 않도록 설정해 주세요.", "auth-error-generic": "로그인 처리에 실패했습니다. 다시 시도해 주세요.",
+      "auth-password-rule": "8자 이상 128자 이하로 설정해 주세요. 이메일(로그인 아이디)은 포함하지 않도록 해 주세요.", "auth-error-generic": "로그인 처리에 실패했습니다. 다시 시도해 주세요.",
       "hello": "안녕하세요.", "ask": "무엇을 도와드릴까요?", "copy": "궁금한 것을 평소 말하듯 편하게 물어보세요.",
       "easy-title": "쉽게 설명해줘", "easy-copy": "어려운 내용도 쉬운 말로", "life-title": "생활 도움", "life-copy": "일상 질문과 계획 세우기", "document-title": "문서와 대화", "document-upload-title": "파일 업로드", "document-upload-copy": "파일을 첨부하여 질문하기", "document-formats": "지원 형식", "document-formats-soon": "지원 형식은 추후 안내합니다.", "composer-empty-message": "글자를 입력하세요", "model-requires-login": "대화를 시작하려면 로그인해 주세요. 로그인 후 등급에 따라 AI를 사용할 수 있습니다.", "custom-chat-only": "Padiem Custom은 Chat에서만 사용할 수 있습니다. 모델 선택에서 Padiem 등급을 선택해 주세요.", "custom-text-only": "Padiem Custom은 현재 텍스트 대화만 지원합니다. 첨부를 해제하거나 다른 모델을 선택해 주세요.", "voice-login-click": "로그인하세요", "model-select-tooltip": "모델 선택", "send-tooltip": "메시지 전송",
       "input": "무엇이든 물어보세요", "file": "파일", "web": "웹 검색", "research": "심층 리서치", "footer": "편하게 질문해 보세요",
