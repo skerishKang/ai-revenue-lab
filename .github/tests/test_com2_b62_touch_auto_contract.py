@@ -42,5 +42,15 @@ class TouchAutoCanaryContract(unittest.TestCase):
         self.assertIn("runs-on: ubuntu-24.04", self.hosted)
         self.assertIn("Verify 390x844 mobile touch targets", self.hosted)
 
+    def test_failed_touch_dispatch_is_scoped_and_does_not_hide_failure(self):
+        self.assertIn('actions: write', self.auto)
+        self.assertIn("steps.run_touch.outcome == 'failure'", self.auto)
+        self.assertIn('failure() && steps.target.outputs.selected', self.auto)
+        self.assertIn('if [[ "$PR" == skip ]]', self.auto)
+        self.assertIn('p["head"]["sha"]==os.environ["EXPECTED"]', self.auto)
+        self.assertIn('p["head"]["repo"]["full_name"]==os.environ["GITHUB_REPOSITORY"]', self.auto)
+        self.assertIn('b62-mobile-touch-hosted-fallback.yml/dispatches', self.auto)
+        self.assertIn('"expected_sha":os.environ["EXPECTED"]', self.auto)
+        self.assertIn('if [[ "$RESULT" == success ]]; then state=success; else state=failure; fi', self.auto)
 if __name__ == "__main__":
     unittest.main()
