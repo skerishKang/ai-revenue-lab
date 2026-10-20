@@ -97,32 +97,37 @@ class BoundedObservationAuthorityTest(unittest.TestCase):
         self.assertFalse(payload["credential_value_included"])
         self.assertFalse(payload["dom_api_exposed"])
 
-    def test_more_than_400_elements_truncate_deterministically(self) -> None:
+    def test_more_elements_than_the_old_bound_are_all_projected(self) -> None:
+        # #4379: the observation carries no PADIEM element-count total, so no
+        # element is dropped for the element count.
         elements = [
             source_element(name=f"버튼 {index}") for index in range(MAX_OBSERVATION_ELEMENTS + 40)
         ]
         payload, observation = built(elements)
-        self.assertTrue(payload["truncated"])
-        self.assertLessEqual(payload["element_count"], MAX_OBSERVATION_ELEMENTS)
-        self.assertGreaterEqual(payload["element_count"], 1)
+        self.assertFalse(payload["truncated"])
+        self.assertEqual(payload["element_count"], MAX_OBSERVATION_ELEMENTS + 40)
         self.assertEqual(
             payload["elements"][-1]["element_ref"],
             f"el-{payload['element_count']:04d}",
         )
-        self.assertLessEqual(observation.serialized_bytes(), MAX_SERIALIZED_OBSERVATION_BYTES)
+        self.assertGreater(observation.serialized_bytes(), MAX_SERIALIZED_OBSERVATION_BYTES)
 
-    def test_byte_budget_truncates_whole_elements_never_bytes(self) -> None:
+    def test_no_element_is_dropped_for_a_byte_budget(self) -> None:
+        # #4379: the observation carries no PADIEM byte total, so no element
+        # is dropped to fit a budget and nothing is cut.
         elements = [source_element(name="x" * MAX_ELEMENT_NAME_CHARS) for _ in range(100)]
         payload, observation = built(elements)
-        self.assertTrue(payload["truncated"])
-        self.assertLess(payload["element_count"], 100)
-        self.assertLessEqual(observation.serialized_bytes(), MAX_SERIALIZED_OBSERVATION_BYTES)
+        self.assertFalse(payload["truncated"])
+        self.assertEqual(payload["element_count"], 100)
+        self.assertGreater(observation.serialized_bytes(), MAX_SERIALIZED_OBSERVATION_BYTES)
 
-    def test_names_truncate_to_64_characters(self) -> None:
-        self.assertEqual(len(truncate_observation_name("a" * 100)), MAX_ELEMENT_NAME_CHARS)
+    def test_names_are_not_cut(self) -> None:
+        # #4379: the accessible name carries no character total, so an
+        # observation keeps the whole name.
+        self.assertEqual(truncate_observation_name("a" * 100), "a" * 100)
         self.assertEqual(truncate_observation_name("가" * 40), "가" * 40)
         payload, _ = built([source_element(name="a" * 100)])
-        self.assertEqual(len(payload["elements"][0]["name"]), MAX_ELEMENT_NAME_CHARS)
+        self.assertEqual(len(payload["elements"][0]["name"]), 100)
 
     def test_password_values_are_never_projected_marker_only(self) -> None:
         payload, _ = built([source_element(role="textbox", name="hunter2", credential_field=True)])
@@ -185,10 +190,13 @@ class BoundedObservationAuthorityTest(unittest.TestCase):
     def test_element_refs_are_stable_and_derived_from_order_only(self) -> None:
         self.assertEqual(observation_element_ref(1), "el-0001")
         self.assertEqual(observation_element_ref(MAX_OBSERVATION_ELEMENTS), "el-0400")
+        # #4379: the observation carries no PADIEM element-count total, so a
+        # sequence past the former bound is not refused.
+        self.assertEqual(
+            observation_element_ref(MAX_OBSERVATION_ELEMENTS + 1), "el-0401"
+        )
         with self.assertRaises(BrowserObservationRefusal):
             observation_element_ref(0)
-        with self.assertRaises(BrowserObservationRefusal):
-            observation_element_ref(MAX_OBSERVATION_ELEMENTS + 1)
         first_payload, _ = built([source_element(), source_element(role="link", name="A")])
         second_payload, _ = built([source_element(), source_element(role="link", name="A")])
         self.assertEqual(first_payload["elements"], second_payload["elements"])
