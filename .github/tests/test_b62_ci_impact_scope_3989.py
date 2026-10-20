@@ -34,6 +34,20 @@ def fake_event(event_type="pull_request"):
 
 
 class B62ScopeTests(unittest.TestCase):
+    def test_exact_isolated_parser_sources_use_focused_ci(self):
+        isolated = [
+            file("packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py"),
+            file("packages/padiem-ai-core/tests/test_isolated_parser_client.py"),
+        ]
+        self.assertEqual(module.impact_scope(isolated), module.CORE_PARSER_ONLY)
+        for risky in (
+            "packages/padiem-ai-core/padiem_ai_core/b14_execution.py",
+            "apps/padiem-chat/app/chat_routes.py",
+            ".github/workflows/b62-padiem-chat-ci.yml",
+        ):
+            self.assertEqual(module.impact_scope(isolated + [file(risky)]), module.FULL)
+
+
     def test_static_js_and_css_skip_core_and_worker_probes(self):
         self.assertEqual(module.impact_scope([
             file("apps/padiem-chat/static/app.js"),

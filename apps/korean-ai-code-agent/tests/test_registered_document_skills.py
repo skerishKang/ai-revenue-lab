@@ -70,6 +70,8 @@ class RegisteredSkillDefinitionTests(unittest.TestCase):
     def test_packages_narrow_permissions_and_gate_external_side_effects(self):
         for package in DOCUMENT_SKILL_PACKAGES:
             self.assertEqual(package.execution_budget.max_tool_calls, 0)
+            self.assertIsNone(package.execution_budget.max_steps)
+            self.assertEqual(package.execution_budget.max_wall_seconds, 900)
             self.assertIn(
                 ApprovalHook.BEFORE_EXTERNAL_SIDE_EFFECT, package.approval_hooks
             )
