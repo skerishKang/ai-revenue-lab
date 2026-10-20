@@ -70,6 +70,20 @@ def compiled(active_definition=None, **overrides):
     )
 
 
+def test_plan_over_32_steps_without_explicit_step_cap() -> None:
+    active_definition = definition(execution_budget=AgentExecutionBudget(
+        max_steps=None, max_tool_calls=None, max_skill_calls=0, max_wall_seconds=180,
+    ))
+    active_compiled = compiled(active_definition, max_steps_cap=None)
+    plan = AgentPlan(
+        agent_id=active_definition.agent_id,
+        steps=tuple(AgentPlanStep(step_id=f"step_{i}", objective="Continue task")
+                    for i in range(1, 49)),
+    )
+    assert validate_agent_plan(plan, definition=active_definition,
+                               compiled_profile=active_compiled) is plan
+
+
 def test_valid_plan_uses_only_compiled_runtime_tool_ids() -> None:
     active_definition = definition()
     active_compiled = compiled(active_definition)
