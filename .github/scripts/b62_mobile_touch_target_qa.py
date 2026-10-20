@@ -177,5 +177,7 @@ async def main() -> None:
         report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+# TEMPORARY UNMERGED E2E PROBE — deliberately fail inside isolated Chromium QA
+raise RuntimeError("CI_5210_CONTROLLED_FALLBACK_PROBE")
 if __name__ == "__main__":
     asyncio.run(main())
