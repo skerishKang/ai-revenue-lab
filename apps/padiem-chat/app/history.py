@@ -274,6 +274,12 @@ def _message_id() -> str:
 #: turn's text.
 GENERAL_ANSWER_MESSAGE_SUFFIX = "_general_answer"
 
+#: #5015: the run action the general lane itself records. Only a run the
+#: server stored under this action is a verified model-only execution; a PC,
+#: desktop or staged run keeps its own action and is never answered from a
+#: model reply.
+MODEL_ONLY_RUN_ACTION = "general"
+
 
 def general_answer_message_id(run_id: str) -> str:
     """The one message id a model-only run owns for its verified answer."""
@@ -1607,25 +1613,52 @@ class D1HistoryStore:
         and the message row itself, so a later turn's text can never be
         returned for an older run. An unverified run returns ``None`` so the
         caller keeps its truthful state instead of claiming a success.
+
+        A model reply is only ever returned for a run the server itself
+        recorded as a model-only execution. A run with a PC execution
+        correlation keeps the existing unavailable state when its own verified
+        result is missing, and a run whose recorded action is not the
+        model-only action is never answered from a model reply.
         """
-        command_answer = await self.get_claw_run_result_message(
-            user_id, run_id, conversation_id
-        )
-        if isinstance(command_answer, str) and command_answer:
-            return {"answer": command_answer, "answer_source": "pc_command_result"}
         if not isinstance(user_id, str) or not user_id:
             raise HistoryError("user_id is required")
         if not isinstance(run_id, str) or not run_id:
             raise HistoryError("run_id is required")
+        correlation = await self._first(
+            "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state='done'",
+            user_id, run_id,
+        )
+        if not isinstance(correlation, dict):
+            correlation = await self.get_local_task_correlation(user_id, run_id)
+        pc_correlated = (
+            isinstance(correlation, dict)
+            and isinstance(correlation.get("command_id"), str)
+            and isinstance(correlation.get("revision_ref"), str)
+        )
+        if pc_correlated:
+            answer = await self.get_claw_run_result_message(
+                user_id, run_id, conversation_id
+            )
+            if isinstance(answer, str) and answer:
+                return {"answer": answer, "answer_source": "pc_command_result"}
+            # A PC execution without its own verified result keeps the
+            # truthful unavailable state. It is never answered from a model
+            # reply.
+            return None
         run_row = await self._first(
-            "SELECT id, status, conversation_id FROM claw_run_history "
+            "SELECT id, action, status, conversation_id FROM claw_run_history "
             "WHERE run_id=? AND user_id=?",
             run_id, user_id,
         )
         if not isinstance(run_row, dict):
             return None
-        # Only a run the store itself recorded as completed may answer. An
-        # unverified or still-running run stays unverified.
+        # Only a run the store itself recorded as a completed model-only
+        # execution may answer with a model reply. A PC, desktop or staged run
+        # keeps its own action and is never answered from one.
+        if run_row.get("action") != MODEL_ONLY_RUN_ACTION:
+            return None
+        # A run that the store did not record as completed stays unverified.
         if run_row.get("status") != "completed":
             return None
         if run_row.get("conversation_id") != conversation_id:

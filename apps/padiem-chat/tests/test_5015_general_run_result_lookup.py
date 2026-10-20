@@ -59,8 +59,8 @@ def _store(*, dispatch=None, run_row=None, messages=None, reads=None):
 
 def test_general_run_result_returns_the_actual_message_not_the_summary():
     run_row = {
-        "id": RUN_ID, "status": "completed", "conversation_id": CID,
-        "result_summary": ANSWER[:50],
+        "id": RUN_ID, "action": "general", "status": "completed",
+        "conversation_id": CID, "result_summary": ANSWER[:50],
     }
     store = _store(
         run_row=run_row,
@@ -72,7 +72,8 @@ def test_general_run_result_returns_the_actual_message_not_the_summary():
 
 def test_general_run_result_refuses_every_unverified_shape():
     completed = {
-        "id": RUN_ID, "status": "completed", "conversation_id": CID,
+        "id": RUN_ID, "action": "general", "status": "completed",
+        "conversation_id": CID,
     }
     # No stored completion record at all.
     store = _store(run_row=None, messages=[{"id": MESSAGE_ID, "content": ANSWER}])
@@ -96,7 +97,8 @@ def test_general_run_result_refuses_every_unverified_shape():
 
 def test_general_run_result_is_scoped_to_the_owner_conversation_and_message():
     run_row = {
-        "id": RUN_ID, "status": "completed", "conversation_id": CID,
+        "id": RUN_ID, "action": "general", "status": "completed",
+        "conversation_id": CID,
     }
     reads = []
     store = _store(
@@ -111,6 +113,56 @@ def test_general_run_result_is_scoped_to_the_owner_conversation_and_message():
     assert "c.user_id=?" in sql and "c.product_scope=?" in sql
     assert "m.role='assistant'" in sql
     assert args == (MESSAGE_ID, CID, OWNER, PRODUCT_SCOPE_CHAT)
+
+
+def test_a_pc_execution_without_its_own_result_keeps_the_unavailable_state():
+    """A PC run never answers from a model reply."""
+    run_row = {
+        "id": RUN_ID, "action": "general", "status": "completed",
+        "conversation_id": CID,
+    }
+    # The run carries a completed PC execution correlation, but its verified
+    # message is missing.
+    store = _store(
+        dispatch={"command_id": "command_1", "revision_ref": "revision_1"},
+        run_row=run_row,
+        messages=[],
+    )
+    assert asyncio.run(store.get_claw_run_result(OWNER, RUN_ID, CID)) is None
+    # With its own verified message the same run answers as a PC command result.
+    store = _store(
+        dispatch={"command_id": "command_1", "revision_ref": "revision_1"},
+        run_row=run_row,
+        messages=[{"id": "msg_ltr_x", "content": "PC COMMAND OUTPUT"}],
+    )
+    resolved = asyncio.run(store.get_claw_run_result(OWNER, RUN_ID, CID))
+    assert resolved == {
+        "answer": "PC COMMAND OUTPUT", "answer_source": "pc_command_result",
+    }
+
+
+def test_a_model_reply_requires_the_server_verified_model_only_action():
+    """Only a run the server recorded as model-only may answer with a model reply."""
+    for action in ("txt_read", "desktop_capture", "", None):
+        run_row = {
+            "id": RUN_ID, "action": action, "status": "completed",
+            "conversation_id": CID,
+        }
+        store = _store(
+            run_row=run_row,
+            messages=[{"id": MESSAGE_ID, "content": ANSWER}],
+        )
+        assert asyncio.run(store.get_claw_run_result(OWNER, RUN_ID, CID)) is None, action
+    # The model-only action the general lane itself records does answer.
+    store = _store(
+        run_row={
+            "id": RUN_ID, "action": "general", "status": "completed",
+            "conversation_id": CID,
+        },
+        messages=[{"id": MESSAGE_ID, "content": ANSWER}],
+    )
+    resolved = asyncio.run(store.get_claw_run_result(OWNER, RUN_ID, CID))
+    assert resolved == {"answer": ANSWER, "answer_source": "model_reply"}
 
 
 def test_command_run_result_keeps_the_verified_pc_source():
