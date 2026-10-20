@@ -32,6 +32,15 @@ _deploy_config = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_deploy_config)
 parse_live_bindings = _deploy_config.parse_live_bindings
 
+_served_version_spec = importlib.util.spec_from_file_location(
+    "b62_cloudflare_served_version", _HERE / "cloudflare_served_version.py"
+)
+assert _served_version_spec is not None and _served_version_spec.loader is not None
+_served_version = importlib.util.module_from_spec(_served_version_spec)
+_served_version_spec.loader.exec_module(_served_version)
+canonical_served_version_id = _served_version.resolve_served_version_id
+is_safe_version_id = _served_version.is_safe_version_id
+
 _guard_spec = importlib.util.spec_from_file_location(
     "b62_binding_state_guard", _HERE / "b62_binding_state_guard.py"
 )
@@ -476,6 +485,60 @@ def verify_chat_orchestration(
         )
 
 
+def latest_published_version_id(versions_payload: object) -> str | None:
+    """The id of the newest published Worker version, or ``None``.
+
+    The Cloudflare versions endpoint returns the newest version first. A
+    payload that does not carry exactly one usable id is refused rather than
+    guessed, so a check can never compare against an invented version.
+    """
+    if not isinstance(versions_payload, dict) or versions_payload.get("success") is not True:
+        return None
+    result = versions_payload.get("result")
+    if not isinstance(result, dict):
+        return None
+    items = result.get("items")
+    if not isinstance(items, list) or not items:
+        return None
+    first = items[0]
+    if not isinstance(first, dict):
+        return None
+    value = first.get("id")
+    if not isinstance(value, str) or not value:
+        return None
+    return value
+
+
+def verify_latest_served_version(
+    *, deployments: object, versions_payload: object
+) -> str:
+    """Refuse the activation unless the live active version is the latest one.
+
+    A settings PATCH mutates the script the current deployment serves. When the
+    newest published version is not the served one, live traffic runs a
+    different version than the one the activation would become, so the check
+    fails closed before any mutation. It also refuses when the served version
+    cannot be resolved or the latest id is unusable, because an unconfirmed
+    comparison is not a confirmation.
+
+    Returns the served version id when the two agree.
+    """
+    try:
+        active = canonical_served_version_id(deployments)
+    except _served_version.ServedVersionResolutionError as exc:
+        raise ActivationPlanError(
+            "the live served version could not be resolved (" + exc.reason + ")"
+        ) from exc
+    latest = latest_published_version_id(versions_payload)
+    if not is_safe_version_id(latest):
+        raise ActivationPlanError("the latest Worker version id is missing or unusable")
+    if active != latest:
+        raise ActivationPlanError(
+            "the live served version is not the latest published version"
+        )
+    return active
+
+
 def source_credential_quality(value: object) -> bool:
     """Bounded UTF-8 byte-quality gate for the replacement source credential.
 
@@ -772,6 +835,7 @@ def main(argv: list[str] | None = None) -> int:
             "verify-oracle-mesh-mode",
             "plan-chat-orchestration",
             "verify-chat-orchestration",
+            "verify-latest-served",
         ),
     )
     parser.add_argument("--settings", type=Path)
@@ -787,6 +851,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--chat-orchestration-rollback", default="false")
     parser.add_argument("--mode", default="")
     parser.add_argument("--deployments", type=Path)
+    parser.add_argument("--versions", type=Path)
     parser.add_argument("--pre-version", default="")
     parser.add_argument("--observations-file", type=Path)
     args = parser.parse_args(args_in)
@@ -815,6 +880,8 @@ def main(argv: list[str] | None = None) -> int:
         return _main_plan_chat_orchestration(args)
     if args.command == "verify-chat-orchestration":
         return _main_verify_chat_orchestration(args)
+    if args.command == "verify-latest-served":
+        return _main_verify_latest_served(args)
 
     if not args.engine_service or not args.r2_bucket:
         print(f"usage: {args.command} requires --engine-service and --r2-bucket", file=sys.stderr)
@@ -1071,6 +1138,35 @@ def _main_verify_chat_orchestration(args: argparse.Namespace) -> int:
     print("CHAT_ORCHESTRATION_ONLY_VARIABLE_CHANGED=YES")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
+    return 0
+
+
+def _main_verify_latest_served(args: argparse.Namespace) -> int:
+    if not args.deployments or not args.versions:
+        print(
+            "usage: verify-latest-served requires --deployments and --versions",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        deployments = json.loads(args.deployments.read_text(encoding="utf-8"))
+        versions = json.loads(args.versions.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(
+            f"B62_CLAW_LATEST_SERVED=FAIL\nREASON={exc}", file=sys.stderr
+        )
+        return 1
+    try:
+        active = verify_latest_served_version(
+            deployments=deployments, versions_payload=versions
+        )
+    except ActivationPlanError as exc:
+        print(f"B62_CLAW_LATEST_SERVED=FAIL\nREASON={exc}", file=sys.stderr)
+        return 1
+    print("B62_CLAW_LATEST_SERVED=PASS")
+    print(f"ACTIVE_VERSION_ID={active}")
+    print("LATEST_EQUALS_ACTIVE=YES")
+    print("SECRET_VALUES_READ=0")
     return 0
 
 

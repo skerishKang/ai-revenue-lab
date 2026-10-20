@@ -173,6 +173,110 @@ def test_targeted_rollback_removes_only_the_orchestration_variable() -> None:
     )
 
 
+def test_latest_served_guard_accepts_the_exact_latest_version():
+    helper = _load_helper()
+    version_id = "3f2b1c40-1111-2222-3333-444455556666"
+    deployments = {
+        "success": True,
+        "result": {"deployments": [{
+            "id": "current",
+            "versions": [{"version_id": version_id, "percentage": 100}],
+        }]},
+    }
+    versions = {"success": True, "result": {"items": [{"id": version_id}]}}
+    assert helper.verify_latest_served_version(
+        deployments=deployments, versions_payload=versions
+    ) == version_id
+
+
+def test_latest_served_guard_refuses_when_the_active_version_is_not_the_latest():
+    helper = _load_helper()
+    deployments = {
+        "success": True,
+        "result": {"deployments": [{
+            "id": "current",
+            "versions": [{"version_id": "aaaa-1111", "percentage": 100}],
+        }]},
+    }
+    versions = {"success": True, "result": {"items": [{"id": "bbbb-2222"}]}}
+    try:
+        helper.verify_latest_served_version(
+            deployments=deployments, versions_payload=versions
+        )
+    except helper.ActivationPlanError as exc:
+        assert "not the latest" in str(exc)
+    else:
+        raise AssertionError("expected refusal when the served version is not the latest")
+
+
+def test_latest_served_guard_refuses_when_the_active_version_cannot_be_resolved():
+    helper = _load_helper()
+    versions = {"success": True, "result": {"items": [{"id": "aaaa-1111"}]}}
+    for deployments in (
+        {"success": False},
+        {"success": True, "result": {"deployments": []}},
+        {"success": True, "result": {"deployments": [{
+            "id": "current",
+            "versions": [{"version_id": "aaaa-1111", "percentage": 50}],
+        }]}},
+        {"success": True, "result": {"deployments": [{
+            "id": "current", "versions": [],
+        }]}},
+    ):
+        try:
+            helper.verify_latest_served_version(
+                deployments=deployments, versions_payload=versions
+            )
+        except helper.ActivationPlanError as exc:
+            assert "served version could not be resolved" in str(exc)
+        else:
+            raise AssertionError("expected refusal for an unresolvable served version")
+
+
+def test_latest_served_guard_refuses_when_the_latest_id_is_missing_or_unusable():
+    helper = _load_helper()
+    deployments = {
+        "success": True,
+        "result": {"deployments": [{
+            "id": "current",
+            "versions": [{"version_id": "aaaa-1111", "percentage": 100}],
+        }]},
+    }
+    for versions in (
+        {"success": False},
+        {"success": True, "result": {"items": []}},
+        {"success": True, "result": {"items": [{}]}},
+        {"success": True, "result": {"items": [{"id": ""}]}},
+        {"success": True, "result": {"items": [{"id": "bad id with spaces"}]}},
+    ):
+        try:
+            helper.verify_latest_served_version(
+                deployments=deployments, versions_payload=versions
+            )
+        except helper.ActivationPlanError as exc:
+            assert "latest Worker version id" in str(exc)
+        else:
+            raise AssertionError("expected refusal for an unusable latest version id")
+
+
+def test_the_latest_served_guard_runs_before_the_patch_and_aborts_it():
+    text = WORKFLOW.read_text(encoding="utf-8")
+    job = text.split("  activate-chat-orchestration:", 1)[1]
+    guard = job.index("Refuse the PATCH unless the live active version is the latest version")
+    patch = job.index("Apply the one-variable Chat orchestration patch through the settings API")
+    assert guard < patch
+    guard_block = job[guard:patch]
+    assert "verify-latest-served" in guard_block
+    # A refused comparison aborts the job before the PATCH runs.
+    assert "CHAT_ORCHESTRATION_PATCH_BLOCKED_LATEST_NOT_SERVED=YES" in guard_block
+    assert "CHAT_ORCHESTRATION_PATCH=NOT_APPLIED" in guard_block
+    assert "exit 1" in guard_block
+    assert "PRODUCTION_MUTATION=0" in guard_block
+    # The guard reads the live deployment and version state itself.
+    assert "/deployments" in guard_block
+    assert "/versions?page=1&per_page=1" in guard_block
+
+
 def test_workflow_exposes_the_reviewed_activation_and_rollback_paths() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "activate_chat_orchestration" in text
@@ -215,6 +319,11 @@ if __name__ == "__main__":
     test_plan_refuses_to_overwrite_a_retyped_or_unexpected_value()
     test_verify_accepts_exactly_one_changed_name_and_refuses_drift()
     test_targeted_rollback_removes_only_the_orchestration_variable()
+    test_latest_served_guard_accepts_the_exact_latest_version()
+    test_latest_served_guard_refuses_when_the_active_version_is_not_the_latest()
+    test_latest_served_guard_refuses_when_the_active_version_cannot_be_resolved()
+    test_latest_served_guard_refuses_when_the_latest_id_is_missing_or_unusable()
+    test_the_latest_served_guard_runs_before_the_patch_and_aborts_it()
     test_workflow_exposes_the_reviewed_activation_and_rollback_paths()
     test_the_variable_stays_a_live_settings_authority_not_a_source_declaration()
     print("B62_CHAT_ORCHESTRATION_ACTIVATION_TESTS=PASS")

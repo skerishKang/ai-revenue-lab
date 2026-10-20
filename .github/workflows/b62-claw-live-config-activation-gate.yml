@@ -1533,6 +1533,26 @@ jobs:
           echo 'CHAT_ORCHESTRATION_LIVE_UNCHANGED_SINCE_SNAPSHOT=PASS'
           echo 'SECRET_VALUES_READ=0'
 
+      - name: Refuse the PATCH unless the live active version is the latest version
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${RUNNER_TEMP}/chat-orchestration-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/versions?page=1&per_page=1" -o "${RUNNER_TEMP}/chat-orchestration-versions.json"
+          if ! python .github/scripts/b62_claw_live_config_activation.py verify-latest-served \
+            --deployments "${RUNNER_TEMP}/chat-orchestration-deployments.json" \
+            --versions "${RUNNER_TEMP}/chat-orchestration-versions.json"; then
+            echo 'CHAT_ORCHESTRATION_PATCH_BLOCKED_LATEST_NOT_SERVED=YES' >&2
+            echo 'CHAT_ORCHESTRATION_PATCH=NOT_APPLIED' >&2
+            echo 'PRODUCTION_MUTATION=0' >&2
+            echo 'DO_NOT_PATCH_A_DIFFERENT_VERSION=YES' >&2
+            exit 1
+          fi
+          echo 'CHAT_ORCHESTRATION_LATEST_EQUALS_ACTIVE=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
       - name: Apply the one-variable Chat orchestration patch through the settings API
         if: ${{ env.CHAT_ORCHESTRATION_NO_OP != '1' }}
         shell: bash
