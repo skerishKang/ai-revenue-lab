@@ -1,5 +1,5 @@
 name: COM2 B62 Structured Answer Canary
-# Isolated non-required canary; existing hosted Deep Research browser QA remains unchanged.
+# Isolated non-required canary; existing hosted Structured Answer browser QA remains unchanged.
 on:
   workflow_run:
     workflows: ["COM2 PR Policy Trigger"]
@@ -59,7 +59,7 @@ jobs:
           persist-credentials: false
           clean: true
           path: sandbox-input
-      - name: Execute offline read-only COM2 Deep Research browser QA
+      - name: Execute offline read-only COM2 Structured Answer browser QA
         id: test
         if: steps.target.outputs.selected == 'true'
         shell: bash
