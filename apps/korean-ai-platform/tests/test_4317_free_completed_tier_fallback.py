@@ -140,8 +140,50 @@ def test_the_gateway_walks_the_owner_roster_after_a_recoverable_failure(client, 
     assert business["attempt_evidence"][1]["outcome"] == "success"
 
 
+def test_the_owner_roster_walk_terminates_when_every_candidate_fails(client, monkeypatch):
+    """Every candidate is tried once and the bounded error is surfaced.
+
+    This is the other half of the no-infinite-loop contract: the walk ends
+    after the candidates the grade allows, instead of retrying one candidate
+    or walking an unbounded list.
+    """
+    from app.pilot import b14_runtime_config as rcfg
+    from app.pilot import platform as plat
+
+    rcfg.provider_mode = "live"
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+    _ready(monkeypatch)
+
+    original = plat.call_platform_chat_completions
+    calls: list[dict] = []
+
+    async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages,
+                   temperature=0.2, max_tokens=300, transport=None):
+        calls.append({"model_id": model_id})
+        raise UpstreamServerError()
+
+    plat.call_platform_chat_completions = fake
+    try:
+        response = client.post(
+            "/api/pilot/v1/chat/completions",
+            json={
+                "model": TIER_DEFAULT_B14_MODEL,
+                "messages": [{"role": "user", "content": "hi"}],
+                "business14": dict(COMPLETED_CHAT_OPTIONS),
+            },
+        )
+    finally:
+        plat.call_platform_chat_completions = original
+
+    # The primary plus every roster candidate, each exactly once, and no more.
+    expected = [TIER_DEFAULT_B14_MODEL, *FREE_ROSTER]
+    assert [call["model_id"] for call in calls] == expected
+    assert len({call["model_id"] for call in calls}) == len(calls)
+    assert response.status_code >= 400
+    assert response.json()["error"]["attempt_count"] == len(expected)
+
+
 def test_the_gateway_does_not_advance_on_a_non_recoverable_failure(client, monkeypatch):
-    """An auth failure fails closed instead of trying another model."""
     from app.pilot import b14_runtime_config as rcfg
     from app.pilot import platform as plat
 
