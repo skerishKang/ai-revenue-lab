@@ -31,6 +31,7 @@ from padiem_ai_core import (
     OrchestrationResult,
     orchestration_result_from_public,
 )
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_ai_engine_client import PadiemAiEngineClientError
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
@@ -151,7 +152,6 @@ _ENGINE_ADMISSION_CODES = frozenset(
 
 
 _BOUNDED_ENGINE_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
-_PC_DEVICE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
 def _bounded_engine_error_code(record: object) -> str:
@@ -603,7 +603,7 @@ class P01EngineOrchestrationClient:
         if not isinstance(target, dict) or set(target) != {"device_id"}:
             return False
         device_id = target.get("device_id")
-        return isinstance(device_id, str) and bool(_PC_DEVICE_ID_RE.fullmatch(device_id))
+        return is_pc_device_id(device_id)
 
     def _is_trusted_capture_request(self, request: OrchestrationRequest) -> bool:
         """Exact Claw-owned, one-capture plan only; never general tool authority."""

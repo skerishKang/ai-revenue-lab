@@ -28,6 +28,25 @@ CATALOG = {
                 "disabled_models": ["google/gemma-safe"]},
     },
 }
+# The central per-product/per-grade route ledger is runtime-enforced and is the
+# administrator's own placement source, so the console reads it directly.
+ROUTES = {
+    "ok": True, "workspace": "padiem-global", "revision": 3,
+    "routes": [
+        {"product": "chat", "tier": "FREE", "primary_model_id": "google/gemini-safe",
+         "fallback_model_id": None, "enabled": True},
+        {"product": "claw", "tier": "PLUS", "primary_model_id": "google/gemini-safe",
+         "fallback_model_id": "google/gemma-safe", "enabled": True},
+        {"product": "b66", "tier": "MAX", "primary_model_id": "google/gemma-safe",
+         "fallback_model_id": None, "enabled": False},
+    ],
+    "static": {
+        product: {tier: {"primary_model_id": None, "fallback_model_id": None}
+                  for tier in ("FREE", "PLUS", "PRO", "MAX")}
+        for product in ("chat", "claw", "b66")
+    },
+    "write_enabled": False, "runtime_enforced": True, "events": [],
+}
 
 
 def _mock(page, *, authorized=True, snapshot=None):
@@ -51,6 +70,8 @@ def _mock(page, *, authorized=True, snapshot=None):
                 body = {"ok": True, "admin": True, "write_enabled": False}
             elif path == "/api/admin/models/snapshot":
                 body = snapshot if snapshot is not None else CATALOG
+            elif path == "/api/admin/models/routes":
+                body = ROUTES
             elif path == "/api/admin/models/preview":
                 data = json.loads(route.request.post_data)
                 body = {"ok": True, "mode": "preview_only", "applied": False,
@@ -87,6 +108,11 @@ def test_compact_model_dashboard_preview_and_accessible_controls(width):
             assert page.locator("#selectedId").inner_text() == "google/gemini-safe"
             assert page.locator("#modelPlacement .placement-item").count() == 6
             assert "PLUS" in page.locator("#modelPlacement").inner_text()
+            # The central route ledger is the runtime-enforced placement, so the
+            # panel shows the real per-product grade assignment of this model.
+            placement = page.locator("#modelPlacement").inner_text()
+            assert "FREE 기본" in placement
+            assert "실행 경로 3" in placement
             page.get_by_role("checkbox", name="중앙 정책 변경 대상").check()
             page.get_by_role("checkbox", name="Claw 변경 대상").check()
             assert page.locator("#targetCount").inner_text() == "2"
@@ -104,9 +130,10 @@ def test_compact_model_dashboard_preview_and_accessible_controls(width):
             page.get_by_role("button", name="도움말 닫기").click()
             assert not page.get_by_role("dialog").is_visible()
 
-            assert [entry["method"] for entry in seen] == ["GET", "GET", "POST"]
+            assert [entry["method"] for entry in seen] == ["GET", "GET", "GET", "POST"]
             assert set(entry["path"] for entry in seen) <= {
-                "/api/admin/models/me", "/api/admin/models/snapshot", "/api/admin/models/preview",
+                "/api/admin/models/me", "/api/admin/models/snapshot",
+                "/api/admin/models/routes", "/api/admin/models/preview",
             }
         finally:
             browser.close()
@@ -186,7 +213,7 @@ def test_glass_tone_matches_chat_palette_without_changing_admin_behavior(width):
             assert "blur(" in values["backdrop"]
             assert "rgba(47, 56, 65" in values["header"]
             assert values["overflow"] is False
-            assert [request["method"] for request in seen] == ["GET", "GET"]
+            assert [request["method"] for request in seen] == ["GET", "GET", "GET"]
             assert not page.locator("#previewResult").is_visible()
         finally:
             browser.close()
@@ -204,7 +231,7 @@ def test_admin_brand_and_icons_match_chat_glass_without_ui_regressions(width):
             page.get_by_role("heading", name="모델과 사용 위치").wait_for()
             page.locator("#modelCount").get_attribute("id")
             assert page.locator(".brand-symbol").inner_text() == "P"
-            assert page.locator(".nav-link .nav-icon svg").count() == 2
+            assert page.locator(".nav-link .nav-icon svg").count() == 3
             assert page.locator(".route-icon svg").count() == 3
             assert page.locator(".target-grid .product-icon").count() == 5
             assert page.locator("#helpBtn svg, #refreshBtn svg").count() == 2
@@ -232,7 +259,7 @@ def test_admin_brand_and_icons_match_chat_glass_without_ui_regressions(width):
             page.get_by_role("button", name="모델 관리자 도움말").click()
             assert page.get_by_role("dialog").is_visible()
             page.get_by_role("button", name="도움말 닫기").click()
-            assert [entry["method"] for entry in seen] == ["GET", "GET"]
+            assert [entry["method"] for entry in seen] == ["GET", "GET", "GET"]
         finally:
             browser.close()
 
@@ -284,7 +311,7 @@ def test_full_b14_inventory_shows_off_but_never_enables_preview(width):
             assert page.locator("#previewBtn").is_enabled()
             page.locator("#previewBtn").click()
             page.get_by_text("변경안 검증 완료").wait_for()
-            assert [call["method"] for call in seen] == ["GET", "GET", "POST"]
+            assert [call["method"] for call in seen] == ["GET", "GET", "GET", "POST"]
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         finally:
             browser.close()
@@ -312,7 +339,7 @@ def test_central_d1_rules_visible_as_stored_only_not_executing():
             assert "실제 실행 미적용" in page.locator("#sourceList").inner_text()
             assert not page.locator("#previewResult").is_visible()
             assert page.get_by_text("미리보기 전용", exact=True).count() >= 1
-            assert [call["method"] for call in seen] == ["GET", "GET"]
+            assert [call["method"] for call in seen] == ["GET", "GET", "GET"]
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         finally:
             browser.close()

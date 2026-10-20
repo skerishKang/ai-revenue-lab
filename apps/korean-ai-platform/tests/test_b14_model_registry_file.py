@@ -223,12 +223,15 @@ def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
     wrangler = (root / "wrangler.toml").read_text(encoding="utf-8")
     import tomllib
     bindings = tomllib.loads(wrangler)["secrets_store_secrets"]
-    for name in ("PADIEM_B14_CREDENTIAL_11", "PADIEM_B14_CREDENTIAL_14"):
-        matches = [x for x in bindings if x["binding"] == name]
+    for binding, secret_name in (
+        ("PADIEM_B14_CREDENTIAL_11", "PADIEM_OPENCODE_API_KEY"),
+        ("PADIEM_B14_CREDENTIAL_14", "PADIEM_ZANSLAB_API_KEY"),
+    ):
+        matches = [x for x in bindings if x["binding"] == binding]
         assert len(matches) == 1
         assert matches[0] == {
-            "binding": name,
-            "secret_name": name,
+            "binding": binding,
+            "secret_name": secret_name,
             "store_id": "f0b09ca04a7b43248154c773704a5616",
         }
     assert len({x["binding"] for x in bindings}) == len(bindings)

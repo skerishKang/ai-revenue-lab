@@ -24,6 +24,7 @@ from app.pilot.router_core import resolve_manual_route
 
 PROVIDER = "tokenharbor"
 BINDING = "PADIEM_B14_CREDENTIAL_13"
+SECRET_NAME = "PADIEM_TOKEN_HARBOR_API_KEY"
 ORIGIN = "https://tokenharbor.ai/v1"
 ALLOWED = {
     "tokenharbor/deepseek-v4.1-flash:free": "deepseek-v4.1-flash:free",
@@ -80,7 +81,7 @@ def test_worker_and_wrangler_use_approved_existing_store_metadata_only():
     assert ours == [{
         "binding": BINDING,
         "store_id": "f0b09ca04a7b43248154c773704a5616",
-        "secret_name": BINDING,
+        "secret_name": SECRET_NAME,
     }]
     assert BINDING in (root / "worker.py").read_text(encoding="utf-8")
     assert get_platform_provider(PROVIDER).credential_binding_name == BINDING

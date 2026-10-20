@@ -108,7 +108,23 @@ _PC_PLAN_STEPS = MappingProxyType({
         ("read_file", "claw.pc.read_file"),
     ),
 })
-_PC_DEVICE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
+#: Canonical PC device identity grammar (#5172). This client package has no
+#: runtime dependency, so the two patterns are copied verbatim from
+#: ``padiem_ai_core.pc_device_identity`` and a parity test proves the copies
+#: stay identical to that single authority.
+PC_DEVICE_ID_PATTERN = r"^[A-Za-z0-9_.:@+-]{1,128}$"
+PC_MESH_NODE_ID_PATTERN = r"^node/[A-Za-z0-9._-]{0,64}/[A-Za-z0-9_.:@+-]{1,128}$"
+_PC_DEVICE_ID_RE = re.compile(PC_DEVICE_ID_PATTERN)
+_PC_MESH_NODE_ID_RE = re.compile(PC_MESH_NODE_ID_PATTERN)
+
+
+def _is_pc_device_id(value: Any) -> bool:
+    """True for the canonical bare or composed Mesh device identity."""
+    if not isinstance(value, str) or not value:
+        return False
+    return bool(
+        _PC_DEVICE_ID_RE.fullmatch(value) or _PC_MESH_NODE_ID_RE.fullmatch(value)
+    )
 
 
 def _trusted_pc_tool_arguments(agent_plan: Any, tool_arguments: Any) -> bool:
@@ -135,7 +151,7 @@ def _trusted_pc_tool_arguments(agent_plan: Any, tool_arguments: Any) -> bool:
     if not isinstance(entry, Mapping) or set(entry) != {"device_id"}:
         return False
     device_id = entry.get("device_id")
-    return isinstance(device_id, str) and bool(_PC_DEVICE_ID_RE.fullmatch(device_id))
+    return _is_pc_device_id(device_id)
 
 ORCHESTRATION_FIELD_PARITY = MappingProxyType(
     {

@@ -82,8 +82,21 @@ async function refresh(){
      set("pc","on");
      pcTruth("online","\uC5F0\uACB0\uB418\uC5C8\uC2B5\uB2C8\uB2E4","Connected");
     }else if(records.every(x=>x&&["PAIRING","OFFLINE","REVOKED","ACTION_REQUIRED"].includes(x.state))){
+     // One generic line cannot help anyone: a revoked binding, an expired
+     // credential, a PC that is simply offline and a Mesh target whose online
+     // state was never observed are four different problems with four
+     // different fixes. The server already distinguishes them, so the card
+     // names the real one.
      set("pc","off");
-     pcTruth("offline","\uC5F0\uACB0 \uD655\uC778 \uD544\uC694","Connection needs checking");
+     if(records.every(x=>x?.revoked===true)){
+      pcTruth("revoked","연결이 철회되었습니다 · 다시 연결해 주세요","Connection revoked · reconnect needed");
+     }else if(records.every(x=>x?.expired===true)){
+      pcTruth("expired","인증이 만료되었습니다 · 다시 연결해 주세요","Credential expired · reconnect needed");
+     }else if(records.every(x=>x?.state==="ACTION_REQUIRED")){
+      pcTruth("executable","실행 대상 준비 · 온라인 상태 미확인","Execution target ready · online status unverified");
+     }else{
+      pcTruth("offline","\uC5F0\uACB0 \uD655\uC778 \uD544\uC694","Connection needs checking");
+     }
     }
    }
   }

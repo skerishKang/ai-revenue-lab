@@ -302,7 +302,11 @@
   // ---------------------------------------------------------------------------
 
   const DEVICE_DIRECTORY_LIMIT = 24;
-  const DEVICE_ID_PATTERN = /^[A-Za-z0-9_.:-]{1,128}$/;
+  // #5172 — the same canonical device identity grammar the server uses. The
+  // bare form and the composed Mesh node form ("node/<domain>/<node-id>",
+  // with the default domain empty) are both a real PC identity, and the
+  // browser must project exactly the value the server proved.
+  const DEVICE_ID_PATTERN = /^[A-Za-z0-9_.:@+-]{1,128}$|^node\/[A-Za-z0-9._-]{0,64}\/[A-Za-z0-9_.:@+-]{1,128}$/;
 
   function deriveDeviceDirectory(raw, selectedDeviceId) {
     const empty = (reason) => Object.freeze({
@@ -349,6 +353,11 @@
         // Not an execution grant: only a server-confirmed canonical fact.
         online: projection.usable && projection.state === "CONNECTED",
         revoked,
+        // The server already distinguishes an expired credential from a PC
+        // that is merely offline. Keeping the fact lets the surface name the
+        // actual reason instead of one generic "needs checking" line. It is
+        // presentation only: an expired row stays unselectable either way.
+        expired: projection.expired === true,
         executable,
         selectable,
       }));

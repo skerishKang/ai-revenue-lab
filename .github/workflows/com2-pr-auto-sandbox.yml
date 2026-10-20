@@ -1,0 +1,85 @@
+name: COM2 PR Auto Sandbox
+
+# Trusted default-branch workflow. Never execute fork pull requests on COM2.
+on:
+  workflow_run:
+    workflows: ["COM2 PR Policy Trigger"]
+    types: [completed]
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+concurrency:
+  group: com2-auto-${{ github.event.workflow_run.pull_requests[0].number || github.event.workflow_run.id }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.pull_requests[0].number != null
+    name: COM2 auto PR policy sandbox
+    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
+    timeout-minutes: 10
+    steps:
+      - name: Resolve exact still-open PR head
+        id: target
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.workflow_run.pull_requests[0].number }}
+          EXPECTED: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$PR" =~ ^[1-9][0-9]{0,7}$ ]]
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          data="$(curl --fail --silent --show-error --header "Authorization: Bearer $GH_TOKEN" --header "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["head"]["sha"], d["state"], d["head"]["repo"]["full_name"])')"
+          [[ "$data" == "$EXPECTED open $GITHUB_REPOSITORY" ]]
+          echo "sha=$EXPECTED" >> "$GITHUB_OUTPUT"
+      - name: Mark COM2 full policy as pending on exact PR HEAD
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --request POST \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${SHA}" \
+            --data "$(python3 -c 'import json,os; print(json.dumps({"state":"pending","context":"COM2 full policy","description":"COM2 isolated policy verification running","target_url":f"https://github.com/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}"}))')"
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.sha }}
+          persist-credentials: false
+          filter: blob:none
+          clean: true
+          path: sandbox-input
+      - name: Run full bounded offline policy suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo -n /usr/local/sbin/padiem-ci-full-policy-check
+          echo "COM2_AUTO_PR_FULL_POLICY=PASS"
+
+      - name: Publish exact PR HEAD full policy result
+        if: ${{ always() && steps.target.outputs.sha != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+          RESULT: ${{ job.status }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export STATE=failure
+          if [[ "$RESULT" == success ]]; then export STATE=success; fi
+          payload="$(python3 -c 'import json,os; print(json.dumps({"state":os.environ["STATE"],"context":"COM2 full policy","description":"COM2 isolated full policy suite: "+os.environ["STATE"],"target_url":"https://github.com/"+os.environ["GITHUB_REPOSITORY"]+"/actions/runs/"+os.environ["GITHUB_RUN_ID"]}))')"
+          curl --fail --silent --show-error --request POST \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${SHA}" \
+            --data "$payload"

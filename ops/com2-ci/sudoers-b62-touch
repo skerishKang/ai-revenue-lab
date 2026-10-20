@@ -1,0 +1,1 @@
+padiem-ci ALL=(root) NOPASSWD: /usr/local/sbin/padiem-ci-b62-touch-check
