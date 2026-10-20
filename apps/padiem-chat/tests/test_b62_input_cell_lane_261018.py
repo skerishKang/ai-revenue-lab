@@ -24,6 +24,7 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 FRAME = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
 GLASS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
 CLAW = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
+WORKSPACE = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
 
 
 def _body(css: str, selector: str) -> str:
@@ -111,10 +112,21 @@ def test_the_claw_conversation_clearance_tracks_the_measured_composer() -> None:
     status/cancel row (+25px). Chat already reads the runtime
     `--padiem-composer-clearance`; the Claw workbench rule pinned 218px, so a
     grown composer left the user's last turn sitting under the glass input.
+
+    The same measured clearance is now the single authority for every
+    document-scrolling surface above the fixed composer: the conversation
+    lane (home, chat and the Claw landing), the Claw workbench canvas and
+    the Claw workspace strip.
     """
     rule = _body(
         CLAW,
         '.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) .conversation',
     )
-    assert "padding-bottom: var(--padiem-composer-clearance" in rule, rule
+    assert "var(--padiem-composer-clearance" in rule, rule
     assert "padding-bottom: 218px" not in rule, "a constant inset cannot track a growing composer"
+    # No arbitrary pixel inset may stand in for the measured composer.
+    for constant in ("padding-bottom: 280px", "max-height: calc(100dvh - 92px)"):
+        assert constant not in CLAW, f"an arbitrary inset cannot track a growing composer: {constant}"
+    # The Claw workbench strip reserves the same measured clearance.
+    assert "var(--padiem-composer-clearance" in WORKSPACE, WORKSPACE
+    assert "padding: clamp(20px, 5vh, 48px) 0 280px" not in WORKSPACE

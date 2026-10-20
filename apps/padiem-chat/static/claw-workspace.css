@@ -22,15 +22,16 @@
   display: block;
   /* The Claw result/forms live in this shared column while the composer is
    * fixed. Own the long manual surface here instead of letting the column
-   * expand below the viewport and hide the composer clearance. */
+   * expand below the viewport and hide the composer clearance. This canvas
+   * scrolls, so it reserves the fixed composer area with the measured
+   * --padiem-composer-clearance instead of an arbitrary inset. */
   min-height: 0;
-  /* Theme breathing margins can move this surface below the 66px topbar;
-   * reserve a stable 96px so the scroll viewport never extends behind the
-   * bottom edge or the fixed composer across tablet/mobile/desktop. */
-  max-height: calc(100vh - 96px);
+  max-height: none;
   overflow-y: auto;
   overscroll-behavior-y: contain;
-  padding-bottom: 280px;
+  padding-bottom: calc(
+    var(--padiem-composer-clearance, 280px) + var(--padiem-visual-keyboard-inset, 0px)
+  );
 }
 .app-shell[data-state="claw"] .conversation .empty-state {
   display: none;
@@ -93,11 +94,18 @@
   flex: 1;
   width: min(800px, calc(100% - 40px));
   margin: 0 auto;
-  /* Room for the fixed composer + Claw mode bar (#2532). */
-  padding: clamp(20px, 5vh, 48px) 0 280px;
+  /* This strip scrolls with the document, so it reserves the fixed composer
+   * area at its own end, exactly like the conversation lane. The measured
+   * --padiem-composer-clearance replaces the old arbitrary 280px inset, so
+   * the Claw connection guidance and the workspace views can never run under
+   * the input. */
+  padding: clamp(20px, 5vh, 48px) 0 calc(
+    var(--padiem-composer-clearance, 280px) + var(--padiem-visual-keyboard-inset, 0px)
+  );
   flex-direction: column;
   gap: 18px;
   overflow-y: auto;
+  min-height: 0;
   box-sizing: border-box;
 }
 

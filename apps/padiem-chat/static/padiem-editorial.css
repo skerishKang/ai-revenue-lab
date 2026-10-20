@@ -79,6 +79,16 @@
   align-items: end;
 }
 
+@media (max-width: 620px) {
+  /* A phone cannot afford the 300px editorial column: it pushed the home
+   * cards past the viewport and made the whole page scroll sideways. Every
+   * home item already spans both columns, so a single column is the same
+   * composition without the horizontal overflow. */
+  .empty-state {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .eyebrow,
 .empty-state h1,
 .starter-grid {

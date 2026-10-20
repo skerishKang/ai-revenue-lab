@@ -29,7 +29,11 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-wor
    * reclaimed and the lane stays centred instead of left-anchored. */
   width: min(1200px, calc(100% - 48px));
   margin: 14px auto 0;
-  padding: 24px clamp(18px, 2.4vw, 34px) calc(var(--claw-composer-clearance, 174px) + 42px);
+  /* The landing scrolls with the document, so it reserves the fixed composer
+   * area at its own end, exactly like the Chat lane. */
+  padding: 24px clamp(18px, 2.4vw, 34px) calc(
+    var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)
+  );
   /* Same panel language as Chat: translucent glass, soft white border, 30px. */
   border: 1px solid var(--glass-chat-border, rgba(255, 255, 255, .58));
   border-radius: 30px;
@@ -37,8 +41,11 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-wor
   box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72);
   backdrop-filter: blur(30px) saturate(106%);
   -webkit-backdrop-filter: blur(30px) saturate(106%);
-  max-height: calc(100dvh - 92px);
-  scroll-padding-bottom: calc(var(--claw-composer-clearance, 174px) + 18px);
+  /* The flexbox bounds this canvas inside the column. */
+  max-height: none;
+  scroll-padding-bottom: calc(
+    var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
+  );
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .topbar {
   /* Chat's dark translucent topbar; its light icon buttons need this contrast. */
@@ -236,7 +243,9 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
 @media (max-width: 1100px) {
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
     width: min(1200px, calc(100% - 32px));
-    padding: 18px 18px calc(var(--claw-composer-clearance, 174px) + 26px);
+    padding: 18px 18px calc(
+      var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)
+    );
   }
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .composer-wrap {
     width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - 48px));
@@ -287,7 +296,9 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
    * (the old rule left Claw 6px wider than Chat). */
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
     width: min(760px, calc(100% - 28px));
-    padding: 14px 12px calc(var(--claw-composer-clearance, 132px) + 20px);
+    padding: 14px 12px calc(
+      var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)
+    );
   }
   @media (max-width: 620px) {
     html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .conversation {
@@ -992,13 +1003,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   max-height: none;
   overflow-y: visible;
   overscroll-behavior-y: auto;
-  /* Must track the composer's measured height, not a constant. The composer
-   * grows with the attachment tray, the model row and the cancel/status row,
-   * and a fixed inset leaves the last turn sitting under the glass input.
-   * The software-keyboard inset is added because the fixed composer is raised
-   * by exactly that amount while the keyboard is open. */
+  /* The landing scrolls with the document, so it reserves the fixed composer
+   * area at its own end, exactly like the Chat lane. */
   padding-bottom: calc(
-    var(--padiem-composer-clearance, 218px) + var(--padiem-visual-keyboard-inset, 0px)
+    var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)
   );
 }
 @media (max-width: 620px) {
@@ -1131,14 +1139,13 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     right: 9px;
     bottom: 8px;
   }
-  /* Last turn belongs above the fixed composer even as its measured height
-   * changes for attachments or the mobile software keyboard. */
+  /* The landing keeps the same measured clearance as the Chat lane. */
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation {
     scroll-padding-bottom: calc(
-      var(--padiem-composer-clearance, 218px) + var(--padiem-visual-keyboard-inset, 0px) + 24px
+      var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
     );
     padding-bottom: calc(
-      var(--padiem-composer-clearance, 218px) + var(--padiem-visual-keyboard-inset, 0px) + 36px
+      var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
     );
   }
 }
