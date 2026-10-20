@@ -27,11 +27,13 @@
     freezeFormat({ label: "XLSX", extensions: [".xlsx"], mediaTypes: ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"] }),
   ]);
 
+  // #4379: an attached image or binary document carries no PADIEM byte
+  // total. The platform request limit and the provider limit are the real
+  // ceilings, and the route reader stays incremental instead of applying a
+  // product-side maximum. The text bounds below are a data shape, not a total.
   const limits = Object.freeze({
-    imageBytes: 1024 * 1024 * 1024,
     textBytes: 96 * 1024,
     textChars: 40000,
-    binaryBytes: 1024 * 1024 * 1024,
   });
 
   const allDocuments = Object.freeze([...textDocuments, ...binaryDocuments]);
@@ -56,12 +58,10 @@
         imageFormats: imageLabels,
         documentFormats: documentLabels,
         idleNote: `Attach one image (${imageLabels}) or document (${documentLabels}).`,
-        fileButtonTitle: `Attach one image (${imageLabels}, up to 1 GiB) or document (${textLabels}, up to 96 KiB / 40,000 characters; ${binaryLabels}, up to 1 GiB).`,
+        fileButtonTitle: `Attach one image (${imageLabels}) or document (${textLabels}, up to 96 KiB / 40,000 characters; ${binaryLabels}).`,
         unsupportedFormat: `Supported attachment formats: ${imageLabels}, ${documentLabels}.`,
-        imageTooLarge: "Images must be 1 GiB or smaller.",
         textTooLarge: "Text documents must be 96 KiB or smaller.",
         textTooLong: "Text documents must be 40,000 characters or fewer.",
-        binaryTooLarge: `${binaryLabels} documents must be 1 GiB or smaller.`,
       });
     }
 
@@ -69,12 +69,10 @@
       imageFormats: imageLabels,
       documentFormats: documentLabels,
       idleNote: `사진(${imageLabels}) 또는 문서(${documentLabels}) 한 개를 첨부할 수 있습니다.`,
-      fileButtonTitle: `사진(${imageLabels}, 최대 1 GiB) 또는 문서(${textLabels}, 최대 96 KiB/40,000자; ${binaryLabels}, 최대 1 GiB) 한 개를 첨부합니다.`,
+      fileButtonTitle: `사진(${imageLabels}) 또는 문서(${textLabels}, 최대 96 KiB/40,000자; ${binaryLabels}) 한 개를 첨부합니다.`,
       unsupportedFormat: `지원 첨부 형식: ${imageLabels}·${documentLabels}.`,
-      imageTooLarge: "사진은 1 GiB 이하만 첨부할 수 있습니다.",
       textTooLarge: "텍스트 문서는 96 KiB 이하만 첨부할 수 있습니다.",
       textTooLong: "텍스트 문서는 40,000자 이하만 첨부할 수 있습니다.",
-      binaryTooLarge: `${binaryLabels} 문서는 1 GiB 이하만 첨부할 수 있습니다.`,
     });
   }
 
