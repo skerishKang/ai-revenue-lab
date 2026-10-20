@@ -68,8 +68,9 @@ QUOTECORE_CALCULATION_AUTHORITY = True
 # Missing model facts stay explicitly unknown; fabrication is forbidden.
 UNKNOWN = "UNKNOWN"
 
-# Intake-side bounds reused from the B14/file-intake contract (decoded image
-# <= 4 MiB; native text bounded for the gateway text cap).
+# Intake-side bounds reused from the B14/file-intake contract.
+# #4379: an image carries no PADIEM byte total. The native text bound below
+# stays. This symbol is retained for import compatibility.
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
 MAX_EXTRACTION_TEXT_CHARS = 32000
 # Validation bounds below mirror the deployed browser contract
