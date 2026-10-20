@@ -23,6 +23,7 @@ UI_MIXED = "ui_mixed"
 TESTS_ONLY = "tests_only"
 B14_ONLY = "b14_only"
 B14_TESTS_ONLY = "b14_tests_only"
+CORE_PARSER_ONLY = "core_parser_only"
 
 # #4459: source-invariant static UI and changed pytest modules. Run every
 # changed test in the UI-mixed job; no deploy/auth/Worker/CI script ever qualifies.
@@ -69,12 +70,24 @@ def impact_scope(files: object) -> str:
         if not isinstance(path, str) or not (
             path.startswith("apps/padiem-chat/")
             or path.startswith("apps/korean-ai-platform/")
+            or path in {
+                "packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py",
+                "packages/padiem-ai-core/tests/test_isolated_parser_client.py",
+            }
         ):
             return FULL
         # Do not accept malformed paths, explicit traversal or duplicates.
         if not path or "\\" in path or ".." in Path(path).parts or path in paths:
             return FULL
         paths.append(path)
+    # Exact isolated-parser changes do not affect B62 chat routing or Worker bytes.
+    # Preserve the required B62 status with its focused core-parser check.
+    parser_paths = {
+        "packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py",
+        "packages/padiem-ai-core/tests/test_isolated_parser_client.py",
+    }
+    if all(p in parser_paths for p in paths):
+        return CORE_PARSER_ONLY
     # B14 unit-test-only changes never alter either product's shipped sources,
     # pinned dependencies or runtime probes. B14's independent validate-b14-alpha
     # workflow runs the *complete* B14 test suite on every such PR and main push.
