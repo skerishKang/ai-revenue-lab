@@ -95,7 +95,7 @@ def test_readme_matches_current_ephemeral_composer_contract():
     assert "JPEG / PNG / WebP" in README
     assert "TXT / Markdown / CSV / JSON" in README
     assert "PDF / DOCX / PPTX / XLSX" in README
-    assert "raw binary payload up to 2 MiB" in README
+    assert "raw binary payload up to 1 GiB" in README
     assert "existing completed `/api/chat` attachment contract" in README
     assert "frontend does not reimplement document extraction" in README
     assert "PDF, DOCX, PPTX and XLSX extraction are **not supported yet**" not in README

@@ -147,11 +147,11 @@ Composer attachments are request-scoped product inputs and are distinct from per
 Current bounded composer contract:
 
 ```text
-Images:      JPEG / PNG / WebP, one attachment, up to 4 MiB
+Images:      JPEG / PNG / WebP, one attachment, up to 1 GiB
 Text docs:   TXT / Markdown / CSV / JSON, one attachment,
              up to 96 KiB and 40,000 decoded text characters
 Binary docs: PDF / DOCX / PPTX / XLSX, one attachment,
-             raw binary payload up to 2 MiB
+             raw binary payload up to 1 GiB
 ```
 
 Binary extraction remains server-side behind the existing completed `/api/chat` attachment contract; the frontend does not reimplement document extraction.

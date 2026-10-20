@@ -346,9 +346,15 @@
         if (isSameRun(myRun)) stop("user-stopped");
       }
       function handleTurnComplete(event) {
-        // The recognizer fires this only after Stop, all 2xx transcript chunks
-        // (including the tail) and their editable commits complete.
-        if (stoppingRun !== myRun || !event || event.accepted !== true ||
+        /* #4643: a confirmed Live turn is an accepted turn. The recognizer may
+         * report it while the run is still open (Mode 2/3/4 need one auto-send
+         * per utterance without closing the microphone) or while the run is
+         * stopping (the reviewed chunk path reports it after Stop).
+         *
+         * The event carries no send of its own: the mode gate in the shared
+         * voice menu refuses to submit in the basic mode, so Mode 1 stays
+         * manual and Mode 2/3/4 submit exactly once per accepted turn. */
+        if ((!isSameRun(myRun) && stoppingRun !== myRun) || !event || event.accepted !== true ||
             event.endOfTurn !== true || !event.finalId || !state.authenticated ||
             !state.identityKey || state.composing || input.disabled ||
             myRun.initialInput || myRun.manuallyEdited) return;
