@@ -11,7 +11,7 @@ from app.pilot.errors import NoSafeRoute
 # #4379: a pilot image carries no PADIEM byte total. The media type, the
 # magic bytes and the base64 shape stay. This symbol is retained for import
 # compatibility.
-MAX_IMAGE_BYTES = 4 * 1024 * 1024
+MAX_IMAGE_BYTES = 1024 * 1024 * 1024
 _ALLOWED_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 _DATA_PREFIXES = {media: f"data:{media};base64," for media in _ALLOWED_MEDIA_TYPES}
 
