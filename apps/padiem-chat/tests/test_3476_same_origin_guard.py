@@ -18,6 +18,7 @@ from app.config import Settings
 from app.main import create_app
 from app.orchestration_routes import install_orchestration_routes
 from app.request_telemetry import RequestTelemetryMiddleware
+from app.session_revocation_guard import SessionRevocationGuardMiddleware
 from app.same_origin_guard import (
     JSON_CONTENT_TYPE_REQUIRED_CODE,
     ORIGIN_GUARD_UNAVAILABLE_CODE,
@@ -271,6 +272,7 @@ def test_guard_is_installed_by_the_composition_root() -> None:
     assert [layer.cls for layer in _app().user_middleware] == [
         RequestTelemetryMiddleware,
         SameOriginGuardMiddleware,
+        SessionRevocationGuardMiddleware,
     ]
 
 

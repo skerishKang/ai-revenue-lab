@@ -9,7 +9,13 @@ from collections.abc import Callable
 from datetime import datetime, timezone
 from typing import Any
 
-from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
+from padiem_control_plane.auth_sessions import (
+    AuthSessionSnapshot,
+    AuthSessionState,
+    AuthSessionTransition,
+    AuthSessionTransitionKind,
+    apply_auth_session_transition,
+)
 from padiem_control_plane.contracts import (
     CanonicalSubjectRef,
     ControlPlaneContractError,
@@ -853,6 +859,89 @@ class CloudflareCanonicalIdentityAuthorityStore:
             tenant_id,
         )
         return snapshot
+
+    def revoke_auth_session(
+        self,
+        *,
+        product_id: str,
+        session_id: str,
+        now: datetime,
+        reason_code: str = "user_logout",
+    ) -> AuthSessionSnapshot:
+        """Revoke exactly one canonical auth session (#5225).
+
+        The single canonical session store is the revocation authority: a product
+        logout materializes the existing terminal REVOKE transition here instead
+        of minting a second, parallel session or logout registry. No other
+        session of the same subject is touched, so a second device that signed in
+        normally keeps its own session.
+
+        The transition is applied through the canonical
+        :func:`apply_auth_session_transition` contract, so expiry/revocation stay
+        monotonic and a terminal session can never reactivate in place.
+
+        Revocation is idempotent: a session that is already REVOKED (or EXPIRED)
+        is returned unchanged instead of raising, so a repeated logout is safe.
+        """
+
+        product = self._require_product(product_id)
+        if not isinstance(session_id, str) or not _SAFE_ID_RE.fullmatch(session_id):
+            raise ControlPlaneContractError(
+                "invalid_identity_authority",
+                "session_id must be a bounded safe identifier",
+            )
+        rows = _rows(
+            self._sql.exec(
+                "SELECT session_id, product_id, subject_type, subject_id, issued_at, "
+                "expires_at, state, revision, tenant_id FROM canonical_auth_session "
+                "WHERE session_id=?",
+                session_id,
+            )
+        )
+        if not rows:
+            raise ControlPlaneContractError(
+                "canonical_auth_session_not_found",
+                "canonical auth session was not found",
+            )
+        if len(rows) != 1:
+            raise ControlPlaneContractError(
+                "identity_authority_storage_error",
+                "canonical auth session is ambiguous",
+            )
+        snapshot = self._session_from_row(rows[0])
+        if snapshot.product_id != product:
+            # A session of another product is never revocable through this
+            # product's authority, so a product-scoped caller cannot end a
+            # foreign session.
+            raise ControlPlaneContractError(
+                "identity_authority_product_mismatch",
+                "caller product is not authorized by this identity authority",
+            )
+        if snapshot.state is not AuthSessionState.ACTIVE:
+            # Already terminal (revoked or expired): revocation is idempotent and
+            # the current state is the truthful answer.
+            return snapshot
+        occurred_at = _utc(now, "now")
+        if occurred_at < snapshot.issued_at:
+            # A transition cannot occur before issuance; the server clock is
+            # authoritative and is never backdated by a caller.
+            occurred_at = snapshot.issued_at
+        transition = AuthSessionTransition(
+            event_id=self._new_ref("ev_", 16),
+            session_id=snapshot.session_id,
+            kind=AuthSessionTransitionKind.REVOKE,
+            occurred_at=occurred_at,
+            from_revision=snapshot.revision,
+            reason_code=reason_code,
+        )
+        applied = apply_auth_session_transition(snapshot, transition)
+        self._sql.exec(
+            "UPDATE canonical_auth_session SET state=?, revision=? WHERE session_id=?",
+            applied.current.state.value,
+            applied.current.revision,
+            snapshot.session_id,
+        )
+        return applied.current
 
     @staticmethod
     def _session_from_row(row: dict[str, Any]) -> AuthSessionSnapshot:

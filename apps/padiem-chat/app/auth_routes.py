@@ -23,6 +23,7 @@ from .auth import (
     GoogleOAuthClient,
     create_oauth_state,
     create_session_token,
+    decode_session_claims,
     decode_session_token,
     oauth_state_cookie_kwargs,
     session_cookie_kwargs,
@@ -36,7 +37,11 @@ from .b54_canonical_session import (
 )
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .config import Settings
-from .control_plane_identity import TrustedProductAuthEvidence, bridge_trusted_product_auth
+from .control_plane_identity import (
+    PADIEM_CHAT_PRODUCT_ID,
+    TrustedProductAuthEvidence,
+    bridge_trusted_product_auth,
+)
 from .history import HistoryConflict, HistoryStore, PasswordCredential
 from .password_auth import (
     PasswordAuthError,
@@ -47,6 +52,7 @@ from .password_auth import (
     verify_password,
     validate_password,
 )
+from .session_revocation_guard import session_verdict
 
 
 def auth_ready(request: Request) -> bool:
@@ -76,6 +82,20 @@ def password_auth_ready(request: Request) -> bool:
 
 
 def current_user_id(request: Request) -> str | None:
+    """Resolve the signed-in product user for this request.
+
+    #5225: when the canonical session guard resolved a verdict for this
+    request, that verdict is the authority. A revoked, unknown or unbound
+    canonical session never yields a user id, so every protected Chat/Claw API
+    refuses a stored session cookie right after the logout that revoked it.
+    Without a verdict — a deployment without the canonical identity authority,
+    or a directly invoked route handler — the pre-existing cookie-only
+    behaviour is unchanged.
+    """
+
+    verdict = session_verdict(request)
+    if verdict is not None and not verdict.authenticated:
+        return None
     settings: Settings = request.app.state.settings
     return decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
 
@@ -181,19 +201,34 @@ async def _write_identity_shadow_after_login(
     authenticated_at: datetime,
     expires_at: datetime,
     ensure_personal_tenant: bool = False,
-) -> None:
-    """Best-effort shadow write; never turns migration telemetry into login authority.
+) -> str | None:
+    """Establish the canonical B62 session behind a verified login and shadow it.
 
-    The canonical values still come only from the injected trusted Control Plane
-    authority. Failure here means the later shared-authority path has no usable
-    shadow and therefore fails closed; the existing B62 Google login remains
-    available during the migration/shadow phase.
+    The canonical Control Plane identity authority is the single session
+    authority for PADIEM, and this is the production callsite that binds one
+    verified login to exactly one canonical session. #5225 reuses that session:
+    the logout revokes it, so a stored session cookie stops authenticating.
+
+    The only input is the server-verified identity, never request content: no
+    request field can name a user, provider subject, tenant, product or
+    session.
+
+    Returns the canonical session id to bind into the signed session cookie, or
+    ``None`` when this deployment established no canonical session for this
+    login — a deployment without the canonical identity shadow, or a canonical
+    authority that could not confirm the session. Such a session keeps the
+    pre-existing cookie-only behaviour; #5225 adds a revocation path to the
+    canonical session, it never removes the compatibility login.
+
+    The D1 shadow write stays best-effort. It is a non-authoritative local
+    pointer and never turns a migration telemetry write into login authority;
+    a shadow failure therefore does not fail the login.
     """
 
     authority = getattr(request.app.state, "control_plane_identity_authority", None)
     shadow_store = getattr(request.app.state, "identity_shadow_store", None)
     if authority is None or shadow_store is None:
-        return
+        return None
     try:
         bridged = await bridge_trusted_product_auth(
             authority,
@@ -212,7 +247,8 @@ async def _write_identity_shadow_after_login(
         # Shadow/parity collection is intentionally not the compatibility login
         # authority. Shared-authority consumers independently fail closed if the
         # projection/current canonical session cannot later be resolved.
-        return
+        return None
+    return bridged.auth_session.session_id
 
 
 async def establish_b54_canonical_session_after_login(
@@ -337,8 +373,21 @@ async def google_callback(request: Request) -> Response:
         authenticated_epoch = int(datetime.now(timezone.utc).timestamp())
         authenticated_at = datetime.fromtimestamp(authenticated_epoch, tz=timezone.utc)
         expires_at = authenticated_at + timedelta(seconds=settings.session_max_age_seconds)
+        canonical_session_id = await _write_identity_shadow_after_login(
+            request,
+            product_user_id=profile.id,
+            provider="google",
+            provider_subject=identity["subject"],
+            authenticated_at=authenticated_at,
+            expires_at=expires_at,
+        )
         session = (
-            create_session_token(settings, profile.id, now=authenticated_epoch)
+            create_session_token(
+                settings,
+                profile.id,
+                now=authenticated_epoch,
+                canonical_session_id=canonical_session_id,
+            )
             if handoff_record is None
             else None
         )
@@ -349,15 +398,6 @@ async def google_callback(request: Request) -> Response:
             {"error": {"code": "auth_storage_error", "message": "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요."}},
             status_code=503,
         )
-
-    await _write_identity_shadow_after_login(
-        request,
-        product_user_id=profile.id,
-        provider="google",
-        provider_subject=identity["subject"],
-        authenticated_at=authenticated_at,
-        expires_at=expires_at,
-    )
 
     # #3240: the B62 Google login above is already complete and unchanged. The
     # canonical B54 session is additive and best-effort — a B54 failure returns
@@ -514,8 +554,10 @@ async def _identifier_failure_window(
     return window if isinstance(window, AuthAbuseWindow) else UNAVAILABLE_WINDOW
 
 
-def _session_response(settings: Settings, profile) -> JSONResponse:
-    session = create_session_token(settings, profile.id)
+def _session_response(settings: Settings, profile, *, canonical_session_id: str | None = None) -> JSONResponse:
+    session = create_session_token(
+        settings, profile.id, canonical_session_id=canonical_session_id
+    )
     response = JSONResponse({"ok": True, "user": profile.public_dict()})
     response.set_cookie(SESSION_COOKIE, session, **session_cookie_kwargs(settings))
     return response
@@ -562,15 +604,18 @@ async def password_register(request: Request) -> JSONResponse:
     authenticated_epoch = int(datetime.now(timezone.utc).timestamp())
     authenticated_at = datetime.fromtimestamp(authenticated_epoch, tz=timezone.utc)
     expires_at = authenticated_at + timedelta(seconds=settings.session_max_age_seconds)
-    await _write_identity_shadow_after_login(
-        request,
-        product_user_id=profile.id,
-        provider="password",
-        provider_subject=username,
-        authenticated_at=authenticated_at,
-        expires_at=expires_at,
-        ensure_personal_tenant=True,
-    )
+    try:
+        canonical_session_id = await _write_identity_shadow_after_login(
+            request,
+            product_user_id=profile.id,
+            provider="password",
+            provider_subject=username,
+            authenticated_at=authenticated_at,
+            expires_at=expires_at,
+            ensure_personal_tenant=True,
+        )
+    except Exception:
+        canonical_session_id = None
     # Preserve B62's recently merged canonical-session registration fix.
     try:
         registered_credential = await store.find_password_credential(username)
@@ -584,7 +629,9 @@ async def password_register(request: Request) -> JSONResponse:
         # B54 fails closed independently; do not roll back B62 signup.
         pass
     await deliver_after_signup(request, profile.id)
-    return _session_response(settings, profile)
+    return _session_response(
+        settings, profile, canonical_session_id=canonical_session_id
+    )
 
 
 async def password_login(request: Request) -> JSONResponse:
@@ -673,24 +720,74 @@ async def password_login(request: Request) -> JSONResponse:
     authenticated_epoch = int(now.timestamp())
     authenticated_at = datetime.fromtimestamp(authenticated_epoch, tz=timezone.utc)
     expires_at = authenticated_at + timedelta(seconds=settings.session_max_age_seconds)
-    await _write_identity_shadow_after_login(
-        request,
-        product_user_id=credential.user.id,
-        provider="password",
-        provider_subject=credential.username,
-        authenticated_at=authenticated_at,
-        expires_at=expires_at,
-        ensure_personal_tenant=True,
-    )
+    try:
+        canonical_session_id = await _write_identity_shadow_after_login(
+            request,
+            product_user_id=credential.user.id,
+            provider="password",
+            provider_subject=credential.username,
+            authenticated_at=authenticated_at,
+            expires_at=expires_at,
+            ensure_personal_tenant=True,
+        )
+    except Exception:
+        canonical_session_id = None
     # Establishing the session is the product outcome: it lands in the single
     # canonical Control Plane session store for the B54 product scope, where a
     # B54-scoped consumer resolves it. #2963 Step 3 is that consumer and remains a
     # separately authorized gate, so nothing here projects it to the browser.
     await establish_b54_canonical_session_after_login(request, credential)
-    return _session_response(settings, credential.user)
+    return _session_response(
+        settings, credential.user, canonical_session_id=canonical_session_id
+    )
 
 
 async def logout(request: Request) -> JSONResponse:
+    """Revoke the canonical session behind this cookie, then clear the cookie.
+
+    #5225: deleting the browser cookie alone left the signed session token
+    usable on every protected Chat/Claw API until it expired. The canonical
+    Control Plane session is therefore revoked server-side first, so a stored
+    copy of the cookie is refused by the protected APIs immediately after a
+    successful logout.
+
+    Exactly one canonical session is revoked. A second device that signed in
+    normally owns a different canonical session and keeps it.
+
+    A revocation the canonical authority could not confirm is reported as a
+    failure and the cookie is kept: the session was not ended, so the logout
+    must not be reported as successful.
+    """
+
+    settings: Settings = request.app.state.settings
+    claims = decode_session_claims(settings, request.cookies.get(SESSION_COOKIE))
+    canonical_session_id = claims.canonical_session_id if claims is not None else None
+    if canonical_session_id:
+        authority = getattr(request.app.state, "control_plane_identity_authority", None)
+        revoke = getattr(authority, "revoke_auth_session", None) if authority is not None else None
+        if not callable(revoke):
+            return _auth_error(
+                503,
+                "session_revocation_unavailable",
+                "로그아웃을 완료하지 못했습니다. 다시 시도해 주세요.",
+            )
+        try:
+            await revoke(
+                product_id=PADIEM_CHAT_PRODUCT_ID,
+                session_id=canonical_session_id,
+            )
+        except Exception as exc:
+            if getattr(exc, "code", "") != "canonical_auth_session_not_found":
+                # The canonical session is still active, so the stored cookie
+                # would keep working. Report the failure honestly instead of
+                # deleting the cookie and claiming a logout that did not happen.
+                return _auth_error(
+                    503,
+                    "session_revocation_failed",
+                    "로그아웃을 완료하지 못했습니다. 다시 시도해 주세요.",
+                )
+            # The canonical session is already gone, so the stored cookie can no
+            # longer authenticate anything. The logout outcome is already true.
     response = JSONResponse({"ok": True})
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response

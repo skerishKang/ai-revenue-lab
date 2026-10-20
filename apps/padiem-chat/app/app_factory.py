@@ -313,6 +313,7 @@ from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
 from .same_origin_guard import SameOriginGuardMiddleware
+from .session_revocation_guard import SessionRevocationGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
 from .owner_model_preview_routes import claw_verified_model_choices, owner_model_name_preview
 from .saved_outputs import SavedOutputStore
@@ -850,6 +851,12 @@ def create_app(
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
     app = Starlette(routes=routes)
+    # #5225: the canonical session guard resolves the Control Plane session
+    # behind the session cookie once per request. It is added first so it stays
+    # the innermost of the three layers: the same-origin guard refuses a
+    # cross-origin mutation before any canonical authority read happens, and
+    # the telemetry layer stays outermost so it still records guard rejections.
+    app.add_middleware(SessionRevocationGuardMiddleware)
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
     # recording guard rejections.
