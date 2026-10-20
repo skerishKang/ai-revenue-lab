@@ -72,7 +72,11 @@ def test_user_turn_mirrors_the_answer_typography_in_both_states():
 def test_plan4_three_column_grid_and_chip_geometry_stay_pinned():
     turn = " ".join(blocks_with("#messageList .user-message.user-message"))
     assert "grid-template-columns: minmax(0, 1fr) auto 32px !important" in turn
+    avatar = " ".join(blocks_with("#messageList .user-message .user-avatar"))
+    assert "width: 32px !important" in avatar
+    assert "height: 32px !important" in avatar
     chip = " ".join(blocks_with("#messageList .user-message .user-profile-chip"))
+    assert "font-weight: 700 !important" in chip
     assert "color: #53606c !important" in chip
 
 
