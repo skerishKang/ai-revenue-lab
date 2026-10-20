@@ -15,10 +15,10 @@ def test_attachment_capabilities_are_single_browser_truth_source():
     assert "window.PadiemAttachmentCapabilities" in CAPABILITIES_JS
     for label in ["JPEG", "PNG", "WebP", "TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
         assert f'label: "{label}"' in CAPABILITIES_JS
-    assert "imageBytes: 4 * 1024 * 1024" in CAPABILITIES_JS
+    assert "imageBytes: 1024 * 1024 * 1024" in CAPABILITIES_JS
     assert "textBytes: 96 * 1024" in CAPABILITIES_JS
     assert "textChars: 40000" in CAPABILITIES_JS
-    assert "binaryBytes: 2 * 1024 * 1024" in CAPABILITIES_JS
+    assert "binaryBytes: 1024 * 1024 * 1024" in CAPABILITIES_JS
     assert "idleNote:" in CAPABILITIES_JS
     assert "fileButtonTitle:" in CAPABILITIES_JS
     assert "unsupportedFormat:" in CAPABILITIES_JS

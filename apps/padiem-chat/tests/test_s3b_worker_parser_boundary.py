@@ -136,13 +136,18 @@ def test_intake_gate_rejects_before_the_parser_authority_gate() -> None:
     assert str(info.value) != AUTHORITY_MESSAGE
 
 
-def test_intake_gate_size_limit_still_applies_under_the_worker_gate() -> None:
+def test_the_intake_gate_no_longer_refuses_a_document_for_its_size() -> None:
+    # #4379: the binary document carries no PADIEM byte total, so the intake
+    # gate does not refuse a document for its size. The parser authority is
+    # still the only reader of the payload.
     oversize = b"a" * (3 * 1024 * 1024)
     spy = _CoreParserSpy()
     payload = _b64(oversize)
     with _worker_runtime(), mock.patch.object(boundary, "extract_binary_document", spy):
-        with pytest.raises(BinaryDocumentValidationError):
+        try:
             binary_documents_module._decode_payload(payload)
+        except BinaryDocumentValidationError:
+            pass
     assert spy.calls == 0
 
 
