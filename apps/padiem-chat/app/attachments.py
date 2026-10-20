@@ -8,7 +8,7 @@ from typing import Any
 from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item
 from .documents import DocumentAttachment, DocumentValidationError, parse_document_item
 
-MAX_IMAGE_BYTES = 4 * 1024 * 1024
+MAX_IMAGE_BYTES = 1024 * 1024 * 1024
 MAX_IMAGE_NAME_CHARS = 120
 ALLOWED_IMAGE_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 
