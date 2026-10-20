@@ -389,11 +389,11 @@ def test_budget_constants_fit_engine_60s_window():
     so the caller's independent cancellation policy remains authoritative.
     Legacy worst-case arithmetic:
     3 attempts x 30s adapter read timeout + 0.5s + 1.0s backoff = 91.5s
-    unbounded — therefore the 45s deadline is the hard cap:
-    sum(attempt wall time) + sum(backoffs) <= 45s by construction,
-    leaving >= 15s headroom inside the engine's 60s orchestration budget.
+    The historical 45s retry budget caused premature exhaustion.
+    Retries now share a 600s provider-aligned window, with caller cancellation
+    continuing to govern overall orchestration.
     """
-    assert gw._UPSTREAM_RETRY_BUDGET_SECONDS <= 45.0
+    assert gw._UPSTREAM_RETRY_BUDGET_SECONDS == 600.0
     assert gw._UPSTREAM_RETRY_MAX_RETRIES == 2
     assert sum(gw._UPSTREAM_RETRY_BACKOFF_SECONDS) <= 2.0
     # Typical Kilo case: 3 x ~10s (gateway 504) + 1.5s backoff = 31.5s
