@@ -340,8 +340,8 @@ def _validate_b14_options(raw: Any) -> dict:
 
     ma = raw.get("max_attempts")
     if ma is not None:
-        if isinstance(ma, bool) or not isinstance(ma, int) or ma < 1 or ma > 5:
-            raise _InvalidBody("business14.max_attempts must be an integer between 1 and 5")
+        if isinstance(ma, bool) or not isinstance(ma, int) or ma < 1:
+            raise _InvalidBody("business14.max_attempts must be a positive integer")
         opts["max_attempts"] = ma
 
     mr = raw.get("max_retries")
