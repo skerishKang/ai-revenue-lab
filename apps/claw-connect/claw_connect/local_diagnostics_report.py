@@ -33,8 +33,13 @@ LOCAL_DIAGNOSTICS_FILENAME = "connector-diagnostics.json"
 #: The version of the local file shape.
 LOCAL_DIAGNOSTICS_VERSION = "padiem-connector-local-diagnostics.v1"
 
-#: The three closed labels the local file carries.
+#: The three closed labels the local file carries. The same shape in every
+#: package that carries this contract, and a parity test proves the copies
+#: match.
 LOCAL_CHECK_KEYS = ("agent_source", "autostart", "resident")
+
+#: The value that means "not observed". It is never a confirmed negative.
+UNKNOWN = "unknown"
 
 #: The local label vocabulary. ``unknown`` means the Connector could not
 #: read the fact - never that the fact is confirmed negative.
@@ -177,6 +182,7 @@ def local_diagnostics_file_from_environ(
 
 __all__ = [
     "LOCAL_AGENT_SOURCE_STATES",
+    "UNKNOWN",
     "LOCAL_AUTOSTART_STATES",
     "LOCAL_CHECK_KEYS",
     "LOCAL_DIAGNOSTICS_FILE_ENV",

@@ -8,8 +8,11 @@ the result on the heartbeat the Resident already sends.
 The hint is display only. It never becomes an execution permission, a
 registration proof, a credential or an ONLINE claim, and it carries no path,
 no secret and no log line. The vocabulary is the shared one in
-``padiem_ai_core.pc_device_diagnostics`` so the server, the Broker and the
-web surface cannot drift apart.
+the canonical vocabulary in ``padiem_ai_core.pc_device_diagnostics`` so the
+server, the Broker and the web surface cannot drift apart. This package
+keeps a local copy because the shared package is not guaranteed to be
+installed in every deployment of this lane; a parity test proves the
+copies are identical.
 """
 from __future__ import annotations
 
@@ -18,11 +21,14 @@ import os
 from pathlib import Path
 from typing import Any, Mapping
 
-from padiem_ai_core.pc_device_diagnostics import (
-    DIAGNOSTIC_KEYS,
-    PC_DEVICE_DIAGNOSTICS_VERSION,
-    normalize_diagnostics,
-)
+
+#: The canonical hint version. It is the same string in every package that
+#: carries this contract, and a parity test proves the copies match.
+PC_DEVICE_DIAGNOSTICS_VERSION = "padiem-pc-device-diagnostics.v1"
+
+#: The three closed labels. The same shape in every package that carries
+#: this contract, and a parity test proves the copies match.
+DIAGNOSTIC_KEYS = ("agent_source", "autostart", "resident")
 
 #: The environment variable the Connector uses to name the local file.
 LOCAL_DIAGNOSTICS_FILE_ENV = "PADIEM_AGENT_LOCAL_DIAGNOSTICS_FILE"
@@ -34,11 +40,31 @@ LOCAL_DIAGNOSTICS_VERSION = "padiem-connector-local-diagnostics.v1"
 #: canonical one, so the mapping is a copy and not a translation.
 _LOCAL_CHECK_KEYS = ("agent_source", "autostart", "resident")
 
+#: The closed label vocabulary. The same shape in every package that
+#: carries this contract, and a parity test proves the copies match.
+AGENT_SOURCE_STATES = ("ready", "not_installed", "invalid", "unknown")
+AUTOSTART_STATES = ("enabled", "disabled", "unknown")
+RESIDENT_STATES = ("running", "stopped", "unknown")
+UNKNOWN = "unknown"
+
 _LOCAL_STATE_VOCABULARY: Mapping[str, tuple[str, ...]] = {
-    "agent_source": ("ready", "not_installed", "invalid", "unknown"),
-    "autostart": ("enabled", "disabled", "unknown"),
-    "resident": ("running", "stopped", "unknown"),
+    "agent_source": AGENT_SOURCE_STATES,
+    "autostart": AUTOSTART_STATES,
+    "resident": RESIDENT_STATES,
 }
+
+
+def normalize_diagnostics(raw: Any) -> dict[str, str] | None:
+    """Normalize one reported hint, or ``None`` when it is unusable."""
+    if not isinstance(raw, Mapping) or set(raw) != set(DIAGNOSTIC_KEYS):
+        return None
+    result: dict[str, str] = {}
+    for key in DIAGNOSTIC_KEYS:
+        value = raw.get(key)
+        if not isinstance(value, str) or value not in _LOCAL_STATE_VOCABULARY[key]:
+            return None
+        result[key] = value
+    return result
 
 
 def _bounded_revision(value: Any) -> int:
@@ -123,9 +149,16 @@ def diagnostics_hint(diagnostics: Mapping[str, Any] | None) -> dict[str, Any] | 
 
 
 __all__ = [
+    "AGENT_SOURCE_STATES",
+    "AUTOSTART_STATES",
+    "DIAGNOSTIC_KEYS",
+    "RESIDENT_STATES",
+    "UNKNOWN",
+    "PC_DEVICE_DIAGNOSTICS_VERSION",
     "LOCAL_DIAGNOSTICS_FILE_ENV",
     "LOCAL_DIAGNOSTICS_VERSION",
     "diagnostics_hint",
+    "normalize_diagnostics",
     "normalize_local_checks",
     "read_local_diagnostics",
 ]

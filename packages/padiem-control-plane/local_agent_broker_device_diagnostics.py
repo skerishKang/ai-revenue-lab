@@ -42,6 +42,10 @@ CREATE TABLE IF NOT EXISTS local_agent_broker_device_diagnostics (
 )
 """
 
+#: The three closed labels. The same shape in every package that carries
+#: this contract, and a parity test proves the copies match.
+DIAGNOSTIC_KEYS = ("agent_source", "autostart", "resident")
+
 #: The closed label vocabulary. ``unknown`` is the only value that means
 #: "not observed", and it is never shown as a confirmed negative.
 AGENT_SOURCE_STATES = ("ready", "not_installed", "invalid", "unknown")
@@ -57,7 +61,7 @@ _STATE_VOCABULARY: Mapping[str, tuple[str, ...]] = {
 
 #: The hint shape the heartbeat carries.
 _HINT_KEYS = frozenset({"version", "revision", "checks"})
-_CHECK_KEYS = frozenset({"agent_source", "autostart", "resident"})
+_CHECK_KEYS = frozenset(DIAGNOSTIC_KEYS)
 _VERSION = "padiem-pc-device-diagnostics.v1"
 
 #: The maximum age of a hint whose revision has not advanced. After this,
@@ -264,6 +268,7 @@ def _age_seconds(observed_at: str) -> float | None:
 
 __all__ = [
     "AGENT_SOURCE_STATES",
+    "DIAGNOSTIC_KEYS",
     "AUTOSTART_STATES",
     "MAX_DEVICES",
     "MAX_HINT_AGE_SECONDS",
