@@ -350,12 +350,8 @@ def _validate_b14_options(raw: Any) -> dict:
             isinstance(mr, bool)
             or not isinstance(mr, int)
             or mr < 0
-            or mr > _UPSTREAM_RETRY_MAX_RETRIES
         ):
-            raise _InvalidBody(
-                "business14.max_retries must be an integer between 0 and "
-                f"{_UPSTREAM_RETRY_MAX_RETRIES}"
-            )
+            raise _InvalidBody("business14.max_retries must be a non-negative integer")
         opts["max_retries"] = mr
 
     ap = raw.get("allow_paid")

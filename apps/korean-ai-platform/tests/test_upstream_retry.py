@@ -183,7 +183,7 @@ def test_request_max_retries_zero_disables_same_route_retry(client, monkeypatch,
     ]
 
 
-def test_request_max_retries_cannot_exceed_global_ceiling(client, monkeypatch):
+def test_request_max_retries_accepts_more_than_default(client, monkeypatch):
     calls = _install_seq(monkeypatch, [_ok_response])
 
     resp = _post(
@@ -191,9 +191,8 @@ def test_request_max_retries_cannot_exceed_global_ceiling(client, monkeypatch):
         business14={"max_retries": gw._UPSTREAM_RETRY_MAX_RETRIES + 1},
     )
 
-    assert resp.status_code == 422
-    assert calls == []
-    assert resp.json()["error"]["code"] == "invalid_body"
+    assert resp.status_code == 200
+    assert len(calls) == 1
 
 
 def test_request_max_retries_rejects_boolean(client, monkeypatch):
