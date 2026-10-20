@@ -268,11 +268,13 @@ def _message_id() -> str:
 
 
 #: #5015: the run-scoped id of the assistant message that a model-only Claw run
-#: stores for exactly that run. It is derived from the server-owned run id, so
-#: the owner-scoped lookup can correlate the stored completion record with the
-#: actual message without a schema change and without ever matching a later
-#: turn's text.
-GENERAL_ANSWER_MESSAGE_SUFFIX = "_general_answer"
+#: stores for exactly that run. It follows the existing deterministic result-id
+#: convention (``msg_ltr_<40hex>`` from a salted hash, the same shape
+#: ``local_task_result_message_id`` produces), because the private full-context
+#: key validator only accepts the canonical message identities. Deriving it from
+#: the server-owned run id keeps the owner-scoped lookup correlatable without a
+#: schema change and without ever matching a later turn's text.
+GENERAL_ANSWER_MESSAGE_SALT = "claw-general-answer:v1"
 
 #: #5015: the run action the general lane itself records. Only a run the
 #: server stored under this action is a verified model-only execution; a PC,
@@ -282,10 +284,17 @@ MODEL_ONLY_RUN_ACTION = "general"
 
 
 def general_answer_message_id(run_id: str) -> str:
-    """The one message id a model-only run owns for its verified answer."""
+    """The one message id a model-only run owns for its verified answer.
+
+    The id must satisfy the canonical message identity the private full-context
+    store accepts, otherwise a long answer (stored as a D1 preview plus an R2
+    original) would fail its R2 key validation and take the whole conversation
+    save down with it.
+    """
     if not isinstance(run_id, str) or not run_id:
         raise HistoryError("run_id is required")
-    message_id = run_id + GENERAL_ANSWER_MESSAGE_SUFFIX
+    payload = f"{GENERAL_ANSWER_MESSAGE_SALT}:{run_id}"
+    message_id = "msg_ltr_" + hashlib.sha256(payload.encode("utf-8")).hexdigest()[:40]
     if len(message_id) > 128:
         raise HistoryError("run-scoped answer message id is not bounded")
     return message_id
