@@ -261,7 +261,11 @@ async def run():
             del options["max_retries"]
         response = await gateway._handle_alpha_chat("synthetic-b66-guard", {
             **payload, "business14": options,
-        })
+        # #5224: platform dispatch needs an explicit authorization decision.
+        # This subprocess models an already authorized internal caller.
+        }, gateway.DispatchAuthorization(
+            allowed=True, reason="test_internal_call", status_code=200,
+        ))
         results.append([response.status_code, len(calls), json.loads(response.body)["error"]["attempt_count"]])
     return results
 print("OFFLINE_RESULT=" + json.dumps(asyncio.run(run())))
