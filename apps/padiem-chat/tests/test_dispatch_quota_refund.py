@@ -79,7 +79,7 @@ class FakeServiceTransport:
         assert payload["model"] == DEFAULT_B14_MODEL_ID
         assert payload["business14"]["required_capabilities"] == ["chat"]
         assert payload["business14"]["allow_external_fallback"] is False
-        assert payload["business14"]["max_attempts"] == 1
+        assert "max_attempts" not in payload["business14"]
         if self.error is not None:
             raise self.error
         return self.status, self.body

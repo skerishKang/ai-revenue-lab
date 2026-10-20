@@ -202,7 +202,7 @@ class AgentProfile:
     required_capabilities: tuple[str, ...] = ()
     context_policy: Mapping[str, Any] = field(default_factory=dict)
     model_policy: Mapping[str, Any] = field(default_factory=dict)
-    max_steps: int | None = 1
+    max_steps: int | None = None
     output_contract: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
