@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 SCRIPTS = (
-    "voice-stt-input.js", "voice-composer.js",
+    "voice-stt-input.js", "voice-live-transcript.js", "voice-composer.js",
     "voice-live-turn-controller.js", "voice-tts-output.js",
     "voice-ui-menu.js", "voice-answer-ui.js", "voice-call-ui.js",
 )

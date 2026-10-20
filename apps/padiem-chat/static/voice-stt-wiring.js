@@ -593,8 +593,13 @@
           onProviderUnavailable: function () {
             // The live engine cannot run in this browser or session. Nothing
             // was transcribed yet, so the reviewed chunk fallback takes the
-            // run over without losing a word.
-            if (cancelled || active !== null) return;
+            // run over without losing a word. The live handle is released
+            // first, otherwise it would still own the run.
+            if (cancelled) return;
+            if (active) {
+              try { active.stop("provider-unavailable"); } catch (e) { /* already gone */ }
+              active = null;
+            }
             startChunk();
           },
         };
