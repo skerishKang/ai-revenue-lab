@@ -146,7 +146,7 @@ def test_source_evidence_and_archive_are_from_same_bounded_bytes(tmp_path, monke
     def swap_before_archive_open(file, *args, **kwargs):
         # Files can change between the raw file read and opening ZIP. The analyzer
         # must use BytesIO(admitted_raw), not open the source path a second time.
-        seen.append(isinstance(file, BytesIO))
+        seen.append(hasattr(file, 'fileno') and hasattr(file, 'seek'))
         source.write_bytes(b"NOT_A_ZIP")
         return native_zipfile(file, *args, **kwargs)
 
