@@ -86,3 +86,15 @@ def test_free_owner_fallback_explicit_cap_keeps_nonstreaming_contract(monkeypatc
     )
     assert default.max_attempts == 1 + len(TIER_FALLBACK_B14_MODELS["free"])
     assert capped.max_attempts == 2
+
+
+def test_b14_accepts_positive_attempt_budget_above_five():
+    from app.pilot.gateway import _validate_b14_options
+    assert _validate_b14_options({"max_attempts": 50})["max_attempts"] == 50
+
+
+@pytest.mark.parametrize("value", [0, -1, True, 1.5, "50"])
+def test_b14_rejects_invalid_attempt_budget(value):
+    from app.pilot.gateway import _validate_b14_options
+    with pytest.raises(ValueError):
+        _validate_b14_options({"max_attempts": value})
