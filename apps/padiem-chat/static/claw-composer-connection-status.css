@@ -86,7 +86,15 @@
   background: var(--success, #1a6b3a);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--success, #1a6b3a) 24%, transparent);
 }
+.composer-pc-status[data-state="connecting"] .composer-pc-status-dot {
+  background: var(--accent-strong, #2f6f99);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-strong, #2f6f99) 22%, transparent);
+}
 .composer-pc-status[data-state="check"] .composer-pc-status-dot {
+  background: var(--danger, #b3261e);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger, #b3261e) 22%, transparent);
+}
+.composer-pc-status[data-state="unavailable"] .composer-pc-status-dot {
   background: var(--danger, #b3261e);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger, #b3261e) 22%, transparent);
 }
