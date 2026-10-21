@@ -1889,6 +1889,10 @@
       setAuthFormError(passwordChangeError, uiT("password-change-mismatch"));
       return;
     }
+    if (newPassword === currentPassword) {
+      setAuthFormError(passwordChangeError, uiT("password-change-unchanged"));
+      return;
+    }
     passwordChangeSubmit.disabled = true;
     try {
       await passwordAuthRequest("/api/auth/password/change", {
