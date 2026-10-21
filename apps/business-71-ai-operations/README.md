@@ -32,6 +32,12 @@ sample results the workstreams already produced. It calls no backend, no sales
 channel, no ERP and no remote computer, and every screen states that it shows
 synthetic data.
 
+```text
+LIVE_URL=https://ai-revenue-business-71-ai-operations.pages.dev/
+PAGES_PROJECT=ai-revenue-business-71-ai-operations
+CUSTOM_DOMAIN=b71.padiem.net (attached, pending until one CNAME record exists)
+```
+
 | Path | Role |
 |---|---|
 | `reference/business-71-ai-operations-v1/` | The deployed static site |
