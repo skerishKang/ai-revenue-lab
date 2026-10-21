@@ -1849,6 +1849,16 @@ class D1HistoryStore:
         a distinct row for each call, while re-staging the exact same call still
         finds its terminal row and refuses a second execution.
 
+        The stored ``tool_call_ref`` (NULL for the legacy lane) is what 063's
+        indexes enforce, and it is the database — not this read-then-write —
+        that decides a concurrent staging: the loser of an INSERT race re-reads
+        the winner's row and returns it only when it is the same payload, never
+        when a different call won. The legacy lane is correlated to the
+        run-scoped rows only, so a trusted file call staged in the same run is
+        never selected, reused or replaced by it; the trusted lane keeps
+        correlating on ``tool_request_ref`` so a row written before 063 (which
+        has no scope column) is still found and still refuses a replay.
+
         ``evidence_ref`` and ``binding_ref`` are nullable on purpose. A PC that
         has never completed the native PC offer has no Broker binding and no
         Broker-minted evidence, and this table stores NULL for both rather than
@@ -1923,7 +1933,12 @@ class D1HistoryStore:
             correlation_sql = "user_id=? AND run_id=? AND tool_request_ref=?"
             correlation_params = (user_id, run_id, tool_call_ref)
         else:
-            correlation_sql = "user_id=? AND run_id=?"
+            # The legacy single-command lane owns the run-scoped rows and
+            # nothing else. Selecting by run alone would read a trusted file
+            # call of the same run as if it were the legacy dispatch, and an
+            # expired pending file row would then be replaced — losing the
+            # file call's own replay protection.
+            correlation_sql = "user_id=? AND run_id=? AND tool_call_ref IS NULL"
             correlation_params = (user_id, run_id)
         owned = await self._first(
             "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
@@ -1938,13 +1953,16 @@ class D1HistoryStore:
             f"state, expires_at FROM oracle_mesh_dispatch WHERE {correlation_sql}",
             *correlation_params,
         )
-        now = _now_iso()
-        if existing is not None:
-            same = all(
-                existing.get(name) == value
+        def same_payload(row: dict[str, Any]) -> bool:
+            return all(
+                row.get(name) == value
                 for name, value in fields.items()
                 if name not in ("user_id", "run_id")
             )
+
+        now = _now_iso()
+        if existing is not None:
+            same = same_payload(existing)
             if same and existing.get("state") == "pending" and existing.get("expires_at", "") > now:
                 return dict(existing)
             if same and existing.get("state") in ("done", "failed"):
@@ -1967,13 +1985,14 @@ class D1HistoryStore:
                 "request_id=?, revision_ref=?, evidence_ref=?, request_fingerprint=?, "
                 "account_ref=?, workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, "
                 "root_ref=?, path_relative=?, file_path=?, kind=?, command_text=?, "
-                "nonce_sha256=NULL, state=?, "
+                "tool_call_ref=?, nonce_sha256=NULL, state=?, "
                 "expires_at=?, created_at=? WHERE "
                 f"{correlation_sql} AND state=? AND expires_at<=?",
                 command_id, tool_request_ref, request_id, revision_ref,
                 evidence_ref, request_fingerprint, account_ref, workspace_ref,
                 device_id, binding_ref, node_ref, root_ref, path_relative,
-                file_path, kind, command_text, "pending", expires_at, now,
+                file_path, kind, command_text, tool_call_ref,
+                "pending", expires_at, now,
                 *correlation_params, "pending", now,
             )
             replaced = await self._first(
@@ -1987,20 +2006,47 @@ class D1HistoryStore:
                 raise HistoryError("oracle mesh dispatch unavailable")
             return dict(replaced)
         dispatch_id = "dsp_" + uuid.uuid4().hex
-        await self._run(
-            "INSERT INTO oracle_mesh_dispatch "
-            "(dispatch_id, user_id, run_id, command_id, tool_request_ref, request_id, "
-            "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
-            "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
-            "kind, command_text, "
-            "nonce_sha256, state, expires_at, created_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)",
-            dispatch_id, user_id, run_id, command_id, tool_request_ref,
-            request_id, revision_ref, evidence_ref, request_fingerprint,
-            account_ref, workspace_ref, device_id, binding_ref, node_ref,
-            root_ref, path_relative, file_path, kind, command_text,
-            "pending", expires_at, now,
-        )
+        try:
+            await self._run(
+                "INSERT INTO oracle_mesh_dispatch "
+                "(dispatch_id, user_id, run_id, command_id, tool_request_ref, request_id, "
+                "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
+                "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
+                "kind, command_text, tool_call_ref, "
+                "nonce_sha256, state, expires_at, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)",
+                dispatch_id, user_id, run_id, command_id, tool_request_ref,
+                request_id, revision_ref, evidence_ref, request_fingerprint,
+                account_ref, workspace_ref, device_id, binding_ref, node_ref,
+                root_ref, path_relative, file_path, kind, command_text,
+                tool_call_ref, "pending", expires_at, now,
+            )
+        except Exception:
+            # 063 makes the database the decider of a concurrent staging: two
+            # requests can both read no row and then race to INSERT, and only
+            # one of them can win. The loser resolves to the winner's row when
+            # it is the exact same payload, and is refused otherwise — it never
+            # reports a dispatch it did not stage, and it never retries the
+            # INSERT.
+            raced = await self._first(
+                "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, "
+                "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
+                "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
+                "nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
+                f"WHERE {correlation_sql}",
+                *correlation_params,
+            )
+            if raced is None:
+                raise
+            if (
+                same_payload(raced)
+                and raced.get("state") == "pending"
+                and raced.get("expires_at", "") > now
+            ):
+                return dict(raced)
+            if same_payload(raced) and raced.get("state") in ("done", "failed"):
+                raise HistoryError("oracle mesh run already executed") from None
+            raise HistoryError("oracle mesh run already dispatched") from None
         created = await self._first(
             "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
             "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
