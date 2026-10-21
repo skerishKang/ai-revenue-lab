@@ -49,6 +49,27 @@ _AGENT_ALLOWED = frozenset({
     "required_capabilities", "model_policy",
 })
 
+# #5002: the Business 14 Router auto route is suspended. No Engine route may
+# dispatch it. A request that names it is refused before any external
+# invocation, with the same stable code the research route already uses,
+# instead of being rewritten into another default model.
+SUSPENDED_AUTO_MODEL_PREFIX = "b14/auto"
+SUSPENDED_AUTO_MODEL_MESSAGE = (
+    "b14/auto is reserved for future development; select an explicit registered model."
+)
+
+
+def is_suspended_auto_model(model: object) -> bool:
+    """Whether a model id names the suspended Router auto route.
+
+    The reserved prefix is the whole namespace, so no spelling of the
+    suspended route can reach a provider. The check is syntax only: B14 stays
+    the authority for whether an explicit model is actually registered.
+    """
+    return isinstance(model, str) and model.strip().lower().startswith(
+        SUSPENDED_AUTO_MODEL_PREFIX
+    )
+
 
 class ExecutionRunner(Protocol):
     async def run(self, request: Any) -> ExecutionResult: ...
@@ -121,6 +142,15 @@ def _model_policy(value: Any) -> dict[str, Any]:
         raise ServiceContractError(
             "invalid_request",
             "agent.model_policy.model must be an explicit non-empty model route.",
+        )
+    if is_suspended_auto_model(model):
+        # The suspended Router auto route is refused here, before the request
+        # reaches any runtime or provider. The account's own validated model
+        # is the only route that may be dispatched.
+        raise ServiceContractError(
+            "auto_routing_deferred",
+            SUSPENDED_AUTO_MODEL_MESSAGE,
+            status_code=422,
         )
     return out
 
