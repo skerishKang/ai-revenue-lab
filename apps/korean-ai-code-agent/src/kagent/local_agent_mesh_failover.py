@@ -783,3 +783,7 @@ __all__ = [
     "read_heartbeat",
     "write_heartbeat",
 ]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

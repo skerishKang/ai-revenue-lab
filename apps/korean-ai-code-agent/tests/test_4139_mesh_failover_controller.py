@@ -402,5 +402,52 @@ class SupervisorDeliveryTests(unittest.TestCase):
         )
 
 
+class ModuleEntryPointTests(unittest.TestCase):
+    """The supervisor has to be runnable as a module.
+
+    The deployed unit runs ``python -m kagent.local_agent_mesh_failover``, so
+    a missing entry point would make the supervisor import and exit without
+    ever deciding anything.
+    """
+
+    def test_the_module_runs_its_entry_point(self):
+        import subprocess
+        import sys
+
+        source = os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "src",
+            "kagent",
+            "local_agent_mesh_failover.py",
+        )
+        with open(source, "r", encoding="utf-8") as handle:
+            text = handle.read()
+        self.assertIn('if __name__ == "__main__":', text)
+        self.assertIn("raise SystemExit(main())", text)
+
+    def test_the_entry_point_refuses_to_start_without_configuration(self):
+        import subprocess
+
+        # The configuration is removed, so the run must refuse loudly rather
+        # than start a supervisor with no inputs.
+        env = {
+            key: value
+            for key, value in os.environ.items()
+            if not key.startswith("MESH_FAILOVER_")
+            and not key.startswith("ORACLE_MESH_")
+        }
+        env["PYTHONPATH"] = os.path.join(os.path.dirname(__file__), "..", "src")
+        completed = subprocess.run(
+            [sys.executable, "-m", "kagent.local_agent_mesh_failover"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+            env=env,
+        )
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("refused to start", completed.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()
