@@ -28,6 +28,8 @@ export interface ChatMessage {
   errorMessage: string | null;
   /** The prompt that produced this answer. Kept so a failed turn can retry. */
   sourcePrompt: string | null;
+  /** The canonical P01 runtime label, when the server reported one. */
+  runtimeLabel?: string | null;
   /** How many times this turn has been attempted. The first attempt is 1. */
   attempt: number;
   /** Set when the turn came from the local fixture source, not a live API. */

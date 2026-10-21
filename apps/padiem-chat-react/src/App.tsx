@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { ClawApprovalDialog } from "./components/ClawApprovalDialog";
 import { ClawWorkspace } from "./components/ClawWorkspace";
 import { Composer } from "./components/Composer";
 import { ConversationView } from "./components/ConversationView";
@@ -32,6 +33,13 @@ import {
   fetchConversations,
   streamAnswer,
 } from "./api/chatApi";
+import {
+  clawApproval,
+  fetchClawDeviceDirectory,
+  selectClawDevice,
+  streamClawGeneral,
+} from "./api/clawApi";
+import { chatTransport } from "./lib/chat-transport";
 import { mountOperationalGlassShell } from "./lib/glass-shell";
 
 /** How long the fixture answer takes to arrive. Long enough to show the loading state. */
@@ -131,6 +139,43 @@ export function App() {
       });
     return () => controller.abort();
   }, [loadApiConversations]);
+
+  // The Claw device directory is the server's own read. It is loaded for the
+  // Claw product and never invents a device.
+  const loadClawDevices = useCallback(async () => {
+    if (state.apiMode !== "api") return;
+    try {
+      const directory = await fetchClawDeviceDirectory();
+      const devices = Array.isArray(directory.devices) ? directory.devices : [];
+      dispatch({
+        type: "set-claw-devices",
+        devices,
+        selectedDeviceId:
+          typeof directory.saved_target_id === "string" ? directory.saved_target_id : null,
+      });
+    } catch {
+      dispatch({ type: "set-claw-devices", devices: [], selectedDeviceId: null });
+    }
+  }, [state.apiMode]);
+
+  useEffect(() => {
+    if (state.mode !== "claw") return;
+    void loadClawDevices();
+  }, [state.mode, loadClawDevices]);
+
+  // A run that needs a decision pauses. The browser only sends an intent; the
+  // trusted server/control-plane adapter authenticates the actor.
+  useEffect(() => {
+    // The transport hands the pause over as `{ orchestration, requestPayload }`.
+    chatTransport.setOrchestrationPauseHandler((pause: unknown) => {
+      const orchestration =
+        pause && typeof pause === "object" && "orchestration" in pause
+          ? (pause as { orchestration: unknown }).orchestration
+          : pause;
+      dispatch({ type: "set-approval-pause", orchestration });
+    });
+    return () => chatTransport.setOrchestrationPauseHandler(null);
+  }, []);
 
   const handleSelectTheme = useCallback((theme: ThemeAttributes["theme"]) => {
     setThemeAttributes((current) => {
@@ -293,6 +338,73 @@ export function App() {
     const pending = state.pendingTurn;
     if (!pending) return;
 
+    if (state.apiMode === "api" && state.mode === "claw") {
+      // The generic Claw submit runs on the canonical P01 Engine lane.
+      const controller = new AbortController();
+      void streamClawGeneral(
+        {
+          messages: pending.outbound,
+          skill: pending.skill,
+          signal: controller.signal,
+        },
+        {
+          onRuntimeLabel: (label) => {
+            dispatch({
+              type: "set-runtime-label",
+              conversationId: pending.conversationId,
+              messageId: pending.messageId,
+              label,
+            });
+          },
+          onDelta: (delta) => {
+            dispatch({
+              type: "append-delta",
+              conversationId: pending.conversationId,
+              messageId: pending.messageId,
+              delta,
+            });
+          },
+          onDone: (result) => {
+            if (result.conversationId && result.conversationId !== pending.conversationId) {
+              dispatch({
+                type: "replace-conversation-id",
+                from: pending.conversationId,
+                to: result.conversationId,
+              });
+            }
+            dispatch({
+              type: "resolve-message",
+              conversationId: pending.conversationId,
+              messageId: pending.messageId,
+              content: result.answer,
+              completedAt: new Date().toISOString(),
+              serverConversationId: result.conversationId,
+            });
+            void loadApiConversations().catch(() => {
+              /* The answer is already on screen; a failed list read is not. */
+            });
+          },
+          onRecovery: () => {
+            /* The recovery truth is observed inside the client. */
+          },
+        },
+      )
+        .catch((error: unknown) => {
+          if (error instanceof Error && error.name === "AbortError") return;
+          const message =
+            error instanceof Error && error.message
+              ? error.message
+              : "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요.";
+          dispatch({
+            type: "fail-message",
+            conversationId: pending.conversationId,
+            messageId: pending.messageId,
+            errorMessage: message,
+          });
+        });
+      return () => controller.abort();
+    }
+
     if (state.apiMode === "api") {
       const controller = new AbortController();
       void streamAnswer(
@@ -371,7 +483,45 @@ export function App() {
       });
     }, FIXTURE_LATENCY_MS);
     return () => window.clearTimeout(timer);
-  }, [state.pendingTurn, state.apiMode, state.serverConversationId, loadApiConversations]);
+  }, [state.pendingTurn, state.apiMode, state.mode, state.serverConversationId, loadApiConversations]);
+
+  const handleApprovalDecision = useCallback((outcome: "approved" | "denied") => {
+    const orchestration = state.approvalPause;
+    if (orchestration === null) return;
+    const intent =
+      outcome === "approved" ? clawApproval.approve(orchestration) : clawApproval.deny(orchestration);
+    dispatch({ type: "clear-approval-pause" });
+    if (!intent) return;
+    void chatTransport
+      .resumeOrchestration(intent)
+      .then((data) => {
+        // The server may answer the resumed run directly.
+        const answer = data && typeof data.answer === "string" ? data.answer : null;
+        const pending = state.pendingTurn;
+        if (!answer || !pending) return;
+        dispatch({
+          type: "resolve-message",
+          conversationId: pending.conversationId,
+          messageId: pending.messageId,
+          content: answer,
+          completedAt: new Date().toISOString(),
+        });
+      })
+      .catch(() => {
+        /* A refused resume leaves the run paused on the server. */
+      });
+  }, [state.approvalPause, state.pendingTurn]);
+
+  const handleApprovalCancel = useCallback(() => {
+    const orchestration = state.approvalPause;
+    if (orchestration === null) return;
+    const intent = clawApproval.cancel(orchestration);
+    dispatch({ type: "clear-approval-pause" });
+    if (!intent) return;
+    void chatTransport.cancelOrchestration(intent).catch(() => {
+      /* A refused cancel leaves the run paused on the server. */
+    });
+  }, [state.approvalPause]);
 
   // The operational product publishes the shell state: "home" on the empty
   // first screen, "chat" once a conversation is active and "claw" in the Claw
@@ -452,6 +602,21 @@ export function App() {
             dispatch({ type: "set-connector-state", connectorId: "pc", state: "unknown" })
           }
           onConnectPc={() => handleOpenConnector("pc")}
+          clawDevices={state.clawDevices}
+          selectedDeviceId={state.selectedDeviceId}
+          onSelectDevice={(deviceId) => {
+            void selectClawDevice(deviceId)
+              .then(() => {
+                dispatch({
+                  type: "set-claw-devices",
+                  devices: state.clawDevices,
+                  selectedDeviceId: deviceId,
+                });
+              })
+              .catch(() => {
+                /* The server keeps its own target when the choice is refused. */
+              });
+          }}
         />
       </main>
       <LoginDialog
@@ -463,6 +628,13 @@ export function App() {
           void loadApiConversations();
         }}
       />
+      {state.approvalPause !== null ? (
+        <ClawApprovalDialog
+          orchestration={state.approvalPause}
+          onDecide={handleApprovalDecision}
+          onCancel={handleApprovalCancel}
+        />
+      ) : null}
     </div>
   );
 }

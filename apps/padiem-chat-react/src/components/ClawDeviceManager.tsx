@@ -1,25 +1,40 @@
 import { useState } from "react";
 import type { ConnectorState } from "../data/types";
+import type { ClawDevice } from "../api/clawApi";
 
 interface ClawDeviceManagerProps {
   /** The server-owned state. `unknown` mirrors the operational product before it answered. */
   state: ConnectorState;
+  devices: ClawDevice[];
+  selectedDeviceId: string | null;
   onRefresh: () => void;
+  onSelect: (deviceId: string) => void;
   onConnect: () => void;
 }
 
+function deviceStateLabel(device: ClawDevice): string {
+  if (device.revoked === true) return "연결 해제";
+  if (device.expired === true) return "인증 만료";
+  if (device.online === true) return "온라인 · 작업 승인 필요";
+  return "오프라인";
+}
+
 /**
- * #5298 — computer connection entry.
+ * #5298 — the computer connection panel.
  *
- * The operational product renders this block inside the composer wrap with the
- * same ids and classes, so the first screen keeps the same height and the
- * same reading order. The connection state comes from a fixture in this PR:
- * the block never claims a computer is connected while the clone cannot prove
- * it.
+ * The device list is the server's own directory read. The operational product
+ * shows the same list, and the execution-target choice is only a hint: the
+ * server re-verifies it against the current authority and connection.
  */
-export function ClawDeviceManager({ state, onRefresh, onConnect }: ClawDeviceManagerProps) {
+export function ClawDeviceManager({
+  state,
+  devices,
+  selectedDeviceId,
+  onRefresh,
+  onSelect,
+  onConnect,
+}: ClawDeviceManagerProps) {
   const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState("");
 
   const stateLabel =
     state === "connected"
@@ -67,26 +82,33 @@ export function ClawDeviceManager({ state, onRefresh, onConnect }: ClawDeviceMan
         <div className="claw-device-manager-actions">
           <button
             className="claw-device-manager-refresh"
+            id="clawDeviceManagerRefresh"
             type="button"
-            onClick={() => {
-              onRefresh();
-              setStatus(
-                "컴퓨터 연결 서비스가 아직 준비되지 않았습니다. 연결된 PC를 확인할 수 없습니다.",
-              );
-            }}
+            onClick={onRefresh}
           >
             연결 상태 새로고침
           </button>
         </div>
-        <p
-          className="claw-device-manager-status"
-          id="clawDeviceManagerStatus"
-          role="status"
-          aria-live="polite"
-        >
-          {status}
-        </p>
-        <ul className="claw-device-manager-list" id="clawDeviceManagerList" hidden></ul>
+        <p className="claw-device-manager-status" id="clawDeviceManagerStatus" role="status" aria-live="polite"></p>
+        <ul className="claw-device-manager-list" id="clawDeviceManagerList" hidden={devices.length === 0}>
+          {devices.map((device) => (
+            <li key={device.device_id} data-device-id={device.device_id}>
+              <strong>{device.name ?? device.device_id}</strong>
+              <small>
+                {device.platform ? `${device.platform} · ` : ""}
+                {deviceStateLabel(device)}
+              </small>
+              <button
+                type="button"
+                data-device-select={device.device_id}
+                aria-pressed={device.device_id === selectedDeviceId ? "true" : "false"}
+                onClick={() => onSelect(device.device_id)}
+              >
+                {device.device_id === selectedDeviceId ? "선택됨" : "작업 대상 후보로 선택"}
+              </button>
+            </li>
+          ))}
+        </ul>
         <div className="claw-device-manager-connect" id="clawDeviceManagerConnect">
           <h3 className="claw-device-manager-connect-title">컴퓨터와 연결해 보세요</h3>
           <p className="claw-device-manager-connect-copy">

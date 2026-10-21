@@ -58,6 +58,30 @@ and the clone has no tier authority to claim one. The model control shows a
 generic execution contract, and the public repository does not publish
 model-to-tier assignments.
 
+## The Claw execution lane
+
+The generic Claw submit runs on the canonical P01 Engine lane
+(`POST /api/claw/general`). There is deliberately no fallback to the standalone
+Chat lane: an unavailable P01 lane surfaces as a bounded error instead of
+silently changing products.
+
+- **Computer state** comes from the server's own device directory
+  (`GET /api/claw/local-access/devices`). The execution-target choice is a
+  hint; the server re-verifies it against the current authority and connection.
+- **Only a validated canonical P01 envelope** can change the runtime label.
+  The validation is the operational projection, so a clone run and a product
+  run cannot disagree about what an event means.
+- **A verified failure, cancellation or approval pause** can never be revived
+  by a later delta.
+- **Approval** pauses the run. The browser only sends an intent, and the
+  intent body — the continuation reference, the pause id and the outcome — is
+  built by the operational orchestration module. The trusted
+  server/control-plane adapter authenticates the actor.
+
+  The operational product publishes the approval model and the intents but
+  does not register a pause handler, so the clone supplies the missing
+  surface.
+
 ## Reuse contract
 
 | Source | Used for |
@@ -66,6 +90,9 @@ model-to-tier assignments.
 | `packages/padiem-conversation-ui/composer-core.js` | IME composition guard, Enter-to-send rule, textarea growth |
 | `apps/padiem-chat/static/attachment-capabilities.js` | Accepted attachment formats, size limits, the Korean composer note |
 | `apps/padiem-chat/static/chat-transport.js` | The Chat request contract: `/api/chat/stream`, `/api/chat`, the orchestration readiness check and the SSE frame reader |
+| `apps/padiem-chat/static/claw-run-event-projection.js` | The canonical P01 event validation and its runtime label |
+| `apps/padiem-chat/static/claw-recovery-truth.js` | The observed-run recovery state and the bounded failure copy |
+| `apps/padiem-chat/static/message-lifecycle.js` | The orchestration approval model and the approval intents |
 | `apps/padiem-chat/static/padiem-glass-shell.js` | The glass portrait and its twenty registered shell ribbons |
 
 `src/styles/operational.css` reproduces the operational cascade order exactly,
@@ -143,10 +170,11 @@ e2e/first-screen.spec.ts  browser verification
 
 ## Scope
 
-This is the second slice of the #5298 series:
+This is the third slice of the #5298 series:
 
 1. **PR #5465** — app bootstrap, first screen, theme, responsive layout, tests.
-2. **This PR** — the real Chat API: conversation list, conversation detail,
+2. **PR #5472** — the real Chat API: conversation list, conversation detail,
    conversation delete, the streaming answer and the session cookie.
-3. Claw tool execution and approval flow (the Connector and PC contracts).
+3. **This PR** — the Claw execution lane: the computer connection state, the
+   P01 execution stream, the canonical runtime labels and the approval flow.
 4. Library, automation, calendar, meeting notes, settings, i18n, accessibility.
