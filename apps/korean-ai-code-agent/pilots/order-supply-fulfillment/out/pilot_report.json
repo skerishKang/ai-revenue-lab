@@ -1,0 +1,402 @@
+{
+  "artifacts": [
+    {
+      "bytes": 2498,
+      "path": "D:/work/ai-revenue-lab-5448/apps/korean-ai-code-agent/pilots/order-supply-fulfillment/out/order_intake_record.json",
+      "sha256": "68b03857fe41a92e0e61a33db551731c1468448707dafe276e9aef3812211b0d"
+    },
+    {
+      "bytes": 916,
+      "path": "D:/work/ai-revenue-lab-5448/apps/korean-ai-code-agent/pilots/order-supply-fulfillment/out/supplier_order_request_draft.md",
+      "sha256": "0eb30c721697766b92ed10ddd3a42c94b406cf427e55ac272fb0f6cb98501f48"
+    },
+    {
+      "bytes": 682,
+      "path": "D:/work/ai-revenue-lab-5448/apps/korean-ai-code-agent/pilots/order-supply-fulfillment/out/supplier_order_request_email_draft.txt",
+      "sha256": "09feb04b0b8d541785fd900c80785e94ef4c48211a633da6a2c0739eab846559"
+    },
+    {
+      "bytes": 480,
+      "path": "D:/work/ai-revenue-lab-5448/apps/korean-ai-code-agent/pilots/order-supply-fulfillment/out/tracking_input_template.csv",
+      "sha256": "f3f7c855fb4d49d648934311838a49edf65927b5b65a6e9b8c1b033ce8063dea"
+    },
+    {
+      "bytes": 730,
+      "path": "D:/work/ai-revenue-lab-5448/apps/korean-ai-code-agent/pilots/order-supply-fulfillment/out/shipment_tracking.csv",
+      "sha256": "ccf76226d6ce2d184407cfa5ff4d5f6ab4d6cd7dd7026b416744cfe52216ec0e"
+    },
+    {
+      "bytes": 516,
+      "path": "D:/work/ai-revenue-lab-5448/apps/korean-ai-code-agent/pilots/order-supply-fulfillment/out/order_lines.csv",
+      "sha256": "51b3e979b329b581e2ee1271f6a9709fb1d4c8f322db321bfcd5e4bf72a36ca2"
+    },
+    {
+      "bytes": 372,
+      "path": "D:/work/ai-revenue-lab-5448/apps/korean-ai-code-agent/pilots/order-supply-fulfillment/out/exception_cases.csv",
+      "sha256": "e4904a342e47498f3fed9a6cab2d079a4490eb424cb135340bffb03444de6bf2"
+    },
+    {
+      "bytes": 1870,
+      "path": "D:/work/ai-revenue-lab-5448/apps/korean-ai-code-agent/pilots/order-supply-fulfillment/out/order_completion_record.json",
+      "sha256": "764c11e3ff72670b04fa8c036c68c5f46de5a1b821506b8260798aa3977ed150"
+    },
+    {
+      "bytes": 10268,
+      "path": "D:/work/ai-revenue-lab-5448/apps/korean-ai-code-agent/pilots/order-supply-fulfillment/out/fulfillment_case.json",
+      "sha256": "31c2bab3416b40279777cd60f1ef10ff8f9ce762f9fe3cfc972714c5a247692d"
+    }
+  ],
+  "automation_execution": {
+    "automation_execution_minutes": "0.000093",
+    "automation_retry_count": 0,
+    "derived_metric_keys": [
+      "automation_retry_count",
+      "extraction_correction_rate",
+      "manual_reentry_count",
+      "owner_intervention_count",
+      "request_to_po_minutes",
+      "request_to_rfq_minutes"
+    ],
+    "extraction_correction_rate": "20",
+    "guard_probe_count": 5,
+    "guard_probe_fired_count": 5,
+    "manual_reentry_count": 2,
+    "measured": true,
+    "note": "가상 케이스 실행에서 실제로 측정된 자동화 처리 시간과 개입·재입력·재시도 건수.",
+    "owner_intervention_count": 1
+  },
+  "baseline_measured": false,
+  "baseline_note": "수동 처리 시간 기준선은 아직 측정하지 않았다. 기준선 없이 생산성 변화율을 산출하지 않는다.",
+  "business_step_intervals": {
+    "note": "아래 값은 가상 업무 시각으로 만든 샘플 입력이며 운영 실측값이 아니다.",
+    "production_measurement": false,
+    "source": "sample_input_virtual_business_clock",
+    "steps": [
+      {
+        "at": "2026-10-21T09:00:00Z",
+        "step": "order_received"
+      },
+      {
+        "at": "2026-10-21T10:00:00Z",
+        "step": "supplier_request_drafted"
+      },
+      {
+        "at": "2026-10-21T10:00:00Z",
+        "step": "supplier_acknowledged"
+      },
+      {
+        "at": "2026-10-22T02:00:00Z",
+        "step": "shipment_label_issued"
+      },
+      {
+        "at": "2026-10-24T09:00:00Z",
+        "step": "shipment_delivered"
+      }
+    ]
+  },
+  "guard_probes": [
+    {
+      "expected_error": "short_line_ids reported and status stays received",
+      "fired": true,
+      "name": "short_stock_is_reported_and_order_stays_unconfirmed"
+    },
+    {
+      "expected_error": "supplier order request needs a confirmed order",
+      "fired": true,
+      "name": "supplier_request_needs_confirmed_order"
+    },
+    {
+      "expected_error": "tracking_number is required",
+      "fired": true,
+      "name": "shipment_needs_a_tracking_number"
+    },
+    {
+      "expected_error": "return requires a shipped order",
+      "fired": true,
+      "name": "return_before_shipment_is_refused"
+    },
+    {
+      "expected_error": "purchase order unit price differs from the customer sale price",
+      "fired": true,
+      "name": "supplier_request_uses_supplier_cost_not_customer_price"
+    }
+  ],
+  "kpi_measurement_scope": {
+    "milestone_clock_source": "sample_input_virtual_business_clock",
+    "note": "마일스톤 시각은 샘플 입력의 가상 업무 시각이다. 값은 가상 케이스 안에서 일관되지만 운영 실측값이 아니며, 기준선 비교도 수행하지 않는다.",
+    "pilot_phase": "shadow",
+    "production_measurement": false
+  },
+  "kpi_observations": [
+    {
+      "metric_key": "request_to_po_minutes",
+      "observation_id": "telemetry_1a473665e04692c75e74f060",
+      "phase": "shadow",
+      "quality": "measured",
+      "source_event_ids": [
+        "tev-request-ingested",
+        "tev-po-ready"
+      ],
+      "source_evidence_refs": [
+        "channel:csv_export:CH-2026-0011",
+        "po:po-order_demo_1-v2:v1"
+      ],
+      "value": "60",
+      "workflow_ref": "wf-order-order_demo_1"
+    },
+    {
+      "metric_key": "request_to_rfq_minutes",
+      "observation_id": "telemetry_4b0447093d685aebb52f6455",
+      "phase": "shadow",
+      "quality": "measured",
+      "source_event_ids": [
+        "tev-request-ingested",
+        "tev-rfq-ready"
+      ],
+      "source_evidence_refs": [
+        "channel:csv_export:CH-2026-0011",
+        "po:po-order_demo_1-v2:v1"
+      ],
+      "value": "60",
+      "workflow_ref": "wf-order-order_demo_1"
+    },
+    {
+      "metric_key": "owner_intervention_count",
+      "observation_id": "telemetry_759d36906dc4a76054c924e6",
+      "phase": "shadow",
+      "quality": "measured",
+      "source_event_ids": [
+        "tev-owner-intervention-availability",
+        "tev-workflow-completed"
+      ],
+      "source_evidence_refs": [
+        "check:stock_and_terms",
+        "order:order_demo_1"
+      ],
+      "value": "1",
+      "workflow_ref": "wf-order-order_demo_1"
+    },
+    {
+      "metric_key": "automation_retry_count",
+      "observation_id": "telemetry_776baa7f96dbb001402a2cfc",
+      "phase": "shadow",
+      "quality": "measured",
+      "source_event_ids": [
+        "tev-workflow-completed"
+      ],
+      "source_evidence_refs": [
+        "order:order_demo_1"
+      ],
+      "value": "0",
+      "workflow_ref": "wf-order-order_demo_1"
+    },
+    {
+      "metric_key": "extraction_correction_rate",
+      "observation_id": "telemetry_97120ac445ed9cf3cf238ad8",
+      "phase": "shadow",
+      "quality": "measured",
+      "source_event_ids": [
+        "tev-field-L1.quantity",
+        "tev-field-L1.unit_price_amount_minor",
+        "tev-field-L2.quantity",
+        "tev-field-L2.unit_price_amount_minor",
+        "tev-field-ship_to.postal_code"
+      ],
+      "source_evidence_refs": [
+        "field-review:L1.quantity",
+        "field-review:L1.unit_price_amount_minor",
+        "field-review:L2.quantity",
+        "field-review:L2.unit_price_amount_minor",
+        "field-review:ship_to.postal_code"
+      ],
+      "value": "20",
+      "workflow_ref": "wf-order-order_demo_1"
+    },
+    {
+      "metric_key": "manual_reentry_count",
+      "observation_id": "telemetry_a344b28703dd09bc98eac85e",
+      "phase": "shadow",
+      "quality": "measured",
+      "source_event_ids": [
+        "tev-manual-supplier-reply",
+        "tev-manual-waybill",
+        "tev-workflow-completed"
+      ],
+      "source_evidence_refs": [
+        "supplier:supplier_demo_1",
+        "carrier:demo_carrier",
+        "order:order_demo_1"
+      ],
+      "value": "2",
+      "workflow_ref": "wf-order-order_demo_1"
+    }
+  ],
+  "measured_comparison_available": false,
+  "measurement_plan": [
+    {
+      "automation": "fully_automatable",
+      "error_signal": "채널 주문 식별 실패 / 스키마 불일치",
+      "key": "receive_order",
+      "number": 1,
+      "production_clock_source": "판매채널 주문 접수 이벤트 (파일 수정시각 또는 API 수신시각)",
+      "production_metric_key": "request_to_rfq_minutes",
+      "sample_case_status": "가상 케이스에서 재현 확인",
+      "title_ko": "온라인 판매채널 주문 접수"
+    },
+    {
+      "automation": "human_confirmation_required",
+      "error_signal": "필드 수정 건수 (correction rate)",
+      "key": "verify_order_lines",
+      "number": 2,
+      "production_clock_source": "접수~확인 구간의 검토 이벤트",
+      "production_metric_key": "extraction_correction_rate",
+      "sample_case_status": "가상 케이스에서 재현 확인",
+      "title_ko": "주문 상품·수량·배송지 확인"
+    },
+    {
+      "automation": "human_confirmation_required",
+      "error_signal": "재고 부족 라인 발생 건수",
+      "key": "check_stock_and_terms",
+      "number": 3,
+      "production_clock_source": "재고 조회 응답시각 (ERP 재고 연계 확정 후)",
+      "production_metric_key": "owner_intervention_count",
+      "sample_case_status": "가상 케이스에서 재현 확인",
+      "title_ko": "공급사·재고·거래조건 확인"
+    },
+    {
+      "automation": "human_confirmation_required",
+      "error_signal": "발주 초안 검증 실패 (금액/품목 누락)",
+      "key": "draft_supplier_order",
+      "number": 4,
+      "production_clock_source": "발주 초안 생성시각 (초안 렌더 완료 로그)",
+      "production_metric_key": "request_to_po_minutes",
+      "sample_case_status": "가상 케이스에서 재현 확인",
+      "title_ko": "공급사 발주·배송 요청 초안 생성"
+    },
+    {
+      "automation": "manual_only",
+      "error_signal": "회신 미수신·납기일 미확정 건수",
+      "key": "confirm_supplier_result",
+      "number": 5,
+      "production_clock_source": "공급사 회신 수신시각 (이메일/메신저 수신함)",
+      "production_metric_key": "supplier_response_minutes",
+      "sample_case_status": "가상 케이스에서 재현 확인",
+      "title_ko": "공급사 처리 결과 확인"
+    },
+    {
+      "automation": "manual_only",
+      "error_signal": "송장 미발급·조회 실패·상태 정체 건수",
+      "key": "track_shipment",
+      "number": 6,
+      "production_clock_source": "택배사 송장 조회 시각 (택배사 조회 계약 확정 후)",
+      "production_metric_key": "owner_intervention_count",
+      "sample_case_status": "가상 케이스에서 재현 확인",
+      "title_ko": "송장번호·배송 상태 관리"
+    },
+    {
+      "automation": "fully_automatable",
+      "error_signal": "완료 처리 실패 건수",
+      "key": "complete_order",
+      "number": 7,
+      "production_clock_source": "배송 완료 확인 시각",
+      "production_metric_key": "manual_reentry_count",
+      "sample_case_status": "가상 케이스에서 재현 확인",
+      "title_ko": "주문 완료 처리"
+    },
+    {
+      "automation": "manual_only",
+      "error_signal": "반품/오배송 접수 후 미종결 건수",
+      "key": "handle_exception",
+      "number": 8,
+      "production_clock_source": "예외 접수~종결 시각",
+      "production_metric_key": "automation_retry_count",
+      "sample_case_status": "가상 케이스에서 재현 확인",
+      "title_ko": "취소·반품·오배송 대응"
+    }
+  ],
+  "outbox_state": "pending",
+  "pilot": {
+    "channel_order_ref": "CH-2026-0011",
+    "issue": "#5448",
+    "message_sent": false,
+    "order_id": "order_demo_1",
+    "real_customer_data_used": false,
+    "real_order_placed": false,
+    "real_purchase_order_issued": false,
+    "slug": "order-supply-fulfillment",
+    "virtual_case": true,
+    "workspace_id": "ws_demo"
+  },
+  "step_automation_summary": {
+    "blocked_missing_system": 0,
+    "fully_automatable": 2,
+    "human_confirmation_required": 3,
+    "manual_only": 3
+  },
+  "steps": [
+    {
+      "automation": "fully_automatable",
+      "human_checkpoint": "접수 주문의 채널 주문번호 대조만 필요",
+      "key": "receive_order",
+      "number": 1,
+      "system_dependency": "판매채널 주문 목록 (CSV 내보내기 또는 브라우저 주문 페이지)",
+      "title_ko": "온라인 판매채널 주문 접수"
+    },
+    {
+      "automation": "human_confirmation_required",
+      "human_checkpoint": "배송지·수령인 표기 오류 확인",
+      "key": "verify_order_lines",
+      "number": 2,
+      "system_dependency": "채널 주문 원문",
+      "title_ko": "주문 상품·수량·배송지 확인"
+    },
+    {
+      "automation": "human_confirmation_required",
+      "human_checkpoint": "부족 수량의 대체 공급사/분할 발주 결정",
+      "key": "check_stock_and_terms",
+      "number": 3,
+      "system_dependency": "재고 시스템 또는 재고 대장 (현재 ERP 재고 연계 미확정)",
+      "title_ko": "공급사·재고·거래조건 확인"
+    },
+    {
+      "automation": "human_confirmation_required",
+      "human_checkpoint": "발주 금액·납기일 승인 후 실제 발송",
+      "key": "draft_supplier_order",
+      "number": 4,
+      "system_dependency": "공급사 거래 조건과 발주 채널 (이메일/메신저/ERP)",
+      "title_ko": "공급사 발주·배송 요청 초안 생성"
+    },
+    {
+      "automation": "manual_only",
+      "human_checkpoint": "회신 수신과 납기일 확인을 사람이 수행",
+      "key": "confirm_supplier_result",
+      "number": 5,
+      "system_dependency": "공급사 회신 (이메일/메신저 수신함)",
+      "title_ko": "공급사 처리 결과 확인"
+    },
+    {
+      "automation": "manual_only",
+      "human_checkpoint": "송장번호 입력과 배송 상태 확인",
+      "key": "track_shipment",
+      "number": 6,
+      "system_dependency": "택배사 송장 조회 (택배사별 API 계약 미확정)",
+      "title_ko": "송장번호·배송 상태 관리"
+    },
+    {
+      "automation": "fully_automatable",
+      "human_checkpoint": "없음",
+      "key": "complete_order",
+      "number": 7,
+      "system_dependency": "없음 (내부 기록)",
+      "title_ko": "주문 완료 처리"
+    },
+    {
+      "automation": "manual_only",
+      "human_checkpoint": "반품 승인·회수지시·재배송 판단",
+      "key": "handle_exception",
+      "number": 8,
+      "system_dependency": "반품 접수 채널과 회수 택배 정보",
+      "title_ko": "취소·반품·오배송 대응"
+    }
+  ]
+}

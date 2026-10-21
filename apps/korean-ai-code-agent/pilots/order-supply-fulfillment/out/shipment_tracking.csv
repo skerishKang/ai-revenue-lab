@@ -1,0 +1,5 @@
+shipment_id,order_id,order_version,version,status,carrier,tracking_number,observed_at,delivered_at,source_ref,note
+ship_demo_1,order_demo_1,3,1,label_issued,demo_carrier,TRK-2026-0001,2026-10-22T02:00:00Z,,carrier:demo_carrier:TRK-2026-0001,송장 발급(가상)
+ship_demo_1,order_demo_1,4,2,in_transit,demo_carrier,TRK-2026-0001,2026-10-22T05:00:00Z,,carrier:demo_carrier:TRK-2026-0001,집화 후 이동(가상)
+ship_demo_1,order_demo_1,5,3,out_for_delivery,demo_carrier,TRK-2026-0001,2026-10-24T06:00:00Z,,carrier:demo_carrier:TRK-2026-0001,배달 출발(가상)
+ship_demo_1,order_demo_1,5,4,delivered,demo_carrier,TRK-2026-0001,2026-10-24T09:00:00Z,2026-10-24T09:00:00Z,carrier:demo_carrier:TRK-2026-0001,배송 완료(가상)
