@@ -84,6 +84,8 @@ from app.dispatch_quota import (
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
 from app.b66_signup_notifications import B66SignupNotifier
+from app.password_reset_delivery import build_email_delivery
+from app.password_reset_store import D1PasswordResetStore
 from app.claw_local_task_result_composition import (
     build_local_task_result_source_with_diagnostic,
 )
@@ -1041,6 +1043,25 @@ class Default(WorkerEntrypoint):
                     ),
                     claw_telegram_delivery_request_builder=(
                         claw_telegram_delivery_request_builder
+                    ),
+                    # #5441 lost-password reset. The store is derived from the
+                    # existing Chat D1 binding; the delivery transport is
+                    # configured from the trusted Worker bindings only.
+                    password_reset_store=(
+                        D1PasswordResetStore(db_binding)
+                        if db_binding is not None else None
+                    ),
+                    password_reset_delivery=build_email_delivery(
+                        resend_api_key=(
+                            binding_value(self.env, "PADIEM_CHAT_PASSWORD_RESET_RESEND_API_KEY")
+                            or binding_value(self.env, "B66_ALERT_RESEND_API_KEY")
+                            or ""
+                        ),
+                        email_from=(
+                            binding_value(self.env, "PADIEM_CHAT_PASSWORD_RESET_EMAIL_FROM")
+                            or binding_value(self.env, "B66_ALERT_EMAIL_FROM")
+                            or ""
+                        ),
                     ),
                 )
                 _worker_app.state.b66_membership_enforced = (

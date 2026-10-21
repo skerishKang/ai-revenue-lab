@@ -38,6 +38,13 @@ _CURRENT_SESSION_KEYS = frozenset({"product_id", "product_user_id"})
 # clock or reason supplied by the caller, so a caller can neither revoke a
 # foreign session nor move the clock the transition is materialized at.
 _REVOKE_SESSION_KEYS = frozenset({"product_id", "session_id"})
+# #5441: the credential-reset revocation names the product and the product user
+# and nothing else. It deliberately accepts no session_id, subject_id,
+# tenant_id, provider, clock or reason supplied by the caller, so a caller can
+# neither pick the sessions it ends nor move the clock the transition is
+# materialized at. The Durable Object resolves the canonical subject and the
+# session rows itself.
+_REVOKE_ALL_SESSIONS_KEYS = frozenset({"product_id", "product_user_id"})
 # #3247: the reverse product-user lookup names the product and the canonical
 # subject and nothing else. It deliberately accepts no product_user_id,
 # provider, provider_subject, owner_ref or clock, so a caller can neither pick
@@ -276,6 +283,36 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def revoke_all_auth_sessions(self, payload: dict) -> dict:
+        """Revoke every canonical auth session of one product user (#5441).
+
+        A lost-password reset replaces the account credential, so every
+        session that the replaced credential could still authenticate has to
+        end, on every device. The request is closed to ``product_id`` +
+        ``product_user_id``: the Durable Object resolves the canonical subject
+        from its own identity link, reads the session rows itself and
+        materializes the canonical terminal REVOKE transition on each one. The
+        caller's clock is never used: ``now`` comes from this private
+        authority.
+        """
+
+        try:
+            wire = _closed(
+                payload, _REVOKE_ALL_SESSIONS_KEYS, "auth-session revoke-all RPC"
+            )
+            sessions = self._store.revoke_all_auth_sessions_for_product_user(
+                product_id=wire["product_id"],
+                product_user_id=wire["product_user_id"],
+                now=datetime.now().astimezone(),
+            )
+            return {
+                "ok": True,
+                "revoked_count": len(sessions),
+                "sessions": [session.to_public_dict() for session in sessions],
+            }
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def resolve_product_user_for_subject(self, payload: dict) -> dict:
         """Read-only reverse product-user lookup for one canonical subject (#3247).
 
@@ -481,6 +518,9 @@ class Default(WorkerEntrypoint):
 
     async def revoke_auth_session(self, payload: dict) -> dict:
         return await self._stub().revoke_auth_session(payload)
+
+    async def revoke_all_auth_sessions(self, payload: dict) -> dict:
+        return await self._stub().revoke_all_auth_sessions(payload)
 
     async def resolve_product_user_for_subject(self, payload: dict) -> dict:
         return await self._stub().resolve_product_user_for_subject(payload)
