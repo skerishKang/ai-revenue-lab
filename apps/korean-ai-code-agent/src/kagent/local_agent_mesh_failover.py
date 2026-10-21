@@ -47,6 +47,8 @@ from .contracts import ContractError
 from .local_agent_mesh_connection_route import (
     EVENT_ROUTE_TO_COM2,
     EVENT_ROUTE_TO_ORACLE,
+    TARGET_COM2,
+    TARGET_ORACLE,
     claim_owner,
     com2_route,
     oracle_route,
