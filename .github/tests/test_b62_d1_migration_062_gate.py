@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 import importlib.util
+import shutil
 import sqlite3
+import subprocess
+import tempfile
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/b62-d1-migration-062-gate.yml"
@@ -261,6 +266,57 @@ def test_migration_contains_no_existing_table_mutation() -> None:
         "PRAGMA DEFERRED_FOREIGN_KEYS",
     ):
         assert forbidden not in upper
+
+
+def test_workflow_heredocs_are_terminated_on_their_own_line() -> None:
+    # A heredoc terminator that shares its line with the next command breaks
+    # the script it opens, and the failure shows up as an unrelated syntax
+    # error far from the edit that caused it.
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    for number, line in enumerate(workflow.splitlines(), start=1):
+        stripped = line.strip()
+        if stripped == "PY":
+            continue
+        if stripped.startswith("PY "):
+            raise AssertionError(
+                f"line {number} joins a heredoc terminator with the next command"
+            )
+
+
+def test_workflow_shell_blocks_parse() -> None:
+    """Every ``run:`` block must be a valid shell script.
+
+    A heredoc terminator that shares its line with the next command is a
+    syntax error that only shows up when the workflow runs against Production.
+    ``bash -n`` catches it in the source contract instead.
+    """
+
+    bash = shutil.which("bash")
+    if bash is None:
+        pytest.skip("bash is not available on this host")
+    yaml = pytest.importorskip("yaml")
+    workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+    assert isinstance(workflow, dict)
+    jobs = workflow.get("jobs") or {}
+    assert jobs
+    with tempfile.TemporaryDirectory() as directory:
+        for job_name, job in jobs.items():
+            for index, step in enumerate(job.get("steps") or []):
+                script = step.get("run")
+                if not isinstance(script, str) or not script.strip():
+                    continue
+                path = Path(directory) / f"{job_name}-{index}.sh"
+                path.write_text(script, encoding="utf-8", newline="\n")
+                result = subprocess.run(
+                    [bash, "-n", path.name],
+                    capture_output=True,
+                    text=True,
+                    cwd=str(path.parent),
+                )
+                assert result.returncode == 0, (
+                    f"{job_name} / {step.get('name')} is not a valid shell script: "
+                    f"{result.stderr[:600]}"
+                )
 
 
 def test_workflow_is_exact_main_and_migration_specific() -> None:

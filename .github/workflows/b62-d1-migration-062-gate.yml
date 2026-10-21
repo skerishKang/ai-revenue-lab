@@ -96,7 +96,7 @@ jobs:
 
       - name: Run migration gate contract tests
         run: |
-          python -m pip install --disable-pip-version-check --quiet pytest
+          python -m pip install --disable-pip-version-check --quiet pytest pyyaml
           python -m pytest .github/tests/test_b62_d1_migration_062_gate.py -q
 
       - name: Replay the reviewed 062 source contract
@@ -474,7 +474,8 @@ jobs:
           if before != after:
               raise SystemExit('account rows changed across migration 062')
           print('B62_D1_MIGRATION_062_ACCOUNT_ROWS_PRESERVED=PASS')
-          PY          fk_query="${RUNNER_TEMP}/b62-d1-062-fk-query.json"
+          PY
+          fk_query="${RUNNER_TEMP}/b62-d1-062-fk-query.json"
           fk_response="${RUNNER_TEMP}/b62-d1-062-fk.json"
           python3 - "${fk_query}" <<'PY'
           import json, sys
