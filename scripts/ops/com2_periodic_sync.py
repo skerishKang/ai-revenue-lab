@@ -51,6 +51,12 @@ STATUS_NAME = "scheduled-sync-status.json"
 LOG_NAME = "scheduled-sync.log"
 DEFAULT_TASK_NAME = "PADIEM-COM2-D1-R2-Sync"
 DEFAULT_TASK_TIME = "04:20"
+# #5484: the COM2 DPAPI secret store is the only Cloudflare credential path on
+# that host. The D1 export already goes through it; the inventory Worker must
+# too, because ``wrangler dev`` with a remote R2 binding opens a remote proxy
+# session and fails with "You must be logged in to use wrangler dev in remote
+# mode" when no credential is present.
+DEFAULT_SECRET_STORE = r"D:\PADIEM-Servers\infrastructure\secret-store\store.py"
 R2_BUCKETS = ("workspace", "b66", "media")
 REQUIRED_LAYOUT = ("refresh_d1.py", "r2_sync.py", "inventory.mjs", "wrangler.inventory.toml")
 
@@ -203,6 +209,27 @@ class InventoryServer:
             self.output.close()
 
 
+def inventory_command(
+    *,
+    wrangler: str,
+    port: int,
+    secret_store: Path | None = None,
+    python: str = sys.executable,
+) -> list[str]:
+    """Build the inventory Worker command.
+
+    ``wrangler dev`` with a remote R2 binding opens a remote proxy session, so
+    it needs a Cloudflare credential. On COM2 that credential lives only in the
+    DPAPI secret store, exactly like the D1 export credential. #5484: without
+    the store wrapper the remote proxy session fails and the inventory Worker
+    exits before the first inventory request, which fails the whole sync.
+    """
+    command = [wrangler, "dev", "--config", "wrangler.inventory.toml", "--port", str(port)]
+    if secret_store is not None and Path(secret_store).is_file():
+        command = [python, str(secret_store), "run", *command]
+    return command
+
+
 def start_inventory(
     root: Path,
     *,
@@ -210,6 +237,8 @@ def start_inventory(
     port: int,
     log: _Logger,
     startup_timeout: float = 90.0,
+    secret_store: Path | None = None,
+    python: str = sys.executable,
 ) -> InventoryServer:
     selected = port or _free_port()
     output_path = Path(root) / "logs" / "inventory-worker.log"
@@ -217,7 +246,12 @@ def start_inventory(
     output = output_path.open("a", encoding="utf-8", errors="replace")
     try:
         process = subprocess.Popen(
-            [wrangler, "dev", "--config", "wrangler.inventory.toml", "--port", str(selected)],
+            inventory_command(
+                wrangler=wrangler,
+                port=selected,
+                secret_store=secret_store,
+                python=python,
+            ),
             cwd=root,
             stdout=output,
             stderr=subprocess.STDOUT,
@@ -329,6 +363,7 @@ def run_once(
     r2_sync_timeout: float = 3600.0,
     startup_timeout: float = 90.0,
     retry_delay: float = 2.0,
+    secret_store: Path | None = None,
     log: _Logger | None = None,
     inventory_factory: InventoryFactory = start_inventory,
 ) -> int:
@@ -363,7 +398,12 @@ def run_once(
 
         current_step = "inventory"
         server = inventory_factory(
-            root, wrangler=wrangler, port=port, log=log, startup_timeout=startup_timeout
+            root,
+            wrangler=wrangler,
+            port=port,
+            log=log,
+            startup_timeout=startup_timeout,
+            secret_store=secret_store,
         )
         try:
             counts = fetch_inventories(
@@ -532,6 +572,15 @@ def _parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--r2-diff-timeout", type=float, default=600.0)
     run_parser.add_argument("--r2-sync-timeout", type=float, default=3600.0)
     run_parser.add_argument("--startup-timeout", type=float, default=90.0)
+    run_parser.add_argument(
+        "--secret-store",
+        default=DEFAULT_SECRET_STORE,
+        help=(
+            "COM2 DPAPI secret store that injects the Cloudflare credential into "
+            "the inventory Worker. The D1 export already uses the same store; "
+            "a remote R2 binding needs the same credential."
+        ),
+    )
     run_parser.set_defaults(handler=_command_run)
 
     status_parser = subparsers.add_parser("status", help="print the last run status")
@@ -567,6 +616,7 @@ def _command_run(args: argparse.Namespace) -> int:
         r2_diff_timeout=args.r2_diff_timeout,
         r2_sync_timeout=args.r2_sync_timeout,
         startup_timeout=args.startup_timeout,
+        secret_store=Path(args.secret_store) if args.secret_store else None,
     )
 
 

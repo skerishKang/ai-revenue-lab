@@ -242,6 +242,79 @@ python scripts/ops/d1_restore_verify.py \
 - 원격 R2 객체를 삭제·덮어쓰지 않습니다. 원격에서 사라진 객체는 diff 개수로만
   기록합니다.
 
+### #5484 D1 export 완료 판정과 실행 예산 (2026-10-21)
+
+증상과 계측:
+
+- 2026-10-21 04:20 예약 실행이 `d1_refresh_failed`로 끝났고 `runtime_lag=true`가
+  유지되었습니다. 실패 단계는 `wrangler d1 export padiem-chat-db --remote`이고
+  내부 예산 120초에 도달했습니다.
+- 같은 export를 정상 경로에서 직접 실행하면 chat 1.48MB가 6.0초, engine이
+  3초에 끝나며 wrapper 기동은 1.2초입니다. D1 크기·Cloudflare API 응답·토큰
+  권한(`/user/tokens/verify` 200, D1 목록 200)·디스크 여유(1.4TB)는 원인이
+  아닙니다.
+- 실패한 04:20 실행의 wrangler 로그는 `Downloaded to ...\chat.sql successfully!`
+  (작업 7.9초)까지 기록합니다. 그 뒤 프로세스가 반환하지 않아 120초 뒤
+  `TimeoutExpired`가 발생했고, 오류 경로가 `.pending` 폴더를 지우면서 **유효한
+  chat.sql까지 삭제**했습니다. 세대가 게시되지 않아 포인터가 뒤처졌습니다.
+- 원인 분류는 프로세스 수명입니다. 자식이 종료하지 않은 채 stdout 파이프를
+  붙잡고 있어 실행기가 종료 완료를 기다리다 예산을 소진했습니다.
+
+수정(`scripts/ops/refresh_d1.py`, COM2 `storage-migration\refresh_d1.py`의 버전
+관리 원본):
+
+- export 성공 판정은 **산출물**입니다(SQL 파일 존재 + integrity + 테이블 수).
+  자식 종료 코드는 참고값이며, export를 이미 끝낸 자식이 늦게 끝나도 성공으로
+  처리하고 유효한 SQL을 삭제하지 않습니다.
+- 타임아웃 시 전체 자식 트리를 종료합니다(`taskkill /PID /T /F`). 고아
+  node/wrangler 프로세스가 파이프나 `.pending` 폴더를 붙잡지 않습니다.
+- 산출물이 없는 진짜 실패만 1회 재시도합니다.
+- 실행 예산은 계측값 기준으로 정합니다. export 시도 240초
+  (`COM2_D1_EXPORT_TIMEOUT_SECONDS`), 전체 refresh 840초
+  (`COM2_D1_REFRESH_BUDGET_SECONDS`)로 실행기의 900초 단계 예산 안에 둡니다.
+  관측된 병성 구간(기동 61초 + 작업 7.9초 + 미종료)을 감당하면서 실제 hang은
+  계속 제한됩니다.
+- 단계별 소요 시간(`D1_EXPORT label=... seconds=...`)과 실행한 소스 SHA-256
+  (`D1_REFRESH_SOURCE_SHA256`)을 기록해 다음 실패를 계측할 수 있게 합니다.
+
+COM2 배포는 이 파일의 바이트를 COM2 `storage-migration\refresh_d1.py`로
+배포하는 것으로 끝납니다. 실행기(`com2_periodic_sync.py`)와 예약 작업
+(`PADIEM-COM2-D1-R2-Sync`)은 바뀌지 않습니다.
+
+회귀는 `scripts/ops/tests/test_refresh_d1.py` 10건입니다. 완료된 export가
+자식 지연 때문에 삭제되지 않는지, 실패가 1회만 재시도되는지, 타임아웃 시
+트리 전체가 종료되는지, 게시·포인터·메타데이터 계약이 유지되는지, export
+예산이 남은 refresh 예산을 넘지 않는지를 확인합니다.
+
+### #5484 R2 열거·다운로드 자격증명 경로 (2026-10-21)
+
+D1 단계가 복구되고 나면 같은 예약 실행은 다음 단계에서 실패했습니다.
+`inventory_worker_exited`입니다. 원인은 timeout이 아니라 자격증명이었습니다.
+
+- `wrangler dev`는 R2 바인딩이 remote라서 원격 프록시 세션을 엽니다. 그
+  세션은 Cloudflare 자격증명이 필요합니다.
+- 실행기는 inventory Worker를 자격증명 없이 시작했습니다. COM2 로컬의
+  Wrangler OAuth 세션은 만료된 상태라 `You must be logged in to use wrangler
+  dev in remote mode`로 즉시 종료했습니다.
+- 같은 `wrangler dev`를 COM2 DPAPI Secret 저장소를 경유해 실행하면
+  `GET /inventory`가 200으로 응답하는 것을 실측했습니다.
+- `r2_sync.py`의 `wrangler r2 object get`도 같은 자격증명 경로가 필요합니다.
+
+수정:
+
+- `scripts/ops/com2_periodic_sync.py`는 inventory Worker를
+  `com2_periodic_sync.py --secret-store <DPAPI 저장소>`(기본값은 COM2 DPAPI
+  저장소 경로)로 시작합니다. 저장소 파일이 없으면 이전 동작 그대로입니다.
+- `scripts/ops/r2_sync.py`는 COM2 `storage-migration\r2_sync.py`의 버전 관리
+  원본이며, 원격 객체 다운로드도 같은 DPAPI 저장소를 경유합니다. 자격증명은
+  자식 프로세스 환경으로만 주입되고 argv·출력·새 평문 파일에는 남지 않습니다.
+- COM2 배포는 두 파일의 바이트를 `storage-migration`에 배포하고, 실행기는
+  `run-scheduled-sync.ps1`이 같은 폴더의 사본을 가리키게 합니다. COM2 체크아웃
+  브랜치와 `com2_runtime.py`·백업 스크립트는 그대로 두어 실행 감독과 백업
+  경로가 바뀌지 않습니다.
+
+회귀는 `scripts/ops/tests/test_r2_sync.py` 4건과 실행기 테스트 4건입니다.
+
 예약 작업:
 
 ```text
@@ -268,9 +341,12 @@ python scripts/ops/com2_periodic_sync.py remove-task
 ```
 
 집중 검증은 `scripts/ops/tests/test_d1_restore_verify.py` 8건,
-`scripts/ops/tests/test_com2_periodic_sync.py` 14건입니다. 실패 단계 기록,
+`scripts/ops/tests/test_com2_periodic_sync.py` 14건,
+`scripts/ops/tests/test_refresh_d1.py` 10건입니다. 실패 단계 기록,
 재시도, 부분 열거 차단, 잠금, 중복 실행, 상태 파일 비밀값 미기록을 스텁
-스크립트와 스텁 HTTP 서버로 확인합니다.
+스크립트와 스텁 HTTP 서버로 확인합니다. `test_refresh_d1.py`는 완료된
+export가 자식 지연으로 삭제되지 않는지, 타임아웃 시 자식 트리 전체가
+종료되는지, 실행 예산이 남은 refresh 예산을 넘지 않는지를 확인합니다.
 
 ## 7. 남은 격차와 담당 범위
 
