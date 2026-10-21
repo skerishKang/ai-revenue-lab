@@ -192,6 +192,15 @@ def resolve_manual_route(
             message="OWNER가 제외한 모델은 실행할 수 없습니다.",
             upstream_called=False,
         )
+    # #2505 (owner decision 2026-10-21): an excluded free candidate is never
+    # an execution candidate, so a customer that sends the exact id, or a
+    # resolver that answers with it, gets no route at all.
+    if free_candidate_excluded_from_execution(model_id):
+        raise NoSafeRoute(
+            reason_code="free_candidate_excluded",
+            message="제외된 무료 모델은 실행할 수 없습니다.",
+            upstream_called=False,
+        )
     cm = get_catalog_by_id(model_id)
 
     if cm is None:
