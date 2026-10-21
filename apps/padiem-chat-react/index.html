@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#aeb6bf" />
+    <link rel="icon" href="data:," />
+    <title>Padiem Chat</title>
+    <!--
+      Theme bootstrap runs before the first paint so the clone does not flash a
+      wrong background on load. The theme contract itself (data-theme plus the
+      glass variant/mask/speed attributes) matches the operational
+      apps/padiem-chat/static/theme-init.js.
+    -->
+    <script>
+      (function () {
+        "use strict";
+        try {
+          var THEMES = ["light", "dark", "cinematic", "padiem-home", "padiem-glass"];
+          var VARIANTS = ["female", "male"];
+          var MASKS = ["auto", "on", "off"];
+          var params = new URLSearchParams(window.location.search);
+          var theme = params.get("theme");
+          var variant = params.get("glass");
+          var mask = params.get("mask");
+          var speed = parseInt(params.get("speed") || "", 10);
+          if (THEMES.indexOf(theme) === -1) theme = "padiem-glass";
+          if (VARIANTS.indexOf(variant) === -1) variant = "female";
+          if (MASKS.indexOf(mask) === -1) mask = "auto";
+          if (!(speed >= 20 && speed <= 300)) speed = 100;
+          var root = document.documentElement;
+          root.setAttribute("data-theme", theme);
+          root.setAttribute("data-glass-variant", variant);
+          root.setAttribute("data-glass-mask", mask);
+          root.setAttribute("data-glass-speed", String(speed));
+          var scheme = theme === "light" || theme === "padiem-home" || theme === "padiem-glass" ? "light" : "dark";
+          root.style.colorScheme = scheme;
+          var colors = {
+            light: "#f8f8fb",
+            dark: "#131417",
+            cinematic: "#04070d",
+            "padiem-home": "#e6e9ee",
+            "padiem-glass": "#aeb6bf",
+          };
+          root.style.setProperty("--clone-theme-color", colors[theme] || "#04070d");
+        } catch (error) {
+          /* The clone still renders with the default stylesheet contract. */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

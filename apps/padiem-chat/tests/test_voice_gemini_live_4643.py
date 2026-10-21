@@ -49,7 +49,7 @@ def test_gemini_live_engine_gates_pass() -> None:
     assert passed and failed, f"no summary in node output: {tail}"
     assert int(failed.group(1)) == 0
     # A lost case must show up as a smaller count, not a green run.
-    assert int(passed.group(1)) == 9, result.stdout[-1500:]
+    assert int(passed.group(1)) == 10, result.stdout[-1500:]
 
 
 def test_engine_is_the_global_classroom_port_with_its_provenance() -> None:

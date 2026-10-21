@@ -52,7 +52,12 @@
   display: none !important;
 }
 
-/* Give the composer slightly stronger first-use hierarchy without changing hooks. */
+/* Give the composer slightly stronger first-use hierarchy without changing hooks.
+ * The first screen is the authority for the Glass input box: the Glass chat
+ * state carries the same border, shadow and text size in
+ * padiem-glass-brand-polish.css, so sending a message does not restyle the
+ * input. This rule stays scoped to the home state so the other themes keep
+ * their own first-use treatment. */
 .app-shell[data-state="home"] .composer {
   border-color: rgba(255, 255, 255, .22);
   box-shadow:

@@ -121,6 +121,33 @@ def test_classifier_accepts_schema_created_by_migration() -> None:
     assert helper.classify_schema(payload) == "exact"
 
 
+def test_classifier_accepts_both_sides_of_the_4379_release_without_losing_drift() -> None:
+    # The pre-deploy probe runs before any migration is applied, so it must accept
+    # the table while production still carries the ceiling and after #4379
+    # releases it. The zero-length refusal stays part of the contract either way,
+    # and a different ceiling is still drift rather than a third accepted shape.
+    helper = _load_helper()
+    released = _payload(state="exact")
+    released["result"][0]["results"][0]["sql"] = released["result"][0]["results"][0]["sql"].replace(
+        " AND byte_length <= 262144", ""
+    )
+    assert helper.classify_schema(released) == "exact"
+
+    no_check = _payload(state="exact")
+    no_check["result"][0]["results"][0]["sql"] = no_check["result"][0]["results"][0]["sql"].replace(
+        " CHECK (byte_length >= 1 AND byte_length <= 262144)", ""
+    )
+    assert helper.classify_schema(no_check) == "drift"
+
+    other_ceiling = _payload(state="exact")
+    other_ceiling["result"][0]["results"][0]["sql"] = (
+        other_ceiling["result"][0]["results"][0]["sql"].replace(
+            "byte_length <= 262144", "byte_length <= 1048576"
+        )
+    )
+    assert helper.classify_schema(other_ceiling) == "drift"
+
+
 def test_migration_is_additive_and_preserves_existing_rows() -> None:
     db = sqlite3.connect(":memory:")
     db.executescript(
@@ -196,6 +223,7 @@ def test_workflow_is_exact_main_and_migration_specific() -> None:
 if __name__ == "__main__":
     test_schema_classifier_missing_exact_drift()
     test_classifier_rejects_wrong_index_or_foreign_key()
+    test_classifier_accepts_both_sides_of_the_4379_release_without_losing_drift()
     test_classifier_accepts_schema_created_by_migration()
     test_migration_is_additive_and_preserves_existing_rows()
     test_migration_contract_is_metadata_only_and_bounded()

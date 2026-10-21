@@ -51,6 +51,47 @@ async def connector_asgi_websocket_runtime_probe(scope, receive, send):
     # No credential or ACK data is ever sent. The test client closes.
 
 
+def _password_kdf_state() -> str:
+    """``ok`` when this runtime can run the Worker's password hashing.
+
+    The Worker's stored credential format is PBKDF2-HMAC-SHA512. A Python
+    runtime without ``hashlib.pbkdf2_hmac`` cannot verify a stored hash at
+    all, so every password login would answer HTTP 500. The probe runs the
+    real application hashing function, so a runtime without the KDF is
+    reported instead of silently passing.
+    """
+    try:
+        from app.password_auth import hash_password, verify_password
+
+        stored = hash_password("runtime-probe-password")
+        if not verify_password("runtime-probe-password", stored):
+            return "verify-failed"
+        if verify_password("runtime-probe-wrong", stored):
+            return "verify-wrong-accepted"
+        return "ok"
+    except Exception:
+        return "missing"
+
+
+def _timezone_database_state() -> str:
+    """``ok`` when this runtime can resolve a real IANA zone.
+
+    #5023: the Calendar contracts validate the explicit timezone against the
+    real IANA database. A Pyodide runtime without the tz database raises
+    ZoneInfoNotFoundError for every real zone, and the Calendar routes surface
+    that as HTTP 400 ``invalid_timezone`` on every read. The probe runs the
+    real application contract, so a runtime without the database is reported
+    instead of silently passing.
+    """
+    try:
+        from app.calendar_contracts import validate_timezone
+
+        validate_timezone("Asia/Seoul")
+        return "ok"
+    except Exception:
+        return "missing"
+
+
 
 
 class Default(WorkerEntrypoint):
@@ -65,7 +106,20 @@ class Default(WorkerEntrypoint):
             # as CENTRAL's review-only production candidate.
             return await asgi.websocket(connector_asgi_websocket_runtime_probe, request)
         if url.path == "/ready" and not url.query:
-            return Response("ok", status=200)
+            # #5479: report the running CPython version AND whether this
+            # runtime can still run the Worker's password hashing. The CI lane
+            # must prove the runtime Production actually deploys, and the
+            # Pyodide 3.14 snapshot has no `hashlib.pbkdf2_hmac`, which would
+            # answer every password login with HTTP 500.
+            # #5023: the same holds for the IANA timezone database the
+            # Calendar contracts validate against.
+            import sys
+
+            return Response(
+                f"ok {sys.version_info.major}.{sys.version_info.minor} "
+                f"kdf={_password_kdf_state()} tz={_timezone_database_state()}",
+                status=200,
+            )
         if url.path != "/probe":
             return Response("not found", status=404)
         try:

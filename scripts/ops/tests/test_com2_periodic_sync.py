@@ -47,6 +47,67 @@ if behavior.get("r2_sync_exit"):
 print("R2_PUBLISHED_GENERATION gen-r2 DELTA_OBJECTS 1")
 """
 
+# #5484: the D1 stub that really publishes a generation, so the B62 runtime
+# pointer can be published from it.
+PUBLISHING_REFRESH_STUB = """
+import hashlib
+import json
+import sqlite3
+import sys
+from pathlib import Path
+
+root = Path(__file__).resolve().parent
+generation = "20261021T074313336936Z"
+r2_generation = "20261021T074335749153Z"
+snapshot = root / "snapshots" / "generations" / generation
+snapshot.mkdir(parents=True, exist_ok=True)
+database = snapshot / "chat.sqlite3"
+connection = sqlite3.connect(database)
+connection.execute("CREATE TABLE t0 (a INTEGER)")
+connection.commit()
+connection.close()
+digest = hashlib.sha256(database.read_bytes()).hexdigest()
+(root / "snapshots" / "current_generation.json").write_text(
+    json.dumps({
+        "generation": generation,
+        "databases": {"chat": {"sha256": digest, "bytes": database.stat().st_size, "tables": 1}},
+        "fresh_remote_export": True,
+        "production_bound": False,
+    }),
+    encoding="utf-8",
+)
+r2 = root / "r2-staging" / "generations" / r2_generation
+r2.mkdir(parents=True, exist_ok=True)
+(r2 / "manifest.json").write_text("[]", encoding="utf-8")
+(root / "r2-staging" / "current_generation.json").write_text(
+    json.dumps({"generation": r2_generation, "production_bound": False}), encoding="utf-8"
+)
+print("D1_PUBLISHED_GENERATION", generation, "DATABASES", 2)
+"""
+
+# The R2 step publishes a NEWER R2 generation than the D1 step saw. The B62
+# runtime pointer must be published after it, otherwise the pointer names an R2
+# generation the runtime no longer finds and the live listener refuses to start.
+R2_PUBLISHING_STUB = """
+import json
+import sys
+from pathlib import Path
+
+root = Path(__file__).resolve().parent
+if "--diff-only" in sys.argv:
+    for bucket in ("workspace", "b66", "media"):
+        print(f"DIFF {bucket} BASE_GEN=gen REMOTE=1 BYTES=1 NEW=1 CHANGED=0 "
+              "DELETED_REMOTE=0 UNCHANGED=0")
+    sys.exit(0)
+generation = "20261021T121907270084Z"
+target = root / "r2-staging" / "generations" / generation
+target.mkdir(parents=True, exist_ok=True)
+(target / "manifest.json").write_text("[]", encoding="utf-8")
+(root / "r2-staging" / "current_generation.json").write_text(
+    json.dumps({"generation": generation, "production_bound": False}), encoding="utf-8")
+print("R2_PUBLISHED_GENERATION", generation, "DELTA_OBJECTS", 1)
+"""
+
 
 def _load():
     spec = importlib.util.spec_from_file_location("com2_periodic_sync_ops", SCRIPT)
@@ -353,3 +414,156 @@ def test_status_missing_returns_two(tmp_path, capsys):
 
     assert sync_ops.main(["status", "--root", str(root)]) == 2
     assert "STATUS_MISSING" in capsys.readouterr().err
+
+
+# #5484: a remote R2 binding needs a Cloudflare credential. The inventory
+# Worker must receive it from the same DPAPI secret store the D1 export uses,
+# otherwise "wrangler dev" exits with "You must be logged in to use wrangler dev
+# in remote mode" and the whole sync fails before the first inventory request.
+
+
+def test_the_inventory_worker_is_started_through_the_secret_store(tmp_path):
+    store = tmp_path / "store.py"
+    store.write_text("# test double\n", encoding="utf-8")
+
+    command = sync_ops.inventory_command(
+        wrangler="wrangler.cmd", port=1234, secret_store=store
+    )
+
+    assert command[0] == sys.executable
+    assert command[1] == str(store)
+    assert command[2] == "run"
+    assert command[3] == "wrangler.cmd"
+    assert command[4:] == [
+        "dev",
+        "--config",
+        "wrangler.inventory.toml",
+        "--port",
+        "1234",
+    ]
+
+
+def test_the_inventory_worker_stays_unchanged_without_a_store(tmp_path):
+    command = sync_ops.inventory_command(
+        wrangler="wrangler.cmd", port=1234, secret_store=tmp_path / "missing.py"
+    )
+
+    assert command == [
+        "wrangler.cmd",
+        "dev",
+        "--config",
+        "wrangler.inventory.toml",
+        "--port",
+        "1234",
+    ]
+    assert sync_ops.inventory_command(wrangler="wrangler.cmd", port=1234) == command
+
+
+def test_the_run_command_passes_the_secret_store_to_the_inventory_worker(tmp_path):
+    root = _make_root(tmp_path)
+    store = tmp_path / "store.py"
+    store.write_text("# test double\n", encoding="utf-8")
+    seen = {}
+
+    def factory(*_args, **kwargs):
+        seen.update(kwargs)
+        return FakeInventoryServer()
+
+    code = sync_ops.run_once(
+        root, inventory_factory=factory, retry_delay=0, secret_store=store
+    )
+
+    assert code == 0
+    assert seen["secret_store"] == store
+
+
+def test_the_default_secret_store_is_the_com2_dpapi_store():
+    assert sync_ops.DEFAULT_SECRET_STORE.endswith("store.py")
+    assert "secret-store" in sync_ops.DEFAULT_SECRET_STORE
+
+
+# #5484: nothing published the B62 runtime pointer after a successful sync, so
+# the COM2 B62 runtime kept serving an old generation while the sync published
+# a new one every day.
+
+
+def test_the_sync_publishes_the_b62_runtime_pointer(tmp_path):
+    root = _make_root(tmp_path)
+    (root / "refresh_d1.py").write_text(PUBLISHING_REFRESH_STUB, encoding="utf-8")
+    store = tmp_path / "b62-runtime" / "generation-store"
+    store.parent.mkdir(parents=True, exist_ok=True)
+
+    code = sync_ops.run_once(
+        root, inventory_factory=_factory(), retry_delay=0, b62_store=store
+    )
+
+    assert code == 0
+    pointer = json.loads((store / "current_generation.json").read_text(encoding="utf-8"))
+    assert pointer["d1_generation"] == "20261021T074313336936Z"
+    assert pointer["r2_generation"] == "20261021T074335749153Z"
+    assert pointer["production_bound"] is False
+    assert (store / pointer["d1_seed"]).is_file()
+
+
+def test_the_pointer_names_the_r2_generation_the_r2_step_published(tmp_path):
+    """The pointer must follow the R2 step, not the D1 step.
+
+    Publishing the pointer right after the D1 step left it naming an R2
+    generation that the R2 step had already replaced, so the runtime refused to
+    open it (r2_generation_pointer_mismatch) and the live listener went down.
+    """
+
+    root = _make_root(tmp_path)
+    (root / "refresh_d1.py").write_text(PUBLISHING_REFRESH_STUB, encoding="utf-8")
+    (root / "r2_sync.py").write_text(R2_PUBLISHING_STUB, encoding="utf-8")
+    store = tmp_path / "b62-runtime" / "generation-store"
+    store.parent.mkdir(parents=True, exist_ok=True)
+
+    code = sync_ops.run_once(
+        root, inventory_factory=_factory(), retry_delay=0, b62_store=store
+    )
+
+    assert code == 0
+    pointer = json.loads((store / "current_generation.json").read_text(encoding="utf-8"))
+    # The R2 step published 20261021T121907270084Z; the pointer must name it.
+    assert pointer["r2_generation"] == "20261021T121907270084Z"
+    r2_pointer = json.loads(
+        (root / "r2-staging" / "current_generation.json").read_text(encoding="utf-8")
+    )
+    assert pointer["r2_generation"] == r2_pointer["generation"]
+    status = json.loads((root / "scheduled-sync-status.json").read_text(encoding="utf-8"))
+    assert status["b62_pointer"]["published"] is True
+
+
+def test_the_pointer_step_is_skipped_on_a_host_without_a_b62_runtime_store(tmp_path):
+    root = _make_root(tmp_path)
+    (root / "refresh_d1.py").write_text(PUBLISHING_REFRESH_STUB, encoding="utf-8")
+
+    code = sync_ops.run_once(
+        root, inventory_factory=_factory(), retry_delay=0, b62_store=None
+    )
+
+    assert code == 0
+    status = json.loads((root / "scheduled-sync-status.json").read_text(encoding="utf-8"))
+    assert status["b62_pointer"]["published"] is False
+    assert status["b62_pointer"]["skipped"] is True
+    assert status["b62_pointer"]["reason"] == "b62_runtime_store_absent"
+
+
+def test_a_failed_pointer_publish_fails_the_sync(tmp_path):
+    root = _make_root(tmp_path)
+    # A stub that publishes no generation leaves the publisher without a source.
+    (root / "refresh_d1.py").write_text(REFRESH_STUB, encoding="utf-8")
+    store = tmp_path / "b62-runtime" / "generation-store"
+    store.parent.mkdir(parents=True, exist_ok=True)
+
+    code = sync_ops.run_once(
+        root, inventory_factory=_factory(), retry_delay=0, b62_store=store
+    )
+
+    assert code == 1
+    status = json.loads((root / "scheduled-sync-status.json").read_text(encoding="utf-8"))
+    assert status["failed_step"] == "b62_pointer"
+    assert status["error"] == "b62_pointer_publish_failed"
+    assert not (store / "current_generation.json").exists()
+

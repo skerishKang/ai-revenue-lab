@@ -147,7 +147,18 @@ def test_admin_model_choices_require_server_verified_admin(monkeypatch):
 def test_claw_admin_exact_model_is_server_owned():
     root = Path(__file__).resolve().parents[1] / "app"
     source = (root / "claw_general_routes.py").read_text(encoding="utf-8")
-    assert 'admin_lane = requested_tier == "admin"' in source
-    assert 'await selected_admin_denial(request, user_id)' in source
+    # #5223: the administrator lane and its denial are resolved by the ONE
+    # shared grade authority, so the lane's own copy of the admin comparison
+    # and the admin denial moved to that authority.  The ownership properties
+    # are unchanged: the lane is still selected on the server, the admin
+    # denial is still the operator admin authority, and the browser still
+    # cannot pick the administrator model.
+    assert 'admin_lane = grade.admin_lane' in source
+    assert 'await claw_execution_tier_denial(request, user_id, grade)' in source
     assert 'selected_model_id != ADMIN_B14_MODEL_ID' in source
     assert 'if admin_lane else await resolve_claw_tier_model' in source
+
+    # The shared authority is the one that still refuses a forged admin.
+    shared = (root / "member_grade_access.py").read_text(encoding="utf-8")
+    assert 'if grade.admin_lane' in shared
+    assert 'await selected_admin_denial(request, user_id)' in shared

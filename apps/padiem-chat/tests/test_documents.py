@@ -341,7 +341,7 @@ def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_
     assert 'label: "DOCX"' in capabilities
     assert 'label: "PPTX"' in capabilities
     assert 'label: "XLSX"' in capabilities
-    assert "binaryBytes: 1024 * 1024 * 1024" in capabilities
+    assert "binaryBytes" not in capabilities
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
     assert "PDF·DOCX는 아직 지원하지 않습니다" not in html
     assert "presentationml" not in html

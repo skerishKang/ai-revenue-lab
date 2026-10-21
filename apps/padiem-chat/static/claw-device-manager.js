@@ -104,13 +104,13 @@
     toggle.type = "button";
     toggle.setAttribute("aria-controls", "clawDeviceManagerPanel");
     toggle.setAttribute("aria-expanded", "false");
-    // The entry carries its own headline and state: the connection guidance
-    // before a PC is confirmed, and the real PC name plus its server-confirmed
-    // state afterwards. One control, one line, no second device authority.
     const toggleTitle = element("span", "claw-device-manager-toggle-title");
     const toggleState = element("span", "claw-device-manager-state");
     toggleState.hidden = true;
     toggle.append(toggleTitle, toggleState);
+    // The entry carries its own headline and state: the connection guidance
+    // before a PC is confirmed, and the real PC name plus its server-confirmed
+    // state afterwards. One control, one line, no second device authority.
     const panel = element("section", "claw-device-manager-panel");
     panel.id = "clawDeviceManagerPanel";
     panel.setAttribute("aria-labelledby", "clawDeviceManagerTitle");
@@ -145,8 +145,22 @@
     connect.append(connectTitle, connectCopy, connectAction);
     head.append(title, close);
     panel.append(head, help, actions, status, list, connect);
-    root.append(toggle, panel);
-    composer.parentElement.insertBefore(root, composer);
+    // The entry stays with the shared composer so it is always reachable, but
+    // the directory panel leaves the FIXED composer area: an expanding panel
+    // inside a fixed bottom bar grows over the content above it (the Claw
+    // guidance panel, a home card's connection cell, the last turn) and hides
+    // their controls. The panel is mounted in the content column right above
+    // the composer area, so it keeps its place and never overlaps the
+    // content it would otherwise cover.
+    const composerArea = composer.parentElement;
+    const composerColumn = composerArea ? composerArea.parentElement : null;
+    root.append(toggle);
+    composerArea.insertBefore(root, composer);
+    if (composerColumn && composerColumn !== composerArea) {
+      composerColumn.insertBefore(panel, composerArea);
+    } else {
+      root.append(panel);
+    }
 
     let sequence = 0;
     let pendingController = null;
@@ -546,6 +560,17 @@
       opened = true;
       panel.hidden = false;
       toggle.setAttribute("aria-expanded", "true");
+      // The panel is mounted above the composer area, so it is the next
+      // element in the reading order. Move the focus into it when it opens:
+      // that is the standard disclosure behaviour and it keeps every panel
+      // control reachable with the keyboard.
+      close.focus({ preventScroll: true });
+      // The panel lives in the content column, so reveal it where the user
+      // pressed the entry. This is an explicit user action on the panel
+      // itself, not a jump while reading a conversation.
+      if (typeof panel.scrollIntoView === "function") {
+        panel.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
       void load();
     });
     close.addEventListener("click", closePanel);
@@ -558,12 +583,17 @@
       selectedId = null;
       void load();
     });
-    root.addEventListener("keydown", (event) => {
+    // Escape closes the directory from anywhere inside it. The panel lives
+    // in the content column, so it carries its own listener next to the
+    // entry's.
+    const closeOnEscape = (event) => {
       if (event.key === "Escape" && opened) {
         event.preventDefault();
         closePanel();
       }
-    });
+    };
+    root.addEventListener("keydown", closeOnEscape);
+    panel.addEventListener("keydown", closeOnEscape);
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible" && opened) {
         // Returning from pairing may change device truth; GET only.

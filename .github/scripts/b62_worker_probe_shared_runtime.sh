@@ -3,10 +3,19 @@
 set -euo pipefail
 SOURCE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 if (( $# != 0 )); then echo 'B62_SHARED_WORKER_INVALID_ARGUMENTS' >&2; exit 2; fi
-cat > .runtime-shared-probe.toml <<'EOF'
+# #5479: the real Pyodide probe must boot the SAME compatibility date that
+# Production deploys. A literal date here lets the CI lane prove a runtime
+# that Production no longer runs.
+CHAT_MANIFEST="$(cd -- "$SOURCE_DIR/../../apps/padiem-chat" && pwd)/wrangler.toml"
+COMPAT_DATE="$(sed -n 's/^compatibility_date = "\(.*\)"$/\1/p' "$CHAT_MANIFEST" | head -n 1)"
+if [ -z "$COMPAT_DATE" ]; then
+  echo 'B62_WORKER_COMPAT_DATE_MISSING=FAIL' >&2
+  exit 2
+fi
+cat > .runtime-shared-probe.toml <<EOF
 name = "padiem-chat-runtime-shared-probe"
 main = "worker_runtime_combined_probe.py"
-compatibility_date = "2026-08-25"
+compatibility_date = "$COMPAT_DATE"
 compatibility_flags = ["python_workers"]
 workers_dev = true
 EOF
@@ -43,8 +52,9 @@ setsid npx --yes wrangler@4.130.0 dev --config .runtime-shared-probe.toml --port
 WORKER_PID="$!"
 echo "B62_SHARED_WORKER_LAUNCHED_MS=$(date +%s%3N)"
 READY=0
+READY_BODY=""
 for _ in $(seq 1 90); do
-  if curl -fsS http://127.0.0.1:8795/ready >/dev/null 2>&1; then READY=1; break; fi
+  if READY_BODY="$(curl -fsS http://127.0.0.1:8795/ready 2>/dev/null)"; then READY=1; break; fi
   sleep 1
 done
 if [[ "$READY" -ne 1 ]]; then
@@ -54,6 +64,36 @@ if [[ "$READY" -ne 1 ]]; then
 fi
 echo "B62_SHARED_WORKER_READY_MS=$(date +%s%3N)"
 echo 'B62_SHARED_WORKER_READY=PASS'
+# #5479: the CI lane must prove the Python runtime Production actually runs.
+# The compatibility date above is the deployed one, so the booted interpreter
+# has to be the version that date selects.
+EXPECTED_PYTHON="$(uv run --locked python -c 'from pywrangler.utils import get_python_version; print(get_python_version())' 2>/dev/null | tail -n 1)"
+if [[ -z "$EXPECTED_PYTHON" || "$READY_BODY" != *"ok ${EXPECTED_PYTHON} "* ]]; then
+  echo "B62_WORKER_PYTHON_RUNTIME=FAIL ready=$READY_BODY expected=$EXPECTED_PYTHON" >&2
+  cat "$LOGDIR/workerd.log" >&2
+  exit 1
+fi
+echo "B62_WORKER_PYTHON_RUNTIME=$READY_BODY"
+# #5023: the deployed runtime must be able to resolve a real IANA zone, because
+# the Calendar contracts validate the explicit timezone against the real
+# database. A runtime without the tz database answers every Calendar read with
+# HTTP 400 invalid_timezone.
+if [[ "$READY_BODY" != *"tz=ok"* ]]; then
+  echo "B62_WORKER_TIMEZONE_DATABASE=FAIL ready=$READY_BODY" >&2
+  cat "$LOGDIR/workerd.log" >&2
+  exit 1
+fi
+echo 'B62_WORKER_TIMEZONE_DATABASE=PASS'
+# #5479: the deployed runtime must still be able to run the Worker's own
+# password hashing. The Pyodide 3.14 snapshot ships no _hashlib and CPython
+# 3.14 removed the pure-Python PBKDF2 fallback, so that runtime has no
+# hashlib.pbkdf2_hmac and every password login would answer HTTP 500.
+if [[ "$READY_BODY" != *"kdf=ok"* ]]; then
+  echo "B62_WORKER_PASSWORD_KDF=FAIL ready=$READY_BODY" >&2
+  cat "$LOGDIR/workerd.log" >&2
+  exit 1
+fi
+echo 'B62_WORKER_PASSWORD_KDF=PASS'
 
 failed=0
 count=0

@@ -1,0 +1,802 @@
+[
+  {
+    "channel_id": "coupang",
+    "display_name": "쿠팡 마켓플레이스",
+    "steps": [
+      {
+        "order": 1,
+        "action": "type",
+        "target_label": "등록상품명",
+        "value_preview": "데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 2,
+        "action": "type",
+        "target_label": "노출상품명",
+        "value_preview": "데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 3,
+        "action": "type",
+        "target_label": "노출 카테고리 코드",
+        "value_preview": "DEMO-100201",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 4,
+        "action": "type",
+        "target_label": "브랜드",
+        "value_preview": "DemoBrand",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 5,
+        "action": "type",
+        "target_label": "제조사",
+        "value_preview": "데모제조 주식회사",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 6,
+        "action": "type",
+        "target_label": "상품 식별번호(품번/바코드)",
+        "value_preview": "DEMO-STD-001-SLV",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 7,
+        "action": "type",
+        "target_label": "구매옵션명",
+        "value_preview": "무광 실버",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 8,
+        "action": "type",
+        "target_label": "옵션 판매가",
+        "value_preview": "32900",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 9,
+        "action": "type",
+        "target_label": "정상가(할인율 기준가)",
+        "value_preview": "39900",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 10,
+        "action": "type",
+        "target_label": "총 재고수량",
+        "value_preview": "120",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 11,
+        "action": "type",
+        "target_label": "부가세 구분(Y/N)",
+        "value_preview": "Y",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 12,
+        "action": "type",
+        "target_label": "미성년자 구매 가능 여부",
+        "value_preview": "N",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 13,
+        "action": "upload",
+        "target_label": "대표이미지",
+        "value_preview": "1개 파일",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "이미지 업로드는 단계승인 액션이므로 사람이 올립니다."
+      },
+      {
+        "order": 14,
+        "action": "upload",
+        "target_label": "추가이미지",
+        "value_preview": "2개 파일",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "이미지 업로드는 단계승인 액션이므로 사람이 올립니다."
+      },
+      {
+        "order": 15,
+        "action": "type",
+        "target_label": "상세설명",
+        "value_preview": "<div class=\"product-detail\"><h2>데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)</h2><p>알루미늄 CNC 가공 데스크 스탠드로 12.9인치 노트북을 6도에서 55도까지 각도 ",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 16,
+        "action": "type",
+        "target_label": "상품 주요정보 요약",
+        "value_preview": "알루미늄 CNC 가공 데스크 스탠드로 12.9인치 노트북을 6도에서 55도까지 각도 조절할 수 있습니다. USB-C 포트 1개와 USB-A 포트 1개를 제공하며 케이블 정리 슬롯과 폴더 받침이 내장되어 있습니다.",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 17,
+        "action": "type",
+        "target_label": "검색어",
+        "value_preview": "노트북 스탠드, USB-C 랭징 스테이션, 알루미늄 거치대",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 18,
+        "action": "type",
+        "target_label": "상품정보제공고시",
+        "value_preview": "",
+        "classification": "lease_eligible",
+        "requires_human": true,
+        "rationale": "채널 전용 항목이라 표준 속성에서 채울 수 없습니다. 사람이 채널 규칙에 따라 직접 입력합니다."
+      },
+      {
+        "order": 19,
+        "action": "type",
+        "target_label": "배송비 유형",
+        "value_preview": "무료배송",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 20,
+        "action": "type",
+        "target_label": "배송비",
+        "value_preview": "0",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 21,
+        "action": "type",
+        "target_label": "발송예정일자",
+        "value_preview": "2",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 22,
+        "action": "type",
+        "target_label": "반품/교환 정책",
+        "value_preview": "미개봉 상태 기준 7일 이내 반품 가능, 반품비 3,000원",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 23,
+        "action": "submit",
+        "target_label": "상품 등록 저장/판매요청",
+        "value_preview": "",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "저장·판매요청은 단계승인 액션이므로 사람이 실행합니다."
+      }
+    ],
+    "human_steps": [
+      "대표이미지 이미지 업로드",
+      "추가이미지 이미지 업로드",
+      "상품정보제공고시 직접 입력",
+      "상품 등록 저장 및 판매요청"
+    ],
+    "automatable_step_count": 19,
+    "human_step_count": 4
+  },
+  {
+    "channel_id": "naver_smart_store",
+    "display_name": "네이버 스마트스토어",
+    "steps": [
+      {
+        "order": 1,
+        "action": "type",
+        "target_label": "상품명",
+        "value_preview": "데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 2,
+        "action": "type",
+        "target_label": "카테고리",
+        "value_preview": "디지털/가전 > 노트북 액세서리 > 노트북 거치대",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 3,
+        "action": "type",
+        "target_label": "브랜드",
+        "value_preview": "DemoBrand",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 4,
+        "action": "type",
+        "target_label": "제조사",
+        "value_preview": "데모제조 주식회사",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 5,
+        "action": "type",
+        "target_label": "원산지",
+        "value_preview": "국내 제조",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 6,
+        "action": "type",
+        "target_label": "모델명/품번",
+        "value_preview": "DEMO-STD-001",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 7,
+        "action": "type",
+        "target_label": "판매가",
+        "value_preview": "32900",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 8,
+        "action": "type",
+        "target_label": "정가",
+        "value_preview": "39900",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 9,
+        "action": "type",
+        "target_label": "재고수량",
+        "value_preview": "120",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 10,
+        "action": "type",
+        "target_label": "최소 구매 수량",
+        "value_preview": "1",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 11,
+        "action": "type",
+        "target_label": "단위",
+        "value_preview": "개",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 12,
+        "action": "type",
+        "target_label": "상품 간략 정보",
+        "value_preview": "알루미늄 CNC 가공 데스크 스탠드로 12.9인치 노트북을 6도에서 55도까지 각도 조절할 수 있습니다. USB-C 포트 1개와 USB-A 포트 1개를 제공하며 케이블 정리 슬롯과 폴더 받침이 내장되어 있습니다.",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 13,
+        "action": "type",
+        "target_label": "상품 상세설명",
+        "value_preview": "<div class=\"product-detail\"><h2>데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)</h2><p>알루미늄 CNC 가공 데스크 스탠드로 12.9인치 노트북을 6도에서 55도까지 각도 ",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 14,
+        "action": "upload",
+        "target_label": "대표이미지",
+        "value_preview": "1개 파일",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "이미지 업로드는 단계승인 액션이므로 사람이 올립니다."
+      },
+      {
+        "order": 15,
+        "action": "upload",
+        "target_label": "추가이미지",
+        "value_preview": "2개 파일",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "이미지 업로드는 단계승인 액션이므로 사람이 올립니다."
+      },
+      {
+        "order": 16,
+        "action": "type",
+        "target_label": "검색어/태그",
+        "value_preview": "노트북 스탠드, USB-C 랭징 스테이션, 알루미늄 거치대",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 17,
+        "action": "type",
+        "target_label": "배송비",
+        "value_preview": "무료배송",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 18,
+        "action": "type",
+        "target_label": "배송비 금액",
+        "value_preview": "0",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 19,
+        "action": "type",
+        "target_label": "발송예정일",
+        "value_preview": "2",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 20,
+        "action": "type",
+        "target_label": "반품/교환 안내",
+        "value_preview": "미개봉 상태 기준 7일 이내 반품 가능, 반품비 3,000원",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 21,
+        "action": "type",
+        "target_label": "무게",
+        "value_preview": "0.42",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 22,
+        "action": "type",
+        "target_label": "가로",
+        "value_preview": "212",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 23,
+        "action": "type",
+        "target_label": "세로",
+        "value_preview": "168",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 24,
+        "action": "type",
+        "target_label": "높이",
+        "value_preview": "18",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 25,
+        "action": "submit",
+        "target_label": "상품 등록 저장/판매요청",
+        "value_preview": "",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "저장·판매요청은 단계승인 액션이므로 사람이 실행합니다."
+      }
+    ],
+    "human_steps": [
+      "대표이미지 이미지 업로드",
+      "추가이미지 이미지 업로드",
+      "상품 등록 저장 및 판매요청"
+    ],
+    "automatable_step_count": 22,
+    "human_step_count": 3
+  },
+  {
+    "channel_id": "elevenst",
+    "display_name": "11번가 셀러오피스",
+    "steps": [
+      {
+        "order": 1,
+        "action": "type",
+        "target_label": "상품명",
+        "value_preview": "데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 2,
+        "action": "type",
+        "target_label": "카테고리",
+        "value_preview": "디지털/가전 > 노트북 액세서리 > 노트북 거치대",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 3,
+        "action": "type",
+        "target_label": "브랜드",
+        "value_preview": "DemoBrand",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 4,
+        "action": "type",
+        "target_label": "모델명/품번",
+        "value_preview": "DEMO-STD-001",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 5,
+        "action": "type",
+        "target_label": "판매가",
+        "value_preview": "32900",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 6,
+        "action": "type",
+        "target_label": "재고수량",
+        "value_preview": "120",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 7,
+        "action": "type",
+        "target_label": "최소 구매 수량",
+        "value_preview": "1",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 8,
+        "action": "upload",
+        "target_label": "대표이미지",
+        "value_preview": "1개 파일",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "이미지 업로드는 단계승인 액션이므로 사람이 올립니다."
+      },
+      {
+        "order": 9,
+        "action": "upload",
+        "target_label": "추가이미지",
+        "value_preview": "2개 파일",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "이미지 업로드는 단계승인 액션이므로 사람이 올립니다."
+      },
+      {
+        "order": 10,
+        "action": "type",
+        "target_label": "추가상세정보",
+        "value_preview": "<div class=\"product-detail\"><h2>데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)</h2><p>알루미늄 CNC 가공 데스크 스탠드로 12.9인치 노트북을 6도에서 55도까지 각도 ",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 11,
+        "action": "type",
+        "target_label": "검색어",
+        "value_preview": "노트북 스탠드, USB-C 랭징 스테이션, 알루미늄 거치대",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 12,
+        "action": "type",
+        "target_label": "배송비",
+        "value_preview": "무료배송",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 13,
+        "action": "type",
+        "target_label": "배송비 금액",
+        "value_preview": "0",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 14,
+        "action": "type",
+        "target_label": "발송예정일",
+        "value_preview": "2",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 15,
+        "action": "type",
+        "target_label": "반품/교환 정책",
+        "value_preview": "미개봉 상태 기준 7일 이내 반품 가능, 반품비 3,000원",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 16,
+        "action": "type",
+        "target_label": "보증기간/AS",
+        "value_preview": "12개월 제조사 보증",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 17,
+        "action": "submit",
+        "target_label": "상품 등록 저장/판매요청",
+        "value_preview": "",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "저장·판매요청은 단계승인 액션이므로 사람이 실행합니다."
+      }
+    ],
+    "human_steps": [
+      "대표이미지 이미지 업로드",
+      "추가이미지 이미지 업로드",
+      "상품 등록 저장 및 판매요청"
+    ],
+    "automatable_step_count": 14,
+    "human_step_count": 3
+  },
+  {
+    "channel_id": "own_mall",
+    "display_name": "자체몰(카페24 콘솔 기준)",
+    "steps": [
+      {
+        "order": 1,
+        "action": "type",
+        "target_label": "상품명",
+        "value_preview": "데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 2,
+        "action": "type",
+        "target_label": "상품분류",
+        "value_preview": "디지털/가전 > 노트북 액세서리 > 노트북 거치대",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 3,
+        "action": "type",
+        "target_label": "브랜드",
+        "value_preview": "DemoBrand",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 4,
+        "action": "type",
+        "target_label": "판매가",
+        "value_preview": "32900",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 5,
+        "action": "type",
+        "target_label": "소비자가",
+        "value_preview": "39900",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 6,
+        "action": "type",
+        "target_label": "재고수량",
+        "value_preview": "120",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 7,
+        "action": "type",
+        "target_label": "최소 구매 수량",
+        "value_preview": "1",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 8,
+        "action": "type",
+        "target_label": "단위",
+        "value_preview": "개",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 9,
+        "action": "upload",
+        "target_label": "대표이미지",
+        "value_preview": "1개 파일",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "이미지 업로드는 단계승인 액션이므로 사람이 올립니다."
+      },
+      {
+        "order": 10,
+        "action": "upload",
+        "target_label": "추가이미지",
+        "value_preview": "2개 파일",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "이미지 업로드는 단계승인 액션이므로 사람이 올립니다."
+      },
+      {
+        "order": 11,
+        "action": "type",
+        "target_label": "상품 상세설명",
+        "value_preview": "<div class=\"product-detail\"><h2>데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)</h2><p>알루미늄 CNC 가공 데스크 스탠드로 12.9인치 노트북을 6도에서 55도까지 각도 ",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 12,
+        "action": "type",
+        "target_label": "상품 요약",
+        "value_preview": "알루미늄 CNC 가공 데스크 스탠드로 12.9인치 노트북을 6도에서 55도까지 각도 조절할 수 있습니다. USB-C 포트 1개와 USB-A 포트 1개를 제공하며 케이블 정리 슬롯과 폴더 받침이 내장되어 있습니다.",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 13,
+        "action": "type",
+        "target_label": "배송비",
+        "value_preview": "무료배송",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 14,
+        "action": "type",
+        "target_label": "배송비 금액",
+        "value_preview": "0",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 15,
+        "action": "type",
+        "target_label": "발송예정일",
+        "value_preview": "2",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 16,
+        "action": "type",
+        "target_label": "반품/교환 정책",
+        "value_preview": "미개봉 상태 기준 7일 이내 반품 가능, 반품비 3,000원",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 17,
+        "action": "type",
+        "target_label": "AS 안내",
+        "value_preview": "12개월 제조사 보증",
+        "classification": "lease_eligible",
+        "requires_human": false,
+        "rationale": "lease 허용 입력 액션입니다."
+      },
+      {
+        "order": 18,
+        "action": "submit",
+        "target_label": "상품 등록 저장/판매요청",
+        "value_preview": "",
+        "classification": "step_up_required",
+        "requires_human": true,
+        "rationale": "저장·판매요청은 단계승인 액션이므로 사람이 실행합니다."
+      }
+    ],
+    "human_steps": [
+      "대표이미지 이미지 업로드",
+      "추가이미지 이미지 업로드",
+      "상품 등록 저장 및 판매요청"
+    ],
+    "automatable_step_count": 15,
+    "human_step_count": 3
+  }
+]

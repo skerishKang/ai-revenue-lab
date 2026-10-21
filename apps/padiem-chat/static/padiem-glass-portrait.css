@@ -371,6 +371,31 @@ html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
   html[data-theme="padiem-glass"] .composer {
     background: rgba(249, 251, 252, .94);
   }
+
+  /* #5505: the Glass shell portrait stands behind the whole content column on
+   * a narrow window, and the theme's surfaces are only 48% opaque there, so
+   * the artwork showed through the cards and their text was read against the
+   * picture instead of against a surface.
+   *
+   * The theme already answers exactly this in reading mode (.91) and under
+   * prefers-reduced-transparency (.96): raise the surface alpha. A narrow
+   * window gets the same treatment, so the artwork stays a background behind
+   * the content and the cards stay readable. The wide-screen composition is
+   * untouched.
+   */
+  html[data-theme="padiem-glass"] {
+    --card-bg: rgba(239, 243, 246, .92);
+    --glass-card-surface: rgba(244, 247, 249, .93);
+  }
+
+  /* The standalone views (Automation, Connectors, Calendar, Library) put their
+   * header and tagline straight on the page, not on a card, so that text was
+   * read against the picture too. They take the same sheet the Chat
+   * conversation already takes on a narrow window. */
+  html[data-theme="padiem-glass"] .standalone-view {
+    background: rgba(242, 245, 247, .90);
+    border-radius: 24px;
+  }
 }
 
 @media (max-width: 620px) {
@@ -497,8 +522,12 @@ html[data-theme="padiem-glass"] .answer-action:focus-visible {
 
 /* Chat's same glass composer stays visually continuous during typing.
  * Do not replace its white shell with a dark nested textarea when state=chat.
- * The shared Chat/Claw composer is ONE stable input, not a second popup. */
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-actions {
+ * The shared Chat/Claw composer is ONE stable input, not a second popup.
+ *
+ * The first screen owns the Chat input box, so the Chat composer keeps the
+ * first screen's row spacing and the conversation does not resize the input
+ * when a message is sent. The Claw lane keeps its own spacing. */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-actions {
   margin-top: 8px;
 }
 

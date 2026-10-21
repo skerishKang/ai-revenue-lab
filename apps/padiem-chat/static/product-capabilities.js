@@ -476,6 +476,17 @@
     return true;
   }
 
+  // #5222: the tier this account may actually use right now, highest first.
+  // The server-verified member grade is the ceiling, not a floor: the user may
+  // still pick any lower tier. The administrator lane is the default only
+  // once the server has verified it, so an unverified probe never presents it
+  // as executable.
+  function highestAvailableTier() {
+    if (adminAvailable && adminVerified) return "admin";
+    const tiers = availableTiers();
+    return tiers.length ? tiers[tiers.length - 1] : "free";
+  }
+
   // #5222: an explicit user choice replaces the account's stored preference.
   // Restoring the account's own preference never writes one back.
   async function persistAccountSelection(tier) {
@@ -518,7 +529,10 @@
     const restorable = payload && typeof payload.restorable_tier === "string"
       ? payload.restorable_tier
       : "";
-    let next = "free";
+    // #5222: with no usable stored preference the account keeps the tier it
+    // really has, instead of falling back to the Free tier. An administrator
+    // therefore lands on the administrator lane, and a Max member on Max.
+    let next = highestAvailableTier();
     if (restorable === "admin") {
       // The administrator lane is executable only after the server verified
       // this account; an unverified probe never presents it as usable.
@@ -1221,8 +1235,9 @@
     if (!adminAvailable && selectedTier === "admin") {
       // The administrator lane is not executable right now. The account's
       // stored preference stays on the server and returns with the next
-      // verified administrator probe.
-      commitTier("free");
+      // verified administrator probe. What the browser shows meanwhile is the
+      // account's own highest tier that IS executable right now.
+      commitTier(highestAvailableTier());
     }
     syncAdminOption();
     if (!adminAvailable && !adminVerified) {
@@ -1365,7 +1380,9 @@
       ? adminAvailable
       : availableTiers().includes(selectedTier);
     if (!selectionValid) {
-      selectedTier = "free";
+      // The account keeps the tier it really has; it never falls back to the
+      // Free tier while a higher tier is the one it is entitled to.
+      selectedTier = highestAvailableTier();
       window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier: selectedTier } }));
     }
     syncModeCopy();

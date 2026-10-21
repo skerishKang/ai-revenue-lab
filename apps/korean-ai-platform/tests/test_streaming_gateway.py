@@ -161,8 +161,13 @@ def test_mock_preview_is_sse_manual_route_with_done_and_metadata():
     assert metadata["route_evidence_status"] == "mock_no_upstream_call"
 
 
-def test_advertised_tier_fallback_is_not_used_when_caller_pins_one_attempt(monkeypatch):
-    """An explicit one-attempt request keeps the primary route only."""
+def test_a_caller_cannot_narrow_the_tier_fallback_with_an_attempt_count(monkeypatch):
+    """#4317: the candidate list decides, so an attempt count narrows nothing.
+
+    The route advertises the owner-tier fallback and the caller cannot pin it
+    away with a number. The primary still answers here, so the attempt count
+    is 1, but the fallback stays available for a recoverable primary failure.
+    """
     from dataclasses import replace
     from app.pilot import stream_gateway
 
@@ -183,7 +188,6 @@ def test_advertised_tier_fallback_is_not_used_when_caller_pins_one_attempt(monke
             reason_codes=[*base.reason_codes, "owner_selected_tier_fallback:free"],
             fallback_allowed=True,
             eligible_fallback=[fallback],
-            max_attempts=1,
         )
 
     monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
@@ -195,7 +199,9 @@ def test_advertised_tier_fallback_is_not_used_when_caller_pins_one_attempt(monke
     assert frames and "data: [DONE]" in response.text
     assert frames[0]["business14"]["attempt_count"] == 1
     assert frames[0]["business14"]["fallback_used"] is False
-    assert frames[0]["business14"]["fallback_allowed"] is False
+    # The tier fallback is still advertised: the caller's attempt count did not
+    # remove it from the candidate list.
+    assert frames[0]["business14"]["fallback_allowed"] is True
 
 
 def test_canonical_stream_true_does_not_promote_auto_route():
@@ -266,7 +272,6 @@ def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch):
             reason_codes=[*base.reason_codes, "owner_selected_tier_fallback:free"],
             fallback_allowed=True,
             eligible_fallback=[fallback],
-            max_attempts=2,
         )
 
     monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
@@ -334,7 +339,6 @@ def test_owner_tier_fallback_is_not_tried_after_first_visible_token(monkeypatch)
             reason_codes=[*base.reason_codes, "owner_selected_tier_fallback:free"],
             fallback_allowed=True,
             eligible_fallback=[fallback],
-            max_attempts=2,
         )
 
     monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)

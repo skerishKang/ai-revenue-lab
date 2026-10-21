@@ -76,6 +76,24 @@ class MemoryStore:
     async def find_password_credential(self, identifier):
         return self.credentials.get(identifier)
 
+    async def find_password_credential_by_user_id(self, user_id):
+        for cred in self.credentials.values():
+            if cred.user.id == user_id:
+                return cred
+        return None
+
+    async def update_password_credential(self, user_id, password_hash):
+        for username, cred in tuple(self.credentials.items()):
+            if cred.user.id == user_id:
+                self.credentials[username] = PasswordCredential(
+                    user=cred.user,
+                    username=cred.username,
+                    password_hash=password_hash,
+                    failed_attempts=0,
+                    locked_until=None,
+                )
+                return
+
     async def record_password_failure(self, user_id, failed_attempts, locked_until):
         return None
 
@@ -200,22 +218,23 @@ def _session_cookie(response: httpx.Response) -> str:
     raise AssertionError("session cookie was not issued")
 
 
-async def _register(client: httpx.AsyncClient, username: str = "owner.test") -> httpx.Response:
+async def _register(client: httpx.AsyncClient, account: str = "owner.test") -> httpx.Response:
+    # #5424: the email address is the single login identifier, so the
+    # registration and the login both use it.
     return await client.post(
         "/api/auth/password/register",
         json={
-            "username": username,
-            "email": f"{username}@example.test",
+            "email": f"{account}@example.test",
             "name": "Owner Test",
             "password": "correct horse battery staple",
         },
     )
 
 
-async def _login(client: httpx.AsyncClient, username: str = "owner.test") -> httpx.Response:
+async def _login(client: httpx.AsyncClient, account: str = "owner.test") -> httpx.Response:
     return await client.post(
         "/api/auth/password/login",
-        json={"identifier": username, "password": "correct horse battery staple"},
+        json={"identifier": f"{account}@example.test", "password": "correct horse battery staple"},
     )
 
 

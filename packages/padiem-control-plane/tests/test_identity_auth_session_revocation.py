@@ -204,3 +204,82 @@ def test_revocation_rejects_a_product_outside_the_authority_allowlist():
             product_id="b66", session_id="sess_0123456789abcdef0123456789abcdef", now=NOW
         )
     assert exc.value.code == "identity_authority_product_mismatch"
+
+
+# #5441: a replaced credential has to end every session it could still
+# authenticate, on every device.
+
+
+def test_revoking_all_sessions_of_one_product_user_ends_every_device_session():
+    store, _storage = fixture()
+    device_a = _session(store)
+    device_b = _session(store)
+    other_user = _session(store, user="usr_other_5441", provider_subject="other-subject-5441")
+
+    revoked = store.revoke_all_auth_sessions_for_product_user(
+        product_id="b62",
+        product_user_id="usr_5225",
+        now=NOW + timedelta(minutes=5),
+    )
+
+    assert {session.session_id for session in revoked} == {
+        device_a.session_id,
+        device_b.session_id,
+    }
+    for session in (device_a, device_b):
+        stored = store.resolve_auth_session(session_id=session.session_id)
+        assert stored.state is AuthSessionState.REVOKED
+        assert stored.is_active(now=NOW + timedelta(minutes=5)) is False
+    # Another account keeps its own sessions.
+    survivor = store.resolve_auth_session(session_id=other_user.session_id)
+    assert survivor.state is AuthSessionState.ACTIVE
+
+
+def test_revoking_all_sessions_is_idempotent_and_never_reactivates_a_terminal_session():
+    store, _storage = fixture()
+    session = _session(store)
+
+    first = store.revoke_all_auth_sessions_for_product_user(
+        product_id="b62", product_user_id="usr_5225", now=NOW + timedelta(minutes=1)
+    )
+    second = store.revoke_all_auth_sessions_for_product_user(
+        product_id="b62", product_user_id="usr_5225", now=NOW + timedelta(minutes=2)
+    )
+
+    assert len(first) == 1
+    assert second == []
+    stored = store.resolve_auth_session(session_id=session.session_id)
+    assert stored.state is AuthSessionState.REVOKED
+    assert stored.revision == first[0].revision
+
+
+def test_revoking_all_sessions_of_an_unlinked_product_user_fails_closed():
+    store, _storage = fixture()
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.revoke_all_auth_sessions_for_product_user(
+            product_id="b62", product_user_id="usr_missing_5441", now=NOW
+        )
+    assert exc.value.code == "canonical_product_identity_link_not_found"
+
+
+def test_revoking_all_sessions_rejects_a_product_outside_the_authority_allowlist():
+    store, _storage = fixture()
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.revoke_all_auth_sessions_for_product_user(
+            product_id="b66", product_user_id="usr_5225", now=NOW
+        )
+    assert exc.value.code == "identity_authority_product_mismatch"
+
+
+def test_revoking_all_sessions_never_touches_another_product_session():
+    store, _storage = fixture()
+    _session(store)
+    claw_session = _session(store, product_id="b54-padiem-claw", user="usr_claw_5441")
+
+    store.revoke_all_auth_sessions_for_product_user(
+        product_id="b62", product_user_id="usr_5225", now=NOW + timedelta(minutes=1)
+    )
+
+    survivor = store.resolve_auth_session(session_id=claw_session.session_id)
+    assert survivor.state is AuthSessionState.ACTIVE
+

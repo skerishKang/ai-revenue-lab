@@ -50,7 +50,9 @@ ENV_ENGINE_CREDENTIAL = "P01_ENGINE_CREDENTIAL"
 
 # P01 agent execution now supports long-lived work; keep a finite socket
 # watchdog separate from model stream idle and user cancellation.
-TRANSPORT_TIMEOUT_SECONDS = 3600.0  # long-running P01 sync compatibility; async job follow-up
+# #4379: the P01 transport carries no PADIEM client deadline. None means the
+# request waits for the Engine's own answer.
+TRANSPORT_TIMEOUT_SECONDS: float | None = None
 
 # Non-model Engine health/approval/control-plane result budgets remain small.
 # Completed model replies can legitimately exceed this pilot-era 1MiB limit.
@@ -126,9 +128,9 @@ class P01EngineRuntimeConfig:
 class UrllibEngineTransport:
     """Stdlib-only Engine transport mapped onto the configured base URL."""
 
-    def __init__(self, base_url: str, *, timeout_seconds: float = TRANSPORT_TIMEOUT_SECONDS) -> None:
+    def __init__(self, base_url: str, *, timeout_seconds: float | None = TRANSPORT_TIMEOUT_SECONDS) -> None:
         self._base_url = _validated_base_url(base_url, ENV_ENGINE_BASE_URL)
-        self._timeout = float(timeout_seconds)
+        self._timeout = None if timeout_seconds is None else float(timeout_seconds)
 
     def map_url(self, url: str) -> str:
         parsed = urllib.parse.urlsplit(url)

@@ -329,7 +329,18 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
             records = [r for r in records if r.is_visible_to(member_id)]
         return tuple(records[:bounded])
 
-    async def projection(self, workspace_id: str, *, member_id: str | None = None) -> dict[str, Any]:
+    async def projection(
+        self, workspace_id: str, *, member_id: str | None = None,
+        include_raw: bool = True,
+    ) -> dict[str, Any]:
+        """The workspace-scoped Task/Alert projection of this Claw memory store.
+
+        #5360: the shared ``ClawMemoryStore`` contract carries an
+        ``include_raw`` switch, so a caller may ask for the authorized form or
+        the diagnostic/log form of the same workspace. The durable Task/Alert
+        rows hold no inbound body, so both forms are the same document here;
+        the switch only keeps this adapter callable through the contract.
+        """
         _safe_identifier("workspace_id", workspace_id)
         tasks = await self.list_tasks(workspace_id)
         alerts = await self.list_alerts(workspace_id, member_id=member_id)

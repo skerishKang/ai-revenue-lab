@@ -68,9 +68,13 @@ def _mime_type(value: str) -> bytes:
     return value.encode("ascii")
 
 
-def _timeout(value: int) -> int:
+def _timeout(value: int | None) -> int | None:
+    # #4379: None means the send carries no PADIEM client deadline, so the
+    # provider's own timeout governs; a stated deadline still has to be sane.
+    if value is None:
+        return None
     if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 60:
-        raise ContractError("Telegram document timeout must be between 1 and 60 seconds")
+        raise ContractError("Telegram document timeout must be a positive number or None")
     return value
 
 
@@ -113,7 +117,7 @@ class StdlibTelegramDocumentSendPort:
         document_bytes: bytes,
         filename: str,
         mime_type: str,
-        timeout_seconds: int,
+        timeout_seconds: int | None,
     ) -> dict[str, Any]:
         token_text = _bot_token(token)  # existing trusted Bot API token contract
         chat_id = _provider_int(provider_chat_id, "chat id")  # negative group ids valid

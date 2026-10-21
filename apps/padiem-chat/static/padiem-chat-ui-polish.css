@@ -257,6 +257,32 @@ html[data-theme="padiem-glass"] .settings-dialog .language-option[aria-pressed="
   cursor: pointer;
 }
 
+/* #5434: the account entry that opens the self-service password change. */
+.settings-action {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid rgba(62, 76, 88, .14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .58);
+  color: #33424e;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 680;
+  cursor: pointer;
+}
+
+.settings-action:hover {
+  background: rgba(255, 255, 255, .86);
+  border-color: rgba(42, 57, 69, .24);
+}
+
+html[data-theme="padiem-glass"] .settings-action {
+  background: rgba(42, 57, 69, .90);
+  color: #fff;
+  border-color: rgba(42, 57, 69, .90);
+  box-shadow: 0 8px 22px rgba(31, 43, 54, .16);
+}
+
 html[data-theme="padiem-glass"] .settings-panel {
   background: linear-gradient(155deg, rgba(250, 252, 253, .96), rgba(232, 238, 242, .93));
   color: #17212a;

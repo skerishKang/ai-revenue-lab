@@ -25,6 +25,12 @@ from app.service import (
     EngineService,
 )
 
+# #5002: an inert, syntactically valid model route. It is used only to prove
+# the Engine forwards the selected model verbatim; B14 stays the availability
+# authority, so nothing here claims these are registered models. The suspended
+# Router auto route is never a valid fixture model on an Engine product route.
+_INERT_MODEL_ID = "testowner/example-model.v1"
+
 
 def valid_payload() -> dict:
     return {
@@ -39,9 +45,8 @@ def valid_payload() -> dict:
             "max_tokens": 512,
             "required_capabilities": ["free"],
             "model_policy": {
-                "model": "b14/auto",
+                "model": _INERT_MODEL_ID,
                 "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         },
         "messages": [{"role": "user", "content": "안녕"}],
@@ -137,9 +142,11 @@ async def test_success_maps_strict_request_to_core_once() -> None:
     assert request.agent.allowed_tools == ()
     assert request.agent.max_steps == 1
     assert request.agent.required_capabilities == ("free",)
-    assert request.agent.model_policy["model"] == "b14/auto"
+    assert request.agent.model_policy["model"] == _INERT_MODEL_ID
     assert request.agent.model_policy["allow_external_fallback"] is False
-    assert request.agent.model_policy["max_attempts"] == 1
+    # #4317: there is no attempt budget in the policy. B14 derives the walk
+    # from the candidates the declared product grade allows.
+    assert "max_attempts" not in request.agent.model_policy
     assert request.messages == ({"role": "user", "content": "안녕"},)
     assert request.session_id == "session-1"
     assert request.trace_id == "trace-1"
@@ -186,11 +193,12 @@ class FakeB14:
 @pytest.mark.parametrize(
     "policy",
     [
-        {"model": "b14/auto", "unknown": True},
-        # #4317: the attempt budget is a positive count, not a capped constant,
-        # so a large budget is valid and a non-positive one is not.
-        {"model": "b14/auto", "max_attempts": 0},
-        {"model": "b14/auto", "max_attempts": True},
+        {"model": _INERT_MODEL_ID, "unknown": True},
+        # #4317: a declared attempt budget is not a Core policy field at all, so
+        # any value of it fails closed here instead of narrowing B14's roster.
+        {"model": _INERT_MODEL_ID, "max_attempts": 0},
+        {"model": _INERT_MODEL_ID, "max_attempts": 1},
+        {"model": _INERT_MODEL_ID, "max_attempts": True},
     ],
 )
 async def test_invalid_core_model_policy_fails_before_b14(policy) -> None:
@@ -210,15 +218,15 @@ async def test_invalid_core_model_policy_fails_before_b14(policy) -> None:
 
 
 @pytest.mark.asyncio
-async def test_a_large_attempt_budget_reaches_b14_instead_of_being_rejected() -> None:
-    """#4317: the attempt budget is a positive count, not a capped constant.
+async def test_a_declared_attempt_budget_is_rejected_before_b14() -> None:
+    """#4317: the policy has no attempt budget, so a declared one fails closed.
 
-    B14 bounds the real walk by the candidates the declared grade allows, so
-    a large declared budget is forwarded rather than refused here. The
-    remaining guard is that the budget must be a positive integer.
+    The allowed candidate roster is the only ceiling. Accepting a caller number
+    here could only narrow that roster, so Core does not carry the field at all
+    and the real runtime refuses the request before any upstream call.
     """
     payload = valid_payload()
-    payload["agent"]["model_policy"] = {"model": "b14/auto", "max_attempts": 99}
+    payload["agent"]["model_policy"] = {"model": _INERT_MODEL_ID, "max_attempts": 99}
     b14 = FakeB14()
     service = EngineService(
         runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
@@ -227,9 +235,9 @@ async def test_a_large_attempt_budget_reaches_b14_instead_of_being_rejected() ->
 
     response = await service.execute_payload(payload)
 
-    assert response.status_code == 200
-    assert len(b14.calls) == 1
-    assert b14.calls[0].routing.max_attempts == 99
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_execution_request"
+    assert b14.calls == []
 
 
 # #3566 / #3382: inert, syntactically valid identifiers used only to prove the

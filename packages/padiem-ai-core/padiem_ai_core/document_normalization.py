@@ -1233,6 +1233,164 @@ def _extract_xlsx_text(payload: bytes) -> str:
         workbook.close()
 
 
+@dataclass(frozen=True, slots=True)
+class XlsxTable:
+    """One bounded structured worksheet read through the XLSX authority.
+
+    ``headers`` is the first non-empty row of the sheet and ``rows`` are the
+    data rows that follow it, each padded or trimmed to the header width. Every
+    cell is the text form of the workbook value, so a number keeps its literal
+    text and a formula cell reads as its cached value because the reader is
+    opened with ``data_only=True``.
+
+    ``truncated`` says the sheet held more data rows than the requested bound
+    and the read stopped early. ``total_rows_seen`` counts the non-empty data
+    rows the reader inspected, so a caller can tell a short sheet from a
+    bounded one without reading the workbook again.
+    """
+
+    sheet_title: str
+    headers: tuple[str, ...]
+    rows: tuple[tuple[str, ...], ...]
+    truncated: bool
+    total_rows_seen: int
+
+
+def read_xlsx_table(
+    *,
+    name: Any,
+    media_type: Any,
+    payload: Any,
+    sheet_index: int = 0,
+    max_rows: int = MAX_XLSX_ROWS,
+    max_columns: int = MAX_XLSX_COLUMNS,
+) -> XlsxTable:
+    """Read one worksheet as a bounded header-plus-rows table.
+
+    This is the structured counterpart of the flat XLSX text extraction: it
+    reuses the same archive gate, the same bounded repackage and the same
+    ``openpyxl`` reader, so no caller can read a workbook through a second,
+    weaker parser path.
+    """
+
+    safe_name, safe_media = validate_document_identity(
+        name=name,
+        media_type=media_type,
+        source_kind="binary",
+    )
+    if safe_media != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        raise DocumentNormalizationError(
+            "unsupported_binary_media_type",
+            "Unsupported binary document media type.",
+        )
+    if isinstance(payload, (bytes, bytearray)):
+        binary = bytes(payload)
+    elif hasattr(payload, "read") and hasattr(payload, "seek"):
+        payload.seek(0)
+        binary = payload.read()
+    else:
+        raise DocumentNormalizationError(
+            "invalid_binary_payload",
+            "XLSX payload must be bytes or a readable stream.",
+        )
+    if not isinstance(binary, (bytes, bytearray)) or not binary:
+        raise DocumentNormalizationError(
+            "invalid_binary_payload",
+            "XLSX payload must be non-empty bytes.",
+        )
+    if isinstance(sheet_index, bool) or not isinstance(sheet_index, int) or sheet_index < 0:
+        raise DocumentNormalizationError(
+            "invalid_sheet_index",
+            "Sheet index must be a non-negative integer.",
+        )
+    if isinstance(max_rows, bool) or not isinstance(max_rows, int) or not 1 <= max_rows <= MAX_XLSX_ROWS:
+        raise DocumentNormalizationError(
+            "invalid_row_bound",
+            "Row bound is outside the supported range.",
+        )
+    if (
+        isinstance(max_columns, bool)
+        or not isinstance(max_columns, int)
+        or not 1 <= max_columns <= MAX_XLSX_COLUMNS
+    ):
+        raise DocumentNormalizationError(
+            "invalid_column_bound",
+            "Column bound is outside the supported range.",
+        )
+
+    validate_ooxml_archive(bytes(binary))
+    try:
+        from openpyxl import load_workbook
+    except ModuleNotFoundError as exc:
+        raise DocumentNormalizationError(
+            "document_dependency_unavailable",
+            "XLSX extraction dependency is unavailable.",
+        ) from exc
+    try:
+        workbook = load_workbook(
+            BytesIO(_bounded_ooxml_repackage(bytes(binary))),
+            read_only=True,
+            data_only=True,
+            keep_links=False,
+        )
+    except Exception as exc:
+        raise DocumentNormalizationError("xlsx_invalid", "XLSX could not be parsed safely.") from exc
+    try:
+        if len(workbook.sheetnames) < 1:
+            raise DocumentNormalizationError("xlsx_no_sheets", "XLSX contains no worksheets.")
+        if sheet_index >= len(workbook.sheetnames):
+            raise DocumentNormalizationError("xlsx_sheet_missing", "Requested worksheet does not exist.")
+        worksheet = workbook.worksheets[sheet_index]
+        declared_rows = int(worksheet.max_row or 0)
+        declared_columns = int(worksheet.max_column or 0)
+        if declared_rows < 1 or declared_columns < 1:
+            raise DocumentNormalizationError("xlsx_no_headers", "XLSX worksheet contains no header row.")
+
+        headers: tuple[str, ...] = ()
+        rows: list[tuple[str, ...]] = []
+        total_rows_seen = 0
+        nonempty_cells = 0
+        truncated = declared_rows > max_rows + 1
+        column_limit = min(declared_columns, max_columns)
+        row_limit = min(declared_rows, max_rows + 1)
+        for raw_row in worksheet.iter_rows(max_row=row_limit, max_col=column_limit):
+            values = tuple(_cell_text(cell.value) for cell in raw_row)
+            if not headers:
+                if not any(value.strip() for value in values):
+                    continue
+                headers = values
+                continue
+            if not any(value.strip() for value in values):
+                continue
+            total_rows_seen += 1
+            nonempty_cells += sum(1 for value in values if value.strip())
+            if nonempty_cells > MAX_XLSX_NONEMPTY_CELLS:
+                raise DocumentNormalizationError(
+                    "xlsx_cell_budget",
+                    "XLSX contains too many non-empty cells.",
+                )
+            if len(rows) >= max_rows:
+                truncated = True
+                continue
+            rows.append(values)
+        if not headers:
+            raise DocumentNormalizationError("xlsx_no_headers", "XLSX worksheet contains no header row.")
+
+        width = len(headers)
+        padded = tuple(
+            tuple(row[:width]) + ("",) * max(0, width - len(row)) for row in rows
+        )
+        return XlsxTable(
+            sheet_title=str(worksheet.title),
+            headers=headers,
+            rows=padded,
+            truncated=truncated,
+            total_rows_seen=total_rows_seen,
+        )
+    finally:
+        workbook.close()
+
+
 def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> NormalizedDocument:
     safe_name, safe_media = validate_document_identity(name=name, media_type=media_type, source_kind="binary")
     file_payload = (

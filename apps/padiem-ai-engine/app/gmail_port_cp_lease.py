@@ -97,7 +97,7 @@ class ControlPlaneLeaseGmailReadPort(GmailReadPort):
         token: str,
         url: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> tuple[int, bytes]:
         if (
@@ -107,9 +107,12 @@ class ControlPlaneLeaseGmailReadPort(GmailReadPort):
         ):
             raise _provider_unavailable("Gmail response bound is invalid.")
         if (
-            isinstance(timeout_seconds, bool)
-            or not isinstance(timeout_seconds, int)
-            or not 1 <= timeout_seconds <= 60
+            timeout_seconds is not None
+            and (
+                isinstance(timeout_seconds, bool)
+                or not isinstance(timeout_seconds, int)
+                or not 1 <= timeout_seconds <= 60
+            )
         ):
             raise _provider_unavailable("Gmail timeout is invalid.")
         try:
@@ -146,7 +149,7 @@ class ControlPlaneLeaseGmailReadPort(GmailReadPort):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
         url = self._url(base_url=base_url, path=path)

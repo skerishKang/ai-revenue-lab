@@ -16,11 +16,15 @@ from dataclasses import dataclass
 from .contracts import ControlPlaneContractError
 from .model_assignment_policy import (
     MAX_CHANGES,
+    SHARED_GRADE_PRODUCTS,
     CatalogModel,
     TIERS,
     _model,
     _scope,
+    canonical_product,
+    product_scope_set,
 )
+from .product_tier_routes import is_free_execution_candidate
 
 ROUTE_PRODUCTS = frozenset({"chat", "claw", "b66"})
 ROUTE_ACTIONS = frozenset({"set", "reset"})
@@ -126,7 +130,23 @@ class TierRouteSnapshot:
             raise _err("duplicate_model_route")
 
     def lookup(self, product: str, tier: str) -> TierRoute | None:
-        return next((row for row in self.routes if row.key == (product, tier)), None)
+        """The one row that governs this product and tier.
+
+        #2505: the Chat and Claw surfaces share one grade setting, so the
+        canonical row answers for both. A legacy alias row still governs the
+        shared grade until a shared row is written.
+        """
+        canonical = canonical_product(product)
+        row = next((r for r in self.routes if r.key == (canonical, tier)), None)
+        if row is not None:
+            return row
+        for alias in sorted(product_scope_set(product)):
+            if alias == canonical:
+                continue
+            row = next((r for r in self.routes if r.key == (alias, tier)), None)
+            if row is not None:
+                return row
+        return None
 
 
 @dataclass(frozen=True, slots=True)
@@ -138,20 +158,51 @@ class TierRouteResolution:
     reason: str
 
 
+def project_shared_routes(snapshot: TierRouteSnapshot) -> tuple[TierRoute, ...]:
+    """The stored rows projected onto one shared setting per grade.
+
+    #2505: the Chat and Claw surfaces share one grade setting, so a shared
+    row is reported once and a shadowed legacy alias row is not reported as a
+    second setting. An independent product keeps its own row.
+    """
+    projected: list[TierRoute] = []
+    shared_tiers: set[str] = set()
+    for row in sorted(snapshot.routes, key=lambda r: (r.product, r.tier)):
+        if row.product in SHARED_GRADE_PRODUCTS:
+            if row.tier in shared_tiers:
+                continue
+            shared_tiers.add(row.tier)
+            projected.append(TierRoute(
+                product=canonical_product(row.product),
+                tier=row.tier,
+                primary_model_id=row.primary_model_id,
+                fallback_model_id=row.fallback_model_id,
+                enabled=row.enabled,
+            ))
+        else:
+            projected.append(row)
+    return tuple(projected)
+
+
 def static_tier_route(
     static_primary: str | None, static_fallback: str | None = None,
     *, blocked_model_ids: frozenset[str] = frozenset(),
 ) -> TierRouteResolution:
     """Apply explicit model blocks even when no central route row exists."""
-    if static_primary is None:
+    if static_primary is None or is_free_execution_candidate(static_primary):
         return TierRouteResolution(False, None, None, "static", "tier_unavailable")
     if static_primary not in blocked_model_ids:
         fallback = (
             static_fallback
-            if static_fallback not in blocked_model_ids else None
+            if static_fallback not in blocked_model_ids
+            and not is_free_execution_candidate(static_fallback) else None
         )
         return TierRouteResolution(True, static_primary, fallback, "static", "allowed")
-    if static_fallback is not None and static_fallback not in blocked_model_ids:
+    if (
+        static_fallback is not None
+        and static_fallback not in blocked_model_ids
+        and not is_free_execution_candidate(static_fallback)
+    ):
         return TierRouteResolution(True, static_fallback, None, "static", "allowed")
     return TierRouteResolution(False, None, None, "static", "tier_unavailable")
 
@@ -185,9 +236,15 @@ def effective_tier_route(
         return TierRouteResolution(False, None, None, "central", "central_route_disabled")
     for candidate, fallback in ((row.primary_model_id, row.fallback_model_id),
                                 (row.fallback_model_id, None)):
-        if candidate is not None and candidate not in blocked_model_ids:
+        if (
+            candidate is not None
+            and candidate not in blocked_model_ids
+            and not is_free_execution_candidate(candidate)
+        ):
             safe_fallback = (
-                fallback if fallback not in blocked_model_ids else None
+                fallback
+                if fallback not in blocked_model_ids
+                and not is_free_execution_candidate(fallback) else None
             )
             return TierRouteResolution(True, candidate, safe_fallback, "central", "allowed")
     return TierRouteResolution(False, None, None, "central", "central_route_unavailable")
@@ -208,6 +265,8 @@ def _check_route_changes(
         for model_id in (row.primary_model_id, row.fallback_model_id):
             if model_id is None:
                 continue
+            if is_free_execution_candidate(model_id):
+                raise _err("model_route_free_candidate")
             found = catalog.get(model_id)
             if found is None or not isinstance(found, CatalogModel) or not found.registered:
                 raise _err("model_route_unknown_model")
@@ -220,11 +279,19 @@ def _updated_routes(
 ) -> TierRouteSnapshot:
     values = {row.key: row for row in snapshot.routes}
     for change in changes:
+        canonical = canonical_product(change.product)
+        if change.product in SHARED_GRADE_PRODUCTS:
+            # One shared grade setting: the alias row is shadowed, never kept
+            # beside the shared row.
+            for alias in sorted(product_scope_set(change.product)):
+                if alias != canonical:
+                    values.pop((alias, change.tier), None)
+        key = (canonical, change.tier)
         if change.action == "reset":
-            values.pop(change.key, None)
+            values.pop(key, None)
         else:
-            values[change.key] = TierRoute(
-                product=change.product,
+            values[key] = TierRoute(
+                product=canonical,
                 tier=change.tier,
                 primary_model_id=change.primary_model_id or "",
                 fallback_model_id=change.fallback_model_id,
@@ -240,14 +307,15 @@ def _route_diff(
     diff: list[dict[str, object]] = []
     for change in changes:
         before = snapshot.lookup(change.product, change.tier)
+        canonical = canonical_product(change.product)
         diff.append({
-            "product": change.product,
+            "product": canonical,
             "tier": change.tier,
             "action": change.action,
             "previous": before.public() if before is not None else None,
             "next": (
                 None if change.action == "reset" else {
-                    "product": change.product,
+                    "product": canonical,
                     "tier": change.tier,
                     "primary_model_id": change.primary_model_id,
                     "fallback_model_id": change.fallback_model_id,
@@ -270,5 +338,6 @@ __all__ = [
     "_route_diff",
     "_updated_routes",
     "effective_tier_route",
+    "project_shared_routes",
     "static_tier_route",
 ]

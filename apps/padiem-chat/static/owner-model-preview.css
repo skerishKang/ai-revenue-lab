@@ -98,3 +98,85 @@
   .composer-tools { flex: 1 1 0; min-width: 0; flex-wrap: wrap; }
   .send-button { flex: 0 0 44px; align-self: flex-end; }
 }
+
+/* B62 #5297 first screen: the composer action row is not complete at the first
+ * paint, and every late arrival used to move it.
+ *
+ * The tools row is the free space of the composer action row, so on a phone it
+ * is 182px wide and it wraps. Three things land after the first paint:
+ *
+ *   - the two voice controls, mounted into the action row by voice-composer.js
+ *     and voice-ui-menu.js, which makes the tools row 108px narrower,
+ *   - the tier pill, released when product-capabilities.js installs the tier
+ *     control (padiem-first-use.css hides `.model-pill` until then), and
+ *   - the web-search control, revealed when the deployment capability arrives.
+ *
+ * The narrower row is the row the other two have to fit into, so whichever of
+ * them crosses 182px first re-wraps the row into a second line. The composer
+ * grows by a whole tool row and the settled first screen jumps. The web-search
+ * control also slides the tier pill at every width, because it is ordered
+ * before the pill.
+ *
+ * All three reserve their space, so the action row already has its settled
+ * geometry at the first paint and nothing moves afterwards. The reserved
+ * boxes carry their own size, because the tier pill and the web-search control
+ * are sized by stylesheets that arrive later (mode-presentation.css is
+ * injected at run time) and a reserved box that still followed them would move
+ * the row while the stylesheets load.
+ *
+ * The controls keep their own semantics meanwhile: they stay invisible,
+ * unfocusable and unclickable, and the deployment capability still decides
+ * whether the web-search control is shown at all. Every reservation is given
+ * back as soon as the thing it reserves is there, so the settled composer is
+ * laid out exactly as it is today.
+ */
+#composerForm .composer-tools .model-pill {
+  /* padiem-first-use.css owns `.model-pill { display: none !important; }`,
+     and the tier control is installed a frame before its own stylesheet is
+     applied. The pill keeps its slot through both. */
+  display: inline-flex !important;
+  visibility: hidden;
+  /* The standard tier pill's own width, so the reserved slot is the slot the
+   * released pill takes. A tier label of its own length may end wider; the
+   * pill is the last item of the row and sits alone on its own line, so its
+   * start position does not move. */
+  width: 116px;
+  min-width: 116px;
+}
+#composerForm .composer-tools .model-pill[data-mode-control="true"] {
+  /* The tier control is installed: the pill is shown with its own width. */
+  visibility: visible;
+  width: auto;
+  min-width: 0;
+}
+#composerForm .composer-tools #webSearchButton[hidden] {
+  /* padiem-shared-ui.css owns a global `[hidden] { display: none !important; }`. */
+  display: inline-grid !important;
+  visibility: hidden;
+  /* The touch-target size the released control has (voice-composer.css). */
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+}
+@media (max-width: 720px) {
+  /* The tier pill's own height and width on a phone (mode-presentation.css).
+   * They are kept because the pill is the only item on the row's second line,
+   * so its height is the height of that line. */
+  #composerForm .composer-tools .model-pill { width: 112px; min-width: 112px; height: 44px; }
+}
+@media (max-width: 620px) {
+  /* The two voice controls are mounted into the action row after the first
+   * paint. Until they are there the tools row is the whole free space, and it
+   * becomes 108px narrower (two 44px controls and two 10px gaps) when they
+   * arrive. That narrower row is the row the tier pill and the web-search
+   * control have to fit into, so the space they take is reserved here: the
+   * tools row keeps the width it will have in the settled composer, and its
+   * content never re-wraps.
+   *
+   * The reservation is given back as soon as the controls are mounted, so the
+   * settled composer is laid out exactly as it is today. */
+  .composer-actions:not(:has(> #voiceMicButton)):not(:has(> #voiceWaveformButton)) #sendButton {
+    margin-left: calc(2 * 44px + 2 * 10px);
+  }
+}

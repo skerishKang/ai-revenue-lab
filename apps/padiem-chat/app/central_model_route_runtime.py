@@ -12,11 +12,17 @@ No provider connection, credential or B14 registry mutation happens here.
 """
 from __future__ import annotations
 
+import asyncio
+
 from contextlib import asynccontextmanager
 
 from starlette.requests import Request
 
-from padiem_control_plane.model_assignment_policy import ModelPolicySnapshot, TIERS
+from padiem_control_plane.model_assignment_policy import (
+    ModelPolicySnapshot,
+    TIERS,
+    product_scope_set,
+)
 from padiem_control_plane.model_tier_routes import (
     TierRouteResolution,
     TierRouteSnapshot,
@@ -70,6 +76,9 @@ async def _blocked_models_from_store(
     Runtime route selection reads blocks so an operator's explicit block is
     never silently routed around. A policy read failure imposes no extra
     restriction: only the already validated central route remains in force.
+
+    #2505: the Chat and Claw surfaces share one grade setting, so a block on
+    either screen of the shared product blocks the shared setting for both.
     """
     read = getattr(store, "snapshot", None)
     if not callable(read):
@@ -81,9 +90,10 @@ async def _blocked_models_from_store(
         return frozenset()
     if not isinstance(snapshot, ModelPolicySnapshot) or snapshot.workspace_id != WORKSPACE:
         return frozenset()
+    blocked_scope = frozenset({"central"}) | product_scope_set(product)
     return frozenset(
         rule.model_id for rule in snapshot.rules
-        if rule.action == "block" and rule.tier == tier and rule.product in ("central", product)
+        if rule.action == "block" and rule.tier == tier and rule.product in blocked_scope
     )
 
 
@@ -130,8 +140,14 @@ async def resolve_tier_route_view_from_stores(
         raise ValueError("invalid route tier")
     # The policy ledger is independent of the route ledger. A route read
     # outage must not silently remove a policy block that remains readable.
-    blocked_model_ids = await _blocked_models_from_store(policy_store, product, tier)
-    snapshot = await _read_route_snapshot(route_store)
+    # #4317 perf: the two stores are unrelated, so the two reads are issued
+    # together instead of one after the other. Each helper already fails closed
+    # on its own errors, so the outcome is identical and one store round trip
+    # leaves the chat TTFT path.
+    blocked_model_ids, snapshot = await asyncio.gather(
+        _blocked_models_from_store(policy_store, product, tier),
+        _read_route_snapshot(route_store),
+    )
     if snapshot is None:
         return static_tier_route(
             static_primary, static_fallback, blocked_model_ids=blocked_model_ids,

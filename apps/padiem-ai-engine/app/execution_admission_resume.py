@@ -22,6 +22,7 @@ from app.execution_admission import (
     ExecutionAdmissionRequest,
     TrustedExecutionAdmission,
     TrustedUsageReservation,
+    permission_product_id_for_execution_app,
     require_trusted_admission,
 )
 
@@ -48,12 +49,20 @@ class OriginalAdmissionBinding:
             return
         if not isinstance(reservation, TrustedUsageReservation):
             raise ExecutionAdmissionError("invalid_admission", "Original usage reservation evidence is invalid.")
-        if reservation.product_id != self.app_id or reservation.billing_semantic_id != ORCHESTRATION_RUN_CAPABILITY:
+        # #5015 (F-032): the persisted evidence keeps the execution app id, and
+        # the permission product of that app is the server-owned mapping. The
+        # reservation must name the same permission product the admission was
+        # granted under, for the same user.
+        permission_product_id = permission_product_id_for_execution_app(self.app_id)
+        if (
+            reservation.product_id != permission_product_id
+            or reservation.billing_semantic_id != ORCHESTRATION_RUN_CAPABILITY
+        ):
             raise ExecutionAdmissionError("invalid_admission", "Original usage reservation scope is invalid.")
         if reservation.request_fingerprint != self.request_fingerprint:
             raise ExecutionAdmissionError("invalid_admission", "Original usage reservation request identity is invalid.")
         expected_subject_type = "user" if self.subject_id is not None else "account"
-        expected_subject_id = self.subject_id if self.subject_id is not None else self.app_id
+        expected_subject_id = self.subject_id if self.subject_id is not None else permission_product_id
         if reservation.subject_type != expected_subject_type or reservation.subject_id != expected_subject_id:
             raise ExecutionAdmissionError("invalid_admission", "Original usage reservation subject is invalid.")
 

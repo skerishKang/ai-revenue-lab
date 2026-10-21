@@ -64,14 +64,18 @@ from __future__ import annotations
 import inspect
 import json
 import re
+from types import SimpleNamespace
 from typing import Any
 import uuid
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from .member_grade_access import selected_grade_denial
-from padiem_control_plane.product_tier_routes import ProductTierLabel
+from .member_grade_access import claw_execution_tier_denial
+from .model_policy import (
+    ADMIN_B14_MODEL_ID,
+    resolve_claw_execution_grade,
+)
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -88,6 +92,7 @@ from .history import (
     MAX_RUN_RESULT_SUMMARY_CHARS,
     HistoryStore,
     PRODUCT_SCOPE_CHAT,
+    validate_chat_pc_run_id,
     validate_conversation_id,
 )
 from .usage_gate import UsageGate
@@ -154,12 +159,10 @@ _ACTION_MAP: dict[str, ManualIntakeAction] = {
     "extract_candidates": ManualIntakeAction.EXTRACT_CANDIDATES,
 }
 
-_BROWSER_TIER_MAP: dict[str, ProductTierLabel] = {
-    "free": ProductTierLabel.FREE,
-    "plus": ProductTierLabel.PLUS,
-    "pro": ProductTierLabel.PRO,
-    "max": ProductTierLabel.MAX,
-}
+# #5223: the grade -> transport profile map is owned by the shared grade
+# authority in ``model_policy``, so no Claw lane keeps a private copy of it.
+# The lanes resolve a browser-supplied grade through
+# ``resolve_claw_execution_grade``.
 
 _CHANNEL_MAP: dict[str, ManualIntakeChannel] = {
     "kakao": ManualIntakeChannel.KAKAO,
@@ -519,14 +522,16 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         sender_hint = raw_sender or None
 
     raw_tier = data.get("tier", "free")
-    if not isinstance(raw_tier, str):
+    # #5223: the grade is resolved by the ONE shared authority, exactly like the
+    # composer lane. A lane with its own copy of the grade map refused a valid
+    # administrator with ``422 invalid_tier`` (#5229).
+    grade = resolve_claw_execution_grade(raw_tier)
+    if grade is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-    product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
-    if product_tier is None:
-        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    product_tier = grade.product_tier
     if "tier" in data:
-        tier_denial = await selected_grade_denial(
-            request, current_user_id(request) if auth_ready(request) else None, raw_tier.strip().lower()
+        tier_denial = await claw_execution_tier_denial(
+            request, current_user_id(request) if auth_ready(request) else None, grade
         )
         if tier_denial is not None:
             return tier_denial
@@ -534,7 +539,17 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     # absent row preserves the historical static declaration.
     from .central_model_route_runtime import resolve_claw_tier_model
 
-    claw_route = await resolve_claw_tier_model(request, raw_tier.strip().lower())
+    if grade.admin_lane:
+        # The administrator lane selects the one exact administrator model.
+        # It is not a centrally routed member grade.
+        claw_route = SimpleNamespace(
+            ok=True,
+            model_id=ADMIN_B14_MODEL_ID,
+            fallback_model_id=None,
+            source="admin",
+        )
+    else:
+        claw_route = await resolve_claw_tier_model(request, grade.tier_id)
     if not claw_route.ok or not claw_route.model_id:
         return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
 
@@ -1266,13 +1281,34 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
     return JSONResponse({"ok": True, "result": result}, status_code=200, headers=_NO_STORE_HEADERS)
 
 
+def _is_resolvable_claw_run_id(run_id: object) -> bool:
+    """#5015 — the run ids this route may resolve.
+
+    The legacy Claw run grammar stays exactly as it was, and the canonical
+    Chat PC run id (``chat_pcq_`` plus 32 lowercase hex) is accepted through
+    the shared canonical id validator, so a run is addressable by its own id
+    without widening the accepted pattern. The owner check below is unchanged:
+    a run that is not this session's is simply not found.
+    """
+
+    if not isinstance(run_id, str) or not run_id:
+        return False
+    if re.fullmatch(r"run_[a-zA-Z0-9]{12,80}", run_id):
+        return True
+    try:
+        validate_chat_pc_run_id(run_id)
+    except ValueError:
+        return False
+    return True
+
+
 async def claw_pending_result(request: Request) -> JSONResponse:
     """Only one session-owned pending run; never enumerate runs or dispatch PC."""
     uid = current_user_id(request) if auth_ready(request) else None
     if not uid:
         return _error(401, "unauthorized", "Authentication required")
     run_id = request.path_params.get("run_id", "")
-    if not isinstance(run_id, str) or not re.fullmatch(r"run_[a-zA-Z0-9]{12,80}", run_id):
+    if not _is_resolvable_claw_run_id(run_id):
         return _error(404, "run_not_found", "Run not found")
     history = getattr(request.app.state, "history_store", None)
     if history is None:

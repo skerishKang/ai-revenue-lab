@@ -3,6 +3,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
+from typing import Any
 
 from padiem_control_plane.product_tier_routes import (
     RETIRED_PRODUCT_MODEL_IDS,
@@ -67,6 +68,60 @@ TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
     "pro": ProductTierLabel.PRO,
     "max": ProductTierLabel.MAX,
 }
+
+# #5223: the administrator lane is NOT a member grade. It is the separately
+# authorized exact model above, granted by the operator admin authority, and it
+# never appears in the Free..Max product-tier routes.
+ADMIN_TIER_ID = "admin"
+
+# #5223: the browser-supplied grade -> the product transport profile. ONE map
+# for every Claw lane. #5229 showed that a lane carrying its own copy of this
+# map refused a valid administrator with ``422 invalid_tier``, so the map lives
+# with the grade vocabulary and the lanes resolve it through
+# ``resolve_claw_execution_grade``.
+TIER_TRANSPORT_LABEL_BY_ID: dict[str, ProductTierLabel] = {
+    "free": ProductTierLabel.FREE,
+    "plus": ProductTierLabel.PLUS,
+    "pro": ProductTierLabel.PRO,
+    "max": ProductTierLabel.MAX,
+}
+
+
+@dataclass(frozen=True)
+class ClawExecutionGrade:
+    """The resolved grade of one Claw execution request.
+
+    ``admin_lane`` marks the separately authorized administrator lane. Its
+    authority is the operator admin store, never the browser-supplied grade.
+    ``product_tier`` is the transport profile the P01 wire carries; it is not
+    an entitlement and never widens a membership.
+    """
+
+    tier_id: str
+    admin_lane: bool
+    product_tier: ProductTierLabel
+
+
+def resolve_claw_execution_grade(raw_tier: Any) -> ClawExecutionGrade | None:
+    """Resolve a browser-supplied grade for a Claw execution lane.
+
+    Returns ``None`` for a grade that does not exist, so the caller refuses it
+    with the one existing ``422 invalid_tier`` contract. Every Claw lane
+    resolves the grade here, so the lanes cannot drift apart again.
+    """
+
+    if not isinstance(raw_tier, str):
+        return None
+    tier_id = raw_tier.strip().lower()
+    if tier_id == ADMIN_TIER_ID:
+        # P01 transports only member-tier enums. The administrator lane uses
+        # the existing PLUS transport profile and the exact administrator
+        # model, exactly like the composer lane.
+        return ClawExecutionGrade(tier_id, True, ProductTierLabel.PLUS)
+    product_tier = TIER_TRANSPORT_LABEL_BY_ID.get(tier_id)
+    if product_tier is None:
+        return None
+    return ClawExecutionGrade(tier_id, False, product_tier)
 TIER_ID_TO_PROFILE: dict[str, str] = {
     "free": "free",
     "plus": "low",

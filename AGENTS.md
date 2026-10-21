@@ -10,6 +10,12 @@ This file is the repository-wide entry point for AI-assisted work. A more specif
 - Preserve verbatim external source code/logs/legal quotations when their literal content is necessary; the prohibition governs the assistant's authored prose, not source-data mutation. It does not create new product permissions or override real security enforcement.
 - New GitHub-aware agent sessions must read this rule. Existing conversations/workers may require instruction reload; committing this document does not automatically edit their runtime instructions.
 
+## Cloudflare account scope — Owner decision (2026-10-21)
+
+- **Padiem AI work in this repository uses the Cloudflare account `Charliekant`.** This includes the existing Chat/Engine Worker deployment, diagnostics and log-reading tasks.
+- The separate Cloudflare account named **`Padiem` is for other businesses** and is outside the current Padiem AI operations scope. The Padiem product/domain name does not select that Cloudflare account.
+- Before Cloudflare work, read [Cloudflare Credential Operations §0](docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md). Resolve the account ID and authentication from the existing authorized sources for `Charliekant`. If a local or workflow configuration resolves to `Padiem`, report the scope mismatch; do not guess from account-list order or silently rewrite live credentials.
+
 ## Non-public company governance (read before business decisions)
 
 This repository contains **public development and engineering policy**, not the authoritative text of PADIEM's internal business policy. Business instructions are local-only on the authorized **Padiem-Command-Center** PC:

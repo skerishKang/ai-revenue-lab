@@ -288,14 +288,15 @@ def _execution_context(value: Any) -> dict[str, Any] | None:
         normalized["idempotency_key"] = key
     if "timeout_seconds" in data:
         timeout = data["timeout_seconds"]
-        if (
+        # #4379: an explicit null means the execution carries no PADIEM deadline.
+        if timeout is not None and (
             isinstance(timeout, bool)
             or not isinstance(timeout, (int, float))
             or not 1 <= float(timeout) <= 3600
         ):
             raise PadiemAiEngineClientError(
                 "invalid_engine_request",
-                "execution_context.timeout_seconds must be between 1 and 3600",
+                "execution_context.timeout_seconds must be a positive number or None",
             )
         normalized["timeout_seconds"] = timeout
     return normalized

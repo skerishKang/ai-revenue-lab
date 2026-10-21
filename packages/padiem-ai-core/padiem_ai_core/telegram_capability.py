@@ -78,7 +78,9 @@ TELEGRAM_PROVIDER_CLOUD_DOWNLOAD_LIMIT_BYTES = 20 * 1024 * 1024
 TELEGRAM_PROVIDER_CLOUD_SEND_DOCUMENT_LIMIT_BYTES = 50 * 1024 * 1024
 TELEGRAM_CALLBACK_DATA_MAX_BYTES = 64
 
-REQUEST_TIMEOUT_SECONDS = 30
+# #4379: a provider request carries no PADIEM client deadline. None
+# means the provider's own timeout applies.
+REQUEST_TIMEOUT_SECONDS: int | None = None
 
 # Core-side output bounds (analogous to the Gmail/Drive promotions).
 MAX_PROVIDER_METADATA_BYTES = 128_000
@@ -136,7 +138,7 @@ class TelegramReadPort(Protocol):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
         ...
@@ -158,7 +160,6 @@ def telegram_read_tool_specs() -> tuple[ToolSpec, ...]:
             approval_policy=ApprovalPolicy.NOT_REQUIRED,
             input_schema={"type": "object", "properties": {}, "additionalProperties": False},
             auth_scope=(TELEGRAM_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=TELEGRAM_GET_CHAT_INFO_TOOL_ID,
@@ -180,7 +181,6 @@ def telegram_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(TELEGRAM_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
     )
 

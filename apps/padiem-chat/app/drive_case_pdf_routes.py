@@ -13,14 +13,20 @@ No browser-provided workspace, Drive grant, provider endpoint, ancestry proof,
 or OAuth authority is accepted here. file_id is selection intent only; the
 Engine re-fetches Drive metadata and re-authorizes selected-folder scope before
 returning bytes.
+
+#4379 hop-2: the detail route answers those bytes as ``application/pdf``. The
+previous contract re-encoded the whole PDF back into a JSON string on the way
+to the browser, which doubled the wire cost of a file already bounded by the
+Engine ceiling. Errors stay JSON so a byte-reading client can tell the two apart.
 """
 
 from __future__ import annotations
 
 from collections.abc import Mapping
+from urllib.parse import quote
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from .drive_case_folder_engine import DriveCaseFolderEngineError
 from .drive_case_folder_routes import _resolve_context
@@ -29,6 +35,17 @@ MAX_PDF_QUERY_CHARS = 200
 MAX_PDF_FILE_ID_CHARS = 200
 
 _ALLOWED_COLLECTION_QUERY_KEYS = frozenset({"query"})
+
+_PDF_MEDIA_TYPE = "application/pdf"
+# Same same-origin inline-preview header set the existing artifact routes use.
+_SAFE_HEADERS = {
+    "Cache-Control": "no-store, max-age=0",
+    "Pragma": "no-cache",
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+    "Cross-Origin-Resource-Policy": "same-origin",
+    "Vary": "Cookie",
+}
 
 
 def _error(code: str, message: str, status_code: int) -> JSONResponse:
@@ -93,7 +110,7 @@ async def drive_case_pdfs_collection(request: Request) -> JSONResponse:
     )
 
 
-async def drive_case_pdf_detail(request: Request) -> JSONResponse:
+async def drive_case_pdf_detail(request: Request) -> Response:
     _uid, pid, workspace_ref, client, error = await _resolve_context(request)
     if error is not None:
         return error
@@ -109,7 +126,7 @@ async def drive_case_pdf_detail(request: Request) -> JSONResponse:
         return _invalid("invalid_file_id", "PDF 선택 값이 올바르지 않습니다.")
 
     try:
-        body = await client.read_pdf(
+        file_body, content = await client.read_pdf_bytes(
             workspace_ref=workspace_ref,
             project_id=pid,
             file_id=file_id,
@@ -119,7 +136,18 @@ async def drive_case_pdf_detail(request: Request) -> JSONResponse:
     except Exception:
         return _generic_failure()
 
-    return JSONResponse(body)
+    return Response(
+        content,
+        status_code=200,
+        media_type=_PDF_MEDIA_TYPE,
+        headers={
+            **_SAFE_HEADERS,
+            "Content-Disposition": "inline; filename*=UTF-8''"
+            + quote(file_body["name"], safe=""),
+            "Content-Length": str(len(content)),
+            "X-Frame-Options": "SAMEORIGIN",
+        },
+    )
 
 
 async def drive_case_pdf_extraction_review(request: Request) -> JSONResponse:

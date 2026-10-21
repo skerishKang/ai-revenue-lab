@@ -44,7 +44,10 @@ from app.pilot.b14_timeout_policy import build_provider_http_timeout
 from app.pilot.agnes_429_diagnostics import log_agnes_429
 from app.pilot.exlab_429_diagnostics import log_exlab_429
 from app.pilot.b14_runtime_config import runtime_config
-from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
+from app.pilot.owner_model_exclusions import (
+    excluded_from_owner_customer_selection,
+    free_candidate_excluded_from_execution,
+)
 from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.platform_secrets import (
     CredentialSource,
@@ -290,6 +293,26 @@ def _require_owner_allowed_live_model(
         )
 
 
+def _require_free_candidate_excluded(
+    model_id: str, upstream_model: str, platform_provider_id: str
+) -> None:
+    """#2505: an excluded free candidate never reaches a provider network call.
+
+    The check runs before every provider branch, including the provider that
+    returns before the owner-exclusion gate below. A directly supplied model
+    id and a bypassed resolver answer are refused the same way, and another
+    provider's free model keeps its own owner-approved status.
+    """
+    if free_candidate_excluded_from_execution(
+        model_id,
+        upstream_model=upstream_model,
+        platform_provider_id=platform_provider_id,
+    ):
+        raise PilotNotConfigured(
+            "제외된 무료 모델은 이 실행 경로에서 사용할 수 없습니다."
+        )
+
+
 async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONSE_BYTES) -> bytes:
     """Collect a completed response body with a pre-decode byte cap (#4379).
 
@@ -346,6 +369,11 @@ async def call_platform_chat_completions(
         )
         return _mock_response(model_id, upstream_model, provider)
 
+    # #2505: the excluded free family is refused before any provider branch,
+    # so no supplier network call can follow it.
+    _require_free_candidate_excluded(
+        model_id, upstream_model, platform_provider_id
+    )
     if platform_provider_id == "opencode-go":
         from .opencode_go_wire import call_go_model
         if model_parameters:
@@ -519,6 +547,11 @@ async def stream_platform_chat_completions(
             yield event
         return
 
+    # #2505: the excluded free family is refused before any provider branch,
+    # so no supplier network call can follow it.
+    _require_free_candidate_excluded(
+        model_id, upstream_model, platform_provider_id
+    )
     if platform_provider_id == "opencode-go":
         from .opencode_go_wire import stream_go_model
         if model_parameters:

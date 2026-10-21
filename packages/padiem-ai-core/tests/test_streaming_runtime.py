@@ -139,8 +139,7 @@ def test_manual_stream_uses_explicit_model_and_reuses_completed_request_policy()
             "model": "openrouter/free",
             "temperature": 0.4,
             "provider_order": ["OpenRouter"],
-            "max_attempts": 1,
-            "allow_external_fallback": False,
+                "allow_external_fallback": False,
         }
     )
     client = FakeStreamClient(complete_events())
@@ -177,7 +176,6 @@ def test_manual_stream_uses_explicit_model_and_reuses_completed_request_policy()
         "optimize_for": "korean",
         "allow_external_fallback": False,
         "provider_order": ["OpenRouter"],
-        "max_attempts": 1,
     }
 
 

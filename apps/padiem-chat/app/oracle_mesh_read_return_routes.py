@@ -60,6 +60,7 @@ from .history import (
     HistoryError,
     HistoryForbidden,
     MAX_HISTORY_MESSAGE_CHARS,
+    is_multi_command_action,
     validate_conversation_id,
 )
 from .request_telemetry import emit_stage_event
@@ -584,6 +585,51 @@ async def _read_body(
     except Exception:
         return None
     return _read_json(raw, keys, limit, optional)
+
+
+async def _read_result_body(
+    request: Request,
+) -> tuple[dict[str, Any], bytes | None] | None:
+    """Read one result wire: legacy JSON, or the #4379 binary frame.
+
+    The binary frame is ``4-byte big-endian header length + UTF-8 JSON header
+    + raw bytes``: a screenshot travels as the bytes it is, never as a base64
+    string. The JSON shape stays accepted so an executor that has not been
+    restarted keeps its held result deliverable after this deploy. The second
+    element is the raw body, or None when the JSON shape was used.
+    """
+    media_type = (
+        request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    )
+    if media_type != "application/octet-stream":
+        wire = await _read_body(
+            request, _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
+            optional=_RESULT_BLOB_KEYS,
+        )
+        return None if wire is None else (wire, None)
+    try:
+        declared = request.headers.get("content-length")
+        if declared is not None and (
+            not declared.isdecimal() or int(declared) > _MAX_RESULT_BODY_BYTES
+        ):
+            return None
+        raw = await request.body()
+    except Exception:
+        return None
+    if len(raw) < 6 or len(raw) > _MAX_RESULT_BODY_BYTES:
+        return None
+    header_size = int.from_bytes(raw[:4], "big")
+    # A frame without its own body is not a capture; the note-only shape
+    # stays JSON. The header itself is bounded by the same envelope.
+    if not 0 < header_size <= _MAX_RESULT_BODY_BYTES or 4 + header_size >= len(raw):
+        return None
+    header = _read_json(
+        raw[4:4 + header_size], _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
+        optional=_RESULT_BLOB_KEYS,
+    )
+    if header is None:
+        return None
+    return header, raw[4 + header_size:]
 
 
 def _channel_source(request: Request) -> OracleMeshReturnSource | None:
@@ -1326,21 +1372,21 @@ def _verified_desktop_note(wire: dict[str, Any]) -> str | None:
 
 def _verified_desktop_blob(
     wire: dict[str, Any], max_bytes: int = _MAX_RESULT_BODY_BYTES,
+    raw: bytes | None = None,
 ) -> bytes | bytearray | None:
     """Revalidate a desktop screenshot blob, or ``b""`` when absent.
 
     Returns None for a malformed blob. Absence (act ops) is ``b""``, never
-    an error: only a half-present blob is untrusted.
+    an error: only a half-present blob is untrusted. ``raw`` is the body of
+    the binary frame; the legacy JSON shape carries the same bytes as base64.
     """
     media = wire.get("content_blob_media_type")
     encoded = wire.get("content_blob_base64")
     digest = wire.get("content_blob_sha256")
     size = wire.get("content_blob_bytes")
-    if media is None and encoded is None and digest is None and size is None:
+    if raw is None and media is None and encoded is None and digest is None and size is None:
         return b""
     if media != _DESKTOP_SCREENSHOT_MEDIA_TYPE:
-        return None
-    if not isinstance(encoded, str) or not encoded:
         return None
     if not isinstance(digest, str) or not digest:
         return None
@@ -1348,15 +1394,23 @@ def _verified_desktop_blob(
         return None
     if size <= 0 or size > max_bytes:
         return None
-    try:
-        raw = base64.b64decode(encoded, validate=True)
-    except ValueError:
+    if raw is not None:
+        # A binary frame never also carries the base64 copy: exactly one shape.
+        if encoded is not None:
+            return None
+        blob = raw
+    else:
+        if not isinstance(encoded, str) or not encoded:
+            return None
+        try:
+            blob = base64.b64decode(encoded, validate=True)
+        except ValueError:
+            return None
+    if len(blob) != size or hashlib.sha256(blob).hexdigest() != digest:
         return None
-    if len(raw) != size or hashlib.sha256(raw).hexdigest() != digest:
+    if not blob.startswith(_DESKTOP_SCREENSHOT_MAGIC):
         return None
-    if not raw.startswith(_DESKTOP_SCREENSHOT_MAGIC):
-        return None
-    return raw
+    return blob
 
 
 _DESKTOP_OP_LABELS = {
@@ -1764,10 +1818,10 @@ def _command_output_parts(output: str, limit: int) -> list[str]:
 
 async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     """Executor submit: secret + single-use nonce, verified, appended once."""
-    wire = await _read_body(request, _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
-                            optional=_RESULT_BLOB_KEYS)
-    if wire is None:
+    parsed_result = await _read_result_body(request)
+    if parsed_result is None:
         return _error(400, "oracle_mesh_invalid_body")
+    wire, result_blob_raw = parsed_result
     if _ref(wire.get("dispatch_id"), 128) is None:
         return _error(400, "oracle_mesh_invalid_body")
     if _ref(wire.get("nonce"), 128) is None:
@@ -1844,8 +1898,9 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     desktop_arg: str | None = None
     result_digest = wire["content_sha256"] if wire["content_bytes"] else _EMPTY_RESULT_SHA256
     result_size = wire["content_bytes"]
-    if dispatch.get("kind") != "desktop" and any(
-        key in wire for key in _RESULT_BLOB_KEYS
+    if dispatch.get("kind") != "desktop" and (
+        result_blob_raw is not None
+        or any(key in wire for key in _RESULT_BLOB_KEYS)
     ):
         # Screenshot evidence on a non-desktop turn is untrusted by shape.
         # The consumed dispatch still closes as failed and nothing reaches
@@ -1912,7 +1967,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         # present, else the note, matching what the executor pinned first.
         parsed = _parse_desktop_op_text(dispatch.get("command_text"))
         verified_note = _verified_desktop_note(wire)
-        verified_blob = _verified_desktop_blob(wire)
+        verified_blob = _verified_desktop_blob(wire, raw=result_blob_raw)
         if (
             parsed is None
             or verified_note is None
@@ -2255,6 +2310,12 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     else:
         messages = [content]
     appended = False
+    # #5015: a run that may hold more than one PC tool call stores each
+    # command's own result beside the others and never seals the run row, so
+    # one command's completion is never read as the whole work's completion.
+    command_scope = None
+    if is_multi_command_action((run_row or {}).get("action")):
+        command_scope = dispatch.get("command_id")
     try:
         for index, part in enumerate(messages):
             message_id = base_message_id if len(messages) == 1 else (
@@ -2270,6 +2331,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                 # A terminal result is the only caller that opts out of the
                 # shared edge trim; every other message keeps today's behavior.
                 preserve_edges=(dispatch.get("kind") == "command"),
+                command_scope=command_scope,
             ) or appended
     except HistoryForbidden:
         # Ownership refusal is final: retrying cannot change it.

@@ -106,7 +106,16 @@ def _store():
         "request_fingerprint TEXT, account_ref TEXT, workspace_ref TEXT, device_id TEXT, "
         "binding_ref TEXT, node_ref TEXT, root_ref TEXT, path_relative TEXT, file_path TEXT, "
         "kind TEXT, command_text TEXT, nonce_sha256 TEXT, state TEXT, expires_at TEXT, "
-        "created_at TEXT);"
+        "created_at TEXT, tool_call_ref TEXT);"
+        # 063: the dispatch scopes are separate indexes, plus one call key
+        # that covers both row shapes.
+        "CREATE UNIQUE INDEX idx_oracle_mesh_dispatch_run_scope "
+        "ON oracle_mesh_dispatch (user_id, run_id) WHERE tool_call_ref IS NULL;"
+        "CREATE UNIQUE INDEX idx_oracle_mesh_dispatch_tool_call "
+        "ON oracle_mesh_dispatch (user_id, run_id, tool_call_ref) "
+        "WHERE tool_call_ref IS NOT NULL;"
+        "CREATE UNIQUE INDEX idx_oracle_mesh_dispatch_tool_request "
+        "ON oracle_mesh_dispatch (user_id, run_id, tool_request_ref);"
     )
     connection.execute(
         "INSERT INTO claw_run_history VALUES (?,?,?)", ("row-1", RUN, OWNER),

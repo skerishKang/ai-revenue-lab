@@ -168,3 +168,27 @@ html[data-theme="light"] .composer-pc-status:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .composer-pc-status * { transition: none !important; animation: none !important; }
 }
+
+/* #5297 was the first-screen composer band: the device manager mounted a
+ * separate entry line above the composer and reserved its height so the
+ * fixed input could not jump when it arrived.
+ *
+ * That entry line repeated the same state the composer status control already
+ * shows in the input's top-right corner, so the band is gone: the composer
+ * status control is the single composer-level entry, and the space above the
+ * input is reclaimed instead of reserved.
+ *
+ * The device manager keeps its element and its own open/close state. Only the
+ * duplicate entry line is not shown, and the block holds no margin while it
+ * shows nothing, so nothing is left behind above the composer. */
+#clawDeviceManager > .claw-device-manager-toggle {
+  display: none;
+}
+
+/* The block keeps no vertical margin while it shows nothing. The panel brings
+ * its own margin when it opens, so the composer area is not padded by an
+ * empty block. */
+#clawDeviceManager:not(:has(> .claw-device-manager-panel:not([hidden]))) {
+  margin-top: 0;
+  margin-bottom: 0;
+}

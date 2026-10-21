@@ -29,7 +29,9 @@ def _agent(**changes):
         "allowed_tools": ("calc",),
         "required_capabilities": ("text",),
         "context_policy": {"mode": "bounded"},
-        "model_policy": {"model": "b14/auto", "temperature": 0.2},
+        # #5002: an inert explicit route; the suspended Router auto route is
+        # never a valid Engine model.
+        "model_policy": {"model": "testowner/example-model.v1", "temperature": 0.2},
         "max_steps": 4,
         "output_contract": {"type": "text"},
     }

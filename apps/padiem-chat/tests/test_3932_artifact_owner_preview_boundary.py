@@ -98,10 +98,22 @@ def test_mime_and_bytes_must_both_match_before_inline():
         assert resp.headers["x-content-type-options"] == "nosniff"
 
 
-def test_oversized_pdf_cannot_be_inlined():
-    resp, _, _ = _get(payload=b"%PDF-1.4\n" + b"A" * (10 * 1024 * 1024) + b"%%EOF")
+def test_a_pdf_past_the_released_ceiling_is_still_inlined():
+    # #4379: the 10 MiB total was a PADIEM capacity claim, not a platform
+    # request limit, and the D1 metadata column no longer carries it. The
+    # container proof is what still decides, so a real PDF is inlined.
+    payload = b"%PDF-1.4\n" + b"A" * (10 * 1024 * 1024) + b"%%EOF"
+    resp, _, _ = _get(payload=payload)
+    assert resp.status_code == 200
+    assert resp.content == payload
+    assert resp.headers["content-type"] == PDF_MIME
+
+
+def test_a_pdf_below_the_floor_is_not_inlined():
+    resp, _, _ = _get(payload=b"%PDF-1.4")
     assert resp.status_code == 200
     assert resp.json()["preview"]["available"] is False
+    assert resp.json()["preview"]["kind"] == "download_only"
 
 
 def test_untrusted_filename_is_encoded_not_raw_header():

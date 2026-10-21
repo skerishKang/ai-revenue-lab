@@ -94,7 +94,13 @@ def test_central_and_product_intersection_then_global_off_priority():
     other = effective_model(snapshot, workspace_id="ws-1", product="claw",
                             tier="PLUS", model=CATALOG[A], model_id=A,
                             capability_ready=True, trusted_policy_fresh=True)
-    assert not other.allowed and other.reason == "product_unassigned"
+    # #2505: Chat and Claw are two screens of one AI product, so one
+    # product-scoped decision covers both of them.
+    assert other.allowed and other.reason == "allowed"
+    independent = effective_model(snapshot, workspace_id="ws-1", product="b66",
+                                  tier="PLUS", model=CATALOG[A], model_id=A,
+                                  capability_ready=True, trusted_policy_fresh=True)
+    assert not independent.allowed and independent.reason == "product_unassigned"
     changed = preview(svc, change("central", action="block"))
     blocked = apply(svc, changed["confirmation_receipt"])
     decision = effective_model(blocked, workspace_id="ws-1", product="chat",
@@ -130,8 +136,13 @@ def test_product_admin_can_only_change_single_product_never_global():
     assert s.lookup("central", "PLUS", A) == "inherit"
     assert_error("model_admin_scope_forbidden",
                  lambda: preview(svc, change("central"), grant=g))
+    # #2505: the Chat and Claw screens are one shared product, so one
+    # product-scoped grant covers both of them, and still covers no other
+    # product.
+    shared = preview(svc, change("claw"), change("chat"), grant=g)
+    assert len(shared["diff"]) == 2
     assert_error("model_admin_scope_forbidden",
-                 lambda: preview(svc, change("claw"), change("chat"), grant=g))
+                 lambda: preview(svc, change("claw"), change("b66"), grant=g))
     assert_error("model_admin_scope_forbidden",
                  lambda: svc.preview_rollback(grant=g, workspace_id="ws-1", target_revision=0, now=NOW))
     store.close()

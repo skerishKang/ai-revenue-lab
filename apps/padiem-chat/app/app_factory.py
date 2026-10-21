@@ -121,8 +121,11 @@ from .auth_routes import (
     google_callback,
     google_start,
     logout,
+    password_change,
     password_login,
     password_register,
+    password_reset_confirm,
+    password_reset_request,
 )
 from .auto_grounding import AutoGroundingService
 from .voice_stt_routes import IDENTITY_PATH as VOICE_IDENTITY_PATH
@@ -294,6 +297,8 @@ from .desktop_conversation_routes import (
 )
 from .grounding import GroundedChatService
 from .history import HistoryStore
+from .password_reset import PasswordResetService
+from .password_reset_store import D1PasswordResetStore
 from .project_file_routes import (
     owner_files_collection,
     project_file_detail,
@@ -431,6 +436,8 @@ def create_app(
     claw_engine_desktop_secret=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
+    password_reset_store=None,
+    password_reset_delivery=None,
     android_handoff_store=None,
     connector_owner_enrollment=None,
     github_oauth_store=None,
@@ -478,6 +485,12 @@ def create_app(
         Route("/auth/android/confirm", android_handoff_confirm, methods=["POST"]),
         Route("/api/auth/password/register", password_register, methods=["POST"]),
         Route("/api/auth/password/login", password_login, methods=["POST"]),
+        Route("/api/auth/password/change", password_change, methods=["POST"]),
+        # #5441 lost-password self-service reset. The request route issues one
+        # short-lived, single-use link; the confirm route redeems it and sets
+        # the new password.
+        Route("/api/auth/password/reset/request", password_reset_request, methods=["POST"]),
+        Route("/api/auth/password/reset/confirm", password_reset_confirm, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route(MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session, methods=["POST"]),
@@ -1055,6 +1068,31 @@ def create_app(
         except Exception:
             _auth_abuse_store = None
     app.state.auth_abuse_gate = AuthAbuseGate(resolved, _auth_abuse_store)
+
+    # #5441 lost-password reset. The store holds the one-time token digests
+    # and the reset audit ledger; the delivery transport sends the one-time
+    # link to the account's own address. Both are optional: without them the
+    # reset routes fail closed with a retryable error instead of pretending a
+    # mail was sent.
+    _password_reset_store = password_reset_store
+    if _password_reset_store is None and d1_binding is not None:
+        try:
+            _password_reset_store = D1PasswordResetStore(d1_binding)
+        except Exception:
+            _password_reset_store = None
+    app.state.password_reset_store = _password_reset_store
+    app.state.password_reset_delivery = password_reset_delivery
+    app.state.password_reset_service = (
+        PasswordResetService(
+            _password_reset_store,
+            pepper=resolved.session_secret or "",
+            public_base_url=resolved.public_base_url or "",
+        )
+        if _password_reset_store is not None
+        and resolved.session_secret
+        and resolved.public_base_url
+        else None
+    )
 
     # AI usage quotas are disabled by default during development.
     # Explicitly injected quota stores retain opt-in policy coverage.

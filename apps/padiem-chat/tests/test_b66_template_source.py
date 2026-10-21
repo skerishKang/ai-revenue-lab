@@ -23,10 +23,8 @@ from app.b66_template_source import (
     B66TemplateSourceOrphanError,
     B66TemplateSourceStore,
     D1B66TemplateSourceMetadataStore,
-    MAX_B66_TEMPLATE_SOURCE_BYTES,
     sanitize_original_filename,
 )
-from app.b66_template_source_routes import MAX_TEMPLATE_SOURCE_REQUEST_BYTES
 from app.bounded_request_body import (
     RequestBodyTooLarge,
     read_bounded_request_body,
@@ -211,13 +209,15 @@ async def test_bounds_and_magic_fail_before_r2_write():
             body=b"not-a-pdf",
         )
 
+    # #4379: the empty-payload rejection is the rule that survived its source line;
+    # the 1 GiB byte total it travelled with is gone.
     with pytest.raises(B66TemplateSourceError, match="size"):
         await store.put_template_source(
             user_id=USER_A,
             workspace_id=WORKSPACE_A,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            original_filename="big.xlsx",
-            body=b"PK\x03\x04" + b"x" * MAX_B66_TEMPLATE_SOURCE_BYTES,
+            original_filename="empty.xlsx",
+            body=b"",
         )
     assert r2.put_calls == []
 
@@ -369,13 +369,41 @@ async def test_download_refuses_object_whose_reported_size_disagrees():
 
 
 @pytest.mark.asyncio
-async def test_download_refuses_object_over_custody_ceiling_before_read():
+async def test_download_pre_read_guard_never_refuses_an_object_for_its_size():
+    # #4379: custody carries no PADIEM byte total, so an object reporting a size
+    # over the former 1 GiB ceiling is still read. What refuses it afterwards is
+    # the metadata and SHA-256 agreement, which stays the integrity authority.
+    reads: list[int] = []
+
+    class OversizedReportingObject:
+        size = (2 * 1024 * 1024 * 1024) + 1
+
+        async def arrayBuffer(self):
+            reads.append(self.size)
+            return memoryview(PDF_BODY)
+
+    class ReportingR2(MemoryR2):
+        async def get(self, key):
+            return OversizedReportingObject() if key in self.objects else None
+
     metadata = MemoryMetadata()
-    body = PDF_BODY
-    store_meta = _pdf_metadata(body=body)
+    reported = OversizedReportingObject.size
+    store_meta = B66TemplateSourceMetadata(
+        template_source_id=TEMPLATE_SOURCE_ID,
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        media_type="application/pdf",
+        original_filename="form.pdf",
+        object_key=f"b66/template-source/{TEMPLATE_SOURCE_ID}.pdf",
+        byte_length=reported,
+        sha256=hashlib.sha256(PDF_BODY).hexdigest(),
+        status="uploaded",
+        created_at="2026-10-09T00:00:00.000Z",
+        updated_at="2026-10-09T00:00:00.000Z",
+    )
     metadata.rows[(USER_A, WORKSPACE_A, TEMPLATE_SOURCE_ID)] = store_meta
-    r2 = SizeReportingR2(reported_size=MAX_B66_TEMPLATE_SOURCE_BYTES + 1)
-    r2.objects[store_meta.object_key] = body
+    r2 = ReportingR2()
+    r2.objects[store_meta.object_key] = PDF_BODY
     store = B66TemplateSourceStore(metadata, r2)
 
     with pytest.raises(B66TemplateSourceError, match="integrity check failed"):
@@ -384,6 +412,7 @@ async def test_download_refuses_object_over_custody_ceiling_before_read():
             workspace_id=WORKSPACE_A,
             template_source_id=TEMPLATE_SOURCE_ID,
         )
+    assert reads == [reported], "the pre-read guard must not refuse the object for its size"
 
 
 @pytest.mark.asyncio
@@ -489,6 +518,35 @@ async def test_d1_metadata_cannot_redirect_id_to_another_r2_object():
             user_id=USER_A,
             workspace_id=WORKSPACE_A,
         )
+
+
+@pytest.mark.asyncio
+async def test_d1_metadata_row_over_the_old_byte_total_still_parses():
+    # #4379: custody carries no PADIEM byte total, so a row reporting a length over
+    # the former 1 GiB maximum is read as valid metadata. The row checks that remain
+    # are object-key agreement, filename bounds, a non-empty length and shape.
+    reported = (2 * 1024 * 1024 * 1024) + 1
+    row = {
+        "id": TEMPLATE_SOURCE_ID,
+        "user_id": USER_A,
+        "workspace_id": WORKSPACE_A,
+        "media_type": "application/pdf",
+        "original_filename": "원본.pdf",
+        "object_key": f"b66/template-source/{TEMPLATE_SOURCE_ID}.pdf",
+        "byte_length": reported,
+        "sha256": hashlib.sha256(PDF_BODY).hexdigest(),
+        "status": "uploaded",
+        "created_at": "2026-10-09T00:00:00.000Z",
+        "updated_at": "2026-10-09T00:00:00.000Z",
+    }
+    store = D1B66TemplateSourceMetadataStore(_D1(row))
+
+    metadata = await store.get_active(
+        template_source_id=TEMPLATE_SOURCE_ID,
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+    )
+    assert metadata is not None and metadata.byte_length == reported
 
 
 def test_sanitize_original_filename_strips_paths_and_bounds():
@@ -686,8 +744,8 @@ class RouteStore:
             "text/csv",
         ):
             raise B66TemplateSourceError("media_type is invalid")
-        # Emulate the real store contract: magic/structure/size validation
-        # happens before any R2 write and raises before metadata is created.
+        # Emulate the real store contract: magic/structure validation happens
+        # before any R2 write and raises before metadata is created.
         if media_type == "application/pdf" and not (
             body.startswith(b"%PDF-") and b"%%EOF" in body
         ):
@@ -990,6 +1048,9 @@ async def test_real_sqlite_d1_migration_and_r2_custody_round_trip():
         stored = conn.execute("SELECT user_id, workspace_id, sha256 FROM b66_template_source").fetchone()
         assert stored["user_id"] == USER_A and stored["workspace_id"] == WORKSPACE_A
         assert stored["sha256"] == hashlib.sha256(original).hexdigest()
+        # #4379: the byte ceiling this table used to declare is released by the
+        # forward migration 060, which the dedicated guard test exercises against
+        # the whole schema. Nothing on this surface refuses a file for its size.
     finally:
         conn.close()
 
@@ -1003,6 +1064,8 @@ def test_migration_027_stores_metadata_only_and_uses_unique_sequence():
     assert "user_id TEXT NOT NULL REFERENCES users(id)" in migration
     assert "workspace_id TEXT NOT NULL" in migration
     assert "object_key TEXT NOT NULL UNIQUE" in migration
+    # 027 is a released migration and keeps its own text; #4379 releases the
+    # ceiling by a forward rebuild instead of rewriting this file.
     assert "10485760" in migration
     assert "'uploaded'" in migration
     lowered = migration.lower()
@@ -1010,64 +1073,30 @@ def test_migration_027_stores_metadata_only_and_uses_unique_sequence():
         assert forbidden not in lowered
 
 
-def test_upload_request_ceiling_rejects_oversized_bodies_with_413():
+def test_upload_declares_no_padiem_byte_total_to_the_reader(monkeypatch):
+    # #4379: the route hands the body to the incremental reader with no PADIEM
+    # byte total, so the platform request limit is the only ceiling left and no
+    # request is refused with a product-side 413.
+    import app.b66_template_source_routes as routes
+
+    captured: list[object] = []
+    real_reader = routes.read_bounded_request_body
+
+    async def spy(request, *, max_bytes):
+        captured.append(max_bytes)
+        return await real_reader(request, max_bytes=max_bytes)
+
+    monkeypatch.setattr(routes, "read_bounded_request_body", spy)
     store = RouteStore()
     client = _client(store=store)
-    # Declared-length path: a body crossing the route ceiling is rejected 413
-    # before any parsing or store call, even though it is not valid JSON.
-    raw = b"x" * (MAX_TEMPLATE_SOURCE_REQUEST_BYTES + 1)
     response = client.post(
         "/api/b66/template-sources",
-        content=raw,
-        headers={
-            "Content-Type": "application/json",
-            "Content-Length": str(len(raw)),
-        },
-    )
-    assert response.status_code == 413
-    assert response.json()["error"]["code"] == "template_source_request_too_large"
-    assert store.upload_calls == []
-
-
-def test_upload_base64_expansion_beyond_ceiling_rejected_with_413():
-    store = RouteStore()
-    client = _client(store=store)
-    # A PDF whose decoded size is inside the 10 MiB file limit minus headroom
-    # but whose base64 JSON envelope crosses the route ceiling is rejected 413
-    # during reception, before the payload is decoded.
-    oversized = _upload_payload(
-        media_type="application/pdf",
-        filename="huge.pdf",
-        body=b"%PDF-1.4\n" + b"x" * (MAX_B66_TEMPLATE_SOURCE_BYTES + 16384) + b"\n%%EOF\n",
-    )
-    raw = json.dumps(oversized).encode("utf-8")
-    assert len(raw) > MAX_TEMPLATE_SOURCE_REQUEST_BYTES
-    response = client.post(
-        "/api/b66/template-sources",
-        content=raw,
+        content=json.dumps(_upload_payload()).encode("utf-8"),
         headers={"Content-Type": "application/json"},
     )
-    assert response.status_code == 413
-    assert response.json()["error"]["code"] == "template_source_request_too_large"
-    assert store.upload_calls == []
-
-
-def test_upload_ceiling_boundary_value_still_passes_validation():
-    # A body just under the ceiling but with an invalid payload type still
-    # reaches JSON validation (400 media type), proving the ceiling does not
-    # swallow legitimate requests.
-    store = RouteStore()
-    client = _client(store=store)
-    boundary = _upload_payload(media_type="application/zip")
-    raw = json.dumps(boundary).encode("utf-8")
-    assert len(raw) < MAX_TEMPLATE_SOURCE_REQUEST_BYTES
-    response = client.post(
-        "/api/b66/template-sources",
-        content=raw,
-        headers={"Content-Type": "application/json"},
-    )
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "template_source_media_type_invalid"
+    assert response.status_code == 201
+    assert captured == [None]
+    assert len(store.upload_calls) == 1
 
 
 def test_upload_rejects_malformed_json_with_400():
@@ -1083,50 +1112,66 @@ def test_upload_rejects_malformed_json_with_400():
     assert store.upload_calls == []
 
 
+READER_BOUND = 4096  # an explicit caller bound, not a product-side total
+
+
 def test_bounded_reader_rejects_missing_content_length_incrementally():
     # Direct unit coverage of the reader contract for a chunked/missing-length
-    # stream that crosses the ceiling mid-reception.
+    # stream that crosses the caller's bound mid-reception.
     request = MagicMock()
     request.headers = {}  # no content-length: incremental counting applies
 
     async def stream():
         yield b"x" * 1024
-        yield b"y" * MAX_TEMPLATE_SOURCE_REQUEST_BYTES
+        yield b"y" * READER_BOUND
 
     request.stream = stream
     with pytest.raises(RequestBodyTooLarge):
-        asyncio.run(
-            read_bounded_request_body(request, max_bytes=MAX_TEMPLATE_SOURCE_REQUEST_BYTES)
-        )
+        asyncio.run(read_bounded_request_body(request, max_bytes=READER_BOUND))
 
 
 def test_bounded_reader_rejects_declared_content_length_over_limit():
     request = MagicMock()
-    request.headers = {"content-length": str(MAX_TEMPLATE_SOURCE_REQUEST_BYTES + 1)}
+    request.headers = {"content-length": str(READER_BOUND + 1)}
 
     async def stream():
         yield b"never-read"  # pragma: no cover - must not be consumed
 
     request.stream = stream
     with pytest.raises(RequestBodyTooLarge):
-        asyncio.run(
-            read_bounded_request_body(request, max_bytes=MAX_TEMPLATE_SOURCE_REQUEST_BYTES)
-        )
+        asyncio.run(read_bounded_request_body(request, max_bytes=READER_BOUND))
 
 
-def test_bounded_reader_allows_body_at_exact_ceiling():
+def test_bounded_reader_allows_body_at_exact_bound():
     request = MagicMock()
-    request.headers = {"content-length": str(MAX_TEMPLATE_SOURCE_REQUEST_BYTES)}
-    payload = b"z" * MAX_TEMPLATE_SOURCE_REQUEST_BYTES
+    request.headers = {"content-length": str(READER_BOUND)}
+    payload = b"z" * READER_BOUND
 
     async def stream():
         yield payload
 
     request.stream = stream
-    result = asyncio.run(
-        read_bounded_request_body(request, max_bytes=MAX_TEMPLATE_SOURCE_REQUEST_BYTES)
-    )
+    result = asyncio.run(read_bounded_request_body(request, max_bytes=READER_BOUND))
     assert result == payload
+
+
+def test_bounded_reader_with_no_bound_streams_the_body_in():
+    # #4379: max_bytes=None is the "this route declares no PADIEM total" contract.
+    # The reader must still consume the request stream chunk by chunk rather than
+    # falling back to a one-shot body materialization.
+    request = MagicMock()
+    request.headers = {}
+    arrived: list[int] = []
+
+    async def stream():
+        for chunk in (b"a" * 1024, b"b" * 2048, b"c" * 512):
+            arrived.append(len(chunk))
+            yield chunk
+
+    request.stream = stream
+    result = asyncio.run(read_bounded_request_body(request, max_bytes=None))
+    assert result == b"a" * 1024 + b"b" * 2048 + b"c" * 512
+    assert arrived == [1024, 2048, 512]
 
 
 def test_routes_are_registered_and_composition_fails_closed():

@@ -151,7 +151,7 @@
             <div><p data-locale-key="auth-kicker">Padiem Account</p><h2 id="authDialogTitle" data-locale-key="auth-title">로그인 / 회원가입</h2></div>
             <button class="auth-close" id="authDialogClose" type="button" data-locale-aria-label="auth-close" aria-label="로그인 창 닫기">×</button>
           </div>
-          <button class="auth-google" id="googleLoginButton" type="button" data-locale-key="auth-google">Google 계정으로 계속</button>
+          <button class="auth-google" id="googleLoginButton" type="button"><svg class="auth-google-logo" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span data-locale-key="auth-google">Google 계정으로 계속</span></button>
           <div class="auth-handoff" id="androidHandoffPanel" hidden>
             <p class="auth-handoff-title" data-locale-key="auth-android-title">앱 로그인 코드</p>
             <p class="auth-handoff-code" id="androidHandoffCode"></p>
@@ -168,26 +168,53 @@
           </div>
           <div class="auth-divider" id="authDivider"><span data-locale-key="auth-or">또는</span></div>
           <form class="auth-form" id="passwordLoginForm">
-            <h3 data-locale-key="auth-password-login">아이디로 로그인</h3>
-            <label for="passwordLoginIdentifier" data-locale-key="auth-identifier">아이디 또는 이메일</label>
-            <input id="passwordLoginIdentifier" name="identifier" type="text" autocomplete="username" maxlength="320" required>
+            <h3 data-locale-key="auth-password-login">이메일로 로그인</h3>
+            <label for="passwordLoginIdentifier" data-locale-key="auth-identifier">이메일</label>
+            <input id="passwordLoginIdentifier" name="identifier" type="text" inputmode="email" autocomplete="username" maxlength="320" required>
             <label for="passwordLoginPassword" data-locale-key="auth-password">비밀번호</label>
             <input id="passwordLoginPassword" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+            <button class="auth-link" id="passwordResetOpen" type="button" data-locale-key="auth-forgot-password">비밀번호를 잊으셨나요?</button>
             <p class="auth-error" id="passwordLoginError" role="alert" hidden></p>
             <button class="auth-primary" id="passwordLoginSubmit" type="submit" data-locale-key="auth-login">로그인</button>
           </form>
+          <section class="auth-reset" id="passwordResetPanel" aria-labelledby="passwordResetTitle" hidden>
+            <div class="auth-reset-view" id="passwordResetRequestView">
+              <h3 id="passwordResetTitle" data-locale-key="auth-reset-request-title">비밀번호 찾기</h3>
+              <p class="auth-reset-note" data-locale-key="auth-reset-request-note">가입에 사용한 이메일을 입력해 주세요. 그 주소로 새 비밀번호를 정할 수 있는 링크를 보내드립니다.</p>
+              <form class="auth-form" id="passwordResetRequestForm">
+                <label for="passwordResetEmail" data-locale-key="auth-identifier">이메일</label>
+                <input id="passwordResetEmail" name="email" type="email" inputmode="email" autocomplete="username" maxlength="320" required>
+                <p class="auth-error" id="passwordResetRequestError" role="alert" hidden></p>
+                <p class="auth-status" id="passwordResetRequestStatus" role="status" aria-live="polite" hidden></p>
+                <button class="auth-primary" id="passwordResetRequestSubmit" type="submit" data-locale-key="auth-reset-request-submit">인증 메일 보내기</button>
+              </form>
+              <button class="auth-link" id="passwordResetBack" type="button" data-locale-key="auth-reset-back">로그인으로 돌아가기</button>
+            </div>
+            <div class="auth-reset-view" id="passwordResetConfirmView" hidden>
+              <h3 data-locale-key="auth-reset-confirm-title">새 비밀번호 설정</h3>
+              <form class="auth-form" id="passwordResetConfirmForm">
+                <label for="passwordResetNew" data-locale-key="password-change-new">새 비밀번호</label>
+                <input id="passwordResetNew" name="new_password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+                <label for="passwordResetConfirm" data-locale-key="password-change-confirm">새 비밀번호 확인</label>
+                <input id="passwordResetConfirm" name="new_password_confirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+                <small data-locale-key="auth-password-rule">8자 이상 128자 이하. 이메일(로그인 아이디)은 포함하지 않도록 해 주세요.</small>
+                <p class="auth-error" id="passwordResetConfirmError" role="alert" hidden></p>
+                <p class="auth-status" id="passwordResetConfirmStatus" role="status" aria-live="polite" hidden></p>
+                <button class="auth-primary" id="passwordResetConfirmSubmit" type="submit" data-locale-key="auth-reset-confirm-submit">비밀번호 설정하기</button>
+              </form>
+              <button class="auth-link" id="passwordResetConfirmBack" type="button" data-locale-key="auth-reset-back">로그인으로 돌아가기</button>
+            </div>
+          </section>
           <details class="auth-register" id="passwordRegisterSection">
             <summary data-locale-key="auth-create-account">새 계정 만들기</summary>
             <form class="auth-form" id="passwordRegisterForm">
-              <label for="passwordRegisterUsername" data-locale-key="auth-username">아이디</label>
-              <input id="passwordRegisterUsername" name="username" type="text" autocomplete="username" minlength="4" maxlength="32" pattern="[a-z0-9][a-z0-9._-]{3,31}" required>
-              <label for="passwordRegisterEmail" data-locale-key="auth-email">이메일</label>
-              <input id="passwordRegisterEmail" name="email" type="email" autocomplete="email" maxlength="320" required>
+              <label for="passwordRegisterEmail" data-locale-key="auth-email-login-id">이메일 (로그인 아이디)</label>
+              <input id="passwordRegisterEmail" name="email" type="email" autocomplete="username" maxlength="320" required>
               <label for="passwordRegisterName" data-locale-key="auth-name">이름</label>
               <input id="passwordRegisterName" name="name" type="text" autocomplete="name" maxlength="160">
               <label for="passwordRegisterPassword" data-locale-key="auth-password">비밀번호</label>
-              <input id="passwordRegisterPassword" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
-              <small data-locale-key="auth-password-rule">12자 이상, 아이디 전체를 포함하지 않도록 설정해 주세요.</small>
+              <input id="passwordRegisterPassword" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+              <small data-locale-key="auth-password-rule">8자 이상 128자 이하로 설정해 주세요. 이메일(로그인 아이디)은 포함하지 않도록 해 주세요.</small>
               <p class="auth-error" id="passwordRegisterError" role="alert" hidden></p>
               <button class="auth-primary" id="passwordRegisterSubmit" type="submit" data-locale-key="auth-register">회원가입</button>
             </form>
@@ -218,6 +245,11 @@
               <button type="button" class="language-option" data-locale-value="en" aria-pressed="false">EN</button>
             </div>
           </section>
+          <section class="settings-section" aria-labelledby="accountTitle" id="accountSettingsSection" hidden>
+            <p class="settings-label">ACCOUNT</p>
+            <h3 id="accountTitle" data-locale-key="account-title">계정</h3>
+            <button class="settings-action" id="passwordChangeOpen" type="button" data-locale-key="password-change-open">비밀번호 변경</button>
+          </section>
           <section class="settings-section settings-help" aria-labelledby="settingsHelpTitle">
             <p class="settings-label">HELP &amp; GUIDE</p>
             <h3 id="settingsHelpTitle" data-locale-key="settings-help-title">문서·사용 안내</h3>
@@ -233,6 +265,25 @@
           </section>
           <div class="settings-footer"><button class="settings-done" type="submit" value="done" data-locale-key="done">완료</button></div>
         </form>
+      </dialog>
+      <dialog class="auth-dialog" id="passwordChangeDialog" aria-labelledby="passwordChangeDialogTitle">
+        <div class="auth-panel">
+          <div class="auth-header">
+            <div><p data-locale-key="auth-kicker">Padiem Account</p><h2 id="passwordChangeDialogTitle" data-locale-key="password-change-title">비밀번호 변경</h2></div>
+            <button class="auth-close" id="passwordChangeDialogClose" type="button" data-locale-aria-label="auth-close" aria-label="닫기">×</button>
+          </div>
+          <form class="auth-form" id="passwordChangeForm">
+            <label for="passwordChangeCurrent" data-locale-key="password-change-current">현재 비밀번호</label>
+            <input id="passwordChangeCurrent" name="current_password" type="password" autocomplete="current-password" maxlength="128" required>
+            <label for="passwordChangeNew" data-locale-key="password-change-new">새 비밀번호</label>
+            <input id="passwordChangeNew" name="new_password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+            <label for="passwordChangeConfirm" data-locale-key="password-change-confirm">새 비밀번호 확인</label>
+            <input id="passwordChangeConfirm" name="new_password_confirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+            <small data-locale-key="auth-password-rule">8자 이상 128자 이하. 이메일(로그인 아이디)은 포함하지 않도록 해 주세요.</small>
+            <p class="auth-error" id="passwordChangeError" role="alert" hidden></p>
+            <button class="auth-primary" id="passwordChangeSubmit" type="submit" data-locale-key="password-change-submit">비밀번호 변경</button>
+          </form>
+        </div>
       </dialog>
       <dialog class="capability-dialog" id="connectorsDialog" aria-labelledby="connectorsDialogTitle">
         <div class="capability-dialog-header">
@@ -321,18 +372,20 @@
         </section>
         <section class="claw-inbox" id="clawAutomation" aria-labelledby="clawAutomationTitle" tabindex="-1" hidden>
           <div class="claw-inbox-header">
-            <div>
+            <div class="claw-inbox-heading">
               <p class="claw-workspace-kicker" data-locale-key="claw-automation-kicker">Padiem Claw Automation</p>
               <h3 id="clawAutomationTitle" data-locale-key="claw-automation-title">자동화 규칙</h3>
             </div>
-            <button class="claw-inbox-retry" id="clawAutomationRetry" type="button" data-locale-key="retry">다시 시도</button>
-            <button class="claw-inbox-retry" id="automationAlertsButton" type="button" data-locale-key="automation-alerts-open">알림함 보기</button>
+            <div class="claw-inbox-header-actions">
+              <button class="claw-inbox-primary" id="clawAutomationCreateOpen" type="button" aria-expanded="false" aria-controls="clawAutomationCreate" data-locale-key="claw-automation-create-summary">+ 자동화 만들기</button>
+              <button class="claw-inbox-secondary" id="automationAlertsButton" type="button" data-locale-key="automation-alerts-open">알림함 보기</button>
+              <button class="claw-inbox-retry" id="clawAutomationRetry" type="button" data-locale-key="retry" hidden>다시 시도</button>
+            </div>
           </div>
-          <p class="claw-inbox-help" id="clawAutomationHelp" data-locale-key="claw-automation-help">현재 워크스페이스의 자동화 규칙을 표시합니다. 생성은 워크스페이스 소유자만 할 수 있고 수정·삭제는 아직 지원하지 않습니다.</p>
-          <p class="claw-inbox-help" id="clawAutomationSchedulerNote" data-locale-key="claw-automation-scheduler-note">‘규칙 설정’은 규칙에 저장된 설정값이며, 자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다.</p>
           <details class="calendar-record claw-automation-create" id="clawAutomationCreate">
-            <summary class="calendar-record-summary" id="clawAutomationCreateToggle" data-locale-key="claw-automation-create-summary">+ 자동화 만들기</summary>
+            <summary class="calendar-record-summary" id="clawAutomationCreateToggle" data-locale-key="claw-automation-create-summary" hidden>+ 자동화 만들기</summary>
             <p class="calendar-record-hint" data-locale-key="claw-automation-create-hint">자동화 규칙을 만듭니다. 실행 대상(저장소·버전)은 서버가 지정하며 사용자가 지정할 수 없습니다.</p>
+            <p class="claw-inbox-help" id="clawAutomationHelp" data-locale-key="claw-automation-help">현재 워크스페이스의 자동화 규칙을 표시합니다. 생성은 워크스페이스 소유자만 할 수 있고 수정·삭제는 아직 지원하지 않습니다.</p>
             <form class="calendar-record-form" id="clawAutomationCreateForm" novalidate>
               <label class="calendar-record-field" for="clawAutomationCreateName">
                 <span data-locale-key="claw-automation-create-name-label">이름</span>
@@ -407,6 +460,8 @@
           <div class="claw-inbox-status" id="clawAutomationStatus" aria-live="polite" aria-atomic="true">
             <p id="clawAutomationLoading" data-locale-key="claw-automation-loading" hidden>자동화 규칙을 불러오는 중…</p>
             <p id="clawAutomationError" data-locale-key="claw-automation-error" hidden>자동화 규칙을 불러오지 못했습니다.</p>
+            <p id="clawAutomationForbidden" data-locale-key="claw-automation-forbidden" hidden>이 워크스페이스의 자동화 규칙을 볼 권한이 없습니다.</p>
+            <p class="claw-inbox-empty" id="clawAutomationEmpty" data-locale-key="claw-automation-empty" hidden>등록된 자동화 규칙이 없습니다.</p>
           </div>
           <p class="claw-inbox-help" id="clawAutomationToggleStatus" role="status" aria-live="polite" hidden></p>
           <form class="calendar-record-form claw-automation-edit-form" id="clawAutomationEditForm" hidden novalidate aria-labelledby="clawAutomationEditTitle">
@@ -457,8 +512,8 @@
             </div>
           </form>
           <p class="claw-inbox-help" id="clawAutomationEditStatus" role="status" aria-live="polite" hidden></p>
-          <p class="claw-inbox-empty" id="clawAutomationEmpty" data-locale-key="claw-automation-empty" hidden>등록된 자동화 규칙이 없습니다.</p>
           <div class="claw-inbox-list" id="clawAutomationList" role="list"></div>
+          <p class="claw-inbox-help" id="clawAutomationSchedulerNote" data-locale-key="claw-automation-scheduler-note">‘규칙 설정’은 규칙에 저장된 설정값이며, 자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다.</p>
         </section>
       </section>
       <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>
