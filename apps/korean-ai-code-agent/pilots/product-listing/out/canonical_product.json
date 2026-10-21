@@ -1,0 +1,367 @@
+{
+  "product_id": "sample",
+  "source_ref": "supplier_products.csv",
+  "fields": {
+    "brand": {
+      "field_id": "brand",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:브랜드",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "category_code": {
+      "field_id": "category_code",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:카테고리코드",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "category_path": {
+      "field_id": "category_path",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:카테고리",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "color": {
+      "field_id": "color",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:색상",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "delivery_days": {
+      "field_id": "delivery_days",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:발송예정일",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "depth_mm": {
+      "field_id": "depth_mm",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:높이mm",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "detail_html": {
+      "field_id": "detail_html",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "generated:detail_html",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "extra_images": {
+      "field_id": "extra_images",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:추가이미지",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "height_mm": {
+      "field_id": "height_mm",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:세로mm",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "list_price": {
+      "field_id": "list_price",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:정가",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "main_image": {
+      "field_id": "main_image",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:대표이미지",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "manufacturer": {
+      "field_id": "manufacturer",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:제조사",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "material": {
+      "field_id": "material",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:소재",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "min_order_quantity": {
+      "field_id": "min_order_quantity",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:최소주문수량",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "minor_purchase_allowed": {
+      "field_id": "minor_purchase_allowed",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:미성년자구매",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "model_name": {
+      "field_id": "model_name",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:모델명",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "option_summary": {
+      "field_id": "option_summary",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:option_summary",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "origin": {
+      "field_id": "origin",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:원산지",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "product_identifier": {
+      "field_id": "product_identifier",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:품번",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "product_name": {
+      "field_id": "product_name",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:상품명",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "product_summary": {
+      "field_id": "product_summary",
+      "confidence": "0.7",
+      "origin": "model",
+      "source_locator": "research:product_summary#source=https://example.invalid/demo/vendor-page-demo-stand",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "return_policy": {
+      "field_id": "return_policy",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:반품교환정책",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "sale_price": {
+      "field_id": "sale_price",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:판매가",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "search_keywords": {
+      "field_id": "search_keywords",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:검색어",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "shipping_fee": {
+      "field_id": "shipping_fee",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:배송비",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "shipping_fee_type": {
+      "field_id": "shipping_fee_type",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:배송비유형",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "size": {
+      "field_id": "size",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:사이즈",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "stock_quantity": {
+      "field_id": "stock_quantity",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:재고수량",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "supplier_name": {
+      "field_id": "supplier_name",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:공급사",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "supply_cost": {
+      "field_id": "supply_cost",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:공급가",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "tags": {
+      "field_id": "tags",
+      "confidence": "0.7",
+      "origin": "model",
+      "source_locator": "research:tags#source=https://example.invalid/demo/category-guide",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "tax_type": {
+      "field_id": "tax_type",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:부가세구분",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "unit": {
+      "field_id": "unit",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:단위",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "warranty": {
+      "field_id": "warranty",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:보증기간",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "weight_kg": {
+      "field_id": "weight_kg",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:무게kg",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    },
+    "width_mm": {
+      "field_id": "width_mm",
+      "confidence": "1",
+      "origin": "rule",
+      "source_locator": "supplier:row1:가로mm",
+      "review_status": "unreviewed",
+      "trusted_business_value": false,
+      "has_raw_value": true,
+      "has_correction": false
+    }
+  },
+  "unresolved_field_count": 34
+}

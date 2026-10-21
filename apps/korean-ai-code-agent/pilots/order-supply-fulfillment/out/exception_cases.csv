@@ -1,0 +1,3 @@
+return_id,order_id,order_version,version,reason,status,requested_at,shipment_id,resolution_note
+ret_demo_1,order_demo_1-exception,4,2,customer_return,resolved,2026-10-21T10:00:00Z,ship_demo_exception,"가상 케이스: 수령 후 반품 접수, 회수 지시 완료(가상)"
+ret_demo_2,order_demo_1-exception,5,1,misdelivery,open,2026-10-21T10:00:00Z,ship_demo_exception,

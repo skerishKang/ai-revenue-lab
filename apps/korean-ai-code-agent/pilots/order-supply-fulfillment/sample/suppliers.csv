@@ -1,0 +1,2 @@
+supplier_id,name,terms_id,terms_label,due_days,prepaid
+supplier_demo_1,가상 공급사 1,terms_demo_1,선불 7일 이내 입금,7,true

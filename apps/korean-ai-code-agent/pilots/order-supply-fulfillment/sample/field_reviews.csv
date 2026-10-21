@@ -1,0 +1,6 @@
+field_id,decision,note
+L1.quantity,confirmed,채널 표기 수량과 일치 확인
+L1.unit_price_amount_minor,confirmed,채널 표기 단가와 일치 확인
+L2.quantity,confirmed,채널 표기 수량과 일치 확인
+L2.unit_price_amount_minor,corrected,채널 표기 단가 불일치 정정
+ship_to.postal_code,confirmed,배송지 우편번호 확인
