@@ -39,6 +39,12 @@ run's success does not carry over; the sandbox re-resolves the still-open PR and
   `COM2 B62 generic browser canary`). A canary success is selective special-QA evidence for its
   exact head, never the required gate, and a canary whose QA step is `skipped` by its own path
   selector is not a QA pass.
+- The Generic Browser canary's visual tail runs the isolated scope: `B62_VISUAL_TAIL_SCOPE=isolated`
+  with `B62_VISUAL_TAIL_SKIPPED=b62_glass_zoom_visual_qa.py` and
+  `B62_VISUAL_TAIL_SKIPPED_COUNT=1`. The skipped suite is the high-resolution Glass Zoom
+  composition that the GitHub-hosted browser QA lane proves on every pull request; it is not
+  counted as executed or passed, and `B62_VISUAL_TAIL_FAIL_COUNT` covers only the suites that
+  actually ran. See `COM2_CI_PRIMARY_FAILOVER_VERIFY.md` for the measured lane comparison.
 
 ## Dated record
 

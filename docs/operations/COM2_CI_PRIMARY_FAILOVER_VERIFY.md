@@ -40,6 +40,32 @@ superseded COM2-primary pilot is kept as a dated record at the bottom of this fi
   the host. Those commands, their ordered script lists and the runner installation are host
   configuration and are out of scope for repository changes.
 
+## Visual-tail lane scopes
+
+The B62 visual tail (Glass Shell, Glass Zoom, Chat Gutter) runs in two lanes with two scopes.
+
+| Lane | Invocation | Scope | Suites |
+| --- | --- | --- | --- |
+| GitHub-hosted browser QA (`b62-browser-qa-unified.yml`, `pull_request`) | `b62_browser_qa_tail_parallel.py --scope full` | `full` | Shell, Glass Zoom, Chat Gutter |
+| Isolated COM2 container (root-owned host command) | `b62_browser_qa_tail_parallel.py` | `isolated` (runner default) | Shell, Chat Gutter |
+
+- The hosted lane is the Glass Zoom proof: it runs on every pull request and renders the
+  2560x1440 Glass surface (measured: 24.10 s for the zoom suite, tail 3/3, `FAIL_COUNT=0`).
+- The isolated lane does not repeat that high-resolution duplicate. The same suite never
+  completed inside the 1-CPU/768MB container's budgets (measured: the 240 s per-suite cap, and
+  a fail-closed fan-in that turned the whole canary red, so the lane's other suites stopped
+  producing a signal). The isolated scope keeps the Shell and Chat Gutter composition checks,
+  which do fit the container (measured: Shell 48.46 s, Chat Gutter 24.34 s).
+- The skip is never a pass. The runner prints `B62_VISUAL_TAIL_SCOPE=isolated`,
+  `B62_VISUAL_TAIL_SKIPPED=b62_glass_zoom_visual_qa.py`, the skip reason, the hosted coverage
+  that replaces it, `B62_VISUAL_TAIL_EXECUTED=2` and `B62_VISUAL_TAIL_SKIPPED_COUNT=1`; the
+  skipped suite is not reported as a case and not counted in the fail count.
+- The full scope stays the hosted lane's explicit, contract-tested contract
+  (`.github/tests/test_b62_visual_tail_lane_scope.py` checks that every repository-side
+  invocation of the runner asks for `--scope full`). No assertion, timing window, retry bound,
+  product source or required check name changed.
+
+
 ## Failover
 
 - `com2-policy-hosted-failover-watch.yml` and `com2-mobile-hosted-failover-watch.yml` run from

@@ -541,7 +541,7 @@ class VisualTailFailureEvidenceContract(unittest.TestCase):
             buffer = io.StringIO()
             with patch.dict(os.environ, {"PADIEM_CHAT_RUNTIME_MODE": "mock"}):
                 with redirect_stdout(buffer):
-                    self.assertEqual(tail.main(), 1)
+                    self.assertEqual(tail.main(["--scope", "full"]), 1)
             printed.append(buffer.getvalue())
         finally:
             tail.execute = original
