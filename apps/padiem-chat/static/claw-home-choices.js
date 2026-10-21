@@ -333,18 +333,34 @@
       }
     });
 
-    const deviceStatus = document.getElementById("clawComputerDeviceStatusButton");
+  // #5555: the Connectors screen and the Claw home share the same computer
+  // card, so the same owner-scoped status readback serves both.
+  const connectorsSurfaceOpen = () => {
+    try {
+      const view = document.getElementById("connectorsView");
+      return Boolean(view && !view.hidden && view.getClientRects().length > 0);
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const deviceStatus = document.getElementById("clawComputerDeviceStatusButton");
     const statusText = document.getElementById("clawComputerLiveStatus");
-    deviceStatus?.addEventListener("click", async () => {
-      if (!isClawHome() || !statusText || deviceStatus.disabled) return;
-      // Use the SAME existing, owner-scoped GET endpoint as the Claw device
-      // manager; this is status-only and cannot issue a pairing or task grant.
+    // #5555: the Connectors card shows the real server state, so the same
+    // owner-scoped readback the button already used runs when the screen
+    // opens too. The button stays the retry. A failed read is reported as
+    // "could not verify", never as "not connected".
+    let computerStateInFlight = false;
+    async function refreshComputerConnectionState() {
+      if (!statusText || deviceStatus?.disabled) return;
       const en = document.documentElement.lang === "en";
       const show = (ko, english) => {
         statusText.textContent = en ? english : ko;
         statusText.hidden = false;
       };
-      deviceStatus.disabled = true;
+      if (computerStateInFlight) return;
+      computerStateInFlight = true;
+      if (deviceStatus) deviceStatus.disabled = true;
       show("컴퓨터 연결 상태를 확인하고 있습니다.", "Checking your computer connection.");
       try {
         const response = await fetch("/api/claw/local-access/devices", {
@@ -372,9 +388,22 @@
       } catch (_) {
         show("컴퓨터 연결 상태를 확인하지 못했습니다.", "Could not verify computer connection.");
       } finally {
-        deviceStatus.disabled = false;
+        computerStateInFlight = false;
+        if (deviceStatus) deviceStatus.disabled = false;
       }
+    }
+    deviceStatus?.addEventListener("click", async () => {
+      if (!isClawHome() && !connectorsSurfaceOpen()) return;
+      await refreshComputerConnectionState();
     });
+    // The Connectors screen shows the live state without a click. The same
+    // owner-scoped GET is used, so no new endpoint or permission appears.
+    const connectorsShell = document.querySelector(".app-shell");
+    if (connectorsShell) {
+      new MutationObserver(() => {
+        if (connectorsSurfaceOpen()) void refreshComputerConnectionState();
+      }).observe(connectorsShell, { attributes: true, attributeFilter: ["data-state"] });
+    }
   }
 
   if (document.readyState === "loading") {

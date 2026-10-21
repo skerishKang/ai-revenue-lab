@@ -220,6 +220,94 @@ html[data-theme="padiem-glass"] .capability-read {
   }
 }
 
+/* ── #5555 Connectors screen: one grid, one card shape, one action row ──── */
+/* The screen shows a fixed two-column card grid on desktop and a single
+   column on a phone, with the same padding, the same information order and
+   the same action placement on every card. The Glass tokens, the radius and
+   the existing status colours are reused unchanged. */
+.capability-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+  padding: 4px 0 20px;
+}
+
+.capability-card {
+  gap: 6px;
+  padding: 16px;
+  min-height: 148px;
+}
+
+.capability-card strong {
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+/* The connection state is the information the user came for, so it is the
+   strongest line on the card. The support capability stays a separate,
+   quieter line: a supported capability is never a connected state. */
+.capability-card .capability-workspace {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.capability-card[data-connector-status="connected"] .capability-workspace {
+  font-weight: 700;
+  color: var(--accent-strong, #2f6f99);
+}
+
+.capability-card .capability-read {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: .85;
+}
+
+/* One action row per card, aligned to the card bottom so a card with two
+   actions and a card with one action still read as the same block. */
+.capability-card .connector-retry {
+  align-self: flex-start;
+  margin-top: auto;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 10px;
+}
+
+.capability-card .connector-connect {
+  margin-top: auto;
+}
+
+/* The header keeps one page name and one short line; the long explanation
+   moved into a disclosure. */
+.connectors-view .standalone-view-details {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.connectors-view .standalone-view-details > summary {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--accent-strong, #2f6f99);
+}
+
+.connectors-view .standalone-view-details > p {
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .capability-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .capability-card {
+    min-height: 0;
+  }
+}
+
 /* ── Connectors dialog brightness — #connectorsDialog scoped only ──────── */
 /* On Padiem Glass, --panel resolves to rgba(235,239,242,.46), so the
    Connectors dialog rendered as a fogged sheet over a near-black backdrop.
