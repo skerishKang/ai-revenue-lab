@@ -1,20 +1,20 @@
-"""B62 Chat/Claw — the Glass theme stays legible on a narrow window.
+﻿"""B62 Chat/Claw — the Glass theme stays legible on a narrow window.
 
-#5505: on a phone the Glass shell portrait layer covered the whole content
-column, so the standalone workspace views (Automation, Connectors) read their
-text against the artwork. The artwork itself already had a narrow-window
-treatment for the other instance of the same picture, and the Automation page's
-own primary action used a translucent accent fill that measured 3.31:1 on the
-Glass card.
+#5505: on a phone the Glass shell portrait stands behind the whole content
+column, and the theme's card surfaces are only 48% opaque there, so the
+artwork showed through the cards and their text was read against the picture
+instead of against a surface. The Automation page's own primary action had a
+translucent accent fill that measured 3.31:1 on that card.
 
 This file pins the contract:
 
-* the narrow-window treatment for the shell portrait layer exists, sits after
-  the base portrait rule so it wins on source order, and keeps the artwork
-  faint and pushed off-canvas;
-* the wide-screen composition is untouched;
-* the Automation primary action uses the shared primary tokens, so its label
-  measures at least 4.5:1 against its own opaque background in every theme.
+* on a narrow window the Glass theme raises its own surface alpha and gives
+  the standalone views the same sheet the Chat conversation already takes;
+* the wide-screen composition keeps the theme's original surfaces;
+* the primary action uses the shared primary tokens, so its label measures at
+  least 4.5:1 against its own opaque background in every theme;
+* the shell portrait keeps its reveal channel: the fade is a surface decision,
+  the portrait's own opacity still belongs to the shell state machine.
 
 The static contract tests below run everywhere (the required CI lane installs
 no browser), so Playwright is optional here and only the real browser checks
@@ -41,6 +41,7 @@ requires_browser = pytest.mark.skipif(
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
+GLASS_CSS = STATIC / "padiem-glass.css"
 PORTRAIT_CSS = STATIC / "padiem-glass-portrait.css"
 VIEWS_CSS = STATIC / "standalone-views.css"
 
@@ -82,7 +83,7 @@ def browser():
         instance.close()
 
 
-def _open_automation(page, server, *, theme: str = "padiem-glass") -> None:
+def _open_view(page, server, *, view: str = "automation", theme: str = "padiem-glass") -> None:
     page.route(
         "**" + AUTH_ENDPOINT,
         lambda route: route.fulfill(
@@ -133,7 +134,10 @@ def _open_automation(page, server, *, theme: str = "padiem-glass") -> None:
         " if (document.body) document.body.setAttribute('data-theme', t); }",
         theme,
     )
-    page.evaluate("() => document.getElementById('automationNavButton').click()")
+    page.evaluate(
+        "(id) => document.getElementById(id).click()",
+        "automationNavButton" if view == "automation" else "connectorsNavButton",
+    )
     page.wait_for_timeout(1200)
 
 
@@ -142,54 +146,105 @@ def _open_automation(page, server, *, theme: str = "padiem-glass") -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_the_shell_portrait_has_a_narrow_window_treatment() -> None:
-    """The portrait layer is faint and pushed off-canvas on a narrow window."""
+def _alpha(text: str) -> float:
+    """CSS alphas are written without the leading zero in this codebase."""
+    text = text.strip()
+    if text.startswith("."):
+        text = "0" + text
+    return float(text)
+
+
+def _media_blocks(css: str) -> list[tuple[str, str]]:
+    """Every @media (condition, body) pair, matched with its own braces."""
+    blocks: list[tuple[str, str]] = []
+    for match in re.finditer(r"@media(?P<condition>[^{]*)\{", css):
+        depth = 1
+        index = match.end()
+        while index < len(css) and depth:
+            if css[index] == "{":
+                depth += 1
+            elif css[index] == "}":
+                depth -= 1
+            index += 1
+        blocks.append((match.group("condition"), css[match.end() : index - 1]))
+    return blocks
+
+
+def _rules(css: str) -> list[tuple[str, str]]:
+    """Every (selector, declarations) pair in a flat block."""
+    return [(m.group(1), m.group(2)) for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", css)]
+
+
+def _narrow_window_block(css: str) -> str:
+    for condition, body in _media_blocks(css):
+        if "max-width: 920px" in condition:
+            return body
+    raise AssertionError("the narrow-window block is missing")
+
+
+def test_the_narrow_window_raises_the_theme_surface_alpha() -> None:
+    """The cards have to stop showing the artwork through them."""
+    body = _narrow_window_block(PORTRAIT_CSS.read_text(encoding="utf-8"))
+    alphas: dict[str, float] = {}
+    for _selector, declarations in _rules(body):
+        for name in ("--card-bg", "--glass-card-surface"):
+            match = re.search(
+                rf"{re.escape(name)}: rgba\([^)]*?,\s*(?P<alpha>[0-9.]+)\);", declarations
+            )
+            if match is not None:
+                alphas[name] = _alpha(match.group("alpha"))
+    assert alphas.get("--card-bg", 0) >= 0.9, alphas
+    assert alphas.get("--glass-card-surface", 0) >= 0.9, alphas
+
+
+def test_the_standalone_views_take_a_sheet_on_a_narrow_window() -> None:
+    """Their header and tagline sit straight on the page, not on a card."""
+    body = _narrow_window_block(PORTRAIT_CSS.read_text(encoding="utf-8"))
+    alpha = None
+    for selector, declarations in _rules(body):
+        if ".standalone-view" not in selector:
+            continue
+        match = re.search(r"background: rgba\(242, 245, 247, (?P<alpha>[0-9.]+)\);", declarations)
+        if match is not None:
+            alpha = _alpha(match.group("alpha"))
+    assert alpha is not None, "the standalone views have no narrow-window sheet"
+    assert alpha >= 0.85, alpha
+
+
+def test_the_wide_screen_keeps_the_theme_surfaces() -> None:
+    """The desktop Glass composition is untouched."""
     css = PORTRAIT_CSS.read_text(encoding="utf-8")
-    narrow = css[css.rfind("@media (max-width: 920px) {"):]
-    portrait = re.search(
-        r"html\[data-theme=\"padiem-glass\"\] \.glass-shell-portrait,\s*"
-        r"html\[data-theme=\"padiem-glass\"\] \.glass-shell-field \{(?P<decl>.*?)\}",
-        narrow,
-        re.S,
-    )
-    assert portrait is not None, "the portrait layer has no narrow-window rule"
-    decl = portrait.group("decl")
-    assert "opacity: .22" in decl, "the artwork stays fully opaque on a phone"
-    assert "right: -24vw" in decl, "the artwork is not pushed off-canvas"
-    assert "blur(" in decl, "the artwork is not softened on a phone"
+    base = re.search(r"--glass-card-surface: rgba\(244, 247, 249, (?P<alpha>[0-9.]+)\);", css)
+    assert base is not None
+    assert _alpha(base.group("alpha")) == 0.72, base.group("alpha")
+    theme = GLASS_CSS.read_text(encoding="utf-8")
+    card = re.search(r"--card-bg: rgba\(239, 243, 246, (?P<alpha>[0-9.]+)\);", theme)
+    assert card is not None
+    assert _alpha(card.group("alpha")) == 0.48, card.group("alpha")
 
 
-def test_the_narrow_window_rule_comes_after_the_base_portrait_rule() -> None:
-    """Only a later source order can override the base portrait rule."""
-    css = PORTRAIT_CSS.read_text(encoding="utf-8")
-    base = css.find(
-        ".glass-shell-portrait,\nhtml[data-theme=\"padiem-glass\"] .glass-shell-field {"
-    )
-    assert base > 0, "the base portrait rule is missing"
-    narrow = css.find("@media (max-width: 920px) {", base)
-    assert narrow > base, "the narrow-window rule is declared before the base rule"
+def test_the_shell_portrait_keeps_its_reveal_channel() -> None:
+    """The portrait's opacity belongs to the shell state machine.
 
-
-def test_the_phone_treatment_is_fainter_still() -> None:
-    css = PORTRAIT_CSS.read_text(encoding="utf-8")
-    phone = css[css.rfind("@media (max-width: 620px) {"):]
-    portrait = re.search(
-        r"html\[data-theme=\"padiem-glass\"\] \.glass-shell-portrait,\s*"
-        r"html\[data-theme=\"padiem-glass\"\] \.glass-shell-field \{(?P<decl>.*?)\}",
-        phone,
-        re.S,
-    )
-    assert portrait is not None, "the portrait layer has no phone rule"
-    assert "opacity: .16" in portrait.group("decl")
-    assert "right: -34vw" in portrait.group("decl")
+    The repository's own browser QA asserts that the resting shell stays at
+    full opacity on a touch device, so a narrow-window treatment may not take
+    that channel. The fade belongs to the surfaces instead.
+    """
+    for path in (GLASS_CSS, PORTRAIT_CSS):
+        css = path.read_text(encoding="utf-8")
+        for _condition, block in _media_blocks(css):
+            for selector, declarations in _rules(block):
+                if ".glass-shell-portrait" not in selector:
+                    continue
+                assert "opacity" not in declarations, (
+                    f"{path.name} takes the shell portrait's opacity in a media query"
+                )
 
 
 def test_the_primary_action_uses_the_shared_primary_tokens() -> None:
     """A translucent accent fill left the label below the 4.5:1 it needs."""
     css = VIEWS_CSS.read_text(encoding="utf-8")
-    primary = re.search(
-        r"\.claw-inbox-primary \{(?P<body>.*?)\n\}", css, re.S
-    )
+    primary = re.search(r"\.claw-inbox-primary \{(?P<body>.*?)\n\}", css, re.S)
     assert primary is not None
     body = primary.group("body")
     assert "background: var(--accent);" in body
@@ -230,8 +285,24 @@ CONTRAST = """() => {
   return {
     ratio: Math.round(ratio * 100) / 100,
     backgroundAlpha: bg.a,
-    color: cs.color,
-    background: cs.backgroundColor,
+  };
+}"""
+
+SURFACES = """() => {
+  const root = getComputedStyle(document.documentElement);
+  const alpha = (value) => {
+    const match = value.replace(/rgba?\\(/, '').replace(')', '').split(',');
+    return match.length > 3 ? parseFloat(match[3]) : 1;
+  };
+  const view = document.querySelector('.standalone-view:not([hidden])');
+  const portrait = document.querySelector('.glass-shell-portrait');
+  const panel = document.querySelector('#clawAutomation');
+  return {
+    cardBg: alpha(root.getPropertyValue('--card-bg').trim() || 'rgba(0,0,0,0)'),
+    cardSurface: alpha(root.getPropertyValue('--glass-card-surface').trim() || 'rgba(0,0,0,0)'),
+    viewAlpha: view ? alpha(getComputedStyle(view).backgroundColor) : null,
+    panelAlpha: panel ? alpha(getComputedStyle(panel).backgroundColor) : null,
+    portraitOpacity: portrait ? parseFloat(getComputedStyle(portrait).opacity) : null,
   };
 }"""
 
@@ -240,7 +311,7 @@ CONTRAST = """() => {
 @pytest.mark.parametrize("theme", ["padiem-glass", "light", "dark"])
 def test_the_primary_action_meets_the_text_contrast(browser, server, theme) -> None:
     page = browser.new_page(viewport={"width": 390, "height": 844})
-    _open_automation(page, server, theme=theme)
+    _open_view(page, server, theme=theme)
     measured = page.evaluate(CONTRAST)
     assert measured is not None, "the primary action is missing"
     # The action label is 13px bold, so it is not large text: it needs 4.5:1.
@@ -254,65 +325,36 @@ def test_the_primary_action_meets_the_text_contrast(browser, server, theme) -> N
 
 @requires_browser
 @pytest.mark.parametrize("width", PHONE_WIDTHS)
-def test_the_artwork_does_not_cover_the_content_column(browser, server, width) -> None:
-    """On a phone the artwork is faint, so the content owns the contrast."""
+def test_the_surfaces_hold_the_artwork_back_on_a_phone(browser, server, width) -> None:
     page = browser.new_page(viewport={"width": width, "height": 844})
-    _open_automation(page, server)
-    state = page.evaluate(
-        """() => {
-          const portrait = document.querySelector('.glass-shell-portrait');
-          const card = document.querySelector('#clawAutomation');
-          if (!portrait || !card) return null;
-          const pcs = getComputedStyle(portrait);
-          const cardRect = card.getBoundingClientRect();
-          return {
-            opacity: parseFloat(pcs.opacity),
-            filter: pcs.filter,
-            cardLeft: Math.round(cardRect.left),
-            cardRight: Math.round(cardRect.right),
-            textVisible: document.querySelector(
-              '#clawAutomationList .claw-inbox-card strong') !== null,
-          };
-        }"""
-    )
-    assert state is not None
-    # The artwork is a background here, not a layer on top of the content.
-    assert state["opacity"] <= 0.25, state
-    assert "blur(" in state["filter"], state
-    assert state["textVisible"] is True, state
+    _open_view(page, server)
+    state = page.evaluate(SURFACES)
+    assert state["cardBg"] >= 0.9, state
+    assert state["cardSurface"] >= 0.9, state
+    assert state["viewAlpha"] is None or state["viewAlpha"] >= 0.85, state
+    assert state["panelAlpha"] is None or state["panelAlpha"] >= 0.85, state
     page.close()
 
 
 @requires_browser
-def test_the_wide_screen_artwork_is_untouched(browser, server) -> None:
-    """The desktop composition keeps its full artwork.
+def test_the_shell_keeps_its_resting_opacity_on_a_phone(browser, server) -> None:
+    """The touch contract: the resting shell stays assembled and shown."""
+    page = browser.new_page(viewport={"width": 390, "height": 844})
+    _open_view(page, server)
+    state = page.evaluate(SURFACES)
+    assert state["portraitOpacity"] is not None
+    assert state["portraitOpacity"] >= 0.8, state
+    page.close()
 
-    The narrow-window rule dims the artwork to .22 and pushes it off-canvas.
-    None of that may reach the wide screen, so the artwork has to stay opaque,
-    pinned to the right and wide enough to read as a portrait column.
-    """
+
+@requires_browser
+def test_the_wide_screen_surfaces_are_unchanged(browser, server) -> None:
     page = browser.new_page(viewport={"width": DESKTOP_WIDTH, "height": 900})
-    _open_automation(page, server)
-    state = page.evaluate(
-        """() => {
-          const portrait = document.querySelector('.glass-shell-portrait');
-          if (!portrait) return null;
-          const cs = getComputedStyle(portrait);
-          const rect = portrait.getBoundingClientRect();
-          return {
-            display: cs.display,
-            width: rect.width,
-            opacity: parseFloat(cs.opacity),
-            right: cs.right,
-            filter: cs.filter,
-          };
-        }"""
-    )
-    assert state is not None
-    assert state["display"] != "none", state
-    assert state["opacity"] >= 0.9, state
-    assert state["right"] == "0px", state
-    assert state["width"] >= 400, state
+    _open_view(page, server)
+    state = page.evaluate(SURFACES)
+    assert state["cardBg"] == 0.48, state
+    assert state["cardSurface"] == 0.72, state
+    assert state["portraitOpacity"] >= 0.8, state
     page.close()
 
 
@@ -321,6 +363,6 @@ def test_the_console_reports_no_error(browser, server) -> None:
     page = browser.new_page(viewport={"width": 390, "height": 844})
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
-    _open_automation(page, server)
+    _open_view(page, server)
     assert not errors, errors
     page.close()
