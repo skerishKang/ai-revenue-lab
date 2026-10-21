@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   "use strict";
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
@@ -4424,6 +4424,24 @@
     else if (clawAutomationCreateToggle) clawAutomationCreateToggle.focus();
   }
 
+  function scrollClawAutomationCreateIntoView() {
+    // The narrow-window layout puts the rule list before the create form, so
+    // opening the form has to bring it into view. A form that is already
+    // visible stays where it is, and the wide-screen layout never moves.
+    if (!clawAutomationCreate) return;
+    const host = clawAutomation.closest(".automation-view");
+    if (!host) return;
+    const form = clawAutomationCreate.getBoundingClientRect();
+    const area = host.getBoundingClientRect();
+    // A form whose top is already on screen stays where it is: the view only
+    // moves when the form would otherwise open below the fold.
+    if (form.top >= area.top && form.top < area.bottom) return;
+    const target = Math.max(0, host.scrollTop + (form.top - area.top) - 8);
+    // The scroll is applied directly: the list re-renders behind the form, and
+    // an animated scroll would be cancelled by that reflow.
+    host.scrollTop = target;
+  }
+
   async function submitClawAutomationCreate(event) {
     event.preventDefault();
     if (!clawAutomationCreateForm || clawAutomationCreateInFlight) return;
@@ -4515,6 +4533,11 @@
     } else {
       clawAutomationCreateOpen.addEventListener("click", () => {
         clawAutomationCreate.open = !clawAutomationCreate.open;
+        // On a narrow window the form sits below the rule list, so the view
+        // follows the user to it instead of leaving the input off-screen.
+        if (clawAutomationCreate.open) {
+          scrollClawAutomationCreateIntoView();
+        }
       });
     }
   }

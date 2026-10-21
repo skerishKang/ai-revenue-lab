@@ -172,6 +172,41 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   }
 }
 
+/* Automation on a narrow window: one column, and the rules come before the
+ * create form.
+ *
+ * The form is a <details> block that lives above the rule list in the
+ * document, so on a phone it pushed the rules out of the first screen. The
+ * panel keeps its own card frame and its own controls; only the order of the
+ * blocks changes here, so the rule list and the form are never side by side
+ * and the list stays the first thing on the page. The wide-screen layout is
+ * untouched.
+ */
+@media (max-width: 700px) {
+  .app-shell[data-state="automation"] #clawAutomation {
+    display: flex;
+    flex-direction: column;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-inbox-header {
+    order: 1;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-inbox-list {
+    order: 2;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-inbox-status {
+    order: 3;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-automation-create {
+    order: 4;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-automation-edit-form {
+    order: 5;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-inbox-help {
+    order: 6;
+  }
+}
+
 
 /* Connectors: remove dialog-era spacing and make the long list visibly scrollable.
  * Only the standalone connector page is affected; connection state, auth and
