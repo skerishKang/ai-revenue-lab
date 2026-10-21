@@ -513,11 +513,26 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             routing=B14RoutingOptions(product_tier=model_policy.get("product_tier") if model_policy else None,
                 max_retries=model_policy.get("max_retries") if model_policy else None,
                 task_type=task_type, optimize_for=optimize_for))
-        response = await b14_client.execute(request)
         try:
-            return json.loads(response.answer.strip())
-        except (TypeError, ValueError) as exc:
-            raise PCQueryStepError("model response is not valid JSON") from exc
+            response = await b14_client.execute(request)
+        except Exception as exc:
+            # #5015: a model-call failure is its own step detail. The provider
+            # policy (routing, retries, fallback) is unchanged and the original
+            # exception is not chained past this boundary.
+            raise PCQueryStepError(
+                "model call failed", detail="model_call_failed",
+            ) from exc
+        answer = getattr(response, "answer", None)
+        if not isinstance(answer, str):
+            raise PCQueryStepError(
+                "model response is not text", detail="model_call_failed",
+            )
+        try:
+            return json.loads(answer.strip())
+        except ValueError as exc:
+            raise PCQueryStepError(
+                "model response is not valid JSON", detail="model_response_not_json",
+            ) from exc
 
     return StructuredPCQueryStepDriver(
         select_step=select_step, static_arguments=static_arguments,

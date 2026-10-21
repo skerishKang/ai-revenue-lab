@@ -93,8 +93,25 @@ PC_QUERY_OWNER: ContextVar[tuple[str, str, str, str | None] | None] = ContextVar
 )
 
 
+# #5015: the closed set of PC step details this product may name. Core keeps
+# only the identifier, so a support read can tell these apart without the model
+# answer, the prompt or a file path.
+PC_STEP_FAILURE_DETAILS = frozenset({
+    "model_response_not_json",
+    "model_step_not_object",
+    "tool_selection_invalid",
+    "completion_answer_invalid",
+    "model_call_failed",
+})
+
+
 class PCQueryStepError(ValueError):
-    pass
+    """A refused PC step with an optional, closed diagnostic detail."""
+
+    def __init__(self, message: str, *, detail: str | None = None) -> None:
+        super().__init__(message)
+        # Outside the closed set the detail is dropped rather than passed on.
+        self.code = detail if detail in PC_STEP_FAILURE_DETAILS else None
 
 
 def selected_device_id(arguments: Any) -> str | None:
@@ -377,9 +394,16 @@ class StructuredPCQueryStepDriver:
         decision = await self._select_step(context=context, compiled_profile=compiled_profile,
                                            observations=tuple(observations))
         if not isinstance(decision, Mapping):
-            raise PCQueryStepError("model step must be an object")
-        if decision.get("action") == "complete" and isinstance(decision.get("answer"), str) and decision["answer"].strip():
-            return AgentStepDecision.complete(decision["answer"])
+            raise PCQueryStepError("model step must be an object", detail="model_step_not_object")
+        if decision.get("action") == "complete":
+            answer = decision.get("answer")
+            if isinstance(answer, str) and answer.strip():
+                return AgentStepDecision.complete(answer)
+            # A completion with a missing or non-text answer is its own refusal,
+            # not an unauthorized tool selection.
+            raise PCQueryStepError(
+                "model completion answer is invalid", detail="completion_answer_invalid",
+            )
         if decision.get("action") == "tool":
             tool_id = decision.get("tool_id")
             arguments = decision.get("arguments")
@@ -403,7 +427,9 @@ class StructuredPCQueryStepDriver:
                     return AgentStepDecision.use_tool(
                         ToolInvocation(tool_id=tool_id, arguments={"path": path})
                     )
-        raise PCQueryStepError("model tool selection is invalid or unauthorized")
+        raise PCQueryStepError(
+            "model tool selection is invalid or unauthorized", detail="tool_selection_invalid",
+        )
 
 
 def plan_step_arguments(tool_arguments: Any, step_id: str) -> dict[str, Any]:
@@ -438,6 +464,7 @@ __all__ = [
     "PC_READ_FILE_TOOL_ID",
     "PC_DRIVE_COMMAND",
     "PcQueryProductContract",
+    "PC_STEP_FAILURE_DETAILS",
     "PCQueryStepError",
     "StructuredPCQueryStepDriver",
     "build_pc_query_product_contract",
