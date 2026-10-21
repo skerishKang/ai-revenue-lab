@@ -60,6 +60,7 @@ from .history import (
     HistoryError,
     HistoryForbidden,
     MAX_HISTORY_MESSAGE_CHARS,
+    is_multi_command_action,
     validate_conversation_id,
 )
 from .request_telemetry import emit_stage_event
@@ -2309,6 +2310,12 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     else:
         messages = [content]
     appended = False
+    # #5015: a run that may hold more than one PC tool call stores each
+    # command's own result beside the others and never seals the run row, so
+    # one command's completion is never read as the whole work's completion.
+    command_scope = None
+    if is_multi_command_action((run_row or {}).get("action")):
+        command_scope = dispatch.get("command_id")
     try:
         for index, part in enumerate(messages):
             message_id = base_message_id if len(messages) == 1 else (
@@ -2324,6 +2331,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                 # A terminal result is the only caller that opts out of the
                 # shared edge trim; every other message keeps today's behavior.
                 preserve_edges=(dispatch.get("kind") == "command"),
+                command_scope=command_scope,
             ) or appended
     except HistoryForbidden:
         # Ownership refusal is final: retrying cannot change it.

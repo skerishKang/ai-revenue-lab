@@ -92,6 +92,7 @@ from .history import (
     MAX_RUN_RESULT_SUMMARY_CHARS,
     HistoryStore,
     PRODUCT_SCOPE_CHAT,
+    validate_chat_pc_run_id,
     validate_conversation_id,
 )
 from .usage_gate import UsageGate
@@ -1280,13 +1281,34 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
     return JSONResponse({"ok": True, "result": result}, status_code=200, headers=_NO_STORE_HEADERS)
 
 
+def _is_resolvable_claw_run_id(run_id: object) -> bool:
+    """#5015 — the run ids this route may resolve.
+
+    The legacy Claw run grammar stays exactly as it was, and the canonical
+    Chat PC run id (``chat_pcq_`` plus 32 lowercase hex) is accepted through
+    the shared canonical id validator, so a run is addressable by its own id
+    without widening the accepted pattern. The owner check below is unchanged:
+    a run that is not this session's is simply not found.
+    """
+
+    if not isinstance(run_id, str) or not run_id:
+        return False
+    if re.fullmatch(r"run_[a-zA-Z0-9]{12,80}", run_id):
+        return True
+    try:
+        validate_chat_pc_run_id(run_id)
+    except ValueError:
+        return False
+    return True
+
+
 async def claw_pending_result(request: Request) -> JSONResponse:
     """Only one session-owned pending run; never enumerate runs or dispatch PC."""
     uid = current_user_id(request) if auth_ready(request) else None
     if not uid:
         return _error(401, "unauthorized", "Authentication required")
     run_id = request.path_params.get("run_id", "")
-    if not isinstance(run_id, str) or not re.fullmatch(r"run_[a-zA-Z0-9]{12,80}", run_id):
+    if not _is_resolvable_claw_run_id(run_id):
         return _error(404, "run_not_found", "Run not found")
     history = getattr(request.app.state, "history_store", None)
     if history is None:
