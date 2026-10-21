@@ -54,6 +54,12 @@ from .tool_runtime import (
 
 MAX_APPROVAL_PAUSE_SECONDS = 86_400
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+# #5015: a step driver may name its own failure with a bounded lowercase
+# detail code. Core keeps only that shape-checked identifier and never reads
+# the exception text, so a product can classify its own step failure (an
+# unparsable model answer, an unauthorized tool choice, a model-call error)
+# without Core importing product modules or inventing a telemetry system.
+_STEP_FAILURE_DETAIL_RE = re.compile(r"^[a-z][a-z0-9_]{0,47}$")
 
 
 class AgentRuntimeError(RuntimeError):
@@ -68,6 +74,20 @@ class AgentRuntimeError(RuntimeError):
 
     def to_public_dict(self) -> dict[str, str]:
         return {"code": self.code, "message": self.safe_message}
+
+
+def step_failure_code(exc: BaseException) -> str:
+    """The bounded public code for a step-driver failure (#5015).
+
+    A driver marks its own closed detail on the exception it raises; anything
+    else keeps the previous generic code. Only the identifier shape crosses
+    this boundary: the exception message, the model answer and every other
+    value stay where they were raised.
+    """
+    detail = getattr(exc, "code", None)
+    if isinstance(detail, str) and _STEP_FAILURE_DETAIL_RE.fullmatch(detail):
+        return f"agent_step_failed.{detail}"
+    return "agent_step_failed"
 
 
 class AgentStepKind(str, Enum):
@@ -662,9 +682,12 @@ class BoundedAgentRuntime:
                 raise
             except AgentRuntimeError:
                 raise
-            except Exception:
+            except Exception as exc:
+                # #5015: the public message stays generic, and the original
+                # exception is still not chained to the caller. The driver's
+                # own bounded detail code is preserved instead of being lost.
                 raise AgentRuntimeError(
-                    "agent_step_failed",
+                    step_failure_code(exc),
                     "Agent step execution failed.",
                 ) from None
 
