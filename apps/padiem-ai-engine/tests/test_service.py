@@ -25,6 +25,12 @@ from app.service import (
     EngineService,
 )
 
+# #5002: an inert, syntactically valid model route. It is used only to prove
+# the Engine forwards the selected model verbatim; B14 stays the availability
+# authority, so nothing here claims these are registered models. The suspended
+# Router auto route is never a valid fixture model on an Engine product route.
+_INERT_MODEL_ID = "testowner/example-model.v1"
+
 
 def valid_payload() -> dict:
     return {
@@ -39,7 +45,7 @@ def valid_payload() -> dict:
             "max_tokens": 512,
             "required_capabilities": ["free"],
             "model_policy": {
-                "model": "b14/auto",
+                "model": _INERT_MODEL_ID,
                 "allow_external_fallback": False,
             },
         },
@@ -136,7 +142,7 @@ async def test_success_maps_strict_request_to_core_once() -> None:
     assert request.agent.allowed_tools == ()
     assert request.agent.max_steps == 1
     assert request.agent.required_capabilities == ("free",)
-    assert request.agent.model_policy["model"] == "b14/auto"
+    assert request.agent.model_policy["model"] == _INERT_MODEL_ID
     assert request.agent.model_policy["allow_external_fallback"] is False
     # #4317: there is no attempt budget in the policy. B14 derives the walk
     # from the candidates the declared product grade allows.
@@ -187,12 +193,12 @@ class FakeB14:
 @pytest.mark.parametrize(
     "policy",
     [
-        {"model": "b14/auto", "unknown": True},
+        {"model": _INERT_MODEL_ID, "unknown": True},
         # #4317: a declared attempt budget is not a Core policy field at all, so
         # any value of it fails closed here instead of narrowing B14's roster.
-        {"model": "b14/auto", "max_attempts": 0},
-        {"model": "b14/auto", "max_attempts": 1},
-        {"model": "b14/auto", "max_attempts": True},
+        {"model": _INERT_MODEL_ID, "max_attempts": 0},
+        {"model": _INERT_MODEL_ID, "max_attempts": 1},
+        {"model": _INERT_MODEL_ID, "max_attempts": True},
     ],
 )
 async def test_invalid_core_model_policy_fails_before_b14(policy) -> None:
@@ -220,7 +226,7 @@ async def test_a_declared_attempt_budget_is_rejected_before_b14() -> None:
     and the real runtime refuses the request before any upstream call.
     """
     payload = valid_payload()
-    payload["agent"]["model_policy"] = {"model": "b14/auto", "max_attempts": 99}
+    payload["agent"]["model_policy"] = {"model": _INERT_MODEL_ID, "max_attempts": 99}
     b14 = FakeB14()
     service = EngineService(
         runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),

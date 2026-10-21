@@ -87,7 +87,9 @@ def valid_payload(ref: str = ATTACHMENT_REF, app_id: str = APP_ID) -> dict[str, 
             "max_tokens": 512,
             "required_capabilities": ["chat", "image"],
             "model_policy": {
-                "model": "b14/auto",
+                # #5002: an inert explicit route; the suspended Router auto
+                # route is never a valid Engine product-route model.
+                "model": "testowner/example-model.v1",
                 "allow_external_fallback": False,
             },
         },
