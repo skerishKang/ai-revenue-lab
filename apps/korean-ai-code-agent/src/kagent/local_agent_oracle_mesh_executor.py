@@ -136,6 +136,7 @@ class OracleMeshExecutor:
         timeout_seconds: int = 30,
         transport: Optional[Callable[..., tuple[int, dict[str, Any]]]] = None,
         pending_dir: Optional[str] = None,
+        claim_gate: Optional[Callable[[], bool]] = None,
     ) -> None:
         if not isinstance(chat_origin, str) or not chat_origin.startswith("https://"):
             raise ContractError("the chat channel must be an https origin")
@@ -170,6 +171,13 @@ class OracleMeshExecutor:
         self._pending_dir = pending_dir
         #: The body file the current manifest points at, once durable.
         self._pending_body: Optional[str] = None
+        # #5462: an optional claim gate. When the failover controller has
+        # moved the claim to the other host, the gate refuses the poll on
+        # this host, so the two executors never claim the same dispatch.
+        # A host with no gate keeps the historical behaviour.
+        if claim_gate is not None and not callable(claim_gate):
+            raise ContractError("the claim gate must be callable")
+        self._claim_gate = claim_gate
 
     # ---- channel -------------------------------------------------------
     def _https_post(
@@ -973,6 +981,12 @@ class OracleMeshExecutor:
         """Retry a held result if any; otherwise poll, execute and submit."""
         if self._pending is not None:
             return self.resend_pending_result()
+        # #5462: a held result is still resent while this host is not the
+        # active one — the bytes the PC really produced must reach the
+        # server exactly once. Only a NEW claim is gated, because claiming
+        # is what could execute the same work twice.
+        if self._claim_gate is not None and not self._claim_gate():
+            return None
         dispatch = self.poll_once()
         if dispatch is None:
             return None
@@ -1004,6 +1018,7 @@ def make_oracle_mesh_executor(
     mesh_url: str = "wss://127.0.0.1:4443",
     work_dir: str | None = None,
     timeout_seconds: int = 30,
+    claim_gate: Optional[Callable[[], bool]] = None,
 ) -> OracleMeshExecutor:
     """Build the executor with the REAL official meshctrl read port.
 
@@ -1078,6 +1093,7 @@ def make_oracle_mesh_executor(
         desktop_port=desktop_port,
         timeout_seconds=timeout_seconds,
         pending_dir=work_dir,
+        claim_gate=claim_gate,
     )
 
 
