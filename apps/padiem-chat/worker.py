@@ -74,7 +74,10 @@ from app.connector_owner_runtime_mount import compose_owner_enrollment_from_work
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
-from app.control_plane_identity_shadow import D1IdentityShadowStore
+from app.control_plane_identity_shadow import (
+    D1IdentityShadowStore,
+    RefreshingCanonicalSubjectResolver,
+)
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from app.dispatch_quota import (
     DispatchAwareB14Client,
@@ -853,6 +856,24 @@ class Default(WorkerEntrypoint):
                     if identity_binding is not None
                     else None
                 )
+                # #5484: the Engine admission authority resolves the engine
+                # entitlement by CANONICAL subject. The B62 product-local
+                # ``usr_*`` id is not a canonical subject id, so the Control
+                # Plane reverse product-user lookup fails closed and the whole
+                # Engine orchestration lane answers 503 ``entitlement_unavailable``.
+                # The canonical subject resolver already exists (#1617) and is
+                # composed from the same authority and shadow projection the
+                # Chat PC lane uses; only the Production composition was missing
+                # it. Absent either dependency the resolver stays None and the
+                # bridge keeps its previous (unbound) behaviour.
+                canonical_subject_resolver = (
+                    RefreshingCanonicalSubjectResolver(
+                        authority=identity_authority,
+                        store=identity_shadow_store,
+                    )
+                    if identity_authority is not None and identity_shadow_store is not None
+                    else None
+                )
                 google_oauth_workspace_truth = (
                     CloudflareGoogleOAuthWorkspaceTruth(google_oauth_binding)
                     if google_oauth_binding is not None
@@ -1394,6 +1415,7 @@ class Default(WorkerEntrypoint):
                         settings=settings,
                         db_binding=db_binding,
                         request_factory=Request,
+                        canonical_subject_resolver=canonical_subject_resolver,
                     ),
                 )
             except ConfigError:
