@@ -385,17 +385,21 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   justify-content: center;
   min-height: 40px;
   padding: 8px 16px;
-  border: 1px solid var(--accent-strong, #2f6f99);
+  /* The same primary treatment the Calendar and Meeting actions already use: a
+   * solid accent with the contrast ink. The translucent accent fill left the
+   * label at 3.31:1 on the Glass card, below the 4.5:1 that 13px bold text
+   * needs, because the card artwork showed through the button. */
+  border: 1px solid var(--accent);
   border-radius: 999px;
-  background: rgba(121, 188, 231, .18);
-  color: var(--accent-strong, #2f6f99);
+  background: var(--accent);
+  color: var(--accent-contrast);
   font: inherit;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-primary:hover {
-  background: rgba(121, 188, 231, .28);
+  filter: brightness(1.04);
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-primary:focus-visible {
   outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
