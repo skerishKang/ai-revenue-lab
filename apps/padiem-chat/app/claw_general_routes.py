@@ -38,8 +38,8 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from .member_grade_access import selected_grade_denial, selected_admin_denial
-from .model_policy import ADMIN_B14_MODEL_ID
+from .member_grade_access import claw_execution_tier_denial
+from .model_policy import ADMIN_B14_MODEL_ID, resolve_claw_execution_grade
 from types import SimpleNamespace
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_control_plane.product_tier_routes import (
@@ -79,7 +79,6 @@ from .claw_first_turn_authority import (
 from .claw_live_canary import live_stream_allowed
 from .claw_general_run_history import project_completed_general_run
 from .claw_routes import (
-    _BROWSER_TIER_MAP,
     _NO_STORE_HEADERS,
     _error,
     _safe_composition_diagnostic,
@@ -1278,20 +1277,21 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         )
 
     raw_tier = data.get("tier", "free")
-    if not isinstance(raw_tier, str):
+    # #5223: the grade is resolved by the ONE shared authority, exactly like the
+    # manual-execution lane. A lane with its own copy of the grade map refused
+    # a valid administrator with ``422 invalid_tier`` (#5229).
+    grade = resolve_claw_execution_grade(raw_tier)
+    if grade is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-    requested_tier = raw_tier.strip().lower()
-    admin_lane = requested_tier == "admin"
+    requested_tier = grade.tier_id
+    admin_lane = grade.admin_lane
     # P01 currently transports only member-tier enums. The administrator
     # chooses the separately authorized exact model, never a browser-provided
     # tier/model grant. PLUS here is solely the existing P01 transport profile.
-    product_tier = ProductTierLabel.PLUS if admin_lane else _BROWSER_TIER_MAP.get(requested_tier)
-    if product_tier is None:
-        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    product_tier = grade.product_tier
     if "tier" in data:
         user_id = current_user_id(request) if auth_ready(request) else None
-        tier_denial = (await selected_admin_denial(request, user_id)
-                       if admin_lane else await selected_grade_denial(request, user_id, requested_tier))
+        tier_denial = await claw_execution_tier_denial(request, user_id, grade)
         if tier_denial is not None:
             return tier_denial
     # #4428: the central per-grade route is resolved SERVER-SIDE before any

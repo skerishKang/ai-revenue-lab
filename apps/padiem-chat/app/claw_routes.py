@@ -64,14 +64,18 @@ from __future__ import annotations
 import inspect
 import json
 import re
+from types import SimpleNamespace
 from typing import Any
 import uuid
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from .member_grade_access import selected_grade_denial
-from padiem_control_plane.product_tier_routes import ProductTierLabel
+from .member_grade_access import claw_execution_tier_denial
+from .model_policy import (
+    ADMIN_B14_MODEL_ID,
+    resolve_claw_execution_grade,
+)
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -154,12 +158,10 @@ _ACTION_MAP: dict[str, ManualIntakeAction] = {
     "extract_candidates": ManualIntakeAction.EXTRACT_CANDIDATES,
 }
 
-_BROWSER_TIER_MAP: dict[str, ProductTierLabel] = {
-    "free": ProductTierLabel.FREE,
-    "plus": ProductTierLabel.PLUS,
-    "pro": ProductTierLabel.PRO,
-    "max": ProductTierLabel.MAX,
-}
+# #5223: the grade -> transport profile map is owned by the shared grade
+# authority in ``model_policy``, so no Claw lane keeps a private copy of it.
+# The lanes resolve a browser-supplied grade through
+# ``resolve_claw_execution_grade``.
 
 _CHANNEL_MAP: dict[str, ManualIntakeChannel] = {
     "kakao": ManualIntakeChannel.KAKAO,
@@ -519,14 +521,16 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         sender_hint = raw_sender or None
 
     raw_tier = data.get("tier", "free")
-    if not isinstance(raw_tier, str):
+    # #5223: the grade is resolved by the ONE shared authority, exactly like the
+    # composer lane. A lane with its own copy of the grade map refused a valid
+    # administrator with ``422 invalid_tier`` (#5229).
+    grade = resolve_claw_execution_grade(raw_tier)
+    if grade is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-    product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
-    if product_tier is None:
-        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    product_tier = grade.product_tier
     if "tier" in data:
-        tier_denial = await selected_grade_denial(
-            request, current_user_id(request) if auth_ready(request) else None, raw_tier.strip().lower()
+        tier_denial = await claw_execution_tier_denial(
+            request, current_user_id(request) if auth_ready(request) else None, grade
         )
         if tier_denial is not None:
             return tier_denial
@@ -534,7 +538,17 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     # absent row preserves the historical static declaration.
     from .central_model_route_runtime import resolve_claw_tier_model
 
-    claw_route = await resolve_claw_tier_model(request, raw_tier.strip().lower())
+    if grade.admin_lane:
+        # The administrator lane selects the one exact administrator model.
+        # It is not a centrally routed member grade.
+        claw_route = SimpleNamespace(
+            ok=True,
+            model_id=ADMIN_B14_MODEL_ID,
+            fallback_model_id=None,
+            source="admin",
+        )
+    else:
+        claw_route = await resolve_claw_tier_model(request, grade.tier_id)
     if not claw_route.ok or not claw_route.model_id:
         return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
 
