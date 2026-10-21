@@ -199,8 +199,8 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          query="${RUNNER_TEMP}/b62-d1-062-counts-query.json"
-          response="${RUNNER_TEMP}/b62-d1-062-counts-before.json"
+          query="${RUNNER_TEMP}/b62-d1-062-counts-readonly-query.json"
+          response="${RUNNER_TEMP}/b62-d1-062-counts-readonly.json"
           python3 - "${query}" <<'PY'
           import json, sys
           sql = """SELECT COUNT(*) AS n FROM users;
@@ -352,6 +352,43 @@ jobs:
           echo "PREMUTATION_SCHEMA_STATE=${state}"
           echo 'PREMUTATION_SCHEMA_STATE_STABLE=PASS'
 
+      - name: Read the preserved account row counts before the release
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          query="${RUNNER_TEMP}/b62-d1-062-counts-before-query.json"
+          response="${RUNNER_TEMP}/b62-d1-062-counts-before.json"
+          python3 - "${query}" <<'PY'
+          import json, sys
+          sql = """SELECT COUNT(*) AS n FROM users;
+          SELECT COUNT(*) AS n FROM password_credentials;"""
+          with open(sys.argv[1], 'w', encoding='utf-8') as handle:
+              json.dump({'sql': sql}, handle)
+          PY
+          curl -fsS --max-time 30 -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${response}"
+          python3 - "${response}" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1], encoding='utf-8'))
+          blocks = payload.get('result') if payload.get('success') is True else None
+          if not isinstance(blocks, list) or len(blocks) != 2:
+              raise SystemExit('row count evidence is incomplete')
+          for block in blocks:
+              if not isinstance(block, dict) or block.get('success') is not True:
+                  raise SystemExit('row count statement unsuccessful')
+              rows = block.get('results')
+              if not isinstance(rows, list) or len(rows) != 1:
+                  raise SystemExit('row count statement malformed')
+              value = rows[0].get('n')
+              if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+                  raise SystemExit('row count is unreadable')
+          print('B62_D1_MIGRATION_062_ACCOUNT_ROW_COUNTS_READ=PASS')
+          PY
+          echo 'ROW_CONTENT_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+
       - name: Apply exactly migration 062 once
         if: ${{ env.READONLY_SCHEMA_STATE == 'missing' }}
         shell: bash
@@ -437,8 +474,7 @@ jobs:
           if before != after:
               raise SystemExit('account rows changed across migration 062')
           print('B62_D1_MIGRATION_062_ACCOUNT_ROWS_PRESERVED=PASS')
-          PY
-          fk_query="${RUNNER_TEMP}/b62-d1-062-fk-query.json"
+          PY          fk_query="${RUNNER_TEMP}/b62-d1-062-fk-query.json"
           fk_response="${RUNNER_TEMP}/b62-d1-062-fk.json"
           python3 - "${fk_query}" <<'PY'
           import json, sys
