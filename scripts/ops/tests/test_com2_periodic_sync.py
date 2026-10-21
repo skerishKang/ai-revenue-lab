@@ -85,6 +85,29 @@ r2.mkdir(parents=True, exist_ok=True)
 print("D1_PUBLISHED_GENERATION", generation, "DATABASES", 2)
 """
 
+# The R2 step publishes a NEWER R2 generation than the D1 step saw. The B62
+# runtime pointer must be published after it, otherwise the pointer names an R2
+# generation the runtime no longer finds and the live listener refuses to start.
+R2_PUBLISHING_STUB = """
+import json
+import sys
+from pathlib import Path
+
+root = Path(__file__).resolve().parent
+if "--diff-only" in sys.argv:
+    for bucket in ("workspace", "b66", "media"):
+        print(f"DIFF {bucket} BASE_GEN=gen REMOTE=1 BYTES=1 NEW=1 CHANGED=0 "
+              "DELETED_REMOTE=0 UNCHANGED=0")
+    sys.exit(0)
+generation = "20261021T121907270084Z"
+target = root / "r2-staging" / "generations" / generation
+target.mkdir(parents=True, exist_ok=True)
+(target / "manifest.json").write_text("[]", encoding="utf-8")
+(root / "r2-staging" / "current_generation.json").write_text(
+    json.dumps({"generation": generation, "production_bound": False}), encoding="utf-8")
+print("R2_PUBLISHED_GENERATION", generation, "DELTA_OBJECTS", 1)
+"""
+
 
 def _load():
     spec = importlib.util.spec_from_file_location("com2_periodic_sync_ops", SCRIPT)
@@ -480,6 +503,36 @@ def test_the_sync_publishes_the_b62_runtime_pointer(tmp_path):
     assert pointer["r2_generation"] == "20261021T074335749153Z"
     assert pointer["production_bound"] is False
     assert (store / pointer["d1_seed"]).is_file()
+
+
+def test_the_pointer_names_the_r2_generation_the_r2_step_published(tmp_path):
+    """The pointer must follow the R2 step, not the D1 step.
+
+    Publishing the pointer right after the D1 step left it naming an R2
+    generation that the R2 step had already replaced, so the runtime refused to
+    open it (r2_generation_pointer_mismatch) and the live listener went down.
+    """
+
+    root = _make_root(tmp_path)
+    (root / "refresh_d1.py").write_text(PUBLISHING_REFRESH_STUB, encoding="utf-8")
+    (root / "r2_sync.py").write_text(R2_PUBLISHING_STUB, encoding="utf-8")
+    store = tmp_path / "b62-runtime" / "generation-store"
+    store.parent.mkdir(parents=True, exist_ok=True)
+
+    code = sync_ops.run_once(
+        root, inventory_factory=_factory(), retry_delay=0, b62_store=store
+    )
+
+    assert code == 0
+    pointer = json.loads((store / "current_generation.json").read_text(encoding="utf-8"))
+    # The R2 step published 20261021T121907270084Z; the pointer must name it.
+    assert pointer["r2_generation"] == "20261021T121907270084Z"
+    r2_pointer = json.loads(
+        (root / "r2-staging" / "current_generation.json").read_text(encoding="utf-8")
+    )
+    assert pointer["r2_generation"] == r2_pointer["generation"]
+    status = json.loads((root / "scheduled-sync-status.json").read_text(encoding="utf-8"))
+    assert status["b62_pointer"]["published"] is True
 
 
 def test_the_pointer_step_is_skipped_on_a_host_without_a_b62_runtime_store(tmp_path):

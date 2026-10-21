@@ -458,14 +458,6 @@ def run_once(
         if d1["exit"] != 0:
             raise SyncError("d1_refresh_failed")
 
-        current_step = "b62_pointer"
-        status["b62_pointer"] = publish_b62_pointer(
-            root,
-            store=b62_store,
-            log=log,
-            python=python,
-        )
-
         current_step = "inventory"
         server = inventory_factory(
             root,
@@ -504,6 +496,20 @@ def run_once(
         else:
             status["r2"]["mode"] = "unchanged"
             log.emit("R2_UNCHANGED")
+
+        # The B62 runtime pointer is published after the R2 step, not after the
+        # D1 step. The runtime verifies the pointer's R2 generation against the
+        # R2 staging pointer, and the R2 step publishes a newer R2 generation
+        # than the one that existed when the D1 step ran. Publishing earlier
+        # therefore left a pointer the runtime refuses to open
+        # (r2_generation_pointer_mismatch) and took the live listener down.
+        current_step = "b62_pointer"
+        status["b62_pointer"] = publish_b62_pointer(
+            root,
+            store=b62_store,
+            log=log,
+            python=python,
+        )
 
         status["ok"] = True
         status["finished_utc"] = _utc_now()
