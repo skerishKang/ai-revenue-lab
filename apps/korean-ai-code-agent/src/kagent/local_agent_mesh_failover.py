@@ -37,6 +37,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shlex
 import sys
 import time
 from dataclasses import dataclass, field
@@ -730,6 +731,30 @@ def command_notifier(
     return notifier
 
 
+def _both_notifiers(
+    first: Callable[[str, str], None], second: Callable[[str, str], None]
+) -> Callable[[str, str], None]:
+    """Run both notifiers, and never let one of them stop the other.
+
+    The local log is the evidence; the delivery is the notification. A
+    failed delivery must not cost the evidence, and a failed log write must
+    not cost the notification.
+    """
+
+    def notifier(event: str, message: str) -> None:
+        for one in (first, second):
+            try:
+                one(event, message)
+            except Exception as exc:  # a notifier must never break the loop
+                print(
+                    f"mesh-failover notifier failed event={event} "
+                    f"{type(exc).__name__}: {exc}",
+                    file=sys.stderr,
+                )
+
+    return notifier
+
+
 def main(environ: Optional[dict[str, str]] = None) -> int:
     """One supervisor pass. Configured by environment only.
 
@@ -806,6 +831,17 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             ),
         )
         notifier = events_file_notifier(need("MESH_FAILOVER_EVENTS_PATH"))
+        # The delivery of the event is pluggable, so a host that can reach
+        # the operator's channel delivers it and a host that cannot still
+        # keeps the durable local log.
+        delivery = env.get("MESH_FAILOVER_NOTIFY_COMMAND", "").strip()
+        if delivery:
+            command = shlex.split(delivery)
+            if not command:
+                raise ContractError("the delivery command is required")
+            notifier = _both_notifiers(
+                notifier, command_notifier(command)
+            )
         supervisor = MeshFailoverSupervisor(
             controller=controller,
             heartbeat_path=need("MESH_FAILOVER_HEARTBEAT_PATH"),
