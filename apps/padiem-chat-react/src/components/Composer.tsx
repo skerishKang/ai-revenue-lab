@@ -16,6 +16,8 @@ interface ComposerProps {
   pendingAttachment: PendingAttachment | null;
   streaming: boolean;
   pcState: "unknown" | "check" | "disconnected" | "connected";
+  /** The API probe has not answered yet, so the source of an answer is unknown. */
+  probing: boolean;
   onSelectModel: (modelId: string) => void;
   onSend: (prompt: string) => void;
   onAttach: (file: File) => void;
@@ -38,6 +40,7 @@ export function Composer({
   pendingAttachment,
   streaming,
   pcState,
+  probing,
   onSelectModel,
   onSend,
   onAttach,
@@ -96,7 +99,7 @@ export function Composer({
 
   const submit = () => {
     const prompt = value.trim();
-    if (!prompt) return;
+    if (!prompt || probing) return;
     onSend(prompt);
     setValue("");
     requestAnimationFrame(() => {
@@ -326,7 +329,7 @@ export function Composer({
             type="submit"
             aria-label="메시지 보내기"
             data-padiem-tooltip="메시지 전송"
-            disabled={streaming}
+            disabled={streaming || probing}
           >
             <svg
               className="send-arrow-icon"

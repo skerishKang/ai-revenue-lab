@@ -1,9 +1,11 @@
 import { ThemePicker } from "./ThemePicker";
 import type { ThemeName } from "../theme/theme";
+import type { ApiMode } from "../state/chatStore";
 
 interface TopBarProps {
   theme: ThemeName;
   collapsed: boolean;
+  apiMode: ApiMode;
   onSelectTheme: (theme: ThemeName) => void;
   onOpenMobile: () => void;
   onRestoreSidebar: () => void;
@@ -15,14 +17,26 @@ interface TopBarProps {
  * The operational top bar owns the mobile menu and the sidebar restore
  * button. The clone keeps both and adds the theme switcher on the right, which
  * is the only addition in this PR.
+ *
+ * The badge states which source answers are coming from: the real Chat API or
+ * the local fixture. It is never hidden, because a fixture answer must not be
+ * readable as a live product answer.
  */
 export function TopBar({
   theme,
   collapsed,
+  apiMode,
   onSelectTheme,
   onOpenMobile,
   onRestoreSidebar,
 }: TopBarProps) {
+  const badge =
+    apiMode === "api"
+      ? { className: "clone-api-badge", text: "실제 API 연결" }
+      : apiMode === "probing"
+        ? { className: "clone-probe-badge", text: "API 확인 중" }
+        : { className: "clone-fixture-badge", text: "복제본 미리보기" };
+
   return (
     <header className="topbar">
       <button
@@ -50,10 +64,14 @@ export function TopBar({
       </button>
       <div className="clone-topbar-actions">
         <span
-          className="clone-fixture-badge"
-          title="복제본 미리보기입니다. 답변은 로컬 fixture에서 생성되며 실제 모델 호출은 하지 않습니다."
+          className={badge.className}
+          title={
+            apiMode === "api"
+              ? "실제 Chat API에 연결되어 있습니다."
+              : "API에 연결할 수 없어 로컬 fixture로 응답합니다."
+          }
         >
-          복제본 미리보기
+          {badge.text}
         </span>
         <ThemePicker theme={theme} onSelect={onSelectTheme} />
       </div>
