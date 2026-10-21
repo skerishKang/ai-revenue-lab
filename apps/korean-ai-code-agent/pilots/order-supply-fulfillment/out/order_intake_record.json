@@ -1,0 +1,103 @@
+{
+  "availability_check": {
+    "covered_line_ids": [
+      "L1",
+      "L2"
+    ],
+    "fully_covered": true,
+    "order_id": "order_demo_1",
+    "order_version": 1,
+    "positions": [
+      {
+        "available_quantity": "120",
+        "item_id": "item_demo_1",
+        "lead_time_days": 2,
+        "reserved_quantity": "10",
+        "sellable_quantity": "110",
+        "sku": "SKU-DEMO-1",
+        "supplier_id": "supplier_demo_1",
+        "unit_cost": {
+          "amount_minor": 9000,
+          "currency": "KRW"
+        }
+      },
+      {
+        "available_quantity": "45",
+        "item_id": "item_demo_2",
+        "lead_time_days": 2,
+        "reserved_quantity": "0",
+        "sellable_quantity": "45",
+        "sku": "SKU-DEMO-2",
+        "supplier_id": "supplier_demo_1",
+        "unit_cost": {
+          "amount_minor": 6000,
+          "currency": "KRW"
+        }
+      }
+    ],
+    "short_line_ids": [],
+    "supplier_ids": [
+      "supplier_demo_1"
+    ]
+  },
+  "order": {
+    "channel": "csv_export",
+    "channel_order_ref": "CH-2026-0011",
+    "customer_ref": "cust_demo_001",
+    "lines": [
+      {
+        "description": "데모 상품 A",
+        "item_id": "item_demo_1",
+        "line_id": "L1",
+        "quantity": "2",
+        "sku": "SKU-DEMO-1",
+        "total": {
+          "amount_minor": 24000,
+          "currency": "KRW"
+        },
+        "unit": "EA",
+        "unit_price": {
+          "amount_minor": 12000,
+          "currency": "KRW"
+        }
+      },
+      {
+        "description": "데모 상품 B",
+        "item_id": "item_demo_2",
+        "line_id": "L2",
+        "quantity": "1",
+        "sku": "SKU-DEMO-2",
+        "total": {
+          "amount_minor": 8000,
+          "currency": "KRW"
+        },
+        "unit": "EA",
+        "unit_price": {
+          "amount_minor": 8000,
+          "currency": "KRW"
+        }
+      }
+    ],
+    "order_id": "order_demo_1",
+    "personal_data_redacted": true,
+    "received_at": "2026-10-21T09:00:00Z",
+    "requested_delivery_date": "2026-10-24",
+    "ship_to": {
+      "address_line1": "(redacted)",
+      "address_line2": "",
+      "postal_code": "04**",
+      "recipient_name": "테**",
+      "recipient_phone": "***-****-***0000"
+    },
+    "status": "received",
+    "total": {
+      "amount_minor": 32000,
+      "currency": "KRW"
+    },
+    "version": 1,
+    "workspace_id": "ws_demo"
+  },
+  "personal_data_redacted": true,
+  "real_customer_data_used": false,
+  "record_version": "claw-ops-order-intake.v1"
+}

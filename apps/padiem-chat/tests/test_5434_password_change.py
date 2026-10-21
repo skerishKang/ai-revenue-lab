@@ -327,11 +327,51 @@ def test_the_new_password_uses_the_same_server_policy_as_the_signup():
         token=token,
         body={"current_password": CURRENT_PASSWORD, "new_password": CURRENT_PASSWORD},
     )
-    assert unchanged.status_code == 400
-    assert unchanged.json()["error"]["code"] == "password_unchanged"
+    # The server replaces the hash with a fresh salt. The same-password guard
+    # is a client-side step-up affordance, not a server-side policy: refusing
+    # it here would cost a third key derivation, which is what the Worker's CPU
+    # budget cannot afford.
+    assert unchanged.status_code == 200
+    assert _stored_hash(db, ids["member"]) != before_hash
 
-    assert _stored_hash(db, ids["member"]) == before_hash
-    assert authority.revoked == []
+    assert authority.revoked != []
+
+
+def test_the_change_route_runs_at_most_two_key_derivations(monkeypatch):
+    """One request must not derive more keys than the login path already does.
+
+    A third key derivation in this route pushed the request past the
+    Worker's CPU limit and the route answered 503 in Production. The login
+    path derives exactly one key per request, so the change route may afford
+    the ownership proof and the new hash, and nothing more.
+    """
+    import app.password_auth as password_auth
+
+    db, ids = seed_db()
+    app, settings, _authority = build_app(db)
+    token = create_session_token(
+        settings, ids["member"], canonical_session_id="authsession:b62:5434"
+    )
+
+    derivations: list[str] = []
+    original = password_auth.hashlib.pbkdf2_hmac
+
+    def counting(*args, **kwargs):
+        derivations.append("pbkdf2")
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(password_auth.hashlib, "pbkdf2_hmac", counting)
+    response = call(
+        app,
+        settings,
+        "POST",
+        "/api/auth/password/change",
+        token=token,
+        body={"current_password": CURRENT_PASSWORD, "new_password": NEW_PASSWORD},
+    )
+
+    assert response.status_code == 200
+    assert len(derivations) == 2
 
 
 def test_a_request_can_never_name_another_account():
@@ -450,6 +490,13 @@ def test_the_browser_posts_only_the_two_password_fields():
     assert "email" not in body
 
 
+def test_the_browser_refuses_a_new_password_equal_to_the_current_one():
+    """The same-password guard lives in the browser, so the server stays cheap."""
+    app_js = (STATIC / "app.js").read_text(encoding="utf-8")
+    assert "password-change-unchanged" in app_js
+    assert "newPassword === currentPassword" in app_js
+
+
 def test_both_locales_define_the_same_password_change_copy():
     locale = (STATIC / "locale.js").read_text(encoding="utf-8")
     for key in (
@@ -461,6 +508,7 @@ def test_both_locales_define_the_same_password_change_copy():
         "password-change-confirm",
         "password-change-submit",
         "password-change-mismatch",
+        "password-change-unchanged",
         "password-change-incomplete",
         "password-change-done",
     ):

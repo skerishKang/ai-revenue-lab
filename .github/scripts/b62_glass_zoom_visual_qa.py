@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from playwright.async_api import Page, async_playwright
+from playwright.async_api import Page, Route, async_playwright
 
 from b62_visual_timing import (
     TimingOvershoot,
@@ -37,6 +37,68 @@ VIEWPORTS = (
     ("glass-zoom100-equivalent", 1920, 1080),
     ("glass-zoom150-equivalent", 1280, 720),
 )
+
+# The Glass Zoom suite measures the conversation motion clock, not the chat
+# transport.  Its answer used to come from the live mock server inside the
+# unchanged 15s answer budget, and on the isolated COM2 lane (1 CPU, offline
+# container) that round trip is the one dependency the measurement does not
+# need but can exceed the budget on: COM2 run 39498783280 timed out exactly at
+# that wait (Page.wait_for_function: Timeout 15000ms exceeded) after the suite
+# had already spent its normal COM2 budget, while the identical suite passes
+# on the 2-core hosted lane at the same head (21.77s, B62_VISUAL_TAIL_FAIL_
+# COUNT=0).  The sibling suites that also drive a chat turn already answer the
+# stream from an in-page route mock (b62_browser_visual_qa.py,
+# b62_product_surface_certification_browser_qa.py,
+# b62_post_certification_browser_qa.py), and the live server path stays covered
+# by those siblings inside the same lane.  The answer text is the mock
+# runtime's own preview text, so the wait predicate, the real clicks and every
+# assertion below stay exactly as they are.
+PREVIEW_MARKER = "지금은 미리보기 환경입니다"
+PREVIEW_ANSWER = (
+    f"{PREVIEW_MARKER}. "
+    "브라우저 배율 대응 시각 검수용 결정론적 미리보기 답변입니다."
+)
+
+
+def _preview_stream_payload() -> str:
+    """The mock runtime's own SSE frames for the preview answer.
+
+    The frame shape mirrors the local mock server's ``_public_sse`` output
+    (``event: delta`` / ``event: done``), so the product renders the answer
+    through the same code path it uses against the mock server.
+    """
+
+    return (
+        "event: delta\n"
+        f"data: {json.dumps({'delta': PREVIEW_ANSWER}, ensure_ascii=False)}\n\n"
+        "event: done\n"
+        f"data: {json.dumps({'done': True}, ensure_ascii=False)}\n\n"
+    )
+
+
+async def _install_preview_stream(page: Page, requests: list[dict[str, Any]]) -> None:
+    """Answer the chat stream in-page, so the motion measurement is not a
+    measurement of the answer's server round trip.
+
+    The product's own send path is still exercised: the intercepted request is
+    the real chat request, and it is recorded as evidence.
+    """
+
+    async def stream(route: Route) -> None:
+        raw = route.request.post_data or "{}"
+        body = json.loads(raw)
+        if not isinstance(body, dict):
+            raise AssertionError(f"chat request must be an object: {body!r}")
+        requests.append(body)
+        await route.fulfill(
+            status=200,
+            content_type="text/event-stream; charset=utf-8",
+            body=_preview_stream_payload(),
+            headers={"Cache-Control": "no-store"},
+        )
+
+    await page.route("**/api/chat/stream", stream)
+
 
 # #4783/#4845: at >=921px shared-six-panel-frame.css turns `.conversation` into a
 # self-contained scroll panel (`overflow-y:auto` + `height:calc(100dvh - 100px)`),
@@ -120,18 +182,27 @@ async def _scroll_to_end(page: Page) -> None:
     )
 
 
-async def _wheel_up(page: Page, delta: int) -> None:
-    """Wheel over the surface that owns the scroll, so the user signal lands."""
-    await page.evaluate(
+async def _wheel_up(page: Page, delta: int) -> float:
+    """Wheel over the surface that owns the scroll, so the user signal lands.
+
+    Returns the page-clock timestamp of the dispatch itself.  Dispatching the
+    wheel is a host-to-page round trip, so reading the measurement start in a
+    second round trip would add that host latency to the measured pause
+    window and put the 200ms ceiling out of reach on a loaded runner.
+    Capturing the clock inside the same in-page evaluation keeps the window a
+    measurement of the product's pause latency alone.
+    """
+    return await page.evaluate(
         """
         (delta) => {
           const doc = document.documentElement;
           const conv = document.querySelector(".conversation");
           if (conv && conv.scrollHeight > conv.clientHeight + 1) {
             conv.dispatchEvent(new WheelEvent("wheel", { deltaY: delta, bubbles: true }));
-            return;
+          } else {
+            window.dispatchEvent(new WheelEvent("wheel", { deltaY: delta, bubbles: true }));
           }
-          window.dispatchEvent(new WheelEvent("wheel", { deltaY: delta, bubbles: true }));
+          return performance.now();
         }
         """,
         delta,
@@ -286,14 +357,16 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     await page.wait_for_timeout(600)
     # Dispatch the wheel at the surface that owns the scroll, so the page-level
     # listener sees the same signal regardless of which container scrolls.
-    await _wheel_up(page, -520)
+    # The dispatch returns the page clock of the wheel itself, so the measured
+    # window is the product's pause latency and not the host's dispatch
+    # round-trip, which on a loaded runner is longer than the whole budget.
+    wheel_observed = await _wheel_up(page, -520)
     # Detect the pause on the page clock instead of sampling a fixed host
     # sleep: on a loaded CI runner the old 180ms sleep + read round-trip could
     # land either before the wheel was processed (false "did not pause") or
     # at an uncontrolled time.  The pause must still arrive within the
     # original ~180ms budget (200ms ceiling absorbs only the deterministic
     # ~one-tick in-page detection granularity, not the former host slack).
-    wheel_observed = await page.evaluate("performance.now()")
     pause_wait = await wait_state_settled(
         page,
         started_ms=wheel_observed,
@@ -515,8 +588,47 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     }
 
 
+async def _page_diagnostic(page: Page, chat_requests: int) -> str:
+    """A compact page snapshot for the COM2 runner's bounded log window.
+
+    The snapshot is bounded: a page that stopped answering must not turn the
+    diagnostic into a new hang.
+    """
+
+    try:
+        state = await asyncio.wait_for(
+            page.evaluate(
+                """() => ({
+                  url: location.href,
+                  shell: document.querySelector('.app-shell')?.dataset?.state || null,
+                  ready: document.readyState,
+                  assistants: document.querySelectorAll('#messageList .assistant-content').length,
+                  lastAssistant: (document.querySelector('#messageList .assistant-content:last-child')?.textContent || '').slice(0, 120),
+                })"""
+            ),
+            timeout=5.0,
+        )
+    except Exception as exc:  # noqa: BLE001 - a diagnostic must never mask the failure
+        return f"unavailable:{type(exc).__name__}"
+    state["chatRequests"] = chat_requests
+    return json.dumps(state, ensure_ascii=False)
+
+
+def _attach_diagnostic(exc: Exception, diagnostic: str) -> None:
+    """Append the page snapshot to the failure message, keeping the exception
+    type (and a timing overshoot's evidence) intact."""
+
+    try:
+        if exc.args and isinstance(exc.args[0], str):
+            exc.args = (f"{exc.args[0]} | ZOOM_DIAG={diagnostic}", *exc.args[1:])
+    except Exception:  # noqa: BLE001 - a diagnostic must never mask the failure
+        pass
+
+
 async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[str, Any]:
+    chat_requests: list[dict[str, Any]] = []
     await page.set_viewport_size({"width": width, "height": height})
+    await _install_preview_stream(page, chat_requests)
     await page.goto(
         f"{BASE_URL}/?theme=padiem-glass&glass=female",
         wait_until="domcontentloaded",
@@ -545,15 +657,32 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     home_screenshot = f"{name}-female-home.png"
     await page.screenshot(path=str(OUT_DIR / home_screenshot), full_page=True)
 
-    await page.locator("#messageInput").fill("브라우저 배율 대응 시각 검수")
-    if await page.locator("#sendButton").is_disabled():
-        raise AssertionError(f"send button stayed disabled at {name}")
-    await page.locator("#sendButton").click()
-    await page.locator('.app-shell[data-state="chat"]').wait_for(state="attached")
-    await page.wait_for_function(
-        "() => document.querySelector('#messageList .assistant-content')?.textContent?.includes('지금은 미리보기 환경입니다')",
-        timeout=15_000,
-    )
+    # The composer interaction surface has to be live before the send, exactly
+    # as the sibling suites gate their own chat turn.  A fixed sleep cannot
+    # prove it on a starved lane.
+    await page.wait_for_function("() => Boolean(window.PadiemChatInteractionPresentation)")
+    try:
+        await page.locator("#messageInput").fill("브라우저 배율 대응 시각 검수")
+        if await page.locator("#sendButton").is_disabled():
+            raise AssertionError(f"send button stayed disabled at {name}")
+        # The product's send is a fetch: it performs no navigation, so the
+        # click must not wait for one.  Playwright's generic post-click
+        # navigation wait is what consumed the whole 30s click budget on the
+        # 1-CPU COM2 lane (run 39514816394: "click action done" followed by
+        # "waiting for scheduled navigations to finish").  The send itself is
+        # still proven by the chat state and the answered turn below, so a
+        # product that navigated instead of answering still fails the suite.
+        await page.locator("#sendButton").click(no_wait_after=True)
+        await page.locator('.app-shell[data-state="chat"]').wait_for(state="attached")
+        await page.wait_for_function(
+            "() => document.querySelector('#messageList .assistant-content')?.textContent?.includes('지금은 미리보기 환경입니다')",
+            timeout=15_000,
+        )
+    except Exception as exc:
+        _attach_diagnostic(exc, await _page_diagnostic(page, len(chat_requests)))
+        raise
+    if not chat_requests:
+        raise AssertionError(f"the product chat request was not issued at {name}")
     await page.wait_for_function(
         "() => document.documentElement.getAttribute('data-glass-mode') === 'reading'",
         timeout=5_000,
@@ -652,6 +781,7 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "viewport": {"width": width, "height": height},
         "glass_mode_home": mode_home,
         "glass_mode_chat": "reading",
+        "chat_requests": len(chat_requests),
         "conversation_home": conversation_home,
         "composer_home": composer_home,
         "conversation_chat": conversation_chat,
@@ -708,6 +838,7 @@ async def main() -> None:
         "base_url": BASE_URL,
         "purpose": "Padiem Glass zoom-responsive composition with cinematic home and calm active reading",
         "browser_zoom_forced": False,
+        "answer_source": "in-page-route-mock (mock runtime preview text)",
         "views": {},
     }
     report_path = OUT_DIR / "glass-zoom-report.json"

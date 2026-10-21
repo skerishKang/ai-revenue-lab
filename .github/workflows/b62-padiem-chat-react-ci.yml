@@ -1,0 +1,74 @@
+name: B62 Padiem Chat React clone CI
+
+on:
+  pull_request:
+    paths:
+      # The clone owns its own sources.
+      - "apps/padiem-chat-react/**"
+      # The clone imports the operational stylesheets read-only, so a change
+      # there can change what the clone renders.
+      - "apps/padiem-chat/static/**"
+      # The clone consumes the canonical shared composer core.
+      - "packages/padiem-conversation-ui/**"
+      - ".github/workflows/b62-padiem-chat-react-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/padiem-chat-react/**"
+      - "apps/padiem-chat/static/**"
+      - "packages/padiem-conversation-ui/**"
+      - ".github/workflows/b62-padiem-chat-react-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Test-only lane. It never deploys and never touches a Production surface.
+concurrency:
+  group: b62-padiem-chat-react-ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  react-clone:
+    name: React clone typecheck, tests, build and browser check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/padiem-chat-react
+    steps:
+      - name: Check out the exact ref
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/padiem-chat-react/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Component and contract tests
+        run: npm run test
+
+      - name: Production build
+        run: npm run build
+
+      - name: Prove the build did not change the operational product
+        run: |
+          set -euo pipefail
+          git diff --exit-code -- ../padiem-chat
+          echo 'OPERATIONAL_PRODUCT_UNCHANGED=PASS'
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: First-screen browser regression
+        run: npm run test:e2e

@@ -1,0 +1,102 @@
+{
+  "brand": {
+    "status": "confirmed"
+  },
+  "category_code": {
+    "status": "confirmed"
+  },
+  "category_path": {
+    "status": "confirmed"
+  },
+  "color": {
+    "status": "confirmed"
+  },
+  "delivery_days": {
+    "status": "confirmed"
+  },
+  "depth_mm": {
+    "status": "confirmed"
+  },
+  "extra_images": {
+    "status": "confirmed"
+  },
+  "height_mm": {
+    "status": "confirmed"
+  },
+  "list_price": {
+    "status": "confirmed"
+  },
+  "main_image": {
+    "status": "confirmed"
+  },
+  "manufacturer": {
+    "status": "confirmed"
+  },
+  "material": {
+    "status": "confirmed"
+  },
+  "min_order_quantity": {
+    "status": "confirmed"
+  },
+  "minor_purchase_allowed": {
+    "status": "confirmed"
+  },
+  "model_name": {
+    "status": "corrected",
+    "value": "DEMO-STD-001-SLV"
+  },
+  "option_summary": {
+    "status": "confirmed"
+  },
+  "origin": {
+    "status": "confirmed"
+  },
+  "product_identifier": {
+    "status": "confirmed"
+  },
+  "product_name": {
+    "status": "confirmed"
+  },
+  "product_summary": {
+    "status": "confirmed"
+  },
+  "return_policy": {
+    "status": "confirmed"
+  },
+  "sale_price": {
+    "status": "confirmed"
+  },
+  "search_keywords": {
+    "status": "confirmed"
+  },
+  "shipping_fee": {
+    "status": "confirmed"
+  },
+  "shipping_fee_type": {
+    "status": "confirmed"
+  },
+  "size": {
+    "status": "confirmed"
+  },
+  "stock_quantity": {
+    "status": "confirmed"
+  },
+  "tags": {
+    "status": "confirmed"
+  },
+  "tax_type": {
+    "status": "confirmed"
+  },
+  "unit": {
+    "status": "confirmed"
+  },
+  "warranty": {
+    "status": "confirmed"
+  },
+  "weight_kg": {
+    "status": "confirmed"
+  },
+  "width_mm": {
+    "status": "confirmed"
+  }
+}

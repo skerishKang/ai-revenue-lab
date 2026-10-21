@@ -1,0 +1,72 @@
+name: ERP Item Master CI
+
+# Focused contract test lane for the ERP item-master pilot (#5447).
+#
+# It proves only what it executes: the app's own unit and contract tests, and
+# the shared Core document-normalization tests that back the bounded XLSX
+# table reader this app uses. It does not touch a customer ERP account, a
+# model provider or any Production surface.
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/erp-item-master/**'
+      - 'packages/padiem-ai-core/padiem_ai_core/document_normalization.py'
+      - 'packages/padiem-ai-core/tests/test_document_normalization.py'
+      - '.github/workflows/erp-item-master-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/erp-item-master/**'
+      - 'packages/padiem-ai-core/padiem_ai_core/document_normalization.py'
+      - 'packages/padiem-ai-core/tests/test_document_normalization.py'
+      - '.github/workflows/erp-item-master-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: erp-item-master-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  item-master-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Assert exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          echo "expected=$expected"
+          echo "actual=$actual"
+          test "$expected" = "$actual"
+
+      - name: Install the shared Core package with its document and test extras
+        run: |
+          python -m pip install --disable-pip-version-check -e 'packages/padiem-ai-core[dev]'
+          python -m pip check
+
+      - name: Test the ERP item-master app
+        run: python -m pytest apps/erp-item-master/tests -q
+
+      - name: Test the shared Core document normalization boundary
+        run: python -m pytest packages/padiem-ai-core/tests/test_document_normalization.py -q

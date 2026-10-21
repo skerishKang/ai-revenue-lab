@@ -61,18 +61,37 @@ def main() -> int:
     if os.environ.get("PADIEM_CHAT_RUNTIME_MODE") != "mock":
         print("B62_VISUAL_TAIL_REJECTED=NON_MOCK_RUNTIME", flush=True)
         return 1
+    failed = []
+    # Each case is printed as soon as it finishes, in the suite order.  The
+    # COM2 runner keeps a bounded log window and can cut the job off while
+    # the tail is still running, so a suite that already finished has to be
+    # visible before the next one starts.  The suites, their order, their
+    # timeouts and the hard failure fan-in are unchanged.
     with ThreadPoolExecutor(max_workers=MAX_PARALLEL) as pool:
         futures = [pool.submit(execute, script) for script in SCRIPTS]
-        results = [f.result() for f in futures]
-
-    failed = []
+        results = []
+        for future in futures:
+            name, rc, seconds, output = future.result()
+            results.append((name, rc, seconds, output))
+            print(f"=== B62_VISUAL_TAIL_CASE={name} seconds={seconds:.2f} exit={rc} ===", flush=True)
+            if output:
+                print(output, end="\n" if not output.endswith("\n") else "", flush=True)
+            if rc:
+                failed.append(name)
+            print(f"B62_VISUAL_TAIL_STATUS_{name}={'FAIL' if rc else 'PASS'}", flush=True)
+    # A failing suite's assertion has to survive the bounded diagnostic window
+    # the COM2 runner keeps (the last N log lines only), so repeat the failing
+    # case's evidence tail after every suite has already printed.  The suite
+    # itself is unchanged; only the failure evidence is repeated.
     for name, rc, seconds, output in results:
-        print(f"=== B62_VISUAL_TAIL_CASE={name} seconds={seconds:.2f} exit={rc} ===", flush=True)
-        if output:
-            print(output, end="\n" if not output.endswith("\n") else "", flush=True)
-        if rc:
-            failed.append(name)
-        print(f"B62_VISUAL_TAIL_STATUS_{name}={'FAIL' if rc else 'PASS'}", flush=True)
+        if not rc:
+            continue
+        print(
+            f"=== B62_VISUAL_TAIL_FAILURE={name} exit={rc} seconds={seconds:.2f} ===",
+            flush=True,
+        )
+        for line in (output or "").strip().splitlines()[-12:]:
+            print(f"B62_VISUAL_TAIL_FAILURE_LINE={line}", flush=True)
     print(f"B62_VISUAL_TAIL_EXECUTED={len(results)}", flush=True)
     print(f"B62_VISUAL_TAIL_FAIL_COUNT={len(failed)}", flush=True)
     return 1 if failed else 0

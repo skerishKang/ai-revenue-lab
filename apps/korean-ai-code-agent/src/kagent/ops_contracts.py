@@ -19,6 +19,12 @@ class BusinessObjectKind(str, Enum):
     PURCHASE_ORDER = "purchase_order"
     DELIVERY_COMMITMENT = "delivery_commitment"
     ACCOUNTING_HANDOFF = "accounting_handoff"
+    # #5448: online sales-channel fulfilment (customer order -> supplier
+    # purchase order -> customer shipment). Additive only: the existing
+    # procurement chain above is unchanged.
+    SALES_ORDER = "sales_order"
+    SHIPMENT = "shipment"
+    RETURN_REQUEST = "return_request"
 
 
 class CommercialRequestStatus(str, Enum):

@@ -1,0 +1,55 @@
+{
+  "channel_id": "coupang",
+  "display_name": "쿠팡 마켓플레이스",
+  "admin_surface": "쿠팡 Wing > 상품관리 > 상품등록",
+  "values": {
+    "seller_product_name": "데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)",
+    "display_product_name": "데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)",
+    "category_code": "DEMO-100201",
+    "brand": "DemoBrand",
+    "manufacturer": "데모제조 주식회사",
+    "product_identifier": "DEMO-STD-001-SLV",
+    "option_names": "무광 실버",
+    "sale_price": "32900",
+    "original_price": "39900",
+    "stock_quantity": "120",
+    "tax_type": "Y",
+    "minor_purchase_allowed": "N",
+    "main_image": "demo-main-01.png",
+    "extra_images": "demo-detail-01.png, demo-spec-01.png",
+    "detail_html": "<div class=\"product-detail\"><h2>데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)</h2><p>알루미늄 CNC 가공 데스크 스탠드로 12.9인치 노트북을 6도에서 55도까지 각도 조절할 수 있습니다. USB-C 포트 1개와 USB-A 포트 1개를 제공하며 케이블 정리 슬롯과 폴더 받침이 내장되어 있습니다.</p><table border=\"1\" cellspacing=\"0\" cellpadding=\"6\"><caption>상품 주요 정보</caption><tbody><tr><th scope=\"row\">모델명</th><td>DEMO-STD-001</td></tr><tr><th scope=\"row\">브랜드</th><td>DemoBrand</td></tr><tr><th scope=\"row\">제조사</th><td>데모제조 주식회사</td></tr><tr><th scope=\"row\">카테고리</th><td>디지털/가전 &gt; 노트북 액세서리 &gt; 노트북 거치대</td></tr><tr><th scope=\"row\">품번</th><td>DEMO-STD-001-SLV</td></tr><tr><th scope=\"row\">색상</th><td>무광 실버</td></tr><tr><th scope=\"row\">사이즈</th><td>12.9인치 전용</td></tr><tr><th scope=\"row\">소재</th><td>알루미늄 합금</td></tr><tr><th scope=\"row\">무게(kg)</th><td>0.42</td></tr><tr><th scope=\"row\">가로(mm)</th><td>212</td></tr><tr><th scope=\"row\">세로(mm)</th><td>168</td></tr><tr><th scope=\"row\">높이(mm)</th><td>18</td></tr><tr><th scope=\"row\">단위</th><td>개</td></tr><tr><th scope=\"row\">원산지</th><td>국내 제조</td></tr><tr><th scope=\"row\">보증기간</th><td>12개월 제조사 보증</td></tr><tr><th scope=\"row\">판매가</th><td>32900</td></tr><tr><th scope=\"row\">배송비</th><td>무료배송</td></tr><tr><th scope=\"row\">배송비 금액</th><td>0</td></tr><tr><th scope=\"row\">발송예정일</th><td>2</td></tr><tr><th scope=\"row\">반품/교환 정책</th><td>미개봉 상태 기준 7일 이내 반품 가능, 반품비 3,000원</td></tr></tbody></table></div>",
+    "product_summary": "알루미늄 CNC 가공 데스크 스탠드로 12.9인치 노트북을 6도에서 55도까지 각도 조절할 수 있습니다. USB-C 포트 1개와 USB-A 포트 1개를 제공하며 케이블 정리 슬롯과 폴더 받침이 내장되어 있습니다.",
+    "search_keywords": "노트북 스탠드, USB-C 랭징 스테이션, 알루미늄 거치대",
+    "category_notice": "",
+    "shipping_fee_type": "무료배송",
+    "shipping_fee": "0",
+    "delivery_days": "2",
+    "return_policy": "미개봉 상태 기준 7일 이내 반품 가능, 반품비 3,000원"
+  },
+  "issues": [
+    {
+      "channel_id": "coupang",
+      "target": "category_notice",
+      "severity": "warning",
+      "code": "manual_channel_field",
+      "message": "상품정보제공고시 항목은 채널별 필수 확인이 필요합니다. 카테고리별 고시 항목, 선택 필수"
+    },
+    {
+      "channel_id": "coupang",
+      "target": "*",
+      "severity": "warning",
+      "code": "unreviewed_fields",
+      "message": "검수 전 필드 21건: 등록상품명, 노출상품명, 노출 카테고리 코드, 브랜드, 제조사, 상품 식별번호(품번/바코드), 구매옵션명, 옵션 판매가, 정상가(할인율 기준가), 총 재고수량, 부가세 구분(Y/N), 미성년자 구매 가능 여부, 대표이미지, 추가이미지, 상세설명, 상품 주요정보 요약, 검색어, 배송비 유형, 배송비, 발송예정일자, 반품/교환 정책. 확인 후 등록하세요."
+    }
+  ],
+  "unresolved_field_count": 21,
+  "manual_field_count": 1,
+  "ready_for_entry": false,
+  "source_urls": [
+    "https://developers.coupang.com/ko/api/products/product-creation",
+    "https://marketplace.coupang.com/register",
+    "https://marketplace.coupang.com/mba/listing",
+    "https://marketplace.coupang.com/information-center/marketplace3p-product-info-update-uid"
+  ],
+  "source_checked_on": "2026-10-21"
+}
