@@ -861,7 +861,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list
   gap: 14px !important;
 }
 
-/* #5485: the Glass shell portrait on a narrow window.
+/* #5505: the Glass shell portrait on a narrow window.
  *
  * The shell portrait is the same artwork as .main-panel::before, but it is a
  * separate fixed layer that keeps the wide-screen geometry: it is pinned to

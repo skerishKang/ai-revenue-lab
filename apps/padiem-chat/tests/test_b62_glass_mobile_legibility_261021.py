@@ -1,6 +1,6 @@
 """B62 Chat/Claw — the Glass theme stays legible on a narrow window.
 
-#5485: on a phone the Glass shell portrait layer covered the whole content
+#5505: on a phone the Glass shell portrait layer covered the whole content
 column, so the standalone workspace views (Automation, Connectors) read their
 text against the artwork. The artwork itself already had a narrow-window
 treatment for the other instance of the same picture, and the Automation page's
