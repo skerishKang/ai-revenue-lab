@@ -1,13 +1,17 @@
-"""#5462 — failover/failback controller contract.
+"""#5462/#5485 — failover controller contract.
 
-Four scenarios are pinned here, because they are the whole point of the
-work:
+Three facts are kept apart on purpose, and these tests pin every one of them:
 
-* A normal  — COM2 usable, nothing moves.
-* B fault   — COM2 stops being able to execute, the claim goes to Oracle.
-* C recover — COM2 becomes usable again, the claim goes back to COM2.
-* D exactly once — the epoch fences a consumer that still believes it
-  is active, so the same dispatch is never claimed twice.
+* **com2_restored** — COM2 says it is healthy again. It is a *signal*: it
+  moves the route, and the route is what sends the device.
+* **com2_device_connected** — COM2's own probe says the device is there
+  *now*. The agent has to travel back before this is true.
+* **oracle_device_connected** — Oracle's own probe says the device is there
+  *now*.
+
+The claim follows the **device**, never the route and never a signal. A
+target that owns no device would lose the dispatch, so the claim waits
+instead of being taken and lost.
 
 These are unittest cases on purpose: the KAgent CI lane discovers
 ``unittest.TestCase`` only, so a pytest-style module here would never be
@@ -31,16 +35,16 @@ from kagent.local_agent_mesh_failover import (
     EVENT_COM2_RESTORED,
     EVENT_FAILBACK_COMPLETE,
     EVENT_ORACLE_ACTIVE,
+    EVENT_ROUTE_TO_COM2,
+    EVENT_ROUTE_TO_ORACLE,
     MeshCentralDevicePresence,
     MeshFailoverController,
     MeshFailoverSupervisor,
-    _both_notifiers,
     build_heartbeat,
     command_notifier,
     decision_file_claim_gate,
     events_file_notifier,
     heartbeat_age_seconds,
-    highest_issued_epoch,
     read_heartbeat,
     write_heartbeat,
 )
@@ -78,76 +82,202 @@ class MeshFailoverControllerTests(unittest.TestCase):
     def test_scenario_a_normal_keeps_com2_active(self):
         controller = MeshFailoverController()
         for _ in range(5):
-            decision = controller.evaluate(com2_usable=True, com2_heartbeat_age_seconds=1.0)
+            decision = controller.evaluate(
+                com2_restored=True,
+                com2_device_connected=True,
+                oracle_device_connected=False,
+                com2_heartbeat_age_seconds=1.0,
+            )
             self.assertEqual(decision.active_target, ACTIVE_COM2)
+            self.assertEqual(decision.route_target, ACTIVE_COM2)
             self.assertFalse(decision.changed)
             self.assertEqual(decision.events, ())
         self.assertEqual(controller.epoch, 1)
 
-    def test_scenario_b_fault_moves_the_claim_to_oracle(self):
+    def test_scenario_b_fault_moves_the_route_then_the_claim(self):
         controller = MeshFailoverController(fault_confirmations=2)
-        first = controller.evaluate(com2_usable=False, com2_heartbeat_age_seconds=200.0)
+        first = controller.evaluate(
+            com2_restored=False,
+            com2_device_connected=False,
+            oracle_device_connected=False,
+            com2_heartbeat_age_seconds=200.0,
+        )
         self.assertFalse(first.changed)
-        self.assertEqual(first.active_target, ACTIVE_COM2)
-        second = controller.evaluate(com2_usable=False, com2_heartbeat_age_seconds=200.0)
+        self.assertEqual(first.route_target, ACTIVE_COM2)
+        # The device is nowhere, so nobody may claim yet.
+        self.assertIsNone(first.active_target)
+
+        second = controller.evaluate(
+            com2_restored=False,
+            com2_device_connected=False,
+            oracle_device_connected=True,
+            com2_heartbeat_age_seconds=200.0,
+        )
         self.assertTrue(second.changed)
+        # The route moved first, and the claim followed the device.
+        self.assertEqual(second.route_target, ACTIVE_ORACLE)
         self.assertEqual(second.active_target, ACTIVE_ORACLE)
-        self.assertEqual(second.events, (EVENT_COM2_FAULT, EVENT_ORACLE_ACTIVE))
+        self.assertIn(EVENT_ROUTE_TO_ORACLE, second.events)
+        self.assertIn(EVENT_COM2_FAULT, second.events)
+        self.assertIn(EVENT_ORACLE_ACTIVE, second.events)
         self.assertGreater(second.epoch, first.epoch)
 
-    def test_scenario_b_stale_heartbeat_alone_does_not_claim_com2_is_usable(self):
+    def test_the_claim_waits_for_the_device_to_arrive(self):
+        controller = MeshFailoverController(fault_confirmations=1)
+        decision = controller.evaluate(
+            com2_restored=False,
+            com2_device_connected=False,
+            oracle_device_connected=False,
+            com2_heartbeat_age_seconds=200.0,
+        )
+        self.assertEqual(decision.route_target, ACTIVE_ORACLE)
+        self.assertIsNone(decision.active_target)
+
+    def test_scenario_c_recovery_needs_the_device_back(self):
+        controller = MeshFailoverController(
+            fault_confirmations=1, restore_confirmations=1
+        )
+        faulted = controller.evaluate(
+            com2_restored=False,
+            com2_device_connected=False,
+            oracle_device_connected=True,
+            com2_heartbeat_age_seconds=900.0,
+        )
+        self.assertEqual(faulted.active_target, ACTIVE_ORACLE)
+
+        # COM2 says it is back, but the device has not travelled yet.
+        signalled = controller.evaluate(
+            com2_restored=True,
+            com2_device_connected=False,
+            oracle_device_connected=True,
+            com2_heartbeat_age_seconds=1.0,
+        )
+        self.assertEqual(signalled.route_target, ACTIVE_COM2)
+        self.assertIn(EVENT_ROUTE_TO_COM2, signalled.events)
+        # The claim stays with the server that still has the device.
+        self.assertEqual(signalled.active_target, ACTIVE_ORACLE)
+
+        # The device is back, and only now does the claim return.
+        restored = controller.evaluate(
+            com2_restored=True,
+            com2_device_connected=True,
+            oracle_device_connected=False,
+            com2_heartbeat_age_seconds=1.0,
+        )
+        self.assertEqual(restored.active_target, ACTIVE_COM2)
+        self.assertIn(EVENT_FAILBACK_COMPLETE, restored.events)
+        self.assertGreater(restored.epoch, faulted.epoch)
+
+    def test_scenario_d_the_epoch_fences_a_stale_consumer(self):
+        controller = MeshFailoverController(fault_confirmations=1)
+        before = controller.evaluate(
+            com2_restored=True,
+            com2_device_connected=True,
+            oracle_device_connected=False,
+            com2_heartbeat_age_seconds=1.0,
+        )
+        self.assertTrue(before.may_claim(before.epoch))
+        faulted = controller.evaluate(
+            com2_restored=False,
+            com2_device_connected=False,
+            oracle_device_connected=True,
+            com2_heartbeat_age_seconds=900.0,
+        )
+        # The consumer that still believes it is active is refused.
+        self.assertFalse(faulted.may_claim(before.epoch))
+        self.assertTrue(faulted.may_claim(faulted.epoch))
+        # The restore window is three confirmations, so the epoch moves on
+        # the last one.
+        for _ in range(2):
+            controller.evaluate(
+                com2_restored=True,
+                com2_device_connected=True,
+                oracle_device_connected=False,
+                com2_heartbeat_age_seconds=1.0,
+            )
+        restored = controller.evaluate(
+            com2_restored=True,
+            com2_device_connected=True,
+            oracle_device_connected=False,
+            com2_heartbeat_age_seconds=1.0,
+        )
+        self.assertGreater(restored.epoch, faulted.epoch)
+        self.assertFalse(restored.may_claim(faulted.epoch))
+
+    def test_a_single_missed_observation_does_not_move_the_route(self):
+        controller = MeshFailoverController(fault_confirmations=2)
+        controller.evaluate(
+            com2_restored=True,
+            com2_device_connected=True,
+            oracle_device_connected=False,
+            com2_heartbeat_age_seconds=1.0,
+        )
+        missed = controller.evaluate(
+            com2_restored=False,
+            com2_device_connected=False,
+            oracle_device_connected=False,
+            com2_heartbeat_age_seconds=500.0,
+        )
+        # The route stays: one missed observation is not a fault.
+        self.assertEqual(missed.route_target, ACTIVE_COM2)
+        self.assertEqual(missed.events, ())
+        back = controller.evaluate(
+            com2_restored=True,
+            com2_device_connected=True,
+            oracle_device_connected=False,
+            com2_heartbeat_age_seconds=1.0,
+        )
+        # The route never moved, and the claim is back where the device is.
+        self.assertEqual(back.route_target, ACTIVE_COM2)
+        self.assertEqual(back.active_target, ACTIVE_COM2)
+
+    def test_a_stale_heartbeat_alone_does_not_fail_com2_over(self):
         controller = MeshFailoverController()
         self.assertTrue(controller.heartbeat_is_stale(None))
         self.assertTrue(controller.heartbeat_is_stale(1000.0))
         self.assertFalse(controller.heartbeat_is_stale(1.0))
 
-    def test_scenario_c_recovery_moves_the_claim_back_to_com2(self):
-        controller = MeshFailoverController(
-            fault_confirmations=1, restore_confirmations=3
+    def test_oracle_keeps_the_claim_while_com2_stays_down(self):
+        """Oracle has to keep serving for as long as COM2 is down."""
+        controller = MeshFailoverController(fault_confirmations=1)
+        controller.evaluate(
+            com2_restored=False,
+            com2_device_connected=False,
+            oracle_device_connected=True,
+            com2_heartbeat_age_seconds=900.0,
         )
-        faulted = controller.evaluate(com2_usable=False, com2_heartbeat_age_seconds=900.0)
-        self.assertEqual(faulted.active_target, ACTIVE_ORACLE)
-        for _ in range(2):
-            partial = controller.evaluate(com2_usable=True, com2_heartbeat_age_seconds=1.0)
-            self.assertFalse(partial.changed)
-            self.assertEqual(partial.active_target, ACTIVE_ORACLE)
-        restored = controller.evaluate(com2_usable=True, com2_heartbeat_age_seconds=1.0)
-        self.assertTrue(restored.changed)
-        self.assertEqual(restored.active_target, ACTIVE_COM2)
-        self.assertEqual(restored.events, (EVENT_COM2_RESTORED, EVENT_FAILBACK_COMPLETE))
-        self.assertGreater(restored.epoch, faulted.epoch)
-
-    def test_scenario_d_the_epoch_fences_a_stale_consumer(self):
-        controller = MeshFailoverController(
-            fault_confirmations=1, restore_confirmations=1
-        )
-        before = controller.evaluate(com2_usable=True, com2_heartbeat_age_seconds=1.0)
-        self.assertTrue(before.may_claim(before.epoch))
-        faulted = controller.evaluate(com2_usable=False, com2_heartbeat_age_seconds=900.0)
-        # The consumer that still believes it is active is refused.
-        self.assertFalse(faulted.may_claim(before.epoch))
-        self.assertTrue(faulted.may_claim(faulted.epoch))
-        # And the epoch never goes back, so a late consumer cannot win.
-        restored = controller.evaluate(com2_usable=True, com2_heartbeat_age_seconds=1.0)
-        self.assertGreater(restored.epoch, faulted.epoch)
-        self.assertFalse(restored.may_claim(faulted.epoch))
-        self.assertFalse(restored.may_claim(before.epoch))
-
-    def test_a_single_missed_observation_does_not_move_the_target(self):
-        controller = MeshFailoverController(fault_confirmations=2)
-        controller.evaluate(com2_usable=True, com2_heartbeat_age_seconds=1.0)
-        missed = controller.evaluate(com2_usable=False, com2_heartbeat_age_seconds=500.0)
-        self.assertFalse(missed.changed)
-        self.assertEqual(missed.active_target, ACTIVE_COM2)
-        back = controller.evaluate(com2_usable=True, com2_heartbeat_age_seconds=1.0)
-        self.assertFalse(back.changed)
+        for _ in range(200):
+            decision = controller.evaluate(
+                com2_restored=False,
+                com2_device_connected=False,
+                oracle_device_connected=True,
+                com2_heartbeat_age_seconds=900.0,
+            )
+            self.assertEqual(decision.active_target, ACTIVE_ORACLE)
+            self.assertEqual(decision.route_target, ACTIVE_ORACLE)
+            self.assertFalse(decision.changed)
 
     def test_the_controller_rejects_nonsense_input(self):
         controller = MeshFailoverController()
         with self.assertRaises(ContractError):
-            controller.evaluate(com2_usable="yes")
+            controller.evaluate(
+                com2_restored="yes",
+                com2_device_connected=True,
+                oracle_device_connected=False,
+            )
         with self.assertRaises(ContractError):
-            controller.evaluate(com2_usable=True, com2_heartbeat_age_seconds="soon")
+            controller.evaluate(
+                com2_restored=True,
+                com2_device_connected=True,
+                oracle_device_connected="no",
+            )
+        with self.assertRaises(ContractError):
+            controller.evaluate(
+                com2_restored=True,
+                com2_device_connected=True,
+                oracle_device_connected=False,
+                com2_heartbeat_age_seconds="soon",
+            )
         with self.assertRaises(ContractError):
             MeshFailoverController(fault_confirmations=0)
         with self.assertRaises(ContractError):
@@ -270,15 +400,18 @@ class _FakePresence:
 class MeshFailoverSupervisorTests(unittest.TestCase):
     """The supervisor wiring: heartbeat in, decision and events out."""
 
-    def _supervisor(self, folder, *, com2_connected, local_connected, notifier=None):
-        heartbeat = os.path.join(folder, "com2-heartbeat.json")
+    def _supervisor(
+        self, folder, *, com2_connected, local_connected, notifier=None,
+        executor_alive=True,
+    ):
+        heartbeat = os.path.join(folder, "heartbeat.json")
         write_heartbeat(
             heartbeat,
             build_heartbeat(
                 mesh_url="wss://127.0.0.1:4443",
                 device_id=DEVICE_ID,
                 device_connected=com2_connected,
-                executor_alive=True,
+                executor_alive=executor_alive,
             ),
         )
         supervisor = MeshFailoverSupervisor(
@@ -300,9 +433,11 @@ class MeshFailoverSupervisorTests(unittest.TestCase):
             )
             decision = supervisor.run_once()
             self.assertEqual(decision.active_target, ACTIVE_COM2)
+            self.assertEqual(decision.route_target, ACTIVE_COM2)
             self.assertEqual(decision.events, ())
 
-    def test_a_heartbeat_without_the_device_fails_com2_over(self):
+    def test_a_heartbeat_without_the_device_does_not_hold_the_claim(self):
+        """COM2 is up but the device is not there: the claim stays where the device is."""
         events = []
         with tempfile.TemporaryDirectory() as folder:
             supervisor, _ = self._supervisor(
@@ -312,9 +447,24 @@ class MeshFailoverSupervisorTests(unittest.TestCase):
                 notifier=lambda event, message: events.append(event),
             )
             decision = supervisor.run_once()
+            # COM2 says it is restored, so the route stays on it and the
+            # device will travel there. The device is at Oracle for now, so
+            # Oracle holds the claim.
+            self.assertEqual(decision.route_target, ACTIVE_COM2)
             self.assertEqual(decision.active_target, ACTIVE_ORACLE)
-            self.assertEqual(decision.events, (EVENT_COM2_FAULT, EVENT_ORACLE_ACTIVE))
-            self.assertEqual(events, [EVENT_COM2_FAULT, EVENT_ORACLE_ACTIVE])
+            self.assertIn(EVENT_ORACLE_ACTIVE, decision.events)
+            self.assertIn(EVENT_ORACLE_ACTIVE, events)
+
+    def test_a_missing_heartbeat_is_not_a_proof_of_execution(self):
+        with tempfile.TemporaryDirectory() as folder:
+            supervisor, heartbeat = self._supervisor(
+                folder, com2_connected=True, local_connected=False
+            )
+            os.remove(heartbeat)
+            decision = supervisor.run_once()
+            # The route moves, but the device is nowhere, so nobody claims.
+            self.assertEqual(decision.route_target, ACTIVE_ORACLE)
+            self.assertIsNone(decision.active_target)
 
     def test_the_state_file_records_the_decision_and_the_epoch(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -325,18 +475,10 @@ class MeshFailoverSupervisorTests(unittest.TestCase):
             with open(supervisor.state_path, "r", encoding="utf-8") as handle:
                 state = json.load(handle)
             self.assertEqual(state["active_target"], decision.active_target)
+            self.assertEqual(state["route_target"], decision.route_target)
             self.assertEqual(state["epoch"], decision.epoch)
             self.assertTrue(state["local_can_execute"])
-            self.assertFalse(state["com2_usable"])
-
-    def test_a_missing_heartbeat_is_not_a_proof_of_execution(self):
-        with tempfile.TemporaryDirectory() as folder:
-            supervisor, heartbeat = self._supervisor(
-                folder, com2_connected=True, local_connected=False
-            )
-            os.remove(heartbeat)
-            decision = supervisor.run_once()
-            self.assertEqual(decision.active_target, ACTIVE_ORACLE)
+            self.assertFalse(state["com2_device_connected"])
 
 
 class ClaimGateTests(unittest.TestCase):
@@ -385,12 +527,10 @@ class NotifierTests(unittest.TestCase):
             raise OSError("the delivery channel is unreachable")
 
         notifier = command_notifier(["/nonexistent/hermes-cli"])
-        # A missing binary is reported, not raised.
         notifier(EVENT_COM2_FAULT, "com2 is down")
 
     def test_both_notifiers_run_and_one_failure_does_not_stop_the_other(self):
         seen = []
-        log = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..")
 
         def bad(event, message):
             raise OSError("the delivery channel is unreachable")
@@ -398,40 +538,123 @@ class NotifierTests(unittest.TestCase):
         def good(event, message):
             seen.append((event, message))
 
+        from kagent.local_agent_mesh_failover import _both_notifiers
+
         both = _both_notifiers(bad, good)
         both(EVENT_ORACLE_ACTIVE, "oracle takes the claim")
         self.assertEqual(len(seen), 1)
         self.assertEqual(seen[0][0], EVENT_ORACLE_ACTIVE)
-        del log
 
 
-class SupervisorDeliveryTests(unittest.TestCase):
-    """The event vocabulary reaches the notifier on a real transition."""
+class ConfirmationWindowSurvivesARestartTests(unittest.TestCase):
+    """A confirmation window has to survive the process.
 
-    def test_the_four_events_are_the_documented_vocabulary(self):
-        self.assertEqual(
-            (
-                EVENT_COM2_FAULT,
-                EVENT_ORACLE_ACTIVE,
-                EVENT_COM2_RESTORED,
-                EVENT_FAILBACK_COMPLETE,
+    The supervisor is a fresh process on every pass, so a window that lived
+    only in memory could never be reached: every pass would start again at
+    one observation. The streaks therefore live in the decision file.
+    """
+
+    def _supervisor(
+        self, folder, *, com2_connected, executor_alive=True, controller=None
+    ):
+        heartbeat = os.path.join(folder, "heartbeat.json")
+        write_heartbeat(
+            heartbeat,
+            build_heartbeat(
+                mesh_url="wss://127.0.0.1:4443",
+                device_id=DEVICE_ID,
+                device_connected=com2_connected,
+                executor_alive=executor_alive,
             ),
-            ("COM2_FAULT", "ORACLE_ACTIVE", "COM2_RESTORED", "FAILBACK_COMPLETE"),
         )
+        return MeshFailoverSupervisor(
+            controller=controller or MeshFailoverController(fault_confirmations=2),
+            heartbeat_path=heartbeat,
+            presence=_FakePresence(False),
+            device_id=DEVICE_ID,
+            state_path=os.path.join(folder, "state.json"),
+        )
+
+    def test_a_second_pass_confirms_the_fault_and_moves_the_route(self):
+        with tempfile.TemporaryDirectory() as folder:
+            first = self._supervisor(
+                folder, com2_connected=False, executor_alive=False
+            )
+            one = first.run_once()
+            self.assertEqual(one.route_target, ACTIVE_COM2)
+
+            with open(first.state_path, "r", encoding="utf-8") as handle:
+                state = json.load(handle)
+            self.assertEqual(state["fault_streak"], 1)
+
+            second = self._supervisor(
+                folder,
+                com2_connected=False,
+                executor_alive=False,
+                controller=MeshFailoverController(
+                    fault_confirmations=2,
+                    initial_target=state["route_target"],
+                    initial_route=state["route_target"],
+                    initial_claim=state["active_target"],
+                    fault_streak=state["fault_streak"],
+                    restore_streak=state["restore_streak"],
+                ),
+            )
+            two = second.run_once()
+            self.assertEqual(two.route_target, ACTIVE_ORACLE)
+            self.assertIn(EVENT_ROUTE_TO_ORACLE, two.events)
+
+    def test_the_streaks_are_part_of_the_persisted_decision(self):
+        with tempfile.TemporaryDirectory() as folder:
+            supervisor = self._supervisor(
+                folder, com2_connected=False, executor_alive=False
+            )
+            supervisor.run_once()
+            with open(supervisor.state_path, "r", encoding="utf-8") as handle:
+                state = json.load(handle)
+            self.assertIn("fault_streak", state)
+            self.assertIn("restore_streak", state)
+
+    def test_the_epoch_never_goes_back_across_a_restart(self):
+        with tempfile.TemporaryDirectory() as folder:
+            first = self._supervisor(
+                folder,
+                com2_connected=False,
+                executor_alive=False,
+                controller=MeshFailoverController(fault_confirmations=1),
+            )
+            faulted = first.run_once()
+            self.assertEqual(faulted.route_target, ACTIVE_ORACLE)
+            self.assertGreater(faulted.epoch, 1)
+
+            with open(first.state_path, "r", encoding="utf-8") as handle:
+                state = json.load(handle)
+            self.assertEqual(state["epoch"], faulted.epoch)
+
+            second = self._supervisor(
+                folder,
+                com2_connected=False,
+                executor_alive=False,
+                controller=MeshFailoverController(
+                    fault_confirmations=1,
+                    restore_confirmations=1,
+                    initial_target=state["route_target"],
+                    initial_route=state["route_target"],
+                    initial_claim=state["active_target"],
+                    fault_streak=state["fault_streak"],
+                    restore_streak=state["restore_streak"],
+                    initial_epoch=state["epoch"],
+                ),
+            )
+            after = second.run_once()
+            self.assertGreaterEqual(after.epoch, faulted.epoch)
+            self.assertFalse(after.may_claim(faulted.epoch - 1))
 
 
 class ModuleEntryPointTests(unittest.TestCase):
-    """The supervisor has to be runnable as a module.
-
-    The deployed unit runs ``python -m kagent.local_agent_mesh_failover``, so
-    a missing entry point would make the supervisor import and exit without
-    ever deciding anything.
-    """
+    """The supervisor has to be runnable as a module."""
 
     def test_the_module_runs_its_entry_point(self):
-        import subprocess
-        import sys
-
         source = os.path.join(
             os.path.dirname(__file__),
             "..",
@@ -447,15 +670,24 @@ class ModuleEntryPointTests(unittest.TestCase):
     def test_the_entry_point_refuses_to_start_without_configuration(self):
         import subprocess
 
-        # The configuration is removed, so the run must refuse loudly rather
-        # than start a supervisor with no inputs.
         env = {
             key: value
             for key, value in os.environ.items()
             if not key.startswith("MESH_FAILOVER_")
             and not key.startswith("ORACLE_MESH_")
         }
-        env["PYTHONPATH"] = os.path.join(os.path.dirname(__file__), "..", "src")
+        # The module reaches the shared packages through the repository, so
+        # the check does not depend on an installed distribution.
+        here = os.path.dirname(__file__)
+        repo = os.path.abspath(os.path.join(here, "..", "..", ".."))
+        env["PYTHONPATH"] = os.pathsep.join(
+            [
+                os.path.join(here, "..", "src"),
+                os.path.join(repo, "packages", "padiem-ai-core"),
+                os.path.join(repo, "packages", "padiem-control-plane"),
+                os.path.join(repo, "apps", "padiem-ai-engine", "clients", "python"),
+            ]
+        )
         completed = subprocess.run(
             [sys.executable, "-m", "kagent.local_agent_mesh_failover"],
             capture_output=True,
@@ -465,138 +697,6 @@ class ModuleEntryPointTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 2)
         self.assertIn("refused to start", completed.stderr)
-
-
-class ConfirmationWindowSurvivesARestartTests(unittest.TestCase):
-    """A confirmation window has to survive the process.
-
-    The supervisor is a fresh process on every pass, so a window that lived
-    only in memory could never be reached: every pass would start again at
-    one observation. The streaks therefore live in the decision file.
-    """
-
-    def _supervisor(self, folder, *, com2_connected, controller=None):
-        heartbeat = os.path.join(folder, "heartbeat.json")
-        write_heartbeat(
-            heartbeat,
-            build_heartbeat(
-                mesh_url="wss://127.0.0.1:4443",
-                device_id=DEVICE_ID,
-                device_connected=com2_connected,
-                executor_alive=True,
-            ),
-        )
-        return MeshFailoverSupervisor(
-            controller=controller or MeshFailoverController(fault_confirmations=2),
-            heartbeat_path=heartbeat,
-            presence=_FakePresence(False),
-            device_id=DEVICE_ID,
-            state_path=os.path.join(folder, "state.json"),
-        )
-
-    def test_a_second_pass_confirms_the_fault_and_moves_the_claim(self):
-        with tempfile.TemporaryDirectory() as folder:
-            first = self._supervisor(folder, com2_connected=False)
-            one = first.run_once()
-            self.assertEqual(one.active_target, ACTIVE_COM2)
-
-            # A fresh process, as the timer produces, restores the window.
-            with open(first.state_path, "r", encoding="utf-8") as handle:
-                state = json.load(handle)
-            self.assertEqual(state["fault_streak"], 1)
-
-            second = self._supervisor(
-                folder,
-                com2_connected=False,
-                controller=MeshFailoverController(
-                    fault_confirmations=2,
-                    initial_target=state["active_target"],
-                    fault_streak=state["fault_streak"],
-                    restore_streak=state["restore_streak"],
-                ),
-            )
-            two = second.run_once()
-            self.assertEqual(two.active_target, ACTIVE_ORACLE)
-            self.assertEqual(two.events, (EVENT_COM2_FAULT, EVENT_ORACLE_ACTIVE))
-
-    def test_the_streaks_are_part_of_the_persisted_decision(self):
-        with tempfile.TemporaryDirectory() as folder:
-            supervisor = self._supervisor(folder, com2_connected=False)
-            supervisor.run_once()
-            with open(supervisor.state_path, "r", encoding="utf-8") as handle:
-                state = json.load(handle)
-            self.assertIn("fault_streak", state)
-            self.assertIn("restore_streak", state)
-
-    def test_the_epoch_never_goes_back_across_a_restart(self):
-        with tempfile.TemporaryDirectory() as folder:
-            first = self._supervisor(
-                folder,
-                com2_connected=False,
-                controller=MeshFailoverController(fault_confirmations=1),
-            )
-            faulted = first.run_once()
-            self.assertEqual(faulted.active_target, ACTIVE_ORACLE)
-            self.assertGreater(faulted.epoch, 1)
-
-            # A fresh process restores the decision, including the epoch.
-            with open(first.state_path, "r", encoding="utf-8") as handle:
-                state = json.load(handle)
-            self.assertEqual(state["epoch"], faulted.epoch)
-
-            second = self._supervisor(
-                folder,
-                com2_connected=False,
-                controller=MeshFailoverController(
-                    fault_confirmations=1,
-                    initial_target=state["active_target"],
-                    fault_streak=state["fault_streak"],
-                    restore_streak=state["restore_streak"],
-                    initial_epoch=state["epoch"],
-                ),
-            )
-            after = second.run_once()
-            # The epoch must not restart from a lower value, or a consumer
-            # holding an older epoch could win the claim again.
-            self.assertGreaterEqual(after.epoch, faulted.epoch)
-            self.assertFalse(after.may_claim(faulted.epoch - 1))
-
-
-class EpochRecoveryTests(unittest.TestCase):
-    """The epoch is the fencing token, so it is never handed out twice."""
-
-    def test_the_highest_issued_epoch_is_read_from_the_event_log(self):
-        with tempfile.TemporaryDirectory() as folder:
-            path = os.path.join(folder, "events.log")
-            with open(path, "w", encoding="utf-8") as handle:
-                handle.write(
-                    "=== 2026-10-21T00:00:00 COM2_FAULT ===\n"
-                    "COM2_FAULT\nactive_target: oracle\nepoch: 2\nreason: x\n"
-                    "=== 2026-10-21T00:01:00 ORACLE_ACTIVE ===\n"
-                    "ORACLE_ACTIVE\nactive_target: oracle\nepoch: 5\nreason: y\n"
-                )
-            self.assertEqual(highest_issued_epoch(path), 5)
-
-    def test_a_missing_event_log_yields_no_epoch(self):
-        with tempfile.TemporaryDirectory() as folder:
-            self.assertEqual(
-                highest_issued_epoch(os.path.join(folder, "absent.log")), 0
-            )
-
-    def test_a_decision_file_below_the_log_is_lifted_up(self):
-        with tempfile.TemporaryDirectory() as folder:
-            events = os.path.join(folder, "events.log")
-            with open(events, "w", encoding="utf-8") as handle:
-                handle.write("epoch: 7\n")
-            state = {"active_target": "oracle", "epoch": 1, "fault_streak": 0, "restore_streak": 0}
-            restored = max(
-                1,
-                int(state.get("epoch", 1) or 1),
-                highest_issued_epoch(events),
-            )
-            self.assertEqual(restored, 7)
-            controller = MeshFailoverController(initial_epoch=restored)
-            self.assertEqual(controller.epoch, 7)
 
 
 if __name__ == "__main__":

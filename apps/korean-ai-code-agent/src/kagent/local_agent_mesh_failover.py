@@ -44,6 +44,13 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Optional, Sequence
 
 from .contracts import ContractError
+from .local_agent_mesh_connection_route import (
+    EVENT_ROUTE_TO_COM2,
+    EVENT_ROUTE_TO_ORACLE,
+    claim_owner,
+    com2_route,
+    oracle_route,
+)
 from .local_agent_meshcentral_private_reader import (
     _MESHCTRL_STDIN_BOOTSTRAP,
     _PASSWORD_MARKER,
@@ -62,6 +69,10 @@ EVENT_COM2_FAULT = "COM2_FAULT"
 EVENT_ORACLE_ACTIVE = "ORACLE_ACTIVE"
 EVENT_COM2_RESTORED = "COM2_RESTORED"
 EVENT_FAILBACK_COMPLETE = "FAILBACK_COMPLETE"
+#: Sentinel for "the caller did not say", so that "nobody may claim" stays a
+#: real, carryable state instead of looking like a missing value.
+_UNSPECIFIED = object()
+
 FAILOVER_EVENTS = (
     EVENT_COM2_FAULT,
     EVENT_ORACLE_ACTIVE,
@@ -83,11 +94,19 @@ DEFAULT_RESTORE_CONFIRMATIONS = 3
 class MeshFailoverDecision:
     """One evaluation of the failover state machine.
 
+    ``active_target`` is who may claim a dispatch, and it is ``None`` while
+    the device is connected nowhere: the claim waits rather than being
+    taken by a host that cannot execute it.
+
+    ``route_target`` is where the agent is being pointed. The route is the
+    instruction that moves the device, so it moves **before** the claim.
+
     ``epoch`` is the fencing token. A consumer that presents an older
     epoch is not allowed to claim a dispatch.
     """
 
-    active_target: str
+    active_target: Optional[str]
+    route_target: str
     epoch: int
     changed: bool
     events: tuple[str, ...]
@@ -120,6 +139,8 @@ class MeshFailoverController:
         fault_streak: int = 0,
         restore_streak: int = 0,
         initial_epoch: int = 1,
+        initial_route: Optional[str] = None,
+        initial_claim: Any = _UNSPECIFIED,
     ) -> None:
         for name, value in (
             ("heartbeat_stale_seconds", heartbeat_stale_seconds),
@@ -140,17 +161,32 @@ class MeshFailoverController:
         self._heartbeat_stale_seconds = heartbeat_stale_seconds
         self._fault_confirmations = fault_confirmations
         self._restore_confirmations = restore_confirmations
-        self._active = initial_target
-        # The epoch is the fencing token, so it is carried across processes and
-        # never restarts from a lower value: a consumer that still holds an
-        # older epoch must stay refused.
+        # The route is where the agent is pointed; the claim is who may
+        # execute. They are separate because the route has to move first
+        # and the device has to travel.
+        self._route = initial_route or initial_target
+        # The claim starts where the route points, so the first pass does not
+        # look like a transition. "Nobody may claim" is a real state and is
+        # carried explicitly, which is why the default is a sentinel.
+        self._claim = (
+            self._route if initial_claim is _UNSPECIFIED else initial_claim
+        )
+        # The epoch is the fencing token, so it is carried across processes
+        # and never restarts from a lower value: a consumer that still holds
+        # an older epoch must stay refused.
         self._epoch = initial_epoch
         self._fault_streak = fault_streak
         self._restore_streak = restore_streak
 
     @property
-    def active_target(self) -> str:
-        return self._active
+    def active_target(self) -> Optional[str]:
+        """Who may claim a dispatch right now."""
+        return self._claim
+
+    @property
+    def route_target(self) -> str:
+        """Where the agent is being pointed right now."""
+        return self._route
 
     @property
     def epoch(self) -> int:
@@ -178,98 +214,143 @@ class MeshFailoverController:
     def evaluate(
         self,
         *,
-        com2_usable: bool,
+        com2_restored: bool,
+        com2_device_connected: bool,
+        oracle_device_connected: bool,
         com2_heartbeat_age_seconds: Optional[float] = None,
     ) -> MeshFailoverDecision:
         """Evaluate the state machine once and return the decision.
 
-        ``com2_usable`` is the caller's real answer to "can COM2 execute
-        right now": its MeshCentral answers AND the target device is
-        connected to it. A stale heartbeat alone does not fail COM2 over;
-        it only means the caller must not claim COM2 is usable without
-        its own probe.
-        """
-        if not isinstance(com2_usable, bool):
-            raise ContractError("com2_usable must be a boolean")
-        stale = self.heartbeat_is_stale(com2_heartbeat_age_seconds)
-        # COM2 is only trusted when it is usable AND its heartbeat is fresh.
-        trusted = com2_usable and not stale
+        Three facts are kept apart on purpose:
 
-        if self._active == ACTIVE_COM2:
-            if trusted:
+        * ``com2_restored`` — COM2 says it is healthy again. This is a
+          **signal**. It moves the route, and the route is what sends the
+          device.
+        * ``com2_device_connected`` — COM2's own probe says the device is
+          connected to COM2 **now**. The agent has to travel back before
+          this becomes true, so it is the fact the claim waits for.
+        * ``oracle_device_connected`` — Oracle's own probe says the device
+          is connected to Oracle now.
+
+        The claim follows the **device**. A target that owns no device
+        would lose the dispatch, so the claim never moves to a target
+        before the device is there, and a "COM2 is back" signal on its own
+        does not hand the claim back to a COM2 the device has not returned
+        to.
+        """
+        for name, value in (
+            ("com2_restored", com2_restored),
+            ("com2_device_connected", com2_device_connected),
+            ("oracle_device_connected", oracle_device_connected),
+        ):
+            if not isinstance(value, bool):
+                raise ContractError(f"{name} must be a boolean")
+        stale = self.heartbeat_is_stale(com2_heartbeat_age_seconds)
+        # COM2 is only trusted when it says it is restored AND its
+        # heartbeat is fresh. A stale heartbeat alone does not fail COM2
+        # over; it only means the caller must not claim COM2 is restored
+        # without its own probe.
+        restored = com2_restored and not stale
+
+        previous_route = self._route
+        previous_claim = self._claim
+
+        if self._route == ACTIVE_COM2:
+            if restored:
                 self._fault_streak = 0
                 self._restore_streak = 0
-                return MeshFailoverDecision(
-                    active_target=self._active,
-                    epoch=self._epoch,
-                    changed=False,
-                    events=(),
-                    reason="com2 is usable and its heartbeat is fresh",
+            else:
+                self._restore_streak = 0
+                self._fault_streak = min(
+                    self._fault_streak + 1, self._fault_confirmations
                 )
-            self._restore_streak = 0
-            self._fault_streak += 1
-            if self._fault_streak < self._fault_confirmations:
-                return MeshFailoverDecision(
-                    active_target=self._active,
-                    epoch=self._epoch,
-                    changed=False,
-                    events=(),
-                    reason=(
-                        f"com2 is not usable ({self._fault_streak}/"
-                        f"{self._fault_confirmations} confirming)"
-                    ),
+                if self._fault_streak >= self._fault_confirmations:
+                    self._route = ACTIVE_ORACLE
+                    self._epoch += 1
+        else:
+            # The route is on Oracle. COM2 comes back only after it has
+            # claimed it is restored for the whole restore window.
+            if restored:
+                self._fault_streak = 0
+                self._restore_streak = min(
+                    self._restore_streak + 1, self._restore_confirmations
                 )
-            self._active = ACTIVE_ORACLE
-            self._epoch += 1
-            self._fault_streak = 0
-            return MeshFailoverDecision(
-                active_target=self._active,
-                epoch=self._epoch,
-                changed=True,
-                events=(EVENT_COM2_FAULT, EVENT_ORACLE_ACTIVE),
-                reason=(
-                    "com2 stopped being able to execute the dispatch; "
-                    "oracle takes the claim"
-                ),
-            )
+                if self._restore_streak >= self._restore_confirmations:
+                    self._route = ACTIVE_COM2
+                    self._epoch += 1
+            else:
+                self._restore_streak = 0
+                self._fault_streak = min(
+                    self._fault_streak + 1, self._fault_confirmations
+                )
 
-        # Oracle is active. COM2 comes back only after it has proven
-        # itself usable for the whole restore window.
-        if trusted:
-            self._fault_streak = 0
-            self._restore_streak += 1
-            if self._restore_streak < self._restore_confirmations:
-                return MeshFailoverDecision(
-                    active_target=self._active,
-                    epoch=self._epoch,
-                    changed=False,
-                    events=(),
-                    reason=(
-                        f"com2 is usable again ({self._restore_streak}/"
-                        f"{self._restore_confirmations} confirming)"
-                    ),
-                )
-            self._active = ACTIVE_COM2
-            self._epoch += 1
-            self._restore_streak = 0
-            return MeshFailoverDecision(
-                active_target=self._active,
-                epoch=self._epoch,
-                changed=True,
-                events=(EVENT_COM2_RESTORED, EVENT_FAILBACK_COMPLETE),
-                reason=(
-                    "com2 is usable again; the claim goes back to com2"
-                ),
-            )
-        self._restore_streak = 0
-        self._fault_streak += 1
-        return MeshFailoverDecision(
-            active_target=self._active,
-            epoch=self._epoch,
-            changed=False,
-            events=(),
-            reason="com2 is still not usable; oracle keeps the claim",
+        owner, blocked = claim_owner(
+            self._route,
+            com2_device_connected=com2_device_connected,
+            oracle_device_connected=oracle_device_connected,
         )
+        self._claim = owner
+
+        events: list[str] = []
+        if self._route != previous_route:
+            if self._route == ACTIVE_ORACLE:
+                events.append(EVENT_ROUTE_TO_ORACLE)
+                events.append(EVENT_COM2_FAULT)
+            else:
+                events.append(EVENT_ROUTE_TO_COM2)
+                events.append(EVENT_COM2_RESTORED)
+        if owner != previous_claim:
+            # ORACLE_ACTIVE says Oracle owns the claim now, which is true
+            # whatever the route is doing.
+            #
+            # FAILBACK_COMPLETE describes a **finished** failback, so it
+            # only fires when the route is back on COM2 as well: while the
+            # device is travelling, the claim may already name COM2 and the
+            # failback is still not complete.
+            if owner == ACTIVE_ORACLE:
+                events.append(EVENT_ORACLE_ACTIVE)
+            elif owner == ACTIVE_COM2 and self._route == ACTIVE_COM2:
+                events.append(EVENT_FAILBACK_COMPLETE)
+
+        reason = self._reason(
+            restored=restored,
+            owner=owner,
+            blocked=blocked,
+            route_changed=self._route != previous_route,
+        )
+        return MeshFailoverDecision(
+            active_target=owner,
+            route_target=self._route,
+            epoch=self._epoch,
+            changed=bool(events),
+            events=tuple(events),
+            reason=reason,
+        )
+
+    def _reason(
+        self,
+        *,
+        restored: bool,
+        owner: Optional[str],
+        blocked: str,
+        route_changed: bool,
+    ) -> str:
+        if route_changed:
+            return (
+                f"the route moved to {self._route}; the device follows it"
+            )
+        if owner is None:
+            return blocked or "the claim is held"
+        if owner == ACTIVE_COM2:
+            return (
+                "com2 is restored, its heartbeat is fresh and the device is "
+                "connected there"
+            )
+        return (
+            "com2 is not restored, so oracle keeps the claim and the device "
+            "stays with it"
+        )
+
 
 
 def heartbeat_age_seconds(
@@ -470,6 +551,10 @@ class MeshFailoverSupervisor:
     state_path: str
     notifier: Optional[Callable[[str, str], None]] = None
     local_target: str = ACTIVE_ORACLE
+    #: The two routes the transport can apply. When they are configured the
+    #: decision file carries the forward arguments, so the transport side
+    #: does not have to know how a route is built.
+    routes: Optional[dict[str, Any]] = None
     now: Callable[[], float] = time.time
     _last_events: tuple[str, ...] = field(default=(), init=False, repr=False)
 
@@ -480,8 +565,8 @@ class MeshFailoverSupervisor:
         except (ContractError, OSError, ValueError):
             return False
 
-    def _com2_can_execute(self) -> bool:
-        """Whether COM2 can actually execute the dispatch.
+    def _com2_device_connected(self) -> bool:
+        """Whether the device is connected to COM2 **right now**.
 
         COM2 publishes that truth in its own heartbeat, because COM2 has
         no inbound path from Oracle. A heartbeat that is missing, stale or
@@ -499,6 +584,26 @@ class MeshFailoverSupervisor:
             return False
         return True
 
+    def _com2_restored(self) -> bool:
+        """Whether COM2 says it is healthy again.
+
+        This is the **signal**, and it is deliberately weaker than the
+        device being connected there: COM2's MeshCentral and its executor
+        can be up while the agent is still travelling back from the
+        standby. The route follows this signal; the claim does not.
+        """
+        age = heartbeat_age_seconds(self.heartbeat_path, now=self.now())
+        if age is None or self.controller.heartbeat_is_stale(age):
+            return False
+        payload = read_heartbeat(self.heartbeat_path)
+        if not payload:
+            return False
+        if payload.get("target") != ACTIVE_COM2:
+            return False
+        if payload.get("executor_alive") is not True:
+            return False
+        return True
+
     def run_once(self) -> MeshFailoverDecision:
         """Evaluate once, persist the decision and emit any event.
 
@@ -506,13 +611,22 @@ class MeshFailoverSupervisor:
         process, so the streaks are carried in the state file. A window that
         lived only in memory would never confirm anything.
         """
-        com2_usable = self._com2_can_execute()
+        com2_restored = self._com2_restored()
+        com2_device_connected = self._com2_device_connected()
+        oracle_device_connected = self._local_can_execute()
         age = heartbeat_age_seconds(self.heartbeat_path, now=self.now())
         decision = self.controller.evaluate(
-            com2_usable=com2_usable,
+            com2_restored=com2_restored,
+            com2_device_connected=com2_device_connected,
+            oracle_device_connected=oracle_device_connected,
             com2_heartbeat_age_seconds=age,
         )
-        self._persist(decision, com2_usable=com2_usable, heartbeat_age=age)
+        self._persist(
+            decision,
+            com2_restored=com2_restored,
+            com2_device_connected=com2_device_connected,
+            heartbeat_age=age,
+        )
         if decision.events:
             for event in decision.events:
                 self._emit(event, decision)
@@ -523,16 +637,23 @@ class MeshFailoverSupervisor:
         self,
         decision: MeshFailoverDecision,
         *,
-        com2_usable: bool,
+        com2_restored: bool,
+        com2_device_connected: bool,
         heartbeat_age: Optional[float],
     ) -> None:
         payload = {
             "schema": "padiem_mesh_failover/v1",
+            # Who may claim. None means the device is connected nowhere yet,
+            # so the claim waits instead of being taken and lost.
             "active_target": decision.active_target,
+            # Where the agent is being pointed. This is the instruction the
+            # transport applies, and it moves BEFORE the claim.
+            "route_target": decision.route_target,
             "epoch": decision.epoch,
             "local_target": self.local_target,
             "local_can_execute": self._local_can_execute(),
-            "com2_usable": com2_usable,
+            "com2_restored": com2_restored,
+            "com2_device_connected": com2_device_connected,
             "com2_heartbeat_age_seconds": heartbeat_age,
             "changed": decision.changed,
             "events": list(decision.events),
@@ -543,6 +664,17 @@ class MeshFailoverSupervisor:
             "restore_streak": self.controller.restore_streak,
             "ts": self.now(),
         }
+        route = None
+        if self.routes:
+            chosen = self.routes.get(decision.route_target)
+            if chosen is not None:
+                route = {
+                    "target": chosen.target,
+                    "identity": chosen.identity(),
+                    "agent_url": chosen.agent_url,
+                    "tunnel_arguments": list(chosen.tunnel_arguments()),
+                }
+        payload["connection_route"] = route
         directory = os.path.dirname(self.state_path)
         if directory:
             os.makedirs(directory, exist_ok=True)
@@ -810,7 +942,9 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             restore_confirmations=optional_int(
                 "MESH_FAILOVER_RESTORE_CONFIRMATIONS", DEFAULT_RESTORE_CONFIRMATIONS
             ),
-            initial_target=previous.get("active_target", ACTIVE_COM2),
+            initial_target=previous.get("route_target", ACTIVE_COM2),
+            initial_route=previous.get("route_target", ACTIVE_COM2),
+            initial_claim=previous.get("active_target"),
             fault_streak=int(previous.get("fault_streak", 0) or 0),
             restore_streak=int(previous.get("restore_streak", 0) or 0),
             # The epoch is the fencing token and it must never go back, so it
@@ -842,6 +976,38 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             notifier = _both_notifiers(
                 notifier, command_notifier(command)
             )
+        # The routes are optional: without them the decision still names the
+        # route target, and the transport side resolves the forward itself.
+        routes = None
+        com2_host = env.get("MESH_FAILOVER_COM2_TUNNEL_HOST", "").strip()
+        oracle_host = env.get("MESH_FAILOVER_ORACLE_TUNNEL_HOST", "").strip()
+        if com2_host and oracle_host:
+            routes = {
+                TARGET_COM2: com2_route(
+                    tunnel_host=com2_host,
+                    tunnel_user=env.get(
+                        "MESH_FAILOVER_COM2_TUNNEL_USER", ""
+                    ).strip(),
+                    tunnel_key=env.get(
+                        "MESH_FAILOVER_COM2_TUNNEL_KEY", ""
+                    ).strip(),
+                    tunnel_port=optional_int(
+                        "MESH_FAILOVER_COM2_TUNNEL_PORT", 4443
+                    ),
+                ),
+                TARGET_ORACLE: oracle_route(
+                    tunnel_host=oracle_host,
+                    tunnel_user=env.get(
+                        "MESH_FAILOVER_ORACLE_TUNNEL_USER", ""
+                    ).strip(),
+                    tunnel_key=env.get(
+                        "MESH_FAILOVER_ORACLE_TUNNEL_KEY", ""
+                    ).strip(),
+                    tunnel_port=optional_int(
+                        "MESH_FAILOVER_ORACLE_TUNNEL_PORT", 443
+                    ),
+                ),
+            }
         supervisor = MeshFailoverSupervisor(
             controller=controller,
             heartbeat_path=need("MESH_FAILOVER_HEARTBEAT_PATH"),
@@ -850,6 +1016,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             state_path=state_path,
             notifier=notifier,
             local_target=need("MESH_FAILOVER_LOCAL_TARGET"),
+            routes=routes,
         )
     except (ContractError, ValueError) as exc:
         print(f"mesh-failover refused to start: {exc}", file=sys.stderr)

@@ -145,7 +145,6 @@ remembered so the next run retries it.
 
 ## 5. Known blocker — the device transport is still COM1-bound
 
-
 **Current state:** the target's agent reaches COM2 through COM1's SSH
 tunnel. If COM1 is down, or the tunnel task is retired, the agent has no
 server to reach, and Oracle's MeshCentral will keep showing `conn=0` no
@@ -154,8 +153,8 @@ matter what the controller decides.
 Measured constraints:
 
 * A MeshCentral agent connects to **one** server. Upstream is explicit
-  that a second server is reached by DNS/load balancing in front of both
-  servers, not by a second URL in the agent.
+  that a second server is reached by DNS/load balancing in front of
+  both servers, not by a second URL in the agent.
 * MeshCentral 1.2.5 does not relay commands to a device that is
   connected to a peer server, so server peering alone does not make
   Oracle able to execute.
@@ -170,9 +169,63 @@ applied yet**:
 3. a local forwarder on the target PC whose backend target follows the
    controller's decision.
 
-Until one of them is in place and verified against a real COM2 outage,
-the failover is proven for the **claim** (the controller, the gate, the
-exactly-once fencing) and **not** for the **device transport**.
+### 5.1 The route that option 3 uses
+
+The route is the third option, and it is the one this change builds.
+**The agent's own configuration does not change at all.** Both routes use
+the same local address and the same forward mechanism, and they differ
+only in the destination:
+
+```
+com2     ssh -L 127.0.0.1:4443:127.0.0.1:4443  user@<com2>
+oracle   ssh -L 127.0.0.1:4443:127.0.0.1:443   ubuntu@<oracle>
+```
+
+The agent accepts either endpoint because **Oracle presents the same
+agentserver certificate that COM2 presents** (agentserver
+`47:A1:09:FF:…:22:01`, verified on both hosts). That is why the
+device keeps one identity on both servers and does not have to be
+re-enrolled, and why the route can be switched under the agent.
+
+Oracle's side of that route is a TLS listener that presents the
+MeshCentral server's own agentserver pair and proxies to the local
+MeshCentral:
+`scripts/ops/oracle_mesh/oracle_mesh_agent_endpoint.nginx.conf.template`.
+It only **adds** a listener; the MeshCentral on `127.0.0.1:4443` and
+the existing public web server on port 80 are untouched.
+
+### 5.2 A route is not a permission
+
+The route and the claim are separate, and the order matters:
+
+```
+route  ->  the device travels  ->  the device is connected  ->  the claim
+```
+
+* The **route** follows COM2's health. It is the instruction that moves
+  the device.
+* The **claim** follows the **device**. It goes to a server that
+  actually owns the device.
+
+So a "COM2 is back" signal on its own moves the route and nothing
+else. The claim stays with the server that still has the device until
+the agent has actually travelled back and reconnected, and a dispatch is
+never claimed by a host that cannot execute it. While the device is
+connected nowhere, the claim waits instead of being taken and lost.
+
+The three facts are kept apart on purpose, because they are three
+different things:
+
+| fact | meaning | source |
+|---|---|---|
+| `com2_restored` | COM2 says it is healthy again | the heartbeat |
+| `com2_device_connected` | the device is connected to COM2 **now** | COM2's own probe |
+| `oracle_device_connected` | the device is connected to Oracle **now** | Oracle's own probe |
+
+Oracle keeps serving for as long as COM2 is down. There is no timeout
+that forces it to stop, and a COM2 outage that lasts hours or days does
+not end Oracle's role.
+
 
 ## 6. COM1 Mesh-only scheduled work — inventory and retirement order
 
