@@ -260,8 +260,13 @@ async def test_one_account_never_sees_another_accounts_selection():
         )
         other = await client.get(MODEL_SELECTION_PATH, cookies=session(app, free))
         assert other.status_code == 200
+        # The other account has no row of its own: the first account's stored
+        # Plus selection is never handed to it.
         assert other.json()["stored_tier"] is None
-        assert other.json()["restorable_tier"] is None
+        assert other.json()["selection"] is None
+        # What it may show is its OWN proven tier, never the other account's.
+        assert other.json()["restorable_tier"] == "free"
+        assert other.json()["restorable_tier"] != "plus"
         # A forged account id in the body is ignored: the row is always the
         # signed session's own account.
         forged = await client.put(
@@ -335,8 +340,44 @@ async def test_a_revoked_grade_recovers_to_an_available_tier_without_losing_the_
         assert read.status_code == 200
         body = read.json()
         assert body["stored_tier"] == "plus"
-        assert body["restorable_tier"] is None
+        # #5222: the account recovers to the tier it may actually use now
+        # (its own verified grade), not to a hardcoded Free tier.
+        assert body["restorable_tier"] == "free"
+        assert body["default_tier"] == "free"
         assert body["allowed_tiers"] == ["free"]
+
+
+@pytest.mark.asyncio
+async def test_an_administrator_without_a_stored_selection_gets_the_administrator_lane():
+    """#5222: the reported symptom must not land on Padiem Free."""
+    db, admin, _plus, _free = seed_db()
+    app = build_app(db)
+    async with client_for(app) as client:
+        read = await client.get(MODEL_SELECTION_PATH, cookies=session(app, admin))
+        assert read.status_code == 200
+        body = read.json()
+        assert body["stored_tier"] is None
+        assert body["admin_available"] is True
+        # The administrator's own highest usable tier is the administrator lane.
+        assert body["default_tier"] == "admin"
+        assert body["restorable_tier"] == "admin"
+        # The derived default is never turned into a stored preference.
+        assert body["selection"] is None
+
+
+@pytest.mark.asyncio
+async def test_a_member_without_a_stored_selection_gets_its_own_grade():
+    db, _admin, plus, free = seed_db()
+    app = build_app(db)
+    async with client_for(app) as client:
+        plus_read = await client.get(MODEL_SELECTION_PATH, cookies=session(app, plus))
+        assert plus_read.json()["default_tier"] == "plus"
+        assert plus_read.json()["restorable_tier"] == "plus"
+        free_read = await client.get(MODEL_SELECTION_PATH, cookies=session(app, free))
+        assert free_read.json()["default_tier"] == "free"
+        assert free_read.json()["restorable_tier"] == "free"
+        # The derived default is never stored.
+        assert free_read.json()["selection"] is None
 
 
 @pytest.mark.asyncio
@@ -351,7 +392,14 @@ async def test_an_unavailable_administrator_authority_is_not_a_denial():
         # The authority could not be checked: that is neither "allowed" nor
         # "denied", and an administrator selection is not handed back.
         assert body["admin_available"] is None
-        assert body["restorable_tier"] is None
+        # The administrator lane is never presented while it is unverified.
+        assert body["restorable_tier"] != "admin"
+        assert body["default_tier"] != "admin"
+        # The same authority proves the member grade, so an unprovable
+        # administrator authority also leaves the account on the tier its own
+        # membership record shows.
+        assert body["default_tier"] == "free"
+        assert body["restorable_tier"] == "free"
 
 
 @pytest.mark.asyncio
@@ -518,10 +566,17 @@ function boot(fixture) {
 
   const state = {
     accounts: Object.assign({}, fixture.accounts || {}),
+    // #5222: the verified member grade can differ per account, so an account
+    // switch can be proven to reset to the NEW account's own grade instead of
+    // inheriting the previous account's selection.
+    accountGrades: Object.assign({}, fixture.account_grades || {}),
     account: fixture.account || Object.keys(fixture.accounts || {})[0],
     authenticated: fixture.authenticated !== false,
     memberGrade: fixture.member_grade || "plus",
     adminMode: fixture.admin_mode || "not_admin",
+    // The server's own administrator view, when it differs from the browser
+    // probe's view. A fixture that omits it keeps the same answer.
+    serverAdminMode: fixture.server_admin_mode,
     adminFailures: fixture.admin_failures || 0,
     adminCalls: 0,
     requests: [],
@@ -529,15 +584,24 @@ function boot(fixture) {
     tierChanges: [],
   };
 
+  function currentGrade() {
+    const own = state.accountGrades[state.account];
+    if (typeof own === "string") return own;
+    return state.memberGrade;
+  }
+
   function allowedTiers() {
     const order = ["free", "plus", "pro", "max"];
-    const index = order.indexOf(state.memberGrade);
+    const index = order.indexOf(currentGrade());
     return order.slice(0, index < 0 ? 1 : index + 1);
   }
 
   function serverAdminAvailable() {
-    if (state.adminMode === "admin") return true;
-    if (state.adminMode === "unknown") return null;
+    // The server route and the browser probe are two independent checks: the
+    // route uses the member-admin authority, the probe uses /api/b66/admin/me.
+    const mode = state.serverAdminMode === undefined ? state.adminMode : state.serverAdminMode;
+    if (mode === "admin") return true;
+    if (mode === "unknown") return null;
     return false;
   }
 
@@ -559,7 +623,7 @@ function boot(fixture) {
         authenticated: state.authenticated,
         session_state: state.authenticated ? "signed_in" : "guest",
         user: state.authenticated ? { name: "Member" } : null,
-        member_grade: state.memberGrade,
+        member_grade: currentGrade(),
         history_ready: false,
         project_files_ready: false,
       });
@@ -583,6 +647,9 @@ function boot(fixture) {
       const stored = state.accounts[state.account] || null;
       const allowed = allowedTiers();
       const admin = serverAdminAvailable();
+      // #5222: the account's own highest available tier is the default when
+      // there is no stored preference, or the stored one may no longer be used.
+      const defaultTier = admin === true ? "admin" : (allowed.length ? allowed[allowed.length - 1] : null);
       if (method === "PUT") {
         const body = JSON.parse(opts.body || "{}");
         state.puts.push(body);
@@ -597,6 +664,7 @@ function boot(fixture) {
           selection: { tier, updated_at: "2026-10-20T00:00:00Z" },
           stored_tier: tier,
           restorable_tier: tier,
+          default_tier: defaultTier,
           allowed_tiers: allowed,
           admin_available: admin,
         });
@@ -604,11 +672,13 @@ function boot(fixture) {
       let restorable = null;
       if (stored && allowed.includes(stored)) restorable = stored;
       else if (stored === "admin" && admin === true) restorable = "admin";
+      if (restorable === null) restorable = defaultTier;
       return jsonResponse(200, {
         ok: true,
         selection: stored ? { tier: stored, updated_at: "2026-10-20T00:00:00Z" } : null,
         stored_tier: stored,
         restorable_tier: restorable,
+        default_tier: defaultTier,
         allowed_tiers: allowed,
         admin_available: admin,
       });
@@ -755,6 +825,12 @@ const scenario = process.argv[4];
     await api.ready();
     out.tier_after_retry = api.tier();
     out.stored_after = api.state.accounts[api.state.account];
+  } else if (scenario === "admin_probe_unconfirmed") {
+    await api.ready();
+    out.tier = api.tier();
+    out.stored = api.state.accounts[api.state.account];
+    out.puts = api.state.puts;
+    out.adminCalls = api.state.adminCalls;
   } else if (scenario === "account_switch") {
     await api.ready();
     out.before = api.tier();
@@ -833,7 +909,12 @@ def test_the_account_selection_is_restored_after_a_reload(runner):
     assert out["puts"] == []
 
 
-def test_an_account_without_a_stored_selection_keeps_the_free_default(runner):
+def test_an_account_without_a_stored_selection_keeps_its_own_highest_tier(runner):
+    """#5222: no stored preference means the tier the account really has.
+
+    The representative's requirement: with no stored selection the account
+    starts on its own actual highest available tier, not on the Free tier.
+    """
     out = runner(
         {
             "accounts": {"account-a": None},
@@ -843,8 +924,42 @@ def test_an_account_without_a_stored_selection_keeps_the_free_default(runner):
         },
         "restore",
     )
-    assert out["tier"] == "free"
-    assert out["pill"] == "free"
+    assert out["tier"] == "plus"
+    assert out["pill"] == "plus"
+    # The default is a derived grade, never a stored preference: nothing is
+    # written back for the account.
+    assert out["puts"] == []
+
+
+def test_an_administrator_without_a_stored_selection_lands_on_the_admin_lane(runner):
+    """The reported symptom: an administrator must not land on Padiem Free."""
+    out = runner(
+        {
+            "accounts": {"account-a": None},
+            "account": "account-a",
+            "member_grade": "max",
+            "admin_mode": "admin",
+        },
+        "restore",
+    )
+    assert out["tier"] == "admin"
+    assert out["pill"] == "admin"
+    # The derived default is never written back as a preference.
+    assert out["puts"] == []
+
+
+def test_the_default_is_never_written_back_as_a_preference(runner):
+    out = runner(
+        {
+            "accounts": {"account-a": None},
+            "account": "account-a",
+            "member_grade": "pro",
+            "admin_mode": "not_admin",
+        },
+        "restore",
+    )
+    assert out["tier"] == "pro"
+    assert out["puts"] == []
 
 
 def test_the_administrator_selection_is_restored_for_a_verified_administrator(runner):
@@ -872,8 +987,9 @@ def test_a_temporarily_unverified_administrator_keeps_the_stored_preference(runn
         },
         "transient_admin_failure",
     )
-    # The administrator lane is not executable while it is unverified.
-    assert out["after_failure"] == "free"
+    # The administrator lane is not executable while it is unverified, so the
+    # account shows the highest tier that IS executable right now.
+    assert out["after_failure"] == "max"
     # The stored preference is not destroyed by the transient failure.
     assert out["stored"] == "admin"
     assert out["puts"] == []
@@ -893,17 +1009,51 @@ def test_an_unavailable_administrator_authority_is_never_presented_as_usable(run
         },
         "unavailable_admin_authority",
     )
-    assert out["tier"] == "free"
+    # The administrator lane is never presented while the authority could not
+    # be confirmed; the account shows its own executable highest tier.
+    assert out["tier"] == "max"
     assert out["stored"] == "admin"
     assert out["puts"] == []
-    assert out["tier_after_retry"] == "free"
+    assert out["tier_after_retry"] == "max"
     assert out["stored_after"] == "admin"
+
+
+def test_an_unconfirmed_administrator_probe_falls_back_to_the_account_own_tier(runner):
+    """#5222: the browser's own fallback is the account's tier, never Free.
+
+    The server verified the administrator lane, but the browser's own
+    administrator probe could not confirm it. The administrator lane must not
+    be presented as executable, and the account must keep the highest tier it
+    may actually use instead of dropping to the Free tier.
+    """
+    out = runner(
+        {
+            "accounts": {"account-a": "admin"},
+            "account": "account-a",
+            "member_grade": "max",
+            # The server side verified the administrator; the browser probe
+            # could not confirm it.
+            "admin_mode": "unknown",
+            "server_admin_mode": "admin",
+        },
+        "admin_probe_unconfirmed",
+    )
+    # The administrator lane is never presented while it is unverified.
+    assert out["tier"] != "admin"
+    # The account keeps the highest tier it may actually use.
+    assert out["tier"] == "max"
+    # The stored preference is untouched and nothing is written back.
+    assert out["stored"] == "admin"
+    assert out["puts"] == []
 
 
 def test_a_signed_out_and_switched_account_never_inherits_the_previous_selection(runner):
     out = runner(
         {
             "accounts": {"account-a": "pro", "account-b": None},
+            # The second account is entitled to less than the first one, so a
+            # carried-over selection would be visible.
+            "account_grades": {"account-a": "pro", "account-b": "free"},
             "account": "account-a",
             "member_grade": "pro",
             "admin_mode": "not_admin",
@@ -912,6 +1062,8 @@ def test_a_signed_out_and_switched_account_never_inherits_the_previous_selection
     )
     assert out["before"] == "pro"
     assert out["after_logout"] == "free"
+    # The switched account shows ITS OWN highest tier, never the previous
+    # account's selection.
     assert out["after_switch"] == "free"
     # The first account keeps its own stored preference for its next sign-in.
     assert out["stored_a"] == "pro"
@@ -923,12 +1075,14 @@ def test_an_explicit_choice_replaces_the_account_preference(runner):
         {
             "accounts": {"account-a": None},
             "account": "account-a",
-            "member_grade": "plus",
+            # The account may use Pro, so choosing Plus is a real, explicit
+            # choice that replaces what the account would show by default.
+            "member_grade": "pro",
             "admin_mode": "not_admin",
         },
         "explicit_choice",
     )
-    assert out["before"] == "free"
+    assert out["before"] == "pro"
     assert out["after"] == "plus"
     assert out["puts"] == [{"tier": "plus"}]
     assert out["stored"] == "plus"
