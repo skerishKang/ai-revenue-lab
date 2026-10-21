@@ -1,3 +1,4 @@
+import { useLocale } from "../i18n/LocaleProvider";
 import { ClawHomeCards } from "./ClawHomeCards";
 import { MessageList } from "./MessageList";
 import type { ConnectorCard, ConnectorId, Conversation, ProductMode } from "../data/types";
@@ -15,15 +16,15 @@ const STARTERS = [
   {
     key: "explain",
     icon: "☺",
-    title: "쉽게 설명해줘",
-    copy: "어려운 내용도 쉬운 말로",
+    titleKey: "easy-title",
+    copyKey: "easy-copy",
     prompt: "AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘",
   },
   {
     key: "plan",
     icon: "⌂",
-    title: "생활 도움",
-    copy: "일상 질문과 계획 세우기",
+    titleKey: "life-title",
+    copyKey: "life-copy",
     prompt: "이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘",
   },
 ];
@@ -31,8 +32,8 @@ const STARTERS = [
 const WRITING_STARTER = {
   key: "auto",
   icon: "✎",
-  title: "글쓰기 도움",
-  copy: "메일 · 문장 · 초안",
+  titleKey: "writing-starter-title",
+  copyKey: "writing-starter-copy",
   prompt: "목적과 읽는 사람에 맞는 이메일이나 문장 초안을 작성해줘",
 };
 
@@ -53,6 +54,7 @@ export function ConversationView({
   onOpenConnector,
   onRetry,
 }: ConversationViewProps) {
+  const { t } = useLocale();
   const messages = conversation?.messages ?? [];
   const hasTurns = messages.length > 0;
   const isClaw = mode === "claw";
@@ -66,14 +68,14 @@ export function ConversationView({
           <span className="claw-hero-eyebrow">Padiem Claw</span>
         </p>
         <h1>
-          <span className="chat-hero-line">안녕하세요.</span>
+          <span className="chat-hero-line">{t("hello")}</span>
           <br className="chat-hero-line" />
-          <span className="chat-hero-line">무엇을 도와드릴까요?</span>
+          <span className="chat-hero-line">{t("ask")}</span>
           <span className="claw-hero-line">클로입니다.</span>
           <br className="claw-hero-line" />
           <span className="claw-hero-line">어디에서 작업할까요?</span>
         </h1>
-        <p className="empty-copy chat-hero-line">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
+        <p className="empty-copy chat-hero-line">{t("copy")}</p>
         <div className="starter-grid" aria-label="추천 질문">
           {STARTERS.map((starter) => (
             <button
@@ -88,8 +90,8 @@ export function ConversationView({
                 {starter.icon}
               </span>
               <span>
-                <strong>{starter.title}</strong>
-                <small>{starter.copy}</small>
+                <strong>{t(starter.titleKey)}</strong>
+                <small>{t(starter.copyKey)}</small>
               </span>
             </button>
           ))}
@@ -99,8 +101,8 @@ export function ConversationView({
                 ▤
               </span>
               <span>
-                <strong>파일 업로드</strong>
-                <small>파일을 첨부하여 질문하기</small>
+                <strong>{t("document-upload-title")}</strong>
+                <small>{t("document-upload-copy")}</small>
               </span>
             </button>
             <button
@@ -131,8 +133,8 @@ export function ConversationView({
               {WRITING_STARTER.icon}
             </span>
             <span>
-              <strong>{WRITING_STARTER.title}</strong>
-              <small>{WRITING_STARTER.copy}</small>
+              <strong>{t(WRITING_STARTER.titleKey)}</strong>
+              <small>{t(WRITING_STARTER.copyKey)}</small>
             </span>
           </button>
           <button
@@ -148,8 +150,8 @@ export function ConversationView({
               ⌕
             </span>
             <span>
-              <strong>웹에서 찾아줘</strong>
-              <small>웹 검색 · 준비 중</small>
+              <strong>{t("web-starter-title")}</strong>
+              <small>{t("web-starter-copy")}</small>
             </span>
           </button>
           <ClawHomeCards connectors={connectors} onOpenConnector={onOpenConnector} />

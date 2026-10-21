@@ -93,6 +93,8 @@ silently changing products.
 | `apps/padiem-chat/static/claw-run-event-projection.js` | The canonical P01 event validation and its runtime label |
 | `apps/padiem-chat/static/claw-recovery-truth.js` | The observed-run recovery state and the bounded failure copy |
 | `apps/padiem-chat/static/message-lifecycle.js` | The orchestration approval model and the approval intents |
+| `apps/padiem-chat/static/locale.js` | The Korean and English dictionary, the `?lang=` URL contract and the DOM bindings |
+| `apps/padiem-chat/static/a11y.js` | The confirm dialog for a destructive action, with its focus return |
 | `apps/padiem-chat/static/padiem-glass-shell.js` | The glass portrait and its twenty registered shell ribbons |
 
 `src/styles/operational.css` reproduces the operational cascade order exactly,
@@ -102,6 +104,31 @@ two it appends last. The order is load-bearing: `padiem-glass.css` and
 
 The clone therefore follows the operational stylesheets instead of copying
 them. A pinned snapshot is a separate decision and is not taken here.
+
+## Settings, language and accessibility
+
+- **The language is the product's.** The dictionary, the `?lang=` URL contract
+  and the document language attribute belong to `locale.js`, so a wording
+  change in the product reaches the clone. Korean is the default and English is
+  the second language, exactly like the product.
+- **The settings surface is the product's structure.** The same ids, the same
+  classes and the same `data-theme-value` / `data-locale-value` contracts, so
+  the approved styling applies unchanged. The theme list, the language picker
+  and the help section mirror the product's settings dialog.
+- **The clone's own strings** — the source badge, the fixture label — live in
+  `src/i18n/cloneCopy.ts` in both languages, so the clone never adds a key to
+  the product's dictionary.
+- **The dialogs are native `<dialog>` elements.** The browser owns the focus
+  trap, the Escape key and the inert background, and the focus returns to the
+  trigger when a dialog closes.
+- **A destructive action asks first.** The conversation delete uses the
+  product's own confirm dialog.
+- **The drawer follows the product's rules.** On a phone the closed sidebar is
+  inert, the open drawer makes the main panel inert, the menu button reports
+  its state, and the Escape key closes the drawer and returns the focus.
+
+No new authentication or settings-storage API is created. The language and the
+theme live in the URL, like they do in the product.
 
 ## Commands
 
@@ -170,11 +197,15 @@ e2e/first-screen.spec.ts  browser verification
 
 ## Scope
 
-This is the third slice of the #5298 series:
+This is the fourth slice of the #5298 series:
 
 1. **PR #5465** — app bootstrap, first screen, theme, responsive layout, tests.
 2. **PR #5472** — the real Chat API: conversation list, conversation detail,
    conversation delete, the streaming answer and the session cookie.
-3. **This PR** — the Claw execution lane: the computer connection state, the
+3. **PR #5482** — the Claw execution lane: the computer connection state, the
    P01 execution stream, the canonical runtime labels and the approval flow.
-4. Library, automation, calendar, meeting notes, settings, i18n, accessibility.
+4. **This PR** — the common features: the settings surface, the language
+   contract, and the accessibility rules.
+5. Library, automation, calendar, meeting notes, i18n coverage and the
+   functional, visual and performance comparison between the product and the
+   two clones.

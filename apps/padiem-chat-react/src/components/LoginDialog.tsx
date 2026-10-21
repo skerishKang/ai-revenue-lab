@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { loginWithPassword } from "../api/chatApi";
+import { Modal } from "./Modal";
+import { useLocale } from "../i18n/LocaleProvider";
 
 interface LoginDialogProps {
   open: boolean;
@@ -16,12 +18,11 @@ interface LoginDialogProps {
  * styling applies unchanged.
  */
 export function LoginDialog({ open, onClose, onSignedIn }: LoginDialogProps) {
+  const { t } = useLocale();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-
-  if (!open) return null;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -36,7 +37,7 @@ export function LoginDialog({ open, onClose, onSignedIn }: LoginDialogProps) {
       setError(
         failure instanceof Error && failure.message
           ? failure.message
-          : "로그인 정보를 확인해 주세요.",
+          : t("auth-login-failed") || "로그인 정보를 확인해 주세요.",
       );
     } finally {
       setBusy(false);
@@ -44,26 +45,33 @@ export function LoginDialog({ open, onClose, onSignedIn }: LoginDialogProps) {
   };
 
   return (
-    <dialog className="auth-dialog" id="authDialog" open aria-labelledby="authDialogTitle">
+    <Modal
+      open={open}
+      onClose={onClose}
+      className="auth-dialog"
+      labelledBy="authDialogTitle"
+    >
       <div className="auth-panel">
         <div className="auth-header">
           <div>
-            <p>Padiem Account</p>
-            <h2 id="authDialogTitle">로그인 / 회원가입</h2>
+            <p>{t("auth-kicker") || "Padiem Account"}</p>
+            <h2 id="authDialogTitle">{t("auth-title") || "로그인 / 회원가입"}</h2>
           </div>
           <button
             className="auth-close"
             id="authDialogClose"
             type="button"
-            aria-label="로그인 창 닫기"
+            aria-label={t("auth-close") || "로그인 창 닫기"}
             onClick={onClose}
           >
             ×
           </button>
         </div>
         <form className="auth-form" id="passwordLoginForm" onSubmit={submit}>
-          <h3>아이디로 로그인</h3>
-          <label htmlFor="passwordLoginIdentifier">아이디 또는 이메일</label>
+          <h3>{t("auth-password-login") || "아이디로 로그인"}</h3>
+          <label htmlFor="passwordLoginIdentifier">
+            {t("auth-identifier") || "아이디 또는 이메일"}
+          </label>
           <input
             id="passwordLoginIdentifier"
             name="identifier"
@@ -74,7 +82,7 @@ export function LoginDialog({ open, onClose, onSignedIn }: LoginDialogProps) {
             value={identifier}
             onChange={(event) => setIdentifier(event.target.value)}
           />
-          <label htmlFor="passwordLoginPassword">비밀번호</label>
+          <label htmlFor="passwordLoginPassword">{t("auth-password") || "비밀번호"}</label>
           <input
             id="passwordLoginPassword"
             name="password"
@@ -91,10 +99,10 @@ export function LoginDialog({ open, onClose, onSignedIn }: LoginDialogProps) {
             </p>
           ) : null}
           <button className="auth-primary" id="passwordLoginSubmit" type="submit" disabled={busy}>
-            로그인
+            {t("auth-login") || "로그인"}
           </button>
         </form>
       </div>
-    </dialog>
+    </Modal>
   );
 }

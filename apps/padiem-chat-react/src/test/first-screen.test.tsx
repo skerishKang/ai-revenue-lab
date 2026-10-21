@@ -73,7 +73,7 @@ describe("React clone first screen", () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByRole("button", { name: "테마" }));
+    await user.click(screen.getByRole("button", { name: "테마 선택" }));
     await user.click(screen.getByRole("button", { name: "Dark" }));
 
     await waitFor(() => {

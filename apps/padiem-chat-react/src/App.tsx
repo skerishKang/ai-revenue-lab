@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { ClawApprovalDialog } from "./components/ClawApprovalDialog";
 import { ClawWorkspace } from "./components/ClawWorkspace";
+import { SettingsDialog } from "./components/SettingsDialog";
 import { Composer } from "./components/Composer";
 import { ConversationView } from "./components/ConversationView";
 import { LoginDialog } from "./components/LoginDialog";
@@ -40,6 +41,7 @@ import {
   streamClawGeneral,
 } from "./api/clawApi";
 import { chatTransport } from "./lib/chat-transport";
+import { confirmDialog } from "./lib/locale";
 import { mountOperationalGlassShell } from "./lib/glass-shell";
 
 /** How long the fixture answer takes to arrive. Long enough to show the loading state. */
@@ -72,6 +74,7 @@ export function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const [state, dispatch] = useReducer(
     chatReducer,
@@ -162,6 +165,43 @@ export function App() {
     if (state.mode !== "claw") return;
     void loadClawDevices();
   }, [state.mode, loadClawDevices]);
+
+  // The drawer accessibility follows the product's own rules: on a phone the
+  // closed sidebar is inert, the open drawer makes the main panel inert, the
+  // menu reports its state and the Escape key closes the drawer and returns the
+  // focus to the menu button.
+  const restoreMenuFocusRef = useRef(false);
+
+  useEffect(() => {
+    const isMobile = window.matchMedia("(max-width: 920px)").matches;
+    const sidebar = document.getElementById("sidebar");
+    const mainPanel = document.querySelector(".main-panel");
+    const menu = document.getElementById("mobileMenu");
+    const scrim = document.getElementById("sidebarScrim");
+    if (!sidebar || !mainPanel || !menu || !scrim) return;
+    const open = isMobile && mobileOpen;
+    (sidebar as HTMLElement).inert = isMobile ? !open : false;
+    (mainPanel as HTMLElement).inert = open;
+    menu.setAttribute("aria-expanded", open ? "true" : "false");
+    scrim.hidden = !open;
+    // The menu lives in the main panel, so the focus can only return once the
+    // panel is no longer inert.
+    if (restoreMenuFocusRef.current && !open) {
+      restoreMenuFocusRef.current = false;
+      menu.focus();
+    }
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setMobileOpen(false);
+      restoreMenuFocusRef.current = true;
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen]);
 
   // A run that needs a decision pauses. The browser only sends an intent; the
   // trusted server/control-plane adapter authenticates the actor.
@@ -319,17 +359,38 @@ export function App() {
 
   const handleDeleteConversation = useCallback(
     (conversationId: string) => {
-      if (state.apiMode !== "api") {
-        dispatch({ type: "delete-conversation", conversationId });
+      const title =
+        state.conversations.find((conversation) => conversation.id === conversationId)?.title ?? "";
+      const remove = () => {
+        if (state.apiMode !== "api") {
+          dispatch({ type: "delete-conversation", conversationId });
+          return;
+        }
+        void deleteConversation(conversationId)
+          .then(() => loadApiConversations())
+          .catch(() => {
+            /* The server keeps the record; the list is left as it was. */
+          });
+      };
+      // The product asks before a destructive action and returns the focus to
+      // the trigger. The confirm dialog is the product's own.
+      const dialog = confirmDialog();
+      if (!dialog) {
+        remove();
         return;
       }
-      void deleteConversation(conversationId)
-        .then(() => loadApiConversations())
-        .catch(() => {
-          /* The server keeps the record; the list is left as it was. */
+      void dialog
+        .confirm({
+          title: "대화를 삭제할까요?",
+          message: `‘${title}’ 대화를 삭제합니다. 이 작업은 되돌릴 수 없습니다.`,
+          cancelLabel: "취소",
+          confirmLabel: "삭제",
+        })
+        .then((confirmed) => {
+          if (confirmed) remove();
         });
     },
-    [state.apiMode, loadApiConversations],
+    [state.apiMode, state.conversations, loadApiConversations],
   );
 
   // The answer arrives from the real API, or from the local fixture when no
@@ -577,6 +638,7 @@ export function App() {
           onSelectTheme={handleSelectTheme}
           onOpenMobile={() => setMobileOpen(true)}
           onRestoreSidebar={() => setCollapsed(false)}
+          onOpenSettings={() => setSettingsOpen(true)}
         />
         <ClawWorkspace visible={state.mode === "claw"} />
         <ConversationView
@@ -635,6 +697,12 @@ export function App() {
           onCancel={handleApprovalCancel}
         />
       ) : null}
+      <SettingsDialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        theme={themeAttributes.theme}
+        onSelectTheme={handleSelectTheme}
+      />
     </div>
   );
 }

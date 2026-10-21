@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../i18n/LocaleProvider";
 import type { Conversation, ProductMode } from "../data/types";
 
 interface SidebarProps {
@@ -87,6 +88,7 @@ export function Sidebar({
   apiAvailable,
   onOpenLogin,
 }: SidebarProps) {
+  const { t } = useLocale();
   const [searchOpen, setSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -148,7 +150,7 @@ export function Sidebar({
         >
           <button className="new-chat" id="newChatButton" type="button" onClick={onNewChat}>
             <span aria-hidden="true">＋</span>
-            <span data-locale-key="new-chat">새 채팅</span>
+            <span data-locale-key="new-chat">{t("new-chat")}</span>
           </button>
           <button
             className="side-item sidebar-search-item"
@@ -179,7 +181,7 @@ export function Sidebar({
             <span className="side-icon" aria-hidden="true">
               ◆
             </span>
-            <span data-locale-key="nav-claw">Claw</span>
+            <span data-locale-key="nav-claw">{t("nav-claw")}</span>
           </button>
         </nav>
       </div>
@@ -189,25 +191,25 @@ export function Sidebar({
           <span className="side-icon" aria-hidden="true">
             ▥
           </span>
-          <span data-locale-key="nav-meeting">회의록</span>
+          <span data-locale-key="nav-meeting">{t("nav-meeting")}</span>
         </button>
         <button className="side-item" id="automationNavButton" type="button" aria-current="false">
           <span className="side-icon" aria-hidden="true">
             ◷
           </span>
-          <span data-locale-key="nav-automation">자동화</span>
+          <span data-locale-key="nav-automation">{t("nav-automation")}</span>
         </button>
         <button className="side-item" id="filesNavButton" type="button" aria-current="false">
           <span className="side-icon" aria-hidden="true">
             ▤
           </span>
-          <span data-locale-key="nav-files">라이브러리</span>
+          <span data-locale-key="nav-files">{t("nav-files")}</span>
         </button>
         <button className="side-item" id="calendarNavButton" type="button" aria-current="false">
           <span className="side-icon" aria-hidden="true">
             ▨
           </span>
-          <span data-locale-key="nav-calendar">캘린더</span>
+          <span data-locale-key="nav-calendar">{t("nav-calendar")}</span>
         </button>
       </nav>
 
@@ -216,7 +218,7 @@ export function Sidebar({
           <span className="side-icon" aria-hidden="true">
             ⇄
           </span>
-          <span data-locale-key="nav-connectors">Connectors</span>
+          <span data-locale-key="nav-connectors">{t("nav-connectors")}</span>
         </button>
         <button
           className="side-item"
@@ -229,14 +231,14 @@ export function Sidebar({
           <span className="side-icon" aria-hidden="true">
             ✦
           </span>
-          <span data-locale-key="nav-skills">Skills</span>
+          <span data-locale-key="nav-skills">{t("nav-skills")}</span>
         </button>
       </nav>
 
       <section className="recent-section" id="historySection" aria-labelledby="historyTitle">
         <div className="section-heading-row">
           <h2 id="historyTitle" data-locale-key="history-title">
-            최근 대화
+            {t("history-title")}
           </h2>
           <button
             className="sidebar-section-toggle"
@@ -329,16 +331,20 @@ export function Sidebar({
           ))}
         </div>
         <p className="history-empty" id="historyEmpty" hidden={hasConversations}>
-          저장된 대화가 없습니다.
+          {t("history-empty")}
         </p>
       </section>
 
       <div className="sidebar-footer">
         <span className="preview-dot" aria-hidden="true"></span>
-        <span data-locale-key="footer">편하게 질문해 보세요</span>
+        <span data-locale-key="footer">{t("footer")}</span>
       </div>
 
       <div className="sidebar-bottom" aria-label="서비스, 계정 및 설정">
+        {/* The product hides the sidebar settings entry on purpose
+            (`.sidebar-bottom > #settingsButton`), and opens the same dialog
+            from the account profile. The clone has no account panel, so its
+            settings entry lives in the top bar instead. */}
         {/* The clone runs without a signed-in session, so the account controls
             stay hidden exactly like the operational product before login. */}
         <div className="sidebar-account account-controls" hidden={authenticated || !apiAvailable}>
@@ -353,7 +359,7 @@ export function Sidebar({
             title="Google 계정으로 로그인"
             onClick={onOpenLogin}
           >
-            로그인
+            {t("auth-login")}
           </button>
         </div>
         <a
@@ -366,7 +372,7 @@ export function Sidebar({
           <span className="home-link-mark" aria-hidden="true">
             ↗
           </span>
-          <span data-locale-key="home-link">Padiem Home</span>
+          <span data-locale-key="home-link">{t("home-link")}</span>
         </a>
       </div>
       <span hidden data-mobile-open={mobileOpen ? "true" : "false"} />

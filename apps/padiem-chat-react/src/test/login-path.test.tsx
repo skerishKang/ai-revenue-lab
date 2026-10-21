@@ -58,7 +58,7 @@ describe("React clone sign-in path", () => {
     });
 
     await user.click(document.getElementById("loginButton") as HTMLElement);
-    await user.type(screen.getByLabelText("아이디 또는 이메일"), "clone@example.com");
+    await user.type(screen.getByLabelText("이메일"), "clone@example.com");
     await user.type(screen.getByLabelText("비밀번호"), "wrong-password");
     await user.click(document.getElementById("passwordLoginSubmit") as HTMLElement);
 

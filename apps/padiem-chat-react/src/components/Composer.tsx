@@ -1,3 +1,4 @@
+import { useLocale } from "../i18n/LocaleProvider";
 import { useEffect, useRef, useState } from "react";
 import { composerCore } from "../lib/composer-core";
 import { attachmentCapabilities } from "../lib/attachment-capabilities";
@@ -63,6 +64,7 @@ export function Composer({
   selectedDeviceId,
   onSelectDevice,
 }: ComposerProps) {
+  const { t, tOr } = useLocale();
   const [value, setValue] = useState("");
   const [modelOpen, setModelOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -171,13 +173,13 @@ export function Composer({
         </div>
 
         <label className="sr-only" htmlFor="messageInput">
-          메시지 입력
+          {t("message-input-label")}
         </label>
         <textarea
           id="messageInput"
           ref={textareaRef}
           rows={1}
-          placeholder="무엇이든 물어보세요"
+          placeholder={t("input")}
           autoComplete="off"
           value={value}
           onChange={(event) => {
@@ -204,7 +206,7 @@ export function Composer({
               className="model-pill composer-tier-trigger"
               type="button"
               data-mode-control="true"
-              aria-label="AI 등급"
+              aria-label={tOr("mode", "AI 등급")}
               aria-haspopup="true"
               aria-expanded={modelOpen ? "true" : "false"}
               aria-controls="cloneModelPicker"
@@ -259,13 +261,13 @@ export function Composer({
               type="button"
               className="tool-button"
               id="attachmentButton"
-              aria-label="파일 첨부"
+              aria-label={tOr("attachment-button", "파일 첨부")}
               title={attachmentCapabilities.copy("ko").fileButtonTitle}
               data-padiem-tooltip="파일 첨부"
               onClick={() => fileInputRef.current?.click()}
             >
               <span aria-hidden="true">＋</span>
-              <span>파일</span>
+              <span>{t("file")}</span>
             </button>
             <button
               type="button"
@@ -302,12 +304,12 @@ export function Composer({
             aria-pressed="false"
             aria-disabled="true"
             data-voice-state="unavailable"
-            aria-label="음성 입력 시작"
+            aria-label={tOr("voice-mic-start", "음성 입력 시작")}
             data-padiem-tooltip="음성 입력"
             disabled
           >
             <span aria-hidden="true">◉</span>
-            <span data-locale-key="voice-mic">음성 입력</span>
+            <span data-locale-key="voice-mic">{t("voice-mic")}</span>
           </button>
           <button
             type="button"
@@ -336,16 +338,16 @@ export function Composer({
                 fill="none"
               />
             </svg>
-            <span className="sr-only">음성 모드</span>
+            <span className="sr-only">{t("voice-mode")}</span>
           </button>
           <button className="cancel-stream-button" id="cancelStreamButton" type="button" hidden>
-            취소
+            {t("cancel")}
           </button>
           <button
             className="send-button"
             id="sendButton"
             type="submit"
-            aria-label="메시지 보내기"
+            aria-label={tOr("send-tooltip", "메시지 보내기")}
             data-padiem-tooltip="메시지 전송"
             disabled={streaming || probing}
           >
