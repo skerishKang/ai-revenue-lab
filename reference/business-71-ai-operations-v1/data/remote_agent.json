@@ -1,0 +1,41 @@
+{
+  "connection": {
+    "detail": "이 화면은 향후 실제 Browser Use 실행 이벤트를 연결할 구조입니다. 지금 이 사이트는 원격 제어가 연결되어 있지 않습니다.",
+    "label": "연결 준비 중",
+    "state": "not_connected"
+  },
+  "current_job": null,
+  "event_contract": {
+    "lease_eligible_actions": [
+      "scroll",
+      "focus",
+      "click",
+      "type",
+      "select"
+    ],
+    "note": "이 목록은 제품이 이미 분류한 액션 어휘입니다. 실제 실행 기록이 붙기 전까지 이 화면은 실행 이력이 없습니다.",
+    "prohibited_actions": [
+      "javascript_evaluate",
+      "payment_or_purchase",
+      "account_or_security_change",
+      "destructive_action",
+      "permission_prompt"
+    ],
+    "source": "kagent.browser_control_actions",
+    "step_up_required_actions": [
+      "submit",
+      "credential_field_interaction",
+      "upload",
+      "download",
+      "clipboard_read",
+      "clipboard_write",
+      "cross_origin_navigation"
+    ]
+  },
+  "input_events": [],
+  "recent_steps": [],
+  "screenshots": [],
+  "source": "no browser-control session is connected to this site",
+  "synthetic_data": true,
+  "synthetic_notice": "가상 샘플 데이터입니다. 실제 고객 계정·판매채널·ERP에 연결되지 않았습니다."
+}
