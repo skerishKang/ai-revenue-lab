@@ -1,2 +1,47 @@
 /* Shared Chat + Claw UI utilities, separate from the frozen Chat foundation. */
 [hidden] { display: none !important; }
+
+/* #5453 activity sweep.
+ *
+ * A short bright segment travels left and right while work is happening. It
+ * is deliberately not a progress bar and not a percentage: no measured
+ * progress exists behind it, so it only says that the work is still going.
+ * The status text next to it always names the real state, and the sweep is
+ * only applied to a state the product really is in.
+ *
+ * The highlight is derived from the existing theme tokens, so the sweep reads
+ * the same in the light, dark and Glass themes. */
+.padiem-activity-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.padiem-activity-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent 40%,
+    var(--padiem-sweep-highlight, color-mix(in srgb, var(--accent, #6557e8) 26%, transparent)) 50%,
+    transparent 60%);
+  background-size: 160% 100%;
+  background-repeat: no-repeat;
+  animation: padiem-activity-sweep 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* The band travels across the middle of the surface and comes back, so the
+ * movement is visible the whole time and never reads as a position. */
+@keyframes padiem-activity-sweep {
+  0% { background-position: 100% 0; }
+  50% { background-position: 0% 0; }
+  100% { background-position: 100% 0; }
+}
+
+/* A reduced-motion reader gets the same state, without the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .padiem-activity-sweep::after {
+    animation: none;
+    background-position: 50% 0;
+  }
+}
