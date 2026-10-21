@@ -30,10 +30,13 @@ export interface ChatTransportApi {
   ): Promise<void>;
   requestCompleted(payload: unknown, signal?: AbortSignal): Promise<Record<string, unknown>>;
   requestStreaming(payload: unknown, signal?: AbortSignal): Promise<Response>;
+  requestClawGeneral(payload: unknown, signal?: AbortSignal): Promise<Response>;
   orchestrationReady(signal?: AbortSignal): Promise<boolean>;
   resumeOrchestration(intent: unknown, signal?: AbortSignal): Promise<Record<string, unknown>>;
   cancelOrchestration(intent: unknown, signal?: AbortSignal): Promise<Record<string, unknown>>;
-  setOrchestrationPauseHandler(handler: ((...args: unknown[]) => void) | null): void;
+  setOrchestrationPauseHandler(
+    handler: ((pause: { orchestration: unknown; requestPayload: unknown }) => void) | null,
+  ): void;
 }
 
 const runtime = globalThis as typeof globalThis & {

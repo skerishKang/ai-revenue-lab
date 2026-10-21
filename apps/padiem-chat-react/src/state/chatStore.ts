@@ -28,6 +28,8 @@ export interface PendingTurn {
    * starts, so a streaming answer is never restarted by a state change.
    */
   outbound: { role: "user" | "assistant"; content: string }[];
+  /** The Claw execution target the server confirmed, if one was chosen. */
+  modelId?: string | null;
 }
 
 export type ApiMode = "probing" | "api" | "offline";
@@ -45,6 +47,11 @@ export interface ChatState {
   pendingAttachment: PendingAttachment | null;
   searchQuery: string;
   pendingTurn: PendingTurn | null;
+  /** The orchestration that waits for the owner's decision. */
+  approvalPause: unknown | null;
+  /** The Claw device directory the server reported. */
+  clawDevices: { device_id: string; name?: string; platform?: string; online?: boolean; state?: string; revoked?: boolean; expired?: boolean }[];
+  selectedDeviceId: string | null;
 }
 
 export type ChatAction =
@@ -70,6 +77,10 @@ export type ChatAction =
       outbound: { role: "user" | "assistant"; content: string }[];
     }
   | { type: "append-delta"; conversationId: string; messageId: string; delta: string }
+  | { type: "set-runtime-label"; conversationId: string; messageId: string; label: string }
+  | { type: "set-approval-pause"; orchestration: unknown }
+  | { type: "clear-approval-pause" }
+  | { type: "set-claw-devices"; devices: ChatState["clawDevices"]; selectedDeviceId: string | null }
   | { type: "retry-message"; conversationId: string; messageId: string }
   | {
       type: "resolve-message";
@@ -99,6 +110,9 @@ export function initialChatState(
     pendingAttachment: null,
     searchQuery: "",
     pendingTurn: null,
+    approvalPause: null,
+    clawDevices: [],
+    selectedDeviceId: null,
   };
 }
 
@@ -182,6 +196,15 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...conversation,
         messages: previous.get(conversation.id)?.messages ?? conversation.messages,
       }));
+      // The open thread is not dropped while the server has not listed it yet.
+      // A conversation without turns is dropped: the server owns the list.
+      if (
+        state.activeConversationId &&
+        !conversations.some((conversation) => conversation.id === state.activeConversationId)
+      ) {
+        const active = previous.get(state.activeConversationId);
+        if (active && active.messages.length > 0) conversations.unshift(active);
+      }
       const activeConversationId =
         conversations.find((conversation) => conversation.id === state.activeConversationId)?.id ??
         conversations[0]?.id ??
@@ -267,6 +290,30 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ),
       };
     }
+    case "set-runtime-label": {
+      return {
+        ...state,
+        conversations: replaceConversation(
+          state.conversations,
+          action.conversationId,
+          (conversation) =>
+            updateMessage(conversation, action.messageId, (message) => ({
+              ...message,
+              runtimeLabel: action.label,
+            })),
+        ),
+      };
+    }
+    case "set-approval-pause":
+      return { ...state, approvalPause: action.orchestration };
+    case "clear-approval-pause":
+      return { ...state, approvalPause: null };
+    case "set-claw-devices":
+      return {
+        ...state,
+        clawDevices: action.devices,
+        selectedDeviceId: action.selectedDeviceId,
+      };
     case "retry-message": {
       const conversation = state.conversations.find(
         (item) => item.id === action.conversationId,

@@ -24,6 +24,18 @@ interface ComposerProps {
   onClearAttachment: () => void;
   onRefreshPcState: () => void;
   onConnectPc: () => void;
+  /** The server-reported computer list for the Claw product. */
+  clawDevices: {
+    device_id: string;
+    name?: string;
+    platform?: string;
+    online?: boolean;
+    state?: string;
+    revoked?: boolean;
+    expired?: boolean;
+  }[];
+  selectedDeviceId: string | null;
+  onSelectDevice: (deviceId: string) => void;
 }
 
 /**
@@ -47,6 +59,9 @@ export function Composer({
   onClearAttachment,
   onRefreshPcState,
   onConnectPc,
+  clawDevices,
+  selectedDeviceId,
+  onSelectDevice,
 }: ComposerProps) {
   const [value, setValue] = useState("");
   const [modelOpen, setModelOpen] = useState(false);
@@ -115,7 +130,10 @@ export function Composer({
     <section className="composer-wrap" aria-label="메시지 작성" ref={wrapRef}>
       <ClawDeviceManager
         state={pcState}
+        devices={clawDevices}
+        selectedDeviceId={selectedDeviceId}
         onRefresh={onRefreshPcState}
+        onSelect={onSelectDevice}
         onConnect={onConnectPc}
       />
         <form
