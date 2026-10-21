@@ -101,13 +101,15 @@ def open_guidance(page):
 
 
 def open_directory(page):
-    page.locator("#clawDeviceManagerToggle").click()
+    # The composer's small connection control is the visible entry above the
+    # composer, so the panel is opened through it.
+    page.locator("#composerPcStatus").click()
     page.locator("#clawDeviceManagerList li").first.wait_for(timeout=5000)
 
 
 def open_directory_without_rows(page):
     """Open the directory when it is expected to answer with no rows at all."""
-    page.locator("#clawDeviceManagerToggle").click()
+    page.locator("#composerPcStatus").click()
     page.get_by_text("연결 서비스가 아직 준비되지 않았습니다", exact=False).wait_for(timeout=5000)
 
 

@@ -195,15 +195,64 @@
 
     function apply(snapshot) {
       paint(classify(snapshot));
+      watchPanel();
+      syncPanelState();
     }
 
     // The EXISTING computer connection management UI. The device directory
     // panel already owns the guidance, the device rows, the execution target
     // choice and the action into the existing Connectors computer card.
+    const PANEL_ID = "clawDeviceManagerPanel";
+    let watchedPanel = null;
+
+    // The composer control is the visible owner of the management panel: the
+    // duplicate entry line above the composer is not shown any more, so this
+    // control carries the expanded state and the focus follows the panel.
+    function syncPanelState() {
+      const panel = document.getElementById(PANEL_ID);
+      if (!panel) return;
+      const open = !panel.hidden;
+      button.setAttribute("aria-controls", PANEL_ID);
+      button.setAttribute("aria-expanded", open ? "true" : "false");
+      const active = document.activeElement;
+      if (open) {
+        if (!active || active === button || active === document.body) {
+          const close = panel.querySelector(".claw-device-manager-close");
+          const target = close || panel;
+          if (target === panel && !target.hasAttribute("tabindex")) {
+            target.setAttribute("tabindex", "-1");
+          }
+          if (typeof target.focus === "function") {
+            target.focus({ preventScroll: true });
+          }
+        }
+        return;
+      }
+      // The manager returns the focus to its own entry control, which is no
+      // longer shown and therefore cannot take it. The visible composer
+      // control takes it back instead.
+      if (active && panel.contains(active)) {
+        button.focus({ preventScroll: true });
+      }
+    }
+
+    function watchPanel() {
+      const panel = document.getElementById(PANEL_ID);
+      if (!panel || panel === watchedPanel) return;
+      watchedPanel = panel;
+      if (typeof MutationObserver === "function") {
+        new MutationObserver(syncPanelState).observe(panel, {
+          attributes: true,
+          attributeFilter: ["hidden"],
+        });
+      }
+    }
+
     function openExistingPanel() {
       const toggle = document.getElementById("clawDeviceManagerToggle");
       if (toggle) {
         toggle.click();
+        syncPanelState();
         return;
       }
       const opener = document.getElementById("connectorsNavButton");
@@ -237,6 +286,8 @@
     window.addEventListener("resize", syncLayout);
 
     paint("unknown");
+    watchPanel();
+    syncPanelState();
     syncLayout();
     // The snapshot may already be published when this module installs.
     apply(window.PadiemClawDeviceDirectory);

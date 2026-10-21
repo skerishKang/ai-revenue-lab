@@ -169,15 +169,26 @@ html[data-theme="light"] .composer-pc-status:focus-visible {
   .composer-pc-status * { transition: none !important; animation: none !important; }
 }
 
-/* #5297: the device band is the composer's first child and a script mounts it
- * after the first paint, so on a bottom-anchored wrap it pushed the whole fixed
- * input upward. The band is reserved here with the mounted block's own declared
- * geometry and retires as soon as that block exists, so the settled layout keeps
- * exactly one band and no extra height. */
-.app-shell:is([data-state="home"], [data-state="chat"])
-  .composer-wrap:not(:has(> #clawDeviceManager))::before {
-  content: "";
-  display: block;
-  min-height: 44px;
-  margin: 10px 0 12px;
+/* #5297 was the first-screen composer band: the device manager mounted a
+ * separate entry line above the composer and reserved its height so the
+ * fixed input could not jump when it arrived.
+ *
+ * That entry line repeated the same state the composer status control already
+ * shows in the input's top-right corner, so the band is gone: the composer
+ * status control is the single composer-level entry, and the space above the
+ * input is reclaimed instead of reserved.
+ *
+ * The device manager keeps its element and its own open/close state. Only the
+ * duplicate entry line is not shown, and the block holds no margin while it
+ * shows nothing, so nothing is left behind above the composer. */
+#clawDeviceManager > .claw-device-manager-toggle {
+  display: none;
+}
+
+/* The block keeps no vertical margin while it shows nothing. The panel brings
+ * its own margin when it opens, so the composer area is not padded by an
+ * empty block. */
+#clawDeviceManager:not(:has(> .claw-device-manager-panel:not([hidden]))) {
+  margin-top: 0;
+  margin-bottom: 0;
 }
