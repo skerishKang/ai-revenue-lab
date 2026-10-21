@@ -65,7 +65,14 @@ class Default(WorkerEntrypoint):
             # as CENTRAL's review-only production candidate.
             return await asgi.websocket(connector_asgi_websocket_runtime_probe, request)
         if url.path == "/ready" and not url.query:
-            return Response("ok", status=200)
+            # #5479: report the running CPython version so the CI lane proves
+            # the Python runtime Production actually deploys, not a runtime
+            # that only exists inside this probe script.
+            import sys
+
+            return Response(
+                f"ok {sys.version_info.major}.{sys.version_info.minor}", status=200
+            )
         if url.path != "/probe":
             return Response("not found", status=404)
         try:
