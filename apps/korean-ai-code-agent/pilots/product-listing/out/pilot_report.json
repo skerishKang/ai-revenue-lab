@@ -2,9 +2,9 @@
   "measurement": {
     "product_id": "sample",
     "milestone_minutes": {
-      "intake_to_research_minutes": "0",
-      "intake_to_draft_minutes": "0",
-      "total_minutes": "0"
+      "intake_to_research_minutes": "0.0000167",
+      "intake_to_draft_minutes": "0.00003755",
+      "total_minutes": "0.0000419"
     },
     "counts": {
       "manual_reentry_count": "0",
@@ -22,7 +22,8 @@
     "baseline_estimated_minutes": null,
     "baseline_is_estimated": false,
     "measured_comparison_available": false,
-    "note": "기준선은 추정치일 수 있으며, 추정치는 측정된 절감률로 사용하지 않습니다."
+    "note": "기준선은 추정치일 수 있으며, 추정치는 측정된 절감률로 사용하지 않습니다.",
+    "scope": "milestone_minutes 는 자동 처리 구간의 실행 시간이며 사람의 판단·입력 시간은 포함하지 않습니다. 실제 업무 소요시간은 현장 실연에서 사람 단위로 측정합니다."
   },
   "review_checklist": [
     "공급처 자료의 상품명·모델명·품번이 실제 제품과 일치하는지 확인",

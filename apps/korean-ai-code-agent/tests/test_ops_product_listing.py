@@ -198,6 +198,16 @@ class ReviewTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             apply_review(record, {"not_a_field": {"status": "confirmed"}})
 
+    def test_two_review_rounds_on_one_field_keep_distinct_event_ids(self):
+        record = sample_record()
+        _, first = apply_review(
+            record, {"brand": {"status": "confirmed"}}, round_index=1
+        )
+        _, second = apply_review(
+            record, {"brand": {"status": "confirmed"}}, round_index=2
+        )
+        self.assertNotEqual(first[0].event_id, second[0].event_id)
+
 
 class ChannelProjectionTests(unittest.TestCase):
     def test_missing_required_field_is_an_error(self):
@@ -468,6 +478,15 @@ class PilotRunTests(unittest.TestCase):
         result = self._run()
         self.assertTrue(result.review_checklist)
         self.assertTrue(result.follow_ups)
+
+    def test_a_multi_product_supplier_file_is_refused(self):
+        rows = parse_supplier_csv(supplier_csv_text())
+        with self.assertRaises(ContractError):
+            run_product_listing_pilot(
+                supplier_rows=rows + rows,
+                research_notes={},
+                profiles=CHANNEL_PROFILES,
+            )
 
     def test_internal_attribute_map_has_no_channel_source(self):
         for attribute in INTERNAL_ONLY_ATTRIBUTES:

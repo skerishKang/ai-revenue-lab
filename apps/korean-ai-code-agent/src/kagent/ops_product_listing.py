@@ -748,16 +748,23 @@ def merge_research_notes(
 def apply_review(
     record: ProductListingRecord,
     review: Mapping[str, Mapping[str, str]],
+    *,
+    round_index: int = 1,
 ) -> tuple[ProductListingRecord, tuple[WorkflowTelemetryEvent, ...]]:
     """Apply a human review to a record and return the review telemetry.
 
     ``review`` maps a field id to ``{"status": "confirmed"|"corrected",
     "value": "<corrected text>"}``. A correction without a value is refused,
     because a silent correction is worse than an unresolved field.
+
+    ``round_index`` keeps the telemetry event ids unique when the same field
+    is settled in more than one review round.
     """
 
     if not isinstance(review, Mapping):
         raise ContractError("review must be a mapping")
+    if isinstance(round_index, bool) or not isinstance(round_index, int) or round_index < 1:
+        raise ContractError("round_index must be a positive integer")
     updated = dict(record.fields)
     attribute_by_field_id = {
         attribute.value: attribute for attribute in updated
@@ -785,7 +792,7 @@ def apply_review(
             )
             events.append(
                 WorkflowTelemetryEvent(
-                    event_id=f"review_confirmed_{field_id}",
+                    event_id=f"review_confirmed_{field_id}_r{round_index}",
                     workspace_id="pilot",
                     workflow_ref=record.product_id,
                     phase=PilotPhase.SHADOW,
@@ -809,7 +816,7 @@ def apply_review(
             )
             events.append(
                 WorkflowTelemetryEvent(
-                    event_id=f"review_corrected_{field_id}",
+                    event_id=f"review_corrected_{field_id}_r{round_index}",
                     workspace_id="pilot",
                     workflow_ref=record.product_id,
                     phase=PilotPhase.SHADOW,
@@ -1471,6 +1478,11 @@ class ListingMeasurement:
             "note": (
                 "기준선은 추정치일 수 있으며, 추정치는 측정된 절감률로 사용하지 않습니다."
             ),
+            "scope": (
+                "milestone_minutes 는 자동 처리 구간의 실행 시간이며 사람의 판단·"
+                "입력 시간은 포함하지 않습니다. 실제 업무 소요시간은 현장 실연에서 "
+                "사람 단위로 측정합니다."
+            ),
         }
 
 
@@ -1527,6 +1539,10 @@ def run_product_listing_pilot(
 
     if not supplier_rows:
         raise ContractError("product listing pilot requires at least one supplier row")
+    if len(supplier_rows) > 1:
+        raise ContractError(
+            "product listing pilot handles one product per run; split the file"
+        )
     if clock is None:
         clock = lambda: datetime.now(timezone.utc)  # noqa: E731
 
@@ -1570,8 +1586,10 @@ def run_product_listing_pilot(
     description_html = build_detail_html(record)
     record = _with_detail_html(record, description_html)
 
-    for review_round in reviews:
-        record, review_events = apply_review(record, review_round)
+    for round_index, review_round in enumerate(reviews, start=1):
+        record, review_events = apply_review(
+            record, review_round, round_index=round_index
+        )
         telemetry.extend(review_events)
         regenerated = build_detail_html(record)
         if regenerated != description_html:
