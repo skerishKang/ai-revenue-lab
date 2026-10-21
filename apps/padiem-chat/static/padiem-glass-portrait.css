@@ -522,8 +522,12 @@ html[data-theme="padiem-glass"] .answer-action:focus-visible {
 
 /* Chat's same glass composer stays visually continuous during typing.
  * Do not replace its white shell with a dark nested textarea when state=chat.
- * The shared Chat/Claw composer is ONE stable input, not a second popup. */
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-actions {
+ * The shared Chat/Claw composer is ONE stable input, not a second popup.
+ *
+ * The first screen owns the Chat input box, so the Chat composer keeps the
+ * first screen's row spacing and the conversation does not resize the input
+ * when a message is sent. The Claw lane keeps its own spacing. */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-actions {
   margin-top: 8px;
 }
 
