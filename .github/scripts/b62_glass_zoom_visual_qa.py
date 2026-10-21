@@ -589,17 +589,24 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
 
 
 async def _page_diagnostic(page: Page, chat_requests: int) -> str:
-    """A compact page snapshot for the COM2 runner's bounded log window."""
+    """A compact page snapshot for the COM2 runner's bounded log window.
+
+    The snapshot is bounded: a page that stopped answering must not turn the
+    diagnostic into a new hang.
+    """
 
     try:
-        state = await page.evaluate(
-            """() => ({
-              url: location.href,
-              shell: document.querySelector('.app-shell')?.dataset?.state || null,
-              ready: document.readyState,
-              assistants: document.querySelectorAll('#messageList .assistant-content').length,
-              lastAssistant: (document.querySelector('#messageList .assistant-content:last-child')?.textContent || '').slice(0, 120),
-            })"""
+        state = await asyncio.wait_for(
+            page.evaluate(
+                """() => ({
+                  url: location.href,
+                  shell: document.querySelector('.app-shell')?.dataset?.state || null,
+                  ready: document.readyState,
+                  assistants: document.querySelectorAll('#messageList .assistant-content').length,
+                  lastAssistant: (document.querySelector('#messageList .assistant-content:last-child')?.textContent || '').slice(0, 120),
+                })"""
+            ),
+            timeout=5.0,
         )
     except Exception as exc:  # noqa: BLE001 - a diagnostic must never mask the failure
         return f"unavailable:{type(exc).__name__}"

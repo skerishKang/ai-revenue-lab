@@ -505,6 +505,18 @@ class VisualTailFailureEvidenceContract(unittest.TestCase):
         self.assertLess(case_block, failure_block)
         self.assertLess(failure_block, source.index("B62_VISUAL_TAIL_EXECUTED="))
 
+    def test_each_case_is_printed_before_the_next_case_starts(self):
+        # The COM2 canary job has a 10 minute budget and can be cut off while
+        # the tail is still running, so a suite that already finished has to
+        # be visible before the next one starts.
+        source = TAIL.read_text(encoding="utf-8")
+        self.assertIn("for future in futures:", source)
+        loop_start = source.index("for future in futures:")
+        case_print = source.index("B62_VISUAL_TAIL_CASE=")
+        self.assertGreater(case_print, loop_start)
+        # The "collect every result first" shape must be gone.
+        self.assertNotIn("results = [f.result() for f in futures]", source)
+
     def test_the_repeated_evidence_carries_the_assertion_text(self):
         printed: list[str] = []
 
