@@ -52,7 +52,18 @@ def test_the_page_name_is_the_english_connectors_in_both_locales():
     assert 'data-locale-key="connectors-title">Connectors<' in view
 
 
-def test_the_view_header_does_not_repeat_the_page_name():
+def test_no_korean_connector_word_is_left_in_a_display_string():
+    """#5555: the page name is the English ``Connectors`` everywhere."""
+    for name, text in (
+        ("index.html", HTML),
+        ("locale.js", LOCALE),
+        ("claw-connector-management.js", CONNECTOR_JS),
+    ):
+        for number, line in enumerate(text.splitlines(), start=1):
+            stripped = line.strip()
+            if stripped.startswith(("//", "/*", "*", "<!--", "#")):
+                continue
+            assert "커넥터" not in stripped, f"{name}:{number}: {stripped[:80]}"
     view = HTML[HTML.index('id="connectorsView"'):HTML.index('id="connectorsViewBody"')]
     # The rendered header, not the source comment that explains the change.
     rendered = re.sub(r"<!--.*?-->", "", view, flags=re.DOTALL)
