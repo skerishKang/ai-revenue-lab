@@ -26,7 +26,8 @@ MESSAGE_ID = general_answer_message_id(RUN_ID)
 ANSWER = "the verified model reply"
 
 
-def _store(*, dispatch=None, run_row=None, messages=None, reads=None):
+def _store(*, dispatch=None, run_row=None, messages=None, reads=None,
+           legacy_correlation_unavailable=False):
     """A D1HistoryStore whose three reads are answered from fixed evidence."""
     store = SimpleNamespace()
     store.get_claw_run_result_message = D1HistoryStore.get_claw_run_result_message.__get__(
@@ -49,6 +50,10 @@ def _store(*, dispatch=None, run_row=None, messages=None, reads=None):
         return messages or []
 
     async def local_correlation(user_id, run_id):
+        if legacy_correlation_unavailable:
+            # A deployment that never applied the legacy correlation migration
+            # cannot read that table at all.
+            raise RuntimeError("no such table: claw_local_task_correlation")
         return None
 
     store._first = first
@@ -174,6 +179,41 @@ def test_command_run_result_keeps_the_verified_pc_source():
     assert resolved == {
         "answer": "PC COMMAND OUTPUT", "answer_source": "pc_command_result",
     }
+
+
+def test_an_unavailable_legacy_correlation_table_never_hides_the_model_reply():
+    """#5015: a deployment without the legacy correlation table still answers.
+
+    The legacy local-runner correlation table comes from a source migration a
+    deployment may never have applied. An unavailable table means the
+    deployment holds no local-runner correlation at all, so it must not turn a
+    model-only run into an unavailable result.
+    """
+    run_row = {
+        "id": RUN_ID, "action": "general", "status": "completed",
+        "conversation_id": CID,
+    }
+    store = _store(
+        run_row=run_row,
+        messages=[{"id": MESSAGE_ID, "content": ANSWER}],
+        legacy_correlation_unavailable=True,
+    )
+    resolved = asyncio.run(store.get_claw_run_result(OWNER, RUN_ID, CID))
+    assert resolved == {"answer": ANSWER, "answer_source": "model_reply"}
+
+
+def test_an_unavailable_legacy_correlation_table_never_fabricates_a_pc_answer():
+    """A PC run stays unavailable without its own verified result."""
+    for action in ("txt_read", "desktop_capture", "pc_files_query"):
+        store = _store(
+            run_row={
+                "id": RUN_ID, "action": action, "status": "completed",
+                "conversation_id": CID,
+            },
+            messages=[{"id": MESSAGE_ID, "content": ANSWER}],
+            legacy_correlation_unavailable=True,
+        )
+        assert asyncio.run(store.get_claw_run_result(OWNER, RUN_ID, CID)) is None, action
 
 
 def _request(history):
