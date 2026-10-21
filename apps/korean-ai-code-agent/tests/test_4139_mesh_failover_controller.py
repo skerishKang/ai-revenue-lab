@@ -699,5 +699,96 @@ class ModuleEntryPointTests(unittest.TestCase):
         self.assertIn("refused to start", completed.stderr)
 
 
+class RoutePublicationTests(unittest.TestCase):
+    """The route has to reach the decision file.
+
+    The route is optional configuration, so the branch that builds it was
+    never exercised by the other tests. A missing name there only showed up
+    on the live host, so the configured path is covered here.
+    """
+
+    def _environment(self, folder, **extra):
+        env = {
+            "MESH_FAILOVER_HEARTBEAT_PATH": os.path.join(folder, "hb.json"),
+            "MESH_FAILOVER_STATE_PATH": os.path.join(folder, "state.json"),
+            "MESH_FAILOVER_EVENTS_PATH": os.path.join(folder, "events.log"),
+            "MESH_FAILOVER_DEVICE_ID": DEVICE_ID,
+            "MESH_FAILOVER_LOCAL_TARGET": "oracle",
+            "MESH_FAILOVER_COM2_TUNNEL_HOST": "192.168.0.101",
+            "MESH_FAILOVER_COM2_TUNNEL_USER": "user",
+            "MESH_FAILOVER_COM2_TUNNEL_KEY": "C:/keys/id_rsa",
+            "MESH_FAILOVER_ORACLE_TUNNEL_HOST": "168.138.200.12",
+            "MESH_FAILOVER_ORACLE_TUNNEL_USER": "ubuntu",
+            "MESH_FAILOVER_ORACLE_TUNNEL_KEY": "C:/keys/id_oracle",
+            "ORACLE_MESH_MESHCTRL_JS": "/opt/padiem/meshcentral/meshctrl.js",
+            "ORACLE_MESH_URL": "wss://127.0.0.1:4443",
+            "ORACLE_MESH_LOGIN_USER": "padiemadmin",
+            "ORACLE_MESH_PASSWORD_FILE": os.path.join(folder, "pw.txt"),
+        }
+        env.update(extra)
+        return env
+
+    def test_the_configured_route_reaches_the_decision_file(self):
+        import kagent.local_agent_mesh_failover as module
+
+        with tempfile.TemporaryDirectory() as folder:
+            with open(os.path.join(folder, "pw.txt"), "w", encoding="utf-8") as h:
+                h.write("operator-secret\n")
+            write_heartbeat(
+                os.path.join(folder, "hb.json"),
+                build_heartbeat(
+                    mesh_url="wss://127.0.0.1:4443",
+                    device_id=DEVICE_ID,
+                    device_connected=True,
+                    executor_alive=True,
+                ),
+            )
+            env = self._environment(folder)
+            os.environ.update(
+                {k: v for k, v in env.items() if k.startswith("MESH_FAILOVER_")}
+            )
+            try:
+                code = module.main(env)
+            finally:
+                for key in list(os.environ):
+                    if key.startswith("MESH_FAILOVER_"):
+                        del os.environ[key]
+            self.assertEqual(code, 0)
+            with open(os.path.join(folder, "state.json"), "r", encoding="utf-8") as h:
+                state = json.load(h)
+            route = state.get("connection_route")
+            self.assertIsNotNone(route)
+            self.assertEqual(route["target"], "com2")
+            self.assertIn("user@192.168.0.101", route["tunnel_arguments"])
+            self.assertEqual(route["agent_url"], "wss://127.0.0.1:4443/agent.ashx")
+
+    def test_the_route_is_absent_when_it_is_not_configured(self):
+        import kagent.local_agent_mesh_failover as module
+
+        with tempfile.TemporaryDirectory() as folder:
+            with open(os.path.join(folder, "pw.txt"), "w", encoding="utf-8") as h:
+                h.write("operator-secret\n")
+            write_heartbeat(
+                os.path.join(folder, "hb.json"),
+                build_heartbeat(
+                    mesh_url="wss://127.0.0.1:4443",
+                    device_id=DEVICE_ID,
+                    device_connected=True,
+                    executor_alive=True,
+                ),
+            )
+            env = self._environment(folder)
+            for key in (
+                "MESH_FAILOVER_COM2_TUNNEL_HOST",
+                "MESH_FAILOVER_ORACLE_TUNNEL_HOST",
+            ):
+                env.pop(key, None)
+            code = module.main(env)
+            self.assertEqual(code, 0)
+            with open(os.path.join(folder, "state.json"), "r", encoding="utf-8") as h:
+                state = json.load(h)
+            self.assertIsNone(state.get("connection_route"))
+
+
 if __name__ == "__main__":
     unittest.main()
