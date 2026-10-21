@@ -1,0 +1,82 @@
+{
+  "measurement": {
+    "product_id": "sample",
+    "milestone_minutes": {
+      "intake_to_research_minutes": "0",
+      "intake_to_draft_minutes": "0",
+      "total_minutes": "0"
+    },
+    "counts": {
+      "manual_reentry_count": "0",
+      "automation_retry_count": "0",
+      "owner_intervention_count": "0"
+    },
+    "correction_rate": null,
+    "derived_metric_keys": [
+      "automation_retry_count",
+      "manual_reentry_count",
+      "owner_intervention_count",
+      "request_to_po_minutes",
+      "request_to_rfq_minutes"
+    ],
+    "baseline_estimated_minutes": null,
+    "baseline_is_estimated": false,
+    "measured_comparison_available": false,
+    "note": "기준선은 추정치일 수 있으며, 추정치는 측정된 절감률로 사용하지 않습니다."
+  },
+  "review_checklist": [
+    "공급처 자료의 상품명·모델명·품번이 실제 제품과 일치하는지 확인",
+    "판매가와 정가가 가격 정책에 맞는지 확인",
+    "카테고리가 실제 노출 카테고리와 일치하는지 확인",
+    "상세설명에 표시 이미지와 대체 텍스트가 포함되었는지 확인",
+    "배송비·발송예정일·반품 정책이 운영 정책과 일치하는지 확인",
+    "이미지 규격(분해능·용량·형식)이 채널 기준을 충족하는지 확인",
+    "검수 전 필드 목록을 모두 확인",
+    "검수 전 필드 34건을 확정하거나 수정",
+    "쿠팡 마켓플레이스 채널 전용 항목 1건을 직접 입력"
+  ],
+  "follow_ups": [
+    "검수 전 필드 34건을 사람이 확정해야 합니다."
+  ],
+  "artifacts": {
+    "record_sha256": "6264a77a2bef7ed3ad7a07790522ed22985983ce434e2b80f3c67eeb7d85888d",
+    "channel_draft_count": "4",
+    "ready_for_entry_channels": "(없음)",
+    "automatable_step_total": "70",
+    "human_step_total": "13"
+  },
+  "drafts": [
+    {
+      "channel_id": "coupang",
+      "display_name": "쿠팡 마켓플레이스",
+      "ready_for_entry": false,
+      "error_count": 0,
+      "warning_count": 2,
+      "unresolved_field_count": 21
+    },
+    {
+      "channel_id": "naver_smart_store",
+      "display_name": "네이버 스마트스토어",
+      "ready_for_entry": false,
+      "error_count": 0,
+      "warning_count": 1,
+      "unresolved_field_count": 24
+    },
+    {
+      "channel_id": "elevenst",
+      "display_name": "11번가 셀러오피스",
+      "ready_for_entry": false,
+      "error_count": 0,
+      "warning_count": 1,
+      "unresolved_field_count": 16
+    },
+    {
+      "channel_id": "own_mall",
+      "display_name": "자체몰(카페24 콘솔 기준)",
+      "ready_for_entry": false,
+      "error_count": 0,
+      "warning_count": 1,
+      "unresolved_field_count": 17
+    }
+  ]
+}
