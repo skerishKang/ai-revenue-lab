@@ -29,11 +29,13 @@ from app.continuation_identity import (
 )
 from app.orchestration_service import (
     OrchestrationEngineService,
+    _PC_PLAN_AGENT_IDS,
     _parse_agent_plan,
     _parse_approval_decision_submission,
     _parse_continuation_ref,
     _parse_recovery_policy,
     _pc_tool_arguments_gate,
+    _canonical_pc_plan,
 )
 from app.service import ServiceContractError, ServiceResponse, _service_error, build_execution_request
 from app.tool_projection import EngineToolProjectionError
@@ -176,15 +178,42 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             max_retries = int(payload.get("max_retries", 3))
             require_evidence = bool(payload.get("require_evidence", False))
             require_verification = bool(payload.get("require_verification", False))
-            # Trusted tool authority is attached for the gated PC plan only.
-            # Adding it for every registered app would widen what the
+            # Trusted tool authority is attached for the canonical PC plan
+            # only. Adding it for every registered app would widen what the
             # identity-bound lane executes beyond this fix's scope.
+            #
+            # The authority follows the plan, not the device hint: both product
+            # adapters also send the canonical PC plan without a hint when the
+            # owner has no explicit selection, and the Broker then resolves the
+            # pinned target from the owner scope. Binding the authority to the
+            # presence of the optional ``tool_arguments`` field left that
+            # product-designed request with no tool authority at all, so the
+            # plan started and then failed inside Core instead of running the
+            # PC tool. The closed device grammar is unchanged: a hint that is
+            # present is still validated by the shared PC plan validator.
+            canonical_pc_plan = _canonical_pc_plan(app_id, plan)
+            if (
+                plan is not None
+                and getattr(plan, "agent_id", None) in _PC_PLAN_AGENT_IDS
+                and canonical_pc_plan is None
+            ):
+                # A canonical PC agent id was presented, but not under the
+                # product that owns it, or with a plan shape that is not one of
+                # the two canonical PC plans. That is a wrong product identity
+                # or a wrong plan, so it is refused here, before any tool can
+                # run. Without this the request carried no tool authority and
+                # failed later inside Core as an opaque internal error.
+                return _service_error(
+                    "invalid_plan",
+                    "The PC plan does not match the canonical PC plan for this product.",
+                    status_code=400,
+                )
             tool_kwargs = (
                 {}
-                if _pc_tool_arguments_gate(payload) is None
+                if canonical_pc_plan is None
                 else self._tool_request_kwargs(
                     app_id=app_id,
-                    plan=plan,
+                    plan=canonical_pc_plan,
                     raw_tool_arguments=payload.get("tool_arguments"),
                 )
             )
