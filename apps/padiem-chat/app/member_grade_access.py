@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from starlette.responses import JSONResponse
 
+from .model_policy import ClawExecutionGrade
 from .platform_model_authority import is_model_admin
 
 GRADES = ("free", "plus", "pro", "max")
@@ -85,3 +86,20 @@ async def selected_grade_denial(request, user_id, selected_grade):
     if GRADES.index(selected_grade.lower()) > GRADES.index(allowed):
         return JSONResponse({"error": {"code": "tier_not_available", "message": "회원 등급 이하의 AI 등급을 선택해 주세요."}}, status_code=403)
     return None
+
+
+async def claw_execution_tier_denial(request, user_id, grade: ClawExecutionGrade):
+    """Refuse a Claw execution whose grade the server cannot grant.
+
+    #5223: the administrator lane is judged by the operator admin authority
+    (``selected_admin_denial``) and the member grades by the verified
+    membership (``selected_grade_denial``). A browser-supplied grade is never
+    an authority by itself, and both Claw lanes go through this one
+    dispatcher, so a lane cannot refuse a valid administrator or accept a
+    forged one.
+    """
+
+    if grade.admin_lane:
+        return await selected_admin_denial(request, user_id)
+    return await selected_grade_denial(request, user_id, grade.tier_id)
+
