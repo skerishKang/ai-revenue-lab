@@ -946,6 +946,10 @@ def test_an_administrator_without_a_stored_selection_lands_on_the_admin_lane(run
     assert out["pill"] == "admin"
     # The derived default is never written back as a preference.
     assert out["puts"] == []
+    # Chat and Claw read the SAME shared selection, so the default reaches
+    # both surfaces.
+    assert out["clawRequests"], "the Claw model list must be requested"
+    assert any("tier=admin" in url for url in out["clawRequests"]), out["clawRequests"]
 
 
 def test_the_default_is_never_written_back_as_a_preference(runner):
