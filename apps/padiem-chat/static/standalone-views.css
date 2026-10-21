@@ -172,6 +172,41 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   }
 }
 
+/* Automation on a narrow window: one column, and the rules come before the
+ * create form.
+ *
+ * The form is a <details> block that lives above the rule list in the
+ * document, so on a phone it pushed the rules out of the first screen. The
+ * panel keeps its own card frame and its own controls; only the order of the
+ * blocks changes here, so the rule list and the form are never side by side
+ * and the list stays the first thing on the page. The wide-screen layout is
+ * untouched.
+ */
+@media (max-width: 700px) {
+  .app-shell[data-state="automation"] #clawAutomation {
+    display: flex;
+    flex-direction: column;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-inbox-header {
+    order: 1;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-inbox-list {
+    order: 2;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-inbox-status {
+    order: 3;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-automation-create {
+    order: 4;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-automation-edit-form {
+    order: 5;
+  }
+  .app-shell[data-state="automation"] #clawAutomation > .claw-inbox-help {
+    order: 6;
+  }
+}
+
 
 /* Connectors: remove dialog-era spacing and make the long list visibly scrollable.
  * Only the standalone connector page is affected; connection state, auth and
@@ -241,7 +276,13 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   border-radius: 18px;
   background: rgba(248,250,251,.28);
 }
-.app-shell[data-state="automation"] #clawAutomation .claw-inbox-header > div {
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-header > .claw-inbox-heading {
+  display: none;
+}
+/* The create form is opened from the header button, so its own summary is not
+ * shown. A closed form therefore has nothing to draw, and the empty frame it
+ * would leave behind is removed instead of sitting under the header. */
+.app-shell[data-state="automation"] #clawAutomation .claw-automation-create:not([open]) {
   display: none;
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-header {
@@ -357,4 +398,116 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 .app-shell[data-state="automation"] #clawInboxError,
 .app-shell[data-state="connectors"] #connectorsError {
   color: var(--danger, #b42318);
+}
+
+/* #5028 follow-up (Automation page): one entry, one primary action, honest
+ * states.
+ *
+ * The page header owns the visible title on this surface, so the header
+ * carries the primary action instead of the section heading. The alerts entry
+ * is secondary, and a retry only appears when a load actually failed. The
+ * tokens below are the ones the existing Calendar and Claw surfaces already
+ * use, so this page adds no new visual language. */
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  /* The same primary treatment the Calendar and Meeting actions already use: a
+   * solid accent with the contrast ink. The translucent accent fill left the
+   * label at 3.31:1 on the Glass card, below the 4.5:1 that 13px bold text
+   * needs, because the card artwork showed through the button. */
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-primary:hover {
+  filter: brightness(1.04);
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-primary:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 2px;
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-secondary {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--line, rgba(66, 106, 135, .28));
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted, #5b6672);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-secondary:hover {
+  background: var(--surface, rgba(255, 255, 255, .76));
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-secondary:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 2px;
+}
+
+/* Loading, failure, no permission and an empty list are one status block, so
+ * the page reads as one state instead of four competing paragraphs. */
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-status {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-status > :is(
+  #clawAutomationLoading, #clawAutomationError, #clawAutomationForbidden, .claw-inbox-empty
+) {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-status #clawAutomationError {
+  color: var(--danger, #b3261e);
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-status #clawAutomationForbidden {
+  color: var(--muted, #5b6672);
+}
+
+/* The rule name and its stored setting are two lines, so a long name never
+ * runs into the schedule. */
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-list .claw-inbox-card > strong {
+  display: block;
+  margin-bottom: 2px;
+}
+.app-shell[data-state="automation"] #clawAutomation .claw-inbox-list .claw-inbox-card > small {
+  display: block;
+}
+
+/* The stored-setting legend explains the rule rows, so it sits with them
+ * instead of above the whole page. */
+.app-shell[data-state="automation"] #clawAutomation > .claw-inbox-help {
+  margin: 10px 0 0;
+}
+
+/* Phone: the header actions use the full width and the primary action keeps
+ * the touch floor next to the secondary entry. */
+@media (max-width: 700px) {
+  .app-shell[data-state="automation"] #clawAutomation .claw-inbox-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .app-shell[data-state="automation"] #clawAutomation .claw-inbox-primary {
+    min-height: 44px;
+  }
+  .app-shell[data-state="automation"] #clawAutomation .claw-inbox-secondary {
+    min-height: 44px;
+  }
 }

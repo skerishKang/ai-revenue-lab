@@ -31,6 +31,7 @@ from padiem_ai_core import (
     OrchestrationResult,
     orchestration_result_from_public,
 )
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_ai_engine_client import PadiemAiEngineClientError
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
@@ -67,10 +68,18 @@ from .p01_approval_pause_transport import (
 def _padiem_executable_route_ids() -> frozenset[str]:
     """Model IDs of the executable Padiem v1 tiers, derived from the shared
     declaration contract (#2099 SOT). B14 stays the execution authority: a
-    route unregistered there still fails closed at dispatch. A successor-pending Plus HOLD may make this set empty; that is an import-safe
-    state and never authorizes a dispatch."""
+    route unregistered there still fails closed at dispatch. A successor-pending HOLD may make this set empty; that is an import-safe
+    state and never authorizes a dispatch.
+
+    Every product tier is scanned, not a hand-picked subset. The tier's own
+    executable route is the implicit authority the P01 wire accepts for that
+    tier, so a tier whose route the shared contract declares executable must
+    be dispatchable here. A subset silently strands that tier: the P01
+    authority pin then rejects its own contract route and the run fails closed
+    before the Engine is reached (#5223).
+    """
     ids: set[str] = set()
-    for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO):
+    for label in ProductTierLabel:
         try:
             route = active_route_for(label)
         except ProductTierRoutesError as exc:
@@ -151,7 +160,6 @@ _ENGINE_ADMISSION_CODES = frozenset(
 
 
 _BOUNDED_ENGINE_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
-_PC_DEVICE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
 def _bounded_engine_error_code(record: object) -> str:
@@ -603,7 +611,7 @@ class P01EngineOrchestrationClient:
         if not isinstance(target, dict) or set(target) != {"device_id"}:
             return False
         device_id = target.get("device_id")
-        return isinstance(device_id, str) and bool(_PC_DEVICE_ID_RE.fullmatch(device_id))
+        return is_pc_device_id(device_id)
 
     def _is_trusted_capture_request(self, request: OrchestrationRequest) -> bool:
         """Exact Claw-owned, one-capture plan only; never general tool authority."""

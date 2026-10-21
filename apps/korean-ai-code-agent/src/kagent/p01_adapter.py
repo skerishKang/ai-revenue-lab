@@ -38,12 +38,13 @@ from .p01_approval_pause_transport import (
     P01PausedWireResult,
 )
 from .runs import ClawRun, RunStateError
-from .security import redact_secrets
 
 
 P01_APP_ID = "b54-padiem-claw"
 P01_AGENT_ID = "b54-padiem-claw"
-DEFAULT_P01_TIMEOUT_SECONDS = 900.0
+# #4379: the P01 run carries no PADIEM execution budget. None declares no
+# total, so the run is bounded by the platform and by cancellation.
+DEFAULT_P01_TIMEOUT_SECONDS: float | None = None
 
 # #3382: the canonical USER subject is CP-issued in the exact
 # `sub_<32 lowercase hex>` form. The Engine's own `_parse_subject_id` accepts
@@ -266,7 +267,7 @@ class ClawOrchestrationOutcome:
         # the browser never receives resume authority or the trusted request.
         return {
             "projection": self.projection.safe_dict(),
-            "answer": redact_secrets(self.answer) if self.answer is not None else None,
+            "answer": self.answer,
             "p01_run_id": self.p01_run_id,
             "p01_event_count": self.p01_event_count,
             "continuation_ref": self.continuation_ref,
@@ -426,15 +427,18 @@ class P01RequestFactory:
     def __init__(
         self,
         *,
-        timeout_seconds: float = DEFAULT_P01_TIMEOUT_SECONDS,
+        timeout_seconds: float | None = DEFAULT_P01_TIMEOUT_SECONDS,
         clock: Callable[[], datetime] | None = None,
         product_tier: ProductTierLabel = ProductTierLabel.PLUS,
         allow_subject_identity: bool = False,
     ) -> None:
-        if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
+        if timeout_seconds is not None and (
+            isinstance(timeout_seconds, bool)
+            or not isinstance(timeout_seconds, (int, float))
+        ):
             raise P01AdapterError(
                 "invalid_timeout",
-                "P01 timeout must be numeric.",
+                "P01 timeout must be numeric or None.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         if not isinstance(allow_subject_identity, bool):
@@ -443,7 +447,9 @@ class P01RequestFactory:
                 "P01 subject identity lane must be a boolean.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
-        normalized_timeout = float(timeout_seconds)
+        normalized_timeout = (
+            None if timeout_seconds is None else float(timeout_seconds)
+        )
         # Validate against the canonical public P01 contract instead of importing
         # private/internal timeout constants. This makes Core the single authority
         # for the accepted execution budget.
@@ -801,27 +807,27 @@ class ClawOrchestrationProjector:
         elif kind is OrchestrationEventKind.APPROVAL_PAUSED:
             self._run.transition(
                 ClawRunStatus.WAITING_APPROVAL,
-                summary=redact_secrets(event.message or "사용자 승인 대기"),
+                summary=(event.message or "사용자 승인 대기"),
             )
         elif kind is OrchestrationEventKind.RUN_RESUMED:
             self._run.transition(
                 ClawRunStatus.RUNNING,
-                summary=redact_secrets(event.message or "승인 후 실행 재개"),
+                summary=(event.message or "승인 후 실행 재개"),
             )
         elif kind is OrchestrationEventKind.RUN_COMPLETED:
             self._run.transition(
                 ClawRunStatus.COMPLETED,
-                summary=redact_secrets(event.message or "작업 완료"),
+                summary=(event.message or "작업 완료"),
             )
         elif kind is OrchestrationEventKind.RUN_FAILED:
             self._run.transition(
                 ClawRunStatus.FAILED,
-                summary=redact_secrets(event.message or "P01 실행 실패"),
+                summary=(event.message or "P01 실행 실패"),
             )
         elif kind is OrchestrationEventKind.RUN_CANCELLED:
             self._run.transition(
                 ClawRunStatus.CANCELLED,
-                summary=redact_secrets(event.message or "작업 취소"),
+                summary=(event.message or "작업 취소"),
             )
 
 
@@ -1023,7 +1029,7 @@ class P01CoreOrchestrationAdapter:
                 await on_event(live_terminal)
 
             answer = (
-                redact_secrets(result.execution_result.answer)
+                result.execution_result.answer
                 if run.status is ClawRunStatus.COMPLETED
                 else None
             )

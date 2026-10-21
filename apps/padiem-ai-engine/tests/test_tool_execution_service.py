@@ -390,17 +390,17 @@ async def test_unregistered_tool_fails_closed(fx: Fixture):
 OVERSIZED_TOOL_ARGUMENTS = {"query": "a11-smoke-" + ("0" * 70_000)}
 
 
-async def test_oversized_arguments_unregistered_tool_fails_at_parse_ceiling(
+async def test_large_arguments_reach_the_tool_authority_gate(
     fx: Fixture,
 ):
+    # #4379: a large tool argument payload is not refused for its size. The
+    # unregistered tool is still refused by the authority gate, and no tool
+    # executes.
     response = await fx.service.execute_payload(
         execute_payload("tool:acme:ghost@1", OVERSIZED_TOOL_ARGUMENTS)
     )
-    assert response.status_code == 400
-    assert response.body["error"]["code"] == "tool_arguments_too_large"
-    assert response.body["error"]["message"] == (
-        "Tool arguments exceed the bounded Core argument ceiling."
-    )
+    assert response.status_code == 403
+    assert response.body["error"]["code"] == "tool_not_registered"
     assert fx.total() == 0
 
 
@@ -717,7 +717,7 @@ class _CapturedRequest(Exception):
 class _FakeRunner:
     captured: list = []
 
-    def __init__(self, runtime=None, idempotency=None):
+    def __init__(self, runtime=None, idempotency=None, **_kwargs):
         pass
 
     async def run(self, request):

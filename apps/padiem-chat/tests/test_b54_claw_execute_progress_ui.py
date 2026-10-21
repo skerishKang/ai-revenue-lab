@@ -199,8 +199,8 @@ def test_wait_timer_lifecycle_is_closed() -> None:
     finally_block = app[app.index("    } finally {\n      // The owning request always tears its wait timer down"):]
     finally_block = finally_block[: finally_block.index("setClawButtonsBusy(false);")]
     assert "clearClawWait();" in finally_block
-    reset = app[app.index("function resetConversation("):]
-    reset = reset[: reset.index("function selectProject(")]
+    reset = app[app.index("function resetConversationView("):]
+    reset = reset[: reset.index("function resetConversation(")]
     assert "clearClawWait();" in reset
     auth = app[app.index("if (!authenticated) {"):]
     auth = auth[: auth.index("const sessionState")]

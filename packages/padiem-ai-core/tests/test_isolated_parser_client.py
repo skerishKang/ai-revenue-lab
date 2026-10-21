@@ -205,20 +205,24 @@ def test_transport_requires_injected_exchange_port() -> None:
 
 
 def test_request_bounds_derive_from_core_document_limits() -> None:
-    assert ISOLATED_PARSER_MAX_REQUEST_BYTES == (
-        ((MAX_BINARY_DOCUMENT_BYTES + 2) // 3) * 4 + 4096
-    )
-    assert ISOLATED_PARSER_MAX_RESPONSE_BYTES == 256 * 1024
-    # worst-case UTF-8 expansion of the full text budget stays under the ceiling
+    # #4379: the parser request and response carry no PADIEM byte total. The
+    # symbols stay importable, but nothing refuses a payload for them.
+    assert ISOLATED_PARSER_MAX_REQUEST_BYTES > 0
+    assert ISOLATED_PARSER_MAX_RESPONSE_BYTES > 0
     assert MAX_DOCUMENT_CHARS * 4 < ISOLATED_PARSER_MAX_RESPONSE_BYTES
 
 
-def test_oversized_payload_fails_before_the_transport() -> None:
+def test_payload_over_the_old_byte_total_reaches_the_transport() -> None:
+    # #4379: a binary document carries no PADIEM byte total, so a payload
+    # over the former bound is sent to the parser authority instead of being
+    # refused for its size.
     client, transport = _client(_success_envelope())
     with pytest.raises(DocumentNormalizationError) as info:
         _parse(client, payload=b"x" * (MAX_BINARY_DOCUMENT_BYTES + 1))
-    assert info.value.code == "binary_too_large"
-    assert transport.requests == []
+    # The payload reached the parser transport instead of being refused for
+    # its size; the response contract is what the fixture does not satisfy.
+    assert info.value.code != "binary_too_large"
+    assert len(transport.requests) == 1
 
 
 def test_non_bytes_and_empty_payload_fail_before_the_transport() -> None:
@@ -253,6 +257,24 @@ def test_request_envelope_is_bounded_json_with_identity_and_payload_only() -> No
     lowered = transport.requests[0].lower()
     for leaked in (b"endpoint", b"http://", b"https://", b"timeout", b"command"):
         assert leaked not in lowered
+
+
+def test_binary_capable_transport_receives_original_bytes_without_base64() -> None:
+    class BinaryTransport:
+        def __init__(self) -> None:
+            self.calls = []
+
+        def exchange(self, request: bytes) -> bytes:
+            raise AssertionError("legacy JSON exchange must not be used")
+
+        def exchange_binary(self, *, name: str, media_type: str, payload: bytes) -> bytes:
+            self.calls.append((name, media_type, payload))
+            return _success_envelope()
+
+    transport = BinaryTransport()
+    result = _parse(IsolatedParserClient(transport=transport))
+    assert result.byte_size == len(VALID_PAYLOAD)
+    assert transport.calls == [(VALID_NAME, VALID_MEDIA, VALID_PAYLOAD)]
 
 
 # --- C: success response is canonical bounded document material ----------------

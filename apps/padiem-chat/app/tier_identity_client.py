@@ -10,7 +10,7 @@ from .model_policy import (
     ADMIN_B14_MODEL_ID,
     ModelPolicyError,
     current_request_tier_id,
-    model_policy_is_executable,
+    model_policy_is_request_executable,
     product_tier_name,
     resolve_request_model_policy,
 )
@@ -131,7 +131,7 @@ class PadiemTierB14Client(B14Client):
             }
         if (
             self.settings.runtime_mode != "mock"
-            and not model_policy_is_executable(policy.model_id)
+            and not model_policy_is_request_executable(policy.model_id)
             and not _verified_admin_exact_dispatch(policy.model_id)
         ):
             raise ChatRuntimeError(422, "tier_unavailable", _TIER_UNAVAILABLE_MESSAGE)
@@ -157,7 +157,7 @@ class PadiemTierB14Client(B14Client):
             return
         if (
             self.settings.runtime_mode != "mock"
-            and not model_policy_is_executable(policy.model_id)
+            and not model_policy_is_request_executable(policy.model_id)
             and not _verified_admin_exact_dispatch(policy.model_id)
         ):
             raise ChatRuntimeError(422, "tier_unavailable", _TIER_UNAVAILABLE_MESSAGE)

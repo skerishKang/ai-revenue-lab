@@ -1,0 +1,146 @@
+name: COM2 PR Auto Sandbox
+
+# Trusted default-branch workflow. Never execute fork pull requests on COM2.
+on:
+  workflow_run:
+    workflows: ["COM2 PR Policy Trigger"]
+    types: [completed]
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+concurrency:
+  group: com2-auto-${{ github.event.workflow_run.pull_requests[0].number || github.event.workflow_run.id }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.pull_requests[0].number != null
+    name: COM2 auto PR policy sandbox
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Resolve exact still-open PR head
+        id: target
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.workflow_run.pull_requests[0].number }}
+          EXPECTED: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$PR" =~ ^[1-9][0-9]{0,7}$ ]]
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          data="$(curl --fail --silent --show-error --header "Authorization: Bearer $GH_TOKEN" --header "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["head"]["sha"], d["state"], d["head"]["repo"]["full_name"])')"
+          [[ "$data" == "$EXPECTED open $GITHUB_REPOSITORY" ]]
+          echo "sha=$EXPECTED" >> "$GITHUB_OUTPUT"
+      - name: Reuse completed policy check for unchanged exact HEAD
+        id: reuse
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          result="$(curl --fail --silent --show-error \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${SHA}/status" \
+            | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next((s["state"] for s in d["statuses"] if s["context"]=="COM2 full policy"), "missing"))')"
+          if [[ "$result" == success ]]; then
+            echo 'cached=true' >> "$GITHUB_OUTPUT"
+            echo 'COM2_FULL_POLICY_EXACT_SHA_ALREADY_PASS=YES'
+          else
+            echo 'cached=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mark COM2 full policy as pending on exact PR HEAD
+        if: steps.reuse.outputs.cached != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --request POST \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${SHA}" \
+            --data "$(python3 -c 'import json,os; print(json.dumps({"state":"pending","context":"COM2 full policy","description":"COM2 isolated policy verification running","target_url":f"https://github.com/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}"}))')"
+      - name: Checkout exact source
+        if: steps.reuse.outputs.cached != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.sha }}
+          persist-credentials: false
+          filter: blob:none
+          clean: true
+          path: sandbox-input
+      - name: Run full bounded offline policy suite
+        if: steps.reuse.outputs.cached != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Trusted inline Dockerfile, not the PR checkout. Build dependencies in
+          # a separate image; the untrusted PR test runtime has no network,
+          # writable repository, elevated capabilities, or GitHub token.
+          # The base image is digest-pinned so the required policy runtime cannot
+          # drift under a mutable tag, and the build is time-bounded so a stalled
+          # registry pull cannot consume the whole job budget and leave the
+          # required status permanently pending.
+          timeout 300 docker build --tag padiem-policy-hosted:5338 - <<'DOCKERFILE'
+          FROM python:3.12.15-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+          RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git \
+              && rm -rf /var/lib/apt/lists/* \
+              && pip install --no-cache-dir pytest==9.1.1 PyYAML==6.0.3
+          DOCKERFILE
+          src="$GITHUB_WORKSPACE/sandbox-input"
+          test -d "$src/.git"
+          test "$(git -C "$src" rev-parse HEAD)" = "${{ steps.target.outputs.sha }}"
+          policy() {
+            docker run --rm --pull=never --network=none --read-only \
+              --cap-drop=ALL --security-opt=no-new-privileges \
+              --pids-limit=128 --memory=768m --cpus=1 --user=65534 \
+              --mount "type=bind,source=$src,target=/src,readonly" \
+              --tmpfs /tmp:rw,nosuid,nodev,size=128m \
+              -e GIT_CONFIG_COUNT=1 -e GIT_CONFIG_KEY_0=safe.directory \
+              -e GIT_CONFIG_VALUE_0=/src -w /src \
+              --entrypoint python padiem-policy-hosted:5338 "$@"
+          }
+          policy -m pytest -p no:cacheprovider -q docs/operations/tests \
+            .github/tests/test_3989_engine_living_learning_ci_scope.py \
+            .github/tests/test_pr_contract_guard.py \
+            .github/tests/test_r2_credential_authority_split.py \
+            .github/tests/test_b62_pr_preview_trigger_scope.py \
+            .github/tests/test_b62_worker_deploy_trigger_scope.py \
+            .github/tests/test_cross_lane_test_dependency_guard.py \
+            .github/tests/test_frozen_source_checkout_byte_guard.py \
+            .github/tests/test_verify_import_origin.py \
+            tools/b66_generic/tests/test_b66_generic_archive_bounds.py \
+            .github/tests/test_3989_operations_guard_pytest_batch.py
+          policy .github/scripts/cross_lane_test_dependency_guard.py
+          policy .github/scripts/frozen_source_checkout_byte_guard.py
+          policy .github/scripts/com2_b62_browser_planner_regression.py
+          echo "COM2_AUTO_PR_FULL_POLICY=PASS"
+
+      - name: Publish exact PR HEAD full policy result
+        if: ${{ always() && steps.target.outputs.sha != '' && steps.reuse.outputs.cached != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+          RESULT: ${{ job.status }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export STATE=failure
+          if [[ "$RESULT" == success ]]; then export STATE=success; fi
+          payload="$(python3 -c 'import json,os; print(json.dumps({"state":os.environ["STATE"],"context":"COM2 full policy","description":"COM2 isolated full policy suite: "+os.environ["STATE"],"target_url":"https://github.com/"+os.environ["GITHUB_REPOSITORY"]+"/actions/runs/"+os.environ["GITHUB_RUN_ID"]}))')"
+          curl --fail --silent --show-error --request POST \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${SHA}" \
+            --data "$payload"

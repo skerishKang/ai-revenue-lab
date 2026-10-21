@@ -10,19 +10,77 @@
     WAITING_APPROVAL: "waiting_for_approval",
   });
 
+  // The runtime status chip has one owner. The caller writes the visible
+  // text; this API owns the chip state (data-runtime-state) and its
+  // visibility, so a completed answer releases the "answer preparing" chip
+  // and a real status (a Claw P01 stage, a failure) is never removed.
+  const RUNTIME_LABEL_STATE = Object.freeze({ PREPARING: "preparing", STATUS: "status" });
+
+  function runtimeLabelMarker(article) {
+    return article && article.querySelector ? article.querySelector("[data-runtime-label]") : null;
+  }
+
+  // #5453: the status chip carries the sweep while the turn is really
+  // running. The chip's own text always names the real state, so the movement
+  // only says "still going" - it never pretends to be a progress bar. A
+  // finished, failed, cancelled or timed-out turn has no sweep, and neither
+  // has a chip that was released.
+  function syncActivitySweep(article) {
+    const marker = runtimeLabelMarker(article);
+    if (!marker) return;
+    const live = article.dataset.lifecycle === states.STREAMING && !marker.hidden;
+    marker.classList?.toggle?.("padiem-activity-sweep", live);
+  }
+
+  // Applies the chip state. An empty text releases the chip completely: the
+  // text is cleared, the chip is hidden and the locale binding is dropped so
+  // a language change cannot refill a released chip.
+  function applyRuntimeLabel(article, text, state) {
+    const marker = runtimeLabelMarker(article);
+    if (!marker) return;
+    if (typeof text === "string") {
+      const value = text.trim();
+      if (!value) {
+        marker.textContent = "";
+        marker.hidden = true;
+        marker.removeAttribute("data-locale-key");
+        delete marker.dataset.runtimeState;
+        syncActivitySweep(article);
+        return;
+      }
+      marker.textContent = value;
+    }
+    marker.hidden = false;
+    if (state) marker.dataset.runtimeState = state;
+    syncActivitySweep(article);
+  }
+
+  // A finished answer releases the preparing chip. A chip that already
+  // carries a real status stays exactly as it is.
+  function releasePreparingRuntimeLabel(article) {
+    const marker = runtimeLabelMarker(article);
+    if (!marker) return;
+    if (marker.dataset.runtimeState !== RUNTIME_LABEL_STATE.PREPARING) return;
+    applyRuntimeLabel(article, "", RUNTIME_LABEL_STATE.STATUS);
+  }
+
   window.PadiemChatLifecycle = Object.freeze({
     states,
+    runtimeLabelStates: RUNTIME_LABEL_STATE,
     isCompleted(article) {
       return Boolean(article && article.dataset.lifecycle === states.COMPLETED);
     },
     set(article, state) {
       if (!article || !Object.values(states).includes(state)) return;
       article.dataset.lifecycle = state;
+      syncActivitySweep(article);
       article.dispatchEvent(new CustomEvent("padiem:message-lifecycle", {
         bubbles: true,
         detail: { state },
       }));
     },
+    applyRuntimeLabel,
+    releasePreparingRuntimeLabel,
   });
 
   const orchestrationKinds = Object.freeze({
@@ -49,6 +107,10 @@
   });
 
   const kindValues = new Set(Object.values(orchestrationKinds));
+  // Chat/Claw separation: the bounded orchestration lane is the Chat lane (/api/chat). Its
+  // turns and its conversation id belong to the Chat product, so a resumed
+  // Chat run never writes into the Claw conversation.
+  const CHAT_PRODUCT = "chat";
   const safeId = /^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$/;
   const publicCopy = Object.freeze({
     run_started: "작업을 시작했어요.",
@@ -228,6 +290,7 @@
   }
 
   function removeExisting(article) {
+    if (!article || typeof article.querySelectorAll !== "function") return;
     article.querySelectorAll("[data-orchestration-ui]").forEach((node) => node.remove());
   }
 
@@ -310,6 +373,12 @@
 
   function renderCapabilityKit(article, model, handlers = {}) {
     if (!article || typeof article.querySelector !== "function") return model;
+    // #5221: the work card is a disclosure, so the reader keeps the answer
+    // primary and opens the real stages only when they want them. The choice
+    // survives a re-render, so a live stage update never closes the card the
+    // reader opened.
+    const previousDisclosure = article.querySelector(".capability-kit-disclosure");
+    const wasOpen = previousDisclosure ? previousDisclosure.open : null;
     removeExisting(article);
     if (!model.valid) return model;
     ensureCapabilityStyles();
@@ -325,7 +394,15 @@
     section.dataset.preview = preview ? "synthetic" : "live-contract";
     section.setAttribute("aria-label", text("AI 작업 진행 상태", "AI task status"));
 
-    const header = document.createElement("div");
+    const disclosure = document.createElement("details");
+    disclosure.className = "capability-kit-disclosure";
+    // An approval needs the reader, and the synthetic preview is a UI
+    // verification surface: both stay open. Every other turn starts closed
+    // and keeps the reader's own choice.
+    if (wasOpen === null) disclosure.open = Boolean(presentation.approval) || preview;
+    else disclosure.open = wasOpen;
+
+    const header = document.createElement("summary");
     header.className = "capability-kit-header";
     const heading = document.createElement("strong");
     heading.textContent = text("AI 작업 상태", "AI task status");
@@ -334,6 +411,10 @@
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
     status.textContent = presentation.latest ? presentation.latest.label : model.statusText;
+    // #5453: the sweep only rides a stage that is really still running.
+    const live = Boolean(presentation.latest) && presentation.latest.state === "active"
+      && !presentation.terminal;
+    if (live) status.classList.add("padiem-activity-sweep");
     header.append(heading, status);
 
     if (preview) {
@@ -342,7 +423,14 @@
       badge.textContent = text("합성 미리보기 · 실제 실행 아님", "Synthetic preview · not a live run");
       header.appendChild(badge);
     }
-    section.appendChild(header);
+
+    const caret = document.createElement("span");
+    caret.className = "capability-kit-caret";
+    caret.setAttribute("aria-hidden", "true");
+    caret.textContent = "›";
+    header.appendChild(caret);
+
+    disclosure.appendChild(header);
 
     const stageList = document.createElement("ol");
     stageList.className = "capability-stage-list";
@@ -361,15 +449,17 @@
       row.append(marker, label);
       stageList.appendChild(row);
     }
-    section.appendChild(stageList);
+    disclosure.appendChild(stageList);
 
     if (presentation.evidenceAvailable) {
       const evidence = document.createElement("div");
       evidence.className = "capability-evidence";
       evidence.dataset.capabilityGroup = "evidence";
       evidence.textContent = text("출처와 근거를 사용할 수 있습니다.", "Sources and evidence are available.");
-      section.appendChild(evidence);
+      disclosure.appendChild(evidence);
     }
+
+    section.appendChild(disclosure);
 
     renderApprovalCard(section, presentation, handlers);
 
@@ -472,12 +562,13 @@
     content.appendChild(paragraph);
     const label = article.querySelector("[data-runtime-label]");
     // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
-    // The repetitive "AI 응답" line is removed on completion.
-    if (label && label.textContent === "AI 응답") label.textContent = "";
+    // A finished answer releases the preparing chip; a real status stays.
+    if (label && label.textContent === "AI 응답") applyRuntimeLabel(article, "", RUNTIME_LABEL_STATE.STATUS);
+    else releasePreparingRuntimeLabel(article);
     const conversationState = window.PadiemChatConversationState;
     if (conversationState) {
-      conversationState.commitAssistant(requestPayload.messages, data.answer);
-      if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
+      conversationState.commitAssistant(requestPayload.messages, data.answer, CHAT_PRODUCT);
+      if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id, CHAT_PRODUCT);
     }
     window.PadiemChatLifecycle.set(article, states.COMPLETED);
     revealArticleIfFollowing(article);
@@ -491,7 +582,10 @@
     paragraph.textContent = message;
     content.appendChild(paragraph);
     const label = article.querySelector("[data-runtime-label]");
-    if (label) label.textContent = state === "approval_denied" ? "진행하지 않음" : "작업 취소됨";
+    if (label) {
+      label.textContent = state === "approval_denied" ? "진행하지 않음" : "작업 취소됨";
+      applyRuntimeLabel(article, label.textContent, RUNTIME_LABEL_STATE.STATUS);
+    }
     if (state === "orchestration_cancelled") {
       window.PadiemChatLifecycle.set(article, states.CANCELLED);
     } else {

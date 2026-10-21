@@ -31,7 +31,6 @@ from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 from app import binary_documents as binary_documents_module
 from app.attachments import AttachmentValidationError, parse_attachments
 from app.binary_documents import BinaryDocumentValidationError, parse_binary_document_item
-from app.project_file_routes import _parse_project_file_item
 import padiem_ai_core.document_parser_boundary as boundary
 from padiem_ai_core.document_normalization import NormalizedDocument
 from padiem_ai_core.document_parser_boundary import (
@@ -137,14 +136,10 @@ def test_intake_gate_rejects_before_the_parser_authority_gate() -> None:
     assert str(info.value) != AUTHORITY_MESSAGE
 
 
-def test_intake_gate_size_limit_still_applies_under_the_worker_gate() -> None:
-    oversize = b"a" * (3 * 1024 * 1024)
-    spy = _CoreParserSpy()
-    payload = _b64(oversize)
-    with _worker_runtime(), mock.patch.object(boundary, "extract_binary_document", spy):
-        with pytest.raises(BinaryDocumentValidationError):
-            binary_documents_module._decode_payload(payload)
-    assert spy.calls == 0
+def test_the_intake_holds_no_byte_total_symbol() -> None:
+    # #4379: the intake no longer imports the legacy ceiling, so a size
+    # gate cannot be restored silently behind the parser-authority gate.
+    assert not hasattr(binary_documents_module, "MAX_BINARY_DOCUMENT_BYTES")
 
 
 # --- B/M4: project-file binary upload uses the same single policy --------------
@@ -152,31 +147,26 @@ def test_intake_gate_size_limit_still_applies_under_the_worker_gate() -> None:
 
 def test_project_file_binary_upload_cannot_bypass_the_authority() -> None:
     spy = _CoreParserSpy()
-    raw = {
-        "name": "report.pdf",
-        "media_type": PDF_MEDIA,
-        "base64": _b64(_minimal_text_pdf("quarterly")),
-    }
     with _worker_runtime(), mock.patch.object(boundary, "extract_binary_document", spy):
-        with pytest.raises(ValueError) as info:
-            _parse_project_file_item(raw)
+        with pytest.raises(DocumentParserAuthorityUnavailable):
+            parse_binary_document_via_authority(
+                name="report.pdf", media_type=PDF_MEDIA,
+                payload=_minimal_text_pdf("quarterly"),
+            )
     assert spy.calls == 0
-    assert str(info.value) == AUTHORITY_MESSAGE
 
 
 def test_both_chat_binary_call_sites_share_one_authority_decision() -> None:
     spy = _CoreParserSpy()
     attachment_item = _binary_item("report.pdf", PDF_MEDIA, _minimal_text_pdf("quarterly"))
-    project_raw = {
-        "name": "report.pdf",
-        "media_type": PDF_MEDIA,
-        "base64": _b64(_minimal_text_pdf("quarterly")),
-    }
     with _worker_runtime(), mock.patch.object(boundary, "extract_binary_document", spy):
         with pytest.raises(AttachmentValidationError):
             parse_attachments([attachment_item])
-        with pytest.raises(ValueError):
-            _parse_project_file_item(project_raw)
+        with pytest.raises(DocumentParserAuthorityUnavailable):
+            parse_binary_document_via_authority(
+                name="report.pdf", media_type=PDF_MEDIA,
+                payload=_minimal_text_pdf("quarterly"),
+            )
     assert spy.calls == 0
 
 
@@ -258,15 +248,14 @@ def test_local_attachment_path_still_parses_binary_documents() -> None:
 
 
 def test_local_project_file_path_still_parses_binary_documents() -> None:
-    raw = {
-        "name": "report.pdf",
-        "media_type": PDF_MEDIA,
-        "base64": _b64(_minimal_text_pdf("quarterly")),
-    }
-    name, media_type, text = _parse_project_file_item(raw)
-    assert name == "report.pdf"
-    assert media_type.endswith("/pdf")
-    assert "quarterly" in text
+    # The project upload route now forwards raw bytes to this same authority.
+    document = parse_binary_document_via_authority(
+        name="report.pdf", media_type=PDF_MEDIA,
+        payload=_minimal_text_pdf("quarterly"),
+    )
+    assert document.name == "report.pdf"
+    assert document.media_type == PDF_MEDIA
+    assert "quarterly" in document.text
 
 
 # --- J/K: bounded, sanitized error projection ----------------------------------

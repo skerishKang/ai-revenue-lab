@@ -65,6 +65,10 @@ def build_parser() -> argparse.ArgumentParser:
     native.add_argument("browser_launch_uri")
     sub.add_parser("status", help="machine-readable state, no tray")
     sub.add_parser("doctor", help="read-only Agent installation preflight, no Broker traffic")
+    sub.add_parser(
+        "support-bundle",
+        help="read-only self-diagnosis and secret-free support bundle, no Broker traffic",
+    )
     sub.add_parser("stop", help="ask a running tray to quit")
     login = sub.add_parser("login", help="open the reviewed PADIEM login / consent page")
     login.add_argument(
@@ -168,6 +172,30 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "status":
         print(app.status_json())
         return 0
+
+    if args.command == "support-bundle":
+        # The self-diagnosis and the support bundle are read-only. They
+        # observe the local Connector state and the reviewed Agent preflight
+        # and never call the Broker, read a credential or write device state.
+        from .agent_preflight import agent_preflight
+        from .enrollment import default_state_dir
+        from .self_diagnosis import diagnose, support_bundle
+
+        facts = app.self_diagnosis_facts()
+        bundle = support_bundle(
+            diagnose(
+                agent=agent_preflight(state_dir=default_state_dir()),
+                enrollment=facts["enrollment"],
+                connection_state=str(facts["connection_state"]),
+                resident_running=bool(facts["resident_running"]),
+                autostart_enabled=bool(facts["autostart_enabled"]),
+                single_instance=bool(facts["single_instance"]),
+            ),
+            connector_version=str(facts["version"]),
+            device_id=facts["device_id"],
+        )
+        print(json.dumps(bundle, ensure_ascii=False, sort_keys=True))
+        return 0 if bundle["diagnosis"]["ready"] else 1
 
     if args.command == "stop":
         from .runtime import QuitSignal, QUIT_EVENT_NAME  # noqa: PLC0415

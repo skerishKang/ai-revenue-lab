@@ -118,3 +118,41 @@ def test_production_deploy_gate_connects_the_054_schema_precheck():
     assert "claw_pc_device_selection" in workflow
     assert "MIGRATION_054_PREDEPLOY" in workflow
     assert "B62_D1_MIGRATION_054_SCHEMA=EXACT" in workflow
+
+
+def test_recovery_bookmark_is_read_with_get_and_never_created():
+    """The recovery bookmark must be READ, never created, by the 054 gate.
+
+    POST on ``/d1/database/{id}/time_travel/bookmark`` CREATES a recovery
+    bookmark, and Cloudflare refuses it on the read path (HTTP 405). The same
+    defect made the first real 058 gate dispatch fail in its read-only step,
+    and 058 now pins it. The 054 gate already reads the bookmark with a plain
+    GET, so this guard exists to keep it that way.
+
+    The assertion is the 058 gate contract test, reused verbatim against the
+    054 workflow path.
+    """
+    workflow = (
+        ROOT / ".github/workflows/b62-claw-d1-migration-054-gate.yml"
+    ).read_text(encoding="utf-8")
+    assert "time_travel/bookmark" in workflow
+    lines = workflow.splitlines()
+    bookmark_calls = []
+    for index, line in enumerate(lines):
+        if "time_travel/bookmark" not in line:
+            continue
+        # The curl invocation carries the URL on its own continuation line.
+        invocation = "\n".join(lines[max(0, index - 3):index])
+        assert "curl" in invocation, invocation
+        bookmark_calls.append(invocation)
+    assert bookmark_calls, "the recovery bookmark readback must exist"
+    for invocation in bookmark_calls:
+        assert "-X POST" not in invocation, invocation
+        assert "-X DELETE" not in invocation, invocation
+        assert "-X PUT" not in invocation, invocation
+    # The bookmark is read from the same canonical Worker-bound database.
+    assert '/d1/database/${DB_ID}/time_travel/bookmark' in workflow
+    # The read-only proof must not read row data and must not leak identifiers.
+    assert "ROW_DATA_READ=0" in workflow
+    assert "D1_IDENTIFIER_OUTPUT=0" in workflow
+    assert "D1_RECOVERY_BOOKMARK_PRESENT=PASS" in workflow

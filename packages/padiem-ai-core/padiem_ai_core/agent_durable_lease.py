@@ -27,6 +27,11 @@ _LEASE_MIN_SECONDS = 1
 _LEASE_MAX_SECONDS = 3600
 
 
+# #4379: a recorded checkpoint step is a progress record, not a PADIEM ceiling.
+# A long run may reach any step number. The private ledger table stores the
+# step as written, so a resumed run continues from the step it reached.
+
+
 class AgentDurableLeaseError(ValueError):
     """Safe, non-disclosing lease contract error."""
 
@@ -199,7 +204,10 @@ class SQLiteAgentDurableRunLedger:
         Default unsafe: model/provider activity, external writes and unknown
         outcomes are treated as potential side effects/duplicate cost.
         """
-        if type(completed_step) is not int or not 0 <= completed_step <= 64:
+        # #4379: a checkpoint step is a progress record, not a PADIEM ceiling.
+        # A long run may reach any step number; the lease fencing, the approval
+        # expiry and the cancellation stay the real limits.
+        if type(completed_step) is not int or completed_step < 0:
             raise AgentDurableLeaseError("invalid checkpoint step")
         if type(side_effect_uncertain) is not bool:
             raise AgentDurableLeaseError("invalid side effect marker")

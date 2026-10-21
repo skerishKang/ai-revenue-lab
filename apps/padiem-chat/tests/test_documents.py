@@ -129,7 +129,7 @@ async def test_ephemeral_document_is_untrusted_single_system_context_and_not_pub
     assert upstream["model"] == DEFAULT_B14_MODEL_ID
     assert upstream["business14"]["required_capabilities"] == ["chat"]
     assert upstream["business14"]["allow_external_fallback"] is False
-    assert upstream["business14"]["max_attempts"] == 1
+    assert "max_attempts" not in upstream["business14"]
 
     public = response.json()
     assert public["attachments"] == [{
@@ -282,6 +282,11 @@ class FakeStatement:
         return None
 
     async def run(self):
+        if self.sql.startswith("INSERT INTO project_files"):
+            # #5226: the store writes the row through a statement that returns
+            # the inserted id, so the fake reports the same result the D1
+            # binding does instead of an empty one.
+            return {"results": [{"id": self.values[0]}], "meta": {"changes": 1}}
         return {"results": []}
 
 
@@ -336,7 +341,7 @@ def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_
     assert 'label: "DOCX"' in capabilities
     assert 'label: "PPTX"' in capabilities
     assert 'label: "XLSX"' in capabilities
-    assert "binaryBytes: 2 * 1024 * 1024" in capabilities
+    assert "binaryBytes" not in capabilities
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
     assert "PDF·DOCX는 아직 지원하지 않습니다" not in html
     assert "presentationml" not in html

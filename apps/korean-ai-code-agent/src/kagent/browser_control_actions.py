@@ -261,8 +261,8 @@ class BrowserControlActionRequest:
             if not isinstance(params, Mapping) or set(params) != {"text"}:
                 _refuse("type params must carry exactly text")
             text = params["text"]
-            if not isinstance(text, str) or not 1 <= len(text) <= MAX_ACTION_TEXT_CHARS:
-                _refuse(f"type text must be 1..{MAX_ACTION_TEXT_CHARS} characters")
+            if not isinstance(text, str) or not text:
+                _refuse("type text must be a non-empty string")
             if any(ord(ch) < 32 or ord(ch) == 127 for ch in text):
                 # CR/LF would submit forms; other control bytes have no place
                 # in non-sensitive typing. Input synthesis never needs them.

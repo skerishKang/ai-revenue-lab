@@ -48,6 +48,16 @@ async def _run_view(
         parsed = urlparse(request.url)
         if request.method == "POST" and parsed.path in {"/api/chat", "/api/chat/stream"}:
             payload: Any = None
+            raw_body = request.post_data_buffer
+            if raw_body and request.headers.get("content-type", "").startswith("application/octet-stream"):
+                if len(raw_body) < 5:
+                    raise AssertionError("binary chat frame too short")
+                header_size = int.from_bytes(raw_body[:4], "big")
+                if not 0 < header_size <= 65536 or len(raw_body) <= header_size + 4:
+                    raise AssertionError("invalid binary chat frame")
+                payload = json.loads(raw_body[4:4 + header_size].decode("utf-8"))
+                chat_posts.append({"path": parsed.path, "payload": payload, "binary": raw_body[4 + header_size:]})
+                return
             if request.post_data:
                 try:
                     payload = json.loads(request.post_data)
@@ -56,6 +66,24 @@ async def _run_view(
             chat_posts.append({"path": parsed.path, "payload": payload})
 
     page.on("request", record_request)
+    # Capture outbound Blob bytes in page: Playwright may omit Blob POST post_data.
+    await page.add_init_script("""
+    (() => {
+      const originalFetch = window.fetch;
+      window.__b62RawUploads = [];
+      window.fetch = function(input, init) {
+        if (input === '/api/chat' && init && init.body instanceof Blob) {
+          init.body.arrayBuffer().then(buffer => {
+            const bytes = new Uint8Array(buffer);
+            const size = new DataView(buffer).getUint32(0, false);
+            const metadata = JSON.parse(new TextDecoder().decode(bytes.slice(4, 4 + size)));
+            window.__b62RawUploads.push({payload: metadata, binary: Array.from(bytes.slice(4 + size))});
+          });
+        }
+        return originalFetch.apply(this, arguments);
+      };
+    })();
+    """)
 
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
     await page.locator("#messageInput").wait_for(state="visible")
@@ -144,6 +172,12 @@ async def _run_view(
     post = chat_posts[0]
     if post["path"] != "/api/chat":
         raise AssertionError(f"image attachment must use completed /api/chat once: {post!r}")
+    if post["payload"] is None:
+        captured = await page.evaluate("window.__b62RawUploads")
+        if not captured:
+            raise AssertionError("browser did not capture binary upload")
+        post["payload"] = captured[-1]["payload"]
+        post["binary"] = bytes(captured[-1]["binary"])
     payload = post["payload"]
     if not isinstance(payload, dict):
         raise AssertionError(f"chat payload must be an object: {payload!r}")
@@ -155,11 +189,12 @@ async def _run_view(
         "type": "image",
         "name": IMAGE_NAME,
         "media_type": IMAGE_MIME,
-        "base64": IMAGE_BASE64,
     }
     for key, value in expected.items():
         if image.get(key) != value:
             raise AssertionError(f"image payload mismatch for {key}: {image!r}")
+    if "base64" in image or post.get("binary") != base64.b64decode(IMAGE_BASE64):
+        raise AssertionError("image request must carry exact unencoded bytes")
     if any(key in payload for key in ("model", "provider", "route", "business14")):
         raise AssertionError(f"browser payload must not select model/provider routing: {payload!r}")
     if payload.get("tool"):

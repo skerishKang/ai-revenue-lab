@@ -31,3 +31,21 @@ apps/padiem-ai-engine/clients/python/*.egg-info/
 apps/padiem-chat/wrangler.connector-acceptance-4139.local.toml
 # Wrangler account cache created by read-only ops queries; never commit.
 .wrangler/
+
+# #5231: regenerable local artifacts must never re-enter Git tracking.
+# `.tmp/` is the browser-QA output directory of the `.github/scripts/b62_*`
+# scripts; each CI job already uploads its own directory as an Actions
+# artifact, so a tracked copy is never the canonical evidence.
+# `.workbuddy-ai/` holds per-day local agent memory, `.freebuff/` is local
+# agent-tool state, and `_synccheck/` is one-off operational scratch (local
+# diagnostic scripts, run logs, and issue-comment drafts already posted).
+.tmp/
+.workbuddy-ai/
+.freebuff/
+_synccheck/
+
+# #5231: the single tracked file under `padiem-reports/` is registered public
+# evidence. These two directories are output directories written by the CI
+# scripts that own them and are re-created on every run.
+padiem-reports/2026-10-06/b66-pdf-preview-parity/
+padiem-reports/b66-shell-cgi-v2/

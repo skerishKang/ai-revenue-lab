@@ -102,11 +102,21 @@ def _load_engine_identity_enforcement():
     is not installed for CI gate runners. A stub parent package keeps the
     production import name intact while bypassing ``__init__`` entirely, so
     this CLI executes the verbatim production parser the runtime uses.
+
+    A repository-wide test run may already have imported another ``app``
+    package (the B14 platform app), so the Engine app directory is added to
+    that package's search path instead of replacing it. The import then works
+    in any collection order.
     """
-    if "app" not in sys.modules:
+    engine_app = str(_ROOT / "apps" / "padiem-ai-engine" / "app")
+    package = sys.modules.get("app")
+    if package is None:
         package = types.ModuleType("app")
-        package.__path__ = [str(_ROOT / "apps" / "padiem-ai-engine" / "app")]  # type: ignore[attr-defined]
         sys.modules["app"] = package
+    search_path = list(getattr(package, "__path__", []))
+    if engine_app not in search_path:
+        search_path.append(engine_app)
+        package.__path__ = search_path  # type: ignore[attr-defined]
     return importlib.import_module("app.identity_enforcement")
 
 

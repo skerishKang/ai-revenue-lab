@@ -10,7 +10,12 @@ from .task_modes import TaskMode, get_task_mode
 from .tool_presentations import ToolPresentationDescriptor, get_tool_presentation
 from .web_tools import MAX_QUERY_CHARS, normalize_public_url
 
-MAX_BROWSER_BODY_BYTES = 6_000_000
+# #4379: a browser request body carries no PADIEM byte total. The reader
+# stays incremental, so the body is never materialized past the platform's
+# own request limit. The main branch raised this constant to a very large
+# finite value; a finite value is still a PADIEM total, so the limit is
+# removed instead of enlarged.
+MAX_BROWSER_BODY_BYTES: int | None = None
 # Deprecated model-input caps remain importable for compatibility; no product
 # pilot count/character ceiling applies before B14. HTTP body safety is separate.
 MAX_MESSAGES: int | None = None
@@ -100,7 +105,7 @@ def _validate_payload(
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom"}:
+    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if "calendar_turn_id" in raw:
         turn_id = raw["calendar_turn_id"]

@@ -242,6 +242,16 @@ def test_entitlement_install_is_idempotent_but_revision_identity_cannot_change_b
 
 
 def test_entitlement_revisions_move_forward_and_expired_truth_is_not_returned():
+    """One revision is one identity; a new revision is a new identity.
+
+    The revision already carries the snapshot identity, so a policy expansion
+    (the reviewed tenant-scoped voice policy, for example) is a **new**
+    revision with its own row. Comparing the issue time across revisions
+    instead made every expansion impossible for a subject whose session is
+    newer than the new policy's effective time, and refused the ordinary
+    Engine install with the same reason. The issue time therefore only has to
+    move forward **within one revision**.
+    """
     store, _ = store_fixture()
     first = snapshot()
     store.install_entitlement_snapshot(
@@ -249,21 +259,34 @@ def test_entitlement_revisions_move_forward_and_expired_truth_is_not_returned():
         now=NOW,
     )
 
+    # The same revision may never change its issue time.
     with pytest.raises(
         ControlPlaneContractError
     ) as exc:
         store.install_entitlement_snapshot(
             snapshot(
                 snapshot_id="ent-snap-stale",
-                revision="rev-2",
+                revision=first.revision,
                 issued_at=first.issued_at,
             ),
             now=NOW,
         )
     assert (
         exc.value.code
-        == "stale_entitlement_snapshot"
+        == "entitlement_snapshot_conflict"
     )
+
+    # A new revision is a new identity and installs next to the earlier one.
+    expanded = snapshot(
+        snapshot_id="ent-snap-expanded",
+        revision="rev-2",
+        issued_at=first.issued_at,
+    )
+    installed = store.install_entitlement_snapshot(
+        expanded,
+        now=NOW,
+    )
+    assert installed.revision == "rev-2"
 
     with pytest.raises(
         ControlPlaneContractError

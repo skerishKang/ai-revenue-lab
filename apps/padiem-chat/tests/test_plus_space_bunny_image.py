@@ -31,7 +31,7 @@ def _active_model(label: ProductTierLabel) -> str:
     return route.model_id
 
 
-BEAM = _active_model(ProductTierLabel.FREE)
+FREE_MODEL = _active_model(ProductTierLabel.FREE)
 MUSE = _active_model(ProductTierLabel.PLUS)
 
 
@@ -40,14 +40,12 @@ def test_plus_identity_is_executable_route_and_space_bunny_is_historical_only() 
     assert plus is not None
     assert plus.status is ProductRouteStatus.EXECUTABLE
     assert plus.model_id == LOW_B14_MODEL_ID == MUSE
-    assert DEFAULT_B14_MODEL_ID == BEAM
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset({BEAM, MUSE})
-    bunny = next(
-        route for route in get_tier(ProductTierLabel.PLUS).routes
-        if route.model_id == "kilo/stealth-space-bunny-alpha"
+    assert DEFAULT_B14_MODEL_ID == FREE_MODEL
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset({FREE_MODEL, MUSE})
+    assert all(
+        route.model_id != "kilo/stealth-space-bunny-alpha"
+        for route in get_tier(ProductTierLabel.PLUS).routes
     )
-    assert bunny.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    assert bunny.hold_reason and "#3568" in bunny.hold_reason
 
 
 def test_plus_chat_executes_declared_route_and_image_remains_unavailable() -> None:
@@ -56,7 +54,7 @@ def test_plus_chat_executes_declared_route_and_image_remains_unavailable() -> No
     assert not model_supports(LOW_B14_MODEL_ID, "image")
     default = resolve_model_policy([{"role": "user", "content": "hello"}])
     plus = resolve_tier_policy([{"role": "user", "content": "hello"}], "plus")
-    assert default.model_id == BEAM and default.profile == "free"
+    assert default.model_id == FREE_MODEL and default.profile == "free"
     assert plus.model_id == MUSE and plus.profile == "low"
 
 
@@ -65,5 +63,5 @@ def test_plus_product_identity_matches_current_executable_route() -> None:
         [{"role": "user", "content": "hello"}],
         require_executable=False,
     )
-    assert policy.model_id == BEAM
+    assert policy.model_id == FREE_MODEL
     assert model_policy_is_executable(policy.model_id)

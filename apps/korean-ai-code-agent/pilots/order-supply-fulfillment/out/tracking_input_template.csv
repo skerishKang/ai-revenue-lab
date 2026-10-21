@@ -1,0 +1,5 @@
+shipment_id,carrier,tracking_number,observed_at,delivered_at,status,note
+ship_demo_1,demo_carrier,TRK-2026-0001,2026-10-22T02:00:00Z,,label_issued,송장 발급(가상)
+ship_demo_1,demo_carrier,TRK-2026-0001,2026-10-22T05:00:00Z,,in_transit,집화 후 이동(가상)
+ship_demo_1,demo_carrier,TRK-2026-0001,2026-10-24T06:00:00Z,,out_for_delivery,배달 출발(가상)
+ship_demo_1,demo_carrier,TRK-2026-0001,2026-10-24T09:00:00Z,2026-10-24T09:00:00Z,delivered,배송 완료(가상)

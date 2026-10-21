@@ -6,6 +6,12 @@ on:
       - 'apps/padiem-chat/app/b14_client.py'
       - 'apps/padiem-chat/static/app.js'
       - 'apps/padiem-chat/tests/test_neutral_mock_copy.py'
+      # The lane below executes these two files, so a change to either of them
+      # must run the lane. Without this the lane validated only a subset of the
+      # files it actually runs, and a change to the unassigned-profile gate
+      # expectation was never checked by the lane that owns it.
+      - 'apps/padiem-chat/tests/test_unassigned_profile_gate.py'
+      - 'apps/padiem-chat/tests/test_model_policy.py'
       - '.github/scripts/b62_neutral_mock_copy_audit.py'
       - '.github/workflows/b62-neutral-mock-copy.yml'
   workflow_dispatch:

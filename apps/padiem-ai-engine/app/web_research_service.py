@@ -107,7 +107,7 @@ def _judge_profile(model_policy: Mapping[str, Any]) -> AgentProfile:
         system_instruction=_JUDGE_INSTRUCTION,
         task_type="general",
         optimize_for="balanced",
-        max_tokens=256,
+        max_tokens=None,
         allowed_tools=(),
         required_capabilities=(),
         model_policy=dict(model_policy),
@@ -218,7 +218,11 @@ def _additional_system_context(value: Any) -> str | None:
     text = value.strip()
     if not text:
         return None
-    if len(text) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS:
+    # #4379: the additional system context carries no PADIEM character total.
+    if (
+        MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS is not None
+        and len(text) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS
+    ):
         raise ResearchContractError(
             "invalid_research_request",
             "additional_system_context exceeds the bounded context limit.",
@@ -361,15 +365,11 @@ class WebResearchEngineService:
                 status_code=exc.status_code,
             )
 
-        model_policy = getattr(request.agent, "model_policy", None)
-        model = model_policy.get("model") if isinstance(model_policy, Mapping) else None
-        if not isinstance(model, str) or not model.strip() or model.strip() == "b14/auto":
-            return _service_error(
-                "auto_routing_deferred",
-                "b14/auto is reserved for future development; select an explicit registered model.",
-                status_code=422,
-            )
-
+        # #5002: the suspended Router auto route is refused by the one shared
+        # engine model rule (app/service.py::_model_policy), which this route
+        # reuses through build_execution_request(). The route therefore answers
+        # the same 422 auto_routing_deferred before any runtime or provider
+        # call, and it never needs a second, divergent judgement of its own.
         try:
             research_runtime = self._research_runtime_factory(request.app_id)
             # Evidence-only must not construct, select, or invoke a B14 model.
@@ -408,7 +408,7 @@ class WebResearchEngineService:
                 ),
                 task_type="general",
                 optimize_for="balanced",
-                max_tokens=240,
+                max_tokens=None,
                 allowed_tools=(),
                 required_capabilities=(),
                 # The planner must use the request's server-validated explicit

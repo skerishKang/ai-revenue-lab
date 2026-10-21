@@ -186,19 +186,6 @@
     return data;
   }
 
-  function bytesBase64(buffer) {
-    const bytes = new Uint8Array(buffer);
-    const blockSize = 32768;
-    const parts = [];
-    for (let i = 0; i < bytes.length; i += blockSize) {
-      let str = "";
-      const end = Math.min(i + blockSize, bytes.length);
-      for (let j = i; j < end; j++) str += String.fromCharCode(bytes[j]);
-      parts.push(str);
-    }
-    return btoa(parts.join(""));
-  }
-
   function init(root = document) {
     const $ = (id) => root.getElementById(id);
     const panel = $("clawWebOfficeDetails");
@@ -1132,12 +1119,14 @@
       setBusy(true);
       report("웹 저장소에 선택한 원본을 보관하고 있습니다.");
       try {
-        const buffer = await file.arrayBuffer();
-        if (buffer.byteLength !== file.size) throw new Error("파일 크기가 변경되어 보관하지 않았습니다.");
         const body = await jsonRequest(ENDPOINT, {
           method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ name: file.name, base64: bytesBase64(buffer) }),
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "Accept": "application/json",
+            "X-Padiem-Filename": encodeURIComponent(file.name),
+          },
+          body: file,
         });
         if (body.processing_started !== false || body.p01_approved !== false
             || body.drive_uploaded !== false || !validFile(body.file)) {

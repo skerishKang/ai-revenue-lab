@@ -58,6 +58,7 @@ from app.claw_artifact_delivery_receipt_store import (
 )
 from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
+from app.b14_service_proof import service_proof_headers
 from app.b66_search_boundary import authorized_b66_fact_search_binding
 from app.b66_registered_model_boundary import (
     B14QuoteExactModelExecutor,
@@ -73,7 +74,10 @@ from app.connector_owner_runtime_mount import compose_owner_enrollment_from_work
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
-from app.control_plane_identity_shadow import D1IdentityShadowStore
+from app.control_plane_identity_shadow import (
+    D1IdentityShadowStore,
+    RefreshingCanonicalSubjectResolver,
+)
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from app.dispatch_quota import (
     DispatchAwareB14Client,
@@ -83,6 +87,8 @@ from app.dispatch_quota import (
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
 from app.b66_signup_notifications import B66SignupNotifier
+from app.password_reset_delivery import build_email_delivery
+from app.password_reset_store import D1PasswordResetStore
 from app.claw_local_task_result_composition import (
     build_local_task_result_source_with_diagnostic,
 )
@@ -93,15 +99,20 @@ from app.saved_outputs import D1SavedOutputStore
 from app.usage_gate import D1UsageCounterStore, UsageGate
 from app.worker_config import (
     B14_SERVICE_BINDING_NAME,
+    B14_SERVICE_PROOF_SECRET_BINDING_NAME,
     B66_PDF_RENDERER_SERVICE_BINDING_NAME,
     D1_BINDING_NAME,
     GOOGLE_OAUTH_SERVICE_BINDING_NAME,
     IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
+    MAIL_API_KEY_BINDING_NAMES,
+    MAIL_FROM_BINDING_NAMES,
     WORKSPACE_R2_BINDING_NAME,
     VOICE_STT_SERVICE_BINDING_NAME,
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
+    resolve_first_secret_binding,
+    resolve_secret_binding,
     resolve_web_secrets_store_keys,
     settings_from_worker_bindings,
     p01_engine_config_from_worker_bindings,
@@ -264,10 +275,11 @@ class CloudflareB14ServiceTransport:
     configuration — not the hostname — selects the target Worker.
     """
 
-    def __init__(self, binding: Any):
+    def __init__(self, binding: Any, proof_secret: str | None = None):
         if binding is None:
             raise ValueError("B14 service binding is required")
         self.binding = binding
+        self.proof_secret = proof_secret
 
     async def get_json(self, path: str) -> tuple[int, bytes]:
         """Read only two fixed B14 model authority endpoints over Service Binding."""
@@ -299,14 +311,18 @@ class CloudflareB14ServiceTransport:
                 trace_headers["X-Request-Id"] = value
         except ImportError:
             pass
+        raw_body = json.dumps(payload, ensure_ascii=False)
         request = Request(
             url,
             method="POST",
             headers={
                 "Content-Type": "application/json",
                 **trace_headers,
+                # B14 spends platform-owned Provider credentials on this lane.
+                # The proof binds this exact body to this deployment.
+                **service_proof_headers(self.proof_secret, raw_body.encode("utf-8")),
             },
-            body=json.dumps(payload, ensure_ascii=False),
+            body=raw_body,
         )
         response = await self.binding.fetch(request.js_object)
         status = int(response.status)
@@ -407,10 +423,11 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
 class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
     """Progressive httpx transport backed by the fixed B14 Service Binding."""
 
-    def __init__(self, binding: Any):
+    def __init__(self, binding: Any, proof_secret: str | None = None):
         if binding is None:
             raise ValueError("B14 service binding is required")
         self.binding = binding
+        self.proof_secret = proof_secret
 
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
         try:
@@ -434,7 +451,14 @@ class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
             service_request = Request(
                 str(request.url),
                 method="POST",
-                headers={"Content-Type": "application/json", **trace_headers},
+                headers={
+                    "Content-Type": "application/json",
+                    **trace_headers,
+                    # B14 spends platform-owned Provider credentials on this lane.
+                    **service_proof_headers(
+                        self.proof_secret, body_text.encode("utf-8"),
+                    ),
+                },
                 body=body_text,
             )
         except Exception as exc:
@@ -809,6 +833,12 @@ class Default(WorkerEntrypoint):
                 )
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
+                # B14 spends platform-owned Provider credentials on its catalog
+                # execution lane. The deployment-owned proof secret lets B14
+                # verify this server-to-server caller before it resolves one.
+                b14_proof_secret = await resolve_secret_binding(
+                    self.env, B14_SERVICE_PROOF_SECRET_BINDING_NAME,
+                )
                 b66_pdf_binding = binding_value(self.env, B66_PDF_RENDERER_SERVICE_BINDING_NAME)
                 # #4643: private STT Worker Service Binding. Absent until CENTRAL
                 # adds it, which keeps every /api/voice/* route fail-closed.
@@ -829,6 +859,24 @@ class Default(WorkerEntrypoint):
                     if identity_binding is not None
                     else None
                 )
+                # #5484: the Engine admission authority resolves the engine
+                # entitlement by CANONICAL subject. The B62 product-local
+                # ``usr_*`` id is not a canonical subject id, so the Control
+                # Plane reverse product-user lookup fails closed and the whole
+                # Engine orchestration lane answers 503 ``entitlement_unavailable``.
+                # The canonical subject resolver already exists (#1617) and is
+                # composed from the same authority and shadow projection the
+                # Chat PC lane uses; only the Production composition was missing
+                # it. Absent either dependency the resolver stays None and the
+                # bridge keeps its previous (unbound) behaviour.
+                canonical_subject_resolver = (
+                    RefreshingCanonicalSubjectResolver(
+                        authority=identity_authority,
+                        store=identity_shadow_store,
+                    )
+                    if identity_authority is not None and identity_shadow_store is not None
+                    else None
+                )
                 google_oauth_workspace_truth = (
                     CloudflareGoogleOAuthWorkspaceTruth(google_oauth_binding)
                     if google_oauth_binding is not None
@@ -841,12 +889,12 @@ class Default(WorkerEntrypoint):
                     else None
                 )
                 service_transport = (
-                    CloudflareB14ServiceTransport(b14_binding)
+                    CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)
                     if b14_binding is not None
                     else None
                 )
                 stream_transport = (
-                    CloudflareB14StreamingServiceTransport(b14_binding)
+                    CloudflareB14StreamingServiceTransport(b14_binding, b14_proof_secret)
                     if b14_binding is not None
                     else None
                 )
@@ -983,6 +1031,19 @@ class Default(WorkerEntrypoint):
                                 _claw_desktop_secret = await _claw_desktop_secret
                         except Exception:
                             _claw_desktop_secret = None
+                # #5441: the transactional-mail credential is the EXISTING
+                # owner-side channel credential, resolved once and shared with
+                # the B66 signup notifier below. It is read through
+                # ``resolve_secret_binding``, so an account Secrets Store slot
+                # (an async .get() capability, not a string) is accepted too,
+                # and an unreadable binding never crashes the Worker and never
+                # fakes a delivery. Nothing here mints a second credential.
+                mail_api_key = await resolve_first_secret_binding(
+                    self.env, MAIL_API_KEY_BINDING_NAMES
+                ) or ""
+                mail_from = await resolve_first_secret_binding(
+                    self.env, MAIL_FROM_BINDING_NAMES
+                ) or ""
                 _worker_app = create_app(
                     settings=settings,
                     telemetry_exporter=_grafana_exporter,
@@ -1020,6 +1081,17 @@ class Default(WorkerEntrypoint):
                     claw_telegram_delivery_request_builder=(
                         claw_telegram_delivery_request_builder
                     ),
+                    # #5441 lost-password reset. The store is derived from the
+                    # existing Chat D1 binding; the delivery transport is
+                    # configured from the trusted Worker bindings only.
+                    password_reset_store=(
+                        D1PasswordResetStore(db_binding)
+                        if db_binding is not None else None
+                    ),
+                    password_reset_delivery=build_email_delivery(
+                        resend_api_key=mail_api_key,
+                        email_from=mail_from,
+                    ),
                 )
                 _worker_app.state.b66_membership_enforced = (
                     binding_value(self.env, "B66_MEMBERSHIP_ENFORCED") == "enabled"
@@ -1039,19 +1111,25 @@ class Default(WorkerEntrypoint):
                 )
                 # Optional signup notification channels: configuration comes
                 # exclusively from trusted Worker bindings, never browser input.
-                def _b66_notice_value(key):
-                    value = binding_value(self.env, key)
+                # #5441: every channel value is resolved as a secret binding, so
+                # a Secrets Store slot is accepted and an unreadable binding
+                # degrades to "this channel is not configured" instead of
+                # breaking the Worker.
+                async def _b66_notice_value(key):
+                    value = await resolve_secret_binding(self.env, key)
                     return value if isinstance(value, str) else ""
                 _b66_member_store = _worker_app.state.b66_member_admin_store
                 if _b66_member_store is not None:
                     _b66_notifier = B66SignupNotifier(
                         _b66_member_store,
-                        telegram_bot_token=_b66_notice_value("B66_ALERT_TELEGRAM_BOT_TOKEN"),
-                        telegram_chat_id=_b66_notice_value("B66_ALERT_TELEGRAM_CHAT_ID"),
-                        discord_webhook_url=_b66_notice_value("B66_ALERT_DISCORD_WEBHOOK_URL"),
-                        resend_api_key=_b66_notice_value("B66_ALERT_RESEND_API_KEY"),
-                        email_from=_b66_notice_value("B66_ALERT_EMAIL_FROM"),
-                        email_to=_b66_notice_value("B66_ALERT_EMAIL_TO"),
+                        telegram_bot_token=await _b66_notice_value("B66_ALERT_TELEGRAM_BOT_TOKEN"),
+                        telegram_chat_id=await _b66_notice_value("B66_ALERT_TELEGRAM_CHAT_ID"),
+                        discord_webhook_url=await _b66_notice_value("B66_ALERT_DISCORD_WEBHOOK_URL"),
+                        # The same resolved mail credential the reset mail
+                        # uses. One credential, one source, no second issuance.
+                        resend_api_key=mail_api_key,
+                        email_from=mail_from,
+                        email_to=await _b66_notice_value("B66_ALERT_EMAIL_TO"),
                     )
                     _worker_app.state.b66_signup_notifier = (
                         _b66_notifier if _b66_notifier.channels else None
@@ -1070,18 +1148,34 @@ class Default(WorkerEntrypoint):
                 # #3190: reuse the existing P01_ENGINE_SERVICE binding; no second
                 # Engine binding authority. Missing/malformed binding -> None ->
                 # the Drive case-folder routes fail closed with 503.
+                # #4379: when the same trusted P01 caller surface is configured,
+                # it is passed through so the PDF read can use the Engine byte
+                # route. A binding without caller values keeps the RPC it always
+                # used instead of half-converting, and no new binding, secret or
+                # app identity is consulted here.
                 try:
                     from app.drive_case_folder_engine import (
                         CloudflareDriveCaseFolderEngineClient,
                     )
                     from app.worker_config import P01_ENGINE_SERVICE_BINDING_NAME
 
-                    engine_binding = binding_value(self.env, P01_ENGINE_SERVICE_BINDING_NAME)
-                    drive_case_folder_engine_client = (
-                        CloudflareDriveCaseFolderEngineClient(engine_binding)
-                        if engine_binding is not None
-                        else None
-                    )
+                    drive_p01_config = p01_engine_config_from_worker_bindings(self.env)
+                    if drive_p01_config is not None:
+                        drive_case_folder_engine_client = (
+                            CloudflareDriveCaseFolderEngineClient(
+                                drive_p01_config.service_binding,
+                                caller_id=drive_p01_config.caller_id,
+                                credential=drive_p01_config.credential,
+                                request_factory=Request,
+                            )
+                        )
+                    else:
+                        engine_binding = binding_value(self.env, P01_ENGINE_SERVICE_BINDING_NAME)
+                        drive_case_folder_engine_client = (
+                            CloudflareDriveCaseFolderEngineClient(engine_binding)
+                            if engine_binding is not None
+                            else None
+                        )
                 except Exception:
                     drive_case_folder_engine_client = None
                 _worker_app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
@@ -1335,6 +1429,7 @@ class Default(WorkerEntrypoint):
                         settings=settings,
                         db_binding=db_binding,
                         request_factory=Request,
+                        canonical_subject_resolver=canonical_subject_resolver,
                     ),
                 )
             except ConfigError:

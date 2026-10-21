@@ -244,11 +244,9 @@ def _validate_stream_request(request: B14ChatRequest) -> None:
             "streaming_request_unsupported",
             "Business 14 streaming fallback is not enabled in this Core contract.",
         )
-    if request.routing.max_attempts not in (None, 1):
-        raise B14ExecutionError(
-            "streaming_request_unsupported",
-            "Business 14 streaming currently allows one route attempt only.",
-        )
+    # #4317: there is no attempt budget to constrain. The streaming lane tries
+    # the candidates the declared product grade allows, in order, and the
+    # gateway owns that list.
 
 
 def _validate_auto_stream_request(request: B14ChatRequest) -> None:

@@ -30,12 +30,15 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from padiem_ai_core.pc_device_identity import is_pc_device_id
+
 from .auth_routes import auth_ready, current_user_id
 from .b14_client import B14Client, ChatRuntimeError
 from .history import (
     HistoryForbidden,
     HistoryStore,
     PRODUCT_SCOPE_CHAT,
+    is_multi_command_action,
 )
 from .central_model_route_runtime import chat_request_tier_context
 from .pc_work_context import build_pc_work_context_text
@@ -74,7 +77,6 @@ CHAT_PC_QUERY_TOOL_ID = "claw.pc.query_drives"
 CHAT_PC_RUN_PREFIX = "chat_pcq_"
 
 _SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
-_DEVICE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
 class ChatPCDriveError(ValueError):
@@ -114,13 +116,13 @@ def build_chat_pc_agent_plan() -> dict[str, Any]:
     """Thin Chat adapter: the shared drive tool under the Chat agent id."""
     return {
         "agent_id": CHAT_PC_QUERY_AGENT_ID,
-        "steps": (
+        "steps": [
             {
                 "step_id": "query_drives",
                 "objective": "Query verified PC filesystem drives",
                 "tool_id": CHAT_PC_QUERY_TOOL_ID,
             },
-        ),
+        ],
     }
 
 
@@ -147,7 +149,7 @@ def build_chat_pc_files_agent_plan() -> dict[str, Any]:
     """The same two-step list/read plan the Claw product sends."""
     return {
         "agent_id": CHAT_PC_QUERY_AGENT_ID,
-        "steps": (
+        "steps": [
             {
                 "step_id": "list_files",
                 "objective": "List the approved folder on the verified owner PC",
@@ -158,7 +160,7 @@ def build_chat_pc_files_agent_plan() -> dict[str, Any]:
                 "objective": "Read the requested UTF-8 text file",
                 "tool_id": "claw.pc.read_file",
             },
-        ),
+        ],
     }
 
 
@@ -421,9 +423,7 @@ async def execute_chat_pc_drive_lane(
             "chat_pc_store_unavailable",
             "대화 기록을 현재 사용할 수 없습니다.",
         )
-    if device_id is not None and (
-        not isinstance(device_id, str) or not _DEVICE_ID_RE.fullmatch(device_id)
-    ):
+    if device_id is not None and not is_pc_device_id(device_id):
         raise ChatPCDriveError(
             "chat_pc_target_invalid",
             "선택한 PC 정보가 유효하지 않습니다.",
@@ -747,6 +747,12 @@ async def _append_lane_answer(
     run's summary; reusing that stored summary plus a lane-suffixed message
     id keeps the exactly-once and terminal-immutability guards intact while
     adding the model-composed answer to the same conversation.
+
+    #5015: a run that held more than one PC tool call already stored each
+    command's own result, so the answer is the run's overall completion. The
+    lane seals that completion through the run's own terminal, never through a
+    command result: the seal is refused while a command is still pending or
+    has failed, so the work can never read as completed when it was not.
     """
     _ = request
     try:
@@ -765,6 +771,15 @@ async def _append_lane_answer(
     if len(message_id) > 128:
         return False
     try:
+        if is_multi_command_action(run_row.get("action")):
+            # #5015: the run's own final answer carries its own message id, so
+            # the answer of a multi-command run is never confused with the
+            # answer of a single-command run that shares the same prefix.
+            sealed = await store.seal_run_terminal(
+                user_id=uid, run_id=run_id, message_id=run_id + "_final",
+                summary=summary, content=content, status="completed",
+            )
+            return bool(sealed)
         appended = await store.append_local_task_result(
             user_id=uid, run_id=run_id, message_id=message_id,
             summary=summary, content=content, status="completed",
@@ -791,16 +806,19 @@ async def _append_lane_notice(
     if len(message_id) > 128:
         return False
     try:
-        if isinstance(stored, str) and stored:
-            appended = await store.append_local_task_result(
+        notice_summary = stored if isinstance(stored, str) and stored else "failed"
+        if is_multi_command_action(run_row.get("action")):
+            # #5015: the notice is the run's own terminal, so it is sealed as
+            # such. A run that already carries a failed command stays failed.
+            sealed = await store.seal_run_terminal(
                 user_id=uid, run_id=run_id, message_id=message_id,
-                summary=stored, content=content, status=status,
+                summary=notice_summary, content=content, status=status,
             )
-        else:
-            appended = await store.append_local_task_result(
-                user_id=uid, run_id=run_id, message_id=message_id,
-                summary="failed", content=content, status=status,
-            )
+            return bool(sealed)
+        appended = await store.append_local_task_result(
+            user_id=uid, run_id=run_id, message_id=message_id,
+            summary=notice_summary, content=content, status=status,
+        )
         return bool(appended)
     except Exception:
         return False

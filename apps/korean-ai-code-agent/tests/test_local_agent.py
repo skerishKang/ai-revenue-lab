@@ -133,7 +133,7 @@ class LocalAgentContractTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             fake.execute(request(root_ref="missing"), now=NOW + timedelta(seconds=1))
 
-    def test_output_is_bounded_and_reports_truncation(self):
+    def test_output_is_not_cut_to_a_padiem_character_total(self):
         result = LocalCommandResult(
             request_id="local_command_1",
             run_id="run_1",
@@ -148,10 +148,10 @@ class LocalAgentContractTests(unittest.TestCase):
             dirty_worktree_before=False,
             dirty_worktree_after=False,
         )
-        self.assertEqual(len(result.stdout), 8192)
-        self.assertEqual(len(result.stderr), 8192)
-        self.assertTrue(result.stdout_truncated)
-        self.assertTrue(result.stderr_truncated)
+        # #4379: the local agent output is not cut to a character total and
+        # the result no longer claims a truncation.
+        self.assertEqual(len(result.stdout), 9000)
+        self.assertEqual(len(result.stderr), 9000)
 
     def test_non_windows_fake_runtime_is_not_claimed_complete(self):
         mac_profile = profile(platform=LocalAgentPlatform.MACOS)

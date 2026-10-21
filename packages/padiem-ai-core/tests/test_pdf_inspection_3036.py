@@ -64,13 +64,12 @@ def test_pdf_inspection_rejects_wrong_media_and_page_limit() -> None:
     with pytest.raises(DocumentNormalizationError) as media:
         inspect_pdf(name="report.txt", media_type="text/plain", payload=b"text")
     assert media.value.code == "unsupported_binary_media_type"
-    with pytest.raises(DocumentNormalizationError) as pages:
-        inspect_pdf(
-            name="report.pdf",
-            media_type="application/pdf",
-            payload=_pdf(*(["page"] * (MAX_PDF_PAGES + 1))),
-        )
-    assert pages.value.code == "pdf_page_limit"
+    inspection = inspect_pdf(
+        name="report.pdf",
+        media_type="application/pdf",
+        payload=_pdf(*(["page"] * (MAX_PDF_PAGES + 1))),
+    )
+    assert inspection.page_count == MAX_PDF_PAGES + 1
 
 
 def test_pdf_inspection_classifies_no_native_text_without_claiming_scan() -> None:

@@ -12,13 +12,20 @@ No provider connection, credential or B14 registry mutation happens here.
 """
 from __future__ import annotations
 
+import asyncio
+
 from contextlib import asynccontextmanager
 
 from starlette.requests import Request
 
-from padiem_control_plane.model_assignment_policy import ModelPolicySnapshot, TIERS
+from padiem_control_plane.model_assignment_policy import (
+    ModelPolicySnapshot,
+    TIERS,
+    product_scope_set,
+)
 from padiem_control_plane.model_tier_routes import (
     TierRouteResolution,
+    TierRouteSnapshot,
     effective_tier_route,
     static_tier_route,
 )
@@ -69,6 +76,9 @@ async def _blocked_models_from_store(
     Runtime route selection reads blocks so an operator's explicit block is
     never silently routed around. A policy read failure imposes no extra
     restriction: only the already validated central route remains in force.
+
+    #2505: the Chat and Claw surfaces share one grade setting, so a block on
+    either screen of the shared product blocks the shared setting for both.
     """
     read = getattr(store, "snapshot", None)
     if not callable(read):
@@ -80,10 +90,79 @@ async def _blocked_models_from_store(
         return frozenset()
     if not isinstance(snapshot, ModelPolicySnapshot) or snapshot.workspace_id != WORKSPACE:
         return frozenset()
+    blocked_scope = frozenset({"central"}) | product_scope_set(product)
     return frozenset(
         rule.model_id for rule in snapshot.rules
-        if rule.action == "block" and rule.tier == tier and rule.product in ("central", product)
+        if rule.action == "block" and rule.tier == tier and rule.product in blocked_scope
     )
+
+
+async def _read_route_snapshot(route_store: object) -> object | None:
+    """Read the applied route ledger once.
+
+    ``None`` means "no ledger could be read": no store is configured, the
+    migration is not applied, or D1 is unavailable. The caller then keeps the
+    historical static product contract instead of taking the product offline.
+    """
+    read = getattr(route_store, "snapshot", None)
+    if not callable(read):
+        return None
+    try:
+        value = read(WORKSPACE)
+        return await value if hasattr(value, "__await__") else value
+    except Exception:
+        return None
+
+
+def _applied_revision(snapshot: object) -> int:
+    """Ledger revision of this workspace read, 0 when there is no ledger."""
+    if isinstance(snapshot, TierRouteSnapshot) and snapshot.workspace_id == WORKSPACE:
+        return snapshot.revision
+    return 0
+
+
+async def resolve_tier_route_view_from_stores(
+    route_store: object,
+    policy_store: object,
+    *,
+    product: str,
+    tier: str,
+    static_primary: str | None,
+    static_fallback: str | None = None,
+) -> tuple[TierRouteResolution, int]:
+    """Store-based resolver plus the applied ledger revision (one read).
+
+    The revision is the ledger revision of the stored row that governs this
+    product/tier. A grade that no stored row governs reports 0, so a reader
+    never mistakes an unrelated ledger revision for an applied decision.
+    """
+    if tier not in TIERS:
+        raise ValueError("invalid route tier")
+    # The policy ledger is independent of the route ledger. A route read
+    # outage must not silently remove a policy block that remains readable.
+    # #4317 perf: the two stores are unrelated, so the two reads are issued
+    # together instead of one after the other. Each helper already fails closed
+    # on its own errors, so the outcome is identical and one store round trip
+    # leaves the chat TTFT path.
+    blocked_model_ids, snapshot = await asyncio.gather(
+        _blocked_models_from_store(policy_store, product, tier),
+        _read_route_snapshot(route_store),
+    )
+    if snapshot is None:
+        return static_tier_route(
+            static_primary, static_fallback, blocked_model_ids=blocked_model_ids,
+        ), 0
+    resolution = effective_tier_route(
+        snapshot,
+        workspace_id=WORKSPACE,
+        product=product,
+        tier=tier,
+        static_primary=static_primary,
+        static_fallback=static_fallback,
+        blocked_model_ids=blocked_model_ids,
+    )
+    revision = _applied_revision(snapshot) if resolution.source == "central" else 0
+    return resolution, revision
 
 
 async def resolve_tier_route_from_stores(
@@ -96,27 +175,15 @@ async def resolve_tier_route_from_stores(
     static_fallback: str | None = None,
 ) -> TierRouteResolution:
     """Store-based resolver for callers that have no HTTP Request (cron)."""
-    if tier not in TIERS:
-        raise ValueError("invalid route tier")
-    read = getattr(route_store, "snapshot", None)
-    if not callable(read):
-        return static_tier_route(static_primary, static_fallback)
-    try:
-        value = read(WORKSPACE)
-        snapshot = await value if hasattr(value, "__await__") else value
-    except Exception:
-        # Migration 050 not applied or D1 unavailable: preserve the historical
-        # product contract rather than taking the whole product offline.
-        return static_tier_route(static_primary, static_fallback)
-    return effective_tier_route(
-        snapshot,
-        workspace_id=WORKSPACE,
+    resolution, _revision = await resolve_tier_route_view_from_stores(
+        route_store,
+        policy_store,
         product=product,
         tier=tier,
         static_primary=static_primary,
         static_fallback=static_fallback,
-        blocked_model_ids=await _blocked_models_from_store(policy_store, product, tier),
     )
+    return resolution
 
 
 async def resolve_tier_route(
@@ -187,9 +254,15 @@ async def chat_request_tier_context(request: Request, tier_id: str):
         yield
 
 
-async def resolve_claw_tier_model_from_stores(
+async def resolve_claw_tier_model_view_from_stores(
     route_store: object, policy_store: object, tier_id: str,
-) -> TierRouteResolution:
+) -> tuple[TierRouteResolution, int]:
+    """Resolve the Claw grade route and report the applied ledger revision.
+
+    The revision lets a product read path state which applied central route it
+    is serving, so an operator can tell an applied decision from the static
+    declaration without reading the admin ledger separately.
+    """
     label = _LABEL_BY_ID.get(tier_id)
     if label is None:
         raise ValueError("invalid Claw tier")
@@ -202,20 +275,36 @@ async def resolve_claw_tier_model_from_stores(
         static_primary = None
     if tier_id == "free":
         static_fallback = FREE_FALLBACK_B14_MODEL_ID
-    return await resolve_tier_route_from_stores(
+    return await resolve_tier_route_view_from_stores(
         route_store, policy_store, product="claw", tier=_TIER_BY_ID[tier_id],
         static_primary=static_primary, static_fallback=static_fallback,
+    )
+
+
+async def resolve_claw_tier_model_from_stores(
+    route_store: object, policy_store: object, tier_id: str,
+) -> TierRouteResolution:
+    resolution, _revision = await resolve_claw_tier_model_view_from_stores(
+        route_store, policy_store, tier_id,
+    )
+    return resolution
+
+
+async def resolve_claw_tier_model_view(
+    request: Request, tier_id: str,
+) -> tuple[TierRouteResolution, int]:
+    return await resolve_claw_tier_model_view_from_stores(
+        _store(request),
+        getattr(request.app.state, "central_model_policy_store", None),
+        tier_id,
     )
 
 
 async def resolve_claw_tier_model(
     request: Request, tier_id: str,
 ) -> TierRouteResolution:
-    return await resolve_claw_tier_model_from_stores(
-        _store(request),
-        getattr(request.app.state, "central_model_policy_store", None),
-        tier_id,
-    )
+    resolution, _revision = await resolve_claw_tier_model_view(request, tier_id)
+    return resolution
 
 
 __all__ = [
@@ -225,6 +314,9 @@ __all__ = [
     "resolve_chat_tier_route",
     "resolve_claw_tier_model",
     "resolve_claw_tier_model_from_stores",
+    "resolve_claw_tier_model_view",
+    "resolve_claw_tier_model_view_from_stores",
     "resolve_tier_route",
     "resolve_tier_route_from_stores",
+    "resolve_tier_route_view_from_stores",
 ]

@@ -38,6 +38,7 @@ from padiem_ai_core.document_normalization import (
     extract_hwpx_text,
     extract_pptx_text,
     inspect_pdf,
+    read_xlsx_table,
     normalize_pdf_inspection,
     normalize_text_document,
     parse_hwpx_sections,
@@ -356,9 +357,10 @@ def test_pdf_bad_magic_encryption_page_limit_and_scanned_only_fail_closed() -> N
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=_blank_pdf(encrypted=True))
     assert encrypted.value.code == "pdf_encrypted"
 
+    # Historical PDF page ceiling removed; blank pages still have no readable native text.
     with pytest.raises(DocumentNormalizationError) as pages:
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=_blank_pdf(pages=MAX_PDF_PAGES + 1))
-    assert pages.value.code == "pdf_page_limit"
+    assert pages.value.code == "pdf_empty_text"
 
     with pytest.raises(DocumentNormalizationError) as scanned:
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=_blank_pdf())
@@ -695,11 +697,71 @@ def test_xlsx_extracts_values_and_archive_dtd_is_rejected_before_openpyxl() -> N
     assert "private" not in str(dtd.value)
 
 
-def test_binary_size_bound_fails_without_echoing_payload() -> None:
-    payload = b"PRIVATE" + b"x" * MAX_BINARY_DOCUMENT_BYTES
+def _xlsx_table_bytes() -> bytes:
+    _require_xlsx_extra()
+    assert Workbook is not None
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Items"
+    sheet.append(["코드", "명칭", "수량"])
+    sheet.append(["A-1", "베어링", 10])
+    sheet.append(["A-2", "볼트", 20])
+    detail = workbook.create_sheet("Notes")
+    detail["A1"] = "ignored"
+    output = BytesIO()
+    workbook.save(output)
+    workbook.close()
+    return output.getvalue()
+
+
+def test_xlsx_table_reads_header_and_rows_through_the_single_xlsx_authority() -> None:
+    payload = _xlsx_table_bytes()
+    table = read_xlsx_table(name="items.xlsx", media_type=XLSX_MIME, payload=payload)
+
+    assert table.sheet_title == "Items"
+    assert table.headers == ("코드", "명칭", "수량")
+    assert table.rows == (("A-1", "베어링", "10"), ("A-2", "볼트", "20"))
+    assert table.truncated is False
+    assert table.total_rows_seen == 2
+
+    second = read_xlsx_table(name="items.xlsx", media_type=XLSX_MIME, payload=payload, sheet_index=1)
+    assert second.sheet_title == "Notes"
+
+
+def test_xlsx_table_row_bound_truncates_instead_of_reading_the_whole_sheet() -> None:
+    payload = _xlsx_table_bytes()
+    table = read_xlsx_table(name="items.xlsx", media_type=XLSX_MIME, payload=payload, max_rows=1)
+
+    # The read stops at the bound, so only the first data row was inspected.
+    # ``truncated`` is what tells the caller the sheet held more.
+    assert table.rows == (("A-1", "베어링", "10"),)
+    assert table.truncated is True
+    assert table.total_rows_seen == 1
+
+
+def test_xlsx_table_rejects_a_non_xlsx_media_identity_and_a_missing_sheet() -> None:
+    payload = _xlsx_table_bytes()
+
+    with pytest.raises(DocumentNormalizationError) as wrong_media:
+        read_xlsx_table(name="items.pdf", media_type=PDF_MIME, payload=payload)
+    assert wrong_media.value.code == "unsupported_binary_media_type"
+
+    with pytest.raises(DocumentNormalizationError) as missing_sheet:
+        read_xlsx_table(name="items.xlsx", media_type=XLSX_MIME, payload=payload, sheet_index=5)
+    assert missing_sheet.value.code == "xlsx_sheet_missing"
+
+    with pytest.raises(DocumentNormalizationError) as bad_bound:
+        read_xlsx_table(name="items.xlsx", media_type=XLSX_MIME, payload=payload, max_rows=0)
+    assert bad_bound.value.code == "invalid_row_bound"
+
+
+def test_binary_over_the_old_size_bound_is_not_refused_for_its_size() -> None:
+    # #4379: a binary document carries no PADIEM byte total. The media
+    # validation still refuses the payload and still never echoes it.
+    payload = b"PRIVATE" + b"x" * (MAX_BINARY_DOCUMENT_BYTES + 1)
     with pytest.raises(DocumentNormalizationError) as exc:
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=payload)
-    assert exc.value.code == "binary_too_large"
+    assert exc.value.code != "binary_too_large"
     assert "PRIVATE" not in str(exc.value)
 
 

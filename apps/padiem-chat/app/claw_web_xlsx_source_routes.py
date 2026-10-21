@@ -6,11 +6,8 @@ P01 processing approval will be composed in a separate web milestone.
 """
 from __future__ import annotations
 
-import base64
-import binascii
-import json
 import re
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
@@ -30,7 +27,7 @@ _NO_STORE = {
     "Pragma": "no-cache", "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "no-referrer",
 }
-_MAX_BODY = ((MAX_WEB_XLSX_BYTES + 2) // 3) * 4 + 512
+_MAX_BODY = MAX_WEB_XLSX_BYTES
 
 
 def _error(status: int, code: str) -> JSONResponse:
@@ -72,30 +69,24 @@ async def web_xlsx_sources(request: Request) -> Response:
             "requires_p01_for_processing": True,
         }, headers=_NO_STORE)
 
-    if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
+    if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/octet-stream":
         return _error(415, "unsupported_media_type")
-    try:
-        raw = await read_bounded_request_body(request, max_bytes=_MAX_BODY)
-    except RequestBodyTooLarge:
-        return _error(413, "web_xlsx_too_large")
-    try:
-        data = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, ValueError):
-        return _error(400, "invalid_json")
-    if not isinstance(data, dict) or set(data) != {"name", "base64"}:
+    encoded_name = request.headers.get("x-padiem-filename")
+    if not encoded_name or len(encoded_name) > 512:
         return _error(400, "invalid_web_xlsx_shape")
-    encoded = data["base64"]
-    if type(encoded) is not str or not encoded or len(encoded) > _MAX_BODY:
-        return _error(422, "invalid_web_xlsx_payload")
     try:
-        payload = base64.b64decode(encoded, validate=True)
-        if not 0 < len(payload) <= MAX_WEB_XLSX_BYTES:
-            return _error(413, "web_xlsx_too_large")
+        filename = unquote(encoded_name, encoding="utf-8", errors="strict")
+        # A raw byte request avoids a Base64 intermediary and JSON decoding.
+        payload = await read_bounded_request_body(request, max_bytes=_MAX_BODY)
+        if not payload:
+            return _error(422, "invalid_web_xlsx_payload")
         file = await store.put_web_xlsx(
             tenant_id=workspace, owner_id=owner, workspace_id=workspace,
-            filename=data["name"], body=payload,
+            filename=filename, body=payload,
         )
-    except (binascii.Error, ValueError, TypeError):
+    except RequestBodyTooLarge:
+        return _error(413, "web_xlsx_too_large")
+    except (ValueError, TypeError, UnicodeError):
         return _error(422, "invalid_web_xlsx_file")
     except (WorkspaceStorageError, AttributeError):
         return _error(503, "web_xlsx_save_unavailable")

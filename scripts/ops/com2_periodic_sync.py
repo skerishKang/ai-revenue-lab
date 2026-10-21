@@ -51,6 +51,18 @@ STATUS_NAME = "scheduled-sync-status.json"
 LOG_NAME = "scheduled-sync.log"
 DEFAULT_TASK_NAME = "PADIEM-COM2-D1-R2-Sync"
 DEFAULT_TASK_TIME = "04:20"
+# #5484: the COM2 DPAPI secret store is the only Cloudflare credential path on
+# that host. The D1 export already goes through it; the inventory Worker must
+# too, because ``wrangler dev`` with a remote R2 binding opens a remote proxy
+# session and fails with "You must be logged in to use wrangler dev in remote
+# mode" when no credential is present.
+DEFAULT_SECRET_STORE = r"D:\PADIEM-Servers\infrastructure\secret-store\store.py"
+# #5484: the COM2 B62 runtime opens the generation named by this pointer. Nothing
+# published it after a successful sync, so the runtime kept serving an old
+# generation while the sync published a new one every day. The publisher lives
+# next to this runner; the store is the COM2 B62 runtime generation store.
+DEFAULT_B62_STORE = r"D:\PADIEM-Servers\b62-chat-api\runtime\generation-store"
+B62_PUBLISHER_NAME = "com2_b62_generation_publish.py"
 R2_BUCKETS = ("workspace", "b66", "media")
 REQUIRED_LAYOUT = ("refresh_d1.py", "r2_sync.py", "inventory.mjs", "wrangler.inventory.toml")
 
@@ -60,6 +72,7 @@ _DIFF_LINE = re.compile(
 )
 _D1_GENERATION = re.compile(r"^D1_PUBLISHED_GENERATION\s+(\S+)")
 _R2_GENERATION = re.compile(r"^R2_PUBLISHED_GENERATION\s+(\S+)")
+_B62_PUBLISHED = re.compile(r"^B62_GENERATION_PUBLISHED\s+(?P<fields>.+)$")
 
 
 class SyncError(Exception):
@@ -203,6 +216,27 @@ class InventoryServer:
             self.output.close()
 
 
+def inventory_command(
+    *,
+    wrangler: str,
+    port: int,
+    secret_store: Path | None = None,
+    python: str = sys.executable,
+) -> list[str]:
+    """Build the inventory Worker command.
+
+    ``wrangler dev`` with a remote R2 binding opens a remote proxy session, so
+    it needs a Cloudflare credential. On COM2 that credential lives only in the
+    DPAPI secret store, exactly like the D1 export credential. #5484: without
+    the store wrapper the remote proxy session fails and the inventory Worker
+    exits before the first inventory request, which fails the whole sync.
+    """
+    command = [wrangler, "dev", "--config", "wrangler.inventory.toml", "--port", str(port)]
+    if secret_store is not None and Path(secret_store).is_file():
+        command = [python, str(secret_store), "run", *command]
+    return command
+
+
 def start_inventory(
     root: Path,
     *,
@@ -210,6 +244,8 @@ def start_inventory(
     port: int,
     log: _Logger,
     startup_timeout: float = 90.0,
+    secret_store: Path | None = None,
+    python: str = sys.executable,
 ) -> InventoryServer:
     selected = port or _free_port()
     output_path = Path(root) / "logs" / "inventory-worker.log"
@@ -217,7 +253,12 @@ def start_inventory(
     output = output_path.open("a", encoding="utf-8", errors="replace")
     try:
         process = subprocess.Popen(
-            [wrangler, "dev", "--config", "wrangler.inventory.toml", "--port", str(selected)],
+            inventory_command(
+                wrangler=wrangler,
+                port=selected,
+                secret_store=secret_store,
+                python=python,
+            ),
             cwd=root,
             stdout=output,
             stderr=subprocess.STDOUT,
@@ -318,6 +359,59 @@ def _preflight(root: Path) -> None:
 InventoryFactory = Callable[..., Any]
 
 
+def publish_b62_pointer(
+    root: Path,
+    *,
+    store: Path | None,
+    log: _Logger,
+    python: str = sys.executable,
+) -> dict[str, Any]:
+    """Publish the COM2 B62 runtime pointer for the generation just synced.
+
+    The B62 runtime reads exactly one pointer and refuses to start when it
+    disagrees with the artifacts on disk. Publishing it right after a
+    successful sync is what keeps the runtime on the current generation instead
+    of an old one.
+
+    The step is skipped, and recorded as skipped, on a host that has no B62
+    runtime store. A real publish failure fails the sync: a runtime that keeps
+    serving an old generation is not a successful sync.
+    """
+
+    if store is None or not Path(store).parent.is_dir():
+        log.emit("B62_POINTER_SKIPPED", "reason=b62_runtime_store_absent")
+        return {"published": False, "skipped": True, "reason": "b62_runtime_store_absent"}
+    publisher = Path(__file__).resolve().parent / B62_PUBLISHER_NAME
+    if not publisher.is_file():
+        log.emit("B62_POINTER_SKIPPED", "reason=b62_publisher_absent")
+        return {"published": False, "skipped": True, "reason": "b62_publisher_absent"}
+    started = time.monotonic()
+    completed = subprocess.run(
+        [
+            python,
+            str(publisher),
+            "publish",
+            "--source-root",
+            str(root),
+            "--store",
+            str(store),
+        ],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=300,
+        check=False,
+    )
+    seconds = round(time.monotonic() - started, 1)
+    output = (completed.stdout or "") + (completed.stderr or "")
+    if completed.returncode != 0:
+        raise SyncError("b62_pointer_publish_failed")
+    fields = _last_marker(output, _B62_PUBLISHED)
+    log.emit("B62_POINTER_PUBLISHED", f"seconds={seconds}", fields or "")
+    return {"published": True, "skipped": False, "seconds": seconds, "pointer": fields}
+
+
 def run_once(
     root: Path,
     *,
@@ -329,6 +423,8 @@ def run_once(
     r2_sync_timeout: float = 3600.0,
     startup_timeout: float = 90.0,
     retry_delay: float = 2.0,
+    secret_store: Path | None = None,
+    b62_store: Path | None = None,
     log: _Logger | None = None,
     inventory_factory: InventoryFactory = start_inventory,
 ) -> int:
@@ -345,6 +441,7 @@ def run_once(
         "error": None,
         "d1": {},
         "r2": {},
+        "b62_pointer": {},
     }
 
     current_step = "d1"
@@ -363,7 +460,12 @@ def run_once(
 
         current_step = "inventory"
         server = inventory_factory(
-            root, wrangler=wrangler, port=port, log=log, startup_timeout=startup_timeout
+            root,
+            wrangler=wrangler,
+            port=port,
+            log=log,
+            startup_timeout=startup_timeout,
+            secret_store=secret_store,
         )
         try:
             counts = fetch_inventories(
@@ -394,6 +496,20 @@ def run_once(
         else:
             status["r2"]["mode"] = "unchanged"
             log.emit("R2_UNCHANGED")
+
+        # The B62 runtime pointer is published after the R2 step, not after the
+        # D1 step. The runtime verifies the pointer's R2 generation against the
+        # R2 staging pointer, and the R2 step publishes a newer R2 generation
+        # than the one that existed when the D1 step ran. Publishing earlier
+        # therefore left a pointer the runtime refuses to open
+        # (r2_generation_pointer_mismatch) and took the live listener down.
+        current_step = "b62_pointer"
+        status["b62_pointer"] = publish_b62_pointer(
+            root,
+            store=b62_store,
+            log=log,
+            python=python,
+        )
 
         status["ok"] = True
         status["finished_utc"] = _utc_now()
@@ -532,6 +648,23 @@ def _parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--r2-diff-timeout", type=float, default=600.0)
     run_parser.add_argument("--r2-sync-timeout", type=float, default=3600.0)
     run_parser.add_argument("--startup-timeout", type=float, default=90.0)
+    run_parser.add_argument(
+        "--secret-store",
+        default=DEFAULT_SECRET_STORE,
+        help=(
+            "COM2 DPAPI secret store that injects the Cloudflare credential into "
+            "the inventory Worker. The D1 export already uses the same store; "
+            "a remote R2 binding needs the same credential."
+        ),
+    )
+    run_parser.add_argument(
+        "--b62-store",
+        default=DEFAULT_B62_STORE,
+        help=(
+            "COM2 B62 runtime generation store whose pointer is published after "
+            "a successful sync. Skipped on a host without that store."
+        ),
+    )
     run_parser.set_defaults(handler=_command_run)
 
     status_parser = subparsers.add_parser("status", help="print the last run status")
@@ -567,6 +700,8 @@ def _command_run(args: argparse.Namespace) -> int:
         r2_diff_timeout=args.r2_diff_timeout,
         r2_sync_timeout=args.r2_sync_timeout,
         startup_timeout=args.startup_timeout,
+        secret_store=Path(args.secret_store) if args.secret_store else None,
+        b62_store=Path(args.b62_store) if args.b62_store else None,
     )
 
 

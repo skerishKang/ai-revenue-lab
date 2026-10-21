@@ -40,8 +40,6 @@ def fixture():
     messages = []
 
     async def first(sql, *args):
-        if "MAX(sequence_number)" in sql:
-            return None if not messages else {"max_sequence": max(r["sequence_number"] for r in messages)}
         if "FROM conversations" in sql:
             # #4657: the read now binds (conversation_id, user_id, product_scope).
             # Accept either argument count so the fixture is order-agnostic, and
@@ -55,11 +53,24 @@ def fixture():
         return sorted([dict(row) for row in messages], key=lambda r: r["sequence_number"])
 
     async def run(sql, *args):
-        if sql.startswith("INSERT INTO messages"):
-            mid, cid, seq, body, created_at = args
-            assert cid == CID
-            messages.append({"id": mid, "role": "user" if "'user'" in sql else "assistant",
-                             "content": body, "sequence_number": seq, "created_at": created_at})
+        if "INSERT INTO messages" in sql:
+            # #5226: the exchange is one atomic statement, so the bound values
+            # are the conversation id, then the user row (id, conversation,
+            # content, created_at), then the assistant row in the same shape.
+            # The store no longer supplies a sequence number: it is allocated
+            # inside the statement, so the fake allocates it the same way.
+            assert len(args) == 9, args
+            assert args[0] == CID and args[2] == CID and args[6] == CID
+            sequence = max((row["sequence_number"] for row in messages), default=-1) + 1
+            for message_id, body, created_at, role in (
+                (args[1], args[3], args[4], "user"),
+                (args[5], args[7], args[8], "assistant"),
+            ):
+                messages.append({
+                    "id": message_id, "role": role, "content": body,
+                    "sequence_number": sequence, "created_at": created_at,
+                })
+                sequence += 1
         elif sql.startswith("DELETE FROM conversations"):
             messages.clear()
         elif sql.startswith("UPDATE "):

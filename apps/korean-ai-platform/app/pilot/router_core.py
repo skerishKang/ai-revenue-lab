@@ -14,8 +14,8 @@ Automatic (D14, #2044):
     No scorer is consulted; task_type / required_capabilities /
     optimize_for / provider_order / allow_paid are accepted but ignored
     (recorded as ignored_options in reason_codes).
-  - allow_external_fallback=False → one attempt; max_attempts bounds the
-    chain walk (capped at the chain length).
+  - allow_external_fallback=False → one attempt; otherwise the chain walk is
+    the chain length. No attempt count narrows it (#4317).
   - Fallback on: timeout, transport failure, HTTP 429, HTTP 5xx
   - No fallback on: HTTP 400/401/403/404/409/422/any other 4xx,
     malformed request, malformed upstream response, missing key,
@@ -36,7 +36,10 @@ from app.pilot.catalog import (
     get_catalog_models,
 )
 from app.pilot.b14_runtime_config import runtime_config
-from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
+from app.pilot.owner_model_exclusions import (
+    excluded_from_owner_customer_selection,
+    free_candidate_excluded_from_execution,
+)
 from app.pilot.errors import NoSafeRoute, RoutingError
 
 
@@ -109,7 +112,11 @@ class RouteDecision:
     evidence_status: str
     request_id: str
     provider_mode: str
-    max_attempts: int
+    # There is no attempt limit here. The number of candidates one dispatch
+    # may try is the number of candidates the declared product grade allows:
+    # the selected model plus ``eligible_fallback``. B14 walks that list in
+    # order, advances only on a recoverable provider error, visits each
+    # candidate once, and stops when the list is exhausted (#4317).
     credential_source: str = ""  # platform_secret (OpenRouter retired, D14 #2044)
     platform_provider_id: str = ""
 
@@ -170,6 +177,11 @@ def resolve_manual_route(
     selected primary with trusted product grade instead receives
     exactly one preselected grade fallback on recoverable provider failure.
     The generic allow_external_fallback flag does not disable this fixed pair.
+
+    The number of candidates this route may try is the number of candidates
+    it allows: the selected model plus its eligible fallback list. No separate
+    attempt count narrows that list, so a grade with more allowed candidates
+    is tried in full without any numeric ceiling to maintain (#4317).
     """
     request_id = _new_request_id()
     # Owner exclusions override historical B14 registration in live mode.
@@ -178,6 +190,15 @@ def resolve_manual_route(
         raise NoSafeRoute(
             reason_code="owner_model_excluded",
             message="OWNER가 제외한 모델은 실행할 수 없습니다.",
+            upstream_called=False,
+        )
+    # #2505 (owner decision 2026-10-21): an excluded free candidate is never
+    # an execution candidate, so a customer that sends the exact id, or a
+    # resolver that answers with it, gets no route at all.
+    if free_candidate_excluded_from_execution(model_id):
+        raise NoSafeRoute(
+            reason_code="free_candidate_excluded",
+            message="제외된 무료 모델은 실행할 수 없습니다.",
             upstream_called=False,
         )
     cm = get_catalog_by_id(model_id)
@@ -222,7 +243,8 @@ def resolve_manual_route(
 
     route_id = f"platform:{cm.model_id}"
 
-    owner_tier_pair = model_id == "opencode-go/beam-free"
+    from .tier_fallback import TIER_DEFAULT_B14_MODEL
+    owner_tier_pair = product_tier == "free" and model_id == TIER_DEFAULT_B14_MODEL
     fallback_candidates: list[dict[str, str]] = []
     if owner_tier_pair:
         from .tier_fallback import TIER_FALLBACK_B14_MODELS
@@ -230,7 +252,7 @@ def resolve_manual_route(
             raise NoSafeRoute(reason_code="invalid_product_tier", message="Unsupported product tier.", upstream_called=False)
         for candidate_id in TIER_FALLBACK_B14_MODELS[product_tier]:
             target = get_catalog_by_id(candidate_id)
-            if target is not None and target.enabled and not excluded_from_owner_customer_selection(target.model_id) and _platform_secret_present(target):
+            if target is not None and target.enabled and not excluded_from_owner_customer_selection(target.model_id) and not free_candidate_excluded_from_execution(target.model_id) and _platform_secret_present(target):
                 fallback_candidates.append({
                     "model_id": target.model_id,
                     "upstream_model": target.upstream_model,
@@ -253,6 +275,7 @@ def resolve_manual_route(
             for m in all_models
             if m.model_id != model_id
             and not excluded_from_owner_customer_selection(m.model_id)
+            and not free_candidate_excluded_from_execution(m.model_id)
             and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
         ][:3]  # limit to top 3 fallback candidates
 
@@ -277,7 +300,6 @@ def resolve_manual_route(
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
         provider_mode=runtime_config.provider_mode,
-        max_attempts=(1 + len(fallback_candidates)) if owner_tier_pair else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3)),
         credential_source=cred_source,
         platform_provider_id=plat_pid,
     )
@@ -304,7 +326,6 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
         allow_external_fallback = opts.get("allow_external_fallback", True)
         return resolve_chain_route(
             allow_external_fallback=allow_external_fallback,
-            max_attempts=opts.get("max_attempts"),
             requested_options=opts,
         )
 

@@ -102,7 +102,8 @@ async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provid
         "task_type": "general",
         "optimize_for": "korean",
         "allow_external_fallback": False,
-        "max_attempts": 1,
+        # #5362 removed the default one-step agent execution ceiling, so no
+        # attempt ceiling is sent.
         "required_capabilities": ["chat"],
         # #4805: the B14 owner-pinned failover boundary carries the exact
         # selected grade, because B14's legacy default is Free and omitting the
@@ -375,7 +376,7 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert "chatTransport.requestCompleted(payload, signal)" in js
     assert 'fetch("/api/chat"' in transport
     assert "conversationState.setSkill(selectedSkill)" in js
-    assert 'let skill = "auto";' in conversation_state
+    assert 'skill: "auto"' in conversation_state
     assert "OPENROUTER" not in html.upper()
     assert "API_KEY" not in html
     assert "API_KEY" not in js

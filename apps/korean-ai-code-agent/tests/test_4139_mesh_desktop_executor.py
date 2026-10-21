@@ -8,7 +8,6 @@ MeshCentral server and no live credential are involved.
 """
 from __future__ import annotations
 
-import base64
 import hashlib
 import json
 import tempfile
@@ -20,6 +19,7 @@ from kagent.local_agent_meshcentral_desktop_port import (
     MeshCentralDesktopRefused,
 )
 from kagent.local_agent_oracle_mesh_executor import (
+    MAX_COMMAND_BYTES,
     OracleMeshDispatch,
     OracleMeshExecutionOutcome,
     OracleMeshExecutor,
@@ -186,6 +186,12 @@ class DesktopSubmitTests(unittest.TestCase):
             transport=transport, pending_dir=work_dir,
         )
 
+    @staticmethod
+    def _frame(payload):
+        header_size = int.from_bytes(payload[:4], "big")
+        header = json.loads(payload[4:4 + header_size].decode("utf-8"))
+        return header, payload[4 + header_size:]
+
     def test_serialized_jpeg_over_envelope_is_preserved_not_posted(self):
         calls = []
         def transport(path, payload):
@@ -195,7 +201,7 @@ class DesktopSubmitTests(unittest.TestCase):
             executor = self._executor(transport, work)
             outcome = OracleMeshExecutionOutcome(
                 termination="captured", exit_code=None,
-                body=b"\xff\xd8\xff" + b"x" * 4_600_000,
+                body=b"\xff\xd8\xff" + b"x" * MAX_COMMAND_BYTES,
                 note="capture")
             verdict = executor.submit(_desktop_dispatch(), outcome)
             self.assertEqual(verdict.get("reason"), "desktop_result_wire_envelope_exceeded")
@@ -203,24 +209,47 @@ class DesktopSubmitTests(unittest.TestCase):
             self.assertEqual(calls, [])
             self.assertTrue(executor.resend_pending)
 
+    def test_binary_frame_ships_a_jpeg_that_base64_could_not(self):
+        # 4.6MB of JPEG was 6.13MB as base64 JSON and refused at the same
+        # 6MB envelope; the binary frame carries it unchanged (#4379).
+        seen = {}
+
+        def transport(path, payload):
+            seen["payload"] = payload
+            return 200, {"ok": True}
+
+        body = b"\xff\xd8\xff" + b"x" * 4_600_000
+        outcome = OracleMeshExecutionOutcome(
+            termination="captured", exit_code=None, body=body, note="capture")
+        result = self._executor(transport).submit(_desktop_dispatch(), outcome)
+        self.assertTrue(result.get("ok"))
+        self.assertIsInstance(seen["payload"], bytes)
+        self.assertLess(len(seen["payload"]), MAX_COMMAND_BYTES)
+        header, raw = self._frame(seen["payload"])
+        self.assertEqual(raw, body)
+        self.assertEqual(header["content_blob_bytes"], len(body))
+
     def test_capture_payload_pins_the_png(self):
         seen = {}
 
         def transport(path, payload):
-            seen.update(payload)
+            seen["payload"] = payload
             return 200, {"ok": True}
 
         outcome = OracleMeshExecutionOutcome(
             termination="captured", exit_code=None, body=PNG, note=NOTE)
         result = self._executor(transport).submit(_desktop_dispatch(), outcome)
         self.assertTrue(result.get("ok"))
-        self.assertEqual(seen["content_utf8"], NOTE)
-        self.assertEqual(seen["content_sha256"], hashlib.sha256(PNG).hexdigest())
-        self.assertEqual(seen["content_bytes"], len(PNG))
-        self.assertEqual(seen["content_blob_sha256"], hashlib.sha256(PNG).hexdigest())
-        self.assertEqual(seen["content_blob_bytes"], len(PNG))
-        self.assertEqual(seen["content_blob_media_type"], "image/jpeg")
-        self.assertEqual(base64.b64decode(seen["content_blob_base64"]), PNG)
+        self.assertIsInstance(seen["payload"], bytes)
+        header, raw = self._frame(seen["payload"])
+        self.assertEqual(raw, PNG)
+        self.assertEqual(header["content_utf8"], NOTE)
+        self.assertEqual(header["content_sha256"], hashlib.sha256(PNG).hexdigest())
+        self.assertEqual(header["content_bytes"], len(PNG))
+        self.assertEqual(header["content_blob_sha256"], hashlib.sha256(PNG).hexdigest())
+        self.assertEqual(header["content_blob_bytes"], len(PNG))
+        self.assertEqual(header["content_blob_media_type"], "image/jpeg")
+        self.assertNotIn("content_blob_base64", header)
 
     def test_act_payload_pins_the_note(self):
         seen = {}
@@ -242,7 +271,7 @@ class DesktopSubmitTests(unittest.TestCase):
         calls = []
 
         def transport(path, payload):
-            calls.append(dict(payload))
+            calls.append(payload)
             return 503, {"error": {"code": "oracle_mesh_dispatch_unavailable"}}
 
         executor = self._executor(transport)

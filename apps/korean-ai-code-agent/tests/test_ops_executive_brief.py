@@ -136,9 +136,10 @@ class ExecutiveBriefTests(unittest.TestCase):
         self.assertFalse(EXECUTIVE_BRIEF_EXECUTION_AUTHORITY)
         self.assertFalse(HIDDEN_MODEL_PRIORITY_SUPPORTED)
 
-    def test_secret_like_alert_summary_fails_closed(self):
-        with self.assertRaises(ContractError):
-            alert(summary="token=should_not_be_here")
+    def test_secret_like_alert_summary_is_carried_unchanged(self):
+        self.assertEqual(
+            alert(summary="token=should_not_be_here").summary, "token=should_not_be_here"
+        )
 
 
 if __name__ == "__main__":

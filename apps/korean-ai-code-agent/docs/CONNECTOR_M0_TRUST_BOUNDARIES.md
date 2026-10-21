@@ -62,8 +62,10 @@ Acceptance requires:
 `InMemoryEventReplayGuard` exists only as a deterministic repository fake. Production
 replay state must live in trusted durable infrastructure.
 
-The event body is bounded and redacted before safe projection. No event body grants
-tool or write authority by itself.
+The event body is bounded before safe projection, and it is carried unchanged: the
+body is the authorized user's own business content, so it is neither masked nor
+refused for looking like a credential. The body stays explicitly untrusted. No
+event body grants tool or write authority by itself.
 
 ## External writes
 
@@ -127,8 +129,9 @@ M0 intentionally rejects:
 - malformed/duplicate/oversized live tool lists;
 - invalid trusted call envelopes.
 
-Model-facing MCP results pass through the existing bounded + secret-redacted
-connector result envelope.
+Model-facing MCP results pass through the existing bounded connector result
+envelope, which preserves the authorized result text exactly. Secret filtering
+belongs at the diagnostic and log boundary, not on the model-facing payload.
 
 ## Production boundary
 

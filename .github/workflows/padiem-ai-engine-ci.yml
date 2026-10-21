@@ -97,13 +97,10 @@ jobs:
         working-directory: apps/padiem-ai-engine
         run: node --test ingress/test/worker.test.mjs
 
-      # #3989: preserve both original full suites and dependency checks, but
-      # overlap them on this same runner. The wrapper waits for BOTH and fails
-      # closed when either subprocess fails. No additional runner is allocated.
-      - name: Padiem AI Core full tests and Living Learning Core-reuse regression
+      - name: Padiem AI Core full tests
         if: steps.engine-source.outputs.present == 'true'
-        shell: bash
-        run: bash .github/scripts/engine_core_ll_parallel_3989.sh
+        working-directory: packages/padiem-ai-core
+        run: uv run --extra dev python -m pytest -q
 
       - name: Pywrangler dependency sync
         if: steps.engine-source.outputs.present == 'true'

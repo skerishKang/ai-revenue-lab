@@ -16,6 +16,16 @@ COLUMNS = (
 )
 INDEX_COLUMNS = ("user_id", "workspace_id", "status", "updated_at")
 
+# #4379 releases the 256 KiB byte ceiling of migration 022 with a forward
+# rebuild, so the probe accepts exactly the two reviewed shapes of the column
+# CHECK: the released one and the one after the release. The non-empty lower
+# bound is part of both.
+_BYTE_LENGTH_CHECK = re.compile(r"byte_length integer not null check \([^)]*\)")
+_ALLOWED_BYTE_LENGTH_CHECKS = (
+    "byte_length integer not null check (byte_length >= 1 and byte_length <= 262144)",
+    "byte_length integer not null check (byte_length >= 1)",
+)
+
 
 class SchemaEvidenceError(RuntimeError):
     pass
@@ -68,6 +78,11 @@ def classify_schema(payload: object) -> str:
         return "drift"
 
     table_sql = _normalized_sql(table.get("sql"))
+    # #4379 releases the 256 KiB byte ceiling by a forward rebuild, so the same
+    # pre-deploy probe must accept the table on both sides of that release. The
+    # structural contract the B66 code depends on is still pinned: the column has
+    # a CHECK and it still refuses a zero-length row. Any other ceiling is
+    # drift, not a third accepted shape.
     required = (
         "id text primary key",
         "user_id text not null references users(id) on delete cascade",
@@ -75,13 +90,18 @@ def classify_schema(payload: object) -> str:
         "asset_kind text not null check (asset_kind in ('logo', 'stamp'))",
         "media_type text not null check (media_type in ('image/png', 'image/jpeg', 'image/webp'))",
         "object_key text not null unique",
-        "byte_length integer not null check (byte_length >= 1 and byte_length <= 262144)",
         "sha256 text not null",
         "status text not null check (status in ('approved', 'disabled'))",
         "created_at text not null",
         "updated_at text not null",
     )
     if any(fragment not in table_sql for fragment in required):
+        return "drift"
+
+    byte_length_check = _BYTE_LENGTH_CHECK.search(table_sql)
+    if byte_length_check is None:
+        return "drift"
+    if byte_length_check.group(0) not in _ALLOWED_BYTE_LENGTH_CHECKS:
         return "drift"
 
     if len(foreign_keys) != 1:

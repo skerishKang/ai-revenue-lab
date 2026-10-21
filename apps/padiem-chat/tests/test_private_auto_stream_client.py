@@ -122,7 +122,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_plus_policy():
         assert seen["model"] == REQUEST_MODEL == DEFAULT_B14_MODEL_ID
         assert seen["business14"]["required_capabilities"] == ["free"]
         assert seen["business14"]["allow_external_fallback"] is False
-        assert seen["business14"]["max_attempts"] == 1
+        assert "max_attempts" not in seen["business14"]
         assert seen["business14"]["task_type"] == skill.task_type
         assert seen["business14"]["optimize_for"] == skill.optimize_for
         assert "provider" not in seen["business14"]

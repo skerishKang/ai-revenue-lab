@@ -101,6 +101,13 @@ _HOLD_POLICY_MODULES = {
     "test_free_member_chat_4317.py",
     # #5002: derives every B66 grade from the real shared active route.
     "test_b66_manual_model_choice_contract.py",
+    # #5108: derives the static lane and the applied central route from the
+    # real shared product-tier declaration.
+    "test_5108_admin_route_projection.py",
+    "test_5108_admin_route_revision_visibility.py",
+    # #5108: the Chat route-execution gate is proven against the real shared
+    # product-tier declaration, not the synthetic Plus route.
+    "test_5108_chat_central_route_execution.py",
 }
 
 

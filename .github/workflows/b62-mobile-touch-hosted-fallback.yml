@@ -1,0 +1,118 @@
+name: B62 Mobile Touch Hosted Fallback
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Same-repository open PR
+        required: true
+        type: string
+      expected_sha:
+        description: Exact PR head SHA
+        required: true
+        type: string
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+jobs:
+  mobile-touch-target-qa:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: 'false'
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_TOUCH_QA_BASE_URL: http://127.0.0.1:8784
+      B62_TOUCH_QA_OUT_DIR: ../../.tmp/b62-mobile-touch-target-qa
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - name: Verify exact PR head
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ inputs.pr_number }}
+          EXPECTED: ${{ inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$PR" =~ ^[1-9][0-9]{0,7}$ && "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/$PR" | python3 -c 'import json,os,sys;p=json.load(sys.stdin);assert p["state"]=="open" and p["head"]["sha"]==os.environ["EXPECTED"] and p["head"]["repo"]["full_name"]==os.environ["GITHUB_REPOSITORY"]'
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.expected_sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.5'
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Compile touch-target QA
+        run: uv run python -m py_compile ../../.github/scripts/b62_mobile_touch_target_qa.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps --only-shell chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8784 > /tmp/b62-touch-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-touch-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8784/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-touch-browser-server.log
+          exit 1
+      - name: Verify 390x844 mobile touch targets
+        id: touch_qa
+        run: uv run python ../../.github/scripts/b62_mobile_touch_target_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-mobile-touch-target-qa/report.json ]; then
+            cat ../../.tmp/b62-mobile-touch-target-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-mobile-touch-hosted-fallback
+          path: .tmp/b62-mobile-touch-target-qa
+          if-no-files-found: error
+          retention-days: 14
+      - name: Publish final mobile gate from hosted fallback
+        if: ${{ always() && steps.touch_qa.outcome != 'skipped' }}
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED: ${{ inputs.expected_sha }}
+          RESULT: ${{ steps.touch_qa.outcome }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          # Guard against stale or closed PR before writing a status to HEAD.
+          curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${{ inputs.pr_number }}" | EXPECTED="$EXPECTED" python3 -c 'import json,os,sys;p=json.load(sys.stdin);assert p["state"]=="open" and p["head"]["sha"]==os.environ["EXPECTED"] and p["head"]["repo"]["full_name"]==os.environ["GITHUB_REPOSITORY"]'
+          export STATE=failure
+          if [[ "$RESULT" == success ]]; then export STATE=success; fi
+          payload="$(python3 - <<'PY'
+          import json,os
+          print(json.dumps({"context":"B62 mobile QA final","state":os.environ["STATE"],"description":"Hosted mobile Chromium fallback "+os.environ["STATE"],"target_url":"https://github.com/"+os.environ["GITHUB_REPOSITORY"]+"/actions/runs/"+os.environ["GITHUB_RUN_ID"]}))
+          PY
+          )"
+          curl --fail --silent --show-error -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/$EXPECTED" --data "$payload"

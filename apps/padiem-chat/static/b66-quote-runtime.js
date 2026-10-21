@@ -500,6 +500,8 @@
     if (!node) return;
     node.textContent = text;
     node.dataset.state = state || "";
+    // #5453: the sweep only rides a state the run is really in.
+    node.classList?.toggle?.("padiem-activity-sweep", state === "working");
   }
 
 
@@ -740,6 +742,8 @@
     if (!node) return;
     node.textContent = text;
     node.dataset.state = state || "";
+    // #5453: the sweep only rides a state the run is really in.
+    node.classList?.toggle?.("padiem-activity-sweep", state === "working");
   }
 
   async function refreshModels() {

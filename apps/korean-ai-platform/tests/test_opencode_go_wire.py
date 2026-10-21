@@ -37,6 +37,28 @@ def test_five_exact_wire_shapes(name, wire):
         assert body["messages"] == [{"role": "user", "content": "Write a Python function."}]
 
 
+def test_inference_urls_pin_the_documented_wire_families():
+    """Inference endpoints are family-specific under the approved Go origin.
+
+    The registry origin stays the owner-approved model-list anchor; the
+    OpenAI-compatible families use /openai/v1 and the Anthropic family uses
+    /anthropic/v1. This pins the exact provider-documented URL per family, so
+    a regression cannot pass by keeping only the path suffix.
+    """
+
+    assert go._go_url("chat/completions") == (
+        "https://opencode.ai/inference/go/openai/v1/chat/completions"
+    )
+    assert go._go_url("responses") == (
+        "https://opencode.ai/inference/go/openai/v1/responses"
+    )
+    assert go._go_url("messages") == (
+        "https://opencode.ai/inference/go/anthropic/v1/messages"
+    )
+    with pytest.raises(PilotNotConfigured):
+        go._go_url("embeddings")
+
+
 @pytest.mark.parametrize("name", GO_IDS)
 def test_one_turn_without_product_session_generates_provider_session(name):
     _, _, headers = go.prepare_go_request(
@@ -77,13 +99,13 @@ async def test_completed_protocols_with_synthetic_headers(monkeypatch, name, rep
         assert req.url.host == "opencode.ai"
         assert req.headers["x-opencode-session"] == SESSION
         if name.startswith("claude"):
-            assert req.url.path.endswith("/messages")
+            assert req.url.path == "/inference/go/anthropic/v1/messages"
             assert req.headers["x-api-key"] == "synthetic-test-credential"
             assert "authorization" not in req.headers
         elif name.startswith(("gpt", "muse")):
-            assert req.url.path.endswith("/responses")
+            assert req.url.path == "/inference/go/openai/v1/responses"
         else:
-            assert req.url.path.endswith("/chat/completions")
+            assert req.url.path == "/inference/go/openai/v1/chat/completions"
         return httpx.Response(200, json=reply)
     got = await go.call_go_model(model_id="opencode-go/"+name, upstream_model=name, messages=TURNS, session_id=SESSION, max_tokens=32, transport=httpx.MockTransport(handle))
     assert got["choices"][0]["message"]["content"] == expected

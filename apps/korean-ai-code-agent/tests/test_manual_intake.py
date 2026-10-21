@@ -40,6 +40,17 @@ class TestManualIntakeContracts(unittest.TestCase):
             self.assertEqual(res.action, ManualIntakeAction.QUOTE_DRAFT)
             self.assertIn("견적서 초안", res.title)
 
+    def test_original_result_text_is_preserved(self):
+        from kagent.manual_intake import ManualIntakeResult
+        from datetime import datetime, timezone
+        original = 'Bearer sk-test-demo-123456789012345678901234567890'
+        result = ManualIntakeResult(request_id='req-original', workspace_id='ws-test-01',
+            channel=ManualIntakeChannel.EMAIL, action=ManualIntakeAction.QUOTE_DRAFT,
+            title='Original', result_text=original,
+            safety_decision=ManualIntakeSafetyDecision(raw_input_trusted_as_memory=False,
+                memory_update_requires_user_approval=True))
+        self.assertEqual(result.safe_dict()['result_text'], original)
+
     def test_connectorless_execution(self):
         req = ManualIntakeRequest(
             request_id="req-sms-01",

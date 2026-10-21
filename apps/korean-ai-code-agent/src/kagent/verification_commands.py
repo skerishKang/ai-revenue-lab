@@ -245,7 +245,9 @@ class DeterministicFakeVerificationExecutor:
     ) -> VerificationExecutionReceipt:
         if not isinstance(request, VerificationCommandRequest) or not isinstance(spec, VerificationCommandSpec):
             raise ContractError("fake executor received invalid request/spec")
-        payload = redact_secrets(self.output).encode("utf-8")
+        # Receipt bytes and digest must describe the executed output, not a
+        # presentation-only redacted copy of it.
+        payload = self.output.encode("utf-8")
         if len(payload) > spec.max_output_bytes:
             raise ContractError("verification output exceeds command bound")
         self.executed.append((request, spec))

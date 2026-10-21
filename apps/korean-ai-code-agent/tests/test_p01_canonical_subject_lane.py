@@ -448,18 +448,9 @@ def test_client_reuses_the_adapter_validator_object() -> None:
         assert client_validator is adapter_validator
 
 
-def test_client_source_declares_no_second_grammar() -> None:
-    import inspect
-
-    import kagent.p01_orchestration_client as client_mod
-
-    source = inspect.getsource(client_mod)
-    # The client keeps the reviewed bounded Engine error-code classifier and
-    # the closed PC device-hint grammar (#5015). It must not grow a second
-    # subject grammar: no local alphanumeric validation and no duplicate
-    # subject-length rule.
-    assert source.count("re.compile") == 2
-    assert "_BOUNDED_ENGINE_ERROR_CODE_RE" in source
-    assert "_PC_DEVICE_ID_RE" in source
-    assert "isalnum" not in source
-    assert "len(request.subject_id) > 256" not in source
+# #5141: these two source-grammar contracts moved to
+# ``tests/test_p01_orchestration_client.py`` (class
+# ``P01ClientSourceGrammarContractTests``). The KAgent CI lane discovers
+# ``unittest.TestCase`` cases only, so a pytest-style module contributed zero
+# cases and these assertions were never executed by any CI lane. The
+# assertion text is unchanged; do not add a second copy here.

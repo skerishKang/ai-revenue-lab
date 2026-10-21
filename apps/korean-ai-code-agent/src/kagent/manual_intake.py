@@ -15,7 +15,6 @@ import re
 from typing import Any, Mapping, Sequence
 
 from .contracts import ContractError
-from .core import redact_secrets
 from .document_export import (
     HWPX_EXPORT_DECISION,
     LEGACY_HWP_EXPORT_DECISION,
@@ -180,7 +179,7 @@ class ManualIntakeResult:
             "channel": self.channel.value,
             "action": self.action.value,
             "title": self.title,
-            "result_text": redact_secrets(self.result_text),
+            "result_text": self.result_text,
             "artifacts": [
                 {
                     "artifact_id": a.artifact_id,

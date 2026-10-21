@@ -949,3 +949,56 @@ class P01SelectedPCPlanWireTests(SyntheticPlusRouteTestCase):
             tool_arguments={"files": {"device_id": "office-pc"}},
         )
         self._refused(request)
+
+
+class P01ClientSourceGrammarContractTests(unittest.TestCase):
+    """#5141: the P01 wire client keeps exactly one grammar per concern.
+
+    Moved here from the pytest-style ``test_p01_canonical_subject_lane.py``
+    because the KAgent CI lane discovers ``unittest.TestCase`` cases only:
+    a pytest-style module contributes zero cases, so these assertions were
+    never executed by any CI lane. The assertion text is unchanged; the
+    contract is now enforced on every reviewed revision of this package.
+
+    #5141 resolved the two directions at once. The canonical subject grammar
+    is delegated to the adapter's validator, so the client keeps no subject
+    grammar of its own; the single ``re.compile`` left in the client is the
+    reviewed bounded Engine error-code classifier, which is a different
+    concern from subject identity and has no second implementation anywhere.
+    """
+
+    def test_client_source_declares_no_second_grammar(self) -> None:
+        import inspect
+
+        import kagent.p01_orchestration_client as client_mod
+
+        source = inspect.getsource(client_mod)
+        # The client keeps the reviewed bounded Engine error-code classifier and
+        # the closed PC device-hint grammar (#5015). It must not grow a second
+        # subject grammar: no local alphanumeric validation and no duplicate
+        # subject-length rule.
+        self.assertEqual(source.count("re.compile"), 1)
+        self.assertIn("_BOUNDED_ENGINE_ERROR_CODE_RE", source)
+        self.assertNotIn("isalnum", source)
+        self.assertNotIn("len(request.subject_id) > 256", source)
+
+    def test_client_uses_the_shared_pc_device_identity_grammar(self) -> None:
+        """#5172: the PC device identity has exactly one grammar.
+
+        The client used to keep its own copy of the device-id pattern. The
+        composed Mesh node identity (``node/<domain>/<node-id>``) then existed in
+        one place only, and the plan boundary refused the value the directory had
+        already proved. The client now uses the shared contract, and this test
+        pins that it does not grow a local copy again.
+        """
+        import inspect
+
+        import kagent.p01_orchestration_client as client_mod
+
+        source = inspect.getsource(client_mod)
+        self.assertIn(
+            "from padiem_ai_core.pc_device_identity import is_pc_device_id", source
+        )
+        self.assertNotIn("_PC_DEVICE_ID_RE", source)
+        self.assertNotIn("node/", source, "the client must not restate the grammar")
+        self.assertEqual(inspect.getsource(client_mod).count("re.compile"), 1)

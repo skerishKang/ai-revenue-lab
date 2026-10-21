@@ -122,15 +122,18 @@ def test_remote_unsupported_bad_base64_and_magic_mismatch_rejected_without_echo(
     assert url not in str(info.value)
 
 
-def test_image_over_4_mib_rejected_without_echo() -> None:
-    oversized = b"\x89PNG\r\n\x1a\n" + (b"x" * MAX_B14_IMAGE_BYTES)
-    url = data_url("image/png", oversized)
-    with pytest.raises(ValueError, match="4 MiB") as info:
-        B14MultimodalChatRequest(
-            messages=({"role": "user", "content": content("image/png", oversized)},),
-            model="test/route",
-        )
-    assert url not in str(info.value)
+def test_image_over_the_old_4_mib_bound_is_accepted() -> None:
+    # #4379: an image carries no PADIEM byte total. The media type and the
+    # magic bytes are still verified.
+    oversized = b"\x89PNG\r\n\x1a\n" + (b"x" * (MAX_B14_IMAGE_BYTES + 1))
+    request = B14MultimodalChatRequest(
+        messages=({"role": "user", "content": content("image/png", oversized)},),
+        model="test/route",
+    )
+    payload = request.to_payload()
+    assert payload["messages"][0]["content"][1]["image_url"]["url"] == data_url(
+        "image/png", oversized
+    )
 
 
 def test_text_only_behavior_remains_equal_to_base_request() -> None:

@@ -402,6 +402,41 @@ async def test_projection_round_trip():
     assert proj["alerts"][0]["alert_id"] == "alert-1"
 
 
+async def test_projection_is_callable_with_the_contract_include_raw_switch():
+    """#5360: the D1 adapter honours the shared contract's include_raw switch.
+
+    The durable Task/Alert rows carry no inbound body, so the authorized and
+    the diagnostic form of the same workspace are the same document here. What
+    matters is that a caller may ask for either form through the contract.
+    """
+    store, _ = _store()
+    await store.add_task(_T("task-1", member_id="m-1"))
+    await store.add_alert(_A("alert-1", visible_to_members=("m-1",)))
+    authorized = await store.projection("ws-1", member_id="m-1")
+    diagnostic = await store.projection("ws-1", member_id="m-1", include_raw=False)
+    assert diagnostic == authorized
+    assert "raw_excerpt" not in repr(diagnostic)
+
+
+def test_the_d1_store_projection_accepts_every_contract_keyword():
+    """A contract keyword must never be missing from the durable adapter."""
+    import inspect
+
+    from kagent.claw_memory import ClawMemoryStore
+
+    def keywords(function) -> set[str]:
+        return {
+            name
+            for name, parameter in inspect.signature(function).parameters.items()
+            if parameter.kind is inspect.Parameter.KEYWORD_ONLY
+        }
+
+    assert keywords(D1ClawTaskAlertStore.projection) == keywords(
+        ClawMemoryStore.projection
+    )
+
+
+
 # ---- 6. due_date round trip (regression) ----
 # add_task persists `due_date.isoformat()`, a *plain* date string. Reading it
 # back through a tz-aware datetime parser raised WorkspaceStorageError, so a

@@ -136,6 +136,7 @@ class OracleMeshExecutor:
         timeout_seconds: int = 30,
         transport: Optional[Callable[..., tuple[int, dict[str, Any]]]] = None,
         pending_dir: Optional[str] = None,
+        claim_gate: Optional[Callable[[], bool]] = None,
     ) -> None:
         if not isinstance(chat_origin, str) or not chat_origin.startswith("https://"):
             raise ContractError("the chat channel must be an https origin")
@@ -170,19 +171,35 @@ class OracleMeshExecutor:
         self._pending_dir = pending_dir
         #: The body file the current manifest points at, once durable.
         self._pending_body: Optional[str] = None
+        # #5462: an optional claim gate. When the failover controller has
+        # moved the claim to the other host, the gate refuses the poll on
+        # this host, so the two executors never claim the same dispatch.
+        # A host with no gate keeps the historical behaviour.
+        if claim_gate is not None and not callable(claim_gate):
+            raise ContractError("the claim gate must be callable")
+        self._claim_gate = claim_gate
 
     # ---- channel -------------------------------------------------------
-    def _https_post(self, path: str, payload: Optional[dict[str, Any]]) -> tuple[int, dict[str, Any]]:
+    def _https_post(
+        self, path: str, payload: Optional[dict[str, Any]] | bytes,
+    ) -> tuple[int, dict[str, Any]]:
         """One verified HTTPS POST. Redirects are refused, not followed."""
         url = f"{self._origin}{path}"
-        # UTF-8 as JSON permits: escaping every non-ASCII byte would inflate a
-        # Korean command output about six times, so a body far below the wire
-        # envelope would still be refused as too large and quarantined.
-        data = json.dumps(payload or {}, ensure_ascii=False).encode("utf-8")
+        if isinstance(payload, (bytes, bytearray)):
+            # #4379: an already framed body (desktop screenshot) travels as
+            # octet-stream; its JPEG bytes are never re-encoded as base64.
+            data = bytes(payload)
+            content_type = "application/octet-stream"
+        else:
+            # UTF-8 as JSON permits: escaping every non-ASCII byte would inflate
+            # a Korean command output about six times, so a body far below the
+            # wire envelope would still be refused as too large and quarantined.
+            data = json.dumps(payload or {}, ensure_ascii=False).encode("utf-8")
+            content_type = "application/json"
         request = urllib.request.Request(
             url, data=data, method="POST",
             headers={
-                "Content-Type": "application/json",
+                "Content-Type": content_type,
                 CHANNEL_HEADER: self._secret,
                 "Accept": "application/json",
                 "User-Agent": PRODUCT_USER_AGENT,
@@ -223,7 +240,7 @@ class OracleMeshExecutor:
             decoded = {}
         return status, decoded
 
-    def _post(self, path: str, payload: Optional[dict[str, Any]]) -> tuple[int, dict[str, Any]]:
+    def _post(self, path: str, payload: Optional[dict[str, Any]] | bytes) -> tuple[int, dict[str, Any]]:
         try:
             return self._transport(path, payload)
         except OracleMeshChannelRefused:
@@ -782,13 +799,12 @@ class OracleMeshExecutor:
     ) -> dict[str, Any]:
         """Submit one desktop observation or input.
 
-        The note travels as the UTF-8 text; a screenshot travels beside it
-        as base64 JPEG evidence with its own digest. The dispatch pin covers
+        The note travels as the UTF-8 text; a screenshot travels beside it as
+        the raw JPEG in one binary frame (4-byte big-endian header length +
+        UTF-8 JSON header + bytes) with its own digest. The dispatch pin covers
         the JPEG when one is present, else the note — so a resend is compared
         against the same bytes the server pinned first.
         """
-        import base64
-
         note = outcome.note if isinstance(outcome.note, str) else ""
         try:
             note_raw = note.encode("utf-8")
@@ -813,13 +829,22 @@ class OracleMeshExecutor:
             "content_bytes": len(body) if body else len(note_raw),
         }
         if body:
-            payload["content_blob_base64"] = base64.b64encode(body).decode("ascii")
             payload["content_blob_sha256"] = hashlib.sha256(body).hexdigest()
             payload["content_blob_bytes"] = len(body)
             payload["content_blob_media_type"] = "image/jpeg"
-        # The channel envelope limits the serialized UTF-8 JSON, not raw JPEG.
-        # Persist the immutable screenshot before reporting an unshippable outcome.
-        wire_bytes = len(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
+            # #4379: the screenshot is the body, not a base64 field. Removing
+            # the 4/3 inflation also removes the metadata-only envelope refusal
+            # for a JPEG that fits the same byte budget.
+            header = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+            framed: Optional[dict[str, Any]] | bytes = (
+                len(header).to_bytes(4, "big") + header + body
+            )
+            wire_bytes = len(framed)
+        else:
+            framed = payload
+            wire_bytes = len(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
+        # The channel envelope limits the whole frame (header + bytes), never a
+        # base64 expansion of it. Persist the image before any refusal.
         if wire_bytes > MAX_COMMAND_BYTES:
             self._pending = (dispatch, outcome)
             persist_error = self._persist_pending()
@@ -832,7 +857,7 @@ class OracleMeshExecutor:
         self._pending = (dispatch, outcome)
         persist_error = self._persist_pending()
         try:
-            status, data = self._post(RESULT_PATH, payload)
+            status, data = self._post(RESULT_PATH, framed)
         except OracleMeshChannelRefused:
             wait = self._transient_wait_seconds()
             self._transients += 1
@@ -956,6 +981,12 @@ class OracleMeshExecutor:
         """Retry a held result if any; otherwise poll, execute and submit."""
         if self._pending is not None:
             return self.resend_pending_result()
+        # #5462: a held result is still resent while this host is not the
+        # active one — the bytes the PC really produced must reach the
+        # server exactly once. Only a NEW claim is gated, because claiming
+        # is what could execute the same work twice.
+        if self._claim_gate is not None and not self._claim_gate():
+            return None
         dispatch = self.poll_once()
         if dispatch is None:
             return None
@@ -987,6 +1018,7 @@ def make_oracle_mesh_executor(
     mesh_url: str = "wss://127.0.0.1:4443",
     work_dir: str | None = None,
     timeout_seconds: int = 30,
+    claim_gate: Optional[Callable[[], bool]] = None,
 ) -> OracleMeshExecutor:
     """Build the executor with the REAL official meshctrl read port.
 
@@ -1061,6 +1093,7 @@ def make_oracle_mesh_executor(
         desktop_port=desktop_port,
         timeout_seconds=timeout_seconds,
         pending_dir=work_dir,
+        claim_gate=claim_gate,
     )
 
 

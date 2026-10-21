@@ -18,7 +18,6 @@ from .workspace_storage import WorkspaceStorageAccessError
 _ID = re.compile(r"^doc_[A-Za-z0-9]{32}$")
 _PDF_MIME = "application/pdf"
 _XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-_MAX_PDF = 10 * 1024 * 1024
 _SAFE_HEADERS = {
     "Cache-Control": "no-store, max-age=0",
     "Pragma": "no-cache",
@@ -45,9 +44,11 @@ def _preview_document(metadata: Any, content: bytes) -> JSONResponse | Response:
     if not isinstance(filename, str) or not filename or len(filename) > 160:
         return _deny(503, "artifact_metadata_invalid")
     if mime == _PDF_MIME:
-        # Deny mislabeled HTML/malformed/oversized bytes rather than letting a
-        # same-origin browser attempt to display user-controlled active content.
-        if (not 8 <= len(content) <= _MAX_PDF
+        # Deny mislabeled HTML/malformed bytes rather than letting a same-origin
+        # browser attempt to display user-controlled active content. #4379: the
+        # document carries no PADIEM byte total, so only the floor and the
+        # container proof stay.
+        if (len(content) < 8
                 or not content.startswith(b"%PDF-")
                 or b"%%EOF" not in content[-1024:]):
             return JSONResponse(

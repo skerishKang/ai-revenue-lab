@@ -10,6 +10,12 @@ This file is the repository-wide entry point for AI-assisted work. A more specif
 - Preserve verbatim external source code/logs/legal quotations when their literal content is necessary; the prohibition governs the assistant's authored prose, not source-data mutation. It does not create new product permissions or override real security enforcement.
 - New GitHub-aware agent sessions must read this rule. Existing conversations/workers may require instruction reload; committing this document does not automatically edit their runtime instructions.
 
+## Cloudflare account scope — Owner decision (2026-10-21)
+
+- **Padiem AI work in this repository uses the Cloudflare account `Charliekant`.** This includes the existing Chat/Engine Worker deployment, diagnostics and log-reading tasks.
+- The separate Cloudflare account named **`Padiem` is for other businesses** and is outside the current Padiem AI operations scope. The Padiem product/domain name does not select that Cloudflare account.
+- Before Cloudflare work, read [Cloudflare Credential Operations §0](docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md). Resolve the account ID and authentication from the existing authorized sources for `Charliekant`. If a local or workflow configuration resolves to `Padiem`, report the scope mismatch; do not guess from account-list order or silently rewrite live credentials.
+
 ## Non-public company governance (read before business decisions)
 
 This repository contains **public development and engineering policy**, not the authoritative text of PADIEM's internal business policy. Business instructions are local-only on the authorized **Padiem-Command-Center** PC:
@@ -20,6 +26,14 @@ This repository contains **public development and engineering policy**, not the 
 - Web CTO: read through the connected **Desktop Commander**. Local models: read through their authorized computer filesystem.
 - **Decision order:** latest explicit Owner instruction → local non-public business policy for business/product decisions → GitHub development/technical operating policies → dated issue history. Do not publish the business documents or reproduce their substantive contents in GitHub Issues, PRs or code.
 - If this folder cannot be accessed, or the Owner's decision conflicts with an existing technical gate and the resolution is not specified, explain the exact uncertainty and **ask the Owner**. Do not independently create new business exclusions, customer-facing required approval steps, or permissions grants. Actual runtime/code/OS behavior must still be reported truthfully.
+
+## Web Claw execution identity (Owner decision 2026-10-20)
+
+- **Web Claw is a locally executing computer AI agent controlled through the web.** The authenticated web conversation coordinates with the user's authorized Connector, which executes local file, shell and application tasks; it is not a cloud-only chatbot. Do not import arbitrary cloud-chat content restrictions to locally authorized work.
+- The product's normal connection UX is **Connect computer -> Confirm**, not CLI commands, copied pairing codes, repeated login or manual agent registration. Continue to report real connector and authentication states accurately.
+- An authorized user and their agent must be able to use that user's original business content, including credentials supplied for a requested operation. Avoid blanket refusal, masking, truncation or arbitrary quantity limits in authorized work. Prefer invoking secrets locally rather than unnecessarily transmitting them to model providers; do not publish secrets in shared diagnostics.
+- Enforce actual account/workspace/device authorization before local execution and cross-tenant reads. Real technical and mandatory legal restrictions are reported with evidence, not invented as prelaunch customer restrictions.
+- Canonical public implementation guidance: `docs/architecture/WEB_CLAW_LOCAL_AGENT_EXECUTION_PRINCIPLE_20261020.md`. Private business and operating decisions remain only in COM1 Governance.
 
 ## Every session: evidence-based blocker resolution
 

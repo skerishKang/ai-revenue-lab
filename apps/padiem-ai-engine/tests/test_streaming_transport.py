@@ -139,7 +139,6 @@ async def test_actual_core_manual_stream_client_uses_manual_binding_path() -> No
         model="openrouter/free",
         routing=B14RoutingOptions(
             allow_external_fallback=False,
-            max_attempts=1,
         ),
     )
 
@@ -199,7 +198,6 @@ async def test_core_stream_response_ceiling_remains_authoritative() -> None:
         model="openrouter/free",
         routing=B14RoutingOptions(
             allow_external_fallback=False,
-            max_attempts=1,
         ),
     )
 
@@ -227,7 +225,6 @@ async def test_core_rejects_stream_without_done_marker() -> None:
         model="openrouter/free",
         routing=B14RoutingOptions(
             allow_external_fallback=False,
-            max_attempts=1,
         ),
     )
 

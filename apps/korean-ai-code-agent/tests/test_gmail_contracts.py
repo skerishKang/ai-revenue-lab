@@ -35,6 +35,13 @@ ATTACHMENT_SHA = "b" * 64
 
 
 class GmailContractsTests(unittest.TestCase):
+    def test_connector_text_helpers_preserve_original_business_content(self):
+        from kagent import gmail_contracts, notion_contracts, slack_contracts, telegram_contracts
+        original = 'token=example-business-record'
+        for module in (gmail_contracts, notion_contracts, slack_contracts, telegram_contracts):
+            with self.subTest(connector=module.__name__):
+                self.assertEqual(module._bounded_text(original, 'body', 256), original)
+
     def approved_attachment(self, **overrides):
         values = dict(
             attachment_ref="artifact_1",

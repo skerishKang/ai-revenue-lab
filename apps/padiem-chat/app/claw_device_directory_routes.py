@@ -10,11 +10,11 @@ from __future__ import annotations
 
 import inspect
 import json
-import re
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
 from kagent.local_agent_pairing import DeviceLifecycle
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -37,7 +37,6 @@ CLAW_DEVICE_DIRECTORY_PATH = "/api/claw/local-access/devices"
 CLAW_PC_PAUSE_PATH = "/api/claw/local-access/devices/pause"
 CLAW_PC_RESUME_PATH = "/api/claw/local-access/devices/resume"
 CLAW_PC_SELECT_PATH = "/api/claw/local-access/devices/select"
-_DEVICE_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 _DEVICE_LIMIT = 24
 _MAX_SELECT_BODY_BYTES = 1024
 _NO_STORE = {
@@ -113,7 +112,7 @@ class BrokerDeviceDirectorySource:
             if not isinstance(binding, Mapping):
                 return None
             device_id = binding.get("device_id")
-            if not isinstance(device_id, str) or not _DEVICE_ID_PATTERN.fullmatch(device_id):
+            if not is_pc_device_id(device_id):
                 return None
             if device_id in seen:
                 return None
@@ -266,7 +265,7 @@ async def _read_device_directory(
         ident = row.get("deviceId")
         state = row.get("state")
         usable, revoked, expired = row.get("usable"), row.get("revoked"), row.get("expired")
-        if not isinstance(ident, str) or not _DEVICE_ID_PATTERN.fullmatch(ident) or ident in seen:
+        if not is_pc_device_id(ident) or ident in seen:
             return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
         if state not in ("CONNECTED", "OFFLINE", "REVOKED") or any(
             type(value) is not bool for value in (usable, revoked, expired)
@@ -319,7 +318,7 @@ async def _read_device_directory(
     )
     mesh_id = execution.device_id if execution.ready else None
     if (
-        isinstance(mesh_id, str) and _DEVICE_ID_PATTERN.fullmatch(mesh_id)
+        is_pc_device_id(mesh_id)
         and paused is not True
     ):
         mesh_row = next((row for row in safe if row["deviceId"] == mesh_id), None)
@@ -356,7 +355,7 @@ async def _read_device_directory(
             )
         except Exception:
             selected_device_id = None
-    if isinstance(selected_device_id, str) and _DEVICE_ID_PATTERN.fullmatch(selected_device_id):
+    if is_pc_device_id(selected_device_id):
         selected_row = next(
             (row for row in safe if row["deviceId"] == selected_device_id), None,
         )
@@ -458,7 +457,7 @@ async def claw_pc_select(request: Request) -> JSONResponse:
     if not isinstance(data, dict) or set(data) != {"device_id"}:
         return _error(422, "pc_selection_invalid")
     device_id = data.get("device_id")
-    if not isinstance(device_id, str) or not _DEVICE_ID_PATTERN.fullmatch(device_id):
+    if not is_pc_device_id(device_id):
         return _error(422, "pc_selection_device_invalid")
 
     uid = current_user_id(request) if auth_ready(request) else None

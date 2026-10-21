@@ -1,0 +1,13 @@
+name: COM2 PR Policy Trigger
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  dispatch:
+    name: COM2 policy dispatch
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Emit trusted PR event without checkout
+        run: echo "COM2_PR_TRIGGER=READY"

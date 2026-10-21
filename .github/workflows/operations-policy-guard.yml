@@ -35,19 +35,33 @@ concurrency:
 
 jobs:
   policy-consistency:
+    # COM2 is primary for same-repository PRs; keep hosted for fork PRs and manual recovery.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name != github.repository
     name: Operating policy consistency
-    runs-on: ubuntu-latest
+    # Keep untrusted pull_request runs on GitHub-hosted isolation.
+    # Trusted owner-triggered main dispatch executes on COM2.
+    runs-on: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.actor == 'skerishKang' && fromJSON('["self-hosted","linux","x64","padiem-com2-ci"]') || 'ubuntu-latest' }}
     timeout-minutes: 10
     steps:
       - name: Check out reviewed revision
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          filter: blob:none
 
       - name: Set up Python
+        if: runner.environment != 'self-hosted'
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Reuse COM2 Python 3.12 in isolated environment
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/com2-policy-env"
+          echo "$RUNNER_TEMP/com2-policy-env/bin" >> "$GITHUB_PATH"
 
       - name: Install test dependencies
         run: python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'PyYAML>=6,<7'

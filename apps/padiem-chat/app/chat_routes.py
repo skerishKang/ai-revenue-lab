@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 from typing import Any
 
@@ -10,7 +11,7 @@ from starlette.responses import JSONResponse, StreamingResponse
 from .attachments import ImageAttachment
 from .auth_routes import auth_ready, current_user_id
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
-from .auto_grounding import AutoGroundingService
+from .auto_grounding import AutoGroundingService, auto_grounding_may_continue
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -224,7 +225,10 @@ async def api_chat_stream(request: Request):
     content_length = request.headers.get("content-length")
     if content_length:
         try:
-            if int(content_length) > MAX_BROWSER_BODY_BYTES:
+            if (
+                MAX_BROWSER_BODY_BYTES is not None
+                and int(content_length) > MAX_BROWSER_BODY_BYTES
+            ):
                 return _too_large_response()
         except ValueError:
             return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
@@ -234,7 +238,7 @@ async def api_chat_stream(request: Request):
         return _too_large_response()
 
     try:
-        raw = json.loads(body.decode("utf-8"))
+        raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = _validate_payload(raw)
         if custom is None:
             # No-tier browser clients are Free; validate legacy slash syntax
@@ -247,7 +251,7 @@ async def api_chat_stream(request: Request):
             )
         else:
             selected_model = custom.model
-    except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
+    except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
 
@@ -276,7 +280,7 @@ async def api_chat_stream(request: Request):
     # platform-key proxy. Never read tier/upgrade claims from browser state.
     if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
         return JSONResponse(
-            {"error": {"code": "unauthorized", "message": "?? AI? ????? ???? ???."}},
+            {"error": {"code": "unauthorized", "message": "무료 AI를 사용하려면 로그인이 필요합니다."}},
             status_code=401,
         )
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
@@ -659,11 +663,33 @@ async def api_chat_stream(request: Request):
     )
 
 
+def _decode_completed_binary_attachment(body: bytes) -> dict[str, Any]:
+    """One bounded binary original plus JSON request metadata; no browser Base64."""
+    if len(body) < 6:
+        raise ValueError("invalid binary attachment frame")
+    header_size = int.from_bytes(body[:4], "big")
+    if not 0 < header_size <= 65536 or len(body) <= 4 + header_size:
+        raise ValueError("invalid binary attachment frame")
+    raw = json.loads(body[4:4 + header_size].decode("utf-8"))
+    if not isinstance(raw, dict) or not isinstance(raw.get("attachments"), list) or len(raw["attachments"]) != 1:
+        raise ValueError("invalid binary attachment metadata")
+    item = raw["attachments"][0]
+    if not isinstance(item, dict) or set(item) != {"type", "name", "media_type"}:
+        raise ValueError("invalid binary attachment metadata")
+    if item["type"] not in ("image", "document"):
+        raise ValueError("invalid binary attachment type")
+    item["raw_bytes"] = body[4 + header_size:]
+    return raw
+
+
 async def api_chat(request: Request) -> JSONResponse:
     content_length = request.headers.get("content-length")
     if content_length:
         try:
-            if int(content_length) > MAX_BROWSER_BODY_BYTES:
+            if (
+                MAX_BROWSER_BODY_BYTES is not None
+                and int(content_length) > MAX_BROWSER_BODY_BYTES
+            ):
                 return _too_large_response()
         except ValueError:
             return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
@@ -673,7 +699,7 @@ async def api_chat(request: Request) -> JSONResponse:
         return _too_large_response()
 
     try:
-        raw = json.loads(body.decode("utf-8"))
+        raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = _validate_payload(raw)
         if custom is None:
             # No-tier browser clients are Free; validate legacy slash syntax
@@ -686,7 +712,7 @@ async def api_chat(request: Request) -> JSONResponse:
             )
         else:
             selected_model = custom.model
-    except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
+    except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
 
@@ -731,7 +757,7 @@ async def api_chat(request: Request) -> JSONResponse:
     # platform-key proxy. Never read tier/upgrade claims from browser state.
     if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
         return JSONResponse(
-            {"error": {"code": "unauthorized", "message": "?? AI? ????? ???? ???."}},
+            {"error": {"code": "unauthorized", "message": "무료 AI를 사용하려면 로그인이 필요합니다."}},
             status_code=401,
         )
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
@@ -923,16 +949,8 @@ async def api_chat(request: Request) -> JSONResponse:
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
                 auto_decision = None if image_attachments or drive_context else auto_grounding.decide(messages, skill=skill)
-                if auto_decision is not None and auto_decision.requires_search:
-                    grounded: GroundedChatService = request.app.state.grounded_chat
-                    result = await grounded.complete(
-                        messages,
-                        skill=skill,
-                        tool=get_tool_presentation("web_search"),
-                        tool_input=auto_decision.query,
-                        additional_system_context=reference_context,
-                    )
-                else:
+
+                async def _plain_completion() -> dict[str, Any]:
                     client: B14Client = request.app.state.b14_client
                     policy = resolve_request_model_policy(messages)
                     guard = await create_guard_from_request(
@@ -942,12 +960,32 @@ async def api_chat(request: Request) -> JSONResponse:
                         request.app.state.b14_catalog_source,
                     )
                     client = apply_guard_to_client(client, guard)
-                    result = await client.complete(
+                    return await client.complete(
                         messages,
                         skill=skill,
                         additional_system_context=reference_context,
                         attachments=image_attachments,
                     )
+
+                if auto_decision is not None and auto_decision.requires_search:
+                    grounded: GroundedChatService = request.app.state.grounded_chat
+                    try:
+                        result = await grounded.complete(
+                            messages,
+                            skill=skill,
+                            tool=get_tool_presentation("web_search"),
+                            tool_input=auto_decision.query,
+                            additional_system_context=reference_context,
+                        )
+                    except GroundingError as exc:
+                        if not auto_grounding_may_continue(auto_decision, exc):
+                            raise
+                        # The automatic search found no usable evidence and the
+                        # request does not need it. The turn continues as a
+                        # normal answer, with no evidence or source attached.
+                        result = await _plain_completion()
+                else:
+                    result = await _plain_completion()
             else:
                 grounded = request.app.state.grounded_chat
                 result = await grounded.complete(

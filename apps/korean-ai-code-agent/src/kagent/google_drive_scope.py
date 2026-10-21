@@ -163,7 +163,7 @@ class DriveFileMetadata:
         object.__setattr__(self, "file_id", _safe_ref(self.file_id, "file_id"))
         if not isinstance(self.name, str) or not self.name.strip() or len(self.name.strip()) > 1_024:
             raise ContractError("Drive file name must be bounded and non-empty")
-        object.__setattr__(self, "name", redact_secrets(self.name.strip()))
+        object.__setattr__(self, "name", self.name.strip())
         if not isinstance(self.mime_type, str) or not self.mime_type.strip() or len(self.mime_type) > 255:
             raise ContractError("Drive mime_type must be bounded and non-empty")
         object.__setattr__(self, "mime_type", self.mime_type.strip())

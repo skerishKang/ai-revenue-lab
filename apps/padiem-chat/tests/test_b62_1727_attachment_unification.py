@@ -32,7 +32,8 @@ def test_binary_reader_exports_pure_attachment_api():
     assert "read," in BINARY_JS
     assert 'type: "document"' in BINARY_JS
     assert "mediaType," in BINARY_JS
-    assert "base64," in BINARY_JS
+    assert "file," in BINARY_JS
+    assert "base64," not in BINARY_JS
     assert "byteSize:" in BINARY_JS
 
 
@@ -54,7 +55,10 @@ def test_app_owns_binary_attachment_in_selected_attachment_state():
 
 
 def test_binary_attachment_payload_uses_existing_completed_chat_path():
-    assert 'media_type: attachment.mediaType, base64: attachment.base64' in APP_JS
+    # #5380 replaced the Base64 attachment body with a binary file intake, so
+    # the payload carries the file itself. The completed-chat dispatch path
+    # this test protects is unchanged.
+    assert 'media_type: attachment.mediaType, file: attachment.file' in APP_JS
     assert "const attachments = attachmentPayload(attachment);" in APP_JS
     assert "if (attachments) payload.attachments = attachments;" in APP_JS
     assert "if (attachments) {" in APP_JS

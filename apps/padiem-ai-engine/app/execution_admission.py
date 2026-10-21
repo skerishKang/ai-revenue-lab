@@ -15,11 +15,47 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import re
-from typing import Protocol
+from types import MappingProxyType
+from typing import Mapping, Protocol
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 _CAPABILITY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+
+# #5015 (F-032): the Engine carries two product vocabularies and must not
+# conflate them.
+#
+# * The EXECUTION app id is the Engine's own app/caller identity. The caller
+#   registry authorizes it (``allowed_app_ids``) and the Engine admission binds
+#   it (``admission.app_id``). The Chat product executes as ``padiem-chat``.
+# * The PERMISSION product id is the Control Plane entitlement/usage product.
+#   The Control Plane resolves a session, a grant and a usage reservation for
+#   it. The Chat product's existing permission semantics are the ``b62``
+#   product, and the Claw product's are ``b54-padiem-claw``.
+#
+# The two vocabularies are connected by this server-owned, closed mapping so
+# the snapshot, the admission, the usage reservation and the usage receipt all
+# name the same permission product for the same execution. The mapping is not
+# a permission list: an app id without an entry keeps its own id as the
+# permission product, so every other path is still decided by the Control
+# Plane's own product-eligibility check exactly as before.
+ENGINE_EXECUTION_APP_PERMISSION_PRODUCT_IDS: Mapping[str, str] = MappingProxyType(
+    {
+        "padiem-chat": "b62",
+        "b54-padiem-claw": "b54-padiem-claw",
+    }
+)
+
+
+def permission_product_id_for_execution_app(app_id: str) -> str:
+    """The Control Plane permission product id of one execution app id.
+
+    The app id is a validated bounded identifier at every call site (the
+    admission request, the trusted admission and the persisted evidence), so an
+    app id without a mapping entry simply keeps its own id and stays subject
+    to the Control Plane's own product-eligibility check.
+    """
+    return ENGINE_EXECUTION_APP_PERMISSION_PRODUCT_IDS.get(app_id, app_id)
 
 
 class ExecutionAdmissionError(ValueError):
@@ -108,6 +144,11 @@ class TrustedExecutionAdmission:
     expires_at: datetime
     request_fingerprint: str | None = None
     usage_reservation: TrustedUsageReservation | None = None
+    # #5015 (F-032): the Control Plane permission product this decision was
+    # granted under. It is derived from the execution app id by the server-owned
+    # mapping, never from the request, so the admission, the usage reservation
+    # and the usage receipt all name one permission product for one execution.
+    permission_product_id: str | None = None
 
     def __post_init__(self) -> None:
         _require_safe_id(self.decision_id, "decision_id")
@@ -125,18 +166,35 @@ class TrustedExecutionAdmission:
             raise ExecutionAdmissionError("invalid_admission", "admission expiry must be after issuance.")
         if self.request_fingerprint is not None:
             _require_safe_id(self.request_fingerprint, "request_fingerprint")
+        expected_permission_product = permission_product_id_for_execution_app(self.app_id)
+        if self.permission_product_id is None:
+            object.__setattr__(self, "permission_product_id", expected_permission_product)
+        elif self.permission_product_id != expected_permission_product:
+            # The permission product is derived from the execution app id by the
+            # server-owned mapping. It is not a free field, so an admission that
+            # names another product is refused here — at the only place every
+            # later consumer (the gate, the persisted evidence, the usage
+            # reservation and the usage receipt) reads it from.
+            raise ExecutionAdmissionError(
+                "invalid_admission",
+                "admission permission product does not match the execution app.",
+            )
+        _require_safe_id(self.permission_product_id, "permission_product_id")
         reservation = self.usage_reservation
         if reservation is not None:
             if not isinstance(reservation, TrustedUsageReservation):
                 raise ExecutionAdmissionError("invalid_admission", "usage reservation evidence is invalid.")
             if not self.allowed:
                 raise ExecutionAdmissionError("invalid_admission", "denied admission cannot carry usage reservation evidence.")
-            if reservation.product_id != self.app_id or reservation.billing_semantic_id != self.capability:
+            if (
+                reservation.product_id != self.permission_product_id
+                or reservation.billing_semantic_id != self.capability
+            ):
                 raise ExecutionAdmissionError("invalid_admission", "usage reservation scope does not match admission.")
             if reservation.request_fingerprint != self.request_fingerprint:
                 raise ExecutionAdmissionError("invalid_admission", "usage reservation request identity does not match admission.")
             expected_subject_type = "user" if self.subject_id is not None else "account"
-            expected_subject_id = self.subject_id if self.subject_id is not None else self.app_id
+            expected_subject_id = self.subject_id if self.subject_id is not None else self.permission_product_id
             if reservation.subject_type != expected_subject_type or reservation.subject_id != expected_subject_id:
                 raise ExecutionAdmissionError("invalid_admission", "usage reservation subject does not match admission.")
 

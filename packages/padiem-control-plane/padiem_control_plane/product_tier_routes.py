@@ -48,20 +48,42 @@ _FORBIDDEN_VISIBLE_TOKENS = ("auto", "fallback")
 class ProductTierRoutesError(ValueError):
     """Raised when the contract violates the #2085/#2099 policy (fail closed)."""
 
-FREE_PRIMARY_B14_MODEL_ID = "opencode-go/beam-free"
-FREE_FALLBACK_B14_MODEL_ID = "opencode-go/longcat-2.5-preview-free"
+FREE_PRIMARY_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
+FREE_FALLBACK_B14_MODEL_ID = "google/gemma-4-26b-a4b-it"
 # #5009: Plus/Pro/Max default. Registered and enabled in B14
 # (b14_models.json) and already the verified administrator-only Chat model,
 # so the provider path is proven; the per-grade provider live call is still
 # pending and tracked by each route's evidence.
 MUSE_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
 MUSE_B14_UPSTREAM_MODEL = "muse-spark-1.3-contributor"
+# #2505 (owner decision 2026-10-21): an OpenCode Go free model is never an
+# execution candidate, so it leaves every designated per-grade roster. The
+# paid OpenCode Go model stays; only the free family is excluded.
 TIER_FALLBACK_B14_MODELS = {
-    "max": ("opencode-go/longcat-2.5-preview-free", "opencode-go/muse-spark-1.3-contributor"),
-    "pro": ("opencode-go/longcat-2.5-preview-free", "google/gemma-4-31b-it"),
-    "plus": ("opencode-go/longcat-2.5-preview-free", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
-    "free": ("opencode-go/longcat-2.5-preview-free", "google/gemini-3.1-flash-lite", "google/gemma-4-26b-a4b-it"),
+    "max": ("opencode-go/muse-spark-1.3-contributor",),
+    "pro": ("google/gemma-4-31b-it",),
+    "plus": ("google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
+    "free": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
 }
+
+# Owner decision 2026-10-21 (#2505): OpenCode Go free models are not execution
+# candidates. The provider prefix and the ``-free`` suffix identify the
+# family; no other provider's free model is affected by this decision.
+FREE_CANDIDATE_PROVIDER = "opencode-go"
+
+
+def is_free_execution_candidate(model_id: str | None) -> bool:
+    """Whether one model identity is an excluded free execution candidate.
+
+    Used by the shared grade route contract so an administrator can never
+    bind an excluded free model to a grade, and so a stored row can never
+    serve one either.
+    """
+    if not isinstance(model_id, str) or not model_id:
+        return False
+    provider, separator, tail = model_id.strip().casefold().partition("/")
+    return bool(separator) and provider == FREE_CANDIDATE_PROVIDER and tail.endswith("-free")
+
 
 # A declared grade's fallback is a specific owner choice, not b14/auto or
 # permission for an unrelated/paid model. B14 verifies live registration,
@@ -84,8 +106,8 @@ class ProductCredentialMode(str, Enum):
     PLATFORM_SECRET_BINDING = "platform_secret_binding"
 
 # Historical HOLD sentinels are identity markers, not active B14 model IDs.
-# The active Free/Plus/Pro/Max primary routes below use Beam. Retaining old
-# HOLD entries documents retired choices; it does not disable a current grade.
+# Current executable routes below select Google for Free and Muse for the
+# paid tiers; historical HOLD choices remain only in the Git history.
 PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"
 PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
@@ -145,6 +167,10 @@ def _validate_route(route: ProductTierRoute, tier: ProductTierLabel) -> None:
             route.model_id not in RETIRED_PRODUCT_MODEL_IDS,
             f"{where}: retired model may never be executable",
         )
+        _require(
+            not is_free_execution_candidate(route.model_id),
+            f"{where}: an excluded free model may never be executable",
+        )
     else:
         documented = (route.hold_reason or "") + (route.retired_reason or "")
         _require(
@@ -201,275 +227,40 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
                     token not in route.route_id.lower(),
                     f"{tier.label.value}: route_id must not contain {token!r}",
                 )
-        if tier.label is ProductTierLabel.PLUS and not active:
-            held_ids = {
-                route.model_id
-                for route in tier.routes
-                if route.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-            }
-            _require(
-                PLUS_HOLD_MODEL_ID in held_ids,
-                "Padiem Plus without an executable route must expose the Plus hold identity",
-            )
-        if tier.label is ProductTierLabel.MAX:
-            # Owner replaced Max HOLD with Beam; preserve historic HOLD entries.
-            held = {
-                route.model_family
-                for route in tier.routes
-                if route.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-            }
-            _require(
-                {"qwen", "glm"} <= held,
-                "Max historical qwen and glm entries must remain data-only",
-            )
-            _require(
-                all(
-                    r.model_id in (None, MAX_HOLD_MODEL_ID)
-                    for r in tier.routes
-                    if r.model_id is not None and r.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-                ),
-                "Padiem Max hold routes may only name the Max hold sentinel",
-            )
 
 PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
     ProductTierDefinition(
         label=ProductTierLabel.FREE,
         routes=(ProductTierRoute(
-            route_id="free.beam.v1", status=ProductRouteStatus.EXECUTABLE,
-            model_family="beam", provider_id="opencode-go",
-            model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
+            route_id="free.gemini-3.1-flash-lite.v1",
+            status=ProductRouteStatus.EXECUTABLE,
+            model_family="gemini-3.1-flash-lite",
+            provider_id="google",
+            model_id=FREE_PRIMARY_B14_MODEL_ID,
+            upstream_model="gemini-3.1-flash-lite",
             credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-            credential_binding="PADIEM_B14_CREDENTIAL_11",
-            evidence="Owner Free Beam primary decision 2026-10-18; provider Go live call pending.",
+            credential_binding="PADIEM_B14_CREDENTIAL_03",
+            evidence="Owner Free Google model priority decision 2026-10-20.",
         ),),
     ),
-    ProductTierDefinition(
-        label=ProductTierLabel.PLUS,
-        routes=(
-            ProductTierRoute(
-                route_id="plus.muse-spark.v1", status=ProductRouteStatus.EXECUTABLE,
-                model_family="muse-spark", provider_id="opencode-go",
-                model_id=MUSE_B14_MODEL_ID, upstream_model=MUSE_B14_UPSTREAM_MODEL,
+    *(
+        ProductTierDefinition(
+            label=label,
+            routes=(ProductTierRoute(
+                route_id=f"{label.value.split()[-1].lower()}.muse-spark.v1",
+                status=ProductRouteStatus.EXECUTABLE,
+                model_family="muse-spark",
+                provider_id="opencode-go",
+                model_id=MUSE_B14_MODEL_ID,
+                upstream_model=MUSE_B14_UPSTREAM_MODEL,
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_B14_CREDENTIAL_11",
-                evidence="Owner #5009 Plus default Muse Spark decision 2026-10-18; per-grade provider live call pending.",
-            ),
-            ProductTierRoute(
-                route_id="plus.beam.v1", status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="beam", provider_id="opencode-go",
-                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
-                hold_reason=(
-                    "Superseded as the Plus default by owner decision #5009 "
-                    "(Muse Spark primary). Retained as inactive history, not a "
-                    "current grade route."
-                ),
-                evidence="Owner four-tier Beam primary decision, 2026-10-18; superseded by #5009.",
-            ),
-            ProductTierRoute(
-                route_id="plus.hold.v1",
-                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="plus",
-                model_id=PLUS_HOLD_MODEL_ID,
-                hold_reason=(
-                    "Historical #3568: the Space Bunny free route ended, so Plus was held "
-                    "pending another primary at that time. This retained HOLD identity "
-                    "does not block the currently executable Plus Beam route."
-                ),
-                evidence="#3568 model-independent successor-pending hold.",
-            ),
-            ProductTierRoute(
-                route_id="plus.space-bunny-alpha.v1",
-                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="space-bunny-alpha",
-                provider_id="kilo",
-                model_id="kilo/stealth-space-bunny-alpha",
-                upstream_model="stealth/space-bunny-alpha",
-                credential_mode=ProductCredentialMode.ANONYMOUS,
-                hold_reason=(
-                    "Historical #3568: the Space Bunny free lane is no longer used "
-                    "for Padiem/Claw execution. Retained as inactive history, "
-                    "not as a designated grade fallback."
-                ),
-                evidence=(
-                    "Historical owner decision #3209 / #3143 and Production evidence in "
-                    "#3566; execution disabled by #3568."
-                ),
-            ),
-            ProductTierRoute(
-                route_id="plus.agnes-3.0-flash.v1",
-                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="agnes-3.0-flash",
-                provider_id="agnes-ai",
-                model_id="agnes-ai/agnes-3.0-flash",
-                upstream_model="agnes-3.0-flash",
-                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_B14_CREDENTIAL_01",
-                hold_reason=(
-                    "Superseded as the active Padiem Plus route by owner decision "
-                    "#3209 (Space Bunny Alpha). Retained as historical data only; "
-                    "the Agnes provider registration itself is preserved, but it is not "
-                    "a designated current grade fallback."
-                ),
-                evidence=(
-                    "Historical Plus route; B14 app/pilot/agnes_provider.py "
-                    "registration (#2133) preserved."
-                ),
-            ),
-            ProductTierRoute(
-                route_id="plus.poolside-laguna-direct.v1",
-                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="poolside-laguna",
-                provider_id="poolside",
-                model_id="poolside/laguna-s-2.1",
-                upstream_model="poolside/laguna-s-2.1",
-                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_B14_CREDENTIAL_12",
-                hold_reason=(
-                    "Poolside Laguna was a historical fixed-chain candidate; it is "
-                    "retained as inactive tier history, not as a current "
-                    "owner-designated grade fallback."
-                ),
-                evidence=(
-                    "B14 app/pilot/poolside_provider.py registration (#954)."
-                ),
-            ),
-        ),
-    ),
-    ProductTierDefinition(
-        label=ProductTierLabel.PRO,
-        routes=(
-            ProductTierRoute(
-                route_id="pro.muse-spark.v1", status=ProductRouteStatus.EXECUTABLE,
-                model_family="muse-spark", provider_id="opencode-go",
-                model_id=MUSE_B14_MODEL_ID, upstream_model=MUSE_B14_UPSTREAM_MODEL,
-                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_B14_CREDENTIAL_11",
-                evidence="Owner #5009 Pro default Muse Spark decision 2026-10-18; per-grade provider live call pending.",
-            ),
-            ProductTierRoute(
-                route_id="pro.beam.v1", status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="beam", provider_id="opencode-go",
-                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="beam-free",
-                hold_reason=(
-                    "Superseded as the Pro default by owner decision #5009 "
-                    "(Muse Spark primary). Retained as inactive history, not a "
-                    "current grade route."
-                ),
-                evidence="Owner four-tier Beam primary decision, 2026-10-18; superseded by #5009.",
-            ),
-            ProductTierRoute(
-                route_id="pro.hold.v1",
-                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="pro",
-                model_id=PRO_HOLD_MODEL_ID,
-                hold_reason=(
-                    "Historical #2601: the prior B.AI-backed Pro route was disabled "
-                    "pending a replacement. This retained HOLD identity does not "
-                    "block the currently executable Pro Beam route."
-                ),
-                evidence="#2601 temporary Plus-only product posture.",
-            ),
-            ProductTierRoute(
-                route_id="pro.b-ai-qwen3.8-flash.v1",
-                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="qwen3.8-flash",
-                provider_id="b-ai",
-                model_id="b-ai/qwen3.8-flash",
-                upstream_model="qwen3.8-flash",
-                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_B14_CREDENTIAL_03",
-                hold_reason=(
-                    "Temporarily removed from executable Padiem Pro by owner decision #2601 "
-                    "after provider/model instability. Retained as historical route data only."
-                ),
-                evidence=(
-                    "Historical owner selection #2571 and B14 registration #2133; "
-                    "execution disabled by #2601."
-                ),
-            ),
-            ProductTierRoute(
-                route_id="pro.kilo-nemotron-3-ultra-free.v1",
-                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="nemotron-3-ultra",
-                provider_id="kilo",
-                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-                upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
-                credential_mode=ProductCredentialMode.ANONYMOUS,
-                hold_reason=(
-                    "Superseded as the active Padiem Pro route by owner decision #2571. "
-                    "Retained as historical data only, not as a current grade fallback."
-                ),
-                evidence=(
-                    "Historical B14 Kilo Nemotron lane (#956/#2096/#2099); replaced by "
-                    "B.AI Qwen3.8-Flash selection on 2026-09-16."
-                ),
-            ),
-            ProductTierRoute(
-                route_id="pro.kilo-minimax-m3-free.retired.v1",
-                status=ProductRouteStatus.RETIRED_AS_DATA_ONLY,
-                model_family="minimax-m3",
-                provider_id="kilo",
-                model_id="kilo/minimax-minimax-m3-free",
-                upstream_model="minimax/minimax-m3:free",
-                credential_mode=ProductCredentialMode.ANONYMOUS,
-                retired_reason=(
-                    "RETIRED: Kilo Gateway removed minimax/minimax-m3:free from its free "
-                    "model list (verified 2026-09-08, #2094); unregistered from the B14 "
-                    "executable catalog and fixed_chain_v1 in #2097; never re-executable "
-                    "without a fresh explicit owner selection with gateway evidence."
-                ),
-                evidence="#2094 default-route failure root cause (historical #1442 candidate)",
-            ),
-        ),
-    ),
-    ProductTierDefinition(
-        label=ProductTierLabel.MAX,
-        routes=(
-            ProductTierRoute(
-                route_id="max.muse-spark.v1", status=ProductRouteStatus.EXECUTABLE,
-                model_family="muse-spark", provider_id="opencode-go",
-                model_id=MUSE_B14_MODEL_ID, upstream_model=MUSE_B14_UPSTREAM_MODEL,
-                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_B14_CREDENTIAL_11",
-                evidence="Owner #5009 Max default Muse Spark decision 2026-10-18; per-grade provider live call pending.",
-            ),
-            ProductTierRoute(
-                route_id="max.beam.v1", status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="beam", provider_id="opencode-go",
-                model_id=None, upstream_model="beam-free",
-                hold_reason=(
-                    "Superseded as the Max default by owner decision #5009 "
-                    "(Muse Spark primary). Retained as inactive history, not a "
-                    "current grade route. The Max HOLD identity stays the Max "
-                    "hold sentinel, so this entry names no model id."
-                ),
-                evidence="Owner four-tier Beam primary decision, 2026-10-18; superseded by #5009.",
-            ),
-            ProductTierRoute(
-                route_id="max.hold.qwen.v1",
-                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="qwen",
-                model_id=MAX_HOLD_MODEL_ID,
-                hold_reason=(
-                    "Historical Max Qwen HOLD placeholder: the older B.AI Pro route was "
-                    "not a Max selection. Max now has a separately executable "
-                    "Beam primary; this Qwen entry remains inactive history."
-                ),
-            ),
-            ProductTierRoute(
-                route_id="max.hold.glm.v1",
-                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
-                model_family="glm",
-                hold_reason=(
-                    "Historical Max GLM HOLD placeholder: zai/glm-5.2 appears only "
-                    "in the B60 reference registry, not the executable Max route. "
-                    "Max now uses its separately declared Beam primary."
-                ),
-            ),
-        ),
+                evidence="Owner Plus/Pro/Max Muse primary decision #5009.",
+            ),),
+        )
+        for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)
     ),
 )
-
 validate_product_tier_routes(PRODUCT_TIER_ROUTES)
 
 def get_tier(label: ProductTierLabel) -> ProductTierDefinition:

@@ -46,8 +46,8 @@ from padiem_ai_core.tool_resource_policy import (
     resolve_tool_resources,
 )
 from padiem_ai_core.tool_runtime import (
-    MAX_TOOL_ARGUMENT_BYTES,
     ToolAuthorizationContext,
+    ToolExecutionResult,
     ToolRuntime,
 )
 
@@ -59,12 +59,13 @@ ENGINE_TOOL_CONTRACT_FAMILY = "padiem.engine.tools"
 ENGINE_TOOL_CONTRACT_MAJOR = 1
 ENGINE_TOOL_CONTRACT_VERSION = f"{ENGINE_TOOL_CONTRACT_FAMILY}/{ENGINE_TOOL_CONTRACT_MAJOR}.0"
 
-MAX_PUBLIC_TOOL_OUTPUT_BYTES = 32_768
-MAX_PUBLIC_OUTPUT_STRING_CHARS = 2_048
-MAX_PUBLIC_OUTPUT_NODES = 512
-MAX_PUBLIC_OUTPUT_LIST_ITEMS = 64
+# #4379: the public tool projection no longer shortens or drops a tool result.
+# A secret-shaped key is still redacted and a non-identifier key is still
+# sanitized, but a long string, a long list and a large result now reach the
+# caller exactly as the tool produced them. The depth bound is a structural
+# guard, not a limit on the amount a tool may return.
+MAX_PUBLIC_OUTPUT_DEPTH = 64
 MAX_BOUND_TOOL_AGENTS = 64
-MAX_WIRE_TOOL_ARGUMENTS_BYTES = 64 * 1024
 MAX_PENDING_TOOL_CONTINUATIONS = 256
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
@@ -403,6 +404,35 @@ def _reject_wired_authority(data: Mapping[str, Any]) -> None:
         )
 
 
+def _require_json_arguments(value: Any, *, depth: int = 0) -> None:
+    """Reject a value that is not JSON data.
+
+    The size is not checked (#4379); only the shape is, so a caller cannot hand
+    the Core a value it could never serialize.
+    """
+    if depth > 64:
+        raise EngineToolProjectionError(
+            "invalid_tool_arguments", "Tool arguments must be a JSON object."
+        )
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise EngineToolProjectionError(
+                    "invalid_tool_arguments", "Tool arguments must be a JSON object."
+                )
+            _require_json_arguments(item, depth=depth + 1)
+        return
+    if isinstance(value, (list, tuple)):
+        for item in value:
+            _require_json_arguments(item, depth=depth + 1)
+        return
+    raise EngineToolProjectionError(
+        "invalid_tool_arguments", "Tool arguments must be a JSON object."
+    )
+
+
 def parse_tool_execution_request(payload: Any) -> ToolExecutionWire:
     """Parse one bounded tool execution request; unknown fields fail closed."""
     if not isinstance(payload, Mapping):
@@ -435,11 +465,10 @@ def parse_tool_execution_request(payload: Any) -> ToolExecutionWire:
             "arguments must be a JSON object.",
         )
     arguments = dict(arguments)
-    if json_size(arguments) > MAX_TOOL_ARGUMENT_BYTES:
-        raise EngineToolProjectionError(
-            "tool_arguments_too_large",
-            "Tool arguments exceed the bounded Core argument ceiling.",
-        )
+    # #4379: the caller's tool arguments are not refused for their size. The
+    # JSON shape and the identifier grammar still apply, and the settled result
+    # is owned by the durable tool result ledger.
+    _require_json_arguments(arguments)
     return ToolExecutionWire(app_id=app_id, agent_id=agent_id, tool_id=tool_id, arguments=arguments)
 
 
@@ -461,11 +490,18 @@ def _sanitize_output_key(key: Any) -> str:
     return "field"
 
 
-def _redact_recursive(value: Any, state: dict[str, int | bool]) -> Any:
-    if state["nodes"] >= MAX_PUBLIC_OUTPUT_NODES:
-        state["truncated"] = True
+def _redact_recursive(value: Any, depth: int = 0) -> Any:
+    """Redact secrets in place without shortening or dropping the result.
+
+    #4379: the public projection used to cut every string at 2,048 characters,
+    every list at 64 items and replaced a result larger than 32 KB with
+    ``None``. A tool that really produced a long answer was therefore lost
+    after it had already executed. Only the secret redaction and the key
+    sanitization remain. The depth bound is a structural guard against a
+    self-referential structure, not a limit on how much a tool may return.
+    """
+    if depth > MAX_PUBLIC_OUTPUT_DEPTH:
         return None
-    state["nodes"] += 1
     if isinstance(value, Mapping):
         projected: dict[str, Any] = {}
         for key, item in list(value.items()):
@@ -473,17 +509,11 @@ def _redact_recursive(value: Any, state: dict[str, int | bool]) -> Any:
             if isinstance(key, str) and _SECRET_KEY_RE.search(key):
                 projected[safe_key] = REDACTED_TOOL_VALUE
                 continue
-            projected[safe_key] = _redact_recursive(item, state)
+            projected[safe_key] = _redact_recursive(item, depth + 1)
         return projected
     if isinstance(value, (list, tuple)):
-        items = list(value)[:MAX_PUBLIC_OUTPUT_LIST_ITEMS]
-        if len(list(value)) > MAX_PUBLIC_OUTPUT_LIST_ITEMS:
-            state["truncated"] = True
-        return [_redact_recursive(item, state) for item in items]
+        return [_redact_recursive(item, depth + 1) for item in value]
     if isinstance(value, str):
-        if len(value) > MAX_PUBLIC_OUTPUT_STRING_CHARS:
-            state["truncated"] = True
-            return value[:MAX_PUBLIC_OUTPUT_STRING_CHARS] + "[truncated]"
         return value
     if isinstance(value, bool) or isinstance(value, int):
         return value
@@ -498,8 +528,9 @@ def project_redacted_tool_output(output: Any) -> tuple[Any, bool]:
     """Project one settled Core tool output through the single redaction filter.
 
     Values under secret-shaped keys never cross the Engine boundary
-    (TOOL_RESULT_SECRET_LEAK = 0) and the public projection is bounded well
-    under the Core output ceiling.
+    (TOOL_RESULT_SECRET_LEAK = 0). Nothing else is shortened or dropped: a tool
+    result reaches the caller exactly as it was produced, and the second return
+    value reports whether any part of it had to be withheld.
     """
     if isinstance(output, Mapping):
         source: Any = dict(output)
@@ -507,15 +538,8 @@ def project_redacted_tool_output(output: Any) -> tuple[Any, bool]:
         source = [dict(item) if isinstance(item, Mapping) else item for item in output]
     else:
         source = output
-    state: dict[str, int | bool] = {"nodes": 0, "truncated": False}
-    projected = _redact_recursive(source, state)
-    try:
-        size = json_size(projected)
-    except EngineToolProjectionError:
-        return None, True
-    if size > MAX_PUBLIC_TOOL_OUTPUT_BYTES:
-        return None, True
-    return projected, bool(state["truncated"])
+    projected = _redact_recursive(source)
+    return projected, False
 
 
 _LIFECYCLE_BY_STATUS: dict[RunStatus, ToolLifecycleKind] = {

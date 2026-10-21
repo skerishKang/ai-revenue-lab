@@ -35,8 +35,13 @@ import uuid
 
 from .agent_approval import ApprovalPause, approval_pause_from_tool_error
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
-from .agent_profile_adapter import CompiledAgentProfile
+from .agent_profile_adapter import CompiledAgentProfile, effective_max_steps
 from .agent_progress import AgentProgressTracker
+from .agent_tool_result_ledger import (
+    InMemoryToolResultLedger,
+    ToolResultLedger,
+    ToolResultRef,
+)
 from .contracts import RunStatus, ToolEvent
 from .tool_runtime import (
     ToolAuthorizationContext,
@@ -47,10 +52,14 @@ from .tool_runtime import (
 )
 
 
-MAX_AGENT_INPUT_CHARS = 32_000
-MAX_AGENT_ANSWER_CHARS = 65_536
 MAX_APPROVAL_PAUSE_SECONDS = 86_400
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+# #5015: a step driver may name its own failure with a bounded lowercase
+# detail code. Core keeps only that shape-checked identifier and never reads
+# the exception text, so a product can classify its own step failure (an
+# unparsable model answer, an unauthorized tool choice, a model-call error)
+# without Core importing product modules or inventing a telemetry system.
+_STEP_FAILURE_DETAIL_RE = re.compile(r"^[a-z][a-z0-9_]{0,47}$")
 
 
 class AgentRuntimeError(RuntimeError):
@@ -65,6 +74,20 @@ class AgentRuntimeError(RuntimeError):
 
     def to_public_dict(self) -> dict[str, str]:
         return {"code": self.code, "message": self.safe_message}
+
+
+def step_failure_code(exc: BaseException) -> str:
+    """The bounded public code for a step-driver failure (#5015).
+
+    A driver marks its own closed detail on the exception it raises; anything
+    else keeps the previous generic code. Only the identifier shape crosses
+    this boundary: the exception message, the model answer and every other
+    value stay where they were raised.
+    """
+    detail = getattr(exc, "code", None)
+    if isinstance(detail, str) and _STEP_FAILURE_DETAIL_RE.fullmatch(detail):
+        return f"agent_step_failed.{detail}"
+    return "agent_step_failed"
 
 
 class AgentStepKind(str, Enum):
@@ -96,11 +119,9 @@ class AgentStepDecision:
                     "Completed Agent step requires an answer.",
                 )
             answer = self.answer.strip()
-            if len(answer) > MAX_AGENT_ANSWER_CHARS:
-                raise AgentRuntimeError(
-                    "agent_answer_too_large",
-                    "Agent answer exceeded the bounded output limit.",
-                )
+            # #4379: the completed answer is not bounded by a PADIEM character
+            # count. The provider's own output limit and the platform decide
+            # how much text a model can produce.
             object.__setattr__(self, "answer", answer)
             return
 
@@ -129,7 +150,8 @@ class AgentStepContext:
     run_id: str
     step_index: int
     input_text: str
-    tool_results: tuple[ToolExecutionResult, ...]
+    tool_result_refs: tuple[ToolResultRef, ...]
+    result_ledger: ToolResultLedger
 
     def __post_init__(self) -> None:
         if not isinstance(self.run_id, str) or not _IDENTIFIER_RE.fullmatch(
@@ -142,11 +164,14 @@ class AgentStepContext:
         if (
             isinstance(self.step_index, bool)
             or not isinstance(self.step_index, int)
-            or not 1 <= self.step_index <= 64
+            or self.step_index < 1
         ):
+            # #4379: a step index is not a PADIEM quantity. A long run may
+            # reach any step number; the inactivity watchdog, the durable lease
+            # and cancellation still end it.
             raise AgentRuntimeError(
                 "invalid_agent_run",
-                "step_index must be between 1 and 64.",
+                "step_index must be a positive integer.",
             )
         if not isinstance(self.input_text, str) or not self.input_text.strip():
             raise AgentRuntimeError(
@@ -154,22 +179,64 @@ class AgentStepContext:
                 "Agent input must be a non-empty string.",
             )
         text = self.input_text.strip()
-        if len(text) > MAX_AGENT_INPUT_CHARS:
-            raise AgentRuntimeError(
-                "invalid_agent_run",
-                "Agent input exceeded the bounded input limit.",
-            )
+        # #4379: the Agent input is not bounded by a PADIEM character count.
         object.__setattr__(self, "input_text", text)
-        if not isinstance(self.tool_results, tuple):
+        if not isinstance(self.tool_result_refs, tuple):
             raise AgentRuntimeError(
                 "invalid_agent_run",
-                "tool_results must be a tuple.",
+                "tool_result_refs must be a tuple.",
             )
-        if any(not isinstance(item, ToolExecutionResult) for item in self.tool_results):
+        if any(not isinstance(item, ToolResultRef) for item in self.tool_result_refs):
             raise AgentRuntimeError(
                 "invalid_agent_run",
-                "tool_results must contain ToolExecutionResult values.",
+                "tool_result_refs must contain ToolResultRef values.",
             )
+        if not hasattr(self.result_ledger, "resolve"):
+            raise AgentRuntimeError(
+                "invalid_agent_run",
+                "result_ledger must be a ToolResultLedger.",
+            )
+
+    async def resolve_tool_result(self, ref: ToolResultRef) -> ToolExecutionResult:
+        """Resolve one earlier tool result through its authorized reference.
+
+        The runtime never holds the payload; the driver asks the ledger for the
+        result it needs, so a long run does not retain every output in memory.
+        """
+        return await self.result_ledger.resolve(ref)
+
+    async def resolve_tool_results(self) -> tuple[ToolExecutionResult, ...]:
+        """Resolve every earlier tool result, in call order."""
+        return tuple(
+            [await self.result_ledger.resolve(ref) for ref in self.tool_result_refs]
+        )
+
+
+    @classmethod
+    def with_results(
+        cls,
+        *,
+        run_id: str,
+        step_index: int,
+        input_text: str,
+        results: tuple[ToolExecutionResult, ...] = (),
+    ) -> "AgentStepContext":
+        """Build a context for results a host already holds.
+
+        The payloads go into a process-local ledger and the context keeps only
+        the references, exactly like the runtime does.
+        """
+        ledger = InMemoryToolResultLedger()
+        refs = ledger.adopt(
+            run_id=run_id, step_index=step_index, results=results,
+        )
+        return cls(
+            run_id=run_id,
+            step_index=step_index,
+            input_text=input_text,
+            tool_result_refs=refs,
+            result_ledger=ledger,
+        )
 
 
 class AgentStepDriver(Protocol):
@@ -196,6 +263,7 @@ class AgentRunRequest:
     run_id: str | None = None
     initial_step_index: int = 1
     initial_tool_results: tuple[ToolExecutionResult, ...] = ()
+    initial_tool_result_refs: tuple[ToolResultRef, ...] = ()
     initial_tool_events: tuple[ToolEvent, ...] = ()
     trace_id: str | None = None
     plan_id: str | None = None
@@ -232,12 +300,15 @@ class AgentRunRequest:
                 "Agent input must be a non-empty string.",
             )
         text = self.input_text.strip()
-        if len(text) > MAX_AGENT_INPUT_CHARS:
+        # #4379: the Agent input is not bounded by a PADIEM character count.
+        object.__setattr__(self, "input_text", text)
+        if not isinstance(self.initial_tool_result_refs, tuple) or any(
+            not isinstance(item, ToolResultRef) for item in self.initial_tool_result_refs
+        ):
             raise AgentRuntimeError(
                 "invalid_agent_run",
-                "Agent input exceeded the bounded input limit.",
+                "initial_tool_result_refs must contain ToolResultRef values.",
             )
-        object.__setattr__(self, "input_text", text)
         if self.run_id is not None and (
             not isinstance(self.run_id, str)
             or not _IDENTIFIER_RE.fullmatch(self.run_id)
@@ -379,6 +450,7 @@ class BoundedAgentRuntime:
         run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
         checkpoint_hook: Callable[[int], bool | Awaitable[bool]] | None = None,
         progress: AgentProgressTracker | None = None,
+        result_ledger: ToolResultLedger | None = None,
     ) -> None:
         next_step = getattr(step_driver, "next_step", None)
         if not callable(next_step):
@@ -411,7 +483,13 @@ class BoundedAgentRuntime:
             raise ValueError("checkpoint_hook must be callable when configured")
         if progress is not None and not isinstance(progress, AgentProgressTracker):
             raise ValueError("progress must be AgentProgressTracker when configured")
+        if result_ledger is not None and not hasattr(result_ledger, "resolve"):
+            raise ValueError("result_ledger must be a ToolResultLedger")
         self._checkpoint_hook = checkpoint_hook
+        # #4379: the ledger owns the tool payloads. The runtime keeps only the
+        # references, so the retained memory of a long run scales with the
+        # number of calls, not with the size of their outputs.
+        self._result_ledger = result_ledger or InMemoryToolResultLedger()
         self._approval_pause_seconds = approval_pause_seconds
         # Shared with a trusted host (Engine/orchestration) so an outer
         # inactivity watchdog observes the same real progress events.
@@ -527,15 +605,38 @@ class BoundedAgentRuntime:
         idle_seconds = float(budget.max_wall_seconds)
         total_cap = budget.max_total_seconds
         self._record_progress("run_start")
-        max_steps = min(
-            budget.max_steps,
-            request.compiled_profile.runtime_profile.max_steps,
+        max_steps = effective_max_steps(
+            budget.max_steps, request.compiled_profile.runtime_profile.max_steps
         )
-        tool_results: list[ToolExecutionResult] = list(request.initial_tool_results)
+        tool_result_refs: list[ToolResultRef] = []
         tool_events: list[ToolEvent] = list(request.initial_tool_events)
-        tool_calls = len(tool_results)
+        tool_calls = len(request.initial_tool_results)
+        # #4379: the runtime keeps only references. The payload lives in the
+        # ledger, so a long run does not retain every tool output in memory
+        # and no step copies the whole history again.
+        ledger = self._result_ledger
+        if request.initial_tool_result_refs:
+            # A resumed run restores the original results by reference, so the
+            # exact payload survives the pause without being carried in memory.
+            tool_result_refs.extend(request.initial_tool_result_refs)
+            tool_calls = len(tool_result_refs)
+        else:
+            for ordinal, seeded in enumerate(request.initial_tool_results):
+                tool_result_refs.append(
+                    await ledger.append(
+                        run_id=run_id,
+                        step_index=request.initial_step_index,
+                        ordinal=ordinal,
+                        result=seeded,
+                    )
+                )
 
-        for step_index in range(request.initial_step_index, max_steps + 1):
+        # #4379: a step count is no longer a PADIEM ceiling. The run continues
+        # until the model produces its final answer; the inactivity watchdog,
+        # the opt-in total cap, the durable lease and cancellation still end it.
+        step_index = request.initial_step_index - 1
+        while max_steps is None or step_index < max_steps:
+            step_index += 1
             await self._ensure_run_active()
             if self._total_cap_reached(started=started, total_cap=total_cap):
                 return self._total_cap_terminal(
@@ -558,7 +659,8 @@ class BoundedAgentRuntime:
                 run_id=run_id,
                 step_index=step_index,
                 input_text=request.input_text,
-                tool_results=tuple(tool_results),
+                tool_result_refs=tuple(tool_result_refs),
+                result_ledger=ledger,
             )
             try:
                 decision = await asyncio.wait_for(
@@ -580,9 +682,12 @@ class BoundedAgentRuntime:
                 raise
             except AgentRuntimeError:
                 raise
-            except Exception:
+            except Exception as exc:
+                # #5015: the public message stays generic, and the original
+                # exception is still not chained to the caller. The driver's
+                # own bounded detail code is preserved instead of being lost.
                 raise AgentRuntimeError(
-                    "agent_step_failed",
+                    step_failure_code(exc),
                     "Agent step execution failed.",
                 ) from None
 
@@ -625,7 +730,9 @@ class BoundedAgentRuntime:
             invocation = decision.invocation
             assert isinstance(invocation, ToolInvocation)
 
-            if tool_calls >= budget.max_tool_calls:
+            if budget.max_tool_calls is not None and tool_calls >= budget.max_tool_calls:
+                # #4379: a tool-call count is no longer a PADIEM ceiling. A
+                # caller that still wants one sets it explicitly.
                 return self._terminal(
                     run_id=run_id,
                     reason=AgentTerminalReason.MAX_TOOL_CALLS,
@@ -747,7 +854,14 @@ class BoundedAgentRuntime:
                 )
             self._record_progress("tool_result")
             await self._ensure_run_active()
-            tool_results.append(tool_result)
+            tool_result_refs.append(
+                await ledger.append(
+                    run_id=run_id,
+                    step_index=step_index,
+                    ordinal=len(tool_result_refs),
+                    result=tool_result,
+                )
+            )
             tool_events.append(tool_result.event)
             await self._record_trusted_checkpoint(step_index)
             self._record_progress("checkpoint")
@@ -762,7 +876,7 @@ class BoundedAgentRuntime:
         return self._terminal(
             run_id=run_id,
             reason=AgentTerminalReason.MAX_STEPS,
-            steps=max_steps,
+            steps=max_steps if max_steps is not None else step_index,
             tool_calls=tool_calls,
             tool_events=tool_events,
         )

@@ -67,6 +67,7 @@ jobs:
       - name: Regression check for QA path ownership and scoped base visual behavior
         run: |
           python -m unittest discover -s .github/tests -p test_b62_browser_qa_unified.py -v
+          python -m unittest discover -s .github/tests -p test_com2_b62_touch_auto_contract.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_visual_leaf_smoke.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_owner_leaf_browser_base.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_headless_shell_install.py -v
@@ -80,6 +81,10 @@ jobs:
         run: |
           python -m unittest discover -s .github/tests -p test_3989_b62_browser_tail_parallel.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_glass_timing_ownership.py -v
+          python -m unittest discover -s .github/tests -p test_b62_visual_timing_starved_attribution.py -v
+          python -m unittest discover -s .github/tests -p test_b62_glass_zoom_visual_tail_contract.py -v
+          python -m unittest discover -s .github/tests -p test_b62_post_certification_action_settle.py -v
+          python -m unittest discover -s .github/tests -p test_b62_visual_tail_lane_scope.py -v
       - name: Select jobs for changed PR paths
         id: classify
         env:
@@ -385,9 +390,14 @@ jobs:
         # Shell pointer/answer/mask/viewport/accessibility remain blocking on PR.
         # Strict frame-window certification runs daily on main in a separate
         # non-required workflow, using the original unchanged thresholds.
+        # The full scope is the hosted lane's contract: it proves the
+        # high-resolution 2560x1440 Glass Zoom composition on every pull
+        # request. The isolated COM2 container lane runs the default isolated
+        # scope, which keeps the Shell and Gutter composition checks and skips
+        # this already-validated high-resolution duplicate.
         env:
           B62_GLASS_SHELL_MODE: functional
-        run: uv run python ../../.github/scripts/b62_browser_qa_tail_parallel.py
+        run: uv run python ../../.github/scripts/b62_browser_qa_tail_parallel.py --scope full
       - name: Print QA report
         if: always()
         run: |

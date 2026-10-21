@@ -157,9 +157,13 @@ def test_caller_task_is_preserved_after_bounded_validation():
     assert multiline.task == MULTILINE_TASK
 
 
-def test_credential_shaped_task_is_rejected_by_the_existing_contract():
-    with pytest.raises(ContractError, match="credential"):
-        compose(served_env(), task="use api_key = supersecretvalue123 when running")
+def test_credential_shaped_task_is_accepted_by_the_authorized_credential_contract():
+    # #5373: an authorized credential-shaped task is no longer refused by the
+    # existing contract. The credential masking and the approval rules stay.
+    composed = compose(
+        served_env(), task="use api_key = supersecretvalue123 when running"
+    )
+    assert composed is not None
 
 
 def test_repository_ref_is_exactly_the_server_pin():

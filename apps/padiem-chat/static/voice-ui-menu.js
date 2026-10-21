@@ -13,10 +13,28 @@
   const liveAPI = win.PadiemVoiceLiveTurnController;
   const composerAPI = win.PadiemVoiceComposer;
   const ko = () => /^ko/i.test(doc.documentElement.lang || "ko");
-  const modeLabel = (m) => ko()
-    ? (m === "tts" ? "\ub3d9\uc758 + \uc758\uc2dd \ud5c8\ub3d9" : m === "call" ? "\uc758\uc2dd \ud1b5\ud55c" : "\ub3d9\uc758\ub97c \ubb5c\ud1b5")
-    : (m === "tts" ? "Text + voice together" : m === "call" ? "Voice call" : "Text only");
-  const pickerTitle = ko() ? "\uc758\uc2dd \ubb5c\ub9e5 \ub0b4\uc6a9" : "Voice mode";
+  // Voice copy: the voice mode copy comes from the existing locale catalogue.
+  // The previous inline Korean literals were corrupted escape sequences that
+  // rendered as a meaningless phrase instead of a real label.
+  function localeText(key, fallback) {
+    try {
+      if (win.__padiemLocale && typeof win.__padiemLocale.text === "function") {
+        const value = win.__padiemLocale.text(key);
+        if (value && value !== key) return value;
+      }
+    } catch (_) {}
+    return fallback;
+  }
+  const MODE_LABELS = Object.freeze({
+    text: { key: "voice-mode-text", ko: "문자로 답변", en: "Text only" },
+    tts: { key: "voice-mode-tts", ko: "문자 + 음성 함께", en: "Text + voice together" },
+    call: { key: "voice-mode-call", ko: "음성 통화", en: "Voice call" },
+  });
+  function modeLabel(m) {
+    const entry = MODE_LABELS[m] || MODE_LABELS.text;
+    return localeText(entry.key, ko() ? entry.ko : entry.en);
+  }
+  const pickerTitle = () => localeText("voice-mode", ko() ? "음성 모드" : "Voice mode");
 
   let wave = null;
   let menu = null;
@@ -127,9 +145,13 @@
 
   function renderItems() {
     if (!menu) return;
+    menu.setAttribute("aria-label", pickerTitle());
     const items = menu.querySelectorAll('[data-mode]');
     items.forEach(function (item) {
       const m = item.getAttribute("data-mode");
+      // Voice copy: the item label follows the active language.
+      const label = modeLabel(m);
+      if (item.textContent !== label) item.textContent = label;
       const active = currentMode === "live" && (
         (m === "text" && !ttsOn && !callOn) ||
         (m === "tts" && ttsOn && !callOn) ||
@@ -159,9 +181,11 @@
   wave.type = "button";
   wave.id = "voiceWaveformButton";
   wave.className = "voice-waveform-button";
-  wave.setAttribute("aria-label", ko() ? "\uc758\uc2dd" : "Voice");
+  wave.setAttribute("aria-label", pickerTitle());
   wave.setAttribute("data-locale-aria-label", "voice-mode");
-  wave.setAttribute("title", ko() ? "\uc758\uc2dd \ubb5c\ub9e5" : "Voice modes");
+  // Owner 2026-10-20: the hint uses the shared PADIEM chip tooltip.
+  wave.setAttribute("data-padiem-tooltip", pickerTitle());
+  wave.setAttribute("title", pickerTitle());
   wave.setAttribute("data-locale-title", "voice-mode");
   wave.setAttribute("aria-expanded", "false");
   wave.setAttribute("aria-haspopup", "menu");
@@ -183,7 +207,7 @@
   wave.appendChild(svg);
   const srOnly = doc.createElement("span");
   srOnly.className = "sr-only";
-  srOnly.textContent = "\uc758\uc2dd \ubb5c\ub9e5";
+  srOnly.textContent = pickerTitle();
   wave.appendChild(srOnly);
   const mic = doc.getElementById("voiceMicButton");
   if (mic && mic.parentNode === actions) actions.insertBefore(wave, mic.nextSibling);
@@ -194,11 +218,11 @@
   menu.className = "voice-mode-menu";
   menu.hidden = true;
   menu.setAttribute("role", "menu");
-  menu.setAttribute("aria-label", pickerTitle);
+  menu.setAttribute("aria-label", pickerTitle());
   const menuItems = [
-    {mode: "text", label: "\ubb38\uc790\ub85c \ub2f5\ubcc0"},
-    {mode: "tts", label: "\ubb38\uc790 + \uc74c\uc131 \ud568\uac8c"},
-    {mode: "call", label: "\uc74c\uc131 \ud1b5\ud654"},
+    {mode: "text"},
+    {mode: "tts"},
+    {mode: "call"},
   ];
   menuItems.forEach(function (item) {
     const div = doc.createElement("div");
@@ -206,7 +230,7 @@
     div.setAttribute("role", "menuitemradio");
     div.setAttribute("data-mode", item.mode);
     div.setAttribute("aria-checked", "false");
-    div.textContent = item.label;
+    div.textContent = modeLabel(item.mode);
     menu.appendChild(div);
   });
   doc.body.appendChild(menu);
@@ -250,7 +274,11 @@
     if (!info || !controller || !key()) return;
     syncIdentity();
     const c = composerStatus();
-    if (c.active || c.generation !== info.composerGeneration ||
+    /* #4643: the accepted turn may arrive while the microphone run is still
+     * open (Mode 2/3/4 auto-send once per utterance) or right after it
+     * stopped. The run authority is the generation/session pair, not the run
+     * state, so an open run does not swallow its own turn. */
+    if (c.generation !== info.composerGeneration ||
         c.sessionToken !== info.sessionToken || info.accountKey !== key() ||
         info.accepted !== true || info.endOfTurn !== true) return;
     const st = controller.getState();

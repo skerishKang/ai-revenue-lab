@@ -11,20 +11,40 @@
 .user-message .message-bubble {
   margin-right: 0;
 }
+/* The user avatar carries the first character of the signed-in account name
+ * and shares the Padiem "P" avatar geometry: 32x32, 10px radius, same label
+ * type family, same vertical rhythm. The order stays name -> avatar. */
 .user-avatar {
   flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   display: grid;
   place-items: center;
   background: rgba(101, 87, 232, 0.12);
   color: #6557e8;
   border: 1px solid rgba(101, 87, 232, 0.28);
+  font-family: var(--font-label, "SUIT Variable", system-ui, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: .02em;
+  overflow: hidden;
 }
 .user-avatar svg {
   width: 16px;
   height: 16px;
+}
+
+/* Answer completion time. Same format, size and colour as the user turn
+ * time so both turns read as one system. */
+.answer-action-time {
+  font-size: 12px;
+  line-height: 1;
+  color: #7b8792;
+  white-space: nowrap;
+  margin-right: 2px;
+  font-variant-numeric: tabular-nums;
 }
 
 .answer-actions {
@@ -101,8 +121,6 @@
     width: 36px;
     height: 36px;
   }
-  .user-avatar {
-    width: 26px;
-    height: 26px;
-  }
+  /* The user avatar keeps the 32x32 P-avatar size on every viewport so the
+   * two avatars stay one size on desktop and on mobile alike. */
 }

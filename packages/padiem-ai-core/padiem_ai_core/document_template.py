@@ -14,11 +14,11 @@ from typing import TypeAlias
 DOCUMENT_TEMPLATE_SCHEMA_VERSION = 1
 MAX_TEMPLATE_NAME_CHARS = 160
 MAX_TEMPLATE_SOURCE_REF_CHARS = 512
-MAX_TEMPLATE_STRING_CHARS = 8192
+# #4379: a template string carries no PADIEM character total.
 MAX_TEMPLATE_COLLECTION_ITEMS = 256
 MAX_TEMPLATE_NESTING_DEPTH = 8
 MAX_TEMPLATE_NODES = 4096
-MAX_TEMPLATE_DATA_BYTES = 128 * 1024
+# #4379: the template data carries no PADIEM byte total.
 MAX_TEMPLATE_WARNINGS = 32
 MAX_TEMPLATE_INTEGER_ABS = 2**63 - 1
 
@@ -185,8 +185,7 @@ def _freeze(value: object, *, depth: int = 0, counter: list[int] | None = None) 
             _fail("invalid_document_template_data", "Template numbers must be finite.")
         return value
     if isinstance(value, str):
-        if len(value) > MAX_TEMPLATE_STRING_CHARS:
-            _fail("template_data_budget_exceeded", "Template string is too large.")
+        # #4379: a template string is not refused for its length.
         return value
     if isinstance(value, Mapping):
         if len(value) > MAX_TEMPLATE_COLLECTION_ITEMS:
@@ -231,8 +230,7 @@ def _object(name: str, value: object) -> FrozenTemplateObject:
     frozen = _freeze(source)
     if not isinstance(frozen, FrozenTemplateObject):
         _fail("invalid_document_template_data", f"{name} must be an object.")
-    if len(_encoded(frozen)) > MAX_TEMPLATE_DATA_BYTES:
-        _fail("template_data_budget_exceeded", f"{name} is too large.")
+    # #4379: the template data is not refused for its size.
     return frozen
 
 
@@ -243,8 +241,7 @@ def _array(name: str, value: object) -> FrozenTemplateArray:
     frozen = _freeze(source)
     if not isinstance(frozen, FrozenTemplateArray):
         _fail("invalid_document_template_data", f"{name} must be an array.")
-    if len(_encoded(frozen)) > MAX_TEMPLATE_DATA_BYTES:
-        _fail("template_data_budget_exceeded", f"{name} is too large.")
+    # #4379: the template data is not refused for its size.
     return frozen
 
 
@@ -325,8 +322,7 @@ class DocumentTemplateCandidate:
             _object("fixed_content", self.fixed_content),
             _array("variable_slots", self.variable_slots),
         )
-        if sum(len(_encoded(value)) for value in values) > MAX_TEMPLATE_DATA_BYTES:
-            _fail("template_data_budget_exceeded", "Combined template data is too large.")
+        # #4379: the combined template data is not refused for its size.
         for field_name, value in zip(("structure_profile", "style_profile", "fixed_content", "variable_slots"), values):
             object.__setattr__(self, field_name, value)
         object.__setattr__(self, "renderer_contract_ref", _safe_ref("renderer_contract_ref", self.renderer_contract_ref))
@@ -484,10 +480,8 @@ def approve_document_template_candidate(
 __all__ = [
     "DOCUMENT_TEMPLATE_SCHEMA_VERSION",
     "MAX_TEMPLATE_COLLECTION_ITEMS",
-    "MAX_TEMPLATE_DATA_BYTES",
     "MAX_TEMPLATE_NESTING_DEPTH",
     "MAX_TEMPLATE_NODES",
-    "MAX_TEMPLATE_STRING_CHARS",
     "MAX_TEMPLATE_INTEGER_ABS",
     "DocumentTemplateApproval",
     "DocumentTemplateCandidate",

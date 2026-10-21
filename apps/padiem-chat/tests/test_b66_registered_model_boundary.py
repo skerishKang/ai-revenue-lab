@@ -14,6 +14,11 @@ from app.b66_registered_model_boundary import (
     B66RegisteredModelCompletion,
     validate_authorized_route,
 )
+from padiem_control_plane.product_tier_routes import (
+    FREE_PRIMARY_B14_MODEL_ID,
+    TIER_FALLBACK_B14_MODELS,
+    is_free_execution_candidate,
+)
 
 
 def approved_route(**overrides) -> B14AuthorizedModelRoute:
@@ -51,6 +56,7 @@ class FakeB14Executor:
         self.raises = raises
         self.calls = []
         self.model_parameters = []
+        self.tier_kwargs = []
 
     async def execute_quote_text(
         self,
@@ -60,11 +66,15 @@ class FakeB14Executor:
         additional_system_context,
         requirements,
         model_parameters=None,
+        **kwargs,
     ):
         self.calls.append((route, messages, additional_system_context, requirements))
         # Recorded so a caller that forwards an unexpected native parameter is
         # visible here rather than silently accepted.
         self.model_parameters.append(model_parameters)
+        # The graded lane forwards its product tier to B14, so the double keeps
+        # the forwarded keyword visible.
+        self.tier_kwargs.append(kwargs)
         if self.raises is not None:
             raise self.raises
         return self.response if self.response is not None else {
@@ -215,6 +225,77 @@ def test_no_hidden_route_substitution_or_broken_response(response, code):
     assert len(executor.calls) == 1
 
 
+# ── #2505: the grade recovery roster holds candidate model ids ───────────────
+#
+# The B66 model decision boundary accepts the selected model plus the
+# owner-pinned recovery roster of the grade. The roster is a tuple of candidate
+# model ids; adding the roster itself as one value made every genuine B14
+# grade failover surface as a route mismatch.
+
+
+def _free_tier_completion(response):
+    resolver = FakeTrustedResolver(approved_route(model_id=FREE_PRIMARY_B14_MODEL_ID))
+    executor = FakeB14Executor(response=response)
+    return B66RegisteredModelCompletion(resolver=resolver, executor=executor)
+
+
+def _run_free_tier(client):
+    return asyncio.run(client.complete(
+        [{"role": "user", "content": "견적 회신 요청"}],
+        additional_system_context="private saved skill prompt",
+        attachments=(),
+        model_id=FREE_PRIMARY_B14_MODEL_ID,
+        product_tier="free",
+    ))
+
+
+def test_a_policy_allowed_grade_failover_is_accepted():
+    """A B14 failover to a declared roster candidate is not a substitution."""
+    roster = TIER_FALLBACK_B14_MODELS["free"]
+    assert roster, "the free grade declares its recovery roster"
+    failover = roster[0]
+    client = _free_tier_completion({
+        "answer": '{"recipient":{"company":"x"}}',
+        "route": {"mode": "manual", "model": failover},
+    })
+    assert _run_free_tier(client) == {"answer": '{"recipient":{"company":"x"}}'}
+
+
+def test_the_selected_grade_primary_is_still_accepted():
+    """The normal primary path of a graded B66 lane is unchanged."""
+    client = _free_tier_completion({
+        "answer": "value",
+        "route": {"mode": "manual", "model": FREE_PRIMARY_B14_MODEL_ID},
+    })
+    assert _run_free_tier(client) == {"answer": "value"}
+
+
+def test_a_route_outside_the_selected_model_and_the_roster_is_still_refused():
+    """Widening the allowed set to the roster ids does not widen it further."""
+    client = _free_tier_completion({
+        "answer": "value",
+        "route": {"mode": "manual", "model": "other/model-not-in-the-roster"},
+    })
+    with pytest.raises(B66ModelRouteError) as caught:
+        _run_free_tier(client)
+    assert caught.value.code == "provider_route_mismatch"
+
+
+def test_the_grade_recovery_roster_carries_no_excluded_free_candidate():
+    """The widened allowed set can not make a free candidate eligible."""
+    for tier, roster in TIER_FALLBACK_B14_MODELS.items():
+        assert roster, tier
+        for model_id in roster:
+            assert not is_free_execution_candidate(model_id), (tier, model_id)
+    client = _free_tier_completion({
+        "answer": "value",
+        "route": {"mode": "manual", "model": "opencode-go/longcat-2.5-preview-free"},
+    })
+    with pytest.raises(B66ModelRouteError) as caught:
+        _run_free_tier(client)
+    assert caught.value.code == "provider_route_mismatch"
+
+
 def test_provider_exception_has_bounded_error_and_no_second_attempt():
     resolver = FakeTrustedResolver(approved_route())
     executor = FakeB14Executor(raises=RuntimeError("PRIVATE PROVIDER KEY"))
@@ -354,7 +435,10 @@ def test_real_b14_core_quote_payload_is_exact_one_attempt_no_external_fallback()
     assert url == "https://b14.internal/api/pilot/v1/chat/completions"
     assert payload["model"] == model
     assert payload["business14"]["task_type"] == "document"
-    assert payload["business14"]["max_attempts"] == 1
+    # #5362 removed the default one-step agent execution ceiling, so no
+    # attempt ceiling is sent. The one-shot contract is the pinned retry
+    # budget below.
+    assert "max_attempts" not in payload["business14"]
     assert payload["business14"]["max_retries"] == 0
     assert payload["business14"]["allow_external_fallback"] is False
     assert payload["business14"].get("provider_order") is None

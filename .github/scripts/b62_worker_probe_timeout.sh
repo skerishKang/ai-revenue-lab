@@ -7,10 +7,19 @@ b62_probe_mark() {
   printf 'B62_WORKER_PHASE_%s_%s_MS=%s\n' "$B62_PROBE_TIMING_LABEL" "$1" "$(date +%s%3N)"
 }
 b62_probe_mark START
-cat > .runtime-timeout-probe.toml <<'EOF'
+# #5479: the real Pyodide probe must boot the SAME compatibility date that
+# Production deploys. A literal date here lets the CI lane prove a runtime
+# that Production no longer runs.
+CHAT_MANIFEST="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../apps/padiem-chat" && pwd)/wrangler.toml"
+COMPAT_DATE="$(sed -n 's/^compatibility_date = "\(.*\)"$/\1/p' "$CHAT_MANIFEST" | head -n 1)"
+if [ -z "$COMPAT_DATE" ]; then
+  echo 'B62_WORKER_COMPAT_DATE_MISSING=FAIL' >&2
+  exit 2
+fi
+cat > .runtime-timeout-probe.toml <<EOF
 name = "padiem-chat-runtime-timeout-probe"
 main = "worker_runtime_timeout_probe.py"
-compatibility_date = "2026-08-25"
+compatibility_date = "$COMPAT_DATE"
 compatibility_flags = ["python_workers"]
 workers_dev = true
 EOF

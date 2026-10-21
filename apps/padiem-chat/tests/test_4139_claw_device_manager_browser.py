@@ -66,8 +66,20 @@ def open_claw(browser, server, width=1280):
       document.getElementById("clawWorkspace").hidden = false;
     }""")
     page.locator("#clawWorkspace").wait_for(state="visible", timeout=5000)
-    page.locator("#clawDeviceManagerToggle").wait_for(state="visible", timeout=10000)
+    # The composer connection control is the only visible entry above the
+    # composer. The manager keeps its own entry control and its state;
+    # only the duplicate entry line is not shown.
+    page.locator("#composerPcStatus").wait_for(state="visible", timeout=10000)
     return page, errors
+
+
+def open_manager(page):
+    """Open the device management panel the way a user opens it.
+
+    The composer's small connection control is the visible entry above the
+    composer, so the panel is opened through it.
+    """
+    page.locator("#composerPcStatus").click()
 
 
 def payload(items):
@@ -129,7 +141,7 @@ def test_device_list_choice_refresh_and_approval_boundary(browser, server, width
     route_directory(page, fixture, gets, posts)
     # At most one authenticated-session restore read; no idle polling.
     assert len(gets) <= 1 and not posts
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.locator("#clawDeviceManagerList li").first.wait_for()
     assert gets[-1] == "GET"
     assert len(gets) <= 2
@@ -171,7 +183,7 @@ def test_unconfigured_server_is_honest_and_no_fake_online(browser, server):
         route.fulfill(status=404, body="missing")
 
     page.route("**" + ENDPOINT, no_route)
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.get_by_text("연결 서비스가 아직 준비되지 않았습니다", exact=False).wait_for()
     assert page.locator("#clawDeviceManagerList").is_hidden()
     assert page.locator("#clawDeviceManagerList li").count() == 0
@@ -187,7 +199,7 @@ def test_bad_json_unscoped_directory_and_revocation_never_show_online(browser, s
         route.fulfill(status=200, content_type="application/json", body=fixture["body"])
 
     page.route("**" + ENDPOINT, mock)
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.get_by_text("연결 상태를 확인하지 못했습니다", exact=False).wait_for()
     assert page.locator("#clawDeviceManagerList li").count() == 0
     fixture["body"] = json.dumps({
@@ -218,7 +230,7 @@ def test_credential_and_markup_never_injected(browser, server):
             "stdout": secret, "account_ref": "private-account",
         }])),
     ))
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.locator("#clawDeviceManagerList li").first.wait_for()
     assert page.locator("#clawDeviceManagerList li img").count() == 0
     assert page.locator("#clawDeviceManagerList li strong").inner_text() == name
@@ -233,7 +245,7 @@ def test_owner_switch_hides_previous_devices_and_clear_on_navigation(browser, se
     fixture = {"devices": payload([online("pc1", "계정 A PC")])}
     gets, posts = [], []
     route_directory(page, fixture, gets, posts)
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.locator("#clawDeviceManagerList li").first.wait_for()
     page.locator("#clawDeviceManagerList li button").click()
     page.wait_for_function(
@@ -242,9 +254,15 @@ def test_owner_switch_hides_previous_devices_and_clear_on_navigation(browser, se
     assert posts == [{"device_id": "pc1"}]
     fixture["devices"] = payload([offline("pc2", "계정 B PC")])
     page.evaluate('window.dispatchEvent(new CustomEvent("padiem:auth-state", {detail: {authenticated: true}}))')
-    page.get_by_text("계정 B PC").wait_for()
+    # The shared entry now names the confirmed PC, so the directory list is
+    # addressed directly instead of counting page-wide text matches.
+    page.locator("#clawDeviceManagerList li strong", has_text="계정 B PC").first.wait_for()
     assert page.get_by_text("계정 A PC").count() == 0
     assert page.locator("#clawDeviceManagerList li button").is_disabled()
+    # The composer's duplicate entry line is not shown, so no PC name is
+    # printed above the composer any more. The current owner's PC is listed
+    # in the panel rows and the previous owner's PC is named nowhere.
+    assert page.locator(".claw-device-manager-toggle").is_hidden()
     # #5015: the panel is common now, so switching to Chat keeps it available;
     # the account snapshot was still invalidated and re-read above.
     page.evaluate("""() => {
@@ -252,7 +270,8 @@ def test_owner_switch_hides_previous_devices_and_clear_on_navigation(browser, se
     }""")
     page.wait_for_timeout(50)
     assert page.locator("#clawDeviceManager").is_visible()
-    assert page.get_by_text("계정 B PC").count() == 1
+    assert page.locator("#clawDeviceManagerList li").count() == 1
+    assert page.locator("#clawDeviceManagerList li strong", has_text="계정 B PC").count() == 1
     assert not errors
     page.close()
 
@@ -260,9 +279,9 @@ def test_owner_switch_hides_previous_devices_and_clear_on_navigation(browser, se
 def test_keyboard_escape_closes_without_side_effect(browser, server):
     page, errors = open_claw(browser, server)
     page.route("**" + ENDPOINT, lambda route: route.fulfill(status=503, body="disabled"))
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.get_by_text("연결 서비스가 아직 준비되지 않았습니다", exact=False).wait_for()
-    page.locator("#clawDeviceManagerToggle").press("Escape")
+    page.keyboard.press("Escape")
     assert page.locator("#clawDeviceManagerPanel").is_hidden()
     assert page.locator("#clawDeviceManagerToggle").get_attribute("aria-expanded") == "false"
     assert not errors
@@ -280,7 +299,7 @@ def test_authoritative_empty_directory_and_logged_out_are_distinct(browser, serv
         )
 
     page.route("**" + ENDPOINT, mock)
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.get_by_text("현재 계정에서 확인된 컴퓨터가 없습니다", exact=False).wait_for()
     assert page.locator("#clawDeviceManagerList").is_hidden()
     fixture["status"] = 401
@@ -311,7 +330,7 @@ def test_pending_device_read_is_aborted_on_close(browser, server):
         });
       };
     }""")
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.wait_for_function("window.__deviceReads === 1")
     assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") == "true"
     page.locator(".claw-device-manager-close").click()
@@ -344,7 +363,7 @@ def test_hung_device_read_recovers_without_false_online(browser, server):
       window.setTimeout = (fn, ms, ...args) =>
         originalTimer(fn, ms === 12000 ? 25 : ms, ...args);
     }""")
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.wait_for_function("window.__deviceAborts === 1")
     assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") is None
     assert page.locator("#clawDeviceManagerList li").count() == 0
@@ -378,11 +397,12 @@ def test_owner_change_cancels_old_read_before_new_owner_status(browser, server):
           {status:200,headers:{"Content-Type":"application/json"}}));
       };
     }""")
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.wait_for_function("window.__calls === 1")
     page.evaluate('window.dispatchEvent(new Event("padiem:account-changed"))')
-    page.wait_for_function("window.__calls === 2 && window.__aborts === 1")
-    page.get_by_text("Account B", exact=True).wait_for()
+    page.wait_for_function("""() => window.__calls === 2 && window.__aborts === 1""")
+    # The entry names the confirmed PC, so the row itself is addressed.
+    page.locator("#clawDeviceManagerList li strong", has_text="Account B").first.wait_for()
     assert page.locator("#clawDeviceManagerList li").count() == 1
     assert     page.locator("#clawDeviceManagerList li button").is_disabled()
     assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") is None
@@ -402,7 +422,7 @@ def test_unconfigured_and_read_failed_reasons_are_distinct(browser, server):
     page.route("**" + ENDPOINT, lambda route: route.fulfill(
         status=200, content_type="application/json", body=fixture["body"],
     ))
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.get_by_text("연결 서비스가 아직 설정되지 않았습니다", exact=False).wait_for()
     status = page.locator("#clawDeviceManagerStatus").inner_text()
     assert "조회 중 문제가 발생했습니다" not in status
@@ -425,7 +445,7 @@ def test_read_failure_recovers_on_retry(browser, server):
     page.route("**" + ENDPOINT, lambda route: route.fulfill(
         status=200, content_type="application/json", body=fixture["body"],
     ))
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.get_by_text("연결 서비스 조회 중 문제가 발생했습니다", exact=False).wait_for()
     fixture["body"] = json.dumps(payload([online("home", "집 컴퓨터")]), ensure_ascii=False)
     page.locator(".claw-device-manager-refresh").click()
@@ -450,7 +470,7 @@ def test_unknown_reason_and_server_text_never_reach_the_ui(browser, server):
             "message": secret, "detail": secret,
         }),
     ))
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.get_by_text("연결 서비스가 아직 준비되지 않았습니다", exact=False).wait_for()
     panel = page.locator("#clawDeviceManagerPanel").inner_text()
     assert secret not in panel
@@ -473,7 +493,7 @@ def test_error_response_message_is_never_echoed(browser, server):
             "error": {"code": "device_directory_auth_required", "message": secret},
         }),
     ))
-    page.locator("#clawDeviceManagerToggle").click()
+    open_manager(page)
     page.get_by_text("로그인한 뒤", exact=False).wait_for()
     assert secret not in page.locator("#clawDeviceManagerPanel").inner_text()
     assert page.locator("#clawDeviceManagerList li").count() == 0

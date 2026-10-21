@@ -182,12 +182,15 @@ async def ensure_route_secrets(
     prevents unrelated Provider bindings from being fetched for one model.
     """
     from .catalog import get_catalog_by_id, get_catalog_models
-    from .owner_model_exclusions import excluded_from_owner_customer_selection
+    from .owner_model_exclusions import (
+        excluded_from_owner_customer_selection,
+        free_candidate_excluded_from_execution,
+    )
     from .routing_policy import B14_AUTO_CHAIN
     from .worker_env import load_request_secret
 
-    if model_id == "opencode-go/beam-free":
-        from .tier_fallback import TIER_FALLBACK_B14_MODELS
+    from .tier_fallback import TIER_DEFAULT_B14_MODEL, TIER_FALLBACK_B14_MODELS
+    if product_tier == "free" and model_id == TIER_DEFAULT_B14_MODEL:
         if product_tier not in TIER_FALLBACK_B14_MODELS:
             from .errors import InvalidRequest
             raise InvalidRequest("Unsupported product tier.")
@@ -202,6 +205,7 @@ async def ensure_route_secrets(
             for model in get_catalog_models()
             if model.model_id != model_id
             and not excluded_from_owner_customer_selection(model.model_id)
+            and not free_candidate_excluded_from_execution(model.model_id)
             and model.model_id != "experiential/qwen3.8-flash-next-uncensored"
         ][:3]
     else:

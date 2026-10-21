@@ -9,6 +9,11 @@ on:
       # has to run this suite even when no Claw file moves.
       - 'packages/padiem-ai-core/padiem_ai_core/image_helpers.py'
       - 'packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py'
+      # #5172: the Claw plan boundary uses the shared PC device identity
+      # grammar, so a change to that one contract has to run this suite even
+      # when no Claw file moves.
+      - 'packages/padiem-ai-core/padiem_ai_core/pc_device_identity.py'
+      - 'packages/padiem-ai-core/tests/test_pc_device_identity.py'
       - 'packages/padiem-ai-core/tests/test_pillow_wheel_receipts.py'
       - 'packages/padiem-ai-core/tests/test_image_helpers_3037.py'
       - 'packages/padiem-ai-core/pyproject.toml'
@@ -25,6 +30,7 @@ on:
       - 'packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py'
       - '.github/workflows/validate-b54-kagent.yml'
       - '.github/scripts/kagent_parallel_contract_tests.py'
+      - '.github/scripts/kagent_pytest_style_contract_tests.py'
   workflow_dispatch:
 
 permissions:
@@ -218,3 +224,20 @@ jobs:
         run: |
           set -euo pipefail
           python "$GITHUB_WORKSPACE/.github/scripts/kagent_parallel_contract_tests.py"
+
+      # unittest discovery collects TestCase cases only, so a pytest-style
+      # module in this package contributed zero cases and its assertions ran
+      # nowhere in CI. This step derives the exact complementary set from the
+      # same discovery and runs only that set, so every test function in the
+      # package is executed once and none is executed twice. The whole pytest
+      # suite is deliberately not added here: that would re-run the unittest
+      # cases and turn this lane into a second full-suite job.
+      - name: Run KAgent pytest-style contract tests
+        working-directory: apps/korean-ai-code-agent
+        shell: bash
+        env:
+          PYTHONPATH: src
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check "pytest>=8,<10" "openpyxl>=3.1,<4"
+          python "$GITHUB_WORKSPACE/.github/scripts/kagent_pytest_style_contract_tests.py"
