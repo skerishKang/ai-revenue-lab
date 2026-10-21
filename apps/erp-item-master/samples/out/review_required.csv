@@ -1,0 +1,8 @@
+﻿원본행,품목코드,상품명,검토사유,확인필요항목
+5,SEN-018N-01,포토센서 NPN 18mm,duplicate_candidate:DUP-001; duplicate_item_code:SEN-018N-01,중복 판정
+6,OIL-VG220-18,기어오일 ISO VG 220,missing_purchase_price,purchase_price
+7,BLT-A45-000,A형 벨트 A-45,unreadable_purchase_price,purchase_price
+8,,알루미늄 40x40 프로파일,missing_item_code,item_code
+9,CAL-0150-00,디지털 캘리퍼스 150mm,low_confidence_ai_field:supplier(0.72); duplicate_candidate:DUP-002; fuzzy_name_similarity:0.9231(디지털캘리퍼스150mm~디지털캘리퍼스150mm정밀),"supplier, 중복 판정"
+10,CAL-0150-01,디지털 캘리퍼스 150mm 정밀,duplicate_candidate:DUP-002; fuzzy_name_similarity:0.9231(디지털캘리퍼스150mm~디지털캘리퍼스150mm정밀),중복 판정
+11,SEN-018N-01,포토센서 NPN 18mm,duplicate_candidate:DUP-001; duplicate_item_code:SEN-018N-01,중복 판정

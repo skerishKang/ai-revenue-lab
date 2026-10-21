@@ -1,0 +1,55 @@
+{
+  "ai_filled_field_count": 1,
+  "auto_ok_count": 3,
+  "duplicate_compared_pairs": 1,
+  "duplicate_group_count": 2,
+  "duplicate_record_count": 2,
+  "duplicate_skipped_blocks": 0,
+  "error_count": 2,
+  "extraction_error_count": 2,
+  "outputs": [
+    "apps/erp-item-master/samples/out/item_master_normalized.csv",
+    "apps/erp-item-master/samples/out/item_master_before_after.csv",
+    "apps/erp-item-master/samples/out/review_required.csv",
+    "apps/erp-item-master/samples/out/duplicate_report.csv",
+    "apps/erp-item-master/samples/out/erp_import_generic.csv",
+    "apps/erp-item-master/samples/out/erp_import_ecount_api_candidate_CANDIDATE.csv",
+    "apps/erp-item-master/samples/out/erp_field_mapping_status.csv",
+    "apps/erp-item-master/samples/out/item_master_workbook.xlsx",
+    "apps/erp-item-master/samples/out/pipeline_report.json"
+  ],
+  "profiles": {
+    "ecount_api_candidate": "template_confirmed=False;upload_ready=False;columns=8",
+    "generic": "template_confirmed=True;upload_ready=True;columns=10"
+  },
+  "review_required_count": 7,
+  "row_count": 10,
+  "sheet_title": null,
+  "source_headers": [
+    "품목코드",
+    "상품명",
+    "모델명",
+    "제조사",
+    "공급사",
+    "규격",
+    "단위",
+    "분류",
+    "매입가",
+    "판매가",
+    "담당자",
+    "메모"
+  ],
+  "source_kind": "csv",
+  "source_name": "source_items_raw.csv",
+  "timings_ms": {
+    "detect_duplicates": 52.812,
+    "export": 6870.903,
+    "normalize": 1.941,
+    "read": 13.151,
+    "review": 0.081,
+    "total": 6938.888
+  },
+  "unmapped_headers": [
+    "담당자"
+  ]
+}
