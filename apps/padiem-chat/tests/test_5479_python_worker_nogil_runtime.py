@@ -1,29 +1,38 @@
-"""#5479 — the Chat Python Worker must run the Python 3.14 Pyodide snapshot.
+"""#5479 — the Chat Python Worker's runtime contract.
 
-Production evidence (the ``padiem-chat`` Workers tail of 2026-10-19/20)
-recorded eleven ``NoGilError: Attempted to use PyProxy when Python GIL not
-held`` exceptions. Every one of them was raised inside the Cloudflare runtime
-while it initialized the Python instance (``preparePython`` -> ``initPyInstance``
--> ``Proxy``), so it happened *before* any application code ran, and every one
-of them landed on the repeated ``POST /api/claw/connector/mesh-reads/poll``
-request, which is the traffic that keeps landing on a cold isolate.
+Two facts from #5479 are pinned here.
 
-That signature is the known upstream platform race
-(``cloudflare/workerd#6624``). Cloudflare published the fix as a Python Workers
-runtime update — Python 3.14 with the memory-leak fixes — and asked every
-affected Worker to move its compatibility date to ``2026-09-08`` or later. The
-runtime snapshot is selected by the compatibility date: ``2026-09-08`` is the
-first date that implies the ``python_workers_314`` flag (Pyodide 314.0.6 /
-CPython 3.14.2). The previous date, ``2026-08-25``, still selected the
-Pyodide 3.13 snapshot, which is the runtime that raises the error.
+**The NoGilError is a platform race, not an application defect.** The
+``padiem-chat`` Workers tail of 2026-10-19/20 recorded eleven
+``NoGilError: Attempted to use PyProxy when Python GIL not held`` exceptions.
+Every one of them was raised inside the Cloudflare runtime while it
+initialized the Python instance (``preparePython`` -> ``initPyInstance`` ->
+``Proxy``), so it happened *before* any application code ran, and every one of
+them landed on the repeated ``POST /api/claw/connector/mesh-reads/poll``
+request, the traffic that keeps arriving on a cold isolate. That is the
+upstream race ``cloudflare/workerd#6624``.
 
-Two things are pinned here:
+**The published fix for that race is a runtime change this Worker cannot take
+yet.** Cloudflare shipped the fix as a Python Workers runtime update (Python
+3.14 with the memory-leak fixes) and asked affected Workers to move their
+compatibility date to ``2026-09-08`` or later. The Pyodide 3.14 snapshot ships
+no ``_hashlib``, and CPython 3.14 removed the pure-Python PBKDF2 fallback, so
+that runtime has no ``hashlib.pbkdf2_hmac``. This Worker's stored credential
+format is PBKDF2-HMAC-SHA512, so a 3.14 Worker answers **every** password
+login with HTTP 500
+(``AttributeError: module 'hashlib' has no attribute 'pbkdf2_hmac'``).
 
-1. the Chat Worker manifest stays on a compatibility date that selects the
-   published runtime, and
-2. the real Workerd/Pyodide CI lane boots *that same* compatibility date, so a
-   green CI lane proves the runtime Production actually runs instead of a
-   runtime that only exists inside the probe script.
+So the contract is:
+
+1. the Chat Worker stays on a compatibility date whose runtime still provides
+   the password KDF the Worker uses,
+2. the real Workerd/Pyodide CI lane boots the *deployed* compatibility date and
+   proves both the booted Python version and the password KDF, and
+3. the production deploy config carries that date into the released Worker.
+
+A future runtime bump that breaks (1) or (2) therefore fails in CI before any
+release, and the production deploy cannot silently ship a runtime that cannot
+hash a password.
 """
 from __future__ import annotations
 
@@ -35,14 +44,15 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 CHAT_ROOT = Path(__file__).resolve().parents[1]
 CHAT_MANIFEST = CHAT_ROOT / "wrangler.toml"
 
-#: First compatibility date that implies ``python_workers_314``
-#: (Pyodide 314.0.6 / CPython 3.14.2), the runtime Cloudflare published as the
-#: fix for the ``NoGilError`` initialization race (cloudflare/workerd#6624).
+#: First compatibility date that implies the ``python_workers_314`` flag
+#: (Pyodide 314.0.6 / CPython 3.14.2). That snapshot has no ``_hashlib``, so
+#: ``hashlib.pbkdf2_hmac`` does not exist there and this Worker's password
+#: hashing cannot run.
 PYTHON_314_COMPATIBILITY_DATE = "2026-09-08"
 
-#: The compatibility date this Worker used before #5479. It selects the
-#: Pyodide 3.13 snapshot, which is the runtime that raises ``NoGilError``.
-VULNERABLE_COMPATIBILITY_DATE = "2026-08-25"
+#: The compatibility date the Chat Worker deploys today (Pyodide 3.13 /
+#: CPython 3.13.2), which does provide ``hashlib.pbkdf2_hmac``.
+DEPLOYED_COMPATIBILITY_DATE = "2026-08-25"
 
 #: The real Workerd/Pyodide probe scripts. Each one used to hardcode a
 #: compatibility date, which let the CI lane prove a runtime that Production
@@ -60,11 +70,6 @@ def _manifest() -> dict:
     return tomllib.loads(CHAT_MANIFEST.read_text(encoding="utf-8"))
 
 
-def _python_runtime_is_current(compatibility_date: str) -> bool:
-    """True when the compatibility date selects the published Python runtime."""
-    return compatibility_date >= PYTHON_314_COMPATIBILITY_DATE
-
-
 def _load_deploy_config_module():
     script = REPO_ROOT / ".github/scripts/b62_cloudflare_production_deploy_config.py"
     spec = importlib.util.spec_from_file_location(
@@ -76,39 +81,57 @@ def _load_deploy_config_module():
     return module
 
 
-def test_the_chat_worker_runs_the_published_python_runtime():
-    """The manifest must select Pyodide 3.14, not the 3.13 snapshot."""
+def test_the_worker_password_hash_uses_the_runtime_pbkdf2():
+    """The constraint above is derived from the source, not from a guess."""
+    source = (CHAT_ROOT / "app/password_auth.py").read_text(encoding="utf-8")
+    assert "hashlib.pbkdf2_hmac" in source
+    assert "PBKDF2_ALGORITHM" in source
+
+
+def _runtime_provides_password_kdf(compatibility_date: str) -> bool:
+    """Does the runtime this compatibility date selects provide the KDF?
+
+    CPython 3.14 removed the pure-Python PBKDF2 fallback and the Pyodide 3.14
+    snapshot ships no ``_hashlib``, so every compatibility date from
+    ``PYTHON_314_COMPATIBILITY_DATE`` on selects a runtime whose
+    ``hashlib`` has no ``pbkdf2_hmac``.
+    """
+    return compatibility_date < PYTHON_314_COMPATIBILITY_DATE
+
+
+def test_the_chat_worker_stays_on_a_runtime_with_the_password_kdf():
+    """The compatibility date must not select the KDF-less 3.14 snapshot."""
     manifest = _manifest()
     compatibility_date = manifest["compatibility_date"]
     assert isinstance(compatibility_date, str) and compatibility_date
-    assert _python_runtime_is_current(compatibility_date), (
-        "the Chat Python Worker must use a compatibility date of "
-        f"{PYTHON_314_COMPATIBILITY_DATE} or later; found {compatibility_date}"
+    assert _runtime_provides_password_kdf(compatibility_date), (
+        "the Chat Worker still hashes passwords with hashlib.pbkdf2_hmac, and "
+        "the Pyodide 3.14 snapshot has no hashlib.pbkdf2_hmac; moving the "
+        "compatibility date to "
+        f"{PYTHON_314_COMPATIBILITY_DATE} or later answers every password "
+        "login with HTTP 500"
     )
+    assert compatibility_date == DEPLOYED_COMPATIBILITY_DATE
     assert "python_workers" in manifest["compatibility_flags"]
 
 
-def test_the_pre_fix_compatibility_date_is_rejected():
-    """Differential proof: the guard fails for the runtime that raised the error.
-
-    Without this, the guard above could pass for any date and the regression
-    would not be load-bearing.
-    """
-    assert not _python_runtime_is_current(VULNERABLE_COMPATIBILITY_DATE)
-    assert not _python_runtime_is_current("2026-09-07")
-    assert _python_runtime_is_current(PYTHON_314_COMPATIBILITY_DATE)
-    assert _python_runtime_is_current("2026-10-13")
+def test_the_blocked_compatibility_dates_are_rejected():
+    """Differential proof: the guard fails for the dates it has to fail for."""
+    assert _runtime_provides_password_kdf(DEPLOYED_COMPATIBILITY_DATE)
+    assert not _runtime_provides_password_kdf(PYTHON_314_COMPATIBILITY_DATE)
+    assert not _runtime_provides_password_kdf("2026-10-13")
+    assert not _runtime_provides_password_kdf("2027-01-01")
 
 
-def test_the_production_deploy_config_carries_the_python_runtime_compatibility_date(
+def test_the_production_deploy_config_carries_the_deployed_compatibility_date(
     tmp_path,
 ):
     """The released Worker must run the runtime the manifest declares.
 
     The production deploy config is generated from the repository manifest, so
     the compatibility date has to survive that generation. A manifest change
-    that never reached the deployed config would leave Production on the old
-    snapshot while the source claimed the fix.
+    that never reached the deployed config would leave Production on another
+    runtime while the source claimed the fix.
     """
     module = _load_deploy_config_module()
     manifest = _manifest()
@@ -174,7 +197,7 @@ def test_the_production_deploy_config_carries_the_python_runtime_compatibility_d
     )
     parsed = tomllib.loads(generated)
     assert parsed["compatibility_date"] == manifest["compatibility_date"]
-    assert parsed["compatibility_date"] >= PYTHON_314_COMPATIBILITY_DATE
+    assert parsed["compatibility_date"] < PYTHON_314_COMPATIBILITY_DATE
     assert "python_workers" in parsed["compatibility_flags"]
 
 
@@ -192,12 +215,16 @@ def test_the_real_worker_probe_boots_the_deployed_compatibility_date():
         )
 
 
-def test_the_real_worker_probe_asserts_the_running_python_runtime():
-    """A green probe must state which Python runtime it actually booted."""
-    text = (REPO_ROOT / ".github/scripts/b62_worker_probe_shared_runtime.sh").read_text(
+def test_the_real_worker_probe_asserts_the_runtime_and_the_password_kdf():
+    """A green probe must state which runtime it booted and that it can hash."""
+    shared = (REPO_ROOT / ".github/scripts/b62_worker_probe_shared_runtime.sh").read_text(
         encoding="utf-8"
     )
-    assert "B62_WORKER_PYTHON_RUNTIME" in text
-    assert "3.14" in text
+    assert "B62_WORKER_PYTHON_RUNTIME" in shared
+    assert "get_python_version" in shared
+    assert "B62_WORKER_PASSWORD_KDF" in shared
+    assert "kdf=ok" in shared
     probe = (CHAT_ROOT / "worker_runtime_combined_probe.py").read_text(encoding="utf-8")
     assert "sys.version_info" in probe
+    assert "_password_kdf_state" in probe
+    assert "hash_password" in probe and "verify_password" in probe

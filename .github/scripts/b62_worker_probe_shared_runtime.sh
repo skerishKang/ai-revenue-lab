@@ -66,13 +66,24 @@ echo "B62_SHARED_WORKER_READY_MS=$(date +%s%3N)"
 echo 'B62_SHARED_WORKER_READY=PASS'
 # #5479: the CI lane must prove the Python runtime Production actually runs.
 # The compatibility date above is the deployed one, so the booted interpreter
-# has to be the 3.14 snapshot that carries the NoGilError memory-leak fix.
-if [[ "$READY_BODY" != *"3.14"* ]]; then
-  echo "B62_WORKER_PYTHON_RUNTIME=FAIL ready=$READY_BODY" >&2
+# has to be the version that date selects.
+EXPECTED_PYTHON="$(uv run --locked python -c 'from pywrangler.utils import get_python_version; print(get_python_version())' 2>/dev/null | tail -n 1)"
+if [[ -z "$EXPECTED_PYTHON" || "$READY_BODY" != *"ok ${EXPECTED_PYTHON} "* ]]; then
+  echo "B62_WORKER_PYTHON_RUNTIME=FAIL ready=$READY_BODY expected=$EXPECTED_PYTHON" >&2
   cat "$LOGDIR/workerd.log" >&2
   exit 1
 fi
 echo "B62_WORKER_PYTHON_RUNTIME=$READY_BODY"
+# #5479: the deployed runtime must still be able to run the Worker's own
+# password hashing. The Pyodide 3.14 snapshot ships no _hashlib and CPython
+# 3.14 removed the pure-Python PBKDF2 fallback, so that runtime has no
+# hashlib.pbkdf2_hmac and every password login would answer HTTP 500.
+if [[ "$READY_BODY" != *"kdf=ok"* ]]; then
+  echo "B62_WORKER_PASSWORD_KDF=FAIL ready=$READY_BODY" >&2
+  cat "$LOGDIR/workerd.log" >&2
+  exit 1
+fi
+echo 'B62_WORKER_PASSWORD_KDF=PASS'
 
 failed=0
 count=0
