@@ -71,6 +71,40 @@ def test_no_korean_connector_word_is_left_in_a_display_string():
     assert "Padiem Connectors" not in rendered
 
 
+def test_every_service_card_has_a_mark_before_its_name():
+    """#5553: the mark reuses the design system's letter chip, no new asset.
+
+    The mark is drawn from the card's own attribute, so the reviewed card
+    element structure is untouched.
+    """
+    for anchor, mark in (
+        ('id="connectorComputerCard"', "PC"),
+        ('data-connector-id="connector:google:drive@1"', "D"),
+        ('id="connectorGithubCard"', "GH"),
+        ('data-connector-id="connector:google:gmail@1"', "M"),
+        ('data-connector-id="connector:telegram:bot@1"', "T"),
+        ('data-connector-id="connector:slack:workspace@1"', "S"),
+        ('data-connector-id="connector:google:calendar@1"', "C"),
+        ('data-connector="discord"', "DC"),
+        ('data-connector="kakao-business"', "KB"),
+    ):
+        card = _card(anchor)
+        assert f'data-service-mark="{mark}"' in card, anchor
+        # The name still comes first in the card's own information order.
+        status = min(
+            (card.index(token) for token in
+             ("capability-workspace", "capability-soon", "capability-read")
+             if token in card),
+            default=len(card),
+        )
+        assert card.index("<strong") < status, anchor
+    # The chip is a letter in the card's own tokens: no image asset and no
+    # provider logo is introduced.
+    assert "[data-service-mark]::before" in CSS
+    assert "attr(data-service-mark)" in CSS
+    assert "url(" not in CSS.split("attr(data-service-mark)")[0][-200:]
+
+
 def test_the_dialog_title_uses_the_same_english_name():
     dialog = HTML[HTML.index('id="connectorsDialog"'):HTML.index('id="connectorsLiveStatus"')]
     assert 'data-locale-key="connectors-title">Connectors<' in dialog
