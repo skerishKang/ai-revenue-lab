@@ -353,3 +353,70 @@ def test_status_missing_returns_two(tmp_path, capsys):
 
     assert sync_ops.main(["status", "--root", str(root)]) == 2
     assert "STATUS_MISSING" in capsys.readouterr().err
+
+
+# #5484: a remote R2 binding needs a Cloudflare credential. The inventory
+# Worker must receive it from the same DPAPI secret store the D1 export uses,
+# otherwise "wrangler dev" exits with "You must be logged in to use wrangler dev
+# in remote mode" and the whole sync fails before the first inventory request.
+
+
+def test_the_inventory_worker_is_started_through_the_secret_store(tmp_path):
+    store = tmp_path / "store.py"
+    store.write_text("# test double\n", encoding="utf-8")
+
+    command = sync_ops.inventory_command(
+        wrangler="wrangler.cmd", port=1234, secret_store=store
+    )
+
+    assert command[0] == sys.executable
+    assert command[1] == str(store)
+    assert command[2] == "run"
+    assert command[3] == "wrangler.cmd"
+    assert command[4:] == [
+        "dev",
+        "--config",
+        "wrangler.inventory.toml",
+        "--port",
+        "1234",
+    ]
+
+
+def test_the_inventory_worker_stays_unchanged_without_a_store(tmp_path):
+    command = sync_ops.inventory_command(
+        wrangler="wrangler.cmd", port=1234, secret_store=tmp_path / "missing.py"
+    )
+
+    assert command == [
+        "wrangler.cmd",
+        "dev",
+        "--config",
+        "wrangler.inventory.toml",
+        "--port",
+        "1234",
+    ]
+    assert sync_ops.inventory_command(wrangler="wrangler.cmd", port=1234) == command
+
+
+def test_the_run_command_passes_the_secret_store_to_the_inventory_worker(tmp_path):
+    root = _make_root(tmp_path)
+    store = tmp_path / "store.py"
+    store.write_text("# test double\n", encoding="utf-8")
+    seen = {}
+
+    def factory(*_args, **kwargs):
+        seen.update(kwargs)
+        return FakeInventoryServer()
+
+    code = sync_ops.run_once(
+        root, inventory_factory=factory, retry_delay=0, secret_store=store
+    )
+
+    assert code == 0
+    assert seen["secret_store"] == store
+
+
+def test_the_default_secret_store_is_the_com2_dpapi_store():
+    assert sync_ops.DEFAULT_SECRET_STORE.endswith("store.py")
+    assert "secret-store" in sync_ops.DEFAULT_SECRET_STORE
+

@@ -286,6 +286,35 @@ COM2 배포는 이 파일의 바이트를 COM2 `storage-migration\refresh_d1.py`
 트리 전체가 종료되는지, 게시·포인터·메타데이터 계약이 유지되는지, export
 예산이 남은 refresh 예산을 넘지 않는지를 확인합니다.
 
+### #5484 R2 열거·다운로드 자격증명 경로 (2026-10-21)
+
+D1 단계가 복구되고 나면 같은 예약 실행은 다음 단계에서 실패했습니다.
+`inventory_worker_exited`입니다. 원인은 timeout이 아니라 자격증명이었습니다.
+
+- `wrangler dev`는 R2 바인딩이 remote라서 원격 프록시 세션을 엽니다. 그
+  세션은 Cloudflare 자격증명이 필요합니다.
+- 실행기는 inventory Worker를 자격증명 없이 시작했습니다. COM2 로컬의
+  Wrangler OAuth 세션은 만료된 상태라 `You must be logged in to use wrangler
+  dev in remote mode`로 즉시 종료했습니다.
+- 같은 `wrangler dev`를 COM2 DPAPI Secret 저장소를 경유해 실행하면
+  `GET /inventory`가 200으로 응답하는 것을 실측했습니다.
+- `r2_sync.py`의 `wrangler r2 object get`도 같은 자격증명 경로가 필요합니다.
+
+수정:
+
+- `scripts/ops/com2_periodic_sync.py`는 inventory Worker를
+  `com2_periodic_sync.py --secret-store <DPAPI 저장소>`(기본값은 COM2 DPAPI
+  저장소 경로)로 시작합니다. 저장소 파일이 없으면 이전 동작 그대로입니다.
+- `scripts/ops/r2_sync.py`는 COM2 `storage-migration\r2_sync.py`의 버전 관리
+  원본이며, 원격 객체 다운로드도 같은 DPAPI 저장소를 경유합니다. 자격증명은
+  자식 프로세스 환경으로만 주입되고 argv·출력·새 평문 파일에는 남지 않습니다.
+- COM2 배포는 두 파일의 바이트를 `storage-migration`에 배포하고, 실행기는
+  `run-scheduled-sync.ps1`이 같은 폴더의 사본을 가리키게 합니다. COM2 체크아웃
+  브랜치와 `com2_runtime.py`·백업 스크립트는 그대로 두어 실행 감독과 백업
+  경로가 바뀌지 않습니다.
+
+회귀는 `scripts/ops/tests/test_r2_sync.py` 4건과 실행기 테스트 4건입니다.
+
 예약 작업:
 
 ```text
