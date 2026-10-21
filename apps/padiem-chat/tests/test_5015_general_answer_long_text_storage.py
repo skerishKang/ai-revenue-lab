@@ -9,15 +9,21 @@ rejected *before* the D1 rows land, and the whole conversation save fails.
 These tests drive the real ``D1HistoryStore.append_exchange`` over a SQLite
 database behind the D1 interface, so the schema constraints and the R2 key
 validation are the authority being measured, not a double of the store.
+
+The recovery read is measured the same way: the answer the run actually
+produced has to come back through the real recovery API, not through the
+private original reader. A bounded D1 preview is never the answer.
 """
 from __future__ import annotations
 
+import json
 import sqlite3
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
 import pytest
+from starlette.requests import Request
 
 from app.history import (
     GENERAL_ANSWER_MESSAGE_SALT,
@@ -28,6 +34,7 @@ from app.history import (
     HistoryError,
     general_answer_message_id,
 )
+from app.claw_routes import claw_pending_result
 
 MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
 MIGRATION_NAMES = (
@@ -37,12 +44,16 @@ MIGRATION_NAMES = (
     "009_claw_run_history.sql",
     "014_claw_run_history_conversation.sql",
     "015_claw_run_history_workspace.sql",
+    "020_claw_local_task_correlation.sql",
     "042_conversation_product_scope.sql",
+    "047_oracle_mesh_dispatch.sql",
 )
 
 OWNER = "usr_" + "a" * 32
 CONVERSATION = "chat_" + "c" * 32
-RUN_ID = "run_5015_long_answer"
+# The recovery route resolves a run id by its own canonical grammar, so the id
+# is the canonical one the general lane mints.
+RUN_ID = "run_" + "5" * 24
 USER_TEXT = "폴더에서 읽은 원문을 요약해줘"
 ASSISTANT_TEXT = "LONG-ANSWER-ORIGINAL-" + ("가" * 9000)
 
@@ -223,3 +234,108 @@ async def test_an_invalid_run_scoped_id_still_fails_before_any_row_lands() -> No
     assert _rows(conn) == []
     assert bucket.put_keys == []
     assert bucket.deleted == []
+
+
+async def _completed_general_run(store: D1HistoryStore) -> None:
+    """The real general-lane persistence of one model-only run."""
+    await store.append_exchange(
+        OWNER,
+        CONVERSATION,
+        USER_TEXT,
+        ASSISTANT_TEXT,
+        product_scope=PRODUCT_SCOPE_CHAT,
+        assistant_message_id=general_answer_message_id(RUN_ID),
+    )
+    await store.record_claw_run(
+        user_id=OWNER, run_id=RUN_ID, channel="web", action="general",
+        title="Claw: " + USER_TEXT, status="completed",
+        result_summary=ASSISTANT_TEXT[:200],
+        conversation_id=CONVERSATION,
+    )
+
+
+def _recovery_request(store: D1HistoryStore) -> Request:
+    request = Request({
+        "type": "http", "method": "GET",
+        "path": f"/api/claw/runs/{RUN_ID}/pending-result",
+        "path_params": {"run_id": RUN_ID}, "headers": [],
+    })
+    request.scope["app"] = SimpleNamespace(
+        state=SimpleNamespace(history_store=store)
+    )
+    return request
+
+
+@pytest.mark.asyncio
+async def test_the_recovery_api_returns_the_whole_stored_model_answer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The run's actual model answer, read through the real recovery API."""
+    import app.claw_routes as routes
+
+    conn = _database()
+    store, _bucket = _store(conn)
+    await _completed_general_run(store)
+
+    monkeypatch.setattr(routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    response = await claw_pending_result(_recovery_request(store))
+
+    assert response.status_code == 200
+    body = json.loads(response.body)["result"]
+    assert body["answer"] == ASSISTANT_TEXT
+    assert body["answer_source"] == "model_reply"
+    # The bounded D1 preview is never the answer.
+    assert len(body["answer"]) > MAX_HISTORY_MESSAGE_CHARS
+    assert not body["answer"].endswith(HISTORY_PREVIEW_SUFFIX)
+
+
+@pytest.mark.asyncio
+async def test_a_model_reply_without_its_stored_original_stays_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A missing original stays unavailable; the preview is not the answer."""
+    import app.claw_routes as routes
+
+    conn = _database()
+    store, bucket = _store(conn)
+    await _completed_general_run(store)
+    # The private original is gone: only the bounded preview is left in D1.
+    bucket.objects.clear()
+
+    monkeypatch.setattr(routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+    response = await claw_pending_result(_recovery_request(store))
+
+    assert response.status_code == 503
+    assert json.loads(response.body)["error"]["code"] == "run_result_unavailable"
+
+
+@pytest.mark.asyncio
+async def test_a_duplicate_completion_event_keeps_one_answer_and_its_original() -> None:
+    """The deterministic run-scoped id makes a repeated completion safe."""
+    conn = _database()
+    store, bucket = _store(conn)
+    await _completed_general_run(store)
+    key = f"claw-model-context/v1/{CONVERSATION}/{general_answer_message_id(RUN_ID)}.utf8"
+
+    # The same completion event again: the run-scoped message id is the same,
+    # so the second record is refused instead of duplicating the answer.
+    with pytest.raises(sqlite3.IntegrityError):
+        await store.append_exchange(
+            OWNER,
+            CONVERSATION,
+            USER_TEXT,
+            ASSISTANT_TEXT,
+            product_scope=PRODUCT_SCOPE_CHAT,
+            assistant_message_id=general_answer_message_id(RUN_ID),
+        )
+
+    rows = _rows(conn)
+    assert len(rows) == 2
+    assert [row["role"] for row in rows] == ["user", "assistant"]
+    # The stored original of the first record is still recoverable.
+    assert bucket.deleted == []
+    assert bucket.objects[key] == ASSISTANT_TEXT.encode("utf-8")
+    resolved = await store.get_claw_run_result(OWNER, RUN_ID, CONVERSATION)
+    assert resolved == {"answer": ASSISTANT_TEXT, "answer_source": "model_reply"}
