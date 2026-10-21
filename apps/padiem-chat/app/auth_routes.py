@@ -878,12 +878,10 @@ async def password_change(request: Request) -> JSONResponse:
         validated = validate_password(new_password, identifier=credential.user.email)
     except PasswordAuthError as exc:
         return _auth_error(400, exc.code, exc.message)
-    if verify_password(new_password, credential.password_hash):
-        return _auth_error(
-            400,
-            "password_unchanged",
-            "새 비밀번호는 현재 비밀번호와 달라야 합니다.",
-        )
+    # The new password is hashed once and stored once. The route deliberately
+    # runs no further key derivation: the Worker's CPU budget for one request
+    # fits the same two derivations the login path already runs, and a third
+    # one is what made this route exceed the limit in Production.
     encoded = hash_password(validated)
 
     # End the session first: a session that cannot be ended leaves the
