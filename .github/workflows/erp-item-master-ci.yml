@@ -13,6 +13,7 @@ on:
       - main
     paths:
       - 'apps/erp-item-master/**'
+      - 'apps/business-71-ai-operations/**'
       - 'packages/padiem-ai-core/padiem_ai_core/document_normalization.py'
       - 'packages/padiem-ai-core/tests/test_document_normalization.py'
       - '.github/workflows/erp-item-master-ci.yml'
@@ -21,6 +22,7 @@ on:
       - main
     paths:
       - 'apps/erp-item-master/**'
+      - 'apps/business-71-ai-operations/**'
       - 'packages/padiem-ai-core/padiem_ai_core/document_normalization.py'
       - 'packages/padiem-ai-core/tests/test_document_normalization.py'
       - '.github/workflows/erp-item-master-ci.yml'
@@ -67,6 +69,9 @@ jobs:
 
       - name: Test the ERP item-master app
         run: python -m pytest apps/erp-item-master/tests -q
+
+      - name: Test the B71 ERP-side workflow adapter
+        run: python -m pytest apps/business-71-ai-operations/tests -q
 
       - name: Test the shared Core document normalization boundary
         run: python -m pytest packages/padiem-ai-core/tests/test_document_normalization.py -q

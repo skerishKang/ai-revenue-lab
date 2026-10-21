@@ -1,9 +1,8 @@
-"""Measure how the pipeline behaves on a catalog the size 김범신 대표 described.
+"""Measure how the pipeline behaves on a large catalog.
 
-The representative said the company handles roughly 20,000 to 30,000 items.
-This script builds a synthetic catalog of that size, runs the same pipeline
-over it and prints the measured throughput, so the estimate in the pilot
-report comes from a run rather than from arithmetic.
+This script builds a synthetic catalog of the requested size, runs the same
+pipeline over it and prints the measured throughput, so the capacity figures in
+the pilot report come from a run rather than from arithmetic.
 
     python scripts/scale_check.py --rows 30000
 

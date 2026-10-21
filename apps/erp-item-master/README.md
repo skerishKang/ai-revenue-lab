@@ -27,11 +27,12 @@ CUSTOMER_DATA_IN_THIS_REPOSITORY = NONE
 | `app/review_rules.py` | 사람이 확인해야 하는 항목과 그 이유 토큰 결정 |
 | `app/extraction.py` | **외부에서 만들어진** AI 추출 결과의 검증 계약을 소유한다. 모델을 호출하지 않는다 |
 | `app/erp_profile.py` | ERP 임포트 프로파일과 **필드별 근거 상태**(공식 확인 / 제3자 미검증 / 고객 양식 대기) |
+| `app/template_binding.py` | **실제 서식 파일(.xlsx)** 을 읽어 정규화 필드를 서식 열에 묶는다. 서식에 없는 열 이름을 만들어내지 않는다 |
 | `app/exporter.py` | CSV·Excel 기록. 수식 유사 문자열을 무력화하고, 채우지 못한 값은 비워 둔다 |
 | `app/pipeline.py` | 전체 실행과 처리시간·건수 측정 |
 | `app/cli.py` | `python -m app.cli` 실행 진입점 |
 | `samples/` | 익명 합성 샘플 10건, 추출 입력, 실행 결과물 |
-| `scripts/scale_check.py` | 2만~3만 건 규모에서의 처리량 측정 |
+| `scripts/scale_check.py` | 대규모 카탈로그 규모에서의 처리량 측정 |
 
 ## 2. 이 앱이 하지 않는 것
 
@@ -89,6 +90,15 @@ PYTHONPATH=packages/padiem-ai-core:apps/erp-item-master \
 python -m app.cli --list-profiles
 ```
 
+실제 ERP 서식 파일(.xlsx)이 있으면 서식의 헤더 행을 읽어 프로파일을 확정한다:
+
+```bash
+python -m app.cli --source <원본> --out <결과 폴더> --template "<서식 파일.xlsx>"
+```
+
+서식 바인딩의 절차와 판정 기준은
+[05-ecount-template-binding-procedure.md](../../docs/commercial/erp-item-master-pilot/05-ecount-template-binding-procedure.md)에 있다.
+
 ## 5. 검증 실행
 
 저장소 루트에서:
@@ -102,9 +112,14 @@ python -m pytest packages/padiem-ai-core/tests/test_document_normalization.py -q
 `tests/conftest.py`가 앱과 Core 패키지 경로를 함께 넣으므로 `PYTHONPATH` 없이도
 저장소 루트에서 그대로 실행된다.
 
-2026-10-21 기준 이 소스에서 앱 테스트 56개와 Core 문서 정규화 테스트 36개가 통과했다.
+2026-10-21 기준 이 소스에서 앱 테스트 66개와 Core 문서 정규화 테스트 36개가 통과했다.
 이 결과는 **로컬 회귀 검사**이며, 고객 ERP 접속, 실제 이카운트 업로드,
 브라우저 동작, Production 배포의 통과를 입증하지 않는다.
+
+B71 작업공간과의 연계는 `apps/business-71-ai-operations/erp_item_master_adapter.py`
+에 있고, [06-b71-integration.md](../../docs/commercial/erp-item-master-pilot/06-b71-integration.md)에
+정리되어 있다. 그 어댑터는 이 앱을 위임 대상으로만 쓰고, 정규화·중복·파일 기록을
+다시 구현하지 않는다.
 
 ## 6. 규모 측정
 
@@ -139,7 +154,9 @@ python apps/erp-item-master/scripts/scale_check.py --rows 30000
 - [이카운트 공식 기능 조사](../../docs/commercial/erp-item-master-pilot/01-ecount-official-capability-review.md)
 - [입력 방식 비교 (엑셀 대량등록 vs Open API)](../../docs/commercial/erp-item-master-pilot/02-input-method-comparison.md)
 - [샘플 10건 실행 결과](../../docs/commercial/erp-item-master-pilot/03-sample-run-report.md)
-- [김범신 대표 확인 필요 항목](../../docs/commercial/erp-item-master-pilot/04-remaining-customer-information.md)
+- [적용 전 확인 필요 항목](../../docs/commercial/erp-item-master-pilot/04-remaining-customer-information.md)
+- [이카운트 실제 서식 바인딩 절차](../../docs/commercial/erp-item-master-pilot/05-ecount-template-binding-procedure.md)
+- [B71 연계](../../docs/commercial/erp-item-master-pilot/06-b71-integration.md)
 - [공유 XLSX 구조 판독 권한](../../packages/padiem-ai-core/padiem_ai_core/document_normalization.py) — `read_xlsx_table`
 
 관련 이슈: #5447.

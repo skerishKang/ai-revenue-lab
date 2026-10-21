@@ -244,8 +244,14 @@ def run_pipeline(
     output_dir: str | Path,
     extraction_file: str | Path | None = None,
     profile_ids: Sequence[str] = ("generic", "ecount_api_candidate"),
+    extra_profiles: Sequence[ErpImportProfile] = (),
 ) -> PipelineReport:
-    """Run the whole pipeline once and write every output file."""
+    """Run the whole pipeline once and write every output file.
+
+    ``extra_profiles`` carries profiles that were built at run time, such as
+    one bound to a real ERP template file. They are written after the
+    registered profiles and never replace one of them.
+    """
 
     from .extraction import load_extraction_file
 
@@ -333,8 +339,13 @@ def run_pipeline(
     profile_sheets: list[tuple[str, Sequence[str], Sequence[Sequence[object]]]] = []
     profile_status: dict[str, str] = {}
 
-    for profile_id in profile_ids:
-        profile: ErpImportProfile = profile_by_id(profile_id)
+    profiles: dict[str, ErpImportProfile] = {
+        profile_id: profile_by_id(profile_id) for profile_id in profile_ids
+    }
+    for extra in extra_profiles:
+        profiles[extra.profile_id] = extra
+
+    for profile_id, profile in profiles.items():
         file_name = _profile_file_name(profile)
         written(
             write_rows(
