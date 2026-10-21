@@ -34,6 +34,8 @@ on:
       - "scripts/ops/tests/test_com2_tunnel.py"
       - "scripts/ops/com2_b62_generation.py"
       - "scripts/ops/tests/test_com2_b62_generation.py"
+      - "scripts/ops/com2_b62_generation_publish.py"
+      - "scripts/ops/tests/test_com2_b62_generation_publish.py"
       - ".github/workflows/com2-backup-contract-tests.yml"
   workflow_dispatch:
 
@@ -95,7 +97,7 @@ jobs:
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_tunnel.py
 
       - name: Run B62 generation pointer tests
-        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_b62_generation.py
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_b62_generation.py scripts/ops/tests/test_com2_b62_generation_publish.py
 
       - name: Record gate scope
         run: |
