@@ -40,7 +40,27 @@ jobs:
           data="$(curl --fail --silent --show-error --header "Authorization: Bearer $GH_TOKEN" --header "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["head"]["sha"], d["state"], d["head"]["repo"]["full_name"])')"
           [[ "$data" == "$EXPECTED open $GITHUB_REPOSITORY" ]]
           echo "sha=$EXPECTED" >> "$GITHUB_OUTPUT"
+      - name: Reuse completed policy check for unchanged exact HEAD
+        id: reuse
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          result="$(curl --fail --silent --show-error \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${SHA}/status" \
+            | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next((s["state"] for s in d["statuses"] if s["context"]=="COM2 full policy"), "missing"))')"
+          if [[ "$result" == success ]]; then
+            echo 'cached=true' >> "$GITHUB_OUTPUT"
+            echo 'COM2_FULL_POLICY_EXACT_SHA_ALREADY_PASS=YES'
+          else
+            echo 'cached=false' >> "$GITHUB_OUTPUT"
+          fi
       - name: Mark COM2 full policy as pending on exact PR HEAD
+        if: steps.reuse.outputs.cached != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ steps.target.outputs.sha }}
@@ -52,6 +72,7 @@ jobs:
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${SHA}" \
             --data "$(python3 -c 'import json,os; print(json.dumps({"state":"pending","context":"COM2 full policy","description":"COM2 isolated policy verification running","target_url":f"https://github.com/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}"}))')"
       - name: Checkout exact source
+        if: steps.reuse.outputs.cached != 'true'
         uses: actions/checkout@v4
         with:
           ref: ${{ steps.target.outputs.sha }}
@@ -60,6 +81,7 @@ jobs:
           clean: true
           path: sandbox-input
       - name: Run full bounded offline policy suite
+        if: steps.reuse.outputs.cached != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -106,7 +128,7 @@ jobs:
           echo "COM2_AUTO_PR_FULL_POLICY=PASS"
 
       - name: Publish exact PR HEAD full policy result
-        if: ${{ always() && steps.target.outputs.sha != '' }}
+        if: ${{ always() && steps.target.outputs.sha != '' && steps.reuse.outputs.cached != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ steps.target.outputs.sha }}
