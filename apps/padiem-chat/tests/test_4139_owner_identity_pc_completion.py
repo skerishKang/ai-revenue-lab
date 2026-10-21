@@ -3,6 +3,7 @@ No raw credential, false 'paired_offline', browser payload, or HTTP mount.
 """
 from __future__ import annotations
 import asyncio
+import time
 from datetime import datetime, timezone
 import pytest
 
@@ -198,3 +199,38 @@ def test_no_unreviewed_public_binding_ever_enabled():
         CanonicalOwnerPcIdentityPreflight(
             identity=object(),broker=object(),private_broker=object(),
         )
+
+
+def test_stalled_private_status_fails_closed_instead_of_hanging(monkeypatch):
+    """#3099: a Durable Object that never answers must fail closed.
+
+    The live 2026-10-22 attempt left the owner approval request hanging with
+    no completion log and no stage event, so the PC only ever saw a
+    client-side credential timeout. The retry budget must also bound the
+    transport itself.
+    """
+    import app.connector_owner_identity_pc_completion as module
+
+    monkeypatch.setattr(module, "PREFLIGHT_FETCH_WINDOW_SECONDS", 0.2)
+    monkeypatch.setattr(module, "PREFLIGHT_RPC_TIMEOUT_SECONDS", 0.2)
+
+    class Stalled(Source):
+        async def pending_pc_identity_status(self, payload):
+            self.calls.append(("status", payload))
+            await asyncio.sleep(5)
+
+    fake = Stalled()
+    started = time.monotonic()
+    with pytest.raises(IdentityBridgeError) as exc:
+        run(fake)
+    assert exc.value.code == "pending_pc_live_fetch_unavailable"
+    assert exc.value.status_code == 503
+    # Without the bounded transport the call would wait for the stalled
+    # Durable Object instead of failing closed.
+    assert time.monotonic() - started < 2.0
+    # No proof was claimed and no credential path was entered.
+    assert all(name != "claim" for name, *_ in fake.calls)
+    assert all(
+        name not in ("redeem", "credential_once", "paired_offline")
+        for name, *_ in fake.calls
+    )

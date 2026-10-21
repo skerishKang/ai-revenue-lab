@@ -466,3 +466,60 @@ def test_installed_connector_persists_new_safe_device_session_stage(tmp_path):
     # Unrecognized wire/private values cannot be persisted as stage text.
     ConnectApp._record_offer_stage(holder, "credential_" + CREDENTIAL.decode())
     assert json.loads((tmp_path / "customer-offer-stage.json").read_text()) == state
+
+
+def test_credential_delivery_waits_for_the_canonical_owner_driven_delivery(monkeypatch):
+    """#3099: the canonical credential is delivered by the server's owner
+    approval flow, not by the preceding ``credential_fetch`` frame.
+
+    The PC used to apply the generic per-frame bound to that delivery and
+    aborted a registration the server was still completing, which is what the
+    live 2026-10-22 attempt recorded as
+    ``device_session_credential_fetch_sent / device_credential_response_timeout``.
+    """
+    import claw_connect.device_wss_enrollment as module
+
+    monkeypatch.setattr(module, "FRAME_TIMEOUT_SECONDS", 0.05)
+    # The canonical delivery window must never be shorter than the generic
+    # per-frame bound it replaces.
+    assert module.CREDENTIAL_DELIVERY_TIMEOUT_SECONDS > module.FRAME_TIMEOUT_SECONDS
+
+    class DelayedCredentialSocket(Socket):
+        async def receive_text(self):
+            if self.index == 2:
+                # Longer than the generic per-frame bound, inside the
+                # canonical delivery window.
+                await asyncio.sleep(0.2)
+            return await super().receive_text()
+
+    sock, store = DelayedCredentialSocket(), Store()
+    receipt = run(sock, store)
+    assert receipt.lifecycle == "paired_offline"
+    assert receipt.device_id == DEVICE
+    assert store.saved and store.saved[0][1] == CREDENTIAL
+    assert [entry["type"] for entry in sock.sent] == [
+        "begin", "finish", "credential_fetch", "install_ack",
+    ]
+    assert sock.closed is True
+
+
+def test_credential_delivery_stall_still_fails_closed_without_store_or_ack(monkeypatch):
+    """A genuinely missing credential is still refused: no store write, no ACK."""
+    import claw_connect.device_wss_enrollment as module
+
+    monkeypatch.setattr(module, "CREDENTIAL_DELIVERY_TIMEOUT_SECONDS", 0.05)
+
+    class StalledCredentialSocket(Socket):
+        async def receive_text(self):
+            if self.index == 2:
+                await asyncio.sleep(5)
+            return await super().receive_text()
+
+    sock, store = StalledCredentialSocket(), Store()
+    with pytest.raises(DeviceSessionRefused, match=r"^device_credential_response_timeout$"):
+        run(sock, store)
+    assert sock.closed is True
+    assert store.saved == []
+    assert [entry["type"] for entry in sock.sent] == [
+        "begin", "finish", "credential_fetch",
+    ]

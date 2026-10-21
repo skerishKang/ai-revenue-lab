@@ -45,6 +45,17 @@ MAX_FRAME_CHARS = 8192
 MAX_CREDENTIAL_BYTES = 4096
 FRAME_TIMEOUT_SECONDS = 10.0
 INSTALL_ACK_TIMEOUT_SECONDS = 25.0
+#: ``credential_once`` is NOT produced by this socket's ``credential_fetch``.
+#: The canonical producer is the owner-driven approval flow (the signed
+#: ``approve-link`` request -> Identity authorize -> Broker redeem -> the
+#: one-shot native delivery RPC), which runs on the SAME socket but on the
+#: server's own clock. The generic frame bound above is shorter than that
+#: canonical path (the server waits up to ``INSTALL_ACK_TIMEOUT_SECONDS`` for
+#: this PC's install ACK, and the Broker gateway lease itself lives 60s), so
+#: the PC used to abort a registration that was still progressing and report
+#: ``device_credential_response_timeout``. This bound covers the canonical
+#: delivery and still stays inside the Broker lease.
+CREDENTIAL_DELIVERY_TIMEOUT_SECONDS = 45.0
 BOOTSTRAP_TRANSCRIPT = "padiem.connector-gateway-bootstrap.v1"
 SESSION_TRANSCRIPT = "padiem.connector-gateway-session.v1"
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
@@ -203,6 +214,24 @@ async def _receive(socket: DeviceTextSocket, fields: frozenset[str]) -> dict[str
     )
 
 
+async def _receive_credential_delivery(
+    socket: DeviceTextSocket, fields: frozenset[str],
+) -> dict[str, Any]:
+    """Wait for the canonical owner-driven credential delivery.
+
+    The delivery is produced by the server's owner approval flow, not by the
+    preceding ``credential_fetch`` frame, so it gets its own bounded window
+    instead of the generic per-frame bound. It is still bounded, still
+    fail-closed, and never stores or acknowledges anything on timeout.
+    """
+    return _frame(
+        await asyncio.wait_for(
+            socket.receive_text(), timeout=CREDENTIAL_DELIVERY_TIMEOUT_SECONDS,
+        ),
+        fields,
+    )
+
+
 async def run_review_only_device_session(
     *, socket: DeviceTextSocket, trusted_tls: TrustedDeviceTls,
     receiver: ProtectedCredentialReceiverPort, challenge_id: str,
@@ -279,7 +308,7 @@ async def run_review_only_device_session(
         if on_stage is not None:
             on_stage("device_session_credential_fetch_sent")
         try:
-            delivery = await _receive(socket, frozenset({
+            delivery = await _receive_credential_delivery(socket, frozenset({
                 "type", "challenge_id", "device_id", "lease_ref", "binding",
                 "credential_b64",
             }))

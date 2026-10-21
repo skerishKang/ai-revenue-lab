@@ -6,6 +6,7 @@ production DO export, actual Cloudflare isolate or real DPAPI registration.
 from __future__ import annotations
 
 import asyncio
+import time
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -34,9 +35,13 @@ class BrokerServiceBinding:
         self.corrupt_reservation=None
         self.corrupt_delivery=None
         self.fail_delivery=False
+        self.stall_delivery=False
+        self.stall_reservation=False
 
     async def reserve_pending_pc_owner_intent(self, payload):
         self.calls.append(("reserve", dict(payload)))
+        if self.stall_reservation:
+            await asyncio.sleep(5)
         if self.corrupt_reservation is not None:
             return self.corrupt_reservation
         assert payload == {
@@ -47,6 +52,8 @@ class BrokerServiceBinding:
 
     async def deliver_pending_pc_link(self, payload):
         self.calls.append(("deliver", dict(payload)))
+        if self.stall_delivery:
+            await asyncio.sleep(5)
         if self.fail_delivery:
             raise RuntimeError("mock private transport failure: code redacted")
         if self.corrupt_delivery is not None:
@@ -181,3 +188,45 @@ def test_unexpected_delivery_reply_cannot_mark_success():
             owner_session=signed,request_ref=REF,confirmed=True,
         ))
     assert private.broker.state()=="reserved"
+
+
+def test_stalled_broker_delivery_fails_closed_instead_of_hanging(monkeypatch):
+    """#3099: a stalled Broker Durable Object must not hang the owner request.
+
+    The live 2026-10-22 attempt left this request without a completion log
+    and without a stage event, so the PC only ever saw a client-side
+    credential timeout. The private RPC now has its own bounded window.
+    """
+    import app.connector_pending_pc_owner_rpc as module
+
+    monkeypatch.setattr(module, "BROKER_PRIVATE_RPC_TIMEOUT_SECONDS", 0.2)
+    private,port,fixture,service,signed=make()
+    private.stall_delivery=True
+    started=time.monotonic()
+    with pytest.raises(OneClickDenied,match="pc_delivery_unconfirmed"):
+        asyncio.run(service.approve(
+            owner_session=signed,request_ref=REF,confirmed=True,
+        ))
+    # Without the bounded private RPC this call would wait for the stalled
+    # Durable Object instead of failing closed.
+    assert time.monotonic()-started < 2.0
+    assert [name for name,_ in private.calls]==["reserve","deliver"]
+    assert private.socket.calls==[]
+
+
+def test_stalled_broker_reservation_fails_closed_instead_of_hanging(monkeypatch):
+    import app.connector_pending_pc_owner_rpc as module
+
+    monkeypatch.setattr(module, "BROKER_PRIVATE_RPC_TIMEOUT_SECONDS", 0.2)
+    private,port,fixture,service,signed=make()
+    private.stall_reservation=True
+    started=time.monotonic()
+    with pytest.raises(OneClickDenied,match="pending_pc_unavailable"):
+        asyncio.run(service.approve(
+            owner_session=signed,request_ref=REF,confirmed=True,
+        ))
+    assert time.monotonic()-started < 2.0
+    assert [name for name,_ in private.calls]==["reserve"]
+    assert fixture.calls==[]
+    assert private.socket.calls==[]
+
