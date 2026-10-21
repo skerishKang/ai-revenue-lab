@@ -98,19 +98,23 @@ class CandidateSpec:
     credential_binding: str
     expected_binding: str
     credential_mode: str = "platform_secret"
+    # A retired candidate keeps its spec for the historical synthetic
+    # evaluation fixture, but it may never take a live request.
+    live_dispatch_allowed: bool = True
 
 
 # --------------------------------------------------------------------------
 # Explicit candidate allowlist (#2798 authority correction).
 #
-# PLUS  : Agnes, SenseNova, Poolside, Motif, Mercury, Atria
-# PRO   : GPT-5.6 Luna
+# PLUS  : Agnes, SenseNova, Poolside, Mercury, Atria
 # EXCLUDED: B.AI Qwen3.8 (deliberately absent — see _EXCLUDED_* below)
 #           Space Bunny (owner final retirement decision 2026-10-07: the lane
 #           executes nowhere — no product, manual, auto, or smoke execution.
 #           It was the image-modality candidate under #3209; with its removal
 #           no image candidate exists and every remaining candidate is
 #           text-only.)
+#           Motif and GPT-5.6 Luna (owner retirement + unregistered infron
+#           provider; see RETIRED_CANDIDATE_MODEL_IDS below).
 # --------------------------------------------------------------------------
 
 _CANDIDATES: tuple[CandidateSpec, ...] = (
@@ -144,6 +148,11 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         credential_binding="PADIEM_B14_CREDENTIAL_12",
         expected_binding="PADIEM_B14_CREDENTIAL_12",
     ),
+    # Motif (infron/motif/motif-3) and GPT-5.6 Luna
+    # (experiential/gpt-5.6-luna) are owner-retired: the infron provider is not
+    # registered in the owner registry any more and the luna model id is
+    # retired. They keep their specs for the historical synthetic evaluation
+    # fixture, and they may never take a live request.
     CandidateSpec(
         candidate_id="motif",
         tier="plus",
@@ -153,6 +162,7 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         upstream_model="motif/motif-3",
         credential_binding="PADIEM_B14_CREDENTIAL_07",
         expected_binding="PADIEM_B14_CREDENTIAL_07",
+        live_dispatch_allowed=False,
     ),
     CandidateSpec(
         candidate_id="mercury",
@@ -183,6 +193,7 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         upstream_model="gpt-5.6-luna",
         credential_binding="PADIEM_B14_CREDENTIAL_04",
         expected_binding="PADIEM_B14_CREDENTIAL_04",
+        live_dispatch_allowed=False,
     ),
     # space-bunny removed from the allowlist: owner final retirement decision
     # (2026-10-07). Historical id: kilo/stealth-space-bunny-alpha.
@@ -203,6 +214,14 @@ PRO_CANDIDATE_IDS: tuple[str, ...] = tuple(
 # enforcement; this tuple documents the exclusion so a test can pin it.
 EXCLUDED_CANDIDATE_IDS: tuple[str, ...] = ("b-ai-qwen3.8", "bai", "qwen")
 _EXCLUDED_MODEL_IDS: frozenset[str] = frozenset({"b-ai/qwen3.8-flash"})
+
+# Owner-retired candidate model ids. They are kept as a record of what the
+# allowlist used to contain, and a request for one of them fails closed with
+# the same reason the owner evaluation registry uses.
+RETIRED_CANDIDATE_MODEL_IDS: frozenset[str] = frozenset({
+    "infron/motif/motif-3",
+    "experiential/gpt-5.6-luna",
+})
 
 
 def candidate_ids() -> tuple[str, ...]:
@@ -809,6 +828,15 @@ def run(
         return 1
 
     cid = spec.candidate_id
+
+    if spec.model_id in RETIRED_CANDIDATE_MODEL_IDS or not spec.live_dispatch_allowed:
+        # The owner retired these ids and the infron provider is not
+        # registered any more. The historical synthetic evaluation fixture
+        # still names them, but a live request may not.
+        _emit_result(cid, "FAIL_CANDIDATE_RETIRED")
+        print("B14_CHAT_POST_COUNT=0")
+        print("NETWORK_RETRY_COUNT=0")
+        return 1
 
     if modality not in (MODALITY_TEXT, MODALITY_IMAGE):
         _emit_result(cid, "FAIL_UNKNOWN_MODALITY")

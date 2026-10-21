@@ -1,14 +1,15 @@
-"""Preview-only HTTP/SSE gateway for the Business 14 streaming primitive.
+"""HTTP/SSE gateway for manual B14 routes with owner-tier pre-token fallback.
 
-This router deliberately does not change the canonical
-``/v1/chat/completions`` endpoint. It exposes one bounded preview endpoint for
-manual catalog routes only so HTTP streaming semantics can be validated before
-Router Core fallback, shared Core transport, or B62 streaming are enabled.
+This router does not change the canonical ``/v1/chat/completions`` endpoint.
+It traverses only the finite owner-selected tier roster before the first
+nonblank token; arbitrary catalog fallback stays disabled. After a visible
+token, failures are terminal SSE error events and never switch providers.
 """
 
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
+from dataclasses import replace
 import json
 import logging
 import uuid
@@ -27,7 +28,7 @@ from app.pilot.errors import (
     StreamNotSupported,
     UnsupportedModel,
 )
-from app.pilot.gateway import _validate_body
+from app.pilot.gateway import _platform_caller_denial, _validate_body
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.stream_types import (
     StreamEvent,
@@ -35,6 +36,7 @@ from app.pilot.stream_types import (
 )
 from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
+from app.pilot.stream_error_contract import public_stream_error
 
 logger = logging.getLogger("korean-ai-platform.pilot.stream-preview")
 
@@ -48,12 +50,13 @@ def _request_id() -> str:
 
 
 def _error_response(exc: PilotError, request_id: str) -> JSONResponse:
+    code, status_code, message = public_stream_error(exc)
     return JSONResponse(
-        status_code=exc.status_code,
+        status_code=status_code,
         content={
             "error": {
-                "code": exc.code,
-                "message": exc.message,
+                "code": code,
+                "message": message,
                 "request_id": request_id,
             }
         },
@@ -102,20 +105,23 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
     b14_opts = body.get("business14", {})
     if b14_opts.get("allow_external_fallback") is True:
         raise StreamNotSupported()
-    if b14_opts.get("max_attempts", 1) != 1:
-        raise StreamNotSupported()
 
     decision = rcore.resolve_route(model_id, b14_opts)
-    # platform_secret providers (e.g. Agnes) are now supported by this
-    # streaming gateway via stream_platform_chat_completions. The route
-    # must still stay manual single-attempt (no fallback) to keep the
-    # security/cancellation contract bounded.
-    if (
-        decision.route_mode != "manual"
-        or decision.fallback_allowed
-        or decision.max_attempts != 1
-    ):
+    # Only the existing owner-selected tier roster may be traversed. Arbitrary
+    # catalog fallback remains disabled; traversal is finite and bounded by
+    # the canonical route decision's eligible_fallback field.
+    owner_tier_fallback = any(
+        code.startswith("owner_selected_tier_fallback:")
+        for code in decision.reason_codes
+    )
+    if decision.route_mode != "manual":
         raise StreamNotSupported()
+    if decision.eligible_fallback and not owner_tier_fallback:
+        raise StreamNotSupported()
+    if decision.fallback_allowed and not owner_tier_fallback:
+        raise StreamNotSupported()
+    # #4317: there is no attempt budget to validate. The streaming lane walks
+    # the candidates the declared product grade allows, in order.
 
     return body, decision
 
@@ -132,6 +138,8 @@ def _route_metadata(
     *,
     request_id: str,
     decision: rcore.RouteDecision,
+    attempt_count: int = 1,
+    fallback_used: bool = False,
 ) -> dict[str, Any]:
     return {
         "request_id": request_id,
@@ -140,9 +148,9 @@ def _route_metadata(
         "selected_model": decision.selected_model,
         "selected_upstream_model": decision.selected_upstream_model,
         "selected_route_id": decision.selected_route_id,
-        "fallback_allowed": False,
-        "fallback_used": False,
-        "attempt_count": 1,
+        "fallback_allowed": bool(decision.fallback_allowed),
+        "fallback_used": fallback_used,
+        "attempt_count": attempt_count,
         "provider_mode": runtime_config.provider_mode,
         "route_evidence_status": (
             "mock_no_upstream_call"
@@ -150,6 +158,43 @@ def _route_metadata(
             else "live_streaming_preview"
         ),
     }
+
+
+def _decision_for_attempt(
+    decision: rcore.RouteDecision,
+    candidate: dict[str, str] | None,
+    remaining: list[dict[str, str]],
+) -> rcore.RouteDecision:
+    """Project one owner-tier attempt without widening route authority."""
+    changes: dict[str, Any] = {
+        "fallback_allowed": bool(remaining),
+        "eligible_fallback": remaining,
+    }
+    if candidate is not None:
+        registered = get_catalog_by_id(candidate["model_id"])
+        if (
+            registered is None
+            or not registered.enabled
+            or registered.provider != candidate["provider"]
+            or registered.upstream_model != candidate["upstream_model"]
+            or registered.platform_provider_id != candidate["platform_provider_id"]
+            or candidate["route_id"] != f"platform:{registered.model_id}"
+        ):
+            raise InvalidRequest("Invalid owner-tier fallback route.")
+        available, status, source, provider_id = rcore._credential_status_for(registered)
+        if not available or source != "platform_secret" or not provider_id:
+            raise InvalidRequest("Owner-tier fallback credential unavailable.")
+        changes.update(
+            selected_provider=registered.provider,
+            selected_model=registered.model_id,
+            selected_upstream_model=registered.upstream_model,
+            selected_route_id=candidate["route_id"],
+            credential_available=available,
+            credential_status=status,
+            credential_source=source,
+            platform_provider_id=provider_id,
+        )
+    return replace(decision, **changes)
 
 
 def _encode_data_frame(payload: dict[str, Any]) -> bytes:
@@ -166,6 +211,8 @@ def _encode_event(
     *,
     request_id: str,
     decision: rcore.RouteDecision,
+    attempt_count: int = 1,
+    fallback_used: bool = False,
 ) -> bytes:
     if event.done:
         return b"data: [DONE]\n\n"
@@ -190,7 +237,12 @@ def _encode_event(
         "object": "chat.completion.chunk",
         "model": event.model or decision.selected_upstream_model,
         "choices": choices,
-        "business14": _route_metadata(request_id=request_id, decision=decision),
+        "business14": _route_metadata(
+            request_id=request_id,
+            decision=decision,
+            attempt_count=attempt_count,
+            fallback_used=fallback_used,
+        ),
     }
     if event.usage is not None:
         payload["usage"] = _usage_dict(event.usage)
@@ -202,16 +254,24 @@ def _encode_stream_error(
     *,
     request_id: str,
     decision: rcore.RouteDecision,
+    attempt_count: int = 1,
+    fallback_used: bool = False,
 ) -> bytes:
+    code, _, message = public_stream_error(exc)
     payload = {
         "error": {
-            "code": exc.code,
-            "message": exc.message,
+            "code": code,
+            "message": message,
             "request_id": request_id,
             "after_stream_start": True,
         },
         "business14": {
-            **_route_metadata(request_id=request_id, decision=decision),
+            **_route_metadata(
+                request_id=request_id,
+                decision=decision,
+                attempt_count=attempt_count,
+                fallback_used=fallback_used,
+            ),
             "stream_status": "aborted",
         },
     }
@@ -231,36 +291,46 @@ async def _close_iterator(iterator: AsyncIterator[StreamEvent]) -> None:
 
 async def _stream_body(
     iterator: AsyncIterator[StreamEvent],
-    first_event: StreamEvent,
+    initial_events: list[StreamEvent],
     *,
     request_id: str,
     decision: rcore.RouteDecision,
+    attempt_count: int,
+    fallback_used: bool,
 ) -> AsyncIterator[bytes]:
-    """Emit the primed event, then continue with bounded post-start errors."""
+    """Emit the primed events; after the first visible event, never switch routes."""
     try:
-        yield _encode_event(first_event, request_id=request_id, decision=decision)
-        if first_event.done:
-            return
+        for event in initial_events:
+            yield _encode_event(
+                event, request_id=request_id, decision=decision,
+                attempt_count=attempt_count, fallback_used=fallback_used,
+            )
+            if event.done:
+                return
 
         async for event in iterator:
-            yield _encode_event(event, request_id=request_id, decision=decision)
+            yield _encode_event(
+                event, request_id=request_id, decision=decision,
+                attempt_count=attempt_count, fallback_used=fallback_used,
+            )
             if event.done:
                 return
     except PilotError as exc:
         logger.warning(
-            "stream_preview_post_start_error request_id=%s code=%s",
+            "stream_preview_post_start_error request_id=%s code=%s attempt=%d",
             request_id,
             exc.code,
+            attempt_count,
         )
         yield _encode_stream_error(
-            exc,
-            request_id=request_id,
-            decision=decision,
+            exc, request_id=request_id, decision=decision,
+            attempt_count=attempt_count, fallback_used=fallback_used,
         )
     except Exception:
         logger.error(
-            "stream_preview_post_start_internal_error request_id=%s",
+            "stream_preview_post_start_internal_error request_id=%s attempt=%d",
             request_id,
+            attempt_count,
         )
         generic = PilotError(
             code="internal_error",
@@ -268,9 +338,8 @@ async def _stream_body(
             status_code=500,
         )
         yield _encode_stream_error(
-            generic,
-            request_id=request_id,
-            decision=decision,
+            generic, request_id=request_id, decision=decision,
+            attempt_count=attempt_count, fallback_used=fallback_used,
         )
     finally:
         await _close_iterator(iterator)
@@ -278,16 +347,23 @@ async def _stream_body(
 
 @router.route(_STREAM_PREVIEW_PATH, methods=["POST"])
 async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = None):
-    """Preview one manual, non-fallback platform route as SSE.
+    """Stream a manual platform route with finite owner-tier pre-token fallback.
 
     Canonical gateway passes already parsed bytes to avoid re-reading JSON via
-    the Cloudflare Python/ASGI bridge; the dedicated preview route still parses
-    its own request under the same existing admission checks.
+    the Cloudflare Python/ASGI bridge; the dedicated route uses the same
+    canonical admission checks and keeps arbitrary external fallback disabled.
     """
     request_id = _request_id()
     iterator: AsyncIterator[StreamEvent] | None = None
 
     try:
+        # The preview lane spends platform-owned Provider credentials. Refuse an
+        # unproven caller before any credential is resolved or any Provider
+        # request is built.
+        denial = await _platform_caller_denial(request, request_id)
+        if denial is not None:
+            return denial
+
         if parsed_body is not None:
             raw = parsed_body
         else:
@@ -308,14 +384,41 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
         if transport is not None and not isinstance(transport, httpx.AsyncBaseTransport):
             raise InvalidRequest("Invalid streaming transport configuration.")
 
-        if decision.credential_source == "platform_secret":
-            if not decision.platform_provider_id:
+        fallback_candidates = list(decision.eligible_fallback)
+        # #4317: every candidate the declared product grade allows is tried,
+        # in order. There is no attempt ceiling to apply here.
+        attempt_candidates: list[dict[str, str] | None] = [
+            None,
+            *fallback_candidates,
+        ]
+
+        for attempt_index, candidate in enumerate(attempt_candidates):
+            remaining = [
+                item for item in attempt_candidates[attempt_index + 1:]
+                if item is not None
+            ]
+            attempt_decision = _decision_for_attempt(
+                decision, candidate, remaining
+            )
+            if candidate is None:
+                selected_model = decision.selected_model
+                upstream_model = decision.selected_upstream_model
+                provider = decision.selected_provider
+                platform_provider_id = decision.platform_provider_id
+            else:
+                selected_model = candidate["model_id"]
+                upstream_model = candidate["upstream_model"]
+                provider = candidate["provider"]
+                platform_provider_id = candidate["platform_provider_id"]
+
+            if not platform_provider_id:
                 raise InvalidRequest("platform_secret route missing provider binding.")
+
             iterator = stream_platform_chat_completions(
-                model_id=decision.selected_model,
-                upstream_model=decision.selected_upstream_model,
-                provider=decision.selected_provider,
-                platform_provider_id=decision.platform_provider_id,
+                model_id=selected_model,
+                upstream_model=upstream_model,
+                provider=provider,
+                platform_provider_id=platform_provider_id,
                 messages=body["messages"],
                 temperature=body.get("temperature"),
                 max_tokens=body.get("max_tokens"),
@@ -323,33 +426,56 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                    if body.get("model_parameters") else {}),
                 transport=transport,
             )
-        else:
-            raise InvalidRequest(
-                "non-platform route is not routable (OpenRouter retired, #1933 S2)"
+
+            initial_events: list[StreamEvent] = []
+            try:
+                # Buffer only pre-visible events. A recoverable provider failure
+                # before the first nonblank token may try the next owner-tier
+                # candidate. Once a visible token is selected, this route is final.
+                while True:
+                    try:
+                        event = await anext(iterator)
+                    except StopAsyncIteration as exc:
+                        raise MalformedUpstreamResponse() from exc
+                    initial_events.append(event)
+                    if event.done or (
+                        isinstance(event.delta_content, str)
+                        and bool(event.delta_content.strip())
+                    ):
+                        break
+            except PilotError as exc:
+                await _close_iterator(iterator)
+                if (
+                    attempt_index + 1 < len(attempt_candidates)
+                    and rcore.is_error_fallback_allowed(exc.code)
+                ):
+                    logger.warning(
+                        "stream_preview_pre_start_fallback request_id=%s attempt=%d code=%s",
+                        request_id,
+                        attempt_index + 1,
+                        exc.code,
+                    )
+                    continue
+                raise
+
+            return StreamingResponse(
+                _stream_body(
+                    iterator,
+                    initial_events,
+                    request_id=request_id,
+                    decision=attempt_decision,
+                    attempt_count=attempt_index + 1,
+                    fallback_used=attempt_index > 0,
+                ),
+                status_code=200,
+                media_type="text/event-stream",
+                headers={
+                    "Cache-Control": "no-cache, no-store",
+                    "X-Accel-Buffering": "no",
+                },
             )
 
-        # Prime before StreamingResponse commits HTTP 200. Any provider error
-        # before the first visible event is therefore returned as normal JSON
-        # with the correct bounded status code.
-        try:
-            first_event = await anext(iterator)
-        except StopAsyncIteration as exc:
-            raise MalformedUpstreamResponse() from exc
-
-        return StreamingResponse(
-            _stream_body(
-                iterator,
-                first_event,
-                request_id=request_id,
-                decision=decision,
-            ),
-            status_code=200,
-            media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache, no-store",
-                "X-Accel-Buffering": "no",
-            },
-        )
+        raise MalformedUpstreamResponse()
 
     except PilotError as exc:
         if iterator is not None:

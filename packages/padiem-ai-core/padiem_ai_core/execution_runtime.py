@@ -34,9 +34,10 @@ from .dispatch_preinstruction import (
 # Deprecated legacy model-prompt constants stay importable, but do not gate AI text.
 MAX_EXECUTION_MESSAGES: int | None = None
 MAX_EXECUTION_MESSAGE_CHARS: int | None = None
-# Model/reference context is provider-native within the existing Engine 6MB
-# request transport. These are byte memory guards, not model token caps.
-MAX_SYSTEM_CONTEXT_BYTES = 5_500_000
+# #4379: the model/reference context carries no PADIEM byte total. The
+# provider and the platform apply their own limits. These symbols are
+# retained for import compatibility and are no longer enforced.
+MAX_SYSTEM_CONTEXT_BYTES: int | None = None
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
 MAX_COMPOSED_SYSTEM_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
 
@@ -48,7 +49,6 @@ _MODEL_POLICY_FIELDS = frozenset(
         "temperature",
         "allow_external_fallback",
         "provider_order",
-        "max_attempts",
         "max_retries",
         "product_tier",  # trusted product-side grade carried through Core to B14
         # #3977: explicitly requested provider-native overrides. Absent means
@@ -108,10 +108,7 @@ def _normalize_additional_system_context(value: str | None) -> str | None:
     text = value.strip()
     if not text:
         return None
-    if len(text.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
-        raise ValueError(
-            "additional_system_context exceeds transport safety envelope"
-        )
+    # #4379: the additional system context is not refused for its size.
     return text
 
 
@@ -127,9 +124,11 @@ def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
     if request.additional_system_context is not None:
         parts.append(request.additional_system_context)
     content = "\n\n".join(parts)
-    # The mandatory context is counted inside the same transport envelope as
-    # every other part, so it can never push the request past the guard.
-    if len(content.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
+    # #4379: the composed system instruction carries no PADIEM byte total.
+    if (
+        MAX_SYSTEM_CONTEXT_BYTES is not None
+        and len(content.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES
+    ):
         raise ValueError("composed system instruction exceeds transport safety envelope")
     return content
 
@@ -169,7 +168,6 @@ def _normalize_model_policy(
         raise ValueError("model_policy.provider_order must be a sequence")
 
     allow_external_fallback = policy.get("allow_external_fallback")
-    max_attempts = policy.get("max_attempts")
     max_retries = policy.get("max_retries")
     if max_retries is not None and (
         isinstance(max_retries, bool) or not isinstance(max_retries, int)
@@ -184,7 +182,6 @@ def _normalize_model_policy(
         optimize_for=agent.optimize_for,
         allow_external_fallback=allow_external_fallback,
         provider_order=provider_order,
-        max_attempts=max_attempts,
         max_retries=max_retries,
         product_tier=policy.get("product_tier"),
     )

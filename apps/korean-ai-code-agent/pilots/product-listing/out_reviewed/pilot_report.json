@@ -1,0 +1,81 @@
+{
+  "measurement": {
+    "product_id": "sample",
+    "milestone_minutes": {
+      "intake_to_research_minutes": "0",
+      "intake_to_draft_minutes": "0",
+      "total_minutes": "0"
+    },
+    "counts": {
+      "manual_reentry_count": "0",
+      "automation_retry_count": "0",
+      "owner_intervention_count": "0"
+    },
+    "correction_rate": "2.941176470588235294117647059",
+    "derived_metric_keys": [
+      "automation_retry_count",
+      "extraction_correction_rate",
+      "manual_reentry_count",
+      "owner_intervention_count",
+      "request_to_po_minutes",
+      "request_to_rfq_minutes"
+    ],
+    "baseline_estimated_minutes": "42",
+    "baseline_is_estimated": true,
+    "measured_comparison_available": false,
+    "note": "기준선은 추정치일 수 있으며, 추정치는 측정된 절감률로 사용하지 않습니다.",
+    "scope": "milestone_minutes 는 자동 처리 구간의 실행 시간이며 사람의 판단·입력 시간은 포함하지 않습니다. 실제 업무 소요시간은 현장 실연에서 사람 단위로 측정합니다."
+  },
+  "review_checklist": [
+    "공급처 자료의 상품명·모델명·품번이 실제 제품과 일치하는지 확인",
+    "판매가와 정가가 가격 정책에 맞는지 확인",
+    "카테고리가 실제 노출 카테고리와 일치하는지 확인",
+    "상세설명에 표시 이미지와 대체 텍스트가 포함되었는지 확인",
+    "배송비·발송예정일·반품 정책이 운영 정책과 일치하는지 확인",
+    "이미지 규격(분해능·용량·형식)이 채널 기준을 충족하는지 확인",
+    "검수 전 필드 목록을 모두 확인",
+    "쿠팡 마켓플레이스 채널 전용 항목 1건을 직접 입력"
+  ],
+  "follow_ups": [],
+  "artifacts": {
+    "record_sha256": "1b707094c0b126d872b7b255819e317169918624ed6d2da3bfd851c5abc0ff63",
+    "channel_draft_count": "4",
+    "ready_for_entry_channels": "naver_smart_store,elevenst,own_mall",
+    "automatable_step_total": "70",
+    "human_step_total": "13"
+  },
+  "drafts": [
+    {
+      "channel_id": "coupang",
+      "display_name": "쿠팡 마켓플레이스",
+      "ready_for_entry": false,
+      "error_count": 0,
+      "warning_count": 1,
+      "unresolved_field_count": 0
+    },
+    {
+      "channel_id": "naver_smart_store",
+      "display_name": "네이버 스마트스토어",
+      "ready_for_entry": true,
+      "error_count": 0,
+      "warning_count": 0,
+      "unresolved_field_count": 0
+    },
+    {
+      "channel_id": "elevenst",
+      "display_name": "11번가 셀러오피스",
+      "ready_for_entry": true,
+      "error_count": 0,
+      "warning_count": 0,
+      "unresolved_field_count": 0
+    },
+    {
+      "channel_id": "own_mall",
+      "display_name": "자체몰(카페24 콘솔 기준)",
+      "ready_for_entry": true,
+      "error_count": 0,
+      "warning_count": 0,
+      "unresolved_field_count": 0
+    }
+  ]
+}

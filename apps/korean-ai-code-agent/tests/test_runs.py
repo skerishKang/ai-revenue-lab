@@ -70,15 +70,16 @@ class ClawRunTests(unittest.TestCase):
         with self.assertRaises(RunStateError):
             store.get("run_missing")
 
-    def test_projection_redacts_accidental_secret_summary(self):
+    def test_projection_preserves_owner_summary(self):
         run = ClawRun.create("run_006", self.intent())
         run.transition(
             ClawRunStatus.PREPARING,
-            summary="token=supersecretvalue 준비 중",
+            summary="token=supersecretvalue 요약",
         )
         rendered = str(run.projection().safe_dict())
-        self.assertNotIn("supersecretvalue", rendered)
-        self.assertIn("REDACTED", rendered)
+        self.assertIn("supersecretvalue", rendered)
+        self.assertNotIn("REDACTED", rendered)
+
 
 
 if __name__ == "__main__":

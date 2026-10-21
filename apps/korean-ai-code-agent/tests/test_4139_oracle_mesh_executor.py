@@ -13,6 +13,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from kagent.contracts import ContractError
 from kagent.local_agent_meshcentral_private_reader import (
     MeshCentralCliFileReadPort, MeshCentralReadRefused, _PASSWORD_MARKER,
 )
@@ -287,6 +288,72 @@ class ResultSubmitTests(unittest.TestCase):
         self.assertTrue(first.get("quarantined"))
         self.assertFalse(first.get("retryable"))
         self.assertFalse(executor.resend_pending)
+
+
+class ClaimGateTests(unittest.TestCase):
+    """#5462: a host that is not the active target must not claim.
+
+    The failover controller hands out an epoch and this host's decision
+    file says which target owns the claim. When it is not this host, the
+    executor must not even ask the channel for a dispatch, so the same
+    work can never be claimed by both hosts at once.
+    """
+
+    def _executor(self, gate, transport=None) -> OracleMeshExecutor:
+        return OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net",
+            channel_secret=SECRET,
+            read_port=_StubPort(),
+            transport=transport,
+            claim_gate=gate,
+        )
+
+    def test_a_closed_gate_means_the_channel_is_never_polled(self):
+        polled = []
+
+        def transport(*_args, **_kwargs):
+            polled.append(True)
+            raise AssertionError("the channel must not be polled")
+
+        executor = self._executor(lambda: False, transport)
+        self.assertIsNone(executor.run_once())
+        self.assertEqual(polled, [])
+
+    def test_an_open_gate_polls_as_before(self):
+        polled = []
+
+        def transport(*_args, **_kwargs):
+            polled.append(True)
+            return 200, {"ok": True, "dispatch": None}
+
+        executor = self._executor(lambda: True, transport)
+        self.assertIsNone(executor.run_once())
+        self.assertEqual(len(polled), 1)
+
+    def test_a_non_callable_gate_is_refused(self):
+        with self.assertRaises(ContractError):
+            OracleMeshExecutor(
+                chat_origin="https://chat.padiem.net",
+                channel_secret=SECRET,
+                read_port=_StubPort(),
+                claim_gate="yes",
+            )
+
+    def test_a_host_without_a_gate_keeps_the_historical_behaviour(self):
+        polled = []
+
+        def transport(*_args, **_kwargs):
+            polled.append(True)
+            return 200, {"ok": True, "dispatch": None}
+
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net",
+            channel_secret=SECRET,
+            read_port=_StubPort(),
+            transport=transport,
+        )
+        self.assertIsNone(executor.run_once())
+        self.assertEqual(len(polled), 1)
 
 
 if __name__ == "__main__":

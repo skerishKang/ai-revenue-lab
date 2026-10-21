@@ -27,7 +27,7 @@ on:
         description: 'Exact current main SHA authorized for this one-shot candidate live smoke'
         required: true
       candidate_id:
-        description: 'Allowlisted candidate id (agnes|sensenova|poolside|motif|mercury|atria|luna)'
+        description: 'Allowlisted candidate id (agnes|sensenova|poolside|mercury|atria)'
         required: true
       modality:
         description: 'Request modality (text). Image is retired with space-bunny (2026-10-07).'
@@ -331,9 +331,11 @@ jobs:
           set -euo pipefail
           echo "${CANDIDATE_ID}" | grep -Eq '^[a-z0-9.-]{1,32}$'
           # Owner final retirement decision (2026-10-07): space-bunny is no
-          # longer allowlisted and no image candidate exists.
+          # longer allowlisted and no image candidate exists. Motif and
+          # GPT-5.6 Luna were removed for the same reason: the infron provider
+          # is not registered any more and the luna model id is owner-retired.
           case "${CANDIDATE_ID}" in
-            agnes|sensenova|poolside|motif|mercury|atria|luna) ;;
+            agnes|sensenova|poolside|mercury|atria) ;;
             *) echo 'CANDIDATE_NOT_ALLOWLISTED=1'; exit 1 ;;
           esac
           echo "CANDIDATE_ID_ALLOWLISTED=${CANDIDATE_ID}"

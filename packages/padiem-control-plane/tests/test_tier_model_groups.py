@@ -78,13 +78,23 @@ def test_same_tier_group_independent_chat_claw_b66_primary_and_fallback():
 
 def test_missing_policy_freshness_or_product_grant_never_makes_any_route_ready():
     group = staged(prefs())
-    for policy, fresh in ((None, True), (grants("chat"), False), (grants("claw"), True)):
+    for policy, fresh in ((None, True), (grants("chat"), False)):
         v = preview(group, policy=policy, fresh=fresh)
         assert v.primary_model_id is None and not v.eligible_fallback_model_ids
         assert suggest_explicit_fallback(
             v, failure_code="upstream_timeout",
             attempted_model_ids=(A,), user_notice_possible=True,
         ) is None
+
+
+def test_a_grant_on_one_shared_screen_covers_the_other_but_not_another_product():
+    # #2505: Chat and Claw are two screens of one AI product, so one grade
+    # setting and one product-scoped grant cover both of them. B66 keeps its
+    # own independent grade assignment.
+    group = staged(prefs())
+    shared = preview(group, policy=grants("claw"))
+    assert shared.primary_model_id == A
+    assert preview(group, policy=grants("b66")).primary_model_id is None
 
 
 def test_disabled_or_blocked_backup_never_selected():

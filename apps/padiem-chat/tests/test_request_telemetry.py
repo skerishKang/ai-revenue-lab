@@ -17,6 +17,7 @@ from starlette.testclient import TestClient
 
 from app.app_factory import create_app
 from app.config import Settings
+from app import orchestration_routes
 from app.request_telemetry import (
     OUTCOME_CLIENT_ERROR,
     OUTCOME_OK,
@@ -29,6 +30,7 @@ from app.request_telemetry import (
     default_emitter,
     is_safe_request_id,
     new_request_id,
+    refusal_code_from_body,
     resolve_route_template,
 )
 
@@ -137,6 +139,147 @@ def test_event_key_set_is_exactly_the_documented_projection(client: TestClient, 
     assert events[0]["method"] == "GET"
     assert events[0]["status"] == 200
     assert events[0]["outcome"] == OUTCOME_OK
+
+
+def test_real_chat_error_response_code_reaches_existing_request_event(
+    client: TestClient, events: list[dict]
+):
+    response = client.post("/api/chat", json={"messages": []})
+
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "invalid_request"
+    assert events[-1]["error_code"] == "invalid_request"
+    assert "message" not in events[-1]
+
+
+def test_real_successful_chat_response_keeps_user_input_out_of_event(
+    client: TestClient, events: list[dict]
+):
+    private_input = "TELEMETRY_PRIVATE_CHAT_INPUT"
+    response = client.post("/api/chat", json={"messages": [{"role": "user", "content": private_input}]})
+
+    assert response.status_code == 200
+    assert private_input in response.text
+    assert "error_code" not in events[-1]
+    assert private_input not in json.dumps(events[-1])
+
+
+def test_late_installed_orchestration_route_is_covered_by_telemetry(
+    events: list[dict], monkeypatch: pytest.MonkeyPatch
+):
+    app = create_app(settings=_settings(), telemetry_emitter=events.append)
+    orchestration_routes.install_orchestration_routes(app, bridge=None)
+    monkeypatch.setattr(orchestration_routes, "_bridge", lambda request: object())
+    monkeypatch.setattr(orchestration_routes, "_user_id", lambda request: "synthetic-owner")
+
+    class _UnavailableGate:
+        async def authorize(self, **kwargs):
+            return type(
+                "Decision",
+                (),
+                {
+                    "allowed": False,
+                    "code": "live_abuse_gate_unavailable",
+                    "status_code": 503,
+                    "user_message": "private gate detail",
+                    "retry_after_seconds": None,
+                },
+            )()
+
+    app.state.usage_gate_enforced = True
+    app.state.usage_gate = _UnavailableGate()
+    private_input = "PRIVATE_ORCHESTRATION_PROMPT"
+
+    with TestClient(app) as route_client:
+        response = route_client.post(
+            "/api/orchestration",
+            json={"messages": [{"role": "user", "content": private_input}]},
+        )
+
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "live_abuse_gate_unavailable"
+    assert events[-1]["route"] == "/api/orchestration"
+    assert events[-1]["error_code"] == "live_abuse_gate_unavailable"
+    assert "private gate detail" not in json.dumps(events[-1])
+    assert private_input not in json.dumps(events[-1])
+
+
+@pytest.mark.parametrize(
+    "body, expected",
+    [
+        (b'{"error":{"code":"live_abuse_gate_unavailable","message":"private"}}', "live_abuse_gate_unavailable"),
+        (b'{"error":{"code":"has spaces"}}', None),
+        (b'{"error":{"code":"x\\nfoo"}}', None),
+        (b'{"error":{"code":"valid_code"}}' + b" " * 2048, None),
+        (b"not-json", None),
+    ],
+)
+def test_refusal_code_extraction_is_bounded_and_validated(body: bytes, expected: str | None):
+    assert refusal_code_from_body(body) == expected
+
+
+async def test_middleware_retains_only_error_code_and_passes_body_unchanged():
+    body_chunks = [b'{"error":{"code":"chat_pc_store_', b'unavailable","message":"private"}}']
+    outgoing: list[dict] = []
+    events: list[dict] = []
+
+    async def _app(scope, receive, send):
+        await send({"type": "http.response.start", "status": 503, "headers": []})
+        for index, chunk in enumerate(body_chunks):
+            await send({"type": "http.response.body", "body": chunk, "more_body": index < len(body_chunks) - 1})
+
+    async def _receive():
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    async def _send(message):
+        outgoing.append(message)
+
+    middleware = RequestTelemetryMiddleware(_app, emitter=events.append)
+    await middleware(
+        {"type": "http", "method": "POST", "path": "/api/chat", "headers": [], "query_string": b""},
+        _receive,
+        _send,
+    )
+
+    assert b"".join(message.get("body", b"") for message in outgoing) == b"".join(body_chunks)
+    assert events[-1]["status"] == 503
+    assert events[-1]["error_code"] == "chat_pc_store_unavailable"
+    assert "private" not in json.dumps(events[-1])
+
+
+@pytest.mark.parametrize(
+    "status, body",
+    [
+        (200, b'{"answer":"private user text"}'),
+        (503, b'{"error":{"message":"private user text"}}'),
+        (503, b'{"error":{"code":"bad\\ncode","message":"private user text"}}'),
+    ],
+)
+async def test_success_or_unusable_code_keeps_body_but_not_error_material_in_event(status, body):
+    outgoing: list[dict] = []
+    events: list[dict] = []
+
+    async def _app(scope, receive, send):
+        await send({"type": "http.response.start", "status": status, "headers": []})
+        await send({"type": "http.response.body", "body": body, "more_body": False})
+
+    async def _receive():
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    async def _send(message):
+        outgoing.append(message)
+
+    middleware = RequestTelemetryMiddleware(_app, emitter=events.append)
+    await middleware(
+        {"type": "http", "method": "POST", "path": "/api/chat", "headers": [], "query_string": b""},
+        _receive,
+        _send,
+    )
+
+    assert b"".join(message.get("body", b"") for message in outgoing) == body
+    assert "error_code" not in events[-1]
+    assert "private user text" not in json.dumps(events[-1])
+    assert "message" not in events[-1]
 
 
 def test_event_uses_route_template_not_raw_path(client: TestClient, events: list[dict]):

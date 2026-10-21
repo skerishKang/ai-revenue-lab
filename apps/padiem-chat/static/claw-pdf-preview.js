@@ -5,7 +5,6 @@
   "use strict";
   const VALID_ID = /^doc_[A-Za-z0-9]{32}$/;
   const PDF_TYPE = "application/pdf";
-  const MAX_PDF = 10 * 1024 * 1024;
   const controllers = new Set();
 
   function copy(lang, key) {
@@ -25,7 +24,7 @@
       value.media_type === PDF_TYPE &&
       typeof value.filename === "string" && /\.pdf$/i.test(value.filename) &&
       Number.isInteger(value.byte_length) &&
-      value.byte_length > 0 && value.byte_length <= MAX_PDF;
+      value.byte_length > 0;
   }
   // Run history is owner-scoped, but old records have no byte_length.
   // The user must explicitly request an availability check; actual PDF bytes
@@ -36,10 +35,10 @@
         value.media_type !== PDF_TYPE ||
         typeof value.filename !== "string" || !/\.pdf$/i.test(value.filename)) return false;
     return value.byte_length == null ||
-      (Number.isInteger(value.byte_length) && value.byte_length > 0 && value.byte_length <= MAX_PDF);
+      (Number.isInteger(value.byte_length) && value.byte_length > 0);
   }
   function isPdf(bytes) {
-    if (!(bytes instanceof Uint8Array) || bytes.length < 16 || bytes.length > MAX_PDF) return false;
+    if (!(bytes instanceof Uint8Array) || bytes.length < 16) return false;
     if (bytes[0] !== 37 || bytes[1] !== 80 || bytes[2] !== 68 ||
         bytes[3] !== 70 || bytes[4] !== 45) return false;
     const tail = bytes.subarray(Math.max(0, bytes.length - 1024));

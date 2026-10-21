@@ -25,7 +25,6 @@ def _decision() -> RouteDecision:
         evidence_status="resolved_not_called",
         request_id="b14req_cancel",
         provider_mode="live",
-        max_attempts=1,
     )
 
 

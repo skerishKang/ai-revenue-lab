@@ -1,0 +1,3 @@
+return_id,reason,shipment_id,resolution_status,resolution_note
+ret_demo_1,customer_return,ship_demo_exception,resolved,"가상 케이스: 수령 후 반품 접수, 회수 지시 완료(가상)"
+ret_demo_2,misdelivery,ship_demo_exception,open,"가상 케이스: 다른 주소 배달 건, 재배송 여부 검토 대기"

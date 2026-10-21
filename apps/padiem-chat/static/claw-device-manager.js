@@ -17,7 +17,7 @@
       refresh: "연결 상태 새로고침",
       help: "연결된 컴퓨터를 확인합니다. PC 작업은 별도의 승인이 필요합니다.",
       entryTitle: "컴퓨터와 연결해 보세요",
-      entryDescription: "내 컴퓨터의 파일과 프로그램을 PADIEM에서 사용할 수 있어요.",
+      entryDescription: "내 컴퓨터의 파일과 프로그램을 Padiem에서 사용할 수 있어요.",
       connectAction: "컴퓨터 연결하기",
       loading: "서버에서 컴퓨터 연결 상태를 확인하고 있습니다.",
       unavailable: "컴퓨터 연결 서비스가 아직 준비되지 않았습니다. 연결된 PC를 확인할 수 없습니다.",
@@ -46,7 +46,7 @@
       refresh: "Refresh connection status",
       help: "Review connected devices. Running local tasks requires separate approval.",
       entryTitle: "Connect your computer",
-      entryDescription: "Use the files and programs on your computer in PADIEM.",
+      entryDescription: "Use the files and programs on your computer in Padiem.",
       connectAction: "Connect a computer",
       loading: "Checking your devices with the server.",
       unavailable: "Computer connection service is not ready yet. Device status cannot be confirmed.",
@@ -154,9 +154,45 @@
     let selectionSequence = 0;
     let selectionQueue = Promise.resolve();
     let selectedId = null;
+    let savedTargetId = null;
     let lastDirectory = null;
     let opened = false;
     let stateCode = "unavailable";
+    let readCompleted = false;
+
+    // The shared directory snapshot. The composer status control reads this
+    // instead of opening a second connection to the directory endpoint, so
+    // this module stays the only reader and the only device authority.
+    function publishDirectory() {
+      const directory = lastDirectory;
+      const snapshot = {
+        readCompleted: readCompleted,
+        available: Boolean(directory && directory.available),
+        reason: directory ? directory.reason : null,
+        statusCode: stateCode,
+        // The server-owned preference and the device it resolves to are both
+        // published, so a consumer can tell "no target chosen" from "the
+        // chosen target is gone".
+        savedTargetId: savedTargetId,
+        selectedDeviceId: directory ? directory.selectedDeviceId : null,
+        canTarget: Boolean(directory && directory.canTarget),
+        devices: confirmedDevices().map((device) => ({
+          deviceId: device.deviceId,
+          deviceName: device.deviceName,
+          platform: device.platform,
+          state: device.state,
+          online: device.online === true,
+          revoked: device.revoked === true,
+          expired: device.expired === true,
+          executable: device.executable === true,
+          selectable: device.selectable === true,
+        })),
+      };
+      window.PadiemClawDeviceDirectory = snapshot;
+      if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
+        window.dispatchEvent(new CustomEvent("padiem:claw-device-directory", { detail: snapshot }));
+      }
+    }
 
     function setStatus(value) {
       stateCode = value;
@@ -287,12 +323,17 @@
       panel.removeAttribute("aria-busy");
       sequence += 1; // invalidate any in-flight response or previous owner snapshot
       selectedId = null;
+      savedTargetId = null;
       lastEnvelope = null;
       lastDirectory = null;
       list.replaceChildren();
       list.hidden = true;
       // A new account generation starts from the not-connected guidance again.
       renderEntry();
+      // The shared snapshot returns to "not read yet", so no consumer can
+      // show a connection that belongs to the previous owner.
+      readCompleted = false;
+      publishDirectory();
     }
 
     async function postSelection(deviceId) {
@@ -407,6 +448,7 @@
         // conversation/reload. It never substitutes another device.
         const restored = typeof payload.selectedDeviceId === "string" &&
           payload.selectedDeviceId ? payload.selectedDeviceId : null;
+        savedTargetId = restored;
         const directory = projector(payload, restored);
         if (!directory.available) {
           selectedId = null;
@@ -450,7 +492,15 @@
       } finally {
         window.clearTimeout(timer);
         if (pendingController === controller) pendingController = null;
-        if (request === sequence) panel.removeAttribute("aria-busy");
+        if (request === sequence) {
+          panel.removeAttribute("aria-busy");
+          // Every read attempt publishes its own result, so the shared
+          // snapshot never keeps a state that the server did not confirm.
+          // A superseded read publishes nothing: its owner generation is
+          // already gone.
+          readCompleted = true;
+          publishDirectory();
+        }
       }
     }
 

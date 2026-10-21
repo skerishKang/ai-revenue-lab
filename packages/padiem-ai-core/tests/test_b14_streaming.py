@@ -157,7 +157,6 @@ def test_comments_and_sse_metadata_are_ignored():
     [
         request(model="b14/auto"),
         request(routing=B14RoutingOptions(allow_external_fallback=True)),
-        request(routing=B14RoutingOptions(max_attempts=2)),
     ],
 )
 def test_unsupported_stream_policy_fails_before_network(req: B14ChatRequest):
@@ -494,3 +493,25 @@ async def test_stream_user_cancel_propagates_without_waiting_for_idle_timeout():
     with pytest.raises(asyncio.CancelledError):
         await task
     assert stream.closed is True
+
+
+def test_a_plain_streaming_routing_is_supported():
+    """#4317: without an attempt count to refuse, the plain policy streams.
+
+    The old contract refused a routing that carried an attempt count other
+    than one. There is no attempt count any more, so the plain routing is an
+    ordinary supported streaming request.
+    """
+    async def handler(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([sse(chunk_payload(content="A")), b"data: [DONE]\n\n"]),
+        )
+
+    events = collect(
+        B14StreamingClient(B14ExecutionConfig(BASE_URL), httpx.MockTransport(handler)),
+        request(),
+    )
+    assert [event.delta_content for event in events if event.delta_content] == ["A"]
+    assert events[-1].done is True

@@ -194,11 +194,16 @@ def test_product_scoped_admin_never_assigns_global_or_other_product():
         store, [ModelChange("central", "PRO", GOOD, "allow")], 1,
         actor=product_admin,
     ))
+    # #2505: the Chat and Claw screens are one shared product, so one
+    # product-scoped grant covers both of them, and still covers no other
+    # product.
+    assert commit(store, [ModelChange("chat", "PRO", GOOD, "allow")], 1,
+                  actor=product_admin).revision == 2
     err("model_admin_scope_forbidden", lambda: commit(
-        store, [ModelChange("chat", "PRO", GOOD, "allow")], 1,
+        store, [ModelChange("b66", "PRO", GOOD, "allow")], 2,
         actor=product_admin,
     ))
-    assert read(store).revision == 1
+    assert read(store).revision == 2
 
 
 def test_unapproved_model_allow_rejected_but_explicit_block_is_allowed():

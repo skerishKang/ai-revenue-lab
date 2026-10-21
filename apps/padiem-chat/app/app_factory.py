@@ -15,6 +15,12 @@ from .android_auth_routes import (
     android_handoff_create,
     android_handoff_status,
 )
+from .account_model_selection_routes import (
+    MODEL_SELECTION_PATH,
+    account_model_selection_get,
+    account_model_selection_put,
+)
+from .account_model_selection_store import D1AccountModelSelectionStore
 from .android_auth_store import D1AndroidAuthHandoffStore
 from .auth import GoogleOAuthClient
 from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
@@ -115,15 +121,20 @@ from .auth_routes import (
     google_callback,
     google_start,
     logout,
+    password_change,
     password_login,
     password_register,
+    password_reset_confirm,
+    password_reset_request,
 )
 from .auto_grounding import AutoGroundingService
 from .voice_stt_routes import IDENTITY_PATH as VOICE_IDENTITY_PATH
 from .voice_stt_routes import TRANSCRIBE_PATH as VOICE_TRANSCRIBE_PATH
+from .voice_stt_routes import LIVE_TOKEN_PATH as VOICE_LIVE_TOKEN_PATH
 from .voice_stt_routes import CLAW_IDENTITY_PATH as CLAW_VOICE_IDENTITY_PATH
 from .voice_stt_routes import CLAW_TRANSCRIBE_PATH as CLAW_VOICE_TRANSCRIBE_PATH
-from .voice_stt_routes import voice_identity, voice_transcribe
+from .voice_stt_routes import CLAW_LIVE_TOKEN_PATH as CLAW_VOICE_LIVE_TOKEN_PATH
+from .voice_stt_routes import voice_identity, voice_transcribe, voice_live_token
 from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_office_preview_routes import (
@@ -286,9 +297,12 @@ from .desktop_conversation_routes import (
 )
 from .grounding import GroundedChatService
 from .history import HistoryStore
+from .password_reset import PasswordResetService
+from .password_reset_store import D1PasswordResetStore
 from .project_file_routes import (
     owner_files_collection,
     project_file_detail,
+    project_file_original,
     project_files_collection,
 )
 from .drive_case_folder_routes import (
@@ -306,6 +320,7 @@ from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
 from .same_origin_guard import SameOriginGuardMiddleware
+from .session_revocation_guard import SessionRevocationGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
 from .owner_model_preview_routes import claw_verified_model_choices, owner_model_name_preview
 from .saved_outputs import SavedOutputStore
@@ -421,6 +436,8 @@ def create_app(
     claw_engine_desktop_secret=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
+    password_reset_store=None,
+    password_reset_delivery=None,
     android_handoff_store=None,
     connector_owner_enrollment=None,
     github_oauth_store=None,
@@ -428,6 +445,7 @@ def create_app(
     central_model_route_store=None,
     custom_credential_store=None,
     custom_provider_client=None,
+    account_model_selection_store=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -451,8 +469,10 @@ def create_app(
         Route("/api/auth/status", auth_status, methods=["GET"]),
         Route(VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
         Route(VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
+        Route(VOICE_LIVE_TOKEN_PATH, voice_live_token, methods=["POST"]),
         Route(CLAW_VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
         Route(CLAW_VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
+        Route(CLAW_VOICE_LIVE_TOKEN_PATH, voice_live_token, methods=["POST"]),
         Route(ACCESS_PATH, home_product_access, methods=["GET"]),
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
@@ -465,6 +485,12 @@ def create_app(
         Route("/auth/android/confirm", android_handoff_confirm, methods=["POST"]),
         Route("/api/auth/password/register", password_register, methods=["POST"]),
         Route("/api/auth/password/login", password_login, methods=["POST"]),
+        Route("/api/auth/password/change", password_change, methods=["POST"]),
+        # #5441 lost-password self-service reset. The request route issues one
+        # short-lived, single-use link; the confirm route redeems it and sets
+        # the new password.
+        Route("/api/auth/password/reset/request", password_reset_request, methods=["POST"]),
+        Route("/api/auth/password/reset/confirm", password_reset_confirm, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route(MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session, methods=["POST"]),
@@ -495,6 +521,7 @@ def create_app(
         Route("/api/project-files", owner_files_collection, methods=["GET"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
+        Route("/api/projects/{project_id}/files/{file_id}/original", project_file_original, methods=["GET"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
         Route(
             "/api/projects/{project_id}/drive-case-folder",
@@ -551,6 +578,10 @@ def create_app(
         Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
         Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),
+        # #5222 account-scoped last selected AI tier. One signed-in account owns
+        # one stored preference; the browser never names the account.
+        Route(MODEL_SELECTION_PATH, account_model_selection_get, methods=["GET"]),
+        Route(MODEL_SELECTION_PATH, account_model_selection_put, methods=["PUT"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
         Route(B66_PC_DIRECTORY_PATH, b66_pc_directory, methods=["GET"]),
         Route(B66_PC_TXT_READ_PATH, b66_pc_txt_read_request, methods=["POST"]),
@@ -837,6 +868,12 @@ def create_app(
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
     app = Starlette(routes=routes)
+    # #5225: the canonical session guard resolves the Control Plane session
+    # behind the session cookie once per request. It is added first so it stays
+    # the innermost of the three layers: the same-origin guard refuses a
+    # cross-origin mutation before any canonical authority read happens, and
+    # the telemetry layer stays outermost so it still records guard rejections.
+    app.add_middleware(SessionRevocationGuardMiddleware)
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
     # recording guard rejections.
@@ -912,6 +949,13 @@ def create_app(
     # Missing D1 or migrations fails closed rather than serving a demo roster.
     app.state.b66_member_admin_store = (b66_member_admin_store if b66_member_admin_store is not None
         else D1B66MemberAdminStore(d1_binding, admin_email=b66_admin_google_email) if d1_binding is not None else None)
+    # #5222 the account-scoped last selected AI tier reuses the same D1. Without
+    # the table the route fails closed with 503 and the browser keeps its
+    # server-verified default; it never invents a stored preference.
+    app.state.account_model_selection_store = (
+        account_model_selection_store if account_model_selection_store is not None
+        else D1AccountModelSelectionStore(d1_binding) if d1_binding is not None else None
+    )
     app.state.project_file_store = project_file_store
     app.state.saved_output_store = saved_output_store
     # Separate deployment gate: migrate and audit the D1 schema before enabling.
@@ -1025,11 +1069,36 @@ def create_app(
             _auth_abuse_store = None
     app.state.auth_abuse_gate = AuthAbuseGate(resolved, _auth_abuse_store)
 
-    # An explicitly injected B14 transport is the existing network-free regression seam.
-    # It cannot occur through browser input or Worker bindings. Production/ordinary runtime
-    # (transport=None) always enforces the gate; quota-specific integration tests also
-    # enforce it by supplying a usage store.
-    app.state.usage_gate_enforced = not (transport is not None and usage_store is None)
+    # #5441 lost-password reset. The store holds the one-time token digests
+    # and the reset audit ledger; the delivery transport sends the one-time
+    # link to the account's own address. Both are optional: without them the
+    # reset routes fail closed with a retryable error instead of pretending a
+    # mail was sent.
+    _password_reset_store = password_reset_store
+    if _password_reset_store is None and d1_binding is not None:
+        try:
+            _password_reset_store = D1PasswordResetStore(d1_binding)
+        except Exception:
+            _password_reset_store = None
+    app.state.password_reset_store = _password_reset_store
+    app.state.password_reset_delivery = password_reset_delivery
+    app.state.password_reset_service = (
+        PasswordResetService(
+            _password_reset_store,
+            pepper=resolved.session_secret or "",
+            public_base_url=resolved.public_base_url or "",
+        )
+        if _password_reset_store is not None
+        and resolved.session_secret
+        and resolved.public_base_url
+        else None
+    )
+
+    # AI usage quotas are disabled by default during development.
+    # Explicitly injected quota stores retain opt-in policy coverage.
+    # Development-stage AI usage is provider-governed, not locally quota-gated.
+    # Explicitly injected quota stores keep the opt-in policy/test seam available.
+    app.state.usage_gate_enforced = usage_store is not None
     # Fail closed until CP supplies verified user Drive WRITE grant and owner-scoped upload session.
     app.state.meeting_drive_upload_session_port = meeting_drive_upload_session_port
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)

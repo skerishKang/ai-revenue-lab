@@ -44,7 +44,11 @@ from cloudflare_served_version import (
     resolve_served_version_id,
 )
 
-WORKERS = {"engine": ("padiem-ai-engine", 18), "chat": ("padiem-chat", 27)}
+# #5223: the approved binding set of each Worker is the reviewed name+type
+# baseline, not a binding count. The counts that lived here were written once
+# and never revised, so every later reviewed additive install blocked the
+# release path.
+WORKERS = {"engine": "padiem-ai-engine", "chat": "padiem-chat"}
 PRIMARY_DATABASE = {"engine": "padiem-engine", "chat": "padiem-chat-db"}
 ANNOTATIONS = {"workers/message", "workers/tag"}
 
@@ -119,9 +123,9 @@ def prepare(
         raise TransactionError("SOURCE_SHA_UNSAFE")
     try:
         ids = _database_ids(databases)
-        name, count = WORKERS[worker]
+        name = WORKERS[worker]
         baseline = _snapshot(
-            name, count, before, after, version, settings,
+            name, before, after, version, settings,
             ids[OWNER_NAME], ids[PRIMARY_DATABASE[worker]]
         )
         peer_id = _current_peer(
@@ -155,8 +159,8 @@ def prepare(
         "worker_alias": worker,
         "rollback_version_id": baseline["base_version"],
         "peer_active_version_id": peer_id,
-        "original_binding_count": count,
-        "target_binding_count": count + 1,
+        "original_binding_count": baseline["existing_bindings"],
+        "target_binding_count": baseline["planned_bindings"],
         "script_metadata_digest": baseline["script_metadata_digest"],
         "runtime_metadata_digest": baseline["runtime_metadata_digest"],
         "binding_name_type_digest": baseline["binding_name_type_digest"],
@@ -272,7 +276,7 @@ def verify(
     }
     if old_ann != new_ann:
         raise TransactionError("ANNOTATIONS_NOT_PRESERVED")
-    if anchor.get("worker") not in [x[0] for x in WORKERS.values()]:
+    if anchor.get("worker") not in list(WORKERS.values()):
         raise TransactionError("ANCHOR_WORKER_INVALID")
     return current
 
@@ -520,7 +524,7 @@ def main(argv: list[str] | None = None) -> int:
                 "padiem-engine": _read(args.d1_engine),
             })
             anchor = _read(args.anchor)
-            if anchor.get("worker") != WORKERS[args.worker][0]:
+            if anchor.get("worker") != WORKERS[args.worker]:
                 raise TransactionError("ANCHOR_WORKER_MISMATCH")
             verify(_read(args.pre), _read(args.post), _read(args.deployments),
                            _read(args.settings), ids[OWNER_NAME], anchor,
@@ -586,7 +590,7 @@ def main(argv: list[str] | None = None) -> int:
             print("OWNER_D1_LATEST_VERSION_PROMOTION=VERIFIED")
         elif args.mode == "verify-rollback-target":
             verify_rollback_target(
-                _read(args.anchor), _read(args.version), WORKERS[args.worker][0]
+                _read(args.anchor), _read(args.version), WORKERS[args.worker]
             )
             print("OWNER_D1_ROLLBACK_TARGET_ANCHORED=PASS")
         else:

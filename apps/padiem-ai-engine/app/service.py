@@ -31,9 +31,10 @@ from app.execution_context_wire import parse_execution_context
 EXECUTE_PATH = "/internal/v1/execute"
 HEALTH_PATH = "/internal/v1/health"
 MAX_REQUEST_BODY_BYTES = 128 * 1024  # Non-model Engine routes retain legacy safety.
-# Model-only /execute is bounded by the B62 6MB transport budget rather than
-# a pilot 128KiB pre-provider cap. Tool/Memory/approval route guards unchanged.
-MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES = 6_000_000
+# #4379: the model routes carry no PADIEM request body total. The Engine
+# applies the platform's own request limit. Tool/Memory/approval route guards
+# are unchanged.
+MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES: int | None = None
 
 _TOP_LEVEL_REQUIRED = frozenset({"app_id", "agent", "messages"})
 _TOP_LEVEL_ALLOWED = frozenset(
@@ -47,6 +48,27 @@ _AGENT_ALLOWED = frozenset({
     "id", "title", "description", "system_instruction", "task_type", "optimize_for", "max_tokens",
     "required_capabilities", "model_policy",
 })
+
+# #5002: the Business 14 Router auto route is suspended. No Engine route may
+# dispatch it. A request that names it is refused before any external
+# invocation, with the same stable code the research route already uses,
+# instead of being rewritten into another default model.
+SUSPENDED_AUTO_MODEL_PREFIX = "b14/auto"
+SUSPENDED_AUTO_MODEL_MESSAGE = (
+    "b14/auto is reserved for future development; select an explicit registered model."
+)
+
+
+def is_suspended_auto_model(model: object) -> bool:
+    """Whether a model id names the suspended Router auto route.
+
+    The reserved prefix is the whole namespace, so no spelling of the
+    suspended route can reach a provider. The check is syntax only: B14 stays
+    the authority for whether an explicit model is actually registered.
+    """
+    return isinstance(model, str) and model.strip().lower().startswith(
+        SUSPENDED_AUTO_MODEL_PREFIX
+    )
 
 
 class ExecutionRunner(Protocol):
@@ -120,6 +142,15 @@ def _model_policy(value: Any) -> dict[str, Any]:
         raise ServiceContractError(
             "invalid_request",
             "agent.model_policy.model must be an explicit non-empty model route.",
+        )
+    if is_suspended_auto_model(model):
+        # The suspended Router auto route is refused here, before the request
+        # reaches any runtime or provider. The account's own validated model
+        # is the only route that may be dispatched.
+        raise ServiceContractError(
+            "auto_routing_deferred",
+            SUSPENDED_AUTO_MODEL_MESSAGE,
+            status_code=422,
         )
     return out
 
@@ -351,7 +382,10 @@ class EngineService:
         if not isinstance(body, (bytes, bytearray, memoryview)):
             return _service_error("invalid_request", "Request body is invalid.", status_code=400)
         raw = bytes(body)
-        if len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES:
+        if (
+            MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is not None
+            and len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+        ):
             return _service_error("request_too_large", "Request body exceeds the internal Engine safety limit.", status_code=413)
         try:
             payload = json.loads(raw.decode("utf-8"))

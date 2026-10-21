@@ -15,10 +15,11 @@ def test_attachment_capabilities_are_single_browser_truth_source():
     assert "window.PadiemAttachmentCapabilities" in CAPABILITIES_JS
     for label in ["JPEG", "PNG", "WebP", "TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
         assert f'label: "{label}"' in CAPABILITIES_JS
-    assert "imageBytes: 4 * 1024 * 1024" in CAPABILITIES_JS
+    assert "imageBytes" not in CAPABILITIES_JS
     assert "textBytes: 96 * 1024" in CAPABILITIES_JS
     assert "textChars: 40000" in CAPABILITIES_JS
-    assert "binaryBytes: 2 * 1024 * 1024" in CAPABILITIES_JS
+    assert "binaryBytes" not in CAPABILITIES_JS
+    assert "1 GiB" not in CAPABILITIES_JS
     assert "idleNote:" in CAPABILITIES_JS
     assert "fileButtonTitle:" in CAPABILITIES_JS
     assert "unsupportedFormat:" in CAPABILITIES_JS
@@ -36,7 +37,9 @@ def test_composer_does_not_hard_code_format_truth_in_html():
     assert '<input id="attachmentFileInput" type="file" hidden />' in INDEX_HTML
     assert 'id="documentFormatsToggle"' in INDEX_HTML
     assert 'id="documentFormatsPanel"' in INDEX_HTML
-    assert 'id="attachmentButton" title="파일 첨부"' in INDEX_HTML
+    assert 'id="attachmentButton" data-padiem-tooltip="파일 첨부" aria-label="파일 첨부"' in INDEX_HTML
+    assert 'id="attachmentButton" title=' not in INDEX_HTML
+    assert '<script src="./shared-tooltip.js"></script>' in INDEX_HTML
     assert 'id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.' in INDEX_HTML
 
 
@@ -45,7 +48,8 @@ def test_locale_derives_attachment_copy_without_clobbering_runtime_state():
     assert "capabilityCopy.documentFormats" in LOCALE_JS
     assert 'formats.split("·").join(" · \\u200b")' in LOCALE_JS
     assert "attachmentInput.accept = attachmentCapabilities.accept" in LOCALE_JS
-    assert "attachmentButton.title = capabilityCopy.fileButtonTitle" in LOCALE_JS
+    assert "window.PadiemSharedTooltip?.label?.(attachmentButton, capabilityCopy.fileButtonTitle)" in LOCALE_JS
+    assert "attachmentButton.title = capabilityCopy.fileButtonTitle" not in LOCALE_JS
     assert '"document-copy"' not in LOCALE_JS
     assert '"note"' not in LOCALE_JS
     assert '"#runtimeNote"' not in LOCALE_JS
@@ -55,7 +59,7 @@ def test_locale_derives_attachment_copy_without_clobbering_runtime_state():
 
 def test_app_uses_capabilities_for_limits_formats_idle_copy_and_errors():
     assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in APP_JS
-    assert "const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;" in APP_JS
+    assert "attachmentCapabilities.limits.imageBytes" not in APP_JS
     assert "const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;" in APP_JS
     assert "const MAX_DOCUMENT_CHARS = attachmentCapabilities.limits.textChars;" in APP_JS
     assert "attachmentCapabilities.images.flatMap" in APP_JS
@@ -64,18 +68,18 @@ def test_app_uses_capabilities_for_limits_formats_idle_copy_and_errors():
     assert "throw new Error(attachmentCopy().unsupportedFormat)" in APP_JS
     assert "throw new Error(attachmentCopy().textTooLarge)" in APP_JS
     assert "throw new Error(attachmentCopy().textTooLong)" in APP_JS
-    assert "throw new Error(attachmentCopy().imageTooLarge)" in APP_JS
+    assert "imageTooLarge" not in APP_JS
     assert 'window.addEventListener("padiem:localechange"' in APP_JS
     assert "setNote(idleNote());" in APP_JS
     assert "DEFAULT_NOTE" not in APP_JS
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in APP_JS
 
 
-def test_binary_reader_derives_formats_and_limit_from_capabilities():
+def test_binary_reader_derives_formats_from_capabilities():
     assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in BINARY_JS
-    assert "attachmentCapabilities.limits.binaryBytes" in BINARY_JS
+    assert "limits.binaryBytes" not in BINARY_JS
     assert "attachmentCapabilities.binaryDocuments.forEach" in BINARY_JS
-    assert "attachmentCapabilities.copy(document.documentElement.lang).binaryTooLarge" in BINARY_JS
+    assert "binaryTooLarge" not in BINARY_JS
     assert "2 * 1024 * 1024" not in BINARY_JS
 
 
@@ -92,7 +96,7 @@ def test_readme_matches_current_ephemeral_composer_contract():
     assert "JPEG / PNG / WebP" in README
     assert "TXT / Markdown / CSV / JSON" in README
     assert "PDF / DOCX / PPTX / XLSX" in README
-    assert "raw binary payload up to 2 MiB" in README
+    assert "raw binary payload with no PADIEM byte total" in README
     assert "existing completed `/api/chat` attachment contract" in README
     assert "frontend does not reimplement document extraction" in README
     assert "PDF, DOCX, PPTX and XLSX extraction are **not supported yet**" not in README

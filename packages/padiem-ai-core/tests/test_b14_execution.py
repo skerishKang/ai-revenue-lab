@@ -66,7 +66,6 @@ def request_fixture() -> B14ChatRequest:
             optimize_for="korean",
             allow_external_fallback=True,
             provider_order=(),
-            max_attempts=3,
         ),
     )
 
@@ -132,7 +131,6 @@ def test_routing_options_serialize_current_b14_contract_exactly() -> None:
         optimize_for="KOREAN",
         allow_external_fallback=False,
         provider_order=["provider-a", "provider-b"],
-        max_attempts=2,
     )
     assert options.to_dict() == {
         "task_type": "general",
@@ -140,8 +138,9 @@ def test_routing_options_serialize_current_b14_contract_exactly() -> None:
         "optimize_for": "korean",
         "allow_external_fallback": False,
         "provider_order": ["provider-a", "provider-b"],
-        "max_attempts": 2,
     }
+    # #4317: there is no attempt count in the wire contract any more.
+    assert "max_attempts" not in options.to_dict()
 
 
 @pytest.mark.parametrize(
@@ -149,9 +148,6 @@ def test_routing_options_serialize_current_b14_contract_exactly() -> None:
     [
         ({"task_type": "medical"}, "task_type"),
         ({"optimize_for": "best"}, "optimize_for"),
-        ({"max_attempts": 0}, "max_attempts"),
-        ({"max_attempts": 6}, "max_attempts"),
-        ({"max_attempts": True}, "max_attempts"),
         ({"allow_external_fallback": "yes"}, "allow_external_fallback"),
         ({"required_capabilities": ["free", "free"]}, "duplicates"),
         ({"provider_order": "provider-a"}, "sequence"),
@@ -160,6 +156,18 @@ def test_routing_options_serialize_current_b14_contract_exactly() -> None:
 def test_routing_options_fail_closed_before_network(kwargs, match: str) -> None:
     with pytest.raises(ValueError, match=match):
         B14RoutingOptions(**kwargs)
+
+
+def test_routing_options_offer_no_attempt_budget_at_all() -> None:
+    """#4317: the Core no longer creates or validates an attempt count.
+
+    The number of candidates one dispatch may try is the number the
+    declared product grade allows, and B14 owns that list. A number
+    here could only narrow it, so the field is gone.
+    """
+    with pytest.raises(TypeError):
+        B14RoutingOptions(max_attempts=6)
+    assert "max_attempts" not in B14RoutingOptions().to_dict()
 
 
 def test_request_requires_an_explicit_model() -> None:
@@ -258,7 +266,6 @@ def test_client_uses_exact_endpoint_payload_and_no_provider_credentials() -> Non
             "optimize_for": "korean",
             "allow_external_fallback": True,
             "provider_order": [],
-            "max_attempts": 3,
         },
     }
     assert "authorization" not in seen["headers"]

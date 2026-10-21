@@ -45,7 +45,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
-MAX_B66_TEMPLATE_SOURCE_BYTES = 10 * 1024 * 1024
+# #4379: a template source carries no PADIEM byte total. The platform request
+# limit bounds reception and the D1 schema CHECK bounds custody.
 MAX_TEMPLATE_SOURCE_LIST = 50
 MAX_ORIGINAL_FILENAME_CHARS = 200
 # OOXML containers (XLSX/DOCX) are ZIP packages, not bare ZIP magic. These caps
@@ -246,7 +247,7 @@ def _payload(value: object, *, media_type: str) -> bytes:
     if not isinstance(value, (bytes, bytearray, memoryview)):
         raise B66TemplateSourceError("template source body must be bytes")
     body = bytes(value)
-    if not body or len(body) > MAX_B66_TEMPLATE_SOURCE_BYTES:
+    if not body:
         raise B66TemplateSourceError("template source body size is invalid")
     if not _magic_matches(media_type, body):
         raise B66TemplateSourceError("template source media type does not match bytes")
@@ -293,7 +294,6 @@ def _metadata(row: dict[str, Any]) -> B66TemplateSourceMetadata:
         or not meta.original_filename
         or len(meta.original_filename) > MAX_ORIGINAL_FILENAME_CHARS
         or meta.byte_length < 1
-        or meta.byte_length > MAX_B66_TEMPLATE_SOURCE_BYTES
         or not _SHA256_RE.fullmatch(meta.sha256)
         or meta.status != "uploaded"
     ):
@@ -522,16 +522,12 @@ class B66TemplateSourceStore:
                 obj = await obj
             if obj is None:
                 return None
-            # Pre-read size guard: refuse before materializing when the stored
-            # object reports a size that disagrees with the D1-recorded
-            # byte_length or exceeds the custody ceiling. The real integrity
-            # authority stays the SHA-256 check below; this only prevents
-            # reading an oversized object into memory.
+            # Pre-read guard: refuse before materializing when the stored object
+            # reports a size that disagrees with the D1-recorded byte_length. The
+            # real integrity authority stays the SHA-256 check below; this only
+            # prevents reading an object that contradicts its own metadata.
             reported = _r2_object_size(obj)
-            if reported is not None and (
-                reported != metadata.byte_length
-                or reported > MAX_B66_TEMPLATE_SOURCE_BYTES
-            ):
+            if reported is not None and reported != metadata.byte_length:
                 raise B66TemplateSourceError("template source integrity check failed")
             payload = await _read_r2_bytes(obj)
         except B66TemplateSourceError:
@@ -553,7 +549,6 @@ __all__ = [
     "B66TemplateSourceOrphanError",
     "B66TemplateSourceStore",
     "D1B66TemplateSourceMetadataStore",
-    "MAX_B66_TEMPLATE_SOURCE_BYTES",
     "MAX_OOXML_ENTRIES",
     "MAX_TEMPLATE_SOURCE_LIST",
     "TEMPLATE_SOURCE_MEDIA_TYPES",

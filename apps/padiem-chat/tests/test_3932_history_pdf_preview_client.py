@@ -42,7 +42,7 @@ ok(!P.validArtifact(legacy),"normal result needs a true byte length");
 ok(P.validHistoricalArtifact(legacy),"historical owner-receipt can request a check");
 ok(!P.validHistoricalArtifact({...legacy,filename:"output.xlsx"}),"non PDF rejected");
 ok(!P.validHistoricalArtifact({...legacy,document_id:"../foreign"}),"ID must be canonical");
-ok(!P.validHistoricalArtifact({...legacy,byte_length:11*1024*1024}),"oversize known blocked");
+ ok(!P.validHistoricalArtifact({...legacy,byte_length:0}),"empty known length blocked");
 const app=read("app.js");
 const start=app.indexOf("  function renderClawRunCard(run) {");
 const end=app.indexOf("\n  // Unguarded fetch:",start);

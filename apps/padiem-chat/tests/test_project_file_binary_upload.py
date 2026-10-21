@@ -4,18 +4,23 @@ import io
 from io import BytesIO
 import json
 import zipfile
-from base64 import b64encode
+from base64 import b64encode, b64decode
+from types import SimpleNamespace
 
 import httpx
 import pytest
+from unittest import mock
 from pypdf import PdfWriter, PdfReader
+from unittest import mock
 
 from app.auth import SESSION_COOKIE, create_session_token
+from app import project_file_routes  # noqa: E402
 from app.binary_documents import parse_binary_document_item, BinaryDocumentValidationError
 from app.config import Settings
 from app.documents import DocumentValidationError
 from app.history import ProjectProfile, UserProfile
 from app.main import create_app
+from app import project_file_routes
 from app.project_files import (
     BINARY_PROJECT_FILE_MEDIA,
     D1ProjectFileStore,
@@ -172,7 +177,29 @@ def _make_pdf_base64(*, text: str = "Positive PDF Text") -> str:
     return b64encode(pdf.getvalue()).decode()
 
 
+# The project-file route still bounds the receive spool, which is a resource
+# guard rather than a composer data total. The spool gate is exercised with a
+# patched small ceiling below instead of a gigabyte of test bytes.
 MAX_BINARY_PROJECT_FILE_BASE64_BYTES = 2 * 1024 * 1024
+
+
+class _MemoryR2:
+    def __init__(self):
+        self.objects = {}
+
+    async def put(self, key, body, **kwargs):
+        self.objects[key] = bytes(body)
+
+    async def delete(self, key):
+        self.objects.pop(key, None)
+
+
+async def post_binary(client, url, *, name, media_type, base64):
+    return await client.post(url, content=b64decode(base64), headers={
+        "Content-Type": "application/octet-stream",
+        "X-Padiem-Filename": __import__("urllib.parse", fromlist=["quote"]).quote(name, safe=""),
+        "X-Padiem-Media-Type": media_type,
+    })
 
 
 async def client_with_session(app, user: UserProfile):
@@ -183,6 +210,7 @@ async def client_with_session(app, user: UserProfile):
         google_client_secret="unit-test-secret",
     )
     app.state.settings = cfg
+    app.state.workspace_document_store = SimpleNamespace(r2_bucket=_MemoryR2())
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test")
     client.cookies.set(SESSION_COOKIE, create_session_token(cfg, user.id), domain="chat.example.test", path="/")
     return client
@@ -247,9 +275,7 @@ async def test_pdf_upload_rejected_when_no_extractable_text():
     app = create_app(cfg, history_store=history, project_file_store=store)
     client = await client_with_session(app, user_profile(owner.id))
     try:
-        response = await client.post(f"/api/projects/{project.id}/files", json={
-            "name": "빈보고서.pdf", "media_type": PDF_MEDIA, "base64": _make_empty_pdf_base64()
-        })
+        response = await post_binary(client, f"/api/projects/{project.id}/files", name="빈보고서.pdf", media_type=PDF_MEDIA, base64=_make_empty_pdf_base64())
         assert response.status_code == 422
         assert "PDF" in response.json()["error"]["message"]
     finally:
@@ -267,9 +293,7 @@ async def test_positive_pdf_upload_signed_in_owner_201():
     app = create_app(cfg, history_store=history, project_file_store=store)
     client = await client_with_session(app, user_profile(owner.id))
     try:
-        response = await client.post(f"/api/projects/{project.id}/files", json={
-            "name": "보고서.pdf", "media_type": PDF_MEDIA, "base64": _make_pdf_base64()
-        })
+        response = await post_binary(client, f"/api/projects/{project.id}/files", name="보고서.pdf", media_type=PDF_MEDIA, base64=_make_pdf_base64())
         assert response.status_code == 201, response.json()
         data = response.json()["file"]
         assert data["media_type"] == "extracted/pdf"
@@ -294,9 +318,7 @@ async def test_docx_upload_extracts_text_persisted_as_extracted_docx():
     app = create_app(cfg, history_store=history, project_file_store=store)
     client = await client_with_session(app, user_profile(owner.id))
     try:
-        response = await client.post(f"/api/projects/{project.id}/files", json={
-            "name": "문서.docx", "media_type": DOCX_MEDIA, "base64": _make_docx_base64()
-        })
+        response = await post_binary(client, f"/api/projects/{project.id}/files", name="문서.docx", media_type=DOCX_MEDIA, base64=_make_docx_base64())
         assert response.status_code == 201, response.json()
         data = response.json()["file"]
         assert data["media_type"] == "extracted/docx"
@@ -313,9 +335,7 @@ async def test_unauthenticated_upload_denied():
     app = create_app(settings())
     client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test")
     try:
-        response = await client.post("/api/projects/proj_test/files", json={
-            "name": "보고서.pdf", "media_type": PDF_MEDIA, "base64": _make_pdf_base64()
-        })
+        response = await post_binary(client, "/api/projects/proj_test/files", name="보고서.pdf", media_type=PDF_MEDIA, base64=_make_pdf_base64())
         assert response.status_code in (401, 403, 503)
     finally:
         await client.aclose()
@@ -332,9 +352,7 @@ async def test_cross_owner_project_non_disclosing_404():
     app = create_app(cfg, history_store=history, project_file_store=store)
     other_client = await client_with_session(app, user_profile(other.id))
     try:
-        response = await other_client.post(f"/api/projects/{project.id}/files", json={
-            "name": "보고서.pdf", "media_type": PDF_MEDIA, "base64": _make_pdf_base64()
-        })
+        response = await post_binary(other_client, f"/api/projects/{project.id}/files", name="보고서.pdf", media_type=PDF_MEDIA, base64=_make_pdf_base64())
         assert response.status_code == 404
     finally:
         await other_client.aclose()
@@ -373,9 +391,7 @@ async def test_projection_contains_no_base64_secrets():
     app = create_app(cfg, history_store=history, project_file_store=store)
     client = await client_with_session(app, user_profile(owner.id))
     try:
-        response = await client.post(f"/api/projects/{project.id}/files", json={
-            "name": "문서.docx", "media_type": DOCX_MEDIA, "base64": _make_docx_base64()
-        })
+        response = await post_binary(client, f"/api/projects/{project.id}/files", name="문서.docx", media_type=DOCX_MEDIA, base64=_make_docx_base64())
         assert response.status_code == 201
         payload = json.dumps(response.json(), ensure_ascii=False)
         assert "base64" not in payload
@@ -384,8 +400,8 @@ async def test_projection_contains_no_base64_secrets():
 
 
 @pytest.mark.asyncio
-async def test_oversized_route_level_413():
-    """CENTRAL FIX B: route-level actual HTTP request, verified 413."""
+async def test_oversized_route_level_is_not_refused_for_its_size():
+    """#4379: the route carries no PADIEM byte total for the upload."""
     store = MemoryProjectFileStore()
     history = MemoryProjectStore()
     owner = await history.add_user("owner-oversize")
@@ -394,10 +410,11 @@ async def test_oversized_route_level_413():
     app = create_app(cfg, history_store=history, project_file_store=store)
     client = await client_with_session(app, user_profile(owner.id))
     try:
-        oversized = b64encode(b"x" * (MAX_BINARY_PROJECT_FILE_BASE64_BYTES + 1)).decode()
-        response = await client.post(f"/api/projects/{project.id}/files", json={
-            "name": "big.pdf", "media_type": PDF_MEDIA, "base64": oversized
-        })
+        # The receive spool bound is proven with a patched small ceiling
+        # rather than a gigabyte of test bytes.
+        with mock.patch.object(project_file_routes, "MAX_BINARY_DOCUMENT_BYTES", 1024):
+            oversized = b64encode(b"x" * 1025).decode()
+            response = await post_binary(client, f"/api/projects/{project.id}/files", name="big.pdf", media_type=PDF_MEDIA, base64=oversized)
         assert response.status_code == 413, f"expected 413 got {response.status_code}: {response.json()}"
     finally:
         await client.aclose()

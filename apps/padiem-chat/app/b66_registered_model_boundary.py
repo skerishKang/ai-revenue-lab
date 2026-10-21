@@ -20,7 +20,10 @@ from .b66_reasoning_level import (
     reasoning_transport_available,
     verified_reasoning_levels_for_model,
 )
-from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
+from padiem_control_plane.product_tier_routes import (
+    FREE_PRIMARY_B14_MODEL_ID,
+    is_free_execution_candidate,
+)
 
 
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}\Z")
@@ -129,6 +132,10 @@ def validate_authorized_route(
         raise B66ModelRouteError("selection_ambiguous")
     if requirements.selected_model_id is not None and selection.model_id != requirements.selected_model_id:
         raise B66ModelRouteError("model_not_authorized")
+    # #2505: an excluded free candidate is never an execution candidate, so no
+    # resolver answer can make one eligible for a customer execution.
+    if is_free_execution_candidate(selection.model_id):
+        raise B66ModelRouteError("model_not_authorized")
     if selection.registered is not True:
         raise B66ModelRouteError("model_not_registered")
     if selection.enabled is not True:
@@ -182,6 +189,9 @@ class B14QuoteExactModelExecutor:
             replace(requirements, selected_model_id=None) != B66QuoteTaskRequirements()
             or route.model_id in _FORBIDDEN_MODEL_IDS
             or route.model_id != requirements.selected_model_id
+            # #2505: the last B66-side gate before the provider call refuses an
+            # excluded free candidate.
+            or is_free_execution_candidate(route.model_id)
         ):
             raise B66ModelRouteError("model_identity_invalid")
         tier_kw = {"product_tier": product_tier} if product_tier is not None else {}
@@ -315,6 +325,12 @@ class B66RegisteredModelCompletion:
         if not _safe_id(model_id) or model_id in _FORBIDDEN_MODEL_IDS or model_id.startswith("padiem-profile/"):
             await self._refund_before_dispatch()
             raise B66ModelRouteError("selection_unconfigured")
+        # #2505: an excluded free candidate is refused here, before any B14
+        # read or provider dispatch, so a customer cannot force one by sending
+        # its exact model id.
+        if is_free_execution_candidate(model_id):
+            await self._refund_before_dispatch()
+            raise B66ModelRouteError("model_not_authorized")
         # #3906: an explicit reasoning level is normalized HERE, at the real
         # adapter boundary, and never forwarded as an unvalidated keyword.
         # `default` and an absent value mean provider-native omission, so the
@@ -369,7 +385,11 @@ class B66RegisteredModelCompletion:
             fallback = TIER_FALLBACK_B14_MODELS[product_tier]
         acceptable = {selected.model_id}
         if fallback is not None:
-            acceptable.add(fallback)
+            # The grade roster is the owner-pinned recovery chain: every entry is
+            # one allowed candidate model id. Adding the roster itself as a
+            # single value would make every genuine B14 grade failover look
+            # like a route substitution.
+            acceptable.update(fallback)
         if not isinstance(route, dict) or (
             route.get("model") not in acceptable
             or route.get("mode") != "manual"

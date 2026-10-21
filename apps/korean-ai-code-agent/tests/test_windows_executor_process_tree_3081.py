@@ -314,22 +314,24 @@ class WindowsProcessTreeTerminationTests(unittest.TestCase):
             self.assertFalse(rendered["admin_elevation"])
             self.assertEqual(rendered["environment_inheritance"], "bounded_allowlist")
 
-    def test_bounded_output_and_timeout_distinction_survive_job_containment(self):
+    def test_full_output_and_timeout_distinction_survive_job_containment(self):
         with tempfile.TemporaryDirectory() as root_dir:
             runtime = _runtime(root_dir)
-            truncated = runtime.execute_with_receipt(
+            completed = runtime.execute_with_receipt(
                 _request(
                     str(Path(sys.executable).resolve()),
                     "-c",
                     "print('x' * 20000)",
                     timeout_seconds=60,
-                    request_id="bounded_tree",
+                    request_id="full_output_tree",
                 ),
                 now=datetime.now(timezone.utc),
             )
-            self.assertEqual(truncated.termination, WindowsExecutionTermination.EXITED)
-            self.assertEqual(len(truncated.result.stdout), 8192)
-            self.assertTrue(truncated.result.stdout_truncated)
+            self.assertEqual(completed.termination, WindowsExecutionTermination.EXITED)
+            # #4379: the executor keeps the real output and no longer claims
+            # a truncation.
+            self.assertEqual(len(completed.result.stdout), 20001)
+            self.assertFalse(hasattr(completed.result, "stdout_truncated"))
 
             timed_out = runtime.execute_with_receipt(
                 _request(

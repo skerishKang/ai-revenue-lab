@@ -45,7 +45,7 @@ def _optional_ref(value: str | None, field_name: str) -> str | None:
 def _bounded_text(value: str, field_name: str, limit: int) -> str:
     if not isinstance(value, str):
         raise ContractError(f"{field_name} must be text")
-    normalized = redact_secrets(value.strip())
+    normalized = value.strip()
     if len(normalized) > limit:
         raise ContractError(f"{field_name} exceeds {limit} characters")
     return normalized
@@ -325,7 +325,7 @@ class TelegramInboundUpdate:
         if self.callback_data is not None:
             if not isinstance(self.callback_data, str) or len(self.callback_data.encode("utf-8")) > TELEGRAM_CALLBACK_DATA_MAX_BYTES:
                 raise ContractError("Telegram callback_data exceeds 64 bytes")
-            object.__setattr__(self, "callback_data", redact_secrets(self.callback_data))
+            object.__setattr__(self, "callback_data", self.callback_data)
         if self.update_type == "callback_query" and (self.callback_query_ref is None or self.callback_data is None):
             raise ContractError("callback_query requires callback query ref and callback_data")
         if len(self.files) > MAX_TELEGRAM_FILES_PER_UPDATE or any(not isinstance(f, TelegramFileManifest) for f in self.files):

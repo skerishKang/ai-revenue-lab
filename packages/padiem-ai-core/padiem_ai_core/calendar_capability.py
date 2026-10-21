@@ -68,7 +68,9 @@ GOOGLE_CALENDAR_READONLY_OAUTH_SCOPE = "https://www.googleapis.com/auth/calendar
 GOOGLE_CALENDAR_API_HOST = "www.googleapis.com"
 GOOGLE_CALENDAR_BASE_URL = "https://www.googleapis.com/calendar/v3"
 
-REQUEST_TIMEOUT_SECONDS = 30
+# #4379: a provider request carries no PADIEM client deadline. None
+# means the provider's own timeout applies.
+REQUEST_TIMEOUT_SECONDS: int | None = None
 
 # Core-side output bounds (analogous to the Gmail/Drive/Telegram/Slack promotions).
 MAX_PROVIDER_METADATA_BYTES = 128_000
@@ -132,7 +134,7 @@ class CalendarReadPort(Protocol):
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
         ...
@@ -156,7 +158,6 @@ def calendar_read_tool_specs() -> tuple[ToolSpec, ...]:
             approval_policy=ApprovalPolicy.NOT_REQUIRED,
             input_schema={"type": "object", "properties": {}, "additionalProperties": False},
             auth_scope=(CALENDAR_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=CALENDAR_GET_CALENDAR_TOOL_ID,
@@ -181,7 +182,6 @@ def calendar_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(CALENDAR_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=CALENDAR_LIST_EVENTS_TOOL_ID,
@@ -222,7 +222,6 @@ def calendar_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(CALENDAR_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
         ToolSpec(
             id=CALENDAR_GET_EVENT_TOOL_ID,
@@ -251,7 +250,6 @@ def calendar_read_tool_specs() -> tuple[ToolSpec, ...]:
                 "additionalProperties": False,
             },
             auth_scope=(CALENDAR_READONLY_AUTH_SCOPE,),
-            timeout_seconds=30.0,
         ),
     )
 

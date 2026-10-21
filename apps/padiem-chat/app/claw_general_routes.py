@@ -38,8 +38,8 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from .member_grade_access import selected_grade_denial, selected_admin_denial
-from .model_policy import ADMIN_B14_MODEL_ID
+from .member_grade_access import claw_execution_tier_denial
+from .model_policy import ADMIN_B14_MODEL_ID, resolve_claw_execution_grade
 from types import SimpleNamespace
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_control_plane.product_tier_routes import (
@@ -79,7 +79,6 @@ from .claw_first_turn_authority import (
 from .claw_live_canary import live_stream_allowed
 from .claw_general_run_history import project_completed_general_run
 from .claw_routes import (
-    _BROWSER_TIER_MAP,
     _NO_STORE_HEADERS,
     _error,
     _safe_composition_diagnostic,
@@ -93,30 +92,20 @@ from .history import HISTORY_PREVIEW_SUFFIX, HistoryContextIncomplete, validate_
 
 # This is the existing Chat HTTP resource envelope, not a provider/model cap.
 # The separate P01 Engine ingress guard remains in force until #4383 is resolved.
-MAX_CLAW_GENERAL_BODY_BYTES = 6_000_000
+# #4379: the Claw request body carries no PADIEM byte total. The reader
+# stays incremental.
+MAX_CLAW_GENERAL_BODY_BYTES: int | None = None
 # Kept importable for older clients; None means no Claw-general pilot text cap.
 MAX_CLAW_GENERAL_MESSAGE_CHARS: int | None = None
 MAX_CLAW_GENERAL_MESSAGES: int | None = None
-# Model capability is not constrained by this number: the canonical Engine
-# still enforces a finite 6MB serialized HTTP request memory-safety envelope.
-# Reserve transport overhead for agent/route metadata; never silently truncate.
-P01_ENGINE_REQUEST_ENVELOPE_BYTES = 5_500_000
+# #4379: the owned prior context is not cut to a PADIEM transport envelope.
+# The Engine applies its own request contract; nothing is silently truncated.
+P01_ENGINE_REQUEST_ENVELOPE_BYTES: int | None = None
 CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
 CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
 # Same canonical device identity grammar the Broker device directory and the
 # saved PC preference expose, including the composed Mesh node identity.
-
-
-def _combine_system_context(*parts: str | None) -> str | None:
-    """Join optional trusted context blocks in a fixed order.
-
-    Each part is server-composed; a browser-supplied string never reaches this
-    helper. Empty/absent blocks disappear instead of emitting a blank section.
-    """
-    blocks = [part for part in parts if isinstance(part, str) and part]
-    return "\n\n".join(blocks) if blocks else None
-
 
 
 def _combine_system_context(*parts: str | None) -> str | None:
@@ -1101,12 +1090,6 @@ async def _claw_custom_direct(
             "conversation_authority_unavailable",
             "대화 문맥을 안전하게 확인할 수 없습니다.",
         )
-    if len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES:
-        return _error(
-            413,
-            "engine_request_envelope_exceeded",
-            "엔진 전송 안전 한도를 초과했습니다. 더 짧은 대화에서 다시 요청해 주세요.",
-        )
     try:
         result = await complete_owner_custom(
             request.app.state,
@@ -1294,20 +1277,21 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         )
 
     raw_tier = data.get("tier", "free")
-    if not isinstance(raw_tier, str):
+    # #5223: the grade is resolved by the ONE shared authority, exactly like the
+    # manual-execution lane. A lane with its own copy of the grade map refused
+    # a valid administrator with ``422 invalid_tier`` (#5229).
+    grade = resolve_claw_execution_grade(raw_tier)
+    if grade is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-    requested_tier = raw_tier.strip().lower()
-    admin_lane = requested_tier == "admin"
+    requested_tier = grade.tier_id
+    admin_lane = grade.admin_lane
     # P01 currently transports only member-tier enums. The administrator
     # chooses the separately authorized exact model, never a browser-provided
     # tier/model grant. PLUS here is solely the existing P01 transport profile.
-    product_tier = ProductTierLabel.PLUS if admin_lane else _BROWSER_TIER_MAP.get(requested_tier)
-    if product_tier is None:
-        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    product_tier = grade.product_tier
     if "tier" in data:
         user_id = current_user_id(request) if auth_ready(request) else None
-        tier_denial = (await selected_admin_denial(request, user_id)
-                       if admin_lane else await selected_grade_denial(request, user_id, requested_tier))
+        tier_denial = await claw_execution_tier_denial(request, user_id, grade)
         if tier_denial is not None:
             return tier_denial
     # #4428: the central per-grade route is resolved SERVER-SIDE before any
@@ -1384,10 +1368,6 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # Explicit transport/resource failure before quota; do not silently
     # truncate the owned prior context or present an Engine ingress guard as a
     # provider model-token ceiling. Full serialized Engine checks stay active.
-    if len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES:
-        return _error(413, "engine_request_envelope_exceeded",
-                      "엔진 전송 안전 한도를 초과했습니다. 더 짧은 대화에서 다시 요청해 주세요.")
-
     # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
     # usage gate and before any P01/Engine dispatch, so a failed revalidation
     # never consumes quota and never reaches a provider.

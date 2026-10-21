@@ -400,7 +400,8 @@ class TelegramArtifactDeliveryAdapterTests(unittest.TestCase):
         self.assertEqual(call["filename"], "report.pdf")
         self.assertEqual(call["mime_type"], "application/pdf")
         self.assertEqual(call["token"], PROVIDER_TOKEN)
-        self.assertEqual(call["timeout_seconds"], tad._MAX_DOCUMENT_SEND_TIMEOUT_SECONDS)
+        # #4379: a document send carries no PADIEM client deadline.
+        self.assertIsNone(call["timeout_seconds"])
         self.assertEqual(trusted_binding.token_calls, 1)
         self.assertEqual(trusted_binding.chat_id_calls, 1)
 

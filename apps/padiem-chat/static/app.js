@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   "use strict";
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
@@ -27,6 +27,16 @@
   const settingsButton = document.getElementById("settingsButton");
   const settingsDialog = document.getElementById("settingsDialog");
   const settingsCloseButton = document.getElementById("settingsCloseButton");
+  const accountSettingsSection = document.getElementById("accountSettingsSection");
+  const passwordChangeOpen = document.getElementById("passwordChangeOpen");
+  const passwordChangeDialog = document.getElementById("passwordChangeDialog");
+  const passwordChangeDialogClose = document.getElementById("passwordChangeDialogClose");
+  const passwordChangeForm = document.getElementById("passwordChangeForm");
+  const passwordChangeCurrent = document.getElementById("passwordChangeCurrent");
+  const passwordChangeNew = document.getElementById("passwordChangeNew");
+  const passwordChangeConfirm = document.getElementById("passwordChangeConfirm");
+  const passwordChangeError = document.getElementById("passwordChangeError");
+  const passwordChangeSubmit = document.getElementById("passwordChangeSubmit");
   const attachmentFileInput = document.getElementById("attachmentFileInput");
   const attachmentButton = document.getElementById("attachmentButton");
   const attachmentTray = document.getElementById("attachmentTray");
@@ -45,6 +55,8 @@
   const androidHandoffCode = document.getElementById("androidHandoffCode");
   const androidHandoffNote = document.getElementById("androidHandoffNote");
   const androidHandoffOpen = document.getElementById("androidHandoffOpen");
+  const androidHandoffCopy = document.getElementById("androidHandoffCopy");
+  const androidHandoffCopied = document.getElementById("androidHandoffCopied");
   const androidHandoffCancel = document.getElementById("androidHandoffCancel");
   const androidHandoffError = document.getElementById("androidHandoffError");
   const authDivider = document.getElementById("authDivider");
@@ -55,12 +67,33 @@
   const passwordLoginSubmit = document.getElementById("passwordLoginSubmit");
   const passwordRegisterSection = document.getElementById("passwordRegisterSection");
   const passwordRegisterForm = document.getElementById("passwordRegisterForm");
-  const passwordRegisterUsername = document.getElementById("passwordRegisterUsername");
   const passwordRegisterEmail = document.getElementById("passwordRegisterEmail");
   const passwordRegisterName = document.getElementById("passwordRegisterName");
   const passwordRegisterPassword = document.getElementById("passwordRegisterPassword");
   const passwordRegisterError = document.getElementById("passwordRegisterError");
   const passwordRegisterSubmit = document.getElementById("passwordRegisterSubmit");
+  // #5481: the lost-password entry. The forgot-password link opens the reset
+  // request view, and the one-time link the server mails opens the reset
+  // confirm view directly.
+  const passwordResetOpen = document.getElementById("passwordResetOpen");
+  const passwordResetPanel = document.getElementById("passwordResetPanel");
+  const passwordResetRequestView = document.getElementById("passwordResetRequestView");
+  const passwordResetConfirmView = document.getElementById("passwordResetConfirmView");
+  const passwordResetRequestForm = document.getElementById("passwordResetRequestForm");
+  const passwordResetEmail = document.getElementById("passwordResetEmail");
+  const passwordResetRequestError = document.getElementById("passwordResetRequestError");
+  const passwordResetRequestStatus = document.getElementById("passwordResetRequestStatus");
+  const passwordResetRequestSubmit = document.getElementById("passwordResetRequestSubmit");
+  const passwordResetConfirmForm = document.getElementById("passwordResetConfirmForm");
+  const passwordResetNew = document.getElementById("passwordResetNew");
+  const passwordResetConfirm = document.getElementById("passwordResetConfirm");
+  const passwordResetConfirmError = document.getElementById("passwordResetConfirmError");
+  const passwordResetConfirmStatus = document.getElementById("passwordResetConfirmStatus");
+  const passwordResetConfirmSubmit = document.getElementById("passwordResetConfirmSubmit");
+  const passwordResetBack = document.getElementById("passwordResetBack");
+  const passwordResetConfirmBack = document.getElementById("passwordResetConfirmBack");
+  let passwordResetToken = "";
+  let authDialogView = "login";
   const accountName = document.getElementById("accountName");
   const accountAvatar = document.getElementById("accountAvatar");
   const accountContainer = document.querySelector(".sidebar-account");
@@ -163,7 +196,6 @@
     [".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
   ]);
 
-  const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;
   const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;
   const MAX_DOCUMENT_CHARS = attachmentCapabilities.limits.textChars;
   const ALLOWED_IMAGE_TYPES = new Set(attachmentCapabilities.images.flatMap((format) => format.mediaTypes));
@@ -508,7 +540,12 @@
     window.PadiemSharedTooltip?.bind?.(fragment);
     messageList.appendChild(fragment);
   }
-  function addAssistantShell(label) {
+  // The runtime status chip has one owner (message-lifecycle.js). A finished
+  // answer releases the "answer preparing" chip, and a real status (a Claw P01
+  // stage, a failure) is never removed by accident. The calls go through the
+  // global because a single-function harness evaluates this file's function in
+  // a bare scope.
+  function addAssistantShell(label, runtimeState) {
     const fragment = document.getElementById("assistantMessageTemplate").content.cloneNode(true);
     const article = fragment.querySelector(".assistant-message");
     // #3931: identify the product whose conversation is currently rendered.
@@ -516,6 +553,7 @@
     const productLabel = article.querySelector("[data-assistant-product]");
     if (productLabel) productLabel.textContent = shell.dataset.state === "claw" ? "Padiem Claw" : "Padiem Chat";
     article.querySelector("[data-runtime-label]").textContent = label;
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, runtimeState || "preparing");
     messageList.appendChild(fragment);
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
     return article;
@@ -530,7 +568,7 @@
     content.appendChild(typing);
   }
   function renderStoredAssistant(text, stored) {
-    const article = addAssistantShell(uiT("stored-conversation"));
+    const article = addAssistantShell(uiT("stored-conversation"), "status");
     // A restored turn shows a time only when the store actually carries one.
     // Older records have no per-message time, and none is invented for them.
     const storedAt = stored && typeof stored.completed_at === "string" ? stored.completed_at : "";
@@ -558,7 +596,11 @@
     // The repetitive runtime line is removed: only a truthful non-default
     // state (mock preview) or an explicit skill title is shown.
     const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : "";
-    article.querySelector("[data-runtime-label]").textContent = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
+    const answerLabel = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
+    article.querySelector("[data-runtime-label]").textContent = answerLabel;
+    // A completed answer carries no runtime status: the chip is released
+    // instead of staying on "answer preparing".
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, answerLabel, "status");
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
@@ -659,6 +701,8 @@
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+    // A failure is a real status: the chip stays visible with its own copy.
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error"), "status");
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
@@ -668,6 +712,8 @@
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+    // A failure is a real status: the chip stays visible with its own copy.
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error"), "status");
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
@@ -677,6 +723,7 @@
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = uiT("generation-cancelled");
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("generation-cancelled"), "status");
     content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
@@ -730,14 +777,6 @@
     attachmentSize.textContent = formatBytes(selectedAttachment.byteSize);
     attachmentTray.hidden = false;
   }
-  function readAsDataUrl(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.addEventListener("load", () => resolve(reader.result), { once: true });
-      reader.addEventListener("error", () => reject(new Error(uiT("image-read-failed"))), { once: true });
-      reader.readAsDataURL(file);
-    });
-  }
   function readAsText(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -760,13 +799,8 @@
   }
   async function selectImage(file) {
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error(attachmentCopy().unsupportedFormat);
-    if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error(attachmentCopy().imageTooLarge);
-    const dataUrl = await readAsDataUrl(file);
-    const expectedPrefix = `data:${file.type};base64,`;
-    if (typeof dataUrl !== "string" || !dataUrl.startsWith(expectedPrefix)) throw new Error(uiT("image-format-invalid"));
-    const base64 = dataUrl.slice(expectedPrefix.length);
-    if (!base64) throw new Error(uiT("image-data-empty"));
-    return { type: "image", name: file.name || "image", mediaType: file.type, base64, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
+    if (file.size < 1) throw new Error(uiT("image-data-empty"));
+    return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
   async function selectAttachment(file) {
     if (!file) return;
@@ -785,11 +819,8 @@
   }
   function attachmentPayload(attachment) {
     if (!attachment) return undefined;
-    if (attachment.type === "image") {
-      return [{ type: "image", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
-    }
-    if (typeof attachment.base64 === "string" && attachment.base64) {
-      return [{ type: "document", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
+    if (attachment.file) {
+      return [{ type: attachment.type, name: attachment.name, media_type: attachment.mediaType, file: attachment.file }];
     }
     return [{ type: "document", name: attachment.name, media_type: attachment.mediaType, text: attachment.text }];
   }
@@ -1041,20 +1072,22 @@
     try {
       const projectBinary = projectBinaryMediaType(file);
       let payload;
-      if (projectBinary && binaryDocuments && typeof binaryDocuments.read === "function") {
-        const documentFile = await binaryDocuments.read(file);
-        payload = { name: documentFile.name, media_type: documentFile.mediaType, base64: documentFile.base64 };
-      } else if (projectBinary) {
-        throw new Error(attachmentCopy().unsupportedFormat);
+      if (projectBinary) {
+        // Send binary directly; do not materialize a Base64 JSON copy.
+        payload = null;
       } else {
         const documentFile = await readDocumentFile(file);
         payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
       }
-      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const requestOptions = projectBinary
+        ? { method: "POST", headers: {
+            "Content-Type": "application/octet-stream", "Accept": "application/json",
+            "X-Padiem-Filename": encodeURIComponent(file.name),
+            "X-Padiem-Media-Type": projectBinary,
+          }, body: file }
+        : { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(payload) };
+      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, requestOptions);
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.file) {
         const message = data && data.error && typeof data.error.message === "string" ? data.error.message : uiT("project-file-save-failed");
@@ -1303,6 +1336,11 @@
     if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
       window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated } }));
     }
+    // #5434: the password change is offered only for an account that owns a
+    // password credential. The server owns that fact.
+    if (accountSettingsSection) {
+      accountSettingsSection.hidden = !(authenticated && authState.account_method === "password");
+    }
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),
@@ -1469,8 +1507,14 @@
     const passwordEnabled = authMethodEnabled("password");
     if (googleLoginButton) googleLoginButton.hidden = !googleEnabled;
     if (authDivider) authDivider.hidden = !(googleEnabled && passwordEnabled);
-    if (passwordLoginForm) passwordLoginForm.hidden = !passwordEnabled;
-    if (passwordRegisterSection) passwordRegisterSection.hidden = !passwordEnabled;
+    // #5481: the login view and the two reset views are mutually exclusive.
+    const showLogin = passwordEnabled && authDialogView === "login";
+    if (passwordLoginForm) passwordLoginForm.hidden = !showLogin;
+    if (passwordRegisterSection) passwordRegisterSection.hidden = !showLogin;
+    if (passwordResetOpen) passwordResetOpen.hidden = !passwordEnabled || authDialogView !== "login";
+    if (passwordResetPanel) passwordResetPanel.hidden = authDialogView === "login";
+    if (passwordResetRequestView) passwordResetRequestView.hidden = authDialogView !== "request";
+    if (passwordResetConfirmView) passwordResetConfirmView.hidden = authDialogView !== "confirm";
     renderAndroidHandoff();
   }
 
@@ -1482,15 +1526,29 @@
       }
       return;
     }
+    // #5481: a mailed one-time link opens the reset confirm view directly.
+    const token = passwordResetTokenFromLocation();
+    if (token) {
+      authDialogView = "confirm";
+      passwordResetToken = token;
+    } else {
+      authDialogView = "login";
+    }
     syncAuthDialogMethods();
     setAuthFormError(passwordLoginError);
     setAuthFormError(passwordRegisterError);
+    setAuthFormError(passwordResetRequestError);
+    setAuthFormError(passwordResetConfirmError);
+    setAuthStatusMessage(passwordResetRequestStatus);
+    setAuthStatusMessage(passwordResetConfirmStatus);
     if (typeof authDialog.showModal === "function") {
       authDialog.showModal();
     } else {
       authDialog.setAttribute("open", "");
     }
-    if (authMethodEnabled("password") && passwordLoginIdentifier) passwordLoginIdentifier.focus();
+    if (authDialogView === "confirm") passwordResetNew?.focus();
+    else if (authDialogView === "request") passwordResetEmail?.focus();
+    else if (authMethodEnabled("password") && passwordLoginIdentifier) passwordLoginIdentifier.focus();
   }
 
   function isAndroidWebView() {
@@ -1569,9 +1627,21 @@
       androidHandoffNote.textContent = uiT(key);
     }
     const busy = androidHandoff.phase === "claiming";
+    // The external browser is only useful while the Google sign-in itself
+    // is still pending. Once the profile is bound the user only has to
+    // enter the code, and re-opening Google would repeat that
+    // procedure for nothing.
+    const awaitingLogin = androidHandoff.phase === "waiting";
     if (androidHandoffOpen) {
-      androidHandoffOpen.hidden = busy;
-      androidHandoffOpen.disabled = busy;
+      androidHandoffOpen.hidden = busy || !awaitingLogin;
+      androidHandoffOpen.disabled = busy || !awaitingLogin;
+    }
+    if (androidHandoffCopy) {
+      androidHandoffCopy.hidden = busy;
+      androidHandoffCopy.disabled = busy;
+    }
+    if (androidHandoffCopied) {
+      androidHandoffCopied.hidden = true;
     }
     if (androidHandoffCancel) {
       androidHandoffCancel.hidden = busy;
@@ -1810,7 +1880,6 @@
     passwordRegisterSubmit.disabled = true;
     try {
       await passwordAuthRequest("/api/auth/password/register", {
-        username: passwordRegisterUsername.value,
         email: passwordRegisterEmail.value,
         name: passwordRegisterName.value,
         password: passwordRegisterPassword.value,
@@ -1825,6 +1894,223 @@
       );
     } finally {
       passwordRegisterSubmit.disabled = false;
+    }
+  }
+
+  // #5481: the lost-password flow. The entry link opens the request view, the
+  // mailed one-time link opens the confirm view, and both keep the email the
+  // member already typed. The token never travels in a query string: it
+  // arrives in the URL fragment, which the browser does not send to the server.
+  function setAuthStatusMessage(node, message = "") {
+    if (!node) return;
+    node.textContent = message;
+    node.hidden = !message;
+  }
+
+  function passwordResetTokenFromLocation() {
+    try {
+      const raw = window.location.hash || "";
+      const match = /^#reset=([A-Za-z0-9_-]{16,256})$/.exec(raw);
+      return match ? match[1] : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function clearPasswordResetFragment() {
+    // The one-time token leaves the address bar as soon as the member leaves
+    // the reset view, so a shared link never lingers in the browser history
+    // of the next person who opens this window.
+    try {
+      if (!window.location.hash) return;
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    } catch (_) {}
+  }
+
+  function showPasswordResetView(view) {
+    authDialogView = view;
+    if (passwordResetPanel) passwordResetPanel.hidden = false;
+    if (passwordLoginForm) passwordLoginForm.hidden = view !== "login";
+    if (passwordRegisterSection) passwordRegisterSection.hidden = view !== "login";
+    if (passwordResetRequestView) passwordResetRequestView.hidden = view !== "request";
+    if (passwordResetConfirmView) passwordResetConfirmView.hidden = view !== "confirm";
+  }
+
+  function hidePasswordResetViews() {
+    passwordResetToken = "";
+    authDialogView = "login";
+    clearPasswordResetFragment();
+    if (passwordResetPanel) passwordResetPanel.hidden = true;
+    if (passwordResetRequestView) passwordResetRequestView.hidden = true;
+    if (passwordResetConfirmView) passwordResetConfirmView.hidden = true;
+    if (passwordResetOpen) passwordResetOpen.hidden = !authMethodEnabled("password");
+    if (passwordResetEmail) passwordResetEmail.value = "";
+    if (passwordResetNew) passwordResetNew.value = "";
+    if (passwordResetConfirm) passwordResetConfirm.value = "";
+    setAuthFormError(passwordResetRequestError);
+    setAuthFormError(passwordResetConfirmError);
+    setAuthStatusMessage(passwordResetRequestStatus);
+    setAuthStatusMessage(passwordResetConfirmStatus);
+  }
+
+  function openPasswordResetRequest() {
+    if (!authMethodEnabled("password")) return;
+    setAuthFormError(passwordResetRequestError);
+    setAuthStatusMessage(passwordResetRequestStatus);
+    showPasswordResetView("request");
+    if (passwordResetEmail && passwordLoginIdentifier && !passwordResetEmail.value) {
+      passwordResetEmail.value = passwordLoginIdentifier.value.trim();
+    }
+    passwordResetEmail?.focus();
+  }
+
+  function openPasswordResetConfirm(token) {
+    if (!authMethodEnabled("password")) return;
+    passwordResetToken = typeof token === "string" ? token : "";
+    setAuthFormError(passwordResetConfirmError);
+    setAuthStatusMessage(passwordResetConfirmStatus);
+    showPasswordResetView("confirm");
+    passwordResetNew?.focus();
+  }
+
+  function closePasswordResetViews() {
+    passwordResetToken = "";
+    hidePasswordResetViews();
+    if (passwordResetEmail) passwordResetEmail.value = "";
+    if (passwordResetNew) passwordResetNew.value = "";
+    if (passwordResetConfirm) passwordResetConfirm.value = "";
+    setAuthFormError(passwordResetRequestError);
+    setAuthFormError(passwordResetConfirmError);
+    setAuthStatusMessage(passwordResetRequestStatus);
+    setAuthStatusMessage(passwordResetConfirmStatus);
+  }
+
+  async function submitPasswordResetRequest(event) {
+    event.preventDefault();
+    if (!authMethodEnabled("password") || !passwordResetRequestForm) return;
+    setAuthFormError(passwordResetRequestError);
+    setAuthStatusMessage(passwordResetRequestStatus);
+    passwordResetRequestSubmit.disabled = true;
+    try {
+      await passwordAuthRequest("/api/auth/password/reset/request", {
+        email: passwordResetEmail.value,
+      });
+      // The server answers the same way for every address, so the browser
+      // shows the same confirmation either way.
+      setAuthStatusMessage(passwordResetRequestStatus, uiT("auth-reset-request-sent"));
+    } catch (error) {
+      setAuthFormError(
+        passwordResetRequestError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+    } finally {
+      passwordResetRequestSubmit.disabled = false;
+    }
+  }
+
+  async function submitPasswordResetConfirm(event) {
+    event.preventDefault();
+    if (!authMethodEnabled("password") || !passwordResetConfirmForm) return;
+    setAuthFormError(passwordResetConfirmError);
+    setAuthStatusMessage(passwordResetConfirmStatus);
+    const newPassword = passwordResetNew?.value || "";
+    const confirmPassword = passwordResetConfirm?.value || "";
+    if (!newPassword || !confirmPassword) {
+      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-confirm-incomplete"));
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-confirm-mismatch"));
+      return;
+    }
+    if (!passwordResetToken) {
+      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-expired"));
+      return;
+    }
+    passwordResetConfirmSubmit.disabled = true;
+    try {
+      await passwordAuthRequest("/api/auth/password/reset/confirm", {
+        token: passwordResetToken,
+        new_password: newPassword,
+      });
+      passwordResetToken = "";
+      clearPasswordResetFragment();
+      if (passwordResetNew) passwordResetNew.value = "";
+      if (passwordResetConfirm) passwordResetConfirm.value = "";
+      setAuthStatusMessage(passwordResetConfirmStatus, uiT("auth-reset-confirm-done"));
+      closeAuthDialog();
+      await loadAuthStatus();
+    } catch (error) {
+      setAuthFormError(
+        passwordResetConfirmError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+    } finally {
+      passwordResetConfirmSubmit.disabled = false;
+    }
+  }
+
+  // #5434: the signed-in account changes its own password. The account is
+  // never named by the browser: the server resolves it from the session.
+  function openPasswordChangeDialog() {
+    if (!passwordChangeDialog) return;
+    setAuthFormError(passwordChangeError);
+    if (passwordChangeCurrent) passwordChangeCurrent.value = "";
+    if (passwordChangeNew) passwordChangeNew.value = "";
+    if (passwordChangeConfirm) passwordChangeConfirm.value = "";
+    if (typeof passwordChangeDialog.showModal === "function") passwordChangeDialog.showModal();
+    else passwordChangeDialog.setAttribute("open", "");
+    passwordChangeCurrent?.focus();
+  }
+
+  function closePasswordChangeDialog() {
+    if (!passwordChangeDialog) return;
+    if (passwordChangeDialog.open && typeof passwordChangeDialog.close === "function") passwordChangeDialog.close();
+    else passwordChangeDialog.removeAttribute("open");
+  }
+
+  async function submitPasswordChange(event) {
+    event.preventDefault();
+    if (!passwordChangeForm) return;
+    setAuthFormError(passwordChangeError);
+    const currentPassword = passwordChangeCurrent?.value || "";
+    const newPassword = passwordChangeNew?.value || "";
+    const confirmPassword = passwordChangeConfirm?.value || "";
+    if (!currentPassword || !newPassword) {
+      setAuthFormError(passwordChangeError, uiT("password-change-incomplete"));
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setAuthFormError(passwordChangeError, uiT("password-change-mismatch"));
+      return;
+    }
+    if (newPassword === currentPassword) {
+      setAuthFormError(passwordChangeError, uiT("password-change-unchanged"));
+      return;
+    }
+    passwordChangeSubmit.disabled = true;
+    try {
+      await passwordAuthRequest("/api/auth/password/change", {
+        current_password: currentPassword,
+        new_password: newPassword,
+      });
+      // The server ends the session it changed the credential for, so the
+      // browser signs in again with the new password.
+      if (passwordChangeCurrent) passwordChangeCurrent.value = "";
+      if (passwordChangeNew) passwordChangeNew.value = "";
+      if (passwordChangeConfirm) passwordChangeConfirm.value = "";
+      closePasswordChangeDialog();
+      closeSettings();
+      await loadAuthStatus();
+      if (authDialog && !authDialog.open) openAuthDialog();
+      setAuthFormError(passwordLoginError, uiT("password-change-done"));
+    } catch (error) {
+      setAuthFormError(
+        passwordChangeError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+    } finally {
+      passwordChangeSubmit.disabled = false;
     }
   }
 
@@ -2108,6 +2394,10 @@
   }
 
   function applyStreamDone(article, data, answer, outboundMessages, contextSnapshot) {
+    // The answer is complete: the "answer preparing" chip is released here.
+    // A chip that already carries a real status (a Claw P01 stage, a skill
+    // title) is kept, and a failure keeps its own status.
+    window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
     // Chat/Claw separation: the completion belongs to the product that submitted it, even
     // when the user navigated to the other product while it was in flight.
     conversationState.setProduct?.(contextSnapshot.product);
@@ -2186,6 +2476,8 @@
       const paragraph = document.createElement("p");
       paragraph.textContent = result.answer;
       content.appendChild(paragraph);
+      // The durable run answered: the preparing chip is released as well.
+      window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
       conversationState.setProduct?.(product);
       conversationState.commitAssistant(outboundMessages, result.answer);
       conversationState.setProduct?.(conversationProduct);
@@ -2229,7 +2521,10 @@
       status.textContent = window.PadiemClawRecoveryTruth.copy(state, document.documentElement.lang);
       content?.appendChild(status);
       const marker = article.querySelector("[data-runtime-label]");
-      if (marker) marker.textContent = status.textContent;
+      if (marker) {
+        marker.textContent = status.textContent;
+        window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, status.textContent, "status");
+      }
       PadiemChatLifecycle.set(article, state === "waiting_for_approval"
         ? MESSAGE_LIFECYCLE.WAITING_APPROVAL
         : state === "cancelled" ? MESSAGE_LIFECYCLE.CANCELLED : MESSAGE_LIFECYCLE.FAILED);
@@ -2254,7 +2549,12 @@
             return false;
           }
           const marker = article.querySelector("[data-runtime-label]");
-          if (label && marker) marker.textContent = label;
+          // A Claw P01 stage is a real status: it replaces the preparing chip
+          // and is kept when the run completes.
+          if (label && marker) {
+            marker.textContent = label;
+            window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, "status");
+          }
           return false;
         }
         if (!["delta", "done", "error"].includes(frame.event)) return false;
@@ -2376,15 +2676,13 @@
     setNote(uiT("answer-cancelled-note"), "error");
   }
 
-  // #4317: product-capabilities.js is loaded AFTER app.js. Initialise the
-  // browser's ordinary Chat tier to the universally available signed-in Free
-  // lane once all scripts are ready; preserve an explicit tier choice afterwards.
-  // This updates the visible mode selector but never sends a model request.
-  window.addEventListener("load", () => {
-    if (window.PadiemTierSelection?.get?.() === "plus") {
-      window.PadiemTierSelection.set("free");
-    }
-  }, { once: true });
+  // #4317: product-capabilities.js is loaded AFTER app.js and owns the tier
+  // state. The universally available signed-in Free lane stays the default for
+  // an account that never chose a tier.
+  // #5222: an account that DID choose a tier keeps that choice across a
+  // reload, so this page must not reset the selection to Free behind the
+  // account's back. The restored value is always re-validated by the server
+  // (member grade + administrator gate) before it is used.
 
   function selectedProductTier() {
     // Both Chat and the shared Claw first-use composer honor the visible
@@ -2420,10 +2718,14 @@
     const controller = new AbortController();
     activeRequestController = controller;
     updateComposer();
-    const article = addAssistantShell(uiT("answer-preparing"));
+    const article = addAssistantShell(uiT("answer-preparing"), "preparing");
     activeRequestArticle = article;
     renderTyping(article);
     try {
+      // #5222: wait for the account's tier restore to settle before the tier
+      // is read, so a request never leaves with a tier that was not verified
+      // for this account yet.
+      await window.PadiemTierSelection?.ready?.();
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
       // #4745: retain the exact user-turn claim for a manual retry. A new
       // submitPrompt receives a new contextSnapshot, so a separate identical
@@ -2767,6 +3069,37 @@
       window.location.assign(androidHandoff.authorizationUrl);
     });
   }
+  if (androidHandoffCopy) {
+    androidHandoffCopy.addEventListener("click", async () => {
+      if (!androidHandoff) return;
+      const code = androidHandoff.userCode || "";
+      if (!code) return;
+      let copied = false;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(code);
+          copied = true;
+        }
+      } catch (error) {
+        copied = false;
+      }
+      if (!copied && androidHandoffCode) {
+        // Fall back to selecting the code so it can still be copied.
+        try {
+          const range = document.createRange();
+          range.selectNodeContents(androidHandoffCode);
+          const selection = window.getSelection();
+          if (selection) {
+            selection.removeAllRanges();
+            selection.addRange(range);
+          }
+        } catch (error) {}
+      }
+      if (androidHandoffCopied) {
+        androidHandoffCopied.hidden = false;
+      }
+    });
+  }
   if (androidHandoffCancel) {
     androidHandoffCancel.addEventListener("click", () => { clearAndroidHandoff(); });
   }
@@ -2777,6 +3110,36 @@
   });
   if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
   if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
+  if (passwordResetOpen) {
+    passwordResetOpen.addEventListener("click", openPasswordResetRequest);
+  }
+  if (passwordResetRequestForm) {
+    passwordResetRequestForm.addEventListener("submit", submitPasswordResetRequest);
+  }
+  if (passwordResetConfirmForm) {
+    passwordResetConfirmForm.addEventListener("submit", submitPasswordResetConfirm);
+  }
+  if (passwordResetBack) {
+    passwordResetBack.addEventListener("click", () => {
+      hidePasswordResetViews();
+      syncAuthDialogMethods();
+    });
+  }
+  if (passwordResetConfirmBack) {
+    passwordResetConfirmBack.addEventListener("click", () => {
+      hidePasswordResetViews();
+      syncAuthDialogMethods();
+    });
+  }
+  if (passwordChangeForm) passwordChangeForm.addEventListener("submit", submitPasswordChange);
+  if (passwordChangeOpen) passwordChangeOpen.addEventListener("click", openPasswordChangeDialog);
+  if (passwordChangeDialogClose) passwordChangeDialogClose.addEventListener("click", closePasswordChangeDialog);
+  if (passwordChangeDialog) {
+    passwordChangeDialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closePasswordChangeDialog();
+    });
+  }
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
     submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
     closeSidebar();
@@ -2851,11 +3214,13 @@
   const clawAutomation = document.getElementById("clawAutomation");
   const clawAutomationLoading = document.getElementById("clawAutomationLoading");
   const clawAutomationError = document.getElementById("clawAutomationError");
+  const clawAutomationForbidden = document.getElementById("clawAutomationForbidden");
   const clawAutomationEmpty = document.getElementById("clawAutomationEmpty");
   const clawAutomationList = document.getElementById("clawAutomationList");
   const clawAutomationRetry = document.getElementById("clawAutomationRetry");
   const clawAutomationCreate = document.getElementById("clawAutomationCreate");
   const clawAutomationCreateToggle = document.getElementById("clawAutomationCreateToggle");
+  const clawAutomationCreateOpen = document.getElementById("clawAutomationCreateOpen");
   const clawAutomationCreateForm = document.getElementById("clawAutomationCreateForm");
   const clawAutomationCreateName = document.getElementById("clawAutomationCreateName");
   const clawAutomationCreateTask = document.getElementById("clawAutomationCreateTask");
@@ -3654,7 +4019,10 @@
   function resetClawAutomationState() {
     if (clawAutomationLoading) clawAutomationLoading.hidden = true;
     if (clawAutomationError) clawAutomationError.hidden = true;
+    if (clawAutomationForbidden) clawAutomationForbidden.hidden = true;
     if (clawAutomationEmpty) clawAutomationEmpty.hidden = true;
+    // A retry belongs to a failed load. It is never a permanent control.
+    setClawAutomationRetryVisible(false);
   }
 
   function setClawAutomationLoading() {
@@ -3672,6 +4040,21 @@
     if (clawAutomationError) {
       clawAutomationError.hidden = false;
       clawAutomationError.textContent = uiT("claw-automation-error");
+    }
+    // The load failed, so the one action that can change the outcome is
+    // offered here and nowhere else.
+    setClawAutomationRetryVisible(true);
+  }
+
+  function setClawAutomationForbidden() {
+    // A permission refusal is not a transient failure. It says what it is
+    // instead of claiming the rules could not be loaded, and it offers no
+    // retry, because a retry would not change the answer.
+    resetClawAutomationState();
+    if (clawAutomationList) clawAutomationList.replaceChildren();
+    if (clawAutomationForbidden) {
+      clawAutomationForbidden.hidden = false;
+      clawAutomationForbidden.textContent = uiT("claw-automation-forbidden");
     }
   }
 
@@ -3755,6 +4138,11 @@
         cache: "no-store",
       });
       const data = await response.json().catch(() => null);
+      const code = data && typeof data.code === "string" ? data.code : "";
+      if (response.status === 403 || code === "owner_role_required") {
+        setClawAutomationForbidden();
+        return;
+      }
       if (!response.ok || !data || data.ok !== true || !Array.isArray(data.rules)) {
         throw new Error("automation rules unavailable");
       }
@@ -4031,7 +4419,27 @@
     if (clawAutomationCreate && typeof clawAutomationCreate.open === "boolean") {
       clawAutomationCreate.open = false;
     }
-    if (clawAutomationCreateToggle) clawAutomationCreateToggle.focus();
+    // The visible control is the header button, so the focus goes there.
+    if (clawAutomationCreateOpen) clawAutomationCreateOpen.focus();
+    else if (clawAutomationCreateToggle) clawAutomationCreateToggle.focus();
+  }
+
+  function scrollClawAutomationCreateIntoView() {
+    // The narrow-window layout puts the rule list before the create form, so
+    // opening the form has to bring it into view. A form that is already
+    // visible stays where it is, and the wide-screen layout never moves.
+    if (!clawAutomationCreate) return;
+    const host = clawAutomation.closest(".automation-view");
+    if (!host) return;
+    const form = clawAutomationCreate.getBoundingClientRect();
+    const area = host.getBoundingClientRect();
+    // A form whose top is already on screen stays where it is: the view only
+    // moves when the form would otherwise open below the fold.
+    if (form.top >= area.top && form.top < area.bottom) return;
+    const target = Math.max(0, host.scrollTop + (form.top - area.top) - 8);
+    // The scroll is applied directly: the list re-renders behind the form, and
+    // an animated scroll would be cancelled by that reflow.
+    host.scrollTop = target;
   }
 
   async function submitClawAutomationCreate(event) {
@@ -4104,13 +4512,34 @@
   }
   if (clawAutomationCreate) {
     clawAutomationCreate.addEventListener("toggle", () => {
+      // The header button owns the disclosure, so it carries the state.
+      if (clawAutomationCreateOpen) {
+        clawAutomationCreateOpen.setAttribute(
+          "aria-expanded", clawAutomationCreate.open ? "true" : "false",
+        );
+      }
       if (clawAutomationCreate.open) {
         setClawAutomationCreateStatus(null);
         if (clawAutomationCreateName) clawAutomationCreateName.focus();
-      } else if (clawAutomationCreateToggle) {
-        clawAutomationCreateToggle.focus();
+      } else if (clawAutomationCreateOpen) {
+        clawAutomationCreateOpen.focus();
       }
     });
+  }
+  if (clawAutomationCreateOpen) {
+    if (!clawAutomationCreate) {
+      // No form to open, so the control is not offered at all.
+      clawAutomationCreateOpen.hidden = true;
+    } else {
+      clawAutomationCreateOpen.addEventListener("click", () => {
+        clawAutomationCreate.open = !clawAutomationCreate.open;
+        // On a narrow window the form sits below the rule list, so the view
+        // follows the user to it instead of leaving the input off-screen.
+        if (clawAutomationCreate.open) {
+          scrollClawAutomationCreateIntoView();
+        }
+      });
+    }
   }
 
   // Standalone Automation page: the existing #clawAutomation section is moved
@@ -4132,6 +4561,11 @@
     }
     if (!body || !panel) return;
     body.appendChild(panel);
+    // The page header owns the visible title on this surface, so the section
+    // takes its accessible name from there instead of from the heading the
+    // page already shows.
+    const pageTitle = document.getElementById("automationViewTitle");
+    if (pageTitle) panel.setAttribute("aria-labelledby", "automationViewTitle");
     automationViewMounted = true;
   }
 
@@ -4164,6 +4598,11 @@
   const automationAlertsButton = document.getElementById("automationAlertsButton");
   if (automationAlertsButton) automationAlertsButton.addEventListener("click", () => openClawInbox("alerts"));
   if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
+  // The retry is a failure-only control. It lives here, next to the loader
+  // it retries, and it is never part of the permanent header.
+  function setClawAutomationRetryVisible(visible) {
+    if (clawAutomationRetry) clawAutomationRetry.hidden = !visible;
+  }
 
   function openClawWorkspace() {
     // #3531: Claw opens on the general conversation view. The document
@@ -5147,7 +5586,14 @@
   setNote(idleNote());
   renderProjectState();
   updateComposer();
-  loadAuthStatus();
+  // #5481: a mailed one-time link opens the reset confirm view directly, so
+  // the member lands on the "set a new password" step without signing in.
+  const resetLinkOnLoad = passwordResetTokenFromLocation();
+  if (resetLinkOnLoad) {
+    void loadAuthStatus().then(() => openAuthDialog());
+  } else {
+    void loadAuthStatus();
+  }
   resumeAndroidHandoff();
   // Initial state
   setClawAreaState("idle");

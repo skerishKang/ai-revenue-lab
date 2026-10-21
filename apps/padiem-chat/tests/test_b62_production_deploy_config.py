@@ -1018,3 +1018,136 @@ def test_claw_desktop_secret_name_collision_with_live_authority_fails_closed(tmp
             live, _write_repo_config_with_claw_desktop(tmp_path), PUBLIC_URL,
             attach_claw_desktop_secret=True,
         )
+
+
+# ── #5441: the Owner-registered transactional-mail reference ───────────────
+
+RESEND_ALERT_SECRET_BINDING = {
+    "type": "secrets_store_secret",
+    "name": "B66_ALERT_RESEND_API_KEY",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "secret_name": "B66_ALERT_RESEND_API_KEY",
+}
+
+
+def _write_repo_config_with_resend_alert(tmp_path, *, store_id=None, secret_name=None):
+    path = _write_repo_config(tmp_path)
+    path.write_text(
+        path.read_text(encoding="utf-8")
+        + "\n[[secrets_store_secrets]]\n"
+        'binding = "B66_ALERT_RESEND_API_KEY"\n'
+        f'store_id = "{store_id or RESEND_ALERT_SECRET_BINDING["store_id"]}"\n'
+        f'secret_name = "{secret_name or RESEND_ALERT_SECRET_BINDING["secret_name"]}"\n',
+        encoding="utf-8",
+    )
+    return path
+
+
+def test_the_resend_attach_adds_exactly_the_owner_registered_reference(tmp_path):
+    """One exact reference, no value, and nothing else changes."""
+    import tomllib
+
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    output = module.build_production_config(
+        live, _write_repo_config_with_resend_alert(tmp_path), PUBLIC_URL,
+        attach_existing_resend_secret=True,
+    )
+    module.verify_mutation_zero(output, live)
+    assert tomllib.loads(output)["secrets_store_secrets"] == [{
+        "binding": "B66_ALERT_RESEND_API_KEY",
+        "store_id": "f0b09ca04a7b43248154c773704a5616",
+        "secret_name": "B66_ALERT_RESEND_API_KEY",
+    }]
+
+
+def test_the_resend_reference_is_absent_without_the_explicit_attach(tmp_path):
+    """The live settings stay the authority: no silent install."""
+    import tomllib
+
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    output = module.build_production_config(
+        live, _write_repo_config_with_resend_alert(tmp_path), PUBLIC_URL,
+    )
+    assert "secrets_store_secrets" not in tomllib.loads(output)
+
+
+def test_the_resend_attach_refuses_a_mismatched_source_declaration(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    with pytest.raises(module.ProductionConfigError, match="source binding identity mismatch"):
+        module.build_production_config(
+            live,
+            _write_repo_config_with_resend_alert(tmp_path, secret_name="OTHER_SECRET"),
+            PUBLIC_URL,
+            attach_existing_resend_secret=True,
+        )
+
+
+def test_the_resend_attach_refuses_a_live_name_collision(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(
+        _settings_payload(
+            _production_bindings()
+            + [{"type": "secret_text", "name": "B66_ALERT_RESEND_API_KEY"}]
+        )
+    )
+    with pytest.raises(module.ProductionConfigError, match="collides with live authority"):
+        module.build_production_config(
+            live, _write_repo_config_with_resend_alert(tmp_path), PUBLIC_URL,
+            attach_existing_resend_secret=True,
+        )
+
+
+def test_the_resend_attach_reuses_an_already_served_reference_verbatim(tmp_path):
+    """A redeploy must not duplicate the reference."""
+    import tomllib
+
+    module = _load_module()
+    live = module.parse_live_bindings(
+        _settings_payload(_production_bindings() + [RESEND_ALERT_SECRET_BINDING])
+    )
+    output = module.build_production_config(
+        live, _write_repo_config_with_resend_alert(tmp_path), PUBLIC_URL,
+        attach_existing_resend_secret=True,
+    )
+    assert tomllib.loads(output)["secrets_store_secrets"] == [{
+        "binding": "B66_ALERT_RESEND_API_KEY",
+        "store_id": "f0b09ca04a7b43248154c773704a5616",
+        "secret_name": "B66_ALERT_RESEND_API_KEY",
+    }]
+
+
+def test_the_binding_guard_allows_only_the_exact_resend_reference():
+    """The before/after binding sets may differ by that one identity only."""
+    import importlib.util as _importlib
+
+    guard_path = (
+        Path(__file__).resolve().parents[3] / ".github/scripts/b62_binding_state_guard.py"
+    )
+    spec = _importlib.spec_from_file_location("b62_binding_state_guard", guard_path)
+    assert spec is not None and spec.loader is not None
+    guard = _importlib.module_from_spec(spec)
+    spec.loader.exec_module(guard)
+
+    before = {"success": True, "result": {"bindings": [
+        {"name": "ASSETS", "type": "assets"},
+    ]}}
+    after = {"success": True, "result": {"bindings": [
+        {"name": "ASSETS", "type": "assets"},
+        {
+            "name": "B66_ALERT_RESEND_API_KEY",
+            "type": "secrets_store_secret",
+            "store_id": "f0b09ca04a7b43248154c773704a5616",
+            "secret_name": "B66_ALERT_RESEND_API_KEY",
+        },
+    ]}}
+    guard.assert_exact_resend_alert_added_only(before, after)
+
+    drifted = {"success": True, "result": {"bindings": after["result"]["bindings"] + [
+        {"name": "UNEXPECTED", "type": "secrets_store_secret",
+         "store_id": "f0b09ca04a7b43248154c773704a5616", "secret_name": "OTHER"},
+    ]}}
+    with pytest.raises(Exception):
+        guard.assert_exact_resend_alert_added_only(before, drifted)

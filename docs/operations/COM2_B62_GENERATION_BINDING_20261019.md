@@ -190,3 +190,79 @@ The spare listener was stopped and `18765` no longer accepts connections. The
 transition can be repeated with the same command on `18764` only after the two
 secrets in §5 are registered and the restart is explicitly authorized.
 
+## 9. #5484 pointer publication and live binding (2026-10-21)
+
+Two gaps were closed on 2026-10-21. The COM2 B62 runtime had served the
+generation published on 2026-10-19 while the D1/R2 sync published a new one
+every day, and the live `18764` listener ran the unbound entry, so it served no
+history, no outputs and no canonical identity at all.
+
+### 9.1 The pointer is now published with the sync
+
+Nothing published `generation-store/current_generation.json` after a successful
+sync, so the pointer went stale as soon as the next generation was published.
+`scripts/ops/com2_b62_generation_publish.py` publishes it:
+
+- the writable Chat seed is prepared from the **immutable published snapshot**
+  (temporary name, SHA-256 comparison, integrity check, atomic move), so the
+  published generation is never modified and an existing seed is verified
+  instead of overwritten;
+- the pointer is written atomically only after the seed is in place, and the
+  previous pointer is kept as `current_generation.json.previous` for a
+  rollback;
+- `production_bound` stays `false`. The tool only selects which local
+  generation the COM2 runtime opens; it never binds production;
+- the published pointer is re-checked with the same rules the runtime and the
+  read-only operator verifier (`com2_b62_generation.py verify`) use.
+
+The sync runner publishes the pointer right after a successful D1 step, so the
+pointer cannot go stale again. The step is skipped, and recorded as skipped, on
+a host without a B62 runtime store. A real publish failure fails the sync: a
+runtime that keeps serving an old generation is not a successful sync.
+
+### 9.2 The live listener now runs the bound composition
+
+`start-b62-release.ps1` composes the published generation and the canonical
+identity read path **by default**. It runs through the existing `store.py`, so
+the DPAPI environment supplies the identity bridge and auth values, and it
+adds the storage-migration path that holds the generation binding modules. The
+supervisor starts the script without arguments, so this is the only lever that
+reaches the live entry.
+
+`-Unbound` is the explicit rollback to the previous entry. The pointer and the
+imported generations stay read-only, so reverting the runtime touches no
+artifact.
+
+Verified on the COM2 host on 2026-10-21:
+
+```text
+pointer            d1_generation=20261021T074313336936Z r2_generation=20261021T074335749153Z
+                   d1_seed=chat-20261021T074313336936Z.sqlite3 d1_tables=66 production_bound=false
+operator verify    B62_GENERATION_OK d1_generation=20261021T074313336936Z ... d1_tables=66
+live 18764/health auth_configured=true history_store_bound=true project_file_store_bound=true
+                   saved_output_store_bound=true canonical_identity_bound=true
+                   identity_shadow_bound=true quota_store_bound=true
+live 18764/auth    ready=true history_ready=true methods={"google":false,"password":true}
+supervisor         healthy=true issues=[] chat/claw/engine ready, b62 managed
+live data          seed=chat-20261021T074313336936Z.sqlite3 tables=66 users=37
+                   conversations=134 messages=429
+```
+
+The canonical identity read path was exercised against the real bridge with a
+non-existent session id: the bridge answered with a well-formed
+`canonical_auth_session_not_found`, and the authority refused it. The read
+path is reachable and authenticated from COM2.
+
+Two things are still open and are not part of this change:
+
+- Google login and the GitHub connector stay blocked because
+  `PADIEM_CHAT_GOOGLE_CLIENT_SECRET` and `PADIEM_GITHUB_APP_CLIENT_SECRET` are
+  not in the DPAPI store (§5). Password login and the identity binding work.
+- The runtime supervisor's own `restart` cannot act on this component while its
+  recorded pid is stale, so the live entry was moved by stopping the listener
+  and letting the existing `ensure` start it again.
+
+Cloudflare production was not touched by this change: `chat.padiem.net` kept
+serving the same revision, stayed authenticated, and answered a real model
+call over the same orchestration path.
+

@@ -129,6 +129,7 @@ from .product_tier_routes import (
     ProductTierRoutesError,
     active_route_for,
     get_tier,
+    is_free_execution_candidate,
     validate_product_tier_routes,
 )
 from .padiem_routing_profile_admin import (
@@ -274,6 +275,7 @@ __all__ = [
     "generate_numeric_otp",
     "get_tier",
     "build_padiem_routing_profile_diff",
+    "is_free_execution_candidate",
     "issue_otp_challenge",
     "rollback_padiem_routing_profile",
     "supersede_for_resend",

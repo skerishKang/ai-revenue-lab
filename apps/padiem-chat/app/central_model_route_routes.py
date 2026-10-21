@@ -21,7 +21,7 @@ from padiem_control_plane.model_assignment_policy import (
 )
 from padiem_control_plane.model_tier_routes import (
     ROUTE_PRODUCTS, TierRouteChange, TierRouteSnapshot,
-    _check_route_changes, _route_diff, _updated_routes,
+    _check_route_changes, _route_diff, _updated_routes, project_shared_routes,
 )
 
 from .central_model_control_routes import (
@@ -128,7 +128,7 @@ async def central_model_routes_get(request: Request) -> JSONResponse:
         events = await _store(request).audit(WORKSPACE, limit=12)
         return JSONResponse({
             "ok": True, "workspace": WORKSPACE, "revision": current.revision,
-            "routes": [row.public() for row in current.routes],
+            "routes": [row.public() for row in project_shared_routes(current)],
             "static": _static_contract(),
             "write_enabled": True, "runtime_enforced": True,
             "events": events,

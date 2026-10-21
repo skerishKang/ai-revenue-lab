@@ -2,6 +2,7 @@
 import copy
 import json
 import pytest
+from pathlib import Path
 from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.model_registry_file import read_registry, group_model_ids, installed_model_ids, ModelRegistryError
@@ -59,7 +60,11 @@ def test_only_json_providers_are_registered():
         "assert 'experiential' in ids;"
         "assert len(CATALOG_BY_ID)==len(read_registry()[\'models\'])"
     )
-    result=subprocess.run([sys.executable,"-c",child],capture_output=True,text=True,check=False)
+    # The child imports the app package, so it needs this app's root on
+    # sys.path. Pinning the working directory keeps the fresh-process check
+    # valid whether the suite runs from this app or from the repository root.
+    app_root = str(Path(__file__).resolve().parents[1])
+    result=subprocess.run([sys.executable,"-c",child],capture_output=True,text=True,check=False,cwd=app_root)
     assert result.returncode == 0, result.stderr
 
 @pytest.mark.parametrize("mutate",[

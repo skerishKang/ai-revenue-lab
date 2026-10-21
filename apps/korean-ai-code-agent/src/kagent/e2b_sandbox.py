@@ -73,15 +73,10 @@ E2B_DENY_ALL_ENCODING = "0.0.0.0/0"
 E2B_RUNTIME_NETWORK_UPDATE = "DOCUMENTED"
 E2B_NETWORK_UPDATE_SEMANTICS = "REPLACES_NOT_MERGES"
 
-#: Documented lifetime behaviour. The 300-second default and the plan-bound
-#: continuous maximum are provider facts; the clamp below is the adapter's.
-E2B_DEFAULT_TIMEOUT_SECONDS = 300
 #: E2B documents kill-on-timeout; the value below is the request field the adapter
 #: sends so a future provider default change cannot move this lane. Research label in
 #: the work order is E2B_TIMEOUT_DEFAULT_ACTION=KILL.
 E2B_TIMEOUT_DEFAULT_ACTION = "kill"
-E2B_HOBBY_CONTINUOUS_MAX_SECONDS = 3_600
-E2B_PRO_CONTINUOUS_MAX_SECONDS = 86_400
 
 #: A paused sandbox has no TTL and is never reaped by the provider, and snapshots,
 #: forks and volume mounts outlive the sandbox that produced them. Those are

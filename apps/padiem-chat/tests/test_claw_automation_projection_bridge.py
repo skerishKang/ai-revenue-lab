@@ -428,7 +428,12 @@ async def test_raw_output_content_is_not_persisted() -> None:
     assert RAW_CONTENT not in json.dumps([t.safe_dict() for t in store.tasks.values()], default=str)
 
 
-async def test_secret_shaped_title_is_redacted() -> None:
+async def test_the_owners_own_title_is_stored_unchanged() -> None:
+    """#5360: the owner's own business content is not masked by default.
+
+    The record is the owner's own workspace-scoped task, and the diagnostic
+    and log surfaces keep their own credential filtering.
+    """
     store = _MemoryStore()
     raw_title = "Authorization: Bearer " + "a" * 24
     # Guard: the fixture must actually be secret-shaped for the canonical helper.
@@ -440,8 +445,9 @@ async def test_secret_shaped_title_is_redacted() -> None:
     result = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
 
     task = store.tasks[result.record_id]
-    assert task.title == redact_secrets(raw_title)
-    assert task.title != raw_title
+    assert task.title == raw_title
+    assert task.member_id == MEMBER
+    assert task.workspace_id == WS
 
 
 # ── D1 adapter proof ─────────────────────────────────────────────────────────

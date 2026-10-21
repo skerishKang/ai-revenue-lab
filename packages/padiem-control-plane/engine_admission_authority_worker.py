@@ -17,7 +17,10 @@ from padiem_control_plane.engine_admission_authority import (
 from padiem_control_plane.engine_entitlement_producer import (
     ensure_authenticated_user_engine_entitlement,
 )
-from padiem_control_plane.voice_stt_entitlement_policy import VoiceSttAllPlansMode1Policy
+from padiem_control_plane.voice_stt_entitlement_policy import (
+    VoiceSttAllPlansLiveTokenPolicy,
+    VoiceSttAllPlansMode1Policy,
+)
 
 _AUTHORITY_REF = "control-plane.engine-admission.production.v1"
 _ALLOWED_PRODUCTS: frozenset[str] = frozenset(
@@ -108,6 +111,14 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
         # Owner-approved Mode 1 is available to Free and all paid plans,
         # independently of usage count. Exact deployment flag is the rollback
         # switch; it does not authorize Mode 2 live tokens.
+        #
+        # Owner 2026-10-20 (#4643 / #4816): the real-time transcription of
+        # Global Classroom is ported into Chat and Claw. That path needs the
+        # live transcription token the private STT Worker mints, so the
+        # runtime admits the already reviewed ``voice.stt.live_token``
+        # capability for the same canonical Chat/Claw user sessions. It is a
+        # separate flag and a separate policy, so the Mode 1 baseline and its
+        # own reviewed contract stay exactly as they are.
         self._mode1_voice_policy = (
             VoiceSttAllPlansMode1Policy(
                 revision="mode1-all-plans-20261015-v1",
@@ -120,6 +131,19 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
             if getattr(env, "PADIEM_VOICE_MODE1_ALL_PLANS_ENABLED", None) == "true"
             else None
         )
+        self._live_token_voice_policy = (
+            VoiceSttAllPlansLiveTokenPolicy(
+                revision="live-token-all-plans-20261020-v1",
+                effective_at=datetime(2026, 10, 19, tzinfo=UTC),
+                expires_at=datetime(2099, 1, 1, tzinfo=UTC),
+            )
+            if getattr(env, "PADIEM_VOICE_LIVE_TOKEN_ALL_PLANS_ENABLED", None) == "true"
+            else None
+        )
+        # The live-token baseline is a superset of the Mode 1 baseline, so it
+        # replaces it when it is installed. When it is not installed the Mode 1
+        # baseline is used unchanged.
+        self._voice_policy = self._live_token_voice_policy or self._mode1_voice_policy
 
     async def _ensure_current_entitlement(
         self,
@@ -138,7 +162,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 product_id=product_id,
                 subject=subject_ref,
                 now=now,
-                voice_policy=self._mode1_voice_policy,
+                voice_policy=self._voice_policy,
             )
         )
 
@@ -185,7 +209,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 product_id=product_id,
                 subject=subject,
                 now=now,
-                voice_policy=self._mode1_voice_policy,
+                voice_policy=self._voice_policy,
             )
             reservation = self._store.reserve_usage(
                 wire["reservation"],

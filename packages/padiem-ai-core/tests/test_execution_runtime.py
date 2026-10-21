@@ -100,15 +100,16 @@ def test_caller_system_role_is_rejected_before_b14() -> None:
         )
 
 
-def test_additional_system_context_is_bounded_and_stays_one_role() -> None:
-    with pytest.raises(ValueError, match="transport safety envelope"):
-        request(additional_system_context="x" * (MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS + 1))
+def test_additional_system_context_is_not_refused_for_its_size_and_stays_one_role() -> None:
+    # #4379: the additional system context carries no PADIEM byte total.
+    large = request(additional_system_context="x" * 5_000_000)
 
     executor = FakeExecutor()
     runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
-    run(runtime.run(request(additional_system_context="server context")))
+    run(runtime.run(large))
     payload = executor.calls[0].to_payload()
     assert [item["role"] for item in payload["messages"]] == ["system", "user"]
+    assert "x" * 5_000_000 in payload["messages"][0]["content"]
 
 
 def test_request_copies_caller_messages() -> None:
@@ -132,8 +133,7 @@ def test_agent_policy_maps_to_b14_without_core_provider_selection() -> None:
             "temperature": 0.4,
             "allow_external_fallback": True,
             "provider_order": ["OpenRouter"],
-            "max_attempts": 3,
-        }
+            }
     )
     runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
 
@@ -149,7 +149,6 @@ def test_agent_policy_maps_to_b14_without_core_provider_selection() -> None:
         "optimize_for": "korean",
         "allow_external_fallback": True,
         "provider_order": ["OpenRouter"],
-        "max_attempts": 3,
     }
 
 
@@ -195,7 +194,6 @@ def test_unknown_model_policy_field_fails_closed_before_b14() -> None:
         {"temperature": "hot"},
         {"allow_external_fallback": "yes"},
         {"provider_order": "OpenRouter"},
-        {"max_attempts": 0},
         {"model": ""},
     ],
 )

@@ -366,8 +366,10 @@ class LocalAgentBrokerHttpHandler:
         return _aware(self._clock(), "server_now")
 
     def _decode(self, body: bytes) -> dict[str, Any]:
-        if not isinstance(body, bytes) or not body or len(body) > MAX_LOCAL_AGENT_HTTP_BODY_BYTES:
-            raise ValueError("Local Agent HTTP request body is empty or exceeds the size bound")
+        # #4379: the Local Agent HTTP body carries no PADIEM byte total. The
+        # JSON object shape, the authentication and the TLS requirement stay.
+        if not isinstance(body, bytes) or not body:
+            raise ValueError("Local Agent HTTP request body is empty")
         try:
             decoded = json.loads(body.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -573,9 +575,7 @@ class LocalAgentBrokerHttpHandler:
         sequence = _positive_int(wire["sequence"], "sequence")
         if type(wire["material"]) is not dict:
             raise ValueError("command material payload must be a plain mapping")
-        encoded = json.dumps(wire, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        if len(encoded) > MAX_LOCAL_AGENT_HTTP_BODY_BYTES:
-            raise ValueError("command material response exceeds the HTTP size bound")
+        # #4379: the command material response carries no PADIEM byte total.
         return wire, sequence
 
     def _handle_material(

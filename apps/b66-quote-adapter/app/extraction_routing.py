@@ -28,8 +28,8 @@ Reuse (no second authority):
 - extraction validation: behavioral parity with the model-independent
   ``reference/business-66-padiem-quote-v1/quote-extraction.js`` contract
   (untrusted input, strict nested types, ISO/calendar dates, validDays,
-  bounded evidence/warnings, no totals math; missing facts stay ``None``
-  and surface as ``UNKNOWN`` at the candidate projection).
+  evidence kept entry by entry, bounded warnings, no totals math; missing
+  facts stay ``None`` and surface as ``UNKNOWN`` at the candidate projection).
 
 Manual fallback is always off for the MVP (``allow_external_fallback`` is
 ``False`` on every request this module builds).
@@ -68,9 +68,10 @@ QUOTECORE_CALCULATION_AUTHORITY = True
 # Missing model facts stay explicitly unknown; fabrication is forbidden.
 UNKNOWN = "UNKNOWN"
 
-# Intake-side bounds reused from the B14/file-intake contract (decoded image
-# <= 4 MiB; native text bounded for the gateway text cap).
-MAX_IMAGE_BYTES = 4 * 1024 * 1024
+# Intake-side bounds reused from the B14/file-intake contract.
+# #4379: an image carries no PADIEM byte total. The native text bound below
+# stays. This symbol is retained for import compatibility.
+MAX_IMAGE_BYTES = 1024 * 1024 * 1024
 MAX_EXTRACTION_TEXT_CHARS = 32000
 # Validation bounds below mirror the deployed browser contract
 # ``reference/business-66-padiem-quote-v1/quote-extraction.js`` exactly.
@@ -79,8 +80,8 @@ MAX_TEXT_CHARS = 2000
 MAX_MEMO_CHARS = 8000
 MAX_FILENAME_CHARS = 255
 MAX_SOURCE_KIND_CHARS = 64
-MAX_EVIDENCE = 200
-MAX_EVIDENCE_SNIPPET_CHARS = 1000
+# #4379: the evidence carries no PADIEM item-count total and no per-item
+# character total. The evidence the caller supplies is kept as it is.
 MAX_WARNINGS = 50
 
 SENDER_FIELDS = ("company", "rep", "bizNo", "address", "phone", "email")
@@ -233,8 +234,14 @@ def _reject_unknown_keys(mapping: dict[str, Any], allowed: frozenset[str], code:
         raise B66ExtractionRoutingError(code)
 
 
-def _optional_text(value: Any, *, max_chars: int, code: str = "invalid_text") -> str | None:
-    """Mirror JS ``optionalText``: missing/blank stays ``None``, never fabricated."""
+def _optional_text(
+    value: Any, *, max_chars: int | None, code: str = "invalid_text"
+) -> str | None:
+    """Mirror JS ``optionalText``: missing/blank stays ``None``, never fabricated.
+
+    #4379: ``max_chars=None`` means the field carries no PADIEM character
+    total, so the caller's own text is kept.
+    """
     if value is None:
         return None
     if not isinstance(value, str):
@@ -246,7 +253,7 @@ def _optional_text(value: Any, *, max_chars: int, code: str = "invalid_text") ->
     # Model prompts require JSON null for missing values.
     if text == UNKNOWN:
         _fail("reserved_unknown_sentinel")
-    if len(text) > max_chars:
+    if max_chars is not None and len(text) > max_chars:
         _fail(code)
     return text
 
@@ -374,8 +381,6 @@ def _normalize_evidence(raw: Any) -> list[dict[str, Any]]:
         return []
     if not isinstance(raw, list):
         _fail("invalid_evidence")
-    if len(raw) > MAX_EVIDENCE:
-        _fail("too_much_evidence")
     entries: list[dict[str, Any]] = []
     for index, entry in enumerate(raw):
         if not isinstance(entry, dict):
@@ -394,9 +399,10 @@ def _normalize_evidence(raw: Any) -> list[dict[str, Any]]:
             if page_raw is None
             else _optional_positive_integer(page_raw, code="invalid_evidence_page")
         )
+        # #4379: the evidence snippet carries no character total.
         snippet = _optional_text(
             entry.get("snippet"),
-            max_chars=MAX_EVIDENCE_SNIPPET_CHARS,
+            max_chars=None,
             code="invalid_evidence_snippet",
         )
         confidence_raw = entry.get("confidence")

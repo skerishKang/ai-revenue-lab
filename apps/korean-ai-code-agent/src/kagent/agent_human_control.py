@@ -33,7 +33,7 @@ def _aware(value: datetime, field_name: str) -> datetime:
 def _reason(value: str | None) -> str:
     if value is None or not isinstance(value, str) or not value.strip():
         return "The agent needs a person to continue."
-    normalized = redact_secrets(value.strip())
+    normalized = value.strip()
     if len(normalized) > 1_000:
         raise ContractError("help reason exceeds 1000 characters")
     return normalized
@@ -51,7 +51,7 @@ class PendingSecretRequest:
     snapshot_ref: str | None = None
 
     def __post_init__(self) -> None:
-        label = redact_secrets(self.label.strip()) if isinstance(self.label, str) else ""
+        label = self.label.strip() if isinstance(self.label, str) else ""
         if not label:
             label = "the value this page is asking for"
         if len(label) > 160:

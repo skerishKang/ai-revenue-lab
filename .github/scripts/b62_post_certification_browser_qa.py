@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from playwright.async_api import Browser, BrowserContext, Page, Route, async_playwright
+from playwright.async_api import Browser, BrowserContext, Locator, Page, Route, async_playwright
 
 
 BASE_URL = os.environ.get("B62_QA_BASE_URL", "http://127.0.0.1:8765")
@@ -154,6 +154,93 @@ async def _submit_long_answer(page: Page, requests: list[dict[str, Any]]) -> Non
         raise AssertionError(f"expected one deterministic stream request, got {len(requests)}")
 
 
+# The turn publishes `lifecycle=completed` and `data-terminal-actions-safe=true`
+# while its geometry is still moving. Measured at 1920x1080 on the offline
+# Chromium lane: after the publish, the `.answer-copy` box shifts twice (~313ms and
+# ~489ms), the turn box re-wraps from 9925px to 8522px, and the only mutations
+# recorded at that instant are the `hidden`/`disabled` writes on `.answer-save`
+# (#4462 removed the saved-answers surface, so `updateSaveButtons` hides the
+# disclosure after the fact) — the action row feeds the turn's intrinsic width, so
+# the disclosure sync re-wraps the whole long answer.
+# `Locator.click()` reports only "element is not stable" after burning its whole
+# actionability budget, so on the 1-CPU COM2 container this suite died at the copy
+# click and the visual tail never ran. Below the row's own box is read every
+# animation frame and the click waits for a measured quiet period instead of
+# racing the browser. The real click stays, and if the geometry never goes quiet
+# the failure carries the measured rect timeline.
+_SETTLE_BUDGET_MS = 20_000
+_SETTLE_STABLE_FRAMES = 3
+# A plateau can precede the re-wrap, so consecutive-equal-frames alone is not
+# enough: the quiet period has to outlast the measured ~1.1s reflow window.
+_SETTLE_QUIET_MS = 1_500
+
+_ACTION_GEOMETRY_SETTLE_JS = """([selector, minFrames, quietMs, limitMs]) => new Promise((resolve) => {
+  const turn = document.querySelector('#messageList .assistant-message:last-child');
+  const el = turn ? turn.querySelector(selector) : null;
+  if (!el) {
+    resolve({found: false, settled: false, frames: 0, moves: [], elapsed_ms: 0, rect: null});
+    return;
+  }
+  const read = () => {
+    const r = el.getBoundingClientRect();
+    const t = turn.getBoundingClientRect();
+    return [r.x.toFixed(2), r.y.toFixed(2), r.width.toFixed(2), r.height.toFixed(2),
+            'turn_h=' + t.height.toFixed(2)].join(',');
+  };
+  const start = performance.now();
+  const moves = [];
+  let frames = 0;
+  let rect = null;
+  let quiet_since = start;
+  function tick() {
+    frames += 1;
+    const next = read();
+    if (rect !== null && next !== rect) {
+      if (moves.length < 12) {
+        moves.push({t_ms: Math.round(performance.now() - start), rect: next});
+      }
+      quiet_since = performance.now();
+    }
+    rect = next;
+    const now = performance.now();
+    if (frames >= minFrames && now - quiet_since >= quietMs) {
+      resolve({found: true, settled: true, frames, moves, elapsed_ms: Math.round(now - start), rect});
+      return;
+    }
+    if (now - start > limitMs) {
+      resolve({found: true, settled: false, frames, moves, elapsed_ms: Math.round(now - start), rect});
+      return;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})"""
+
+
+async def _wait_for_action_geometry_settled(
+    page: Page, assistant: Locator, selector: str, label: str
+) -> dict[str, Any]:
+    target = assistant.locator(selector)
+    await target.wait_for(state="visible")
+    settle = await page.evaluate(
+        _ACTION_GEOMETRY_SETTLE_JS,
+        [selector, _SETTLE_STABLE_FRAMES, _SETTLE_QUIET_MS, _SETTLE_BUDGET_MS],
+    )
+    if not settle["found"]:
+        raise AssertionError(f"{label} action disappeared before the click: {selector}")
+    if not settle["settled"]:
+        raise AssertionError(
+            f"{label} action geometry never went quiet in {settle['elapsed_ms']}ms: "
+            f"{settle['frames']} frames, {len(settle['moves'])} measured moves, "
+            f"last={settle['rect']}, moves={settle['moves']}"
+        )
+    # A collapsed subtree reports a zero rect on every frame, which is "quiet" but
+    # proves nothing. The click target has to have real geometry to be clickable.
+    if float(settle["rect"].split(",")[2]) <= 0:
+        raise AssertionError(f"{label} action has no laid-out geometry: {settle['rect']}")
+    return settle
+
+
 async def _desktop_long_answer_probe(browser: Browser) -> dict[str, Any]:
     context = await _open_context(browser, {"width": 1920, "height": 1080})
     page = await context.new_page()
@@ -181,7 +268,9 @@ async def _desktop_long_answer_probe(browser: Browser) -> dict[str, Any]:
             raise AssertionError("completed long answer is not terminal-action safe")
 
         copy_button = assistant.locator(".answer-copy")
-        await copy_button.wait_for(state="visible")
+        copy_settle = await _wait_for_action_geometry_settled(
+            page, assistant, ".answer-copy", "copy"
+        )
         await copy_button.click()
         copied = await page.evaluate("navigator.clipboard.readText()")
         if copied != LONG_ANSWER:
@@ -203,7 +292,9 @@ async def _desktop_long_answer_probe(browser: Browser) -> dict[str, Any]:
                 if await more.get_attribute("aria-expanded") != "true":
                     raise AssertionError("download overflow menu did not report expanded")
         download_button = assistant.locator(".answer-download")
-        await download_button.wait_for(state="visible")
+        download_settle = await _wait_for_action_geometry_settled(
+            page, assistant, ".answer-download", "download"
+        )
 
         download_target = OUT_DIR / "long-answer-fidelity-download.txt"
         async with page.expect_download() as download_info:
@@ -276,6 +367,13 @@ async def _desktop_long_answer_probe(browser: Browser) -> dict[str, Any]:
         return {
             "status": "PASS",
             "stream_chars": len(LONG_ANSWER),
+            "action_geometry_settle": {
+                "copy": copy_settle,
+                "download": download_settle,
+                "budget_ms": _SETTLE_BUDGET_MS,
+                "stable_frames": _SETTLE_STABLE_FRAMES,
+                "quiet_ms": _SETTLE_QUIET_MS,
+            },
             "dom_source_chars": len(raw_dom),
             "copy_chars": len(copied),
             "download_chars": len(downloaded),

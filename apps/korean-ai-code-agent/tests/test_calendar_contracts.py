@@ -34,6 +34,15 @@ ETAG_HASH = "b" * 64
 
 
 class CalendarContractsTests(unittest.TestCase):
+    def test_business_description_is_not_silently_redacted(self):
+        from kagent.calendar_contracts import _bounded_text
+        from kagent.security import redact_secrets
+
+        original = "Bearer sk-test-demo-123456789012345678901234567890"
+        self.assertNotEqual(redact_secrets(original), original)
+        self.assertEqual(_bounded_text(original, "description", 20_000), original)
+
+
     def timed(self, **overrides):
         values = dict(
             all_day=False,

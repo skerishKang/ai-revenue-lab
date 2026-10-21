@@ -66,7 +66,7 @@ async def test_service_binding_transport_wins_and_preserves_explicit_agnes_paylo
     assert payload["model"] == DEFAULT_B14_MODEL_ID
     assert payload["business14"]["required_capabilities"] == ["chat"]
     assert payload["business14"]["allow_external_fallback"] is False
-    assert payload["business14"]["max_attempts"] == 1
+    assert "max_attempts" not in payload["business14"]
     assert "provider" not in payload
     assert "authorization" not in {key.lower() for key in payload}
     assert result["runtime"] == "b14"
@@ -179,7 +179,7 @@ def test_worker_uses_python_request_constructor_and_js_fetch_argument():
     assert "request = Request(" in worker
     assert 'method="POST"' in worker
     assert 'headers={"Content-Type": "application/json"}' in worker
-    assert "body=json.dumps(payload, ensure_ascii=False)" in worker
+    assert "raw_body = json.dumps(payload, ensure_ascii=False)" in worker
     assert "response = await self.binding.fetch(request.js_object)" in worker
     assert "response = await self.binding.fetch(request)" not in worker
     assert "_to_js_object" not in worker
@@ -191,7 +191,7 @@ def test_worker_wires_service_binding_and_browser_cannot_choose_target():
     main = (root / "app/main.py").read_text(encoding="utf-8")
 
     assert "binding_value(self.env, B14_SERVICE_BINDING_NAME)" in worker
-    assert "CloudflareB14ServiceTransport(b14_binding)" in worker
+    assert "CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)" in worker
     assert 'require_service_binding=settings.runtime_mode == "b14"' in worker
     assert 'B14_SERVICE' not in main
     assert '"B14_SERVICE"' not in main
@@ -206,3 +206,5 @@ def test_existing_provisioned_worker_is_never_auto_overwritten_by_mock_workflow(
     assert "needs.preflight.outputs.worker_state == 'absent'" in workflow
     assert "Refusing repository mock deploy over an existing provisioned Worker." in workflow
     assert "Deploy initial mock-only Python Worker" in workflow
+
+

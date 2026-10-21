@@ -1,9 +1,10 @@
 """Server-owned narrowing resource policy for P01 Tool execution.
 
 This module never executes a handler and never replaces ToolRuntime. It resolves
-an effective resource ceiling that is the intersection of the existing ToolSpec
-limits and a trusted server policy. A policy can only make an invocation smaller
-or shorter; it cannot widen ToolSpec authority.
+the effective resources of a tool: the ToolSpec timeout, plus any narrowing the
+trusted server policy declares for that one tool. A policy can only make an
+invocation smaller or shorter; it cannot widen ToolSpec authority, and it
+carries no platform-wide size total (#4379).
 """
 
 from __future__ import annotations
@@ -12,7 +13,6 @@ from dataclasses import dataclass
 import re
 
 from .contracts import ToolSpec
-from .tool_runtime import MAX_TOOL_ARGUMENT_BYTES, MAX_TOOL_OUTPUT_BYTES
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 
@@ -28,17 +28,29 @@ class ToolResourcePolicyError(ValueError):
 
 @dataclass(frozen=True, slots=True)
 class ToolResourcePolicy:
-    """Trusted server ceilings that can only narrow a ToolSpec."""
+    """Trusted server narrowing that can only make an invocation smaller.
 
-    max_argument_bytes: int = MAX_TOOL_ARGUMENT_BYTES
-    max_output_bytes: int = MAX_TOOL_OUTPUT_BYTES
+    #4379: the policy carries no PADIEM aggregate ceiling. ``None`` means the
+    tool keeps the whole size the caller asks for. An explicit integer narrows
+    that one tool, which is a caller choice and not a platform-wide total.
+    """
+
+    max_argument_bytes: int | None = None
+    max_output_bytes: int | None = None
     max_timeout_seconds: float = 300.0
 
     def __post_init__(self) -> None:
-        if isinstance(self.max_argument_bytes, bool) or not isinstance(self.max_argument_bytes, int) or not 1 <= self.max_argument_bytes <= MAX_TOOL_ARGUMENT_BYTES:
-            raise ToolResourcePolicyError("invalid_tool_resource_policy", "max_argument_bytes is outside the bounded ToolRuntime range")
-        if isinstance(self.max_output_bytes, bool) or not isinstance(self.max_output_bytes, int) or not 1 <= self.max_output_bytes <= MAX_TOOL_OUTPUT_BYTES:
-            raise ToolResourcePolicyError("invalid_tool_resource_policy", "max_output_bytes is outside the bounded ToolRuntime range")
+        for name, value in (
+            ("max_argument_bytes", self.max_argument_bytes),
+            ("max_output_bytes", self.max_output_bytes),
+        ):
+            if value is None:
+                continue
+            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+                raise ToolResourcePolicyError(
+                    "invalid_tool_resource_policy",
+                    f"{name} must be a positive integer",
+                )
         if isinstance(self.max_timeout_seconds, bool) or not isinstance(self.max_timeout_seconds, (int, float)) or not 0 < self.max_timeout_seconds <= 300:
             raise ToolResourcePolicyError("invalid_tool_resource_policy", "max_timeout_seconds is outside the bounded ToolSpec range")
 
@@ -46,18 +58,24 @@ class ToolResourcePolicy:
 @dataclass(frozen=True, slots=True)
 class EffectiveToolResources:
     tool_id: str
-    argument_bytes: int
-    output_bytes: int
+    argument_bytes: int | None
+    output_bytes: int | None
     timeout_seconds: float
     narrowed: bool
 
     def __post_init__(self) -> None:
         if not isinstance(self.tool_id, str) or not _IDENTIFIER_RE.fullmatch(self.tool_id):
             raise ToolResourcePolicyError("invalid_tool_resource_policy", "tool_id must be a bounded safe identifier")
-        if isinstance(self.argument_bytes, bool) or not isinstance(self.argument_bytes, int) or self.argument_bytes < 1:
-            raise ToolResourcePolicyError("invalid_tool_resource_policy", "argument_bytes must be positive")
-        if isinstance(self.output_bytes, bool) or not isinstance(self.output_bytes, int) or self.output_bytes < 1:
-            raise ToolResourcePolicyError("invalid_tool_resource_policy", "output_bytes must be positive")
+        for name, value in (
+            ("argument_bytes", self.argument_bytes),
+            ("output_bytes", self.output_bytes),
+        ):
+            if value is None:
+                continue
+            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+                raise ToolResourcePolicyError(
+                    "invalid_tool_resource_policy", f"{name} must be positive"
+                )
         if isinstance(self.timeout_seconds, bool) or not isinstance(self.timeout_seconds, (int, float)) or self.timeout_seconds <= 0:
             raise ToolResourcePolicyError("invalid_tool_resource_policy", "timeout_seconds must be positive")
         if not isinstance(self.narrowed, bool):
@@ -74,16 +92,23 @@ class EffectiveToolResources:
 
 
 def resolve_tool_resources(spec: ToolSpec, policy: ToolResourcePolicy | None = None) -> EffectiveToolResources:
-    """Intersect a ToolSpec with trusted server resource ceilings."""
+    """Resolve the effective resources of one Tool.
+
+    #4379: the result carries no PADIEM aggregate byte ceiling. The trusted
+    policy may still narrow one tool, and its ceiling governs a Tool that
+    declares no timeout.
+    """
     if not isinstance(spec, ToolSpec):
         raise ToolResourcePolicyError("invalid_tool_resource_spec", "spec must be ToolSpec")
     active = policy or ToolResourcePolicy()
 
-    argument_bytes = min(MAX_TOOL_ARGUMENT_BYTES, active.max_argument_bytes)
-    output_bytes = min(MAX_TOOL_OUTPUT_BYTES, active.max_output_bytes)
-    timeout_seconds = min(float(spec.timeout_seconds), float(active.max_timeout_seconds))
+    argument_bytes = active.max_argument_bytes
+    output_bytes = active.max_output_bytes
+    spec_timeout = None if spec.timeout_seconds is None else float(spec.timeout_seconds)
+    policy_timeout = float(active.max_timeout_seconds)
+    timeout_seconds = policy_timeout if spec_timeout is None else min(spec_timeout, policy_timeout)
 
-    if argument_bytes < 1 or output_bytes < 1 or timeout_seconds <= 0:
+    if timeout_seconds <= 0:
         raise ToolResourcePolicyError("invalid_effective_resources", "effective Tool resources are invalid")
 
     return EffectiveToolResources(
@@ -92,8 +117,9 @@ def resolve_tool_resources(spec: ToolSpec, policy: ToolResourcePolicy | None = N
         output_bytes=output_bytes,
         timeout_seconds=timeout_seconds,
         narrowed=(
-            argument_bytes < MAX_TOOL_ARGUMENT_BYTES
-            or output_bytes < MAX_TOOL_OUTPUT_BYTES
-            or timeout_seconds < float(spec.timeout_seconds)
+            argument_bytes is not None
+            or output_bytes is not None
+            or spec_timeout is None
+            or timeout_seconds < spec_timeout
         ),
     )

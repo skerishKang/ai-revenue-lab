@@ -175,7 +175,7 @@ async def test_mock_web_search_plus_b14_produces_grounded_envelope_and_one_syste
     upstream = seen["body"]
     assert upstream["model"] == DEFAULT_B14_MODEL_ID
     assert upstream["business14"]["allow_external_fallback"] is False
-    assert upstream["business14"]["max_attempts"] == 1
+    assert "max_attempts" not in upstream["business14"]
     assert upstream["business14"]["required_capabilities"] == ["chat"]
     assert "max_tokens" not in upstream
     system_messages = [item for item in upstream["messages"] if item["role"] == "system"]
@@ -416,7 +416,10 @@ def test_grounding_context_has_hard_cap_and_response_sources_match_context_sourc
     ]
     prepared = prepare_grounding_context(items)
     context = prepared.context
-    assert len(context) <= MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS
+    # #4379: the grounded evidence context is not cut to a PADIEM character
+    # total, so every evidence item is projected.
+    assert len(context) > 5_000
+    assert len(prepared.evidence) == len(items)
     assert 1 <= len(prepared.evidence) <= 5
     assert context == build_grounding_context(items)
     for index, item in enumerate(prepared.evidence, start=1):

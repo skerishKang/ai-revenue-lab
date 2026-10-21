@@ -37,7 +37,10 @@ class StructuredDesktopStepDriver:
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
         observations = []
-        for index, result in enumerate(context.tool_results):
+        # #4379: the driver resolves the results it needs through their
+        # authorized references, so the runtime never retains every payload.
+        for index, ref in enumerate(context.tool_result_refs):
+            result = await context.resolve_tool_result(ref)
             output = result.output_copy()
             if not isinstance(output, dict):
                 raise DesktopStepContractError("desktop result must be an object")
@@ -46,7 +49,7 @@ class StructuredDesktopStepDriver:
             if receipt is not None:
                 if not isinstance(receipt, str) or not receipt:
                     raise DesktopStepContractError("invalid capture receipt")
-                if index == len(context.tool_results) - 1:
+                if index == len(context.tool_result_refs) - 1:
                     # The latest capture is authoritative for the next decision.
                     # Earlier snapshots stay as audit metadata, not R2 re-reads.
                     image = await self._read_capture(

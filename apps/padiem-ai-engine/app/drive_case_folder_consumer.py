@@ -69,7 +69,6 @@ from typing import Any
 
 from padiem_ai_core.document_normalization import (
     MAX_DOCUMENT_NAME_CHARS,
-    MAX_TEXT_DOCUMENT_BYTES,
     TEXT_DOCUMENT_MEDIA,
 )
 from padiem_ai_core.drive_capability import (
@@ -339,12 +338,6 @@ def _validate_drive_text_envelope(
     if not payload:
         raise DriveCaseFolderConsumerError(
             "empty_drive_content", "Drive content is empty."
-        )
-    if len(payload) > MAX_TEXT_DOCUMENT_BYTES:
-        raise DriveCaseFolderConsumerError(
-            "document_too_large",
-            "Drive content exceeds the bounded text document size.",
-            status_code=413,
         )
 
     version_evidence = projection.get("version_evidence")

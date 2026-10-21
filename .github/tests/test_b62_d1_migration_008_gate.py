@@ -72,6 +72,28 @@ def test_schema_classifier_contract() -> None:
     ) == "drift"
 
 
+RELEASED_008_DDL = (
+    "CREATE TABLE claw_document_metadata (document_id TEXT PRIMARY KEY, "
+    "tenant_id TEXT NOT NULL, object_key TEXT NOT NULL UNIQUE, filename TEXT NOT NULL, "
+    "media_type TEXT NOT NULL, byte_length INTEGER NOT NULL CHECK (byte_length > 0), "
+    "created_at TEXT NOT NULL, expires_at TEXT NOT NULL, deleted_at TEXT)"
+)
+
+
+def test_classifier_accepts_both_sides_of_the_4379_release_without_losing_drift() -> None:
+    # The pre-deploy probe runs before any migration is applied, so it must accept
+    # the table while production still carries the ceiling and after #4379 releases
+    # it. The zero-length refusal stays part of the contract either way.
+    helper = _load_helper()
+    assert helper.classify_schema(_payload(table_sql=RELEASED_008_DDL)) == "exact"
+    assert helper.classify_schema(
+        _payload(table_sql=RELEASED_008_DDL.replace("CHECK (byte_length > 0)", ""))
+    ) == "drift"
+    assert helper.classify_schema(
+        _payload(table_sql=RELEASED_008_DDL.replace("byte_length INTEGER NOT NULL", "byte_length INTEGER"))
+    ) == "drift"
+
+
 def test_migration_is_additive_and_bounded() -> None:
     migration = MIGRATION.read_text(encoding="utf-8")
     assert "CREATE TABLE IF NOT EXISTS claw_document_metadata" in migration

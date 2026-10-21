@@ -583,8 +583,8 @@ async def test_live_token_request_shape_through_the_handler(runtime, monkeypatch
     assert "v1beta" in call["url"]
     sent = json.loads(call["body"])
     assert sent == c.build_live_token_request_body()
-    assert sent["liveConnectConstraints"]["model"] == c.GEMINI_LIVE_STT_MODEL
-    assert "model" not in {k for k in sent if k != "liveConnectConstraints"}
+    assert sent["bidiGenerateContentSetup"]["model"] == f"models/{c.GEMINI_LIVE_STT_MODEL}"
+    assert "model" not in {k for k in sent if k != "bidiGenerateContentSetup"}
 
 
 async def test_live_token_provider_failure_is_bounded(runtime):

@@ -16,6 +16,8 @@
     "test_2550_stream_fail_taxonomy.py": "B14_MANAGED",
     "test_5108_chat_central_route_execution.py": "B14_MANAGED",
     "test_3977_provider_default_temperature_bridge.py": "B14_MANAGED",
+    "test_4317_free_completed_tier_fallback.py": "B14_MANAGED",
+    "test_4317_chat_ttft_path.py": "B14_MANAGED",
     "test_4379_full_reference_model_context.py": "B14_MANAGED",
     "test_4379_local5_chat_core_integration.py": "B14_MANAGED",
     "test_4483_final_dispatch_guard.py": "B14_MANAGED",

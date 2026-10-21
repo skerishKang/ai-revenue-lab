@@ -46,7 +46,7 @@ from padiem_ai_core.agent_approval import tool_invocation_digest
 from padiem_ai_core.contracts import ErrorClass
 from padiem_ai_core.execution_runtime import ExecutionRuntimeError
 from padiem_ai_core.pc_device_identity import is_pc_device_id
-from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, ToolInvocation
+from padiem_ai_core.tool_runtime import ToolInvocation
 
 from app.execution_context_wire import parse_execution_context
 from app.hark_office_p01_receipt import (
@@ -54,7 +54,6 @@ from app.hark_office_p01_receipt import (
     prepare_approved_office_read_receipt,
 )
 from app.tool_projection import (
-    MAX_WIRE_TOOL_ARGUMENTS_BYTES,
     EngineToolBinding,
     EngineToolProjectionError,
     json_size,
@@ -373,6 +372,83 @@ _PC_QUERY_STREAM_AGENT_IDS = frozenset({
 })
 _PC_QUERY_STREAM_APP_IDS = frozenset({"b54-padiem-claw", "padiem-chat"})
 
+# #5015: the PC execution target is a wire field only for one exact product
+# app/agent pair and one of the two canonical PC plan shapes. Every other
+# payload keeps tool_arguments an unsupported field.
+_PC_QUERY_APP_AGENT_PAIRS = {
+    "b54-padiem-claw": "agent:padiem:claw-pc-query@1",
+    "padiem-chat": "agent:padiem:chat-pc-query@1",
+}
+_PC_QUERY_PLAN_SHAPES = (
+    (("query_drives", "claw.pc.query_drives"),),
+    (("list_files", "claw.pc.list_files"), ("read_file", "claw.pc.read_file")),
+)
+
+
+def _pc_query_plan_pair(app_id: Any, plan: Any) -> bool:
+    """True only when the presenting product owns the PC agent in the plan."""
+    expected = (
+        _PC_QUERY_APP_AGENT_PAIRS.get(app_id) if isinstance(app_id, str) else None
+    )
+    return expected is not None and getattr(plan, "agent_id", None) == expected
+
+
+def _canonical_pc_plan(app_id: Any, plan: Any) -> AgentPlan | None:
+    """The canonical PC plan of one product identity, or None.
+
+    The product/agent pair and the exact canonical step shape are both
+    required, so a caller can never declare itself PC-eligible.
+
+    The selected-PC hint is deliberately not part of this test. The trusted PC
+    tool authority belongs to the canonical plan, not to the presence of one
+    optional wire field: the product adapters also send the canonical PC plan
+    without a hint when the owner has no explicit selection and the Broker
+    resolves the pinned target from the owner scope. The plan decides whether
+    the PC tool authority applies; the hint only names the target.
+    """
+    if plan is None or not _pc_query_plan_pair(app_id, plan):
+        return None
+    shape = tuple(
+        (step.step_id, getattr(step, "tool_id", None)) for step in plan.steps
+    )
+    return plan if shape in _PC_QUERY_PLAN_SHAPES else None
+
+
+def _pc_tool_arguments_gate(payload: Any) -> AgentPlan | None:
+    """Return the PC plan that may carry ``tool_arguments``, or None.
+
+    The condition is derived from the payload itself — product pair plus exact
+    canonical plan shape — so a caller can never declare itself PC-eligible. A
+    plan that fails to parse is not gated; its real contract error still
+    surfaces from the shared parser in the service body.
+    """
+    if not isinstance(payload, Mapping) or "tool_arguments" not in payload:
+        return None
+    try:
+        plan = _parse_agent_plan(payload.get("agent_plan"))
+    except (TypeError, ValueError):
+        return None
+    return _canonical_pc_plan(payload.get("app_id"), plan)
+
+
+def _validated_pc_tool_arguments(
+    payload: Any,
+) -> dict[str, dict[str, Any]] | None:
+    """Parse and validate the closed PC target for a gated payload.
+
+    Returns None for a payload that is not a PC run; raises the existing
+    ``invalid_tool_arguments`` contract error for a gated payload whose target
+    is malformed, so no second, laxer parser can accept a different device.
+    """
+    plan = _pc_tool_arguments_gate(payload)
+    if plan is None:
+        return None
+    parsed = OrchestrationEngineService._parse_tool_arguments(
+        payload.get("tool_arguments")
+    )
+    OrchestrationEngineService._validate_pc_plan_tool_arguments(plan, parsed)
+    return parsed
+
 
 def _pc_query_selected_device(tool_arguments: Any) -> str | None:
     """The server-provided device hint for the PC tool plan, never model text."""
@@ -431,6 +507,7 @@ class OrchestrationEngineService:
         approved_office_read_sink: ApprovedOfficeReadReceiptSink | None = None,
         desktop_step_driver_factory: Callable[[str], Any] | None = None,
         pc_query_step_driver_factory: Callable[[str], Any] | None = None,
+        tool_result_ledger_factory: Callable[[str, str | None], Any] | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
@@ -442,6 +519,8 @@ class OrchestrationEngineService:
             raise ValueError("approved_office_read_sink must provide record_verified_office_read")
         if approval_decision_verifier is not None and not callable(getattr(approval_decision_verifier, "verify", None)):
             raise ValueError("approval_decision_verifier must provide verify()")
+        if tool_result_ledger_factory is not None and not callable(tool_result_ledger_factory):
+            raise ValueError("tool_result_ledger_factory must be callable")
         if continuation_store is not None:
             for method in ("issue", "resolve", "claim", "commit", "release", "cancel"):
                 if not callable(getattr(continuation_store, method, None)):
@@ -458,6 +537,10 @@ class OrchestrationEngineService:
             # Default in-memory store always supports atomic cancel
             self._continuation_store_supports_atomic_cancel = True
         self._runtime_factory = runtime_factory
+        # #4379: the durable ledger owns the tool payloads. The runtime keeps
+        # only references, so a long run does not retain every tool output in
+        # the Worker.
+        self._tool_result_ledger_factory = tool_result_ledger_factory
         self._b14_service_bound = bool(b14_service_bound)
         self._idempotency_adapter = idempotency_adapter
         self._approval_decision_verifier = approval_decision_verifier
@@ -512,7 +595,6 @@ class OrchestrationEngineService:
                 "tool_arguments contains too many entries.",
             )
         parsed: dict[str, dict[str, Any]] = {}
-        total = 0
         for key, item in value.items():
             if not isinstance(key, str) or not _IDENTIFIER_RE.fullmatch(key):
                 raise ServiceContractError(
@@ -526,24 +608,15 @@ class OrchestrationEngineService:
                 )
             arguments = dict(item)
             try:
-                size = json_size(arguments)
+                json_size(arguments)
             except EngineToolProjectionError:
                 raise ServiceContractError(
                     "invalid_tool_arguments",
                     "tool_arguments must contain JSON-compatible values only.",
                 ) from None
-            if size > MAX_TOOL_ARGUMENT_BYTES:
-                raise ServiceContractError(
-                    "invalid_tool_arguments",
-                    "tool_arguments step entry exceeds the bounded argument size.",
-                )
-            total += size
+            # #4379: the orchestration wire carries no PADIEM byte total for
+            # tool arguments. The JSON shape and the step identifier rules stay.
             parsed[key] = arguments
-        if total > MAX_WIRE_TOOL_ARGUMENTS_BYTES:
-            raise ServiceContractError(
-                "tool_arguments_too_large",
-                "tool_arguments exceed the bounded orchestration argument budget.",
-            )
         return parsed
 
     @staticmethod
@@ -631,6 +704,44 @@ class OrchestrationEngineService:
             kwargs["tool_registry"] = binding.registry
             kwargs["tool_resource_policy"] = binding.resource_policy
         return kwargs
+
+    def _attach_pc_query_step_driver(
+        self,
+        *,
+        app_id: str,
+        orch_req: OrchestrationRequest,
+        exec_req: ExecutionRequest,
+    ) -> OrchestrationRequest | ServiceResponse:
+        """Bind the owner-selected step driver to the exact product PC plan.
+
+        Without it Core falls back to the plan-backed driver, which invents a
+        ``query`` argument that the closed PC tool schema rejects, so the PC
+        plan could never execute. Any other plan is returned untouched.
+        """
+        if not _pc_query_plan_pair(app_id, orch_req.agent_plan):
+            return orch_req
+        if self._pc_query_step_driver_factory is None or not orch_req.subject_id:
+            return _service_error(
+                "pc_query_model_unavailable",
+                "Owner-bound PC query model runtime unavailable.",
+                status_code=503,
+            )
+        model_id = exec_req.agent.model_policy.get("model")
+        if not isinstance(model_id, str) or not model_id:
+            label = "Claw" if app_id == "b54-padiem-claw" else "Chat"
+            return _service_error(
+                "pc_query_model_unavailable",
+                f"Resolved {label} model is unavailable.",
+                status_code=503,
+            )
+        return replace(
+            orch_req,
+            agent_step_driver=self._pc_query_step_driver_factory(
+                model_id, exec_req.agent.model_policy,
+                exec_req.agent.task_type, exec_req.agent.optimize_for,
+                tool_arguments=orch_req.tool_arguments,
+            ),
+        )
 
     @staticmethod
     def _assert_resumed_invocation_matches(
@@ -924,6 +1035,19 @@ class OrchestrationEngineService:
 
         return app_id, orch_req, exec_req, _execution_request_fingerprint(app_id=app_id, request=exec_req)
 
+    def _tool_result_ledger(self, app_id: str, subject_id: str | None) -> Any | None:
+        """The durable ledger for one run, or None when the host has no store.
+
+        The ledger is owner-scoped, so a reference from another subject can
+        never resolve this run's payload.
+        """
+        if self._tool_result_ledger_factory is None:
+            return None
+        try:
+            return self._tool_result_ledger_factory(app_id, subject_id)
+        except Exception:
+            return None
+
     async def orchestrate_payload(
         self, payload: Any, *, trusted_office_run_id: str | None = None,
     ) -> ServiceResponse:
@@ -960,30 +1084,12 @@ class OrchestrationEngineService:
                     exec_req.agent.task_type, exec_req.agent.optimize_for,
                 ),
             )
-        if (app_id == "b54-padiem-claw" and orch_req.agent_plan is not None
-            and orch_req.agent_plan.agent_id == "agent:padiem:claw-pc-query@1"):
-            if self._pc_query_step_driver_factory is None or not orch_req.subject_id:
-                return _service_error("pc_query_model_unavailable", "Owner-bound PC query model runtime unavailable.", status_code=503)
-            model_id = exec_req.agent.model_policy.get("model")
-            if not isinstance(model_id, str) or not model_id:
-                return _service_error("pc_query_model_unavailable", "Resolved Claw model is unavailable.", status_code=503)
-            orch_req = replace(orch_req, agent_step_driver=self._pc_query_step_driver_factory(
-                model_id, exec_req.agent.model_policy, exec_req.agent.task_type, exec_req.agent.optimize_for,
-                tool_arguments=orch_req.tool_arguments))
-        # Chat product thin lane: same shared PC-query tool contract and step
-        # driver shape under the Chat Engine caller identity ("padiem-chat",
-        # the exact app_id the B62 Chat Engine bridge presents) with its own
-        # agent id. A Claw agent id is never accepted here and vice versa.
-        if (app_id == "padiem-chat" and orch_req.agent_plan is not None
-            and orch_req.agent_plan.agent_id == "agent:padiem:chat-pc-query@1"):
-            if self._pc_query_step_driver_factory is None or not orch_req.subject_id:
-                return _service_error("pc_query_model_unavailable", "Owner-bound PC query model runtime unavailable.", status_code=503)
-            model_id = exec_req.agent.model_policy.get("model")
-            if not isinstance(model_id, str) or not model_id:
-                return _service_error("pc_query_model_unavailable", "Resolved Chat model is unavailable.", status_code=503)
-            orch_req = replace(orch_req, agent_step_driver=self._pc_query_step_driver_factory(
-                model_id, exec_req.agent.model_policy, exec_req.agent.task_type, exec_req.agent.optimize_for,
-                tool_arguments=orch_req.tool_arguments))
+        attached = self._attach_pc_query_step_driver(
+            app_id=app_id, orch_req=orch_req, exec_req=exec_req,
+        )
+        if isinstance(attached, ServiceResponse):
+            return attached
+        orch_req = attached
         if trusted_office_run_id is not None:
             # No ordinary app may select the Core Agent pause run id. The
             # first-party owner/Broker authority must provide this exact
@@ -1008,7 +1114,12 @@ class OrchestrationEngineService:
 
         try:
             runtime = self._runtime_factory(app_id)
-            runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
+            runner = OrchestrationRunner(
+                runtime=runtime, idempotency=self._idempotency_adapter,
+                agent_result_ledger=self._tool_result_ledger(
+                    app_id, getattr(orch_req, "subject_id", None),
+                ),
+            )
             result = await runner.run(orch_req)
         except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
             response = self._orchestration_run_error_response(exc)
@@ -1211,7 +1322,12 @@ class OrchestrationEngineService:
 
         try:
             runtime = self._runtime_factory(app_id)
-            runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
+            runner = OrchestrationRunner(
+                runtime=runtime, idempotency=self._idempotency_adapter,
+                agent_result_ledger=self._tool_result_ledger(
+                    app_id, getattr(resume_req, "subject_id", None),
+                ),
+            )
             result = await runner.resume(resume_req)
         except OrchestrationError as exc:
             if exc.code == "approval_denied":
@@ -1515,7 +1631,10 @@ class OrchestrationEngineService:
         # be the same budget. At 128 KiB a model request between the two was
         # read whole and then refused here, which made the outer budget
         # fictional. Non-model routes keep MAX_REQUEST_BODY_BYTES.
-        if len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES:
+        if (
+            MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is not None
+            and len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+        ):
             return _service_error("request_too_large", "Request body exceeds the safety limit.", status_code=413)
         try:
             payload = json.loads(raw.decode("utf-8"))
@@ -1532,35 +1651,28 @@ class OrchestrationEngineService:
         # falls back to the plan-backed driver, which injects a `query`
         # argument the drive tool schema rejects (invalid_tool_arguments).
         plan = orch_req.agent_plan
-        if plan is not None and orch_req.subject_id:
-            pc_query_plan = (
-                (app_id == "b54-padiem-claw"
-                 and plan.agent_id == "agent:padiem:claw-pc-query@1")
-                or (app_id == "padiem-chat"
-                    and plan.agent_id == "agent:padiem:chat-pc-query@1")
-            )
-            if pc_query_plan:
-                if self._pc_query_step_driver_factory is None:
-                    return _service_error(
-                        "pc_query_model_unavailable",
-                        "Owner-bound PC query model runtime unavailable.",
-                        status_code=503,
-                    )
-                stream_model_id = exec_req.agent.model_policy.get("model")
-                if not isinstance(stream_model_id, str) or not stream_model_id:
-                    return _service_error(
-                        "pc_query_model_unavailable",
-                        "Resolved model is unavailable.",
-                        status_code=503,
-                    )
-                orch_req = replace(
-                    orch_req,
-                    agent_step_driver=self._pc_query_step_driver_factory(
-                        stream_model_id, exec_req.agent.model_policy,
-                        exec_req.agent.task_type, exec_req.agent.optimize_for,
-                        tool_arguments=orch_req.tool_arguments,
-                    ),
+        if plan is not None and orch_req.subject_id and _pc_query_plan_pair(app_id, plan):
+            if self._pc_query_step_driver_factory is None:
+                return _service_error(
+                    "pc_query_model_unavailable",
+                    "Owner-bound PC query model runtime unavailable.",
+                    status_code=503,
                 )
+            stream_model_id = exec_req.agent.model_policy.get("model")
+            if not isinstance(stream_model_id, str) or not stream_model_id:
+                return _service_error(
+                    "pc_query_model_unavailable",
+                    "Resolved model is unavailable.",
+                    status_code=503,
+                )
+            orch_req = replace(
+                orch_req,
+                agent_step_driver=self._pc_query_step_driver_factory(
+                    stream_model_id, exec_req.agent.model_policy,
+                    exec_req.agent.task_type, exec_req.agent.optimize_for,
+                    tool_arguments=orch_req.tool_arguments,
+                ),
+            )
 
         # The synchronous sink receives events in emission order (Core's emit
         # closures deliver synchronously); an unbounded asyncio.Queue never
@@ -1724,7 +1836,10 @@ class OrchestrationEngineService:
         # be the same budget. At 128 KiB a model request between the two was
         # read whole and then refused here, which made the outer budget
         # fictional. Non-model routes keep MAX_REQUEST_BODY_BYTES.
-        if len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES:
+        if (
+            MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is not None
+            and len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+        ):
             return _service_error("request_too_large", "Request body exceeds the safety limit.", status_code=413)
         try:
             payload = json.loads(raw.decode("utf-8"))

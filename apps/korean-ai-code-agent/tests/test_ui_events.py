@@ -42,11 +42,11 @@ class UiEventTests(unittest.TestCase):
         self.assertFalse(rendered["credential_values"])
         self.assertFalse(rendered["execution_authority"])
 
-    def test_summary_is_bounded_and_secret_like_content_fails_closed(self):
+    def test_summary_is_bounded_and_owner_text_is_preserved(self):
         with self.assertRaises(ContractError):
             event(summary="x" * 1001)
-        with self.assertRaises(ContractError):
-            event(summary="api_key=value_should_not_be_here")
+        rendered = event(summary="api_key=value_should_not_be_here").safe_dict()
+        self.assertEqual(rendered["summary"], "api_key=value_should_not_be_here")
 
     def test_sequence_is_contiguous_and_time_monotonic(self):
         stream = ClawUiEventStream()

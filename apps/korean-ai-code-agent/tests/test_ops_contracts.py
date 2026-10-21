@@ -235,7 +235,7 @@ class OpsContractTests(unittest.TestCase):
                 authoritative=True,
             )
 
-    def test_evidence_safe_projection_redacts_accidental_secrets(self):
+    def test_evidence_projection_preserves_owner_original_content(self):
         evidence = WorkflowEvidenceRecord(
             evidence_id="ev_2",
             workspace_id="ws_1",
@@ -250,11 +250,10 @@ class OpsContractTests(unittest.TestCase):
             authoritative=True,
             metadata=(("source", "password=hiddenvalue"),),
         )
-        rendered = str(evidence.safe_dict())
-        self.assertNotIn("verysecretvalue", rendered)
-        self.assertNotIn("anothersecretvalue", rendered)
-        self.assertNotIn("hiddenvalue", rendered)
-        self.assertIn("REDACTED", rendered)
+        rendered = evidence.safe_dict()
+        self.assertEqual(rendered["source_ref"], "token=verysecretvalue")
+        self.assertEqual(rendered["summary"], "api_key=anothersecretvalue")
+        self.assertEqual(rendered["metadata"]["source"], "password=hiddenvalue")
 
     def test_accounting_handoff_is_projection_not_payment_execution(self):
         handoff = AccountingHandoff(

@@ -213,12 +213,19 @@ from .agent_definition import (
     BoundedAgentDefinition,
     missing_agent_capabilities,
 )
+from .agent_tool_result_ledger import (
+    InMemoryToolResultLedger,
+    ToolResultLedger,
+    ToolResultLedgerError,
+    ToolResultRef,
+)
 from .agent_profile_adapter import (
-    AgentProfileCompilationError,
-    CompiledAgentProfile,
+    AgentProfileCompilationError,    CompiledAgentProfile,
     ToolRuntimeBinding,
     TrustedAgentRuntimePolicy,
     compile_agent_profile,
+    effective_max_steps,
+    effective_max_tokens,
 )
 from .agent_planner import (
     MAX_AGENT_PLAN_DEPENDENCIES,
@@ -258,10 +265,8 @@ from .agent_events import (
 from .document_template import (
     DOCUMENT_TEMPLATE_SCHEMA_VERSION,
     MAX_TEMPLATE_COLLECTION_ITEMS,
-    MAX_TEMPLATE_DATA_BYTES,
     MAX_TEMPLATE_NESTING_DEPTH,
     MAX_TEMPLATE_NODES,
-    MAX_TEMPLATE_STRING_CHARS,
     DocumentTemplateApproval,
     DocumentTemplateCandidate,
     DocumentTemplateError,
@@ -712,6 +717,12 @@ __all__ = [
     "ToolRuntimeBinding",
     "TrustedAgentRuntimePolicy",
     "compile_agent_profile",
+    "effective_max_steps",
+    "effective_max_tokens",
+    "InMemoryToolResultLedger",
+    "ToolResultLedger",
+    "ToolResultLedgerError",
+    "ToolResultRef",
     "MAX_AGENT_PLAN_DEPENDENCIES",
     "MAX_AGENT_PLAN_INPUT_CHARS",
     "MAX_AGENT_PLAN_OBJECTIVE_CHARS",
@@ -741,10 +752,8 @@ __all__ = [
     "public_agent_event",
     "DOCUMENT_TEMPLATE_SCHEMA_VERSION",
     "MAX_TEMPLATE_COLLECTION_ITEMS",
-    "MAX_TEMPLATE_DATA_BYTES",
     "MAX_TEMPLATE_NESTING_DEPTH",
     "MAX_TEMPLATE_NODES",
-    "MAX_TEMPLATE_STRING_CHARS",
     "DocumentTemplateApproval",
     "DocumentTemplateCandidate",
     "DocumentTemplateError",

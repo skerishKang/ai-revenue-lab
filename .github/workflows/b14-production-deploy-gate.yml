@@ -604,10 +604,14 @@ jobs:
           python3 - "$preview" <<'PY_MODEL'
           import json, sys, urllib.request, urllib.error
           url = sys.argv[1].rstrip('/') + '/api/pilot/v1/chat/completions'
-          # #4992-free502: cat-jam-free is policy-disabled (model_disabled), so the
-          # Free-primary probe is opencode-go/beam-free with its verified message
-          # budget; gemini-3.1-flash-lite keeps the second-route probe unchanged.
-          for model, user_text, max_tokens in (('opencode-go/beam-free', 'Say hello in one short sentence.', 64), ('google/gemini-3.1-flash-lite', 'Synthetic release check: one word.', 48)):
+          # #5002: the candidate gate probes the CURRENT owner-pinned Free
+          # route pair — the declared Free primary and its first designated
+          # fallback. A model that left the Free grade roster, or that the
+          # owner excluded from execution candidates, is never probed here:
+          # this gate's live evidence has to match the route the product
+          # actually serves. The pair is bound to the shared declaration by
+          # .github/tests/test_5002_model_policy_audit.py.
+          for model, user_text, max_tokens in (('google/gemini-3.1-flash-lite', 'Say hello in one short sentence.', 48), ('google/gemma-4-26b-a4b-it', 'Synthetic release check: one word.', 64)):
               body = json.dumps({'model': model, 'messages': [{'role': 'user', 'content': user_text}], 'max_tokens': max_tokens, 'business14': {'product_tier': 'free', 'allow_external_fallback': False, 'max_retries': 0}}).encode()
               try:
                   # Edge bot protection refuses stdlib urllib's default UA; use

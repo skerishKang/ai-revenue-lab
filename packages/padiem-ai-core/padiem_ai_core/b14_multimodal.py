@@ -7,7 +7,10 @@ from typing import Any, Mapping, Sequence
 
 from .b14_execution import B14ChatRequest
 
-MAX_B14_IMAGE_BYTES = 4 * 1024 * 1024
+# #4379: a B14 image carries no PADIEM byte total, and a multimodal message
+# carries no PADIEM part total. The media type, the magic bytes, the base64
+# shape, the "exactly one image" rule and the text part rule stay.
+MAX_B14_IMAGE_BYTES = 1024 * 1024 * 1024
 MAX_B14_MULTIMODAL_PARTS = 4
 _ALLOWED_IMAGE_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 _ALLOWED_ROLES = frozenset({"system", "user", "assistant"})
@@ -38,16 +41,12 @@ def _normalize_image_data_url(value: Any) -> str:
         raise ValueError("image_url.url must be a JPEG, PNG, or WebP base64 data URL")
     if not payload:
         raise ValueError("image data must not be empty")
-    if len(payload) > ((MAX_B14_IMAGE_BYTES + 2) // 3) * 4 + 4:
-        raise ValueError("decoded image must not exceed 4 MiB")
     try:
         decoded = base64.b64decode(payload, validate=True)
     except (binascii.Error, ValueError) as exc:
         raise ValueError("image data must be valid base64") from exc
     if not decoded:
         raise ValueError("image data must not be empty")
-    if len(decoded) > MAX_B14_IMAGE_BYTES:
-        raise ValueError("decoded image must not exceed 4 MiB")
     if not _image_magic_matches(media_type, decoded):
         raise ValueError("image media type does not match image bytes")
     return f"data:{media_type};base64,{payload}"
@@ -59,8 +58,8 @@ def _normalize_multimodal_content(role: str, content: Any) -> tuple[Mapping[str,
     if isinstance(content, (str, bytes)) or not isinstance(content, Sequence):
         raise ValueError("multimodal content must be a sequence of parts")
     parts = tuple(content)
-    if not 2 <= len(parts) <= MAX_B14_MULTIMODAL_PARTS:
-        raise ValueError("multimodal user content must have 2 to 4 parts")
+    if len(parts) < 2:
+        raise ValueError("multimodal user content must have a text part and an image part")
 
     normalized: list[Mapping[str, Any]] = []
     text_count = 0

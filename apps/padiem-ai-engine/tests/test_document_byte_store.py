@@ -18,11 +18,13 @@ import sys
 from typing import Any
 
 import pytest
+from unittest import mock
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 
+from app import document_byte_store as store_module  # noqa: E402
 from app.document_byte_store import (  # noqa: E402
     DEFAULT_DOCUMENT_RETENTION_SECONDS,
     MAX_STORED_DOCUMENT_BASE64_CHARS,
@@ -37,7 +39,6 @@ from app.document_byte_store import (  # noqa: E402
 from app.document_reference import DOC_REFERENCE_PATTERN  # noqa: E402
 from padiem_ai_core.document_normalization import (  # noqa: E402
     MAX_BINARY_DOCUMENT_BYTES,
-    MAX_TEXT_DOCUMENT_BYTES,
 )
 
 FIXED_NOW = datetime(2026, 9, 19, 12, 0, 0, tzinfo=timezone.utc)
@@ -146,25 +147,30 @@ def test_document_media_allowlist_matches_core() -> None:
     assert "application/x-hwp" not in expected
 
 
-def test_text_ceiling_enforced_from_core_constants() -> None:
+def test_text_above_legacy_96k_ceiling_is_admitted_within_store_budget() -> None:
     store = _scoped()
-    assert MAX_TEXT_DOCUMENT_BYTES > 0
-    with pytest.raises(DocumentByteStoreError) as too_big:
-        _admit(store, data=b"x" * (MAX_TEXT_DOCUMENT_BYTES + 1))
-    assert too_big.value.code == "document_too_large"
-    assert too_big.value.status_code == 413
-    ok = _admit(store, data=b"x" * MAX_TEXT_DOCUMENT_BYTES)
-    assert ok.byte_size == MAX_TEXT_DOCUMENT_BYTES
+    payload = b"x" * (128 * 1024)
+    admitted = _admit(store, data=payload)
+    assert admitted.byte_size == len(payload)
 
 
 def test_binary_ceiling_enforced_and_class_ceiling_is_the_document_bound() -> None:
-    assert MAX_STORED_DOCUMENT_BYTES == MAX_BINARY_DOCUMENT_BYTES == 2 * 1024 * 1024
+    # The store ceiling is the Core binary-document bound. The Core bound is
+    # no longer a PADIEM total (#4379), so the test drives the refusal with a
+    # small bound instead of building a multi-gigabyte payload.
+    assert MAX_STORED_DOCUMENT_BYTES == MAX_BINARY_DOCUMENT_BYTES
     store = _scoped()
-    pdf = b"%PDF-1.4\n" + b"0" * (MAX_BINARY_DOCUMENT_BYTES - 9)
-    ok = _admit(store, data=pdf, media_type="application/pdf", name="deck.pdf")
-    assert ok.byte_size == MAX_BINARY_DOCUMENT_BYTES
-    with pytest.raises(DocumentByteStoreError) as too_big:
-        _admit(store, data=pdf + b"x", media_type="application/pdf")
+    # The store ceiling is the Core binary-document bound, which is no longer a
+    # PADIEM total (#4379). The test drives the refusal with a small ceiling
+    # instead of building a multi-gigabyte payload.
+    with mock.patch.dict(
+        store_module._DOCUMENT_SIZE_BY_MEDIA, {"application/pdf": 1024}
+    ):
+        pdf = b"%PDF-1.4\n" + b"0" * (1024 - 9)
+        ok = _admit(store, data=pdf, media_type="application/pdf", name="deck.pdf")
+        assert ok.byte_size == 1024
+        with pytest.raises(DocumentByteStoreError) as too_big:
+            _admit(store, data=pdf + b"x", media_type="application/pdf")
     assert too_big.value.code == "document_too_large"
 
 

@@ -8,10 +8,14 @@ import secrets
 
 USERNAME_MIN_CHARS = 4
 USERNAME_MAX_CHARS = 32
-PASSWORD_MIN_CHARS = 12
+PASSWORD_MIN_CHARS = 8
 PASSWORD_MAX_CHARS = 128
 DISPLAY_NAME_MAX_CHARS = 160
 EMAIL_MAX_CHARS = 320
+# The Control Plane identity bridge bounds a provider subject to 255
+# characters. The account login identifier is stored as that subject, so a
+# registration identifier may never be longer than the bridge accepts.
+LOGIN_IDENTIFIER_MAX_CHARS = 255
 
 PBKDF2_ALGORITHM = "sha512"
 PBKDF2_ITERATIONS = 220_000
@@ -38,6 +42,13 @@ class PasswordAuthError(ValueError):
 
 
 def normalize_username(value: object) -> str:
+    """Normalize a legacy standalone ID.
+
+    #5424 unified the account identifier on the email address, so a new
+    registration never asks for a separate ID. This grammar is kept only so
+    an account that was registered before the unification can still sign in
+    with the ID it was created with.
+    """
     if not isinstance(value, str):
         raise PasswordAuthError("invalid_username", "아이디 형식이 올바르지 않습니다.")
     username = value.strip().lower()
@@ -58,6 +69,23 @@ def normalize_email(value: object) -> str:
     return email
 
 
+def normalize_login_identifier(value: object) -> str:
+    """Normalize the single PADIEM login identifier: the account email address.
+
+    #5424 removed the separate ID field. The credential still stores its
+    subject in the ``password_credentials.username`` column, but that value is
+    now the normalized email, so the canonical id derivation and the
+    ``password:`` compatibility subject stay exactly as they were.
+    """
+    email = normalize_email(value)
+    if len(email) > LOGIN_IDENTIFIER_MAX_CHARS:
+        raise PasswordAuthError(
+            "invalid_email",
+            f"이메일은 {LOGIN_IDENTIFIER_MAX_CHARS}자 이하로 입력해 주세요.",
+        )
+    return email
+
+
 def normalize_display_name(value: object, *, fallback: str) -> str:
     if value is None:
         return fallback
@@ -71,7 +99,28 @@ def normalize_display_name(value: object, *, fallback: str) -> str:
     return name
 
 
-def validate_password(value: object, *, username: str | None = None) -> str:
+def _identifier_fragments(identifier: str | None) -> tuple[str, ...]:
+    """The identifier substrings a password may not contain.
+
+    The email address is the account identifier, so neither the whole address
+    nor its local part may appear inside a password. A local part shorter than
+    the legacy ID minimum is skipped: it is not an identifier a password could
+    meaningfully be built from, and rejecting it would reject unrelated
+    passwords.
+    """
+    if not isinstance(identifier, str):
+        return ()
+    normalized = identifier.strip().lower()
+    if not normalized:
+        return ()
+    fragments = [normalized]
+    local = normalized.partition("@")[0]
+    if len(local) >= USERNAME_MIN_CHARS and local not in fragments:
+        fragments.append(local)
+    return tuple(fragments)
+
+
+def validate_password(value: object, *, identifier: str | None = None) -> str:
     if not isinstance(value, str):
         raise PasswordAuthError("invalid_password", "비밀번호 형식이 올바르지 않습니다.")
     if not PASSWORD_MIN_CHARS <= len(value) <= PASSWORD_MAX_CHARS:
@@ -81,8 +130,12 @@ def validate_password(value: object, *, username: str | None = None) -> str:
         )
     if any(ord(ch) < 32 or ord(ch) == 127 for ch in value):
         raise PasswordAuthError("invalid_password", "비밀번호에 제어 문자를 사용할 수 없습니다.")
-    if username and username.lower() in value.lower():
-        raise PasswordAuthError("invalid_password", "비밀번호에 아이디 전체를 포함할 수 없습니다.")
+    for fragment in _identifier_fragments(identifier):
+        if fragment in value.lower():
+            raise PasswordAuthError(
+                "invalid_password",
+                "비밀번호에 이메일(로그인 아이디)을 포함할 수 없습니다.",
+            )
     return value
 
 

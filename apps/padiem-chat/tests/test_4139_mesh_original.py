@@ -30,6 +30,7 @@ MIGRATIONS = (
     Path(__file__).resolve().parents[1] / "migrations" / "047_oracle_mesh_dispatch.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "048_oracle_mesh_command.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "049_oracle_mesh_command_result_meta.sql",
+    Path(__file__).resolve().parents[1] / "migrations" / "063_oracle_mesh_dispatch_tool_call_scope.sql",
 )
 
 OWNER = "usr_owner_4139"
