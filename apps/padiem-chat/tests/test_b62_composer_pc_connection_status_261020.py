@@ -216,9 +216,14 @@ def test_the_control_opens_the_existing_management_surface() -> None:
     # The existing Connectors computer card is the fallback surface.
     assert 'document.getElementById("connectorsNavButton")' in source
     assert 'document.getElementById("connectorComputerCard")' in source
-    # No second panel or screen is created.
+    # The existing management panel is referenced, never built here. The
+    # composer's control is the visible owner of that panel, so it carries the
+    # expanded state and the control it points at.
     assert 'createElement("section")' not in source
-    assert "clawDeviceManagerPanel" not in source
+    assert 'createElement("aside")' not in source
+    assert 'createElement("dialog")' not in source
+    assert "aria-expanded" in source
+    assert "aria-controls" in source
 
 
 def test_the_control_never_starts_a_polling_loop() -> None:
