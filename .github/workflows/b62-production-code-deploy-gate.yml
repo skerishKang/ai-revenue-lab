@@ -1785,6 +1785,9 @@ jobs:
           if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
             verify_args=(--allow-add-existing-b14-service-proof-secret)
           fi
+          if [ "${ATTACH_RESEND_ALERT_SECRET}" = "true" ]; then
+            verify_args=(--allow-add-existing-resend-alert-secret)
+          fi
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
             verify_args=(--allow-add-existing-web-secrets-store)
           fi
