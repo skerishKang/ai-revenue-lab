@@ -32,10 +32,8 @@ or a new event scheme. The inbox stays exactly where it was:
 
 | Piece | Role |
 | --- | --- |
-| `apps/padiem-chat/app/claw_push_subscriptions.py` | the device-subscription store, the register/unregister routes, and the delivery seam |
+| `apps/padiem-chat/app/claw_push_subscriptions.py` | the device-subscription store, the register/unregister routes, the capability route, and the delivery seam |
 | `apps/padiem-chat/migrations/065_claw_push_subscriptions.sql` | additive device-endpoint registry (no notification record) |
-| `apps/padiem-chat/static/claw-push.js` | the browser opt-in/opt-out module |
-| `apps/padiem-chat/static/claw-push-sw.js` | the receiving service worker: it only *shows* what the inbox already persisted |
 | `apps/padiem-chat/app/app_factory.py` | the three routes and the store wiring, over the existing `PADIEM_CHAT_DB` |
 
 ### Reused, never recreated
@@ -85,8 +83,38 @@ is the source of truth; the push result never rewrites it.
 - No new customer-facing approval rule, account/role regime, or business
   policy.
 
-## Remaining activation items (not part of this source change)
+## BLOCKED — the browser client (an owner decision, not a coding gap)
 
+The **browser** half of Web Push cannot be implemented in this product's static
+JavaScript under the current privacy gate.
+
+`apps/padiem-chat/static/*` is scanned by `.github/scripts/b62_browser_persistence_audit.py`,
+which **forbids** `navigator.serviceWorker` (together with `localStorage`,
+`sessionStorage`, `indexedDB`, `document.cookie`, `cookieStore` and
+`CacheStorage`). The only allowance the gate knows is one reviewed
+`sessionStorage` key for the Android handoff inside `app.js`; there is no
+allowance for a service worker.
+
+Web Push has no alternative: `PushManager.subscribe()` requires a registered
+service worker to receive the push. So a Web Push client and the existing
+browser-persistence privacy gate are in direct conflict.
+
+The gate is an owner-set protection ("all user state stays server-side, never
+in the browser"), and weakening it to ship a push client is a product/privacy
+decision that this change does not take. The guard was left exactly as it is.
+
+**What is needed to unblock it:** an owner decision to allow a reviewed
+service-worker allowance (the same shape as the Android handoff allowance:
+one file, one reviewed key, one exact call shape) or a different delivery
+mechanism. Until then the server-side contract below is complete and tested,
+and the browser half stays unimplemented.
+
+**What is still missing after that decision:** the browser opt-in/opt-out
+module, the receiving service worker, and the wiring of the delivery seam
+into the existing terminal-run event path.
+
+0. **The browser client** — blocked above; needs the owner decision on a
+   service-worker allowance.
 1. **Push authority configuration** — a VAPID key pair and a push binding on
    the B62 Worker are required before any browser can subscribe. Until then
    the capability endpoint reports `enabled=false` and the browser is not

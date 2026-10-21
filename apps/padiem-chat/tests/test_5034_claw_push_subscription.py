@@ -58,6 +58,7 @@ from padiem_control_plane import (
 ROOT = Path(__file__).resolve().parents[1]
 
 SUBSCRIPTION_PATH = "/api/claw/inbox/push/subscription"
+CAPABILITY_PATH = "/api/claw/inbox/push/capability"
 LIST_ALERTS = "/api/claw/inbox/alerts"
 
 SIGNED_IN_USER_ID = "usr_" + "7" * 32
@@ -458,6 +459,68 @@ def test_the_subscription_table_holds_no_notification_record():
     db = _seed_db()
     with _client(db) as client:
         client.post(SUBSCRIPTION_PATH, json=_payload())
+    tables = {
+        row[0]
+        for row in db.conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        ).fetchall()
+    }
+    assert "claw_push_subscription" in tables
+    # The inbox table is untouched by the push slice.
+    columns = {
+        row[1]
+        for row in db.conn.execute("PRAGMA table_info(claw_push_subscription)").fetchall()
+    }
+    for forbidden in ("title", "status", "kind", "severity", "linked_ref"):
+        assert forbidden not in columns
+
+
+# ── the capability route ───────────────────────────────────────────────────
+
+
+def test_the_capability_is_reported_truthfully_without_a_push_authority():
+    """No push authority means the browser is not offered a dead toggle."""
+    settings = _settings()
+    app = create_app(settings=settings, history_store=MagicMock())
+    with TestClient(app, base_url="https://chat.example.test") as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(settings, SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        response = client.get(CAPABILITY_PATH)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ok"] is True
+    assert body["enabled"] is False
+    assert body["public_key"] is None
+    assert body["scope"] == "https://chat.example.test/"
+
+
+def test_a_configured_public_key_is_advertised():
+    """The VAPID public key is the public half, so it may be exposed."""
+    settings = _settings()
+    app = create_app(settings=settings, history_store=MagicMock())
+    app.state.claw_push_public_key = "BO1x-public-key-value"
+    with TestClient(app, base_url="https://chat.example.test") as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(settings, SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        response = client.get(CAPABILITY_PATH)
+    body = response.json()
+    assert body["enabled"] is True
+    assert body["public_key"] == "BO1x-public-key-value"
+
+
+def test_the_push_table_is_not_a_second_inbox():
+    """The push table is a device registry, never a notification record."""
+    db = _seed_db()
+    with _client(db) as client:
+        _post(client, SUBSCRIPTION_PATH, _payload())
     tables = {
         row[0]
         for row in db.conn.execute(

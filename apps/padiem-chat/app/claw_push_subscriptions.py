@@ -35,6 +35,17 @@ Invariants
   message.
 * ``PUSH_AUTHORITY_OPTIONAL`` — with no push authority configured the seam
   reports ``not_configured`` instead of pretending a device was reached.
+
+Browser half
+------------
+The browser opt-in module is **not** part of this change. The product's
+``static/`` JavaScript is scanned by
+``.github/scripts/b62_browser_persistence_audit.py``, which forbids
+``navigator.serviceWorker`` (with no service-worker allowance), and Web Push
+has no alternative to a service worker. That privacy gate is an owner-set
+protection and is left untouched; see
+``docs/work-orders/5034-claw-web-alert-inbox.md`` for the blocked scope and
+the decision it needs.
 """
 
 from __future__ import annotations
