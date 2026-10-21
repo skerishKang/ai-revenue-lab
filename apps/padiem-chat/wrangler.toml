@@ -1,6 +1,13 @@
 name = "padiem-chat"
 main = "worker.py"
-compatibility_date = "2026-08-25"
+# #5479: 2026-09-08 is the first compatibility date that enables the
+# `python_workers_314` flag (Pyodide 314.0.6 / CPython 3.14.2). The previous
+# 2026-08-25 date ran the Pyodide 3.13 snapshot, which is the runtime that
+# raises `NoGilError: Attempted to use PyProxy when Python GIL not held` while
+# the Cloudflare runtime initializes the Python instance, before any
+# application code runs (cloudflare/workerd#6624). The date is not lowered:
+# Cloudflare published the 3.14 memory-leak fixes as the fix for that race.
+compatibility_date = "2026-09-08"
 compatibility_flags = ["python_workers"]
 workers_dev = true
 base_dir = ".b66-worker-src"
@@ -10,7 +17,7 @@ base_dir = ".b66-worker-src"
 # or enable the feature. Rendering requires a separate explicit flag
 # PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED=true only after live owner E2E.
 # API: BROWSER.quickAction("pdf", {"html": ...}).
-# Compatibility date 2026-08-25 satisfies Quick Actions >=2026-03-24.
+# Compatibility date 2026-09-08 satisfies Quick Actions >=2026-03-24.
 [browser]
 binding = "BROWSER"
 
