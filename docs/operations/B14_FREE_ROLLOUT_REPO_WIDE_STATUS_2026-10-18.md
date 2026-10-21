@@ -5,7 +5,7 @@
 > 범위: B14, B62 Chat, B54 Claw, B66, P01/AI Engine, 공통 Control Plane, 운영 배포.
 > 이 문서는 공개 가능한 기술 상태만 기록합니다. 비공개 사업방침/인증정보는 포함하지 않습니다.
 
-> **2026-10-21 정합화 안내:** 이 문서는 2026-10-18 상태 기록이며 아래 등급표는 그 시점의 값입니다. 이후 Free 등급의 기본 라우트는 `google/gemini-3.1-flash-lite`로 바뀌었고(`google/gemma-4-26b-a4b-it`이 1순위 폴백), Plus/Pro/Max의 제품 라우트는 Muse Spark 1.3으로 유지됩니다. 현재 계약의 권위는 [B14 Free route 결정(2026-10-20)](B14_FREE_ROUTE_20261020.md)와 [Control Plane 제품 등급 라우트](../../packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py)이며, B14 등록 상태의 권위는 [단일 레지스트리](B14_MODEL_REGISTRY_SINGLE_SOURCE.md)입니다.
+> **2026-10-21 정합화 안내:** 이 문서는 2026-10-18 상태 기록이며 아래 등급표는 그 시점의 값입니다. 이후 Free 등급의 기본 라우트는 `google/gemini-3.1-flash-lite`로 바뀌었고(`google/gemma-4-26b-a4b-it`이 1순위 폴백), Plus/Pro/Max의 제품 라우트는 Muse Spark 1.3으로 유지됩니다. 같은 2026-10-21 소유자 결정으로 OpenCode Go free 계열(`opencode-go/beam-free`, `opencode-go/longcat-2.5-preview-free`)은 **실행 후보에서 제외**되어 아래 표의 Free 기본값·폴백은 더 이상 어느 등급의 실행 후보도 아닙니다. 현재 계약의 권위는 [B14 Free route 결정(2026-10-20)](B14_FREE_ROUTE_20261020.md)와 [Control Plane 제품 등급 라우트](../../packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py)이며, B14 등록 상태의 권위는 [단일 레지스트리](B14_MODEL_REGISTRY_SINGLE_SOURCE.md)입니다.
 
 ## 대표 확정 모델 라우팅 (2026-10-18 시점)
 

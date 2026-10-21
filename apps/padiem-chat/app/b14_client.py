@@ -655,23 +655,16 @@ class B14Client:
                 "AI 내부 스트리밍 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
             )
 
-        # Stream gateway forbids mid-stream model replacement. For the owner-
-        # selected tier pair primary, finish a bounded B14 completion and emit
-        # its answer as one SSE delta so a recoverable failure can use its
-        # fallback. beam-free is the Free-tier primary; each paid-tier primary
-        # comes from the shared per-tier declaration, and the manual
-        # single-attempt stream-preview structurally rejects it (owner-tier
-        # routes always carry fallback candidates), so it must not reach it.
-        # cat-jam-free is policy-disabled and no Chat path selects it.
+        # Stream gateway forbids mid-stream model replacement. Every owner-
+        # selected tier primary carries no local attempt pin (the model policy
+        # above), so the upstream may traverse the owner-pinned tier fallback
+        # on a recoverable error. The Free grade primary and the paid-grade
+        # primaries therefore share this one streaming path.
+        # #5002: a model that left the Free grade roster (or that the owner
+        # excluded from execution candidates) is no longer named here: no
+        # current Chat or Claw policy selects such a model, and a hardcoded
+        # identity for one would silently change the streaming shape.
         tier = _owner_product_tier(policy.profile)
-        if policy.model_id == "opencode-go/beam-free":
-            response = await self._complete_text(
-                policy.messages, skill=resolved_skill, model=policy.model_id,
-                additional_system_context=bounded_context, product_tier=tier,
-            )
-            yield ChatStreamEvent(delta_content=response["answer"])
-            yield ChatStreamEvent(done=True)
-            return
         request = _execution_request(
             policy.messages,
             skill=resolved_skill,
