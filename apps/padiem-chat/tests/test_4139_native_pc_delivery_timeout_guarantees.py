@@ -127,6 +127,7 @@ class PrivateBroker:
     def __init__(self):
         self.calls = []
         self.stall_ack = False
+        self.fail_ack = False
 
     async def pending_pc_identity_status(self, payload):
         self.calls.append(("status", payload))
@@ -149,7 +150,9 @@ class PrivateBroker:
         return {
             "request_ref": REF, "challenge_id": CHALLENGE, "device_id": DEVICE,
             "lease_ref": "gateway." + "d" * 32,
-            "expires_at": (NOW + timedelta(seconds=60)).isoformat(),
+            "expires_at": (
+                datetime.now(timezone.utc) + timedelta(seconds=60)
+            ).isoformat(),
             "authenticated": True, "credential_issued": False,
         }
 
@@ -167,6 +170,8 @@ class PrivateBroker:
 
     async def receive_native_pc_install_ack(self, payload):
         self.calls.append(("ack", payload))
+        if self.fail_ack:
+            raise RuntimeError("private ack rpc unconfirmed")
         if self.stall_ack:
             await asyncio.sleep(30)
         return {"ack": {"ok": True}, "source_authenticated": True, "registered": False}
@@ -180,27 +185,8 @@ class PrivateBroker:
         return {"sent_once": True, "connected": False}
 
 
-class Handoff:
-    def __init__(self, *, delivered=True):
-        self.delivered = delivered
-        self.calls = []
 
-    async def ready(self, *, challenge_id, device_id):
-        self.calls.append(("ready", challenge_id, device_id))
-        return True
-
-    async def deliver_once(self, *, challenge_id, device_id, credential, enrollment, now):
-        self.calls.append(("deliver", challenge_id, device_id))
-        if not self.delivered:
-            raise RuntimeError("private gateway rpc unconfirmed")
-        raise RuntimeError("private gateway rpc unconfirmed")
-
-    async def verify_authenticated_ack(self, *, challenge_id, device_id, ack):
-        self.calls.append(("verify", challenge_id, device_id))
-        return False
-
-
-def make_completion(*, identity=None, broker=None, private=None, handoff=None):
+def make_completion(*, identity=None, broker=None, private=None):
     identity = identity or Identity()
     broker = broker or Broker()
     private = private or PrivateBroker()
@@ -237,9 +223,9 @@ def test_timed_out_redeem_never_delivers_a_credential_or_issues_a_second_one(mon
 def test_credential_already_handed_to_the_pc_is_compensated_by_revocation(monkeypatch):
     """A delivery that reached the PC but whose ACK never confirmed is revoked."""
     monkeypatch.setattr(host_module, "CROSS_DO_RPC_TIMEOUT_SECONDS", 0.2)
-    identity, broker, private, completion = make_completion(handoff=Handoff())
-    # The handoff raises after the credential was already handed to the PC, so
-    # the canonical compensating revocation must run.
+    identity, broker, private, completion = make_completion()
+    # The credential was already handed to the PC, but the ACK never confirmed.
+    private.fail_ack = True
     with pytest.raises(IdentityBridgeError):
         asyncio.run(completion.complete(signed_owner=session(), request_ref=REF))
     assert ("revoke", BINDING["binding_ref"]) in broker.calls
@@ -256,12 +242,7 @@ def test_native_pc_port_refuses_a_second_credential_transfer():
     gateway = CanonicalNativePcTrustedGateway(
         verified=verified, private_broker=private,
     )
-    from app.canonical_connector_gateway_handoff import GatewayBootstrapLease
 
-    lease = GatewayBootstrapLease(
-        lease_ref="gateway." + "d" * 32, challenge_id=CHALLENGE,
-        device_id=DEVICE, expires_at=NOW + timedelta(seconds=60),
-    )
     lease = asyncio.run(gateway.reserve_authenticated_bootstrap(
         challenge_id=CHALLENGE, device_id=DEVICE,
     ))
@@ -283,7 +264,6 @@ def test_native_pc_port_ack_timeout_fails_closed_without_a_second_delivery(monke
     private = PrivateBroker()
     private.stall_ack = True
     from app.connector_owner_identity_pc_completion import VerifiedCanonicalPcHandoff
-    from app.canonical_connector_gateway_handoff import GatewayBootstrapLease
 
     verified = VerifiedCanonicalPcHandoff(
         challenge_id=CHALLENGE, device_id=DEVICE, proof_ref=PROOF, request_ref=REF,
