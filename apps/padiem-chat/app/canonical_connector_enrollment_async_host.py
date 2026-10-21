@@ -9,6 +9,7 @@ installs the one-time credential into the existing protected Windows store.
 """
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timezone
 import re
 from typing import Any, Protocol
@@ -21,6 +22,14 @@ from .canonical_connector_credential_handoff import (
 
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _PROOF = re.compile(r"^pairing-proof:[0-9a-f]{64}$")
+#: Bound for one cross-Durable-Object call on this path. Every await that
+#: crosses a Durable Object boundary used to be unbounded, so a stalled
+#: Durable Object left the whole owner request hanging with NO completion log
+#: and NO stage event, and the PC's own credential timeout became the only
+#: observable evidence. Bounding the individual call keeps every existing
+#: compensating revocation path reachable: a timeout raises inside the same
+#: try/except blocks that already revoke a failed handoff.
+CROSS_DO_RPC_TIMEOUT_SECONDS = 15.0
 
 
 class ProtectedDeviceCredentialHandoff(Protocol):
@@ -71,7 +80,10 @@ class CanonicalConnectorEnrollmentAsyncHost:
         security HOLD as an RPC failure; never claim a compensated enrollment.
         The typed Broker Service Binding already returns precisely this shape.
         """
-        result = await self._broker.revoke_binding(binding_ref=binding_ref)
+        result = await asyncio.wait_for(
+            self._broker.revoke_binding(binding_ref=binding_ref),
+            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
+        )
         if (
             type(result) is not dict
             or set(result) != {"binding_ref", "state"}
@@ -84,8 +96,11 @@ class CanonicalConnectorEnrollmentAsyncHost:
         """Issue only after current canonical session and explicit per-PC consent pass."""
         session_id = _ref(canonical_session_id, "canonical session")
         device = _ref(device_id, "device_id")
-        consent = await self._identity.resolve_connector_enrollment_consent_for_device(
-            session_id=session_id, device_id=device,
+        consent = await asyncio.wait_for(
+            self._identity.resolve_connector_enrollment_consent_for_device(
+                session_id=session_id, device_id=device,
+            ),
+            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
         )
         if (
             consent.get("device_id") != device
@@ -95,16 +110,22 @@ class CanonicalConnectorEnrollmentAsyncHost:
             ))
         ):
             raise IdentityBridgeError(403, "enrollment_consent_required", "Explicit current consent for this PC is required.")
-        challenge, code = await self._broker.issue_enrollment_challenge(
-            account_ref=consent["account_ref"], workspace_ref=consent["workspace_ref"],
-            consent_ref=consent["consent_id"], owner_ref=consent["owner_subject_id"], device_id=device,
+        challenge, code = await asyncio.wait_for(
+            self._broker.issue_enrollment_challenge(
+                account_ref=consent["account_ref"], workspace_ref=consent["workspace_ref"],
+                consent_ref=consent["consent_id"], owner_ref=consent["owner_subject_id"], device_id=device,
+            ),
+            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
         )
         # Identity and Broker are separate DOs. Re-read current consent after
         # challenge creation to narrow the withdrawal race before binding the
         # original session or releasing the code. A refused challenge remains
         # unbound and therefore cannot redeem.
-        latest = await self._identity.resolve_connector_enrollment_consent_for_device(
-            session_id=session_id, device_id=device,
+        latest = await asyncio.wait_for(
+            self._identity.resolve_connector_enrollment_consent_for_device(
+                session_id=session_id, device_id=device,
+            ),
+            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
         )
         if (
             latest.get("consent_id") != consent["consent_id"]
@@ -118,9 +139,12 @@ class CanonicalConnectorEnrollmentAsyncHost:
         # The one-time code is never released to the browser until the existing
         # Identity DO has durably bound the broker challenge to the original
         # canonical login session. If this fails, the orphan challenge cannot redeem.
-        await self._identity.bind_connector_enrollment_challenge(
-            session_id=session_id, challenge_id=challenge["challenge_id"],
-            expires_at=challenge["expires_at"],
+        await asyncio.wait_for(
+            self._identity.bind_connector_enrollment_challenge(
+                session_id=session_id, challenge_id=challenge["challenge_id"],
+                expires_at=challenge["expires_at"],
+            ),
+            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
         )
         return {
             "challenge": {k: challenge[k] for k in (
@@ -145,24 +169,33 @@ class CanonicalConnectorEnrollmentAsyncHost:
             or not callable(getattr(self._handoff, "verify_authenticated_ack", None))
         ):
             raise IdentityBridgeError(503, "credential_handoff_unavailable", "Protected device credential installation is unavailable.")
-        binding = await self._broker.get_enrollment_binding(challenge_id=challenge)
+        binding = await asyncio.wait_for(
+            self._broker.get_enrollment_binding(challenge_id=challenge),
+            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
+        )
         if binding.get("device_id") != device:
             raise IdentityBridgeError(403, "enrollment_device_swap_denied", "Challenge belongs to another PC.")
-        authorization = await self._identity.authorize_connector_enrollment_redeem(
-            challenge_id=challenge, consent_id=binding["consent_ref"], device_id=device,
-            owner_ref=binding["owner_ref"], account_ref=binding["account_ref"],
-            workspace_ref=binding["workspace_ref"],
+        authorization = await asyncio.wait_for(
+            self._identity.authorize_connector_enrollment_redeem(
+                challenge_id=challenge, consent_id=binding["consent_ref"], device_id=device,
+                owner_ref=binding["owner_ref"], account_ref=binding["account_ref"],
+                workspace_ref=binding["workspace_ref"],
+            ),
+            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
         )
         # The bounded HMAC-shaped input is not proof. Require a nonconsuming
         # read of the canonical Broker's original OWNER/device-bound pairing
         # code before attempting gateway reservation or consuming the challenge.
         # The gateway must still authenticate the physical outbound PC/session.
-        proof = await self._broker.verify_enrollment_bootstrap(
-            challenge_id=challenge, device_id=device, proof_ref=proof_ref,
-            consent_ref=authorization["consent_id"],
-            owner_ref=authorization["owner_subject_id"],
-            account_ref=authorization["account_ref"],
-            workspace_ref=authorization["workspace_ref"],
+        proof = await asyncio.wait_for(
+            self._broker.verify_enrollment_bootstrap(
+                challenge_id=challenge, device_id=device, proof_ref=proof_ref,
+                consent_ref=authorization["consent_id"],
+                owner_ref=authorization["owner_subject_id"],
+                account_ref=authorization["account_ref"],
+                workspace_ref=authorization["workspace_ref"],
+            ),
+            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
         )
         if (
             type(proof) is not dict
@@ -180,24 +213,33 @@ class CanonicalConnectorEnrollmentAsyncHost:
         # Never consume the one-time challenge until the existing secure local
         # credential destination proves ready.
         try:
-            ready = await self._handoff.ready(challenge_id=challenge, device_id=device)
+            ready = await asyncio.wait_for(
+            self._handoff.ready(challenge_id=challenge, device_id=device),
+            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
+        )
         except Exception as exc:
             raise IdentityBridgeError(503, "credential_handoff_unavailable", "Protected device credential installation is unavailable.") from exc
         if ready is not True:
             raise IdentityBridgeError(503, "credential_handoff_unavailable", "Protected device credential installation is unavailable.")
-        enrollment, raw_credential = await self._broker.redeem_enrollment(
-            challenge_id=challenge, device_id=device, proof_ref=proof_ref,
-            consent_ref=authorization["consent_id"], owner_ref=authorization["owner_subject_id"],
-            account_ref=authorization["account_ref"], workspace_ref=authorization["workspace_ref"],
+        enrollment, raw_credential = await asyncio.wait_for(
+            self._broker.redeem_enrollment(
+                challenge_id=challenge, device_id=device, proof_ref=proof_ref,
+                consent_ref=authorization["consent_id"], owner_ref=authorization["owner_subject_id"],
+                account_ref=authorization["account_ref"], workspace_ref=authorization["workspace_ref"],
+            ),
+            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
         )
         # Cross-DO operations cannot share one transaction. Re-read the original
         # session and current grant immediately after Broker mutation; if consent
         # was withdrawn in that window, revoke the new binding before handoff.
         try:
-            await self._identity.authorize_connector_enrollment_redeem(
-                challenge_id=challenge, consent_id=authorization["consent_id"], device_id=device,
-                owner_ref=authorization["owner_subject_id"], account_ref=authorization["account_ref"],
-                workspace_ref=authorization["workspace_ref"],
+            await asyncio.wait_for(
+                self._identity.authorize_connector_enrollment_redeem(
+                    challenge_id=challenge, consent_id=authorization["consent_id"], device_id=device,
+                    owner_ref=authorization["owner_subject_id"], account_ref=authorization["account_ref"],
+                    workspace_ref=authorization["workspace_ref"],
+                ),
+                timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
             )
         except Exception as exc:
             try:
@@ -255,11 +297,14 @@ class CanonicalConnectorEnrollmentAsyncHost:
         # and revoke the already-created Broker binding on any change. This is
         # compensating recovery, not a cross-DO atomic transaction.
         try:
-            await self._identity.authorize_connector_enrollment_redeem(
-                challenge_id=challenge, consent_id=authorization["consent_id"],
-                device_id=device, owner_ref=authorization["owner_subject_id"],
-                account_ref=authorization["account_ref"],
-                workspace_ref=authorization["workspace_ref"],
+            await asyncio.wait_for(
+                self._identity.authorize_connector_enrollment_redeem(
+                    challenge_id=challenge, consent_id=authorization["consent_id"],
+                    device_id=device, owner_ref=authorization["owner_subject_id"],
+                    account_ref=authorization["account_ref"],
+                    workspace_ref=authorization["workspace_ref"],
+                ),
+                timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
             )
         except Exception as exc:
             try:

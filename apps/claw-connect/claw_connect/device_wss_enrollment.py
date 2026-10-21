@@ -51,11 +51,14 @@ INSTALL_ACK_TIMEOUT_SECONDS = 25.0
 #: one-shot native delivery RPC), which runs on the SAME socket but on the
 #: server's own clock. The generic frame bound above is shorter than that
 #: canonical path (the server waits up to ``INSTALL_ACK_TIMEOUT_SECONDS`` for
-#: this PC's install ACK, and the Broker gateway lease itself lives 60s), so
-#: the PC used to abort a registration that was still progressing and report
-#: ``device_credential_response_timeout``. This bound covers the canonical
-#: delivery and still stays inside the Broker lease.
+#: this PC's install ACK), so the PC used to abort a registration the server
+#: was still completing. This is a CLIENT CEILING only; the effective window
+#: is additionally limited by the remaining Broker gateway lease.
 CREDENTIAL_DELIVERY_TIMEOUT_SECONDS = 45.0
+#: The Broker authorizes this PC's ``install_ack`` against the SAME gateway
+#: lease, so the lease must still be alive after the credential arrives. This
+#: reserve keeps that time available for the protected install and the ACK.
+INSTALL_ACK_RESERVE_SECONDS = 10.0
 BOOTSTRAP_TRANSCRIPT = "padiem.connector-gateway-bootstrap.v1"
 SESSION_TRANSCRIPT = "padiem.connector-gateway-session.v1"
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
@@ -215,19 +218,19 @@ async def _receive(socket: DeviceTextSocket, fields: frozenset[str]) -> dict[str
 
 
 async def _receive_credential_delivery(
-    socket: DeviceTextSocket, fields: frozenset[str],
+    socket: DeviceTextSocket, fields: frozenset[str], *, timeout: float,
 ) -> dict[str, Any]:
     """Wait for the canonical owner-driven credential delivery.
 
     The delivery is produced by the server's owner approval flow, not by the
     preceding ``credential_fetch`` frame, so it gets its own bounded window
-    instead of the generic per-frame bound. It is still bounded, still
-    fail-closed, and never stores or acknowledges anything on timeout.
+    instead of the generic per-frame bound. The caller supplies the effective
+    window, already limited by the remaining Broker gateway lease. It is still
+    bounded, still fail-closed, and never stores or acknowledges anything on
+    timeout.
     """
     return _frame(
-        await asyncio.wait_for(
-            socket.receive_text(), timeout=CREDENTIAL_DELIVERY_TIMEOUT_SECONDS,
-        ),
+        await asyncio.wait_for(socket.receive_text(), timeout=timeout),
         fields,
     )
 
@@ -280,6 +283,11 @@ async def run_review_only_device_session(
             or _LEASE.fullmatch(lease) is None or not _proof(nonce)):
             raise DeviceSessionRefused("device_nonce_correlation_invalid")
         _timestamp(first["expires_at"], clock)
+        # The Broker gateway lease is the canonical clock of this session: the
+        # Broker refuses ``credential_fetch`` AND the later ``install_ack``
+        # once the lease expired, so the credential must arrive early enough
+        # for this PC to still install it and have the ACK authorized.
+        lease_expires_at = _timestamp(first["expires_at"], clock)
         if on_stage is not None:
             on_stage("device_session_nonce_verified")
         await _send(socket, {
@@ -307,11 +315,25 @@ async def run_review_only_device_session(
         })
         if on_stage is not None:
             on_stage("device_session_credential_fetch_sent")
+        # The wait for the canonical credential is bounded by the Broker lease,
+        # not only by a client-side constant: the lease must still be alive
+        # when this PC installs the credential and its install ACK is
+        # authorized. A window longer than the remaining lease would let the
+        # Broker refuse the ACK of a credential it already delivered.
+        lease_remaining = (
+            lease_expires_at - datetime.now(timezone.utc)
+        ).total_seconds()
+        delivery_window = min(
+            CREDENTIAL_DELIVERY_TIMEOUT_SECONDS,
+            lease_remaining - INSTALL_ACK_RESERVE_SECONDS,
+        )
+        if delivery_window <= 0.0:
+            raise DeviceSessionRefused("device_credential_delivery_window_expired")
         try:
             delivery = await _receive_credential_delivery(socket, frozenset({
                 "type", "challenge_id", "device_id", "lease_ref", "binding",
                 "credential_b64",
-            }))
+            }), timeout=delivery_window)
         except asyncio.TimeoutError as exc:
             raise DeviceSessionRefused("device_credential_response_timeout") from exc
         if (delivery["type"] != "credential_once"

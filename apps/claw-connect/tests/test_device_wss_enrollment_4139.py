@@ -6,11 +6,12 @@ from __future__ import annotations
 
 import asyncio
 import base64
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
 import json
 import sys
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -79,11 +80,13 @@ class FakeBindingStore:
 
 
 class Socket:
-    def __init__(self, *, terminal="paired_offline", corrupted=None):
+    def __init__(self, *, terminal="paired_offline", corrupted=None,
+                 lease_expires_at="2030-01-01T00:00:00+00:00"):
         self.sent = []
         self.closed = False
         self.terminal = terminal
         self.corrupted = corrupted
+        self.lease_expires_at = lease_expires_at
         self.index = 0
     async def send_text(self, message):
         self.sent.append(json.loads(message))
@@ -93,7 +96,7 @@ class Socket:
         if stage == 0:
             data = {"type": "nonce", "challenge_id": CID,
                     "device_id": DEVICE, "lease_ref": LEASE,
-                    "nonce_hex": NONCE, "expires_at": "2030-01-01T00:00:00+00:00"}
+                    "nonce_hex": NONCE, "expires_at": self.lease_expires_at}
             if self.corrupted == "nonce_swap": data["device_id"] = "device.attacker"
             if self.corrupted == "duplicate": return '{"type":"nonce","type":"nonce"}'
         elif stage == 1:
@@ -523,3 +526,55 @@ def test_credential_delivery_stall_still_fails_closed_without_store_or_ack(monke
     assert [entry["type"] for entry in sock.sent] == [
         "begin", "finish", "credential_fetch",
     ]
+
+
+def test_credential_window_is_capped_by_the_remaining_broker_lease():
+    """#3099: the wait may never outlive the Broker gateway lease.
+
+    The Broker authorizes the ``install_ack`` against the SAME lease, so a
+    credential window longer than the remaining lease would let the Broker
+    refuse the ACK of a credential it already delivered.
+    """
+    import claw_connect.device_wss_enrollment as module
+
+    lease = datetime.now(timezone.utc) + timedelta(seconds=12)
+    sock = Socket(lease_expires_at=lease.isoformat())
+    store = Store()
+
+    class LateCredentialSocket(Socket):
+        async def receive_text(self):
+            if self.index == 2:
+                # Later than the lease-derived window (12s lease minus the
+                # 10s ACK reserve), earlier than the 45s client ceiling.
+                await asyncio.sleep(5)
+            return await super().receive_text()
+
+    sock = LateCredentialSocket(lease_expires_at=lease.isoformat())
+    started = time.monotonic()
+    with pytest.raises(DeviceSessionRefused, match=r"^device_credential_response_timeout$"):
+        run(sock, store)
+    elapsed = time.monotonic() - started
+    # It gave up on the lease-derived window, not after the 45s ceiling.
+    assert elapsed < 4.0
+    assert sock.closed is True
+    assert store.saved == []
+    assert [entry["type"] for entry in sock.sent] == [
+        "begin", "finish", "credential_fetch",
+    ]
+    assert module.INSTALL_ACK_RESERVE_SECONDS > 0.0
+
+
+def test_credential_window_refuses_immediately_when_the_lease_cannot_carry_the_ack():
+    """A lease that cannot still authorize the install ACK is refused at once."""
+    lease = datetime.now(timezone.utc) + timedelta(seconds=1)
+    sock = Socket(lease_expires_at=lease.isoformat())
+    store = Store()
+    started = time.monotonic()
+    with pytest.raises(
+        DeviceSessionRefused, match=r"^device_credential_delivery_window_expired$",
+    ):
+        run(sock, store)
+    assert time.monotonic() - started < 1.0
+    assert sock.closed is True
+    assert store.saved == []
+    assert [entry["type"] for entry in sock.sent] == ["begin", "finish", "credential_fetch"]
