@@ -12,8 +12,10 @@ Boundary rules enforced by this module:
 - Durable memory updates require explicit user approval (approved, or an
   edited proposal approved with edits). Applying anything else fails closed.
 - Durable records keep a source/evidence reference where possible.
-- Raw inbound body is never part of a safe projection; the source ref may
-  hold a review-only excerpt that is excluded from ``safe_dict`` output.
+- An authorized owner read carries the customer's own original business
+  content in full. The diagnostic/log projection of the same record does not
+  carry the raw inbound body; the source ref may hold a review-only excerpt
+  that is excluded from the diagnostic projection.
 - No hidden model/provider output is stored as authority: model-derived
   values must arrive as candidates the user reviews.
 
@@ -175,9 +177,11 @@ def sha256_text(body: str) -> str:
 class ClawMemorySourceRef:
     """Evidence reference for a memory fact. Never authoritative by itself.
 
-    ``raw_excerpt`` is optional and review-only: it is excluded from
-    ``safe_dict`` output by default. The SHA-256 digest lets durable records
-    point back to the exact inbound text without embedding the untrusted body.
+    ``raw_excerpt`` is optional and review-only. An authorized read of the
+    owner's own workspace carries it, because it is the customer's original
+    business content; the diagnostic/log projection does not. The SHA-256
+    digest lets durable records point back to the exact inbound text without
+    embedding the untrusted body.
     """
 
     source_id: str
@@ -201,6 +205,7 @@ class ClawMemorySourceRef:
             )
 
     def safe_dict(self, *, include_raw: bool = False) -> dict[str, Any]:
+        """The diagnostic/log projection of this source reference."""
         data: dict[str, Any] = {
             "contract_version": CONTRACT_VERSION,
             "source_id": self.source_id,
@@ -210,6 +215,19 @@ class ClawMemorySourceRef:
             "created_at": self.created_at.isoformat(),
         }
         if include_raw and self.raw_excerpt is not None:
+            data["raw_excerpt"] = self.raw_excerpt
+        return data
+
+    def authorized_dict(self) -> dict[str, Any]:
+        """The owner's own original inbound text for an authorized read.
+
+        #5360: an authorized account/workspace read carries the customer's own
+        original business content in full. The diagnostic/log projection stays
+        the ``safe_dict`` form, so a credential never reaches a log through
+        this contract.
+        """
+        data = self.safe_dict()
+        if self.raw_excerpt is not None:
             data["raw_excerpt"] = self.raw_excerpt
         return data
 
@@ -238,6 +256,7 @@ class ClawMemoryCandidate:
         object.__setattr__(self, "created_at", _aware_utc(self.created_at, "created_at"))
 
     def safe_dict(self) -> dict[str, Any]:
+        """The diagnostic/log projection of this candidate."""
         return {
             "contract_version": CONTRACT_VERSION,
             "candidate_id": self.candidate_id,
@@ -245,6 +264,18 @@ class ClawMemoryCandidate:
             "kind": self.kind.value,
             "payload": dict(self.payload),
             "source": self.source.safe_dict(),
+            "created_at": self.created_at.isoformat(),
+        }
+
+    def authorized_dict(self) -> dict[str, Any]:
+        """The authorized owner's own candidate, with the original source text."""
+        return {
+            "contract_version": CONTRACT_VERSION,
+            "candidate_id": self.candidate_id,
+            "workspace_id": self.workspace_id,
+            "kind": self.kind.value,
+            "payload": dict(self.payload),
+            "source": self.source.authorized_dict(),
             "created_at": self.created_at.isoformat(),
         }
 
@@ -298,6 +329,7 @@ class ClawMemoryProposal:
         return self.state in (ClawProposalState.APPROVED, ClawProposalState.EDITED)
 
     def safe_dict(self) -> dict[str, Any]:
+        """The diagnostic/log projection of this proposal."""
         return {
             "contract_version": CONTRACT_VERSION,
             "proposal_id": self.proposal_id,
@@ -307,6 +339,23 @@ class ClawMemoryProposal:
             "edited_payload": dict(self.edited_payload) if self.edited_payload else None,
             "effective_payload": self.effective_payload,
             "source": self.source.safe_dict(),
+            "candidate_id": self.candidate_id,
+            "state": self.state.value,
+            "decided_by": self.decided_by,
+            "decided_at": self.decided_at.isoformat() if self.decided_at else None,
+        }
+
+    def authorized_dict(self) -> dict[str, Any]:
+        """The authorized owner's own proposal, with the original source text."""
+        return {
+            "contract_version": CONTRACT_VERSION,
+            "proposal_id": self.proposal_id,
+            "workspace_id": self.workspace_id,
+            "kind": self.kind.value,
+            "payload": dict(self.payload),
+            "edited_payload": dict(self.edited_payload) if self.edited_payload else None,
+            "effective_payload": self.effective_payload,
+            "source": self.source.authorized_dict(),
             "candidate_id": self.candidate_id,
             "state": self.state.value,
             "decided_by": self.decided_by,
@@ -837,7 +886,27 @@ class InMemoryClawMemoryStore(ClawMemoryStore):
         )
 
     def projection(self, workspace_id: str, *, member_id: str | None = None) -> dict[str, Any]:
-        """Safe workspace projection. Raw inbound bodies are never included."""
+        """The authorized workspace projection for the owner of that workspace.
+
+        #5360: the owner's own original business content is carried in full.
+        The diagnostic/log form of the same workspace is
+        ``diagnostic_projection``.
+        """
+        return self._projection(workspace_id, member_id=member_id, authorized=True)
+
+    def diagnostic_projection(
+        self, workspace_id: str, *, member_id: str | None = None,
+    ) -> dict[str, Any]:
+        """The log/receipt projection of the same workspace.
+
+        It keeps the credential protection of the diagnostic form: the raw
+        inbound body is never part of this projection.
+        """
+        return self._projection(workspace_id, member_id=member_id, authorized=False)
+
+    def _projection(
+        self, workspace_id: str, *, member_id: str | None, authorized: bool,
+    ) -> dict[str, Any]:
         return {
             "contract_version": CONTRACT_VERSION,
             "workspace_id": workspace_id,
@@ -847,7 +916,7 @@ class InMemoryClawMemoryStore(ClawMemoryStore):
             "tasks": [task.safe_dict() for task in self.list_tasks(workspace_id)],
             "alerts": [alert.safe_dict() for alert in self.list_alerts(workspace_id, member_id=member_id)],
             "proposals": [
-                proposal.safe_dict()
+                (proposal.authorized_dict() if authorized else proposal.safe_dict())
                 for proposal in self._proposals.values()
                 if proposal.workspace_id == workspace_id
             ],

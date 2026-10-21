@@ -428,7 +428,13 @@ async def test_raw_output_content_is_not_persisted() -> None:
     assert RAW_CONTENT not in json.dumps([t.safe_dict() for t in store.tasks.values()], default=str)
 
 
-async def test_secret_shaped_title_is_redacted() -> None:
+async def test_the_owner_task_keeps_the_original_title() -> None:
+    """#5360: the owner's own Task keeps the title the run produced.
+
+    The run record already holds that original title, so redacting it here
+    would make the inbox disagree with the run the user can inspect. The
+    diagnostic and external-transmission form stays redacted.
+    """
     store = _MemoryStore()
     raw_title = "Authorization: Bearer " + "a" * 24
     # Guard: the fixture must actually be secret-shaped for the canonical helper.
@@ -440,8 +446,9 @@ async def test_secret_shaped_title_is_redacted() -> None:
     result = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
 
     task = store.tasks[result.record_id]
-    assert task.title == redact_secrets(raw_title)
-    assert task.title != raw_title
+    assert task.title == raw_title
+    # The diagnostic/log form of the same title is still redacted.
+    assert redact_secrets(task.title) != task.title
 
 
 # ── D1 adapter proof ─────────────────────────────────────────────────────────

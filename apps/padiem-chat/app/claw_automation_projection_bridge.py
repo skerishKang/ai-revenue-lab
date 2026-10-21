@@ -48,7 +48,6 @@ from kagent.claw_memory import (
     ClawFollowupTask,
     ClawTaskStatus,
 )
-from kagent.core import redact_secrets
 
 from .claw_automation_owner_resolution import ResolvedAutomationOwner
 
@@ -203,8 +202,13 @@ async def project_scheduled_run_output(
     if output.output_type != output_type:
         raise AutomationProjectionError("output_type does not match the rule output_type")
 
-    # Reuse the existing secret-redaction helper; never store the raw content body.
-    title = redact_secrets(output.title)
+    # #5360: the owner's own Task/Alert is authorized data, so it carries the
+    # output title exactly as the scheduled run produced it. The run record
+    # already holds that original title, so redacting it here would make the
+    # inbox disagree with the run the user can inspect. Credential material
+    # stays redacted in the diagnostic and external-transmission projections,
+    # and the raw content body is still never stored.
+    title = output.title
 
     if output_type is ClawAutomationOutputType.TASK_PROPOSAL:
         return await _project_task(

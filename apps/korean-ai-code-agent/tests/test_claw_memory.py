@@ -278,18 +278,47 @@ class ClawMemoryContractTests(unittest.TestCase):
         self.assertEqual([a.alert_id for a in store.list_alerts("ws-a", member_id="member-2")], ["alert-2"])
         self.assertEqual(len(store.list_alerts("ws-a", member_id="member-1")), 2)
 
-    def test_safe_projection_excludes_raw_body(self):
+    def test_the_authorized_projection_carries_the_owners_original_body(self):
+        """#5360: the owner reads their own original business content in full."""
         store = InMemoryClawMemoryStore()
         store.submit_candidate(make_party_candidate(), proposal_id="prop-1")
         projection = store.projection("ws-a")
         rendered = repr(projection)
-        self.assertNotIn(RAW_BODY, rendered)
+        self.assertIn(RAW_BODY, rendered)
         self.assertIn(sha256_text(RAW_BODY), rendered)
         source = make_source()
+        # The diagnostic/log form of the same source never carries the body.
         self.assertNotIn("raw_excerpt", source.safe_dict())
         self.assertIn("raw_excerpt", source.safe_dict(include_raw=True))
         self.assertEqual(source.safe_dict(include_raw=True)["raw_excerpt"], RAW_BODY)
         self.assertEqual(source.safe_dict(include_raw=False).get("raw_excerpt"), None)
+        self.assertEqual(source.authorized_dict()["raw_excerpt"], RAW_BODY)
+
+    def test_the_diagnostic_projection_excludes_the_raw_body(self):
+        """The log/receipt form keeps the credential protection."""
+        store = InMemoryClawMemoryStore()
+        store.submit_candidate(make_party_candidate(), proposal_id="prop-1")
+        diagnostic = store.diagnostic_projection("ws-a")
+        self.assertNotIn(RAW_BODY, repr(diagnostic))
+        self.assertIn(sha256_text(RAW_BODY), repr(diagnostic))
+
+    def test_another_workspace_never_sees_the_owners_original_body(self):
+        """A different owner reads nothing of another workspace's memory."""
+        store = InMemoryClawMemoryStore()
+        store.submit_candidate(make_party_candidate(), proposal_id="prop-1")
+        other = store.projection("ws-b")
+        self.assertEqual(other["parties"], [])
+        self.assertEqual(other["proposals"], [])
+        self.assertNotIn(RAW_BODY, repr(other))
+        self.assertNotIn(RAW_BODY, repr(store.diagnostic_projection("ws-b")))
+        with self.assertRaises(ClawMemoryError):
+            store.decide_proposal(
+                "prop-1",
+                ClawProposalState.APPROVED,
+                workspace_id="ws-b",
+                decided_by="owner-2",
+                decided_at=T1,
+            )
 
     def test_cross_workspace_candidate_and_access_fail_closed(self):
         with self.assertRaises(ClawMemoryError):
