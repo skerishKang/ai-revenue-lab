@@ -116,6 +116,13 @@ describe("React clone conversation contract", () => {
     await user.click(document.querySelector("summary.history-more") as HTMLElement);
     await user.click(screen.getByRole("button", { name: /대화 삭제/ }));
 
+    // A destructive action asks first, through the product's own confirm
+    // dialog, and the focus returns to the trigger.
+    await waitFor(() => {
+      expect(document.getElementById("confirmDialog")).toBeInTheDocument();
+    });
+    await user.click(document.getElementById("confirmDialogConfirm") as HTMLElement);
+
     await waitFor(() => {
       const deleteCall = calls.find((call) => call.method === "DELETE");
       expect(deleteCall).toBeTruthy();

@@ -19,9 +19,17 @@ async function collectConsoleErrors(page: Page): Promise<string[]> {
   return errors;
 }
 
+/**
+ * The first screen must render without waiting for the external font files, so
+ * the navigation waits for the document and not for every font request.
+ */
+async function open(page: Page) {
+  await page.goto("/", { waitUntil: "domcontentloaded", timeout: 60000 });
+}
+
 test("first screen renders with the operational shell", async ({ page }) => {
   const errors = await collectConsoleErrors(page);
-  await page.goto("/");
+  await open(page);
 
   await expect(page.locator(".app-shell")).toHaveAttribute("data-state", "home");
   await expect(page.locator("#sidebar")).toBeVisible();
@@ -37,7 +45,7 @@ test("the sidebar shows the recent conversations and switches between them", asy
   page,
   isMobile,
 }) => {
-  await page.goto("/");
+  await open(page);
   if (isMobile) {
     // On the mobile layout the sidebar is a drawer; it has to be opened before
     // a recent conversation can be reached.
@@ -52,7 +60,7 @@ test("the sidebar shows the recent conversations and switches between them", asy
 
 test("the composer sends a turn and the fixture answer arrives", async ({ page }) => {
   const errors = await collectConsoleErrors(page);
-  await page.goto("/");
+  await open(page);
 
   await page.locator("#messageInput").fill("견적서 초안을 준비해줘");
   await page.locator("#sendButton").click();
@@ -72,7 +80,7 @@ test("the composer sends a turn and the fixture answer arrives", async ({ page }
 });
 
 test("the theme switch changes the rendered theme", async ({ page }) => {
-  await page.goto("/");
+  await open(page);
   await page.getByRole("button", { name: "테마" }).click();
   await page.getByRole("button", { name: "Dark", exact: true }).click();
 
@@ -81,7 +89,7 @@ test("the theme switch changes the rendered theme", async ({ page }) => {
 });
 
 test("the first screen does not overflow horizontally", async ({ page }) => {
-  await page.goto("/");
+  await open(page);
   const overflow = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     innerWidth: window.innerWidth,
@@ -98,7 +106,7 @@ test("the first screen does not overflow horizontally", async ({ page }) => {
 
 test("the mobile layout opens the sidebar from the menu button", async ({ page, isMobile }) => {
   test.skip(!isMobile, "mobile-only behaviour");
-  await page.goto("/");
+  await open(page);
 
   await expect(page.locator("#sidebar")).not.toBeInViewport();
   await page.locator("#mobileMenu").click();

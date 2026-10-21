@@ -1,4 +1,6 @@
 import { ThemePicker } from "./ThemePicker";
+import { useCloneCopy } from "../i18n/cloneCopy";
+import { useLocale } from "../i18n/LocaleProvider";
 import type { ThemeName } from "../theme/theme";
 import type { ApiMode } from "../state/chatStore";
 
@@ -9,6 +11,7 @@ interface TopBarProps {
   onSelectTheme: (theme: ThemeName) => void;
   onOpenMobile: () => void;
   onRestoreSidebar: () => void;
+  onOpenSettings: () => void;
 }
 
 /**
@@ -29,13 +32,16 @@ export function TopBar({
   onSelectTheme,
   onOpenMobile,
   onRestoreSidebar,
+  onOpenSettings,
 }: TopBarProps) {
+  const { tOr } = useLocale();
+  const copy = useCloneCopy();
   const badge =
     apiMode === "api"
-      ? { className: "clone-api-badge", text: "실제 API 연결" }
+      ? { className: "clone-api-badge", text: copy("clone-api-badge") }
       : apiMode === "probing"
-        ? { className: "clone-probe-badge", text: "API 확인 중" }
-        : { className: "clone-fixture-badge", text: "복제본 미리보기" };
+        ? { className: "clone-probe-badge", text: copy("clone-probe-badge") }
+        : { className: "clone-fixture-badge", text: copy("clone-offline-badge") };
 
   return (
     <header className="topbar">
@@ -45,7 +51,7 @@ export function TopBar({
         type="button"
         aria-controls="sidebar"
         aria-expanded="false"
-        aria-label="메뉴 열기"
+        aria-label={tOr("open-menu", "메뉴 열기")}
         onClick={onOpenMobile}
       >
         ☰
@@ -63,6 +69,19 @@ export function TopBar({
         <span aria-hidden="true">☰</span>
       </button>
       <div className="clone-topbar-actions">
+        <button
+          className="clone-topbar-button"
+          id="settingsButton"
+          type="button"
+          aria-haspopup="dialog"
+          aria-controls="settingsDialog"
+          aria-expanded="false"
+          aria-label={tOr("settings", "설정")}
+          onClick={onOpenSettings}
+        >
+          <span aria-hidden="true">⚙</span>
+          <span id="settingsButtonLabel">{copy("clone-settings-button")}</span>
+        </button>
         <span
           className={badge.className}
           title={

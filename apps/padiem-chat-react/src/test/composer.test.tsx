@@ -89,11 +89,11 @@ describe("React clone composer", () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByRole("button", { name: "AI 등급" }));
+    await user.click(screen.getByRole("button", { name: "기본 대화" }));
     await user.click(screen.getByRole("option", { name: /고성능 모델/ }));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "AI 등급" })).toHaveTextContent("고성능 모델");
+      expect(screen.getByRole("button", { name: "기본 대화" })).toHaveTextContent("고성능 모델");
     });
   });
 

@@ -1,4 +1,6 @@
 import { clawApproval } from "../api/clawApi";
+import { Modal } from "./Modal";
+import { useLocale } from "../i18n/LocaleProvider";
 
 interface ClawApprovalDialogProps {
   orchestration: unknown;
@@ -19,24 +21,34 @@ export function ClawApprovalDialog({
   onDecide,
   onCancel,
 }: ClawApprovalDialogProps) {
+  const { tOr } = useLocale();
   const model = clawApproval.viewModel(orchestration);
   const approval = model?.approval ?? null;
   const summary =
     approval && typeof approval.summary === "string" ? approval.summary : null;
 
   return (
-    <dialog className="auth-dialog" id="clawApprovalDialog" open aria-labelledby="clawApprovalTitle">
+    <Modal
+      open
+      onClose={onCancel}
+      className="auth-dialog"
+      labelledBy="clawApprovalTitle"
+    >
       <div className="auth-panel">
         <div className="auth-header">
           <div>
             <p>Padiem Claw</p>
-            <h2 id="clawApprovalTitle">계속하기 전에 확인이 필요합니다.</h2>
+            <h2 id="clawApprovalTitle">
+              {tOr("claw-approval-title", "계속하기 전에 확인이 필요합니다.")}
+            </h2>
           </div>
         </div>
         <div className="auth-form">
           <p>
-            이 작업은 승인 없이는 진행되지 않습니다. 확인하면 서버가 권한과 대상 컴퓨터를 다시
-            검증한 뒤 재개합니다.
+            {tOr(
+              "claw-approval-hint",
+              "이 작업은 승인 없이는 진행되지 않습니다. 확인하면 서버가 권한과 대상 컴퓨터를 다시 검증한 뒤 재개합니다.",
+            )}
           </p>
           {summary ? <p className="auth-handoff-note">{summary}</p> : null}
           <div className="auth-handoff-actions">
@@ -46,7 +58,7 @@ export function ClawApprovalDialog({
               type="button"
               onClick={() => onDecide("approved")}
             >
-              승인하고 계속
+              {tOr("claw-approval-approve", "승인하고 계속")}
             </button>
             <button
               className="auth-google"
@@ -54,7 +66,7 @@ export function ClawApprovalDialog({
               type="button"
               onClick={() => onDecide("denied")}
             >
-              거부
+              {tOr("claw-approval-deny", "거부")}
             </button>
             <button
               className="auth-google"
@@ -62,11 +74,11 @@ export function ClawApprovalDialog({
               type="button"
               onClick={onCancel}
             >
-              취소
+              {tOr("cancel", "취소")}
             </button>
           </div>
         </div>
       </div>
-    </dialog>
+    </Modal>
   );
 }
