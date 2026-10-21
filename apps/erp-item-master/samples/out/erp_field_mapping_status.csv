@@ -1,0 +1,23 @@
+﻿프로필,정규화필드,대상필드,필수여부,확인상태,근거,비고
+generic,item_code,품목코드,필수,CONFIRMED_OFFICIAL,self_defined,
+generic,item_name,상품명,필수,CONFIRMED_OFFICIAL,self_defined,
+generic,model_name,모델명,선택,CONFIRMED_OFFICIAL,self_defined,
+generic,manufacturer,제조사,선택,CONFIRMED_OFFICIAL,self_defined,
+generic,supplier,공급사,선택,CONFIRMED_OFFICIAL,self_defined,
+generic,specification,규격,선택,CONFIRMED_OFFICIAL,self_defined,
+generic,unit,단위,선택,CONFIRMED_OFFICIAL,self_defined,
+generic,category,상품분류,선택,CONFIRMED_OFFICIAL,self_defined,
+generic,purchase_price,매입가,선택,CONFIRMED_OFFICIAL,self_defined,
+generic,sales_price,판매가,선택,CONFIRMED_OFFICIAL,self_defined,
+ecount_api_candidate,item_code,PROD_CD,필수,THIRD_PARTY_UNVERIFIED,third_party_report_of_ecount_example_file,품목코드. 제3자 보고 기준 최대 20자.
+ecount_api_candidate,item_name,PROD_DES,필수,THIRD_PARTY_UNVERIFIED,third_party_report_of_ecount_example_file,품목명.
+ecount_api_candidate,specification,SIZE_DES,선택,THIRD_PARTY_UNVERIFIED,third_party_report_of_ecount_example_file,규격. SIZE_FLAG 값에 따라 필수 여부가 달라진다는 보고가 있다.
+ecount_api_candidate,unit,UNIT,선택,THIRD_PARTY_UNVERIFIED,third_party_report_of_ecount_example_file,단위.
+ecount_api_candidate,purchase_price,IN_PRICE,선택,THIRD_PARTY_UNVERIFIED,third_party_report_of_ecount_example_file,입고단가.
+ecount_api_candidate,sales_price,OUT_PRICE,선택,THIRD_PARTY_UNVERIFIED,third_party_report_of_ecount_example_file,출고단가.
+ecount_api_candidate,memo,REMARKS,선택,THIRD_PARTY_UNVERIFIED,third_party_report_of_ecount_example_file,비고.
+ecount_api_candidate,(상수),SIZE_FLAG,필수,THIRD_PARTY_UNVERIFIED,third_party_report_of_ecount_example_file,규격 필수 여부 플래그. 제3자 보고는 '1'=필수규격이라 한다.
+ecount_api_candidate,manufacturer,(대응 필드 없음),선택,NOT_FOUND,no_official_or_reported_target_field,이 정규화 필드는 이 프로필의 이관 파일에 실리지 않는다.
+ecount_api_candidate,model_name,(대응 필드 없음),선택,NOT_FOUND,no_official_or_reported_target_field,이 정규화 필드는 이 프로필의 이관 파일에 실리지 않는다.
+ecount_api_candidate,category,(대응 필드 없음),선택,NOT_FOUND,no_official_or_reported_target_field,이 정규화 필드는 이 프로필의 이관 파일에 실리지 않는다.
+ecount_api_candidate,supplier,(대응 필드 없음),선택,NOT_FOUND,no_official_or_reported_target_field,이 정규화 필드는 이 프로필의 이관 파일에 실리지 않는다.
