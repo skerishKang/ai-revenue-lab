@@ -34,6 +34,7 @@ from kagent.local_agent_mesh_failover import (
     MeshCentralDevicePresence,
     MeshFailoverController,
     MeshFailoverSupervisor,
+    _both_notifiers,
     build_heartbeat,
     command_notifier,
     decision_file_claim_gate,
@@ -386,6 +387,22 @@ class NotifierTests(unittest.TestCase):
         notifier = command_notifier(["/nonexistent/hermes-cli"])
         # A missing binary is reported, not raised.
         notifier(EVENT_COM2_FAULT, "com2 is down")
+
+    def test_both_notifiers_run_and_one_failure_does_not_stop_the_other(self):
+        seen = []
+        log = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..")
+
+        def bad(event, message):
+            raise OSError("the delivery channel is unreachable")
+
+        def good(event, message):
+            seen.append((event, message))
+
+        both = _both_notifiers(bad, good)
+        both(EVENT_ORACLE_ACTIVE, "oracle takes the claim")
+        self.assertEqual(len(seen), 1)
+        self.assertEqual(seen[0][0], EVENT_ORACLE_ACTIVE)
+        del log
 
 
 class SupervisorDeliveryTests(unittest.TestCase):
