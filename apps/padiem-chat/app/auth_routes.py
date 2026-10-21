@@ -53,6 +53,15 @@ from .password_auth import (
     verify_password,
     validate_password,
 )
+from .password_reset import (
+    RESET_DELIVERY_UNAVAILABLE,
+    RESET_INVALID_REQUEST,
+    RESET_TOKEN_INVALID,
+    RESET_UNAVAILABLE,
+    PasswordResetError,
+    PasswordResetService,
+    PasswordResetToken,
+)
 from .session_revocation_guard import session_verdict
 
 
@@ -108,6 +117,71 @@ def _unavailable() -> JSONResponse:
         {"error": {"code": "auth_unavailable", "message": "로그인을 현재 사용할 수 없습니다."}},
         status_code=503,
     )
+
+
+def _password_reset_service(request: Request) -> PasswordResetService | None:
+    """The configured lost-password reset service, or ``None``."""
+
+    service = getattr(request.app.state, "password_reset_service", None)
+    return service if isinstance(service, PasswordResetService) else None
+
+
+def _password_reset_delivery(request: Request):
+    """The configured reset-mail transport, or ``None`` when unconfigured."""
+
+    delivery = getattr(request.app.state, "password_reset_delivery", None)
+    if delivery is None or not callable(getattr(delivery, "send", None)):
+        return None
+    return delivery
+
+
+async def _revoke_all_canonical_sessions(
+    request: Request, *, user_id: str, strict: bool
+) -> str | None:
+    """End every canonical session of one account (#5441).
+
+    A replaced credential has to end every session it could still
+    authenticate, on every device. The canonical Control Plane session store is
+    the only revocation authority, so the revocation happens there instead of
+    in a second, product-local session registry.
+
+    ``strict`` decides what an authority without the reviewed capability means:
+
+    * ``True`` (the lost-password reset) — the revocation cannot be confirmed,
+      so the credential must not move. The caller reports the failure and the
+      member retries with the same link.
+    * ``False`` (the #5434 signed-in change) — the capability is simply not
+      deployed yet, so the already-reviewed single-session revocation stays in
+      force and the route keeps working.
+
+    Returns ``None`` when the sessions are ended (or when there was nothing to
+    end), and a stable error code otherwise.
+    """
+
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    if authority is None:
+        # No canonical authority bound: this deployment has no canonical
+        # sessions, so there is nothing to revoke.
+        return None
+    revoke_all = getattr(authority, "revoke_all_auth_sessions", None)
+    if not callable(revoke_all):
+        return "session_revocation_unavailable" if strict else None
+    try:
+        await revoke_all(
+            product_id=PADIEM_CHAT_PRODUCT_ID,
+            product_user_id=user_id,
+        )
+    except Exception as exc:
+        code = getattr(exc, "code", "")
+        if code in {
+            "canonical_product_identity_link_not_found",
+            "canonical_product_identity_link_not_active",
+        }:
+            # The account has no canonical subject link, so it owns no
+            # canonical session. There is nothing to end.
+            return None
+        return "session_revocation_failed"
+    return None
 
 
 async def _account_method(store: HistoryStore | None, user_id: str) -> str:
@@ -893,6 +967,184 @@ async def password_change(request: Request) -> JSONResponse:
             failure,
             "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
         )
+    # #5441: end the sessions of this account on the other devices too. The
+    # reviewed single-session revocation above stays in force; this is the
+    # additional account-wide revocation, and it is best effort here so an
+    # identity authority that predates the capability keeps the route working.
+    await _revoke_all_canonical_sessions(request, user_id=user_id, strict=False)
+    try:
+        await store.update_password_credential(user_id, encoded)
+    except Exception:
+        return _auth_error(503, "auth_storage_error", "비밀번호를 저장하지 못했습니다.")
+
+    response = JSONResponse({"ok": True})
+    response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+    return response
+
+
+async def password_reset_request(request: Request) -> JSONResponse:
+    """Issue one lost-password reset link (#5441).
+
+    The member proves ownership of the account's email address with a
+    one-time link and then chooses the new password themselves. An email
+    address alone never changes a password: the stored hash moves only after
+    that link is redeemed.
+
+    The public answer never says whether the address belongs to an account, so
+    this unauthenticated route cannot be used to enumerate members. When the
+    deployment has no mail transport at all the request is refused honestly
+    with a retryable error instead of a fake "we sent it" answer.
+    """
+
+    if not password_auth_ready(request) or not auth_ready(request):
+        return _unavailable()
+    service = _password_reset_service(request)
+    if service is None or not service.ready:
+        return _auth_error(
+            503, RESET_UNAVAILABLE, "비밀번호 찾기를 현재 사용할 수 없습니다."
+        )
+    delivery = _password_reset_delivery(request)
+    if delivery is None:
+        return _auth_error(
+            503,
+            RESET_DELIVERY_UNAVAILABLE,
+            "비밀번호 찾기 메일을 현재 보낼 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        )
+    data = await _json_body(request)
+    if data is None or set(data) != {"email"}:
+        return _auth_error(400, RESET_INVALID_REQUEST, "이메일 정보를 확인해 주세요.")
+    raw_email = data.get("email")
+    try:
+        identifier = normalize_email(raw_email)
+    except PasswordAuthError as exc:
+        return _auth_error(400, exc.code, exc.message)
+
+    try:
+        await service.check_request_allowed(identifier=identifier)
+    except PasswordResetError as exc:
+        # A throttled request is audited as rejected, so it never consumes the
+        # daily budget it was refused by.
+        await service.record_request(
+            identifier=identifier, user_id=None, reason_code=exc.code
+        )
+        return _auth_error(429, exc.code, exc.message)
+
+    store: HistoryStore = request.app.state.history_store
+    try:
+        credential = await store.find_password_credential(identifier)
+    except Exception:
+        return _auth_error(503, "auth_storage_error", "계정 정보를 확인하지 못했습니다.")
+
+    # Always run the verifier, including for an unknown identifier, so the
+    # answer time does not reveal whether the address owns an account.
+    verify_password("", credential.password_hash if credential else None)
+
+    await service.record_request(
+        identifier=identifier,
+        user_id=credential.user.id if credential is not None else None,
+    )
+    if credential is None:
+        # No password credential owns this identifier: there is no password to
+        # reset and no mail is sent. The public answer stays the same one.
+        return JSONResponse({"ok": True}, status_code=202)
+
+    raw_token, _token = await service.issue(
+        identifier=identifier, user_id=credential.user.id
+    )
+    link = service.link_for(raw_token)
+    delivered = False
+    try:
+        from .password_reset_delivery import (
+            RESET_MAIL_SUBJECT,
+            build_reset_mail_text,
+        )
+
+        delivered = bool(
+            await delivery.send(
+                to=identifier,
+                subject=RESET_MAIL_SUBJECT,
+                text=build_reset_mail_text(link),
+            )
+        )
+    except Exception:
+        delivered = False
+    await service.record_delivery(
+        identifier=identifier, user_id=credential.user.id, delivered=delivered
+    )
+    # The answer is the same for a delivered and for a refused mail, so the
+    # route never reveals whether the address owns an account. The delivery
+    # outcome itself is recorded in the audit ledger.
+    return JSONResponse({"ok": True}, status_code=202)
+
+
+async def password_reset_confirm(request: Request) -> JSONResponse:
+    """Redeem one reset link and set the new password (#5441).
+
+    The token is single use and short lived. A second redemption of the same
+    token is refused, the outstanding tokens of that account die with the
+    successful redemption, and every canonical session of that account is
+    ended before the stored hash moves, so the old password and every old
+    session stop working together.
+    """
+
+    if not password_auth_ready(request) or not auth_ready(request):
+        return _unavailable()
+    service = _password_reset_service(request)
+    if service is None or not service.ready:
+        return _auth_error(
+            503, RESET_UNAVAILABLE, "비밀번호 찾기를 현재 사용할 수 없습니다."
+        )
+    data = await _json_body(request)
+    if data is None or set(data) != {"token", "new_password"}:
+        return _auth_error(400, RESET_INVALID_REQUEST, "비밀번호 정보를 확인해 주세요.")
+    raw_token = data.get("token")
+    new_password = data.get("new_password")
+    if not isinstance(raw_token, str) or not isinstance(new_password, str):
+        return _auth_error(400, RESET_INVALID_REQUEST, "비밀번호 정보를 확인해 주세요.")
+
+    peeked = await service.peek(raw_token)
+    if peeked is None:
+        return _auth_error(
+            400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
+        )
+
+    store: HistoryStore = request.app.state.history_store
+    try:
+        credential = await store.find_password_credential_by_user_id(peeked.user_id)
+    except Exception:
+        return _auth_error(503, "auth_storage_error", "계정 정보를 확인하지 못했습니다.")
+    if credential is None:
+        return _auth_error(
+            400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
+        )
+    try:
+        validated = validate_password(new_password, identifier=credential.user.email)
+    except PasswordAuthError as exc:
+        return _auth_error(400, exc.code, exc.message)
+    encoded = hash_password(validated)
+
+    # End every session of this account first. A session that cannot be ended
+    # leaves the credential untouched, so the member can retry with the same
+    # link.
+    failure = await _revoke_all_canonical_sessions(
+        request, user_id=peeked.user_id, strict=True
+    )
+    if failure is not None:
+        return _auth_error(
+            503,
+            failure,
+            "세션을 종료하지 못했습니다. 다시 시도해 주세요.",
+        )
+
+    try:
+        user_id = await service.redeem(raw_token=raw_token)
+    except PasswordResetError as exc:
+        return _auth_error(400, exc.code, exc.message)
+    if user_id != peeked.user_id:
+        return _auth_error(
+            400, RESET_TOKEN_INVALID, "재설정 링크가 올바르지 않습니다."
+        )
+
     try:
         await store.update_password_credential(user_id, encoded)
     except Exception:

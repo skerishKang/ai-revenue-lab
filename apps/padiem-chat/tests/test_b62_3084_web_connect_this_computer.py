@@ -871,6 +871,12 @@ ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({
     # that resolves the account from the signed session, verifies the current
     # password and replaces only that account's credential row.
     "/api/auth/password/change",
+    # #5441: the lost-password reset of an account that owns a password
+    # credential. The request POST issues one short-lived, single-use link to
+    # the account's own address; the confirm POST redeems that link and
+    # replaces only that account's credential row.
+    "/api/auth/password/reset/request",
+    "/api/auth/password/reset/confirm",
 })
 
 

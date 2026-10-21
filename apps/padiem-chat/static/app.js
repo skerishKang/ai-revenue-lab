@@ -72,6 +72,28 @@
   const passwordRegisterPassword = document.getElementById("passwordRegisterPassword");
   const passwordRegisterError = document.getElementById("passwordRegisterError");
   const passwordRegisterSubmit = document.getElementById("passwordRegisterSubmit");
+  // #5481: the lost-password entry. The forgot-password link opens the reset
+  // request view, and the one-time link the server mails opens the reset
+  // confirm view directly.
+  const passwordResetOpen = document.getElementById("passwordResetOpen");
+  const passwordResetPanel = document.getElementById("passwordResetPanel");
+  const passwordResetRequestView = document.getElementById("passwordResetRequestView");
+  const passwordResetConfirmView = document.getElementById("passwordResetConfirmView");
+  const passwordResetRequestForm = document.getElementById("passwordResetRequestForm");
+  const passwordResetEmail = document.getElementById("passwordResetEmail");
+  const passwordResetRequestError = document.getElementById("passwordResetRequestError");
+  const passwordResetRequestStatus = document.getElementById("passwordResetRequestStatus");
+  const passwordResetRequestSubmit = document.getElementById("passwordResetRequestSubmit");
+  const passwordResetConfirmForm = document.getElementById("passwordResetConfirmForm");
+  const passwordResetNew = document.getElementById("passwordResetNew");
+  const passwordResetConfirm = document.getElementById("passwordResetConfirm");
+  const passwordResetConfirmError = document.getElementById("passwordResetConfirmError");
+  const passwordResetConfirmStatus = document.getElementById("passwordResetConfirmStatus");
+  const passwordResetConfirmSubmit = document.getElementById("passwordResetConfirmSubmit");
+  const passwordResetBack = document.getElementById("passwordResetBack");
+  const passwordResetConfirmBack = document.getElementById("passwordResetConfirmBack");
+  let passwordResetToken = "";
+  let authDialogView = "login";
   const accountName = document.getElementById("accountName");
   const accountAvatar = document.getElementById("accountAvatar");
   const accountContainer = document.querySelector(".sidebar-account");
@@ -1485,8 +1507,14 @@
     const passwordEnabled = authMethodEnabled("password");
     if (googleLoginButton) googleLoginButton.hidden = !googleEnabled;
     if (authDivider) authDivider.hidden = !(googleEnabled && passwordEnabled);
-    if (passwordLoginForm) passwordLoginForm.hidden = !passwordEnabled;
-    if (passwordRegisterSection) passwordRegisterSection.hidden = !passwordEnabled;
+    // #5481: the login view and the two reset views are mutually exclusive.
+    const showLogin = passwordEnabled && authDialogView === "login";
+    if (passwordLoginForm) passwordLoginForm.hidden = !showLogin;
+    if (passwordRegisterSection) passwordRegisterSection.hidden = !showLogin;
+    if (passwordResetOpen) passwordResetOpen.hidden = !passwordEnabled || authDialogView !== "login";
+    if (passwordResetPanel) passwordResetPanel.hidden = authDialogView === "login";
+    if (passwordResetRequestView) passwordResetRequestView.hidden = authDialogView !== "request";
+    if (passwordResetConfirmView) passwordResetConfirmView.hidden = authDialogView !== "confirm";
     renderAndroidHandoff();
   }
 
@@ -1498,15 +1526,29 @@
       }
       return;
     }
+    // #5481: a mailed one-time link opens the reset confirm view directly.
+    const token = passwordResetTokenFromLocation();
+    if (token) {
+      authDialogView = "confirm";
+      passwordResetToken = token;
+    } else {
+      authDialogView = "login";
+    }
     syncAuthDialogMethods();
     setAuthFormError(passwordLoginError);
     setAuthFormError(passwordRegisterError);
+    setAuthFormError(passwordResetRequestError);
+    setAuthFormError(passwordResetConfirmError);
+    setAuthStatusMessage(passwordResetRequestStatus);
+    setAuthStatusMessage(passwordResetConfirmStatus);
     if (typeof authDialog.showModal === "function") {
       authDialog.showModal();
     } else {
       authDialog.setAttribute("open", "");
     }
-    if (authMethodEnabled("password") && passwordLoginIdentifier) passwordLoginIdentifier.focus();
+    if (authDialogView === "confirm") passwordResetNew?.focus();
+    else if (authDialogView === "request") passwordResetEmail?.focus();
+    else if (authMethodEnabled("password") && passwordLoginIdentifier) passwordLoginIdentifier.focus();
   }
 
   function isAndroidWebView() {
@@ -1852,6 +1894,159 @@
       );
     } finally {
       passwordRegisterSubmit.disabled = false;
+    }
+  }
+
+  // #5481: the lost-password flow. The entry link opens the request view, the
+  // mailed one-time link opens the confirm view, and both keep the email the
+  // member already typed. The token never travels in a query string: it
+  // arrives in the URL fragment, which the browser does not send to the server.
+  function setAuthStatusMessage(node, message = "") {
+    if (!node) return;
+    node.textContent = message;
+    node.hidden = !message;
+  }
+
+  function passwordResetTokenFromLocation() {
+    try {
+      const raw = window.location.hash || "";
+      const match = /^#reset=([A-Za-z0-9_-]{16,256})$/.exec(raw);
+      return match ? match[1] : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function clearPasswordResetFragment() {
+    // The one-time token leaves the address bar as soon as the member leaves
+    // the reset view, so a shared link never lingers in the browser history
+    // of the next person who opens this window.
+    try {
+      if (!window.location.hash) return;
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    } catch (_) {}
+  }
+
+  function showPasswordResetView(view) {
+    authDialogView = view;
+    if (passwordResetPanel) passwordResetPanel.hidden = false;
+    if (passwordLoginForm) passwordLoginForm.hidden = view !== "login";
+    if (passwordRegisterSection) passwordRegisterSection.hidden = view !== "login";
+    if (passwordResetRequestView) passwordResetRequestView.hidden = view !== "request";
+    if (passwordResetConfirmView) passwordResetConfirmView.hidden = view !== "confirm";
+  }
+
+  function hidePasswordResetViews() {
+    passwordResetToken = "";
+    authDialogView = "login";
+    clearPasswordResetFragment();
+    if (passwordResetPanel) passwordResetPanel.hidden = true;
+    if (passwordResetRequestView) passwordResetRequestView.hidden = true;
+    if (passwordResetConfirmView) passwordResetConfirmView.hidden = true;
+    if (passwordResetOpen) passwordResetOpen.hidden = !authMethodEnabled("password");
+    if (passwordResetEmail) passwordResetEmail.value = "";
+    if (passwordResetNew) passwordResetNew.value = "";
+    if (passwordResetConfirm) passwordResetConfirm.value = "";
+    setAuthFormError(passwordResetRequestError);
+    setAuthFormError(passwordResetConfirmError);
+    setAuthStatusMessage(passwordResetRequestStatus);
+    setAuthStatusMessage(passwordResetConfirmStatus);
+  }
+
+  function openPasswordResetRequest() {
+    if (!authMethodEnabled("password")) return;
+    setAuthFormError(passwordResetRequestError);
+    setAuthStatusMessage(passwordResetRequestStatus);
+    showPasswordResetView("request");
+    if (passwordResetEmail && passwordLoginIdentifier && !passwordResetEmail.value) {
+      passwordResetEmail.value = passwordLoginIdentifier.value.trim();
+    }
+    passwordResetEmail?.focus();
+  }
+
+  function openPasswordResetConfirm(token) {
+    if (!authMethodEnabled("password")) return;
+    passwordResetToken = typeof token === "string" ? token : "";
+    setAuthFormError(passwordResetConfirmError);
+    setAuthStatusMessage(passwordResetConfirmStatus);
+    showPasswordResetView("confirm");
+    passwordResetNew?.focus();
+  }
+
+  function closePasswordResetViews() {
+    passwordResetToken = "";
+    hidePasswordResetViews();
+    if (passwordResetEmail) passwordResetEmail.value = "";
+    if (passwordResetNew) passwordResetNew.value = "";
+    if (passwordResetConfirm) passwordResetConfirm.value = "";
+    setAuthFormError(passwordResetRequestError);
+    setAuthFormError(passwordResetConfirmError);
+    setAuthStatusMessage(passwordResetRequestStatus);
+    setAuthStatusMessage(passwordResetConfirmStatus);
+  }
+
+  async function submitPasswordResetRequest(event) {
+    event.preventDefault();
+    if (!authMethodEnabled("password") || !passwordResetRequestForm) return;
+    setAuthFormError(passwordResetRequestError);
+    setAuthStatusMessage(passwordResetRequestStatus);
+    passwordResetRequestSubmit.disabled = true;
+    try {
+      await passwordAuthRequest("/api/auth/password/reset/request", {
+        email: passwordResetEmail.value,
+      });
+      // The server answers the same way for every address, so the browser
+      // shows the same confirmation either way.
+      setAuthStatusMessage(passwordResetRequestStatus, uiT("auth-reset-request-sent"));
+    } catch (error) {
+      setAuthFormError(
+        passwordResetRequestError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+    } finally {
+      passwordResetRequestSubmit.disabled = false;
+    }
+  }
+
+  async function submitPasswordResetConfirm(event) {
+    event.preventDefault();
+    if (!authMethodEnabled("password") || !passwordResetConfirmForm) return;
+    setAuthFormError(passwordResetConfirmError);
+    setAuthStatusMessage(passwordResetConfirmStatus);
+    const newPassword = passwordResetNew?.value || "";
+    const confirmPassword = passwordResetConfirm?.value || "";
+    if (!newPassword || !confirmPassword) {
+      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-confirm-incomplete"));
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-confirm-mismatch"));
+      return;
+    }
+    if (!passwordResetToken) {
+      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-expired"));
+      return;
+    }
+    passwordResetConfirmSubmit.disabled = true;
+    try {
+      await passwordAuthRequest("/api/auth/password/reset/confirm", {
+        token: passwordResetToken,
+        new_password: newPassword,
+      });
+      passwordResetToken = "";
+      clearPasswordResetFragment();
+      if (passwordResetNew) passwordResetNew.value = "";
+      if (passwordResetConfirm) passwordResetConfirm.value = "";
+      setAuthStatusMessage(passwordResetConfirmStatus, uiT("auth-reset-confirm-done"));
+      closeAuthDialog();
+      await loadAuthStatus();
+    } catch (error) {
+      setAuthFormError(
+        passwordResetConfirmError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+    } finally {
+      passwordResetConfirmSubmit.disabled = false;
     }
   }
 
@@ -2915,6 +3110,27 @@
   });
   if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
   if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
+  if (passwordResetOpen) {
+    passwordResetOpen.addEventListener("click", openPasswordResetRequest);
+  }
+  if (passwordResetRequestForm) {
+    passwordResetRequestForm.addEventListener("submit", submitPasswordResetRequest);
+  }
+  if (passwordResetConfirmForm) {
+    passwordResetConfirmForm.addEventListener("submit", submitPasswordResetConfirm);
+  }
+  if (passwordResetBack) {
+    passwordResetBack.addEventListener("click", () => {
+      hidePasswordResetViews();
+      syncAuthDialogMethods();
+    });
+  }
+  if (passwordResetConfirmBack) {
+    passwordResetConfirmBack.addEventListener("click", () => {
+      hidePasswordResetViews();
+      syncAuthDialogMethods();
+    });
+  }
   if (passwordChangeForm) passwordChangeForm.addEventListener("submit", submitPasswordChange);
   if (passwordChangeOpen) passwordChangeOpen.addEventListener("click", openPasswordChangeDialog);
   if (passwordChangeDialogClose) passwordChangeDialogClose.addEventListener("click", closePasswordChangeDialog);
@@ -5294,7 +5510,14 @@
   setNote(idleNote());
   renderProjectState();
   updateComposer();
-  loadAuthStatus();
+  // #5481: a mailed one-time link opens the reset confirm view directly, so
+  // the member lands on the "set a new password" step without signing in.
+  const resetLinkOnLoad = passwordResetTokenFromLocation();
+  if (resetLinkOnLoad) {
+    void loadAuthStatus().then(() => openAuthDialog());
+  } else {
+    void loadAuthStatus();
+  }
   resumeAndroidHandoff();
   // Initial state
   setClawAreaState("idle");

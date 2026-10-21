@@ -31,6 +31,10 @@ _SESSION_KEYS_LEGACY = frozenset(
     {"session_id", "product_id", "subject", "issued_at", "expires_at", "state", "revision"}
 )
 _SESSION_KEYS_TENANT = _SESSION_KEYS_LEGACY | {"tenant_id"}
+# #5441: the revoke-all answer carries the count and the revoked sessions. The
+# count is the authoritative statement; the session list is the readable
+# projection of the same rows.
+_REVOKE_ALL_KEYS = frozenset({"ok", "revoked_count", "sessions"})
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
 _TICKET_KEYS = frozenset({"connect_ticket", "connector_id", "expires_at"})
 _CONNECTOR_WORKSPACE_KEYS_ABSENT = frozenset({"present"})
@@ -318,6 +322,42 @@ class CloudflareControlPlaneIdentityAuthority:
             )
         )
         return self._session_from_wire(wire)
+
+    async def revoke_all_auth_sessions(
+        self, *, product_id: str, product_user_id: str
+    ) -> list[AuthSessionSnapshot]:
+        """Revoke every canonical auth session of one product user (#5441).
+
+        A replaced credential has to end every session it could still
+        authenticate, on every device. The canonical session store is the only
+        revocation authority, so this call names only the product and the
+        product user: the private authority resolves the canonical subject and
+        the session rows itself and materializes the terminal REVOKE
+        transition on each one.
+        """
+
+        if not isinstance(product_id, str) or not product_id:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        if not isinstance(product_user_id, str) or not product_user_id:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        wire = _closed(
+            await self._rpc_envelope(
+                "revoke_all_auth_sessions",
+                {"product_id": product_id, "product_user_id": product_user_id},
+            ),
+            _REVOKE_ALL_KEYS,
+            "revoke-all sessions",
+        )
+        raw_sessions = wire.get("sessions")
+        if not isinstance(raw_sessions, list):
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        return [self._session_from_wire(_closed_session(item)) for item in raw_sessions]
 
     async def resolve_current_auth_session(
         self, *, product_id: str, product_user_id: str
