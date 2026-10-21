@@ -1,0 +1,64 @@
+name: B71 custom domain CNAME probe (scratch)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      ZONE_NAME: padiem.net
+      RECORD_NAME: b71.padiem.net
+      RECORD_CONTENT: ai-revenue-business-71-ai-operations.pages.dev
+    steps:
+      - name: Resolve zone and read the record first
+        id: read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}" || { echo "NO_TOKEN" >&2; exit 1; }
+          zone_id="$(curl -s --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); r=d.get('result') or []; print(r[0]['id'] if r else '')")"
+          test -n "${zone_id}" || { echo "ZONE_NOT_FOUND" >&2; exit 1; }
+          echo "ZONE_ID=${zone_id}" >> "${GITHUB_OUTPUT}"
+          status="$(curl -s -o /tmp/recs.json -w '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?name=${RECORD_NAME}")"
+          echo "DNS_READ_STATUS=${status}" >> "${GITHUB_OUTPUT}"
+          echo "DNS_READ_STATUS=${status}"
+
+      - name: Create the one CNAME record when the read proved the scope
+        if: steps.read.outputs.DNS_READ_STATUS == '200'
+        shell: bash
+        run: |
+          set -euo pipefail
+          zone_id="${{ steps.read.outputs.ZONE_ID }}"
+          existing="$(python3 -c "import json;d=json.load(open('/tmp/recs.json'));r=d.get('result') or [];print(r[0]['id'] if r else '')")"
+          if [ -n "${existing}" ]; then
+            echo "RECORD_ALREADY_EXISTS=${existing}"
+          else
+            status="$(curl -s -o /tmp/post.json -w '%{http_code}' -X POST \
+              --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              --header 'Content-Type: application/json' \
+              --data '{"type":"CNAME","name":"b71.padiem.net","content":"ai-revenue-business-71-ai-operations.pages.dev","ttl":1,"proxied":false}' \
+              "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records")"
+            echo "DNS_WRITE_STATUS=${status}"
+            test "${status}" = "200"
+          fi
+
+      - name: Confirm the record and the hostname
+        shell: bash
+        run: |
+          set -euo pipefail
+          zone_id="${{ steps.read.outputs.ZONE_ID }}"
+          curl -s --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?name=b71.padiem.net" \
+            | python3 -c "import json,sys;d=json.load(sys.stdin);[print('RECORD',r.get('type'),r.get('name'),r.get('content')) for r in (d.get('result') or [])]"
+          getent hosts b71.padiem.net || echo "DNS_NOT_PROPAGATED_YET"
+          curl -s -o /dev/null -w 'HTTPS_STATUS=%{http_code}\n' https://b71.padiem.net/ || echo "HTTPS_NOT_READY"
