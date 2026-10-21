@@ -47,6 +47,33 @@ data/*.json           # generated dataset (rebuild with the script above)
 evidence/             # local verification script and its recorded result
 ```
 
+## Deployment
+
+```text
+PAGES_PROJECT=ai-revenue-business-71-ai-operations
+LIVE_URL=https://ai-revenue-business-71-ai-operations.pages.dev/
+CUSTOM_DOMAIN=b71.padiem.net (attached to the Pages project, still pending)
+```
+
+The site is published with the existing approved-Business Pages provisioning
+workflow (`.github/workflows/provision-approved-business-pages.yml`), so no new
+deploy script or credential was introduced. The Pages project is GitHub
+integrated with `main` as its production branch, so a merge to `main` rebuilds
+the site.
+
+`b71.padiem.net` is attached to the Pages project and Cloudflare matched it to
+the `padiem.net` zone in the same account. It stays `pending` until one DNS
+record exists:
+
+```text
+b71.padiem.net  CNAME  ai-revenue-business-71-ai-operations.pages.dev
+```
+
+The Cloudflare credential available to the repository resolves the zone but is
+refused by the DNS record API, and the local Wrangler OAuth session carries
+`zone:read` without a DNS scope, so neither authorized path can create that
+record. Until it exists the site is served from its `pages.dev` URL.
+
 ## Verification
 
 ```bash
