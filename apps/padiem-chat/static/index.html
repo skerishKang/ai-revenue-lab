@@ -372,18 +372,20 @@
         </section>
         <section class="claw-inbox" id="clawAutomation" aria-labelledby="clawAutomationTitle" tabindex="-1" hidden>
           <div class="claw-inbox-header">
-            <div>
+            <div class="claw-inbox-heading">
               <p class="claw-workspace-kicker" data-locale-key="claw-automation-kicker">Padiem Claw Automation</p>
               <h3 id="clawAutomationTitle" data-locale-key="claw-automation-title">자동화 규칙</h3>
             </div>
-            <button class="claw-inbox-retry" id="clawAutomationRetry" type="button" data-locale-key="retry">다시 시도</button>
-            <button class="claw-inbox-retry" id="automationAlertsButton" type="button" data-locale-key="automation-alerts-open">알림함 보기</button>
+            <div class="claw-inbox-header-actions">
+              <button class="claw-inbox-primary" id="clawAutomationCreateOpen" type="button" aria-expanded="false" aria-controls="clawAutomationCreate" data-locale-key="claw-automation-create-summary">+ 자동화 만들기</button>
+              <button class="claw-inbox-secondary" id="automationAlertsButton" type="button" data-locale-key="automation-alerts-open">알림함 보기</button>
+              <button class="claw-inbox-retry" id="clawAutomationRetry" type="button" data-locale-key="retry" hidden>다시 시도</button>
+            </div>
           </div>
-          <p class="claw-inbox-help" id="clawAutomationHelp" data-locale-key="claw-automation-help">현재 워크스페이스의 자동화 규칙을 표시합니다. 생성은 워크스페이스 소유자만 할 수 있고 수정·삭제는 아직 지원하지 않습니다.</p>
-          <p class="claw-inbox-help" id="clawAutomationSchedulerNote" data-locale-key="claw-automation-scheduler-note">‘규칙 설정’은 규칙에 저장된 설정값이며, 자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다.</p>
           <details class="calendar-record claw-automation-create" id="clawAutomationCreate">
-            <summary class="calendar-record-summary" id="clawAutomationCreateToggle" data-locale-key="claw-automation-create-summary">+ 자동화 만들기</summary>
+            <summary class="calendar-record-summary" id="clawAutomationCreateToggle" data-locale-key="claw-automation-create-summary" hidden>+ 자동화 만들기</summary>
             <p class="calendar-record-hint" data-locale-key="claw-automation-create-hint">자동화 규칙을 만듭니다. 실행 대상(저장소·버전)은 서버가 지정하며 사용자가 지정할 수 없습니다.</p>
+            <p class="claw-inbox-help" id="clawAutomationHelp" data-locale-key="claw-automation-help">현재 워크스페이스의 자동화 규칙을 표시합니다. 생성은 워크스페이스 소유자만 할 수 있고 수정·삭제는 아직 지원하지 않습니다.</p>
             <form class="calendar-record-form" id="clawAutomationCreateForm" novalidate>
               <label class="calendar-record-field" for="clawAutomationCreateName">
                 <span data-locale-key="claw-automation-create-name-label">이름</span>
@@ -458,6 +460,8 @@
           <div class="claw-inbox-status" id="clawAutomationStatus" aria-live="polite" aria-atomic="true">
             <p id="clawAutomationLoading" data-locale-key="claw-automation-loading" hidden>자동화 규칙을 불러오는 중…</p>
             <p id="clawAutomationError" data-locale-key="claw-automation-error" hidden>자동화 규칙을 불러오지 못했습니다.</p>
+            <p id="clawAutomationForbidden" data-locale-key="claw-automation-forbidden" hidden>이 워크스페이스의 자동화 규칙을 볼 권한이 없습니다.</p>
+            <p class="claw-inbox-empty" id="clawAutomationEmpty" data-locale-key="claw-automation-empty" hidden>등록된 자동화 규칙이 없습니다.</p>
           </div>
           <p class="claw-inbox-help" id="clawAutomationToggleStatus" role="status" aria-live="polite" hidden></p>
           <form class="calendar-record-form claw-automation-edit-form" id="clawAutomationEditForm" hidden novalidate aria-labelledby="clawAutomationEditTitle">
@@ -508,8 +512,8 @@
             </div>
           </form>
           <p class="claw-inbox-help" id="clawAutomationEditStatus" role="status" aria-live="polite" hidden></p>
-          <p class="claw-inbox-empty" id="clawAutomationEmpty" data-locale-key="claw-automation-empty" hidden>등록된 자동화 규칙이 없습니다.</p>
           <div class="claw-inbox-list" id="clawAutomationList" role="list"></div>
+          <p class="claw-inbox-help" id="clawAutomationSchedulerNote" data-locale-key="claw-automation-scheduler-note">‘규칙 설정’은 규칙에 저장된 설정값이며, 자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다.</p>
         </section>
       </section>
       <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>

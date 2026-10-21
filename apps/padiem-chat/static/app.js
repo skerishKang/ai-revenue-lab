@@ -3214,11 +3214,13 @@
   const clawAutomation = document.getElementById("clawAutomation");
   const clawAutomationLoading = document.getElementById("clawAutomationLoading");
   const clawAutomationError = document.getElementById("clawAutomationError");
+  const clawAutomationForbidden = document.getElementById("clawAutomationForbidden");
   const clawAutomationEmpty = document.getElementById("clawAutomationEmpty");
   const clawAutomationList = document.getElementById("clawAutomationList");
   const clawAutomationRetry = document.getElementById("clawAutomationRetry");
   const clawAutomationCreate = document.getElementById("clawAutomationCreate");
   const clawAutomationCreateToggle = document.getElementById("clawAutomationCreateToggle");
+  const clawAutomationCreateOpen = document.getElementById("clawAutomationCreateOpen");
   const clawAutomationCreateForm = document.getElementById("clawAutomationCreateForm");
   const clawAutomationCreateName = document.getElementById("clawAutomationCreateName");
   const clawAutomationCreateTask = document.getElementById("clawAutomationCreateTask");
@@ -4017,7 +4019,10 @@
   function resetClawAutomationState() {
     if (clawAutomationLoading) clawAutomationLoading.hidden = true;
     if (clawAutomationError) clawAutomationError.hidden = true;
+    if (clawAutomationForbidden) clawAutomationForbidden.hidden = true;
     if (clawAutomationEmpty) clawAutomationEmpty.hidden = true;
+    // A retry belongs to a failed load. It is never a permanent control.
+    setClawAutomationRetryVisible(false);
   }
 
   function setClawAutomationLoading() {
@@ -4035,6 +4040,21 @@
     if (clawAutomationError) {
       clawAutomationError.hidden = false;
       clawAutomationError.textContent = uiT("claw-automation-error");
+    }
+    // The load failed, so the one action that can change the outcome is
+    // offered here and nowhere else.
+    setClawAutomationRetryVisible(true);
+  }
+
+  function setClawAutomationForbidden() {
+    // A permission refusal is not a transient failure. It says what it is
+    // instead of claiming the rules could not be loaded, and it offers no
+    // retry, because a retry would not change the answer.
+    resetClawAutomationState();
+    if (clawAutomationList) clawAutomationList.replaceChildren();
+    if (clawAutomationForbidden) {
+      clawAutomationForbidden.hidden = false;
+      clawAutomationForbidden.textContent = uiT("claw-automation-forbidden");
     }
   }
 
@@ -4118,6 +4138,11 @@
         cache: "no-store",
       });
       const data = await response.json().catch(() => null);
+      const code = data && typeof data.code === "string" ? data.code : "";
+      if (response.status === 403 || code === "owner_role_required") {
+        setClawAutomationForbidden();
+        return;
+      }
       if (!response.ok || !data || data.ok !== true || !Array.isArray(data.rules)) {
         throw new Error("automation rules unavailable");
       }
@@ -4394,7 +4419,9 @@
     if (clawAutomationCreate && typeof clawAutomationCreate.open === "boolean") {
       clawAutomationCreate.open = false;
     }
-    if (clawAutomationCreateToggle) clawAutomationCreateToggle.focus();
+    // The visible control is the header button, so the focus goes there.
+    if (clawAutomationCreateOpen) clawAutomationCreateOpen.focus();
+    else if (clawAutomationCreateToggle) clawAutomationCreateToggle.focus();
   }
 
   async function submitClawAutomationCreate(event) {
@@ -4467,13 +4494,29 @@
   }
   if (clawAutomationCreate) {
     clawAutomationCreate.addEventListener("toggle", () => {
+      // The header button owns the disclosure, so it carries the state.
+      if (clawAutomationCreateOpen) {
+        clawAutomationCreateOpen.setAttribute(
+          "aria-expanded", clawAutomationCreate.open ? "true" : "false",
+        );
+      }
       if (clawAutomationCreate.open) {
         setClawAutomationCreateStatus(null);
         if (clawAutomationCreateName) clawAutomationCreateName.focus();
-      } else if (clawAutomationCreateToggle) {
-        clawAutomationCreateToggle.focus();
+      } else if (clawAutomationCreateOpen) {
+        clawAutomationCreateOpen.focus();
       }
     });
+  }
+  if (clawAutomationCreateOpen) {
+    if (!clawAutomationCreate) {
+      // No form to open, so the control is not offered at all.
+      clawAutomationCreateOpen.hidden = true;
+    } else {
+      clawAutomationCreateOpen.addEventListener("click", () => {
+        clawAutomationCreate.open = !clawAutomationCreate.open;
+      });
+    }
   }
 
   // Standalone Automation page: the existing #clawAutomation section is moved
@@ -4495,6 +4538,11 @@
     }
     if (!body || !panel) return;
     body.appendChild(panel);
+    // The page header owns the visible title on this surface, so the section
+    // takes its accessible name from there instead of from the heading the
+    // page already shows.
+    const pageTitle = document.getElementById("automationViewTitle");
+    if (pageTitle) panel.setAttribute("aria-labelledby", "automationViewTitle");
     automationViewMounted = true;
   }
 
@@ -4527,6 +4575,11 @@
   const automationAlertsButton = document.getElementById("automationAlertsButton");
   if (automationAlertsButton) automationAlertsButton.addEventListener("click", () => openClawInbox("alerts"));
   if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
+  // The retry is a failure-only control. It lives here, next to the loader
+  // it retries, and it is never part of the permanent header.
+  function setClawAutomationRetryVisible(visible) {
+    if (clawAutomationRetry) clawAutomationRetry.hidden = !visible;
+  }
 
   function openClawWorkspace() {
     // #3531: Claw opens on the general conversation view. The document
