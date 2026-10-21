@@ -213,7 +213,27 @@ def _idempotency_adapter_for_env(env: Any) -> CloudflareD1IdempotencyAdapter | N
     return CloudflareD1IdempotencyAdapter(binding)
 
 
+def _record_refusal_code(result: ServiceResponse) -> None:
+    """Keep the bounded refusal code on the request's telemetry event (#5015).
+
+    Every Engine error response is built from a ``ServiceResponse`` whose body
+    already names the exact branch. The exporter dropped that identifier, so an
+    operator could only see ``400 client_error``. Recording happens here, on the
+    one response path every route shares, and never changes the response.
+    """
+    if result.status_code < 400:
+        return
+    try:
+        from app.stack_telemetry import record_refusal
+
+        record_refusal(result.status_code, result.body)
+    except Exception:
+        # Telemetry must never turn a bounded refusal into a Worker failure.
+        pass
+
+
 def _json_response(result: ServiceResponse) -> Response:
+    _record_refusal_code(result)
     return Response(
         json.dumps(
             dict(result.body),
