@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="B71 AI Operations - 온라인몰 상품등록·ERP 품목관리·주문배송 업무 3종을 한 화면에서 확인하는 내부 시연용 대시보드">
+<title>B71 AI Operations</title>
+<link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <a class="brand" href="#/dashboard">
+      <span class="brand-mark" aria-hidden="true">B71</span>
+      <span class="brand-text">
+        <strong>B71 AI Operations</strong>
+        <small>온라인몰 업무 3종 통합 대시보드</small>
+      </span>
+    </a>
+    <nav class="nav" aria-label="B71 주요 메뉴">
+      <a href="#/dashboard" data-nav="dashboard">대시보드</a>
+      <a href="#/product" data-nav="product">상품등록</a>
+      <a href="#/erp" data-nav="erp">ERP 품목관리</a>
+      <a href="#/orders" data-nav="orders">주문·배송</a>
+      <a href="#/remote" data-nav="remote">원격업무 시연</a>
+    </nav>
+    <p class="synthetic-badge" id="synthetic-badge" hidden>가상 데이터</p>
+  </header>
+
+  <main id="view" class="view" tabindex="-1">
+    <p class="loading">데이터를 불러오는 중입니다…</p>
+  </main>
+
+  <footer class="footer">
+    <span>B71 AI Operations · Business 71 (제안 번호)</span>
+    <span id="footer-sources">근거 이슈 #5446 · #5447 · #5448</span>
+  </footer>
+</div>
+
+<script src="./scripts/app.js"></script>
+</body>
+</html>
