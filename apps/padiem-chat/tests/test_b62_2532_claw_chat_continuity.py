@@ -167,7 +167,13 @@ def test_typography_reuses_chat_scale() -> None:
 
 def test_workspace_reserves_room_for_fixed_composer() -> None:
     layout = WORKSPACE_CSS.split("/* ── Workspace layout", 1)[1]
-    assert "padding: clamp(20px, 5vh, 48px) 0 280px" in layout.split("}", 1)[0]
+    # #5014/#5260: the workspace strip reserves the measured composer
+    # clearance, with 280px only as its fallback for older runtime values.
+    strip = layout.split("}", 1)[0]
+    assert "padding: clamp(20px, 5vh, 48px) 0 calc(" in strip
+    assert "var(--padiem-composer-clearance, 280px)" in strip
+    assert "var(--padiem-visual-keyboard-inset, 0px)" in strip
+    assert "padding: clamp(20px, 5vh, 48px) 0 280px" not in strip
     mobile = WORKSPACE_CSS.split("@media (max-width: 920px)", 1)[1]
     assert "padding: 16px 0 260px" in mobile
 
