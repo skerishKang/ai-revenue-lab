@@ -56,6 +56,9 @@ export function MessageList({ messages, productLabel, onRetry }: MessageListProp
             <div className="assistant-body">
               <div className="assistant-meta">
                 <span data-assistant-product>{productLabel}</span>
+                {message.runtimeLabel ? (
+                  <span data-runtime-label>{message.runtimeLabel}</span>
+                ) : null}
                 {message.state === "streaming" ? (
                   <span className="demo-label" data-runtime-label data-locale-key="answer-preparing">
                     답변 준비 중
