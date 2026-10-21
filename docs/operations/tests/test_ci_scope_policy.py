@@ -68,6 +68,9 @@ B62_CHAT_EXPECTED_PATHS = (
     # #3989 scoped Chat CI source/guard changes always trigger FULL lane.
     ".github/scripts/b62_ci_impact_scope_3989.py",
     ".github/tests/test_b62_ci_impact_scope_3989.py",
+    # #5341 shared Core import-scope proof and its contract test.
+    ".github/scripts/ci_core_import_scope.py",
+    ".github/tests/test_5341_core_import_scope.py",
     ".github/scripts/b62_worker_probe_*.sh",
     ".github/scripts/b62_worker_probe_shared_assertions.py",
     ".github/tests/test_3989_b62_worker_probe_parallel.py",

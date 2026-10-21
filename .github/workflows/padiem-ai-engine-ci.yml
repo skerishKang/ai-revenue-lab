@@ -10,6 +10,11 @@ on:
       # Keep Core changes here and retain the full LL regression within
       # Engine's job whenever Engine/Core itself changes.
       - '.github/tests/test_3989_engine_living_learning_ci_scope.py'
+      # #5341: the shared Core import-scope proof and its classifier decide
+      # whether a Core change reaches the Engine runtime at all.
+      - '.github/scripts/ci_core_import_scope.py'
+      - '.github/scripts/b62_ci_impact_scope_3989.py'
+      - '.github/tests/test_5341_core_import_scope.py'
       - '.github/workflows/padiem-ai-engine-ci.yml'
   workflow_dispatch:
 
@@ -27,6 +32,18 @@ jobs:
     steps:
       - name: Checkout exact head
         uses: actions/checkout@v4
+
+      # #5341: prove whether the changed Core module is outside the Engine
+      # runtime import closure. An unproven or unknown change set keeps the
+      # complete Engine + Core regression below.
+      - name: Classify the Core change impact for Engine
+        id: core-scope
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python .github/scripts/b62_ci_impact_scope_3989.py --core-product engine
+
+      - name: Test the shared Core import-scope contract
+        run: python -m unittest discover -s .github/tests -p test_5341_core_import_scope.py -q
 
       - name: Detect Engine source
         id: engine-source
@@ -62,53 +79,53 @@ jobs:
           version: '0.12.5'
 
       - name: Resolve Engine with shared Core dependency
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: uv sync --extra dev
 
       - name: Prove shared Core import without PYTHONPATH
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: uv run python -c "import padiem_ai_core, pathlib; print(pathlib.Path(padiem_ai_core.__file__).resolve())"
 
       - name: Compile Engine and Core
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: uv run python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
 
       - name: Engine network-free tests
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: uv run python -m pytest -q
 
       - name: Set up Node for cross-runtime reference client
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: JavaScript Service Binding client tests
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: node --test clients/js/test/client.test.mjs
 
       - name: Cross-account ingress contract tests
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: node --test ingress/test/worker.test.mjs
 
       - name: Padiem AI Core full tests
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: packages/padiem-ai-core
         run: uv run --extra dev python -m pytest -q
 
       - name: Pywrangler dependency sync
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: uv run pywrangler sync --force
 
       - name: Prove Core vendored for Engine Worker
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: |
           set -euo pipefail
@@ -118,7 +135,7 @@ jobs:
           echo 'PADIEM_AI_ENGINE_CORE_VENDORED=PASS'
 
       - name: Prove ToolRuntime Worker-native validation path
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: |
           set -euo pipefail
@@ -132,7 +149,7 @@ jobs:
           test -z "${rpds_path}"
           echo 'PADIEM_AI_ENGINE_TOOL_RUNTIME_WORKER_NATIVE=PASS'
       - name: Real Worker/Pyodide Drive external transport probe
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: |
           set -euo pipefail
@@ -197,9 +214,56 @@ jobs:
           PY
 
       - name: Python Worker bundle dry-run
-        if: steps.engine-source.outputs.present == 'true'
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent != 'true'
         working-directory: apps/padiem-ai-engine
         run: uv run pywrangler deploy --dry-run --outdir ../../.tmp/padiem-ai-engine-worker-bundle
+
+      # #5341: a Core change that no Engine source imports cannot change the
+      # Engine runtime. The focused Core contract below is the load-bearing
+      # check for that change set; every Engine/Core integration step above
+      # stays on the complete path for every other change.
+      - name: Focused independent Core contract
+        if: steps.engine-source.outputs.present == 'true' && steps.core-scope.outputs.core_independent == 'true'
+        working-directory: packages/padiem-ai-core
+        env:
+          CORE_TESTS: ${{ steps.core-scope.outputs.core_tests }}
+          CORE_MODULES: ${{ steps.core-scope.outputs.core_modules }}
+        run: |
+          set -euo pipefail
+          uv sync --extra dev
+          uv run python -m compileall -q padiem_ai_core
+          if [ -n "$CORE_MODULES" ]; then
+            read -r -a modules <<< "$CORE_MODULES"
+            test "${#modules[@]}" -ge 1
+            for module in "${modules[@]}"; do
+              [[ "$module" =~ ^[a-z][a-z0-9_]*$ ]]
+            done
+            uv run python - "$CORE_MODULES" <<'PY'
+          import importlib
+          import sys
+
+          for name in sys.argv[1].split():
+              importlib.import_module(f"padiem_ai_core.{name}")
+          print("ENGINE_CORE_INDEPENDENT_IMPORT_SMOKE=PASS")
+          PY
+          else
+            echo 'ENGINE_CORE_INDEPENDENT_IMPORT_SMOKE=NOT_REQUIRED'
+          fi
+          if [ -n "$CORE_TESTS" ]; then
+            read -r -a tests <<< "$CORE_TESTS"
+            test "${#tests[@]}" -ge 1
+            for test_file in "${tests[@]}"; do
+              [[ "$test_file" =~ ^test_[A-Za-z0-9_]+\.py$ ]]
+              test -f "tests/$test_file"
+            done
+            uv run python -m pytest -q "${tests[@]/#/tests/}"
+          else
+            echo 'ENGINE_CORE_FOCUSED_TESTS=NONE'
+          fi
+          echo 'ENGINE_CORE_FOCUSED=1'
+          echo 'ENGINE_PUBLIC_HTTP_FALLBACK=0'
+          echo 'REAL_PROVIDER_CALLS=0'
+          echo 'PRODUCTION_DEPLOYMENT=NO'
 
       - name: Record zero-live-call contract
         if: steps.engine-source.outputs.present == 'true'
