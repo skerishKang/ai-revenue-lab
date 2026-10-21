@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import time
 from dataclasses import dataclass, field
@@ -115,23 +116,36 @@ class MeshFailoverController:
         fault_confirmations: int = DEFAULT_FAULT_CONFIRMATIONS,
         restore_confirmations: int = DEFAULT_RESTORE_CONFIRMATIONS,
         initial_target: str = ACTIVE_COM2,
+        fault_streak: int = 0,
+        restore_streak: int = 0,
+        initial_epoch: int = 1,
     ) -> None:
         for name, value in (
             ("heartbeat_stale_seconds", heartbeat_stale_seconds),
             ("fault_confirmations", fault_confirmations),
             ("restore_confirmations", restore_confirmations),
+            ("fault_streak", fault_streak),
+            ("restore_streak", restore_streak),
+            ("initial_epoch", initial_epoch),
         ):
-            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
-                raise ContractError(f"{name} must be a positive integer")
+            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                raise ContractError(f"{name} must be a non-negative integer")
+        if fault_confirmations < 1 or restore_confirmations < 1:
+            raise ContractError("the confirmation windows must be positive")
+        if initial_epoch < 1:
+            raise ContractError("the initial epoch must be at least 1")
         if initial_target not in ACTIVE_TARGETS:
             raise ContractError("the initial target must be a known target")
         self._heartbeat_stale_seconds = heartbeat_stale_seconds
         self._fault_confirmations = fault_confirmations
         self._restore_confirmations = restore_confirmations
         self._active = initial_target
-        self._epoch = 1
-        self._fault_streak = 0
-        self._restore_streak = 0
+        # The epoch is the fencing token, so it is carried across processes and
+        # never restarts from a lower value: a consumer that still holds an
+        # older epoch must stay refused.
+        self._epoch = initial_epoch
+        self._fault_streak = fault_streak
+        self._restore_streak = restore_streak
 
     @property
     def active_target(self) -> str:
@@ -141,6 +155,16 @@ class MeshFailoverController:
     def epoch(self) -> int:
         """The current fencing token."""
         return self._epoch
+
+    @property
+    def fault_streak(self) -> int:
+        """Consecutive unusable observations seen so far."""
+        return self._fault_streak
+
+    @property
+    def restore_streak(self) -> int:
+        """Consecutive usable observations seen so far."""
+        return self._restore_streak
 
     def heartbeat_is_stale(self, age_seconds: Optional[float]) -> bool:
         """A missing or old heartbeat means COM2 stopped proving liveness."""
@@ -475,7 +499,12 @@ class MeshFailoverSupervisor:
         return True
 
     def run_once(self) -> MeshFailoverDecision:
-        """Evaluate once, persist the decision and emit any event."""
+        """Evaluate once, persist the decision and emit any event.
+
+        The confirmation windows span several passes, and each pass is a fresh
+        process, so the streaks are carried in the state file. A window that
+        lived only in memory would never confirm anything.
+        """
         com2_usable = self._com2_can_execute()
         age = heartbeat_age_seconds(self.heartbeat_path, now=self.now())
         decision = self.controller.evaluate(
@@ -507,6 +536,10 @@ class MeshFailoverSupervisor:
             "changed": decision.changed,
             "events": list(decision.events),
             "reason": decision.reason,
+            # The confirmation windows have to survive the process, so the
+            # streaks are part of the persisted decision.
+            "fault_streak": self.controller.fault_streak,
+            "restore_streak": self.controller.restore_streak,
             "ts": self.now(),
         }
         directory = os.path.dirname(self.state_path)
@@ -606,6 +639,31 @@ def decision_file_claim_gate(
         return state.get("active_target") == local_target
 
     return gate
+
+
+def highest_issued_epoch(path: str) -> int:
+    """The highest epoch this host has ever issued, from the event log.
+
+    The decision file holds the current epoch, but the event log is the
+    durable record of every epoch that was handed out. The epoch is the
+    fencing token, so it has to be strictly greater than every epoch a
+    consumer may still be holding; taking the highest issued one keeps
+    that true even if the decision file was ever rewritten.
+    """
+    if not isinstance(path, str) or not path.strip():
+        return 0
+    highest = 0
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as handle:
+            for line in handle:
+                match = re.search(r"^epoch:\s*(\d+)\s*$", line.strip())
+                if match:
+                    value = int(match.group(1))
+                    if value > highest:
+                        highest = value
+    except OSError:
+        return 0
+    return highest
 
 
 def events_file_notifier(path: str) -> Callable[[str, str], None]:
@@ -710,6 +768,12 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             raise ContractError(f"{key} must be an integer") from exc
 
     try:
+        # The confirmation windows span several passes and each pass is a
+        # fresh process, so the previous decision is restored before the next
+        # evaluation. Without this the window could never be reached.
+        state_path = need("MESH_FAILOVER_STATE_PATH")
+        events_path = need("MESH_FAILOVER_EVENTS_PATH")
+        previous = read_heartbeat(state_path)
         controller = MeshFailoverController(
             heartbeat_stale_seconds=optional_int(
                 "MESH_FAILOVER_HEARTBEAT_STALE_SECONDS",
@@ -720,6 +784,17 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             ),
             restore_confirmations=optional_int(
                 "MESH_FAILOVER_RESTORE_CONFIRMATIONS", DEFAULT_RESTORE_CONFIRMATIONS
+            ),
+            initial_target=previous.get("active_target", ACTIVE_COM2),
+            fault_streak=int(previous.get("fault_streak", 0) or 0),
+            restore_streak=int(previous.get("restore_streak", 0) or 0),
+            # The epoch is the fencing token and it must never go back, so it
+            # is carried across processes with the rest of the decision, and
+            # it is also lifted above every epoch the event log shows.
+            initial_epoch=max(
+                1,
+                int(previous.get("epoch", 1) or 1),
+                highest_issued_epoch(events_path),
             ),
         )
         presence = MeshCentralDevicePresence(
@@ -736,7 +811,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             heartbeat_path=need("MESH_FAILOVER_HEARTBEAT_PATH"),
             presence=presence,
             device_id=need("MESH_FAILOVER_DEVICE_ID"),
-            state_path=need("MESH_FAILOVER_STATE_PATH"),
+            state_path=state_path,
             notifier=notifier,
             local_target=need("MESH_FAILOVER_LOCAL_TARGET"),
         )
@@ -779,7 +854,12 @@ __all__ = [
     "decision_file_claim_gate",
     "events_file_notifier",
     "heartbeat_age_seconds",
+    "highest_issued_epoch",
     "main",
     "read_heartbeat",
     "write_heartbeat",
 ]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

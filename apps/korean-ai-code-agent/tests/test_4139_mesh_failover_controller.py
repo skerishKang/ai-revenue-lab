@@ -39,6 +39,7 @@ from kagent.local_agent_mesh_failover import (
     decision_file_claim_gate,
     events_file_notifier,
     heartbeat_age_seconds,
+    highest_issued_epoch,
     read_heartbeat,
     write_heartbeat,
 )
@@ -400,6 +401,185 @@ class SupervisorDeliveryTests(unittest.TestCase):
             ),
             ("COM2_FAULT", "ORACLE_ACTIVE", "COM2_RESTORED", "FAILBACK_COMPLETE"),
         )
+
+
+class ModuleEntryPointTests(unittest.TestCase):
+    """The supervisor has to be runnable as a module.
+
+    The deployed unit runs ``python -m kagent.local_agent_mesh_failover``, so
+    a missing entry point would make the supervisor import and exit without
+    ever deciding anything.
+    """
+
+    def test_the_module_runs_its_entry_point(self):
+        import subprocess
+        import sys
+
+        source = os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "src",
+            "kagent",
+            "local_agent_mesh_failover.py",
+        )
+        with open(source, "r", encoding="utf-8") as handle:
+            text = handle.read()
+        self.assertIn('if __name__ == "__main__":', text)
+        self.assertIn("raise SystemExit(main())", text)
+
+    def test_the_entry_point_refuses_to_start_without_configuration(self):
+        import subprocess
+
+        # The configuration is removed, so the run must refuse loudly rather
+        # than start a supervisor with no inputs.
+        env = {
+            key: value
+            for key, value in os.environ.items()
+            if not key.startswith("MESH_FAILOVER_")
+            and not key.startswith("ORACLE_MESH_")
+        }
+        env["PYTHONPATH"] = os.path.join(os.path.dirname(__file__), "..", "src")
+        completed = subprocess.run(
+            [sys.executable, "-m", "kagent.local_agent_mesh_failover"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+            env=env,
+        )
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("refused to start", completed.stderr)
+
+
+class ConfirmationWindowSurvivesARestartTests(unittest.TestCase):
+    """A confirmation window has to survive the process.
+
+    The supervisor is a fresh process on every pass, so a window that lived
+    only in memory could never be reached: every pass would start again at
+    one observation. The streaks therefore live in the decision file.
+    """
+
+    def _supervisor(self, folder, *, com2_connected, controller=None):
+        heartbeat = os.path.join(folder, "heartbeat.json")
+        write_heartbeat(
+            heartbeat,
+            build_heartbeat(
+                mesh_url="wss://127.0.0.1:4443",
+                device_id=DEVICE_ID,
+                device_connected=com2_connected,
+                executor_alive=True,
+            ),
+        )
+        return MeshFailoverSupervisor(
+            controller=controller or MeshFailoverController(fault_confirmations=2),
+            heartbeat_path=heartbeat,
+            presence=_FakePresence(False),
+            device_id=DEVICE_ID,
+            state_path=os.path.join(folder, "state.json"),
+        )
+
+    def test_a_second_pass_confirms_the_fault_and_moves_the_claim(self):
+        with tempfile.TemporaryDirectory() as folder:
+            first = self._supervisor(folder, com2_connected=False)
+            one = first.run_once()
+            self.assertEqual(one.active_target, ACTIVE_COM2)
+
+            # A fresh process, as the timer produces, restores the window.
+            with open(first.state_path, "r", encoding="utf-8") as handle:
+                state = json.load(handle)
+            self.assertEqual(state["fault_streak"], 1)
+
+            second = self._supervisor(
+                folder,
+                com2_connected=False,
+                controller=MeshFailoverController(
+                    fault_confirmations=2,
+                    initial_target=state["active_target"],
+                    fault_streak=state["fault_streak"],
+                    restore_streak=state["restore_streak"],
+                ),
+            )
+            two = second.run_once()
+            self.assertEqual(two.active_target, ACTIVE_ORACLE)
+            self.assertEqual(two.events, (EVENT_COM2_FAULT, EVENT_ORACLE_ACTIVE))
+
+    def test_the_streaks_are_part_of_the_persisted_decision(self):
+        with tempfile.TemporaryDirectory() as folder:
+            supervisor = self._supervisor(folder, com2_connected=False)
+            supervisor.run_once()
+            with open(supervisor.state_path, "r", encoding="utf-8") as handle:
+                state = json.load(handle)
+            self.assertIn("fault_streak", state)
+            self.assertIn("restore_streak", state)
+
+    def test_the_epoch_never_goes_back_across_a_restart(self):
+        with tempfile.TemporaryDirectory() as folder:
+            first = self._supervisor(
+                folder,
+                com2_connected=False,
+                controller=MeshFailoverController(fault_confirmations=1),
+            )
+            faulted = first.run_once()
+            self.assertEqual(faulted.active_target, ACTIVE_ORACLE)
+            self.assertGreater(faulted.epoch, 1)
+
+            # A fresh process restores the decision, including the epoch.
+            with open(first.state_path, "r", encoding="utf-8") as handle:
+                state = json.load(handle)
+            self.assertEqual(state["epoch"], faulted.epoch)
+
+            second = self._supervisor(
+                folder,
+                com2_connected=False,
+                controller=MeshFailoverController(
+                    fault_confirmations=1,
+                    initial_target=state["active_target"],
+                    fault_streak=state["fault_streak"],
+                    restore_streak=state["restore_streak"],
+                    initial_epoch=state["epoch"],
+                ),
+            )
+            after = second.run_once()
+            # The epoch must not restart from a lower value, or a consumer
+            # holding an older epoch could win the claim again.
+            self.assertGreaterEqual(after.epoch, faulted.epoch)
+            self.assertFalse(after.may_claim(faulted.epoch - 1))
+
+
+class EpochRecoveryTests(unittest.TestCase):
+    """The epoch is the fencing token, so it is never handed out twice."""
+
+    def test_the_highest_issued_epoch_is_read_from_the_event_log(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = os.path.join(folder, "events.log")
+            with open(path, "w", encoding="utf-8") as handle:
+                handle.write(
+                    "=== 2026-10-21T00:00:00 COM2_FAULT ===\n"
+                    "COM2_FAULT\nactive_target: oracle\nepoch: 2\nreason: x\n"
+                    "=== 2026-10-21T00:01:00 ORACLE_ACTIVE ===\n"
+                    "ORACLE_ACTIVE\nactive_target: oracle\nepoch: 5\nreason: y\n"
+                )
+            self.assertEqual(highest_issued_epoch(path), 5)
+
+    def test_a_missing_event_log_yields_no_epoch(self):
+        with tempfile.TemporaryDirectory() as folder:
+            self.assertEqual(
+                highest_issued_epoch(os.path.join(folder, "absent.log")), 0
+            )
+
+    def test_a_decision_file_below_the_log_is_lifted_up(self):
+        with tempfile.TemporaryDirectory() as folder:
+            events = os.path.join(folder, "events.log")
+            with open(events, "w", encoding="utf-8") as handle:
+                handle.write("epoch: 7\n")
+            state = {"active_target": "oracle", "epoch": 1, "fault_streak": 0, "restore_streak": 0}
+            restored = max(
+                1,
+                int(state.get("epoch", 1) or 1),
+                highest_issued_epoch(events),
+            )
+            self.assertEqual(restored, 7)
+            controller = MeshFailoverController(initial_epoch=restored)
+            self.assertEqual(controller.epoch, 7)
 
 
 if __name__ == "__main__":

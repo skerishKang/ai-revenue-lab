@@ -176,6 +176,8 @@ Retirement order, once the transport leg is verified:
 
 ## 7. Verification performed
 
+### 7.1 Unit level
+
 | Scenario | How | Result |
 |---|---|---|
 | A normal | COM2 usable | active target stays `com2`, no event, epoch unchanged |
@@ -188,7 +190,51 @@ by unit tests that need no MeshCentral, no network and no clock. The
 executor-side fence is covered by a test that proves the channel is
 never polled while the gate is closed.
 
-The real COM2 outage is **not** rehearsed in this document: the task
-requires it to be done in an isolated scope that does not disturb other
-LOCALs' work or the live connection, and the transport leg in section 5
-has to be solved first.
+### 7.2 Live, on Oracle, against the real COM2 heartbeat
+
+The lever was **only the COM2 heartbeat publisher**. COM2's MeshCentral, its
+executor and the COM1 tunnel kept running for the whole test, so the live
+execution lane was never interrupted and no other work was disturbed.
+
+| Moment | Observed |
+|---|---|
+| normal | `active=com2`, `com2_usable=true`, heartbeat age ≈ 10 s, epoch stable |
+| COM2 publisher stopped | `COM2_FAULT` + `ORACLE_ACTIVE` recorded in the event log, epoch 1 → 2 |
+| while Oracle was active | the Oracle executor **waited**: `the claim belongs to 'com2' (local_can_execute=false): waiting` — it never claimed, because Oracle's own MeshCentral has no device connected |
+| COM2 publisher restarted | `COM2_RESTORED` + `FAILBACK_COMPLETE`, epoch 2 → 3 |
+
+The event vocabulary is exactly the four names above, in the event log,
+with the epoch on every entry.
+
+### 7.3 Two defects the deployment found that the unit tests could not
+
+Both were found only by running the supervisor as a real, repeated
+process. They are fixed and covered by tests.
+
+1. **The confirmation window never confirmed anything.** The streaks
+   lived in process memory, and the supervisor is a fresh process on
+   every pass, so every pass started again at one observation and the
+   window of two was never reached. The streaks now live in the decision
+   file and are restored on the next pass.
+2. **The epoch went backwards.** The epoch was not carried across
+   processes, so after a switch the next pass restarted it at 1. A
+   consumer holding an older epoch could then win the claim again. The
+   epoch is now carried in the decision file and is additionally lifted
+   above every epoch the event log shows, so an epoch is never handed
+   out twice.
+
+A third defect was found the same way and fixed in the same series: the
+module had no `__main__` guard, so the documented
+`python -m kagent.local_agent_mesh_failover` imported the module and
+exited without deciding anything while the unit reported success.
+
+### 7.4 What is still not proven
+
+The device **transport** is still COM1-bound (section 5), so the failover
+is proven for the **claim** and not for the **device transport**. During
+the fault test the claim did move to Oracle and the Oracle executor did
+correctly refuse to claim, because Oracle has no device connected. A
+real end-to-end handover — Oracle executing on the target PC — therefore
+still needs the transport leg to be solved first, and the COM1 tasks
+stay until then.
+
