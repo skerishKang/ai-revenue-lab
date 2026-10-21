@@ -1808,7 +1808,17 @@ class D1HistoryStore:
             user_id, run_id,
         )
         if not isinstance(correlation, dict):
-            correlation = await self.get_local_task_correlation(user_id, run_id)
+            # #5015: the legacy local-runner correlation table comes from a
+            # source migration that a deployment may never have applied. The
+            # Mesh dispatch row above is the authority for a PC execution, so
+            # an unavailable legacy table can only mean "this deployment holds
+            # no local-runner correlation" - it must never turn a model-only
+            # run into an unavailable result. A PC run stays unavailable
+            # through its own action record instead.
+            try:
+                correlation = await self.get_local_task_correlation(user_id, run_id)
+            except Exception:
+                correlation = None
         pc_correlated = (
             isinstance(correlation, dict)
             and isinstance(correlation.get("command_id"), str)
