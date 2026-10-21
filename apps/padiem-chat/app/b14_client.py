@@ -520,9 +520,22 @@ class B14Client:
         # response header, independent of B14's own internal attempt ID.
         stream_started = time.perf_counter()
         stream_completed = False
+        first_delta_emitted = False
         try:
             async for event in core_stream:
                 if event.delta_content:
+                    if not first_delta_emitted:
+                        # #4317 perf: `b14.stream` below is the WHOLE stream, so
+                        # it cannot separate "the model started late" from "the
+                        # model answered slowly". This stage is the missing
+                        # time-to-first-visible-token measurement, on the same
+                        # request id and the same existing event contract.
+                        first_delta_emitted = True
+                        emit_stage_event(
+                            stage="b14.stream.first_delta",
+                            outcome="ok",
+                            duration_ms=(time.perf_counter()-stream_started)*1000,
+                        )
                     yield ChatStreamEvent(delta_content=event.delta_content)
                 if event.done:
                     stream_completed = True

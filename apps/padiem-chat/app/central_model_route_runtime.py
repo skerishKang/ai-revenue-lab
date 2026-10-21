@@ -12,6 +12,8 @@ No provider connection, credential or B14 registry mutation happens here.
 """
 from __future__ import annotations
 
+import asyncio
+
 from contextlib import asynccontextmanager
 
 from starlette.requests import Request
@@ -138,8 +140,14 @@ async def resolve_tier_route_view_from_stores(
         raise ValueError("invalid route tier")
     # The policy ledger is independent of the route ledger. A route read
     # outage must not silently remove a policy block that remains readable.
-    blocked_model_ids = await _blocked_models_from_store(policy_store, product, tier)
-    snapshot = await _read_route_snapshot(route_store)
+    # #4317 perf: the two stores are unrelated, so the two reads are issued
+    # together instead of one after the other. Each helper already fails closed
+    # on its own errors, so the outcome is identical and one store round trip
+    # leaves the chat TTFT path.
+    blocked_model_ids, snapshot = await asyncio.gather(
+        _blocked_models_from_store(policy_store, product, tier),
+        _read_route_snapshot(route_store),
+    )
     if snapshot is None:
         return static_tier_route(
             static_primary, static_fallback, blocked_model_ids=blocked_model_ids,
