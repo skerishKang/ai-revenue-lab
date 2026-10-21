@@ -363,6 +363,11 @@ def test_the_read_only_gate_proves_the_live_binding_set_against_the_baseline():
     assert "b62_binding_baseline.py" in readonly_job
     assert "B62_BINDING_BASELINE=PASS" in readonly_job
     assert "B62_BINDING_BASELINE_VALUES_EMITTED=0" in readonly_job
+    # This gate's credential is deliberately locked to the B62 Worker
+    # (#3930), so it proves the B62 baseline only and must not reach for the
+    # Engine Worker through that helper.
+    assert "${P01_ENGINE_WORKER}/settings" not in readonly_job
+    assert "B62_BINDING_BASELINE_WORKERS=${B62_WORKER}" in readonly_job
     # The read-only gate runs before the deploy job, so a drifted binding set
     # fails closed before any deploy mutation.
     assert text.index("\n  cloudflare-readonly:") < text.index("\n  deploy-production-code:")
