@@ -271,6 +271,8 @@ from .byok_routes import (
     custom_credential_delete,
     custom_credential_save,
     custom_credential_status,
+    custom_credential_test,
+    custom_provider_models,
 )
 from .connector_ticket_routes import google_connector_ticket
 from .meeting_drive_upload_routes import MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session
@@ -578,6 +580,10 @@ def create_app(
         Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
         Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),
+        # #5121 PADIEM Custom (BYOK) multi-provider routes: the customer key
+        # lane, separate from the B14 managed model routes.
+        Route("/api/chat/custom/credential/test", custom_credential_test, methods=["GET"]),
+        Route("/api/chat/custom/models", custom_provider_models, methods=["GET"]),
         # #5222 account-scoped last selected AI tier. One signed-in account owns
         # one stored preference; the browser never names the account.
         Route(MODEL_SELECTION_PATH, account_model_selection_get, methods=["GET"]),

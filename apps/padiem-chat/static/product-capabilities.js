@@ -151,6 +151,22 @@
       keyLength: "API 키는 공백 없이 16자 이상 512자 이하여야 합니다.",
       saveFailed: "API 키를 저장하지 못했습니다.",
       deleteFailed: "API 키를 삭제하지 못했습니다.",
+      providerLabel: "공급사",
+      modelNotSet: "모델을 선택하세요",
+      modelPlaceholder: "공급사 모델 ID를 입력하세요",
+      modelRequired: "모델 ID를 먼저 선택하거나 입력해 주세요.",
+      loadModels: "모델 목록 불러오기",
+      loadingModels: "모델 목록 확인 중…",
+      modelsLoaded: "공급사 모델 목록을 불러왔습니다.",
+      modelsFailed: "모델 목록을 불러오지 못했습니다.",
+      endpointLabel: "API 엔드포인트 (선택)",
+      endpointPlaceholder: "https://<your-endpoint>/v1",
+      endpointHint: "비워 두면 공급사 기본 주소를 사용합니다. 공개 HTTPS 주소만 저장됩니다.",
+      test: "연결 테스트",
+      testing: "확인 중…",
+      testOk: "공급사 연결을 확인했습니다.",
+      testFailed: "공급사 연결을 확인하지 못했습니다.",
+      keyRequired: "API 키를 저장한 뒤 Padiem Custom을 선택할 수 있습니다.",
     }),
     en: Object.freeze({
       heading: "My API key",
@@ -186,6 +202,22 @@
       keyLength: "An API key must be 16 to 512 characters with no spaces.",
       saveFailed: "Could not save the API key.",
       deleteFailed: "Could not delete the API key.",
+      providerLabel: "Provider",
+      modelNotSet: "Choose a model",
+      modelPlaceholder: "Enter the provider model ID",
+      modelRequired: "Choose or enter a model ID first.",
+      loadModels: "Load model list",
+      loadingModels: "Checking model list…",
+      modelsLoaded: "Loaded the provider model list.",
+      modelsFailed: "Could not load the provider model list.",
+      endpointLabel: "API endpoint (optional)",
+      endpointPlaceholder: "https://<your-endpoint>/v1",
+      endpointHint: "Leave empty to use the provider's default address. Only public HTTPS addresses are stored.",
+      test: "Test connection",
+      testing: "Checking…",
+      testOk: "Provider connection verified.",
+      testFailed: "Could not verify the provider connection.",
+      keyRequired: "Save an API key before selecting Padiem Custom.",
     }),
   });
 
@@ -200,6 +232,13 @@
   let customFocusPending = false;
   let customMessageText = "";
   let customMessageState = "info";
+  let customProviderId = null;
+  let customProviderSignature = "";
+  let customModelValue = "";
+  let customModelOptions = [];
+  let customModelState = "idle";
+  let customModelSeq = 0;
+  let customTestState = "idle";
   let customOption = null;
   let customOptionTitle = null;
   let customOptionModel = null;
@@ -216,6 +255,17 @@
   let customDeleteButton = null;
   let customMessageEl = null;
   let customRetryButton = null;
+  let customProviderLabelEl = null;
+  let customProviderSelect = null;
+  let customModelLabelEl = null;
+  let customModelSelect = null;
+  let customModelInput = null;
+  let customModelDatalist = null;
+  let customModelListButton = null;
+  let customEndpointLabelEl = null;
+  let customEndpointInput = null;
+  let customEndpointHintEl = null;
+  let customTestButton = null;
 
   const ACCOUNT_COPY = Object.freeze({
     ko: Object.freeze({
@@ -581,13 +631,23 @@
   }
 
   function customProvider() {
-    return customProviders.length ? customProviders[0] : null;
+    if (!customProviders.length) return null;
+    return customProviders.find((row) => row.provider === customProviderId) || customProviders[0];
   }
 
   function customCredential() {
     const provider = customProvider();
     if (!provider) return null;
     return customCredentials.find((row) => row.provider === provider.provider) || null;
+  }
+
+  function customModelId() {
+    const provider = customProvider();
+    if (!provider) return "";
+    if (provider.manual_model) {
+      return customModelInput ? String(customModelInput.value || "").trim() : customModelValue;
+    }
+    return customModelSelect ? String(customModelSelect.value || "").trim() : customModelValue;
   }
 
   function customUsageState() {
@@ -625,8 +685,72 @@
     customLoadError = "";
     customMutation = null;
     customSelection = null;
+    customProviderId = null;
+    customProviderSignature = "";
+    customModelValue = "";
+    customModelOptions = [];
+    customModelState = "idle";
+    customModelSeq += 1;
+    customTestState = "idle";
     customRequestSeq += 1;
     syncModeCopy();
+  }
+
+  function syncProviderOptions() {
+    if (!customProviderSelect) return;
+    const signature = customProviders.map((row) => row.provider).join("|");
+    if (signature !== customProviderSignature) {
+      customProviderSignature = signature;
+      customProviderSelect.textContent = "";
+      customProviders.forEach((row) => {
+        const option = document.createElement("option");
+        option.value = row.provider;
+        option.textContent = row.display_name;
+        customProviderSelect.appendChild(option);
+      });
+    }
+    const provider = customProvider();
+    if (provider) customProviderSelect.value = provider.provider;
+  }
+
+  function syncModelOptions(provider) {
+    const registry = Boolean(provider && !provider.manual_model);
+    if (customModelLabelEl) {
+      customModelLabelEl.htmlFor = registry ? "modeCustomModelSelect" : "modeCustomModelInput";
+    }
+    if (customModelSelect) {
+      customModelSelect.hidden = !registry;
+      const listed = registry && Array.isArray(provider.models) ? provider.models : [];
+      const signature = listed.join("|");
+      if (customModelSelect.dataset.signature !== signature) {
+        customModelSelect.dataset.signature = signature;
+        customModelSelect.textContent = "";
+        listed.forEach((model) => {
+          const option = document.createElement("option");
+          option.value = model;
+          option.textContent = model;
+          customModelSelect.appendChild(option);
+        });
+      }
+      if (registry) {
+        if (!listed.length) customModelValue = "";
+        else if (!listed.includes(customModelValue)) customModelValue = listed[0];
+        customModelSelect.value = customModelValue;
+      }
+    }
+    if (customModelInput) customModelInput.hidden = registry;
+    if (customModelDatalist) {
+      const signature = customModelOptions.join("|");
+      if (customModelDatalist.dataset.signature !== signature) {
+        customModelDatalist.dataset.signature = signature;
+        customModelDatalist.textContent = "";
+        customModelOptions.forEach((model) => {
+          const option = document.createElement("option");
+          option.value = model;
+          customModelDatalist.appendChild(option);
+        });
+      }
+    }
   }
 
   function syncCustomSection() {
@@ -636,6 +760,10 @@
     if (customDescriptionEl) customDescriptionEl.textContent = copy.description;
     if (customKeyLabelEl) customKeyLabelEl.textContent = copy.keyLabel;
     if (customKeyHintEl) customKeyHintEl.textContent = copy.keyHint;
+    if (customProviderLabelEl) customProviderLabelEl.textContent = copy.providerLabel;
+    if (customModelLabelEl) customModelLabelEl.textContent = copy.modelLabel;
+    if (customEndpointLabelEl) customEndpointLabelEl.textContent = copy.endpointLabel;
+    if (customEndpointHintEl) customEndpointHintEl.textContent = copy.endpointHint;
     if (customRetryButton) customRetryButton.textContent = copy.retry;
     const state = customUsageState();
     const selectable = state === "ready" || state === "key";
@@ -643,13 +771,19 @@
     const provider = customProvider();
     const busy = customMutation !== null;
 
+    syncProviderOptions();
+    syncModelOptions(provider);
+    const model = customModelId();
+
     customOption.disabled = !selectable;
     customOption.setAttribute("aria-disabled", selectable ? "false" : "true");
     customOption.setAttribute("aria-pressed", customSelection && selectable ? "true" : "false");
     customOption.dataset.modeStatus = state === "ready" ? "available" : state === "key" ? "key" : "unavailable";
     if (customOptionTitle) customOptionTitle.textContent = provider ? provider.display_name : copy.option;
     if (customOptionModel) {
-      customOptionModel.textContent = provider ? copy.modelLabel + " " + provider.model : "";
+      customOptionModel.textContent = provider
+        ? copy.modelLabel + " " + (model || copy.modelNotSet)
+        : "";
       customOptionModel.hidden = !provider;
     }
     if (customOptionState) {
@@ -677,19 +811,60 @@
       customStatusEl.textContent = state === "loading" ? copy.stateLoading
         : state === "expired" ? copy.authExpired
         : state === "unavailable" ? (customLoadError || copy.unavailable)
-        : credential ? copy.credential + String(credential.key_last4 || "")
-        : copy.noCredential;
+        : credential
+          ? copy.credential + String(credential.key_last4 || "")
+            + (credential.endpoint_is_default === false && credential.endpoint
+              ? " · " + credential.endpoint : "")
+          : copy.noCredential;
       customStatusEl.dataset.state = state;
     }
+
+    const controlsDisabled = busy || !auth.authenticated
+      || state === "loading" || state === "unavailable" || state === "expired";
+    if (customProviderSelect) {
+      customProviderSelect.disabled = controlsDisabled || !customProviders.length;
+    }
+    if (customModelSelect) {
+      customModelSelect.disabled = controlsDisabled || !provider || !provider.models.length;
+    }
+    if (customModelInput) {
+      customModelInput.disabled = controlsDisabled || !provider;
+      customModelInput.placeholder = copy.modelPlaceholder;
+    }
+    if (customModelListButton) {
+      customModelListButton.hidden = !provider || !provider.supports_model_listing;
+      customModelListButton.disabled = controlsDisabled || !credential
+        || customModelState === "loading";
+      customModelListButton.textContent = customModelState === "loading"
+        ? copy.loadingModels : copy.loadModels;
+    }
+    if (customEndpointLabelEl) {
+      customEndpointLabelEl.hidden = !provider || !provider.supports_custom_endpoint;
+    }
+    if (customEndpointInput) {
+      customEndpointInput.hidden = !provider || !provider.supports_custom_endpoint;
+      customEndpointInput.disabled = controlsDisabled || !provider;
+      customEndpointInput.placeholder = provider && provider.default_endpoint
+        ? provider.default_endpoint : copy.endpointPlaceholder;
+    }
+    if (customEndpointHintEl) {
+      customEndpointHintEl.hidden = !provider || !provider.supports_custom_endpoint;
+    }
+    if (customTestButton) {
+      customTestButton.hidden = !provider || !provider.supports_connection_test || !credential;
+      customTestButton.disabled = controlsDisabled || !credential
+        || customTestState === "testing";
+      customTestButton.textContent = customTestState === "testing"
+        ? copy.testing : copy.test;
+    }
     if (customInput) {
-      customInput.disabled = busy || !auth.authenticated
-        || state === "loading" || state === "unavailable" || state === "expired";
+      customInput.disabled = controlsDisabled;
       customInput.placeholder = copy.keyPlaceholder;
     }
     if (customSaveButton) {
       customSaveButton.textContent = busy && customMutation === "save"
         ? copy.saveBusy : credential ? copy.replace : copy.save;
-      customSaveButton.disabled = busy || (customInput ? customInput.disabled : true);
+      customSaveButton.disabled = controlsDisabled || !provider;
     }
     if (customDeleteButton) {
       customDeleteButton.textContent = busy && customMutation === "delete" ? copy.deleteBusy : copy.remove;
@@ -704,13 +879,21 @@
     if (customRetryButton) {
       customRetryButton.hidden = !(auth.authenticated && state === "unavailable");
     }
-    if (customFocusPending && customInput && !customInput.disabled
-        && modePanel && !modePanel.hidden) {
+    if (customFocusPending && !controlsDisabled && modePanel && !modePanel.hidden) {
       customFocusPending = false;
+      const target = customModelInput && !customModelInput.hidden && !model
+        ? customModelInput
+        : customInput;
       window.setTimeout(() => {
-        try { customInput.focus(); } catch (_) { /* focus is an enhancement */ }
+        try { target.focus(); } catch (_) { /* focus is an enhancement */ }
       }, 0);
     }
+  }
+
+  function focusCustomModel() {
+    const target = customModelInput && !customModelInput.hidden
+      ? customModelInput : customModelSelect;
+    try { if (target) target.focus(); } catch (_) { /* focus is an enhancement */ }
   }
 
   function selectCustom() {
@@ -718,7 +901,14 @@
     if (!provider || !auth.authenticated) return false;
     const state = customUsageState();
     if (state !== "ready" && state !== "key") return false;
-    customSelection = { provider: provider.provider, model: provider.model };
+    const model = customModelId();
+    if (!model) {
+      // A typed-but-unknown model id is never accepted as a success.
+      setCustomMessage(customCopy().modelRequired, "error");
+      focusCustomModel();
+      return false;
+    }
+    customSelection = { provider: provider.provider, model };
     customMessageText = "";
     customMessageState = "info";
     syncModeCopy();
@@ -730,6 +920,118 @@
     }
     closeModePanel({ restoreFocus: true });
     return true;
+  }
+
+  function selectCustomProvider(providerId) {
+    if (!customProviders.some((row) => row.provider === providerId)) return;
+    customProviderId = providerId;
+    const provider = customProvider();
+    customModelValue = provider && !provider.manual_model && provider.models.length
+      ? provider.models[0] : "";
+    customModelOptions = provider && Array.isArray(provider.models)
+      ? provider.models.slice() : [];
+    customModelState = "idle";
+    customModelSeq += 1;
+    customTestState = "idle";
+    customMessageText = "";
+    customMessageState = "info";
+    if (customModelInput) customModelInput.value = customModelValue;
+    const credential = customCredential();
+    if (customEndpointInput) {
+      customEndpointInput.value = credential
+        && credential.endpoint_is_default === false && credential.endpoint
+        ? credential.endpoint : "";
+    }
+    syncModeCopy();
+  }
+
+  function onCustomModelChanged() {
+    customModelValue = customModelId();
+    customMessageText = "";
+    customMessageState = "info";
+    syncCustomSection();
+  }
+
+  async function loadCustomModels() {
+    const provider = customProvider();
+    if (!provider || !provider.supports_model_listing || customModelState === "loading") return;
+    const copy = customCopy();
+    if (!customCredential()) {
+      setCustomMessage(copy.keyRequired, "info");
+      return;
+    }
+    const ticket = ++customModelSeq;
+    customModelState = "loading";
+    syncCustomSection();
+    try {
+      const response = await nativeFetch(
+        "/api/chat/custom/models?provider=" + encodeURIComponent(provider.provider),
+        {
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+          credentials: "same-origin",
+        },
+      );
+      const data = await response.json().catch(() => null);
+      if (ticket !== customModelSeq) return;
+      if (!response.ok || !data || data.ok !== true) {
+        customModelState = "error";
+        setCustomMessage(errorMessage(data) || copy.modelsFailed, "error");
+        return;
+      }
+      customModelOptions = (Array.isArray(data.models) ? data.models : [])
+        .filter((row) => typeof row === "string" && row.length > 0 && row.length <= 200)
+        .slice(0, 500);
+      customModelState = "ready";
+      setCustomMessage(copy.modelsLoaded, "ok");
+    } catch (_) {
+      if (ticket !== customModelSeq) return;
+      customModelState = "error";
+      setCustomMessage(copy.modelsFailed, "error");
+    }
+    syncCustomSection();
+  }
+
+  async function testCustomConnection() {
+    const provider = customProvider();
+    if (!provider || !provider.supports_connection_test || customTestState === "testing") return;
+    const copy = customCopy();
+    if (!customCredential()) {
+      setCustomMessage(copy.keyRequired, "info");
+      return;
+    }
+    customTestState = "testing";
+    setCustomMessage("", "info");
+    syncCustomSection();
+    try {
+      const response = await nativeFetch(
+        "/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider),
+        {
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+          credentials: "same-origin",
+        },
+      );
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true) {
+        if (response.status === 401) {
+          customTestState = "idle";
+          clearCustomState();
+          setCustomMessage(copy.authExpired, "error");
+          void refreshAuth();
+          return;
+        }
+        customTestState = "idle";
+        setCustomMessage(errorMessage(data) || copy.testFailed, "error");
+        return;
+      }
+      customTestState = "idle";
+      setCustomMessage(copy.testOk, "ok");
+    } catch (_) {
+      customTestState = "idle";
+      setCustomMessage(copy.testFailed, "error");
+    }
+    syncCustomSection();
   }
 
   function openCustomCredentials() {
@@ -791,14 +1093,24 @@
       const providers = Array.isArray(data.providers) ? data.providers : [];
       const credentials = Array.isArray(data.credentials) ? data.credentials : [];
       customProviders = providers
-        .filter((row) => row && typeof row.provider === "string" && row.provider
-          && typeof row.model === "string" && row.model)
-        .slice(0, 4)
-        .map((row) => Object.freeze({
-          provider: row.provider,
-          model: row.model,
-          display_name: text(row.display_name, 120) || customCopy().option,
-        }));
+        .filter((row) => row && typeof row.provider === "string" && row.provider)
+        .slice(0, 8)
+        .map((row) => {
+          const listed = Array.isArray(row.models)
+            ? row.models.filter((model) => typeof model === "string"
+              && model.length > 0 && model.length <= 200)
+            : (typeof row.model === "string" && row.model ? [row.model] : []);
+          return Object.freeze({
+            provider: row.provider,
+            display_name: text(row.display_name, 120) || customCopy().option,
+            models: Object.freeze(listed.slice(0, 500)),
+            manual_model: row.manual_model === true,
+            supports_model_listing: row.supports_model_listing === true,
+            supports_connection_test: row.supports_connection_test === true,
+            supports_custom_endpoint: row.supports_custom_endpoint === true,
+            default_endpoint: typeof row.default_endpoint === "string" ? row.default_endpoint : "",
+          });
+        });
       const known = new Set(customProviders.map((row) => row.provider));
       customCredentials = credentials
         .filter((row) => row && known.has(row.provider)
@@ -806,17 +1118,43 @@
         .map((row) => Object.freeze({
           provider: row.provider,
           key_last4: row.key_last4.replace(/[^A-Za-z0-9]/g, "").slice(-4),
+          endpoint: typeof row.endpoint === "string" ? row.endpoint : "",
+          endpoint_is_default: row.endpoint_is_default !== false,
         }));
       customLoadState = customProviders.length ? "ready" : "unavailable";
       if (!customProviders.length) customLoadError = customCopy().unavailable;
+      if (!customProviders.some((row) => row.provider === customProviderId)) {
+        customProviderId = customProviders.length ? customProviders[0].provider : null;
+        customModelValue = "";
+        customModelOptions = [];
+        customModelState = "idle";
+        customModelSeq += 1;
+        customTestState = "idle";
+        if (customModelInput) customModelInput.value = "";
+        if (customEndpointInput) customEndpointInput.value = "";
+      }
+      const provider = customProvider();
+      if (provider) {
+        if (!provider.manual_model && !provider.models.includes(customModelValue)) {
+          customModelValue = provider.models[0] || "";
+        }
+        if (customModelInput) customModelInput.value = customModelValue;
+      }
       if (customSelection) {
         const selectedProvider = customProviders.find(
-          (row) => row.provider === customSelection.provider
-            && row.model === customSelection.model,
+          (row) => row.provider === customSelection.provider,
         );
-        customSelection = selectedProvider
-          ? { provider: selectedProvider.provider, model: selectedProvider.model }
+        const stillValid = selectedProvider && customSelection.model
+          && (selectedProvider.manual_model
+            || selectedProvider.models.includes(customSelection.model));
+        customSelection = stillValid
+          ? { provider: selectedProvider.provider, model: customSelection.model }
           : null;
+      }
+      const credential = customCredential();
+      if (customEndpointInput && credential
+          && credential.endpoint_is_default === false && credential.endpoint) {
+        customEndpointInput.value = credential.endpoint;
       }
       syncModeCopy();
     } catch (_) {
@@ -841,6 +1179,10 @@
       customInput.focus();
       return;
     }
+    const endpoint = customEndpointInput
+      ? String(customEndpointInput.value || "").trim() : "";
+    const payload = { provider: provider.provider, api_key: key };
+    if (endpoint) payload.endpoint = endpoint;
     customMutation = "save";
     customMessageText = "";
     customMessageState = "info";
@@ -851,7 +1193,7 @@
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         cache: "no-store",
         credentials: "same-origin",
-        body: JSON.stringify({ provider: provider.provider, api_key: key }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.ok !== true) {
@@ -870,6 +1212,12 @@
       customInput.value = "";
       customMutation = null;
       await refreshCustomStatus();
+      const stored = customCredential();
+      if (customEndpointInput) {
+        customEndpointInput.value = stored
+          && stored.endpoint_is_default === false && stored.endpoint
+          ? stored.endpoint : "";
+      }
       setCustomMessage(hadCredential ? copy.replaced : copy.saved, "ok");
     } catch (_) {
       setCustomMessage(copy.saveFailed, "error");
@@ -912,6 +1260,8 @@
         return;
       }
       if (customInput) customInput.value = "";
+      if (customEndpointInput) customEndpointInput.value = "";
+      customTestState = "idle";
       customMutation = null;
       await refreshCustomStatus();
       setCustomMessage(data.deleted === true ? copy.deleted : copy.deleteNoop, "ok");
@@ -967,6 +1317,68 @@
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
 
+    // Every provider and model rendered here comes from the server capability
+    // payload. The browser never invents a provider/model that the server will
+    // not accept, and a manually typed model is passed through for the provider
+    // to accept or reject rather than being treated as a success.
+    customProviderLabelEl = document.createElement("label");
+    customProviderLabelEl.className = "mode-custom-key-label";
+    customProviderLabelEl.htmlFor = "modeCustomProvider";
+    customProviderLabelEl.textContent = copy.providerLabel;
+    customProviderSelect = document.createElement("select");
+    customProviderSelect.id = "modeCustomProvider";
+    customProviderSelect.className = "mode-custom-select";
+    customProviderSelect.addEventListener("change", () => {
+      selectCustomProvider(customProviderSelect.value);
+    });
+
+    customModelLabelEl = document.createElement("label");
+    customModelLabelEl.className = "mode-custom-key-label";
+    customModelLabelEl.htmlFor = "modeCustomModelSelect";
+    customModelLabelEl.textContent = copy.modelLabel;
+    customModelSelect = document.createElement("select");
+    customModelSelect.id = "modeCustomModelSelect";
+    customModelSelect.className = "mode-custom-select";
+    customModelSelect.addEventListener("change", onCustomModelChanged);
+    customModelInput = document.createElement("input");
+    customModelInput.type = "text";
+    customModelInput.id = "modeCustomModelInput";
+    customModelInput.className = "mode-custom-key-input";
+    customModelInput.autocomplete = "off";
+    customModelInput.maxLength = 200;
+    customModelInput.placeholder = copy.modelPlaceholder;
+    customModelInput.setAttribute("list", "modeCustomModelOptions");
+    customModelInput.setAttribute("autocapitalize", "off");
+    customModelInput.setAttribute("spellcheck", "false");
+    customModelInput.hidden = true;
+    customModelInput.addEventListener("input", onCustomModelChanged);
+    customModelDatalist = document.createElement("datalist");
+    customModelDatalist.id = "modeCustomModelOptions";
+    customModelListButton = document.createElement("button");
+    customModelListButton.type = "button";
+    customModelListButton.className = "mode-custom-action mode-custom-model-load";
+    customModelListButton.textContent = copy.loadModels;
+    customModelListButton.hidden = true;
+    customModelListButton.addEventListener("click", () => void loadCustomModels());
+
+    customEndpointLabelEl = document.createElement("label");
+    customEndpointLabelEl.className = "mode-custom-key-label";
+    customEndpointLabelEl.htmlFor = "modeCustomEndpoint";
+    customEndpointLabelEl.textContent = copy.endpointLabel;
+    customEndpointInput = document.createElement("input");
+    customEndpointInput.type = "url";
+    customEndpointInput.id = "modeCustomEndpoint";
+    customEndpointInput.className = "mode-custom-key-input";
+    customEndpointInput.autocomplete = "off";
+    customEndpointInput.maxLength = 2048;
+    customEndpointInput.setAttribute("autocapitalize", "off");
+    customEndpointInput.setAttribute("spellcheck", "false");
+    customEndpointInput.setAttribute("aria-describedby", "modeCustomEndpointHint");
+    customEndpointHintEl = document.createElement("small");
+    customEndpointHintEl.className = "mode-custom-hint";
+    customEndpointHintEl.id = "modeCustomEndpointHint";
+    customEndpointHintEl.textContent = copy.endpointHint;
+
     const label = document.createElement("label");
     label.className = "mode-custom-key-label";
     label.htmlFor = "modeCustomApiKey";
@@ -999,7 +1411,13 @@
     customDeleteButton.type = "button";
     customDeleteButton.className = "mode-custom-action mode-custom-delete";
     customDeleteButton.addEventListener("click", () => void deleteCustomKey());
-    actions.append(customSaveButton, customDeleteButton);
+    customTestButton = document.createElement("button");
+    customTestButton.type = "button";
+    customTestButton.className = "mode-custom-action mode-custom-test";
+    customTestButton.textContent = copy.test;
+    customTestButton.hidden = true;
+    customTestButton.addEventListener("click", () => void testCustomConnection());
+    actions.append(customSaveButton, customDeleteButton, customTestButton);
 
     const hint = document.createElement("small");
     hint.className = "mode-custom-hint";
@@ -1018,7 +1436,25 @@
     customRetryButton.textContent = copy.retry;
     customRetryButton.addEventListener("click", () => void refreshCustomStatus());
 
-    form.append(status, label, customInput, actions, hint, customMessageEl, customRetryButton);
+    form.append(
+      status,
+      customProviderLabelEl,
+      customProviderSelect,
+      customModelLabelEl,
+      customModelSelect,
+      customModelInput,
+      customModelDatalist,
+      customModelListButton,
+      customEndpointLabelEl,
+      customEndpointInput,
+      customEndpointHintEl,
+      label,
+      customInput,
+      actions,
+      hint,
+      customMessageEl,
+      customRetryButton,
+    );
 
     customGuestNote = document.createElement("p");
     customGuestNote.className = "mode-custom-guest-note";

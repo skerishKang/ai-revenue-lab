@@ -79,23 +79,57 @@ def test_byok_heading_has_no_decorative_icon() -> None:
         assert forbidden not in heading, forbidden
 
 
-def test_picker_has_no_fake_connection_test_or_update_history() -> None:
-    for forbidden in (
-        "연결 테스트",
-        "connection test",
-        "Connection test",
-        "업데이트 내역",
-        "Update history",
-    ):
+def test_connection_test_is_real_and_only_shown_for_server_supported_providers() -> None:
+    # No placeholder button and no client-side success claim: the control is
+    # hidden unless the server advertises a model-list-backed test and a stored
+    # credential exists, and the result comes from the server response.
+    assert (
+        'customTestButton.hidden = !provider || !provider.supports_connection_test || !credential;'
+        in CAPABILITIES
+    )
+    assert (
+        '"/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider)'
+        in CAPABILITIES
+    )
+    assert 'method: "POST"' not in CAPABILITIES
+    assert 'method: "PATCH"' not in CAPABILITIES
+    assert "customTestState = \"testing\";" in CAPABILITIES
+    assert "setCustomMessage(copy.testOk, \"ok\");" in CAPABILITIES
+    assert "setCustomMessage(errorMessage(data) || copy.testFailed, \"error\");" in CAPABILITIES
+    for forbidden in ("업데이트 내역", "Update history"):
         assert forbidden not in CAPABILITIES, forbidden
 
 
-def test_picker_renders_only_server_reported_provider_and_model() -> None:
+def test_picker_renders_only_server_reported_providers_models_and_capabilities() -> None:
     assert 'const providers = Array.isArray(data.providers) ? data.providers : [];' in CAPABILITIES
-    assert 'customOptionModel.textContent = provider ? copy.modelLabel + " " + provider.model : "";' in CAPABILITIES
+    assert "customProviderSelect.textContent = \"\";" in CAPABILITIES
+    assert "customProviders.forEach((row) => {" in CAPABILITIES
+    assert "option.value = row.provider;" in CAPABILITIES
+    assert "manual_model: row.manual_model === true," in CAPABILITIES
+    assert "supports_connection_test: row.supports_connection_test === true," in CAPABILITIES
+    assert "supports_custom_endpoint: row.supports_custom_endpoint === true," in CAPABILITIES
     assert "customCopyBlock.append(customOptionTitle, customOptionModel);" in CAPABILITIES
-    for provider in ("openai", "anthropic", "openrouter", "gemini"):
+    # The browser still contains no provider inventory of its own.
+    for provider in ("openai", "anthropic", "openrouter", "gemini", "opencode-go"):
         assert provider not in CAPABILITIES.lower(), provider
+
+
+def test_manual_model_requires_an_explicit_model_before_custom_selection() -> None:
+    select_custom = CAPABILITIES.split("function selectCustom()", 1)[1].split(
+        "function selectCustomProvider", 1
+    )[0]
+    assert "const model = customModelId();" in select_custom
+    assert "if (!model) {" in select_custom
+    assert "setCustomMessage(customCopy().modelRequired, \"error\");" in select_custom
+    assert "focusCustomModel();" in select_custom
+    assert "customSelection = { provider: provider.provider, model };" in select_custom
+    # No automatic success for a typed-but-unverified model.
+    assert "customSelection = { provider: provider.provider, model };" in CAPABILITIES
+    assert (
+        '"/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider)'
+        in CAPABILITIES
+    )
+    assert '"/api/chat/custom/models?provider=" + encodeURIComponent(provider.provider)' in CAPABILITIES
 
 
 def test_tier_rows_keep_existing_order_status_and_badges() -> None:
@@ -122,7 +156,9 @@ def test_mobile_picker_scroll_stays_inside_the_panel() -> None:
 def test_customer_key_is_write_only_and_only_last_four_are_rendered() -> None:
     assert 'nativeFetch("/api/chat/custom/credential", {' in CAPABILITIES
     assert 'method: "PUT"' in CAPABILITIES
-    assert 'body: JSON.stringify({ provider: provider.provider, api_key: key })' in CAPABILITIES
+    assert "const payload = { provider: provider.provider, api_key: key };" in CAPABILITIES
+    assert "if (endpoint) payload.endpoint = endpoint;" in CAPABILITIES
+    assert "body: JSON.stringify(payload)" in CAPABILITIES
     assert 'method: "DELETE"' in CAPABILITIES
     assert (
         '"/api/chat/custom/credential?provider=" + encodeURIComponent(provider.provider)'
@@ -137,6 +173,22 @@ def test_customer_key_is_write_only_and_only_last_four_are_rendered() -> None:
         assert forbidden not in CAPABILITIES, forbidden
     # Only the server-provided last four characters are rendered.
     assert 'copy.credential + String(credential.key_last4 || "")' in CAPABILITIES
+
+
+def test_custom_endpoint_and_provider_model_controls_follow_server_capabilities() -> None:
+    assert 'customProviderSelect.id = "modeCustomProvider";' in CAPABILITIES
+    assert 'customModelSelect.id = "modeCustomModelSelect";' in CAPABILITIES
+    assert 'customModelInput.id = "modeCustomModelInput";' in CAPABILITIES
+    assert 'customEndpointInput.id = "modeCustomEndpoint";' in CAPABILITIES
+    assert 'customTestButton.className = "mode-custom-action mode-custom-test";' in CAPABILITIES
+    assert 'customModelListButton.hidden = !provider || !provider.supports_model_listing;' in CAPABILITIES
+    assert 'customEndpointInput.hidden = !provider || !provider.supports_custom_endpoint;' in CAPABILITIES
+    assert 'customEndpointInput.placeholder = provider && provider.default_endpoint' in CAPABILITIES
+    # The default endpoint is presented, and a key is never sent to an endpoint
+    # the server did not store for this provider.
+    assert "credential.endpoint_is_default === false" in CAPABILITIES
+    assert "if (endpoint) payload.endpoint = endpoint;" in CAPABILITIES
+    assert 'setCustomMessage(copy.keyRequired, "info");' in CAPABILITIES
 
 
 def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() -> None:
