@@ -19,6 +19,7 @@ from .b66_registered_model_boundary import (
     B66ModelRouteError,
     B66QuoteTaskRequirements,
 )
+from padiem_control_plane.product_tier_routes import is_free_execution_candidate
 
 _MODELS_PATH = "/api/pilot/models"
 _READINESS_PATH = "/api/pilot/provider-readiness"
@@ -43,6 +44,16 @@ def _excluded_by_owner(model_id: str) -> bool:
         or "motif-3" in normalized
         or "gpt-5.6-luna" in normalized
     )
+
+
+def _excluded_free_candidate(model_id: str) -> bool:
+    """Refuse an excluded free execution candidate for B66's selection.
+
+    #2505 (owner decision 2026-10-21): an OpenCode Go free model is never an
+    execution candidate, so it is not a customer-selectable B66 route either.
+    The rule is the shared contract's, so B66 and the other products agree.
+    """
+    return is_free_execution_candidate(model_id)
 
 
 class B14RegisteredModelView(Protocol):
@@ -114,6 +125,10 @@ def _qualified_routes(
         # must permit the exact route. Missing owner_excluded fails closed.
         if _excluded_by_owner(mid) or route.get("owner_excluded") is not False:
             continue
+        # #2505: an excluded free candidate is never an execution candidate, so
+        # it is not a selectable B66 route either.
+        if _excluded_free_candidate(mid):
+            continue
         # B14 free/public/auto_eligible/explicit_only flags belong to its
         # general-purpose auto router. They are NOT B66 eligibility gates.
         # B66 can use a paid or manual-pin registered route ONLY when the
@@ -182,6 +197,10 @@ class B14FreeFirstQuoteModelResolver:
     ) -> B14AuthorizedModelRoute | None:
         if not isinstance(requirements.selected_model_id, str) or not _SAFE_ID.fullmatch(requirements.selected_model_id):
             raise B66ModelRouteError("selection_unconfigured")
+        # #2505: an excluded free candidate is refused before any B14 read, so
+        # a customer cannot force one by sending its exact model id.
+        if _excluded_free_candidate(requirements.selected_model_id):
+            raise B66ModelRouteError("model_not_authorized")
         if replace(requirements, selected_model_id=None) != B66QuoteTaskRequirements():
             raise B66ModelRouteError("selection_unavailable")
         if self._transport is None:
