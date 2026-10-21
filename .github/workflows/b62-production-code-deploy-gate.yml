@@ -793,13 +793,16 @@ jobs:
       # with an opaque count mismatch. Comparing by name and type keeps the
       # expectation reviewable, and running it here means a binding change
       # that nobody reviewed fails closed BEFORE any deploy mutation.
+      #
+      # Scope: this gate's credential is deliberately locked to the B62
+      # Worker (#3930), so it proves the B62 baseline only. The Owner D1
+      # preparation proves both Workers' baselines on its own approved reads.
       - name: Prove the live binding set matches the reviewed baseline
         shell: bash
         run: |
           set -euo pipefail
           test -n "${CLOUDFLARE_API_TOKEN}"
           test -n "${CLOUDFLARE_ACCOUNT_ID}"
-          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts"
 
           chat_settings="${RUNNER_TEMP}/baseline-chat-settings.json"
@@ -807,13 +810,9 @@ jobs:
           python3 .github/scripts/b62_binding_baseline.py \
             --worker "${B62_WORKER}" --payload "${chat_settings}"
 
-          engine_settings="${RUNNER_TEMP}/baseline-engine-settings.json"
-          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/${P01_ENGINE_WORKER}/settings" "${engine_settings}"
-          python3 .github/scripts/b62_binding_baseline.py \
-            --worker "${P01_ENGINE_WORKER}" --payload "${engine_settings}"
-
           echo "B62_BINDING_BASELINE=PASS"
           echo "B62_BINDING_BASELINE_VALUES_EMITTED=0"
+          echo "B62_BINDING_BASELINE_WORKERS=${B62_WORKER}"
           echo "PRODUCTION_MUTATION=0"
 
   deploy-production-code:
