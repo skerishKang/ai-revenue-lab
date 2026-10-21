@@ -1,5 +1,10 @@
 """Provider-neutral Worker isolated parser client contract (#2936, parent #2824).
 
+CI scope note (#5341 probe): no product runtime imports this module, so a
+change here is proven independent for B62 and Engine and runs the focused
+Core contract instead of both complete product regressions. The proof lives
+in ``.github/scripts/ci_core_import_scope.py``.
+
 Why this module exists
 ----------------------
 ``padiem_ai_core.document_parser_boundary`` is the single binary parser
