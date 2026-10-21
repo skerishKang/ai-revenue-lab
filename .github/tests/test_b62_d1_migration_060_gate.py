@@ -8,6 +8,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / ".github/scripts"
 HELPER = SCRIPTS / "b62_d1_migration_060_schema.py"
@@ -103,6 +105,64 @@ def test_classifier_reports_missing_when_the_prerequisites_are_absent() -> None:
         assert helper.classify(helper.schema_payload(con)) == "missing"
     finally:
         con.close()
+
+
+def test_the_absent_tables_are_named_so_the_next_step_is_unambiguous() -> None:
+    helper = _load_helper()
+    con = sqlite3.connect(":memory:")
+    try:
+        payload = helper.schema_payload(con)
+        states = helper.table_states(payload)
+        assert states == {table: "missing" for table in TABLES}
+        assert helper.missing_tables(payload) == list(TABLES)
+    finally:
+        con.close()
+
+    present = _payload(helper, with_release=False)
+    assert helper.missing_tables(present) == []
+    assert set(helper.table_states(present).values()) == {"pre_060"}
+
+
+def test_counting_rows_in_an_absent_table_is_a_sql_error() -> None:
+    """The HTTP 400 of the readonly gate, reproduced offline.
+
+    The D1 API answers a SQL error with HTTP 400, so a row count against a
+    table that is not there fails the whole read. The gate must learn which
+    tables are absent before it reads any row count.
+    """
+    helper = _load_helper()
+    con = sqlite3.connect(":memory:")
+    try:
+        with pytest.raises(sqlite3.OperationalError) as caught:
+            con.execute(
+                "SELECT COUNT(*) AS n FROM claw_document_metadata"
+            ).fetchall()
+        assert "no such table" in str(caught.value)
+        # The gate's own count query is the statement that failed live.
+        assert helper.COUNTS_STATEMENTS[0].startswith(
+            "SELECT COUNT(*) AS n FROM claw_document_metadata"
+        )
+    finally:
+        con.close()
+
+
+def test_the_row_count_read_never_runs_against_absent_tables() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    # The row count read is skipped when the prerequisite tables are absent,
+    # because a SQL error there is the HTTP 400 that stopped the readonly gate.
+    assert (
+        "if: ${{ steps.schema.outputs.schema_state != 'missing' }}"
+        in workflow
+    )
+    assert "Report the absent prerequisite tables instead of counting rows" in workflow
+    assert "B62_D1_MIGRATION_060_ROW_COUNTS_READ=SKIPPED_TABLES_ABSENT" in workflow
+    assert "missing-tables" in workflow
+    # The absent tables are named by the reviewed script, not by the workflow.
+    helper_source = HELPER.read_text(encoding="utf-8")
+    assert "B62_D1_MIGRATION_060_MISSING_TABLES=" in helper_source
+    assert "def missing_tables(" in helper_source
+    # The mutation path still refuses an absent prerequisite set.
+    assert "prerequisite tables are not in place" in workflow
 
 
 def test_classifier_refuses_a_partially_released_schema() -> None:
@@ -326,6 +386,9 @@ if __name__ == "__main__":
     test_source_contract_refuses_an_unreviewed_migration()
     test_classifier_accepts_only_the_two_legal_live_shapes()
     test_classifier_reports_missing_when_the_prerequisites_are_absent()
+    test_the_absent_tables_are_named_so_the_next_step_is_unambiguous()
+    test_counting_rows_in_an_absent_table_is_a_sql_error()
+    test_the_row_count_read_never_runs_against_absent_tables()
     test_classifier_refuses_a_partially_released_schema()
     test_classifier_refuses_a_changed_shape()
     test_classifier_refuses_malformed_evidence()
