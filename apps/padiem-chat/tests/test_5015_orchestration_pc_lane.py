@@ -82,6 +82,7 @@ def _request(payload: dict, bridge: _Bridge) -> Request:
             history_store=None,
             usage_gate_enforced=False,
             usage_gate=None,
+            settings=SimpleNamespace(runtime_mode="mock"),
         )
     )
     request._body = json.dumps(payload).encode("utf-8")

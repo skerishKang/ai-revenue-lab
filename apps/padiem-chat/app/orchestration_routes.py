@@ -12,9 +12,11 @@ from starlette.routing import Route
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .central_model_route_runtime import chat_request_tier_context
 from .history import HistoryForbidden, HistoryStore
 from .history import PRODUCT_SCOPE_CHAT
-from .model_policy import ModelPolicyError, resolve_model_policy
+from .member_grade_access import selected_admin_denial, selected_grade_denial
+from .model_policy import ModelPolicyError, resolve_request_model_policy
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 from .request_contract import BrowserRequestError, _validate_payload
 from .usage_gate import UsageGate
@@ -195,7 +197,20 @@ async def api_orchestration(request: Request) -> JSONResponse:
                 "이 요청은 기존 채팅 경로에서 처리합니다.",
                 409,
             )
-        policy = resolve_model_policy(messages)
+        # #5015: the browser tier is a preference, not authority. Reuse the
+        # same server-side grade/administrator gates the Chat stream route
+        # applies before the tier-aware resolver reads the request context.
+        if "tier" in raw:
+            if raw.get("tier") == "admin":
+                admin_denial = await selected_admin_denial(request, uid)
+                if admin_denial is not None:
+                    return admin_denial
+            else:
+                tier_denial = await selected_grade_denial(request, uid, raw["tier"])
+                if tier_denial is not None:
+                    return tier_denial
+        async with chat_request_tier_context(request, raw.get("tier", "free")):
+            policy = resolve_request_model_policy(messages)
     except BrowserRequestError as exc:
         return _error("invalid_request", str(exc), 422)
     except ModelPolicyError as exc:
