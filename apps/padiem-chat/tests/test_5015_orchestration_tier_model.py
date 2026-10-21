@@ -15,11 +15,7 @@ from types import SimpleNamespace
 from starlette.requests import Request
 
 from app import orchestration_routes as routes
-from app.model_policy import (
-    ADMIN_B14_MODEL_ID,
-    request_tier_context,
-    resolve_request_model_policy,
-)
+from app.model_policy import ADMIN_B14_MODEL_ID
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
@@ -33,6 +29,7 @@ PC_TEXT = (
     "내 PC의 MeshCentralTrial 폴더에서 파일 목록을 보고, "
     "meshcentral-padiem-trial.txt 파일 내용을 읽어줘"
 )
+ALIASED_TEXT = "/plus " + PC_TEXT
 
 
 class _RecordingBridge(B62EngineOrchestrationBridge):
@@ -201,14 +198,35 @@ def test_plus_tier_reaches_the_pc_files_engine_request(monkeypatch) -> None:
     )
 
 
-def test_tier_keeps_priority_over_a_hidden_alias() -> None:
-    messages = [{"role": "user", "content": "/plus hidden prompt"}]
+def test_legacy_alias_without_tier_keeps_its_model_and_cleans_the_prompt(
+    monkeypatch,
+) -> None:
+    bridge, history, admin_store = _install(monkeypatch, is_admin=False)
+    expected = active_route_for(ProductTierLabel.PLUS).model_id
 
-    legacy = resolve_request_model_policy(messages)
-    assert legacy.model_id == active_route_for(ProductTierLabel.PLUS).model_id
+    response = asyncio.run(routes.api_orchestration(
+        _request(
+            {"messages": [{"role": "user", "content": ALIASED_TEXT}]},
+            bridge, history, admin_store,
+        ),
+    ))
 
-    with request_tier_context("admin"):
-        selected = resolve_request_model_policy(messages)
+    assert response.status_code == 200
+    assert bridge.requests[0]["agent"]["model_policy"] == {"model": expected}
+    assert bridge.requests[0]["messages"][0]["content"] == PC_TEXT
+    assert history.runs[0]["user_text"] == ALIASED_TEXT
 
-    assert selected.model_id == ADMIN_B14_MODEL_ID
-    assert selected.messages[-1]["content"] == "hidden prompt"
+
+def test_admin_tier_replaces_the_alias_in_the_engine_prompt(monkeypatch) -> None:
+    bridge, history, admin_store = _install(monkeypatch, is_admin=True)
+
+    response = asyncio.run(routes.api_orchestration(
+        _request(_payload("admin", ALIASED_TEXT), bridge, history, admin_store),
+    ))
+
+    assert response.status_code == 200
+    assert bridge.requests[0]["agent"]["model_policy"] == {
+        "model": ADMIN_B14_MODEL_ID,
+    }
+    assert bridge.requests[0]["messages"][0]["content"] == PC_TEXT
+    assert history.runs[0]["user_text"] == ALIASED_TEXT

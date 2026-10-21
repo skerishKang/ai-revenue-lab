@@ -16,7 +16,11 @@ from .central_model_route_runtime import chat_request_tier_context
 from .history import HistoryForbidden, HistoryStore
 from .history import PRODUCT_SCOPE_CHAT
 from .member_grade_access import selected_admin_denial, selected_grade_denial
-from .model_policy import ModelPolicyError, resolve_request_model_policy
+from .model_policy import (
+    ModelPolicyError,
+    resolve_model_policy,
+    resolve_request_model_policy,
+)
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 from .request_contract import BrowserRequestError, _validate_payload
 from .usage_gate import UsageGate
@@ -138,6 +142,7 @@ async def _run_pc_lane(
     request: Request,
     *,
     user_text: str,
+    execution_user_text: str | None = None,
     skill: Any,
     model_id: str,
     tier: str,
@@ -157,6 +162,7 @@ async def _run_pc_lane(
         outcome = await execute_chat_pc_drive_lane(
             request,
             user_text=user_text,
+            execution_user_text=execution_user_text,
             skill=skill,
             model_id=model_id,
             conversation_id=conversation_id,
@@ -197,9 +203,10 @@ async def api_orchestration(request: Request) -> JSONResponse:
                 "이 요청은 기존 채팅 경로에서 처리합니다.",
                 409,
             )
-        # #5015: the browser tier is a preference, not authority. Reuse the
-        # same server-side grade/administrator gates the Chat stream route
-        # applies before the tier-aware resolver reads the request context.
+        # #5015: an explicit browser tier is a preference, not authority.
+        # Reuse the same server-side grade/administrator gates and resolver the
+        # Chat stream route applies. A legacy request without a tier keeps the
+        # existing alias/default resolution.
         if "tier" in raw:
             if raw.get("tier") == "admin":
                 admin_denial = await selected_admin_denial(request, uid)
@@ -209,8 +216,10 @@ async def api_orchestration(request: Request) -> JSONResponse:
                 tier_denial = await selected_grade_denial(request, uid, raw["tier"])
                 if tier_denial is not None:
                     return tier_denial
-        async with chat_request_tier_context(request, raw.get("tier", "free")):
-            policy = resolve_request_model_policy(messages)
+            async with chat_request_tier_context(request, raw["tier"]):
+                policy = resolve_request_model_policy(messages)
+        else:
+            policy = resolve_model_policy(messages)
     except BrowserRequestError as exc:
         return _error("invalid_request", str(exc), 422)
     except ModelPolicyError as exc:
@@ -242,6 +251,10 @@ async def api_orchestration(request: Request) -> JSONResponse:
             )
 
     user_text = _latest_user(messages)
+    # #5015: the resolved policy already removed a hidden tier alias from the
+    # execution messages. The PC lane uses that text for its model/Engine
+    # prompt, while the original user_text above remains the stored user turn.
+    execution_user_text = _latest_user(policy.messages)
     # #5015: a browser turn may reach this surface instead of the Chat stream
     # route. The generic bridge call below carries NO PC plan and NO selected
     # target, so a PC request could never reach the existing PC file lane: the
@@ -254,6 +267,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
         pc_lane_answer, pc_lane_conversation_id = await _run_pc_lane(
             request,
             user_text=user_text,
+            execution_user_text=execution_user_text,
             skill=skill,
             model_id=policy.model_id,
             tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",

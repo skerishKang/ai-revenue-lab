@@ -394,6 +394,7 @@ async def execute_chat_pc_drive_lane(
     request: Request,
     *,
     user_text: str,
+    execution_user_text: str | None = None,
     skill: Any,
     model_id: str,
     conversation_id: str | None,
@@ -406,14 +407,24 @@ async def execute_chat_pc_drive_lane(
     (anonymous user, no drive detector match). Raises ChatPCDriveError for
     every handled failure. History writes happen here, so both the JSON and
     the SSE call sites share them.
+
+    ``user_text`` remains the stored user turn. ``execution_user_text`` is the
+    resolved policy text used for model and Engine prompts, so a hidden alias
+    removed by the policy never reaches the model; absent, it falls back to
+    ``user_text`` for existing callers.
     """
     from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 
     uid = current_user_id(request) if auth_ready(request) else None
     if not uid:
         return None
-    drive_requested = is_chat_pc_drive_query(user_text)
-    files_requested = is_chat_pc_files_query(user_text)
+    execution_text = (
+        execution_user_text
+        if isinstance(execution_user_text, str) and execution_user_text.strip()
+        else user_text
+    )
+    drive_requested = is_chat_pc_drive_query(execution_text)
+    files_requested = is_chat_pc_files_query(execution_text)
     if not drive_requested and not files_requested:
         return None
     files_only = files_requested and not drive_requested
@@ -509,14 +520,15 @@ async def execute_chat_pc_drive_lane(
     if files_only:
         return await _execute_chat_pc_files_lane(
             request, store=store, uid=uid, subject_id=subject_id,
-            workspace_id=workspace_id, user_text=user_text, skill=skill,
+            workspace_id=workspace_id, user_text=user_text,
+            execution_user_text=execution_text, skill=skill,
             model_id=model_id, conversation_id=conversation_id,
             device_id=device_id, additional_system_context=pc_work_text,
         )
 
-    decision_contract = _decision_contract(user_text)
+    decision_contract = _decision_contract(execution_text)
     decision_raw = await _complete_with_model(
-        request, user_text=user_text, skill=skill,
+        request, user_text=execution_text, skill=skill,
         tier=tier,
         system_contract=(
             pc_work_text + "\n\n" + decision_contract
@@ -621,6 +633,7 @@ async def _execute_chat_pc_files_lane(
     subject_id: str,
     workspace_id: str,
     user_text: str,
+    execution_user_text: str | None = None,
     skill: Any,
     model_id: str,
     conversation_id: str | None,
@@ -632,6 +645,8 @@ async def _execute_chat_pc_files_lane(
     The model decisions and both tool executions happen in the Engine's PC
     step driver; this lane only stages the Chat run, passes the server-owned
     device hint and records the final answer in the original conversation.
+    ``user_text`` remains the stored user turn; the Engine prompt uses the
+    policy-cleaned ``execution_user_text`` when supplied.
     """
     from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 
@@ -660,10 +675,15 @@ async def _execute_chat_pc_files_lane(
     tool_arguments = (
         {"files": {"device_id": device_id}} if device_id is not None else None
     )
+    engine_text = (
+        execution_user_text
+        if isinstance(execution_user_text, str) and execution_user_text.strip()
+        else user_text
+    )
     try:
         outcome = await bridge.start(
             user_id=uid,
-            messages=({"role": "user", "content": user_text},),
+            messages=({"role": "user", "content": engine_text},),
             skill=skill,
             model_id=model_id,
             user_text=user_text,
@@ -717,6 +737,7 @@ async def run_chat_pc_drive_lane(
     request: Request,
     *,
     user_text: str,
+    execution_user_text: str | None = None,
     skill: Any,
     model_id: str,
     conversation_id: str | None,
@@ -726,7 +747,8 @@ async def run_chat_pc_drive_lane(
     """JSON wrapper of :func:`execute_chat_pc_drive_lane` for /api/chat."""
     try:
         result = await execute_chat_pc_drive_lane(
-            request, user_text=user_text, skill=skill, model_id=model_id,
+            request, user_text=user_text, execution_user_text=execution_user_text,
+            skill=skill, model_id=model_id,
             conversation_id=conversation_id, tier=tier, device_id=device_id,
         )
     except ChatPCDriveError as exc:
