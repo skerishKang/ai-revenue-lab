@@ -17,6 +17,7 @@ from starlette.testclient import TestClient
 
 from app.app_factory import create_app
 from app.config import Settings
+from app import orchestration_routes
 from app.request_telemetry import (
     OUTCOME_CLIENT_ERROR,
     OUTCOME_OK,
@@ -160,6 +161,46 @@ def test_real_successful_chat_response_keeps_user_input_out_of_event(
     assert response.status_code == 200
     assert private_input in response.text
     assert "error_code" not in events[-1]
+    assert private_input not in json.dumps(events[-1])
+
+
+def test_late_installed_orchestration_route_is_covered_by_telemetry(
+    events: list[dict], monkeypatch: pytest.MonkeyPatch
+):
+    app = create_app(settings=_settings(), telemetry_emitter=events.append)
+    orchestration_routes.install_orchestration_routes(app, bridge=None)
+    monkeypatch.setattr(orchestration_routes, "_bridge", lambda request: object())
+    monkeypatch.setattr(orchestration_routes, "_user_id", lambda request: "synthetic-owner")
+
+    class _UnavailableGate:
+        async def authorize(self, **kwargs):
+            return type(
+                "Decision",
+                (),
+                {
+                    "allowed": False,
+                    "code": "live_abuse_gate_unavailable",
+                    "status_code": 503,
+                    "user_message": "private gate detail",
+                    "retry_after_seconds": None,
+                },
+            )()
+
+    app.state.usage_gate_enforced = True
+    app.state.usage_gate = _UnavailableGate()
+    private_input = "PRIVATE_ORCHESTRATION_PROMPT"
+
+    with TestClient(app) as route_client:
+        response = route_client.post(
+            "/api/orchestration",
+            json={"messages": [{"role": "user", "content": private_input}]},
+        )
+
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "live_abuse_gate_unavailable"
+    assert events[-1]["route"] == "/api/orchestration"
+    assert events[-1]["error_code"] == "live_abuse_gate_unavailable"
+    assert "private gate detail" not in json.dumps(events[-1])
     assert private_input not in json.dumps(events[-1])
 
 

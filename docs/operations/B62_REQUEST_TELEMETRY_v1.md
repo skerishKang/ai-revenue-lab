@@ -124,7 +124,7 @@ correlate a client call with its log entry.
 
 ## Tests
 
-`apps/padiem-chat/tests/test_request_telemetry.py` (40 network-free cases):
+`apps/padiem-chat/tests/test_request_telemetry.py` (41 network-free cases):
 request-id generation/echo/rejection, exact event key set, route-template (not
 raw path), no-request-material, outcome classification, duration, default
 emitter single-line JSON, emitter-failure resilience, non-HTTP scope pass-through,
