@@ -92,3 +92,57 @@ def test_the_free_candidate_rule_covers_the_owner_free_family_only():
     assert not free_candidate_excluded_from_execution(
         "tokenharbor/deepseek-v4.1-flash:free"
     )
+
+
+def _shared_declaration_roster():
+    """The shared Control Plane declaration of the same per-grade roster.
+
+    The declaration is stdlib-only, so it is read by path: the platform app
+    does not depend on the Control Plane package, and this contract only has
+    to compare the two declarations.
+    """
+    import importlib.util
+    import sys
+    from pathlib import Path
+
+    path = (
+        Path(__file__).resolve().parents[3]
+        / "packages" / "padiem-control-plane" / "padiem_control_plane"
+        / "product_tier_routes.py"
+    )
+    spec = importlib.util.spec_from_file_location("shared_product_tier_routes", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    # The declaration uses dataclasses, which resolve through sys.modules.
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module.TIER_FALLBACK_B14_MODELS
+
+
+def test_the_execution_roster_matches_the_shared_declaration():
+    """The B14 execution roster and the shared product declaration stay equal.
+
+    A drift between them would let the product declare a recovery option that
+    B14 never executes, or the other way round, with no test noticing.
+    """
+    assert dict(TIER_FALLBACK_B14_MODELS) == dict(_shared_declaration_roster())
+
+
+def test_every_declared_grade_candidate_is_in_the_real_b14_allow_list():
+    """A declared recovery candidate must still be a usable B14 route.
+
+    The router only offers a candidate that is registered, enabled and not
+    owner-excluded, so a declared candidate outside that allow list would
+    silently remove a grade's recovery option.
+    """
+    from app.pilot.catalog import get_catalog_by_id
+    from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
+
+    for tier, roster in TIER_FALLBACK_B14_MODELS.items():
+        assert roster, tier
+        for model_id in roster:
+            model = get_catalog_by_id(model_id)
+            assert model is not None, f"{tier}: {model_id} is not registered in B14"
+            assert model.enabled, f"{tier}: {model_id} is not enabled in B14"
+            assert not excluded_from_owner_customer_selection(model_id), model_id
+            assert not free_candidate_excluded_from_execution(model_id), model_id
