@@ -117,7 +117,9 @@ def _happy_transport(spec, calls: list | None = None):
 
 def test_allowlist_matches_2798_authority_correction() -> None:
     # Space Bunny was removed by the owner final retirement decision
-    # (2026-10-07): the Plus candidate list now excludes it.
+    # (2026-10-07): the Plus candidate list now excludes it. Motif and
+    # GPT-5.6 Luna keep their specs for the historical synthetic evaluation
+    # fixture, but they are owner-retired and may never be dispatched live.
     assert smoke.PLUS_CANDIDATE_IDS == (
         "agnes",
         "sensenova",
@@ -137,6 +139,25 @@ def test_allowlist_matches_2798_authority_correction() -> None:
         "luna",
     }
     assert "space-bunny" not in smoke.CANDIDATE_REGISTRY
+
+
+def test_retired_candidates_never_dispatch_live() -> None:
+    # The owner evaluation registry refuses both ids, so a live request may not
+    # take them either. The synthetic fixture keeps naming them.
+    assert smoke.RETIRED_CANDIDATE_MODEL_IDS == frozenset({
+        "infron/motif/motif-3",
+        "experiential/gpt-5.6-luna",
+    })
+    for retired in ("motif", "luna"):
+        spec = smoke.CANDIDATE_REGISTRY[retired]
+        assert spec.model_id in smoke.RETIRED_CANDIDATE_MODEL_IDS
+        assert spec.live_dispatch_allowed is False
+    for model_id in smoke.RETIRED_CANDIDATE_MODEL_IDS:
+        assert model_id not in {
+            spec.model_id
+            for spec in smoke.CANDIDATE_REGISTRY.values()
+            if spec.live_dispatch_allowed
+        }
 
 
 def test_bai_qwen_is_excluded() -> None:
@@ -181,7 +202,14 @@ def test_contract_constants_pin_one_call_no_retry_no_fallback() -> None:
 # --------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("candidate_id", sorted(smoke.CANDIDATE_REGISTRY))
+@pytest.mark.parametrize(
+    "candidate_id",
+    sorted(
+        cid
+        for cid, spec in smoke.CANDIDATE_REGISTRY.items()
+        if spec.live_dispatch_allowed
+    ),
+)
 def test_success_uses_two_gets_and_exactly_one_chat_post(candidate_id: str) -> None:
     spec_obj = smoke.CANDIDATE_REGISTRY[candidate_id]
     calls: list[tuple[str, str, dict | None]] = []
@@ -260,7 +288,7 @@ def test_missing_credential_fails_before_chat_post() -> None:
 
 
 def test_wrong_route_identity_fails_before_provider_post() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["motif"]
+    spec_obj = smoke.CANDIDATE_REGISTRY["atria"]
 
     def transport(method: str, path: str, body: dict | None):
         if path == smoke.HEALTH_PATH:
@@ -281,7 +309,7 @@ def test_wrong_route_identity_fails_before_provider_post() -> None:
 
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout):
-        rc = smoke.run("motif", transport=transport)
+        rc = smoke.run("atria", transport=transport)
 
     assert rc == 1
     assert "FAIL_ROUTE_IDENTITY" in stdout.getvalue()
@@ -313,7 +341,7 @@ def test_actual_response_model_mismatch_is_failure_not_fallback() -> None:
 
 
 def test_attempt_count_two_or_fallback_true_is_failure() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["luna"]
+    spec_obj = smoke.CANDIDATE_REGISTRY["sensenova"]
     payload = json.loads(_chat(spec_obj).decode("utf-8"))
     payload["business14"]["attempt_count"] = 2
     payload["business14"]["fallback_used"] = True
@@ -327,7 +355,7 @@ def test_attempt_count_two_or_fallback_true_is_failure() -> None:
 
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout):
-        rc = smoke.run("luna", transport=transport)
+        rc = smoke.run("sensenova", transport=transport)
 
     output = stdout.getvalue()
     assert rc == 1
@@ -827,8 +855,37 @@ def test_image_modality_is_rejected_before_provider_call_for_every_candidate() -
         assert rc == 1
         assert calls == []
         output = stdout.getvalue()
-        assert "FAIL_IMAGE_MODALITY_NOT_PERMITTED" in output
+        if spec_obj.live_dispatch_allowed:
+            assert "FAIL_IMAGE_MODALITY_NOT_PERMITTED" in output
+        else:
+            # A retired candidate is refused even earlier: it may not be
+            # dispatched at all.
+            assert "FAIL_CANDIDATE_RETIRED" in output
         assert "B14_CHAT_POST_COUNT=0" in output
+
+
+def test_retired_candidates_fail_closed_before_any_provider_post() -> None:
+    # The owner retired these ids and the infron provider is not registered
+    # any more. The historical synthetic evaluation fixture still names them,
+    # but a live request may not.
+    for retired in sorted(
+        cid
+        for cid, spec in smoke.CANDIDATE_REGISTRY.items()
+        if not spec.live_dispatch_allowed
+    ):
+        spec_obj = smoke.CANDIDATE_REGISTRY[retired]
+        calls: list = []
+
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            rc = smoke.run(retired, transport=_happy_transport(spec_obj, calls))
+
+        assert rc == 1
+        assert calls == [], calls
+        output = stdout.getvalue()
+        assert "FAIL_CANDIDATE_RETIRED" in output
+        assert "B14_CHAT_POST_COUNT=0" in output
+        assert "NETWORK_RETRY_COUNT=0" in output
 
 
 @pytest.mark.parametrize("modality", ["video", "audio", "IMAGE", "", "text ", "auto"])
