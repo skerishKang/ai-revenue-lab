@@ -491,6 +491,21 @@ def _title_from_user_text(text: str) -> str:
     return one_line[:MAX_HISTORY_TITLE_CHARS] or "새 대화"
 
 
+def _is_bounded_preview(content: str) -> bool:
+    """Whether a stored D1 row is the bounded preview of a longer original.
+
+    A message longer than ``MAX_HISTORY_MESSAGE_CHARS`` is stored as a
+    truncated preview plus the private original, and the preview is marked
+    explicitly. Every read that has to return the *whole* stored text decides
+    with this one predicate, so the preview can never be mistaken for the
+    answer.
+    """
+    return (
+        len(content) == MAX_HISTORY_MESSAGE_CHARS
+        and content.endswith(HISTORY_PREVIEW_SUFFIX)
+    )
+
+
 def _changed_rows(result: Any) -> int:
     """How many rows one ``statement.run()`` actually changed.
 
@@ -688,9 +703,32 @@ class D1HistoryStore:
                 # DB owner/row authority remains independent of R2 cleanup.
                 pass
 
+    async def _delete_orphan_full_keys(self, keys: list[tuple[str, str]]) -> None:
+        """Remove only the originals whose own message row never landed.
+
+        A row that DID land keeps its R2 original, so a stored message never
+        degrades into a preview-only row with a missing full text. The check is
+        per message id, because the run-scoped answer id of #5015 is
+        deterministic: a repeated completion event collides on the
+        ``messages.id`` primary key, and that collision must not strip the
+        original of the record that is already stored.
+
+        A row that cannot be read is treated as landed: an original that might
+        belong to a stored row is never destroyed on an unproven guess.
+        """
+        orphan_keys: list[str] = []
+        for message_id, key in keys:
+            try:
+                landed = await self._first("SELECT id FROM messages WHERE id=?", message_id)
+            except Exception:
+                continue
+            if not isinstance(landed, dict):
+                orphan_keys.append(key)
+        await self._delete_full_keys(orphan_keys)
+
     async def _read_full_message(self, conversation_id: str, row: dict[str, Any]) -> str:
         preview = str(row.get("content", ""))
-        if len(preview) != MAX_HISTORY_MESSAGE_CHARS or not preview.endswith(HISTORY_PREVIEW_SUFFIX):
+        if not _is_bounded_preview(preview):
             return preview
         bucket = self.full_context_bucket
         if bucket is None or not callable(getattr(bucket, "get", None)):
@@ -1161,13 +1199,13 @@ class D1HistoryStore:
             _message_reference(assistant_message_id)
             if assistant_message_id is not None else _message_id()
         )
-        r2_keys: list[str] = []
+        r2_keys: list[tuple[str, str]] = []
         persisted = False
         try:
             for msg_id, raw in ((user_msg_id, user_text.strip()), (answer_msg_id, assistant_text.strip())):
                 key = await self._put_full_message(cid, msg_id, raw)
                 if key is not None:
-                    r2_keys.append(key)
+                    r2_keys.append((msg_id, key))
             if creating:
                 # Store private full text first; unavailable R2 must not leave
                 # a misleading, empty D1 conversation for the first turn.
@@ -1196,8 +1234,12 @@ class D1HistoryStore:
             # that DID land keeps its R2 original, so a stored message never
             # degrades into a preview-only row with a missing full text, and a
             # failed append leaves no orphan R2 object behind.
+            # #5015: the run-scoped answer id is deterministic, so a repeated
+            # completion event collides on the messages primary key instead of
+            # appending the same answer twice. The row of the first record is
+            # still there, and its original has to survive that collision.
             if not persisted:
-                await self._delete_full_keys(r2_keys)
+                await self._delete_orphan_full_keys(r2_keys)
                 if creating:
                     # A first turn that never landed must not leave an empty
                     # conversation behind.
@@ -1750,6 +1792,11 @@ class D1HistoryStore:
         correlation keeps its existing unavailable state when its own verified
         result is missing, and a run whose recorded action is not the
         model-only action is never answered from a model reply.
+
+        A model reply is the run's *actual* stored answer: a long answer is
+        kept as a bounded D1 preview plus the private original, so the
+        original is restored before it is returned. The bounded preview is
+        never presented as the answer.
         """
         if not isinstance(user_id, str) or not user_id:
             raise HistoryError("user_id is required")
@@ -1817,8 +1864,27 @@ class D1HistoryStore:
         )
         if not rows:
             return None
+        # #5015: a long model answer is stored as a bounded D1 preview plus the
+        # private R2 original, so the D1 row is NOT the answer. The stored
+        # original is restored through the same authority the model-context
+        # read uses, inside the owner / run / conversation / assistant-message
+        # scope the query above already proved. A row whose original is
+        # unavailable stays unverified instead of answering with a truncated
+        # preview body.
+        contents: list[str] = []
+        for row in rows:
+            content = str(row.get("content", ""))
+            if _is_bounded_preview(content):
+                try:
+                    content = await self._read_full_message(conversation_id, row)
+                except HistoryContextIncomplete:
+                    return None
+            contents.append(content)
+        answer = "\n".join(contents)
+        if not answer:
+            return None
         return {
-            "answer": "\n".join(row["content"] for row in rows),
+            "answer": answer,
             "answer_source": "model_reply",
         }
 
