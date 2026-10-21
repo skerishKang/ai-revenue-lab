@@ -345,65 +345,61 @@
   };
 
   const deviceStatus = document.getElementById("clawComputerDeviceStatusButton");
-    const statusText = document.getElementById("clawComputerLiveStatus");
-    // #5555: the Connectors card shows the real server state, so the same
-    // owner-scoped readback the button already used runs when the screen
-    // opens too. The button stays the retry. A failed read is reported as
-    // "could not verify", never as "not connected".
-    let computerStateInFlight = false;
-    async function refreshComputerConnectionState() {
-      if (!statusText || deviceStatus?.disabled) return;
-      const en = document.documentElement.lang === "en";
-      const show = (ko, english) => {
-        statusText.textContent = en ? english : ko;
-        statusText.hidden = false;
-      };
-      if (computerStateInFlight) return;
-      computerStateInFlight = true;
-      if (deviceStatus) deviceStatus.disabled = true;
-      show("컴퓨터 연결 상태를 확인하고 있습니다.", "Checking your computer connection.");
-      try {
-        const response = await fetch("/api/claw/local-access/devices", {
-          method: "GET", credentials: "same-origin", cache: "no-store",
-          headers: { Accept: "application/json" },
-        });
-        if (response.status === 401 || response.status === 403) {
-          show("먼저 로그인해 주세요.", "Please sign in first.");
-        } else if (!response.ok) {
-          show("컴퓨터 연결을 아직 확인할 수 없습니다.", "Computer connection is not yet available.");
-        } else {
-          const raw = await response.text();
-          if (raw.length > 32768) throw new Error("invalid device response");
-          const data = JSON.parse(raw);
-          if (data?.ok !== true || data?.available !== true ||
-              data?.ownerScoped !== true || !Array.isArray(data.devices)) {
-            throw new Error("unverified device response");
-          }
-          const count = data.devices.length;
-          show(
-            count ? "승인된 컴퓨터 " + count + "대가 있습니다. 작업 시 별도 승인이 필요합니다." : "아직 승인된 컴퓨터가 없습니다.",
-            count ? count + " approved computer(s). Tasks still require approval." : "No approved computers yet.",
-          );
-        }
-      } catch (_) {
-        show("컴퓨터 연결 상태를 확인하지 못했습니다.", "Could not verify computer connection.");
-      } finally {
-        computerStateInFlight = false;
-        if (deviceStatus) deviceStatus.disabled = false;
-      }
+  const statusText = document.getElementById("clawComputerLiveStatus");
+  // #5553: this card and the composer control show the SAME computer
+  // connection state. The shared state module owns the classification and
+  // reads the existing device directory snapshot, so this card opens no
+  // connection of its own and the two surfaces cannot disagree.
+  const COMPUTER_STATE_COPY = {
+    connected: ["컴퓨터가 연결되어 있습니다.", "A computer is connected."],
+    connecting: ["컴퓨터 연결 상태를 확인하는 중입니다.", "Checking the computer connection status."],
+    disconnected: ["컴퓨터가 연결되어 있지 않습니다.", "No computer is connected."],
+    unavailable: ["컴퓨터 연결 상태를 확인하지 못했습니다.", "The computer connection status could not be confirmed."],
+    preparing: ["컴퓨터 연결 기능은 아직 준비 중입니다.", "The computer connection feature is not available yet."],
+  };
+  function renderComputerState(state) {
+    if (!statusText || typeof state !== "string") return;
+    const copy = COMPUTER_STATE_COPY[state];
+    if (!copy) return;
+    const en = document.documentElement.lang === "en";
+    statusText.textContent = en ? copy[1] : copy[0];
+    statusText.hidden = false;
+    const card = document.getElementById("connectorComputerCard");
+    if (card) card.dataset.connectorStatus = state;
+  }
+  function refreshComputerConnectionState() {
+    const shared = window.PadiemComputerConnectionState;
+    if (shared && typeof shared.current === "function") {
+      const detail = shared.current();
+      if (detail && typeof detail.state === "string") renderComputerState(detail.state);
+      return;
     }
-    deviceStatus?.addEventListener("click", async () => {
-      if (!isClawHome() && !connectorsSurfaceOpen()) return;
-      await refreshComputerConnectionState();
-    });
-    // The Connectors screen shows the live state without a click. The same
-    // owner-scoped GET is used, so no new endpoint or permission appears.
-    const connectorsShell = document.querySelector(".app-shell");
-    if (connectorsShell) {
-      new MutationObserver(() => {
-        if (connectorsSurfaceOpen()) void refreshComputerConnectionState();
-      }).observe(connectorsShell, { attributes: true, attributeFilter: ["data-state"] });
-    }
+    renderComputerState("connecting");
+  }
+  // The card follows the shared state, and asking for a re-read only
+  // triggers the EXISTING directory control.
+  window.addEventListener("padiem:computer-connection", (event) => {
+    const detail = event && event.detail ? event.detail : null;
+    renderComputerState(detail && typeof detail.state === "string" ? detail.state : "connecting");
+  });
+  deviceStatus?.addEventListener("click", () => {
+    if (!connectorsSurfaceOpen() && !isClawHome()) return;
+    const shared = window.PadiemComputerConnectionState;
+    if (shared && typeof shared.requestRead === "function") shared.requestRead();
+    refreshComputerConnectionState();
+  });
+  // The Connectors screen shows the live state without a click. The re-read is
+  // the existing directory control's own read, so no new endpoint and no second
+  // reader appear.
+  const connectorsShell = document.querySelector(".app-shell");
+  if (connectorsShell) {
+    new MutationObserver(() => {
+      if (!connectorsSurfaceOpen()) return;
+      const shared = window.PadiemComputerConnectionState;
+      if (shared && typeof shared.requestRead === "function") shared.requestRead();
+      refreshComputerConnectionState();
+    }).observe(connectorsShell, { attributes: true, attributeFilter: ["data-state"] });
+  }
   }
 
   if (document.readyState === "loading") {

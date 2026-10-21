@@ -205,7 +205,17 @@ html[data-theme="padiem-glass"] .capability-read {
 
 .capability-card[data-connector-status="connected"] .capability-workspace {
   font-weight: 700;
+  color: var(--success, #1a6b3a);
+}
+
+/* The computer card and the composer chip share one status vocabulary and
+   one colour per state, so the two surfaces read the same. */
+.capability-card[data-connector-status="connecting"] .capability-workspace {
   color: var(--accent-strong, #2f6f99);
+}
+
+.capability-card[data-connector-status="unavailable"] .capability-workspace {
+  color: var(--danger, #b3261e);
 }
 
 .capability-card[data-connector-status="ambiguous"] .capability-workspace,

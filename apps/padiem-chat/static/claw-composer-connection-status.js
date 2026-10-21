@@ -22,20 +22,28 @@
     ko: {
       connect: "컴퓨터 연결",
       connected: "PC 연결됨",
-      check: "PC 연결 확인",
+      connecting: "연결 확인 중",
+      disconnected: "컴퓨터 미연결",
+      check: "연결 확인 불가",
+      preparing: "준비 중",
       connectHint: "컴퓨터가 연결되어 있지 않습니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
       connectedHint: "컴퓨터가 연결되어 있습니다. 클릭하면 연결된 컴퓨터 정보를 확인합니다.",
+      connectingHint: "컴퓨터 연결 상태를 확인하는 중입니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
       checkHint: "컴퓨터 연결 상태를 확인하지 못했습니다. 클릭하면 연결 상태를 다시 확인합니다.",
-      checkingHint: "컴퓨터 연결 상태를 확인하는 중입니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
+      preparingHint: "컴퓨터 연결 기능은 아직 준비 중입니다. 클릭하면 연결 안내를 엽니다.",
     },
     en: {
       connect: "PC connect",
       connected: "PC connected",
-      check: "PC check",
+      connecting: "Checking…",
+      disconnected: "PC not connected",
+      check: "PC status unavailable",
+      preparing: "Coming soon",
       connectHint: "No computer is connected. Click to open the computer connection guide.",
       connectedHint: "A computer is connected. Click to review the connected computer.",
+      connectingHint: "Checking the computer connection status. Click to open the computer connection guide.",
       checkHint: "The computer connection status could not be confirmed. Click to check it again.",
-      checkingHint: "Checking the computer connection status. Click to open the computer connection guide.",
+      preparingHint: "The computer connection feature is not available yet. Click to open the guide.",
     },
   });
 
@@ -87,7 +95,7 @@
     const button = element("button", "composer-pc-status");
     button.type = "button";
     button.id = "composerPcStatus";
-    button.dataset.state = "unknown";
+    button.dataset.state = "connecting";
     const face = element("span", "composer-pc-status-face");
     const dot = element("span", "composer-pc-status-dot");
     dot.setAttribute("aria-hidden", "true");
@@ -101,7 +109,7 @@
     form.append(button);
     form.dataset.pcStatus = "ready";
 
-    let state = "unknown";
+    let state = "connecting";
 
     // The composer grows with its content (attachment tray, model row, text).
     // The control sits on the textarea's own top-right corner, so its offset
@@ -127,15 +135,19 @@
     function hintFor(next) {
       const t = locale();
       if (next === "connected") return t.connectedHint;
-      if (next === "check") return t.checkHint;
-      if (next === "unknown") return t.checkingHint;
+      if (next === "connecting") return t.connectingHint;
+      if (next === "unavailable") return t.checkHint;
+      if (next === "preparing") return t.preparingHint;
       return t.connectHint;
     }
 
     function labelFor(next) {
       const t = locale();
       if (next === "connected") return t.connected;
-      if (next === "check") return t.check;
+      if (next === "connecting") return t.connecting;
+      if (next === "disconnected") return t.disconnected;
+      if (next === "unavailable") return t.check;
+      if (next === "preparing") return t.preparing;
       return t.connect;
     }
 
@@ -158,39 +170,15 @@
     // The truth is the server projection that the device directory module
     // already published. A device counts as connected only when the server
     // marked it CONNECTED and usable, and never while it is revoked or
-    // expired.
+    // expired. The classification itself lives in the ONE shared state
+    // module, so this control and the Connectors computer card can never
+    // disagree.
     function classify(snapshot) {
-      if (!snapshot || snapshot.readCompleted !== true) return "unknown";
-      const status = typeof snapshot.statusCode === "string" ? snapshot.statusCode : "";
-      // The directory itself could not be read or is not configured.
-      if (status === "unavailable" || status === "unconfigured" ||
-          status === "readFailed" || status === "failed") return "check";
-      if (status === "login") return "disconnected";
-      if (snapshot.available !== true) return "check";
-      const devices = Array.isArray(snapshot.devices) ? snapshot.devices : [];
-      if (!devices.length) return "disconnected";
-      const usable = (device) => Boolean(
-        device && device.online === true &&
-        device.revoked !== true && device.expired !== true,
-      );
-      const savedTargetId = typeof snapshot.savedTargetId === "string"
-        ? snapshot.savedTargetId
-        : "";
-      if (savedTargetId) {
-        // Claw already chose an execution target: that target's own state is
-        // the state the reader asked about. No other PC is substituted for it.
-        const target = devices.find((device) => device.deviceId === savedTargetId);
-        if (!target) return "check";
-        if (usable(target)) return "connected";
-        if (target.revoked === true || target.expired === true) return "check";
-        return "disconnected";
+      const shared = window.PadiemComputerConnectionState;
+      if (shared && typeof shared.classify === "function") {
+        return shared.classify(snapshot);
       }
-      if (devices.some(usable)) return "connected";
-      const needsAttention = devices.every((device) => (
-        device.revoked === true || device.expired === true ||
-        device.state === "ACTION_REQUIRED"
-      ));
-      return needsAttention ? "check" : "disconnected";
+      return "connecting";
     }
 
     function apply(snapshot) {
@@ -275,6 +263,15 @@
     window.addEventListener(SNAPSHOT_EVENT, (event) => {
       apply(event && event.detail ? event.detail : window.PadiemClawDeviceDirectory);
     });
+    // The shared state module republishes the classified state, so this control
+    // and the Connectors computer card always show the same state.
+    window.addEventListener("padiem:computer-connection", (event) => {
+      const detail = event && event.detail ? event.detail : null;
+      if (!detail || typeof detail.state !== "string") return;
+      paint(detail.state);
+      watchPanel();
+      syncPanelState();
+    });
     new MutationObserver(() => paint(state)).observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["lang"],
@@ -285,7 +282,7 @@
     }
     window.addEventListener("resize", syncLayout);
 
-    paint("unknown");
+    paint("connecting");
     watchPanel();
     syncPanelState();
     syncLayout();

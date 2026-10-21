@@ -134,22 +134,25 @@ def test_the_github_card_uses_the_shared_status_vocabulary():
 
 
 def test_a_failed_status_read_is_never_reported_as_not_connected():
+    # #5553: the card reads the ONE shared state, and the shared
+    # classification keeps "could not verify" separate from "not connected".
+    shared = (STATIC / "claw-connection-state.js").read_text(encoding="utf-8")
     assert "컴퓨터 연결 상태를 확인하지 못했습니다." in HOME_JS
-    assert "Could not verify computer connection." in HOME_JS
-    # The readback keeps the "could not verify" wording separate from the
-    # "no approved computers" wording.
-    assert "아직 승인된 컴퓨터가 없습니다." in HOME_JS
+    assert "The computer connection status could not be confirmed." in HOME_JS
+    assert 'return STATE.UNAVAILABLE' in shared
+    # The "no approved computers" wording stays a different state.
+    assert "아직 승인된 컴퓨터가 없습니다." not in HOME_JS
 
 
-def test_the_computer_state_is_read_from_the_existing_owner_scoped_endpoint():
-    assert '"/api/claw/local-access/devices"' in HOME_JS
-    # No new endpoint and no pairing grant is introduced.
-    assert "/api/connectors/" not in HOME_JS
-
-
-def test_the_connectors_screen_shows_the_computer_state_without_a_click():
-    assert "connectorsSurfaceOpen" in HOME_JS
-    assert "refreshComputerConnectionState" in HOME_JS
+def test_the_computer_state_comes_from_the_existing_device_directory_reader():
+    # #5553: the device directory module stays the ONLY reader of the
+    # canonical endpoint, and the card reads what it publishes.
+    assert '"/api/claw/local-access/devices"' in (
+        STATIC / "claw-device-manager.js"
+    ).read_text(encoding="utf-8")
+    assert "/api/claw/local-access/devices" not in HOME_JS
+    assert "PadiemComputerConnectionState" in HOME_JS
+    assert "padiem:computer-connection" in HOME_JS
 
 
 # ── the grid and the action row ────────────────────────────────────────────
