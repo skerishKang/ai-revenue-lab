@@ -235,6 +235,12 @@ from .calendar_routes import (
 )
 from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStore
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
+from .claw_push_subscriptions import (
+    D1ClawPushSubscriptionStore,
+    claw_push_capability,
+    claw_push_subscription_register,
+    claw_push_subscription_unregister,
+)
 from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH, local_runner_result
 from .claw_device_directory_routes import (
     CLAW_DEVICE_DIRECTORY_PATH, CLAW_PC_PAUSE_PATH, CLAW_PC_RESUME_PATH,
@@ -421,6 +427,7 @@ def create_app(
     central_model_policy_store=None,
     central_model_policy_signing_key: str = "",
     claw_task_alert_store=None,
+    claw_push_subscription_store=None,
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
     telemetry_emitter=None,
@@ -784,6 +791,11 @@ def create_app(
         Route("/api/claw/runs/{run_id}/local-result", local_runner_result, methods=["POST"]),
         Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
         Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
+        # #5034 Web Push opt-in for the EXISTING user inbox. This adds a device
+        # subscription, never a second inbox or a second notification authority.
+        Route("/api/claw/inbox/push/capability", claw_push_capability, methods=["GET"]),
+        Route("/api/claw/inbox/push/subscription", claw_push_subscription_register, methods=["POST"]),
+        Route("/api/claw/inbox/push/subscription", claw_push_subscription_unregister, methods=["DELETE"]),
         Route("/api/calendar/today", calendar_today, methods=["GET"]),
         Route("/api/calendar/upcoming", calendar_upcoming, methods=["GET"]),
         Route("/api/calendar/items", calendar_items, methods=["GET"]),
@@ -1516,6 +1528,16 @@ def create_app(
         except Exception:
             _task_alert_store = None
     app.state.claw_task_alert_store = _task_alert_store
+
+    # #5034 Web Push subscriptions: the same PADIEM_CHAT_DB binding, a device
+    # endpoint registry only. No notification record is stored here.
+    _push_subscription_store = claw_push_subscription_store
+    if _push_subscription_store is None and d1_binding is not None:
+        try:
+            _push_subscription_store = D1ClawPushSubscriptionStore(d1_binding)
+        except Exception:
+            _push_subscription_store = None
+    app.state.claw_push_subscription_store = _push_subscription_store
 
     # #2834 Native Padiem Calendar Phase B-2: durable D1 store.
     # Fail-closed: if d1_binding is present but D1CalendarStore construction
