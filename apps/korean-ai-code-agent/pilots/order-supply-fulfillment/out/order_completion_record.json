@@ -1,0 +1,62 @@
+{
+  "completed_at": "2026-10-21T10:00:00Z",
+  "order_id": "order_demo_1",
+  "order_version": 7,
+  "personal_data_redacted": true,
+  "record_version": "claw-ops-order-completion.v1",
+  "shipments": [
+    {
+      "carrier": "demo_carrier",
+      "delivered_at": null,
+      "note": "송장 발급(가상)",
+      "observed_at": "2026-10-22T02:00:00Z",
+      "order_id": "order_demo_1",
+      "order_version": 3,
+      "shipment_id": "ship_demo_1",
+      "source_ref": "carrier:demo_carrier:TRK-2026-0001",
+      "status": "label_issued",
+      "tracking_number": "TRK-2026-0001",
+      "version": 1
+    },
+    {
+      "carrier": "demo_carrier",
+      "delivered_at": null,
+      "note": "집화 후 이동(가상)",
+      "observed_at": "2026-10-22T05:00:00Z",
+      "order_id": "order_demo_1",
+      "order_version": 4,
+      "shipment_id": "ship_demo_1",
+      "source_ref": "carrier:demo_carrier:TRK-2026-0001",
+      "status": "in_transit",
+      "tracking_number": "TRK-2026-0001",
+      "version": 2
+    },
+    {
+      "carrier": "demo_carrier",
+      "delivered_at": null,
+      "note": "배달 출발(가상)",
+      "observed_at": "2026-10-24T06:00:00Z",
+      "order_id": "order_demo_1",
+      "order_version": 5,
+      "shipment_id": "ship_demo_1",
+      "source_ref": "carrier:demo_carrier:TRK-2026-0001",
+      "status": "out_for_delivery",
+      "tracking_number": "TRK-2026-0001",
+      "version": 3
+    },
+    {
+      "carrier": "demo_carrier",
+      "delivered_at": "2026-10-24T09:00:00Z",
+      "note": "배송 완료(가상)",
+      "observed_at": "2026-10-24T09:00:00Z",
+      "order_id": "order_demo_1",
+      "order_version": 5,
+      "shipment_id": "ship_demo_1",
+      "source_ref": "carrier:demo_carrier:TRK-2026-0001",
+      "status": "delivered",
+      "tracking_number": "TRK-2026-0001",
+      "version": 4
+    }
+  ],
+  "status": "completed"
+}
