@@ -74,6 +74,16 @@ if [[ -z "$EXPECTED_PYTHON" || "$READY_BODY" != *"ok ${EXPECTED_PYTHON} "* ]]; t
   exit 1
 fi
 echo "B62_WORKER_PYTHON_RUNTIME=$READY_BODY"
+# #5023: the deployed runtime must be able to resolve a real IANA zone, because
+# the Calendar contracts validate the explicit timezone against the real
+# database. A runtime without the tz database answers every Calendar read with
+# HTTP 400 invalid_timezone.
+if [[ "$READY_BODY" != *"tz=ok"* ]]; then
+  echo "B62_WORKER_TIMEZONE_DATABASE=FAIL ready=$READY_BODY" >&2
+  cat "$LOGDIR/workerd.log" >&2
+  exit 1
+fi
+echo 'B62_WORKER_TIMEZONE_DATABASE=PASS'
 # #5479: the deployed runtime must still be able to run the Worker's own
 # password hashing. The Pyodide 3.14 snapshot ships no _hashlib and CPython
 # 3.14 removed the pure-Python PBKDF2 fallback, so that runtime has no
