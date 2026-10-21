@@ -134,20 +134,38 @@ def _preview_wait_budget(source: str) -> int:
     raise AssertionError("the preview answer wait has no explicit timeout")
 
 
-def _capture_order(source: str) -> tuple[int, int]:
-    """Statement indexes of the route-mock install and of the real send click."""
+def _capture_order(source: str) -> dict[str, int]:
+    """Statement indexes of the route-mock install, the composer readiness wait
+    and the real send click inside ``_capture``."""
 
     tree = ast.parse(source)
     capture = _function(tree, "_capture")
-    install = -1
-    send = -1
+    order = {"install": -1, "readiness": -1, "send": -1}
     for index, statement in enumerate(capture.body):
         dumped = ast.dump(statement)
-        if install < 0 and "_install_preview_stream" in dumped:
-            install = index
-        if send < 0 and "sendButton" in dumped and "click" in dumped:
-            send = index
-    return install, send
+        if order["install"] < 0 and "_install_preview_stream" in dumped:
+            order["install"] = index
+        if order["readiness"] < 0 and "PadiemChatInteractionPresentation" in dumped:
+            order["readiness"] = index
+        if order["send"] < 0 and "sendButton" in dumped and "click" in dumped:
+            order["send"] = index
+    return order
+
+
+def _send_click(source: str) -> ast.Call:
+    """The real click on the product's send button."""
+
+    tree = ast.parse(source)
+    capture = _function(tree, "_capture")
+    for node in ast.walk(capture):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "click"
+            and "sendButton" in ast.dump(node)
+        ):
+            return node
+    raise AssertionError("the send click is missing")
 
 
 class _FakeRequest:
@@ -387,16 +405,40 @@ class GlassZoomAnswerSourceContract(unittest.TestCase):
         self.assertIn(PREVIEW_MARKER, predicate)
         self.assertIn("#messageList .assistant-content", predicate)
         # The real click on the send button stays a click.
-        install, send = _capture_order(source)
-        self.assertGreaterEqual(install, 0)
-        self.assertGreaterEqual(send, 0)
+        order = _capture_order(source)
+        self.assertGreaterEqual(order["install"], 0)
+        self.assertGreaterEqual(order["send"], 0)
 
     def test_the_route_mock_is_installed_before_the_send(self):
         source = ZOOM.read_text(encoding="utf-8")
-        install, send = _capture_order(source)
-        self.assertGreaterEqual(install, 0, "the answer route mock must be installed")
-        self.assertGreaterEqual(send, 0, "the real send click must stay")
-        self.assertLess(install, send)
+        order = _capture_order(source)
+        self.assertGreaterEqual(order["install"], 0, "the answer route mock must be installed")
+        self.assertGreaterEqual(order["send"], 0, "the real send click must stay")
+        self.assertLess(order["install"], order["send"])
+
+    def test_the_send_waits_for_the_composer_interaction_surface(self):
+        source = ZOOM.read_text(encoding="utf-8")
+        order = _capture_order(source)
+        self.assertGreaterEqual(order["readiness"], 0, "the composer readiness wait must exist")
+        self.assertLess(order["readiness"], order["send"])
+
+    def test_the_send_click_does_not_wait_for_a_navigation(self):
+        # The product's send is a fetch and performs no navigation, so the
+        # click must not wait for one: Playwright's generic post-click
+        # navigation wait consumed the whole 30 s click budget on the 1-CPU
+        # COM2 lane (run 39514816394).  The click itself stays a real click.
+        source = ZOOM.read_text(encoding="utf-8")
+        click = _send_click(source)
+        keywords = {keyword.arg: keyword.value for keyword in click.keywords}
+        self.assertIn("no_wait_after", keywords)
+        self.assertIs(keywords["no_wait_after"].value, True)
+
+    def test_a_failure_carries_the_page_diagnostic(self):
+        # The COM2 runner keeps only the last log lines, so the failure text
+        # itself has to carry the page state.
+        source = ZOOM.read_text(encoding="utf-8")
+        self.assertIn("ZOOM_DIAG=", source)
+        self.assertIn("_attach_diagnostic(exc,", source)
 
     def test_mutations_are_detected(self):
         source = ZOOM.read_text(encoding="utf-8")
@@ -408,16 +450,28 @@ class GlassZoomAnswerSourceContract(unittest.TestCase):
         # 2. A removed route-mock install is detected.
         removed = source.replace("    await _install_preview_stream(page, chat_requests)\n", "")
         self.assertNotEqual(removed, source)
-        install, _send = _capture_order(removed)
-        self.assertEqual(install, -1)
+        self.assertEqual(_capture_order(removed)["install"], -1)
 
-        # 3. An answer that lost the preview marker is detected, because the
+        # 3. A removed composer readiness wait is detected.
+        no_readiness = source.replace(
+            '    await page.wait_for_function("() => Boolean(window.PadiemChatInteractionPresentation)")\n',
+            "",
+        )
+        self.assertNotEqual(no_readiness, source)
+        self.assertEqual(_capture_order(no_readiness)["readiness"], -1)
+
+        # 4. A click that waits for a navigation again is detected.
+        waits = source.replace("click(no_wait_after=True)", "click()")
+        self.assertNotEqual(waits, source)
+        self.assertNotIn("no_wait_after", {k.arg for k in _send_click(waits).keywords})
+
+        # 5. An answer that lost the preview marker is detected, because the
         #    wait could then never succeed.
         with patch.object(zoom, "PREVIEW_ANSWER", "답변이 아직 준비되지 않았습니다."):
             payload = zoom._preview_stream_payload()
         self.assertNotIn(PREVIEW_MARKER, payload)
 
-        # 4. A wait predicate that no longer watches the assistant content is
+        # 6. A wait predicate that no longer watches the assistant content is
         #    detected: the wait would observe the wrong surface.
         changed = source.replace("#messageList .assistant-content", "#messageList .user-content")
         self.assertNotEqual(changed, source)

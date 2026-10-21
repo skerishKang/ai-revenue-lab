@@ -588,6 +588,36 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     }
 
 
+async def _page_diagnostic(page: Page, chat_requests: int) -> str:
+    """A compact page snapshot for the COM2 runner's bounded log window."""
+
+    try:
+        state = await page.evaluate(
+            """() => ({
+              url: location.href,
+              shell: document.querySelector('.app-shell')?.dataset?.state || null,
+              ready: document.readyState,
+              assistants: document.querySelectorAll('#messageList .assistant-content').length,
+              lastAssistant: (document.querySelector('#messageList .assistant-content:last-child')?.textContent || '').slice(0, 120),
+            })"""
+        )
+    except Exception as exc:  # noqa: BLE001 - a diagnostic must never mask the failure
+        return f"unavailable:{type(exc).__name__}"
+    state["chatRequests"] = chat_requests
+    return json.dumps(state, ensure_ascii=False)
+
+
+def _attach_diagnostic(exc: Exception, diagnostic: str) -> None:
+    """Append the page snapshot to the failure message, keeping the exception
+    type (and a timing overshoot's evidence) intact."""
+
+    try:
+        if exc.args and isinstance(exc.args[0], str):
+            exc.args = (f"{exc.args[0]} | ZOOM_DIAG={diagnostic}", *exc.args[1:])
+    except Exception:  # noqa: BLE001 - a diagnostic must never mask the failure
+        pass
+
+
 async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[str, Any]:
     chat_requests: list[dict[str, Any]] = []
     await page.set_viewport_size({"width": width, "height": height})
@@ -620,15 +650,30 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     home_screenshot = f"{name}-female-home.png"
     await page.screenshot(path=str(OUT_DIR / home_screenshot), full_page=True)
 
-    await page.locator("#messageInput").fill("브라우저 배율 대응 시각 검수")
-    if await page.locator("#sendButton").is_disabled():
-        raise AssertionError(f"send button stayed disabled at {name}")
-    await page.locator("#sendButton").click()
-    await page.locator('.app-shell[data-state="chat"]').wait_for(state="attached")
-    await page.wait_for_function(
-        "() => document.querySelector('#messageList .assistant-content')?.textContent?.includes('지금은 미리보기 환경입니다')",
-        timeout=15_000,
-    )
+    # The composer interaction surface has to be live before the send, exactly
+    # as the sibling suites gate their own chat turn.  A fixed sleep cannot
+    # prove it on a starved lane.
+    await page.wait_for_function("() => Boolean(window.PadiemChatInteractionPresentation)")
+    try:
+        await page.locator("#messageInput").fill("브라우저 배율 대응 시각 검수")
+        if await page.locator("#sendButton").is_disabled():
+            raise AssertionError(f"send button stayed disabled at {name}")
+        # The product's send is a fetch: it performs no navigation, so the
+        # click must not wait for one.  Playwright's generic post-click
+        # navigation wait is what consumed the whole 30s click budget on the
+        # 1-CPU COM2 lane (run 39514816394: "click action done" followed by
+        # "waiting for scheduled navigations to finish").  The send itself is
+        # still proven by the chat state and the answered turn below, so a
+        # product that navigated instead of answering still fails the suite.
+        await page.locator("#sendButton").click(no_wait_after=True)
+        await page.locator('.app-shell[data-state="chat"]').wait_for(state="attached")
+        await page.wait_for_function(
+            "() => document.querySelector('#messageList .assistant-content')?.textContent?.includes('지금은 미리보기 환경입니다')",
+            timeout=15_000,
+        )
+    except Exception as exc:
+        _attach_diagnostic(exc, await _page_diagnostic(page, len(chat_requests)))
+        raise
     if not chat_requests:
         raise AssertionError(f"the product chat request was not issued at {name}")
     await page.wait_for_function(
