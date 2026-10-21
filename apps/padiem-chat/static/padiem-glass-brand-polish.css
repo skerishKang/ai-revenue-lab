@@ -139,10 +139,10 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation
    * (interaction-polish.css). A second copy here would drop the software
    * keyboard inset, because the fixed composer is raised by exactly that
    * amount while the keyboard is open. */
-  background: linear-gradient(155deg, rgba(248, 250, 251, .74), rgba(233, 238, 241, .68)) !important;
-  box-shadow:
-    0 20px 58px rgba(28, 36, 44, .13),
-    inset 0 1px 0 rgba(255, 255, 255, .64) !important;
+  /* The frame itself is not restyled here: the first screen is the authority
+   * for the panel (shared-six-panel-frame.css, CENTRAL_OWNER_HOME_VISUAL_LOCK),
+   * so the conversation keeps the same background, transparency, border and
+   * shadow as the landing and the mode only changes what is inside it. */
 }
 
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .message-list {
@@ -154,24 +154,47 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   scroll-margin-top: 92px;
 }
 
-/* Keep one stable bright Glass composer before and after the first turn.
+/* Keep one stable Glass composer before and after the first turn.
  * State changes may alter controls, but must not flip the whole input surface
- * from frosted light to charcoal. */
+ * from frosted light to charcoal.
+ *
+ * The input box is the first screen's design, and it stays that design after
+ * the conversation starts. The theme-agnostic chat sheet (padiem-rich.css) is
+ * the charcoal composer, so the Glass chat state is pinned to the first
+ * screen's values: the Glass surface, the first-use border and shadow, and
+ * the same row of controls. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer {
   background: linear-gradient(165deg, rgba(255, 255, 255, .94), var(--glass-composer-surface)) !important;
-  border-color: rgba(255, 255, 255, .76) !important;
+  border-color: rgba(255, 255, 255, .22) !important;
   box-shadow:
-    0 24px 70px rgba(28, 36, 44, .20),
-    inset 0 1px 0 rgba(255, 255, 255, .88) !important;
+    inset 0 1px 0 rgba(255, 255, 255, .07),
+    0 22px 64px rgba(0, 0, 0, .22),
+    0 0 0 1px rgba(136, 201, 255, .035) !important;
   color: #17202a !important;
+}
+
+/* The fixed composer keeps the first screen's lane, so the input row does not
+ * jump when the conversation starts. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer-wrap {
+  padding-top: 26px !important;
+}
+
+/* The narrow window's first-screen composer is a flat frosted sheet, so the
+ * chat state uses the same one instead of the wide-window gradient. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer {
+    background: rgba(249, 251, 252, .94) !important;
+  }
 }
 
 /* One composer surface only. The textarea remains transparent rather than
  * becoming a nested rectangle, while its foreground matches the bright Glass
- * surface in both home and active-chat states. */
+ * surface in both home and active-chat states. The text size is the first
+ * screen's (padiem-first-use.css), so the input does not resize when the
+ * conversation starts. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer textarea {
   min-height: 50px !important;
-  padding: 8px 8px 4px !important;
+  font-size: 17px !important;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
@@ -184,14 +207,12 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer tex
   color: rgba(37, 48, 58, .48) !important;
 }
 
+/* The composer buttons keep the first screen's skin, so the input row reads
+ * the same before and after the conversation starts. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer .tool-button {
   background: rgba(255, 255, 255, .26) !important;
   color: #25333e !important;
-  border-color: rgba(255, 255, 255, .38) !important;
-}
-
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer .tool-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, .46) !important;
+  border-color: rgba(45, 69, 87, .08) !important;
 }
 
 /* During generation, the cancel action occupies the send-control position as
