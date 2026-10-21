@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PADIEM Designer — 미리보기</title>
+  <style>
+    :root {
+      --text: #111827;
+      --muted: #4b5563;
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --line: #d1d5db;
+      --accent: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 10px 16px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 15px; margin: 0; }
+    #status { font-size: 12px; color: var(--muted); }
+    #status b { color: var(--text); }
+    main { flex: 1; display: flex; min-height: 0; }
+    #left { width: 420px; max-width: 45%; display: flex; flex-direction: column; border-right: 1px solid var(--line); background: var(--panel); }
+    #right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    #prompt-row { padding: 12px; display: flex; gap: 8px; border-bottom: 1px solid var(--line); }
+    #prompt { flex: 1; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 6px; resize: vertical; min-height: 60px; }
+    button { font: inherit; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--accent); color: #fff; cursor: pointer; }
+    button.secondary { background: var(--panel); color: var(--text); }
+    button:disabled { opacity: .5; cursor: default; }
+    #transcript { flex: 1; overflow-y: auto; padding: 12px; font-size: 13px; }
+    .turn { border-bottom: 1px solid var(--line); padding: 8px 0; }
+    .turn .who { font-weight: 600; font-size: 12px; color: var(--muted); }
+    .turn .body { white-space: pre-wrap; margin-top: 4px; }
+    .turn .ctx { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
+    #state-bar { padding: 8px 12px; border-top: 1px solid var(--line); font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--muted); max-height: 120px; overflow-y: auto; white-space: pre-wrap; }
+    #frame-bar { padding: 8px 12px; background: var(--panel); border-bottom: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+    #frame { flex: 1; border: 0; width: 100%; background: #fff; }
+    #error { padding: 10px 16px; background: #fef2f2; color: #991b1b; font-size: 13px; display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PADIEM Designer</h1>
+    <div id="status">연결 확인 중…</div>
+  </header>
+  <div id="error"></div>
+  <main>
+    <section id="left">
+      <div id="prompt-row">
+        <textarea id="prompt" placeholder="예: 수량과 단가를 입력하면 합계가 계산되는 주문서 양식을 만들어줘"></textarea>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button id="generate">생성</button>
+          <button id="clear" class="secondary">초기화</button>
+        </div>
+      </div>
+      <div id="transcript"></div>
+      <div id="state-bar">UI 상태: (아직 없음)</div>
+    </section>
+    <section id="right">
+      <div id="frame-bar">미리보기 — 생성된 UI가 이 프레임 안에서 동작합니다.</div>
+      <iframe id="frame" title="PADIEM Designer 미리보기" sandbox="allow-scripts"></iframe>
+    </section>
+  </main>
+  <script src="/static/designer.js"></script>
+</body>
+</html>
