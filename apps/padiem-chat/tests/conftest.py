@@ -108,6 +108,10 @@ _HOLD_POLICY_MODULES = {
     # #5108: the Chat route-execution gate is proven against the real shared
     # product-tier declaration, not the synthetic Plus route.
     "test_5108_chat_central_route_execution.py",
+    # #5015: the orchestration route must preserve the real selected grade
+    # (including the administrator exact model), so the synthetic Plus route
+    # would erase the contract under test.
+    "test_5015_orchestration_tier_model.py",
 }
 
 
