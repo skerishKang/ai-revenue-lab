@@ -1,0 +1,29 @@
+{
+  "entries": [
+    {
+      "role": "main",
+      "file_name": "demo-main-01.png",
+      "width_px": 1200,
+      "height_px": 1200,
+      "byte_size": 482130,
+      "alt_text": "데모 노트북 거치대 대표 이미지"
+    },
+    {
+      "role": "extra",
+      "file_name": "demo-detail-01.png",
+      "width_px": 1200,
+      "height_px": 1200,
+      "byte_size": 351004,
+      "alt_text": "데모 노트북 거치대 각도 조절 이미지"
+    },
+    {
+      "role": "extra",
+      "file_name": "demo-spec-01.png",
+      "width_px": 1200,
+      "height_px": 1200,
+      "byte_size": 298771,
+      "alt_text": "데모 노트북 거치대 포트 사양 이미지"
+    }
+  ],
+  "issues": []
+}

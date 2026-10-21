@@ -1,0 +1,33 @@
+{
+  "channel_id": "elevenst",
+  "display_name": "11번가 셀러오피스",
+  "admin_surface": "셀러오피스 > 상품관리 > 상품등록",
+  "values": {
+    "product_name": "데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)",
+    "category_path": "디지털/가전 > 노트북 액세서리 > 노트북 거치대",
+    "brand": "DemoBrand",
+    "model_name": "DEMO-STD-001-SLV",
+    "sale_price": "32900",
+    "stock_quantity": "120",
+    "min_order_quantity": "1",
+    "main_image": "demo-main-01.png",
+    "extra_images": "demo-detail-01.png, demo-spec-01.png",
+    "detail_html": "<div class=\"product-detail\"><h2>데모 USB-C 알루미늄 노트북 스탠드 (12.9인치 전용)</h2><p>알루미늄 CNC 가공 데스크 스탠드로 12.9인치 노트북을 6도에서 55도까지 각도 조절할 수 있습니다. USB-C 포트 1개와 USB-A 포트 1개를 제공하며 케이블 정리 슬롯과 폴더 받침이 내장되어 있습니다.</p><table border=\"1\" cellspacing=\"0\" cellpadding=\"6\"><caption>상품 주요 정보</caption><tbody><tr><th scope=\"row\">모델명</th><td>DEMO-STD-001-SLV</td></tr><tr><th scope=\"row\">브랜드</th><td>DemoBrand</td></tr><tr><th scope=\"row\">제조사</th><td>데모제조 주식회사</td></tr><tr><th scope=\"row\">카테고리</th><td>디지털/가전 &gt; 노트북 액세서리 &gt; 노트북 거치대</td></tr><tr><th scope=\"row\">품번</th><td>DEMO-STD-001-SLV</td></tr><tr><th scope=\"row\">색상</th><td>무광 실버</td></tr><tr><th scope=\"row\">사이즈</th><td>12.9인치 전용</td></tr><tr><th scope=\"row\">소재</th><td>알루미늄 합금</td></tr><tr><th scope=\"row\">무게(kg)</th><td>0.42</td></tr><tr><th scope=\"row\">가로(mm)</th><td>212</td></tr><tr><th scope=\"row\">세로(mm)</th><td>168</td></tr><tr><th scope=\"row\">높이(mm)</th><td>18</td></tr><tr><th scope=\"row\">단위</th><td>개</td></tr><tr><th scope=\"row\">원산지</th><td>국내 제조</td></tr><tr><th scope=\"row\">보증기간</th><td>12개월 제조사 보증</td></tr><tr><th scope=\"row\">판매가</th><td>32900</td></tr><tr><th scope=\"row\">배송비</th><td>무료배송</td></tr><tr><th scope=\"row\">배송비 금액</th><td>0</td></tr><tr><th scope=\"row\">발송예정일</th><td>2</td></tr><tr><th scope=\"row\">반품/교환 정책</th><td>미개봉 상태 기준 7일 이내 반품 가능, 반품비 3,000원</td></tr></tbody></table></div>",
+    "search_keywords": "노트북 스탠드, USB-C 랭징 스테이션, 알루미늄 거치대",
+    "shipping_fee_type": "무료배송",
+    "shipping_fee": "0",
+    "delivery_days": "2",
+    "return_policy": "미개봉 상태 기준 7일 이내 반품 가능, 반품비 3,000원",
+    "warranty": "12개월 제조사 보증"
+  },
+  "issues": [],
+  "unresolved_field_count": 0,
+  "manual_field_count": 0,
+  "ready_for_entry": true,
+  "source_urls": [
+    "http://www.11st.co.kr/tpost/FrontTPostAction.tmall?NtceNo=856123&method=getNoticeView&type=so",
+    "http://11st.co.kr/tpost/FrontTPostAction.tmall?brdInfoNo=65981072&method=getTPostBoard&sellGroupCode=CM024&unityBrdNo=43",
+    "https://i.011st.com/ui_img/seller/pdf/prod.pdf"
+  ],
+  "source_checked_on": "2026-10-21"
+}
