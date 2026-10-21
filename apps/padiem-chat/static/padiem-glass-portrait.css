@@ -860,3 +860,47 @@ html[data-theme="padiem-glass"] .answer-action + .answer-action {
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
   gap: 14px !important;
 }
+
+/* #5485: the Glass shell portrait on a narrow window.
+ *
+ * The shell portrait is the same artwork as .main-panel::before, but it is a
+ * separate fixed layer that keeps the wide-screen geometry: it is pinned to
+ * the right at min(48vw, 680px) and scaled up by the shell transition, so on a
+ * phone it covered the whole content column.
+ *
+ * The standalone workspace views (Automation, Connectors, Calendar, Library)
+ * put their content in that column, so their text was read against the
+ * artwork instead of against a surface.
+ *
+ * The narrow-viewport treatment is the one the artwork already has above:
+ * pushed off-canvas, faint and softened, with the same mask. The wide-screen
+ * composition is untouched, and the artwork still reads as a background behind
+ * the content rather than a layer on top of it.
+ *
+ * These rules come last on purpose: the base portrait rule is declared above
+ * and has the same specificity, so only a later source order can win. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] .glass-shell-portrait,
+  html[data-theme="padiem-glass"] .glass-shell-field {
+    top: 62px;
+    right: -24vw;
+    bottom: 0;
+    width: 82vw;
+    --glass-art-scale: 1;
+    background-position: right 52%;
+    background-size: auto 72vh;
+    opacity: .22;
+    filter: saturate(.52) contrast(.86) brightness(1.16) blur(.4px);
+    --glass-mask-start: 8%;
+    --glass-mask-full: 34%;
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-theme="padiem-glass"] .glass-shell-portrait,
+  html[data-theme="padiem-glass"] .glass-shell-field {
+    right: -34vw;
+    width: 94vw;
+    opacity: .16;
+  }
+}

@@ -256,7 +256,11 @@ def test_no_execution_surface_changed() -> None:
 def test_the_page_adds_no_new_visual_language() -> None:
     css = VIEWS_CSS.read_text(encoding="utf-8")
     # The new controls use the tokens the other destinations already use.
-    assert "var(--accent-strong, #2f6f99)" in css
+    # #5485: the primary action now uses the shared primary treatment (the
+    # Calendar and Meeting actions), because the translucent accent fill it
+    # had before left the label at 3.31:1 on the Glass card.
+    assert "background: var(--accent);" in css
+    assert "color: var(--accent-contrast);" in css
     assert "var(--line, rgba(66, 106, 135, .28))" in css
     assert "var(--focus-ring, rgba(101, 87, 232, .24))" in css
     # The page stays inside the existing standalone-view frame.
