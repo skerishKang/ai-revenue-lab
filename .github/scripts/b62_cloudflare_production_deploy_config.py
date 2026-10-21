@@ -26,6 +26,7 @@ from b62_web_secrets_store_contract import (
     expected_b14_service_proof_bindings,
     expected_claw_desktop_bindings,
     expected_oracle_mesh_bindings,
+    expected_resend_alert_bindings,
     expected_web_secret_bindings,
     require_exact_web_secrets_store,
 )
@@ -183,6 +184,7 @@ def build_production_config(
     attach_oracle_mesh: bool = False,
     attach_claw_desktop_secret: bool = False,
     attach_b14_service_proof_secret: bool = False,
+    attach_existing_resend_secret: bool = False,
 ) -> str:
     try:
         repo = tomllib.loads(repo_config_path.read_text(encoding="utf-8"))
@@ -485,6 +487,41 @@ def build_production_config(
                     raise ProductionConfigError("Oracle live Secrets Store metadata drift")
             else:
                 store_bindings.append(dict(identity))
+    if attach_existing_resend_secret:
+        # #5441: the Owner registered the transactional-mail credential in the
+        # account Secrets Store. The repository declaration must already name
+        # this exact store and secret; the attach adds only that reference and
+        # never reads or writes a value.
+        approved = expected_resend_alert_bindings()
+        declarations = repo.get("secrets_store_secrets")
+        declared = [
+            {"binding": d.get("binding"), "store_id": d.get("store_id"), "secret_name": d.get("secret_name")}
+            for d in (declarations if isinstance(declarations, list) else [])
+            if isinstance(d, dict) and d.get("binding") in approved
+        ]
+        expected_declared = [
+            {"binding": name, "store_id": item["store_id"], "secret_name": item["secret_name"]}
+            for name, item in approved.items()
+        ]
+        if sorted(declared, key=lambda x: x["binding"]) != sorted(expected_declared, key=lambda x: x["binding"]):
+            raise ProductionConfigError("Resend alert source binding identity mismatch")
+        all_other_names = (
+            {i["name"] for key in ("assets", "services", "d1", "r2") for i in live[key]}
+            | set(live["vars"]) | set(live["secret_names"])
+        )
+        if live["version_metadata"] is not None:
+            all_other_names.add(live["version_metadata"]["name"])
+        if live["browser"] is not None:
+            all_other_names.add(live["browser"]["name"])
+        if all_other_names & set(approved):
+            raise ProductionConfigError("Resend alert binding name collides with live authority")
+        for name, identity in approved.items():
+            existing = [item for item in store_bindings if item["name"] == name]
+            if existing:
+                if len(existing) != 1 or existing[0] != identity:
+                    raise ProductionConfigError("Resend alert live Secrets Store metadata drift")
+            else:
+                store_bindings.append(dict(identity))
     if attach_claw_desktop_secret:
         # #4139: exactly one shared Engine/Chat desktop proof reference. The
         # repository declaration must already name this store and secret.
@@ -712,6 +749,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="#4139: only the one existing shared Engine/Chat desktop Secrets Store reference")
     parser.add_argument("--attach-existing-b14-service-proof-secret", action="store_true",
                         help="#5224: only the one deployment-owned B14 caller-proof Secrets Store reference")
+    parser.add_argument("--attach-existing-resend-secret", action="store_true",
+                        help="#5441: only the one Owner-registered transactional-mail Secrets Store reference")
     parser.add_argument("--activate-claw-public-search", action="store_true",
                         help="owner-reviewed single exact Claw public search ON var, preserving every other live binding")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
@@ -750,6 +789,15 @@ def main(argv: list[str] | None = None) -> int:
             or args.attach_existing_oracle_mesh or args.attach_existing_claw_desktop_secret
         ):
             raise ProductionConfigError("B14 service proof attach must be the only additive mode")
+        if args.attach_existing_resend_secret and (
+            args.attach_existing_connector_broker or args.commission_hark_browser
+            or args.attach_existing_web_secrets_store or args.owner_d1_database_id is not None
+            or args.activate_claw_public_search or args.attach_existing_grafana_telemetry
+            or args.attach_existing_oracle_mesh
+            or args.attach_existing_claw_desktop_secret
+            or args.attach_existing_b14_service_proof_secret
+        ):
+            raise ProductionConfigError("Resend alert attach must be the only additive mode")
         if args.activate_claw_public_search and (
             args.attach_existing_connector_broker or args.commission_hark_browser
             or args.attach_existing_web_secrets_store or args.owner_d1_database_id is not None
@@ -783,6 +831,7 @@ def main(argv: list[str] | None = None) -> int:
             attach_oracle_mesh=args.attach_existing_oracle_mesh,
             attach_claw_desktop_secret=args.attach_existing_claw_desktop_secret,
             attach_b14_service_proof_secret=args.attach_existing_b14_service_proof_secret,
+            attach_existing_resend_secret=args.attach_existing_resend_secret,
         )
         verify_mutation_zero(
             config_text, live,
