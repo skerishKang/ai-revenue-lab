@@ -415,7 +415,34 @@ def test_an_external_event_schedule_never_answers_without_evidence() -> None:
     app, config, seen = build_app(provider)
     response = post(
         app, config, "/api/chat",
-        {"messages": messages("이번 주 무슨 요일에 축제가 열려?"), "mode": "auto"},
+        {"messages": messages("몇 시에 경기가 시작해?"), "mode": "auto"},
+    )
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "no_evidence"
+    assert seen == []
+
+
+def test_a_mention_of_an_event_keeps_the_ordinary_answer_path() -> None:
+    """A request that merely mentions an event is not forced to search."""
+    provider = EmptyProvider()
+    app, config, seen = build_app(provider)
+    response = post(
+        app, config, "/api/chat",
+        {"messages": messages("영화 시나리오 작성해줘"), "mode": "auto"},
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["answer"]
+    # The provider was never asked: the ordinary path answered directly.
+    assert provider.search_calls == []
+    assert len(seen) == 1
+
+
+def test_a_current_weather_question_never_answers_without_evidence() -> None:
+    """The current weather is never answered from the model's own memory."""
+    provider = EmptyProvider()
+    app, config, seen = build_app(provider)
+    response = post(
+        app, config, "/api/chat", {"messages": messages("지금 비 와?"), "mode": "auto"}
     )
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "no_evidence"
