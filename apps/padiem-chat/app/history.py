@@ -681,11 +681,21 @@ class D1HistoryStore:
 
         Browser APIs keep bounded previews; the canonical full-original (R2)
         restoration is only ever reachable through this product-scoped read.
+
+        #4317 perf: this used to call :meth:`get_conversation` first, which
+        reads the conversation row *and* the bounded message preview, and then
+        read the same message rows again for the full-original bodies. The
+        preview read was pure waste on this path, so the conversation row is
+        read directly here and the message rows are read once. The returned
+        shape is unchanged.
         """
-        owned = await self.get_conversation(
-            user_id, conversation_id, product_scope=product_scope
+        scope = _require_product_scope(product_scope)
+        conv = await self._first(
+            "SELECT id, title, project_id, created_at, updated_at FROM conversations "
+            "WHERE id=? AND user_id=? AND product_scope=?",
+            conversation_id, user_id, scope,
         )
-        if owned is None:
+        if not conv:
             return None
         rows = await self._all(
             "SELECT id, role, content, sequence_number FROM messages "
@@ -701,7 +711,18 @@ class D1HistoryStore:
             if byte_total > MAX_MODEL_CONTEXT_BYTES:
                 raise HistoryError("conversation context exceeds transport envelope")
             full_messages.append({"role": row["role"], "content": content})
-        return {**owned, "messages": full_messages}
+        return {
+            "id": str(conv.get("id", "")),
+            "title": str(conv.get("title", "")),
+            "project_id": (
+                str(conv.get("project_id"))
+                if conv.get("project_id") is not None
+                else None
+            ),
+            "created_at": str(conv.get("created_at", "")),
+            "updated_at": str(conv.get("updated_at", "")),
+            "messages": full_messages,
+        }
 
     async def _first(self, sql: str, *values: Any) -> dict[str, Any] | None:
         statement = self.db.prepare(sql)
