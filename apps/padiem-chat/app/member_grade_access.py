@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from starlette.responses import JSONResponse
 
+from .platform_model_authority import is_model_admin
+
 GRADES = ("free", "plus", "pro", "max")
 
 
@@ -18,14 +20,14 @@ async def verified_member_grade(request, user_id, access=None):
     # Missing/unreadable membership evidence never grants a paid tier.
     # The Google-verified owner has the maximum model grade independently
     # of customer membership. Never trust a client-supplied admin flag.
-    store = getattr(request.app.state, "b66_member_admin_store", None)
-    is_admin = getattr(store, "is_google_admin", None) if store is not None else None
-    if callable(is_admin) and isinstance(user_id, str) and user_id:
-        try:
-            if await is_admin(user_id):
-                return "max"
-        except Exception:
-            pass  # Continue with server-verified membership, never elevate.
+    #
+    # #5483: the administrator model ceiling is judged by the same server
+    # authority that already reveals the administrator hub, so an account the
+    # server proves to be an administrator is never locked to the ordinary
+    # member grade. The member record below stays the only source of a paid
+    # grade for everybody else.
+    if await is_model_admin(request, user_id):
+        return "max"
     known = _known_grade(access)
     if known is not None:
         return known
