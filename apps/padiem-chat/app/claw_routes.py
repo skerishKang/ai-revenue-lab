@@ -1325,10 +1325,29 @@ async def claw_pending_result(request: Request) -> JSONResponse:
             status = row.get("status")
         result = {"run_id": run_id, "conversation_id": cid, "status": status}
         if status == "completed":
-            answer = await history.get_claw_run_result_message(uid, run_id, cid)
-            if not isinstance(answer, str):
+            # #5015: the owner's stored completion record and the actual
+            # assistant message are compared inside the owner's run and
+            # conversation scope. A model reply is reported as a model reply;
+            # it is never presented as a verified PC execution result, and an
+            # unverified run keeps the truthful unavailable state.
+            reader = getattr(history, "get_claw_run_result", None)
+            resolved: object = None
+            if callable(reader):
+                resolved = await reader(uid, run_id, cid)
+            else:
+                legacy = getattr(history, "get_claw_run_result_message", None)
+                if callable(legacy):
+                    answer = await legacy(uid, run_id, cid)
+                    if isinstance(answer, str) and answer:
+                        resolved = {"answer": answer, "answer_source": "pc_command_result"}
+            if not isinstance(resolved, dict) or not isinstance(resolved.get("answer"), str) \
+                    or not resolved["answer"]:
                 return _error(503, "run_result_unavailable", "Result unavailable")
-            result["answer"] = answer
+            source = resolved.get("answer_source")
+            result["answer"] = resolved["answer"]
+            result["answer_source"] = (
+                source if source in ("pc_command_result", "model_reply") else "unknown"
+            )
         return JSONResponse({"ok": True, "result": result},
                             headers=_NO_STORE_HEADERS)
     except Exception:

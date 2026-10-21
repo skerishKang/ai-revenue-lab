@@ -227,7 +227,7 @@ class HistoryStore(Protocol):
     async def search_conversations(self, user_id: str, query: str, *, product_scope: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS) -> list[dict[str, Any]]: ...
     async def get_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> dict[str, Any] | None: ...
     async def delete_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> bool: ...
-    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str) -> str: ...
+    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str, assistant_message_id: str | None = None) -> str: ...
     async def list_projects(self, user_id: str) -> list[ProjectProfile]: ...
     async def get_project(self, user_id: str, project_id: str) -> ProjectProfile | None: ...
     async def create_project(self, user_id: str, name: str, instructions: str) -> ProjectProfile: ...
@@ -297,6 +297,48 @@ def _chat_id() -> str:
 
 def _message_id() -> str:
     return "msg_" + uuid.uuid4().hex
+
+
+#: #5015: the run-scoped id of the assistant message that a model-only Claw run
+#: stores for exactly that run. It follows the existing deterministic result-id
+#: convention (``msg_ltr_<40hex>`` from a salted hash, the same shape
+#: ``local_task_result_message_id`` produces), because the private full-context
+#: key validator only accepts the canonical message identities. Deriving it from
+#: the server-owned run id keeps the owner-scoped lookup correlatable without a
+#: schema change and without ever matching a later turn's text.
+GENERAL_ANSWER_MESSAGE_SALT = "claw-general-answer:v1"
+
+#: #5015: the run action the general lane itself records. Only a run the
+#: server stored under this action is a verified model-only execution; a PC,
+#: desktop or staged run keeps its own action and is never answered from a
+#: model reply.
+MODEL_ONLY_RUN_ACTION = "general"
+
+
+def general_answer_message_id(run_id: str) -> str:
+    """The one message id a model-only run owns for its verified answer.
+
+    The id must satisfy the canonical message identity the private full-context
+    store accepts, otherwise a long answer (stored as a D1 preview plus an R2
+    original) would fail its R2 key validation and take the whole conversation
+    save down with it.
+    """
+    if not isinstance(run_id, str) or not run_id:
+        raise HistoryError("run_id is required")
+    payload = f"{GENERAL_ANSWER_MESSAGE_SALT}:{run_id}"
+    message_id = "msg_ltr_" + hashlib.sha256(payload.encode("utf-8")).hexdigest()[:40]
+    if len(message_id) > 128:
+        raise HistoryError("run-scoped answer message id is not bounded")
+    return message_id
+
+
+def _message_reference(value: object) -> str:
+    """Validate a caller-supplied message id as a bounded safe reference."""
+    if not isinstance(value, str) or not value or len(value) > 128:
+        raise HistoryError("message id must be a bounded safe reference")
+    if any(not (ch.isalnum() or ch in "_-") for ch in value):
+        raise HistoryError("message id must be a bounded safe reference")
+    return value
 
 
 def _project_id() -> str:
@@ -1085,7 +1127,7 @@ class D1HistoryStore:
         )
         return True
 
-    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str) -> str:
+    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str, assistant_message_id: str | None = None) -> str:
         scope = _require_product_scope(product_scope)
         user_content = _bounded_text(user_text, "user_text")
         assistant_content = _bounded_text(assistant_text, "assistant_text")
@@ -1110,7 +1152,15 @@ class D1HistoryStore:
             if stored_project != project_id:
                 raise HistoryForbidden("conversation project mismatch")
 
-        user_msg_id, answer_msg_id = _message_id(), _message_id()
+        # #5015: a model-only run stores its verified answer under a run-scoped
+        # message id, so the owner-scoped lookup can correlate the stored
+        # completion record with the actual message. The default stays the
+        # random id, and an explicit id is never taken from a browser value.
+        user_msg_id = _message_id()
+        answer_msg_id = (
+            _message_reference(assistant_message_id)
+            if assistant_message_id is not None else _message_id()
+        )
         r2_keys: list[str] = []
         persisted = False
         try:
@@ -1675,6 +1725,92 @@ class D1HistoryStore:
             message_id, len(part_prefix), part_prefix, final_id,
         )
         return "\n".join(row["content"] for row in rows) if rows else None
+
+    async def get_claw_run_result(
+        self, user_id: str, run_id: str, conversation_id: str,
+    ) -> dict[str, str] | None:
+        """The owner's completed run result, correlated to the actual message.
+
+        Two proven sources, and never a summary substitution:
+
+        * a completed Mesh / Local Runner command run resolves through the
+          dispatch correlation to the assistant message that holds the verified
+          PC command result (``pc_command_result``);
+        * a completed model-only run resolves through the run-scoped answer
+          message the general lane stored for exactly that run
+          (``model_reply``).
+
+        Both branches are bounded by the owner's own run row, its conversation
+        and the message row itself, so a later turn's text can never be
+        returned for an older run. An unverified run returns ``None`` so the
+        caller keeps its truthful state instead of claiming a success.
+
+        A model reply is only ever returned for a run the server itself
+        recorded as a model-only execution. A run with a PC execution
+        correlation keeps its existing unavailable state when its own verified
+        result is missing, and a run whose recorded action is not the
+        model-only action is never answered from a model reply.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        correlation = await self._first(
+            "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state='done'",
+            user_id, run_id,
+        )
+        if not isinstance(correlation, dict):
+            correlation = await self.get_local_task_correlation(user_id, run_id)
+        pc_correlated = (
+            isinstance(correlation, dict)
+            and isinstance(correlation.get("command_id"), str)
+            and isinstance(correlation.get("revision_ref"), str)
+        )
+        if pc_correlated:
+            # #5015: a PC execution run keeps its own verified-result contract.
+            # The correlation may point at a dispatch whose message is stored
+            # under the dispatch identity, so the established lookup is reused
+            # unchanged. A PC run without its own verified result keeps the
+            # truthful unavailable state; it is never answered from a model
+            # reply.
+            answer = await self.get_claw_run_result_message(
+                user_id, run_id, conversation_id
+            )
+            if isinstance(answer, str) and answer:
+                return {"answer": answer, "answer_source": "pc_command_result"}
+            return None
+        run_row = await self._first(
+            "SELECT id, action, status, conversation_id FROM claw_run_history "
+            "WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if not isinstance(run_row, dict):
+            return None
+        # Only a run the store itself recorded as a completed model-only
+        # execution may answer with a model reply. A PC, desktop or staged run
+        # keeps its own action and is never answered from one.
+        if run_row.get("action") != MODEL_ONLY_RUN_ACTION:
+            return None
+        # A run that the store did not record as completed stays unverified.
+        if run_row.get("status") != "completed":
+            return None
+        if run_row.get("conversation_id") != conversation_id:
+            return None
+        message_id = general_answer_message_id(run_id)
+        rows = await self._all(
+            "SELECT m.id, m.content FROM messages m JOIN conversations c "
+            "ON c.id=m.conversation_id WHERE m.id=? AND m.role='assistant' "
+            "AND m.conversation_id=? AND c.user_id=? AND c.product_scope=? "
+            "ORDER BY m.sequence_number LIMIT 16",
+            message_id, conversation_id, user_id, PRODUCT_SCOPE_CHAT,
+        )
+        if not rows:
+            return None
+        return {
+            "answer": "\n".join(row["content"] for row in rows),
+            "answer_source": "model_reply",
+        }
 
     async def append_command_result(
         self,
