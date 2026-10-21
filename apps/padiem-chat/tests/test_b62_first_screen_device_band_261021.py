@@ -1,19 +1,26 @@
-"""#5297: the first screen must not move when the composer's device band mounts.
+"""#5446 follow-up of #4488: the composer shows ONE computer connection entry.
 
-The reported defect is the Chat/Claw first screen shifting after it appears. The
-measured cause is the shared composer: `#clawDeviceManager` is the first visible
-child of the fixed `.composer-wrap`, it is created by a script that runs after the
-first paint, and the wrap is anchored to the bottom of the viewport, so the band
-arriving pushed the whole input upward. It is the dominant layout-shift entry on
-every first screen (a phone 0.01909 and a desktop 0.00476-0.00943 on the band
-alone), and on a phone it was the only entry the first screen produced.
+This file keeps the historical name of the #5297 regression (the first screen
+device band). The band itself is gone with the duplicate entry line, so the
+first-screen shift it used to cause is now guarded by "there is no band".
 
-The fix reserves the band and retires the reservation the moment the real block
-exists, so the settled layout keeps exactly one band and no extra height. These
-regressions therefore assert (a) the reservation mirrors the mounted block's own
-declared geometry, (b) the fixed input does not move while the first screen
-settles, (c) the reserved band and the mounted band measure the same box, and
-(d) the Claw workbench is never given a phantom band.
+The Chat/Claw composer showed the computer connection state twice: a separate
+entry line above the input (the device manager's own entry control) and the
+small status control in the input's top-right corner. The owner's decision keeps
+the small status control and removes the duplicate entry line.
+
+This file carries the #5297 first-screen regression forward under the new
+contract. The defect that file measured is still a defect: the shared composer
+`#clawDeviceManager` is created by a script that runs after the first paint and
+the wrap is anchored to the bottom of the viewport, so a block arriving above
+the input pushes the fixed input upward. With the duplicate entry line gone the
+block shows nothing, so the composer reserves nothing and the input never
+moves.
+
+These regressions assert (a) no stylesheet reserves a composer band any more,
+(b) the fixed input does not move while the first screen settles, (c) the block
+above the composer shows nothing, and (d) the composer's status control is the
+visible entry that opens the existing management panel.
 
 No new component, screen, endpoint or fixed pixel height is introduced, and the
 #5014 clearance contract, the #5222 selection contract and the #4379 attachment
@@ -43,15 +50,11 @@ requires_browser = pytest.mark.skipif(
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
 STATUS_CSS = STATIC / "claw-composer-connection-status.css"
+STATUS_JS = STATIC / "claw-composer-connection-status.js"
 DEVICE_CSS = STATIC / "claw-device-manager.css"
 
 # The phone landing and the narrowed desktop window from the report.
 WINDOWS = ((390, 844), (1024, 800))
-
-RESERVATION = re.compile(
-    r'\.app-shell:is\(\[data-state="home"\], \[data-state="chat"\]\)\s*'
-    r'\.composer-wrap:not\(:has\(> #clawDeviceManager\)\)::before \{(?P<body>[^}]*)\}'
-)
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -85,39 +88,17 @@ def browser():
         instance.close()
 
 
-def _declaration(body: str, property_name: str) -> str:
-    found = re.search(rf"{property_name}:\s*([^;]+);", body)
-    assert found is not None, body
-    return " ".join(found.group(1).split())
+# ---------------------------------------------------------------------------
+# Static contracts (always run)
+# ---------------------------------------------------------------------------
 
 
-def test_the_reservation_mirrors_the_mounted_band_geometry():
-    """A reservation that drifts from the block it replaces is a new shift.
+def test_no_stylesheet_reserves_a_composer_band_any_more():
+    """The band is gone, so nothing may reserve room for it.
 
-    The mounted band is the device manager root's own vertical margins around
-    its toggle's touch floor, so the reservation has to declare the same values.
-    """
-    status = STATUS_CSS.read_text(encoding="utf-8")
-    device = DEVICE_CSS.read_text(encoding="utf-8")
-
-    rule = RESERVATION.search(status)
-    assert rule is not None, "the first-screen composer band is not reserved"
-    body = rule.group("body")
-    assert _declaration(body, "content") == '""'
-    assert _declaration(body, "display") == "block"
-
-    toggle = re.search(r"\.claw-device-manager-toggle \{(?P<body>[^}]*)\}", device)
-    mounted = re.search(r"\.claw-device-manager \{(?P<body>[^}]*)\}", device)
-    assert toggle is not None and mounted is not None
-    assert _declaration(body, "min-height") == _declaration(toggle.group("body"), "min-height")
-    assert _declaration(body, "margin") == _declaration(mounted.group("body"), "margin")
-
-
-def test_the_reservation_is_the_only_writer_of_the_composer_band():
-    """A second writer with a different height becomes the next shift.
-
-    The Claw workbench owns its own composer, so the landing reservation must be
-    the single place that opens a band in the fixed wrap.
+    A reservation that outlives the block it replaced is a layout shift and an
+    empty gap above the input, so the only writer of such a reservation is
+    removed and the contract is that there is none.
     """
     sheets = sorted(STATIC.glob("*.css"))
     writers = [
@@ -125,12 +106,57 @@ def test_the_reservation_is_the_only_writer_of_the_composer_band():
         for sheet in sheets
         if re.search(r"\.composer-wrap\b[^{]*::?before", sheet.read_text(encoding="utf-8"))
     ]
-    assert writers == [STATUS_CSS.name], writers
-    status = STATUS_CSS.read_text(encoding="utf-8")
-    # It retires through the mounted block itself, never through a timer or a delay.
-    assert ":not(:has(> #clawDeviceManager))" in RESERVATION.search(status).group(0)
-    assert "transition" not in RESERVATION.search(status).group("body")
+    assert writers == [], writers
 
+
+def test_the_duplicate_entry_line_is_not_shown():
+    """The composer's connection entry is the small status control.
+
+    The device manager keeps its element and its own open/close state, so the
+    rule only hides the duplicate entry line. Nothing is removed from the
+    document, so the panel's existing entry control keeps working.
+    """
+    status = STATUS_CSS.read_text(encoding="utf-8")
+    assert "#clawDeviceManager > .claw-device-manager-toggle" in status
+    rule = re.search(
+        r"#clawDeviceManager > \.claw-device-manager-toggle \{(?P<body>[^}]*)\}", status
+    )
+    assert rule is not None
+    assert "display: none" in rule.group("body")
+
+
+def test_the_empty_block_keeps_no_margin_above_the_composer():
+    """The block above the composer holds nothing, so it reserves nothing."""
+    status = STATUS_CSS.read_text(encoding="utf-8")
+    assert "#clawDeviceManager:not(:has(> .claw-device-manager-panel:not([hidden])))" in status
+    rule = re.search(
+        r"#clawDeviceManager:not\(:has\(> \.claw-device-manager-panel:not\(\[hidden\]\)\)\)"
+        r" \{(?P<body>[^}]*)\}",
+        status,
+    )
+    assert rule is not None
+    body = rule.group("body")
+    assert "margin-top: 0" in body
+    assert "margin-bottom: 0" in body
+
+
+def test_the_status_control_opens_the_existing_panel():
+    """The visible entry drives the existing management panel."""
+    source = STATUS_JS.read_text(encoding="utf-8")
+    # The existing entry control of the existing panel is reused.
+    assert 'document.getElementById("clawDeviceManagerToggle")' in source
+    # The visible control carries the expanded state of the panel it opens.
+    assert 'aria-expanded' in source
+    assert 'aria-controls' in source
+    # No second panel or screen is created here.
+    assert 'createElement("section")' not in source
+    assert 'createElement("aside")' not in source
+    assert 'createElement("dialog")' not in source
+
+
+# ---------------------------------------------------------------------------
+# Browser contracts
+# ---------------------------------------------------------------------------
 
 FIRST_SCREEN = """(() => {
   window.__b = {samples: [], shifts: 0, shiftEntries: []};
@@ -171,7 +197,7 @@ FIRST_SCREEN = """(() => {
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
-})();"""
+})()"""
 
 
 @requires_browser
@@ -179,10 +205,10 @@ FIRST_SCREEN = """(() => {
 def test_the_fixed_input_never_moves_while_the_first_screen_settles(
     browser, server, width, height
 ):
-    """The defect itself: the bottom-anchored input jumped up when the band arrived.
+    """The defect itself: the bottom-anchored input must not jump.
 
     The wrap height and its top edge are sampled every frame from the first
-    frame to the settled screen, so a single late band still shows up here.
+    frame to the settled screen, so a late block still shows up here.
     """
     page = browser.new_page(viewport={"width": width, "height": height})
     page.add_init_script(FIRST_SCREEN)
@@ -194,62 +220,103 @@ def test_the_fixed_input_never_moves_while_the_first_screen_settles(
     state = page.evaluate("() => window.__b")
     samples = state["samples"]
     assert samples, "the fixed composer was never sampled"
-    # The band is mounted by the time the screen settles, so this is the settled
-    # layout being compared, not an empty one.
+    # The block is mounted by the time the screen settles, so this is the
+    # settled layout being compared, not an empty one.
     assert samples[-1]["band"] is True, samples
     heights = {sample["height"] for sample in samples}
     tops = {sample["top"] for sample in samples}
     assert len(heights) == 1, ("the composer height changed on the first screen", samples)
     assert len(tops) == 1, ("the composer top edge moved on the first screen", samples)
     assert state["shifts"] == 0, ("band-attributed layout shift", state, samples)
-    # The reservation is in effect at the frame that shows the landing, before
-    # the mount, and is gone on the frame that shows the mounted band.
-    pre = [sample for sample in samples if not sample["band"]]
-    if pre:
-        assert all(sample["reserved"] > 0 for sample in pre), pre
-        assert all(sample["height"] == samples[-1]["height"] for sample in pre), samples
-    assert samples[-1]["reserved"] == 0, samples
+    # Nothing is reserved before or after the block arrives: there is no band
+    # to reserve, so the fixed input never has to move.
+    assert all(sample["reserved"] == 0 for sample in samples), samples
     assert not errors, errors
     page.close()
 
 
 @requires_browser
-def test_the_reserved_band_and_the_mounted_band_are_the_same_box(browser, server):
-    """Proves the reservation is live and exactly sized, not inert CSS.
+def test_the_block_above_the_composer_shows_nothing(browser, server):
+    """The duplicate entry line is gone and the block is empty above the input.
 
-    With the real band removed, the retired-reservation path must reproduce the
-    mounted height to the pixel; a rule that never matched, or one that reserved
-    a different height, fails here instead of passing on the source text.
+    With the real block removed the composer wrap must measure exactly the
+    same, because the block reserved nothing while it was there.
     """
     page = browser.new_page(viewport={"width": 390, "height": 844})
     page.add_init_script(FIRST_SCREEN)
     page.goto(server, wait_until="domcontentloaded")
     page.wait_for_timeout(3000)
-    with_band = page.evaluate("() => window.__sample()")
-    assert with_band["band"] is True, with_band
+    mounted = page.evaluate("() => window.__sample()")
+    assert mounted["band"] is True, mounted
+
+    # The duplicate entry line is not shown, and the block holds no height.
+    assert page.locator(".claw-device-manager-toggle").is_hidden()
+    assert page.locator("#clawDeviceManager").bounding_box()["height"] == 0
+    # The composer's own status control is the visible entry.
+    assert page.locator("#composerPcStatus").is_visible()
 
     page.evaluate("""() => {
       const band = document.getElementById("clawDeviceManager");
       band.remove();
     }""")
     page.wait_for_timeout(500)
-    reserved = page.evaluate("() => window.__sample()")
-    assert reserved["band"] is False, reserved
-    assert reserved["reserved"] == 44, reserved
-    assert reserved["height"] == with_band["height"], (with_band, reserved)
-    assert reserved["top"] == with_band["top"], (with_band, reserved)
+    removed = page.evaluate("() => window.__sample()")
+    assert removed["band"] is False, removed
+    assert removed["reserved"] == 0, removed
+    # Removing an empty block changes nothing, so the input cannot move.
+    assert removed["height"] == mounted["height"], (mounted, removed)
+    assert removed["top"] == mounted["top"], (mounted, removed)
+    page.close()
 
-    # The same surface with the reservation disabled has to move, or this test
-    # proves nothing about the rule it claims to check.
-    page.add_style_tag(content="""
-      .app-shell:is([data-state="home"], [data-state="chat"])
-        .composer-wrap:not(:has(> #clawDeviceManager))::before {
-        content: none !important;
-        min-height: 0 !important;
-        margin: 0 !important;
-      }
-    """)
-    page.wait_for_timeout(500)
-    unreserved = page.evaluate("() => window.__sample()")
-    assert unreserved["height"] < with_band["height"], (with_band, unreserved)
+
+@requires_browser
+def test_the_status_control_opens_the_existing_panel(browser, server):
+    """One click on the visible entry opens the existing management panel."""
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.locator("#composerPcStatus").wait_for(state="attached", timeout=15000)
+    page.wait_for_timeout(400)
+
+    page.click("#composerPcStatus")
+    page.wait_for_timeout(900)
+    state = page.evaluate(
+        """() => {
+          const panel = document.getElementById('clawDeviceManagerPanel');
+          const chip = document.getElementById('composerPcStatus');
+          return {
+            panelVisible: panel ? !panel.hidden : false,
+            chipExpanded: chip ? chip.getAttribute('aria-expanded') : null,
+            chipControls: chip ? chip.getAttribute('aria-controls') : null,
+            focusInsidePanel: panel && panel.contains(document.activeElement),
+          };
+        }"""
+    )
+    assert state["panelVisible"] is True
+    # The visible control is the owner of the panel it opens.
+    assert state["chipExpanded"] == "true"
+    assert state["chipControls"] == "clawDeviceManagerPanel"
+    # The focus follows the panel, so a keyboard user lands in it.
+    assert state["focusInsidePanel"] is True
+    assert not errors, errors
+
+    # Closing the panel returns the focus to the visible control, because the
+    # manager's own entry control is not shown any more.
+    page.locator(".claw-device-manager-close").click()
+    page.wait_for_timeout(400)
+    closed = page.evaluate(
+        """() => {
+          const chip = document.getElementById('composerPcStatus');
+          return {
+            panelHidden: document.getElementById('clawDeviceManagerPanel').hidden,
+            chipExpanded: chip.getAttribute('aria-expanded'),
+            focusOnChip: document.activeElement === chip,
+          };
+        }"""
+    )
+    assert closed["panelHidden"] is True
+    assert closed["chipExpanded"] == "false"
+    assert closed["focusOnChip"] is True
+    assert not errors, errors
     page.close()
