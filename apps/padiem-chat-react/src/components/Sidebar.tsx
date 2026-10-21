@@ -16,6 +16,11 @@ interface SidebarProps {
   onToggleCollapse: () => void;
   onCloseMobile: () => void;
   onOpenMode: (mode: ProductMode) => void;
+  /** The API answered and reports a signed-in account. */
+  authenticated: boolean;
+  /** The API answered, so a sign-in is possible. */
+  apiAvailable: boolean;
+  onOpenLogin: () => void;
 }
 
 /** The operational product's own row icons, rebuilt as React nodes. */
@@ -78,6 +83,9 @@ export function Sidebar({
   onToggleCollapse,
   onCloseMobile,
   onOpenMode,
+  authenticated,
+  apiAvailable,
+  onOpenLogin,
 }: SidebarProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
@@ -333,7 +341,7 @@ export function Sidebar({
       <div className="sidebar-bottom" aria-label="서비스, 계정 및 설정">
         {/* The clone runs without a signed-in session, so the account controls
             stay hidden exactly like the operational product before login. */}
-        <div className="sidebar-account account-controls" hidden>
+        <div className="sidebar-account account-controls" hidden={authenticated || !apiAvailable}>
           <span className="account-avatar" id="accountAvatar" aria-hidden="true">
             ?
           </span>
@@ -342,10 +350,8 @@ export function Sidebar({
             className="login-button"
             id="loginButton"
             type="button"
-            disabled
-            aria-disabled="true"
             title="Google 계정으로 로그인"
-            hidden
+            onClick={onOpenLogin}
           >
             로그인
           </button>

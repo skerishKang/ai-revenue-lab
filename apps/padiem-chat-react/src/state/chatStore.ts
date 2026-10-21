@@ -21,12 +21,24 @@ export interface PendingTurn {
   messageId: string;
   prompt: string;
   attempt: number;
+  /** The skill the starter carried, if any. The API payload keeps the same field. */
+  skill?: string;
+  /**
+   * The exact outbound messages of this turn. They are fixed when the turn
+   * starts, so a streaming answer is never restarted by a state change.
+   */
+  outbound: { role: "user" | "assistant"; content: string }[];
 }
+
+export type ApiMode = "probing" | "api" | "offline";
 
 export interface ChatState {
   conversations: Conversation[];
   activeConversationId: string | null;
+  /** The server-side conversation id of the active thread, once the API issued one. */
+  serverConversationId: string | null;
   mode: ProductMode;
+  apiMode: ApiMode;
   modelId: string;
   modelChoices: ModelChoice[];
   connectors: ConnectorCard[];
@@ -39,14 +51,34 @@ export type ChatAction =
   | { type: "select-conversation"; conversationId: string }
   | { type: "create-conversation"; conversationId: string; title: string }
   | { type: "delete-conversation"; conversationId: string }
+  | { type: "set-conversations"; conversations: Conversation[] }
+  | { type: "replace-conversation-id"; from: string; to: string }
+  | { type: "set-conversation-messages"; conversationId: string; messages: ChatMessage[] }
+  | { type: "set-api-mode"; apiMode: ApiMode }
   | { type: "set-mode"; mode: ProductMode }
   | { type: "set-model"; modelId: string }
   | { type: "set-search-query"; query: string }
   | { type: "attach-file"; attachment: PendingAttachment }
   | { type: "clear-attachment" }
-  | { type: "send-message"; conversationId: string; userMessage: ChatMessage; assistantMessage: ChatMessage; prompt: string }
+  | {
+      type: "send-message";
+      conversationId: string;
+      userMessage: ChatMessage;
+      assistantMessage: ChatMessage;
+      prompt: string;
+      skill?: string;
+      outbound: { role: "user" | "assistant"; content: string }[];
+    }
+  | { type: "append-delta"; conversationId: string; messageId: string; delta: string }
   | { type: "retry-message"; conversationId: string; messageId: string }
-  | { type: "resolve-message"; conversationId: string; messageId: string; content: string; completedAt: string }
+  | {
+      type: "resolve-message";
+      conversationId: string;
+      messageId: string;
+      content: string;
+      completedAt: string;
+      serverConversationId?: string | null;
+    }
   | { type: "fail-message"; conversationId: string; messageId: string; errorMessage: string }
   | { type: "set-connector-state"; connectorId: string; state: ConnectorState };
 
@@ -58,7 +90,9 @@ export function initialChatState(
   return {
     conversations,
     activeConversationId: conversations[0]?.id ?? null,
+    serverConversationId: null,
     mode: "chat",
+    apiMode: "probing",
     modelId: modelChoices[0]?.id ?? "",
     modelChoices,
     connectors,
@@ -103,6 +137,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...state,
         activeConversationId: target.id,
         mode: target.product,
+        serverConversationId: null,
         pendingTurn: null,
       };
     }
@@ -119,6 +154,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         conversations: [conversation, ...state.conversations],
         activeConversationId: conversation.id,
         mode: conversation.product,
+        serverConversationId: null,
         pendingTurn: null,
       };
     }
@@ -130,8 +166,60 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         state.activeConversationId === action.conversationId
           ? (conversations[0]?.id ?? null)
           : state.activeConversationId;
-      return { ...state, conversations, activeConversationId };
+      return {
+        ...state,
+        conversations,
+        activeConversationId,
+        serverConversationId:
+          state.activeConversationId === action.conversationId ? null : state.serverConversationId,
+      };
     }
+    case "set-conversations": {
+      // The server owns the list. A conversation that is already open keeps the
+      // turns that are rendered for it, so a reload never blanks the panel.
+      const previous = new Map(state.conversations.map((c) => [c.id, c]));
+      const conversations = action.conversations.map((conversation) => ({
+        ...conversation,
+        messages: previous.get(conversation.id)?.messages ?? conversation.messages,
+      }));
+      const activeConversationId =
+        conversations.find((conversation) => conversation.id === state.activeConversationId)?.id ??
+        conversations[0]?.id ??
+        null;
+      return {
+        ...state,
+        conversations,
+        activeConversationId,
+        serverConversationId:
+          state.activeConversationId === activeConversationId ? state.serverConversationId : null,
+      };
+    }
+    case "replace-conversation-id": {
+      // The server issues the conversation id when the first answer lands. The
+      // open thread keeps its turns under the server's id.
+      if (action.from === action.to) return state;
+      const conversations = state.conversations.map((conversation) =>
+        conversation.id === action.from ? { ...conversation, id: action.to } : conversation,
+      );
+      return {
+        ...state,
+        conversations,
+        activeConversationId:
+          state.activeConversationId === action.from ? action.to : state.activeConversationId,
+      };
+    }
+    case "set-conversation-messages": {
+      return {
+        ...state,
+        conversations: replaceConversation(
+          state.conversations,
+          action.conversationId,
+          (conversation) => ({ ...conversation, messages: action.messages }),
+        ),
+      };
+    }
+    case "set-api-mode":
+      return { ...state, apiMode: action.apiMode };
     case "set-mode":
       return { ...state, mode: action.mode };
     case "set-model":
@@ -160,7 +248,23 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
           messageId: action.assistantMessage.id,
           prompt: action.prompt,
           attempt: action.assistantMessage.attempt,
+          skill: action.skill,
+          outbound: action.outbound,
         },
+      };
+    }
+    case "append-delta": {
+      return {
+        ...state,
+        conversations: replaceConversation(
+          state.conversations,
+          action.conversationId,
+          (conversation) =>
+            updateMessage(conversation, action.messageId, (message) => ({
+              ...message,
+              content: message.content + action.delta,
+            })),
+        ),
       };
     }
     case "retry-message": {
@@ -188,6 +292,11 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
           messageId: action.messageId,
           prompt: message.sourcePrompt ?? "",
           attempt: message.attempt + 1,
+          skill: undefined,
+          // The retry replays the same turns, without the failed answer.
+          outbound: (conversation?.messages ?? [])
+            .filter((item) => item.id !== action.messageId)
+            .map((item) => ({ role: item.role, content: item.content })),
         },
       };
     }
@@ -206,6 +315,10 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
               errorMessage: null,
             })),
         ),
+        serverConversationId:
+          action.serverConversationId === undefined
+            ? state.serverConversationId
+            : action.serverConversationId,
         pendingTurn: null,
       };
     case "fail-message":

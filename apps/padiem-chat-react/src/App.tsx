@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { ClawWorkspace } from "./components/ClawWorkspace";
 import { Composer } from "./components/Composer";
 import { ConversationView } from "./components/ConversationView";
+import { LoginDialog } from "./components/LoginDialog";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import {
@@ -11,20 +12,27 @@ import {
   createFixtureConversations,
   pickFixtureReply,
 } from "./data/fixtures";
-import type { ChatMessage, ConnectorId } from "./data/types";
+import type { ChatMessage, ConnectorId, Conversation } from "./data/types";
 import {
   chatReducer,
   initialChatState,
   selectActiveConversation,
   selectVisibleConversations,
 } from "./state/chatStore";
-import { mountOperationalGlassShell } from "./lib/glass-shell";
 import {
   applyTheme,
   readThemeAttributes,
   themeSearch,
   type ThemeAttributes,
 } from "./theme/theme";
+import {
+  deleteConversation,
+  fetchAuthStatus,
+  fetchConversation,
+  fetchConversations,
+  streamAnswer,
+} from "./api/chatApi";
+import { mountOperationalGlassShell } from "./lib/glass-shell";
 
 /** How long the fixture answer takes to arrive. Long enough to show the loading state. */
 const FIXTURE_LATENCY_MS = 450;
@@ -42,7 +50,11 @@ function nextId(prefix: string): string {
  * (`data-state`, `sidebar-collapsed`, `sidebar-open`) so the operational
  * stylesheets render the clone exactly as they render the product.
  *
- * Answers come from local fixtures. No auth, no backend, no live model call.
+ * The clone talks to the real Chat API when one is reachable: the same
+ * `/api/chat/stream` transport, the same conversation routes and the same
+ * session cookie the operational product uses. When no API answers, the clone
+ * falls back to its local fixtures and says so in the top bar. It never
+ * presents a fixture answer as a live one.
  */
 export function App() {
   const [themeAttributes, setThemeAttributes] = useState<ThemeAttributes>(() =>
@@ -50,6 +62,8 @@ export function App() {
   );
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
 
   const [state, dispatch] = useReducer(
     chatReducer,
@@ -77,6 +91,46 @@ export function App() {
 
   const activeConversation = selectActiveConversation(state);
   const visibleConversations = selectVisibleConversations(state);
+
+  /** Loads the server-owned conversation list. */
+  const loadApiConversations = useCallback(async () => {
+    try {
+      const summaries = await fetchConversations();
+      const conversations: Conversation[] = summaries.map((summary) => ({
+        id: summary.id,
+        title: summary.title,
+        product: "chat",
+        updatedAt: summary.updated_at ?? "",
+        messages: [],
+      }));
+      dispatch({ type: "set-conversations", conversations });
+    } catch {
+      // The server owns the list. An unavailable history means no list at all,
+      // never the fixture list presented as the account's history.
+      dispatch({ type: "set-conversations", conversations: [] });
+    }
+  }, []);
+
+  // One probe decides the mode: the real API when it answers, the local
+  // fixtures when it does not. The badge in the top bar says which one it is.
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchAuthStatus(controller.signal)
+      .then((status) => {
+        // A well-formed "not ready" answer means there is no API to talk to.
+        if (!status.ready) {
+          dispatch({ type: "set-api-mode", apiMode: "offline" });
+          return;
+        }
+        setAuthenticated(status.authenticated === true);
+        dispatch({ type: "set-api-mode", apiMode: "api" });
+        return loadApiConversations();
+      })
+      .catch(() => {
+        dispatch({ type: "set-api-mode", apiMode: "offline" });
+      });
+    return () => controller.abort();
+  }, [loadApiConversations]);
 
   const handleSelectTheme = useCallback((theme: ThemeAttributes["theme"]) => {
     setThemeAttributes((current) => {
@@ -133,12 +187,25 @@ export function App() {
         errorMessage: null,
         sourcePrompt: prompt,
         attempt: 1,
-        fixture: true,
+        fixture: state.apiMode !== "api",
       };
-      dispatch({ type: "send-message", conversationId, userMessage, assistantMessage, prompt });
+      dispatch({
+        type: "send-message",
+        conversationId,
+        userMessage,
+        assistantMessage,
+        prompt,
+        outbound: [
+          ...(activeConversation?.messages ?? []).map((message) => ({
+            role: message.role,
+            content: message.content,
+          })),
+          { role: "user" as const, content: prompt },
+        ],
+      });
       dispatch({ type: "clear-attachment" });
     },
-    [activeConversation],
+    [activeConversation, state.apiMode],
   );
 
   const handleRetry = useCallback(
@@ -162,9 +229,10 @@ export function App() {
   }, []);
 
   const handleAttach = useCallback((file: File) => {
-    const sizeLabel = file.size >= 1024 * 1024
-      ? `${(file.size / (1024 * 1024)).toFixed(1)}MB`
-      : `${Math.max(1, Math.round(file.size / 1024))}KB`;
+    const sizeLabel =
+      file.size >= 1024 * 1024
+        ? `${(file.size / (1024 * 1024)).toFixed(1)}MB`
+        : `${Math.max(1, Math.round(file.size / 1024))}KB`;
     dispatch({
       type: "attach-file",
       attachment: {
@@ -176,11 +244,111 @@ export function App() {
     });
   }, []);
 
-  // The fixture answer replaces the loading turn once the simulated latency is
-  // over. The failure trigger keeps the error and retry states reachable.
+  const handleSelectConversation = useCallback(
+    (conversationId: string) => {
+      dispatch({ type: "select-conversation", conversationId });
+      setMobileOpen(false);
+      if (state.apiMode !== "api") return;
+      // The server owns the saved turns.
+      void fetchConversation(conversationId)
+        .then((detail) => {
+          const messages: ChatMessage[] = detail.messages.map((message, index) => ({
+            id: `api_${detail.id}_${index}`,
+            role: message.role,
+            content: message.content,
+            completedAt: message.completed_at ?? null,
+            state: "complete" as const,
+            errorMessage: null,
+            sourcePrompt: null,
+            attempt: 1,
+            fixture: false,
+          }));
+          dispatch({ type: "set-conversation-messages", conversationId, messages });
+        })
+        .catch(() => {
+          /* A failed read keeps the list usable and never invents turns. */
+        });
+    },
+    [state.apiMode],
+  );
+
+  const handleDeleteConversation = useCallback(
+    (conversationId: string) => {
+      if (state.apiMode !== "api") {
+        dispatch({ type: "delete-conversation", conversationId });
+        return;
+      }
+      void deleteConversation(conversationId)
+        .then(() => loadApiConversations())
+        .catch(() => {
+          /* The server keeps the record; the list is left as it was. */
+        });
+    },
+    [state.apiMode, loadApiConversations],
+  );
+
+  // The answer arrives from the real API, or from the local fixture when no
+  // API is reachable. A fixture answer is never labelled as a live one.
   useEffect(() => {
     const pending = state.pendingTurn;
     if (!pending) return;
+
+    if (state.apiMode === "api") {
+      const controller = new AbortController();
+      void streamAnswer(
+        {
+          messages: pending.outbound,
+          conversationId: state.serverConversationId,
+          skill: pending.skill,
+          signal: controller.signal,
+        },
+        {
+          onDelta: (delta) => {
+            dispatch({
+              type: "append-delta",
+              conversationId: pending.conversationId,
+              messageId: pending.messageId,
+              delta,
+            });
+          },
+          onDone: (result) => {
+            if (result.conversationId && result.conversationId !== pending.conversationId) {
+              dispatch({
+                type: "replace-conversation-id",
+                from: pending.conversationId,
+                to: result.conversationId,
+              });
+            }
+            dispatch({
+              type: "resolve-message",
+              conversationId: pending.conversationId,
+              messageId: pending.messageId,
+              content: result.answer,
+              completedAt: new Date().toISOString(),
+              serverConversationId: result.conversationId,
+            });
+            void loadApiConversations().catch(() => {
+              /* The answer is already on screen; a failed list read is not. */
+            });
+          },
+        },
+      )
+        .catch((error: unknown) => {
+          if (error instanceof Error && error.name === "AbortError") return;
+          const message =
+            error instanceof Error && error.message
+              ? error.message
+              : "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.";
+          dispatch({
+            type: "fail-message",
+            conversationId: pending.conversationId,
+            messageId: pending.messageId,
+            errorMessage: message,
+          });
+        });
+      return () => controller.abort();
+    }
+
     const timer = window.setTimeout(() => {
       // The failure trigger only fails the first attempt, so the retry path is
       // a real recovery instead of a loop.
@@ -203,7 +371,7 @@ export function App() {
       });
     }, FIXTURE_LATENCY_MS);
     return () => window.clearTimeout(timer);
-  }, [state.pendingTurn]);
+  }, [state.pendingTurn, state.apiMode, state.serverConversationId, loadApiConversations]);
 
   // The operational product publishes the shell state: "home" on the empty
   // first screen, "chat" once a conversation is active and "claw" in the Claw
@@ -235,17 +403,15 @@ export function App() {
         collapsed={collapsed}
         mobileOpen={mobileOpen}
         onNewChat={handleNewChat}
-        onSelectConversation={(conversationId) => {
-          dispatch({ type: "select-conversation", conversationId });
-          setMobileOpen(false);
-        }}
-        onDeleteConversation={(conversationId) =>
-          dispatch({ type: "delete-conversation", conversationId })
-        }
+        onSelectConversation={handleSelectConversation}
+        onDeleteConversation={handleDeleteConversation}
         onSearchQuery={(query) => dispatch({ type: "set-search-query", query })}
         onToggleCollapse={() => setCollapsed((value) => !value)}
         onCloseMobile={() => setMobileOpen(false)}
         onOpenMode={(mode) => dispatch({ type: "set-mode", mode })}
+        authenticated={authenticated}
+        apiAvailable={state.apiMode === "api"}
+        onOpenLogin={() => setLoginOpen(true)}
       />
       <div
         className="sidebar-scrim"
@@ -257,6 +423,7 @@ export function App() {
         <TopBar
           theme={themeAttributes.theme}
           collapsed={collapsed}
+          apiMode={state.apiMode}
           onSelectTheme={handleSelectTheme}
           onOpenMobile={() => setMobileOpen(true)}
           onRestoreSidebar={() => setCollapsed(false)}
@@ -275,6 +442,7 @@ export function App() {
           selectedModelId={state.modelId}
           pendingAttachment={state.pendingAttachment}
           streaming={state.pendingTurn !== null}
+          probing={state.apiMode === "probing"}
           pcState={state.connectors.find((card) => card.id === "pc")?.state ?? "unknown"}
           onSelectModel={(modelId) => dispatch({ type: "set-model", modelId })}
           onSend={handleSend}
@@ -286,6 +454,15 @@ export function App() {
           onConnectPc={() => handleOpenConnector("pc")}
         />
       </main>
+      <LoginDialog
+        open={loginOpen}
+        onClose={() => setLoginOpen(false)}
+        onSignedIn={() => {
+          setAuthenticated(true);
+          dispatch({ type: "set-api-mode", apiMode: "api" });
+          void loadApiConversations();
+        }}
+      />
     </div>
   );
 }

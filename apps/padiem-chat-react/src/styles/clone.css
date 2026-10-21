@@ -142,8 +142,42 @@
   white-space: nowrap;
 }
 
+/* The clone badge that states the answers come from the real Chat API. */
+.clone-api-badge {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .78);
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* The clone badge that states the API probe is still running. */
+.clone-probe-badge {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .78);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
 html[data-theme="dark"] .clone-fixture-badge,
-html[data-theme="cinematic"] .clone-fixture-badge {
+html[data-theme="dark"] .clone-api-badge,
+html[data-theme="dark"] .clone-probe-badge,
+html[data-theme="cinematic"] .clone-fixture-badge,
+html[data-theme="cinematic"] .clone-api-badge,
+html[data-theme="cinematic"] .clone-probe-badge {
   background: rgba(255, 255, 255, .08);
   color: inherit;
 }
