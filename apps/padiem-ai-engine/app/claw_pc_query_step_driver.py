@@ -452,6 +452,46 @@ def build_chat_pc_query_tool_binding(*, service, request_factory, secret, runtim
         endpoint_url=CHAT_ENGINE_PC_DRIVE_URL)
 
 
+def _reject_duplicate_keys(pairs):
+    """Refuse an object that names the same key twice.
+
+    ``json.loads`` keeps the last value silently, so ``action`` or ``tool_id``
+    could change meaning without the model naming one step. A duplicate key is
+    ambiguous for this contract, never a value to choose between.
+    """
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def _model_step_payload(answer: str) -> Any:
+    """Decode the one step object from a possibly decorated model answer.
+
+    The prompt asks for exactly one JSON object, and the model sometimes wraps
+    it in a Markdown fence or a short sentence. Recover only the span between
+    the first and last brace, then parse it strictly. Two objects, a prose brace
+    outside that span, or duplicate keys make the span ambiguous and keep the
+    existing refusal instead of choosing one command. The step policy still
+    validates every field after decoding.
+    """
+    text = answer.lstrip("\ufeff").strip()
+    if not text:
+        raise ValueError("empty model response")
+    try:
+        return json.loads(text, object_pairs_hook=_reject_duplicate_keys)
+    except ValueError:
+        pass
+    start, stop = text.find("{"), text.rfind("}")
+    if start < 0 or stop <= start:
+        raise ValueError("no JSON object in model response")
+    return json.loads(
+        text[start:stop + 1], object_pairs_hook=_reject_duplicate_keys,
+    )
+
+
 def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_type=None,
                                optimize_for=None, service=None, request_factory=None,
                                secret=None, tool_arguments=None):
@@ -528,7 +568,7 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
                 "model response is not text", detail="model_call_failed",
             )
         try:
-            return json.loads(answer.strip())
+            return _model_step_payload(answer)
         except ValueError as exc:
             raise PCQueryStepError(
                 "model response is not valid JSON", detail="model_response_not_json",

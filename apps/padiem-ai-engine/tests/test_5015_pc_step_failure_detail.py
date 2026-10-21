@@ -162,6 +162,93 @@ async def test_normal_json_selection_still_reaches_the_tool() -> None:
     assert decision.invocation.arguments == {"path": "."}
 
 
+@pytest.mark.asyncio
+async def test_markdown_fenced_tool_step_is_still_the_same_step() -> None:
+    fenced = "```json\n" + json.dumps({
+        "action": "tool", "tool_id": PC_LIST_FILES_TOOL_ID,
+        "arguments": {"path": "."},
+    }) + "\n```"
+
+    decision = await _driver(fenced).next_step(_Context(), None)
+
+    assert decision.kind is AgentStepKind.TOOL
+    assert decision.invocation.tool_id == PC_LIST_FILES_TOOL_ID
+    assert decision.invocation.arguments == {"path": "."}
+
+
+@pytest.mark.asyncio
+async def test_prose_wrapped_completion_is_still_the_same_completion() -> None:
+    answer = "Here is the result:\n" + json.dumps(
+        {"action": "complete", "answer": "read complete"},
+    ) + "\nDone."
+
+    decision = await _driver(answer).next_step(_Context(), None)
+
+    assert decision.kind is AgentStepKind.COMPLETE
+    assert decision.answer == "read complete"
+
+
+@pytest.mark.asyncio
+async def test_truncated_object_is_not_repaired() -> None:
+    truncated = ('{"action":"tool","tool_id":"' + PC_LIST_FILES_TOOL_ID
+                 + '","arguments":{"path":"."')
+
+    assert await _refusal(truncated) == "model_response_not_json"
+
+
+@pytest.mark.asyncio
+async def test_decorated_step_still_obeys_the_closed_tool_policy() -> None:
+    fenced_unknown = "```json\n" + json.dumps({
+        "action": "tool", "tool_id": "claw.pc.format_disk", "arguments": {},
+    }) + "\n```"
+
+    assert await _refusal(fenced_unknown) == "tool_selection_invalid"
+
+
+@pytest.mark.asyncio
+async def test_two_objects_are_not_arbitrarily_selected() -> None:
+    first = json.dumps({"action": "tool", "tool_id": PC_LIST_FILES_TOOL_ID,
+                        "arguments": {"path": "."}})
+    second = json.dumps({"action": "complete", "answer": "done"})
+
+    assert await _refusal(first + second) == "model_response_not_json"
+
+
+@pytest.mark.asyncio
+async def test_prose_brace_outside_the_object_fails_closed() -> None:
+    answer = "Use {path} then " + json.dumps(
+        {"action": "complete", "answer": "done"},
+    )
+
+    assert await _refusal(answer) == "model_response_not_json"
+
+
+@pytest.mark.asyncio
+async def test_brace_inside_a_json_string_is_not_a_boundary() -> None:
+    answer = json.dumps({"action": "complete", "answer": "a } { b"})
+
+    decision = await _driver(answer).next_step(_Context(), None)
+
+    assert decision.kind is AgentStepKind.COMPLETE
+    assert decision.answer == "a } { b"
+
+
+@pytest.mark.asyncio
+async def test_conflicting_duplicate_action_is_refused() -> None:
+    conflicting = ('{"action":"tool","tool_id":"' + PC_LIST_FILES_TOOL_ID
+                   + '","arguments":{"path":"."},"action":"complete","answer":"done"}')
+
+    assert await _refusal(conflicting) == "model_response_not_json"
+
+
+@pytest.mark.asyncio
+async def test_duplicate_argument_key_is_refused() -> None:
+    duplicate = ('{"action":"tool","tool_id":"' + PC_LIST_FILES_TOOL_ID
+                 + '","arguments":{"path":".","path":"elsewhere"}}')
+
+    assert await _refusal(duplicate) == "model_response_not_json"
+
+
 def _compiled():
     definition = BoundedAgentDefinition(
         agent_id="agent:padiem:chat-pc-query@1",
