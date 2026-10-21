@@ -37,6 +37,8 @@ SUPPORT_STATES = ("complete", "source_ready", "deferred")
 WORKSPACE_STATES = ("connected", "not_connected", "unverified", "ambiguous")
 LOCALE_KEYS = (
     "connectors-note",
+    "connectors-note-toggle",
+    "connectors-note-details",
     "connectors-loading",
     "connectors-error",
     "connectors-status-loading",
@@ -215,10 +217,15 @@ def test_live_status_locale_keys_are_complete_in_ko_and_en() -> None:
         missing = [key for key in LOCALE_KEYS if not table[language].get(key)]
         assert missing == [], f"{language} missing {missing}"
 
-    assert "GitHub" in table["ko"]["connectors-note"]
-    assert "GitHub" in table["en"]["connectors-note"]
-    assert "연결 삭제" in table["ko"]["connectors-note"]
-    assert "connection management" in table["en"]["connectors-note"].lower()
+    # #5555: the long explanation moved out of the header line and into the
+    # disclosure, so the connection-management wording is asserted there.
+    assert "GitHub" in table["ko"]["connectors-note-details"]
+    assert "GitHub" in table["en"]["connectors-note-details"]
+    assert "연결 삭제" in table["ko"]["connectors-note-details"]
+    assert "connection management" in table["en"]["connectors-note-details"].lower()
+    # The header line itself stays short.
+    for language in ("ko", "en"):
+        assert len(table[language]["connectors-note"]) < 120
 
 
 def test_reviewed_google_connector_connection_actions_are_exactly_calendar_and_drive() -> None:
