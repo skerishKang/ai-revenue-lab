@@ -385,7 +385,11 @@ class B66RegisteredModelCompletion:
             fallback = TIER_FALLBACK_B14_MODELS[product_tier]
         acceptable = {selected.model_id}
         if fallback is not None:
-            acceptable.add(fallback)
+            # The grade roster is the owner-pinned recovery chain: every entry is
+            # one allowed candidate model id. Adding the roster itself as a
+            # single value would make every genuine B14 grade failover look
+            # like a route substitution.
+            acceptable.update(fallback)
         if not isinstance(route, dict) or (
             route.get("model") not in acceptable
             or route.get("mode") != "manual"
