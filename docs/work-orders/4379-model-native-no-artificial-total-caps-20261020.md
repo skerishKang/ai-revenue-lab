@@ -13,15 +13,15 @@ Preserve real authorization, Free/Plus/Pro/Max eligibility, admin model authoriz
 
 | Layer | Source / example | Historical bound |
 | --- | --- | --- |
-| Claw HTTP | `apps/padiem-chat/app/claw_general_routes.py` | `MAX_CLAW_GENERAL_BODY_BYTES=6_000_000` |
-| Claw → Engine context | same file | `P01_ENGINE_REQUEST_ENVELOPE_BYTES=5_500_000` |
-| B14 completed response | `packages/padiem-ai-core/padiem_ai_core/b14_execution.py` | `MAX_B14_RESPONSE_BYTES=1_048_576` |
-| B14 configured completed maximum | same file | `MAX_CONFIGURED_B14_RESPONSE_BYTES=8_388_608` |
+| Claw HTTP | `apps/padiem-chat/app/claw_general_routes.py` | `MAX_CLAW_GENERAL_BODY_BYTES=6_000_000` — **already removed on main** (now `int | None = None`) |
+| Claw → Engine context | same file | `P01_ENGINE_REQUEST_ENVELOPE_BYTES=5_500_000` — **already removed on main** (now `int | None = None`) |
+| B14 completed response | `packages/padiem-ai-core/padiem_ai_core/b14_execution.py` (also imported by `apps/padiem-ai-engine/app/cloudflare_transport.py`) | `MAX_B14_RESPONSE_BYTES=1_048_576` (runtime hard safety ceiling) |
+| B14 configured completed maximum | same file | `MAX_CONFIGURED_B14_RESPONSE_BYTES=8_388_608` (configured cap) |
 | Core tool request | `packages/padiem-ai-core/padiem_ai_core/tool_runtime.py` | `MAX_TOOL_ARGUMENT_BYTES=65_536` |
 | Core tool result | same file | `MAX_TOOL_OUTPUT_BYTES=262_144` |
 | B14/P01 time | B14 execution config / `apps/korean-ai-code-agent/src/kagent/p01_adapter.py` | defaults 600s / 900s |
 
-The global 4,096 `max_tokens` ceiling was previously removed (commit `b67119315`). These entries identify source locations, not evidence that every value blocks a real active model call.
+The global 4,096 `max_tokens` ceiling was previously removed (commit `b67119315`), and the two Claw/Engine body and envelope caps were removed on main as well. These entries identify source locations, not evidence that every value blocks a real active model call. A row marked as already removed is a starting point for the audit, not outstanding work.
 
 ## Acceptance
 
