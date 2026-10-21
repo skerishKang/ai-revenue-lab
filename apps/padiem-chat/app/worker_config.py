@@ -147,7 +147,13 @@ async def resolve_secret_binding(env: Any, name: str) -> str | None:
         return None
     if isinstance(bound, str):
         return bound or None
-    getter = getattr(bound, "get", None)
+    try:
+        getter = getattr(bound, "get", None)
+    except Exception:
+        # A binding whose own attribute access raises is unreadable, not
+        # fatal: the documented contract is that the caller fails closed on
+        # its own boundary instead of the Worker crashing at composition time.
+        return None
     if not callable(getter):
         return None
     try:
@@ -160,6 +166,42 @@ async def resolve_secret_binding(env: Any, name: str) -> str | None:
         return None
     if isinstance(pending, str) and pending:
         return pending
+    return None
+
+
+#: #5441: the transactional-mail credential is ONE channel credential, reused.
+#:
+#: The order is reuse-first. The already provisioned owner-side channel names
+#: come first, so a deployment never has to mint a second credential for the
+#: lost-password reset mail, and the account Secrets Store (where every other
+#: PADIEM credential of this account lives) is a valid home for the very same
+#: value. A Secrets Store binding is an async ``.get()`` capability, not a
+#: string, so every one of these names is resolved through
+#: :func:`resolve_secret_binding` and never read raw.
+MAIL_API_KEY_BINDING_NAMES: tuple[str, ...] = (
+    "B66_ALERT_RESEND_API_KEY",
+    "PADIEM_CHAT_PASSWORD_RESET_RESEND_API_KEY",
+    "PADIEM_RESEND_API_KEY",
+)
+MAIL_FROM_BINDING_NAMES: tuple[str, ...] = (
+    "B66_ALERT_EMAIL_FROM",
+    "PADIEM_CHAT_PASSWORD_RESET_EMAIL_FROM",
+    "PADIEM_RESEND_EMAIL_FROM",
+)
+
+
+async def resolve_first_secret_binding(env: Any, names: tuple[str, ...]) -> str | None:
+    """Resolve the first readable secret among ``names``.
+
+    Every candidate is resolved through :func:`resolve_secret_binding`, so a
+    plain Worker secret and an account Secrets Store secret are both accepted
+    and a missing or unreadable binding never raises. The first name that
+    resolves wins, which keeps the reuse order explicit and auditable.
+    """
+    for name in names:
+        value = await resolve_secret_binding(env, name)
+        if value:
+            return value
     return None
 
 

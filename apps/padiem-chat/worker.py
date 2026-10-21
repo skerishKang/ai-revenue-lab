@@ -104,11 +104,14 @@ from app.worker_config import (
     D1_BINDING_NAME,
     GOOGLE_OAUTH_SERVICE_BINDING_NAME,
     IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
+    MAIL_API_KEY_BINDING_NAMES,
+    MAIL_FROM_BINDING_NAMES,
     WORKSPACE_R2_BINDING_NAME,
     VOICE_STT_SERVICE_BINDING_NAME,
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
+    resolve_first_secret_binding,
     resolve_secret_binding,
     resolve_web_secrets_store_keys,
     settings_from_worker_bindings,
@@ -1028,6 +1031,19 @@ class Default(WorkerEntrypoint):
                                 _claw_desktop_secret = await _claw_desktop_secret
                         except Exception:
                             _claw_desktop_secret = None
+                # #5441: the transactional-mail credential is the EXISTING
+                # owner-side channel credential, resolved once and shared with
+                # the B66 signup notifier below. It is read through
+                # ``resolve_secret_binding``, so an account Secrets Store slot
+                # (an async .get() capability, not a string) is accepted too,
+                # and an unreadable binding never crashes the Worker and never
+                # fakes a delivery. Nothing here mints a second credential.
+                mail_api_key = await resolve_first_secret_binding(
+                    self.env, MAIL_API_KEY_BINDING_NAMES
+                ) or ""
+                mail_from = await resolve_first_secret_binding(
+                    self.env, MAIL_FROM_BINDING_NAMES
+                ) or ""
                 _worker_app = create_app(
                     settings=settings,
                     telemetry_exporter=_grafana_exporter,
@@ -1073,16 +1089,8 @@ class Default(WorkerEntrypoint):
                         if db_binding is not None else None
                     ),
                     password_reset_delivery=build_email_delivery(
-                        resend_api_key=(
-                            binding_value(self.env, "PADIEM_CHAT_PASSWORD_RESET_RESEND_API_KEY")
-                            or binding_value(self.env, "B66_ALERT_RESEND_API_KEY")
-                            or ""
-                        ),
-                        email_from=(
-                            binding_value(self.env, "PADIEM_CHAT_PASSWORD_RESET_EMAIL_FROM")
-                            or binding_value(self.env, "B66_ALERT_EMAIL_FROM")
-                            or ""
-                        ),
+                        resend_api_key=mail_api_key,
+                        email_from=mail_from,
                     ),
                 )
                 _worker_app.state.b66_membership_enforced = (
@@ -1103,19 +1111,25 @@ class Default(WorkerEntrypoint):
                 )
                 # Optional signup notification channels: configuration comes
                 # exclusively from trusted Worker bindings, never browser input.
-                def _b66_notice_value(key):
-                    value = binding_value(self.env, key)
+                # #5441: every channel value is resolved as a secret binding, so
+                # a Secrets Store slot is accepted and an unreadable binding
+                # degrades to "this channel is not configured" instead of
+                # breaking the Worker.
+                async def _b66_notice_value(key):
+                    value = await resolve_secret_binding(self.env, key)
                     return value if isinstance(value, str) else ""
                 _b66_member_store = _worker_app.state.b66_member_admin_store
                 if _b66_member_store is not None:
                     _b66_notifier = B66SignupNotifier(
                         _b66_member_store,
-                        telegram_bot_token=_b66_notice_value("B66_ALERT_TELEGRAM_BOT_TOKEN"),
-                        telegram_chat_id=_b66_notice_value("B66_ALERT_TELEGRAM_CHAT_ID"),
-                        discord_webhook_url=_b66_notice_value("B66_ALERT_DISCORD_WEBHOOK_URL"),
-                        resend_api_key=_b66_notice_value("B66_ALERT_RESEND_API_KEY"),
-                        email_from=_b66_notice_value("B66_ALERT_EMAIL_FROM"),
-                        email_to=_b66_notice_value("B66_ALERT_EMAIL_TO"),
+                        telegram_bot_token=await _b66_notice_value("B66_ALERT_TELEGRAM_BOT_TOKEN"),
+                        telegram_chat_id=await _b66_notice_value("B66_ALERT_TELEGRAM_CHAT_ID"),
+                        discord_webhook_url=await _b66_notice_value("B66_ALERT_DISCORD_WEBHOOK_URL"),
+                        # The same resolved mail credential the reset mail
+                        # uses. One credential, one source, no second issuance.
+                        resend_api_key=mail_api_key,
+                        email_from=mail_from,
+                        email_to=await _b66_notice_value("B66_ALERT_EMAIL_TO"),
                     )
                     _worker_app.state.b66_signup_notifier = (
                         _b66_notifier if _b66_notifier.channels else None
