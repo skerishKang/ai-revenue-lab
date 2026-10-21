@@ -17,17 +17,34 @@ import re
 FREE_CANDIDATE_PROVIDER = "opencode-go"
 
 
-def free_candidate_excluded_from_execution(model_id: str) -> bool:
+def free_candidate_excluded_from_execution(
+    model_id: str,
+    *,
+    upstream_model: str | None = None,
+    platform_provider_id: str | None = None,
+) -> bool:
     """Whether one model identity is an excluded free execution candidate.
 
     The candidate lists must never offer an excluded free model: the grade
     routes and the automatic recovery chains are owner-pinned choices, and a
     free lane is not one of them.
+
+    The public model id carries the provider prefix, so the family is
+    recognized from it. A caller that also knows the provider's own upstream
+    name cannot disguise an excluded free upstream route behind a benign
+    public id: the upstream of the excluded provider is checked as well, and
+    another provider's free upstream name is never affected.
     """
     if not isinstance(model_id, str) or not model_id:
         return False
     provider, separator, tail = model_id.strip().casefold().partition("/")
-    return bool(separator) and provider == FREE_CANDIDATE_PROVIDER and tail.endswith("-free")
+    if separator and provider == FREE_CANDIDATE_PROVIDER and tail.endswith("-free"):
+        return True
+    return (
+        isinstance(upstream_model, str)
+        and platform_provider_id == FREE_CANDIDATE_PROVIDER
+        and upstream_model.strip().casefold().endswith("-free")
+    )
 
 
 def excluded_from_owner_customer_selection(model_id: str) -> bool:

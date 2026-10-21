@@ -37,11 +37,12 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
 
 
 @pytest.mark.parametrize("model_id,tier", [
-    ("opencode-go/beam-free", "free"),
     ("opencode-go/muse-spark-1.3-contributor", "plus"),
     ("google/gemini-3.1-flash-lite", "plus"),
 ])
 def test_other_primary_or_grade_does_not_inherit_free_fallback(monkeypatch, model_id, tier):
+    # #2505: a free primary no longer resolves at all, so it is proven
+    # refused in test_2505_b14_free_candidate_execution_block.py.
     _ready(monkeypatch)
     decision = router_core.resolve_manual_route(
         model_id, allow_external_fallback=False, product_tier=tier,
