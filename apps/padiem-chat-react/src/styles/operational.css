@@ -1,0 +1,104 @@
+/*
+ * #5298 — operational design tokens and shared stylesheets.
+ *
+ * The clone reuses the *running product's* stylesheets read-only from
+ * `apps/padiem-chat/static/`. The operational app is never modified: this file
+ * only imports it.
+ *
+ * The order below reproduces the operational cascade exactly, including the two
+ * glass sheets that `theme-init.js` appends before the static links are
+ * parsed and the two sheets that `theme.js` appends last. The order is not
+ * cosmetic: `padiem-glass.css` and `sidebar-utility.css` both set the
+ * sidebar brand row, and the later sheet wins.
+ */
+
+/* 1–2 — appended by the operational theme bootstrap, before the static links */
+@import "../../../padiem-chat/static/padiem-glass.css";
+@import "../../../padiem-chat/static/padiem-glass-portrait.css";
+/* 3 — base shell, sidebar, topbar, conversation, composer */
+@import "../../../padiem-chat/static/styles.css";
+/* 4 — owner model preview surface */
+@import "../../../padiem-chat/static/owner-model-preview.css";
+/* 5 — attachment tray */
+@import "../../../padiem-chat/static/attachments.css";
+/* 6 — sidebar history rows + auth dialog */
+@import "../../../padiem-chat/static/history.css";
+/* 7 — project sidebar section */
+@import "../../../padiem-chat/static/projects.css";
+/* 8 — document panel */
+@import "../../../padiem-chat/static/documents.css";
+/* 9 — saved outputs */
+@import "../../../padiem-chat/static/outputs.css";
+/* 10 — rich answer rendering */
+@import "../../../padiem-chat/static/rich-response.css";
+/* 11 — search source cards */
+@import "../../../padiem-chat/static/search-sources.css";
+/* 12 — cinematic chat layer */
+@import "../../../padiem-chat/static/padiem-cinematic-chat.css";
+/* 13 — cinematic workspace layer */
+@import "../../../padiem-chat/static/padiem-cinematic-workspace.css";
+/* 14 — the four-theme token system (light / dark / cinematic / padiem-home) */
+@import "../../../padiem-chat/static/padiem-themes.css";
+/* 15 — sidebar utility + collapse */
+@import "../../../padiem-chat/static/sidebar-utility.css";
+/* 16 — capability navigation */
+@import "../../../padiem-chat/static/capability-nav.css";
+/* 17 — claw manual intake */
+@import "../../../padiem-chat/static/claw-manual-intake.css";
+/* 18 — claw workspace */
+@import "../../../padiem-chat/static/claw-workspace.css";
+/* 19 — claw quote compare */
+@import "../../../padiem-chat/static/claw-quote-compare.css";
+/* 20 — b66 quote runtime */
+@import "../../../padiem-chat/static/b66-quote-runtime.css";
+/* 21 — claw local handoff */
+@import "../../../padiem-chat/static/claw-local-handoff.css";
+/* 22 — claw device manager */
+@import "../../../padiem-chat/static/claw-device-manager.css";
+/* 23 — computer connection status chip inside the shared composer */
+@import "../../../padiem-chat/static/claw-composer-connection-status.css";
+/* 24 — claw device guidance */
+@import "../../../padiem-chat/static/claw-device-guidance.css";
+/* 25 — claw pc enrollment consent */
+@import "../../../padiem-chat/static/claw-pc-enrollment-consent.css";
+/* 26 — chat ui polish */
+@import "../../../padiem-chat/static/padiem-chat-ui-polish.css";
+/* 27 — calendar view */
+@import "../../../padiem-chat/static/calendar.css";
+/* 28 — library view */
+@import "../../../padiem-chat/static/library.css";
+/* 29 — claw task hub */
+@import "../../../padiem-chat/static/claw-task-hub.css";
+/* 30 — shared ui primitives */
+@import "../../../padiem-chat/static/padiem-shared-ui.css";
+/* 31 — claw connection guide */
+@import "../../../padiem-chat/static/claw-connection-guide.css";
+/* 32 — answer actions (copy / regenerate / listen / share) */
+@import "../../../padiem-chat/static/answer-actions.css";
+/* 33 — shared chip tooltip */
+@import "../../../padiem-chat/static/shared-tooltip.css";
+/* 34 — standalone views */
+@import "../../../padiem-chat/static/standalone-views.css";
+/* 35 — meeting capture */
+@import "../../../padiem-chat/static/meeting-capture.css";
+/* 36 — claw focus layout + composer clearance */
+@import "../../../padiem-chat/static/claw-focus-layout.css";
+/* 37 — voice composer */
+@import "../../../padiem-chat/static/voice-composer.css";
+/* 38 — voice ui */
+@import "../../../padiem-chat/static/voice-ui.css";
+/* 39 — shared six panel frame */
+@import "../../../padiem-chat/static/shared-six-panel-frame.css";
+/* 40 — sidebar unified row */
+@import "../../../padiem-chat/static/sidebar-unified.css";
+/* 41 — dark mode contrast */
+@import "../../../padiem-chat/static/padiem-dark-contrast.css";
+/* 42 — sidebar single cell polish (#4890/#4894/#4897) */
+@import "../../../padiem-chat/static/sidebar-section-polish.css";
+/* 43 — sidebar history scroll */
+@import "../../../padiem-chat/static/sidebar-history-scroll.css";
+/* 44 — interaction polish + composer clearance */
+@import "../../../padiem-chat/static/interaction-polish.css";
+/* 45–46 — appended last by the operational theme controller */
+@import "../../../padiem-chat/static/mode-presentation.css";
+@import "../../../padiem-chat/static/padiem-glass-reading.css";

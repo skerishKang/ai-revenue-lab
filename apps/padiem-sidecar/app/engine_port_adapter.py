@@ -34,6 +34,8 @@ ENGINE_EXECUTE_PATH = "/internal/v1/execute"
 CALLER_ID_HEADER = "x-padiem-engine-caller"
 CALLER_CREDENTIAL_HEADER = "x-padiem-engine-credential"
 
+# #4379: a capability payload carries no PADIEM character total. The payload
+# shape, the caller authority and the non-empty text rule stay.
 MAX_CAPABILITY_TEXT_CHARS = 8_000
 _MAX_AGENT_FIELD_CHARS = 256
 
@@ -171,8 +173,6 @@ class ServerMediatedEnginePort(EnginePort):
         text = payload["text"]
         if not isinstance(text, str) or not text.strip():
             raise SidecarContractError("capability text must be a non-empty string")
-        if len(text) > MAX_CAPABILITY_TEXT_CHARS:
-            raise SidecarContractError("capability text exceeds the bound")
 
         request_body = json.dumps(
             self._execute_request(capability, text),

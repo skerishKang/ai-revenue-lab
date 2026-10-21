@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import json
+import inspect
+from urllib.parse import unquote
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
+from starlette.responses import JSONResponse, Response, StreamingResponse
 
 from .auth_routes import auth_ready, current_user_id
-from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
-from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body, open_bounded_spooled_request
+from padiem_ai_core.document_normalization import DocumentNormalizationError, MAX_BINARY_DOCUMENT_BYTES
+from padiem_ai_core.document_parser_boundary import parse_binary_document_via_authority, production_worker_runtime
 from .documents import DocumentValidationError, validate_document_fields
 from .history import HistoryStore, validate_project_id
 from .project_files import (
@@ -23,8 +26,19 @@ from .project_files import (
     validate_file_id,
 )
 
+def _project_original_object_key(user_id: str, project_id: str, file_id: str) -> str:
+    # All identifiers originate from an authenticated session and validated IDs.
+    return f"projects/{user_id}/{project_id}/originals/{file_id}"
+
+
+async def _r2_call(bucket, method: str, *args, **kwargs):
+    result = getattr(bucket, method)(*args, **kwargs)
+    if inspect.isawaitable(result):
+        return await result
+    return result
+
+
 MAX_PROJECT_FILE_BODY_BYTES = 160_000
-MAX_BINARY_PROJECT_FILE_BASE64_BYTES = ((2 * 1024 * 1024 + 2) // 3) * 4 + 4  # 2 MiB binary cap, base64-expanded
 
 
 def _unavailable() -> JSONResponse:
@@ -73,23 +87,10 @@ async def _identity(request: Request):
 def _parse_project_file_item(raw: dict[str, Any]) -> tuple[str, str, str]:
     if not isinstance(raw, dict):
         raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
-    keys = set(raw)
-    text_item = keys == {"name", "media_type", "text"}
-    binary_item = keys == {"name", "media_type", "base64"}
-    if not text_item and not binary_item:
-        raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
-    if text_item:
-        document = validate_document_fields(raw.get("name"), raw.get("media_type"), raw.get("text"))
-        return document.name, document.media_type, document.text
-    name = raw.get("name")
-    media_type = raw.get("media_type")
-    if media_type not in BINARY_PROJECT_FILE_MEDIA:
-        raise BinaryDocumentValidationError("PDF, DOCX 문서만 이 형식으로 첨부할 수 있습니다.")
-    try:
-        document = parse_binary_document_item({"type": "document", "name": name, "media_type": media_type, "base64": raw.get("base64")})
-    except BinaryDocumentValidationError as exc:
-        raise ValueError(str(exc)) from exc
-    return document.name, _extracted_media_type(document.media_type), document.text
+    if set(raw) != {"name", "media_type", "text"}:
+        raise ValueError("Project text documents require name, media_type and text; binary files use raw upload.")
+    document = validate_document_fields(raw.get("name"), raw.get("media_type"), raw.get("text"))
+    return document.name, document.media_type, document.text
 
 
 def _bad_request(field: str) -> JSONResponse:
@@ -171,10 +172,50 @@ async def project_files_collection(request: Request) -> JSONResponse:
             return _unavailable()
         return JSONResponse({"files": [item.public_dict() for item in files]})
 
+    is_binary_upload = request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream"
+    if is_binary_upload:
+        encoded_name = request.headers.get("x-padiem-filename")
+        media_type = request.headers.get("x-padiem-media-type")
+        if not encoded_name or len(encoded_name) > 512 or media_type not in BINARY_PROJECT_FILE_MEDIA:
+            return JSONResponse({"error": {"code": "invalid_document"}}, status_code=422)
+        try:
+            name = unquote(encoded_name, encoding="utf-8", errors="strict")
+            async with open_bounded_spooled_request(request, max_bytes=MAX_BINARY_DOCUMENT_BYTES) as spool:
+                # Local Core PDF parsing can use the seekable spool directly.
+                # The Worker isolated-parser wire contract still requires bytes.
+                source = spool if media_type == "application/pdf" and not production_worker_runtime() else spool.read()
+                parsed = parse_binary_document_via_authority(
+                    name=name, media_type=media_type, payload=source,
+                )
+                created = await store.create_file(
+                    uid, pid, parsed.name, _extracted_media_type(parsed.media_type), parsed.text,
+                )
+                workspace_store = getattr(request.app.state, "workspace_document_store", None)
+                bucket = getattr(workspace_store, "r2_bucket", None)
+                if bucket is None:
+                    await store.delete_file(uid, pid, created.id)
+                    return _unavailable()
+                try:
+                    spool.seek(0)
+                    # R2 Python binding receives bytes; avoid a second parse-time
+                    # copy for PDFs while preserving the existing storage contract.
+                    await _r2_call(
+                        bucket, "put", _project_original_object_key(uid, pid, created.id),
+                        spool.read(), httpMetadata={"contentType": media_type},
+                    )
+                except Exception:
+                    await store.delete_file(uid, pid, created.id)
+                    return _unavailable()
+                return JSONResponse({"file": created.public_dict()}, status_code=201)
+        except RequestBodyTooLarge:
+            return JSONResponse({"error": {"code": "invalid_document"}}, status_code=413)
+        except (ValueError, DocumentNormalizationError, DocumentValidationError, ProjectFileLimitError) as exc:
+            return JSONResponse({"error": {"code": "invalid_document", "message": str(exc)}}, status_code=422)
+        except Exception:
+            return _unavailable()
     try:
         body = await read_bounded_request_body(
-            request,
-            max_bytes=MAX_BINARY_PROJECT_FILE_BASE64_BYTES,
+            request, max_bytes=MAX_PROJECT_FILE_BODY_BYTES,
         )
     except RequestBodyTooLarge:
         return JSONResponse({"error": {"code": "invalid_document", "message": "문서 요청이 너무 큽니다."}}, status_code=413)
@@ -184,13 +225,75 @@ async def project_files_collection(request: Request) -> JSONResponse:
             raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
         name, media_type, text = _parse_project_file_item(raw)
         created = await store.create_file(uid, pid, name, media_type, text)
-    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError, BinaryDocumentValidationError) as exc:
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError) as exc:
         return JSONResponse({"error": {"code": "invalid_document", "message": str(exc) or "문서 형식이 올바르지 않습니다."}}, status_code=422)
     except ProjectFileLimitError as exc:
         return JSONResponse({"error": {"code": "project_file_limit", "message": str(exc)}}, status_code=422)
     except Exception:
         return _unavailable()
     return JSONResponse({"file": created.public_dict()}, status_code=201)
+
+
+async def project_file_original(request: Request) -> Response:
+    """Owner/project-scoped binary retrieval by opaque file ID, never by R2 key."""
+    uid, pid, error = await _identity(request)
+    if error is not None:
+        return error
+    try:
+        fid = validate_file_id(request.path_params.get("file_id"))
+    except ValueError:
+        return _not_found()
+    store: ProjectFileStore = request.app.state.project_file_store
+    try:
+        record = await store.get_file(uid, pid, fid)
+        if record is None or record.media_type not in {"extracted/pdf", "extracted/docx"}:
+            return _not_found()
+        workspace_store = getattr(request.app.state, "workspace_document_store", None)
+        bucket = getattr(workspace_store, "r2_bucket", None)
+        if bucket is None:
+            return _unavailable()
+        obj = await _r2_call(bucket, "get", _project_original_object_key(uid, pid, fid))
+        if obj is None:
+            return _not_found()
+        media = "application/pdf" if record.media_type == "extracted/pdf" else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        body = getattr(obj, "body", None)
+
+        async def original_chunks():
+            # Prefer R2's native streaming body, never concatenate to one payload.
+            if body is not None and hasattr(body, "__aiter__"):
+                async for chunk in body:
+                    yield bytes(chunk)
+            elif body is not None and hasattr(body, "getReader"):
+                reader = body.getReader()
+                try:
+                    while True:
+                        item = reader.read()
+                        if inspect.isawaitable(item):
+                            item = await item
+                        if item.get("done"):
+                            break
+                        yield bytes(item["value"])
+                finally:
+                    release = getattr(reader, "releaseLock", None)
+                    if callable(release):
+                        release()
+            else:
+                array_buffer = getattr(obj, "arrayBuffer", None)
+                if callable(array_buffer):
+                    payload = array_buffer()
+                    if inspect.isawaitable(payload):
+                        payload = await payload
+                    as_bytes = getattr(payload, "to_bytes", None)
+                    yield as_bytes() if callable(as_bytes) else bytes(payload)
+                else:
+                    yield bytes(body if body is not None else obj)
+
+        return StreamingResponse(original_chunks(), media_type=media, headers={
+            "Cache-Control": "private, no-store",
+            "X-Content-Type-Options": "nosniff",
+        })
+    except Exception:
+        return _unavailable()
 
 
 async def project_file_detail(request: Request):
@@ -215,6 +318,15 @@ async def project_file_detail(request: Request):
         return JSONResponse({"file": record.public_dict()})
 
     try:
+        # An original exists only for the new raw-binary project upload path.
+        record = await store.get_file(uid, pid, fid)
+        if record is None:
+            return _not_found()
+        if record.media_type in {"extracted/pdf", "extracted/docx"}:
+            workspace_store = getattr(request.app.state, "workspace_document_store", None)
+            bucket = getattr(workspace_store, "r2_bucket", None)
+            if bucket is not None:
+                await _r2_call(bucket, "delete", _project_original_object_key(uid, pid, fid))
         deleted = await store.delete_file(uid, pid, fid)
     except Exception:
         return _unavailable()

@@ -1,0 +1,120 @@
+{
+  "_provenance": {
+    "chat_builders": [
+      "app.chat_pc_drive.build_chat_pc_agent_plan",
+      "app.chat_pc_drive.build_chat_pc_files_agent_plan",
+      "app.orchestration_bridge.B62EngineOrchestrationBridge.build_engine_request",
+      "app.task_modes.get_task_mode('auto')",
+      "padiem_ai_engine_client.client.PadiemAiEngineClient.orchestrate (_run_payload -> recording transport)"
+    ],
+    "normalization": "only trace_id and execution_context.trace_id are compared modulo the generated value; every other field is byte-identical",
+    "pinned_inputs": [
+      "messages",
+      "additional_system_context",
+      "subject_id",
+      "session_id",
+      "tool_arguments",
+      "agent.model_policy.model",
+      "app_id"
+    ],
+    "produced_by": "apps/padiem-chat/tests/test_5015_chat_pc_engine_wire_fixture.py",
+    "transport": "recording fake; zero network egress, zero provider calls"
+  },
+  "drives": {
+    "additional_system_context": "PC 작업 지침",
+    "agent": {
+      "description": "일반 질문에 자연스럽게 답합니다.",
+      "id": "b62_auto",
+      "max_tokens": null,
+      "model_policy": {
+        "model": "google/gemini-3.1-flash-lite"
+      },
+      "optimize_for": "korean",
+      "system_instruction": null,
+      "task_type": "general",
+      "title": "자동 추천"
+    },
+    "agent_plan": {
+      "agent_id": "agent:padiem:chat-pc-query@1",
+      "steps": [
+        {
+          "objective": "Query verified PC filesystem drives",
+          "step_id": "query_drives",
+          "tool_id": "claw.pc.query_drives"
+        }
+      ]
+    },
+    "app_id": "padiem-chat",
+    "execution_context": {
+      "trace_id": "b62_orch_da0da5467c6248bdbf2a4031"
+    },
+    "max_retries": 3,
+    "messages": [
+      {
+        "content": "내 PC에 어떤 드라이브가 있어?",
+        "role": "user"
+      }
+    ],
+    "require_evidence": false,
+    "require_verification": false,
+    "session_id": "chat_pc_dddddddddddddddddddddddddddddddd",
+    "subject_id": "sub_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "tool_arguments": {
+      "query_drives": {
+        "device_id": "dev_cccccccccccccccccccccccccccccccc"
+      }
+    },
+    "trace_id": "b62_orch_da0da5467c6248bdbf2a4031"
+  },
+  "files": {
+    "additional_system_context": "PC 작업 지침",
+    "agent": {
+      "description": "일반 질문에 자연스럽게 답합니다.",
+      "id": "b62_auto",
+      "max_tokens": null,
+      "model_policy": {
+        "model": "google/gemini-3.1-flash-lite"
+      },
+      "optimize_for": "korean",
+      "system_instruction": null,
+      "task_type": "general",
+      "title": "자동 추천"
+    },
+    "agent_plan": {
+      "agent_id": "agent:padiem:chat-pc-query@1",
+      "steps": [
+        {
+          "objective": "List the approved folder on the verified owner PC",
+          "step_id": "list_files",
+          "tool_id": "claw.pc.list_files"
+        },
+        {
+          "objective": "Read the requested UTF-8 text file",
+          "step_id": "read_file",
+          "tool_id": "claw.pc.read_file"
+        }
+      ]
+    },
+    "app_id": "padiem-chat",
+    "execution_context": {
+      "trace_id": "b62_orch_5b2e0ad975ab4433813a5f66"
+    },
+    "max_retries": 3,
+    "messages": [
+      {
+        "content": "내 PC의 MeshCentralTrial 폴더에서 파일 목록을 보고 txt 내용을 읽어줘",
+        "role": "user"
+      }
+    ],
+    "require_evidence": false,
+    "require_verification": false,
+    "session_id": "chat_pc_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "subject_id": "sub_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "tool_arguments": {
+      "files": {
+        "device_id": "dev_cccccccccccccccccccccccccccccccc"
+      }
+    },
+    "trace_id": "b62_orch_5b2e0ad975ab4433813a5f66"
+  }
+}

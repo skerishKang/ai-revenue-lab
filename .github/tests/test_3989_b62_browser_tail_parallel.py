@@ -81,7 +81,7 @@ class BrowserQATailContract(unittest.TestCase):
         out = io.StringIO()
         with patch.dict(os.environ, {"PADIEM_CHAT_RUNTIME_MODE": "prod"}):
             with redirect_stdout(out):
-                self.assertEqual(tail.main(), 1)
+                self.assertEqual(tail.main(["--scope", "full"]), 1)
         self.assertIn("REJECTED=NON_MOCK_RUNTIME", out.getvalue())
 
         observed = []
@@ -104,7 +104,7 @@ class BrowserQATailContract(unittest.TestCase):
         with patch.dict(os.environ, {"PADIEM_CHAT_RUNTIME_MODE": "mock"}):
             with patch.object(tail, "execute", side_effect=fake_execute):
                 with redirect_stdout(out):
-                    self.assertEqual(tail.main(), 1)
+                    self.assertEqual(tail.main(["--scope", "full"]), 1)
         self.assertCountEqual(observed, tail.SCRIPTS)
         self.assertEqual(maximum, 1)
         self.assertEqual(observed, list(tail.SCRIPTS))
@@ -114,7 +114,7 @@ class BrowserQATailContract(unittest.TestCase):
         with patch.dict(os.environ, {"PADIEM_CHAT_RUNTIME_MODE": "mock"}):
             with patch.object(tail, "execute", side_effect=lambda name: (name, 0, 0.1, "PASS")):
                 with redirect_stdout(io.StringIO()):
-                    self.assertEqual(tail.main(), 0)
+                    self.assertEqual(tail.main(["--scope", "full"]), 0)
 
 
 if __name__ == "__main__":

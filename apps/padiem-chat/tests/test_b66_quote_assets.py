@@ -16,7 +16,6 @@ from app.b66_quote_assets import (
     B66QuoteAssetMetadata,
     B66QuoteAssetStore,
     D1B66QuoteAssetMetadataStore,
-    MAX_B66_QUOTE_ASSET_BYTES,
 )
 from app.config import Settings
 
@@ -25,6 +24,9 @@ USER_B = "usr_" + "b" * 32
 WORKSPACE_A = f"owner:{USER_A}"
 ASSET_ID = "b66asset_" + "c" * 32
 PNG = b"\x89PNG\r\n\x1a\nprivate-logo"
+# #4379: the 256 KiB product total is released, so a body past the old ceiling
+# is still a valid PNG asset and must reach the private R2 write.
+OVER_RELEASED_CEILING = b"\x89PNG\r\n\x1a\n" + b"x" * (256 * 1024)
 
 
 def _settings() -> Settings:
@@ -151,9 +153,30 @@ async def test_asset_bounds_and_magic_fail_before_r2_write():
             workspace_id=WORKSPACE_A,
             asset_kind="stamp",
             media_type="image/png",
-            body=b"\x89PNG\r\n\x1a\n" + b"x" * MAX_B66_QUOTE_ASSET_BYTES,
+            body=b"",
         )
     assert r2.put_calls == []
+
+
+@pytest.mark.asyncio
+async def test_a_body_past_the_released_ceiling_is_still_accepted():
+    # #4379: the 256 KiB product total is a PADIEM claim, not a platform limit,
+    # so the asset still reaches the private R2 write and keeps its byte_length.
+    metadata = MemoryMetadata()
+    r2 = MemoryR2()
+    store = B66QuoteAssetStore(metadata, r2)
+
+    saved = await store.put_approved_asset(
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        asset_kind="logo",
+        media_type="image/png",
+        body=OVER_RELEASED_CEILING,
+    )
+
+    assert saved.byte_length == len(OVER_RELEASED_CEILING)
+    assert len(r2.put_calls) == 1
+    assert r2.put_calls[0][1] == OVER_RELEASED_CEILING
 
 
 @pytest.mark.asyncio
@@ -282,6 +305,33 @@ def test_migration_022_stores_metadata_only():
     lowered = migration.lower()
     for forbidden in (" blob", "base64", "asset_bytes", "image_bytes", "data_url"):
         assert forbidden not in lowered
+
+
+def test_the_quote_asset_ceiling_is_released_by_a_forward_migration_only():
+    # #4379: the released 022 keeps its own text, and one forward rebuild drops
+    # the ceiling while it keeps the non-empty rule and every other constraint.
+    migrations = Path(__file__).resolve().parents[1] / "migrations"
+    released = (migrations / "022_b66_quote_asset.sql").read_text(encoding="utf-8")
+    assert "byte_length >= 1 AND byte_length <= 262144" in released
+
+    forward = (migrations / "061_b66_quote_asset_byte_length_ceiling_release.sql").read_text(
+        encoding="utf-8"
+    )
+    assert "262144" not in forward
+    assert forward.count("byte_length INTEGER NOT NULL CHECK (byte_length >= 1)") == 1
+    assert forward.index("INSERT INTO b66_quote_asset_next") < forward.index(
+        "DROP TABLE b66_quote_asset;"
+    )
+    assert "ALTER TABLE b66_quote_asset_next RENAME TO b66_quote_asset;" in forward
+    assert "CREATE INDEX IF NOT EXISTS idx_b66_quote_asset_owner_workspace_status" in forward
+    for kept in (
+        "user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE",
+        "asset_kind TEXT NOT NULL CHECK (asset_kind IN ('logo', 'stamp'))",
+        "media_type TEXT NOT NULL CHECK (media_type IN ('image/png', 'image/jpeg', 'image/webp'))",
+        "object_key TEXT NOT NULL UNIQUE",
+        "status TEXT NOT NULL CHECK (status IN ('approved', 'disabled'))",
+    ):
+        assert kept in forward, kept
 
 
 def test_asset_route_is_registered_but_no_public_upload_route_exists():

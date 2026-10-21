@@ -1,5 +1,21 @@
 name = "padiem-chat"
 main = "worker.py"
+# #5479: the Chat Worker stays on the Pyodide 3.13 snapshot (CPython 3.13.2).
+#
+# The 3.14 snapshot (compatibility date 2026-09-08 or later, the
+# `python_workers_314` flag) is the runtime Cloudflare published for the
+# `NoGilError` initialization race (cloudflare/workerd#6624), but it cannot
+# run this Worker's password hashing: that snapshot ships no `_hashlib`, and
+# CPython 3.14 removed the pure-Python PBKDF2 fallback, so
+# `hashlib.pbkdf2_hmac` does not exist there. A deployed 3.14 Worker answers
+# every password login with HTTP 500
+# (`AttributeError: module 'hashlib' has no attribute 'pbkdf2_hmac'`).
+#
+# Moving this Worker to 3.14 therefore requires a password KDF the runtime
+# actually provides, which changes the stored credential format and is an
+# owner-level credential decision, not a runtime bump. Until then the date
+# stays here, and the real Workerd/Pyodide CI lane proves that the deployed
+# runtime still provides the password KDF before any release.
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
@@ -35,9 +51,27 @@ binding = "CLAW_ENGINE_DESKTOP_SECRET"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "CLAW_ENGINE_DESKTOP_SECRET"
 
+# #5441: the Owner-registered transactional-mail credential. The account
+# Secrets Store holds the value; the Worker only ever sees this reference. The
+# lost-password reset mail and the operator signup-notification channel read
+# this ONE credential through the reuse-first lookup path of #5516.
+[[secrets_store_secrets]]
+binding = "B66_ALERT_RESEND_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "B66_ALERT_RESEND_API_KEY"
+
 [[services]]
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
+
+# Deployment-owned server-to-server proof secret for the B14 platform-credential
+# execution lane. B14 spends platform-owned Provider credentials there, so this
+# Worker proves it is an approved PADIEM caller before the dispatch is built.
+# The value lives only in Cloudflare Secrets Store and never reaches a browser.
+[[secrets_store_secrets]]
+binding = "PADIEM_B14_SERVICE_PROOF_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_B14_SERVICE_PROOF_SECRET"
 
 # #4139: one existing PADIEM Identity and canonical Broker for Chat/Claw.
 # The Connector's product route is ON by default. Account/device ownership

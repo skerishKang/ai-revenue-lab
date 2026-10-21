@@ -229,11 +229,12 @@ def test_non_canonical_tool_id_rejected(tool_id: str):
     assert excinfo.value.code == "invalid_tool_request"
 
 
-def test_oversized_arguments_rejected_before_core():
+def test_large_arguments_reach_the_core():
+    # #4379: the caller's tool arguments are not refused for their size. The
+    # JSON shape and the identifier grammar still apply.
     big = "x" * (MAX_TOOL_ARGUMENT_BYTES + 10)
-    with pytest.raises(EngineToolProjectionError) as excinfo:
-        parse_tool_execution_request(make_wire(arguments={"query": big}))
-    assert excinfo.value.code == "tool_arguments_too_large"
+    wire = parse_tool_execution_request(make_wire(arguments={"query": big}))
+    assert wire.arguments["query"] == big
 
 
 def test_non_json_arguments_rejected():
@@ -348,7 +349,9 @@ def test_effective_resources_narrows_only():
     entry = binding.resolve_tool(CANONICAL_SEARCH)
     effective = binding.effective_resources(entry)
     assert effective.timeout_seconds == 2
-    assert effective.argument_bytes <= MAX_TOOL_ARGUMENT_BYTES
+    # #4379: the effective resources carry no PADIEM aggregate byte ceiling.
+    assert effective.argument_bytes is None
+    assert effective.output_bytes is None
 
 
 # ---------------------------------------------------------------------------
@@ -373,26 +376,42 @@ def test_redaction_hides_secret_shaped_keys():
     assert truncated is False
 
 
-def test_redaction_bounds_strings_lists_and_nodes():
+def test_redaction_keeps_long_strings_lists_and_nodes_intact():
+    # #4379: a tool that really produced a long answer must not be cut after
+    # it already executed. The projection only redacts; it never shortens.
     output = {
         "long": "z" * 5_000,
         "many": list(range(500)),
         "deep": {f"k{i}": {f"j{i}": i} for i in range(600)},
     }
     projected, truncated = project_redacted_tool_output(output)
-    assert truncated is True
-    assert all(len(value) <= 2_048 + len("[truncated]") for value in [projected["long"]])
-    assert len(projected["many"]) == 64
+    assert truncated is False
+    assert projected["long"] == "z" * 5_000
+    assert len(projected["many"]) == 500
+    assert projected["many"][-1] == 499
+    assert len(projected["deep"]) == 600
+    assert projected["deep"]["k599"]["j599"] == 599
 
 
-def test_redaction_drops_oversized_projection_to_none():
-    # 400 keys x ~2KB strings stay under the 512-node ceiling but blow past the
-    # 32KB public byte ceiling after per-string truncation -> whole projection
-    # is dropped, never partially leaked.
+def test_redaction_keeps_an_oversized_result_instead_of_dropping_it():
+    # #4379: a result larger than the old 32KB public byte ceiling used to be
+    # replaced by None, so the caller saw a lost tool result. It now reaches the
+    # caller exactly as produced.
     output = {f"field_{i}": "y" * 2_000 for i in range(400)}
     projected, truncated = project_redacted_tool_output(output)
-    assert projected is None
-    assert truncated is True
+    assert truncated is False
+    assert projected is not None
+    assert len(projected) == 400
+    assert projected["field_399"] == "y" * 2_000
+
+
+def test_redaction_still_redacts_a_secret_inside_a_long_result():
+    output = {"body": "w" * 9_000, "api_key": "sk-live-abcdef"}
+    projected, truncated = project_redacted_tool_output(output)
+    assert truncated is False
+    assert projected["body"] == "w" * 9_000
+    assert projected["api_key"] == REDACTED_TOOL_VALUE
+    assert "sk-live-abcdef" not in repr(projected)
 
 
 def test_json_size_matches_core_encoding():

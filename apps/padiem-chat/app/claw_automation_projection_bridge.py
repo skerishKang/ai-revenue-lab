@@ -130,10 +130,14 @@ def _require_task_identity(
     source_id: str,
     linked_ref: str,
 ) -> None:
+    # #5360: the title is the authorized owner's own business content, so it is
+    # stored unchanged. A record projected before #5360 may hold the earlier
+    # masked form, so the identity check accepts either form and never
+    # overwrites the record.
     if (
         task.workspace_id != workspace_id
         or task.member_id != member_id
-        or task.title != title
+        or task.title not in (title, redact_secrets(title))
         or task.source_id != source_id
         or task.linked_ref != linked_ref
     ):
@@ -155,7 +159,7 @@ def _require_alert_identity(
         alert.workspace_id != workspace_id
         or alert.kind is not kind
         or alert.severity is not severity
-        or alert.title != title
+        or alert.title not in (title, redact_secrets(title))
         or tuple(alert.visible_to_members) != tuple(visible_to_members)
     ):
         raise AutomationProjectionError(
@@ -203,8 +207,11 @@ async def project_scheduled_run_output(
     if output.output_type != output_type:
         raise AutomationProjectionError("output_type does not match the rule output_type")
 
-    # Reuse the existing secret-redaction helper; never store the raw content body.
-    title = redact_secrets(output.title)
+    # #5360: the title is the authorized owner's own business content. It is
+    # stored in the owner's own workspace-scoped record unchanged; the
+    # diagnostic and log surfaces keep their own credential filtering and
+    # never copy this body into a log.
+    title = output.title
 
     if output_type is ClawAutomationOutputType.TASK_PROPOSAL:
         return await _project_task(

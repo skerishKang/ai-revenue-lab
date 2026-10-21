@@ -17,11 +17,11 @@ class TouchAutoCanaryContract(unittest.TestCase):
         cls.auto = AUTO.read_text(encoding="utf-8")
         cls.hosted = HOSTED.read_text(encoding="utf-8")
 
-    def test_trusted_policy_event_independent_from_hosted_qa(self):
-        self.assertIn('workflows: ["COM2 PR Policy Trigger"]', self.auto)
-        self.assertIn("github.event.workflow_run.event == 'pull_request'", self.auto)
-        self.assertIn("github.event.workflow_run.conclusion == 'success'", self.auto)
-        self.assertIn("github.event.workflow_run.head_repository.full_name == github.repository", self.auto)
+    def test_explicit_dispatch_independent_from_hosted_qa(self):
+        self.assertIn("workflow_dispatch:", self.auto)
+        self.assertIn("github.event_name == 'workflow_dispatch'", self.auto)
+        self.assertIn("EXPECTED: ${{ inputs.sha }}", self.auto)
+        self.assertNotIn("workflows: [\"COM2 PR Policy Trigger\"]", self.auto)
 
     def test_closed_pr_race_skips_checkout_and_execution(self):
         self.assertIn('if len(valid)!=1:', self.auto)

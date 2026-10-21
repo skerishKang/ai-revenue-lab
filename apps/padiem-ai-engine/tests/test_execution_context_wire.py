@@ -59,5 +59,6 @@ def test_merge_does_not_mutate_payload() -> None:
     assert "execution_context" not in payload
     assert merged["execution_context"] == {
         "trace_id": "trace-123",
-        "timeout_seconds": 900.0,
+        # #4379: the declared execution budget has no PADIEM default.
+        "timeout_seconds": None,
     }

@@ -21,6 +21,10 @@ from app.ai.padiem_core import PadiemCoreProvider
 from app.config import Settings
 from app.factory import create_provider
 
+# #5002: a synthetic exact model id for the provider plumbing tests. The
+# suspended ``b14/auto`` route is not a default and is not named here.
+EXACT_MODEL_ID = "fixture/exact-model-id"
+
 
 class StructuredAnswer(BaseModel):
     title: str = Field(min_length=1)
@@ -96,7 +100,7 @@ def test_structured_success_uses_core_once_and_maps_observed_metadata() -> None:
     runtime = FakeRuntime(
         result=execution_result('{"title":"반복문","items":["for","while"]}')
     )
-    provider = PadiemCoreProvider(runtime=runtime)
+    provider = PadiemCoreProvider(runtime=runtime, model=EXACT_MODEL_ID)
 
     result = call(provider)
 
@@ -115,7 +119,9 @@ def test_request_policy_keeps_living_learning_as_retry_authority() -> None:
     runtime = FakeRuntime(
         result=execution_result('{"title":"함수","items":["def"]}')
     )
-    provider = PadiemCoreProvider(runtime=runtime, model="b14/auto")
+    # #5002: a synthetic exact model id. The suspended ``b14/auto`` route is
+    # not a default and is not named by the provider any more.
+    provider = PadiemCoreProvider(runtime=runtime, model=EXACT_MODEL_ID)
 
     call(provider)
 
@@ -125,9 +131,11 @@ def test_request_policy_keeps_living_learning_as_retry_authority() -> None:
     assert agent.optimize_for == "korean"
     assert agent.required_capabilities == ("free",)
     assert agent.allowed_tools == ()
-    assert agent.model_policy["model"] == "b14/auto"
+    assert agent.model_policy["model"] == EXACT_MODEL_ID
     assert agent.model_policy["allow_external_fallback"] is False
-    assert agent.model_policy["max_attempts"] == 1
+    # #4317: the policy carries no attempt budget. B14 walks the candidates the
+    # declared product grade allows, so the provider cannot pin a count.
+    assert "max_attempts" not in agent.model_policy
     assert request.trace_id is None
 
     user_message = json.loads(request.messages[0]["content"])
@@ -143,7 +151,7 @@ def test_markdown_fenced_json_is_not_repaired() -> None:
     runtime = FakeRuntime(
         result=execution_result('```json\n{"title":"x","items":[]}\n```')
     )
-    provider = PadiemCoreProvider(runtime=runtime)
+    provider = PadiemCoreProvider(runtime=runtime, model=EXACT_MODEL_ID)
 
     result = call(provider)
 
@@ -155,7 +163,7 @@ def test_markdown_fenced_json_is_not_repaired() -> None:
 
 def test_schema_validation_failure_is_schema_mismatch() -> None:
     runtime = FakeRuntime(result=execution_result('{"items":["missing-title"]}'))
-    provider = PadiemCoreProvider(runtime=runtime)
+    provider = PadiemCoreProvider(runtime=runtime, model=EXACT_MODEL_ID)
 
     result = call(provider)
 
@@ -227,7 +235,7 @@ def test_schema_validation_failure_is_schema_mismatch() -> None:
 )
 def test_core_errors_map_to_stable_product_categories(error, category) -> None:
     runtime = FakeRuntime(error=error)
-    provider = PadiemCoreProvider(runtime=runtime)
+    provider = PadiemCoreProvider(runtime=runtime, model=EXACT_MODEL_ID)
 
     result = call(provider)
 
@@ -240,7 +248,7 @@ def test_core_errors_map_to_stable_product_categories(error, category) -> None:
 
 def test_unexpected_private_exception_is_redacted() -> None:
     runtime = FakeRuntime(error=RuntimeError("PRIVATE_PROVIDER_SECRET"))
-    provider = PadiemCoreProvider(runtime=runtime)
+    provider = PadiemCoreProvider(runtime=runtime, model=EXACT_MODEL_ID)
 
     result = call(provider)
 
@@ -251,7 +259,7 @@ def test_unexpected_private_exception_is_redacted() -> None:
 
 def test_invalid_product_input_fails_before_core_call() -> None:
     runtime = FakeRuntime(result=execution_result('{"title":"x","items":[]}'))
-    provider = PadiemCoreProvider(runtime=runtime)
+    provider = PadiemCoreProvider(runtime=runtime, model=EXACT_MODEL_ID)
 
     result = provider.generate_structured(
         task_name="lesson_content",
@@ -292,7 +300,7 @@ def test_core_factory_constructs_without_making_network_call() -> None:
         database_url=":memory:",
         provider_type="padiem_core",
         padiem_core_b14_base_url="https://example.invalid",
-        padiem_core_model="b14/auto",
+        padiem_core_model=EXACT_MODEL_ID,
         padiem_core_timeout_seconds=12,
     )
 
@@ -301,9 +309,32 @@ def test_core_factory_constructs_without_making_network_call() -> None:
     assert isinstance(provider, PadiemCoreProvider)
     assert isinstance(provider, AIProvider)
     assert provider.provider_type == "padiem_core"
-    assert provider.model == "b14/auto"
+    assert provider.model == EXACT_MODEL_ID
 
 
 def test_living_learning_settings_default_uses_600s_model_idle() -> None:
     """The app-level default must not silently restore the old 20s budget."""
     assert Settings.model_fields["padiem_core_timeout_seconds"].default == 600.0
+
+def test_the_core_provider_requires_an_explicit_model() -> None:
+    """#5002: the suspended ``b14/auto`` route is never a default.
+
+    The Core provider used to default to the suspended auto route, so an
+    unnamed model reached B14 and always answered 422 auto_routing_deferred.
+    An unnamed model now fails closed at configuration time.
+    """
+    runtime = FakeRuntime(result=execution_result('{"title":"x","items":["y"]}'))
+
+    with pytest.raises(ValueError, match="model must be non-empty"):
+        PadiemCoreProvider(runtime=runtime)
+
+    settings = Settings(
+        database_url=":memory:",
+        provider_type="padiem_core",
+        padiem_core_b14_base_url="https://example.invalid",
+    )
+    with pytest.raises(ValueError, match="LL_PADIEM_CORE_MODEL"):
+        create_provider(settings)
+
+    # The setting itself carries no model either.
+    assert Settings.model_fields["padiem_core_model"].default == ""

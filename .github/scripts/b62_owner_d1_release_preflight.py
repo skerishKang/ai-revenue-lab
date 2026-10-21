@@ -17,6 +17,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
 
+from b62_binding_baseline import (
+    BindingBaselineError,
+    compare_entries,
+    extract_entries,
+    load_baseline,
+)
 from b62_binding_state_guard import (
     BindingStateError,
     assert_owner_version_integrity,
@@ -31,10 +37,11 @@ from cloudflare_served_version import (
 OWNER_NAME = "padiem-browser-owner-p01"
 OWNER_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
 DATABASE_NAMES = (OWNER_NAME, "padiem-chat-db", "padiem-engine")
-EXPECTED_WORKERS = (
-    ("padiem-ai-engine", 18),
-    ("padiem-chat", 27),
-)
+# #5223: the approved binding set of each Worker is the reviewed name+type
+# baseline, not a binding count.  The counts that lived here were written once
+# and never revised, so every later reviewed additive install blocked this
+# release path with an opaque BINDING_COUNT_UNEXPECTED.
+EXPECTED_WORKERS = ("padiem-ai-engine", "padiem-chat")
 WRITABLE_ANNOTATIONS = {"workers/message", "workers/tag"}
 OBSERVED_ANNOTATIONS = WRITABLE_ANNOTATIONS | {"workers/triggered_by"}
 
@@ -125,7 +132,6 @@ def build_candidate(
 
 def _snapshot(
     worker: str,
-    expected_count: int,
     deployments_before: object,
     deployments_after: object,
     version_payload: object,
@@ -154,8 +160,19 @@ def _snapshot(
     if not isinstance(runtime, dict) or not isinstance(runtime.get("compatibility_date"), str):
         raise ReleasePreflightError("RUNTIME_EVIDENCE_MISSING")
     bindings = resources.get("bindings")
-    if not isinstance(bindings, list) or len(bindings) != expected_count:
-        raise ReleasePreflightError("BINDING_COUNT_UNEXPECTED")
+    if not isinstance(bindings, list):
+        raise ReleasePreflightError("BINDING_NAMES_INVALID")
+    # #5223: the live binding set is compared with the reviewed baseline BY
+    # NAME AND TYPE. A missing approved binding and an unexpected served
+    # binding are two different, actionable drifts; a count cannot say which.
+    try:
+        expected_names = load_baseline(worker)
+        missing, unexpected = compare_entries(extract_entries(version_payload), expected_names)
+    except BindingBaselineError as exc:
+        raise ReleasePreflightError("BINDING_BASELINE_UNAVAILABLE") from exc
+    if missing or unexpected:
+        raise ReleasePreflightError("BINDING_SET_DRIFT")
+    expected_count = len(expected_names)
     names = [b.get("name") if isinstance(b, dict) else None for b in bindings]
     if len(set(names)) != expected_count or not all(isinstance(n, str) and n for n in names):
         raise ReleasePreflightError("BINDING_NAMES_INVALID")
@@ -187,14 +204,17 @@ def _snapshot(
         b["name"]: b.get("database_id") or b.get("id")
         for b in bindings if b.get("type") == "d1"
     }
+    # #5223: the D1 authority is judged by NAME against the reviewed baseline.
+    # The old check demanded exactly six Engine D1 bindings that all pointed at
+    # one database, which stopped being true when the B62 web-xlsx product
+    # added its own deliberately separate private database.
+    approved_d1s = {name for name, kind in expected_names.items() if kind == "d1"}
+    if set(existing_d1s) != approved_d1s:
+        raise ReleasePreflightError("D1_AUTHORITY_SET_DRIFT")
     if worker == "padiem-chat":
         if existing_d1s != {"PADIEM_CHAT_DB": existing_database_id}:
             raise ReleasePreflightError("PRIMARY_D1_AUTHORITY_DRIFT")
-    elif (
-        existing_d1s.get("ENGINE_CONTINUATION") != existing_database_id
-        or len(existing_d1s) != 6
-        or set(existing_d1s.values()) != {existing_database_id}
-    ):
+    elif existing_d1s.get("ENGINE_CONTINUATION") != existing_database_id:
         raise ReleasePreflightError("ENGINE_CONTINUATION_D1_AUTHORITY_DRIFT")
 
     annotations = version.get("annotations")
@@ -250,13 +270,16 @@ def prepare_release(
         raise ReleasePreflightError("SOURCE_SHA_INVALID")
     ids = _database_ids(inventories)
     output = []
-    for worker, count in EXPECTED_WORKERS:
+    for worker in EXPECTED_WORKERS:
         before, after, detail, settings = workers[worker]
         expected_primary = ids["padiem-chat-db" if worker == "padiem-chat" else "padiem-engine"]
         output.append(_snapshot(
-            worker, count, before, after, detail, settings, ids[OWNER_NAME],
+            worker, before, after, detail, settings, ids[OWNER_NAME],
             expected_primary,
         ))
+    inherits = ";".join(
+        f"{x['worker']}={x['existing_bindings']}" for x in output
+    )
     return {
         "mode": "OWNER_D1_GET_ONLY_PREPARATION",
         "source_main": main_sha,
@@ -265,6 +288,7 @@ def prepare_release(
         "workers": output,
         "pre_mutation_release_anchor": False,
         "production_mutation": False,
+        "inherits": inherits,
     }
 
 
@@ -297,7 +321,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"OWNER_D1_PREFLIGHT=BLOCKED;REASON={exc}", file=sys.stderr)
         return 2
     print("OWNER_D1_PREFLIGHT=PASS")
-    print("ENGINE_INHERITS=18;CHAT_INHERITS=27")
+    print(f"INHERITS={baseline['inherits']}")
     print("CANDIDATE_RESOURCE_PARITY=PASS")
     print("READONLY_BASELINE_CREATED=YES")
     print("DURABLE_PREMUTATION_RELEASE_ANCHOR=NO")

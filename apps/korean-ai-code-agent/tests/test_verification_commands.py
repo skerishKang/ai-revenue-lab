@@ -154,6 +154,13 @@ class VerificationCommandRunnerTests(unittest.TestCase):
         self.assertFalse(receipt.safe_dict()["raw_output_in_receipt"])
         self.assertEqual(len(fake.executed), 1)
 
+    def test_fake_receipt_hash_uses_original_output_not_redacted_copy(self):
+        original = 'token=supersecretvalue'
+        receipt = self.make_runner(DeterministicFakeVerificationExecutor(output=original)).run(self.request())
+        self.assertEqual(receipt.output_sha256, hashlib.sha256(original.encode('utf-8')).hexdigest())
+        self.assertEqual(receipt.output_bytes, len(original.encode('utf-8')))
+        self.assertFalse(receipt.safe_dict()['raw_output_in_receipt'])
+
     def test_fake_output_cannot_exceed_registered_bound(self):
         fake = DeterministicFakeVerificationExecutor(output="x" * 5000)
         with self.assertRaises(ContractError):

@@ -105,7 +105,10 @@ class PadiemCoreProvider:
         self,
         *,
         runtime: ExecutionRunner,
-        model: str = "b14/auto",
+        # #5002: no default model. The suspended ``b14/auto`` route is not a
+        # default; an empty model fails closed through the existing
+        # non-empty check instead of naming a route that always answers 422.
+        model: str = "",
         max_tokens: int = DEFAULT_MAX_TOKENS,
         temperature: float = DEFAULT_TEMPERATURE,
     ) -> None:
@@ -135,7 +138,8 @@ class PadiemCoreProvider:
         cls,
         *,
         base_url: str,
-        model: str = "b14/auto",
+        # #5002: the exact model must be named; there is no default route.
+        model: str = "",
         timeout_seconds: float = 600.0,
     ) -> "PadiemCoreProvider":
         config = B14ExecutionConfig(
@@ -176,7 +180,6 @@ class PadiemCoreProvider:
                 "model": self.model,
                 "temperature": self._temperature,
                 "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         )
         return ExecutionRequest(

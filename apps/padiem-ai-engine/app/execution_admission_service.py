@@ -56,9 +56,9 @@ from app.orchestration_idempotency_service import (
     _initial_execution_fingerprint,
 )
 from app.orchestration_identity_service import (
-    _ORCHESTRATE_ALLOWED_FIELDS,
     _RESUME_ALLOWED_FIELDS,
     _reject_unknown_fields,
+    _wire_allowed_fields,
 )
 from app.orchestration_service import (
     _parse_agent_plan,
@@ -66,12 +66,15 @@ from app.orchestration_service import (
     _parse_continuation_ref,
     _parse_orchestration_options,
     _parse_recovery_policy,
+    _pc_query_selected_device,
+    _validated_pc_tool_arguments,
 )
 from app.service import (
     ServiceContractError,
     _service_error,
     build_execution_request,
 )
+from app.tool_projection import EngineToolProjectionError
 from app.usage_lifecycle import build_terminal_usage_receipt, is_idempotency_replay
 
 
@@ -115,7 +118,7 @@ def _run_admission_request(payload: Any) -> ExecutionAdmissionRequest | None:
     if not isinstance(payload, Mapping):
         return None
     try:
-        _reject_unknown_fields(payload, allowed=_ORCHESTRATE_ALLOWED_FIELDS)
+        _reject_unknown_fields(payload, allowed=_wire_allowed_fields(payload))
         fingerprint = _initial_execution_fingerprint(payload)
         if fingerprint is None:
             return None
@@ -191,7 +194,7 @@ def _loose_run_would_execute(payload: Any) -> bool:
     try:
         if not isinstance(payload, Mapping):
             return False
-        _reject_unknown_fields(payload, allowed=_ORCHESTRATE_ALLOWED_FIELDS)
+        _reject_unknown_fields(payload, allowed=_wire_allowed_fields(payload))
         app_id = payload.get("app_id")
         if not isinstance(app_id, str) or not app_id.strip():
             return False
@@ -219,6 +222,10 @@ def _loose_run_would_execute(payload: Any) -> bool:
         int(payload.get("max_retries", 3))
         bool(payload.get("require_evidence", False))
         bool(payload.get("require_verification", False))
+        # A PC target that fails the closed validation makes the identity
+        # service answer 400 before Core, so it must not read as an admission
+        # bypass. The shared validator is the only PC parser used here.
+        _validated_pc_tool_arguments(payload)
         return True
     except Exception:
         return False
@@ -395,23 +402,13 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
             run_id = payload.get("session_id") if isinstance(payload, dict) else None
             if isinstance(run_id, str) and run_id:
                 desktop_owner = (binding.subject_id, run_id)
-                selected_device = None
-                tool_arguments = (
-                    payload.get("tool_arguments") if isinstance(payload, dict) else None
-                )
-                if isinstance(tool_arguments, dict):
-                    # The drive plan keys the target by query_drives; the file
-                    # plan uses the shared files hint. Both carry one device.
-                    for step_id in ("files", "query_drives"):
-                        entry = tool_arguments.get(step_id)
-                        if not isinstance(entry, dict):
-                            continue
-                        candidate = entry.get("device_id")
-                        if isinstance(candidate, str) and 0 < len(candidate) <= 128:
-                            selected_device = candidate
-                            break
+                # The drive plan keys the target by query_drives; the file plan
+                # uses the shared files hint. Both carry one device, taken from
+                # the same closed validation the tool projection consumes.
+                pc_target = _validated_pc_tool_arguments(payload)
                 pc_query_owner = (
-                    binding.subject_id, run_id, binding.app_id, selected_device,
+                    binding.subject_id, run_id, binding.app_id,
+                    _pc_query_selected_device(pc_target),
                 )
         desktop_scope_token = _ENGINE_DESKTOP_OWNER.set(desktop_owner)
         pc_query_scope_token = _PC_QUERY_OWNER.set(pc_query_owner)
@@ -619,6 +616,8 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                     status_code=422,
                 )
         except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
 
         # Fingerprint-scoped Core idempotency (mirrors CanonicalIdempotency service).

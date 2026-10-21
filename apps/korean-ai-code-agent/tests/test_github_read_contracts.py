@@ -159,7 +159,7 @@ class GitHubReadContractTests(unittest.TestCase):
                 kind=GitHubContextKind.CHECK_STATUS,
             )
 
-    def test_provider_output_credentials_are_redacted_in_context_snapshot(self):
+    def test_provider_output_text_is_carried_unchanged_into_the_context_snapshot(self):
         from kagent.github_read_contracts import GitHubContextSnapshot
 
         snapshot = GitHubContextSnapshot(
@@ -170,7 +170,7 @@ class GitHubReadContractTests(unittest.TestCase):
             text="token=topsecretvalue",
             item_count=1,
         )
-        self.assertNotIn("topsecretvalue", snapshot.text)
+        self.assertEqual(snapshot.text, "token=topsecretvalue")
 
     def test_authority_nonclaims_are_explicit(self):
         self.assertTrue(GITHUB_APP_PREFERRED)

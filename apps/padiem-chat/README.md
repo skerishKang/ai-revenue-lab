@@ -144,15 +144,24 @@ The browser does not supply Provider keys or arbitrary upstream origins. Ordinar
 
 Composer attachments are request-scoped product inputs and are distinct from persistent Project files. Browser capability truth is centralized in `static/attachment-capabilities.js`.
 
-Current bounded composer contract:
+Current composer contract:
 
 ```text
-Images:      JPEG / PNG / WebP, one attachment, up to 4 MiB
+Images:      JPEG / PNG / WebP, one attachment, no PADIEM byte total
 Text docs:   TXT / Markdown / CSV / JSON, one attachment,
              up to 96 KiB and 40,000 decoded text characters
 Binary docs: PDF / DOCX / PPTX / XLSX, one attachment,
-             raw binary payload up to 2 MiB
+             raw binary payload with no PADIEM byte total
 ```
+
+#4379: an image or a binary document carries no product-side size ceiling. The
+platform request limit and the selected Provider's own limit are the real
+ceilings, and a payload beyond them fails with that true platform or Provider
+error instead of a PADIEM maximum. What stays enforced is the shape and safety
+set: one attachment, the media-type and magic-byte checks, the base64 rules, the
+name rules, the empty-payload rule, the PDF page and text bounds, the XLSX sheet,
+row, column and cell bounds, and the OOXML per-entry and total uncompressed
+bounds that stop a decompression bomb.
 
 Binary extraction remains server-side behind the existing completed `/api/chat` attachment contract; the frontend does not reimplement document extraction.
 
@@ -213,9 +222,12 @@ When configured, the product may expose owner-scoped:
 - Projects and project instructions;
 - bounded project files;
 - Saved Outputs;
-- signed server-owned sessions.
+- signed server-owned sessions;
+- the account's last explicitly selected AI tier.
 
 Saved Outputs are user-selected library records. They are not automatically injected into later chats or treated as hidden model memory.
+
+The last selected AI tier is a UI preference, not model authority. It is stored per signed account on the server (the browser never names the account, and the browser-persistence privacy contract keeps it out of `localStorage` / `sessionStorage`), and the server re-verifies the member grade and the administrator gate on every read and on every model request. A stored tier the account may no longer use is not applied, and a temporarily unavailable authority is never treated as a denial.
 
 Browser-supplied product identifiers never bypass server-side ownership checks.
 

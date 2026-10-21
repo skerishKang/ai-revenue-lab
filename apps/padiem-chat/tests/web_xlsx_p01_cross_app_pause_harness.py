@@ -270,6 +270,12 @@ async def call(app, settings, *, method="GET", path, payload=None, owner=OWNER):
                                  base_url=ORIGIN) as client:
         if method == "GET":
             return await client.get(path, headers=headers)
+        if path == "/api/claw/office/web-sources" and isinstance(payload, dict) and set(payload) == {"name", "base64"}:
+            raw = base64.b64decode(payload["base64"], validate=True)
+            from urllib.parse import quote
+            headers["Content-Type"] = "application/octet-stream"
+            headers["X-Padiem-Filename"] = quote(payload["name"], safe="")
+            return await client.post(path, headers=headers, content=raw)
         return await client.post(path, headers=headers, json=payload)
 
 

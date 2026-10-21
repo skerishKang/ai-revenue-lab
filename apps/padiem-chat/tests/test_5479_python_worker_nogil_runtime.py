@@ -1,0 +1,230 @@
+"""#5479 — the Chat Python Worker's runtime contract.
+
+Two facts from #5479 are pinned here.
+
+**The NoGilError is a platform race, not an application defect.** The
+``padiem-chat`` Workers tail of 2026-10-19/20 recorded eleven
+``NoGilError: Attempted to use PyProxy when Python GIL not held`` exceptions.
+Every one of them was raised inside the Cloudflare runtime while it
+initialized the Python instance (``preparePython`` -> ``initPyInstance`` ->
+``Proxy``), so it happened *before* any application code ran, and every one of
+them landed on the repeated ``POST /api/claw/connector/mesh-reads/poll``
+request, the traffic that keeps arriving on a cold isolate. That is the
+upstream race ``cloudflare/workerd#6624``.
+
+**The published fix for that race is a runtime change this Worker cannot take
+yet.** Cloudflare shipped the fix as a Python Workers runtime update (Python
+3.14 with the memory-leak fixes) and asked affected Workers to move their
+compatibility date to ``2026-09-08`` or later. The Pyodide 3.14 snapshot ships
+no ``_hashlib``, and CPython 3.14 removed the pure-Python PBKDF2 fallback, so
+that runtime has no ``hashlib.pbkdf2_hmac``. This Worker's stored credential
+format is PBKDF2-HMAC-SHA512, so a 3.14 Worker answers **every** password
+login with HTTP 500
+(``AttributeError: module 'hashlib' has no attribute 'pbkdf2_hmac'``).
+
+So the contract is:
+
+1. the Chat Worker stays on a compatibility date whose runtime still provides
+   the password KDF the Worker uses,
+2. the real Workerd/Pyodide CI lane boots the *deployed* compatibility date and
+   proves both the booted Python version and the password KDF, and
+3. the production deploy config carries that date into the released Worker.
+
+A future runtime bump that breaks (1) or (2) therefore fails in CI before any
+release, and the production deploy cannot silently ship a runtime that cannot
+hash a password.
+"""
+from __future__ import annotations
+
+import importlib.util
+import tomllib
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+CHAT_ROOT = Path(__file__).resolve().parents[1]
+CHAT_MANIFEST = CHAT_ROOT / "wrangler.toml"
+
+#: First compatibility date that implies the ``python_workers_314`` flag
+#: (Pyodide 314.0.6 / CPython 3.14.2). That snapshot has no ``_hashlib``, so
+#: ``hashlib.pbkdf2_hmac`` does not exist there and this Worker's password
+#: hashing cannot run.
+PYTHON_314_COMPATIBILITY_DATE = "2026-09-08"
+
+#: The compatibility date the Chat Worker deploys today (Pyodide 3.13 /
+#: CPython 3.13.2), which does provide ``hashlib.pbkdf2_hmac``.
+DEPLOYED_COMPATIBILITY_DATE = "2026-08-25"
+
+#: The real Workerd/Pyodide probe scripts. Each one used to hardcode a
+#: compatibility date, which let the CI lane prove a runtime that Production
+#: no longer ran.
+PROBE_SCRIPTS = (
+    ".github/scripts/b62_worker_probe_shared_runtime.sh",
+    ".github/scripts/b62_worker_probe_timeout.sh",
+    ".github/scripts/b62_worker_probe_web_transport.sh",
+    ".github/scripts/b62_worker_probe_p01_binding.sh",
+    ".github/scripts/b62_worker_probe_r2_read.sh",
+)
+
+
+def _manifest() -> dict:
+    return tomllib.loads(CHAT_MANIFEST.read_text(encoding="utf-8"))
+
+
+def _load_deploy_config_module():
+    script = REPO_ROOT / ".github/scripts/b62_cloudflare_production_deploy_config.py"
+    spec = importlib.util.spec_from_file_location(
+        "b62_cloudflare_production_deploy_config", script
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_the_worker_password_hash_uses_the_runtime_pbkdf2():
+    """The constraint above is derived from the source, not from a guess."""
+    source = (CHAT_ROOT / "app/password_auth.py").read_text(encoding="utf-8")
+    assert "hashlib.pbkdf2_hmac" in source
+    assert "PBKDF2_ALGORITHM" in source
+
+
+def _runtime_provides_password_kdf(compatibility_date: str) -> bool:
+    """Does the runtime this compatibility date selects provide the KDF?
+
+    CPython 3.14 removed the pure-Python PBKDF2 fallback and the Pyodide 3.14
+    snapshot ships no ``_hashlib``, so every compatibility date from
+    ``PYTHON_314_COMPATIBILITY_DATE`` on selects a runtime whose
+    ``hashlib`` has no ``pbkdf2_hmac``.
+    """
+    return compatibility_date < PYTHON_314_COMPATIBILITY_DATE
+
+
+def test_the_chat_worker_stays_on_a_runtime_with_the_password_kdf():
+    """The compatibility date must not select the KDF-less 3.14 snapshot."""
+    manifest = _manifest()
+    compatibility_date = manifest["compatibility_date"]
+    assert isinstance(compatibility_date, str) and compatibility_date
+    assert _runtime_provides_password_kdf(compatibility_date), (
+        "the Chat Worker still hashes passwords with hashlib.pbkdf2_hmac, and "
+        "the Pyodide 3.14 snapshot has no hashlib.pbkdf2_hmac; moving the "
+        "compatibility date to "
+        f"{PYTHON_314_COMPATIBILITY_DATE} or later answers every password "
+        "login with HTTP 500"
+    )
+    assert compatibility_date == DEPLOYED_COMPATIBILITY_DATE
+    assert "python_workers" in manifest["compatibility_flags"]
+
+
+def test_the_blocked_compatibility_dates_are_rejected():
+    """Differential proof: the guard fails for the dates it has to fail for."""
+    assert _runtime_provides_password_kdf(DEPLOYED_COMPATIBILITY_DATE)
+    assert not _runtime_provides_password_kdf(PYTHON_314_COMPATIBILITY_DATE)
+    assert not _runtime_provides_password_kdf("2026-10-13")
+    assert not _runtime_provides_password_kdf("2027-01-01")
+
+
+def test_the_production_deploy_config_carries_the_deployed_compatibility_date(
+    tmp_path,
+):
+    """The released Worker must run the runtime the manifest declares.
+
+    The production deploy config is generated from the repository manifest, so
+    the compatibility date has to survive that generation. A manifest change
+    that never reached the deployed config would leave Production on another
+    runtime while the source claimed the fix.
+    """
+    module = _load_deploy_config_module()
+    manifest = _manifest()
+    repo_config = tmp_path / "wrangler.toml"
+    repo_config.write_text(
+        'name = "padiem-chat"\n'
+        'main = "worker.py"\n'
+        f'compatibility_date = "{manifest["compatibility_date"]}"\n'
+        'compatibility_flags = ["python_workers"]\n'
+        'base_dir = ".b66-worker-src"\n'
+        "\n"
+        "[assets]\n"
+        'directory = "static"\n'
+        'binding = "ASSETS"\n',
+        encoding="utf-8",
+    )
+    live = module.parse_live_bindings({
+        "success": True,
+        "result": {
+            "bindings": [
+                {"type": "assets", "name": "ASSETS"},
+                {
+                    "type": "service",
+                    "name": "B14_SERVICE",
+                    "service": "ai-revenue-korean-ai-platform",
+                },
+                {
+                    "type": "service",
+                    "name": "IDENTITY_AUTHORITY_SERVICE",
+                    "service": "padiem-control-plane-identity",
+                },
+                {
+                    "type": "d1",
+                    "name": "PADIEM_CHAT_DB",
+                    "id": "702bb62b-36f5-41a0-973f-c4f663ee01e6",
+                },
+                {"type": "secret_text", "name": "PADIEM_CHAT_QUOTA_SALT"},
+                {
+                    "type": "plain_text",
+                    "name": "PADIEM_CHAT_RUNTIME_MODE",
+                    "text": "b14",
+                },
+                {
+                    "type": "plain_text",
+                    "name": "PADIEM_CHAT_LIVE_ENABLED",
+                    "text": "true",
+                },
+                {
+                    "type": "plain_text",
+                    "name": "PADIEM_CHAT_TIMEOUT_SECONDS",
+                    "text": "600",
+                },
+                {
+                    "type": "plain_text",
+                    "name": "PADIEM_CHAT_PUBLIC_BASE_URL",
+                    "text": "https://chat.padiem.net",
+                },
+            ]
+        },
+    })
+    generated = module.build_production_config(
+        live, repo_config, "https://chat.padiem.net"
+    )
+    parsed = tomllib.loads(generated)
+    assert parsed["compatibility_date"] == manifest["compatibility_date"]
+    assert parsed["compatibility_date"] < PYTHON_314_COMPATIBILITY_DATE
+    assert "python_workers" in parsed["compatibility_flags"]
+
+
+def test_the_real_worker_probe_boots_the_deployed_compatibility_date():
+    """The CI Pyodide lane must prove the runtime Production actually runs."""
+    for relative in PROBE_SCRIPTS:
+        script = REPO_ROOT / relative
+        text = script.read_text(encoding="utf-8")
+        assert 'compatibility_date = "20' not in text, (
+            f"{relative} hardcodes a compatibility date; the real Workerd probe "
+            "must read the deployed manifest instead of proving another runtime"
+        )
+        assert "wrangler.toml" in text, (
+            f"{relative} must derive the compatibility date from the Chat manifest"
+        )
+
+
+def test_the_real_worker_probe_asserts_the_runtime_and_the_password_kdf():
+    """A green probe must state which runtime it booted and that it can hash."""
+    shared = (REPO_ROOT / ".github/scripts/b62_worker_probe_shared_runtime.sh").read_text(
+        encoding="utf-8"
+    )
+    assert "B62_WORKER_PYTHON_RUNTIME" in shared
+    assert "get_python_version" in shared
+    assert "B62_WORKER_PASSWORD_KDF" in shared
+    assert "kdf=ok" in shared
+    probe = (CHAT_ROOT / "worker_runtime_combined_probe.py").read_text(encoding="utf-8")
+    assert "sys.version_info" in probe
+    assert "_password_kdf_state" in probe
+    assert "hash_password" in probe and "verify_password" in probe

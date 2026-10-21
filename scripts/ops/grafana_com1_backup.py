@@ -29,7 +29,7 @@ OVERLAP_NS = 3 * 1_000_000_000
 ALLOWED = frozenset({
     "event", "service", "ts", "request_id", "request_id_source", "method",
     "route", "product", "status", "duration_ms", "outcome", "stage", "code", "model",
-    "provider", "b14_request_id",
+    "provider", "b14_request_id", "error_code",
 })
 EVENTS = ("http_request", "ai_stage")
 

@@ -13,7 +13,6 @@ from padiem_ai_core.tool_resource_policy import (
     ToolResourcePolicyError,
     resolve_tool_resources,
 )
-from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, MAX_TOOL_OUTPUT_BYTES
 
 
 def tool_spec(*, timeout_seconds: float = 60.0) -> ToolSpec:
@@ -60,8 +59,8 @@ def test_resource_policy_public_projection_has_no_authority_or_credentials() -> 
 
     assert public == {
         "tool_id": "calculator",
-        "argument_bytes": MAX_TOOL_ARGUMENT_BYTES,
-        "output_bytes": MAX_TOOL_OUTPUT_BYTES,
+        "argument_bytes": None,
+        "output_bytes": None,
         "timeout_seconds": 15.0,
         "narrowed": True,
     }

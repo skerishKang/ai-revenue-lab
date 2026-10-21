@@ -2,7 +2,6 @@
   "use strict";
 
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
-  const MAX_BINARY_BYTES = attachmentCapabilities.limits.binaryBytes;
   const MIME_BY_EXTENSION = new Map();
   attachmentCapabilities.binaryDocuments.forEach((format) => {
     const mediaType = format.mediaTypes[0];
@@ -32,35 +31,17 @@
     return expected;
   }
 
-  function arrayBufferToBase64(buffer) {
-    const bytes = new Uint8Array(buffer);
-    const chunkSize = 0x8000;
-    let binary = "";
-    for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-      binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
-    }
-    return btoa(binary);
-  }
-
   async function read(file) {
     const mediaType = canonicalMediaType(file);
     if (!mediaType) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).unsupportedFormat);
     if (!file || file.size < 1) throw new Error("빈 문서는 첨부할 수 없습니다.");
-    if (file.size > MAX_BINARY_BYTES) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).binaryTooLarge);
-
-    const buffer = await file.arrayBuffer();
-    if (buffer.byteLength !== file.size || buffer.byteLength < 1 || buffer.byteLength > MAX_BINARY_BYTES) {
-      throw new Error("문서 크기를 안전하게 확인하지 못했습니다.");
-    }
-    const base64 = arrayBufferToBase64(buffer);
-    if (!base64) throw new Error("문서 데이터가 비어 있습니다.");
 
     return Object.freeze({
       type: "document",
       name: file.name || `document${extensionOf(file.name)}`,
       mediaType,
-      base64,
-      byteSize: buffer.byteLength,
+      file,
+      byteSize: file.size,
     });
   }
 
@@ -83,7 +64,6 @@
 
   const api = Object.freeze({
     formats: Object.freeze(Array.from(MIME_BY_EXTENSION.keys())),
-    maxBytes: MAX_BINARY_BYTES,
     canRead,
     read,
     pendingMeta,

@@ -250,6 +250,40 @@ class SameOriginGuardMiddleware:
         media_type = content_type.split(";", 1)[0].strip().lower()
         if media_type == _JSON_MEDIA_TYPE:
             return None
+        # XLSX originals are sent as raw octet streams to the exact
+        # cookie-authenticated office source route. Keep Origin enforcement.
+        if (
+            scope.get("method") == "POST"
+            and path == "/api/claw/office/web-sources"
+            and media_type == "application/octet-stream"
+        ):
+            return None
+        # B66 customer template originals use raw bytes on one owner-scoped route.
+        # The exact Origin and authenticated session checks above still apply.
+        if scope.get("method") == "POST" and path == "/api/b66/template-sources" and media_type == "application/octet-stream":
+            return None
+        # Standalone Chat accepts one bounded binary attachment with JSON metadata.
+        # Origin and canonical session checks are unchanged.
+        if scope.get("method") == "POST" and path == "/api/chat" and media_type == "application/octet-stream":
+            return None
+        # Voice audio is a raw browser POST on two exact authenticated routes.
+        # The Origin check above and each route's canonical session remain mandatory.
+        if (
+            scope.get("method") == "POST"
+            and path in ("/api/voice/transcribe", "/api/claw/voice/transcribe")
+            and media_type == "application/octet-stream"
+        ):
+            return None
+        # Project originals are raw binary, still subject to the same
+        # cookie, fixed-origin and route-local owner checks.
+        if (
+            scope.get("method") == "POST"
+            and media_type == "application/octet-stream"
+            and len(path.split("/")) == 5
+            and path.startswith("/api/projects/")
+            and path.endswith("/files")
+        ):
+            return None
         # No body and no declared type (e.g. an empty POST/DELETE) is fine;
         # any declared non-JSON type, or a body without a JSON type, is not.
         if media_type or _body_present(scope):

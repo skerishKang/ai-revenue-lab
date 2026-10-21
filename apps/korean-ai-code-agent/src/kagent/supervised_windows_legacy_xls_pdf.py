@@ -37,8 +37,9 @@ class SupervisedWindowsLegacyXlsPdfRenderer:
     launcher: Callable[..., JobBoundProcess] = launch_job_bound_process
 
     def __post_init__(self) -> None:
+        # #4379: no PADIEM wall-clock ceiling. The positive lower bound stays.
         if (type(self.timeout_seconds) is not int
-                or not MIN_TIMEOUT_SECONDS <= self.timeout_seconds <= MAX_TIMEOUT_SECONDS
+                or self.timeout_seconds < MIN_TIMEOUT_SECONDS
                 or not callable(self.launcher)):
             raise ContractError("bounded trusted legacy XLS PDF renderer required")
 

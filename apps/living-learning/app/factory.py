@@ -51,11 +51,19 @@ def create_provider(settings) -> AIProvider:
         from app.ai.padiem_core import PadiemCoreProvider
 
         base_url = getattr(settings, "padiem_core_b14_base_url", "")
-        model = getattr(settings, "padiem_core_model", "b14/auto")
+        # #5002: no default model. The suspended ``b14/auto`` route is not a
+        # default, so an unnamed model fails closed here with a configuration
+        # error instead of reaching B14 and answering 422 auto_routing_deferred.
+        model = getattr(settings, "padiem_core_model", "")
         timeout_seconds = getattr(settings, "padiem_core_timeout_seconds", 600.0)
         if not isinstance(base_url, str) or not base_url.strip():
             raise ValueError(
                 "LL_PADIEM_CORE_B14_BASE_URL is required when "
+                "LL_PROVIDER_TYPE=padiem_core"
+            )
+        if not isinstance(model, str) or not model.strip():
+            raise ValueError(
+                "LL_PADIEM_CORE_MODEL is required when "
                 "LL_PROVIDER_TYPE=padiem_core"
             )
         return PadiemCoreProvider.from_b14(

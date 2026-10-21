@@ -10,7 +10,8 @@ from pypdf import PdfWriter
 from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 
 from app.attachments import AttachmentValidationError, parse_attachments
-from app.binary_documents import MAX_BINARY_DOCUMENT_BYTES
+from app.binary_documents import _decode_payload
+from padiem_ai_core.document_normalization import MAX_BINARY_DOCUMENT_BYTES
 from app.documents import DocumentAttachment
 
 
@@ -177,16 +178,18 @@ def test_binary_media_type_and_extension_must_match(name: str, media_type: str) 
         parse_attachments([_binary_item(name, media_type, b"not-used")])
 
 
-def test_invalid_and_oversized_base64_fail_closed_without_echo() -> None:
+def test_invalid_base64_fails_closed_without_echo() -> None:
     with pytest.raises(AttachmentValidationError, match="문서 데이터가 올바르지") as invalid:
         parse_attachments([{"type": "document", "name": "x.pdf", "media_type": PDF_MIME, "base64": "!!!PRIVATE!!!"}])
     assert "PRIVATE" not in str(invalid.value)
 
-    too_large = b"x" * (MAX_BINARY_DOCUMENT_BYTES + 1)
-    encoded = _b64(too_large)
-    with pytest.raises(AttachmentValidationError, match="2 MiB 이하") as oversized:
-        parse_attachments([{"type": "document", "name": "x.pdf", "media_type": PDF_MIME, "base64": encoded}])
-    assert encoded[:100] not in str(oversized.value)
+
+def test_a_binary_payload_over_the_old_total_is_not_refused_for_its_size() -> None:
+    # #4379: the Chat intake applies no PADIEM byte total. The former
+    # 1 GiB ceiling is gone, so the size itself is never the reason a
+    # document is refused; the parser shape and authority rules below it are.
+    over_the_old_bound = b"a" * (MAX_BINARY_DOCUMENT_BYTES + 1)
+    assert _decode_payload(over_the_old_bound) == over_the_old_bound
 
 
 def test_encrypted_and_scanned_only_pdf_fail_with_safe_specific_messages() -> None:

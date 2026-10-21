@@ -70,8 +70,8 @@ from app.pilot.model_registry_file import group_model_ids
 # (Kilo Gateway's own ~10s limit on free models). Direct/manual routes used
 # to attempt once and give up despite the failure being retryable.
 #
-# The 45s budget limits *additional* retry/fallback dispatches, not the
-# initial model inference. For both manual and auto routes the initial
+# The provider-aligned retry budget limits *additional* retry/fallback
+# dispatches, not the initial model inference. For both manual and auto routes the initial
 # attempt is governed by model idle detection and caller cancellation.
 # After it completes, additional physical requests are allowed only when
 # the shared retry window has remaining budget. The old 60s Engine ceiling
@@ -81,9 +81,8 @@ _UPSTREAM_RETRY_MAX_RETRIES = 2
 _UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
 _UPSTREAM_RETRY_BUDGET_SECONDS = GATEWAY_WALL_SECONDS
 # Retryable transport classes may be retried on a SAME route for explicit
-# manual routes. The owner-designated auto chain has a total upstream-attempt
-# budget equal to ``decision.max_attempts``: each chain candidate gets at most
-# one call so that Agnes -> Poolside remains a two-call maximum.
+# manual routes. The owner-designated auto chain gives each chain candidate at
+# most one call, so a chain stays a two-call maximum for its two positions.
 _SAME_ROUTE_RETRYABLE_CODES = frozenset({
     "upstream_timeout",
     "upstream_server_error",
@@ -110,6 +109,39 @@ async def _read_json_body(request: Request) -> Any:
         return json.loads(raw)
     except (TypeError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise _InvalidBody("Request body must be valid JSON") from exc
+
+
+async def _platform_caller_denial(
+    request: Request, request_id: str
+) -> JSONResponse | None:
+    """Refuse a platform-credential dispatch from an unproven caller.
+
+    The catalog lane spends the platform's own Provider credentials, so it is
+    reachable only by a proven server-to-server caller. Mock mode performs no
+    Provider call and spends no platform credential, so the billing boundary
+    does not exist there. BYOK never reaches this check: it uses the caller's
+    own key and is handled by the separate legacy lane.
+    """
+    from .b14_runtime_config import runtime_config as cfg
+
+    if cfg.is_mock:
+        return None
+
+    from .service_proof import service_proof_denial, service_proof_message
+
+    denial = await service_proof_denial(request, await request.body())
+    if denial is None:
+        return None
+    return JSONResponse(
+        status_code=denial.status_code,
+        content={
+            "error": {
+                "code": denial.code,
+                "message": service_proof_message(),
+                "request_id": request_id,
+            }
+        },
+    )
 
 
 def _log_unexpected_error(event: str, request_id: str, exc: Exception) -> None:
@@ -340,9 +372,11 @@ def _validate_b14_options(raw: Any) -> dict:
 
     ma = raw.get("max_attempts")
     if ma is not None:
-        if isinstance(ma, bool) or not isinstance(ma, int) or ma < 1 or ma > 5:
-            raise _InvalidBody("business14.max_attempts must be an integer between 1 and 5")
-        opts["max_attempts"] = ma
+        # #4317: the option is accepted for wire compatibility and no longer
+        # bounds anything. The number of candidates one dispatch may try is
+        # the number of candidates the declared product grade allows.
+        if isinstance(ma, bool) or not isinstance(ma, int) or ma < 1:
+            raise _InvalidBody("business14.max_attempts must be a positive integer")
 
     mr = raw.get("max_retries")
     if mr is not None:
@@ -350,12 +384,8 @@ def _validate_b14_options(raw: Any) -> dict:
             isinstance(mr, bool)
             or not isinstance(mr, int)
             or mr < 0
-            or mr > _UPSTREAM_RETRY_MAX_RETRIES
         ):
-            raise _InvalidBody(
-                "business14.max_retries must be an integer between 0 and "
-                f"{_UPSTREAM_RETRY_MAX_RETRIES}"
-            )
+            raise _InvalidBody("business14.max_retries must be a non-negative integer")
         opts["max_retries"] = mr
 
     ap = raw.get("allow_paid")
@@ -622,7 +652,9 @@ async def pilot_router_resolve(
             "credential_status": decision.credential_status,
             "evidence_status": decision.evidence_status,
             "provider_mode": decision.provider_mode,
-            "max_attempts": decision.max_attempts,
+            # #4317: the candidates this route may try, in order. The count is
+            # the whole budget; there is no separate attempt ceiling.
+            "attempt_candidates": 1 + len(decision.eligible_fallback),
         })
 
     except NoSafeRoute as e:
@@ -786,7 +818,9 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         for fc in decision.eligible_fallback
     ] if decision.fallback_allowed else []
 
-    max_attempts = decision.max_attempts
+    # #4317: the candidate list is the whole budget. Every candidate the
+    # declared product grade allows is tried, in order, and nothing narrows
+    # that list.
     # B14 does not duplicate provider requests by default. Optional retries
     # require explicit caller opt-in and never widen the configured maximum.
     same_route_retry_limit = b14_opts.get("max_retries", 0)
@@ -850,7 +884,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         return result
 
     budget_exhausted = False
-    for idx in range(min(max_attempts, len(candidates))):
+    for idx in range(len(candidates)):
         if budget_exhausted:
             break
         current = candidates[idx]
@@ -953,8 +987,9 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             })
 
             # Same-route bounded retry for explicit manual routes (#1982).
-            # fixed_chain_v1 treats max_attempts as the total upstream call
-            # budget, so auto candidates advance without a same-route retry.
+            # The candidate list is the whole budget, so a same-route retry
+            # stays inside its own explicit limit and auto candidates advance
+            # without a same-route retry.
             # Non-retryable classes (auth, bad request) never reach a retry:
             # they are not in _SAME_ROUTE_RETRYABLE_CODES and the
             # fallback-prohibited check below breaks on the first attempt.
@@ -982,7 +1017,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
 
             if not rcore.is_error_fallback_allowed(error.code):
                 break
-            if idx + 1 >= max_attempts or idx >= len(candidates) - 1:
+            if idx >= len(candidates) - 1:
                 break
             advance_to_next_candidate = True
             break  # -> next fallback candidate
@@ -1147,6 +1182,12 @@ async def pilot_chat_completions(
 
         # Alpha mode: catalog model or future b14/auto
         if _is_alpha_model(body["model"]):
+            # Platform-owned credentials are spent on this lane. Refuse an
+            # unproven caller before any credential is resolved or any
+            # Provider request is built.
+            denial = await _platform_caller_denial(request, request_id)
+            if denial is not None:
+                return denial
             return await _handle_alpha_chat(request_id, body)
 
         # BYOK mode (legacy flow — unchanged)

@@ -193,11 +193,87 @@
   border: 1px solid rgba(127, 127, 127, 0.28);
   background: rgba(127, 127, 127, 0.08);
   color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.auth-google-logo {
+  flex: 0 0 auto;
+  display: block;
 }
 
 .auth-primary {
   background: #111;
   color: #fff;
+}
+
+/* #5481: the forgot-password entry and the reset views. They keep the same
+   44px touch target floor as every other control in this dialog, so the
+   mobile layout stays comfortable. */
+.auth-link {
+  min-height: 44px;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  opacity: 0.86;
+}
+
+.auth-link:hover,
+.auth-link:focus-visible {
+  opacity: 1;
+}
+
+.auth-reset {
+  display: grid;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(127, 127, 127, 0.2);
+}
+
+.auth-reset[hidden] {
+  display: none;
+}
+
+.auth-reset-view {
+  display: grid;
+  gap: 10px;
+}
+
+.auth-reset-view[hidden] {
+  display: none;
+}
+
+.auth-reset-view h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.auth-reset-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
+.auth-status {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #067647;
+}
+
+.auth-status[hidden] {
+  display: none;
 }
 
 .auth-handoff {

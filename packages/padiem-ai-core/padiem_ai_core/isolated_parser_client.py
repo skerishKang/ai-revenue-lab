@@ -133,11 +133,7 @@ def _bounded_binary_payload(payload: Any) -> bytes:
     binary = bytes(payload)
     if not binary:
         raise DocumentNormalizationError("empty_document", "Document payload is empty.")
-    if len(binary) > MAX_BINARY_DOCUMENT_BYTES:
-        raise DocumentNormalizationError(
-            "binary_too_large",
-            "Binary document exceeds the byte limit.",
-        )
+    # #4379: a binary document carries no PADIEM byte total.
     return binary
 
 
@@ -149,11 +145,8 @@ def _encode_request(*, name: str, media_type: str, payload: bytes) -> bytes:
         "payload_b64": base64.b64encode(payload).decode("ascii"),
     }
     raw = json.dumps(envelope, separators=(",", ":"), sort_keys=True).encode("utf-8")
-    if len(raw) > ISOLATED_PARSER_MAX_REQUEST_BYTES:
-        raise DocumentNormalizationError(
-            "isolated_parser_request_unbounded",
-            "Isolated parser request exceeds the size ceiling.",
-        )
+    # #4379: the parser request carries no PADIEM byte total. The parser
+    # process applies its own contract to what it accepts.
     return raw
 
 
@@ -272,13 +265,21 @@ class IsolatedParserClient:
             source_kind="binary",
         )
         binary = _bounded_binary_payload(payload)
-        request = _encode_request(name=safe_name, media_type=safe_media, payload=binary)
+        # An explicitly binary-capable trusted transport receives original bytes.
+        # Existing JSON-only transports retain their published wire contract.
+        exchange_binary = getattr(self._transport, "exchange_binary", None)
+        request = None if callable(exchange_binary) else _encode_request(
+            name=safe_name, media_type=safe_media, payload=binary,
+        )
         # Raise the bounded failure *after* the except block so the raw
         # exception is never left on ``__context__``/``__cause__`` either.
         transport_failed = False
         raw: Any = None
         try:
-            raw = self._transport.exchange(request)  # type: ignore[attr-defined]
+            if callable(exchange_binary):
+                raw = exchange_binary(name=safe_name, media_type=safe_media, payload=binary)
+            else:
+                raw = self._transport.exchange(request)  # type: ignore[attr-defined]
         except DocumentNormalizationError:
             raise
         except Exception:

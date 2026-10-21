@@ -236,10 +236,9 @@ class ConnectorInboundEvent:
         object.__setattr__(self, "received_at", _aware(self.received_at, "received_at"))
         if not isinstance(self.body_text, str):
             raise ContractError("event body_text must be a string")
-        body = redact_secrets(self.body_text)
-        if len(body) > _MAX_EVENT_BODY_CHARS:
-            body = body[:_MAX_EVENT_BODY_CHARS]
-        object.__setattr__(self, "body_text", body)
+        # Keep the authenticated connector event payload intact for its owner.
+        # Apply masking only when emitting diagnostic or shared log output.
+        object.__setattr__(self, "body_text", self.body_text)
         if not isinstance(self.signature_required, bool):
             raise ContractError("signature_required must be boolean")
         if not isinstance(self.signature_status, SignatureStatus):

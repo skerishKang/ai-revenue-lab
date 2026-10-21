@@ -37,6 +37,10 @@ WORKER_BINDING_NAMES = frozenset({
 })
 D1_BINDING_NAME = "PADIEM_CHAT_DB"
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
+# Deployment-owned server-to-server proof secret for the B14 platform-credential
+# execution lane. The value lives only in Cloudflare Secrets Store; the browser
+# never holds it and it is never part of a request body.
+B14_SERVICE_PROOF_SECRET_BINDING_NAME = "PADIEM_B14_SERVICE_PROOF_SECRET"
 # #4643: the Service Binding this Chat Worker uses to reach the private
 # `padiem-voice-stt` Worker. The browser never holds this binding; it posts to
 # /api/voice/transcribe and this Worker forwards. No entry exists in
@@ -129,6 +133,76 @@ def binding_value(env: Any, key: str) -> Any:
     if isinstance(env, Mapping):
         return env.get(key)
     return getattr(env, key, None)
+
+
+async def resolve_secret_binding(env: Any, name: str) -> str | None:
+    """Resolve one trusted Worker secret binding without exposing its value.
+
+    A missing, unreadable, or empty binding resolves to None so the caller
+    fails closed on its own boundary instead of crashing the Worker. The
+    resolved value is returned to the caller only; it is never logged.
+    """
+    bound = binding_value(env, name)
+    if bound is None:
+        return None
+    if isinstance(bound, str):
+        return bound or None
+    try:
+        getter = getattr(bound, "get", None)
+    except Exception:
+        # A binding whose own attribute access raises is unreadable, not
+        # fatal: the documented contract is that the caller fails closed on
+        # its own boundary instead of the Worker crashing at composition time.
+        return None
+    if not callable(getter):
+        return None
+    try:
+        pending = getter()
+        if inspect.isawaitable(pending):
+            pending = await pending
+    except Exception:
+        # Never chain or publish the binding exception: it may carry secret
+        # material, account identifiers, or internal endpoints.
+        return None
+    if isinstance(pending, str) and pending:
+        return pending
+    return None
+
+
+#: #5441: the transactional-mail credential is ONE channel credential, reused.
+#:
+#: The order is reuse-first. The already provisioned owner-side channel names
+#: come first, so a deployment never has to mint a second credential for the
+#: lost-password reset mail, and the account Secrets Store (where every other
+#: PADIEM credential of this account lives) is a valid home for the very same
+#: value. A Secrets Store binding is an async ``.get()`` capability, not a
+#: string, so every one of these names is resolved through
+#: :func:`resolve_secret_binding` and never read raw.
+MAIL_API_KEY_BINDING_NAMES: tuple[str, ...] = (
+    "B66_ALERT_RESEND_API_KEY",
+    "PADIEM_CHAT_PASSWORD_RESET_RESEND_API_KEY",
+    "PADIEM_RESEND_API_KEY",
+)
+MAIL_FROM_BINDING_NAMES: tuple[str, ...] = (
+    "B66_ALERT_EMAIL_FROM",
+    "PADIEM_CHAT_PASSWORD_RESET_EMAIL_FROM",
+    "PADIEM_RESEND_EMAIL_FROM",
+)
+
+
+async def resolve_first_secret_binding(env: Any, names: tuple[str, ...]) -> str | None:
+    """Resolve the first readable secret among ``names``.
+
+    Every candidate is resolved through :func:`resolve_secret_binding`, so a
+    plain Worker secret and an account Secrets Store secret are both accepted
+    and a missing or unreadable binding never raises. The first name that
+    resolves wins, which keeps the reuse order explicit and auditable.
+    """
+    for name in names:
+        value = await resolve_secret_binding(env, name)
+        if value:
+            return value
+    return None
 
 
 async def resolve_web_secrets_store_keys(env: Any) -> dict[str, str]:

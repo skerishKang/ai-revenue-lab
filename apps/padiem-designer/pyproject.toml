@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "padiem-designer"
+version = "0.1.0"
+description = "PADIEM Designer — generative UI preview app reusing the pinned CopilotKit/OpenIntelligentUI contract"
+requires-python = ">=3.11"
+dependencies = [
+  "starlette>=0.37,<1",
+  "httpx>=0.27,<1",
+  "uvicorn>=0.30,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<10",
+  "playwright>=1.40,<2",
+]
+
+[project.scripts]
+padiem-designer = "app.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.setuptools.package-data]
+app = ["../static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

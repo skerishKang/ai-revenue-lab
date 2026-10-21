@@ -180,3 +180,81 @@ def _ox_alpha_catalog_model():
 def ox_alpha_catalog_entry(monkeypatch):
     """Install the historical free image-capable route used by multimodal tests."""
     return _install_catalog_models(monkeypatch, _ox_alpha_catalog_model())
+
+
+# ---------------------------------------------------------------------------
+# Approved server-to-server caller for the platform-credential dispatch lane
+#
+# B14 spends the platform's own Provider credentials on its catalog execution
+# lane, so that lane is reachable only by a proven server-to-server caller.
+# The product callers (B62 Chat and the Engine) sign each exact request body;
+# this harness plays the same approved-caller role for the application-level
+# tests, so the existing behavioural suites keep exercising the real dispatch
+# contract instead of a weakened one.
+#
+# A test that must observe the refusal path opts out with the
+# ``no_b14_service_proof`` marker and asserts the boundary directly.
+# ---------------------------------------------------------------------------
+B14_SERVICE_PROOF_SECRET = "b14-test-service-proof-secret-0123456789abcdef"
+
+
+@pytest.fixture()
+def b14_service_proof_secret():
+    """The deployment proof secret this harness installs."""
+    return B14_SERVICE_PROOF_SECRET
+
+
+@pytest.fixture(autouse=True)
+def _b14_approved_service_caller(request):
+    """Sign outbound requests as an approved B14 server-to-server caller."""
+    import os
+
+    binding_name = "PADIEM_B14_SERVICE_PROOF_SECRET"
+    previous_secret = os.environ.get(binding_name)
+    os.environ[binding_name] = B14_SERVICE_PROOF_SECRET
+
+    if request.node.get_closest_marker("no_b14_service_proof") is not None:
+        # The deployment secret stays configured; only the caller signature is
+        # withheld, so the refusal path is observed on its own terms.
+        try:
+            yield
+        finally:
+            if previous_secret is None:
+                os.environ.pop(binding_name, None)
+            else:
+                os.environ[binding_name] = previous_secret
+        return
+
+    import time
+
+    import httpx
+
+    from app.pilot.service_proof import (
+        PROOF_HEADER,
+        PROOF_TIME_HEADER,
+        compute_service_proof,
+    )
+
+    original_send = httpx.Client.send
+
+    def send(self, request, **kwargs):
+        if PROOF_HEADER.lower() not in request.headers:
+            # The body is already serialized at this point, so the proof binds
+            # exactly the bytes the application will verify.
+            body = request.read()
+            timestamp = str(int(time.time()))
+            request.headers[PROOF_HEADER] = compute_service_proof(
+                B14_SERVICE_PROOF_SECRET, timestamp, body,
+            )
+            request.headers[PROOF_TIME_HEADER] = timestamp
+        return original_send(self, request, **kwargs)
+
+    httpx.Client.send = send
+    try:
+        yield
+    finally:
+        httpx.Client.send = original_send
+        if previous_secret is None:
+            os.environ.pop(binding_name, None)
+        else:
+            os.environ[binding_name] = previous_secret

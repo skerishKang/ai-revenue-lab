@@ -1070,8 +1070,12 @@ def build_live_token_request_body(
 
     - ``expireTime`` / ``newSessionExpireTime`` are **absolute RFC3339
       timestamps**, not durations.
-    - the model is bound through ``liveConnectConstraints.model`` so the client
-      cannot open a Live session against any other model.
+    - the model is bound through ``bidiGenerateContentSetup.model`` so the
+      client cannot open a Live session against any other model. The provider
+      names that field ``bidiGenerateContentSetup`` and rejects any other
+      spelling of the model constraint with
+      ``Unknown name "liveConnectConstraints" at 'auth_token'``; the model id
+      is the resource form ``models/<model>``.
     - ``uses`` stays 1 so a token starts at most one session.
     """
     if now_epoch_ms is None:
@@ -1082,7 +1086,7 @@ def build_live_token_request_body(
         "uses": 1,
         "expireTime": format_rfc3339_utc(expire),
         "newSessionExpireTime": format_rfc3339_utc(new_session),
-        "liveConnectConstraints": {"model": model},
+        "bidiGenerateContentSetup": {"model": f"models/{model}"},
     }
 
 

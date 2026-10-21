@@ -18,7 +18,6 @@ from .windows_job_object import JobBoundProcess, launch_job_bound_process
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
-_MAX_CAPTURE_CHARS = 8193
 _BLOCKED_EXECUTABLE_NAMES = frozenset(
     {
         "cmd.exe",
@@ -327,18 +326,19 @@ def _contained_working_directory(root_path: str, cwd_relative: str) -> str:
     return str(candidate)
 
 
-def _drain_bounded(stream: Any, chunks: list[str]) -> None:
-    kept = 0
+def _drain_stream(stream: Any, chunks: list[str]) -> None:
+    """Drain one pipe chunk by chunk and keep every chunk.
+
+    #4379: the executor no longer caps the captured output, so a local agent
+    result carries the real output. The pipe is still read in small chunks,
+    so the child process is never blocked by a slow reader.
+    """
     try:
         while True:
             chunk = stream.read(1024)
             if chunk == "" or chunk is None:
                 break
-            if kept < _MAX_CAPTURE_CHARS:
-                remaining = _MAX_CAPTURE_CHARS - kept
-                piece = chunk[:remaining]
-                chunks.append(piece)
-                kept += len(piece)
+            chunks.append(chunk)
     finally:
         try:
             stream.close()
@@ -429,8 +429,8 @@ class WindowsSubprocessLocalAgentRuntime:
 
         stdout_chunks: list[str] = []
         stderr_chunks: list[str] = []
-        stdout_thread = threading.Thread(target=_drain_bounded, args=(process.stdout, stdout_chunks), daemon=True)
-        stderr_thread = threading.Thread(target=_drain_bounded, args=(process.stderr, stderr_chunks), daemon=True)
+        stdout_thread = threading.Thread(target=_drain_stream, args=(process.stdout, stdout_chunks), daemon=True)
+        stderr_thread = threading.Thread(target=_drain_stream, args=(process.stderr, stderr_chunks), daemon=True)
         # Setup and teardown must share one cleanup region. Starting a drain
         # thread can itself fail (thread exhaustion, resource pressure) while
         # the Job-bound child is already live, so an exception raised by

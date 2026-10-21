@@ -260,14 +260,16 @@ class WindowsLocalExecutorLiveProcessTests(unittest.TestCase):
             self.assertFalse(rendered["admin_elevation"])
             self.assertEqual(rendered["environment_inheritance"], "bounded_allowlist")
 
-    def test_real_output_is_bounded_while_pipes_are_fully_drained(self):
+    def test_real_output_is_kept_while_pipes_are_fully_drained(self):
         with tempfile.TemporaryDirectory() as root_dir:
             runtime = self._runtime(root_dir)
             request = command(str(Path(sys.executable).resolve()), "-c", "print('x' * 20000)")
             receipt = runtime.execute_with_receipt(request, now=datetime.now(timezone.utc))
             self.assertEqual(receipt.termination, WindowsExecutionTermination.EXITED)
-            self.assertEqual(len(receipt.result.stdout), 8192)
-            self.assertTrue(receipt.result.stdout_truncated)
+            # #4379: the executor keeps the real output and no longer claims
+            # a truncation.
+            self.assertEqual(len(receipt.result.stdout), 20001)
+            self.assertFalse(hasattr(receipt.result, "stdout_truncated"))
 
     def test_timeout_is_distinct_from_explicit_cancel(self):
         with tempfile.TemporaryDirectory() as root_dir:

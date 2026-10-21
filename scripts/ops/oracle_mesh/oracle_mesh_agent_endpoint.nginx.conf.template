@@ -1,0 +1,44 @@
+# #5485 — Oracle's MeshCentral agent endpoint for the standby route.
+#
+# The standby route forwards the agent's loopback to Oracle over TLS. The
+# agent accepts the endpoint because Oracle presents the SAME agentserver
+# certificate that COM2 presents, so the device keeps one identity on both
+# servers and does not have to be re-enrolled.
+#
+# This file is a TEMPLATE. The paths below are the ones on the Oracle host.
+# Install it as /etc/nginx/conf.d/meshcentral-agent-endpoint.conf and reload
+# nginx. It only ADDS a listener: the existing MeshCentral on 127.0.0.1:4443
+# and the existing public web server on port 80 are untouched.
+#
+# The certificate and its key are the MeshCentral server's own agentserver
+# pair, which live in the MeshCentral data directory. They are reused here
+# rather than issued again, because a different certificate would change the
+# server identity the agent pins.
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name _;
+
+    # The MeshCentral server's own agentserver certificate. The agent pins
+    # this certificate, so it has to be the same pair COM2 presents.
+    ssl_certificate     /home/ubuntu/meshcentral-test/meshcentral-data/agentserver-cert-public.crt;
+    ssl_certificate_key /home/ubuntu/meshcentral-test/meshcentral-data/agentserver-cert-private.key;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+
+    # The agent's endpoint and the MeshCentral application itself.
+    location / {
+        proxy_pass https://127.0.0.1:4443;
+        proxy_ssl_verify off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # The agent holds one long lived connection.
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+    }
+}

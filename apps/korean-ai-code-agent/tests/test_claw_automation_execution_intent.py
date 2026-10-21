@@ -5,7 +5,7 @@ A rule created by a scheduler could not reach canonical execution because
 neither is derivable from any rule field. These tests pin the contract that
 supplies those three values explicitly, and nothing more:
 
-- ``ClawAutomationExecutionIntent`` is bounded, opaque to no credential material,
+- ``ClawAutomationExecutionIntent`` preserves authorized task text, including provided credentials,
   and binds an exact 40-hex revision through the canonical contract predicate.
 - ``intent_sha256`` is a deterministic digest of the versioned material.
 - The safe projection carries digests, never the task body.
@@ -57,6 +57,18 @@ OTHER_REVISION = "dddddd1234567890abcdef1234567890abcdef12"
 UPPER_REVISION = REVISION.upper()
 INTENT_A = {"task": TASK, "repository_ref": REPOSITORY_REF, "exact_revision": REVISION}
 INTENT_B = {"task": "오늘 예정된 작업을 점검해줘", "repository_ref": REPOSITORY_REF, "exact_revision": REVISION}
+
+
+def test_authorized_task_preserves_credential_looking_text() -> None:
+    from kagent.security import redact_secrets
+
+    original = 'Connect with Bearer sk-test-demo-123456789012345678901234567890'
+    assert redact_secrets(original) != original
+    assert Intent(task=original, repository_ref=REPOSITORY_REF, exact_revision=REVISION).task == original
+    secret_ref = 'org/repo?key=AKIAEXAMPLECREDENTIAL1750'
+    with_secret = Intent(task=original, repository_ref=secret_ref, exact_revision=REVISION)
+    assert with_secret.repository_ref == secret_ref
+    assert with_secret.safe_dict()['repository_ref'] != secret_ref
 
 
 def intent(**overrides: str) -> Intent:
@@ -128,15 +140,16 @@ class ExecutionIntentContractTests(unittest.TestCase):
                 with self.assertRaises(ContractError):
                     intent(repository_ref=bad)
 
-    def test_credential_material_fails_closed_in_either_field(self):
+    def test_credential_material_is_preserved_for_authorized_execution(self):
         for kwargs in (
             {"task": "run token=supersecretvalue"},
             {"task": "run password=hunter22here"},
             {"repository_ref": "org/repo?key=AKIAEXAMPLECREDENTIAL1750"},
         ):
-            with self.subTest(**{k: v[:18] for k, v in kwargs.items()}):
-                with self.assertRaises(ContractError):
-                    intent(**kwargs)  # type: ignore[arg-type]
+            with self.subTest(fields=list(kwargs)):
+                result = intent(**kwargs)
+                for field, original in kwargs.items():
+                    self.assertEqual(getattr(result, field), original)
 
     def test_non_string_inputs_are_rejected(self):
         for kwargs in ({"task": None}, {"repository_ref": 5}, {"exact_revision": ["a"]}):

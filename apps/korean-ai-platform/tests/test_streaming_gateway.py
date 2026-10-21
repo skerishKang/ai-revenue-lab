@@ -161,6 +161,49 @@ def test_mock_preview_is_sse_manual_route_with_done_and_metadata():
     assert metadata["route_evidence_status"] == "mock_no_upstream_call"
 
 
+def test_a_caller_cannot_narrow_the_tier_fallback_with_an_attempt_count(monkeypatch):
+    """#4317: the candidate list decides, so an attempt count narrows nothing.
+
+    The route advertises the owner-tier fallback and the caller cannot pin it
+    away with a number. The primary still answers here, so the attempt count
+    is 1, but the fallback stays available for a recoverable primary failure.
+    """
+    from dataclasses import replace
+    from app.pilot import stream_gateway
+
+    fallback = {
+        "model_id": "test-fixture/fallback",
+        "upstream_model": "test-fixture/fallback-upstream",
+        "provider": "Fixture Backup Provider",
+        "platform_provider_id": "test-fixture",
+        "route_id": "platform:test-fixture/fallback",
+        "reason": "owner_selected_tier_fallback",
+    }
+    original = stream_gateway.rcore.resolve_route
+
+    def resolve_with_tier_pair(model_id, opts):
+        base = original(model_id, opts)
+        return replace(
+            base,
+            reason_codes=[*base.reason_codes, "owner_selected_tier_fallback:free"],
+            fallback_allowed=True,
+            eligible_fallback=[fallback],
+        )
+
+    monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
+    response = _client().post(STREAM_URL, json=_payload(
+        business14={"allow_external_fallback": False, "max_attempts": 1},
+    ))
+    assert response.status_code == 200, response.text
+    frames = _json_data_frames(response.text)
+    assert frames and "data: [DONE]" in response.text
+    assert frames[0]["business14"]["attempt_count"] == 1
+    assert frames[0]["business14"]["fallback_used"] is False
+    # The tier fallback is still advertised: the caller's attempt count did not
+    # remove it from the candidate list.
+    assert frames[0]["business14"]["fallback_allowed"] is True
+
+
 def test_canonical_stream_true_does_not_promote_auto_route():
     client = _client()
     response = client.post(CHAT_URL, json=_payload(model="b14/auto"))
@@ -184,10 +227,9 @@ def test_preview_requires_stream_true():
     [
         {"model": "b14/auto"},
         {"business14": {"allow_external_fallback": True}},
-        {"business14": {"max_attempts": 2}},
     ],
 )
-def test_auto_or_fallback_streaming_is_rejected_before_network(payload_update):
+def test_auto_or_external_fallback_streaming_is_rejected_before_network(payload_update):
     calls = 0
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -203,6 +245,136 @@ def test_auto_or_fallback_streaming_is_rejected_before_network(payload_update):
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "stream_not_supported"
     assert calls == 0
+
+
+
+
+def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch):
+    from dataclasses import replace
+    from app.pilot import stream_gateway
+    from app.pilot.errors import PilotError
+    from app.pilot.stream_types import StreamEvent
+
+    fallback = {
+        "model_id": "test-fixture/fallback",
+        "upstream_model": "test-fixture/fallback-upstream",
+        "provider": "Fixture Backup Provider",
+        "platform_provider_id": "test-fixture",
+        "route_id": "platform:test-fixture/fallback",
+        "reason": "owner_selected_tier_fallback",
+    }
+    original = stream_gateway.rcore.resolve_route
+
+    def resolve_with_tier_pair(model_id, opts):
+        base = original(model_id, opts)
+        return replace(
+            base,
+            reason_codes=[*base.reason_codes, "owner_selected_tier_fallback:free"],
+            fallback_allowed=True,
+            eligible_fallback=[fallback],
+        )
+
+    monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
+    from types import SimpleNamespace
+    original_catalog = stream_gateway.get_catalog_by_id
+    def fixture_catalog(model_id):
+        if model_id == fallback["model_id"]:
+            return SimpleNamespace(model_id=fallback["model_id"], enabled=True,
+                provider=fallback["provider"], upstream_model=fallback["upstream_model"],
+                platform_provider_id=fallback["platform_provider_id"])
+        return original_catalog(model_id)
+    monkeypatch.setattr(stream_gateway, "get_catalog_by_id", fixture_catalog)
+    original_credential = stream_gateway.rcore._credential_status_for
+    monkeypatch.setattr(stream_gateway.rcore, "_credential_status_for",
+        lambda cm: (True, "key_available", "platform_secret", "test-fixture")
+        if cm.model_id == fallback["model_id"] else original_credential(cm))
+    attempts = []
+
+    async def fake_stream(**kwargs):
+        attempts.append(kwargs["model_id"])
+        if kwargs["model_id"] == MODEL:
+            raise PilotError("upstream_server_error", "temporary upstream failure", 502)
+        yield StreamEvent(delta_content="backup token", model=kwargs["upstream_model"])
+        yield StreamEvent(done=True)
+
+    monkeypatch.setattr(stream_gateway, "stream_platform_chat_completions", fake_stream)
+    rcfg.provider_mode = "live"
+    response = _client().post(
+        STREAM_URL,
+        json=_payload(business14={"allow_external_fallback": False}),
+    )
+
+    assert response.status_code == 200, response.text
+    frames = _json_data_frames(response.text)
+    assert frames[0]["choices"][0]["delta"]["content"] == "backup token"
+    metadata = frames[0]["business14"]
+    assert metadata["selected_model"] == fallback["model_id"]
+    assert metadata["attempt_count"] == 2
+    assert metadata["fallback_used"] is True
+    assert metadata["fallback_allowed"] is False
+    assert attempts == [MODEL, fallback["model_id"]]
+    assert "data: [DONE]" in response.text
+
+
+def test_owner_tier_fallback_is_not_tried_after_first_visible_token(monkeypatch):
+    from dataclasses import replace
+    from app.pilot import stream_gateway
+    from app.pilot.errors import PilotError
+    from app.pilot.stream_types import StreamEvent
+
+    fallback = {
+        "model_id": "test-fixture/fallback",
+        "upstream_model": "test-fixture/fallback-upstream",
+        "provider": "Fixture Backup Provider",
+        "platform_provider_id": "test-fixture",
+        "route_id": "platform:test-fixture/fallback",
+        "reason": "owner_selected_tier_fallback",
+    }
+    original = stream_gateway.rcore.resolve_route
+
+    def resolve_with_tier_pair(model_id, opts):
+        base = original(model_id, opts)
+        return replace(
+            base,
+            reason_codes=[*base.reason_codes, "owner_selected_tier_fallback:free"],
+            fallback_allowed=True,
+            eligible_fallback=[fallback],
+        )
+
+    monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
+    from types import SimpleNamespace
+    original_catalog = stream_gateway.get_catalog_by_id
+    def fixture_catalog(model_id):
+        if model_id == fallback["model_id"]:
+            return SimpleNamespace(model_id=fallback["model_id"], enabled=True,
+                provider=fallback["provider"], upstream_model=fallback["upstream_model"],
+                platform_provider_id=fallback["platform_provider_id"])
+        return original_catalog(model_id)
+    monkeypatch.setattr(stream_gateway, "get_catalog_by_id", fixture_catalog)
+    original_credential = stream_gateway.rcore._credential_status_for
+    monkeypatch.setattr(stream_gateway.rcore, "_credential_status_for",
+        lambda cm: (True, "key_available", "platform_secret", "test-fixture")
+        if cm.model_id == fallback["model_id"] else original_credential(cm))
+    attempts = []
+
+    async def fake_stream(**kwargs):
+        attempts.append(kwargs["model_id"])
+        yield StreamEvent(delta_content="primary token", model=kwargs["upstream_model"])
+        raise PilotError("upstream_server_error", "temporary upstream failure", 502)
+
+    monkeypatch.setattr(stream_gateway, "stream_platform_chat_completions", fake_stream)
+    rcfg.provider_mode = "live"
+    response = _client().post(
+        STREAM_URL,
+        json=_payload(business14={"allow_external_fallback": False}),
+    )
+
+    assert response.status_code == 200, response.text
+    assert "primary token" in response.text
+    assert "event: error" in response.text
+    assert '"after_stream_start":true' in response.text
+    assert attempts == [MODEL]
+    assert "data: [DONE]" not in response.text
 
 
 def test_legacy_non_catalog_route_is_rejected_before_network():

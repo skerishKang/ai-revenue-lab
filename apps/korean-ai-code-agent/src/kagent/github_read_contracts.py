@@ -52,7 +52,7 @@ def _digest(value: str, field_name: str) -> str:
 def _bounded_text(value: str, field_name: str, limit: int = _MAX_CONTEXT_TEXT) -> str:
     if not isinstance(value, str):
         raise ContractError(f"{field_name} must be a string")
-    value = redact_secrets(value.strip())
+    value = value.strip()
     if len(value) > limit:
         raise ContractError(f"{field_name} exceeds bounded read envelope")
     return value

@@ -41,8 +41,10 @@ from .config import Settings
 from .model_policy import ModelPolicyError, model_supports, resolve_request_model_policy
 from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
-# Provider context is bounded by the existing 6MB HTTP envelope, not a 14k model cap.
-MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES = 5_500_000
+# #4379: the provider context carries no PADIEM byte total. The provider and
+# the platform apply their own limits. These symbols are retained for import
+# compatibility and are no longer enforced.
+MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES: int | None = None
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES  # import compatibility
 
 # Product identity policy. Padiem Chat is a general Korean-first assistant;
@@ -282,7 +284,10 @@ def _bounded_context(value: str | None) -> str | None:
     if not isinstance(value, str):
         raise ValueError("additional system context must be a string")
     extra = value.strip()
-    if len(extra.encode("utf-8")) > MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES:
+    if (
+        MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES is not None
+        and len(extra.encode("utf-8")) > MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES
+    ):
         raise ValueError("additional system context exceeds transport safety envelope")
     return extra or None
 
@@ -323,6 +328,7 @@ def _agent_profile(
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
     product_tier: str | None = None,
+    tier_stream_fallback: bool = False,
 ) -> AgentProfile:
     """Convert B62-owned TaskMode/model policy into the locked Core contract."""
 
@@ -347,7 +353,7 @@ def _agent_profile(
             # Arbitrary catalog-wide fallback stays disabled. This does not
             # block the owner-pinned tier grade backup in the B14 gateway.
             "allow_external_fallback": False,
-            "max_attempts": 1,
+            # No local attempt pin; upstream routing applies its own policy.
             **({"product_tier": product_tier} if product_tier is not None else {}),
             **({"max_retries": max_retries} if max_retries is not None else {}),
             # Only an explicitly requested native parameter enters the policy.
@@ -373,6 +379,7 @@ def _execution_request(
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
     product_tier: str | None = None,
+    tier_stream_fallback: bool = False,
 ) -> ExecutionRequest:
     return ExecutionRequest(
         agent=_agent_profile(
@@ -382,6 +389,7 @@ def _execution_request(
             max_retries=max_retries,
             model_parameters=model_parameters,
             product_tier=product_tier,
+            tier_stream_fallback=tier_stream_fallback,
         ),
         messages=tuple(dict(message) for message in messages),
         additional_system_context=_trusted_dispatch_context(
@@ -512,9 +520,22 @@ class B14Client:
         # response header, independent of B14's own internal attempt ID.
         stream_started = time.perf_counter()
         stream_completed = False
+        first_delta_emitted = False
         try:
             async for event in core_stream:
                 if event.delta_content:
+                    if not first_delta_emitted:
+                        # #4317 perf: `b14.stream` below is the WHOLE stream, so
+                        # it cannot separate "the model started late" from "the
+                        # model answered slowly". This stage is the missing
+                        # time-to-first-visible-token measurement, on the same
+                        # request id and the same existing event contract.
+                        first_delta_emitted = True
+                        emit_stage_event(
+                            stage="b14.stream.first_delta",
+                            outcome="ok",
+                            duration_ms=(time.perf_counter()-stream_started)*1000,
+                        )
                     yield ChatStreamEvent(delta_content=event.delta_content)
                 if event.done:
                     stream_completed = True
@@ -580,6 +601,7 @@ class B14Client:
             required_capabilities=("free",),
             additional_system_context=bounded_context,
             dispatch_sample=self._dispatch_wall_clock(),
+            tier_stream_fallback=True,
         )
         inner_stream = self._stream_core(request)
         try:
@@ -633,23 +655,16 @@ class B14Client:
                 "AI 내부 스트리밍 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
             )
 
-        # Stream gateway forbids mid-stream model replacement. For the owner-
-        # selected tier pair primary, finish a bounded B14 completion and emit
-        # its answer as one SSE delta so a recoverable failure can use its
-        # fallback. beam-free is the Free-tier primary; each paid-tier primary
-        # comes from the shared per-tier declaration, and the manual
-        # single-attempt stream-preview structurally rejects it (owner-tier
-        # routes always carry fallback candidates), so it must not reach it.
-        # cat-jam-free is policy-disabled and no Chat path selects it.
+        # Stream gateway forbids mid-stream model replacement. Every owner-
+        # selected tier primary carries no local attempt pin (the model policy
+        # above), so the upstream may traverse the owner-pinned tier fallback
+        # on a recoverable error. The Free grade primary and the paid-grade
+        # primaries therefore share this one streaming path.
+        # #5002: a model that left the Free grade roster (or that the owner
+        # excluded from execution candidates) is no longer named here: no
+        # current Chat or Claw policy selects such a model, and a hardcoded
+        # identity for one would silently change the streaming shape.
         tier = _owner_product_tier(policy.profile)
-        if policy.model_id == "opencode-go/beam-free":
-            response = await self._complete_text(
-                policy.messages, skill=resolved_skill, model=policy.model_id,
-                additional_system_context=bounded_context, product_tier=tier,
-            )
-            yield ChatStreamEvent(delta_content=response["answer"])
-            yield ChatStreamEvent(done=True)
-            return
         request = _execution_request(
             policy.messages,
             skill=resolved_skill,
@@ -658,6 +673,7 @@ class B14Client:
             additional_system_context=bounded_context,
             dispatch_sample=self._dispatch_wall_clock(),
             product_tier=tier,
+            tier_stream_fallback=True,
         )
         inner_stream = self._stream_core(request)
         try:

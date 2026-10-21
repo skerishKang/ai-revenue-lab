@@ -15,9 +15,15 @@ from __future__ import annotations
 
 import base64
 import binascii
+import hashlib
+import json
+import re
 from collections.abc import Mapping
 from typing import Any
 
+from padiem_ai_engine_client import ENGINE_INTERNAL_ORIGIN
+
+from .service_binding_response import read_bounded_service_binding_body
 from .worker_config import P01_ENGINE_SERVICE_BINDING_NAME
 
 DRIVE_CASE_FOLDER_ENGINE_SEAM_VERSION = "chat-drive-case-folder-engine.v1"
@@ -57,6 +63,30 @@ MAX_PDF_NAME_CHARS = 512
 MAX_PDF_CANDIDATES = 25
 MAX_PDF_BYTES = 4_000_000
 MAX_PDF_BASE64_CHARS = ((MAX_PDF_BYTES + 2) // 3) * 4
+
+# #4379: the Engine -> Chat hop ships one length-prefixed frame instead of a
+# whole-file Base64 string. The route is internal-only and names the existing
+# canonical Drive reader app, so no new caller, grant or app authority exists.
+PDF_BINARY_READ_PATH = "/internal/v1/projects/drive-case-pdf/read"
+PDF_BINARY_READ_APP_ID = "b54-padiem-claw-drive"
+PDF_BINARY_CONTRACT_VERSION = "engine-b67-case-pdf-binary.v1"
+MAX_BINARY_PDF_FRAME_HEADER_BYTES = 65_536
+# The PDF ceiling is unchanged. The frame only adds its own length prefix and
+# bounded metadata header around the same payload bound.
+MAX_BINARY_PDF_FRAME_BYTES = MAX_PDF_BYTES + 4 + MAX_BINARY_PDF_FRAME_HEADER_BYTES
+_MIN_BINARY_PDF_FRAME_BYTES = 6
+_BINARY_PDF_CONTENT_TYPE = "application/octet-stream"
+_SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
+_BINARY_HEADER_KEYS = frozenset(
+    {
+        "file",
+        "byte_size",
+        "sha256",
+        "version_evidence",
+        "authorization",
+        "contract_version",
+    }
+)
 
 _STATUS_KEYS = frozenset({"ok", "status", "contract_version"})
 _STATUS_FIELDS = frozenset({"configured", "space_kind", "scope_token", "updated_at"})
@@ -175,16 +205,111 @@ def _optional_text(value: object, limit: int) -> str | None:
     return _bounded_text(value, limit)
 
 
+def _binary_transport(
+    binding: object,
+    *,
+    caller_id: object,
+    credential: object,
+    request_factory: object,
+) -> tuple[object, str, str, object] | None:
+    """Return the trusted byte transport, or None to stay on the legacy RPC.
+
+    Every part is required together. The caller id and credential arrive from
+    ``p01_engine_config_from_worker_bindings``, which is the canonical P01
+    shape authority, so this seam only proves the values are present and the
+    transport is callable -- it never re-implements identity validation.
+    """
+
+    if caller_id is None or credential is None or request_factory is None:
+        return None
+    if not callable(request_factory) or not callable(getattr(binding, "fetch", None)):
+        return None
+    if not isinstance(caller_id, str) or not caller_id:
+        return None
+    if not isinstance(credential, str) or not credential:
+        return None
+    return (binding, caller_id, credential, request_factory)
+
+
+def _decode_binary_pdf_frame(raw: bytes) -> tuple[dict[str, Any], bytes]:
+    """Split one length-prefixed metadata header from the exact PDF bytes."""
+
+    if len(raw) < _MIN_BINARY_PDF_FRAME_BYTES:
+        raise DriveCaseFolderEngineError(
+            "drive_case_pdf_response_invalid",
+            "Drive case PDF service returned an invalid response.",
+            status_code=502,
+        )
+    header_size = int.from_bytes(raw[:4], "big")
+    if not 0 < header_size <= MAX_BINARY_PDF_FRAME_HEADER_BYTES:
+        raise DriveCaseFolderEngineError(
+            "drive_case_pdf_response_invalid",
+            "Drive case PDF service returned an invalid response.",
+            status_code=502,
+        )
+    if len(raw) <= 4 + header_size:
+        raise DriveCaseFolderEngineError(
+            "drive_case_pdf_response_invalid",
+            "Drive case PDF service returned an invalid response.",
+            status_code=502,
+        )
+    try:
+        header = json.loads(raw[4 : 4 + header_size].decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise DriveCaseFolderEngineError(
+            "drive_case_pdf_response_invalid",
+            "Drive case PDF service returned an invalid response.",
+            status_code=502,
+        ) from None
+    if not isinstance(header, dict) or set(header) != _BINARY_HEADER_KEYS:
+        raise DriveCaseFolderEngineError(
+            "drive_case_pdf_response_invalid",
+            "Drive case PDF service returned an invalid response.",
+            status_code=502,
+        )
+    return header, raw[4 + header_size :]
+
+
+def _is_route_not_found(raw: bytes) -> bool:
+    """True only for the Engine's deny-by-default internal route answer."""
+
+    try:
+        document = json.loads(bytes(raw).decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return False
+    if not isinstance(document, Mapping) or document.get("ok") is not False:
+        return False
+    error = document.get("error")
+    return isinstance(error, Mapping) and error.get("code") == "not_found"
+
+
 class CloudflareDriveCaseFolderEngineClient:
     """Private Service Binding client; one closed validation per operation."""
 
-    def __init__(self, binding: object | None = None) -> None:
+    def __init__(
+        self,
+        binding: object | None = None,
+        *,
+        caller_id: object | None = None,
+        credential: object | None = None,
+        request_factory: object | None = None,
+    ) -> None:
         if binding is None or any(
             not callable(getattr(binding, operation, None))
             for operation in DRIVE_CASE_FOLDER_OPERATIONS
         ):
             raise ValueError("engine binding must expose every drive case-folder RPC")
         self._binding = binding
+        # #4379: the byte route is opt-in on the same binding and the same
+        # existing P01 caller. Without a complete trusted transport the client
+        # stays on the RPC it has always used, so an un-configured isolate
+        # never half-converts and no second Engine authority appears.
+        self._binary_transport = _binary_transport(
+            binding,
+            caller_id=caller_id,
+            credential=credential,
+            request_factory=request_factory,
+        )
 
     def __repr__(self) -> str:
         return "CloudflareDriveCaseFolderEngineClient(configured)"
@@ -315,17 +440,136 @@ class CloudflareDriveCaseFolderEngineClient:
             raise self._malformed(PDF_CANDIDATES_OPERATION)
         return {"files": files, "more": result["more"], "direct_child_only": True}
 
-    async def read_pdf(
+    async def read_pdf_bytes(
         self, *, workspace_ref: str, project_id: str, file_id: object
-    ) -> dict[str, Any]:
+    ) -> tuple[dict[str, Any], bytes]:
+        """One authorized case PDF as raw bytes plus its file projection.
+
+        #4379 hop-2: the browser reads these bytes directly, so this seam no
+        longer re-encodes a whole PDF into a JSON string on the way out. The
+        revision and ancestry evidence is still validated -- it is trust input,
+        not browser payload, so it is checked and then dropped.
+        """
+
         bounded_file_id = _bounded_text(file_id, MAX_PDF_FILE_ID_CHARS)
         if bounded_file_id is None:
             raise DriveCaseFolderEngineError(
                 "invalid_file_id", "PDF selection is invalid.", status_code=400
             )
+        frame = await self._pdf_read_frame(
+            workspace_ref=workspace_ref, project_id=project_id, file_id=bounded_file_id
+        )
+        if frame is None:
+            return await self._read_pdf_bytes_over_rpc(
+                workspace_ref=workspace_ref, project_id=project_id, file_id=bounded_file_id
+            )
+        header, payload = frame
+
+        file_body = self._pdf_file_body(header.get("file"), PDF_READ_OPERATION)
+        if file_body["intake_state"] != "browser_pdf_ready":
+            raise self._malformed(PDF_READ_OPERATION)
+
+        byte_size = header.get("byte_size")
+        if (
+            isinstance(byte_size, bool)
+            or not isinstance(byte_size, int)
+            or byte_size < 1
+            or byte_size > MAX_PDF_BYTES
+            or len(payload) != byte_size
+            or not payload.startswith(b"%PDF-")
+        ):
+            raise self._malformed(PDF_READ_OPERATION)
+
+        digest = header.get("sha256")
+        if (
+            not isinstance(digest, str)
+            or _SHA256_HEX.fullmatch(digest) is None
+            or hashlib.sha256(payload).hexdigest() != digest
+        ):
+            raise self._malformed(PDF_READ_OPERATION)
+
+        if _bounded_text(header.get("contract_version"), 128) != PDF_BINARY_CONTRACT_VERSION:
+            raise self._malformed(PDF_READ_OPERATION)
+
+        self._pdf_version_body(header.get("version_evidence"))
+        self._pdf_authorization_body(header.get("authorization"))
+        return file_body, payload
+
+    async def _pdf_read_frame(
+        self, *, workspace_ref: str, project_id: str, file_id: str
+    ) -> tuple[dict[str, Any], bytes] | None:
+        """Read one internal byte frame, or None when the Engine route is absent.
+
+        None is returned only for the Engine's deny-by-default ``not_found``,
+        which is what an un-deployed Engine answers. Every other outcome --
+        transport fault, wrong content type, malformed frame, a bounded Engine
+        refusal -- is reported, so a real failure is never hidden by silently
+        retrying the slower path.
+        """
+
+        transport = self._binary_transport
+        if transport is None:
+            return None
+        binding, caller_id, credential, request_factory = transport
+        encoded = json.dumps(
+            {
+                "app_id": PDF_BINARY_READ_APP_ID,
+                "workspace_ref": workspace_ref,
+                "project_id": project_id,
+                "file_id": file_id,
+            },
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        request = request_factory(
+            f"{ENGINE_INTERNAL_ORIGIN}{PDF_BINARY_READ_PATH}",
+            method="POST",
+            headers={
+                "content-type": "application/json",
+                "accept": _BINARY_PDF_CONTENT_TYPE,
+                "x-padiem-engine-caller": caller_id,
+                "x-padiem-engine-credential": credential,
+            },
+            body=encoded,
+        )
+        try:
+            response = await binding.fetch(request.js_object)
+            raw = await read_bounded_service_binding_body(
+                response,
+                max_bytes=MAX_BINARY_PDF_FRAME_BYTES,
+                allow_text_fallback=False,
+            )
+            status = int(response.status)
+            content_type = response.headers.get("content-type")
+        except DriveCaseFolderEngineError:
+            raise
+        except Exception:
+            raise DriveCaseFolderEngineError(
+                "drive_case_folder_engine_failed",
+                "Drive case folder service is unavailable.",
+                status_code=502,
+            ) from None
+
+        if status != 200:
+            if status == 404 and _is_route_not_found(raw):
+                return None
+            raise self._engine_refusal(raw)
+        if not isinstance(content_type, str) or content_type.strip() != _BINARY_PDF_CONTENT_TYPE:
+            raise self._malformed(PDF_READ_OPERATION)
+        return _decode_binary_pdf_frame(raw)
+
+    async def _read_pdf_bytes_over_rpc(
+        self, *, workspace_ref: str, project_id: str, file_id: str
+    ) -> tuple[dict[str, Any], bytes]:
+        """Legacy fallback: the Engine still answers base64 here, we decode once.
+
+        Only this inbound RPC wire carries base64; the bytes handed to the
+        caller are raw, so no second encode happens on the way out.
+        """
+
         result = await self._call(
             PDF_READ_OPERATION,
-            {"workspace_ref": workspace_ref, "project_id": project_id, "file_id": bounded_file_id},
+            {"workspace_ref": workspace_ref, "project_id": project_id, "file_id": file_id},
         )
         self._require_exact_keys(result, _PDF_READ_KEYS, PDF_READ_OPERATION)
         file_body = self._pdf_file_body(result.get("file"), PDF_READ_OPERATION)
@@ -351,34 +595,69 @@ class CloudflareDriveCaseFolderEngineClient:
         if len(payload) != byte_size or not payload.startswith(b"%PDF-"):
             raise self._malformed(PDF_READ_OPERATION)
 
-        version = result.get("version_evidence")
-        if not isinstance(version, Mapping) or set(version) != _PDF_VERSION_FIELDS:
-            raise self._malformed(PDF_READ_OPERATION)
-        version_body: dict[str, str | None] = {}
-        for key in _PDF_VERSION_FIELDS:
-            value = version.get(key)
-            if value is not None and _bounded_text(value, 512) is None:
-                raise self._malformed(PDF_READ_OPERATION)
-            version_body[key] = value
-
-        authorization = result.get("authorization")
-        if (
-            not isinstance(authorization, Mapping)
-            or set(authorization) != _PDF_AUTHORIZATION_FIELDS
-            or authorization.get("direct_parent_proof") is not True
-            or authorization.get("source_type") != "drive"
-        ):
-            raise self._malformed(PDF_READ_OPERATION)
+        self._pdf_authorization_body(result.get("authorization"))
         if _bounded_text(result.get("contract_version"), 128) is None:
             raise self._malformed(PDF_READ_OPERATION)
+        self._pdf_version_body(result.get("version_evidence"))
 
-        return {
-            "file": file_body,
-            "content_base64": encoded,
-            "byte_size": byte_size,
-            "version_evidence": version_body,
-            "authorization": {"direct_parent_proof": True, "source_type": "drive"},
-        }
+        return file_body, payload
+
+    @staticmethod
+    def _pdf_version_body(value: object) -> dict[str, Any]:
+        """Closed provider revision evidence.
+
+        Drive projects ``version`` as an integer and the rest as strings, so each
+        field is checked against the type the producer actually sends. Accepting
+        either type for either field would let a fabricated revision through.
+        """
+
+        if not isinstance(value, Mapping) or set(value) != _PDF_VERSION_FIELDS:
+            raise CloudflareDriveCaseFolderEngineClient._malformed(PDF_READ_OPERATION)
+        body: dict[str, Any] = {}
+        for key in _PDF_VERSION_FIELDS:
+            item = value.get(key)
+            if item is None:
+                body[key] = None
+            elif key == "version":
+                if isinstance(item, bool) or not isinstance(item, int) or item < 0:
+                    raise CloudflareDriveCaseFolderEngineClient._malformed(PDF_READ_OPERATION)
+                body[key] = item
+            elif not isinstance(item, str) or _bounded_text(item, 512) is None:
+                raise CloudflareDriveCaseFolderEngineClient._malformed(PDF_READ_OPERATION)
+            else:
+                body[key] = item
+        return body
+
+    @staticmethod
+    def _pdf_authorization_body(value: object) -> dict[str, Any]:
+        if (
+            not isinstance(value, Mapping)
+            or set(value) != _PDF_AUTHORIZATION_FIELDS
+            or value.get("direct_parent_proof") is not True
+            or value.get("source_type") != "drive"
+        ):
+            raise CloudflareDriveCaseFolderEngineClient._malformed(PDF_READ_OPERATION)
+        return {"direct_parent_proof": True, "source_type": "drive"}
+
+    @staticmethod
+    def _engine_refusal(raw: bytes) -> DriveCaseFolderEngineError:
+        """Map one bounded Engine refusal to the seam's existing taxonomy."""
+
+        try:
+            document = json.loads(bytes(raw).decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return CloudflareDriveCaseFolderEngineClient._malformed(PDF_READ_OPERATION)
+        if not isinstance(document, Mapping) or document.get("ok") is not False:
+            return CloudflareDriveCaseFolderEngineClient._malformed(PDF_READ_OPERATION)
+        code, _message = CloudflareDriveCaseFolderEngineClient._validated_error(
+            document, PDF_READ_OPERATION
+        )
+        if code not in _ERROR_TAXONOMY:
+            return DriveCaseFolderEngineError(
+                "drive_case_folder_failed", _DEFAULT_ERROR[1], status_code=502
+            )
+        status_code, message = _ERROR_TAXONOMY[code]
+        return DriveCaseFolderEngineError(code, message, status_code=status_code)
 
     async def review_pdf_extraction(
         self,
@@ -655,6 +934,14 @@ def drive_case_folder_engine_seam_snapshot() -> dict[str, Any]:
         "binding_name": PADIEM_AI_ENGINE_BINDING_NAME,
         "operations": list(DRIVE_CASE_FOLDER_OPERATIONS),
         "pdf_operations": list(DRIVE_CASE_PDF_OPERATIONS),
+        # #4379: the byte frame is used only when a caller id, credential and
+        # request factory are composed. The Base64 RPC remains the answer of an
+        # Engine that has not deployed the route yet, so the snapshot declares
+        # the capability instead of claiming an active conversion.
+        "pdf_read_binary_route": PDF_BINARY_READ_PATH,
+        "pdf_read_binary_transport_composed_by_default": False,
+        "pdf_read_app_id_is_canonical_drive_reader": True,
+        "legacy_base64_rpc_fallback_requires_missing_route": True,
         "browser_selects_endpoint": False,
         "response_schema_closed": True,
         "raw_engine_error_text": False,
@@ -676,6 +963,12 @@ __all__ = [
     "DRIVE_CASE_PDF_OPERATIONS",
     "MAX_FOLDER_QUERY_CHARS",
     "MAX_CANDIDATE_FOLDERS",
+    "MAX_PDF_BYTES",
+    "MAX_BINARY_PDF_FRAME_BYTES",
+    "MAX_BINARY_PDF_FRAME_HEADER_BYTES",
+    "PDF_BINARY_CONTRACT_VERSION",
+    "PDF_BINARY_READ_APP_ID",
+    "PDF_BINARY_READ_PATH",
     "DriveCaseFolderEngineError",
     "CloudflareDriveCaseFolderEngineClient",
     "drive_case_folder_engine_seam_snapshot",

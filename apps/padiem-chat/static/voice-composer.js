@@ -273,7 +273,14 @@
     }
 
     function handleInterim(preview) {
-      state.interim = typeof preview === "string" ? preview : "";
+      /* #4643 M1: the shared adapter writes the live transcript into the input
+       * box, so the preview line must not repeat the same words. A run without
+       * the live input (a provider that has no interim at all) keeps the
+       * preview. */
+      const live = run && run.adapter && typeof run.adapter.writesLiveInput === "function"
+        ? run.adapter.writesLiveInput() === true
+        : false;
+      state.interim = live ? "" : (typeof preview === "string" ? preview : "");
       render();
     }
 
@@ -339,9 +346,15 @@
         if (isSameRun(myRun)) stop("user-stopped");
       }
       function handleTurnComplete(event) {
-        // The recognizer fires this only after Stop, all 2xx transcript chunks
-        // (including the tail) and their editable commits complete.
-        if (stoppingRun !== myRun || !event || event.accepted !== true ||
+        /* #4643: a confirmed Live turn is an accepted turn. The recognizer may
+         * report it while the run is still open (Mode 2/3/4 need one auto-send
+         * per utterance without closing the microphone) or while the run is
+         * stopping (the reviewed chunk path reports it after Stop).
+         *
+         * The event carries no send of its own: the mode gate in the shared
+         * voice menu refuses to submit in the basic mode, so Mode 1 stays
+         * manual and Mode 2/3/4 submit exactly once per accepted turn. */
+        if ((!isSameRun(myRun) && stoppingRun !== myRun) || !event || event.accepted !== true ||
             event.endOfTurn !== true || !event.finalId || !state.authenticated ||
             !state.identityKey || state.composing || input.disabled ||
             myRun.initialInput || myRun.manuallyEdited) return;
@@ -747,6 +760,10 @@
       toggle: toggle,
       invalidate: invalidate,
       setRecognizerFactory: setRecognizerFactory,
+      /* #4643: the wiring stage must be able to tell whether the recognizer
+       * it would install is still the one in place, so it never detaches a
+       * factory another owner registered. */
+      getRecognizerFactory: function () { return factory; },
       handleIdentityKey: handleIdentityKey,
       destroy: destroy,
       getStatus: getStatus,
@@ -796,6 +813,14 @@
     createVoiceComposer: createVoiceComposer,
     init: init,
     registerRecognizerFactory: registerRecognizerFactory,
+    /* #4643: the wiring stage needs to know whether the recognizer it would
+     * install is still the one in place, so it never detaches a factory
+     * another owner registered. */
+    getRecognizerFactory: function () {
+      return controller && typeof controller.getRecognizerFactory === "function"
+        ? controller.getRecognizerFactory()
+        : null;
+    },
     autoInit: autoInit,
     getController: function () { return controller; },
   };

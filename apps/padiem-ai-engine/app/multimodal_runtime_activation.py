@@ -372,9 +372,11 @@ def valid_payload(app_id: str, ref: str = _VALID_REF) -> dict[str, Any]:
             "max_tokens": 64,
             "required_capabilities": ["chat", "image"],
             "model_policy": {
-                "model": "b14/auto",
+                # #5002: the synthetic probe stays synthetic and offline. It
+                # carries an inert explicit route because the suspended Router
+                # auto route is never a valid Engine model.
+                "model": "testowner/example-model.v1",
                 "allow_external_fallback": False,
-                "max_attempts": 1,
             },
         },
         "messages": [{"role": "user", "content": "synthetic a6 probe"}],

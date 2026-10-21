@@ -76,6 +76,11 @@ class ExecutiveInboxTests(unittest.TestCase):
         self.assertEqual(card.due_date, date(2026, 9, 20))
         self.assertFalse(hasattr(card, "approve"))
         self.assertFalse(hasattr(self.projector, "approve"))
+        from dataclasses import replace
+        original = 'Bearer sk-test-demo-123456789012345678901234567890'
+        with_original = replace(card, title=original, summary=original)
+        self.assertEqual(with_original.safe_dict()['title'], original)
+        self.assertEqual(with_original.safe_dict()['summary'], original)
         rendered = card.safe_dict()
         self.assertEqual(rendered["target_version"], 1)
         self.assertEqual(rendered["action_fingerprint"], "a" * 64)

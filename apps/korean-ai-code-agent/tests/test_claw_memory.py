@@ -65,6 +65,21 @@ def make_party_candidate(workspace_id: str = "ws-a") -> ClawMemoryCandidate:
 
 
 class ClawMemoryContractTests(unittest.TestCase):
+    def test_long_raw_excerpt_and_business_text_are_not_rejected(self):
+        source = ClawMemorySourceRef(
+            source_id="src-long", workspace_id="ws-a", origin=ClawSourceOrigin.PASTE,
+            body_sha256=sha256_text("a" * 9000), created_at=T0,
+            raw_excerpt="a" * 9000,
+        )
+        self.assertEqual(len(source.raw_excerpt), 9000)
+        candidate = ClawMemoryCandidate(
+            candidate_id="cand-long", workspace_id="ws-a", kind=ClawMemoryKind.PARTY,
+            payload={"name": "b" * 6000, "role": "customer"},
+            source=source, created_at=T0,
+        )
+        self.assertEqual(candidate.payload["name"], "b" * 6000)
+
+
     def test_party_item_price_records_are_workspace_scoped(self):
         party = ClawPartyMemory(
             memory_id="mem-p1",
@@ -263,16 +278,25 @@ class ClawMemoryContractTests(unittest.TestCase):
         self.assertEqual([a.alert_id for a in store.list_alerts("ws-a", member_id="member-2")], ["alert-2"])
         self.assertEqual(len(store.list_alerts("ws-a", member_id="member-1")), 2)
 
-    def test_safe_projection_excludes_raw_body(self):
+    def test_owner_projection_carries_the_original_body_and_diagnostics_omit_it(self):
+        """#5360: the owner reads their own original business text in full.
+
+        A diagnostic or log projection keeps the body digest and drops the
+        owner's original text, so the text never reaches a log.
+        """
         store = InMemoryClawMemoryStore()
         store.submit_candidate(make_party_candidate(), proposal_id="prop-1")
         projection = store.projection("ws-a")
         rendered = repr(projection)
-        self.assertNotIn(RAW_BODY, rendered)
+        self.assertIn(RAW_BODY, rendered)
         self.assertIn(sha256_text(RAW_BODY), rendered)
+        diagnostic = store.projection("ws-a", include_raw=False)
+        self.assertNotIn(RAW_BODY, repr(diagnostic))
+        self.assertIn(sha256_text(RAW_BODY), repr(diagnostic))
         source = make_source()
-        self.assertNotIn("raw_excerpt", source.safe_dict())
-        self.assertIn("raw_excerpt", source.safe_dict(include_raw=True))
+        self.assertEqual(source.safe_dict()["raw_excerpt"], RAW_BODY)
+        self.assertEqual(source.safe_dict(include_raw=True)["raw_excerpt"], RAW_BODY)
+        self.assertEqual(source.safe_dict(include_raw=False).get("raw_excerpt"), None)
 
     def test_cross_workspace_candidate_and_access_fail_closed(self):
         with self.assertRaises(ClawMemoryError):

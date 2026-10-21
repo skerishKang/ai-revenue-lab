@@ -448,39 +448,9 @@ def test_client_reuses_the_adapter_validator_object() -> None:
         assert client_validator is adapter_validator
 
 
-def test_client_source_declares_no_second_grammar() -> None:
-    import inspect
-
-    import kagent.p01_orchestration_client as client_mod
-
-    source = inspect.getsource(client_mod)
-    # The client keeps the reviewed bounded Engine error-code classifier and
-    # the closed PC device-hint grammar (#5015). It must not grow a second
-    # subject grammar: no local alphanumeric validation and no duplicate
-    # subject-length rule.
-    assert source.count("re.compile") == 1
-    assert "_BOUNDED_ENGINE_ERROR_CODE_RE" in source
-    assert "isalnum" not in source
-    assert "len(request.subject_id) > 256" not in source
-
-
-def test_client_uses_the_shared_pc_device_identity_grammar() -> None:
-    """#5172: the PC device identity has exactly one grammar.
-
-    The client used to keep its own copy of the device-id pattern. The
-    composed Mesh node identity (``node/<domain>/<node-id>``) then existed in
-    one place only, and the plan boundary refused the value the directory had
-    already proved. The client now uses the shared contract, and this test
-    pins that it does not grow a local copy again.
-    """
-    import inspect
-
-    import kagent.p01_orchestration_client as client_mod
-
-    source = inspect.getsource(client_mod)
-    assert (
-        "from padiem_ai_core.pc_device_identity import is_pc_device_id" in source
-    )
-    assert "_PC_DEVICE_ID_RE" not in source
-    assert "node/" not in source, "the client must not restate the grammar"
-    assert inspect.getsource(client_mod).count("re.compile") == 1
+# #5141: these two source-grammar contracts moved to
+# ``tests/test_p01_orchestration_client.py`` (class
+# ``P01ClientSourceGrammarContractTests``). The KAgent CI lane discovers
+# ``unittest.TestCase`` cases only, so a pytest-style module contributed zero
+# cases and these assertions were never executed by any CI lane. The
+# assertion text is unchanged; do not add a second copy here.

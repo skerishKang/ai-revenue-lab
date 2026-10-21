@@ -280,6 +280,57 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   }
 }
 
+/* CENTRAL_OWNER_HOME_VISUAL_LOCK_20261015 (narrow-window completion 2026-10-21)
+ * The lock above covers the wide screen. The narrow window had the same
+ * problem in a different layer: the reading layer swaps the conversation
+ * sheet and dims the artwork there, and the reading layer's surface tokens
+ * change the panel and the composer gradient. The first screen is the
+ * authority there as well, so the same values are declared for the narrow
+ * window and for the chat state. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation.conversation {
+    background: rgba(242, 245, 247, .90) !important;
+    border-color: rgba(255, 255, 255, .58) !important;
+    box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72) !important;
+    backdrop-filter: blur(30px) saturate(106%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(106%) !important;
+  }
+  /* The artwork keeps the first screen's narrow-window composition. */
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
+    right: -24vw !important;
+    width: 82vw !important;
+    background-position: right 52% !important;
+    background-size: auto 72vh !important;
+    opacity: .22 !important;
+    filter: saturate(.52) contrast(.86) brightness(1.16) blur(.4px) !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
+    right: -34vw !important;
+    width: 94vw !important;
+    opacity: .16 !important;
+  }
+}
+
+/* The surface tokens the panel and the composer read are the first screen's
+ * values in the chat state too, so the same frame and the same input box are
+ * drawn before and after the conversation starts. The Claw workspace keeps the
+ * reading layer's own tokens, which is a different surface.
+ *
+ * The shell portrait keeps the first screen's strength for the same reason:
+ * the picture is the background, and the background does not change when a
+ * message is sent. The shell's reveal animation, its mask and its settle
+ * behaviour are untouched. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
+  --glass-chat-surface: rgba(238, 242, 245, .82);
+  --glass-chat-border: rgba(255, 255, 255, .58);
+  --glass-composer-surface: rgba(248, 250, 251, .90);
+  --glass-shell-max: 1;
+}
+
 
 /* CENTRAL_CONTINUOUS_CHAT_CLAW_20261015
  * The first Chat/Claw turn extends the original starter screen inside the

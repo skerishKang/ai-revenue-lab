@@ -1,0 +1,3 @@
+item_id,sku,item_name,unit,supplier_id,available_quantity,reserved_quantity,lead_time_days,unit_cost_amount_minor,currency
+item_demo_1,SKU-DEMO-1,데모 상품 A,EA,supplier_demo_1,120,10,2,9000,KRW
+item_demo_2,SKU-DEMO-2,데모 상품 B,EA,supplier_demo_1,45,0,2,6000,KRW

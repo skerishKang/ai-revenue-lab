@@ -138,7 +138,7 @@ class GoogleProviderNetworkPort(Protocol):
         url: str,
         headers: dict[str, str],
         body: bytes | None,
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> GoogleProviderHttpResponse:
         ...
@@ -176,19 +176,21 @@ class StdlibGoogleProviderNetwork:
         url: str,
         headers: dict[str, str],
         body: bytes | None,
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
     ) -> GoogleProviderHttpResponse:
         _validate_https_google_url(url)
         normalized_method = method.upper().strip()
         if normalized_method not in {"GET", "POST"}:
             raise ContractError("Google provider HTTP method is not allowed")
-        if (
+        # #4379: a provider request carries no PADIEM client deadline. None
+        # means the request waits for the provider's own answer.
+        if timeout_seconds is not None and (
             isinstance(timeout_seconds, bool)
             or not isinstance(timeout_seconds, int)
             or not 1 <= timeout_seconds <= 120
         ):
-            raise ContractError("timeout_seconds must be between 1 and 120")
+            raise ContractError("timeout_seconds must be a positive number or None")
         if (
             isinstance(max_response_bytes, bool)
             or not isinstance(max_response_bytes, int)
@@ -463,16 +465,18 @@ class GoogleReadonlyOAuthAuthority:
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         max_response_bytes: int,
         required_scopes: tuple[str, ...] | None,
     ) -> bytes:
-        if (
+        # #4379: a provider request carries no PADIEM client deadline. None
+        # means the request waits for the provider's own answer.
+        if timeout_seconds is not None and (
             isinstance(timeout_seconds, bool)
             or not isinstance(timeout_seconds, int)
             or not 1 <= timeout_seconds <= 120
         ):
-            raise ContractError("timeout_seconds must be between 1 and 120")
+            raise ContractError("timeout_seconds must be a positive number or None")
         if (
             isinstance(max_response_bytes, bool)
             or not isinstance(max_response_bytes, int)
@@ -528,7 +532,7 @@ class GoogleReadonlyOAuthAuthority:
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         required_scopes: tuple[str, ...] | None = None,
         max_response_bytes: int = DEFAULT_MAX_RESPONSE_BYTES,
     ) -> dict[str, Any]:
@@ -558,7 +562,7 @@ class GoogleReadonlyOAuthAuthority:
         base_url: str,
         path: str,
         query: dict[str, str],
-        timeout_seconds: int,
+        timeout_seconds: int | None,
         required_scopes: tuple[str, ...] | None = None,
         max_response_bytes: int = DEFAULT_MAX_RESPONSE_BYTES,
     ) -> str:

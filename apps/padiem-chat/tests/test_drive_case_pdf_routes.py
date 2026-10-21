@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import base64
 import json
 from types import SimpleNamespace
 
@@ -100,10 +99,10 @@ class FakeEngineClient:
             "direct_child_only": True,
         }
 
-    async def read_pdf(self, *, workspace_ref, project_id, file_id):
+    async def read_pdf_bytes(self, *, workspace_ref, project_id, file_id):
         self.calls.append(("read", {"workspace_ref": workspace_ref, "project_id": project_id, "file_id": file_id}))
-        return {
-            "file": {
+        return (
+            {
                 "file_id": file_id,
                 "name": "소장.pdf",
                 "mime_type": "application/pdf",
@@ -112,17 +111,8 @@ class FakeEngineClient:
                 "space_kind": "my_drive",
                 "intake_state": "browser_pdf_ready",
             },
-            "content_base64": base64.b64encode(PDF_BYTES).decode("ascii"),
-            "byte_size": len(PDF_BYTES),
-            "version_evidence": {
-                "version": "v-1",
-                "modified_time": "2026-10-01T00:00:00Z",
-                "md5_checksum": None,
-                "sha256_checksum": "a" * 64,
-                "head_revision_id": None,
-            },
-            "authorization": {"direct_parent_proof": True, "source_type": "drive"},
-        }
+            PDF_BYTES,
+        )
 
 
     async def review_pdf_extraction(self, *, workspace_ref, project_id, file_id, extraction):
@@ -219,17 +209,25 @@ def test_detail_passes_file_id_as_selection_intent_only():
     engine = FakeEngineClient()
     response = run(drive_case_pdf_detail(FakeRequest(file_id=FILE_ID, state=state(client=engine))))
     assert response.status_code == 200
-    body = json.loads(response.body)
-    assert base64.b64decode(body["content_base64"], validate=True) == PDF_BYTES
-    assert body["authorization"] == {"direct_parent_proof": True, "source_type": "drive"}
+    assert response.body == PDF_BYTES
+    assert response.media_type == "application/pdf"
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.headers["content-length"] == str(len(PDF_BYTES))
+    assert response.headers["content-disposition"] == (
+        "inline; filename*=UTF-8''%EC%86%8C%EC%9E%A5.pdf"
+    )
+    assert "no-store" in response.headers["cache-control"]
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "SAMEORIGIN"
     assert engine.calls[-1] == (
         "read",
         {"workspace_ref": WORKSPACE_REF, "project_id": PROJECT_ID, "file_id": FILE_ID},
     )
-    rendered = response.body.decode()
+    rendered = response.body.decode("latin-1")
     assert WORKSPACE_REF not in rendered
     assert PROJECT_ID not in rendered
     assert "resource_key" not in rendered
+    assert "content_base64" not in rendered
 
 
 def test_detail_rejects_all_query_authority_fields_before_engine_call():
@@ -245,7 +243,7 @@ def test_detail_rejects_all_query_authority_fields_before_engine_call():
 
 def test_engine_error_maps_without_raw_detail():
     class Failing(FakeEngineClient):
-        async def read_pdf(self, *, workspace_ref, project_id, file_id):
+        async def read_pdf_bytes(self, *, workspace_ref, project_id, file_id):
             raise DriveCaseFolderEngineError(
                 "execution_fallback_required",
                 "Selected PDF requires bounded execution fallback.",

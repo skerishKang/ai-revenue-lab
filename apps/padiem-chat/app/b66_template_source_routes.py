@@ -1,6 +1,6 @@
 """Authenticated B66 customer template source custody routes (#3884 Slice 1).
 
-    POST /api/b66/template-sources            (upload original, JSON+base64)
+    POST /api/b66/template-sources            (native binary; legacy JSON+base64 accepted)
     GET  /api/b66/template-sources            (owner-scoped list)
     GET  /api/b66/template-sources/{id}       (authenticated original download)
 
@@ -28,23 +28,14 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
-from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .bounded_request_body import read_bounded_request_body
 from .b66_template_source import (
     B66TemplateSourceError,
-    MAX_B66_TEMPLATE_SOURCE_BYTES,
     MAX_TEMPLATE_SOURCE_LIST,
     sanitize_original_filename,
     validate_template_source_id,
 )
 from .claw_memory_routes import _resolve_memory_workspace
-
-# The upload request is JSON with a base64 file payload. Base64 expands to
-# roughly 4/3 of the raw size; the rest of the envelope (media type, filename,
-# JSON syntax) is bounded metadata. The route ceiling therefore covers the
-# base64 expansion of the maximum original plus a bounded metadata envelope,
-# and is enforced incrementally by read_bounded_request_body (the #3476 JSON
-# binding contract, no multipart).
-MAX_TEMPLATE_SOURCE_REQUEST_BYTES = ((MAX_B66_TEMPLATE_SOURCE_BYTES + 2) // 3) * 4 + 8192
 
 _NO_STORE = {
     "Cache-Control": "private, no-store, max-age=0",
@@ -134,23 +125,27 @@ async def b66_template_source_upload(request: Request) -> Response:
         return _error(401, "unauthorized", "로그인이 필요합니다.")
     uid, workspace_id = scope
 
-    # Enforced incrementally during reception: a declared or streamed body
-    # above the ceiling is rejected with 413 before the payload is parsed.
+    # #4379: the route declares no PADIEM byte total, so the body is still read
+    # incrementally and the platform's own request limit is the only ceiling.
     try:
-        raw_body = await read_bounded_request_body(
-            request, max_bytes=MAX_TEMPLATE_SOURCE_REQUEST_BYTES
-        )
-    except RequestBodyTooLarge:
-        return _error(413, "template_source_request_too_large",
-                      "업로드 요청 크기가 허용 범위를 초과했습니다.")
+        raw_body = await read_bounded_request_body(request, max_bytes=None)
     except Exception:
         return _error(400, "template_source_body_invalid",
                       "원본 양식 본문을 해석할 수 없습니다.")
 
-    try:
-        body = json.loads(raw_body.decode("utf-8"))
-    except (UnicodeDecodeError, ValueError):
-        return _error(400, "template_source_body_invalid",
+    # Native binary upload: original bytes stay bytes end-to-end. The
+    # legacy JSON+Base64 intake remains readable for older clients.
+    is_binary = request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream"
+    if is_binary:
+        body = {
+            "filename": request.headers.get("x-padiem-template-filename"),
+            "media_type": request.headers.get("x-padiem-template-media-type"),
+        }
+    else:
+        try:
+            body = json.loads(raw_body.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError):
+            return _error(400, "template_source_body_invalid",
                       "원본 양식 본문을 해석할 수 없습니다.")
 
     if _reject_client_owner(body):
@@ -170,13 +165,10 @@ async def b66_template_source_upload(request: Request) -> Response:
         return _error(400, "template_source_filename_invalid",
                       "원본 양식 파일 이름이 올바르지 않습니다.")
 
-    payload = _decode_payload(body.get("content_base64"))
+    payload = raw_body if is_binary else _decode_payload(body.get("content_base64"))
     if payload is None or not payload:
         return _error(400, "template_source_body_invalid",
                       "원본 양식 본문을 해석할 수 없습니다.")
-    if len(payload) > MAX_B66_TEMPLATE_SOURCE_BYTES:
-        return _error(400, "template_source_body_invalid",
-                      "원본 양식 파일 크기가 허용 범위를 초과했습니다.")
 
     store = _store(request)
     put_fn = getattr(store, "put_template_source", None) if store is not None else None
@@ -303,7 +295,6 @@ async def b66_template_source_detail(request: Request) -> Response:
 
 
 __all__ = [
-    "MAX_TEMPLATE_SOURCE_REQUEST_BYTES",
     "b66_template_source_detail",
     "b66_template_source_list",
     "b66_template_source_upload",

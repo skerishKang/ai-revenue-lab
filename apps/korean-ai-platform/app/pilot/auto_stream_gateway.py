@@ -23,12 +23,17 @@ from starlette.routing import Router
 
 from app.pilot.errors import InvalidRequest, PilotError, StreamNotSupported
 from app.pilot.catalog import get_catalog_by_id
-from app.pilot.gateway import _validate_body
+from app.pilot.gateway import _platform_caller_denial, _validate_body
 from app.pilot.routing_policy import ROUTING_POLICY_ID
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
 from app.pilot.streaming_router import RouterStreamEvent, stream_routed_chat_completions
+from app.pilot.stream_error_contract import (
+    pilot_error_from_code,
+    public_stream_error,
+    safe_stream_error_details,
+)
 
 logger = logging.getLogger("korean-ai-platform.pilot.auto-stream-preview")
 
@@ -36,35 +41,19 @@ router = Router()
 
 _AUTO_STREAM_PREVIEW_PATH = "/v1/chat/completions/auto-stream-preview"
 
-_PRESTART_ERRORS: dict[str, tuple[int, str]] = {
-    "upstream_auth_failed": (401, "Provider 인증에 실패했습니다."),
-    "upstream_rate_limited": (429, "Provider rate limit에 도달했습니다. 잠시 후 다시 시도하십시오."),
-    "upstream_rate_limited_busy": (429, "Provider가 일시적으로 바쁩니다. 잠시 후 다시 시도하십시오."),
-    "kilo_free_rate_limited": (429, "Kilo Gateway 무료 티어 rate limit(200 req/hour)에 도달했습니다. 잠시 후 다시 시도하십시오."),
-    "upstream_timeout": (504, "Provider 요청 시간이 초과되었습니다. 나중에 다시 시도하십시오."),
-    "upstream_server_error": (502, "Provider 서버 오류가 발생했습니다. 나중에 다시 시도하십시오."),
-    "upstream_client_error": (502, "Provider가 요청을 거부했습니다."),
-    "malformed_upstream_response": (502, "Provider 응답 형식이 올바르지 않습니다."),
-    "upstream_response_too_large": (502, "Provider 응답이 허용된 크기를 초과하여 중단되었습니다."),
-    "pilot_not_configured": (503, "Business 14 Provider 연결이 준비되지 않았습니다."),
-    "no_safe_route": (503, "안전한 라우팅 경로를 찾을 수 없습니다."),
-    "empty_stream_answer": (502, "Provider가 표시 가능한 답변을 반환하지 않았습니다."),
-    "stream_ended_without_done": (502, "Provider 스트리밍 응답이 정상적으로 종료되지 않았습니다."),
-    "stream_execution_error": (502, "Provider 스트리밍 실행에 실패했습니다."),
-}
-
 
 def _gateway_request_id() -> str:
     return f"b14autostream_{uuid.uuid4().hex[:12]}"
 
 
 def _error_response(exc: PilotError, request_id: str) -> JSONResponse:
+    code, status_code, message = public_stream_error(exc)
     return JSONResponse(
-        status_code=exc.status_code,
+        status_code=status_code,
         content={
             "error": {
-                "code": exc.code,
-                "message": exc.message,
+                "code": code,
+                "message": message,
                 "request_id": request_id,
             }
         },
@@ -155,16 +144,12 @@ def _encode_data_frame(payload: dict[str, Any]) -> bytes:
 
 
 def _safe_error_details(code: str) -> tuple[int, str]:
-    return _PRESTART_ERRORS.get(
-        code,
-        (502, "Provider 스트리밍 응답을 안전하게 완료하지 못했습니다."),
-    )
+    return safe_stream_error_details(code)
 
 
 def _pilot_error_from_router_event(event: RouterStreamEvent) -> PilotError:
     code = event.error_code or "stream_execution_error"
-    status_code, message = _safe_error_details(code)
-    return PilotError(code=code, message=message, status_code=status_code)
+    return pilot_error_from_code(code)
 
 
 def _encode_stream_error(
@@ -337,6 +322,13 @@ async def pilot_auto_stream_preview(request: Request):
     iterator: AsyncIterator[RouterStreamEvent] | None = None
 
     try:
+        # The b14/auto lane spends platform-owned Provider credentials. Refuse an
+        # unproven caller before any credential is resolved or any Provider
+        # request is built.
+        denial = await _platform_caller_denial(request, gateway_request_id)
+        if denial is not None:
+            return denial
+
         try:
             raw = await request.json()
         except (ValueError, UnicodeDecodeError):

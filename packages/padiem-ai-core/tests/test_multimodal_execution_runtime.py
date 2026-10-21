@@ -57,8 +57,7 @@ def agent(**overrides) -> AgentProfile:
             "model": "padiem-profile/medium-unassigned",
             "temperature": 0.2,
             "allow_external_fallback": False,
-            "max_attempts": 1,
-        },
+            },
     }
     values.update(overrides)
     return AgentProfile(**values)
@@ -177,7 +176,6 @@ def test_runtime_composes_one_server_system_message_and_preserves_image_payload(
         "required_capabilities": ["chat", "image"],
         "optimize_for": "korean",
         "allow_external_fallback": False,
-        "max_attempts": 1,
     }
 
 

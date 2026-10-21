@@ -31,11 +31,11 @@ def test_single_source_all_surfaces_and_engine_budget_remain_bounded():
     assert (CONNECT_SECONDS, READ_SECONDS, WRITE_SECONDS, POOL_SECONDS) == FIXED
     assert values(build_provider_http_timeout()) == FIXED
     assert values(runtime_config.build_http_timeout()) == FIXED
-    assert gw._UPSTREAM_RETRY_BUDGET_SECONDS == GATEWAY_WALL_SECONDS == 45.0
+    assert gw._UPSTREAM_RETRY_BUDGET_SECONDS == GATEWAY_WALL_SECONDS == 600.0
     assert ENGINE_MAX_WALL_SECONDS == 60.0
     assert 0 < min(FIXED)
-    assert READ_SECONDS > GATEWAY_WALL_SECONDS
-    assert CONNECT_SECONDS == READ_SECONDS > GATEWAY_WALL_SECONDS
+    assert READ_SECONDS == GATEWAY_WALL_SECONDS
+    assert CONNECT_SECONDS == READ_SECONDS == GATEWAY_WALL_SECONDS
     assert gw._UPSTREAM_RETRY_MAX_RETRIES == 2
     assert values(build_provider_http_timeout()) == values(build_provider_http_timeout())
 

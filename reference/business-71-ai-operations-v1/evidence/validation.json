@@ -1,0 +1,147 @@
+{
+  "check_count": 28,
+  "checks": [
+    {
+      "detail": "HTTP 200, 1614 bytes",
+      "name": "index_served",
+      "passed": true
+    },
+    {
+      "detail": "the entry page references the local stylesheet and script",
+      "name": "index_references_local_assets",
+      "passed": true
+    },
+    {
+      "detail": "the entry page loads no remote script, style or image",
+      "name": "index_has_no_remote_asset",
+      "passed": true
+    },
+    {
+      "detail": "HTTP 200",
+      "name": "dataset_served:dashboard.json",
+      "passed": true
+    },
+    {
+      "detail": "the dataset states that it carries synthetic data",
+      "name": "dataset_declares_synthetic:dashboard.json",
+      "passed": true
+    },
+    {
+      "detail": "HTTP 200",
+      "name": "dataset_served:product_listing.json",
+      "passed": true
+    },
+    {
+      "detail": "the dataset states that it carries synthetic data",
+      "name": "dataset_declares_synthetic:product_listing.json",
+      "passed": true
+    },
+    {
+      "detail": "HTTP 200",
+      "name": "dataset_served:erp_items.json",
+      "passed": true
+    },
+    {
+      "detail": "the dataset states that it carries synthetic data",
+      "name": "dataset_declares_synthetic:erp_items.json",
+      "passed": true
+    },
+    {
+      "detail": "HTTP 200",
+      "name": "dataset_served:order_fulfillment.json",
+      "passed": true
+    },
+    {
+      "detail": "the dataset states that it carries synthetic data",
+      "name": "dataset_declares_synthetic:order_fulfillment.json",
+      "passed": true
+    },
+    {
+      "detail": "HTTP 200",
+      "name": "dataset_served:remote_agent.json",
+      "passed": true
+    },
+    {
+      "detail": "the dataset states that it carries synthetic data",
+      "name": "dataset_declares_synthetic:remote_agent.json",
+      "passed": true
+    },
+    {
+      "detail": "3 workflows",
+      "name": "dashboard_lists_three_workflows",
+      "passed": true
+    },
+    {
+      "detail": "3 recent runs",
+      "name": "dashboard_lists_three_recent_runs",
+      "passed": true
+    },
+    {
+      "detail": "4 channels",
+      "name": "product_lists_four_channels",
+      "passed": true
+    },
+    {
+      "detail": "the product detail HTML preview is present",
+      "name": "product_has_description_html",
+      "passed": true
+    },
+    {
+      "detail": "counts {'AUTO_OK': 3, 'DUPLICATE': 4, 'REVIEW_REQUIRED': 3} over 10 items",
+      "name": "erp_status_counts_match_items",
+      "passed": true
+    },
+    {
+      "detail": "statuses ['AUTO_OK', 'DUPLICATE', 'REVIEW_REQUIRED']",
+      "name": "erp_has_three_statuses",
+      "passed": true
+    },
+    {
+      "detail": "1 orders",
+      "name": "orders_lists_orders",
+      "passed": true
+    },
+    {
+      "detail": "4 shipments",
+      "name": "orders_have_shipments",
+      "passed": true
+    },
+    {
+      "detail": "the remote screen states that no session is connected",
+      "name": "remote_is_not_connected",
+      "passed": true
+    },
+    {
+      "detail": "the remote screen carries no execution event or screenshot",
+      "name": "remote_has_no_events",
+      "passed": true
+    },
+    {
+      "detail": "no customer contact marker",
+      "name": "dataset_has_no_contact_marker:dashboard.json",
+      "passed": true
+    },
+    {
+      "detail": "no customer contact marker",
+      "name": "dataset_has_no_contact_marker:product_listing.json",
+      "passed": true
+    },
+    {
+      "detail": "no customer contact marker",
+      "name": "dataset_has_no_contact_marker:erp_items.json",
+      "passed": true
+    },
+    {
+      "detail": "no customer contact marker",
+      "name": "dataset_has_no_contact_marker:order_fulfillment.json",
+      "passed": true
+    },
+    {
+      "detail": "no customer contact marker",
+      "name": "dataset_has_no_contact_marker:remote_agent.json",
+      "passed": true
+    }
+  ],
+  "result": "PASS",
+  "site": "reference/business-71-ai-operations-v1"
+}

@@ -1,0 +1,97 @@
+name: COM2 B62 Saved Outputs Canary
+# Isolated non-required canary; existing hosted Structured Answer browser QA remains unchanged.
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Exact open same-repository PR head SHA (40 lowercase hex)
+        required: true
+        type: string
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+concurrency:
+  group: com2-b62-saved-canary-${{ inputs.sha }}
+  cancel-in-progress: true
+jobs:
+  gate:
+    if: >-
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      selected: ${{ steps.target.outputs.selected }}
+      sha: ${{ steps.target.outputs.sha }}
+    steps:
+      - name: Select open exact-head same-repo PR and Saved Outputs QA scope
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED: ${{ inputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          api="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          prs="$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$api/commits/$EXPECTED/pulls?per_page=100")"
+          pr="$(PRS="$prs" python3 - <<'PY'
+          import json,os
+          sha=os.environ['EXPECTED']
+          repo=os.environ['GITHUB_REPOSITORY']
+          matches=[p for p in json.loads(os.environ['PRS']) if p['state']=='open' and p['head']['sha']==sha and p['head']['repo']['full_name']==repo]
+          print(matches[0]['number'] if len(matches)==1 else 'skip')
+          PY
+          )"
+          if [[ "$pr" == skip ]]; then echo "selected=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          files="$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$api/pulls/$pr/files?per_page=100")"
+          selected="$(FILES="$files" python3 - <<'PY'
+          import json,os
+          rows=json.loads(os.environ['FILES'])
+          paths={x.get('filename','') for x in rows} | {x.get('previous_filename','') for x in rows}
+          hit=len(rows)>=100 or any(p.startswith('apps/padiem-chat/') or p.startswith('packages/padiem-ai-core/') or p.startswith('packages/padiem-control-plane/') or p.startswith('apps/korean-ai-code-agent/') or p.startswith('apps/padiem-ai-engine/clients/python/') or p=='.github/scripts/b62_saved_outputs_browser_qa.py' for p in paths)
+          print('true' if hit else 'false')
+          PY
+          )"
+          echo "selected=$selected" >> "$GITHUB_OUTPUT"
+          echo "sha=$EXPECTED" >> "$GITHUB_OUTPUT"
+  saved-outputs:
+    needs: gate
+    if: ${{ needs.gate.outputs.selected == 'true' }}
+    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source, no persisted credentials
+        if: needs.gate.outputs.selected == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.gate.outputs.sha }}
+          persist-credentials: false
+          clean: true
+          path: sandbox-input
+      - name: Execute offline read-only COM2 Structured Answer browser QA
+        id: test
+        if: needs.gate.outputs.selected == 'true'
+        shell: bash
+        env:
+          SHA: ${{ needs.gate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          sudo -n /usr/local/sbin/padiem-ci-b62-saved-check "$SHA"
+      - name: Publish non-required saved outputs canary status on exact PR HEAD
+        if: ${{ always() && needs.gate.outputs.selected == 'true' && needs.gate.outputs.sha != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ needs.gate.outputs.sha }}
+          RESULT: ${{ steps.test.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$RESULT" == success ]]; then state=success; else state=failure; fi
+          export STATE="$state"
+          payload="$(python3 - <<'PY'
+          import json,os
+          print(json.dumps({'state':os.environ['STATE'],'context':'COM2 B62 saved outputs canary','description':'Offline Chromium Saved Outputs QA: '+os.environ['STATE'],'target_url':'https://github.com/'+os.environ['GITHUB_REPOSITORY']+'/actions/runs/'+os.environ['GITHUB_RUN_ID']}))
+          PY
+          )"
+          curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$SHA" --data "$payload"

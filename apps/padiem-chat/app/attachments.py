@@ -8,7 +8,10 @@ from typing import Any
 from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item
 from .documents import DocumentAttachment, DocumentValidationError, parse_document_item
 
-MAX_IMAGE_BYTES = 4 * 1024 * 1024
+# #4379: an attached image carries no PADIEM byte total. The platform
+# request limit and the provider limit are the real ceilings. The symbol is
+# retained for import compatibility and is no longer enforced.
+MAX_IMAGE_BYTES = 1024 * 1024 * 1024
 MAX_IMAGE_NAME_CHARS = 120
 ALLOWED_IMAGE_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 
@@ -42,12 +45,14 @@ def _safe_name(value: Any) -> str:
 class ImageAttachment:
     name: str
     media_type: str
-    base64_data: str = field(repr=False)
+    base64_data: str = field(default="", repr=False)
     byte_size: int = 0
+    binary_data: bytes | None = field(default=None, repr=False)
 
     @property
     def data_url(self) -> str:
-        return f"data:{self.media_type};base64,{self.base64_data}"
+        encoded = base64.b64encode(self.binary_data).decode("ascii") if self.binary_data is not None else self.base64_data
+        return f"data:{self.media_type};base64,{encoded}"
 
     def public_dict(self) -> dict[str, Any]:
         return {
@@ -59,6 +64,15 @@ class ImageAttachment:
 
 
 def _parse_image(item: dict[str, Any]) -> ImageAttachment:
+    if set(item) == {"type", "name", "media_type", "raw_bytes"}:
+        media_type = item.get("media_type")
+        if media_type not in ALLOWED_IMAGE_MEDIA_TYPES:
+            raise AttachmentValidationError("Unsupported image format")
+        name = _safe_name(item.get("name"))
+        data = item.get("raw_bytes")
+        if not isinstance(data, bytes) or not data or not _matches_magic(media_type, data):
+            raise AttachmentValidationError("Invalid image bytes")
+        return ImageAttachment(name=name, media_type=media_type, binary_data=data, byte_size=len(data))
     if set(item) != {"type", "name", "media_type", "base64"}:
         raise AttachmentValidationError("지원하지 않는 첨부 파일 항목이 있습니다.")
     media_type = item.get("media_type")
@@ -68,16 +82,12 @@ def _parse_image(item: dict[str, Any]) -> ImageAttachment:
     payload = item.get("base64")
     if not isinstance(payload, str) or not payload:
         raise AttachmentValidationError("사진 데이터가 올바르지 않습니다.")
-    if len(payload) > ((MAX_IMAGE_BYTES + 2) // 3) * 4:
-        raise AttachmentValidationError("사진은 4 MiB 이하만 첨부할 수 있습니다.")
     try:
         decoded = base64.b64decode(payload, validate=True)
     except (binascii.Error, ValueError) as exc:
         raise AttachmentValidationError("사진 데이터가 올바르지 않습니다.") from exc
     if not decoded:
         raise AttachmentValidationError("빈 사진은 첨부할 수 없습니다.")
-    if len(decoded) > MAX_IMAGE_BYTES:
-        raise AttachmentValidationError("사진은 4 MiB 이하만 첨부할 수 있습니다.")
     if not _matches_magic(media_type, decoded):
         raise AttachmentValidationError("사진 형식과 실제 파일 내용이 일치하지 않습니다.")
     return ImageAttachment(name=name, media_type=media_type, base64_data=payload, byte_size=len(decoded))
@@ -86,7 +96,8 @@ def _parse_image(item: dict[str, Any]) -> ImageAttachment:
 def _parse_document(item: dict[str, Any]) -> DocumentAttachment:
     has_text = "text" in item
     has_base64 = "base64" in item
-    if has_text == has_base64:
+    has_raw = "raw_bytes" in item
+    if sum((has_text, has_base64, has_raw)) != 1:
         raise AttachmentValidationError("문서는 텍스트 또는 바이너리 데이터 중 하나만 보낼 수 있습니다.")
     if has_text:
         try:

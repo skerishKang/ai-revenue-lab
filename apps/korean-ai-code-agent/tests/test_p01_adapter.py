@@ -258,10 +258,14 @@ class P01RequestFactoryTests(SyntheticPlusRouteTestCase):
     def test_timeout_policy_matches_current_core_bounds(self):
         with self.assertRaises(P01AdapterError):
             P01RequestFactory(timeout_seconds=0.5)
-        with self.assertRaises(P01AdapterError):
-            P01RequestFactory(timeout_seconds=3601)
+        # #4379: the declared timeout has no PADIEM ceiling any more, so a
+        # long-running job is bounded by the platform and by cancellation.
         bundle = P01RequestFactory(timeout_seconds=30).build(self.local_run("run_timeout"))
         self.assertEqual(bundle.context.timeout_seconds, 30.0)
+        long_run = P01RequestFactory(timeout_seconds=7200).build(
+            self.local_run("run_timeout_long")
+        )
+        self.assertEqual(long_run.context.timeout_seconds, 7200.0)
 
     def test_cloud_factory_requires_matching_active_unexpired_lease_and_preparing_state(self):
         run = self.cloud_run()
@@ -359,7 +363,7 @@ class P01ProjectionTests(unittest.TestCase):
             )
         )
         self.assertEqual(run.status, ClawRunStatus.WAITING_APPROVAL)
-        self.assertNotIn("secretvalue123", run.summary)
+        self.assertIn("secretvalue123", run.summary)
         projector.consume(self.event(OrchestrationEventKind.RUN_RESUMED, 4))
         self.assertEqual(run.status, ClawRunStatus.RUNNING)
         completion = self.event(OrchestrationEventKind.RUN_COMPLETED, 5)
@@ -461,7 +465,8 @@ class P01CoreAdapterTests(SyntheticPlusRouteTestCase, unittest.IsolatedAsyncioTe
         run = self.local_run()
         outcome = await P01CoreOrchestrationAdapter(runner).execute(run)
         self.assertEqual(run.status, ClawRunStatus.COMPLETED)
-        self.assertNotIn("secretvalue123", outcome.answer or "")
+        self.assertIn("secretvalue123", outcome.answer or "")
+        self.assertEqual(outcome.safe_dict()["answer"], outcome.answer)
         rendered = outcome.safe_dict()
         self.assertNotIn("provider", rendered)
         self.assertNotIn("model", rendered)

@@ -20,7 +20,6 @@ from .ops_contracts import (
     SupplierQuoteRequest,
 )
 from .ops_ledger import InMemoryOpsLedger
-from .security import redact_secrets
 
 
 class InboxCardKind(str, Enum):
@@ -135,8 +134,8 @@ class ExecutiveInboxCard:
             "kind": self.kind.value,
             "status": self.status.value,
             "priority": self.priority.value,
-            "title": redact_secrets(self.title),
-            "summary": redact_secrets(self.summary),
+            "title": self.title,
+            "summary": self.summary,
             "approval_id": self.approval_id,
             "action": self.action.value,
             "target_kind": self.target_kind.value,
