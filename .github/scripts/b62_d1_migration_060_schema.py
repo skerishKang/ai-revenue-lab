@@ -399,8 +399,8 @@ def _shape_from_live(master_rows, columns, indexes, foreign_keys, table, index) 
     }
 
 
-def classify(payload: object) -> str:
-    """Return ``missing``, ``pre_060``, ``exact`` or ``drift``."""
+def table_states(payload: object) -> dict[str, str]:
+    """Return the per-table disposition: missing, pre_060, exact or drift."""
     blocks = _blocks(payload, len(SCHEMA_STATEMENTS))
     master_rows = blocks[0]
     live: dict[str, dict] = {}
@@ -413,7 +413,7 @@ def classify(payload: object) -> str:
 
     pre = expected_shapes(with_release=False)
     post = expected_shapes(with_release=True)
-    states = {}
+    states: dict[str, str] = {}
     for entry in TABLES:
         table = entry["table"]
         shape = live[table]
@@ -425,6 +425,23 @@ def classify(payload: object) -> str:
             states[table] = "exact"
         else:
             states[table] = "drift"
+    return states
+
+
+def missing_tables(payload: object) -> list[str]:
+    """Return the reviewed tables that are absent from the live database.
+
+    Counting rows in an absent table is a SQL error, so the gate needs to know
+    which tables are missing before it reads any row count.
+    """
+    return [
+        table for table, state in table_states(payload).items() if state == "missing"
+    ]
+
+
+def classify(payload: object) -> str:
+    """Return ``missing``, ``pre_060``, ``exact`` or ``drift``."""
+    states = table_states(payload)
 
     values = set(states.values())
     if "drift" in values:
@@ -651,6 +668,12 @@ def main(argv: list[str] | None = None) -> int:
                 "B62_D1_MIGRATION_060_SCHEMA="
                 + classify(json.loads(Path(args[1]).read_text(encoding="utf-8"))).upper()
             )
+            return 0
+        if action == "missing-tables":
+            tables = missing_tables(
+                json.loads(Path(args[1]).read_text(encoding="utf-8"))
+            )
+            print("B62_D1_MIGRATION_060_MISSING_TABLES=" + ",".join(tables))
             return 0
         if action == "apply":
             # The applied payload is the reviewed file itself, byte for byte.

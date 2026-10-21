@@ -224,6 +224,7 @@ jobs:
           echo 'PRODUCTION_MUTATION=0'
 
       - name: Read only aggregate row counts
+        if: ${{ steps.schema.outputs.schema_state != 'missing' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -251,6 +252,21 @@ jobs:
                   raise SystemExit('row count is unreadable')
           print('B62_D1_MIGRATION_060_ROW_COUNTS_READ=PASS')
           PY
+          echo 'ROW_CONTENT_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Report the absent prerequisite tables instead of counting rows
+        if: ${{ steps.schema.outputs.schema_state == 'missing' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Counting rows in a table that is not there is a SQL error, and the
+          # D1 API answers a SQL error with HTTP 400. The prerequisite tables
+          # have to be applied by their own reviewed gates first, so the gate
+          # names them instead of reading a row count that cannot exist.
+          python3 .github/scripts/b62_d1_migration_060_schema.py missing-tables \
+            "${RUNNER_TEMP}/b62-d1-060-schema-before.json"
+          echo 'B62_D1_MIGRATION_060_ROW_COUNTS_READ=SKIPPED_TABLES_ABSENT'
           echo 'ROW_CONTENT_READ=0'
           echo 'PRODUCTION_MUTATION=0'
 
