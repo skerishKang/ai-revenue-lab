@@ -2500,6 +2500,11 @@
     const canonicalEventProjection = clawGeneralRequest ? window.PadiemClawRunEventProjection?.create?.() : null;
     const verifiedClawRecovery = clawGeneralRequest ? window.PadiemClawRecoveryTruth?.create?.() : null;
     const historicalStages = [];
+    // #5221: the accepted canonical envelopes of this run, so the shared work
+    // card can show the real stages of the run while it happens. Only an
+    // envelope the canonical projection accepted is collected, and the card
+    // validates the list again before it renders anything.
+    const liveOrchestrationEvents = [];
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
@@ -2554,6 +2559,17 @@
           if (label && marker) {
             marker.textContent = label;
             window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, "status");
+          }
+          // #5221: the shared work card shows the real stages of this run.
+          // The card re-validates the list, so an envelope that does not
+          // belong to this run is not rendered. The card is a presentation
+          // extra: the stage labels are already on the status chip, and
+          // drawing the card must never break the answer stream.
+          liveOrchestrationEvents.push(envelope);
+          try {
+            window.PadiemChatOrchestrationUI?.render?.(article, { events: liveOrchestrationEvents }, {});
+          } catch (_) {
+            // The answer does not depend on the card.
           }
           return false;
         }
@@ -3449,6 +3465,7 @@
       clawStatus.hidden = true;
       clawStatus.textContent = "";
       clawStatus.removeAttribute("data-state");
+      clawStatus.classList?.remove?.("padiem-activity-sweep");
       input.removeAttribute("aria-invalid");
       return;
     }
@@ -3456,6 +3473,8 @@
     clawStatus.textContent = message;
     if (state) clawStatus.dataset.state = state;
     else clawStatus.removeAttribute("data-state");
+    // #5453: the sweep only rides a state the run is really in.
+    clawStatus.classList?.toggle?.("padiem-activity-sweep", state === "running");
     if (localeKey) clawStatus.dataset.localeKey = localeKey;
     else delete clawStatus.dataset.localeKey;
     if (state === "error") input.setAttribute("aria-invalid", "true");
