@@ -78,8 +78,15 @@ def _prepare(worker: str, args=None):
     return prepare(worker, MAIN, *(args or (_engine() if worker == "engine" else _chat())))
 
 
-@pytest.mark.parametrize("worker,expected", [("engine", 18), ("chat", 27)])
-def test_prepare_creates_exact_one_version_pinned_candidate_and_safe_anchor(worker, expected):
+def _baseline_count(worker: str) -> int:
+    """The reviewed baseline size of the Worker, never a hand-written count."""
+    script = "padiem-ai-engine" if worker == "engine" else "padiem-chat"
+    return len(fixture.baseline_mod.load_baseline(script))
+
+
+@pytest.mark.parametrize("worker", ["engine", "chat"])
+def test_prepare_creates_exact_one_version_pinned_candidate_and_safe_anchor(worker):
+    expected = _baseline_count(worker)
     patch, anchor = _prepare(worker)
     assert len(patch["bindings"]) == expected + 1
     assert all(b == {"type": "inherit", "name": b["name"],
@@ -241,7 +248,7 @@ def test_file_outputs_are_creation_only_and_refuse_collisions(tmp_path, capsys):
     # {"settings": {...}} wrapper. Reinstating the original bug fails here.
     assert set(emitted) == {"bindings", "annotations"}
     assert "settings" not in emitted
-    assert len(emitted["bindings"]) == 19
+    assert len(emitted["bindings"]) == _baseline_count("engine") + 1
     assert emitted["bindings"][-1] == {
         "type": "d1", "name": OWNER_BINDING, "database_id": OWNER
     }
@@ -336,8 +343,9 @@ def test_rollback_workflow_uses_verified_cloudflare_deployment_schema():
     assert rollback_step.index("OWNER_D1_ROLLBACK_ATTEMPTED=YES") < rollback_step.index("-X POST")
 
 
-@pytest.mark.parametrize("worker,old_count", [("engine", 18), ("chat", 27)])
-def test_final_multipart_settings_payload_is_direct_object(worker, old_count):
+@pytest.mark.parametrize("worker", ["engine", "chat"])
+def test_final_multipart_settings_payload_is_direct_object(worker):
+    old_count = _baseline_count(worker)
     args = _engine() if worker == "engine" else _chat()
     patch, anchor = _prepare(worker)
     old_version = args[3]
@@ -656,7 +664,7 @@ def test_pre_promotion_snapshot_pins_original_version_and_requires_engine_only()
         "engine", MAIN, *args,
         promotion_latest_version="newer-undeployed-version"
     )
-    assert len(patch["bindings"]) == 19
+    assert len(patch["bindings"]) == _baseline_count("engine") + 1
     assert anchor["rollback_version_id"] == "engine-version"
     assert anchor["promotion_target_version_id"] == "newer-undeployed-version"
     assert anchor["latest_matches_served"] is False

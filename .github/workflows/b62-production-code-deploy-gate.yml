@@ -86,6 +86,10 @@ on:
       - ".github/tests/test_b62_binding_state_guard.py"
       - ".github/scripts/b62_owner_d1_release_preflight.py"
       - ".github/tests/test_b62_owner_d1_release_preflight.py"
+      # #5223: the reviewed Worker binding baseline and its comparison.
+      - ".github/scripts/b62_binding_baseline.py"
+      - ".github/tests/test_b62_binding_baseline.py"
+      - ".github/binding_baselines/**"
       - ".github/workflows/b54-owner-d1-controlled-connection.yml"
       - ".github/scripts/b62_owner_d1_release_transaction.py"
       - ".github/tests/test_b62_owner_d1_release_transaction.py"
@@ -345,6 +349,7 @@ jobs:
           python3 -m pytest \
             .github/tests/test_b62_owner_d1_release_transaction.py \
             .github/tests/test_b62_owner_d1_release_preflight.py \
+            .github/tests/test_b62_binding_baseline.py \
             .github/tests/test_b62_binding_state_guard.py -q
           echo "OWNER_D1_PROTECTED_RELEASE_SOURCE_CI=PASS"
           echo "PRODUCTION_MUTATION=0"
@@ -419,6 +424,13 @@ jobs:
           assert "PADIEM_CHAT_PUBLIC_BASE_URL: https://chat.padiem.net" in workflow or \
               "B62_PUBLIC_BASE_URL: https://chat.padiem.net" in workflow
           assert "python .github/scripts/b62_binding_state_guard.py" in workflow
+          # #5223: the live binding set is compared with the reviewed
+          # name+type baseline before any deploy mutation, so an unreviewed
+          # binding change fails closed instead of rotting the expectation.
+          assert "b62_binding_baseline.py" in workflow
+          assert "B62_BINDING_BASELINE=PASS" in workflow
+          assert "B62_BINDING_BASELINE_VALUES_EMITTED=0" in workflow
+          assert ".github/binding_baselines/**" in workflow
           assert "b62-settings-before-normalized.json" in workflow
           assert "PUBLIC_BASE_URL_NORMALIZATION=ALREADY_EXPECTED" in workflow
           assert "INJECTED_EXPECTED_" + "ONLY" not in workflow
@@ -773,6 +785,35 @@ jobs:
           PY
 
           echo "B62_CODE_DEPLOY_READONLY=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      # #5223: the live binding set must match the reviewed name+type
+      # baseline. The Owner D1 release path used to pin the binding set with
+      # a magic count, so every later reviewed additive install blocked it
+      # with an opaque count mismatch. Comparing by name and type keeps the
+      # expectation reviewable, and running it here means a binding change
+      # that nobody reviewed fails closed BEFORE any deploy mutation.
+      - name: Prove the live binding set matches the reviewed baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts"
+
+          chat_settings="${RUNNER_TEMP}/baseline-chat-settings.json"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/${B62_WORKER}/settings" "${chat_settings}"
+          python3 .github/scripts/b62_binding_baseline.py \
+            --worker "${B62_WORKER}" --payload "${chat_settings}"
+
+          engine_settings="${RUNNER_TEMP}/baseline-engine-settings.json"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/${P01_ENGINE_WORKER}/settings" "${engine_settings}"
+          python3 .github/scripts/b62_binding_baseline.py \
+            --worker "${P01_ENGINE_WORKER}" --payload "${engine_settings}"
+
+          echo "B62_BINDING_BASELINE=PASS"
+          echo "B62_BINDING_BASELINE_VALUES_EMITTED=0"
           echo "PRODUCTION_MUTATION=0"
 
   deploy-production-code:
