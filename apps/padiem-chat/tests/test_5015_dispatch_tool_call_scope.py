@@ -6,8 +6,8 @@
 reads a file therefore found no row for the second call and the INSERT was
 refused by the one-per-run constraint.
 
-These guards run the real migration files and the real store SQL. The pre-062
-schema must reproduce the refusal, 062 must keep every existing row (id, state,
+These guards run the real migration files and the real store SQL. The pre-063
+schema must reproduce the refusal, 063 must keep every existing row (id, state,
 nonce, result digest) byte-for-byte, and both dispatch scopes must stay
 protected afterwards: one legacy command per run, one dispatch per trusted tool
 call inside a run.
@@ -26,7 +26,7 @@ from app import oracle_mesh_read_return_routes as routes
 from app.history import D1HistoryStore, HistoryError, HistoryForbidden
 
 MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
-FORWARD = "062_oracle_mesh_dispatch_tool_call_scope.sql"
+FORWARD = "063_oracle_mesh_dispatch_tool_call_scope.sql"
 USER = "usr_" + "a" * 32
 OTHER_USER = "usr_" + "b" * 32
 RUN = "chat_pcq_" + "c" * 32
@@ -193,7 +193,7 @@ def _insert_dispatch(connection: sqlite3.Connection, **overrides) -> dict:
         "exit_code": None,
     }
     row.update(overrides)
-    columns = [name for name in row if name != "tool_call_ref"]
+    columns = list(row)
     connection.execute(
         "INSERT INTO oracle_mesh_dispatch (" + ",".join(columns) + ") "
         "VALUES (" + ",".join("?" for _ in columns) + ")",
@@ -220,7 +220,7 @@ def _count(connection: sqlite3.Connection) -> int:
     ).fetchone()[0]
 
 
-def test_pre_062_schema_refuses_the_second_call_of_one_run():
+def test_pre_063_schema_refuses_the_second_call_of_one_run():
     """The confirmed production shape: the DB, not the lane, refuses row two."""
     connection = _database(with_forward=False)
     try:
@@ -244,7 +244,7 @@ def test_pre_062_schema_refuses_the_second_call_of_one_run():
         connection.close()
 
 
-def test_new_store_refuses_to_stage_before_062_is_applied():
+def test_new_store_refuses_to_stage_before_063_is_applied():
     """Deploy order: a Worker ahead of the migration writes no row at all."""
     connection = _database(with_forward=False)
     try:
@@ -283,6 +283,7 @@ def test_forward_migration_preserves_every_existing_row():
             "idx_oracle_mesh_dispatch_state_expiry",
             "idx_oracle_mesh_dispatch_run_scope",
             "idx_oracle_mesh_dispatch_tool_call",
+            "idx_oracle_mesh_dispatch_tool_request",
         } <= index_names
     finally:
         connection.close()
@@ -347,6 +348,115 @@ def test_legacy_single_command_keeps_its_one_per_run_guard():
                 tool_request_ref=OTHER_LEGACY_REF, state="pending",
                 nonce_sha256=None, result_sha256=None, result_bytes=None,
             )
+    finally:
+        connection.close()
+
+
+def test_file_and_legacy_calls_coexist_in_either_order():
+    for legacy_first in (False, True):
+        connection = _database(with_forward=True)
+        try:
+            store = _store(connection)
+            steps = (
+                ("file", _tool_call_arguments(LIST_CALL)),
+                ("legacy", _legacy_arguments()),
+            )
+            if legacy_first:
+                steps = tuple(reversed(steps))
+            staged = {}
+            for name, arguments in steps:
+                staged[name] = asyncio.run(
+                    store.create_oracle_mesh_dispatch(**arguments)
+                )
+            assert _count(connection) == 2, legacy_first
+            assert _row(connection, staged["file"]["dispatch_id"])["tool_call_ref"] == LIST_CALL
+            assert _row(connection, staged["legacy"]["dispatch_id"])["tool_call_ref"] is None
+        finally:
+            connection.close()
+
+
+def test_expired_file_row_is_not_replaced_by_a_legacy_call():
+    """The legacy lane owns the run scope only; a file row is another dispatch."""
+    connection = _database(with_forward=True)
+    try:
+        store = _store(connection)
+        file_call = asyncio.run(store.create_oracle_mesh_dispatch(
+            **_tool_call_arguments(LIST_CALL),
+        ))
+        connection.execute(
+            "UPDATE oracle_mesh_dispatch SET expires_at='2026-10-21T00:00:00.000Z' "
+            "WHERE dispatch_id=?",
+            (file_call["dispatch_id"],),
+        )
+        connection.commit()
+        legacy = asyncio.run(store.create_oracle_mesh_dispatch(**_legacy_arguments()))
+        assert legacy["dispatch_id"] != file_call["dispatch_id"]
+        assert _count(connection) == 2
+        row = _row(connection, file_call["dispatch_id"])
+        assert row["tool_call_ref"] == LIST_CALL
+        assert row["tool_request_ref"] == LIST_CALL
+        assert row["state"] == "pending"
+        assert row["expires_at"] == "2026-10-21T00:00:00.000Z"
+        # The file call still replaces only its own expired row.
+        replaced = asyncio.run(store.create_oracle_mesh_dispatch(
+            **_tool_call_arguments(LIST_CALL),
+        ))
+        assert replaced["dispatch_id"] == file_call["dispatch_id"]
+        assert _count(connection) == 2
+        assert _row(connection, legacy["dispatch_id"])["tool_call_ref"] is None
+    finally:
+        connection.close()
+
+
+def test_pre_063_trusted_rows_keep_their_replay_defense():
+    """A row written before the scope column existed is still found by its call."""
+    connection = _database(with_forward=True)
+    try:
+        store = _store(connection)
+        arguments = _tool_call_arguments(LIST_CALL)
+        _insert_dispatch(
+            connection,
+            **{name: value for name, value in arguments.items()
+               if name != "tool_call_ref"},
+            dispatch_id="dsp_pre063", state="done",
+            nonce_sha256="n" * 64, result_sha256="e" * 64, result_bytes=1515,
+            termination="no_exit_code",
+        )
+        assert _row(connection, "dsp_pre063")["tool_call_ref"] is None
+        with pytest.raises(HistoryError, match="already executed"):
+            asyncio.run(store.create_oracle_mesh_dispatch(**arguments))
+        assert _count(connection) == 1
+        # A claimed-but-expired pre-063 row may already have run: neither lane
+        # restages it.
+        connection.execute(
+            "UPDATE oracle_mesh_dispatch SET state='pending', "
+            "expires_at='2026-10-21T00:00:00.000Z' WHERE dispatch_id='dsp_pre063'",
+        )
+        connection.commit()
+        with pytest.raises(HistoryError, match="execution is uncertain"):
+            asyncio.run(store.create_oracle_mesh_dispatch(**arguments))
+        with pytest.raises(HistoryError, match="execution is uncertain"):
+            asyncio.run(store.create_oracle_mesh_dispatch(**_legacy_arguments()))
+        assert _count(connection) == 1
+    finally:
+        connection.close()
+
+
+def test_old_and_new_row_shapes_cannot_duplicate_one_call():
+    """A Worker still writing the pre-063 shape and the new code dedupe together."""
+    connection = _database(with_forward=True)
+    try:
+        store = _store(connection)
+        arguments = _tool_call_arguments(LIST_CALL)
+        # The old shape: the same call staged without the scope column.
+        _race(store, {**arguments, "tool_call_ref": None})
+        outcome = asyncio.run(store.create_oracle_mesh_dispatch(**arguments))
+        assert _count(connection) == 1
+        assert _row(connection, outcome["dispatch_id"])["tool_call_ref"] is None
+        # The database itself refuses the second form of the same call.
+        with pytest.raises(sqlite3.IntegrityError, match="UNIQUE"):
+            _insert_dispatch(connection, dispatch_id="dsp_new_shape", **arguments)
+        assert _count(connection) == 1
     finally:
         connection.close()
 

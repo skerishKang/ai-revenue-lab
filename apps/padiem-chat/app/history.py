@@ -1849,11 +1849,15 @@ class D1HistoryStore:
         a distinct row for each call, while re-staging the exact same call still
         finds its terminal row and refuses a second execution.
 
-        The stored ``tool_call_ref`` (NULL for the legacy lane) is what 062's
-        two partial unique indexes enforce, and it is the database — not this
-        read-then-write — that decides a concurrent staging: the loser of an
-        INSERT race re-reads the winner's row and returns it only when it is
-        the same payload, never when a different call won.
+        The stored ``tool_call_ref`` (NULL for the legacy lane) is what 063's
+        indexes enforce, and it is the database — not this read-then-write —
+        that decides a concurrent staging: the loser of an INSERT race re-reads
+        the winner's row and returns it only when it is the same payload, never
+        when a different call won. The legacy lane is correlated to the
+        run-scoped rows only, so a trusted file call staged in the same run is
+        never selected, reused or replaced by it; the trusted lane keeps
+        correlating on ``tool_request_ref`` so a row written before 063 (which
+        has no scope column) is still found and still refuses a replay.
 
         ``evidence_ref`` and ``binding_ref`` are nullable on purpose. A PC that
         has never completed the native PC offer has no Broker binding and no
@@ -1929,7 +1933,12 @@ class D1HistoryStore:
             correlation_sql = "user_id=? AND run_id=? AND tool_request_ref=?"
             correlation_params = (user_id, run_id, tool_call_ref)
         else:
-            correlation_sql = "user_id=? AND run_id=?"
+            # The legacy single-command lane owns the run-scoped rows and
+            # nothing else. Selecting by run alone would read a trusted file
+            # call of the same run as if it were the legacy dispatch, and an
+            # expired pending file row would then be replaced — losing the
+            # file call's own replay protection.
+            correlation_sql = "user_id=? AND run_id=? AND tool_call_ref IS NULL"
             correlation_params = (user_id, run_id)
         owned = await self._first(
             "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
@@ -2013,7 +2022,7 @@ class D1HistoryStore:
                 tool_call_ref, "pending", expires_at, now,
             )
         except Exception:
-            # 062 makes the database the decider of a concurrent staging: two
+            # 063 makes the database the decider of a concurrent staging: two
             # requests can both read no row and then race to INSERT, and only
             # one of them can win. The loser resolves to the winner's row when
             # it is the exact same payload, and is refused otherwise — it never

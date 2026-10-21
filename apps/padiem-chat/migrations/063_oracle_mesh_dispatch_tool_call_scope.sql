@@ -16,7 +16,10 @@
 --
 -- Each rule is a partial unique index over exactly the rows it owns, so the
 -- legacy guard stays byte-for-byte equivalent to 047 and a run can hold one
--- legacy dispatch plus one dispatch per tool call.
+-- legacy dispatch plus one dispatch per tool call. A third, unpartial index
+-- keys a call by its request reference across every row: a Worker that still
+-- writes the pre-063 shape (scope NULL) and one that writes the new shape can
+-- therefore never stage the same call twice.
 --
 -- This is a forward rebuild because SQLite cannot alter a table constraint in
 -- place. Every column added by 048 (kind, command_text) and 049 (termination,
@@ -95,5 +98,13 @@ WHERE tool_call_ref IS NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_oracle_mesh_dispatch_tool_call
 ON oracle_mesh_dispatch (user_id, run_id, tool_call_ref)
 WHERE tool_call_ref IS NOT NULL;
+
+-- Cross-form rule: one call is one row whatever scope wrote it. A Worker that
+-- has not picked up the scope column writes the same call with tool_call_ref
+-- NULL; without this index the same call could exist once in each form and a
+-- restart could execute it twice. It also covers every pre-063 row, which has
+-- no scope value, so an existing dispatch is never re-created by the new code.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_oracle_mesh_dispatch_tool_request
+ON oracle_mesh_dispatch (user_id, run_id, tool_request_ref);
 
 PRAGMA foreign_keys=ON;
