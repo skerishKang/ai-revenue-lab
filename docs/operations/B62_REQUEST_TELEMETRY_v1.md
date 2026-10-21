@@ -35,7 +35,8 @@ permitted to perform (`LIVE_EXTERNAL_PROVISIONING=NO`, `DEPLOY=NO`).
 
 - Per request, the Worker emits **one structured JSON line** carrying the exact,
   locally-measured `duration_ms`, a correlation `request_id`, the matched
-  `route` template, and the `status`.
+  `route` template, and the `status`. When a response is an error, the event
+  may also carry only its bounded `error.code` identifier, never response text.
 - Counting, rate derivation, and alerting are left to the log pipeline that
   Cloudflare already provides: `wrangler tail`, **Workers Logs**, and
   **Logpush** into the team's existing log/metrics backend. This is the
@@ -79,6 +80,7 @@ One event per HTTP request, written by `app/request_telemetry.py` to the
 | `status` | integer HTTP status |
 | `duration_ms` | request wall-clock in milliseconds, non-negative |
 | `outcome` | `ok` (<400), `client_error` (4xx), `server_error` (5xx) |
+| `error_code` | optional; only on 4xx/5xx when a bounded JSON `error.code` is present |
 
 ## Evidence boundary (bounded, non-secret)
 
@@ -88,6 +90,7 @@ The event **must never** carry request material:
 - no request headers,
 - no cookies,
 - no request body,
+- no response body or message; only the bounded `error.code` identifier may be retained on errors,
 - no client address / IP,
 - no tenant or user identifier.
 
@@ -121,7 +124,7 @@ correlate a client call with its log entry.
 
 ## Tests
 
-`apps/padiem-chat/tests/test_request_telemetry.py` (29 network-free cases):
+`apps/padiem-chat/tests/test_request_telemetry.py` (40 network-free cases):
 request-id generation/echo/rejection, exact event key set, route-template (not
 raw path), no-request-material, outcome classification, duration, default
 emitter single-line JSON, emitter-failure resilience, non-HTTP scope pass-through,
