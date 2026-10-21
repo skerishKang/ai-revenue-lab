@@ -24,6 +24,10 @@
       "type": "secret_text"
     },
     {
+      "name": "B66_ALERT_RESEND_API_KEY",
+      "type": "secrets_store_secret"
+    },
+    {
       "name": "B66_MEMBERSHIP_ENFORCED",
       "type": "secret_text"
     },
