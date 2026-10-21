@@ -98,26 +98,53 @@ controller decides.
 
 Oracle had a MeshCentral server but **no executor, no systemd unit and no
 autostart**, so it could never take over even when the device was
-connected. The deployment adds:
+connected. It could not even import the executor: the deployed tree had no
+`padiem_ai_core`. The deployment adds:
 
 | Unit | Role |
 |---|---|
 | `padiem-mesh-failover.service` / `.timer` | one supervisor pass per minute: read the heartbeat, evaluate, write the decision, emit events |
-| `padiem-oracle-mesh-executor.service` | the executor, started only while Oracle is the active target |
+| `padiem-oracle-mesh-executor.service` | the executor. It **waits for its turn**: it only execs the executor when the decision names this host AND this host's own MeshCentral has the device connected. A host that cannot execute never claims. |
 
-The supervisor writes `failover-state.json`; the executor reads it
-through `decision_file_claim_gate`. The executor's own pending/outbox
-contract is unchanged: a restart resends the bytes it holds and never
-re-runs the command.
+The supervisor writes `failover-state.json`; the decision file also carries
+the confirmation streaks and the fencing epoch, because the window spans
+several passes and every pass is a fresh process.
 
 ### COM2 — the primary
 
 COM2 keeps its current units (`padiem-meshcentral.service`,
 `padiem-oracle-mesh-executor.service`, `padiem-mesh-health.timer`) and
-gains the heartbeat publisher, so the heartbeat states the **device
-connection** truth and not only "I am alive".
+gains the heartbeat publisher, so the heartbeat states the
+**device-connection** truth and not only "I am alive".
+
+### The health signal path
+
+```
+COM2  --(ssh, restricted key)-->  Oracle  --(ssh, read only)-->  COM1  --(Hermes CLI)-->  Telegram / Discord
+```
+
+The COM2 key is **restricted**: Oracle's `authorized_keys` pins it to the
+heartbeat receiver script, and the receiver validates the document and
+stores it. The key cannot run anything else.
+
+### The notification path
+
+The decision lives on Oracle, and the operator's channel is served by the
+Hermes CLI on COM1, which Oracle cannot reach. So the delivery is two
+hops and each hop is existing:
+
+* Oracle records the event in a durable local log and hands it to the
+  configured delivery command.
+* COM1 runs `PADIEM-Mesh-Failover-Notify`, which reads the event log from
+  Oracle over read-only SSH and hands a **new** event to the existing
+  `com2-mesh-notifier.cmd` (Hermes CLI → Telegram + Discord).
+
+The relay is a **notification** relay only: it decides nothing, it
+remembers the events it already delivered, and a failed delivery is not
+remembered so the next run retries it.
 
 ## 5. Known blocker — the device transport is still COM1-bound
+
 
 **Current state:** the target's agent reaches COM2 through COM1's SSH
 tunnel. If COM1 is down, or the tunnel task is retired, the agent has no
@@ -159,6 +186,7 @@ reviewed, reversible step.
 | `PADIEM-Mesh-Tunnel` | boot + every 5 min | `background-tunnel.vbs` -> `padiem-tunnel-wrapper.cmd` -> `padiem-tunnel.cmd` | retire only when the agent reaches a server without this tunnel |
 | `PADIEM-Grafana-Logs-COM1-Backup` | every 5 min | `background-grafana.vbs` | **not** Mesh work — keep |
 | `Hermes_Gateway` | gateway service | `Hermes_Gateway.vbs` | **not** Mesh work — keep (it is the operator notification path) |
+| `PADIEM-Mesh-Failover-Notify` | every 1 min | `mesh-failover-relay.ps1` | **new — notification only.** It relays a decision that was already made; it decides nothing |
 
 Existing task definitions and recovery copies are already on disk under
 `C:\Users\limone\Padiem\` (`task-backup-health-20261021.xml`,
