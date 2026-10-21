@@ -14,7 +14,14 @@ import sys
 from pathlib import Path
 
 from .erp_profile import all_profiles
+from .exporter import write_rows
 from .pipeline import run_pipeline
+from .template_binding import (
+    BINDING_REPORT_HEADERS,
+    bind_template,
+    binding_profile,
+    binding_report_rows,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -43,6 +50,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Comma separated import profiles to write.",
     )
     parser.add_argument(
+        "--template",
+        default=None,
+        help=(
+            "Optional real ERP import template (.xlsx) downloaded from the ERP "
+            "account. The template's own header row is read and bound to the "
+            "canonical fields; nothing is guessed."
+        ),
+    )
+    parser.add_argument(
         "--list-profiles",
         action="store_true",
         help="Print the available import profiles and exit.",
@@ -67,14 +83,36 @@ def main(argv: list[str] | None = None) -> int:
         part.strip() for part in str(args.profiles).split(",") if part.strip()
     )
 
+    extra_profiles = []
+    binding = None
+    if args.template:
+        binding = bind_template(args.template)
+        extra_profiles.append(
+            binding_profile(
+                binding,
+                profile_id="template_bound",
+                display_name=f"{binding.template_name} 기반 임포트 프로파일",
+            )
+        )
+
     report = run_pipeline(
         source=args.source,
         output_dir=args.out,
         extraction_file=args.extraction,
         profile_ids=profile_ids,
+        extra_profiles=extra_profiles,
     )
 
+    if binding is not None:
+        write_rows(
+            Path(args.out) / "template_binding_report.csv",
+            BINDING_REPORT_HEADERS,
+            binding_report_rows(binding),
+        )
+
     summary = report.to_public_dict()
+    if binding is not None:
+        summary["template_binding"] = binding.to_public_dict()
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0
 

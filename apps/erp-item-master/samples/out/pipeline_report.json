@@ -42,12 +42,12 @@
   "source_kind": "csv",
   "source_name": "source_items_raw.csv",
   "timings_ms": {
-    "detect_duplicates": 52.812,
-    "export": 6870.903,
-    "normalize": 1.941,
-    "read": 13.151,
-    "review": 0.081,
-    "total": 6938.888
+    "detect_duplicates": 0.62,
+    "export": 371.085,
+    "normalize": 0.92,
+    "read": 0.347,
+    "review": 0.077,
+    "total": 373.05
   },
   "unmapped_headers": [
     "담당자"
