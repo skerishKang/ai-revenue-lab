@@ -244,6 +244,20 @@ def test_pre_062_schema_refuses_the_second_call_of_one_run():
         connection.close()
 
 
+def test_new_store_refuses_to_stage_before_062_is_applied():
+    """Deploy order: a Worker ahead of the migration writes no row at all."""
+    connection = _database(with_forward=False)
+    try:
+        store = _store(connection)
+        with pytest.raises(sqlite3.OperationalError, match="tool_call_ref"):
+            asyncio.run(store.create_oracle_mesh_dispatch(
+                **_tool_call_arguments(LIST_CALL),
+            ))
+        assert _count(connection) == 0
+    finally:
+        connection.close()
+
+
 def test_forward_migration_preserves_every_existing_row():
     connection = _database(with_forward=False)
     try:
