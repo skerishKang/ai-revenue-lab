@@ -76,16 +76,20 @@ def browser():
 def test_conversation_clearance_follows_the_measured_composer_in_every_state():
     """The home state used a fixed inset that was smaller than the composer."""
     polish = POLISH_CSS.read_text(encoding="utf-8")
-    assert '.app-shell:is([data-state="home"], [data-state="chat"]) .conversation' in polish
+    assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation' in polish
     assert "var(--padiem-composer-clearance, 230px)" in polish
     # The software keyboard raises the fixed composer by its own inset, so the
     # reserved body space has to grow by the same amount.
     assert "var(--padiem-visual-keyboard-inset, 0px)" in polish
     assert "scroll-padding-bottom" in polish
-    # The Claw first-use landing keeps its own measured clearance and gap.
+    # The Claw workbench canvas and the Claw workspace strip use the same
+    # measured clearance instead of an arbitrary pixel inset.
     focus = FOCUS_CSS.read_text(encoding="utf-8")
-    assert "var(--padiem-visual-keyboard-inset, 0px)" in focus
-    assert "var(--padiem-composer-clearance, 218px)" in focus
+    assert "var(--padiem-composer-clearance" in focus
+    assert "max-height: calc(100dvh - 92px)" not in focus
+    workspace = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+    assert "var(--padiem-composer-clearance" in workspace
+    assert "0 280px" not in workspace
 
 
 def test_mobile_shell_uses_the_dynamic_viewport_height():

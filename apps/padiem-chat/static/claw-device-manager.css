@@ -4,6 +4,16 @@
   color: var(--text, #243f53);
   max-width: 820px;
 }
+/* The directory panel is mounted in the content column right above the fixed
+ * composer area, so it can never grow over the content it would hide. It
+ * keeps the shared lane's width and centering, and it reserves the fixed
+ * composer area below itself so its own rows stay clickable. */
+.claw-device-manager-panel {
+  width: min(840px, calc(100% - 40px));
+  margin: 0 auto calc(
+    var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)
+  );
+}
 .claw-device-manager[hidden], .claw-device-manager-panel[hidden],
 .claw-device-manager-list[hidden] { display: none !important; }
 .claw-device-manager-toggle {
@@ -140,12 +150,16 @@
 .claw-device-manager-select[aria-pressed="true"] { border-color: #19756b; font-weight: 650; }
 .claw-device-manager :focus-visible { outline: 3px solid var(--focus, #2a7db4); outline-offset: 3px; }
 :root[data-theme="dark"] .claw-device-manager,
-:root[data-theme="night"] .claw-device-manager {
+:root[data-theme="dark"] .claw-device-manager-panel,
+:root[data-theme="night"] .claw-device-manager,
+:root[data-theme="night"] .claw-device-manager-panel {
   --text: #e7eef6;
   --text-dim: #b8c5d4;
   --line: rgba(218,231,247,.2);
   --surface: #202b3c;
 }
+.claw-device-manager :focus-visible,
+.claw-device-manager-panel :focus-visible { outline: 3px solid var(--focus, #2a7db4); outline-offset: 3px; }
 @media (max-width: 580px) {
   .claw-device-manager-panel { padding: 13px; }
   .claw-device-manager-item { align-items: stretch; flex-direction: column; }

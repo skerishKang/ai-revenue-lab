@@ -87,13 +87,18 @@
   outline-offset: 2px;
 }
 
-/* Keep the end of a long answer AND the last home card clear of the fixed
- * composer. The JS value tracks the composer's MEASURED height, so a taller
- * composer (model row, attachment tray, the shared "My computers" row) can
- * never leave the last turn or the last starter card under the input.
+/* The fixed composer area owns the bottom of the viewport.
+ *
+ * Every document-scrolling content block that sits above the input reserves
+ * the composer's MEASURED height at its own end, so the last turn, a home
+ * card, an answer error card or the Claw connection status cell can never
+ * end under the fixed input. The JS value tracks the composer's real height,
+ * so a taller composer (model row, attachment tray, the shared "My computers"
+ * row) or the mobile software keyboard can never cover the content above it.
+ *
  * The home state is included because its first-use cards used a fixed
  * 218px/230px inset that was smaller than the real composer. */
-.app-shell:is([data-state="home"], [data-state="chat"]) .conversation {
+.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation {
   padding-bottom: calc(
     var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)
   ) !important;
