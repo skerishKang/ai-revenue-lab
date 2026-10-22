@@ -380,7 +380,6 @@ class StructuredPCQueryStepDriver:
         select_step: Callable[..., Awaitable[Mapping[str, Any]]],
         static_arguments: Mapping[str, Any] | None = None,
         allowed_tool_ids: frozenset[str] | None = None,
-        legacy_read_allowed: bool = False,
     ):
         self._select_step = select_step
         # Supplied by the trusted plan, never by the model step. The model may
@@ -390,9 +389,9 @@ class StructuredPCQueryStepDriver:
         # the legacy binding unchanged; a set is a hard allowlist enforced
         # before any invocation is returned.
         self._allowed_tool_ids = allowed_tool_ids
-        # A missing intent never grants read: only the server-verified legacy
-        # list+read plan (or an explicit read intent) does.
-        self._read_allowed = bool(legacy_read_allowed)
+        # #5574: a read never starts authorized. An explicit model intent:"read"
+        # list step opens it; an explicit intent:"list" step closes it again.
+        self._read_allowed = False
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
         # #4379: the driver resolves the results it needs through their

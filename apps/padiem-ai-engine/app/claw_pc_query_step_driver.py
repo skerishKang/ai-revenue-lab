@@ -631,7 +631,8 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             )
             + "Listing intent: include \"intent\":\"list\" in claw.pc.list_files when the "
             "user only asks what is in a folder; include \"intent\":\"read\" only when "
-            "the user clearly asks to read or explain a file's content. After a "
+            "the user clearly asks to read or explain a file's content. read_file is "
+            "refused unless a list step declared \"intent\":\"read\". After a "
             "list-intent listing, complete; never call read_file.\n"
             "If the turn is not about the PC, complete with a truthful concise answer.\n"
             + "Return exactly one JSON object. Tool: {\"action\":\"tool\",\"tool_id\":\"...\","
@@ -665,12 +666,12 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
                 "model response is not valid JSON", detail="model_response_not_json",
             ) from exc
 
+    # The plan hint is the turn's tool ceiling, never a per-step grant: the
+    # driver starts read-closed and only the model's explicit read intent
+    # opens it (#5574).
     return StructuredPCQueryStepDriver(
         select_step=select_step, static_arguments=static_arguments,
         allowed_tool_ids=allowed_tool_ids,
-        legacy_read_allowed=(
-            isinstance(tool_arguments, Mapping) and set(tool_arguments) == {"files"}
-        ),
     )
 
 

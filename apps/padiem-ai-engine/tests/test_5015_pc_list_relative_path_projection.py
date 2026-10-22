@@ -246,6 +246,11 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
     )
 
     async def select_step(*, context, compiled_profile, observations):
+        if not observations:
+            return {
+                "action": "tool", "tool_id": PC_LIST_FILES_TOOL_ID,
+                "arguments": {"path": ".", "intent": "read"},
+            }
         assert len(observations) == 1
         rows = json.loads(observations[0]["output"]["output"])["entries"]
         row = next(r for r in rows if r.get("PSIsContainer") is False)
@@ -254,24 +259,31 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
             "arguments": {"path": row["relative_path"]},
         }
 
+    # #5573/#5574: the Chat lane's list+read ceiling is not a grant; the same
+    # driver instance first takes the model's read-intent listing step, then
+    # the read step over its observation.
+    driver = StructuredPCQueryStepDriver(
+        select_step=select_step,
+        allowed_tool_ids=frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID}),
+    )
+    first = asyncio.run(driver.next_step(
+        AgentStepContext.with_results(
+            run_id=RUN_ID,
+            step_index=1,
+            input_text="폴더 목록을 보고 TXT를 읽어줘",
+            results=(),
+        ),
+        object(),
+    ))
+    assert first.invocation.tool_id == PC_LIST_FILES_TOOL_ID
+
     context = AgentStepContext.with_results(
         run_id=RUN_ID,
         step_index=2,
         input_text="폴더 목록을 보고 TXT를 읽어줘",
         results=(observed,),
     )
-
-    # #5573: the read runs under the server-granted list+read scope the Chat
-    # lane ships for a PC files turn. The model's own intent is not needed and
-    # is not pre-fixed here.
-    step = asyncio.run(StructuredPCQueryStepDriver(
-        select_step=select_step,
-        allowed_tool_ids=frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID}),
-        legacy_read_allowed=True,
-    ).next_step(
-        context,
-        object(),
-    ))
+    step = asyncio.run(driver.next_step(context, object()))
 
     assert step.invocation.arguments == {
         "path": "meshcentral-padiem-trial.txt"

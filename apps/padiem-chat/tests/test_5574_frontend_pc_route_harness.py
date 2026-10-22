@@ -868,11 +868,10 @@ def test_pc_list_turn_runs_one_lane_call_with_the_saved_target_and_completes() -
     assert call["tool_arguments"] == {"files": {"device_id": DEVICE_ID}}
     assert call["conversation_id"] == step["conversation_id"]
 
-    # MEASURED (#5574 negative case): a listing-only request is NOT narrowed
-    # by the server. The lane ships the trusted legacy list+read scope hint
-    # and a two-step plan, so the Engine's read gate starts open and the
-    # model's own intent is the only narrowing (engine side evidence:
-    # apps/padiem-ai-engine/tests/test_5574_pc_read_scope_leak.py).
+    # #5574: the lane still ships the trusted list+read ceiling and the
+    # two-step plan; the Engine's step policy starts read-closed and refuses
+    # a read the model did not explicitly intend. Engine-side regression:
+    # apps/padiem-ai-engine/tests/test_5574_pc_read_scope_leak.py.
     assert [s["tool_id"] for s in call["agent_plan"]["steps"]] == [
         "claw.pc.list_files",
         "claw.pc.read_file",

@@ -1,17 +1,20 @@
-"""#5574 negative case: a listing-only request whose model wrongly answers read.
+"""#5574 regression: a listing-only request whose model wrongly answers read.
 
-The Chat lane always ships the trusted legacy list+read plan hint
+The Chat lane always ships the trusted list+read plan hint
 (``tool_arguments == {"files": ...}``) together with a two-step plan
 (``list_files`` + ``read_file``); it never ships the list-only
 (``files_list``) hint and it does not classify the request. This file drives
 the REAL engine composition (``build_live_pc_query_driver``) with a model
-that wrongly answers a listing-only request with a read step, and records
-what the production policy actually does.
+that wrongly answers a listing-only request with a read step.
+
+The hint is the turn's tool ceiling, never a per-step grant: the driver
+starts read-closed, so the wrong read is refused before any invocation
+exists. A legitimate read still works when the model declares
+``intent:"read"`` on its listing step, inside the same scope hint.
 
 Nothing in the wrong-read case pre-fixes the model's intent: the wrongly
-returned read IS the case under test. The one mechanism that narrows the
-turn (the model declaring ``intent:"list"`` itself) is exercised only as a
-separate contrast case, never as a way to make the wrong-read case pass.
+returned read IS the case under test. Model intent declarations are
+exercised only in the separate cases.
 """
 
 from __future__ import annotations
@@ -85,21 +88,23 @@ def _read_step() -> str:
     )
 
 
-def test_the_chat_lane_scope_lets_the_wrong_read_through() -> None:
-    """ACTUAL RESULT: the wrongly returned read is NOT refused.
+def test_the_chat_lane_scope_allows_read_after_the_models_read_intent() -> None:
+    """The legitimate read path inside the same scope hint is unchanged.
 
-    The Chat lane's scope hint (``{"files": ...}``) is the trusted legacy
-    list+read plan, so the read gate starts open and a missing intent does
-    not close it. The read invocation is produced, which means the Engine
-    would run it (the handler's own authority/path/size checks still apply).
+    The model still selects the read tool itself; one explicit read intent on
+    its listing step opens the gate, and a later list intent closes it again.
     """
 
-    driver, _model = _driver(CHAT_LANE_SCOPE, [_list_step(), _read_step()])
+    driver, _model = _driver(
+        CHAT_LANE_SCOPE, [_list_step(intent="read"), _read_step()],
+    )
     first = asyncio.run(driver.next_step(_context(), object()))
     assert first.invocation.tool_id == PC_LIST_FILES_TOOL_ID
+    assert first.invocation.arguments == {"path": "."}
 
     second = asyncio.run(driver.next_step(_context(), object()))
     assert second.invocation.tool_id == PC_READ_FILE_TOOL_ID
+    assert second.invocation.arguments == {"path": "a.txt"}
 
 
 def test_the_list_only_hint_refuses_the_wrong_read() -> None:
@@ -115,12 +120,7 @@ def test_the_list_only_hint_refuses_the_wrong_read() -> None:
 
 
 def test_the_models_own_list_intent_refuses_the_later_read() -> None:
-    """CONTRAST: the only narrowing that exists inside the Chat lane scope.
-
-    When the model itself declares ``intent:"list"``, the read gate closes
-    for the rest of the turn. This is the mechanism the product relies on
-    today; it is a model behaviour, not a server guarantee.
-    """
+    """A listing-intent turn never reads, whatever the next model step says."""
 
     driver, _model = _driver(CHAT_LANE_SCOPE, [_list_step(intent="list"), _read_step()])
     asyncio.run(driver.next_step(_context(), object()))
@@ -129,19 +129,17 @@ def test_the_models_own_list_intent_refuses_the_later_read() -> None:
     assert "outside this execution scope" in str(excinfo.value)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "#5574 known gap: the Chat lane ships the legacy list+read scope for a "
-        "listing-only request, so a model that wrongly answers read is not "
-        "refused. Closing it needs a server-side list-only scope (or another "
-        "server-side narrowing), which this change deliberately does not add."
-    ),
-)
 def test_a_listing_only_request_must_not_produce_a_read_invocation() -> None:
-    """The invariant the product wants, stated without any intent shortcut."""
+    """The #5574 invariant, stated without any intent shortcut.
+
+    The model lists without declaring an intent and then wrongly answers
+    read. The read must be refused at the step boundary so the runtime never
+    receives an invocation and the handler never dispatches.
+    """
 
     driver, _model = _driver(CHAT_LANE_SCOPE, [_list_step(), _read_step()])
     asyncio.run(driver.next_step(_context(), object()))
-    with pytest.raises(PCQueryStepError):
+    with pytest.raises(PCQueryStepError) as excinfo:
         asyncio.run(driver.next_step(_context(), object()))
+    assert "outside this execution scope" in str(excinfo.value)
+    assert excinfo.value.code is None
