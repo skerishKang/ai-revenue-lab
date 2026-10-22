@@ -1236,7 +1236,11 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
 
             stage = "compose"
             # A deployed Claw Plus model must be explicitly chosen per request.
-            # Verify the input before permitting the sole model dispatch.
+            # The exact-ID input lives in the collapsible advanced panel, so
+            # open it before the visibility contract below can hold.
+            advanced = page.locator("details.claw-model-advanced")
+            if advanced.count() == 1 and not advanced.evaluate("node => node.open === true"):
+                advanced.locator("summary").click()
             model_input = page.locator("#clawModelIdInput")
             model_input.wait_for(state="visible", timeout=15000)
             model_input.fill(CLAW_OWNER_SELECTED_MODEL_ID)
