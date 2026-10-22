@@ -45,6 +45,7 @@ server.
 | Pending expiry | n/a | `RECOVERY_FAILED_PENDING_EXPIRED` after `max_pending_seconds` |
 | Repeated action | next 5-minute check could act again | a live pending window suppresses a second action |
 | Class change | pending verdict silently reused | pending is invalidated (`pending_invalidation=class_changed`) |
+| Non-actionable class | `record_only` branch kept the old pending verdict and never reset the class clock | class clock resets and the verdict is closed (`class_changed` / `class_not_actionable`) |
 | Launcher lifetime | task ended in <1 s, ssh detached | task instance lives exactly as long as ssh |
 | Duplicate start | possible (IgnoreNew inert) | IgnoreNew is effective **and** the wrapper holds a lock directory |
 
@@ -66,6 +67,48 @@ observed inside the verification window**. It is not a recovery claim.
   bound measured from the end of the action.
 * If the failure class changes while pending, the pending verdict is discarded
   and the new class starts its own clock.
+
+### Why 900 seconds
+
+`max_pending_seconds` is bounded from both sides by the watchdog cadence, not by
+recovery speed.
+
+* **Lower bound: must exceed one watchdog cycle (300 s).** The obligation is
+  rechecked on the next `PADIEM-COM2-Mesh-Health` run. A deadline shorter than
+  300 s would expire before the next check can possibly observe the 200, which
+  would turn every slow-but-successful recovery into a guaranteed failure.
+* **900 s = 3 cycles.** One cycle for the recheck, two more for a second chance
+  and for jitter in the trigger (`PT5M` + variable probe duration). The one real
+  episode on record needed well under one cycle: action at 01:00:16, HTTP 200
+  observed at 01:05:06 (293.9 s after the fault was first recorded). 900 s keeps
+  a factor of three over the only measured case.
+* **Upper bound: alerting latency, not runtime.** A pending verdict costs nothing
+  in a run (it performs no action), so the 90 s engine bound in
+  `com2-mesh-health.ps1` and the 120 s task limit are unaffected. The cost of a
+  larger value is purely how long a genuinely dead forward can sit without a
+  failure verdict. 900 s caps that at three cycles while still producing
+  `RECOVERY_FAILED_PENDING_EXPIRED` inside a single working session.
+* It is **not** a substitute for `verify_timeout_seconds`. The verification window
+  stays at its configured 20 s; pending only says what happens after it.
+
+### Pending release conditions
+
+The verdict is released in exactly four ways. Three are automatic and one is an
+explicit operator action.
+
+| Condition | Result | `pending_invalidation` |
+|---|---|---|
+| An HTTP 200 is observed (any later cycle) | `recovered`, `RECOVERED_HTTP200_OBSERVED_AFTER_PENDING` | (empty) |
+| The failure class changes | verdict dropped, class clock restarts, next cycle may act | `class_changed` |
+| The class stays the same but permits no action (`record_only`) | verdict dropped — the condition that justified the action is gone | `class_not_actionable` |
+| The deadline passes with no observed 200 | `failed`, `RECOVERY_FAILED_PENDING_EXPIRED`, next cycle may act | `pending_expired` |
+| Operator deletes `com2-mesh-recovery-state.json` after confirming no process holds the recovery lock | verdict dropped | n/a |
+
+"Fault worsens" is the third row. When the probe degrades from an actionable
+class (for example `tunnel_broken`) to a class that permits no automatic action
+(`com2_ssh_unreachable`, or `com2_mesh_down` with a healthy keeper and unit), the
+old pending verdict is closed immediately instead of being carried into a fault
+it never described. Both rows are covered by tests.
 
 ### Consumer compatibility
 
@@ -142,38 +185,136 @@ deployed **first**, otherwise every repetition adds a competing forward:
 
 Applying task XML is an operator action and is out of scope for this change.
 
+## Install mapping
+
+Every deployed file keeps its current name, so no task action, health script path
+or config key changes. The mapping is repo path → operator path, both under the
+same directory that `padiem-tunnel-wrapper.cmd` resolves with `%~dp0`.
+
+| Repo path | Operator path | Used by | Deploy order |
+|---|---|---|---|
+| `scripts/ops/com2_mesh/padiem-tunnel-wrapper.cmd` | `C:\Users\limone\Padiem\padiem-tunnel-wrapper.cmd` | task action (via VBS) | 1 (same step) |
+| `scripts/ops/com2_mesh/padiem-tunnel.cmd` | `C:\Users\limone\Padiem\padiem-tunnel.cmd` | wrapper | 1 (same step) |
+| `scripts/ops/com2_mesh/background-tunnel.vbs` | `C:\Users\limone\Padiem\background-tunnel.vbs` | `PADIEM-Mesh-Tunnel` task action | 1 (same step) |
+| `scripts/ops/com2_mesh/com2_mesh_recovery.ps1` | `C:\Users\limone\Padiem\com2_mesh_recovery.ps1` | `com2-mesh-health.ps1` | 2 |
+| `scripts/ops/com2_mesh/com2_mesh_recovery_selftest.ps1` | `C:\Users\limone\Padiem\com2_mesh_recovery_selftest.ps1` | operator test run | 2 |
+| `scripts/ops/com2_mesh/com2_mesh_config.template.json` | reference only — the live `com2-mesh-config.json` is **not** replaced | operator | none |
+| `scripts/ops/com2_mesh/tests/test_tunnel_launcher.ps1` | any working directory | operator test run | none |
+
+Not deployed by this change: `com2-mesh-health.ps1`, `com2-mesh-alert.ps1`,
+`com2-mesh-config.json`, `padiem-tunnel-target.txt`, and the scheduled task XML.
+
+**Config note:** `max_pending_seconds` has a code default of 900. Adding it to
+the live `com2-mesh-config.json` is optional and is an operator edit, not part of
+this change. If it is added with a value below 300, the deadline can expire
+before the next check and every slow recovery becomes a failure.
+
 ## Apply plan (operator, not performed here)
 
-1. Snapshot: copy `C:\Users\limone\Padiem\com2_mesh_recovery.ps1`,
-   `padiem-tunnel-wrapper.cmd`, `padiem-tunnel.cmd`, `background-tunnel.vbs`
-   to a dated backup directory.
-2. Deploy the launcher trio first (low risk, no decision change). Run
-   `powershell -NoProfile -ExecutionPolicy Bypass -File tests/test_tunnel_launcher.ps1`
-   from the deployed directory and require `FAIL=0`.
-3. Deploy `com2_mesh_recovery.ps1`. Run
-   `powershell -NoProfile -ExecutionPolicy Bypass -File com2_mesh_recovery_selftest.ps1`
-   and require `FAIL=0`.
-4. Verify on the next natural watchdog cycle **without** restarting anything:
-   the new fields appear in `com2-mesh-recovery.jsonl`, the existing fields keep
-   their names, and `com2-mesh-status.json` still parses.
-5. Do **not** shorten the 5-minute interval and do not raise
-   `verify_timeout_seconds` in this step. If the window is raised later, the
-   ceiling is about 45 s: `com2-mesh-health.ps1` bounds the engine at 90 s and
-   the task has `ExecutionTimeLimit=PT2M`, so a longer window turns a slow
-   recovery into an `ENGINE_ERROR` with no status file.
+Prerequisite: none of these steps restarts the task, a service, a process or the
+machine. Each step has an explicit gate; stop at the first failed gate.
+
+**Step 0 — snapshot (required for rollback)**
+
+```bat
+set BK=C:\Users\limone\Padiem\backup-20261023
+mkdir "%BK%"
+copy "C:\Users\limone\Padiem\com2_mesh_recovery.ps1"      "%BK%\"
+copy "C:\Users\limone\Padiem\padiem-tunnel-wrapper.cmd"   "%BK%\"
+copy "C:\Users\limone\Padiem\padiem-tunnel.cmd"           "%BK%\"
+copy "C:\Users\limone\Padiem\background-tunnel.vbs"       "%BK%\"
+```
+
+Gate 0: the four files exist in `%BK%` and `certutil -hashfile` compares equal to
+the originals.
+
+**Step 1 — launcher trio (no decision change)**
+
+Copy the three launcher files from the repo to `C:\Users\limone\Padiem\`, then:
+
+```powershell
+cd C:\Users\limone\Padiem
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\test_tunnel_launcher.ps1
+```
+
+Gate 1: `LAUNCHER SELFTEST PASS=… FAIL=0`.
+
+**Step 2 — recovery engine**
+
+Copy `com2_mesh_recovery.ps1` and `com2_mesh_recovery_selftest.ps1`, then:
+
+```powershell
+cd C:\Users\limone\Padiem
+powershell -NoProfile -ExecutionPolicy Bypass -File com2_mesh_recovery_selftest.ps1
+```
+
+Gate 2: `SELFTEST PASS=… FAIL=0`.
+
+**Step 3 — passive verification (do not force a cycle)**
+
+Wait for the next natural 5-minute check. Then confirm:
+
+* `com2-mesh-recovery.jsonl` last line parses and carries `recovery_state`,
+  `class_started_at`, `class_age_sec`, `engine_elapsed_sec`, `remote_http_reason`;
+* `com2-mesh-status.json` still parses and `com2-mesh-health.log` still matches
+  `recovery_ok=` and `code=`;
+* nothing in the record set disappeared.
+
+Gate 3: all three hold, and the task was never restarted by hand.
+
+**Not in this step:** shortening the 5-minute interval, raising
+`verify_timeout_seconds`, enabling the repetition trigger. If the window is
+raised later the ceiling is about 45 s: `com2-mesh-health.ps1` bounds the engine
+at 90 s and the task has `ExecutionTimeLimit=PT2M`, so a longer window turns a
+slow recovery into an `ENGINE_ERROR` with no status file.
 
 ## Rollback plan
 
-1. Stop here if any selftest reports `FAIL>0`.
-2. Restore the four files from the backup directory (byte-identical originals).
-3. The added record fields are additive; the previous engine ignores them, so no
-   state-file migration is needed. `com2-mesh-recovery-state.json` written by
-   the new engine carries `class_started_at` / `pending_*`; the old engine reads
-   only `first_fault`, `last_class`, `last_ts`, `last_code`.
-4. To clear a stuck pending state during rollback, delete
-   `com2-mesh-recovery-state.json` **only** after confirming no recovery process
-   holds `com2-mesh-recovery.lock`.
-5. Task XML was not changed by this PR, so no trigger rollback is required.
+Trigger any line below; each is independent and none needs a reboot.
+
+1. **Gate failed before any copy** — do nothing; the machine is unchanged.
+2. **Gate 1 failed** (launcher) — copy the three launcher files back from `%BK%`.
+   The next scheduled start uses the original behaviour. The running ssh forward
+   is not touched; it keeps serving until its own `ServerAlive*` settings end it.
+3. **Gate 2 failed** (engine) — copy `com2_mesh_recovery.ps1` back from `%BK%`.
+4. **Gate 3 failed** (passive verification) — copy both the engine and the
+   launcher trio back. The engine reads only `first_fault`, `last_class`,
+   `last_ts`, `last_code` from state, so extra keys written by the new engine
+   (`class_started_at`, `pending_*`) are ignored. No state migration is needed.
+5. **Stuck pending after rollback** — delete
+   `C:\Users\limone\Padiem\com2-mesh-recovery-state.json` **only** after
+   confirming no process holds `com2-mesh-recovery.lock`. This clears the episode
+   and class clocks; the next check starts a new episode.
+6. **Task XML** was not changed by this PR, so no trigger rollback is required.
+
+Rollback does **not** need: a reboot, a task restart, a service restart, a
+config edit, or a re-registration.
+
+## Required CI
+
+`main` is not covered by classic branch protection (the API returns
+`Branch not protected`); enforcement comes from repository ruleset `25431914`,
+which requires exactly one status check:
+
+* **`COM2 full policy`** — `strict_required_status_checks_policy: false`.
+
+How that status is produced: `com2-pr-policy-trigger.yml` (job `COM2 policy
+dispatch`, no checkout) fires on `pull_request`, which lets
+`com2-pr-auto-sandbox.yml` run on the trusted default branch and post
+`COM2 full policy` (pending, then success/failure) against the **exact PR head
+SHA**.
+
+The sandbox suite runs an explicit list: `docs/operations/tests` plus named
+`.github/tests/*.py` files. **The PowerShell suites in this directory are not in
+that list.** They are local operator evidence only; CI passing does not prove
+them, and they cannot fail CI. Adding them to the COM2 suite is a separate
+change.
+
+Other checks on a PR here are non-blocking for this change:
+`Operating policy consistency` is skipped for same-repository PRs,
+`Pull request contract report` is report-only unless dispatched with
+`enforce_pr_contract=true`, and the browser-QA canaries skip on paths that do
+not touch their surfaces.
 
 ## Tests
 

@@ -378,8 +378,53 @@ Test-Case -Name 'pending_resolved_on_later_check' -Fixture $healthyFixture2 -See
     http200_observed_basis = 'observed_at_this_check'
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
-Write-Output '-- episode clock vs class clock'
+Test-Case -Name 'pending_closed_when_class_not_actionable' -Fixture @{
+    com2_ssh = $false; tunnel_tcp = $true; mesh_http = '000'
+} -SeedState @{
+    first_fault = (New-Stamp -600); last_class = 'tunnel_broken'
+    last_ts = (New-Stamp -60); last_code = 'RECOVERY_PENDING_HTTP_000'
+    class_started_at = (New-Stamp -600)
+    pending_since = (New-Stamp -60); pending_action = 'restart_tunnel'
+    pending_deadline = (New-Stamp 600)
+} -Expected @{
+    class = 'com2_ssh_unreachable'; action = 'record_only'; recovery_ok = 'no'
+    recovery_state = 'none'; code = 'COM2_SSH_UNREACHABLE'
+    pending_since = ''; pending_deadline = ''; pending_invalidation = 'class_changed'
+} -Engine $EnginePath -ConfigPath $configPath -Directory $work
+
+Test-Case -Name 'pending_closed_same_class_not_actionable' -Fixture @{
+    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'OK'; remote_unit = 'active'
+} -SeedState @{
+    first_fault = (New-Stamp -600); last_class = 'com2_mesh_down'
+    last_ts = (New-Stamp -60); last_code = 'RECOVERY_PENDING_HTTP_000'
+    class_started_at = (New-Stamp -600)
+    pending_since = (New-Stamp -60); pending_action = 'restart_mesh_service'
+    pending_deadline = (New-Stamp 600)
+} -Expected @{
+    class = 'com2_mesh_down'; action = 'record_only'; recovery_ok = 'no'
+    pending_since = ''; pending_invalidation = 'class_not_actionable'
+} -Engine $EnginePath -ConfigPath $configPath -Directory $work
+
+Write-Output '-- pending is not carried past a non-actionable class'
 $statePath2 = Join-Path $work 'state.json'
+Write-JsonFile -Path $statePath2 -Object @{
+    first_fault = (New-Stamp -600); last_class = 'tunnel_broken'
+    last_ts = (New-Stamp -60); last_code = 'RECOVERY_PENDING_HTTP_000'
+    class_started_at = (New-Stamp -600)
+    pending_since = (New-Stamp -60); pending_action = 'restart_tunnel'
+    pending_deadline = (New-Stamp 600)
+}
+$notActionableFixture = Join-Path $work 'fixture-not-actionable.json'
+Write-JsonFile -Path $notActionableFixture -Object @{ com2_ssh = $false; tunnel_tcp = $true; mesh_http = '000' }
+$notActionableRun = Invoke-EngineSimulate -Engine $EnginePath -ConfigPath $configPath -FixturePath $notActionableFixture
+Assert-True -Value ($notActionableRun.record -ne $null) -Label 'not-actionable record present'
+$clearedState = Get-Content -LiteralPath $statePath2 -Raw | ConvertFrom-Json
+Assert-Equal -Expected '' -Actual $clearedState.pending_since -Label 'pending cleared in state'
+Assert-Equal -Expected '' -Actual $clearedState.pending_deadline -Label 'pending deadline cleared in state'
+Assert-True -Value ([string]$clearedState.class_started_at -ne '') -Label 'class clock kept for the new class'
+
+Write-Output '-- episode clock vs class clock'
 $classFixture = Join-Path $work 'fixture-class-change.json'
 Write-JsonFile -Path $classFixture -Object $pendingFixture
 Write-JsonFile -Path $statePath2 -Object @{

@@ -707,8 +707,21 @@ try {
             'remote_probe_failed' { $code = 'REMOTE_PROBE_FAILED' }
             default { $code = 'NO_ACTION_AVAILABLE' }
         }
-        if (-not $firstFault) { $firstFault = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss') }
+        if (-not $firstFault) { $firstFault = $nowStamp }
+        # Same two clocks as the action branch. A class boundary resets the
+        # class clock, and a pending verdict never outlives its class: this
+        # branch permits no action at all, so carrying the verdict forward would
+        # later suppress an unrelated action or expire into a false failure.
+        $classChanged = ($state.last_class -ne $failureClass) -or (-not $classStartedAt)
+        if ($classChanged) { $classStartedAt = $nowStamp }
+        if ($pendingSince) {
+            $pendingInvalidation = $(if ($classChanged) { 'class_changed' } else { 'class_not_actionable' })
+            $pendingSince = ''
+            $pendingAction = ''
+            $pendingDeadline = ''
+        }
         $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
+        $classAge = ConvertTo-FaultAgeSeconds -FirstFault $classStartedAt -Now (Get-Date)
     } else {
         # Episode clock vs. class clock. A new first_fault starts a new episode;
         # a class change only resets class_started_at, so the age of the whole
