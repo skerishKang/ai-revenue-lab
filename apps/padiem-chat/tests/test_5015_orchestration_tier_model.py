@@ -114,8 +114,10 @@ def _install(monkeypatch, *, is_admin: bool):
     async def work_context(
         request, *, owner_id, workspace_id, session_id, selected_device_id,
     ):
+        # The turn has a verified PC; this harness only exercises tier/model
+        # selection, so the inventory is one READY device.
         return SimpleNamespace(
-            devices=(),
+            devices=(SimpleNamespace(device_id="node/mesh/owner-pc", state="READY"),),
             selected_confirmed=False,
             execution=SimpleNamespace(ready=False),
         )

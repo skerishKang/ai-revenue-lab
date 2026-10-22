@@ -629,6 +629,11 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
                 and PC_READ_FILE_TOOL_ID not in allowed_tool_ids
                 else ""
             )
+            + "Listing intent: include \"intent\":\"list\" in claw.pc.list_files when the "
+            "user only asks what is in a folder; include \"intent\":\"read\" only when "
+            "the user clearly asks to read or explain a file's content. After a "
+            "list-intent listing, complete; never call read_file.\n"
+            "If the turn is not about the PC, complete with a truthful concise answer.\n"
             + "Return exactly one JSON object. Tool: {\"action\":\"tool\",\"tool_id\":\"...\","
             "\"arguments\":{...}}. Completion: {\"action\":\"complete\",\"answer\":\"...\"}. "
             "User: " + context.input_text
@@ -663,6 +668,9 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
     return StructuredPCQueryStepDriver(
         select_step=select_step, static_arguments=static_arguments,
         allowed_tool_ids=allowed_tool_ids,
+        legacy_read_allowed=(
+            isinstance(tool_arguments, Mapping) and set(tool_arguments) == {"files"}
+        ),
     )
 
 

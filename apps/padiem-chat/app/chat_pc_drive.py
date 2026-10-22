@@ -458,6 +458,17 @@ def _conversation_history(messages: Any, user_text: str) -> tuple[dict[str, str]
     return tuple(history[-8:])
 
 
+def _conversation_transcript(messages: Any) -> str:
+    """The prior turns as plain text for the Engine system context."""
+    history = _conversation_history(messages, "")
+    if not history:
+        return ""
+    return "\n".join(
+        ("User: " if item["role"] == "user" else "Assistant: ") + item["content"]
+        for item in history
+    )
+
+
 async def _complete_with_model(
     request: Request, *, user_text: str, skill: Any,
     tier: str, system_contract: str, history: Any = None,
@@ -563,33 +574,10 @@ async def execute_chat_pc_drive_lane(
     try:
         session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
     except ChatPCDriveError:
-        # The PC authority is unavailable, so no verified PC context exists.
-        # The SAME model step still decides from the sentence and prior turns:
-        # words are not the condition. A PC request is refused explicitly; an
-        # ordinary turn falls through.
-        fallback = parse_pc_action_decision(
-            await _complete_with_model(
-                request, user_text=execution_text, skill=skill, tier=tier,
-                system_contract=_pc_action_contract(
-                    execution_text, "PC authority unavailable; no selected PC",
-                ),
-                history=_conversation_history(conversation_messages, execution_text),
-            )
-        )
-        if fallback["action"] == "none":
-            return None
-        if fallback["action"] == "clarify":
-            saved_id = await _save_pair(
-                store, uid=uid, conversation_id=conversation_id,
-                user_text=user_text, answer=fallback["answer"],
-            )
-            return (fallback["answer"], saved_id) if saved_id else None
-        raise ChatPCDriveError(
-            "chat_pc_owner_unavailable",
-            "PC \uc791\uc5c5 \uad8c\ud55c\uc744 \ud655\uc778\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. "
-            "\uc138\uc158\uc744 \ud655\uc778\ud55c \ub4a4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574 \uc8fc\uc138\uc694.",
-            503,
-        ) from None
+        # No PC authority means no verified PC context. An ordinary turn keeps
+        # its existing path and pays no extra call; a PC request cannot be
+        # distinguished without a context and falls through (documented).
+        return None
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
         read_saved_device_selection, render_pc_work_context,
@@ -650,153 +638,39 @@ async def execute_chat_pc_drive_lane(
                 "선택한 PC가 서버 실행 대상과 일치하지 않습니다. 작업 대상을 다시 선택해 주세요.",
                 403,
             )
+    if not pc_context.devices:
+        # No verified PC exists for this account: the turn has no PC context
+        # and the ordinary path continues without any extra call.
+        return None
+    if not await _check_mesh_grant(request, session, device_id=device_id):
+        answer = _no_pc_answer()
+        saved_id = await _save_pair(
+            store, uid=uid, conversation_id=conversation_id,
+            user_text=user_text, answer=answer,
+        )
+        if saved_id is None:
+            raise ChatPCDriveError("conversation_not_found", "\ub300\ud654\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.", 404)
+        return answer, saved_id
+
     pc_work_text = render_pc_work_context(pc_context)
 
-    # #5573: every entry path reaches this one execution-scope decision, after
-    # every server-side target check. The word list only decides how an
-    # authority failure is reported; it never picks the plan or adds read.
-    action = parse_pc_action_decision(
-        await _complete_with_model(
-            request, user_text=execution_text, skill=skill, tier=tier,
-            system_contract=_pc_action_contract(execution_text, pc_work_text),
-            history=_conversation_history(conversation_messages, execution_text),
-        )
+    # #5573 / Option A: one Engine call for every turn with a verified PC
+    # context. The Engine's existing step driver selects the tool (drives,
+    # list, read) or completes a non-PC turn; the Chat app no longer runs a
+    # separate classification call. Prior turns travel in the system context so
+    # the same call can resolve "그 폴더" and similar follow-ups.
+    transcript = _conversation_transcript(conversation_messages)
+    additional_context = pc_work_text if not transcript else (
+        pc_work_text + "\n\nRecent conversation:\n" + transcript
     )
-    if action["action"] == "none":
-        # The scope call happened before the ordinary path may issue its own
-        # model call: one extra model turn and its latency, by design.
-        return None
-    if action["action"] == "clarify":
-        saved_id = await _save_pair(
-            store, uid=uid, conversation_id=conversation_id,
-            user_text=user_text, answer=action["answer"],
-        )
-        return (action["answer"], saved_id) if saved_id else None
-    files_only = action["action"] != "drives"
-    list_only = action["action"] == "files_list"
-
-    if not await _check_mesh_grant(request, session, device_id=device_id):
-        answer = (
-            "검증된 PC 연결을 확인하지 못해 파일 목록을 조회할 수 없습니다. "
-            "PC 연결을 먼저 확인한 뒤 다시 요청해 주세요. "
-            "연결되지 않은 PC의 파일을 추측해서 안내하지 않았습니다."
-            if files_only else _no_pc_answer()
-        )
-        saved_id = await _save_pair(
-            store, uid=uid, conversation_id=conversation_id,
-            user_text=user_text, answer=answer,
-        )
-        if saved_id is None:
-            raise ChatPCDriveError("conversation_not_found", "대화를 찾을 수 없습니다.", 404)
-        return answer, saved_id
-
-    if files_only:
-        return await _execute_chat_pc_files_lane(
-            request, store=store, uid=uid, subject_id=subject_id,
-            workspace_id=workspace_id, user_text=user_text,
-            execution_user_text=execution_text, skill=skill,
-            model_id=model_id, conversation_id=conversation_id,
-            device_id=device_id, additional_system_context=pc_work_text,
-            run_id=client_run_id, list_only=list_only,
-        )
-
-    decision_contract = _decision_contract(execution_text)
-    decision_raw = await _complete_with_model(
-        request, user_text=execution_text, skill=skill,
-        tier=tier,
-        system_contract=(
-            pc_work_text + "\n\n" + decision_contract
-            if pc_work_text else decision_contract
-        ),
+    return await _execute_chat_pc_files_lane(
+        request, store=store, uid=uid, subject_id=subject_id,
+        workspace_id=workspace_id, user_text=user_text,
+        execution_user_text=execution_text, skill=skill,
+        model_id=model_id, conversation_id=conversation_id,
+        device_id=device_id, additional_system_context=additional_context,
+        run_id=client_run_id, list_only=False,
     )
-    decision = parse_chat_pc_tool_decision(decision_raw)
-    if decision.get("action") == "complete":
-        answer = str(decision["answer"]).strip()
-        if not answer:
-            return None
-        saved_id = await _save_pair(
-            store, uid=uid, conversation_id=conversation_id,
-            user_text=user_text, answer=answer,
-        )
-        if saved_id is None:
-            raise ChatPCDriveError("conversation_not_found", "대화를 찾을 수 없습니다.", 404)
-        return answer, saved_id
-
-    bridge = getattr(request.app.state, "orchestration_bridge", None)
-    if not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready:
-        raise ChatPCDriveError(
-            "chat_pc_drive_unavailable",
-            "PC 드라이브 조회 기능을 현재 사용할 수 없습니다.",
-        )
-    lane_run_id = client_run_id or _new_lane_run_id()
-    try:
-        staged_conversation_id = await store.record_chat_pc_drive_run(
-            user_id=uid, run_id=lane_run_id, workspace_id=workspace_id,
-            user_text=user_text, conversation_id=conversation_id,
-        )
-    except HistoryForbidden as exc:
-        raise ChatPCDriveError("conversation_not_found", "대화를 찾을 수 없습니다.", 404) from exc
-    except Exception as exc:
-        raise ChatPCDriveError(
-            "chat_pc_store_unavailable",
-            "대화 기록을 현재 사용할 수 없습니다.",
-        ) from exc
-    try:
-        outcome = await bridge.start(
-            user_id=uid,
-            messages=({"role": "user", "content": user_text},),
-            skill=skill,
-            model_id=model_id,
-            user_text=user_text,
-            conversation_id=staged_conversation_id,
-            subject_id=subject_id,
-            session_id=lane_run_id,
-            agent_plan=build_chat_pc_agent_plan(),
-            additional_system_context=pc_work_text,
-            tool_arguments=(
-                {"query_drives": {"device_id": device_id}}
-                if device_id is not None else None
-            ),
-        )
-    except B62OrchestrationError as exc:
-        await _append_lane_notice(
-            request, store, uid=uid, run_id=lane_run_id,
-            content=(
-                "PC 드라이브 조회를 완료하지 못했습니다. "
-                "같은 요청을 반복하기 전에 PC 연결 상태를 확인해 주세요."
-            ),
-            status="failed",
-        )
-        raise ChatPCDriveError("chat_pc_engine_unavailable", exc.user_message, exc.status_code) from exc
-    answer = outcome.answer if isinstance(outcome.answer, str) else None
-    if not answer or not answer.strip():
-        await _append_lane_notice(
-            request, store, uid=uid, run_id=lane_run_id,
-            content=(
-                "PC 드라이브 조회를 완료하지 못했습니다. "
-                "같은 요청을 반복하기 전에 PC 연결 상태를 확인해 주세요."
-            ),
-            status="failed",
-        )
-        raise ChatPCDriveError(
-            "chat_pc_engine_unavailable",
-            "AI가 표시할 답변을 만들지 못했습니다.",
-            502,
-        )
-    # The Engine step driver already re-fed the verified tool observation to
-    # the model and composed this answer there; the lane records it verbatim
-    # instead of adding a second model paraphrase (and a second hallucination
-    # surface) on top.
-    composed = answer.strip()
-    saved = await _append_lane_answer(
-        request, store, uid=uid, run_id=lane_run_id, content=composed,
-    )
-    if not saved:
-        raise ChatPCDriveError(
-            "chat_pc_store_unavailable",
-            "대화 기록을 현재 사용할 수 없습니다.",
-        )
-    return composed, staged_conversation_id
 
 
 async def _execute_chat_pc_files_lane(

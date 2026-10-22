@@ -380,6 +380,7 @@ class StructuredPCQueryStepDriver:
         select_step: Callable[..., Awaitable[Mapping[str, Any]]],
         static_arguments: Mapping[str, Any] | None = None,
         allowed_tool_ids: frozenset[str] | None = None,
+        legacy_read_allowed: bool = False,
     ):
         self._select_step = select_step
         # Supplied by the trusted plan, never by the model step. The model may
@@ -389,6 +390,9 @@ class StructuredPCQueryStepDriver:
         # the legacy binding unchanged; a set is a hard allowlist enforced
         # before any invocation is returned.
         self._allowed_tool_ids = allowed_tool_ids
+        # A missing intent never grants read: only the server-verified legacy
+        # list+read plan (or an explicit read intent) does.
+        self._read_allowed = bool(legacy_read_allowed)
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
         # #4379: the driver resolves the results it needs through their
@@ -430,13 +434,29 @@ class StructuredPCQueryStepDriver:
             if (
                 tool_id in PC_FILE_TOOL_IDS
                 and isinstance(arguments, Mapping)
-                and set(arguments) == {"path"}
+                and set(arguments) <= {"path", "intent"}
             ):
                 path = arguments.get("path")
+                intent = arguments.get("intent")
+                if intent is not None and intent not in {"list", "read"}:
+                    raise PCQueryStepError(
+                        "model tool selection is invalid or unauthorized",
+                        detail="tool_selection_invalid",
+                    )
+                if tool_id == PC_READ_FILE_TOOL_ID and not self._read_allowed:
+                    raise PCQueryStepError(
+                        "model tool selection is outside this execution scope",
+                        detail="tool_scope_denied",
+                    )
                 if (
                     isinstance(path, str) and 0 < len(path) <= 2048
                     and not any(ord(ch) < 32 for ch in path)
                 ):
+                    if tool_id == PC_LIST_FILES_TOOL_ID:
+                        if intent == "list":
+                            self._read_allowed = False
+                        elif intent == "read":
+                            self._read_allowed = True
                     return AgentStepDecision.use_tool(
                         ToolInvocation(tool_id=tool_id, arguments={"path": path})
                     )

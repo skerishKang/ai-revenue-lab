@@ -789,13 +789,12 @@ def test_chat_pc_decision_model_receives_context_and_selection_reaches_the_plan(
     )
     result = _run_chat_lane(request, device_id="office-pc")
     assert result is not None
-    decision_context = request.app.state.b14_client.calls[0]
+    decision_context = bridge.requests[0]["additional_system_context"]
     assert PC_WORK_CONTEXT_VERSION in decision_context
     assert "현재 작업 대상 PC: Office PC" in decision_context
-    assert CHAT_PC_QUERY_TOOL_ID in request.app.state.b14_client.calls[1]
     # The SAME selected id travels to the Engine plan, not a server guess.
     assert bridge.requests[0]["tool_arguments"] == {
-        "query_drives": {"device_id": "office-pc"},
+        "files": {"device_id": "office-pc"},
     }
     assert bridge.requests[0]["agent_plan"]["agent_id"] == "agent:padiem:chat-pc-query@1"
     assert PC_WORK_CONTEXT_VERSION in bridge.requests[0]["additional_system_context"]
@@ -941,9 +940,9 @@ def test_chat_lane_uses_the_saved_target_when_the_browser_sends_none():
     assert result is not None
     assert store.calls == [{"owner_id": OWNER, "workspace_id": WORKSPACE}]
     assert bridge.requests[0]["tool_arguments"] == {
-        "query_drives": {"device_id": "office-pc"},
+        "files": {"device_id": "office-pc"},
     }
-    assert "현재 작업 대상 PC: Office PC" in request.app.state.b14_client.calls[0]
+    assert "현재 작업 대상 PC: Office PC" in bridge.requests[0]["additional_system_context"]
 
 
 def test_chat_lane_refuses_a_stale_saved_target():

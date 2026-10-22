@@ -1,8 +1,4 @@
-"""#5573: the verified PC selection plus one model step routes the turn.
-
-No keyword list decides entry and no word list picks the plan: the model
-returns one closed action and the lane sends the matching plan.
-"""
+"""#5573 Option A: one Engine call decides the PC tool, no pre-classification."""
 
 from __future__ import annotations
 
@@ -30,60 +26,17 @@ class _Bridge(B62EngineOrchestrationBridge):
 
 
 class _B14:
-    def __init__(self, answers):
-        self.answers = list(answers)
+    def __init__(self):
         self.calls = []
 
-    async def complete(self, messages, skill, additional_system_context=None):
-        self.calls.append({"messages": tuple(messages), "contract": additional_system_context})
-        return {"answer": self.answers.pop(0)}
+    async def complete(self, messages, skill=None, additional_system_context=None):
+        self.calls.append(additional_system_context)
+        return {"answer": "unused"}
 
 
 class _Store:
     async def record_chat_pc_drive_run(self, **fields):
         return CONVERSATION
-
-
-def _context():
-    return SimpleNamespace(
-        devices=[SimpleNamespace(device_id=DEVICE, state="READY")],
-        selected_confirmed=True,
-        execution=SimpleNamespace(ready=True),
-    )
-
-
-def _wire(monkeypatch, *, answers, selected=True):
-    b14 = _B14(answers)
-    bridge = _Bridge()
-    request = SimpleNamespace(
-        app=SimpleNamespace(state=SimpleNamespace(
-            b14_client=b14, orchestration_bridge=bridge, history_store=_Store(),
-        )),
-        cookies={},
-    )
-    monkeypatch.setattr(lane, "auth_ready", lambda req: True)
-    monkeypatch.setattr(lane, "current_user_id", lambda req: "usr_5573")
-    monkeypatch.setattr(lane, "_append_lane_answer", _always_true)
-    monkeypatch.setattr(lane, "_save_pair", _save_pair)
-
-    async def _owner(request, uid):
-        return SimpleNamespace(session_id="sess_5573"), "usr_5573", "tenant-1"
-
-    async def _grant(request, session, *, device_id=None):
-        return True
-
-    monkeypatch.setattr(lane, "_resolve_chat_owner", _owner)
-    monkeypatch.setattr(lane, "_check_mesh_grant", _grant)
-    monkeypatch.setattr(
-        pc_work_context, "read_saved_device_selection", _selection(selected)
-    )
-    monkeypatch.setattr(
-        pc_work_context, "resolve_pc_work_context", _resolve_context
-    )
-    monkeypatch.setattr(
-        pc_work_context, "render_pc_work_context", lambda ctx: "selected PC: " + DEVICE
-    )
-    return request, b14, bridge
 
 
 async def _always_true(*args, **kwargs):
@@ -108,175 +61,121 @@ def _selection(selected):
     return _read
 
 
+_DEVICES = [SimpleNamespace(device_id=DEVICE, state="READY")]
+
+
 async def _resolve_context(request, **kwargs):
-    return _context()
+    devices = _DEVICES if _WIRE_DEVICES[0] else []
+    return SimpleNamespace(
+        devices=devices,
+        selected_confirmed=True,
+        execution=SimpleNamespace(ready=True),
+    )
 
 
-def _run(request, text):
+_WIRE_DEVICES = [True]
+
+
+def _wire(monkeypatch, *, selected=True, devices=True):
+    _WIRE_DEVICES[0] = devices
+    b14 = _B14()
+    bridge = _Bridge()
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(
+            b14_client=b14, orchestration_bridge=bridge, history_store=_Store(),
+        )),
+        cookies={},
+    )
+    monkeypatch.setattr(lane, "auth_ready", lambda req: True)
+    monkeypatch.setattr(lane, "current_user_id", lambda req: "usr_5573")
+    monkeypatch.setattr(lane, "_append_lane_answer", _always_true)
+    monkeypatch.setattr(lane, "_save_pair", _save_pair)
+
+    async def _owner(request, uid):
+        return SimpleNamespace(session_id="sess_5573"), "usr_5573", "tenant-1"
+
+    async def _grant(request, session, *, device_id=None):
+        return True
+
+    monkeypatch.setattr(lane, "_resolve_chat_owner", _owner)
+    monkeypatch.setattr(lane, "_check_mesh_grant", _grant)
+    monkeypatch.setattr(pc_work_context, "read_saved_device_selection", _selection(selected))
+    monkeypatch.setattr(pc_work_context, "resolve_pc_work_context", _resolve_context)
+    monkeypatch.setattr(pc_work_context, "render_pc_work_context", lambda ctx: "selected PC: " + DEVICE)
+    return request, b14, bridge
+
+
+def _run(request, text, messages=None):
     return asyncio.run(lane.execute_chat_pc_drive_lane(
         request, user_text=text, skill=SimpleNamespace(id="auto"),
         model_id="m", conversation_id=None, tier="free",
+        conversation_messages=messages,
     ))
 
 
-def test_context_entry_selects_the_list_only_plan(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_list"}'])
-    result = _run(request, "5015-conditions-20261022 \ud3f4\ub354\uc5d0 \uc788\ub294 \ud30c\uc77c \ubaa9\ub85d\ub9cc \ubcf4\uc5ec\uc918")
+def test_one_engine_call_with_the_files_plan(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch)
+    result = _run(request, "\ub0b4 PC\uc758 5015-conditions-20261022 \ud3f4\ub354 \ubaa9\ub85d")
     assert result == ("ok", CONVERSATION)
     assert len(bridge.requests) == 1
-    sent = bridge.requests[0]
-    assert [step["tool_id"] for step in sent["agent_plan"]["steps"]] == ["claw.pc.list_files"]
-    assert sent["tool_arguments"] == {"files_list": {"device_id": DEVICE}}
-
-
-def test_context_entry_keeps_the_two_step_read_plan(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_read"}'])
-    _run(request, "\uadf8 \ud3f4\ub354\uc5d0\uc11c \ubb50\uac00 \uc788\ub294\uc9c0 \uc54c\ub824\uc918")
     sent = bridge.requests[0]
     assert [step["tool_id"] for step in sent["agent_plan"]["steps"]] == [
         "claw.pc.list_files", "claw.pc.read_file",
     ]
     assert sent["tool_arguments"] == {"files": {"device_id": DEVICE}}
-
-
-def test_general_turn_executes_nothing(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"none"}'])
-    assert _run(request, "\uc624\ub298 \ub0a0\uc528 \uc5b4\ub54c?") is None
-    assert bridge.requests == []
-    assert len(b14.calls) == 1
-
-
-def test_ambiguous_turn_answers_with_a_question(monkeypatch):
-    request, b14, bridge = _wire(
-        monkeypatch, answers=['{"action":"clarify","answer":"\uc5b4\ub290 PC\uc778\uac00\uc694?"}']
-    )
-    result = _run(request, "\uadf8\uac83 \uc880 \ubcf4\uc5ec\uc918")
-    assert result == ("\uc5b4\ub290 PC\uc778\uac00\uc694?", CONVERSATION)
-    assert bridge.requests == []
-
-
-def test_no_selected_pc_general_turn_still_falls_through(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"none"}'], selected=None)
-    assert _run(request, "\uc624\ub298 \ub0a0\uc528 \uc5b4\ub54c?") is None
-    assert len(b14.calls) == 1
-    assert bridge.requests == []
-
-
-def test_no_selected_pc_clear_pc_request_uses_the_server_context(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_list"}'], selected=None)
-    result = _run(request, "PC\uc758 \uadf8 \ud3f4\ub354 \ubaa9\ub85d\ub9cc \ubcf4\uc5ec\uc918")
-    assert result == ("ok", CONVERSATION)
-    assert bridge.requests[0]["tool_arguments"] is None
-    assert [step["tool_id"] for step in bridge.requests[0]["agent_plan"]["steps"]] == [
-        "claw.pc.list_files",
-    ]
-
-
-def test_unreadable_selection_fails_closed_before_any_model_call(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=[], selected=False)
-    with pytest.raises(lane.ChatPCDriveError) as excinfo:
-        _run(request, "PC\uc758 \uadf8 \ud3f4\ub354 \ubaa9\ub85d\ub9cc \ubcf4\uc5ec\uc918")
-    assert excinfo.value.code == "chat_pc_selection_unavailable"
     assert b14.calls == []
-    assert bridge.requests == []
 
 
-def test_authority_failure_general_turn_falls_through(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"none"}'])
-
-    async def _denied(request, uid):
-        raise lane.ChatPCDriveError("chat_pc_owner_unavailable", "denied", 503)
-
-    monkeypatch.setattr(lane, "_resolve_chat_owner", _denied)
-    assert _run(request, "\uc624\ub298 \ub0a0\uc528 \uc5b4\ub54c?") is None
-    assert len(b14.calls) == 1
-    assert bridge.requests == []
-
-
-def test_authority_failure_pc_request_without_keywords_is_a_refusal(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_read"}'])
-
-    async def _denied(request, uid):
-        raise lane.ChatPCDriveError("chat_pc_owner_unavailable", "denied", 503)
-
-    monkeypatch.setattr(lane, "_resolve_chat_owner", _denied)
-    with pytest.raises(lane.ChatPCDriveError) as excinfo:
-        _run(request, "\uadf8 \ud3f4\ub354 \uc548\uc5d0 \ubb50 \uc788\uc5b4?")
-    assert excinfo.value.code == "chat_pc_owner_unavailable"
-    assert bridge.requests == []
-
-
-def test_follow_up_without_any_pc_keyword_uses_the_prior_turn(monkeypatch):
-    """The phrase has no PC word; only the prior turn and PC identify it."""
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_read"}'])
+def test_follow_up_without_keywords_carries_the_prior_turns(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch)
     history = [
         {"role": "user", "content": "5015-conditions-20261022 \ud3f4\ub354\ub97c \ubd24\uc5b4"},
         {"role": "assistant", "content": "\ubaa9\ub85d\uc744 \ud655\uc778\ud588\uc2b5\ub2c8\ub2e4."},
         {"role": "user", "content": "\uadf8 \ud3f4\ub354 \uc548\uc5d0 \ubb50 \uc788\uc5b4?"},
     ]
-    result = asyncio.run(lane.execute_chat_pc_drive_lane(
-        request, user_text=history[-1]["content"], skill=SimpleNamespace(id="auto"),
-        model_id="m", conversation_id=None, tier="free",
-        conversation_messages=history,
-    ))
+    result = _run(request, history[-1]["content"], messages=history)
     assert result == ("ok", CONVERSATION)
-    sent = bridge.requests[0]
-    assert [step["tool_id"] for step in sent["agent_plan"]["steps"]] == [
-        "claw.pc.list_files", "claw.pc.read_file",
-    ]
-    contents = [item["content"] for item in b14.calls[0]["messages"]]
-    assert contents[0] == history[0]["content"]
-    assert contents[-1] == history[-1]["content"]
+    context = bridge.requests[0]["additional_system_context"]
+    assert history[0]["content"] in context
+    assert history[1]["content"] in context
+    assert b14.calls == []
 
 
-def test_keyword_turn_also_uses_the_scope_decision(monkeypatch):
-    """The old keyword path no longer keeps its own two-step plan."""
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_list"}'])
-    _run(request, "\ub0b4 PC \ub4dc\ub77c\uc774\ube0c \ubaa9\ub85d \uc54c\ub824\uc918")
-    sent = bridge.requests[0]
-    assert [step["tool_id"] for step in sent["agent_plan"]["steps"]] == ["claw.pc.list_files"]
-    assert sent["tool_arguments"] == {"files_list": {"device_id": DEVICE}}
-
-
-def test_scope_decision_receives_prior_turns(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_read"}'])
-    history = [
-        {"role": "user", "content": "5015-conditions-20261022 \ud3f4\ub354\ub97c \ubd24\uc5b4"},
-        {"role": "assistant", "content": "\ubaa9\ub85d\uc744 \ud655\uc778\ud588\uc2b5\ub2c8\ub2e4."},
-        {"role": "user", "content": "\uadf8 \ud3f4\ub354\uc5d0\uc11c \ubb50\uac00 \uc788\uc5b4?"},
-    ]
-    asyncio.run(lane.execute_chat_pc_drive_lane(
-        request, user_text=history[-1]["content"], skill=SimpleNamespace(id="auto"),
-        model_id="m", conversation_id=None, tier="free",
-        conversation_messages=history,
-    ))
-    sent = b14.calls[0]["messages"]
-    contents = [item["content"] for item in sent]
-    assert contents[0] == history[0]["content"]
-    assert contents[1] == history[1]["content"]
-    assert contents[-1] == history[-1]["content"]
-
-
-def test_clear_pc_request_without_authority_is_not_generalised(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"drives"}'])
-
-    async def _denied(request, uid):
-        raise lane.ChatPCDriveError("chat_pc_owner_unavailable", "denied", 503)
-
-    monkeypatch.setattr(lane, "_resolve_chat_owner", _denied)
-    with pytest.raises(lane.ChatPCDriveError) as excinfo:
-        _run(request, "\ub0b4 PC \ub4dc\ub77c\uc774\ube0c \uc54c\ub824\uc918")
-    assert excinfo.value.code == "chat_pc_owner_unavailable"
+def test_no_verified_pc_makes_no_call(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch, selected=None, devices=False)
+    assert _run(request, "\uadf8 \ud3f4\ub354 \uc548\uc5d0 \ubb50 \uc788\uc5b4?") is None
     assert bridge.requests == []
+    assert b14.calls == []
 
 
-def test_keyword_pc_request_without_authority_is_a_refusal(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"drives"}'])
+def test_unreadable_selection_fails_closed_before_any_call(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch, selected=False)
+    with pytest.raises(lane.ChatPCDriveError) as excinfo:
+        _run(request, "\ub0b4 PC \ud30c\uc77c \ubaa9\ub85d")
+    assert excinfo.value.code == "chat_pc_selection_unavailable"
+    assert bridge.requests == []
+    assert b14.calls == []
+
+
+def test_authority_failure_falls_through_without_a_call(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch)
 
     async def _denied(request, uid):
         raise lane.ChatPCDriveError("chat_pc_owner_unavailable", "denied", 503)
 
     monkeypatch.setattr(lane, "_resolve_chat_owner", _denied)
+    assert _run(request, "\uc624\ub298 \ub0a8\uc528 \uc5b4\ub54c?") is None
+    assert bridge.requests == []
+    assert b14.calls == []
+
+
+def test_browser_supplied_target_is_refused_when_it_mismatches(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch)
     with pytest.raises(lane.ChatPCDriveError) as excinfo:
-        _run(request, "\ub0b4 PC \ub4dc\ub77c\uc774\ube0c \uc54c\ub824\uc918")
-    assert excinfo.value.code == "chat_pc_owner_unavailable"
+        asyncio.run(lane.execute_chat_pc_drive_lane(
+            request, user_text="PC\uc758 \ud3f4\ub354", skill=SimpleNamespace(id="auto"),
+            model_id="m", conversation_id=None, tier="free",
+            device_id="node/meshdomain1/other-pc",
+        ))
+    assert excinfo.value.code == "chat_pc_selection_stale"
+    assert bridge.requests == []
