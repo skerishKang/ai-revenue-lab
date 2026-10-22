@@ -123,6 +123,18 @@ function ConvertFrom-IsoDurationSeconds {
     return $null
 }
 
+# LastTaskResult is a UInt32. Error results such as 0x800710E0 exceed
+# Int32.MaxValue, so it is converted to Int64 and never truncated.
+function ConvertTo-TaskResultCode {
+    param($Value)
+    if ($null -eq $Value) { return $null }
+    try {
+        return [int64]$Value
+    } catch {
+        return $null
+    }
+}
+
 # --- observations ---------------------------------------------------------
 
 function Get-BootObservation {
@@ -216,7 +228,7 @@ function Get-TunnelTaskObservation {
         try {
             $info = Get-ScheduledTaskInfo -TaskName $TaskName -ErrorAction Stop
             $obs.last_run = ConvertTo-ObsTimeString $info.LastRunTime
-            if ($null -ne $info.LastTaskResult) { $obs.last_result = [int]$info.LastTaskResult }
+            if ($null -ne $info.LastTaskResult) { $obs.last_result = ConvertTo-TaskResultCode $info.LastTaskResult }
             $obs.next_run = ConvertTo-ObsTimeString $info.NextRunTime
         } catch {
             $obs.info_error = $_.Exception.Message
@@ -475,12 +487,19 @@ function Test-AutostartEvidence {
             } elseif ($null -eq $task.last_result) {
                 $resultDetail = 'not verified: LastTaskResult was not observed'
             } else {
-                $code = [int]$task.last_result
-                $resultOk = ($code -eq 0 -or $code -eq 267009)
-                $resultDetail = 'LastTaskResult=' + $code
-                if ($code -eq 267009) { $resultDetail += ' (running)' }
-                elseif ($code -eq 267011) { $resultDetail += ' (has not run yet)' }
-                elseif ($code -eq 267010) { $resultDetail += ' (disabled)' }
+                $code = ConvertTo-TaskResultCode $task.last_result
+                if ($null -eq $code) {
+                    $resultDetail = 'not verified: LastTaskResult was not an integer: ' + [string]$task.last_result
+                } else {
+                    $resultOk = ($code -eq 0 -or $code -eq 267009)
+                    $resultDetail = 'LastTaskResult=' + $code
+                    if ($code -ge 0 -and $code -le 4294967295) {
+                        $resultDetail += (' (0x{0:X8})' -f $code)
+                    }
+                    if ($code -eq 267009) { $resultDetail += ' (running)' }
+                    elseif ($code -eq 267011) { $resultDetail += ' (has not run yet)' }
+                    elseif ($code -eq 267010) { $resultDetail += ' (disabled)' }
+                }
             }
             $checks.Add((New-AutostartCheck 'tunnel_task_last_result_ok' $resultOk $resultDetail `
                 $task.last_result '0 or 267009 while running'))
