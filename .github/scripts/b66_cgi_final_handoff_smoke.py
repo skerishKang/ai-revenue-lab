@@ -426,6 +426,18 @@ def _parse_claw_live_sse(body_text: object) -> dict[str, object]:
     }
 
 
+def _bounded_frame_presence(body_text: object) -> str:
+    """Name only the SSE frame kinds present in a partial capture."""
+    if not isinstance(body_text, str):
+        return "none"
+    names = [
+        name
+        for name in ("p01_event", "delta", "done", "error")
+        if re.search(r"(?m)^event: " + name + r"$", body_text)
+    ]
+    return ",".join(names) if names else "none"
+
+
 def _is_direct_provider(url: str) -> bool:
     parsed = urlparse(url)
     host = (parsed.hostname or "").lower()
@@ -1521,6 +1533,32 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                 if not sse_content_type:
                     _fail("claw_general_not_sse")
 
+                live = None
+                if lane == "live":
+                    # Playwright cannot read a still-streamed SSE body via
+                    # response.text(); read the page-side clone of the exact
+                    # bytes the app received. The stream closes with `done`,
+                    # so this wait also distinguishes an unfinished stream.
+                    stage = "live_stream_read"
+                    try:
+                        page.wait_for_function(
+                            "() => Boolean(window.__clawSse && window.__clawSse.text)",
+                            timeout=120000,
+                        )
+                        live_body = page.evaluate("() => window.__clawSse.text")
+                    except Exception as exc:
+                        snapshot = page.evaluate(
+                            "() => (window.__clawSse && window.__clawSse.text) || ''"
+                        )
+                        print("CLAW_LIVE_CAPTURE_CHARS=" + str(len(snapshot)))
+                        print(
+                            "CLAW_LIVE_CAPTURE_FRAMES="
+                            + _bounded_frame_presence(snapshot)
+                        )
+                        raise SmokeFailure("claw_live_stream_incomplete") from exc
+                    stage = "live_stream_contract"
+                    live = _parse_claw_live_sse(live_body)
+
                 stage = "assistant_terminal_lifecycle_" + lane
                 page.wait_for_function(
                     CLAW_ASSISTANT_COMPLETED_JS,
@@ -1543,19 +1581,6 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                 complete_ms = lane_complete_ms
 
                 if lane == "live":
-                    # Playwright cannot read a still-streamed SSE body via
-                    # response.text(); read the page-side clone instead.
-                    stage = "live_stream_read"
-                    try:
-                        page.wait_for_function(
-                            "() => Boolean(window.__clawSse && window.__clawSse.text)",
-                            timeout=30000,
-                        )
-                        live_body = page.evaluate("() => window.__clawSse.text")
-                    except Exception as exc:
-                        raise SmokeFailure("claw_live_stream_capture_missing") from exc
-                    stage = "live_stream_contract"
-                    live = _parse_claw_live_sse(live_body)
                     stage = "live_history_readback"
                     history = context.request.get(
                         CLAW_TARGET_URL.rstrip("/")
@@ -1774,6 +1799,8 @@ def _run_claw_live_parser_self_tests() -> None:
     assert parsed["delta_chars"] > 0
     assert parsed["terminal_kind"] == "run_completed"
     assert parsed["conversation_id"] == conversation_id
+    assert _bounded_frame_presence(good) == "p01_event,delta,done"
+    assert _bounded_frame_presence("") == "none"
 
     def rejects(body: str, code: str) -> None:
         try:
