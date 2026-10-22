@@ -720,6 +720,96 @@ def test_a_late_command_result_never_reopens_a_completed_run():
         connection.close()
 
 
+def _read_dispatch_arguments(call_ref: str, *, suffix: str) -> dict:
+    """One trusted file read row on the same kind=read lane the route stages."""
+
+    arguments = _dispatch_arguments(call_ref, suffix=suffix, command="")
+    arguments.update({
+        "kind": "read", "command_text": None,
+        "root_ref": routes._PC_FILES_READ_ROOT_REF,
+        "path_relative": "notes.txt",
+        "file_path": r"C:\Users\limone\AppData\Local\PADIEM\MeshCentralTrial\notes.txt",
+    })
+    return arguments
+
+
+def _stage_read(store, suffix: str, *, call_ref: str) -> str:
+    asyncio.run(store.create_oracle_mesh_dispatch(
+        **_read_dispatch_arguments(call_ref, suffix=suffix),
+    ))
+    return "oracle_mesh_cmd_" + suffix
+
+
+def test_a_kind_read_failure_keeps_the_run_failed_and_never_completed():
+    """List success is not the work's completion; a failed read stays failed."""
+
+    connection = _database()
+    try:
+        _stage_run(connection)
+        store = _store(connection)
+        _stage_command(store, "list")
+        read_call = RUN + ":read_file:" + "a" * 24
+        read_id = _stage_read(store, "read", call_ref=read_call)
+
+        asyncio.run(store.append_local_task_result(
+            user_id=OWNER, run_id=RUN,
+            message_id=_command_message_id("oracle_mesh_cmd_list", "oracle_mesh_rev_list"),
+            command_scope="oracle_mesh_cmd_list",
+            summary="no_exit_code", content="listing body", status="completed",
+        ))
+        _finish_command(connection, "list")
+        # A list result alone never seals the overall run.
+        assert _run_row(connection)["status"] == "running"
+        with pytest.raises(HistoryError, match="without a terminal result"):
+            asyncio.run(store.seal_run_terminal(
+                user_id=OWNER, run_id=RUN, message_id=RUN + "_final",
+                summary="no_exit_code", content="premature answer",
+                status="completed",
+            ))
+
+        marker = "PADIEM_PC_FILE_ERROR:too_large"
+        digest = hashlib.sha256(marker.encode("utf-8")).hexdigest()
+        dispatch_id = connection.execute(
+            "SELECT dispatch_id FROM oracle_mesh_dispatch WHERE command_id=?",
+            (read_id,),
+        ).fetchone()[0]
+        asyncio.run(store.record_oracle_mesh_first_result(
+            dispatch_id=dispatch_id,
+            content_sha256=digest, content_bytes=len(marker.encode("utf-8")),
+            termination="exited", exit_code=1,
+        ))
+        asyncio.run(store.store_oracle_mesh_command_result(
+            user_id=OWNER, dispatch_id=dispatch_id,
+            conversation_id=CONVERSATION,
+            message_id=_command_message_id(read_id, "oracle_mesh_rev_read"),
+            raw=marker, expected_sha256=digest,
+            expected_bytes=len(marker.encode("utf-8")),
+        ))
+        stored = asyncio.run(store.read_oracle_mesh_original(
+            user_id=OWNER, dispatch_id=dispatch_id,
+            conversation_id=CONVERSATION,
+            message_id=_command_message_id(read_id, "oracle_mesh_rev_read"),
+        ))
+        assert stored is not None and stored[0] == marker.encode("utf-8")
+
+        assert asyncio.run(store.append_local_task_result(
+            user_id=OWNER, run_id=RUN,
+            message_id=_command_message_id(read_id, "oracle_mesh_rev_read"),
+            command_scope=read_id,
+            summary="exited/1", content=marker, status="failed",
+        )) is True
+        _finish_command(connection, "read", outcome="failed")
+        assert _run_row(connection)["status"] == "failed"
+        with pytest.raises(HistoryError, match="failed command"):
+            asyncio.run(store.seal_run_terminal(
+                user_id=OWNER, run_id=RUN, message_id=RUN + "_final",
+                summary="exited/1", content="a false success",
+                status="completed",
+            ))
+    finally:
+        connection.close()
+
+
 # ---------------------------------------------------------------------------
 # The canonical Chat PC run id
 # ---------------------------------------------------------------------------

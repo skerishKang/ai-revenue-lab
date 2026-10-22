@@ -68,6 +68,9 @@ from app.tool_projection import EngineToolBinding, TrustedToolAuthority
 CLAW_ENGINE_PC_FILES_URL = "https://padiem-chat.internal/internal/claw/engine-pc-files"
 CHAT_ENGINE_PC_FILES_URL = "https://padiem-chat.internal/internal/chat/engine-pc-files"
 PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
+#: #5015: the Chat PC-files read is bounded server-side at 1 MB. The Engine
+#: re-checks the delivered bytes defensively; it never raises the bound.
+PC_FILES_READ_MAX_BYTES = 1_000_000
 # Exact, reviewed Chat API codes may cross the trusted Engine boundary as
 # bounded diagnostic stages; unknown codes and messages never leave that
 # boundary. These stages do not authorize or retry any PC command.
@@ -261,6 +264,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 "pc_files_admission_required", "Verified owner run is required",
             )
         path = _validate_pc_file_arguments(arguments)
+        expected_kind = "read" if op == "read" else "command"
         tool_call_ref = _pc_file_call_ref(owner[1], tool_id, path)
         dispatched = await _signed_files_call(
             service=service, request_factory=request_factory, secret=secret,
@@ -271,7 +275,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         if (
             not isinstance(dispatch, dict)
             or dispatch.get("run_id") != owner[1]
-            or dispatch.get("kind") != "command"
+            or dispatch.get("kind") != expected_kind
         ):
             raise ToolHandlerError(
                 "pc_files_dispatch_mismatch",
@@ -285,6 +289,40 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
             )
         import asyncio
 
+        async def _final_result():
+            result = await _signed_files_call(
+                service=service, request_factory=request_factory,
+                secret=secret, owner=owner, mode="result",
+                payload={"dispatch_id": dispatch_id},
+            )
+            final = result.get("dispatch")
+            if (
+                not isinstance(final, dict)
+                or final.get("dispatch_id") != dispatch_id
+                or final.get("run_id") != owner[1]
+                or final.get("kind") != expected_kind
+                or not isinstance(final.get("output"), str)
+            ):
+                raise ToolHandlerError(
+                    "pc_files_output_missing",
+                    "Verified PC file output is unavailable",
+                )
+            return final
+
+        def _raise_read_failure(output: str):
+            """Surface the existing marker, or the generic bounded failure."""
+            stripped = output.strip()
+            if stripped.startswith(PC_FILE_ERROR_PREFIX) and len(stripped) <= 64:
+                code = stripped[len(PC_FILE_ERROR_PREFIX):].strip()
+                raise ToolHandlerError(
+                    "pc_file_" + (code or "failed"),
+                    "PC file read failed",
+                )
+            raise ToolHandlerError(
+                "pc_files_execution_failed",
+                "PC executor reported failure",
+            )
+
         while True:
             await asyncio.sleep(2)
             observed = await _signed_files_call(
@@ -297,55 +335,84 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 not isinstance(row, dict)
                 or row.get("dispatch_id") != dispatch_id
                 or row.get("run_id") != owner[1]
+                or row.get("kind") != expected_kind
             ):
                 raise ToolHandlerError(
                     "pc_files_result_mismatch",
                     "PC file result correlation failed; do not replay",
                 )
             if row.get("state") == "failed":
+                if op == "read":
+                    # A failed read keeps its verified marker body in the same
+                    # result store, so the model lane sees too_large/read_failed
+                    # instead of an empty collapse. A missing body is still a
+                    # bounded execution failure, never a completion.
+                    try:
+                        final = await _final_result()
+                    except Exception:
+                        raise ToolHandlerError(
+                            "pc_files_execution_failed",
+                            "PC executor reported failure",
+                        ) from None
+                    _raise_read_failure(final["output"])
                 raise ToolHandlerError(
                     "pc_files_execution_failed",
                     "PC executor reported failure",
                 )
             if row.get("state") == "done":
-                result = await _signed_files_call(
-                    service=service, request_factory=request_factory,
-                    secret=secret, owner=owner, mode="result",
-                    payload={"dispatch_id": dispatch_id},
-                )
-                final = result.get("dispatch")
-                if (
-                    not isinstance(final, dict)
-                    or final.get("dispatch_id") != dispatch_id
-                    or not isinstance(final.get("output"), str)
-                ):
-                    raise ToolHandlerError(
-                        "pc_files_output_missing",
-                        "Verified PC file output is unavailable",
-                    )
+                final = await _final_result()
                 termination = final.get("termination")
                 exit_code = final.get("exit_code")
-                if termination not in ("exited", "no_exit_code", "output_too_large"):
-                    raise ToolHandlerError(
-                        "pc_files_execution_failed",
-                        "PC executor reported failure",
-                    )
-                if exit_code is None:
-                    if termination not in ("no_exit_code", "output_too_large"):
+                output = final["output"]
+                if op == "read":
+                    # A read success is exactly a clean exited/0 result. Every
+                    # other terminal state keeps its marker or fails bounded.
+                    if termination != "exited" or exit_code != 0:
+                        _raise_read_failure(output)
+                    encoded = output.encode("utf-8")
+                    content_bytes = final.get("content_bytes")
+                    if (
+                        isinstance(content_bytes, bool)
+                        or not isinstance(content_bytes, int)
+                        or content_bytes < 0
+                        or content_bytes != len(encoded)
+                    ):
                         raise ToolHandlerError(
                             "pc_files_output_missing",
                             "Verified PC outcome is incomplete",
                         )
-                elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
-                    raise ToolHandlerError(
-                        "pc_files_output_missing",
-                        "Verified PC outcome is incomplete",
-                    )
-                output = final["output"]
+                    if (
+                        content_bytes > PC_FILES_READ_MAX_BYTES
+                        or len(encoded) > PC_FILES_READ_MAX_BYTES
+                    ):
+                        raise ToolHandlerError(
+                            "pc_files_output_too_large",
+                            "PC file output exceeds the read bound",
+                        )
+                else:
+                    if termination not in (
+                        "exited", "no_exit_code", "output_too_large",
+                    ):
+                        raise ToolHandlerError(
+                            "pc_files_execution_failed",
+                            "PC executor reported failure",
+                        )
+                    if exit_code is None:
+                        if termination not in ("no_exit_code", "output_too_large"):
+                            raise ToolHandlerError(
+                                "pc_files_output_missing",
+                                "Verified PC outcome is incomplete",
+                            )
+                    elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
+                        raise ToolHandlerError(
+                            "pc_files_output_missing",
+                            "Verified PC outcome is incomplete",
+                        )
                 common = {
                     "dispatch_id": dispatch_id,
                     "output": output,
                     "result_sha256": final.get("result_sha256"),
+                    "content_sha256": final.get("content_sha256"),
                     "execution_confirmed": True,
                     "termination": termination,
                     "exit_code": exit_code,
@@ -393,13 +460,6 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         separators=(",", ":"),
                     )
                     return common
-                stripped = output.strip()
-                if stripped.startswith(PC_FILE_ERROR_PREFIX) and len(stripped) <= 64:
-                    code = stripped[len(PC_FILE_ERROR_PREFIX):].strip()
-                    raise ToolHandlerError(
-                        "pc_file_" + (code or "failed"),
-                        "PC file read failed",
-                    )
                 common["content"] = output
                 common["content_bytes"] = len(output.encode("utf-8"))
                 return common
@@ -588,6 +648,7 @@ __all__ = [
     "PC_DRIVES_CANONICAL_TOOL_ID",
     "PC_DRIVES_TOOL_ID",
     "PC_FILE_ERROR_PREFIX",
+    "PC_FILES_READ_MAX_BYTES",
     "PC_FILE_TOOL_IDS",
     "PC_LIST_FILES_CANONICAL_TOOL_ID",
     "PC_LIST_FILES_SCOPE",
