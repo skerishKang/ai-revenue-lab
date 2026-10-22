@@ -121,8 +121,13 @@ class Socket:
 
 
 class Trusted:
-    def __init__(self, ok=True): self.ok = ok
-    async def verify(self, socket): return self.ok
+    def __init__(self, ok=True, delay=0.0):
+        self.ok = ok
+        self.delay = delay
+    async def verify(self, socket):
+        if self.delay:
+            await asyncio.sleep(self.delay)
+        return self.ok
 
 
 def _fake_binding(fields, *, now, expires_at):
@@ -526,6 +531,62 @@ def test_credential_delivery_stall_still_fails_closed_without_store_or_ack(monke
     assert [entry["type"] for entry in sock.sent] == [
         "begin", "finish", "credential_fetch",
     ]
+
+
+def test_credential_window_subtracts_begin_and_bootstrap_delays(monkeypatch):
+    """#3099: the whole handshake time is charged to the receive window.
+
+    The budget is computed after ``credential_fetch`` is sent, so the ``begin``
+    -> ``nonce`` leg AND the ``finish`` -> ``bootstrap_verified`` leg must both
+    already have been subtracted. Only the local monotonic elapsed time is
+    used, so no clock difference can change the result.
+    """
+    import claw_connect.device_wss_enrollment as module
+
+    # 1.0s lease with a 0.5s ACK reserve leaves a 0.5s budget.
+    monkeypatch.setattr(module, "GATEWAY_LEASE_TTL_SECONDS", 1.0)
+    monkeypatch.setattr(module, "INSTALL_ACK_RESERVE_SECONDS", 0.5)
+
+    class SlowLegsSocket(Socket):
+        async def receive_text(self):
+            if self.index in (0, 1):
+                # The begin leg and the bootstrap leg.
+                await asyncio.sleep(0.3)
+            return await super().receive_text()
+
+    sock, store = SlowLegsSocket(), Store()
+    started = time.monotonic()
+    with pytest.raises(
+        DeviceSessionRefused, match=r"^device_credential_delivery_window_expired$",
+    ):
+        run(sock, store)
+    # If only one leg were subtracted the budget would still be positive and
+    # this would fail as a credential timeout instead.
+    assert time.monotonic() - started >= 0.6
+    assert sock.closed is True
+    assert store.saved == []
+    assert [entry["type"] for entry in sock.sent] == ["begin", "finish", "credential_fetch"]
+
+
+def test_credential_window_starts_before_the_tls_verification(monkeypatch):
+    """#3099: the budget starts before ``begin``, not after the TLS check."""
+    import claw_connect.device_wss_enrollment as module
+
+    monkeypatch.setattr(module, "GATEWAY_LEASE_TTL_SECONDS", 1.0)
+    monkeypatch.setattr(module, "INSTALL_ACK_RESERVE_SECONDS", 0.5)
+
+    sock, store = Socket(), Store()
+    started = time.monotonic()
+    with pytest.raises(
+        DeviceSessionRefused, match=r"^device_credential_delivery_window_expired$",
+    ):
+        run(sock, store, trusted=Trusted(delay=0.6))
+    # Starting the budget after the TLS verification would leave a positive
+    # window and fail as a credential timeout instead.
+    assert time.monotonic() - started >= 0.6
+    assert sock.closed is True
+    assert store.saved == []
+    assert [entry["type"] for entry in sock.sent] == ["begin", "finish", "credential_fetch"]
 
 
 def test_credential_window_is_capped_by_the_remaining_broker_lease(monkeypatch):

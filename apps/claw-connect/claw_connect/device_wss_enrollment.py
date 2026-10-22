@@ -270,14 +270,19 @@ async def run_review_only_device_session(
     clock = now or datetime.now(timezone.utc)
     if clock.tzinfo is None or clock.utcoffset() is None:
         raise DeviceSessionRefused("device_clock_invalid")
+    # START POINT of the lease budget: taken BEFORE the TLS verification and
+    # therefore before ``begin``. Everything from here to the credential wait
+    # (TLS verify, begin -> nonce, finish -> bootstrap_verified, and the
+    # credential_fetch send) is subtracted from the canonical lease TTL, so the
+    # budget can only under-estimate the remaining lease. It is a monotonic
+    # reading, so no difference between this PC's clock and the Broker's clock
+    # can change it.
+    lease_clock = time.monotonic()
     try:
         if await asyncio.wait_for(trusted_tls.verify(socket), timeout=5.0) is not True:
             raise DeviceSessionRefused("trusted_tls_required")
         if on_stage is not None:
             on_stage("device_session_tls_verified")
-        # Monotonic, so the remaining-lease budget below never depends on the
-        # difference between this PC's clock and the Broker's clock.
-        lease_clock = time.monotonic()
         await _send(socket, {
             "type": "begin", "challenge_id": challenge_id,
             "device_id": device_id, "proof_ref": build_enrollment_proof_ref(
