@@ -27,6 +27,7 @@ from kagent.contracts import ClawRunStatus, ClawTaskIntent, ExecutionMode
 from kagent.p01_adapter import (
     P01_AGENT_ID,
     P01_APP_ID,
+    PADIEM_CLAW_IDENTITY_INSTRUCTION,
     _agent_profile,
     ClawOrchestrationProjector,
     P01AdapterError,
@@ -824,3 +825,11 @@ def test_explicit_free_choice_allows_only_free_registered_ids():
     except P01AdapterError as exc:
         assert exc.code == "model_not_available_for_tier"
         assert exc.dispatch_class == "not_dispatched"
+
+
+def test_claw_dispatch_carries_the_claw_product_identity():
+    from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
+    profile = _agent_profile(ProductTierLabel.FREE, selected_model_id=FREE_PRIMARY_B14_MODEL_ID)
+    assert profile.system_instruction == PADIEM_CLAW_IDENTITY_INSTRUCTION
+    assert profile.system_instruction.startswith("당신은 파디엠클로의 AI 어시스턴트입니다")
+    assert "파디엠챗" not in profile.system_instruction
