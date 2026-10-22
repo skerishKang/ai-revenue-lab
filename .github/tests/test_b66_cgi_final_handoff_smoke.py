@@ -705,7 +705,9 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
         owner = text[text.index("def run_claw_owner_one_shot("):text.index("\ndef self_test(")]
         self.assertEqual(module.CLAW_LANES, ("live", "evidence"))
         self.assertEqual(module.MAX_CLAW_MODEL_DISPATCHES, 2)
-        self.assertIn("for lane in CLAW_LANES:", owner)
+        self.assertEqual(module.CLAW_INTER_LANE_PAUSE_SECONDS, 65)
+        self.assertIn("for index, lane in enumerate(CLAW_LANES):", owner)
+        self.assertIn("time.sleep(CLAW_INTER_LANE_PAUSE_SECONDS)", owner)
         self.assertIn('lane_state["lane"] = lane', owner)
         self.assertIn("guard.reset_lane()", owner)
         self.assertIn('if lane == "evidence":', owner)
@@ -791,6 +793,21 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
             module._parse_claw_live_sse(
                 "event: delta\ndata: " + "x" * (module.CLAW_LIVE_MAX_BODY_BYTES + 1)
             )
+
+    def test_live_error_frame_prints_only_the_bounded_class(self):
+        body = (
+            'event: error\ndata: {"error": {"code": "engine_execution_failed", '
+            '"detail": "engine_provider_rate_limited", '
+            '"message": "provider raw text"}}\n\n'
+        )
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            with self.assertRaisesRegex(module.SmokeFailure, "claw_live_error_event"):
+                module._parse_claw_live_sse(body)
+        output = buffer.getvalue()
+        self.assertIn("CLAW_LIVE_ERROR_CODE=engine_execution_failed", output)
+        self.assertIn("CLAW_LIVE_ERROR_DETAIL=engine_provider_rate_limited", output)
+        self.assertNotIn("provider raw text", output)
 
     def test_claw_http_failure_diagnostics_stay_bounded(self):
         text = SCRIPT.read_text(encoding="utf-8")
