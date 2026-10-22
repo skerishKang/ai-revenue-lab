@@ -23,6 +23,16 @@ from .control_plane_broker_pairing_client import _dict as _private_rpc_dict
 
 B54_NATIVE_PC_IDENTITY_COMPLETION_ROUTE_MOUNTED = False
 B54_NATIVE_PC_IDENTITY_COMPLETION_PRODUCTION_ENABLED = False
+#: Bound for one canonical private RPC on this path. The fetch window below
+#: is a retry budget, not a transport bound: an unbounded await left the whole
+#: owner request hanging with NO completion log and NO stage event, so the PC
+#: only ever saw a client-side credential timeout. A stalled Durable Object
+#: must fail closed with one of this module's existing bounded codes.
+PREFLIGHT_RPC_TIMEOUT_SECONDS = 10.0
+#: How long the owner approval may wait for the PC's own signed
+#: ``credential_fetch`` to become verifiable. This is a retry budget for the
+#: read-only status call, not a transport bound.
+PREFLIGHT_FETCH_WINDOW_SECONDS = 5.0
 _REQUEST = re.compile(r"^link\.[0-9a-f]{32}$")
 _REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _PROOF = re.compile(r"^pairing-proof:[0-9a-f]{64}$")
@@ -88,12 +98,26 @@ class CanonicalOwnerPcIdentityPreflight:
         # network independently. Only this read-only status may be retried;
         # proof claims and credential redemption below remain one-shot.
         loop = asyncio.get_running_loop()
-        deadline = loop.time() + (5.0 if wait_for_fetch else 0.0)
+        deadline = loop.time() + (
+            PREFLIGHT_FETCH_WINDOW_SECONDS if wait_for_fetch else 0.0
+        )
         while True:
             try:
-                status = _private_rpc_dict(await self._private.pending_pc_identity_status({
-                    "request_ref": request_ref,
-                }))
+                # The retry budget also bounds a single stalled RPC, so a
+                # Durable Object that never answers fails closed instead of
+                # hanging this owner request without any telemetry.
+                remaining = (
+                    max(0.0, deadline - loop.time()) if wait_for_fetch
+                    else PREFLIGHT_RPC_TIMEOUT_SECONDS
+                )
+                if remaining <= 0.0:
+                    raise asyncio.TimeoutError("preflight_fetch_window_elapsed")
+                status = _private_rpc_dict(await asyncio.wait_for(
+                    self._private.pending_pc_identity_status({
+                        "request_ref": request_ref,
+                    }),
+                    timeout=remaining,
+                ))
                 break
             except Exception:
                 if wait_for_fetch and loop.time() < deadline:
@@ -169,10 +193,13 @@ class CanonicalOwnerPcIdentityPreflight:
         # No browser-authored challenge or proof is accepted. Claim-once
         # deliberately happens AFTER B54's fresh canonical Identity check.
         try:
-            receipt = _private_rpc_dict(await self._private.claim_pending_pc_identity_proof({
-                "request_ref": request_ref,
-                "challenge_id": challenge, "device_id": device,
-            }))
+            receipt = _private_rpc_dict(await asyncio.wait_for(
+                self._private.claim_pending_pc_identity_proof({
+                    "request_ref": request_ref,
+                    "challenge_id": challenge, "device_id": device,
+                }),
+                timeout=PREFLIGHT_RPC_TIMEOUT_SECONDS,
+            ))
         except Exception:
             raise IdentityBridgeError(
                 503, "pending_pc_claim_unconfirmed", "Current PC handoff is unavailable.",
