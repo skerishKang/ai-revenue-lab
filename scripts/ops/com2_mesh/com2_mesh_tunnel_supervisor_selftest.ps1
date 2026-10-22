@@ -9,6 +9,10 @@
   - an exclusive lock refuses a second supervisor without touching the live
     state, and the job object kills the child when the supervisor is hard
     terminated;
+  - a missing or unassignable job object refuses to start or own a child, and
+    closing the job kills the owned child;
+  - the listener owner PID is resolved through the connection cmdlet and the
+    netstat fallback;
   - failed children are retried with a capped backoff and a bounded budget;
   - a run at least tunnel_stable_seconds long resets the attempt budget;
   - a missing forward listener is treated as a failure and leaves no child;
@@ -285,6 +289,51 @@ Stop-SupProcess -Process $first
 Start-Sleep -Milliseconds 1500
 $orphan = Get-Process -Id $firstChildPid -ErrorAction SilentlyContinue
 Assert-True -Value ($null -eq $orphan) -Label 'job object kills child on hard stop'
+
+# --- job object is mandatory ----------------------------------------------
+
+Write-Output '-- job object is mandatory'
+$jobDir = Join-Path $work 'job'
+New-Item -ItemType Directory -Path $jobDir -Force | Out-Null
+$jobCfg = New-SupConfig -Directory $jobDir -Port (Get-FreeTcpPort) -MockChild $mockChild -ChildArguments @(
+    '-SleepSeconds', '60') -Overrides @{ tunnel_require_listener = $false }
+$noJob = Start-OwnedChild -Cfg $jobCfg -Job ([IntPtr]::Zero)
+Assert-Equal -Expected 'False' -Actual ([bool]$noJob.ok) -Label 'missing job object refuses the child'
+Assert-Equal -Expected 'job_object_unavailable' -Actual $noJob.error -Label 'missing job object error code'
+Assert-True -Value (@(Get-MockChildProcesses -MockPath $mockChild).Count -eq 0) -Label 'missing job object starts no child'
+
+$bogusOwned = Start-OwnedChild -Cfg $jobCfg -Job ([IntPtr]::new(12345))
+Assert-Equal -Expected 'False' -Actual ([bool]$bogusOwned.ok) -Label 'unassignable job refuses the child'
+Assert-Equal -Expected 'job_object_assign_failed' -Actual $bogusOwned.error -Label 'unassignable job error code'
+Start-Sleep -Milliseconds 500
+Assert-True -Value (@(Get-MockChildProcesses -MockPath $mockChild).Count -eq 0) -Label 'unassignable job leaves no child'
+
+$realJob = New-ChildJob
+Assert-True -Value ($realJob -ne [IntPtr]::Zero) -Label 'job object is created'
+if ($realJob -ne [IntPtr]::Zero) {
+    $owned = Start-OwnedChild -Cfg $jobCfg -Job $realJob
+    Assert-True -Value ([bool]$owned.ok) -Label 'owned child starts'
+    $ownedPid = 0
+    if ($owned.ok) { $ownedPid = [int]$owned.process.Id }
+    Assert-True -Value ($ownedPid -gt 0 -and $null -ne (Get-Process -Id $ownedPid -ErrorAction SilentlyContinue)) -Label 'owned child is alive'
+    try { [Com2MeshTunnelJob]::Close($realJob) } catch { }
+    Start-Sleep -Milliseconds 1500
+    Assert-True -Value ($null -eq (Get-Process -Id $ownedPid -ErrorAction SilentlyContinue)) -Label 'closing the job kills the owned child'
+    if ($owned.ok) { try { $owned.process.Dispose() } catch { } }
+}
+
+# --- listener ownership fallback ------------------------------------------
+
+Write-Output '-- listener ownership fallback'
+$ownerListener = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Parse('127.0.0.1'), 0)
+$ownerListener.Start()
+try {
+    $ownerPort = ([System.Net.IPEndPoint]$ownerListener.LocalEndpoint).Port
+    Assert-Equal -Expected $PID -Actual (Get-NetstatListenerOwnerPid -Port $ownerPort) -Label 'netstat fallback returns the owner pid'
+    Assert-Equal -Expected $PID -Actual (Get-ListenerOwnerPid -TargetHost '127.0.0.1' -Port $ownerPort) -Label 'listener owner pid is resolved'
+} finally {
+    try { $ownerListener.Stop() } catch { }
+}
 
 # --- bounded retry --------------------------------------------------------
 

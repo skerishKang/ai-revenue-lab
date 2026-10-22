@@ -9,7 +9,9 @@
     lock is an OS handle, so a dead supervisor releases it automatically.
   - The child is assigned to a Windows job object with
     JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE, so it cannot outlive the supervisor
-    even when the task is ended with a hard terminate.
+    even when the task is ended with a hard terminate. A job object that
+    cannot be created or assigned is fatal: the supervisor never reports
+    forwarding for an unowned child.
   - A failed child is retried with a capped backoff. A child that ran for at
     least tunnel_stable_seconds resets the attempt budget. After
     tunnel_max_attempts failures the supervisor exits; the scheduled task's
@@ -99,21 +101,6 @@ function Write-SupState {
 }
 
 # --- process helpers ------------------------------------------------------
-
-function Test-TcpPort {
-    param([string]$TargetHost, [int]$Port, [int]$TimeoutMs = 1000)
-    $client = New-Object System.Net.Sockets.TcpClient
-    try {
-        $async = $client.BeginConnect($TargetHost, $Port, $null, $null)
-        if (-not $async.AsyncWaitHandle.WaitOne($TimeoutMs, $false)) { return $false }
-        $client.EndConnect($async)
-        return $true
-    } catch {
-        return $false
-    } finally {
-        try { $client.Close() } catch { }
-    }
-}
 
 # Windows PowerShell 5.1 has no ProcessStartInfo.ArgumentList, so the command
 # line is built with the Windows quoting rules when the property is missing.
@@ -348,6 +335,22 @@ function Stop-ForwardChild {
     try { $Process.Dispose() } catch { }
 }
 
+function Start-OwnedChild {
+    param($Cfg, [IntPtr]$Job)
+    if ($Job -eq [IntPtr]::Zero) {
+        return @{ ok = $false; process = $null; error = 'job_object_unavailable' }
+    }
+    $child = Start-ForwardChild -Cfg $Cfg
+    if (-not $child.ok) { return $child }
+    $assigned = $false
+    try { $assigned = [Com2MeshTunnelJob]::Assign($Job, $child.process.Handle) } catch { $assigned = $false }
+    if (-not $assigned) {
+        Stop-ForwardChild -Process $child.process
+        return @{ ok = $false; process = $null; error = 'job_object_assign_failed' }
+    }
+    return $child
+}
+
 function Get-ListenerOwnerPid {
     param([string]$TargetHost, [int]$Port)
     try {
@@ -356,6 +359,22 @@ function Get-ListenerOwnerPid {
             Select-Object -First 1
         if (-not $match) { $match = $connections | Select-Object -First 1 }
         if ($match) { return [int]$match.OwningProcess }
+    } catch { }
+    return (Get-NetstatListenerOwnerPid -Port $Port)
+}
+
+# Fallback when the connection cmdlet is unavailable. It still returns a real
+# owner PID, so readiness keeps comparing the owner with the supervisor's child
+# instead of accepting any process that answers on the port.
+function Get-NetstatListenerOwnerPid {
+    param([int]$Port)
+    try {
+        $lines = & netstat.exe -ano -p tcp 2>$null
+        foreach ($line in $lines) {
+            if ([string]$line -match ('^\s*TCP\s+\S+:' + $Port + '\s+\S+\s+LISTENING\s+(\d+)\s*$')) {
+                return [int]$Matches[1]
+            }
+        }
     } catch { }
     return 0
 }
@@ -369,13 +388,7 @@ function Wait-ForwardListener {
     $deadline = (Get-Date).AddSeconds([Math]::Max(1, $TimeoutSeconds))
     while ((Get-Date) -lt $deadline) {
         $ownerPid = Get-ListenerOwnerPid -TargetHost ([string]$Cfg.tunnel_local_host) -Port ([int]$Cfg.tunnel_local_port)
-        if ($ownerPid -gt 0) {
-            if ($Process -and $ownerPid -eq $Process.Id) { return $true }
-        } elseif (Test-TcpPort -TargetHost $Cfg.tunnel_local_host -Port ([int]$Cfg.tunnel_local_port) -TimeoutMs 500) {
-            # The connection table is unavailable; the port answers, so the
-            # child is the only intended owner.
-            return $true
-        }
+        if ($ownerPid -gt 0 -and $Process -and $ownerPid -eq $Process.Id) { return $true }
         try {
             if ($Process -and $Process.HasExited) { return $false }
         } catch {
@@ -436,9 +449,24 @@ try {
         Write-SupLog -Cfg $cfg -Message ('supervisor_start pid={0} job_object={1}' -f $PID, ($job -ne [IntPtr]::Zero))
         $attempt = 0
         $stableRuns = 0
+        if ($job -eq [IntPtr]::Zero) {
+            $state.state = 'error'
+            $state.last_error = 'job_object_unavailable'
+            Write-SupState -Cfg $cfg -State $state
+            Write-SupLog -Cfg $cfg -Message 'job_object_unavailable'
+            $finalExit = 1
+        } else {
         while ($true) {
-            $child = Start-ForwardChild -Cfg $cfg
+            $child = Start-OwnedChild -Cfg $cfg -Job $job
             if (-not $child.ok) {
+                if ($child.error -eq 'job_object_assign_failed') {
+                    $state.state = 'error'
+                    $state.last_error = 'job_object_assign_failed'
+                    Write-SupState -Cfg $cfg -State $state
+                    Write-SupLog -Cfg $cfg -Message 'job_object_assign_failed'
+                    $finalExit = 1
+                    break
+                }
                 $attempt++
                 $state.attempt = $attempt
                 $state.last_error = [string]$child.error
@@ -463,9 +491,6 @@ try {
             $proc = $child.process
             $state.child_pid = $proc.Id
             $state.state = 'starting'
-            if ($job -ne [IntPtr]::Zero) {
-                try { [void][Com2MeshTunnelJob]::Assign($job, $proc.Handle) } catch { }
-            }
             Write-SupState -Cfg $cfg -State $state
             Write-SupLog -Cfg $cfg -Message ('child_started pid={0} attempt={1}' -f $proc.Id, $attempt)
 
@@ -537,6 +562,7 @@ try {
             Write-SupLog -Cfg $cfg -Message ('child_exit exit={0} run_seconds={1} attempt={2} backoff={3}s' -f
                 $exitCode, $runSeconds, $attempt, $delay)
             Start-Sleep -Seconds $delay
+        }
         }
     }
 } catch {

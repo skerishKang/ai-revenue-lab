@@ -38,8 +38,8 @@
 
 - 하나의 supervisor가 하나의 SSH 자식만 소유한다.
 - 잠금: `FileShare.None`으로 연 잠금 파일을 프로세스 수명 동안 유지한다. 중복 실행은 종료 코드 2와 `duplicate_refused` 로그를 남기고 살아 있는 상태를 덮어쓰지 않는다. 잠금은 OS 핸들이므로 비정상 종료 시 자동으로 풀린다.
-- 자식 수명: 자식을 job object에 즉시 할당하고 `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`를 설정한다. 할당 실패는 치명적이지 않고 상태에 남지 않으므로, 실제 회수는 적용 창의 강제 종료 게이트(§5.6)로 확인한다. supervisor가 정상 종료할 때는 자식을 직접 종료한다.
-- 준비 판정: 설정된 loopback 포트의 리스너 소유 PID가 자식 PID와 같을 때만 forwarding으로 전환한다. 다른 프로세스가 포트를 잡고 있으면 준비 실패로 처리하고 자식을 종료한다.
+- 자식 수명: 자식을 job object에 할당한 뒤에만 기동으로 인정한다. job object 생성·할당 실패는 치명적으로 처리하고 상태·로그에 남긴다. supervisor가 정상 종료할 때는 자식을 직접 종료한다.
+- 준비 판정: 설정된 loopback 포트의 리스너 소유 PID가 자식 PID와 같을 때만 forwarding으로 전환한다. 연결 테이블 조회가 실패하면 `netstat -ano`의 소유 PID로 대조하며, TCP 연결 성공만으로 인정하지 않는다. 다른 프로세스가 포트를 잡고 있으면 준비 실패로 처리하고 자식을 종료한다.
 - 재시도: `tunnel_backoff_schedule_seconds`(기본 5/15/30/60초), `tunnel_max_attempts`(기본 5). `tunnel_stable_seconds`(기본 120초) 이상 유지된 실행은 시도 예산을 초기화한다. 예산 소진 시 종료 코드 3으로 끝나고, 5분 작업 트리거가 새 에피소드를 시작한다.
 - 상태: `com2_mesh_tunnel_supervisor/v1` JSON(`state`, `pid`, `child_pid`, `attempt`, `max_attempts`, `stable_runs`, `forwarding_since`, `next_attempt_at`, `last_exit_code`, `last_run_seconds`, `last_error`)과 한 줄 로그.
 - COM2 서비스는 건드리지 않는다. 서비스 조치는 기존 복구 엔진만 수행한다.
@@ -92,7 +92,7 @@ mesh_http_200
 | 파일 | 검증 |
 |---|---|
 | `com2_mesh_recovery_selftest.ps1` | 분기별 분류·계획·코드, 원인별 원격 실패, unknown 상태의 record_only, retry backoff/exhaustion/window 재개/class 전환/healthy 초기화, pending 활성 억제·만료 시 1회 소비와 backoff·만료 예산 소진·pending 중 200 관측·class/조치 변경·비조치 class에서 pending 폐기, record-only pending 누수 없음, 두 시계(에피소드/class) 분리, 관측 200 비소급, Simulate가 시도를 소비하지 않음, 상태·로그·락 |
-| `com2_mesh_tunnel_supervisor_selftest.ps1` | 중복 supervisor 거부와 살아 있는 상태 보존, 강제 종료 시 자식 회수, 제한 재시도, stable 실행의 예산 초기화, 리스너 미준비, 다른 프로세스가 포트를 소유한 경우 거부, 작업 XML 불변식과 만료 XML 거부 |
+| `com2_mesh_tunnel_supervisor_selftest.ps1` | 중복 supervisor 거부와 살아 있는 상태 보존, 강제 종료 시 자식 회수, job object 미생성·미할당 시 자식 미기동과 실패 코드, job 닫기 시 소유 자식 회수, 리스너 소유 PID의 cmdlet·netstat 대조, 제한 재시도, stable 실행의 예산 초기화, 리스너 미준비, 다른 프로세스가 포트를 소유한 경우 거부, 작업 XML 불변식과 만료 XML 거부 |
 | `com2_mesh_autostart_selftest.ps1` | 15개 체크의 true/false/null, 만료 반복, 지난 NextRunTime, 부팅 전 실행, 수동/중지 서비스, 리스너 없음/다른 프로세스/부팅 전 시작, HTTP 500, 부팅 시각 미관측, 조회 실패, verified→failed→verified 전이, CLI JSON 계약 |
 
 ## 3. 동작 계약
@@ -315,7 +315,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File com2_mesh_task_template.ps1 
 
 ### 5.6 job object 자식 회수 게이트 (창 안에서 1회, 파괴적)
 
-job object 할당은 실패해도 치명적이지 않고 상태에 남지 않는다. 실제 회수 보장은 이 게이트로만 확인할 수 있다.
+job object 생성·할당 실패는 이제 치명적으로 끝나고 상태·로그에 남는다. 이 게이트는 정상 기동 후 `KILL_ON_JOB_CLOSE`가 실제로 자식을 회수하는지 확인하는 런타임 확인이다.
 
 1. supervisor PID S, 자식 PID C, 포트 소유자가 C임을 기록한다.
 2. `Stop-Process -Id S -Force` (작업이 아니라 supervisor 프로세스).
@@ -432,17 +432,19 @@ $status.auto_start_probe_ts = if ($autostart) { [string]$autostart.ts } else { "
 |---|---|---|---|
 | 단일 supervisor | `FileShare.None` 잠금, 중복 시 exit 2, IgnoreNew | 중복 거부·상태 보존 selftest, XML 불변식 검증 | Task Scheduler IgnoreNew의 런타임 동작(5.5.4, 5.7) |
 | 리스너 소유권 | 준비 판정은 리스너 소유 PID == 자식 PID | 다른 프로세스 포트 점유 시 준비 실패 selftest | 전환 승인은 직접 PID 조회로만 판정(5.5.3) |
-| 자식 수명 | job object `KILL_ON_JOB_CLOSE`, 종료 시 직접 종료 | 강제 종료 자식 회수 selftest(mock) | 할당이 fail-open이므로 5.6 강제 종료 게이트가 유일한 런타임 증거 |
+| 자식 수명 | job object `KILL_ON_JOB_CLOSE`, 생성·할당 실패는 치명적, 종료 시 직접 종료 | 미생성·미할당 시 자식 미기동, job 닫기 시 자식 회수 selftest | 5.6 강제 종료 게이트로 실제 기동 경로를 확인 |
 | 잠금 해제 | OS 핸들 기반, 소유자만 잠금 파일 제거 | 비정상 종료 후 재기동 selftest | 실제 강제 종료 후 재기동(5.6.4) |
 | 진행 작업 보존 | 엔진은 전달만 교체, 명령 결과 큐를 만들지 않음 | 해당 없음 | 창 시작 전 실행 중 작업 없음 확인(5.1.5)이 유일한 보장 |
 | 기존 소비자 호환 | 필드 추가만, `recovery_ok=pending`은 성공 아님 | 소비자 필드 표(§3.6), read-only 확인 | health 스크립트 연결 후 실제 표시(5.8) |
 
 ### 10.2 발견 사항
 
+분류: 코드 결함 **F1, F2**(이 HEAD에서 수정), 적용 전제 **F3, F4, F6**(§5.1.6, §5.4.5, §5.3), 운영 검증 항목 **F5, F7**(§5.7, §8). F5는 문서 기준을 이미 교체했으므로 코드 변경 없이 런타임에서 `NextRunTime`으로 확인한다.
+
 | ID | 내용 | 영향 | 처리 |
 |---|---|---|---|
-| F1 | job object 생성·할당 실패가 치명적이지 않고 상태·로그에도 남지 않는다(fail-open). | 강제 종료 시 ssh 자식이 남을 수 있다. fixture는 mock이므로 런타임 보장이 아니다. | 5.6 강제 종료 게이트를 적용 승인 조건으로 둔다. 실패하면 실제 결함으로 승격한다. |
-| F2 | `Wait-ForwardListener`는 연결 테이블 조회가 실패하면 TCP 연결 성공만으로 준비를 인정한다. 다른 프로세스가 포트를 잡은 경우를 구분하지 못한다. | 잘못된 forwarding 판정 가능. | 전환 승인 판정은 5.5.3의 직접 PID 조회로만 한다. 적용 창에서 cmdlet이 실패하면 TCP 대체가 아니라 실패로 처리한다. |
+| F1 | job object 생성·할당 실패가 치명적이지 않고 상태·로그에도 남지 않는다(fail-open). | ~~강제 종료 시 ssh 자식이 남을 수 있다.~~ | **해소**: 생성·할당 실패는 `job_object_unavailable`/`job_object_assign_failed`로 끝나며 자식을 기동·유지하지 않는다. selftest 66건에 포함. 5.6은 런타임 확인으로 유지. |
+| F2 | `Wait-ForwardListener`는 연결 테이블 조회가 실패하면 TCP 연결 성공만으로 준비를 인정한다. | ~~다른 프로세스의 포트 점유를 구분하지 못한다.~~ | **해소**: TCP 대체를 제거하고 `netstat -ano` 소유 PID 대조로 교체했다. 소유 PID가 자식 PID와 같을 때만 준비로 인정한다. |
 | F3 | 복구 엔진의 `restart_tunnel`은 작업 중지 → 리스너 PID 종료 → 작업 시작을 직접 수행한다. | 적용 창에서 감시자가 동시에 실행되면 전환 순서와 충돌한다. | 5.1.6에서 감시자를 식별하고 창 동안 비활성화한다. 적용 후에는 supervisor 자식이 `-L`·포트 조건을 만족하므로 기존 경로가 그대로 동작한다. |
 | F4 | 기존 래퍼를 강제 종료하면 `padiem-tunnel.lock.d`가 남고, 복원된 래퍼는 rc=3으로 즉시 끝난다. | 롤백 실패로 오인할 수 있다. | 5.4.5에서 제거하고, R2~R5에 제거 조건을 넣었다. |
 | F5 | 장기 실행 supervisor에서는 IgnoreNew 때문에 `LastRunTime`이 전진하지 않는다. | 구 §5.6의 반복 건강 기준이 성립하지 않는다. | 5.7에서 `NextRunTime` 전진, `LastTaskResult=267009`, supervisor PID 불변으로 대체했다. |
@@ -451,4 +453,4 @@ $status.auto_start_probe_ts = if ($autostart) { [string]$autostart.ts } else { "
 
 ### 10.3 판정
 
-`FINAL_REVIEW_CONDITIONALLY_READY` — 소스·fixture·정확한 HEAD 정책 CI는 통과했고, 운영 적용 전 확인해야 할 조건은 5.1.5(진행 작업 없음), 5.3(ssh 경로 명시), 5.5.3(직접 PID 소유권), 5.6(자식 회수), 5.7(10분 관찰)이다. 이 단계에서 병합·운영 적용·프로세스 종료/재시작·재부팅·failover·알림 발송은 수행하지 않았고 PR은 Draft로 유지한다.
+`FINAL_REVIEW_CONDITIONALLY_READY` — 소스·fixture·정확한 HEAD 정책 CI는 통과했고, 운영 적용 전 확인해야 할 조건은 5.1.5(진행 작업 없음), 5.3(ssh 경로 명시), 5.5.3(직접 PID 소유권), 5.6(자식 회수 런타임 확인), 5.7(10분 관찰)이다. F1·F2는 해소됐고 남은 조건은 모두 적용 창의 런타임 게이트다. 이 단계에서 병합·운영 적용·프로세스 종료/재시작·재부팅·failover·알림 발송은 수행하지 않았다.
