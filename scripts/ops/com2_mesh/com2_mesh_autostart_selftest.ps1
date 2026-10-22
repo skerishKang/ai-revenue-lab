@@ -76,6 +76,9 @@ function New-Observation {
         listener = [ordered]@{
             queried = $true; listening = $true; local_address = '127.0.0.1'
             pid = 30500; process_name = 'ssh'; process_started = '2026-10-23 01:00:16'; error = ''
+            parent_pid = 29000; parent_process_name = 'powershell'
+            parent_command_line = 'powershell.exe -NoProfile -File C:\Padiem\com2_mesh_tunnel_supervisor.ps1 -Config C:\Padiem\com2-mesh-config.json'
+            parent_error = ''
         }
         mesh_http = [ordered]@{ queried = $true; code = 200; error = '' }
     }
@@ -143,6 +146,7 @@ Assert-Equal -Expected '' -Actual (ConvertTo-ObsTimeString ([datetime]'1899-12-3
 Assert-Equal -Expected '2026-10-23 00:44:45' -Actual (ConvertTo-ObsTimeString '2026-10-23 00:44:45') -Label 'time round trip'
 Assert-Equal -Expected 'Mesh Agent' -Actual $probeConfig.mesh_agent_service -Label 'default agent service'
 Assert-Equal -Expected 'ssh.exe' -Actual $probeConfig.tunnel_process_name -Label 'default listener process'
+Assert-Equal -Expected 'com2_mesh_tunnel_supervisor.ps1' -Actual $probeConfig.tunnel_supervisor_script -Label 'default supervisor script'
 Assert-Equal -Expected 120 -Actual $probeConfig.autostart_boot_tolerance_seconds -Label 'default boot tolerance'
 Assert-Equal -Expected 8 -Actual $probeConfig.autostart_http_timeout_seconds -Label 'default http timeout'
 Assert-Equal -Expected 2147946720 -Actual (ConvertTo-TaskResultCode ([uint32]2147946720)) -Label 'task result UInt32 above Int32'
@@ -173,9 +177,26 @@ $mockTask = [pscustomobject]@{
         Repetition = [pscustomobject]@{ Interval = 'PT5M'; Duration = '' }
     })
 }
+$script:mockListenerPid = 30500
+$script:mockParentPid = 29000
+$script:mockChildMissing = $false
 function Get-CimInstance {
     [CmdletBinding()]
     param($Namespace, $ClassName, $Filter)
+    if ($ClassName -eq 'Win32_Process') {
+        if ([string]$Filter -match ('ProcessId={0}$' -f $script:mockListenerPid)) {
+            if ($script:mockChildMissing) { return $null }
+            return [pscustomobject]@{ ProcessId = $script:mockListenerPid; ParentProcessId = $script:mockParentPid }
+        }
+        if ([string]$Filter -match ('ProcessId={0}$' -f $script:mockParentPid)) {
+            return [pscustomobject]@{
+                ProcessId = $script:mockParentPid
+                Name = 'powershell.exe'
+                CommandLine = 'powershell.exe -NoProfile -File C:\Padiem\com2_mesh_tunnel_supervisor.ps1'
+            }
+        }
+        return $null
+    }
     return $mockTask
 }
 function Get-ScheduledTaskInfo {
@@ -198,6 +219,56 @@ Assert-Equal -Expected '' -Actual $hostObs.info_error -Label 'observed UInt32 re
 $resultType = if ($null -ne $hostObs.last_result) { $hostObs.last_result.GetType().Name } else { '' }
 Assert-Equal -Expected 'Int64' -Actual $resultType -Label 'observed result is Int64'
 
+Write-Output '-- host listener parent query'
+function Get-CimInstance {
+    [CmdletBinding()]
+    param($Namespace, $ClassName, $Filter)
+    if ($ClassName -eq 'Win32_Process') {
+        if ([string]$Filter -match ('ProcessId={0}$' -f $script:mockListenerPid)) {
+            if ($script:mockChildMissing) { return $null }
+            return [pscustomobject]@{ ProcessId = $script:mockListenerPid; ParentProcessId = $script:mockParentPid }
+        }
+        if ([string]$Filter -match ('ProcessId={0}$' -f $script:mockParentPid)) {
+            return [pscustomobject]@{
+                ProcessId = $script:mockParentPid
+                Name = 'powershell.exe'
+                CommandLine = 'powershell.exe -NoProfile -File C:\Padiem\com2_mesh_tunnel_supervisor.ps1'
+            }
+        }
+        return $null
+    }
+    return $null
+}
+function Get-Process {
+    [CmdletBinding()]
+    param($Id)
+    return [pscustomobject]@{ ProcessName = 'ssh'; StartTime = [datetime]'2026-10-23 02:35:56' }
+}
+function Get-NetTCPConnection {
+    [CmdletBinding()]
+    param($State, $LocalPort)
+    return [pscustomobject]@{ LocalAddress = '127.0.0.1'; OwningProcess = $script:mockListenerPid }
+}
+try {
+    $listenerObs = Get-ListenerObservation -Cfg $probeConfig
+    $script:mockChildMissing = $true
+    $orphanObs = Get-ListenerObservation -Cfg $probeConfig
+} finally {
+    $script:mockChildMissing = $false
+    Remove-Item -LiteralPath function:Get-CimInstance -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath function:Get-Process -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath function:Get-NetTCPConnection -ErrorAction SilentlyContinue
+}
+Assert-Equal -Expected 'True' -Actual ([string]$listenerObs.listening) -Label 'listener observed'
+Assert-Equal -Expected 30500 -Actual $listenerObs.pid -Label 'listener child pid'
+Assert-Equal -Expected 29000 -Actual $listenerObs.parent_pid -Label 'listener parent pid'
+Assert-Equal -Expected 'powershell.exe' -Actual $listenerObs.parent_process_name -Label 'listener parent name'
+Assert-True -Value ($listenerObs.parent_command_line -match 'com2_mesh_tunnel_supervisor\.ps1') -Label 'listener parent command line'
+Assert-Equal -Expected '' -Actual $listenerObs.parent_error -Label 'listener parent query has no error'
+Assert-Equal -Expected 'True' -Actual ([string]$orphanObs.listening) -Label 'orphan listener still observed'
+Assert-Equal -Expected 0 -Actual $orphanObs.parent_pid -Label 'orphan listener parent pid'
+Assert-True -Value ([string]$orphanObs.parent_error) -Label 'orphan listener records the parent failure'
+
 # --- verified baseline ----------------------------------------------------
 
 Write-Output '-- verified baseline'
@@ -209,6 +280,13 @@ Assert-Equal -Expected 'verified' -Actual $baseRecord.auto_start_state -Label 'b
 Assert-Equal -Expected 0 -Actual @($baseRecord.failed_checks).Count -Label 'baseline failed count'
 Assert-Equal -Expected 0 -Actual @($baseRecord.unverified_checks).Count -Label 'baseline unverified count'
 Assert-Equal -Expected 15 -Actual @($baseRecord.checks).Count -Label 'check count'
+Assert-Equal -Expected 'running_connected' -Actual $baseRecord.supervisor.state -Label 'baseline supervisor state'
+Assert-Equal -Expected 'confirmed' -Actual $baseRecord.supervisor.identity -Label 'baseline supervisor identity'
+Assert-Equal -Expected 30500 -Actual $baseRecord.supervisor.child_pid -Label 'baseline supervisor child pid'
+Assert-Equal -Expected 29000 -Actual $baseRecord.supervisor.parent_pid -Label 'baseline supervisor parent pid'
+Assert-Equal -Expected 'succeeded' -Actual $baseRecord.last_start_attempt.outcome -Label 'baseline attempt outcome'
+Assert-Equal -Expected 'observed' -Actual $baseRecord.last_start_attempt.confidence -Label 'baseline attempt confidence'
+Assert-Equal -Expected 0 -Actual $baseRecord.last_start_attempt.result -Label 'baseline attempt result'
 foreach ($name in @('boot_time_observed', 'mesh_agent_service_automatic', 'mesh_agent_running',
         'mesh_agent_running_since_boot', 'tunnel_task_exists', 'tunnel_task_enabled',
         'tunnel_task_autostart_trigger', 'tunnel_task_repetition_unbounded',
@@ -250,12 +328,16 @@ $notYetRun.tunnel_task.last_result = 267011
 $notYetRecord = Test-AutostartEvidence -Observation $notYetRun -Cfg $probeConfig -Now $now
 Assert-Check -Record $notYetRecord -Name 'tunnel_task_ran_after_boot' -Expected 'false' -Label 'not yet run'
 Assert-Check -Record $notYetRecord -Name 'tunnel_task_last_result_ok' -Expected 'false' -Label 'not yet run'
+Assert-Equal -Expected 'not_run' -Actual $notYetRecord.last_start_attempt.outcome -Label 'not yet run outcome'
+Assert-Equal -Expected 'observed' -Actual $notYetRecord.last_start_attempt.confidence -Label 'not yet run confidence'
 
 $runningTask = New-Observation
 $runningTask.tunnel_task.last_result = 267009
 $runningRecord = Test-AutostartEvidence -Observation $runningTask -Cfg $probeConfig -Now $now
 Assert-Check -Record $runningRecord -Name 'tunnel_task_last_result_ok' -Expected 'true' -Label 'running task result'
 Assert-Equal -Expected 'verified' -Actual $runningRecord.auto_start_state -Label 'running task state'
+Assert-Equal -Expected 'running' -Actual $runningRecord.last_start_attempt.outcome -Label 'running task outcome'
+Assert-Equal -Expected 'observed' -Actual $runningRecord.last_start_attempt.confidence -Label 'running task confidence'
 
 $errorResult = New-Observation
 $errorResult.tunnel_task.last_result = 2147946720
@@ -266,6 +348,100 @@ Assert-Equal -Expected 'failed' -Actual $errorResultRecord.auto_start_state -Lab
 Assert-ListContains -List $errorResultRecord.failed_checks -Name 'tunnel_task_last_result_ok' -Label 'UInt32 error result failed list'
 Assert-Equal -Expected 'LastTaskResult=2147946720 (0x800710E0)' `
     -Actual (Get-Check -Record $errorResultRecord -Name 'tunnel_task_last_result_ok').detail -Label 'UInt32 error result detail'
+Assert-Equal -Expected 'running_connected' -Actual $errorResultRecord.supervisor.state -Label 'UInt32 error supervisor state'
+Assert-Equal -Expected 'confirmed' -Actual $errorResultRecord.supervisor.identity -Label 'UInt32 error supervisor identity'
+Assert-Equal -Expected 'suspected_refused_while_running' -Actual $errorResultRecord.last_start_attempt.outcome -Label 'UInt32 error attempt outcome'
+Assert-Equal -Expected 'suspected' -Actual $errorResultRecord.last_start_attempt.confidence -Label 'UInt32 error attempt confidence'
+Assert-Equal -Expected 2147946720 -Actual $errorResultRecord.last_start_attempt.result -Label 'UInt32 error attempt result'
+Assert-Equal -Expected '0x800710E0' -Actual $errorResultRecord.last_start_attempt.result_hex -Label 'UInt32 error attempt hex'
+Assert-Equal -Expected '2026-10-23 01:00:00' -Actual $errorResultRecord.last_start_attempt.run -Label 'UInt32 error attempt run'
+
+$refusedNoSupervisor = New-Observation
+$refusedNoSupervisor.tunnel_task.last_result = 2147946720
+$refusedNoSupervisor.listener.listening = $false
+$refusedNoSupervisor.listener.pid = 0
+$refusedNoSupervisor.listener.process_name = ''
+$refusedNoSupervisor.listener.process_started = ''
+$refusedNoSupervisor.mesh_http.code = 0
+$refusedNoSupervisor.mesh_http.error = 'tunnel closed'
+$refusedNoSupervisorRecord = Test-AutostartEvidence -Observation $refusedNoSupervisor -Cfg $probeConfig -Now $now
+Assert-Equal -Expected 'not_running' -Actual $refusedNoSupervisorRecord.supervisor.state `
+    -Label 'refused code without supervisor state'
+Assert-Equal -Expected 'failed' -Actual $refusedNoSupervisorRecord.last_start_attempt.outcome `
+    -Label 'refused code without supervisor outcome'
+Assert-Equal -Expected 'observed' -Actual $refusedNoSupervisorRecord.last_start_attempt.confidence `
+    -Label 'refused code without supervisor confidence'
+Assert-Equal -Expected 2147946720 -Actual $refusedNoSupervisorRecord.last_start_attempt.result `
+    -Label 'refused code without supervisor result'
+Assert-Equal -Expected 'failed' -Actual $refusedNoSupervisorRecord.auto_start_state `
+    -Label 'refused code without supervisor verdict'
+
+$identityUnknown = New-Observation
+$identityUnknown.tunnel_task.last_result = 2147946720
+$identityUnknown.listener.parent_pid = 0
+$identityUnknown.listener.parent_process_name = ''
+$identityUnknown.listener.parent_command_line = ''
+$identityUnknown.listener.parent_error = 'access denied'
+$identityUnknownRecord = Test-AutostartEvidence -Observation $identityUnknown -Cfg $probeConfig -Now $now
+Assert-Equal -Expected 'unconfirmed' -Actual $identityUnknownRecord.supervisor.identity `
+    -Label 'unread parent identity'
+Assert-Equal -Expected 'unknown' -Actual $identityUnknownRecord.supervisor.state `
+    -Label 'unread parent supervisor state'
+Assert-Equal -Expected 'failed' -Actual $identityUnknownRecord.last_start_attempt.outcome `
+    -Label 'unread parent attempt outcome'
+Assert-Equal -Expected 'observed' -Actual $identityUnknownRecord.last_start_attempt.confidence `
+    -Label 'unread parent attempt confidence'
+Assert-Equal -Expected 2147946720 -Actual $identityUnknownRecord.last_start_attempt.result `
+    -Label 'unread parent attempt result'
+Assert-Check -Record $identityUnknownRecord -Name 'tunnel_task_last_result_ok' -Expected 'false' `
+    -Label 'unread parent keeps the failed check'
+Assert-ListContains -List $identityUnknownRecord.failed_checks -Name 'tunnel_task_last_result_ok' `
+    -Label 'unread parent keeps the failed list'
+Assert-Equal -Expected 'failed' -Actual $identityUnknownRecord.auto_start_state `
+    -Label 'unread parent keeps the failed verdict'
+
+$identityNoCommand = New-Observation
+$identityNoCommand.tunnel_task.last_result = 2147946720
+$identityNoCommand.listener.parent_command_line = ''
+$identityNoCommandRecord = Test-AutostartEvidence -Observation $identityNoCommand -Cfg $probeConfig -Now $now
+Assert-Equal -Expected 'unconfirmed' -Actual $identityNoCommandRecord.supervisor.identity `
+    -Label 'parent without command line identity'
+Assert-Equal -Expected 'unknown' -Actual $identityNoCommandRecord.supervisor.state `
+    -Label 'parent without command line supervisor state'
+Assert-Equal -Expected 'failed' -Actual $identityNoCommandRecord.last_start_attempt.outcome `
+    -Label 'parent without command line outcome'
+Assert-Equal -Expected 'observed' -Actual $identityNoCommandRecord.last_start_attempt.confidence `
+    -Label 'parent without command line confidence'
+
+$identityMismatch = New-Observation
+$identityMismatch.tunnel_task.last_result = 2147946720
+$identityMismatch.listener.parent_command_line = 'powershell.exe -NoProfile -File C:\Padiem\other_tunnel.ps1'
+$identityMismatchRecord = Test-AutostartEvidence -Observation $identityMismatch -Cfg $probeConfig -Now $now
+Assert-Equal -Expected 'mismatch' -Actual $identityMismatchRecord.supervisor.identity `
+    -Label 'mismatched parent identity'
+Assert-Equal -Expected 'unknown' -Actual $identityMismatchRecord.supervisor.state `
+    -Label 'mismatched parent supervisor state'
+Assert-Equal -Expected 'failed' -Actual $identityMismatchRecord.last_start_attempt.outcome `
+    -Label 'mismatched parent attempt outcome'
+Assert-Equal -Expected 'observed' -Actual $identityMismatchRecord.last_start_attempt.confidence `
+    -Label 'mismatched parent attempt confidence'
+Assert-Equal -Expected 2147946720 -Actual $identityMismatchRecord.last_start_attempt.result `
+    -Label 'mismatched parent attempt result'
+Assert-Equal -Expected '0x800710E0' -Actual $identityMismatchRecord.last_start_attempt.result_hex `
+    -Label 'mismatched parent attempt hex'
+Assert-Equal -Expected 'failed' -Actual $identityMismatchRecord.auto_start_state `
+    -Label 'mismatched parent verdict'
+
+$duplicateExit = New-Observation
+$duplicateExit.tunnel_task.last_result = 2
+$duplicateExitRecord = Test-AutostartEvidence -Observation $duplicateExit -Cfg $probeConfig -Now $now
+Assert-Check -Record $duplicateExitRecord -Name 'tunnel_task_last_result_ok' -Expected 'false' -Label 'duplicate exit'
+Assert-Equal -Expected 'duplicate_instance_exit' -Actual $duplicateExitRecord.last_start_attempt.outcome `
+    -Label 'duplicate exit outcome'
+Assert-Equal -Expected 'observed' -Actual $duplicateExitRecord.last_start_attempt.confidence `
+    -Label 'duplicate exit confidence'
+Assert-Equal -Expected 2 -Actual $duplicateExitRecord.last_start_attempt.result -Label 'duplicate exit result'
+Assert-Equal -Expected 'failed' -Actual $duplicateExitRecord.auto_start_state -Label 'duplicate exit state'
 
 $bootOnly = New-Observation
 $bootOnly.tunnel_task.next_run = ''
@@ -316,6 +492,14 @@ $wrongProcess.listener.process_name = 'python'
 $wrongProcessRecord = Test-AutostartEvidence -Observation $wrongProcess -Cfg $probeConfig -Now $now
 Assert-Check -Record $wrongProcessRecord -Name 'tunnel_listener_process_matches' -Expected 'false' -Label 'wrong listener process'
 Assert-Equal -Expected 'failed' -Actual $wrongProcessRecord.auto_start_state -Label 'wrong process state'
+Assert-Equal -Expected 'not_running' -Actual $wrongProcessRecord.supervisor.state -Label 'wrong process supervisor state'
+
+$ownerUnknown = New-Observation
+$ownerUnknown.listener.process_name = ''
+$ownerUnknownRecord = Test-AutostartEvidence -Observation $ownerUnknown -Cfg $probeConfig -Now $now
+Assert-Check -Record $ownerUnknownRecord -Name 'tunnel_listener_process_matches' -Expected 'unverified' -Label 'unverified listener owner'
+Assert-Equal -Expected 'unknown' -Actual $ownerUnknownRecord.supervisor.state -Label 'unverified listener owner supervisor state'
+Assert-Equal -Expected 'confirmed' -Actual $ownerUnknownRecord.supervisor.identity -Label 'unverified listener owner identity'
 
 $beforeBoot = New-Observation
 $beforeBoot.listener.process_started = '2026-10-23 00:20:00'
@@ -328,6 +512,7 @@ $httpDown.mesh_http.error = 'server error'
 $httpDownRecord = Test-AutostartEvidence -Observation $httpDown -Cfg $probeConfig -Now $now
 Assert-Check -Record $httpDownRecord -Name 'mesh_http_200' -Expected 'false' -Label 'http 500'
 Assert-Equal -Expected 'failed' -Actual $httpDownRecord.auto_start_state -Label 'http 500 state'
+Assert-Equal -Expected 'running_disconnected' -Actual $httpDownRecord.supervisor.state -Label 'http 500 supervisor state'
 
 # --- unverified handling --------------------------------------------------
 
@@ -355,6 +540,8 @@ Assert-Equal -Expected 0 -Actual @($queryFailRecord.failed_checks).Count -Label 
 Assert-Equal -Expected 10 -Actual @($queryFailRecord.unverified_checks).Count -Label 'query failure unverified count'
 Assert-Check -Record $queryFailRecord -Name 'mesh_agent_running' -Expected 'unverified' -Label 'query failure'
 Assert-Check -Record $queryFailRecord -Name 'tunnel_task_exists' -Expected 'unverified' -Label 'query failure'
+Assert-Equal -Expected 'running_connected' -Actual $queryFailRecord.supervisor.state -Label 'query failure supervisor state'
+Assert-Equal -Expected 'unknown' -Actual $queryFailRecord.last_start_attempt.outcome -Label 'query failure attempt outcome'
 
 $infoFail = New-Observation
 $infoFail.tunnel_task.info_error = 'Get-ScheduledTaskInfo failed'
@@ -366,6 +553,8 @@ Assert-Check -Record $infoFailRecord -Name 'tunnel_task_next_run_present' -Expec
 Assert-Check -Record $infoFailRecord -Name 'tunnel_task_ran_after_boot' -Expected 'unverified' -Label 'info failure'
 Assert-Check -Record $infoFailRecord -Name 'tunnel_task_last_result_ok' -Expected 'unverified' -Label 'info failure'
 Assert-Equal -Expected 'unverified' -Actual $infoFailRecord.auto_start_state -Label 'info failure state'
+Assert-Equal -Expected 'running_connected' -Actual $infoFailRecord.supervisor.state -Label 'info failure supervisor state'
+Assert-Equal -Expected 'unknown' -Actual $infoFailRecord.last_start_attempt.outcome -Label 'info failure attempt outcome'
 
 # --- state transition -----------------------------------------------------
 
@@ -405,6 +594,12 @@ if ($cliRecord) {
     Assert-Equal -Expected 'True' -Actual ([string]$cliRecord.auto_start_verified) -Label 'cli verified flag'
     Assert-Equal -Expected 'verified' -Actual $cliRecord.auto_start_state -Label 'cli verified state'
     Assert-Equal -Expected 15 -Actual @($cliRecord.checks).Count -Label 'cli check count'
+    Assert-Equal -Expected 'running_connected' -Actual $cliRecord.supervisor.state -Label 'cli supervisor state survives json'
+    Assert-Equal -Expected 'confirmed' -Actual $cliRecord.supervisor.identity -Label 'cli supervisor identity survives json'
+    Assert-Equal -Expected 30500 -Actual $cliRecord.supervisor.child_pid -Label 'cli supervisor child pid survives json'
+    Assert-Equal -Expected 29000 -Actual $cliRecord.supervisor.parent_pid -Label 'cli supervisor parent pid survives json'
+    Assert-Equal -Expected 'succeeded' -Actual $cliRecord.last_start_attempt.outcome -Label 'cli attempt outcome survives json'
+    Assert-Equal -Expected 'observed' -Actual $cliRecord.last_start_attempt.confidence -Label 'cli attempt confidence survives json'
 }
 Assert-True -Value (Test-Path -LiteralPath $outFile) -Label 'cli out file written'
 $savedRecord = if (Test-Path -LiteralPath $outFile) { Get-Content -LiteralPath $outFile -Raw | ConvertFrom-Json } else { $null }
