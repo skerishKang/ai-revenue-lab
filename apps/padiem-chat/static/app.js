@@ -2850,11 +2850,14 @@
         delete payload.tier;
         payload.custom = { provider: customSelection.provider, model: customSelection.model };
       }
-      // The long PC lane can outlive the browser's request. Generate the same
+      // The long PC lane can outlive the browser's request. Generate the
       // canonical run handle before submit so a dropped response can be
       // recovered by an owner-scoped GET instead of resubmitting the PC turn.
+      // An explicit retry reuses the failed request's handle; the server
+      // refuses to rewrite an existing run, so a retry cannot silently start a
+      // second PC execution. A new submit gets a new snapshot/handle.
       const pcRunId = !clawGeneralRequest && !customSelection
-        ? chatTransport.createChatPcRunId?.() : null;
+        ? (contextSnapshot.pcRunId || chatTransport.createChatPcRunId?.()) : null;
       if (pcRunId) {
         contextSnapshot.pcRunId = pcRunId;
         payload.pc_run_id = pcRunId;

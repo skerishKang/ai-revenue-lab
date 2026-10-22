@@ -43,6 +43,7 @@ def test_pc_run_handle_and_recovery_are_wired_to_the_real_consumer():
     index = INDEX_HTML.read_text(encoding="utf-8")
     assert "createChatPcRunId" in transport
     assert "payload.pc_run_id = pcRunId" in app_js
+    assert "contextSnapshot.pcRunId || chatTransport.createChatPcRunId" in app_js
     assert "PadiemChatPcRecovery?.create" in app_js
     assert "recoverStoredPcResult(" in app_js
     assert "recoverOnce({" in app_js
