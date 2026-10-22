@@ -658,3 +658,123 @@ def test_revoke_before_the_redemption_commits_is_not_a_guarantee():
     )
     assert verdict["disposition"] == "security_hold"
     assert verdict["canonical_revocation_confirmed"] is False
+
+
+def test_new_challenge_for_the_same_device_neither_reuses_nor_duplicates_the_binding():
+    """#3099: re-registering the same account/PC with a NEW challenge.
+
+    The Broker derives ``pairing-binding.<sha256(challenge:device)>``, so a new
+    challenge produces a DIFFERENT binding name and the existing binding is
+    never reused. While the first binding is ACTIVE, the canonical authority
+    refuses to register a second one for the same device, so the re-registration
+    fails closed instead of creating a duplicate. Only after a revocation can a
+    new challenge register a genuinely new binding.
+    """
+    import hashlib
+
+    def derived(challenge_id: str) -> str:
+        return "pairing-binding." + hashlib.sha256(
+            f"{challenge_id}:{DEVICE}".encode()
+        ).hexdigest()[:32]
+
+    def redeem(h, challenge, code, *, seconds):
+        return h.pairing.redeem_enrollment(
+            challenge_id=challenge.challenge_id, device_id=DEVICE,
+            proof_ref=proof(challenge, code), consent_ref=CONSENT,
+            owner_ref=OWNER, account_ref=ACCOUNT, workspace_ref=WORKSPACE,
+            now=NOW + timedelta(seconds=seconds),
+        )
+
+    def bindings(h):
+        stored = h.broker._state_port.load(authority_ref=AUTHORITY_REF)
+        return list(stored.snapshot.bindings)
+
+    h = Harness()
+    install(h)
+
+    first, code1 = issue(h)
+    first_ref = derived(first.challenge_id)
+    enrolled1, _ = redeem(h, first, code1, seconds=1)
+    assert enrolled1.binding_ref == first_ref
+    assert len(bindings(h)) == 1
+
+    # A NEW challenge is issued for the same device.
+    second, code2 = issue(h)
+    assert second.challenge_id != first.challenge_id
+    assert derived(second.challenge_id) != first_ref
+
+    # Its redemption is refused: the device already has an ACTIVE binding.
+    with pytest.raises(ControlPlaneContractError) as dup:
+        redeem(h, second, code2, seconds=2)
+    assert dup.value.code == "duplicate_device_binding"
+
+    # No second binding, and the original is untouched (NOT reused, NOT replaced).
+    after = bindings(h)
+    assert len(after) == 1
+    assert after[0].binding_ref == first_ref
+    assert after[0].state is BrokerBindingState.ACTIVE
+
+    # The refused challenge was consumed before the refusal, so it cannot be
+    # replayed into a second attempt.
+    with pytest.raises(ControlPlaneContractError) as replay:
+        redeem(h, second, code2, seconds=3)
+    assert replay.value.code in {
+        "pairing_challenge_already_redeemed", "duplicate_device_binding",
+    }
+
+    # Re-pairing is only possible after the old binding is revoked, and it
+    # creates a NEW binding name rather than reusing the old one.
+    h.broker.revoke_binding(first_ref, now=NOW + timedelta(seconds=4))
+    third, code3 = issue(h)
+    enrolled3, _ = redeem(h, third, code3, seconds=5)
+    assert enrolled3.binding_ref == derived(third.challenge_id)
+    assert enrolled3.binding_ref != first_ref
+    final = bindings(h)
+    assert len(final) == 2
+    states = {b.binding_ref: b.state for b in final}
+    assert states[first_ref] is BrokerBindingState.REVOKED
+    assert states[enrolled3.binding_ref] is BrokerBindingState.ACTIVE
+
+
+def test_same_command_id_never_dispatches_a_second_execution():
+    """#3099: duplicate execution protection on the Native lane.
+
+    One command_id may produce at most one durable command record. An exact
+    retry of the same id returns the existing record (idempotent) instead of
+    minting a second execution, and a different payload under the same id is
+    refused rather than executed again.
+    """
+    h = Harness()
+    install(h)
+    challenge, code = issue(h)
+    enrolled, _ = h.pairing.redeem_enrollment(
+        challenge_id=challenge.challenge_id, device_id=DEVICE,
+        proof_ref=proof(challenge, code), consent_ref=CONSENT,
+        owner_ref=OWNER, account_ref=ACCOUNT, workspace_ref=WORKSPACE,
+        now=NOW + timedelta(seconds=1),
+    )
+    args = dict(
+        command_id="cmd.3099.1", binding_ref=enrolled.binding_ref,
+        run_id="run.3099.1", tool_request_ref="tool.3099.1",
+        request_fingerprint="a" * 64, now=NOW + timedelta(seconds=2),
+    )
+    first = h.broker.enqueue_command(**args)
+    try:
+        second = h.broker.enqueue_command(**args)
+    except ControlPlaneContractError as exc:
+        # A bounded refusal is also acceptable: no second execution either way.
+        assert exc.code in {
+            "broker_command_history_compacted", "duplicate_command_id",
+            "broker_command_already_live",
+        }, exc.code
+    else:
+        assert second.command_id == first.command_id
+
+    stored = h.broker._state_port.load(authority_ref=AUTHORITY_REF)
+    live = [c for c in stored.snapshot.commands if c.command_id == "cmd.3099.1"]
+    assert len(live) == 1
+
+    with pytest.raises(ControlPlaneContractError):
+        h.broker.enqueue_command(**{**args, "request_fingerprint": "b" * 64})
+    stored = h.broker._state_port.load(authority_ref=AUTHORITY_REF)
+    assert len([c for c in stored.snapshot.commands if c.command_id == "cmd.3099.1"]) == 1
