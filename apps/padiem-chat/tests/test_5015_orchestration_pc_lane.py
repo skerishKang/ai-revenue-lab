@@ -113,6 +113,23 @@ def test_a_pc_turn_is_delegated_to_the_existing_pc_lane(monkeypatch):
     assert bridge.calls == []
 
 
+def test_pc_route_forwards_the_client_recovery_run_handle(monkeypatch):
+    client_run_id = "chat_pcq_" + "f" * 32
+    lane = _Lane(outcome=("PC 작업 완료", "chat_pc"))
+    bridge = _install(monkeypatch, lane)
+
+    response = asyncio.run(routes.api_orchestration(_request({
+        "messages": [{"role": "user", "content": PC_TEXT}],
+        "tier": "plus",
+        "device_id": DEVICE_ID,
+        "pc_run_id": client_run_id,
+    }, bridge)))
+    assert response.status_code == 200
+    assert len(lane.calls) == 1
+    assert lane.calls[0]["run_id"] == client_run_id
+    assert bridge.calls == []
+
+
 def test_a_non_pc_turn_keeps_the_ordinary_orchestration_path(monkeypatch):
     lane = _Lane(outcome=None)
     bridge = _install(monkeypatch, lane)

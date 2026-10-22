@@ -2497,6 +2497,84 @@
     }
   }
 
+  const pcResultRecovery = window.PadiemChatPcRecovery?.create?.({
+    fetchImpl: window.fetch.bind(window),
+  }) || null;
+
+  function renderStoredPcAnswer(article, result, outboundMessages, contextSnapshot) {
+    const content = article.querySelector(".assistant-content");
+    if (!content) return false;
+    const product = contextSnapshot.product || conversationProduct;
+    content.replaceChildren();
+    const paragraph = document.createElement("p");
+    paragraph.textContent = result.answer;
+    content.appendChild(paragraph);
+    window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
+    conversationState.setProduct?.(product);
+    if (result.conversationId) conversationState.setConversationId(result.conversationId, product);
+    conversationState.commitAssistant(outboundMessages, result.answer);
+    conversationState.setProduct?.(conversationProduct);
+    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
+    if (authState.authenticated) loadRecentConversations();
+    article.scrollIntoView?.({ block: "nearest", behavior: "smooth" });
+    return true;
+  }
+
+  // A long PC turn can outlive the browser connection. The server may already
+  // have persisted the canonical answer, so recover it with the owner-scoped
+  // run GET. This path never submits the PC turn again.
+  async function recoverStoredPcResult(article, contextSnapshot, outboundMessages, skill, signal) {
+    const runId = contextSnapshot?.pcRunId;
+    if (!runId || !pcResultRecovery || resolvedPcRuns.has(runId)) return false;
+    let first;
+    try {
+      first = await pcResultRecovery.recoverOnce({
+        runId,
+        conversationId: contextSnapshot.conversationId,
+        signal,
+      });
+    } catch (error) {
+      if (error && error.name === "AbortError") throw error;
+      return false;
+    }
+    if (first.kind === "duplicate") return true;
+    if (first.kind === "completed") {
+      resolvedPcRuns.add(runId);
+      return renderStoredPcAnswer(article, first, outboundMessages, contextSnapshot);
+    }
+    if (first.kind !== "pending") return false;
+    if (first.conversationId) {
+      conversationState.setConversationId(first.conversationId, contextSnapshot.product);
+    }
+    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
+    void pcResultRecovery.waitForResult({
+      runId,
+      conversationId: first.conversationId,
+      signal,
+    }).then((result) => {
+      if (result.kind === "completed") {
+        if (!resolvedPcRuns.has(runId)) {
+          resolvedPcRuns.add(runId);
+          renderStoredPcAnswer(article, result, outboundMessages, contextSnapshot);
+        }
+        return;
+      }
+      if (result.kind === "pending") {
+        PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
+        return;
+      }
+      if (article.isConnected && !signal.aborted) {
+        renderStreamError(article, uiT("stream-incomplete"), outboundMessages, skill, contextSnapshot, false);
+      }
+    }).catch((error) => {
+      if (error && error.name === "AbortError") return;
+      if (article.isConnected && !signal.aborted) {
+        PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
+      }
+    });
+    return true;
+  }
+
   async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal, route) {
     // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
     // canonical P01 Engine lane; the standalone Padiem Chat path keeps the
@@ -2678,6 +2756,10 @@
         showVerifiedClawRecovery(verifiedClawRecovery.state());
         return false;
       }
+      // The PC lane may already have persisted its answer. Let the outer
+      // request catch perform the owner-scoped recovery instead of rendering a
+      // premature connection error from the incomplete stream.
+      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !terminalError) throw error;
       if (paragraph) {
         if (clawGeneralRequest) {
           const clawFailure = clawGeneralFailure(error && error.code);
@@ -2768,6 +2850,15 @@
         delete payload.tier;
         payload.custom = { provider: customSelection.provider, model: customSelection.model };
       }
+      // The long PC lane can outlive the browser's request. Generate the same
+      // canonical run handle before submit so a dropped response can be
+      // recovered by an owner-scoped GET instead of resubmitting the PC turn.
+      const pcRunId = !clawGeneralRequest && !customSelection
+        ? chatTransport.createChatPcRunId?.() : null;
+      if (pcRunId) {
+        contextSnapshot.pcRunId = pcRunId;
+        payload.pc_run_id = pcRunId;
+      }
       // #3554: exactly one explicit B14 model per Claw submit; no auto/default
       // selection. The submit-time snapshot survives the Claw→chat shell flip.
       if (clawGeneralRequest && contextSnapshot.selectedModelId) {
@@ -2820,6 +2911,16 @@
       }
       if (requestEpoch !== conversationEpoch) return false;
       handleCustomRequestFailure(error);
+      if (!clawGeneralRequest && contextSnapshot?.pcRunId) {
+        try {
+          const recovered = await recoverStoredPcResult(
+            article, contextSnapshot, outboundMessages, skill, controller.signal,
+          );
+          if (recovered) return true;
+        } catch (recoveryError) {
+          if (recoveryError && recoveryError.name === "AbortError") return false;
+        }
+      }
       const clawFailure = clawGeneralRequest ? clawGeneralFailure(error && error.code) : null;
       renderError(
         article,

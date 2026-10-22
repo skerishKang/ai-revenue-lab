@@ -4,7 +4,11 @@ from dataclasses import dataclass
 from typing import Any
 
 from .attachments import AttachmentValidationError, ImageAttachment, parse_attachments
-from .history import validate_conversation_id, validate_project_id
+from .history import (
+    validate_chat_pc_run_id,
+    validate_conversation_id,
+    validate_project_id,
+)
 from .model_policy import ModelPolicyError, resolve_model_policy, resolve_tier_policy
 from .task_modes import TaskMode, get_task_mode
 from .tool_presentations import ToolPresentationDescriptor, get_tool_presentation
@@ -105,8 +109,13 @@ def _validate_payload(
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id"}:
+    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "pc_run_id"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
+    if "pc_run_id" in raw:
+        try:
+            validate_chat_pc_run_id(raw.get("pc_run_id"))
+        except ValueError as exc:
+            raise BrowserRequestError("PC 작업 실행 ID가 올바르지 않습니다.") from exc
     if "calendar_turn_id" in raw:
         turn_id = raw["calendar_turn_id"]
         if not isinstance(turn_id, str) or not turn_id.strip() or len(turn_id) > 128:

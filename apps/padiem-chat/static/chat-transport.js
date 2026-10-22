@@ -70,6 +70,18 @@
       ? crypto.randomUUID() : null;
   }
 
+  function createChatPcRunId() {
+    if (typeof crypto === "undefined") return null;
+    if (typeof crypto.randomUUID === "function") {
+      return "chat_pcq_" + crypto.randomUUID().replace(/-/g, "");
+    }
+    if (typeof crypto.getRandomValues === "function") {
+      const bytes = crypto.getRandomValues(new Uint8Array(16));
+      return "chat_pcq_" + Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+    }
+    return null;
+  }
+
   function calendarRequestFields(payload) {
     const result = { ...payload };
     if (typeof result.timezone !== "string" || !result.timezone) {
@@ -285,6 +297,7 @@
 
   window.PadiemChatTransport = Object.freeze({
     createCalendarTurnId,
+    createChatPcRunId,
     errorFor,
     parseSseFrame,
     readSseEvents,
