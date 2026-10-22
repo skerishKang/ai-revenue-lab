@@ -369,12 +369,6 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                     # other terminal state keeps its marker or fails bounded.
                     if termination != "exited" or exit_code != 0:
                         _raise_read_failure(output)
-                    stripped = output.strip()
-                    if (
-                        stripped.startswith(PC_FILE_ERROR_PREFIX)
-                        and len(stripped) <= 64
-                    ):
-                        _raise_read_failure(output)
                     encoded = output.encode("utf-8")
                     content_bytes = final.get("content_bytes")
                     if (

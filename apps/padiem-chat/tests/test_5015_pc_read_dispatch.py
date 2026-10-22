@@ -29,7 +29,7 @@ CONVERSATION = "chat_" + "d" * 32
 DEVICE = "device-1"
 NODE = "node-1"
 SECRET = "s" * 32
-CHANNEL_SECRET = "deployment-channel-secret-value-5015"
+CHANNEL_SECRET = "u" * 32
 ROOT = "C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial"
 READ_CALL = RUN + ":read_file:" + "a" * 24
 LIST_CALL = RUN + ":list_files:" + "b" * 24
@@ -379,3 +379,18 @@ def test_command_result_mode_keeps_its_done_only_contract(monkeypatch):
     })
     assert status == 409
     assert body["error"]["code"] == "oracle_mesh_result_not_ready"
+
+def test_read_result_store_bound_is_one_mb_for_pc_files_and_six_mb_otherwise():
+    oversized = "x" * (routes.PC_FILES_READ_MAX_BYTES + 1)
+    raw = oversized.encode("utf-8")
+    wire = {
+        "content_utf8": oversized,
+        "content_bytes": len(raw),
+        "content_sha256": hashlib.sha256(raw).hexdigest(),
+    }
+    assert routes._verified_read_result_text(
+        {"root_ref": routes._PC_FILES_READ_ROOT_REF}, wire,
+    ) is None
+    assert routes._verified_read_result_text(
+        {"root_ref": "other-read-lane"}, wire,
+    ) == oversized

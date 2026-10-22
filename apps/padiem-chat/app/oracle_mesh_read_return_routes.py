@@ -1713,6 +1713,23 @@ def _verified_result_text(
     return text
 
 
+def _verified_read_result_text(
+    dispatch: dict[str, Any], wire: dict[str, Any],
+) -> str | None:
+    """Verify a read body against its lane's server-computed bound.
+
+    The PC-files read lane is limited to 1 MB; other read consumers keep the
+    shared 6 MB envelope. This is the result-store enforcement, independent of
+    the executor's own bound.
+    """
+    limit = (
+        PC_FILES_READ_MAX_BYTES
+        if dispatch.get("root_ref") == _PC_FILES_READ_ROOT_REF
+        else _MAX_FILE_TEXT_BYTES
+    )
+    return _verified_result_text(dispatch, wire, max_bytes=limit)
+
+
 def _command_header(dispatch: dict[str, Any], wire: dict[str, Any]) -> list[str]:
     """The fixed head of one command message: what ran, how, and what is known.
 
@@ -2243,7 +2260,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                         "사유: 결과 무결성 불일치."
                     )
     elif wire["termination"] == "exited" and wire["exit_code"] == 0:
-        verified_text = _verified_result_text(dispatch, wire)
+        verified_text = _verified_read_result_text(dispatch, wire)
         if verified_text is None:
             # A clean execution claim with tampered body+hash is refused, and
             # the consumed dispatch still closes as failed: the bytes are
@@ -2278,7 +2295,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         # ``PADIEM_PC_FILE_ERROR:too_large`` or ``:read_failed`` as an
         # exited/1 body, and the Engine maps that same marker. The
         # conversation still reports a failure, never the file as a success.
-        verified_text = _verified_result_text(dispatch, wire)
+        verified_text = _verified_read_result_text(dispatch, wire)
         if verified_text is None:
             outcome = "failed"
             summary = "untrusted-result"

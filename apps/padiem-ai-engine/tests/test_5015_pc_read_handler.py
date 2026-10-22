@@ -209,3 +209,11 @@ def test_list_still_accepts_the_command_lane_and_its_no_exit_code(monkeypatch):
     )
     assert result["entry_count"] == 1
     assert json.loads(result["output"])["entries"][0]["relative_path"] == "notes.txt"
+
+def test_a_file_body_that_looks_like_an_error_marker_is_still_content(monkeypatch):
+    _install(monkeypatch, result=_result_row(output=READ_FAILED))
+    result = asyncio.run(
+        _handler("read", PC_READ_FILE_TOOL_ID)({"path": "notes.txt"})
+    )
+    assert result["content"] == READ_FAILED
+    assert result["content_bytes"] == len(READ_FAILED.encode("utf-8"))

@@ -36,14 +36,14 @@ LIVE_TRIAL_TEXT = (
 )
 LIVE_TRIAL_BYTES = LIVE_TRIAL_TEXT.encode("utf-8")
 LIVE_TRIAL_SHA = "a8c2ead9ce5bb71a8e2625a482dd16be0196ef92df2af4e83156db45622b473c"
-PASSWORD = "s3cret-at-call-time"
+PASSWORD = "p" * 16
 MESHCTRL_JS = r"C:\meshcentral-test\node_modules\meshcentral\meshctrl.js"
 NODE_REF = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
 KOREAN_PATH = (
     r"C:\Users\limone\AppData\Local\PADIEM\공유 폴더"
     r"\a b $(whoami) 'q' & echo.txt"
 )
-SECRET = "deployment-channel-secret-value-261022"
+SECRET = "u" * 32
 
 
 class _RecordingStdin:
