@@ -2433,6 +2433,18 @@
     if (Array.isArray(data.sources) && data.sources.length) {
       window.PadiemClawAnswerSources?.render(article, data.sources);
     }
+    // #4469: an automatic public search answers on the P01 lane and returns
+    // its evidence in the same browser contract an explicit search uses. The
+    // same bounded renderer shows the sources, so a searched answer is never
+    // shown as a model-only answer.
+    if (Array.isArray(data.evidence) && data.evidence.length) {
+      window.PadiemSearchSources?.render?.(article, data.evidence);
+      if (data.tool && data.tool.id === "web_search") {
+        window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");
+      }
+      article.dataset.taskEvidence = "true";
+      window.PadiemChatLifecycle?.recordTaskEvent?.(article, "evidence");
+    }
     if (typeof data.project_id === "string") {
       const snapshotProject = contextSnapshot.project && contextSnapshot.project.id === data.project_id ? contextSnapshot.project : null;
       const boundedProject = data.project && data.project.id === data.project_id && typeof data.project.name === "string" ? data.project : null;

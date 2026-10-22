@@ -274,6 +274,13 @@
     }, attempt === 0 ? 0 : 25);
   }
 
+  // #4469: the bounded renderer is the single display authority for public
+  // search evidence. An automatic search on the P01 lane returns its evidence
+  // in the same contract, so the same renderer shows it.
+  window.PadiemSearchSources = Object.freeze({
+    render: renderSources,
+  });
+
   window.fetch = async (inputValue, init) => {
     const isChat = chatRequest(inputValue) || streamingChatRequest(inputValue);
     const requestedTool = isChat ? activeTool : null;
