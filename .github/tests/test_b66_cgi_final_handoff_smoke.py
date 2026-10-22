@@ -716,8 +716,20 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
         # route refuses live+evidence together and the canary must not turn
         # that deliberate 422 into a false failure.
         self.assertNotIn("extra_http_headers={CLAW_EVIDENCE_REQUEST_HEADER", owner)
-        self.assertIn("_parse_claw_live_sse(response.text())", owner)
+        # Playwright cannot read a still-streamed SSE body via response.text();
+        # the live lane must read the page-side clone of the exact bytes.
+        self.assertNotIn("_parse_claw_live_sse(response.text())", owner)
+        self.assertIn("context.add_init_script(CLAW_SSE_CAPTURE_JS)", owner)
+        self.assertLess(
+            owner.index("context.add_init_script(CLAW_SSE_CAPTURE_JS)"),
+            owner.index("page.goto(CLAW_TARGET_URL"),
+        )
+        self.assertIn('stage = "live_stream_read"', owner)
+        self.assertIn("() => window.__clawSse.text", owner)
+        self.assertIn("claw_live_stream_capture_missing", owner)
         self.assertIn("claw_live_history_invalid", owner)
+        self.assertTrue(module.CLAW_SSE_CAPTURE_JS.startswith("(() => {"))
+        self.assertIn("response.clone()", module.CLAW_SSE_CAPTURE_JS)
 
     def test_live_sse_parser_requires_verified_terminal_and_answer(self):
         def frame(name, payload):
