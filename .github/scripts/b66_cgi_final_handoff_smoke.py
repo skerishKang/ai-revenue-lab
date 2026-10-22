@@ -518,6 +518,29 @@ class _ClawOutboundGuard:
 # Product authority: message-lifecycle.js sets article.dataset.lifecycle
 # after the terminal SSE frame is applied; disappearance of .typing alone
 # does not establish a completed user-visible answer.
+# Playwright cannot read a still-streamed SSE body via response.text(), so a
+# page-side clone observes the exact bytes the app received. It never alters
+# the request or the response, and it stores no other request body.
+CLAW_SSE_CAPTURE_JS = """(() => {
+  if (window.__clawSse) return;
+  window.__clawSse = { text: "" };
+  const original = window.fetch;
+  window.fetch = async function (input, init) {
+    const response = await original.apply(this, arguments);
+    try {
+      const url = typeof input === "string" ? input : (input && input.url) || "";
+      const method = ((init && init.method) || (input && input.method) || "GET").toUpperCase();
+      if (method === "POST"
+          && url.indexOf("/api/claw/general") !== -1
+          && url.indexOf("/capabilities") === -1) {
+        const clone = response.clone();
+        clone.text().then((text) => { window.__clawSse.text = text; }).catch(() => {});
+      }
+    } catch (error) {}
+    return response;
+  };
+})();"""
+
 CLAW_ASSISTANT_COMPLETED_JS = """before => {
   const messages = Array.from(document.querySelectorAll('#messageList .assistant-message'));
   if (messages.length !== before + 1) return false;
@@ -1306,6 +1329,9 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                 claw_posts = guard.claw_posts
 
             context.route("**/*", guarded_route)
+            # Installed before any app script so the wrapped fetch is the one
+            # the transport captures at module load.
+            context.add_init_script(CLAW_SSE_CAPTURE_JS)
             page = context.new_page()
             stage = "load_chat"
             page.goto(CLAW_TARGET_URL, wait_until="domcontentloaded", timeout=30000)
@@ -1517,8 +1543,19 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                 complete_ms = lane_complete_ms
 
                 if lane == "live":
+                    # Playwright cannot read a still-streamed SSE body via
+                    # response.text(); read the page-side clone instead.
+                    stage = "live_stream_read"
+                    try:
+                        page.wait_for_function(
+                            "() => Boolean(window.__clawSse && window.__clawSse.text)",
+                            timeout=30000,
+                        )
+                        live_body = page.evaluate("() => window.__clawSse.text")
+                    except Exception as exc:
+                        raise SmokeFailure("claw_live_stream_capture_missing") from exc
                     stage = "live_stream_contract"
-                    live = _parse_claw_live_sse(response.text())
+                    live = _parse_claw_live_sse(live_body)
                     stage = "live_history_readback"
                     history = context.request.get(
                         CLAW_TARGET_URL.rstrip("/")
