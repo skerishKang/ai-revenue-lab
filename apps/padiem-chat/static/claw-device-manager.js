@@ -145,22 +145,11 @@
     connect.append(connectTitle, connectCopy, connectAction);
     head.append(title, close);
     panel.append(head, help, actions, status, list, connect);
-    // The entry stays with the shared composer so it is always reachable, but
-    // the directory panel leaves the FIXED composer area: an expanding panel
-    // inside a fixed bottom bar grows over the content above it (the Claw
-    // guidance panel, a home card's connection cell, the last turn) and hides
-    // their controls. The panel is mounted in the content column right above
-    // the composer area, so it keeps its place and never overlaps the
-    // content it would otherwise cover.
-    const composerArea = composer.parentElement;
-    const composerColumn = composerArea ? composerArea.parentElement : null;
-    root.append(toggle);
-    composerArea.insertBefore(root, composer);
-    if (composerColumn && composerColumn !== composerArea) {
-      composerColumn.insertBefore(panel, composerArea);
-    } else {
-      root.append(panel);
-    }
+    // The directory panel is owned by the shared composer: it opens directly
+    // above the composer area, stays inside the composer's width and never
+    // overlaps the message input.
+    root.append(toggle, panel);
+    composer.parentElement.insertBefore(root, composer);
 
     let sequence = 0;
     let pendingController = null;
@@ -565,15 +554,26 @@
       // that is the standard disclosure behaviour and it keeps every panel
       // control reachable with the keyboard.
       close.focus({ preventScroll: true });
-      // The panel lives in the content column, so reveal it where the user
-      // pressed the entry. This is an explicit user action on the panel
-      // itself, not a jump while reading a conversation.
-      if (typeof panel.scrollIntoView === "function") {
-        panel.scrollIntoView({ block: "nearest", inline: "nearest" });
-      }
       void load();
     });
     close.addEventListener("click", closePanel);
+    // Close when clicking outside the panel. The composer status control that
+    // opens it is handled separately so the opening click does not close it.
+    document.addEventListener("click", (event) => {
+      if (!opened) return;
+      const target = event && event.target;
+      if (target && typeof target.closest === "function" &&
+          target.closest("#composerPcStatus")) return;
+      if (root.contains(target)) return;
+      closePanel();
+    });
+    // Escape closes the panel from anywhere, including when focus has left it.
+    document.addEventListener("keydown", (event) => {
+      if (opened && event && event.key === "Escape") {
+        event.preventDefault();
+        closePanel();
+      }
+    });
     // The not-connected action opens the EXISTING Claw computer connect
     // screen. It never pairs, registers or grants anything by itself.
     connectAction.addEventListener("click", () => {
