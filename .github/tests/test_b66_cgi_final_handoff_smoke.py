@@ -683,22 +683,22 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
         self.assertNotIn('page.on("request", observe_request)', owner)
         self.assertNotIn("assistant-message:last-of-type .typing", owner)
 
-    def test_claw_general_model_uses_the_verified_selector(self):
-        # The raw exact-ID panel is Plus-only and display:none for Free, so
-        # the general view must bind the model through its verified selector
-        # before the one dispatch, without a hidden-panel click.
+    def test_claw_general_model_is_bound_before_the_single_dispatch(self):
+        # The general Claw composer is model-free and its explicit-ID panel is
+        # tier-gated and collapsed. Bind the request-builder field directly,
+        # then require it to still hold the exact ID at submit time.
         text = SCRIPT.read_text(encoding="utf-8")
         owner = text[text.index("def run_claw_owner_one_shot("):text.index("\ndef self_test(")]
-        selector = owner.index('page.locator("#clawVerifiedModelSelect")')
-        offered = owner.index('if CLAW_OWNER_SELECTED_MODEL_ID not in offered:', selector)
-        selected = owner.index('model_select.select_option(CLAW_OWNER_SELECTED_MODEL_ID)', offered)
+        attached = owner.index('model_input.wait_for(state="attached", timeout=15000)')
         bound = owner.index(
-            'if model_input.input_value() != CLAW_OWNER_SELECTED_MODEL_ID:', selected
+            'if model_input.input_value() != CLAW_OWNER_SELECTED_MODEL_ID:', attached
         )
-        self.assertLess(selector, offered)
-        self.assertLess(offered, selected)
-        self.assertLess(selected, bound)
+        click = owner.index('page.locator("#sendButton").click()', bound)
+        self.assertLess(attached, bound)
+        self.assertLess(bound, click)
+        self.assertIn("node.dispatchEvent(new Event('input', { bubbles: true }))", owner)
         self.assertNotIn("details.claw-model-advanced", owner)
+        self.assertNotIn("#clawVerifiedModelSelect", owner)
 
     @unittest.skipUnless(shutil.which("node"), "Node required to evaluate terminal predicate")
     def test_terminal_lifecycle_js_negative_controls(self):
@@ -828,7 +828,7 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
         self.assertEqual(module.CLAW_OWNER_SELECTED_MODEL_ID, "agnes-ai/agnes-3.0-flash")
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertIn('page.locator("#clawModelIdInput")', source)
-        self.assertIn("model_select.select_option(CLAW_OWNER_SELECTED_MODEL_ID)", source)
+        self.assertIn("node.value = value;", source)
         self.assertIn("response.request.post_data_json", source)
         self.assertIn('submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID', source)
         self.assertIn("EXPLICIT_MODEL_ID_IN_CLAW_POST=PASS", source)
