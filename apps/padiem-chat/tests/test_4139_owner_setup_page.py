@@ -171,7 +171,7 @@ function field(id) {
   return fields[id];
 }
 globalThis.document={getElementById:field};
-globalThis.window={location:{href:"https://chat.padiem.net/api/claw/connector/enrollments/setup?request_ref="+ref},addEventListener(){}};
+globalThis.window={location:{href:"https://chat.padiem.net/api/claw/connector/enrollments/setup?request_ref="+ref},addEventListener(){},setTimeout(){},closed:false};
 globalThis.BroadcastChannel=class {
   constructor(name){assert.equal(name,"padiem-claw-pc-connect-v1");}
   postMessage(message){forwarded.push(message);}
@@ -199,6 +199,17 @@ assert.equal(posts,0);
 
 def test_setup_page_has_no_extra_consent_or_approve_control():
     assert 'id="pending-pc" hidden' in setup._HTML
+    # The handoff page no longer carries a guidance-only block that only sends
+    # the owner back to the Claw screen. The functional offer signal stays.
+    assert 'PC 연결 정보' not in setup._HTML
+    assert '<h2>' not in setup._HTML
+    assert '이 창은 닫아도 됩니다' not in setup._HTML
+    # The page closes itself only after the settlement arrives; the manual way
+    # back is rendered but hidden until the browser refuses to close it.
+    assert 'pc_offer_approved' in setup._SCRIPT and 'pc_offer_failed' in setup._SCRIPT
+    assert 'window.close()' in setup._SCRIPT
+    assert 'id="pending-return" hidden' in setup._HTML
+    assert '<a href="/">Claw로 돌아가기</a>' in setup._HTML
     assert 'id="pending-approve"' not in setup._HTML
     assert 'id="pending-consent"' not in setup._HTML
     assert 'query.size === 1' in setup._SCRIPT
