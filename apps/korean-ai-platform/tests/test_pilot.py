@@ -247,14 +247,41 @@ class TestPilotChatRequest:
         assert resp.json()["error"]["code"] == "stream_not_supported"
 
     def test_tools_rejected(self, client):
+        # #5536: the BYOK lane serves a caller's own provider and model, and
+        # B14 holds no capability record for it, so a tool declaration is
+        # refused there rather than forwarded unverified.
+        _configure_pilot()
+        resp = client.post(
+            "/api/pilot/v1/chat/completions",
+            json={
+                "model": "test-model-v1",
+                "messages": [{"role": "user", "content": "hi"}],
+                "tools": [
+                    {
+                        "type": "function",
+                        "function": {
+                            "name": "generateSandboxedUi",
+                            "parameters": {"type": "object", "properties": {}},
+                        },
+                    }
+                ],
+            },
+            headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
+        )
+        assert resp.status_code == 400
+        assert resp.json()["error"]["code"] == "tools_not_supported"
+
+    def test_malformed_tool_declaration_rejected(self, client):
+        # #5536: a malformed tool declaration is refused before any provider
+        # call, so it never spends a credential.
         _configure_pilot()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}], "tools": [{"name": "test"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
-        assert resp.status_code == 400
-        assert resp.json()["error"]["code"] == "tools_not_supported"
+        assert resp.status_code == 422
+        assert resp.json()["error"]["code"] == "invalid_body"
 
     def test_unknown_model_rejected(self, client):
         _configure_pilot()

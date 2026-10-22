@@ -68,7 +68,9 @@ def test_catalog_entry_registered_with_evidenced_shape():
     assert model.upstream_model == SENSENOVA_UPSTREAM_MODEL
     assert model.provider == "SenseNova"
     assert model.platform_provider_id == SENSENOVA_PROVIDER_ID
-    assert model.capabilities == frozenset({"chat", "coding"})
+    # #5536: "tools" is measured, not assumed. SenseNova 6.8 Flash Lite
+    # answered a live tool-calling request with a tool call.
+    assert model.capabilities == frozenset({"chat", "coding", "tools"})
     # Owner-plan cost: no fabricated price.
     assert model.input_price_usd_per_1m is None
     assert model.output_price_usd_per_1m is None
