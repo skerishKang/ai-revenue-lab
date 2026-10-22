@@ -287,6 +287,54 @@ def test_the_b14_route_is_refused_when_it_is_not_bound() -> None:
     assert error.value.code == "b14_route_not_bound"
 
 
+def test_the_b14_route_carries_a_tool_result_back_to_the_model() -> None:
+    # #5536: a tool result is only readable by the model when it travels with
+    # the identifier of the call it answers. The route carries that
+    # identifier, and the assistant turn that made the call, so the round
+    # trip can be replayed.
+    transport = _FakeB14Transport()
+    route = B14Route(_b14_settings(), transport=transport)
+
+    import asyncio
+
+    asyncio.run(
+        route.generate(
+            ModelRequest(
+                system_prompt="system",
+                user_prompt="make a form",
+                history=(
+                    {
+                        "role": "assistant",
+                        "tool_calls": [
+                            {
+                                "id": "call_1",
+                                "type": "function",
+                                "function": {
+                                    "name": "generateSandboxedUi",
+                                    "arguments": '{"html":"<p></p>"}',
+                                },
+                            }
+                        ],
+                    },
+                    {
+                        "role": "tool",
+                        "tool_call_id": "call_1",
+                        "name": "generateSandboxedUi",
+                        "content": '{"ok":true}',
+                    },
+                ),
+            )
+        )
+    )
+
+    _, payload = transport.calls[0]
+    assistant = [m for m in payload["messages"] if m["role"] == "assistant"]
+    assert assistant[0]["tool_calls"][0]["id"] == "call_1"
+    tool_message = [m for m in payload["messages"] if m["role"] == "tool"][0]
+    assert tool_message["tool_call_id"] == "call_1"
+    assert tool_message["content"] == '{"ok":true}'
+
+
 def test_a_b14_refusal_is_reported_as_a_route_error() -> None:
     transport = _FakeB14Transport(
         status_code=400,

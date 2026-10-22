@@ -53,7 +53,10 @@ class ModelRequest:
 
     system_prompt: str
     user_prompt: str
-    history: tuple[Mapping[str, str], ...] = ()
+    # The earlier turns. A turn may carry a tool result with the identifier of
+    # the call it answers, and an assistant turn may carry the tool calls it
+    # made, so the round trip can be replayed to the model.
+    history: tuple[Mapping[str, Any], ...] = ()
     interaction_state: Mapping[str, Any] | None = None
 
 
@@ -116,6 +119,44 @@ class ModelRoute(Protocol):
     def supports_tool_calls(self) -> bool: ...
 
     async def generate(self, request: ModelRequest) -> ModelTurn: ...
+
+
+def _history_messages(
+    history: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Carry the earlier turns into the request.
+
+    A plain turn is a role and its content. A tool turn is a role, its
+    content and the identifier of the call it answers; without that
+    identifier the model cannot read the result, so it is carried here and
+    not dropped. An assistant turn may also carry the tool calls it made,
+    which is what lets the round trip be replayed to the model.
+    """
+
+    messages: list[dict[str, Any]] = []
+    for entry in history:
+        role = entry.get("role")
+        if not isinstance(role, str) or not role:
+            continue
+        message: dict[str, Any] = {"role": role}
+        content = entry.get("content")
+        if isinstance(content, str):
+            message["content"] = content
+        call_id = entry.get("tool_call_id")
+        if isinstance(call_id, str) and call_id:
+            message["tool_call_id"] = call_id
+        name = entry.get("name")
+        if isinstance(name, str) and name:
+            message["name"] = name
+        tool_calls = entry.get("tool_calls")
+        if isinstance(tool_calls, (list, tuple)) and tool_calls:
+            message["tool_calls"] = [
+                dict(call) for call in tool_calls if isinstance(call, Mapping)
+            ]
+        if "content" not in message and "tool_calls" not in message:
+            continue
+        messages.append(message)
+    return messages
 
 
 def _tool_arguments(call: Mapping[str, Any]) -> dict[str, Any]:
@@ -209,11 +250,7 @@ class OpenAICompatibleRoute:
         messages: list[dict[str, Any]] = [
             {"role": "system", "content": request.system_prompt}
         ]
-        for entry in request.history:
-            role = entry.get("role")
-            content = entry.get("content")
-            if isinstance(role, str) and isinstance(content, str):
-                messages.append({"role": role, "content": content})
+        messages.extend(_history_messages(request.history))
         messages.append({"role": "user", "content": request.user_prompt})
 
         url = self._settings.model_base_url.rstrip("/") + "/chat/completions"
@@ -346,11 +383,7 @@ class B14Route:
         messages: list[dict[str, Any]] = [
             {"role": "system", "content": request.system_prompt}
         ]
-        for entry in request.history:
-            role = entry.get("role")
-            content = entry.get("content")
-            if isinstance(role, str) and isinstance(content, str):
-                messages.append({"role": role, "content": content})
+        messages.extend(_history_messages(request.history))
         messages.append({"role": "user", "content": request.user_prompt})
 
         url = self._settings.b14_base_url.rstrip("/") + B14_CHAT_COMPLETIONS_PATH
