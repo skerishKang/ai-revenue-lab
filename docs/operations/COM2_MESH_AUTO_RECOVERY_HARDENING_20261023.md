@@ -454,3 +454,63 @@ $status.auto_start_probe_ts = if ($autostart) { [string]$autostart.ts } else { "
 ### 10.3 판정
 
 `FINAL_REVIEW_CONDITIONALLY_READY` — 소스·fixture·정확한 HEAD 정책 CI는 통과했고, 운영 적용 전 확인해야 할 조건은 5.1.5(진행 작업 없음), 5.3(ssh 경로 명시), 5.5.3(직접 PID 소유권), 5.6(자식 회수 런타임 확인), 5.7(10분 관찰)이다. F1·F2는 해소됐고 남은 조건은 모두 적용 창의 런타임 게이트다. 이 단계에서 병합·운영 적용·프로세스 종료/재시작·재부팅·failover·알림 발송은 수행하지 않았다.
+
+## 11. 자동 시작 프로브의 supervisor 표시 분리 (2026-10-23)
+
+### 11.1 동기
+
+`LastTaskResult=2147946720`(`0x800710E0`)은 IgnoreNew 정책에서 supervisor가 이미 실행 중이라 새 시작이 거부된 코드일 수 있다. COM1의 Task Scheduler Operational 로그 채널이 비활성화되어 있어 이벤트로 이 거부를 확인할 수 없다. 확인되지 않은 추정을 정상 실행으로 표시하면 안 되므로, 판정과 표시를 분리했다.
+
+이 변경은 check 판정·`failed_checks`·`unverified_checks`·`auto_start_state` 계산 로직을 바꾸지 않는다. 기존 실패 판정은 그대로 유지되고, supervisor 현재 상태와 마지막 시작 시도를 읽기 전용 관측으로만 덧붙인다.
+
+### 11.2 표시 분리 계약
+
+`tunnel_task_last_result_ok` 판정 기준(`0 또는 267009`)은 변하지 않는다. 결과 코드 `2147946720`은 여전히 실패로 판정되고 `failed_checks`에 남는다. supervisor 표시는 이 판정과 별도로, 아래 세 조건이 모두 확인될 때만 정상 실행 상태로 표시한다.
+
+- 리스너가 설정된 루프백 포트에 존재한다(`tunnel_listener_present` = true).
+- 리스너 소유 프로세스 이름이 설정값과 일치한다(`tunnel_listener_process_matches` = true).
+- 리스너 소유 자식 PID의 부모 프로세스 명령행에 supervisor 스크립트 이름(설정 키 `tunnel_supervisor_script`, 기본 `com2_mesh_tunnel_supervisor.ps1`)이 포함된다(identity = `confirmed`).
+
+세 조건 중 하나라도 확인되지 않으면 supervisor 상태는 `unknown` 또는 `not_running`이 되고, identity는 `confirmed`/`unconfirmed`/`mismatch` 중 하나로 기록된다. `running_connected`/`running_disconnected`/`running_connection_unknown`는 identity가 `confirmed`일 때만 나온다.
+
+### 11.3 suspected/confidence 의미
+
+마지막 시작 시도(`last_start_attempt`)는 원래 결과 코드와 시각을 보존한다. `result`(정수 코드), `result_hex`, `run`(마지막 실행 시각)은 관측값 그대로이고, 판정을 위해 재작성하지 않는다.
+
+`outcome`과 새 `confidence` 필드는 다음과 같다.
+
+- `2147946720`이고 supervisor·자식·리스너 체인이 `confirmed`+정상 상태로 확인되면 `outcome=suspected_refused_while_running`, `confidence=suspected`. 이벤트를 읽지 못했으므로 추정임을 값으로 드러낸다.
+- `2147946720`이고 체인이 확인되지 않으면 `outcome=failed`, `confidence=observed`. 거부 추정조차 성립하지 않는다.
+- `0`/`267009`/`267011`/`267010`/`2` 등 나머지 코드는 기존 outcome을 유지하고, 코드가 정수로 파싱되면 `confidence=observed`, 파싱되지 않으면 `confidence=unknown`.
+
+### 11.4 새 레코드 필드
+
+프로브 레코드에 두 하위 객체를 추가했다. 기존 필드는 제거하지 않았다.
+
+- `supervisor`: `state`, `identity`, `identity_detail`, `child_pid`, `child_process`, `parent_pid`, `detail`.
+- `last_start_attempt`: `run`, `result`, `result_hex`, `outcome`, `confidence`, `detail`.
+
+리스너 관측(`Get-ListenerObservation`)에는 `parent_pid`, `parent_process_name`, `parent_command_line_observed`, `parent_runs_supervisor`, `parent_error`를 추가했다. 부모 명령행은 조회 직후 메모리에서 supervisor 스크립트 이름과 대조하고 버린다. 관측·레코드에는 명령행을 읽었는지 여부(`parent_command_line_observed`)와 대조 결과(`parent_runs_supervisor`)만 남고, 전체 명령행 문자열이나 그 안의 경로·인자·비밀값은 기록하지 않는다. 부모 조회가 실패해도 리스너 관측 자체는 유효하게 유지되고 `parent_error`에만 실패 사유를 기록한다.
+
+### 11.5 health 표시 연결 (재현 가능한 저장소 변경)
+
+운영 health 스크립트는 저장소 밖에 있어 직접 수정하지 않는다. 대신 재현 가능한 저장소 변경으로 세 파일을 추가했다.
+
+- `scripts/ops/com2_mesh/com2_mesh_health_display.ps1`: 표시 모듈. `Get-AutostartDisplayClass`, `Add-AutostartDisplayFields`, `New-AutostartDisplayRows`. 판정 필드는 건드리지 않고 supervisor/시도 표시 필드와 HTML 행만 덧붙인다.
+- `scripts/ops/com2_mesh/com2_mesh_health_patch.ps1`: 해시 보호 앵커 기반 패치 적용기. `-HealthScript`(필수), `-ExpectedSha256`(기본 `44914F0CBB142CA71596A0D0368B0B797C547B1389C4211FC0C2169DCFE737F5`), `-Apply` 스위치. 기본은 dry run이고, 해시 불일치·파일 없음·앵커 모호 시 exit 1.
+- `scripts/ops/com2_mesh/com2_mesh_health_display_selftest.ps1`: fixture 기반 selftest. 합성 fixture로 dry run/apply/구문 검사/실행 결과를 검증한다.
+
+패치 적용기는 운영 health 스크립트의 base SHA256 `44914F0C…`(LF, BOM 없음)을 기대 해시로 고정하고, 상태 복사 블록(앵커 A, base line 250)과 자동 시작 HTML 행(앵커 B, base line 285) 두 지점만 교체한다. 원본 EOL·UTF8(no BOM)을 보존하고, 적용 전 `.bak-yyyyMMdd-HHmmss` 백업을 만든다. 표시 모듈이 health 스크립트 옆에 배포되지 않으면 패치는 비활성 상태로 남아 기존 동작을 바꾸지 않는다.
+
+### 11.6 테스트·변형 증거
+
+- `com2_mesh_autostart_selftest.ps1`: 185 PASS / 0 FAIL. baseline, UInt32 오류(`suspected_refused_while_running`/`suspected`, 코드·시각 보존), `identityUnknown`(부모 pid 0), `identityNoCommand`(부모 명령행 빈 값), `identityMismatch`(다른 스크립트), `ownerUnknown`(소유 프로세스 이름 빈 값) fixture를 포함한다. 기존 실패 판정 보존을 단정한다.
+- `com2_mesh_health_display_selftest.ps1`: 90 PASS / 0 FAIL. 표시 클래스 계약, 필드 복사 계약, 프로브 end-to-end, 패치 적용기(dry run 불변 해시, `DEADBEEF` 거부, 앵커 없음 거부, apply 후 구문 오류 0, 실행 결과 필드/HTML 추가, 모듈 없이 실행 시 무충돌)를 포함한다.
+- 변형 테스트: 프로브(outcome 이름, confidence, 코드 매처, identity 게이트, 명령행 일치, 부모 pid 누락)와 표시 모듈(ok 클래스가 identity 무시, 구형 스키마→running, result 소거, confidence 강제) 변형을 모두 주입해 해당 테스트가 실패함을 확인했다. 부모 명령행 빈 값 분기의 초기 변형이 탈출해 `identityNoCommand` fixture를 추가했고, 이후 해당 변형은 4건에서 실패한다.
+- 패치 적용기는 운영 base의 임시 사본에서 dry run(파일 불변)과 apply(백업 해시 = base, 새 해시 `F6D4C9FA77AEECB4D8C1B3430D4DD3AD6A60117B63CFB8455D53377306602CEF`, parse_errors=0)를 검증한 뒤 임시 사본을 제거했다.
+
+### 11.7 범위 밖 확인 상태
+
+이 단계에서 수행하지 않은 것: 운영 적용, Task Scheduler 로그 채널 활성화, 프로세스 종료/재시작, 재부팅, failover, 알림 발송. 패치 적용기는 저장소 변경일 뿐 운영 health 스크립트에 적용하지 않았다.
+
+확인되지 않은 것(UNVERIFIED): 부팅 자동 시작, 재부팅 복구, 24시간 지속성. 이들은 읽기 전용 관측으로 증명할 수 없고 §5.9·§8의 통제된 재부팅 시험이 별도 승인 항목으로 남는다. `suspected_refused_while_running`는 이벤트 확인이 아닌 supervisor·자식·리스너 체인 관측에 기반한 추정이다.
