@@ -700,6 +700,118 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
         self.assertNotIn("details.claw-model-advanced", owner)
         self.assertNotIn("#clawVerifiedModelSelect", owner)
 
+    def test_claw_runs_live_then_evidence_with_bounded_dispatch_each(self):
+        text = SCRIPT.read_text(encoding="utf-8")
+        owner = text[text.index("def run_claw_owner_one_shot("):text.index("\ndef self_test(")]
+        self.assertEqual(module.CLAW_LANES, ("live", "evidence"))
+        self.assertEqual(module.MAX_CLAW_MODEL_DISPATCHES, 2)
+        self.assertIn("for lane in CLAW_LANES:", owner)
+        self.assertIn('lane_state["lane"] = lane', owner)
+        self.assertIn("guard.reset_lane()", owner)
+        self.assertIn('if lane == "evidence":', owner)
+        self.assertIn("route.fulfill(", owner)
+        self.assertIn("parsed.path == CLAW_CAPABILITIES_PATH", owner)
+        self.assertIn("continue_headers={", owner)
+        # The evidence header must never be installed context-wide: the live
+        # route refuses live+evidence together and the canary must not turn
+        # that deliberate 422 into a false failure.
+        self.assertNotIn("extra_http_headers={CLAW_EVIDENCE_REQUEST_HEADER", owner)
+        self.assertIn("_parse_claw_live_sse(response.text())", owner)
+        self.assertIn("claw_live_history_invalid", owner)
+
+    def test_live_sse_parser_requires_verified_terminal_and_answer(self):
+        def frame(name, payload):
+            return "event: " + name + "\ndata: " + json.dumps(payload) + "\n\n"
+
+        first = {
+            "event_id": "evt_1",
+            "run_id": "run_live",
+            "trace_id": "trace_live",
+            "app_id": "app_live",
+            "kind": "run_started",
+            "sequence": 1,
+            "delivery": "live",
+        }
+        terminal = {**first, "event_id": "evt_2", "kind": "run_completed", "sequence": 2}
+        conversation_id = "chat_" + "c" * 32
+        good = (
+            frame("p01_event", first)
+            + frame("p01_event", terminal)
+            + frame("delta", {"delta": "정상 작동 중입니다."})
+            + frame("done", {"done": True, "conversation_id": conversation_id})
+        )
+        parsed = module._parse_claw_live_sse(good)
+        self.assertEqual(parsed["events"], 2)
+        self.assertEqual(parsed["terminal_kind"], "run_completed")
+        self.assertEqual(parsed["conversation_id"], conversation_id)
+        for body, code in (
+            (frame("p01_event", first) + frame("error", {"error": {"code": "x"}}),
+             "claw_live_error_event"),
+            (frame("p01_event", {**first, "sequence": 2})
+             + frame("p01_event", {**terminal, "sequence": 1})
+             + frame("delta", {"delta": "x"})
+             + frame("done", {"done": True, "conversation_id": conversation_id}),
+             "claw_live_sequence"),
+            (frame("p01_event", first)
+             + frame("p01_event", {**terminal, "kind": "run_failed"})
+             + frame("delta", {"delta": "x"})
+             + frame("done", {"done": True, "conversation_id": conversation_id}),
+             "claw_live_terminal"),
+            (frame("p01_event", first) + frame("p01_event", terminal)
+             + frame("delta", {"delta": "  "})
+             + frame("done", {"done": True, "conversation_id": conversation_id}),
+             "claw_live_answer_missing"),
+            (frame("p01_event", first) + frame("p01_event", terminal)
+             + frame("delta", {"delta": "x"}) + frame("done", {"done": True}),
+             "claw_live_conversation_id"),
+        ):
+            with self.subTest(code=code):
+                with self.assertRaisesRegex(module.SmokeFailure, code):
+                    module._parse_claw_live_sse(body)
+        with self.assertRaisesRegex(module.SmokeFailure, "claw_live_body_guard"):
+            module._parse_claw_live_sse(
+                "event: delta\ndata: " + "x" * (module.CLAW_LIVE_MAX_BODY_BYTES + 1)
+            )
+
+    def test_evidence_lane_injects_one_bounded_header_and_resets_per_lane(self):
+        class Route:
+            def __init__(self):
+                self.actions = []
+                self.headers = None
+
+            def continue_(self, headers=None):
+                self.actions.append("network")
+                self.headers = headers
+
+            def abort(self, reason):
+                self.actions.append("abort:" + reason)
+
+        class Request:
+            method = "POST"
+            url = module.CLAW_TARGET_URL.rstrip("/") + module.CLAW_GENERAL_PATH
+            post_data_json = {"model_id": module.CLAW_OWNER_SELECTED_MODEL_ID}
+            headers = {"content-type": "application/json"}
+
+        guard = module._ClawOutboundGuard()
+        route = Route()
+        guard.route_request(
+            route,
+            Request(),
+            continue_headers={module.CLAW_EVIDENCE_REQUEST_HEADER: module.CLAW_EVIDENCE_MARKER},
+        )
+        self.assertEqual(route.actions, ["network"])
+        self.assertEqual(
+            route.headers[module.CLAW_EVIDENCE_REQUEST_HEADER],
+            module.CLAW_EVIDENCE_MARKER,
+        )
+        self.assertEqual(guard.claw_posts, 1)
+        guard.reset_lane()
+        self.assertEqual(guard.claw_posts, 0)
+        second = Route()
+        guard.route_request(second, Request())
+        self.assertIsNone(second.headers)
+        self.assertEqual(guard.claw_posts, 1)
+
     @unittest.skipUnless(shutil.which("node"), "Node required to evaluate terminal predicate")
     def test_terminal_lifecycle_js_negative_controls(self):
         # Execute the same JavaScript predicate the actual browser waits on.
@@ -831,7 +943,7 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
         self.assertIn("node.value = value;", source)
         self.assertIn("response.request.post_data_json", source)
         self.assertIn('submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID', source)
-        self.assertIn("EXPLICIT_MODEL_ID_IN_CLAW_POST=PASS", source)
+        self.assertIn('"EXPLICIT_MODEL_ID_IN_CLAW_POST_" + lane.upper() + "=PASS"', source)
 
     def test_one_shot_bounds_are_unchanged(self):
         self.assertEqual(module.MAX_CLAW_GENERAL_POSTS, 1)
