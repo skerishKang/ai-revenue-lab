@@ -97,9 +97,11 @@ def _wire(monkeypatch, *, answers, selected=True, owner_raises=False):
         return True
 
     async def _read(request, *, owner_id, workspace_id):
-        if selected:
+        if selected is True:
             return type("Sel", (), {"status": pc_work_context.SAVED_SELECTION_SELECTED, "device_id": DEVICE})()
-        return type("Sel", (), {"status": pc_work_context.SAVED_SELECTION_UNAVAILABLE, "device_id": None})()
+        if selected is False:
+            return type("Sel", (), {"status": pc_work_context.SAVED_SELECTION_UNAVAILABLE, "device_id": None})()
+        return type("Sel", (), {"status": pc_work_context.SAVED_SELECTION_NONE, "device_id": None})()
 
     async def _resolve(request, **kwargs):
         return type("Ctx", (), {
@@ -190,21 +192,53 @@ async def test_ambiguous_turn_returns_a_question(monkeypatch):
 
 
 async def test_clear_pc_request_without_authority_is_a_refusal(monkeypatch):
-    app, b14, bridge = _wire(monkeypatch, answers=[], owner_raises=True)
+    app, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_read"}'], owner_raises=True)
     response = await _post(app, "\ub0b4 PC \ub4dc\ub77c\uc774\ube0c \uc54c\ub824\uc918")
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "chat_pc_owner_unavailable"
     assert bridge.requests == []
-    assert b14.calls == []
+    assert len(b14.calls) == 1
 
 
-async def test_no_selected_pc_clear_request_is_a_refusal(monkeypatch):
-    app, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_list"}'], selected=False)
+async def test_follow_up_without_a_pc_keyword_uses_the_prior_turn(monkeypatch):
+    app, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_read"}'])
+    messages = [
+        {"role": "user", "content": "5015-conditions-20261022 \ud3f4\ub354\ub97c \ubd24\uc5b4"},
+        {"role": "assistant", "content": "\ubaa9\ub85d\uc744 \ud655\uc778\ud588\uc2b5\ub2c8\ub2e4."},
+        {"role": "user", "content": "\uadf8 \ud3f4\ub354 \uc548\uc5d0 \ubb50 \uc788\uc5b4?"},
+    ]
+    async with _client(app) as client:
+        response = await client.post(
+            "/api/orchestration",
+            headers={"Origin": ORIGIN},
+            json={"messages": messages, "skill": "auto"},
+        )
+    assert response.status_code == 200, response.text
+    sent = bridge.requests[0]
+    assert [step["tool_id"] for step in sent["agent_plan"]["steps"]] == [
+        "claw.pc.list_files", "claw.pc.read_file",
+    ]
+    contents = [item["content"] for item in b14.calls[0]["messages"]]
+    assert contents[0] == messages[0]["content"]
+    assert contents[-1] == messages[-1]["content"]
+
+
+async def test_no_selected_pc_clear_request_uses_the_server_context(monkeypatch):
+    app, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_list"}'], selected=None)
+    response = await _post(app, POSSESSIVE + DEEP + LIST)
+    assert response.status_code == 200, response.text
+    sent = bridge.requests[0]
+    assert sent["tool_arguments"] is None
+    assert [step["tool_id"] for step in sent["agent_plan"]["steps"]] == ["claw.pc.list_files"]
+
+
+async def test_unreadable_selection_fails_closed_before_the_model(monkeypatch):
+    app, b14, bridge = _wire(monkeypatch, answers=[], selected=False)
     response = await _post(app, POSSESSIVE + DEEP + LIST)
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "chat_pc_selection_unavailable"
     assert bridge.requests == []
-    assert len(b14.calls) == 1
+    assert b14.calls == []
 
 
 async def test_browser_target_override_is_refused(monkeypatch):

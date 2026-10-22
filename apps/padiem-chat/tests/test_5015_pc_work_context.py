@@ -643,7 +643,7 @@ class _CaptureClient:
     def __init__(self):
         self.calls = []
 
-    async def complete(self, messages, **kwargs):
+    async def complete(self, messages, skill=None, **kwargs):
         self.calls.append(dict(kwargs))
         return {"answer": "확인했습니다.", "runtime": "test"}
 
@@ -684,7 +684,8 @@ def test_chat_model_call_carries_the_verified_pc_context():
     assert response.status_code == 200, response.text
     model = app.state.b14_client
     assert model.calls, "the model must actually be called"
-    context = model.calls[0]["additional_system_context"]
+    # calls[0] is the #5573 scope step; the ordinary answer is the last call.
+    context = model.calls[-1]["additional_system_context"]
     assert PC_WORK_CONTEXT_VERSION in context
     assert "등록 기기 목록" in context
     # In this harness the canonical session resolves to owner:<uid>, so the
@@ -739,9 +740,9 @@ class _ChatBridge(B62EngineOrchestrationBridge):
         return SimpleNamespace(answer=self.answer, public={"answer": self.answer})
 
 
-def _chat_pc_request(*, answer, mesh=None, identity=None, bridge=None,
+def _chat_pc_request(*, answer, scope="drives", mesh=None, identity=None, bridge=None,
                      selection_store=None, directory=None):
-    b14 = _ChatB14([answer])
+    b14 = _ChatB14([json.dumps({"action": scope}), answer])
     history = _ChatHistory()
     state = SimpleNamespace(
         b14_client=b14, history_store=history,
@@ -791,7 +792,7 @@ def test_chat_pc_decision_model_receives_context_and_selection_reaches_the_plan(
     decision_context = request.app.state.b14_client.calls[0]
     assert PC_WORK_CONTEXT_VERSION in decision_context
     assert "현재 작업 대상 PC: Office PC" in decision_context
-    assert CHAT_PC_QUERY_TOOL_ID in decision_context
+    assert CHAT_PC_QUERY_TOOL_ID in request.app.state.b14_client.calls[1]
     # The SAME selected id travels to the Engine plan, not a server guess.
     assert bridge.requests[0]["tool_arguments"] == {
         "query_drives": {"device_id": "office-pc"},
@@ -805,6 +806,7 @@ def test_chat_pc_files_lane_uses_the_client_recovery_run_handle():
     bridge = _ChatBridge("파일 내용을 읽었습니다.")
     request = _chat_pc_request(
         answer="unused",
+        scope="files_read",
         mesh=Mesh([mesh_row("office-pc", node_ref="mesh-node")]),
         identity=Identity(),
         bridge=bridge,
