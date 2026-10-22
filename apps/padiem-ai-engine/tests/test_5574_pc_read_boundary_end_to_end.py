@@ -30,16 +30,12 @@ from __future__ import annotations
 
 import asyncio
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
-from padiem_ai_engine_client import (
-    EngineTransportResponse,
-    PadiemAiEngineClient,
-    PadiemAiEngineClientError,
-)
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 from app.claw_pc_query_step_driver import (
@@ -49,6 +45,18 @@ from app.claw_pc_query_step_driver import (
 from app.execution_admission_service import AdmissionBoundOrchestrationEngineService
 from tests.test_5015_chat_pc_wire_admission import AllowingAdapter
 from tests.test_canonical_idempotency_identity import ReplayAdapter
+
+# The Engine env does not install the Python client: it is a path sibling. The
+# insert is what test_5015_engine_refusal_code_observability.py does, repeated
+# here so this file runs alone instead of only after that module is collected.
+CLIENT_ROOT = Path(__file__).resolve().parents[1] / "clients" / "python"
+sys.path.insert(0, str(CLIENT_ROOT))
+
+from padiem_ai_engine_client import (  # noqa: E402
+    EngineTransportResponse,
+    PadiemAiEngineClient,
+    PadiemAiEngineClientError,
+)
 
 FIXTURE = Path(__file__).with_name("fixtures") / "5015_chat_pc_engine_payloads.json"
 FILES_RECORD = json.loads(FIXTURE.read_text(encoding="utf-8"))["files"]
