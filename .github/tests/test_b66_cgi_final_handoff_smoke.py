@@ -726,7 +726,14 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
         )
         self.assertIn('stage = "live_stream_read"', owner)
         self.assertIn("() => window.__clawSse.text", owner)
-        self.assertIn("claw_live_stream_capture_missing", owner)
+        self.assertIn("claw_live_stream_incomplete", owner)
+        self.assertIn("CLAW_LIVE_CAPTURE_FRAMES=", owner)
+        # The stream must be read before the UI lifecycle wait: an unfinished
+        # stream and a frontend projection defect then fail differently.
+        self.assertLess(
+            owner.index('stage = "live_stream_read"'),
+            owner.index('stage = "assistant_terminal_lifecycle_'),
+        )
         self.assertIn("claw_live_history_invalid", owner)
         self.assertTrue(module.CLAW_SSE_CAPTURE_JS.startswith("(() => {"))
         self.assertIn("response.clone()", module.CLAW_SSE_CAPTURE_JS)
