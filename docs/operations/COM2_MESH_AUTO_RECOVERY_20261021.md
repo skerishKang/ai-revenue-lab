@@ -3,6 +3,7 @@
 - 구현: `scripts/ops/com2_mesh/com2_mesh_recovery.ps1`, `scripts/ops/com2_mesh/com2_mesh_recovery_selftest.ps1`
 - 설정 예시: `scripts/ops/com2_mesh/com2_mesh_config.template.json`
 - 관련: `docs/operations/COM2_PRIMARY_RUNTIME_SUPERVISOR_AND_TUNNEL_20261019.md` (다른 런타임 감독기, 이 문서가 변경하지 않음)
+- 후속: `docs/operations/COM2_MESH_AUTO_RECOVERY_HARDENING_20261023.md` (bounded retry·원격 원인 구분·터널 감독기·자동 시작 실측, 소스만 반영)
 - 상태: **ENGINE_IMPLEMENTED / FIXTURE_SELFTEST_PASSED / OPERATIONAL_DEPLOY_LIVE_VERIFIED**
 
 ## 1. 장애 사례
@@ -55,6 +56,8 @@ COM2 쪽 probe는 `HTTP=<3자리>;KEEPER=OK|MISSING|UNKNOWN;UNIT=active|inactive
 | `com2_mesh_down` | 원격 HTTP 200 아님 | keeper `MISSING` → `start_keeper`; 유닛 `active` 아님 → `restart_mesh_service`; 둘 다 정상 → 기록만 |
 | `remote_probe_failed` | COM2 도달 가능, 원격 프로브 실패 | 기록만 |
 
+원격 원인 구분(2026-10-23 추가): `remote_probe_failed`는 `remote_cause`로 세분한다. 허용 값은 `ssh_timeout`, `ssh_connect_timeout`, `ssh_auth_failed`, `ssh_connection_refused`, `ssh_network_unreachable`, `ssh_transport_error`, `probe_script_failed`, `probe_no_verdict`, `ssh_client_missing`, `not_probed`, `fixture_remote_probe_failed`다. HTTP 000만으로는 COM2 유닛을 재시작하지 않는다. 원격 유닛·keeper 값을 직접 관측하지 못한 경우 `com2_state_source=unverified`로 기록하고 `record_only`로 처리한다. 값이 `unknown`일 때 `restart_mesh_service`·`start_keeper`를 계획하지 않는다.
+
 조치 정의:
 
 - `restart_tunnel`: 설정된 전달 작업을 중지·시작하고, 설정된 loopback 포트를 소유한 잔여 전달 프로세스만 종료한다. 포트 소유 프로세스의 이름과 명령줄이 설정된 전달과 일치할 때만 종료하며, 다른 프로세스가 포트를 점유하면 중지하고 실패로 기록한다.
@@ -76,8 +79,10 @@ health log 한 줄(`key=value`):
 
 ```text
 check / mode / class / com2_ssh / tunnel_tcp / mesh_http / remote_http /
-remote_keeper / remote_unit / first_fault / attempt / planned_action / action /
-executed / recovery_ok / recovery_at / elapsed_sec / fault_age_sec / code / error / detail
+remote_keeper / remote_unit / remote_cause / com2_state_source / first_fault /
+attempt / planned_action / action / executed / recovery_ok / recovery_at /
+elapsed_sec / fault_age_sec / retry_decision / retry_attempt / retry_max /
+next_attempt_at / code / error / detail
 ```
 
 요구 필드 대응:
@@ -93,12 +98,18 @@ executed / recovery_ok / recovery_at / elapsed_sec / fault_age_sec / code / erro
 | 실행 조치 | `planned_action`, `action`, `executed` |
 | 복구 성공 확인 시각 | `recovery_at`, `recovery_ok` |
 | 실제 경과 시간 | `elapsed_sec`, `fault_age_sec` |
-| 실패 원인 | `error`, `detail` |
+| 실패 원인 | `error`, `detail`, `remote_cause` |
+| 원격 상태 근거 | `com2_state_source` (`direct`/`unverified`) |
+| 재시도 결정 | `retry_decision`, `retry_attempt`, `retry_max`, `next_attempt_at` (레코드·health log), `attempt_count`, `last_attempt_at`, `last_success_at` (상태 파일) |
 | 오류 코드 | `code` |
+
+동일 장애·동일 계획 조치(`class|planned_action`)의 재시도는 에피소드 단위로 제한한다. 기본값은 최대 3회, backoff 300/900/1800초, cooldown 300초, retry window 3600초다. healthy 또는 다른 조치가 필요한 분류로 바뀌면 에피소드를 초기화한다. Simulate/DryRun은 시도 횟수를 소모하지 않는다. 설정 키는 `recovery_max_attempts`, `recovery_backoff_schedule_seconds`, `recovery_cooldown_seconds`, `recovery_retry_window_seconds`다.
 
 `recovery_log`에는 같은 값이 한 줄 JSON(`schema=com2_mesh_recovery/v1`)으로 남는다. `status_file`은 마지막 레코드 전체를 담는다.
 
-주요 코드: `HTTP_200`, `SELF_RECOVERED_HTTP_200`, `PLANNED_RESTART_TUNNEL`, `PLANNED_START_KEEPER`, `PLANNED_RESTART_MESH_SERVICE`, `RECOVERED_HTTP_200`, `RECOVERY_FAILED_HTTP_<code>`, `RECOVERY_LOCKED`, `COM2_SSH_UNREACHABLE`, `REMOTE_PROBE_FAILED`, `NO_ACTION_AVAILABLE`, `ENGINE_ERROR`.
+주요 코드: `HTTP_200`, `SELF_RECOVERED_HTTP_200`, `PLANNED_RESTART_TUNNEL`, `PLANNED_START_KEEPER`, `PLANNED_RESTART_MESH_SERVICE`, `RECOVERED_HTTP_200`, `RECOVERY_FAILED_HTTP_<code>`, `RECOVERY_LOCKED`, `RECOVERY_BACKOFF`, `RECOVERY_RETRY_EXHAUSTED`, `COM2_SSH_UNREACHABLE`, `REMOTE_PROBE_FAILED`, `NO_ACTION_AVAILABLE`, `ENGINE_ERROR`.
+
+`action` 값에는 조치 이름 외에 `skipped_backoff`(재시도 대기), `skipped_exhausted`(재시도 한도 소진), `skipped_locked`(다른 복구 프로세스 실행 중), `record_only`(조치 없음)가 기록된다.
 
 ## 6. 실행 방법
 
@@ -122,6 +133,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File com2_mesh_recovery_selftest.
 - Simulate에서는 어떤 조치도 실행하지 않는다(`executed=false`, `code=PLANNED_*`).
 - 첫 장애 시각 보존과 자기 회복 기록.
 - Windows 인용 규칙(공백·따옴표·끝 백슬래시·빈 인수).
+- 2026-10-23 추가: 원격 실패 원인별 분류, `unknown` 유닛·keeper에서 COM2 조치 미계획, `com2_state_source` 기록, 동일 에피소드 backoff·한도 소진·에피소드 초기화·Simulate 시도 미소모.
 
 ## 8. 안전 경계
 
