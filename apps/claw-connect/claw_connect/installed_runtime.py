@@ -32,4 +32,13 @@ def installed_resident_environ(
     result["PADIEM_AGENT_CREDENTIAL_DIR"] = str(
         protected_credential_directory(state_dir)
     )
+    # #3099: the bounded local diagnostics file the Connector keeps up to
+    # date and the Resident reads for the heartbeat it already sends. The
+    # Resident inherits this value; no new channel is opened.
+    from .local_diagnostics_report import (
+        LOCAL_DIAGNOSTICS_FILE_ENV,
+        local_diagnostics_path,
+    )
+
+    result[LOCAL_DIAGNOSTICS_FILE_ENV] = str(local_diagnostics_path(state_dir))
     return result

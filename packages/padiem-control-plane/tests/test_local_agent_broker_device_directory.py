@@ -581,7 +581,14 @@ def test_single_device_truth_api_is_unchanged(monkeypatch: pytest.MonkeyPatch) -
     facts = truth["device_truth"]
     assert facts["binding"]["device_id"] == "pc-other"  # newest binding wins
     assert facts["canonical_state"] == "paired_offline"
-    assert set(facts) == {"canonical_state", "binding", "session", "heartbeat_last_seen_at"}
+    # #3099: the device's own local observations ride along as a display-only
+    # hint. It is absent as a confirmed fact until the device reports one.
+    assert set(facts) == {
+        "canonical_state", "binding", "session", "heartbeat_last_seen_at",
+        "device_diagnostics",
+    }
+    assert facts["device_diagnostics"]["status"] == "unavailable"
+    assert facts["device_diagnostics"]["checks"] == {}
 
 
 def test_directory_rejects_malformed_requests_with_a_bounded_error() -> None:

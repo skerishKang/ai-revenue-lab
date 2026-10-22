@@ -3,8 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
+import os
 import re
-from typing import Any
+from typing import Any, Mapping
 from urllib.parse import urlsplit
 
 from .contracts import ContractError
@@ -18,6 +19,7 @@ from .local_agent_control_plane_https import (
 from .local_agent_pairing import DeviceBinding, DeviceSession
 from .local_agent_secure_channel import PinnedOutboundBrokerBinding
 from .local_agent_secure_transport import DeviceCredentialStore, OutboundTransportConfig
+from .pc_device_diagnostics import diagnostics_hint, read_local_diagnostics
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,511}$")
 _HEARTBEAT_KEYS = frozenset(
@@ -169,18 +171,29 @@ class ControlPlanePhysicalRuntimeTransport(ControlPlaneHttpsLongPollTransport):
         session: DeviceSession,
         now: datetime,
         previous_last_seen_at: datetime | None = None,
+        device_diagnostics: Mapping[str, Any] | None = None,
     ) -> ControlPlaneHeartbeatReceipt:
         now = _aware(now, "now")
         _binding_session_exact(binding, session, now=now)
+        payload: dict[str, Any] = {
+            "session_id": session.session_id,
+            "binding_ref": binding.binding_ref,
+            "credential_b64": self._credential_b64(binding, now=now),
+            "now": _iso(now),
+        }
+        # #3099: the Connector's local diagnostics ride the heartbeat that
+        # already exists. The hint is bounded, display only, and absent
+        # whenever the device has no usable local observation - the server
+        # then shows "확인 불가" instead of a fabricated state.
+        hint = diagnostics_hint(device_diagnostics)
+        if hint is None:
+            hint = diagnostics_hint(read_local_diagnostics(os.environ))
+        if hint is not None:
+            payload["device_diagnostics"] = hint
         response = self._post(
             config=config,
             operation=ControlPlaneRuntimeHttpsOperation.HEARTBEAT,
-            payload={
-                "session_id": session.session_id,
-                "binding_ref": binding.binding_ref,
-                "credential_b64": self._credential_b64(binding, now=now),
-                "now": _iso(now),
-            },
+            payload=payload,
             timeout_seconds=min(config.poll_timeout_seconds, 30),
         )
         payload = _closed_mapping(self._success(response, "heartbeat"), _HEARTBEAT_KEYS, "broker heartbeat")

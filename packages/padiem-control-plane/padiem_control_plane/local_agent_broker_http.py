@@ -32,6 +32,23 @@ _MATERIAL_REQUEST_KEYS = frozenset(
     {"request_ref", "session_id", "binding_ref", "credential_b64", "command_id", "request_fingerprint", "now"}
 )
 _HEARTBEAT_REQUEST_KEYS = frozenset({"session_id", "binding_ref", "credential_b64", "now"})
+#: #3099: the device's bounded local diagnostics ride the heartbeat that
+#: already exists. The key is optional - a device that has no usable local
+#: observation simply does not send it, and the surface then says
+#: "확인 불가" rather than guessing.
+_HEARTBEAT_OPTIONAL_REQUEST_KEYS = frozenset({"device_diagnostics"})
+
+
+def _heartbeat_request_mapping(payload: Any) -> dict:
+    """Validate a heartbeat request, with the optional diagnostic hint."""
+    if type(payload) is not dict:
+        raise ValueError("heartbeat request schema mismatch")
+    keys = frozenset(payload)
+    if not (_HEARTBEAT_REQUEST_KEYS <= keys) or keys - (
+        _HEARTBEAT_REQUEST_KEYS | _HEARTBEAT_OPTIONAL_REQUEST_KEYS
+    ):
+        raise ValueError("heartbeat request schema mismatch")
+    return payload
 _ACK_REQUEST_KEYS = frozenset(
     {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "revision_ref", "termination", "request_id", "exit_code", "now"}
 )
@@ -252,6 +269,17 @@ class DurableLocalAgentBrokerStatePort(Protocol):
     def record_last_seen(self, session_id: str, *, seen_at: datetime) -> DurableLocalAgentSessionRecord:
         ...
 
+    def record_device_diagnostics(
+        self,
+        *,
+        device_id: str,
+        account_ref: str,
+        workspace_ref: str,
+        hint: Any,
+        observed_at: str,
+    ) -> dict:
+        ...
+
 
 class UnconfiguredDurableLocalAgentBrokerStatePort:
     durable = False
@@ -266,6 +294,18 @@ class UnconfiguredDurableLocalAgentBrokerStatePort:
 
     def record_last_seen(self, session_id: str, *, seen_at: datetime) -> DurableLocalAgentSessionRecord:
         del session_id, seen_at
+        raise RuntimeError("durable Local Agent broker state is not configured")
+
+    def record_device_diagnostics(
+        self,
+        *,
+        device_id: str,
+        account_ref: str,
+        workspace_ref: str,
+        hint: Any,
+        observed_at: str,
+    ) -> dict:
+        del device_id, account_ref, workspace_ref, hint, observed_at
         raise RuntimeError("durable Local Agent broker state is not configured")
 
 
@@ -533,7 +573,7 @@ class LocalAgentBrokerHttpHandler:
         *,
         server_now: datetime,
     ) -> LocalAgentBrokerHttpResponse:
-        payload = _closed_mapping(payload, _HEARTBEAT_REQUEST_KEYS, "heartbeat request")
+        payload = _heartbeat_request_mapping(payload)
         record = self._load_scoped_session(auth=auth, payload=payload, server_now=server_now)
         auth_result = self._authenticate_session_via_rpc(payload, server_now=server_now)
         if auth_result["ok"] is False:
@@ -543,6 +583,18 @@ class LocalAgentBrokerHttpHandler:
             raise ValueError("durable state returned an invalid heartbeat record")
         if updated.last_seen_at != server_now:
             raise ValueError("durable state did not persist exact server-owned last-seen time")
+        # #3099: the device's bounded local diagnostics are stored for the
+        # device the session is bound to. A refused or rolled-back hint
+        # changes no stored state and never fails the heartbeat.
+        hint = payload.get("device_diagnostics")
+        if hint is not None:
+            self._state.record_device_diagnostics(
+                device_id=updated.device_id,
+                account_ref=updated.account_ref,
+                workspace_ref=updated.workspace_ref,
+                hint=hint,
+                observed_at=_iso(server_now),
+            )
         heartbeat = {
             "session_id": updated.session_id,
             "binding_ref": updated.binding_ref,
