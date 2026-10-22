@@ -38,14 +38,12 @@ Invariants
 
 Browser half
 ------------
-The browser opt-in module is **not** part of this change. The product's
-``static/`` JavaScript is scanned by
-``.github/scripts/b62_browser_persistence_audit.py``, which forbids
-``navigator.serviceWorker`` (with no service-worker allowance), and Web Push
-has no alternative to a service worker. That privacy gate is an owner-set
-protection and is left untouched; see
-``docs/work-orders/5034-claw-web-alert-inbox.md`` for the blocked scope and
-the decision it needs.
+The browser opt-in module is ``static/claw-push.js`` and the receiving service
+worker is ``static/push-sw.js``. The product's ``static/`` JavaScript is scanned
+by ``.github/scripts/b62_browser_persistence_audit.py``, which forbids
+``navigator.serviceWorker`` everywhere except that one reviewed client file,
+under one declared service-worker path and a closed set of call shapes (owner
+decision 2026-10-23). The service worker itself stores nothing.
 """
 
 from __future__ import annotations
@@ -367,7 +365,20 @@ async def deliver_inbox_push(
         except Exception:
             failed += 1
             continue
-        if result is True:
+        # #5034: a sender may answer a bounded outcome object instead of a bare
+        # bool. A 404/410 means the device is gone, so the row is dropped here
+        # rather than retried forever. This never touches the inbox record.
+        gone = bool(getattr(result, "gone", False))
+        if gone:
+            try:
+                await store.unregister(
+                    workspace_id=workspace_id,
+                    member_id=member_id,
+                    subscription_id=subscription.subscription_id,
+                )
+            except WorkspaceStorageError:
+                pass
+        if result is True or getattr(result, "delivered", False) is True:
             delivered += 1
         else:
             failed += 1

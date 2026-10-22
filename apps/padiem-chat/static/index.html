@@ -377,6 +377,10 @@
             <button class="claw-inbox-retry" id="clawInboxRetry" type="button" data-locale-key="retry">다시 시도</button>
           </div>
           <p class="claw-inbox-help" id="clawInboxHelp" data-locale-key="claw-inbox-help">최근 항목만 표시되며 현재 로그인 계정과 워크스페이스 범위 안에서만 조회됩니다.</p>
+          <div class="claw-push-setting" id="clawPushSetting" hidden>
+            <button class="claw-inbox-secondary" id="clawPushToggle" type="button" aria-pressed="false" data-locale-key="claw-push-enable">이 기기에서 알림 받기</button>
+            <p class="claw-push-status" id="clawPushStatus" aria-live="polite" aria-atomic="true"></p>
+          </div>
           <div class="claw-inbox-status" id="clawInboxStatus" aria-live="polite" aria-atomic="true">
             <p id="clawInboxLoading" data-locale-key="claw-inbox-loading" hidden>불러오는 중…</p>
             <p id="clawInboxError" data-locale-key="claw-inbox-error" hidden>목록을 불러오지 못했습니다.</p>
@@ -1245,6 +1249,7 @@
   <script src="./claw-pc-enrollment-consent.js"></script>
   <!-- #3094: guarded handoff adapter MUST load last, after app.js installed
        the #3084 projection seam. Never weaken the final-script contract. -->
+  <script src="./claw-push.js" defer></script>
   <script src="./claw-local-adapter.js"></script>
 </body>
 </html>
