@@ -94,10 +94,18 @@ def test_the_status_card_is_the_one_status_surface() -> None:
 
 
 def test_the_meta_badge_does_not_repeat_the_card_status() -> None:
-    """The badge stays in the DOM (the auth projection reads it) but hidden."""
+    """The badge stays in the DOM (the auth projection reads it) but hidden.
+
+    The card owns the live status of a running turn. The badge keeps the
+    terminal outcome, so the two never show the same thing at once.
+    """
     lifecycle = _read("message-lifecycle.js")
-    assert "marker.hidden = Boolean(statusCardElement(article));" in lifecycle
+    assert "marker.hidden = Boolean(statusCardElement(article)) && cardShowsLiveStatus(article);" in lifecycle
     assert 'article.querySelector(\'[data-orchestration-ui="kit"]\')' in lifecycle
+    assert 'return lifecycle === states.STREAMING || lifecycle === states.WAITING_APPROVAL;' in lifecycle
+    # The plain lane keeps its outcome in the badge, so the card does not
+    # repeat it.
+    assert "terminalLine: false," in lifecycle
 
 
 def test_the_duplicate_waiting_surfaces_are_gone() -> None:
@@ -598,11 +606,63 @@ def test_the_turn_carries_the_status_card_from_the_first_moment(browser, server)
     )
     assert state["missing"] is False, state
     assert state["card"] is True, state
-    # The badge does not show a second copy of the status.
+    # The badge does not show a second copy of the live status.
     assert state["badgeHidden"] is True, state
     assert state["status"] == "답변 준비 중", state
     assert state["stages"] == 1, state
     # The card starts closed: the reader opens the real steps on request.
     assert state["open"] is False, state
+    assert not errors, errors
+    page.close()
+
+
+@requires_browser
+def test_the_terminal_outcome_stays_in_the_badge(browser, server):
+    """A finished turn keeps its own outcome wording, once."""
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_timeout(1200)
+    state = page.evaluate(
+        """() => {
+          const lifecycle = window.PadiemChatLifecycle;
+          if (!lifecycle) return {missing: true};
+          const article = document.createElement('article');
+          article.className = 'assistant-message';
+          article.innerHTML = '<div class="assistant-meta">'
+            + '<span data-assistant-product>Padiem Chat</span>'
+            + '<span class="demo-label" data-runtime-label></span>'
+            + '</div><div class="assistant-body"><div class="assistant-content"></div></div>';
+          document.body.appendChild(article);
+          lifecycle.set(article, 'streaming');
+          lifecycle.recordTaskEvent(article, 'request_sent');
+          lifecycle.renderTaskStatus(article);
+          const duringBadge = article.querySelector('[data-runtime-label]');
+          const during = {hidden: duringBadge.hidden, text: duringBadge.textContent.trim()};
+          // The turn ends with its own outcome copy.
+          lifecycle.applyRuntimeLabel(article, '생성 취소됨', 'status');
+          lifecycle.set(article, 'cancelled');
+          const afterBadge = article.querySelector('[data-runtime-label]');
+          const card = article.querySelector('.capability-kit');
+          const out = {
+            missing: false,
+            during: during,
+            afterHidden: afterBadge.hidden,
+            afterText: afterBadge.textContent.trim(),
+            cardTerminal: Boolean(card && card.querySelector('[data-capability-terminal]')),
+          };
+          article.remove();
+          return out;
+        }"""
+    )
+    assert state["missing"] is False, state
+    # While the turn runs the card owns the status and the badge stays hidden.
+    assert state["during"]["hidden"] is True, state
+    # When the turn ends the badge carries the outcome exactly once.
+    assert state["afterHidden"] is False, state
+    assert state["afterText"] == "생성 취소됨", state
+    # The plain lane's card does not repeat the outcome.
+    assert state["cardTerminal"] is False, state
     assert not errors, errors
     page.close()

@@ -28,6 +28,24 @@
     return article && article.querySelector ? article.querySelector('[data-orchestration-ui="kit"]') : null;
   }
 
+  // The card owns the live status of a running turn. The badge owns the
+  // terminal outcome ("연결 오류", "생성 취소됨"), so the two never show the
+  // same thing at the same time and the outcome keeps its own wording.
+  function cardShowsLiveStatus(article) {
+    const lifecycle = article && article.dataset ? article.dataset.lifecycle : null;
+    return lifecycle === states.STREAMING || lifecycle === states.WAITING_APPROVAL;
+  }
+
+  function syncBadgeVisibility(article) {
+    const marker = runtimeLabelMarker(article);
+    if (!marker) return;
+    if (!marker.textContent.trim()) {
+      marker.hidden = true;
+      return;
+    }
+    marker.hidden = Boolean(statusCardElement(article)) && cardShowsLiveStatus(article);
+  }
+
   // #5453: the status chip carries the sweep while the turn is really
   // running. The chip's own text always names the real state, so the movement
   // only says "still going" - it never pretends to be a progress bar. A
@@ -58,7 +76,7 @@
       }
       marker.textContent = value;
     }
-    marker.hidden = Boolean(statusCardElement(article));
+    syncBadgeVisibility(article);
     if (state) marker.dataset.runtimeState = state;
     syncActivitySweep(article);
   }
@@ -189,6 +207,9 @@
     set(article, state) {
       if (!article || !Object.values(states).includes(state)) return;
       article.dataset.lifecycle = state;
+      // The card takes over the live status; the badge takes the terminal
+      // outcome back when the turn ends.
+      syncBadgeVisibility(article);
       syncActivitySweep(article);
       article.dispatchEvent(new CustomEvent("padiem:message-lifecycle", {
         bubbles: true,
@@ -582,11 +603,13 @@
 
     renderApprovalCard(section, view, handlers);
 
-    const terminal = document.createElement("div");
-    terminal.className = "capability-terminal";
-    terminal.dataset.capabilityTerminal = "true";
-    terminal.hidden = true;
-    section.appendChild(terminal);
+    if (view.terminalLine !== false) {
+      const terminal = document.createElement("div");
+      terminal.className = "capability-terminal";
+      terminal.dataset.capabilityTerminal = "true";
+      terminal.hidden = true;
+      section.appendChild(terminal);
+    }
 
     if (view.preview) {
       const truth = document.createElement("p");
@@ -599,10 +622,10 @@
     }
 
     body.insertBefore(section, content || null);
-    // #5559: the card is the single status surface, so the meta-row badge
-    // does not show a second copy of the same status.
-    const marker = runtimeLabelMarker(article);
-    if (marker) marker.hidden = true;
+    // #5559: the card is the single live status surface, so the meta-row
+    // badge does not show a second copy of it. The badge keeps the terminal
+    // outcome, which the card does not repeat.
+    syncBadgeVisibility(article);
     return section;
   }
 
@@ -619,6 +642,9 @@
       evidenceAvailable: article.dataset.taskEvidence === "true",
       approval: null,
       terminal: terminalFor(article),
+      // #5559: the plain lane keeps its outcome in the answer meta badge, so
+      // the card does not repeat it.
+      terminalLine: false,
       preview: false,
       live: Boolean(status) && status.state === "active",
     }, handlers);

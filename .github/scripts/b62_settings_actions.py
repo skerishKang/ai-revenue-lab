@@ -46,8 +46,10 @@ async def settings_action_target(page: Page, selector: str, *, label: str) -> di
     """Measure a control in the Settings screen as a touch target.
 
     The evidence is the same one the sidebar account action used to give: a
-    visible control of at least 44 CSS px.
+    visible control of at least 44 CSS px. The screen is opened first, because
+    a closed dialog has no layout box.
     """
+    await open_settings(page)
     snapshot = await page.evaluate(
         """(selector) => {
           const button = document.getElementById(selector.replace('#', ''));
