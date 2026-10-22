@@ -262,10 +262,14 @@ def test_the_sign_out_has_one_implementation() -> None:
     assert "await signOutCurrentAccount();" in app
     # The sidebar keeps the sign-in affordance; the signed-in profile is the
     # one-step Settings entry.
-    assert 'loginButton.hidden = sessionState === "unavailable" || sessionState === "signed_in";' in app
+    # #5479: the sign-in entry point also survives an unreadable session state,
+    # so the hide rule comes from the shared presentation rule.
+    assert 'loginButton.hidden = presentation.loginHidden;' in app
+    assert 'loginButton.hidden = sessionState === "unavailable" || sessionState === "signed_in";' not in app
     capabilities = _read("product-capabilities.js")
-    assert "loginButton.hidden = !available || state === \"signed_in\";" in capabilities
-    assert 'loginButton.hidden !== (!available || state === "signed_in")' in capabilities
+    assert "loginButton.hidden = shared.loginHidden;" in capabilities
+    assert "loginButton.hidden = !available || state === \"signed_in\";" not in capabilities
+    assert 'loginButton.hidden !== shared.loginHidden' in capabilities
 
 
 def test_the_admin_entry_still_asks_the_server() -> None:
