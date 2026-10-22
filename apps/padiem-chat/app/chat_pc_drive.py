@@ -198,6 +198,37 @@ def is_chat_pc_files_query(user_text: str) -> bool:
     return True
 
 
+#: A turn that names a listing and nothing else. The lane runs one fixed
+#: list/read plan and the engine client refuses a narrowed plan, so a listing
+#: only request is answered with its supported scope BEFORE execution instead
+#: of reading a file the user did not ask for.
+_CHAT_PC_LIST_ONLY_MARKERS = ("\ubaa9\ub85d\ub9cc", "\ub9ac\uc2a4\ud2b8\ub9cc", "listonly", "onlylist")
+_CHAT_PC_READ_MARKERS = ("\ub0b4\uc6a9", "\uc77d", "\uc124\uba85", "\uc5f4\uc5b4", "read", "content")
+
+
+def is_chat_pc_list_only_query(user_text: str) -> bool:
+    """True only for a PC file request that asks for a listing alone."""
+    if not is_chat_pc_files_query(user_text):
+        return False
+    lowered = user_text.lower()
+    compact = "".join(lowered.split())
+    if not any(marker in compact for marker in _CHAT_PC_LIST_ONLY_MARKERS):
+        return False
+    return not any(marker in lowered for marker in _CHAT_PC_READ_MARKERS)
+
+
+def _list_only_scope_answer() -> str:
+    return (
+        "\uc9c0\uc6d0 \ubc94\uc704 \uc548\ub0b4: \ud604\uc7ac PC \ud30c\uc77c \uc791\uc5c5\uc740 "
+        "\ud3f4\ub354 \ubaa9\ub85d \uc870\ud68c \ud6c4 \uc9c0\uc815\ud55c \ud14d\uc2a4\ud2b8 "
+        "\ud30c\uc77c\uc744 \uc77d\ub294 2\ub2e8\uacc4\ub85c \uc2e4\ud589\ub429\ub2c8\ub2e4. "
+        "\uc77d\uae30 \uc5c6\uc774 \ubaa9\ub85d\ub9cc \ubc1b\ub294 \uc694\uccad\uc740 "
+        "\uc9c0\uc6d0\ud558\uc9c0 \uc54a\uc544 \uc2e4\ud589\ud558\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4. "
+        "\ud30c\uc77c\uc744 \uc9c0\uc815\ud574 \uc8fc\uc2dc\uba74 \uadf8 \ubc94\uc704 \ub0b4\uc5d0\uc11c "
+        "\uc9c4\ud589\ud569\ub2c8\ub2e4."
+    )
+
+
 def build_chat_pc_files_agent_plan() -> dict[str, Any]:
     """The same two-step list/read plan the Claw product sends."""
     return {
@@ -489,6 +520,17 @@ async def execute_chat_pc_drive_lane(
             "chat_pc_store_unavailable",
             "대화 기록을 현재 사용할 수 없습니다.",
         )
+    if files_only and is_chat_pc_list_only_query(execution_text):
+        # State the supported scope before any owner lookup or Engine send:
+        # the fixed plan would otherwise read a file that was not requested.
+        answer = _list_only_scope_answer()
+        saved_id = await _save_pair(
+            store, uid=uid, conversation_id=conversation_id,
+            user_text=user_text, answer=answer,
+        )
+        if saved_id is None:
+            raise ChatPCDriveError("conversation_not_found", "\ud68c\ud654\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.", 404)
+        return answer, saved_id
     if device_id is not None and not is_pc_device_id(device_id):
         raise ChatPCDriveError(
             "chat_pc_target_invalid",

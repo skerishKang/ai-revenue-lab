@@ -29,3 +29,66 @@ def test_existing_pc_qualifiers_are_unchanged():
 def test_lane_does_not_widen_to_unqualified_requests():
     assert is_chat_pc_files_query(LIST_ONLY) is False
     assert is_chat_pc_files_query("\ub4dc\ub77c\uc774\ube0c \ubaa9\ub85d\ub9cc \ubcf4\uc5ec\uc918") is False
+
+
+
+def test_list_only_detector_separates_listing_from_reading():
+    from app.chat_pc_drive import is_chat_pc_list_only_query
+
+    deep = "C:\\Users\\limone\\AppData\\Local\\Padiem\\MeshCentralTrial\\5015-conditions-20261022"
+    listing = "PC\uc758 " + deep + " \ud3f4\ub354\uc5d0 \uc788\ub294 \ud30c\uc77c \ubaa9\ub85d\ub9cc \ubcf4\uc5ec\uc918"
+    reading = "\ub0b4 PC\uc758 MeshCentralTrial \ud3f4\ub354\uc5d0\uc11c \ud30c\uc77c \ubaa9\ub85d\uc744 \ubcf4\uace0, x.txt \ud30c\uc77c \ub0b4\uc6a9\uc744 \uc124\uba85\ud574\uc918"
+    assert is_chat_pc_list_only_query(listing) is True
+    assert is_chat_pc_list_only_query(reading) is False
+    assert is_chat_pc_list_only_query("\ud30c\uc77c \ubaa9\ub85d\ub9cc \ubcf4\uc5ec\uc918") is False
+
+
+def test_list_only_request_states_scope_without_executing(monkeypatch):
+    """No owner lookup and no Engine send happen; the answer states the scope."""
+    import asyncio
+    import inspect
+    from types import SimpleNamespace
+
+    from app import chat_pc_drive as module
+
+    calls = {"resolve": 0, "save": 0}
+
+    async def _resolve(*args, **kwargs):
+        calls["resolve"] += 1
+        raise AssertionError("authority must not be resolved for a list-only turn")
+
+    async def _save(*args, **kwargs):
+        calls["save"] += 1
+        return "conv_3099"
+
+    monkeypatch.setattr(module, "auth_ready", lambda request: True)
+    monkeypatch.setattr(module, "current_user_id", lambda request: "usr_3099")
+    monkeypatch.setattr(module, "_resolve_chat_owner", _resolve)
+    monkeypatch.setattr(module, "_save_pair", _save)
+
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(history_store=object())),
+    )
+    text = (
+        "\ub0b4 PC\uc758 C:\\Users\\limone\\AppData\\Local\\Padiem\\MeshCentralTrial"
+        "\\5015-conditions-20261022 \ud3f4\ub354\uc5d0 \uc788\ub294 \ud30c\uc77c \ubaa9\ub85d\ub9cc \ubcf4\uc5ec\uc918"
+    )
+    allowed = {
+        "user_text": text,
+        "execution_user_text": None,
+        "conversation_id": None,
+        "device_id": None,
+        "run_id": None,
+        "skill": SimpleNamespace(id="auto"),
+        "model_id": "unused",
+        "tier": "balanced",
+    }
+    params = inspect.signature(module.execute_chat_pc_drive_lane).parameters
+    kwargs = {key: value for key, value in allowed.items() if key in params}
+    result = asyncio.run(module.execute_chat_pc_drive_lane(request, **kwargs))
+
+    assert result is not None
+    answer, saved = result
+    assert saved == "conv_3099"
+    assert "\uc9c0\uc6d0 \ubc94\uc704" in answer
+    assert calls == {"resolve": 0, "save": 1}
