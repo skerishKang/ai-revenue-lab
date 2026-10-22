@@ -30,6 +30,20 @@ HANDOFF_USAGE = re.compile(
     r"window\.sessionStorage\.(?:getItem|setItem|removeItem)\(\s*ANDROID_HANDOFF_STORAGE_KEY\b"
 )
 
+# #5034 Web Push: the owner decision of 2026-10-23 allows the service worker
+# that Web Push requires. Web Push has no alternative -- PushManager.subscribe()
+# needs a registered service worker to receive a push -- so the gate keeps every
+# other browser-persistence primitive forbidden and accepts exactly ONE reviewed
+# client file, under ONE reviewed service-worker path, through a closed set of
+# exact call shapes. The service worker itself stores nothing: it holds no
+# cache, no storage and no user state, and it is scanned like every other file.
+PUSH_CLIENT_FILE = "apps/padiem-chat/static/claw-push.js"
+PUSH_CLIENT_DECLARATION = 'const PADIEM_PUSH_SW_PATH = "/push-sw.js";'
+PUSH_CLIENT_USAGE = re.compile(
+    r"navigator\.serviceWorker\.(?:register\(\s*PADIEM_PUSH_SW_PATH\s*\)|ready\b|getRegistration\(\))"
+)
+PUSH_SW_FILE = "apps/padiem-chat/static/push-sw.js"
+
 
 def _line_slice(text: str, start: int) -> tuple[int, str]:
     line_start = text.rfind("\n", 0, start) + 1
@@ -44,6 +58,17 @@ def _is_reviewed_handoff(relative: str, text: str, start: int, declaration_count
         return False
     _line_number, line = _line_slice(text, start)
     return bool(HANDOFF_USAGE.search(line))
+
+
+def _is_reviewed_push_client(relative: str, text: str, start: int, declaration_count: int) -> bool:
+    """#5034: the one reviewed Web Push client, one path, closed call shapes."""
+
+    if relative != PUSH_CLIENT_FILE or declaration_count != 1:
+        return False
+    if PUSH_CLIENT_DECLARATION not in text:
+        return False
+    _line_number, line = _line_slice(text, start)
+    return bool(PUSH_CLIENT_USAGE.search(line))
 
 
 
@@ -70,11 +95,13 @@ def main() -> None:
     violations: list[str] = []
     counts = {name: 0 for name in FORBIDDEN}
     handoff_allowances = 0
+    push_client_allowances = 0
 
     for path in files:
         relative = path.relative_to(ROOT).as_posix()
         text = path.read_text(encoding="utf-8")
         declarations = text.count(HANDOFF_DECLARATION)
+        push_declarations = text.count(PUSH_CLIENT_DECLARATION)
 
         for name, pattern in FORBIDDEN.items():
             for match in pattern.finditer(text):
@@ -82,6 +109,11 @@ def main() -> None:
                     relative, text, match.start(), declarations
                 ):
                     handoff_allowances += 1
+                    continue
+                if name == "serviceWorker" and _is_reviewed_push_client(
+                    relative, text, match.start(), push_declarations
+                ):
+                    push_client_allowances += 1
                     continue
                 counts[name] += 1
                 line = _line_number(text, match.start())
@@ -98,6 +130,9 @@ def main() -> None:
         print(f"{name}=0")
     print(f"android_handoff_storage_lines={handoff_allowances}")
     print(f"android_handoff_scope={HANDOFF_FILE}:padiem.androidHandoff.v1")
+    print(f"web_push_service_worker_lines={push_client_allowances}")
+    print(f"web_push_client_scope={PUSH_CLIENT_FILE}:{PUSH_CLIENT_DECLARATION}")
+    print(f"web_push_service_worker={PUSH_SW_FILE}")
     print("server_side_D1_persistence=outside_this_gate")
     print("product_source_mutation=0")
 

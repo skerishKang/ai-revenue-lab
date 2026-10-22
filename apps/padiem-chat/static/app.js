@@ -3212,6 +3212,12 @@
     try {
       await fetch("/api/auth/logout", { method: "POST", headers: { "Accept": "application/json" } });
     } finally {
+      // #5034: drop this device's Web Push subscription on sign-out so a
+      // signed-out browser stops receiving this account's task notifications.
+      // Never blocks the sign-out itself.
+      if (window.PadiemPush && typeof window.PadiemPush.clearOnSignOut === "function") {
+        await window.PadiemPush.clearOnSignOut();
+      }
       resetConversationView(false);
       clearProjectsUI();
       await loadAuthStatus();
