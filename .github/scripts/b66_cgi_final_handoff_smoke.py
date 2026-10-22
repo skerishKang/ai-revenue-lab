@@ -49,6 +49,9 @@ CLAW_LANES = ("live", "evidence")
 MAX_CLAW_GENERAL_POSTS = 1
 MAX_CLAW_MODEL_DISPATCHES = 2
 CLAW_LIVE_MAX_BODY_BYTES = 2_000_000
+# Both synthetic lanes dispatch the same owner-selected model; pace the second
+# call so a provider per-minute limit is not misread as a Claw failure.
+CLAW_INTER_LANE_PAUSE_SECONDS = 65
 
 # #3751: interpretation errors have two independent 502 owners. Mirror the
 # exact product-owned header vocabulary; .github/tests checks it against the
@@ -380,7 +383,13 @@ def _parse_claw_live_sse(body_text: object) -> dict[str, object]:
         if not isinstance(payload, dict):
             raise SmokeFailure("claw_live_json_shape")
         frames.append((name, payload))
-    if any(name == "error" for name, _ in frames):
+    error_frames = [payload for name, payload in frames if name == "error"]
+    if error_frames:
+        # The live stream carries no evidence headers; the bounded terminal
+        # code/detail in the error frame is the only provider classification.
+        error_code, error_detail = _bounded_error_class(json.dumps(error_frames[0]))
+        print("CLAW_LIVE_ERROR_CODE=" + (error_code or "NONE"))
+        print("CLAW_LIVE_ERROR_DETAIL=" + (error_detail or "NONE"))
         raise SmokeFailure("claw_live_error_event")
     events = [payload for name, payload in frames if name == "p01_event"]
     deltas = [payload for name, payload in frames if name == "delta"]
@@ -1419,7 +1428,9 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             )
             print("CLAW_WORKSPACE=PASS")
 
-            for lane in CLAW_LANES:
+            for index, lane in enumerate(CLAW_LANES):
+                if index:
+                    time.sleep(CLAW_INTER_LANE_PAUSE_SECONDS)
                 lane_state["lane"] = lane
                 guard.reset_lane()
                 claw_posts = 0
@@ -1757,6 +1768,7 @@ def self_test() -> int:
     assert CLAW_LANES == ("live", "evidence")
     assert MAX_CLAW_GENERAL_POSTS == 1
     assert MAX_CLAW_MODEL_DISPATCHES == 2
+    assert CLAW_INTER_LANE_PAUSE_SECONDS == 65
     # #3655: bounded evidence seam contract.
     assert "engine_admission_denied" in CLAW_FAILURE_DETAIL_VOCABULARY
     assert "engine_provider_server_error" in CLAW_FAILURE_DETAIL_VOCABULARY
