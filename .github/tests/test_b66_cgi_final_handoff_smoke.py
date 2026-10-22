@@ -683,6 +683,19 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
         self.assertNotIn('page.on("request", observe_request)', owner)
         self.assertNotIn("assistant-message:last-of-type .typing", owner)
 
+    def test_claw_advanced_model_panel_is_opened_before_exact_id_entry(self):
+        # The exact-ID input moved inside a collapsed <details> panel. Entering
+        # the model without opening it would time out before the one dispatch.
+        text = SCRIPT.read_text(encoding="utf-8")
+        owner = text[text.index("def run_claw_owner_one_shot("):text.index("\ndef self_test(")]
+        advanced = owner.index('page.locator("details.claw-model-advanced")')
+        opened = owner.index('advanced.locator("summary").click()', advanced)
+        visible = owner.index(
+            'model_input.wait_for(state="visible", timeout=15000)', opened
+        )
+        self.assertLess(advanced, opened)
+        self.assertLess(opened, visible)
+
     @unittest.skipUnless(shutil.which("node"), "Node required to evaluate terminal predicate")
     def test_terminal_lifecycle_js_negative_controls(self):
         # Execute the same JavaScript predicate the actual browser waits on.
