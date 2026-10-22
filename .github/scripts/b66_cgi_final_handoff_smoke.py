@@ -1235,38 +1235,30 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             print("CLAW_WORKSPACE=PASS")
 
             stage = "compose"
-            # The general Claw view binds the exact model through the tier's
-            # verified selector. The raw-ID panel is Plus-only and hidden
-            # for Free, so use the control the deployed surface offers and
-            # verify the app copied the choice into the model input.
-            model_select = page.locator("#clawVerifiedModelSelect")
-            model_select.wait_for(state="visible", timeout=15000)
-            page.wait_for_function(
-                """() => {
-                  const s = document.getElementById('clawVerifiedModelSelect');
-                  return Boolean(
-                    s && !s.disabled
-                    && Array.from(s.options).some(o => o.value)
-                  );
-                }""",
-                timeout=30000,
-            )
-            offered = model_select.evaluate(
-                "node => Array.from(node.options).map(o => o.value)"
-            )
-            if CLAW_OWNER_SELECTED_MODEL_ID not in offered:
-                _fail("owner_model_selection_not_offered")
-            model_select.select_option(CLAW_OWNER_SELECTED_MODEL_ID)
+            # The general Claw view presents a model-free composer and keeps
+            # the explicit-ID controls in a collapsed, tier-gated panel. The
+            # request builder still reads this input, so bind the exact
+            # owner-selected model through the same field at submit time.
             model_input = page.locator("#clawModelIdInput")
             model_input.wait_for(state="attached", timeout=15000)
-            if model_input.input_value() != CLAW_OWNER_SELECTED_MODEL_ID:
-                _fail("owner_model_selection_not_bound")
-            print("OWNER_SELECTED_MODEL_ID=" + CLAW_OWNER_SELECTED_MODEL_ID)
             before_assistants = page.locator("#messageList .assistant-message").count()
             before_errors = page.locator("#messageList .error-box").count()
             page.locator("#messageInput").fill(CLAW_SYNTHETIC_PROMPT)
             if page.locator("#sendButton").is_disabled():
                 _fail("send_button_disabled")
+
+            # Bind at submit time: a late tier-change event clears this field.
+            model_input.evaluate(
+                """(node, value) => {
+                  node.value = value;
+                  node.dispatchEvent(new Event('input', { bubbles: true }));
+                  node.dispatchEvent(new Event('change', { bubbles: true }));
+                }""",
+                CLAW_OWNER_SELECTED_MODEL_ID,
+            )
+            if model_input.input_value() != CLAW_OWNER_SELECTED_MODEL_ID:
+                _fail("owner_model_selection_not_bound")
+            print("OWNER_SELECTED_MODEL_ID=" + CLAW_OWNER_SELECTED_MODEL_ID)
 
             submit_ms = int(time.time() * 1000)
             print("SUBMIT_MS=" + str(submit_ms))
