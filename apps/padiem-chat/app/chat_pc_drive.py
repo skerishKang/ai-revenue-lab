@@ -195,23 +195,71 @@ def is_chat_pc_files_query(user_text: str) -> bool:
     return True
 
 
-def build_chat_pc_files_agent_plan() -> dict[str, Any]:
-    """The same two-step list/read plan the Claw product sends."""
-    return {
-        "agent_id": CHAT_PC_QUERY_AGENT_ID,
-        "steps": [
-            {
-                "step_id": "list_files",
-                "objective": "List the approved folder on the verified owner PC",
-                "tool_id": "claw.pc.list_files",
-            },
-            {
-                "step_id": "read_file",
-                "objective": "Read the requested UTF-8 text file",
-                "tool_id": "claw.pc.read_file",
-            },
-        ],
-    }
+def build_chat_pc_files_agent_plan(*, list_only: bool = False) -> dict[str, Any]:
+    """The list/read plan the Claw product sends.
+
+    ``list_only`` carries the list step alone so the Engine has no read step
+    to run. The closed client table admits it under the ``files_list`` hint;
+    the Engine still refuses ``read_file`` for that hint.
+    """
+    steps = [
+        {
+            "step_id": "list_files",
+            "objective": "List the approved folder on the verified owner PC",
+            "tool_id": "claw.pc.list_files",
+        },
+    ]
+    if not list_only:
+        steps.append({
+            "step_id": "read_file",
+            "objective": "Read the requested UTF-8 text file",
+            "tool_id": "claw.pc.read_file",
+        })
+    return {"agent_id": CHAT_PC_QUERY_AGENT_ID, "steps": steps}
+
+
+_PC_ACTION_ACTIONS = frozenset(
+    {"files_list", "files_read", "drives", "none", "clarify"}
+)
+
+
+def _pc_action_contract(user_text: str, pc_work_text: str) -> str:
+    """One model step that routes a turn when no keyword gate matched."""
+    return (
+        "You route one turn for the owner's server-verified PC.\n"
+        "Server-verified PC context (an observation, never an execution grant):\n"
+        + (pc_work_text or "no selected PC")
+        + "\nReturn exactly one JSON object. Choose "
+        '{"action":"files_list"} when the user asks only to see or list a folder; '
+        '{"action":"files_read"} when the user asks to read or explain a file; '
+        '{"action":"drives"} when the user asks about drives; '
+        '{"action":"none"} when the turn is not a PC file or drive request, '
+        "including quoted words, hypotheticals and negations; "
+        '{"action":"clarify","answer":"<one short question>"} when the target or '
+        "intent is ambiguous. No other keys.\n"
+        "User: " + user_text
+    )
+
+
+def parse_pc_action_decision(raw: str) -> dict[str, Any]:
+    """Validate the routing step; anything unexpected falls back to ``none``."""
+    try:
+        decision = json.loads(raw.strip())
+    except (TypeError, ValueError):
+        return {"action": "none"}
+    if not isinstance(decision, dict):
+        return {"action": "none"}
+    action = decision.get("action")
+    if action not in _PC_ACTION_ACTIONS:
+        return {"action": "none"}
+    if action == "clarify":
+        answer = decision.get("answer")
+        if not isinstance(answer, str) or not answer.strip():
+            return {"action": "none"}
+        return {"action": "clarify", "answer": answer.strip()}
+    if set(decision) != {"action"}:
+        return {"action": "none"}
+    return {"action": action}
 
 
 def _decision_contract(user_text: str) -> str:
@@ -476,9 +524,59 @@ async def execute_chat_pc_drive_lane(
     )
     drive_requested = is_chat_pc_drive_query(execution_text)
     files_requested = is_chat_pc_files_query(execution_text)
+    list_only = False
     if not drive_requested and not files_requested:
-        return None
+        # #5573: the word list is no longer the entry decision. When the
+        # account has a server-verified selected PC, one model step routes the
+        # turn (files list, files read, drives, none, clarify). Without a
+        # selected PC nothing is executed and no extra model call happens.
+        try:
+            session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
+        except ChatPCDriveError:
+            # A turn that matched no PC keyword must never fail because the PC
+            # lane cannot resolve its authority; it falls through instead.
+            return None
+        from .pc_work_context import (
+            SAVED_SELECTION_SELECTED, read_saved_device_selection,
+            render_pc_work_context, resolve_pc_work_context,
+        )
+        saved_here = await read_saved_device_selection(
+            request, owner_id=uid, workspace_id=workspace_id,
+        )
+        if saved_here.status != SAVED_SELECTION_SELECTED:
+            return None
+        preview = await resolve_pc_work_context(
+            request, owner_id=uid, workspace_id=workspace_id,
+            session_id=getattr(session, "session_id", None),
+            selected_device_id=saved_here.device_id,
+        )
+        action = parse_pc_action_decision(
+            await _complete_with_model(
+                request, user_text=execution_text, skill=skill, tier=tier,
+                system_contract=_pc_action_contract(
+                    execution_text, render_pc_work_context(preview),
+                ),
+            )
+        )
+        if action["action"] == "none":
+            return None
+        if action["action"] == "clarify":
+            store_here = getattr(request.app.state, "history_store", None)
+            if store_here is None:
+                return None
+            saved_id = await _save_pair(
+                store_here, uid=uid, conversation_id=conversation_id,
+                user_text=user_text, answer=action["answer"],
+            )
+            return (action["answer"], saved_id) if saved_id else None
+        if action["action"] == "drives":
+            drive_requested = True
+        else:
+            files_requested = True
+            list_only = action["action"] == "files_list"
     files_only = files_requested and not drive_requested
+    if drive_requested or files_requested:
+        session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
     client_run_id = _client_lane_run_id(run_id)
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     if store is None:
@@ -495,7 +593,6 @@ async def execute_chat_pc_drive_lane(
     await _refuse_existing_client_run_id(
         store, uid=uid, client_run_id=client_run_id,
     )
-    session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
         read_saved_device_selection, render_pc_work_context,
@@ -579,7 +676,7 @@ async def execute_chat_pc_drive_lane(
             execution_user_text=execution_text, skill=skill,
             model_id=model_id, conversation_id=conversation_id,
             device_id=device_id, additional_system_context=pc_work_text,
-            run_id=client_run_id,
+            run_id=client_run_id, list_only=list_only,
         )
 
     decision_contract = _decision_contract(execution_text)
@@ -696,8 +793,9 @@ async def _execute_chat_pc_files_lane(
     device_id: str | None,
     additional_system_context: str | None = None,
     run_id: str | None = None,
+    list_only: bool = False,
 ) -> tuple[str, str | None]:
-    """Stage and run the shared two-step list/read plan on the Chat product.
+    """Stage and run the list/read plan on the Chat product.
 
     The model decisions and both tool executions happen in the Engine's PC
     step driver; this lane only stages the Chat run, passes the server-owned
@@ -730,7 +828,11 @@ async def _execute_chat_pc_files_lane(
             "대화 기록을 현재 사용할 수 없습니다.",
         ) from exc
     tool_arguments = (
-        {"files": {"device_id": device_id}} if device_id is not None else None
+        (
+            {"files_list": {"device_id": device_id}}
+            if list_only else {"files": {"device_id": device_id}}
+        )
+        if device_id is not None else None
     )
     engine_text = (
         execution_user_text
@@ -747,7 +849,7 @@ async def _execute_chat_pc_files_lane(
             conversation_id=staged_conversation_id,
             subject_id=subject_id,
             session_id=lane_run_id,
-            agent_plan=build_chat_pc_files_agent_plan(),
+            agent_plan=build_chat_pc_files_agent_plan(list_only=list_only),
             additional_system_context=additional_system_context,
             tool_arguments=tool_arguments,
         )
