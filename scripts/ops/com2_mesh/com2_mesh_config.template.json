@@ -17,6 +17,7 @@
   "ssh_timeout_seconds": 15,
   "tunnel_restart_wait_seconds": 20,
   "verify_timeout_seconds": 30,
+  "max_pending_seconds": 900,
   "tcp_timeout_ms": 3000,
   "tunnel_process_name": "ssh.exe",
   "com2_wsl_distro": "Ubuntu",
