@@ -249,9 +249,9 @@ class CanonicalConnectorEnrollmentAsyncHost:
         # credential destination proves ready.
         try:
             ready = await asyncio.wait_for(
-            self._handoff.ready(challenge_id=challenge, device_id=device),
-            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
-        )
+                self._handoff.ready(challenge_id=challenge, device_id=device),
+                timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
+            )
         except Exception as exc:
             raise IdentityBridgeError(503, "credential_handoff_unavailable", "Protected device credential installation is unavailable.") from exc
         if ready is not True:
