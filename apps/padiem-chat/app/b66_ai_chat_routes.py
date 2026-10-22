@@ -102,6 +102,7 @@ from .final_dispatch_guard_wiring import (
 from .history import HistoryContextIncomplete, validate_conversation_id
 from .request_contract import MAX_BROWSER_BODY_BYTES
 from .member_grade_access import verified_member_grade, GRADES
+from .model_policy import current_verified_member_grade
 from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 
 _ALLOWED_FIELDS = {
@@ -651,6 +652,7 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
                     model_messages,
                     model=route.model_id,
                     **({"product_tier": product_tier} if product_tier is not None else {}),
+                    verified_identity_tier=current_verified_member_grade(),
                     additional_system_context=_envelope(outcome),
                     model_parameters=parameters,
                 )

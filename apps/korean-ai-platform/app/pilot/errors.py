@@ -66,10 +66,21 @@ class StreamNotSupported(PilotError):
 
 
 class ToolsNotSupported(PilotError):
-    def __init__(self) -> None:
+    """Tool calling was requested for a route that cannot serve it (#5536).
+
+    The gateway serves tool calls only for a registered model that declares the
+    tool-calling capability in ``b14_models.json``. A request that declares a
+    tool for any other route is refused before execution.
+    """
+
+    def __init__(self, model_id: str | None = None) -> None:
+        detail = f" ({model_id})" if model_id else ""
         super().__init__(
             code="tools_not_supported",
-            message="tools/function calling은 현재 Pilot에서 지원하지 않습니다.",
+            message=(
+                "tools/function calling은 tool 지원 capability를 선언한 "
+                f"B14 등록 모델에서만 제공됩니다{detail}."
+            ),
             status_code=400,
         )
 

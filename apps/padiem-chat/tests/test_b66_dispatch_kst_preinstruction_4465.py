@@ -203,6 +203,7 @@ def test_b66_dialogue_dispatch_keeps_only_the_b66_identity():
     ))
     assert len(binding.calls) == 1, "the in-memory binding must be the only responder"
     system = systems(binding.calls[0])[0]
-    assert "PADIEM B66의 실제 AI 견적 상담사입니다" in system
+    assert "PADIEM B66 AI" in system
+    assert "기반 모델명" in system
     assert PADIEM_IDENTITY_INSTRUCTION not in system
     assert "파디엠챗" not in system

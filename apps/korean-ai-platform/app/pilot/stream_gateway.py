@@ -96,6 +96,11 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
     if get_catalog_by_id(model_id) is None:
         raise UnsupportedModel(model_id)
 
+    # #5536: the preview streaming lane carries text only. A tool declaration
+    # is refused here rather than silently dropped on the way to the provider.
+    if body.get("tools"):
+        raise StreamNotSupported()
+
     # Slice 12 is deliberately text-only. The installed multimodal validator
     # may accept structured content for the canonical endpoint; preview
     # streaming does not widen that contract yet.
