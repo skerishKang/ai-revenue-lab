@@ -561,3 +561,100 @@ def test_recovery_binding_read_failure_never_claims_revocation():
     with pytest.raises(ControlPlaneContractError) as exc:
         h.pairing.recovery_verdict(**values)
     assert exc.value.code == "durable_pairing_store_unavailable"
+
+
+def test_confirmed_revoke_survives_a_late_duplicate_redemption_commit():
+    """#3099: the ordering the credential recovery depends on.
+
+    A recovery revoke can only succeed once the canonical redemption has
+    committed, because the Broker derives ``pairing-binding.<sha256>`` and
+    refuses to revoke a binding that does not exist. The redemption consumes
+    the single-use challenge and registers that exact binding name once, so a
+    DELAYED duplicate commit arriving after the revoke must be refused and the
+    final state must stay REVOKED.
+    """
+    h = Harness()
+    install(h)
+    challenge, code = issue(h)
+    cid = challenge.challenge_id
+    ref = "pairing-binding." + __import__("hashlib").sha256(
+        f"{cid}:{DEVICE}".encode()
+    ).hexdigest()[:32]
+    values = dict(
+        challenge_id=cid, device_id=DEVICE, proof_ref=proof(challenge, code),
+        consent_ref=CONSENT, owner_ref=OWNER, account_ref=ACCOUNT,
+        workspace_ref=WORKSPACE,
+    )
+    enrolled, _credential = h.pairing.redeem_enrollment(
+        **values, now=NOW + timedelta(seconds=1),
+    )
+    assert enrolled.binding_ref == ref
+    h.broker.revoke_binding(ref, now=NOW + timedelta(seconds=2))
+
+    # 1) The single-use challenge refuses the delayed duplicate redemption.
+    with pytest.raises(ControlPlaneContractError) as already:
+        h.pairing.redeem_enrollment(**values, now=NOW + timedelta(seconds=3))
+    assert already.value.code == "pairing_challenge_already_redeemed"
+
+    # 2) The canonical binding name can never be registered a second time.
+    with pytest.raises(ControlPlaneContractError) as duplicate:
+        h.broker.register_binding(
+            binding_ref=ref, device_id=DEVICE, account_ref=ACCOUNT,
+            workspace_ref=WORKSPACE, credential=b"c" * 32,
+            now=NOW + timedelta(seconds=4),
+        )
+    assert duplicate.value.code == "duplicate_device_binding"
+
+    # 3) The final state stays revoked, confirmed by the same-DO verdict.
+    stored = h.broker._state_port.load(authority_ref=AUTHORITY_REF)
+    final = [x for x in stored.snapshot.bindings if x.binding_ref == ref]
+    assert len(final) == 1 and final[0].state is BrokerBindingState.REVOKED
+    verdict = h.pairing.recovery_verdict(
+        challenge_id=cid, device_id=DEVICE, consent_ref=CONSENT,
+        owner_ref=OWNER, account_ref=ACCOUNT, workspace_ref=WORKSPACE,
+        binding_ref=ref, credential_generation=1,
+    )
+    assert verdict["disposition"] == "revoked"
+    assert verdict["canonical_revocation_confirmed"] is True
+
+
+def test_revoke_before_the_redemption_commits_is_not_a_guarantee():
+    """#3099: the ordering the Broker contract does NOT cover.
+
+    Revoking a binding that does not exist yet is refused, so a redemption that
+    commits afterwards is not prevented. The server must therefore report this
+    ordering as an unconfirmed hold and must never claim a completed recovery.
+    """
+    h = Harness()
+    install(h)
+    challenge, code = issue(h)
+    cid = challenge.challenge_id
+    ref = "pairing-binding." + __import__("hashlib").sha256(
+        f"{cid}:{DEVICE}".encode()
+    ).hexdigest()[:32]
+    # The recovery revoke runs BEFORE the canonical redemption committed.
+    with pytest.raises(ControlPlaneContractError) as missing:
+        h.broker.revoke_binding(ref, now=NOW)
+    assert missing.value.code == "device_binding_not_found"
+
+    # The delayed commit then lands: the device becomes paired without any
+    # credential ever reaching the PC.
+    enrolled, _credential = h.pairing.redeem_enrollment(
+        challenge_id=cid, device_id=DEVICE, proof_ref=proof(challenge, code),
+        consent_ref=CONSENT, owner_ref=OWNER, account_ref=ACCOUNT,
+        workspace_ref=WORKSPACE, now=NOW + timedelta(seconds=1),
+    )
+    assert enrolled.binding_ref == ref
+    stored = h.broker._state_port.load(authority_ref=AUTHORITY_REF)
+    final = [x for x in stored.snapshot.bindings if x.binding_ref == ref]
+    assert len(final) == 1 and final[0].state is not BrokerBindingState.REVOKED
+
+    # The canonical verdict therefore cannot confirm a revocation: this
+    # ordering is a hold, never a completed recovery.
+    verdict = h.pairing.recovery_verdict(
+        challenge_id=cid, device_id=DEVICE, consent_ref=CONSENT,
+        owner_ref=OWNER, account_ref=ACCOUNT, workspace_ref=WORKSPACE,
+        binding_ref=ref, credential_generation=1,
+    )
+    assert verdict["disposition"] == "security_hold"
+    assert verdict["canonical_revocation_confirmed"] is False
