@@ -24,12 +24,13 @@
       connected: "PC 연결됨",
       connecting: "연결 확인 중",
       disconnected: "컴퓨터 미연결",
-      check: "연결 확인 불가",
+      check: "연결 확인 필요",
       preparing: "준비 중",
       connectHint: "컴퓨터가 연결되어 있지 않습니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
       connectedHint: "컴퓨터가 연결되어 있습니다. 클릭하면 연결된 컴퓨터 정보를 확인합니다.",
       connectingHint: "컴퓨터 연결 상태를 확인하는 중입니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
       checkHint: "컴퓨터 연결 상태를 확인하지 못했습니다. 클릭하면 연결 상태를 다시 확인합니다.",
+      executableHint: "PC 실행 대상은 확인되었지만 온라인 상태는 확인되지 않았습니다. 클릭하면 연결 상태를 다시 확인합니다.",
       preparingHint: "컴퓨터 연결 기능은 아직 준비 중입니다. 클릭하면 연결 안내를 엽니다.",
     },
     en: {
@@ -37,12 +38,13 @@
       connected: "PC connected",
       connecting: "Checking…",
       disconnected: "PC not connected",
-      check: "PC status unavailable",
+      check: "Connection needs confirmation",
       preparing: "Coming soon",
       connectHint: "No computer is connected. Click to open the computer connection guide.",
       connectedHint: "A computer is connected. Click to review the connected computer.",
       connectingHint: "Checking the computer connection status. Click to open the computer connection guide.",
       checkHint: "The computer connection status could not be confirmed. Click to check it again.",
+      executableHint: "The PC is an execution target, but its online state is not confirmed. Click to check it again.",
       preparingHint: "The computer connection feature is not available yet. Click to open the guide.",
     },
   });
@@ -110,6 +112,10 @@
     form.dataset.pcStatus = "ready";
 
     let state = "connecting";
+    // A server-confirmed execution target whose online state is unobserved.
+    // It never makes the control connected; it only names the reason the
+    // state is unconfirmed instead of a generic read failure.
+    let executableReady = false;
 
     // The composer grows with its content (attachment tray, model row, text).
     // The control sits on the textarea's own top-right corner, so its offset
@@ -136,7 +142,7 @@
       const t = locale();
       if (next === "connected") return t.connectedHint;
       if (next === "connecting") return t.connectingHint;
-      if (next === "unavailable") return t.checkHint;
+      if (next === "unavailable") return executableReady ? t.executableHint : t.checkHint;
       if (next === "preparing") return t.preparingHint;
       return t.connectHint;
     }
@@ -181,7 +187,13 @@
       return "connecting";
     }
 
+    function syncExecutable() {
+      const shared = window.PadiemComputerConnection;
+      executableReady = Boolean(shared && shared.executableReady === true);
+    }
+
     function apply(snapshot) {
+      syncExecutable();
       paint(classify(snapshot));
       watchPanel();
       syncPanelState();
@@ -268,6 +280,7 @@
     window.addEventListener("padiem:computer-connection", (event) => {
       const detail = event && event.detail ? event.detail : null;
       if (!detail || typeof detail.state !== "string") return;
+      executableReady = detail.executableReady === true;
       paint(detail.state);
       watchPanel();
       syncPanelState();

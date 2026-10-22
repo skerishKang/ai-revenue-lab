@@ -78,6 +78,7 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         agent_plan: Mapping[str, Any] | None = None,
         tool_arguments: Mapping[str, Any] | None = None,
         session_id: str | None = None,
+        product_identity: str | None = None,
     ) -> dict[str, Any]:
         resolved_subject_id = self._current_engine_subject.get()
         if resolved_subject_id is None:
@@ -103,6 +104,7 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
             agent_plan=agent_plan,
             tool_arguments=tool_arguments,
             session_id=session_id,
+            product_identity=product_identity,
         )
 
     async def start(
@@ -119,6 +121,7 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         agent_plan: Mapping[str, Any] | None = None,
         tool_arguments: Mapping[str, Any] | None = None,
         session_id: str | None = None,
+        product_identity: str | None = None,
     ):
         resolved_subject_id = await self._resolve_engine_subject(user_id)
         if subject_id is not None and subject_id != resolved_subject_id:
@@ -141,6 +144,7 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
                 agent_plan=agent_plan,
                 tool_arguments=tool_arguments,
                 session_id=session_id,
+                product_identity=product_identity,
             )
         finally:
             self._current_engine_subject.reset(token)

@@ -11,6 +11,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 
 from .auth_routes import auth_ready, current_user_id
+from .b14_client import PADIEM_IDENTITY_INSTRUCTION, _chat_product_identity_instruction
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .central_model_route_runtime import chat_request_tier_context
 from .grounding import GroundingError
@@ -248,8 +249,14 @@ async def api_orchestration(request: Request) -> JSONResponse:
                     return tier_denial
             async with chat_request_tier_context(request, raw["tier"]):
                 policy = resolve_request_model_policy(messages)
+                # #5347: the Chat stream route composes the product identity while
+                # the server-verified tier context is bound. The Engine lane has no
+                # B14 product default, so the same render is sampled here and
+                # carried on the Engine wire.
+                product_identity = _chat_product_identity_instruction()
         else:
             policy = resolve_model_policy(messages)
+            product_identity = PADIEM_IDENTITY_INSTRUCTION
     except BrowserRequestError as exc:
         return _error("invalid_request", str(exc), 422)
     except ModelPolicyError as exc:
@@ -353,6 +360,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             user_text=user_text,
             conversation_id=conversation_id,
             additional_system_context=grounding_context,
+            product_identity=product_identity,
         )
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)

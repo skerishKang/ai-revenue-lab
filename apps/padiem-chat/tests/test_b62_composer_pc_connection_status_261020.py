@@ -325,7 +325,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     measured = page.evaluate(MEASURE)
     assert measured["present"] is True
     assert measured["state"] == "disconnected"
-    assert measured["label"] == "컴퓨터 연결"
+    assert measured["label"] == "컴퓨터 미연결"
     assert "컴퓨터" in (measured["ariaLabel"] or "")
     assert measured["tooltip"] == measured["ariaLabel"]
 
@@ -340,20 +340,20 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _unroute_directory(page)
     _route_directory(page, _directory([_device("REVOKED", False, revoked=True)]))
     _ask_the_directory_module_to_read(page)
-    _wait_state(page, "check")
+    _wait_state(page, "unavailable")
     revoked = page.evaluate(MEASURE)
-    assert revoked["state"] == "check"
-    assert revoked["label"] == "PC 연결 확인"
+    assert revoked["state"] == "unavailable"
+    assert revoked["label"] == "연결 확인 필요"
 
-    # A server that cannot answer the directory is a "check" state, never a
+    # A server that cannot answer the directory is an "unavailable" state, never a
     # connected one.
     _unroute_directory(page)
     _route_directory(page, {"ok": False}, status=503)
     _ask_the_directory_module_to_read(page)
-    _wait_state(page, "check")
+    _wait_state(page, "unavailable")
     failed = page.evaluate(MEASURE)
-    assert failed["state"] == "check"
-    assert failed["label"] == "PC 연결 확인"
+    assert failed["state"] == "unavailable"
+    assert failed["label"] == "연결 확인 필요"
     assert not errors, errors
     page.close()
 
@@ -387,7 +387,7 @@ def test_the_claw_execution_target_decides_the_state(browser, server) -> None:
     _wait_state(page, "disconnected")
     measured = page.evaluate(MEASURE)
     assert measured["state"] == "disconnected"
-    assert measured["label"] == "컴퓨터 연결"
+    assert measured["label"] == "컴퓨터 미연결"
     assert not errors, errors
     page.close()
 
@@ -473,4 +473,35 @@ def test_the_control_does_not_change_the_fixed_composer_height(browser, server, 
     )
     assert abs(before["formHeight"] - removed) <= 1, (before["formHeight"], removed)
     assert abs(before["formHeight"] - after) <= 1, (before["formHeight"], after)
+    page.close()
+
+@requires_browser
+@pytest.mark.parametrize("width", [320, 390, 1440])
+def test_a_mesh_execution_target_is_unconfirmed_not_disconnected(browser, server, width) -> None:
+    """A server-confirmed execution target with no heartbeat is not "not connected".
+
+    The Mesh grant says the server will route an approved task to this PC. It
+    does not prove the PC is online right now, so the control must say the
+    state needs confirmation instead of claiming the computer is disconnected.
+    """
+    page = browser.new_page(viewport={"width": width, "height": 900})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    _route_directory(
+        page,
+        _directory([
+            _device(
+                "ACTION_REQUIRED", False,
+                deviceId="com1", executable=True, selectable=True,
+            ),
+        ]),
+    )
+    _open(page, server)
+    _ask_the_directory_module_to_read(page)
+    _wait_state(page, "unavailable")
+    measured = page.evaluate(MEASURE)
+    assert measured["state"] == "unavailable"
+    assert measured["label"] == "연결 확인 필요"
+    assert "온라인 상태는 확인되지 않았습니다" in (measured["ariaLabel"] or "")
+    assert not errors, errors
     page.close()

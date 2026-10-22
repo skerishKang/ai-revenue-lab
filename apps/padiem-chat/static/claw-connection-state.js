@@ -44,6 +44,16 @@
     );
   }
 
+  /* A server-confirmed execution target is NOT an online state. The Mesh
+     execution grant says the server will route an approved task to this PC;
+     it says nothing about whether the PC is reachable right now. The
+     directory marks that row `executable` (state ACTION_REQUIRED or a saved
+     Mesh target), and the flag is used only to avoid claiming the PC is
+     disconnected. */
+  function executableDevice(device) {
+    return Boolean(device && device.executable === true);
+  }
+
   /* The one classification. The saved execution target decides the state when
      there is one: no other computer is substituted for it. */
   function classify(snapshot) {
@@ -66,9 +76,16 @@
       if (!target) return STATE.UNAVAILABLE;
       if (usableDevice(target)) return STATE.CONNECTED;
       if (target.revoked === true || target.expired === true) return STATE.UNAVAILABLE;
+      // A saved Mesh target with no observed online state is unconfirmed,
+      // not disconnected: the server already granted execution to it.
+      if (executableDevice(target)) return STATE.UNAVAILABLE;
       return STATE.DISCONNECTED;
     }
     if (devices.some(usableDevice)) return STATE.CONNECTED;
+    // The same rule without a saved target: a PC that the server marked as an
+    // execution target must not be shown as entirely disconnected while its
+    // online state is unobserved.
+    if (devices.some(executableDevice)) return STATE.UNAVAILABLE;
     const needsAttention = devices.every((device) => (
       device.revoked === true || device.expired === true ||
       device.state === "ACTION_REQUIRED"
@@ -79,13 +96,18 @@
   function publish() {
     const snapshot = current();
     const state = classify(snapshot);
+    const devices = snapshot && Array.isArray(snapshot.devices) ? snapshot.devices : [];
     const detail = {
       state: state,
-      devices: snapshot && Array.isArray(snapshot.devices) ? snapshot.devices : [],
+      devices: devices,
       readCompleted: Boolean(snapshot && snapshot.readCompleted === true),
       statusCode: snapshot && typeof snapshot.statusCode === "string"
         ? snapshot.statusCode
         : "",
+      // Presentation fact only: the server confirmed an execution target, so
+      // the surfaces can name an unconfirmed online state instead of a
+      // generic failure. It is never treated as an online state.
+      executableReady: devices.some(executableDevice),
     };
     window.PadiemComputerConnection = detail;
     if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {

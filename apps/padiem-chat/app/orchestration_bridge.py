@@ -395,6 +395,7 @@ class B62EngineOrchestrationBridge:
         agent_plan: Mapping[str, Any] | None = None,
         tool_arguments: Mapping[str, Any] | None = None,
         session_id: str | None = None,
+        product_identity: str | None = None,
     ) -> dict[str, Any]:
         _safe_id("user_id", user_id)
         trace_id = f"b62_orch_{uuid.uuid4().hex[:24]}"
@@ -413,12 +414,19 @@ class B62EngineOrchestrationBridge:
                     "AI 작업 요청 형식이 올바르지 않습니다.",
                     status_code=500,
                 )
+        skill_instruction = getattr(skill, "system_instruction", None)
+        # #5347: same composition arithmetic the Chat stream route applies in
+        # b14_client._execution_request: product identity first, skill after.
+        if product_identity is not None and skill_instruction:
+            system_instruction = f"{product_identity} {skill_instruction}"
+        else:
+            system_instruction = product_identity or skill_instruction
         request: dict[str, Any] = {
             "agent": {
                 "id": _safe_id("agent_id", agent_id),
                 "title": str(getattr(skill, "title", "Padiem Chat")),
                 "description": str(getattr(skill, "description", "Padiem Chat request")),
-                "system_instruction": getattr(skill, "system_instruction", None),
+                "system_instruction": system_instruction,
                 "task_type": str(getattr(skill, "task_type", "general")),
                 "optimize_for": str(getattr(skill, "optimize_for", "balanced")),
                 "max_tokens": getattr(skill, "max_tokens", None),
@@ -483,6 +491,7 @@ class B62EngineOrchestrationBridge:
         agent_plan: Mapping[str, Any] | None = None,
         tool_arguments: Mapping[str, Any] | None = None,
         session_id: str | None = None,
+        product_identity: str | None = None,
     ) -> B62OrchestrationResult:
         engine_request = self.build_engine_request(
             user_id=user_id,
@@ -495,6 +504,7 @@ class B62EngineOrchestrationBridge:
             agent_plan=agent_plan,
             tool_arguments=tool_arguments,
             session_id=session_id,
+            product_identity=product_identity,
         )
         try:
             raw = await self._client.orchestrate(engine_request)
