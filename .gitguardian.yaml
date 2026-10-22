@@ -5,3 +5,8 @@ secret:
   ignored-paths:
     - "apps/korean-ai-code-agent/tests/test_5015_pc_read_port.py"
     - "apps/padiem-chat/tests/test_5015_pc_read_dispatch.py"
+  ignored-matches:
+    - name: synthetic read-port test channel 261022
+      match: deployment-channel-secret-value-261022
+    - name: synthetic read-port test channel 5015
+      match: deployment-channel-secret-value-5015
