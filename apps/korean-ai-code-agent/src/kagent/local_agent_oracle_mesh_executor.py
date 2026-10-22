@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Optional
 
 from .contracts import ContractError
+from .local_agent_meshcentral_private_reader import MeshCentralReadTooLarge
 
 #: Same path the Chat worker mounts. Executor and server must agree exactly.
 POLL_PATH = "/api/claw/connector/mesh-reads/poll"
@@ -38,6 +39,12 @@ MAX_READ_BYTES_ENVELOPE = 6_000_000
 #: Legacy alias for callers that still import it; the read port now takes its
 #: bound from the shared envelope instead of a trial-era byte count.
 MAX_READ_BYTES = MAX_READ_BYTES_ENVELOPE
+#: Existing PC-file error markers the Engine already maps. A read failure is a
+#: truthful body, not an empty success: the executor reports the marker so the
+#: verified result lane can deliver the same outcome the model lane expects.
+PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
+PC_FILE_TOO_LARGE_MARKER = PC_FILE_ERROR_PREFIX + "too_large"
+PC_FILE_READ_FAILED_MARKER = PC_FILE_ERROR_PREFIX + "read_failed"
 #: A result the server refuses for a non-retryable reason is quarantined to
 #: the pending dir instead of dropped: the bytes survive a restart, the cause
 #: is recorded next to them, and the queue moves on. Retrying forever would
@@ -90,6 +97,9 @@ class OracleMeshDispatch:
     kind: str = "read"
     #: The exact single-line command for kind="command"; never used for a read.
     command_text: str | None = None
+    #: #5015: server-computed read bound. Only the poll response may set it;
+    #: a missing value keeps the shared 6 MB read envelope for older servers.
+    max_bytes: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -270,6 +280,22 @@ class OracleMeshExecutor:
                 raise OracleMeshChannelRefused("chat channel returned a command dispatch without a command")
         else:
             command_text = None
+        max_bytes = None
+        if kind == "read":
+            supplied = dispatch.get("max_bytes")
+            if supplied is not None:
+                # The server decides the bound. A value outside the shared
+                # envelope is malformed, and the executor never lets a caller
+                # raise its own limit.
+                if (
+                    isinstance(supplied, bool)
+                    or not isinstance(supplied, int)
+                    or not 0 < supplied <= MAX_READ_BYTES_ENVELOPE
+                ):
+                    raise OracleMeshChannelRefused(
+                        "chat channel returned an unbounded read limit"
+                    )
+                max_bytes = supplied
         return OracleMeshDispatch(
             dispatch_id=_require_text(dispatch.get("dispatch_id"), "dispatch_id"),
             nonce=_require_text(dispatch.get("nonce"), "nonce"),
@@ -279,6 +305,7 @@ class OracleMeshExecutor:
             run_id=_require_text(dispatch.get("run_id"), "run_id"),
             kind=kind,
             command_text=command_text,
+            max_bytes=max_bytes,
         )
 
     def execute(self, dispatch: OracleMeshDispatch) -> OracleMeshExecutionOutcome:
@@ -287,20 +314,65 @@ class OracleMeshExecutor:
             return self._execute_command(dispatch)
         if dispatch.kind == "desktop":
             return self._execute_desktop(dispatch)
+        return self._execute_read(dispatch)
+
+    def _execute_read(
+        self, dispatch: OracleMeshDispatch
+    ) -> OracleMeshExecutionOutcome:
+        """#5015: one private read whose failures keep an identifiable body.
+
+        The read port is bounded by the server-computed dispatch value (the
+        shared 6 MB envelope when an older server omits it). Oversize is
+        reported as the existing ``too_large`` marker, every other read or
+        download failure as ``read_failed``, and invalid UTF-8 as
+        ``read_failed`` too ? the verified result lane is a UTF-8 text lane,
+        so that body cannot cross it. A failed read is never collapsed into an
+        empty success.
+        """
+        read_bound = dispatch.max_bytes
+        if read_bound is None:
+            read_bound = MAX_READ_BYTES_ENVELOPE
+        read_bound = max(1, min(read_bound, MAX_READ_BYTES_ENVELOPE))
+        call: dict[str, Any] = {
+            "node_ref": dispatch.node_ref,
+            "file_path": dispatch.file_path,
+            "timeout_seconds": self._timeout * 4,
+        }
+        if dispatch.max_bytes is not None:
+            # Pass the server-computed bound only when the poll supplied one;
+            # older servers keep the port's historical default.
+            call["max_bytes"] = read_bound
         try:
-            body = self._read_port.read_bytes(
-                node_ref=dispatch.node_ref,
-                file_path=dispatch.file_path,
-                timeout_seconds=self._timeout * 4,
+            body = self._read_port.read_bytes(**call)
+        except MeshCentralReadTooLarge:
+            return OracleMeshExecutionOutcome(
+                termination="exited", exit_code=1,
+                body=PC_FILE_TOO_LARGE_MARKER.encode("utf-8"),
             )
         except Exception:
-            return OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=b"")
+            return OracleMeshExecutionOutcome(
+                termination="exited", exit_code=1,
+                body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
+            )
         if not isinstance(body, (bytes, bytearray)):
-            return OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=b"")
+            return OracleMeshExecutionOutcome(
+                termination="exited", exit_code=1,
+                body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
+            )
         raw = bytes(body)
-        if len(raw) > MAX_READ_BYTES:
+        if len(raw) > read_bound:
             # Oversize is refused, never truncated.
-            return OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=b"")
+            return OracleMeshExecutionOutcome(
+                termination="exited", exit_code=1,
+                body=PC_FILE_TOO_LARGE_MARKER.encode("utf-8"),
+            )
+        try:
+            raw.decode("utf-8")
+        except UnicodeDecodeError:
+            return OracleMeshExecutionOutcome(
+                termination="exited", exit_code=1,
+                body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
+            )
         return OracleMeshExecutionOutcome(termination="exited", exit_code=0, body=raw)
 
     def _execute_command(
@@ -522,6 +594,7 @@ class OracleMeshExecutor:
             "run_id": dispatch.run_id,
             "kind": dispatch.kind,
             "command_text": dispatch.command_text,
+            "max_bytes": dispatch.max_bytes,
             "termination": outcome.termination,
             "exit_code": outcome.exit_code,
             "note": outcome.note if isinstance(outcome.note, str) else "",
@@ -644,6 +717,7 @@ class OracleMeshExecutor:
                 "node_ref": dispatch.node_ref,
                 "run_id": dispatch.run_id,
                 "kind": dispatch.kind,
+                "max_bytes": dispatch.max_bytes,
                 "termination": outcome.termination,
                 "exit_code": outcome.exit_code,
                 "note": outcome.note if isinstance(outcome.note, str) else "",
@@ -744,9 +818,17 @@ class OracleMeshExecutor:
                 run_id=_require_text(meta.get("run_id"), "run_id"),
                 kind=meta.get("kind") or "read",
                 command_text=meta.get("command_text"),
+                max_bytes=meta.get("max_bytes"),
             )
             if dispatch.kind not in ("read", "command", "desktop"):
                 raise ValueError("pending kind is unknown")
+            if dispatch.max_bytes is not None and (
+                dispatch.kind != "read"
+                or isinstance(dispatch.max_bytes, bool)
+                or not isinstance(dispatch.max_bytes, int)
+                or not 0 < dispatch.max_bytes <= MAX_READ_BYTES_ENVELOPE
+            ):
+                raise ValueError("pending read limit is unbounded")
             if dispatch.kind in ("command", "desktop") and (
                 not isinstance(dispatch.command_text, str) or not dispatch.command_text.strip()
             ):
@@ -997,6 +1079,9 @@ __all__ = [
     "CHANNEL_HEADER",
     "MAX_COMMAND_BYTES",
     "MAX_READ_BYTES",
+    "PC_FILE_ERROR_PREFIX",
+    "PC_FILE_READ_FAILED_MARKER",
+    "PC_FILE_TOO_LARGE_MARKER",
     "POLL_PATH",
     "PRODUCT_USER_AGENT",
     "RESULT_PATH",
@@ -1063,6 +1148,10 @@ def make_oracle_mesh_executor(
         password_provider=password_provider,
         url=mesh_url,
         work_dir=work_dir,
+        # #5015: observe the staged download while the official client runs.
+        # This is detection-then-abort, not a transport cap; the read still
+        # refuses an oversize file whole.
+        popen_factory=_popen,
     )
     # The terminal lane reuses the SAME official client, operator credential and
     # private tunnel; nothing new is opened for commands.

@@ -8,6 +8,7 @@ UTF-8 text. No MeshCentral server and no live credential are involved.
 from __future__ import annotations
 
 import hashlib
+import io
 import subprocess
 import unittest
 from pathlib import Path
@@ -35,6 +36,20 @@ class _StubPort:
     def read_bytes(self, *, node_ref, file_path, timeout_seconds):  # noqa: D102
         del node_ref, file_path, timeout_seconds
         return b""
+
+
+class _RecordingStdin:
+    """Records the one credential write even after the real close."""
+
+    def __init__(self):
+        self.value = ""
+        self.closed = False
+
+    def write(self, text):
+        self.value += text
+
+    def close(self):
+        self.closed = True
 
 
 class ChannelTransportHeaderTests(unittest.TestCase):
@@ -109,50 +124,86 @@ class FactoryRunnerTests(unittest.TestCase):
         self.assertIsInstance(port, MeshCentralCliFileReadPort)
         self.assertTrue(port._meshctrl_js.endswith("meshctrl.js"))
 
+    class _FakePopen:
+        """A download child that stages the target and exits on first poll."""
+
+        def __init__(self, argv, *, staged=b"", returncode=0, **kwargs):
+            self.argv = list(argv)
+            self.kwargs = kwargs
+            self.stdin = _RecordingStdin()
+            self.returncode = returncode
+            self.terminated = False
+            self.target = argv[argv.index("--target") + 1]
+            if staged:
+                Path(self.target).write_bytes(staged)
+
+        def poll(self):
+            return self.returncode
+
+        def terminate(self):
+            self.terminated = True
+            self.returncode = -15
+
+        def kill(self):
+            self.terminated = True
+            self.returncode = -9
+
+        def wait(self, timeout=None):
+            del timeout
+            return self.returncode
+
     def test_credential_reaches_the_child_on_stdin_and_never_on_argv(self):
         executor = self._factory()
-        captured: dict = {}
+        created: list = []
 
-        def fake_run(argv, **kwargs):
-            captured["argv"] = list(argv)
-            captured.update(kwargs)
-            # The official client stages the download; emulate that here so the
-            # port's own read path is what is under test.
-            target = argv[argv.index("--target") + 1]
-            Path(target).write_bytes(b"PADIEM MESH\r\nEND\n")
-            return subprocess.CompletedProcess(argv, 0, "", "")
+        def fake_popen(argv, **kwargs):
+            process = self._FakePopen(
+                argv, staged=b"PADIEM MESH\r\nEND\n", **kwargs,
+            )
+            created.append(process)
+            return process
 
-        with patch("subprocess.run", side_effect=fake_run):
+        with patch("subprocess.Popen", side_effect=fake_popen):
             body = executor._read_port.read_bytes(
                 node_ref=NODE, file_path=FILE_PATH, timeout_seconds=30,
             )
 
         self.assertEqual(body, b"PADIEM MESH\r\nEND\n")
+        self.assertEqual(len(created), 1)
+        process = created[0]
         # The credential is delivered as UTF-8 text on stdin, once.
-        self.assertEqual(captured["input"], PASSWORD + "\n")
-        self.assertIs(captured["text"], True)
-        self.assertEqual(captured["encoding"], "utf-8")
-        self.assertTrue(captured["capture_output"])
+        self.assertEqual(process.stdin.value, PASSWORD + "\n")
+        self.assertIs(process.kwargs.get("stdin"), subprocess.PIPE)
+        self.assertIs(process.kwargs.get("stdout"), subprocess.DEVNULL)
+        self.assertIs(process.kwargs.get("stderr"), subprocess.DEVNULL)
+        self.assertIs(process.kwargs.get("text"), True)
+        self.assertEqual(process.kwargs.get("encoding"), "utf-8")
         # The argv carries the public marker, never the credential.
-        argv = captured["argv"]
+        argv = process.argv
         self.assertIn(_PASSWORD_MARKER, argv)
         self.assertNotIn(PASSWORD, argv)
         self.assertNotIn(PASSWORD + "\n", argv)
         for token in argv:
             self.assertNotIn(PASSWORD, token)
+        self.assertFalse(Path(process.target).exists())
 
     def test_failed_client_run_still_refuses_without_leaking(self):
         executor = self._factory()
+        created: list = []
 
-        def fake_run(argv, **kwargs):
-            self.assertEqual(kwargs.get("input"), PASSWORD + "\n")
-            return subprocess.CompletedProcess(argv, 1, "", "denied")
+        def fake_popen(argv, **kwargs):
+            process = self._FakePopen(argv, returncode=1, **kwargs)
+            created.append(process)
+            return process
 
-        with patch("subprocess.run", side_effect=fake_run):
+        with patch("subprocess.Popen", side_effect=fake_popen):
             with self.assertRaises(MeshCentralReadRefused):
                 executor._read_port.read_bytes(
                     node_ref=NODE, file_path=FILE_PATH, timeout_seconds=30,
                 )
+        self.assertEqual(len(created), 1)
+        self.assertEqual(created[0].stdin.value, PASSWORD + "\n")
+        self.assertFalse(Path(created[0].target).exists())
 
     def test_no_input_means_no_forced_pipe(self):
         """A runner call without input must not fabricate an empty stdin write."""

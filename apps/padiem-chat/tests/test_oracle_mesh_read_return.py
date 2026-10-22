@@ -140,6 +140,9 @@ class History:
         self._seq += 1
         dispatch_id = f"dsp-{self._seq}"
         row = {**fields, "dispatch_id": dispatch_id, "state": "pending",
+               # Mirror the production store's default kind: the browser read
+               # intent stages the kind=read download lane.
+               "kind": fields.get("kind") or "read",
                "nonce_sha256": None, "result_sha256": None, "result_bytes": None,
                "created_at": NOW.isoformat()}
         self.rows[dispatch_id] = row
@@ -373,7 +376,43 @@ def test_request_poll_real_read_result_reaches_the_same_conversation(monkeypatch
         command_id=granted["command_id"], revision_ref=granted["revision_ref"],
     )
     assert history.rows[dispatch_id]["state"] == "done"
+    # #5015: the exact verified read body is in the existing original store,
+    # so the Engine result mode can re-feed it.
+    assert history.originals[dispatch_id] == TEXT_BYTES
     del seen_paths
+
+
+def test_a_failed_read_keeps_its_marker_body_and_closes_failed(monkeypatch):
+    """#5015: an oversize/read failure is stored, never collapsed to empty."""
+
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+    _, poll, _ = call(routes.oracle_mesh_read_poll,
+                      Request({}, state(history=history), secret=SECRET))
+    nonce = poll["dispatch"]["nonce"]
+
+    marker = routes.PC_FILES_ERROR_PREFIX + "too_large"
+    marker_bytes = marker.encode("utf-8")
+    marker_sha = hashlib.sha256(marker_bytes).hexdigest()
+    status, result, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(
+            result_body(
+                dispatch_id, nonce, termination="exited", exit_code=1,
+                content_utf8=marker, content_sha256=marker_sha,
+                content_bytes=len(marker_bytes),
+            ),
+            state(history=history), secret=SECRET,
+        ),
+    )
+    assert status == 200, result
+    assert result["status"] == "failed"
+    assert history.rows[dispatch_id]["state"] == "failed"
+    # The marker, not the file, is the verified body the Engine will read.
+    assert history.originals[dispatch_id] == marker_bytes
+    assert history.appended[0]["status"] == "failed"
+    assert marker not in history.appended[0]["content"]
 
 
 def test_poll_then_result_twice_refuses_the_second_consume(monkeypatch):
