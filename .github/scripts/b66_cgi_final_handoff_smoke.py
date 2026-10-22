@@ -1239,6 +1239,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
 
     claw_posts = 0
     total_claw_posts = 0
+    live_header_seen = False
     guard = _ClawOutboundGuard()
     lane_state = {"lane": CLAW_LANES[0]}
     lane_results: dict[str, dict[str, object]] = {}
@@ -1264,7 +1265,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             # Intercept every browser HTTP request before egress; unlike a
             # page.on("request") observer this can abort model calls in advance.
             def guarded_route(route) -> None:
-                nonlocal claw_posts, total_claw_posts
+                nonlocal claw_posts, total_claw_posts, live_header_seen
                 request = route.request
                 if lane_state["lane"] == "evidence":
                     # The live lane deliberately refuses evidence headers. The
@@ -1292,6 +1293,14 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                         claw_posts = guard.claw_posts
                         return
                 before = guard.claw_posts
+                if (
+                    lane_state["lane"] == "live"
+                    and request.method == "POST"
+                    and urlparse(request.url).path == CLAW_GENERAL_PATH
+                ):
+                    live_header_seen = (
+                        request.headers.get("x-padiem-claw-live") == "p01-events-v1"
+                    )
                 guard.route_request(route, route.request)
                 total_claw_posts += guard.claw_posts - before
                 claw_posts = guard.claw_posts
@@ -1330,6 +1339,25 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                 timeout=20000,
             )
             print("OWNER_LOGIN=PASS")
+
+            stage = "live_capability"
+            capability = context.request.get(
+                CLAW_TARGET_URL.rstrip("/") + CLAW_CAPABILITIES_PATH
+            )
+            try:
+                capability_json = capability.json()
+            except Exception:
+                capability_json = {}
+            print("CLAW_CAPABILITY_HTTP=" + str(capability.status))
+            print(
+                "CLAW_LIVE_EVENTS_AVAILABLE="
+                + (
+                    "true"
+                    if isinstance(capability_json, dict)
+                    and capability_json.get("live_events_available") is True
+                    else "false"
+                )
+            )
 
             stage = "open_claw"
             page.locator("#clawNavButton").wait_for(state="attached", timeout=15000)
@@ -1403,6 +1431,11 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                 if not isinstance(submitted, dict) or submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID:
                     _fail("owner_model_id_not_threaded_to_claw_post")
                 print("EXPLICIT_MODEL_ID_IN_CLAW_POST_" + lane.upper() + "=PASS")
+                if lane == "live":
+                    print(
+                        "CLAW_LIVE_REQUEST_HEADER="
+                        + ("PRESENT" if live_header_seen else "ABSENT")
+                    )
                 response_status = response.status
                 content_type = (response.headers.get("content-type") or "").lower()
                 sse_content_type = content_type.startswith("text/event-stream")
@@ -1412,8 +1445,50 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                     # Read the bounded terminal class from the error envelope
                     # BEFORE failing: only the closed code/detail fields survive;
                     # the message and body text are never printed or stored.
+                    try:
+                        error_body = response.text()
+                    except Exception:
+                        error_body = ""
+                    error_content_type = (response.headers.get("content-type") or "").lower()
+                    error_content_type = error_content_type.split(";")[0].strip()
+                    print(
+                        "CLAW_ERROR_CONTENT_TYPE="
+                        + (
+                            error_content_type
+                            if error_content_type
+                            in (
+                                "application/json",
+                                "text/html",
+                                "text/plain",
+                                "text/event-stream",
+                            )
+                            else "other"
+                        )
+                    )
+                    raw_ray = response.headers.get("cf-ray")
+                    print(
+                        "CLAW_ERROR_CF_RAY="
+                        + (
+                            raw_ray
+                            if isinstance(raw_ray, str)
+                            and re.fullmatch(r"[0-9a-f]{16,20}-[A-Z]{3}", raw_ray)
+                            else "UNAVAILABLE"
+                        )
+                    )
+                    print(
+                        "CLAW_ERROR_BODY_JSON="
+                        + ("YES" if error_body.lstrip().startswith("{") else "NO")
+                    )
+                    print(
+                        "CLAW_ERROR_BODY_HTML="
+                        + (
+                            "YES"
+                            if error_body.lstrip().lower().startswith(("<!doctype", "<html"))
+                            else "NO"
+                        )
+                    )
                     terminal_error_code, terminal_error_class = _bounded_error_class(
-                        response.text()
+                        error_body
                     )
                     admission_result = _canonical_admission_result(terminal_error_class)
                     _fail("claw_general_http_" + str(response_status))

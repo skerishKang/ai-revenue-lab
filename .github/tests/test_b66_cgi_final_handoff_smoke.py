@@ -773,6 +773,19 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
                 "event: delta\ndata: " + "x" * (module.CLAW_LIVE_MAX_BODY_BYTES + 1)
             )
 
+    def test_claw_http_failure_diagnostics_stay_bounded(self):
+        text = SCRIPT.read_text(encoding="utf-8")
+        owner = text[text.index("def run_claw_owner_one_shot("):text.index("\ndef self_test(")]
+        self.assertIn('"CLAW_ERROR_CONTENT_TYPE="', owner)
+        self.assertIn('"CLAW_ERROR_CF_RAY="', owner)
+        self.assertIn('"CLAW_ERROR_BODY_JSON="', owner)
+        self.assertIn('"CLAW_ERROR_BODY_HTML="', owner)
+        self.assertIn('"CLAW_LIVE_REQUEST_HEADER="', owner)
+        self.assertIn('"CLAW_LIVE_EVENTS_AVAILABLE="', owner)
+        # Only structure/status metadata may be printed, never the body.
+        self.assertNotIn("print(error_body", owner)
+        self.assertNotIn("print(error_body)", owner)
+
     def test_evidence_lane_injects_one_bounded_header_and_resets_per_lane(self):
         class Route:
             def __init__(self):
