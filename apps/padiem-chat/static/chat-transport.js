@@ -196,6 +196,13 @@
     const delta = `event: delta\ndata: ${JSON.stringify({ delta: data.answer })}\n\n`;
     const donePayload = { done: true };
     if (typeof data.conversation_id === "string") donePayload.conversation_id = data.conversation_id;
+    // #4469: a grounded answer carries its tool marker and its public
+    // evidence. They reach the browser here so the answer can show the
+    // sources it was actually grounded with, exactly like the Chat stream
+    // route already does.
+    if (typeof data.answer_status === "string") donePayload.answer_status = data.answer_status;
+    if (Array.isArray(data.evidence) && data.evidence.length) donePayload.evidence = data.evidence;
+    if (data.tool && typeof data.tool === "object") donePayload.tool = data.tool;
     const done = `event: done\ndata: ${JSON.stringify(donePayload)}\n\n`;
     return new Response(delta + done, {
       status: 200,
