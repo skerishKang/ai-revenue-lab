@@ -50,29 +50,39 @@ async def _no_sleep(_seconds: float) -> None:
     return None
 
 
-def _install_wire(monkeypatch, output: str) -> None:
+def _install_wire(monkeypatch, output: str, *, kind: str = "command") -> None:
+    termination = "exited" if kind == "read" else "no_exit_code"
+    exit_code = 0 if kind == "read" else None
+    encoded = output.encode("utf-8")
+
     async def fake_call(**kwargs):
         mode = kwargs["mode"]
         if mode == "dispatch":
+            assert kwargs["payload"]["op"] == (
+                "read" if kind == "read" else "list"
+            )
             return {
                 "dispatch": {
-                    "run_id": RUN_ID, "kind": "command", "dispatch_id": DISPATCH_ID,
+                    "run_id": RUN_ID, "kind": kind, "dispatch_id": DISPATCH_ID,
                 }
             }
         if mode == "command_status":
             return {
                 "dispatch": {
-                    "dispatch_id": DISPATCH_ID, "run_id": RUN_ID, "state": "done",
+                    "dispatch_id": DISPATCH_ID, "run_id": RUN_ID,
+                    "kind": kind, "state": "done",
                 }
             }
         if mode == "result":
             return {
                 "dispatch": {
-                    "dispatch_id": DISPATCH_ID,
+                    "dispatch_id": DISPATCH_ID, "run_id": RUN_ID, "kind": kind,
                     "output": output,
                     "result_sha256": "a" * 64,
-                    "termination": "no_exit_code",
-                    "exit_code": None,
+                    "content_sha256": "a" * 64,
+                    "content_bytes": len(encoded),
+                    "termination": termination,
+                    "exit_code": exit_code,
                 }
             }
         raise AssertionError("unexpected mode " + str(mode))
@@ -156,7 +166,7 @@ def test_projected_path_is_the_value_the_read_step_submits(monkeypatch) -> None:
     target = listed["entries"][0]["relative_path"]
 
     assert target != "."
-    _install_wire(monkeypatch, "meshcentral trial content")
+    _install_wire(monkeypatch, "meshcentral trial content", kind="read")
     read = asyncio.run(
         _handler("read", PC_READ_FILE_TOOL_ID)({"path": target})
     )

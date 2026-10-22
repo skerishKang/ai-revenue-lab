@@ -51,17 +51,18 @@ def test_file_commands_are_server_built_literals():
     assert "@{" not in list_command
     assert "\r" not in list_command and "\n" not in list_command
 
-    read_command = routes._pc_files_command(
-        op="read", root=ROOT, relative="notes.txt", limit=200,
-    )
-    assert "[IO.File]::ReadAllText" in read_command
-    assert routes.PC_FILES_ERROR_PREFIX + "read_failed" in read_command
-    assert ROOT + "/notes.txt" in read_command
+    # #5015: read no longer builds any shell command. The former
+    # ReadAllText command timed out through the MeshCentral PowerShell reply;
+    # read uses the existing kind="read" download lane instead.
+    with pytest.raises(ValueError, match="only list"):
+        routes._pc_files_command(
+            op="read", root=ROOT, relative="notes.txt", limit=200,
+        )
 
     quoted = routes._pc_files_command(
-        op="read", root=ROOT, relative="it's.txt", limit=200,
+        op="list", root=ROOT + "/it's", relative=".", limit=200,
     )
-    assert "it''s.txt" in quoted
+    assert "it''s" in quoted
 
 
 class _DB:

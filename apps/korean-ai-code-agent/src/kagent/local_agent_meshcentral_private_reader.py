@@ -100,6 +100,23 @@ class MeshCentralReadRefused(ValueError):
     """Bounded refusal of one private read. Never carries content or secrets."""
 
 
+class MeshCentralReadTooLarge(MeshCentralReadRefused):
+    """The staged read exceeded the caller's bound and was refused whole.
+
+    Separate from the generic refusal so the executor can report the existing
+    ``PADIEM_PC_FILE_ERROR:too_large`` marker instead of collapsing every
+    failure into one empty outcome.
+    """
+
+
+#: The download monitor observes the target file while the official client
+#: runs. This is detection-then-abort, not a strict transport cap: the client
+#: has no size-limit option and writes the target as data arrives, so a small
+#: amount beyond the bound may be written before the child is stopped. The
+#: bytes handed back are still read with ``max_bytes + 1`` and refused whole.
+_DOWNLOAD_MONITOR_SECONDS = 0.02
+
+
 def _safe_ref(value: Any, field_name: str) -> str:
     if not isinstance(value, str) or _SAFE_REF_RE.fullmatch(value) is None:
         raise MeshCentralReadRefused(f"{field_name} must be a bounded safe reference")
@@ -140,7 +157,8 @@ class CommandResultLike(Protocol):
 
 class MeshCentralFileReadPort(Protocol):
     def read_bytes(
-        self, *, node_ref: str, file_path: str, timeout_seconds: int
+        self, *, node_ref: str, file_path: str, timeout_seconds: int,
+        max_bytes: int = MAX_READ_ENVELOPE_BYTES,
     ) -> bytes: ...
 
 
@@ -154,6 +172,14 @@ class MeshCentralCliFileReadPort:
     over the child process's stdin, and is placed into the official MeshCtrl
     argument parser by a Node bootstrap inside the child. The OS command line
     carries only a public marker, never the password.
+
+    ``popen_factory`` is optional. When supplied, ``read_bytes`` starts the
+    same official client through it and watches the target file while the
+    child runs, stopping the child as soon as the observed size exceeds the
+    caller's bound. That is detection-then-abort, not a strict transport cap
+    (``meshctrl.js download`` has no size-limit option and writes the target
+    as data arrives); the returned bytes are still bounded by ``max_bytes``.
+    Callers without a factory keep the historical ``command_runner`` path.
     """
 
     def __init__(
@@ -165,9 +191,12 @@ class MeshCentralCliFileReadPort:
         password_provider: Callable[[], str],
         url: str = "wss://127.0.0.1:4443",
         work_dir: str | None = None,
+        popen_factory: Callable[..., Any] | None = None,
     ) -> None:
         if not callable(command_runner):
             raise ContractError("meshcentral read requires an injected command runner")
+        if popen_factory is not None and not callable(popen_factory):
+            raise ContractError("the download monitor must be callable")
         if not isinstance(meshctrl_js, str) or not meshctrl_js.strip():
             raise ContractError("the official meshctrl.js path is required")
         self._meshctrl_js = meshctrl_js
@@ -180,6 +209,95 @@ class MeshCentralCliFileReadPort:
         self._url = url
         self._work_dir = work_dir or tempfile.gettempdir()
         self._command_runner = command_runner
+        self._popen_factory = popen_factory
+
+    @staticmethod
+    def _stop_child(process: Any) -> None:
+        """Stop and reap one download child; never leave it running."""
+        try:
+            if process.poll() is not None:
+                return
+        except Exception:
+            pass
+        try:
+            process.terminate()
+        except Exception:
+            pass
+        try:
+            process.wait(timeout=5)
+            return
+        except Exception:
+            pass
+        try:
+            process.kill()
+        except Exception:
+            pass
+        try:
+            process.wait(timeout=5)
+        except Exception:
+            pass
+
+    def _run_monitored_download(
+        self, *, argv: list[str], password: str, target: str,
+        max_bytes: int, timeout_seconds: int,
+    ) -> None:
+        """Run the official download while observing the staged target size.
+
+        Detection-then-abort, not a strict transport cap: the child is stopped
+        once the file is observed above ``max_bytes``. The caller still reads
+        at most ``max_bytes + 1`` bytes and refuses an oversize file whole, so
+        an accepted read can never exceed the bound.
+        """
+        import subprocess
+        import time
+
+        process = self._popen_factory(
+            argv,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            encoding="utf-8",
+        )
+        try:
+            stdin = getattr(process, "stdin", None)
+            if stdin is None:
+                raise MeshCentralReadRefused(
+                    "the official meshcentral client has no stdin channel"
+                )
+            try:
+                stdin.write(password + "\n")
+                stdin.close()
+            except (OSError, ValueError) as exc:
+                raise MeshCentralReadRefused(
+                    "the official meshcentral client refused the credential channel"
+                ) from exc
+            deadline = time.monotonic() + timeout_seconds
+            while True:
+                if process.poll() is not None:
+                    break
+                try:
+                    observed = os.path.getsize(target)
+                except OSError:
+                    observed = 0
+                if observed > max_bytes:
+                    raise MeshCentralReadTooLarge(
+                        "the read exceeds the bounded size and is refused, "
+                        "never truncated"
+                    )
+                if time.monotonic() >= deadline:
+                    raise MeshCentralReadRefused(
+                        "the official meshcentral client exceeded the read timeout"
+                    )
+                time.sleep(_DOWNLOAD_MONITOR_SECONDS)
+            if getattr(process, "returncode", None) != 0:
+                raise MeshCentralReadRefused(
+                    "the official meshcentral client refused the private read"
+                )
+        finally:
+            # Always stop the child on every exit path, including the oversize
+            # and timeout refusals above.
+            self._stop_child(process)
 
     def read_bytes(
         self,
@@ -195,6 +313,8 @@ class MeshCentralCliFileReadPort:
         request = MeshCentralFileReadRequest(node_ref=node_ref, file_path=file_path)
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, int):
             raise MeshCentralReadRefused("timeout_seconds must be an integer")
+        if isinstance(max_bytes, bool) or not isinstance(max_bytes, int) or max_bytes < 1:
+            raise MeshCentralReadRefused("max_bytes must be a positive integer")
         target = os.path.join(
             self._work_dir, f"padiem-mesh-read-{os.getpid()}-{uuid4().hex}.bin"
         )
@@ -217,17 +337,23 @@ class MeshCentralCliFileReadPort:
                 )
             # The official CLI parses the credential only inside the child;
             # neither the OS command line nor command logs contain it.
-            completed = self._command_runner(
-                argv, input=password + "\n",
-                timeout=timeout_seconds,
-            )
-            if getattr(completed, "returncode", None) != 0:
-                raise MeshCentralReadRefused(
-                    "the official meshcentral client refused the private read"
+            if self._popen_factory is not None:
+                self._run_monitored_download(
+                    argv=argv, password=password, target=target,
+                    max_bytes=max_bytes, timeout_seconds=timeout_seconds,
                 )
+            else:
+                completed = self._command_runner(
+                    argv, input=password + "\n",
+                    timeout=timeout_seconds,
+                )
+                if getattr(completed, "returncode", None) != 0:
+                    raise MeshCentralReadRefused(
+                        "the official meshcentral client refused the private read"
+                    )
             try:
                 if os.path.getsize(target) > max_bytes:
-                    raise MeshCentralReadRefused(
+                    raise MeshCentralReadTooLarge(
                         "the read exceeds the bounded size and is refused, "
                         "never truncated"
                     )
@@ -243,7 +369,7 @@ class MeshCentralCliFileReadPort:
             except OSError:
                 pass
         if len(raw) > max_bytes:
-            raise MeshCentralReadRefused(
+            raise MeshCentralReadTooLarge(
                 "the read exceeds the bounded size and is refused, never truncated"
             )
         return raw
@@ -385,6 +511,7 @@ __all__ = [
     "MeshCentralFileReadPort",
     "MeshCentralFileReadRequest",
     "MeshCentralReadRefused",
+    "MeshCentralReadTooLarge",
     "MeshCentralVerifiedTextReader",
 ]
 
