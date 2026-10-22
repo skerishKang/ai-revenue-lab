@@ -529,6 +529,9 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if grade is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
     product_tier = grade.product_tier
+    # The administrator lane is not a member grade: its identity answer stays
+    # neutral instead of claiming the PLUS transport profile as a membership.
+    identity_tier_id = None if grade.admin_lane else grade.tier_id
     if "tier" in data:
         tier_denial = await claw_execution_tier_denial(
             request, current_user_id(request) if auth_ready(request) else None, grade
@@ -668,6 +671,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         outcome = await adapter.execute(
             run, product_tier=product_tier, subject_id=subject_id,
             central_route_model_id=claw_route.model_id,
+            identity_tier_id=identity_tier_id,
         )
     except P01AdapterError as exc:
         # Canonical #830 invariant: refund only when B62 can prove the Engine
