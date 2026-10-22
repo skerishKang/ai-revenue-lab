@@ -437,7 +437,7 @@ async def api_chat_stream(request: Request):
                 request, user_text=latest_user_text, skill=skill,
                 model_id=selected_model, conversation_id=conversation_id,
                 tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
-                device_id=raw.get("device_id"),
+                device_id=raw.get("device_id"), run_id=raw.get("pc_run_id"),
             )
         except ChatPCDriveError as exc:
             return JSONResponse(
@@ -898,7 +898,7 @@ async def api_chat(request: Request) -> JSONResponse:
             request, user_text=latest_user_text, skill=skill,
             model_id=selected_model, conversation_id=conversation_id,
             tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
-            device_id=raw.get("device_id"),
+            device_id=raw.get("device_id"), run_id=raw.get("pc_run_id"),
         )
         if lane_response is not None:
             return lane_response

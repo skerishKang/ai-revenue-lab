@@ -39,6 +39,7 @@ from .history import (
     HistoryStore,
     PRODUCT_SCOPE_CHAT,
     is_multi_command_action,
+    validate_chat_pc_run_id,
 )
 from .central_model_route_runtime import chat_request_tier_context
 from .pc_work_context import build_pc_work_context_text
@@ -93,6 +94,55 @@ def _error_response(exc: ChatPCDriveError) -> JSONResponse:
         status_code=exc.status_code,
         headers=dict(_NO_STORE_HEADERS),
     )
+
+
+def _client_lane_run_id(value: object) -> str | None:
+    """Accept only the canonical Chat PC run id grammar.
+
+    A browser may send a run-scoped recovery handle before the long PC turn.
+    The id is not an execution grant and never selects a target; it only lets
+    the same signed owner address the run after a transport drop. Anything
+    outside the existing ``chat_pcq_`` grammar is refused before staging.
+    """
+    if value is None:
+        return None
+    try:
+        return validate_chat_pc_run_id(value)
+    except ValueError as exc:
+        raise ChatPCDriveError(
+            "chat_pc_run_id_invalid",
+            "PC 작업 실행 ID가 올바르지 않습니다.",
+            422,
+        ) from exc
+
+
+def _new_lane_run_id() -> str:
+    return CHAT_PC_RUN_PREFIX + uuid.uuid4().hex
+
+
+async def _refuse_existing_client_run_id(
+    store: HistoryStore, *, uid: str, client_run_id: str | None,
+) -> None:
+    """A client handle may address a new run only, never rewrite an old one."""
+    if client_run_id is None:
+        return
+    getter = getattr(store, "get_claw_run", None)
+    if not callable(getter):
+        return
+    try:
+        existing = await getter(uid, client_run_id)
+    except Exception as exc:
+        raise ChatPCDriveError(
+            "chat_pc_run_id_unavailable",
+            "PC 작업 실행 ID 상태를 확인할 수 없습니다.",
+            503,
+        ) from exc
+    if existing is not None:
+        raise ChatPCDriveError(
+            "chat_pc_run_id_conflict",
+            "이미 사용 중인 PC 작업 실행 ID입니다.",
+            409,
+        )
 
 
 def is_chat_pc_drive_query(user_text: str) -> bool:
@@ -400,6 +450,7 @@ async def execute_chat_pc_drive_lane(
     conversation_id: str | None,
     tier: str,
     device_id: str | None = None,
+    run_id: str | None = None,
 ) -> tuple[str, str | None] | None:
     """Run the lane and return ``(answer, conversation_id)``.
 
@@ -428,6 +479,7 @@ async def execute_chat_pc_drive_lane(
     if not drive_requested and not files_requested:
         return None
     files_only = files_requested and not drive_requested
+    client_run_id = _client_lane_run_id(run_id)
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     if store is None:
         raise ChatPCDriveError(
@@ -440,6 +492,9 @@ async def execute_chat_pc_drive_lane(
             "선택한 PC 정보가 유효하지 않습니다.",
             422,
         )
+    await _refuse_existing_client_run_id(
+        store, uid=uid, client_run_id=client_run_id,
+    )
     session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
@@ -524,6 +579,7 @@ async def execute_chat_pc_drive_lane(
             execution_user_text=execution_text, skill=skill,
             model_id=model_id, conversation_id=conversation_id,
             device_id=device_id, additional_system_context=pc_work_text,
+            run_id=client_run_id,
         )
 
     decision_contract = _decision_contract(execution_text)
@@ -554,7 +610,7 @@ async def execute_chat_pc_drive_lane(
             "chat_pc_drive_unavailable",
             "PC 드라이브 조회 기능을 현재 사용할 수 없습니다.",
         )
-    lane_run_id = CHAT_PC_RUN_PREFIX + uuid.uuid4().hex
+    lane_run_id = client_run_id or _new_lane_run_id()
     try:
         staged_conversation_id = await store.record_chat_pc_drive_run(
             user_id=uid, run_id=lane_run_id, workspace_id=workspace_id,
@@ -639,6 +695,7 @@ async def _execute_chat_pc_files_lane(
     conversation_id: str | None,
     device_id: str | None,
     additional_system_context: str | None = None,
+    run_id: str | None = None,
 ) -> tuple[str, str | None]:
     """Stage and run the shared two-step list/read plan on the Chat product.
 
@@ -656,7 +713,7 @@ async def _execute_chat_pc_files_lane(
             "chat_pc_files_unavailable",
             "PC 파일 도구를 현재 사용할 수 없습니다.",
         )
-    lane_run_id = CHAT_PC_RUN_PREFIX + uuid.uuid4().hex
+    lane_run_id = run_id or _new_lane_run_id()
     try:
         staged_conversation_id = await store.record_chat_pc_drive_run(
             user_id=uid, run_id=lane_run_id, workspace_id=workspace_id,
@@ -743,6 +800,7 @@ async def run_chat_pc_drive_lane(
     conversation_id: str | None,
     tier: str,
     device_id: str | None = None,
+    run_id: str | None = None,
 ) -> JSONResponse | None:
     """JSON wrapper of :func:`execute_chat_pc_drive_lane` for /api/chat."""
     try:
@@ -750,6 +808,7 @@ async def run_chat_pc_drive_lane(
             request, user_text=user_text, execution_user_text=execution_user_text,
             skill=skill, model_id=model_id,
             conversation_id=conversation_id, tier=tier, device_id=device_id,
+            run_id=run_id,
         )
     except ChatPCDriveError as exc:
         return _error_response(exc)

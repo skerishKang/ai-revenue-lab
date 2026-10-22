@@ -711,11 +711,13 @@ class _ChatHistory:
         self.pairs.append((user_text, answer))
         return conversation_id or ("chat_" + "n" * 32)
 
-    async def record_chat_pc_drive_run(self, *, user_id, run_id, workspace_id, user_text, conversation_id):
+    async def record_chat_pc_drive_run(self, *, user_id, run_id, workspace_id, user_text, conversation_id, action=None, title_prefix=None):
         self.staged = {"run_id": run_id, "workspace_id": workspace_id}
         return conversation_id or ("chat_" + "s" * 32)
 
     async def get_claw_run(self, user_id, run_id):
+        if not self.staged or self.staged.get("run_id") != run_id:
+            return None
         return {
             "run_id": run_id, "conversation_id": "chat_" + "s" * 32,
             "result_summary": "no_exit_code", "workspace_id": WORKSPACE,
@@ -756,7 +758,7 @@ def _chat_pc_request(*, answer, mesh=None, identity=None, bridge=None,
     )
 
 
-def _run_chat_lane(request, *, device_id=None):
+def _run_chat_lane(request, *, device_id=None, user_text="내 PC 드라이브 정보 알려줘", run_id=None):
     import app.chat_pc_drive as lane
 
     async def fake_owner(req, uid):
@@ -769,9 +771,9 @@ def _run_chat_lane(request, *, device_id=None):
     lane._resolve_chat_owner = fake_owner
     try:
         return asyncio.run(execute_chat_pc_drive_lane(
-            request, user_text="내 PC 드라이브 목록 알려줘", skill=None,
+            request, user_text=user_text, skill=None,
             model_id="model-x", conversation_id=None, tier="free",
-            device_id=device_id,
+            device_id=device_id, run_id=run_id,
         ))
     finally:
         lane.auth_ready, lane.current_user_id = old_ready, old_uid
@@ -796,6 +798,42 @@ def test_chat_pc_decision_model_receives_context_and_selection_reaches_the_plan(
     }
     assert bridge.requests[0]["agent_plan"]["agent_id"] == "agent:padiem:chat-pc-query@1"
     assert PC_WORK_CONTEXT_VERSION in bridge.requests[0]["additional_system_context"]
+
+
+def test_chat_pc_files_lane_uses_the_client_recovery_run_handle():
+    client_run_id = "chat_pcq_" + "d" * 32
+    bridge = _ChatBridge("파일 내용을 읽었습니다.")
+    request = _chat_pc_request(
+        answer="unused",
+        mesh=Mesh([mesh_row("office-pc", node_ref="mesh-node")]),
+        identity=Identity(),
+        bridge=bridge,
+    )
+    result = _run_chat_lane(
+        request,
+        device_id="office-pc",
+        user_text=(
+            "내 PC의 테스트 폴더에서 파일 목록을 보고, "
+            "sample.txt 파일 내용을 읽어줘"
+        ),
+        run_id=client_run_id,
+    )
+    assert result is not None
+    assert request.app.state.history_store.staged["run_id"] == client_run_id
+    assert bridge.requests[0]["session_id"] == client_run_id
+    assert bridge.requests[0]["agent_plan"]["agent_id"] == "agent:padiem:chat-pc-query@1"
+
+
+def test_chat_pc_lane_refuses_a_malformed_client_recovery_handle():
+    from app.chat_pc_drive import _client_lane_run_id
+
+    try:
+        _client_lane_run_id("chat_pcq_not-hex")
+    except ChatPCDriveError as exc:
+        assert exc.code == "chat_pc_run_id_invalid"
+        assert exc.status_code == 422
+    else:
+        raise AssertionError("a malformed client run id must be refused")
 
 
 def test_chat_pc_lane_refuses_a_selected_device_mismatch():
