@@ -138,6 +138,11 @@ CLAW_EVIDENCE_REQUEST_HEADER = "X-Padiem-Claw-Evidence"
 CLAW_EVIDENCE_MARKER = "one-shot"
 _CLAW_RUN_ID_RE = re.compile(r"^run_[0-9a-f]{24}$")
 _EVIDENCE_VALUE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$")
+# B14 reports its selected route as `platform:<provider>/<model>`, so the
+# route header keeps the same bounded grammar plus `/`. Rejecting it dropped
+# the header for every real B14 route and left the canary without its
+# selected-route evidence (#5484).
+_CLAW_SELECTED_ROUTE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_./:-]{0,79}$")
 
 
 def _evidence_header(
@@ -168,7 +173,9 @@ def _claw_evidence_response_headers(claw_run_id: str | None, outcome: Any) -> di
     if orch_pair is not None:
         headers[orch_pair[0]] = orch_pair[1]
     route_pair = _evidence_header(
-        "X-Padiem-Selected-Route-Id", getattr(outcome, "selected_route_id", None)
+        "X-Padiem-Selected-Route-Id",
+        getattr(outcome, "selected_route_id", None),
+        _CLAW_SELECTED_ROUTE_ID_RE,
     )
     if route_pair is not None:
         headers[route_pair[0]] = route_pair[1]
@@ -1333,6 +1340,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # chooses the separately authorized exact model, never a browser-provided
     # tier/model grant. PLUS here is solely the existing P01 transport profile.
     product_tier = grade.product_tier
+    # The administrator lane is not a member grade: its identity answer stays
+    # neutral instead of claiming the PLUS transport profile as a membership.
+    identity_tier_id = None if admin_lane else requested_tier
     if "tier" in data:
         user_id = current_user_id(request) if auth_ready(request) else None
         tier_denial = await claw_execution_tier_denial(request, user_id, grade)
@@ -1792,7 +1802,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
 
     if live_requested:
         from .claw_live_events import live_claw_sse
-        live_args = {"product_tier": product_tier, "subject_id": subject_id}
+        live_args = {"product_tier": product_tier, "subject_id": subject_id,
+                     "identity_tier_id": identity_tier_id}
         if initial_pc_capture:
             live_args["desktop_capture"] = True
             live_args["desktop_device_id"] = desktop_device_id
@@ -1846,7 +1857,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         )
 
     try:
-        dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
+        dispatch_args = {"product_tier": product_tier, "subject_id": subject_id,
+                         "identity_tier_id": identity_tier_id}
         if initial_pc_capture:
             dispatch_args["desktop_capture"] = True
             dispatch_args["desktop_device_id"] = desktop_device_id

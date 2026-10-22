@@ -129,7 +129,6 @@
       </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span></div>
       <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
-        <a class="admin-hub-link" id="adminHubLink" href="./admin" aria-label="총관리자 페이지" title="총관리자 페이지" hidden><span aria-hidden="true">◈</span><span>총관리자</span></a>
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false" hidden><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
         <div class="sidebar-account account-controls">
           <span class="account-avatar" id="accountAvatar" aria-hidden="true">?</span>
@@ -245,10 +244,25 @@
               <button type="button" class="language-option" data-locale-value="en" aria-pressed="false">EN</button>
             </div>
           </section>
+          <section class="settings-section" aria-labelledby="adminSettingsTitle" id="adminSettingsSection" hidden>
+            <p class="settings-label">ADMIN</p>
+            <h3 id="adminSettingsTitle" data-locale-key="admin-settings-title">관리자</h3>
+            <a class="settings-action settings-link" id="adminHubLink" href="./admin" data-locale-aria-label="admin-hub-aria" data-locale-title="admin-hub-aria" aria-label="총관리자 페이지" title="총관리자 페이지" hidden><span aria-hidden="true">◈</span><span data-locale-key="admin-hub">총관리자</span></a>
+          </section>
+          <section class="settings-section" aria-labelledby="dataSettingsTitle" id="dataSettingsSection">
+            <p class="settings-label">DATA</p>
+            <h3 id="dataSettingsTitle" data-locale-key="data-settings-title">데이터 관리</h3>
+            <div class="settings-actions" id="dataSettingsActions"></div>
+          </section>
           <section class="settings-section" aria-labelledby="accountTitle" id="accountSettingsSection" hidden>
             <p class="settings-label">ACCOUNT</p>
             <h3 id="accountTitle" data-locale-key="account-title">계정</h3>
-            <button class="settings-action" id="passwordChangeOpen" type="button" data-locale-key="password-change-open">비밀번호 변경</button>
+            <div class="settings-actions" id="accountPasswordActions" hidden>
+              <button class="settings-action" id="passwordChangeOpen" type="button" data-locale-key="password-change-open">비밀번호 변경</button>
+            </div>
+            <div class="settings-actions">
+              <button class="settings-action" id="settingsLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
+            </div>
           </section>
           <section class="settings-section settings-help" aria-labelledby="settingsHelpTitle">
             <p class="settings-label">HELP &amp; GUIDE</p>
@@ -363,6 +377,10 @@
             <button class="claw-inbox-retry" id="clawInboxRetry" type="button" data-locale-key="retry">다시 시도</button>
           </div>
           <p class="claw-inbox-help" id="clawInboxHelp" data-locale-key="claw-inbox-help">최근 항목만 표시되며 현재 로그인 계정과 워크스페이스 범위 안에서만 조회됩니다.</p>
+          <div class="claw-push-setting" id="clawPushSetting" hidden>
+            <button class="claw-inbox-secondary" id="clawPushToggle" type="button" aria-pressed="false" data-locale-key="claw-push-enable">이 기기에서 알림 받기</button>
+            <p class="claw-push-status" id="clawPushStatus" aria-live="polite" aria-atomic="true"></p>
+          </div>
           <div class="claw-inbox-status" id="clawInboxStatus" aria-live="polite" aria-atomic="true">
             <p id="clawInboxLoading" data-locale-key="claw-inbox-loading" hidden>불러오는 중…</p>
             <p id="clawInboxError" data-locale-key="claw-inbox-error" hidden>목록을 불러오지 못했습니다.</p>
@@ -1031,7 +1049,7 @@
               <button type="button" class="tool-button" disabled id="deepResearchButton" aria-disabled="true" aria-pressed="false" data-padiem-tooltip="심층 리서치" hidden><span aria-hidden="true">✦</span><span>심층 리서치</span></button>
             </div>
             <button class="cancel-stream-button" id="cancelStreamButton" type="button" data-locale-key="cancel" data-locale-aria-label="cancel-answer" aria-label="답변 생성 취소" hidden>취소</button>
-            <button class="send-button" id="sendButton" type="submit" data-padiem-tooltip="메시지 전송" data-locale-title="send-tooltip" data-locale-aria-label="send" aria-label="메시지 보내기"><svg class="send-arrow-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="send-button" id="sendButton" type="submit" data-padiem-tooltip="메시지 전송" data-locale-title="send-tooltip" data-locale-aria-label="send" aria-label="메시지 보내기"><svg class="send-arrow-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="send-waveform-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false" hidden><path d="M7 16v2a6 6 0 0 0 12 0v-2M12 20v1M7 10v2a4 4 0 0 0 8 0v-2M12 14v1M7 4v2a2 2 0 0 0 4 0v-2M12 8v1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </form>
         <p class="composer-note" id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.</p>
@@ -1231,6 +1249,7 @@
   <script src="./claw-pc-enrollment-consent.js"></script>
   <!-- #3094: guarded handoff adapter MUST load last, after app.js installed
        the #3084 projection seam. Never weaken the final-script contract. -->
+  <script src="./claw-push.js" defer></script>
   <script src="./claw-local-adapter.js"></script>
 </body>
 </html>

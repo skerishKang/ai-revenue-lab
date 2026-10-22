@@ -90,6 +90,7 @@ from .final_dispatch_guard_wiring import (
 )
 from .request_contract import MAX_BROWSER_BODY_BYTES
 from .member_grade_access import verified_member_grade, GRADES
+from .model_policy import current_verified_member_grade
 from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 
 _MODEL_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}")
@@ -402,6 +403,7 @@ async def conversation_turn(request: Request) -> JSONResponse:
             [{"role": "user", "content": message}],
             model=route.model_id,
             **({"product_tier": product_tier} if product_tier is not None else {}),
+            verified_identity_tier=current_verified_member_grade(),
             additional_system_context=conversation_prompt(state),
             model_parameters=parameters,
         )
@@ -431,6 +433,7 @@ async def conversation_turn(request: Request) -> JSONResponse:
                 [{"role": "user", "content": message}],
                 model=route.model_id,
                 **({"product_tier": product_tier} if product_tier is not None else {}),
+                verified_identity_tier=current_verified_member_grade(),
                 additional_system_context=(
                     conversation_prompt(state)
                     + "\n이전 형식이 유효하지 않았습니다. 고객의 마지막 요청을 다시 "

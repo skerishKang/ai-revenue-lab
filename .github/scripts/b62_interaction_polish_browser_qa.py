@@ -166,9 +166,17 @@ async def _run(page: Page, *, label: str) -> dict[str, Any]:
     if await page.locator("#messageList .assistant-message:last-child").get_attribute("data-terminal-actions-safe") != "true":
         raise AssertionError(f"completed answer not marked terminal-action safe at {label}")
     await page.wait_for_function("() => document.activeElement?.id === 'messageInput'", timeout=5_000)
-    export_button = page.locator("#conversationExportButton")
-    await export_button.wait_for(state="visible", timeout=5_000)
-    if await export_button.is_disabled():
+    # #5560: the export action lives in Settings > Data management. Its
+    # availability still follows the conversation state: a settled
+    # conversation can be exported, an incomplete one cannot.
+    export_state = await page.evaluate(
+        """() => {
+          const button = document.getElementById('conversationExportButton');
+          if (!button) return null;
+          return { hidden: button.hidden, disabled: button.disabled };
+        }"""
+    )
+    if not export_state or export_state["hidden"] or export_state["disabled"]:
         raise AssertionError(f"completed conversation export should be enabled at {label}")
 
     # Cancel: cancellation is distinct and incomplete actions stay blocked.
@@ -188,7 +196,14 @@ async def _run(page: Page, *, label: str) -> dict[str, Any]:
     if "생성 취소됨" not in await cancelled.inner_text():
         raise AssertionError(f"cancelled copy missing at {label}")
     await cancelled.locator(".retry-button", has_text="다시 생성").wait_for(state="visible")
-    if not await export_button.is_disabled():
+    cancelled_export_state = await page.evaluate(
+        """() => {
+          const button = document.getElementById('conversationExportButton');
+          if (!button) return null;
+          return { hidden: button.hidden, disabled: button.disabled };
+        }"""
+    )
+    if not cancelled_export_state or not cancelled_export_state["disabled"]:
         raise AssertionError(f"export must stay disabled with cancelled incomplete answer at {label}")
     await page.wait_for_function("() => document.activeElement?.id === 'messageInput'", timeout=5_000)
 

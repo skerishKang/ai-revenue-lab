@@ -296,6 +296,11 @@
   let auth = EMPTY_AUTH;
   let authRefreshQueued = false;
   let authRefreshTail = Promise.resolve();
+  // #5554: the tier restore of the CURRENT auth generation. The outgoing
+  // request waits for this one, not for every refresh that was queued after it
+  // (a window focus queues one), so a background refresh can no longer hold a
+  // user's message in the composer.
+  let tierRestoreTail = null;
   let modePanel = null;
   let accountAvatar = null;
 
@@ -419,7 +424,12 @@
     const available = auth.loaded && auth.ready && state !== "unavailable";
     accountContainer.dataset.accountState = state;
     accountContainer.hidden = !available;
-    loginButton.hidden = !available;
+    // #5560: the sign-out entry moved into Settings > Account. The sidebar
+    // keeps the sign-in affordance for a guest or an expired session, and the
+    // signed-in profile (name and avatar) is the one-step Settings entry.
+    // The button element and its text stay: the auth projection and the
+    // outputs feature read them as the session signal.
+    loginButton.hidden = !available || state === "signed_in";
     loginButton.removeAttribute("aria-busy");
     loginButton.disabled = !available;
     loginButton.setAttribute("aria-disabled", available ? "false" : "true");
@@ -463,7 +473,7 @@
     if (!loginButton || !accountContainer) return true;
     const state = auth.loaded ? auth.sessionState : "unavailable";
     const available = auth.loaded && auth.ready && state !== "unavailable";
-    if (accountContainer.hidden !== !available || loginButton.hidden !== !available) return false;
+    if (accountContainer.hidden !== !available || loginButton.hidden !== (!available || state === "signed_in")) return false;
     if (!available) {
       if (!accountName) return true;
       return accountName.hidden && accountName.textContent.trim() === "";
@@ -593,7 +603,7 @@
     commitTier(next, { keepCustom: true });
   }
 
-  async function refreshAccountSelection(epoch) {
+  async function fetchAccountSelection(epoch) {
     const ticket = epoch === undefined ? authEpoch : epoch;
     // A read that started before an explicit user choice must never undo it.
     const writeTicket = selectionWriteSeq;
@@ -608,11 +618,7 @@
       const data = await response.json().catch(() => null);
       if (ticket !== authEpoch || writeTicket !== selectionWriteSeq) return null;
       if (!data || data.ok !== true) return null;
-      accountSelection = data.selection && typeof data.selection === "object"
-        ? data.selection
-        : null;
-      applyAccountSelection(data);
-      return data;
+      return {data, ticket, writeTicket};
     } catch (_) {
       // A transient read failure never destroys the stored preference: it stays
       // on the server for this account and returns with the next read.
@@ -620,10 +626,29 @@
     }
   }
 
+  function commitAccountSelection(read) {
+    // #5554: the read and the apply are separate so the account selection can be
+    // FETCHED while the administrator probe is still in flight. The apply still
+    // happens only after the administrator lane is known, and a read that lost
+    // its generation or its write ticket is still discarded.
+    if (!read) return null;
+    if (read.ticket !== authEpoch || read.writeTicket !== selectionWriteSeq) return null;
+    accountSelection = read.data.selection && typeof read.data.selection === "object"
+      ? read.data.selection
+      : null;
+    applyAccountSelection(read.data);
+    return read.data;
+  }
+
+  async function refreshAccountSelection(epoch) {
+    return commitAccountSelection(await fetchAccountSelection(epoch));
+  }
+
   function tierSelectionReady() {
     // The restore for the current auth generation has settled. A request that
     // waits for this never leaves with a tier that was not verified yet.
-    return authRefreshTail.then(() => undefined, () => undefined);
+    const pending = tierRestoreTail || authRefreshTail;
+    return pending.then(() => undefined, () => undefined);
   }
 
   function customCopy() {
@@ -1803,11 +1828,19 @@
     authEpoch += 1;
     const epoch = authEpoch;
     if (!auth.authenticated) clearCustomState();
+    // #5554: the administrator probe and this account's stored model selection
+    // are two INDEPENDENT reads of the same signed-in session. They used to run
+    // one after the other, so every outgoing request waited for two sequential
+    // round trips (measured 5.5s of pure stall before the request even left the
+    // browser). They now run CONCURRENTLY; the selection is still APPLIED only
+    // after the administrator presence is known, because the administrator lane
+    // may only be restored for a verified administrator.
+    const selectionRead = auth.authenticated ? fetchAccountSelection(epoch) : null;
     await refreshAdminPresence(epoch);
-    if (auth.authenticated) {
+    if (selectionRead) {
       // #5222: restore this account's own last selection, after the server
       // re-verified the member grade and the administrator lane.
-      await refreshAccountSelection(epoch);
+      commitAccountSelection(await selectionRead);
     } else {
       // A signed-out browser keeps no account selection.
       accountSelection = null;
@@ -1827,9 +1860,16 @@
     return auth;
   }
 
-  function refreshAuth() {
+  function refreshAuth(options) {
+    const background = !!(options && options.background);
     const run = authRefreshTail.then(readAuthFresh, readAuthFresh);
     authRefreshTail = run.catch(() => EMPTY_AUTH);
+    // #5554: an outgoing request waits for the restore of the generation it
+    // depends on. A BACKGROUND refresh (window focus, a UI text mismatch) only
+    // refreshes the state; it must never become the prerequisite of a request
+    // that is already leaving, because it re-reads the account selection and
+    // held the user's message in the composer for seconds.
+    if (!background) tierRestoreTail = run;
     return run;
   }
 
@@ -1838,7 +1878,7 @@
     authRefreshQueued = true;
     window.setTimeout(() => {
       authRefreshQueued = false;
-      refreshAuth();
+      refreshAuth({background: true});
     }, 0);
   }
 

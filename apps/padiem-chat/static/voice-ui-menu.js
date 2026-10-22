@@ -1,5 +1,8 @@
 // #4816: unified voice mode toolbar for Chat(B62) and Claw(B54).
-// Two icons only: microphone (M1 direct entry) and waveform picker (M2/M3/M4).
+// #5561: the voice waveform and the send arrow share ONE primary action slot
+// (the send button). An empty composer shows the waveform and opens the
+// M2/M3/M4 picker; a composer with text shows the arrow and sends.
+// The M1 microphone stays a separate, smaller control in the same row.
 // Shares one turn controller with the composer; never starts a provider call.
 (function (win, doc) {
   "use strict";
@@ -35,8 +38,9 @@
     return localeText(entry.key, ko() ? entry.ko : entry.en);
   }
   const pickerTitle = () => localeText("voice-mode", ko() ? "음성 모드" : "Voice mode");
+  const sendTitle = () => localeText("send-tooltip", ko() ? "메시지 전송" : "Send message");
+  const sendLabel = () => localeText("send", ko() ? "메시지 보내기" : "Send message");
 
-  let wave = null;
   let menu = null;
   let controller = null;
   let currentMode = "basic"; // basic | live
@@ -45,6 +49,7 @@
   let outstandingKey = "";
   let busySeen = false;
   let menuOpen = false;
+  let composing = false;
 
   function composerStatus() {
     const controller = composerAPI && composerAPI.getController && composerAPI.getController();
@@ -98,13 +103,52 @@
     }
   }
 
+  // The voice picker only exists when the product really has one: a live turn
+  // controller and an account whose voice identity the server accepted.
+  // Otherwise the primary action stays the honest send arrow.
+  function voiceAvailable() {
+    return Boolean(liveAPI && typeof liveAPI.create === "function" && key());
+  }
+
+  // The primary action is the voice picker only for a composer that can
+  // actually take a voice turn: no text, no request in flight, no open IME
+  // composition. Whitespace alone is still an empty composer.
+  function isVoicePrimaryAction() {
+    if (!voiceAvailable()) return false;
+    if (input.disabled === true) return false;
+    if (composing) return false;
+    return String(input.value || "").trim() === "";
+  }
+
   function renderWaveform() {
-    if (!wave) return;
-    const c = controller ? controller.getState() : {};
-    const on = currentMode === "live" && !c.invalidated && !c.cancelled && !!key();
-    wave.setAttribute("aria-pressed", on ? "true" : "false");
-    wave.setAttribute("data-voice-mode", currentMode);
-    wave.disabled = !key() || !liveAPI || typeof liveAPI.create !== "function";
+    send.setAttribute("data-voice-mode", currentMode);
+    syncPrimaryAction();
+  }
+
+  // One slot, two faces: the waveform while the composer is empty, the arrow
+  // once there is something to send. The slot itself never moves.
+  function syncPrimaryAction() {
+    const voice = isVoicePrimaryAction();
+    const arrow = send.querySelector(".send-arrow-icon");
+    const waveIcon = send.querySelector(".send-waveform-icon");
+    if (arrow) arrow.hidden = voice;
+    if (waveIcon) waveIcon.hidden = !voice;
+    send.dataset.primaryAction = voice ? "voice" : "send";
+    if (voice) {
+      send.setAttribute("aria-haspopup", "menu");
+      send.setAttribute("aria-expanded", menuOpen ? "true" : "false");
+      send.setAttribute("aria-label", pickerTitle());
+      send.setAttribute("title", pickerTitle());
+      send.setAttribute("data-padiem-tooltip", pickerTitle());
+      send.setAttribute("aria-pressed", currentMode === "live" ? "true" : "false");
+      return;
+    }
+    send.removeAttribute("aria-haspopup");
+    send.setAttribute("aria-expanded", "false");
+    send.removeAttribute("aria-pressed");
+    send.setAttribute("aria-label", sendLabel());
+    send.setAttribute("title", sendTitle());
+    send.setAttribute("data-padiem-tooltip", sendTitle());
   }
 
   function escapeHtml(value) {
@@ -113,8 +157,8 @@
   }
 
   function placeMenu() {
-    if (!wave || !menu || !menuOpen) return;
-    const rect = wave.getBoundingClientRect();
+    if (!menu || !menuOpen) return;
+    const rect = send.getBoundingClientRect();
     const top = rect.bottom + 6;
     const left = Math.max(4, Math.min(rect.left, doc.documentElement.clientWidth - menu.offsetWidth - 8));
     menu.style.left = left + "px";
@@ -131,7 +175,7 @@
     syncIdentity();
     menu.hidden = false;
     menuOpen = true;
-    wave.setAttribute("aria-expanded", "true");
+    send.setAttribute("aria-expanded", "true");
     placeMenu();
     renderItems();
   }
@@ -140,7 +184,7 @@
     if (!menuOpen) return;
     menu.hidden = true;
     menuOpen = false;
-    wave.setAttribute("aria-expanded", "false");
+    send.setAttribute("aria-expanded", "false");
   }
 
   function renderItems() {
@@ -177,42 +221,6 @@
     }
   }
 
-  wave = doc.createElement("button");
-  wave.type = "button";
-  wave.id = "voiceWaveformButton";
-  wave.className = "voice-waveform-button";
-  wave.setAttribute("aria-label", pickerTitle());
-  wave.setAttribute("data-locale-aria-label", "voice-mode");
-  // Owner 2026-10-20: the hint uses the shared PADIEM chip tooltip.
-  wave.setAttribute("data-padiem-tooltip", pickerTitle());
-  wave.setAttribute("title", pickerTitle());
-  wave.setAttribute("data-locale-title", "voice-mode");
-  wave.setAttribute("aria-expanded", "false");
-  wave.setAttribute("aria-haspopup", "menu");
-  const svgNs = "http://www.w3.org/2000/svg";
-  const svg = doc.createElementNS(svgNs, "svg");
-  svg.setAttribute("aria-hidden", "true");
-  svg.setAttribute("focusable", "false");
-  svg.setAttribute("width", "20");
-  svg.setAttribute("height", "20");
-  svg.setAttribute("viewBox", "0 0 24 24");
-  const path = doc.createElementNS(svgNs, "path");
-  path.setAttribute("d", "M7 16v2a6 6 0 0 0 12 0v-2M12 20v1M7 10v2a4 4 0 0 0 8 0v-2M12 14v1M7 4v2a2 2 0 0 0 4 0v-2M12 8v1");
-  path.setAttribute("stroke", "currentColor");
-  path.setAttribute("stroke-width", "2.2");
-  path.setAttribute("stroke-linecap", "round");
-  path.setAttribute("stroke-linejoin", "round");
-  path.setAttribute("fill", "none");
-  svg.appendChild(path);
-  wave.appendChild(svg);
-  const srOnly = doc.createElement("span");
-  srOnly.className = "sr-only";
-  srOnly.textContent = pickerTitle();
-  wave.appendChild(srOnly);
-  const mic = doc.getElementById("voiceMicButton");
-  if (mic && mic.parentNode === actions) actions.insertBefore(wave, mic.nextSibling);
-  else actions.appendChild(wave);
-
   menu = doc.createElement("div");
   menu.id = "voiceModeMenu";
   menu.className = "voice-mode-menu";
@@ -235,10 +243,11 @@
   });
   doc.body.appendChild(menu);
 
-  wave.addEventListener("click", function (event) {
+  // The primary action slot: with an empty composer it opens the voice mode
+  // picker, with text it is the ordinary send button.
+  send.addEventListener("click", function (event) {
+    if (!isVoicePrimaryAction()) return;
     event.preventDefault();
-    event.stopPropagation();
-    if (wave.disabled) return;
     if (menuOpen) closeMenu(); else openMenu();
   });
 
@@ -256,13 +265,20 @@
   }
 
   win.addEventListener("click", function (event) {
-    if (menuOpen && menu && !menu.contains(event.target) && event.target !== wave) closeMenu();
+    if (menuOpen && menu && !menu.contains(event.target) && event.target !== send) closeMenu();
   });
   win.addEventListener("keydown", function (event) {
     if (menuOpen && event.key === "Escape") closeMenu();
   });
   win.addEventListener("padiem:auth-state", syncIdentityAndState);
   win.addEventListener("padiem:voice-identity", syncIdentityAndState);
+  win.addEventListener("padiem:localechange", syncIdentityAndState);
+  // The composer owns the input value; this module only reads it. Every
+  // composer change (typing, IME, paste, a committed voice transcript, a
+  // cleared composer) re-reads the value and moves the slot.
+  input.addEventListener("input", syncPrimaryAction);
+  input.addEventListener("compositionstart", function () { composing = true; syncPrimaryAction(); });
+  input.addEventListener("compositionend", function () { composing = false; syncPrimaryAction(); });
   if (shell && win.MutationObserver) {
     new win.MutationObserver(syncIdentityAndState).observe(shell, {attributes: true, attributeFilter: ["data-state"]});
   }
@@ -321,6 +337,10 @@
     isCallActive: isCallActive,
     selectMode: selectMode,
     closeMenu: closeMenu,
+    // #5561: the primary action slot is shared by the voice waveform and the
+    // send arrow, so the composer authority asks this module for the state.
+    isVoicePrimaryAction: isVoicePrimaryAction,
+    syncPrimaryAction: syncPrimaryAction,
   };
   renderWaveform();
 })(window, document);

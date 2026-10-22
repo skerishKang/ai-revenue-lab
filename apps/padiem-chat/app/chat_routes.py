@@ -41,6 +41,7 @@ from .model_policy import model_supports, request_tier_context, resolve_request_
 from .central_model_route_runtime import chat_request_tier_context
 from .final_dispatch_guard_wiring import apply_guard_to_client, create_guard_from_request
 from .member_grade_access import selected_admin_denial, selected_grade_denial
+from .tier_identity_client import is_padiem_identity_question
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
 from .request_contract import (
@@ -396,8 +397,12 @@ async def api_chat_stream(request: Request):
         )
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    identity_question = is_padiem_identity_question(latest_user_text)
     try:
-        drive_context, drive_sources = await drive_general_grounding(request, latest_user_text)
+        drive_context, drive_sources = (
+            (None, ()) if identity_question
+            else await drive_general_grounding(request, latest_user_text)
+        )
     except DriveGroundingError as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
     if drive_context:
@@ -457,6 +462,7 @@ async def api_chat_stream(request: Request):
                 headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
             )
 
+
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
     needs_native_calendar = False
@@ -510,7 +516,7 @@ async def api_chat_stream(request: Request):
 
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
     try:
-        auto_plan = None if drive_context else await auto_grounding.prepare(
+        auto_plan = None if (drive_context or identity_question) else await auto_grounding.prepare(
             messages,
             skill=skill,
             additional_system_context=reference_context,
@@ -858,8 +864,12 @@ async def api_chat(request: Request) -> JSONResponse:
         return JSONResponse(public_chat_result(result))
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    identity_question = is_padiem_identity_question(latest_user_text)
     try:
-        drive_context, drive_sources = await drive_general_grounding(request, latest_user_text)
+        drive_context, drive_sources = (
+            (None, ()) if identity_question
+            else await drive_general_grounding(request, latest_user_text)
+        )
     except DriveGroundingError as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
     if drive_context:
@@ -948,7 +958,7 @@ async def api_chat(request: Request) -> JSONResponse:
         async with chat_request_tier_context(request, raw.get("tier", "free")):
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
-                auto_decision = None if image_attachments or drive_context else auto_grounding.decide(messages, skill=skill)
+                auto_decision = None if image_attachments or drive_context or identity_question else auto_grounding.decide(messages, skill=skill)
 
                 async def _plain_completion() -> dict[str, Any]:
                     client: B14Client = request.app.state.b14_client

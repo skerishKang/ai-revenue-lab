@@ -348,6 +348,10 @@ async def call_platform_chat_completions(
     temperature: float | None = None,
     max_tokens: int | None = None,
     model_parameters: dict[str, Any] | None = None,
+    # #5536: the model-native tool channel. The declaration travels with the
+    # request, and the tool choice selects how the model may use it.
+    tools: list[dict[str, Any]] | None = None,
+    tool_choice: Any = None,
     transport: httpx.AsyncBaseTransport | None = None,
     session_id: str | None = None,
 ) -> dict[str, Any]:
@@ -379,6 +383,11 @@ async def call_platform_chat_completions(
         if model_parameters:
             from .errors import InvalidRequest
             raise InvalidRequest("Unverified model-native parameters for OpenCode Go.")
+        if tools:
+            # #5536: the OpenCode Go wire carries no tool declaration, so a
+            # tool request is refused rather than silently dropped.
+            from .errors import InvalidRequest
+            raise InvalidRequest("Unverified tool declaration for OpenCode Go.")
         return await call_go_model(
             model_id=model_id, upstream_model=upstream_model, messages=messages,
             session_id=session_id, max_tokens=max_tokens, temperature=temperature,
@@ -401,6 +410,12 @@ async def call_platform_chat_completions(
     # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # #5536: the tool declaration and the tool choice travel with the
+    # request. They are present only when the caller declared a tool.
+    if tools:
+        body["tools"] = list(tools)
+    if tool_choice is not None:
+        body["tool_choice"] = tool_choice
     # Re-validate direct adapter calls too. A caller must not bypass the
     # exact-model vendor API allow-list by skipping the gateway.
     if model_parameters:
@@ -471,7 +486,8 @@ async def call_platform_chat_completions(
 
     # HTTP 200 with choices but no user-visible text is NOT a valid completion.
     # A small output budget may exhaust on reasoning alone; never call it success.
-    require_completed_text_answer(response_data)
+    # #5536: a declared tool makes a tool call a valid answer of its own.
+    require_completed_text_answer(response_data, allow_tool_calls=bool(tools))
     choices = response_data["choices"]
 
     usage = response_data.get("usage")

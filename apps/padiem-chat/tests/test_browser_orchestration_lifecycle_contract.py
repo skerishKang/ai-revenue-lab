@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import re
+import os
 import subprocess
+import tempfile
 from pathlib import Path
 
 
@@ -13,12 +15,20 @@ CORE_EVENTS_PATH = REPO_ROOT / "packages" / "padiem-ai-core" / "padiem_ai_core" 
 
 
 def _run_node(script: str) -> dict:
-    completed = subprocess.run(
-        ["node", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    # The script runs from a temporary file. An inline argument would hit the
+    # Windows command-line limit as soon as the module it exercises grows.
+    with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8", newline="\n") as handle:
+        handle.write(script)
+        path = handle.name
+    try:
+        completed = subprocess.run(
+            ["node", path],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    finally:
+        os.unlink(path)
     return json.loads(completed.stdout)
 
 

@@ -133,6 +133,19 @@ _REQUEST_TIER_ID: ContextVar[str | None] = ContextVar(
     "padiem_request_tier_id",
     default=None,
 )
+_VERIFIED_MEMBER_GRADE: ContextVar[str | None] = ContextVar(
+    "padiem_verified_member_grade", default=None
+)
+
+
+def bind_verified_member_grade(tier_id: str | None) -> None:
+    """Bind a server-read membership grade to this request task."""
+    normalized = tier_id.strip().lower() if isinstance(tier_id, str) else None
+    _VERIFIED_MEMBER_GRADE.set(normalized if normalized in {"free", "plus", "pro", "max"} else None)
+
+
+def current_verified_member_grade() -> str | None:
+    return _VERIFIED_MEMBER_GRADE.get()
 # #4428: an exact model resolved from the central per-tier route for THIS
 # request task. It replaces only the static primary of the matching grade and
 # is never used to grant a higher membership tier.

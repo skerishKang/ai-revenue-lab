@@ -21,8 +21,13 @@ B14_IMPORT = re.compile(
     r"|from\s+app\s+import\s+b14_client)\b",
     re.MULTILINE,
 )
-# These execute the checked-in B14 source or read its authority directly.
+# These are B14-managed boundary tests that reach the checked-in B14 source or
+# the shared dispatch authority without a static app.b14_client import. The
+# two route-level Chat tests read the identity authority from Core after the
+# #5347 tier-aware instruction replaced the fixed module constant.
 B14_SOURCE_READERS = frozenset({
+    "test_attachments.py",
+    "test_auto_grounding.py",
     "test_b66_3906_reasoning_level.py",
     "test_b66_real_b14_source_authority.py",
     "test_tier_route_consumer_coverage.py",

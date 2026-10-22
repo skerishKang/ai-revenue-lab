@@ -13,6 +13,7 @@ from starlette.routing import Route
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .central_model_route_runtime import chat_request_tier_context
+from .grounding import GroundingError
 from .history import HistoryForbidden, HistoryStore
 from .history import PRODUCT_SCOPE_CHAT
 from .member_grade_access import selected_admin_denial, selected_grade_denial
@@ -22,6 +23,7 @@ from .model_policy import (
     resolve_request_model_policy,
 )
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
+from .public_chat import public_chat_result
 from .request_contract import BrowserRequestError, _validate_payload
 from .usage_gate import UsageGate
 
@@ -184,11 +186,35 @@ async def _run_pc_lane(
 class _PcLaneRefusal(Exception):
     """A bounded refusal from the existing PC lane."""
 
-    def __init__(self, code: str, message: str, status_code: int) -> None:
+    def __init__(self, code: str, user_message: str, status_code: int) -> None:
         super().__init__(code)
         self.code = code
-        self.message = message
+        self.user_message = user_message
         self.status_code = status_code
+
+
+def public_grounding_evidence(items: Any) -> list[dict[str, Any]]:
+    """The browser-safe evidence projection for a grounded answer.
+
+    The same allowlisted projection the Chat stream route uses: a title, a
+    public URL, a snippet, the retrieval time and the source type. The
+    provider identity stays server-side.
+    """
+    raw = [
+        {
+            "id": item.id,
+            "title": item.title,
+            "url": item.url,
+            "snippet": item.snippet,
+            "retrieved_at": item.retrieved_at,
+            "provider": item.provider,
+            "source_type": item.source_type,
+        }
+        for item in items
+    ]
+    projected = public_chat_result({"evidence": raw})
+    evidence = projected.get("evidence", [])
+    return evidence if isinstance(evidence, list) else []
 
 
 async def api_orchestration(request: Request) -> JSONResponse:
@@ -281,7 +307,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             conversation_messages=messages,
         )
     except _PcLaneRefusal as exc:
-        return _error(exc.code, exc.message, exc.status_code)
+        return _error(exc.code, exc.user_message, exc.status_code)
     if pc_lane_answer is not None:
         # The PC lane already persisted the verified exchange in its own
         # conversation, so the answer is not stored a second time here.
@@ -293,6 +319,31 @@ async def api_orchestration(request: Request) -> JSONResponse:
         if pc_lane_conversation_id is not None:
             payload["conversation_id"] = pc_lane_conversation_id
         return JSONResponse(payload, headers={"Cache-Control": "no-store"})
+    # #4469: in production the PADIEM Chat composer is answered by THIS lane
+    # (the browser tries the orchestration route first), so the shared public
+    # web search has to run here as well. The existing Core search decision,
+    # the existing TinyFish/Daum provider and the existing evidence
+    # projection are reused unchanged: only the lane that actually answers the
+    # turn now runs the retrieval. A request that needs no current external
+    # fact still performs no provider call.
+    auto_grounding = getattr(request.app.state, "auto_grounding", None)
+    prepare_grounding = getattr(auto_grounding, "prepare", None)
+    grounding_context: str | None = None
+    grounded_evidence: list[dict[str, Any]] = []
+    if callable(prepare_grounding):
+        try:
+            auto_plan = await prepare_grounding(
+                messages,
+                skill=skill,
+                additional_system_context=None,
+            )
+        except GroundingError as exc:
+            return _error(exc.code, exc.user_message, exc.status_code)
+        prepared = getattr(auto_plan, "prepared", None)
+        if prepared is not None:
+            grounding_context = prepared.context
+            grounded_evidence = public_grounding_evidence(prepared.evidence)
+
     try:
         result = await bridge.start(
             user_id=uid,
@@ -301,6 +352,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             model_id=policy.model_id,
             user_text=user_text,
             conversation_id=conversation_id,
+            additional_system_context=grounding_context,
         )
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)
@@ -317,6 +369,12 @@ async def api_orchestration(request: Request) -> JSONResponse:
         "answer": result.answer,
         "decision_status": result.decision_status,
     }
+    if grounded_evidence:
+        # The browser contract for a grounded answer: the same tool marker and
+        # the same public evidence the Chat stream route already returns.
+        payload["answer_status"] = "answered_with_evidence"
+        payload["evidence"] = grounded_evidence
+        payload["tool"] = {"id": "web_search", "title": "웹 검색"}
     if saved_id is not None:
         payload["conversation_id"] = saved_id
     return JSONResponse(payload)

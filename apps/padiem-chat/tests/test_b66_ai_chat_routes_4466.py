@@ -43,7 +43,8 @@ class FakeDialogueClient:
         return None
 
     async def complete_registered_b66_chat_model(
-        self, messages, *, model, additional_system_context=None, model_parameters=None
+        self, messages, *, model, additional_system_context=None, model_parameters=None,
+        product_tier="free", verified_identity_tier=None,
     ):
         self.calls.append((messages, model, additional_system_context, model_parameters))
         return {
@@ -372,4 +373,3 @@ def test_dialogue_prompt_declares_real_quote_boundaries_not_extraction():
     # Dialogue is consultation, never the CGI quote field extractor.
     for extraction_only in ("supplyAmount", "grandTotal", "JSON만 반환"):
         assert extraction_only not in system, extraction_only
-

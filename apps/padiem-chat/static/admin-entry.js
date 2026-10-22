@@ -1,8 +1,17 @@
-/* #5108: reveal the admin hub entry only for the server-attested role. */
+/* #5108: reveal the admin hub entry only for the server-attested role.
+ * #5560: the hub entry moved from the sidebar bottom into Settings, so the
+ * same server check owns the Settings section that carries it.
+ */
 (() => {
   "use strict";
   const link = document.getElementById("adminHubLink");
   if (!link) return;
+  const section = document.getElementById("adminSettingsSection");
+
+  function apply(authorized) {
+    link.hidden = !authorized;
+    if (section) section.hidden = !authorized;
+  }
 
   async function refresh() {
     try {
@@ -12,16 +21,18 @@
         cache: "no-store",
       });
       if (!response.ok) {
-        link.hidden = true;
+        apply(false);
+        delete link.dataset.role;
         return;
       }
       const data = await response.json();
       const authorized = Boolean(data && data.authenticated === true && typeof data.role === "string");
-      link.hidden = !authorized;
+      apply(authorized);
       if (authorized) link.dataset.role = data.role;
       else delete link.dataset.role;
     } catch (_) {
-      link.hidden = true;
+      apply(false);
+      delete link.dataset.role;
     }
   }
 

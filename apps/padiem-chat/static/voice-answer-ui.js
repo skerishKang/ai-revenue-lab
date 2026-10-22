@@ -1,6 +1,11 @@
 // #4816: answer listen/stop for M3 ("문자 + 음성 재생").
 // Existing browser speechSynthesis only; explicit user click starts playback.
 // Auto-speaks newly arrived answers only while M3 is the active mode.
+//
+// #5559: the answer used to carry two identical playback controls, one next to
+// the product name and one in the answer action row. The action row is the one
+// that stays, so this module owns the M3 auto-speech only. It marks the turn
+// as speaking, and the single answer action can stop it.
 (function (win, doc) {
   "use strict";
   const ttsAPI = win.PadiemVoiceTTSOutput;
@@ -9,7 +14,7 @@
   if (!ttsAPI || typeof ttsAPI.create !== "function") return;
 
   let tts = null;
-  let currentButton = null;
+  let currentArticle = null;
   let pendingSpeech = [];
   let lastAutoText = "";
   const ko = () => /^ko/i.test(doc.documentElement.lang || "ko");
@@ -25,21 +30,17 @@
     } catch (_) {}
     return fallback;
   }
-  const playText = () => localeText("answer-listen", ko() ? "음성 듣기" : "Listen");
-  const stopText = () => localeText("answer-listen-stop", ko() ? "음성 정지" : "Stop listening");
   const errorText = () => localeText("voice-speech-unavailable", ko() ? "음성 재생 불가" : "Speech unavailable");
 
   function resetButton() {
-    if (currentButton) {
-      currentButton.textContent = playText();
-      currentButton.setAttribute("aria-label", playText());
-      currentButton.setAttribute("aria-pressed", "false");
-    }
-    currentButton = null;
+    // The single answer action at the bottom of the answer owns the playback
+    // control, so there is no second button to relabel here.
+    if (currentArticle) currentArticle.dataset.ttsSpeaking = "false";
+    currentArticle = null;
     pendingSpeech = [];
   }
 
-  function speakText(text) {
+  function speakText(text, article) {
     const parts = [];
     let left = String(text || "").trim();
     while (left) {
@@ -52,47 +53,21 @@
     if (!parts.length) return false;
     tts.start();
     pendingSpeech = parts.slice(1);
+    if (article) {
+      currentArticle = article;
+      article.dataset.ttsSpeaking = "true";
+    }
     return tts.speakText(parts[0]) !== false;
-  }
-
-  function attach(article) {
-    if (article.querySelector(".voice-answer-listen")) return;
-    const content = article.querySelector(".assistant-content");
-    if (!content) return;
-    const meta = article.querySelector(".assistant-meta") || content.parentNode;
-    if (!meta) return;
-    const b = doc.createElement("button");
-    b.type = "button";
-    b.className = "voice-answer-listen";
-    b.setAttribute("aria-label", playText());
-    window.PadiemSharedTooltip?.label?.(b, playText());
-    b.setAttribute("aria-pressed", "false");
-    b.textContent = playText();
-    b.disabled = !tts.isSupported();
-    b.addEventListener("click", function () {
-      if (currentButton === b) { tts.stopOutput(); resetButton(); return; }
-      tts.cancel(); resetButton();
-      const text = content.innerText || content.textContent || "";
-      if (!text) return;
-      currentButton = b;
-      b.setAttribute("aria-pressed", "true");
-      b.setAttribute("aria-label", stopText());
-      window.PadiemSharedTooltip?.label?.(b, stopText());
-      b.textContent = stopText();
-      speakText(text);
-    });
-    meta.appendChild(b);
   }
 
   function handleAnswer(article) {
     if (!article || article.nodeType !== 1) return;
-    attach(article);
     const content = article.querySelector(".assistant-content");
     const text = content ? (content.innerText || content.textContent || "").trim() : "";
     if (menuAPI && typeof menuAPI.isTtsActive === "function" && menuAPI.isTtsActive() &&
         text && text !== lastAutoText) {
       lastAutoText = text;
-      setTimeout(function () { speakText(text); }, 0);
+      setTimeout(function () { speakText(text, article); }, 0);
     }
   }
 
@@ -116,13 +91,13 @@
   tts = ttsAPI.create({  // single shared instance; overrides placeholder above
     lang: "ko-KR",
     onEnd: function () {
-      if (currentButton && pendingSpeech.length) {
+      if (currentArticle && pendingSpeech.length) {
         const next = pendingSpeech.shift();
         if (!tts.speakText(next)) resetButton();
       } else resetButton();
     },
     onError: function () {
-      if (currentButton) currentButton.textContent = errorText();
+      if (currentArticle) currentArticle.dataset.ttsSpeaking = "false";
       pendingSpeech = [];
     }
   });
@@ -139,7 +114,7 @@
 
   win.PadiemVoiceAnswer = {
     isSupported: tts.isSupported,
-    speak: speakText,
+    speak: function (text) { return speakText(text, null); },
     stop: function () { tts.stopOutput(); resetButton(); },
     getState: tts.getState ? tts.getState() : {supported: tts.isSupported()}
   };

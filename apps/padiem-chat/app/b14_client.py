@@ -32,13 +32,14 @@ from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
 
 from padiem_ai_core.dispatch_preinstruction import (
     render_dispatch_preinstruction,
+    render_product_identity_instruction,
     server_wall_clock,
 )
 
 from .attachments import ImageAttachment
 from .request_telemetry import emit_stage_event
 from .config import Settings
-from .model_policy import ModelPolicyError, model_supports, resolve_request_model_policy
+from .model_policy import ModelPolicyError, current_request_tier_id, model_supports, resolve_request_model_policy
 from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
 # #4379: the provider context carries no PADIEM byte total. The provider and
@@ -54,12 +55,14 @@ MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES  # imp
 # grounded only in actual model/routing information provided to this
 # conversation; fabricating a provider/model identity is forbidden.
 PADIEM_IDENTITY_INSTRUCTION = (
-    "당신은 파디엠챗의 AI 어시스턴트입니다. 제품 정체성 외의 모델 이름, 제조사, 버전, "
-    "아키텍처를 먼저 말하지 마세요. '너 누구야?'에는 파디엠챗의 AI 어시스턴트로 답하세요. "
-    "사용자가 명시적으로 현재 모델이나 제조사를 물으면, 이 대화 지침이나 이번 요청 "
-    "문맥에 제공된 실제 모델 정보가 있을 때만 그 근거로 정확히 답하고, 확인하지 "
-    "못한 모델이나 제조사를 추측해서 말하지 마세요."
+    render_product_identity_instruction("chat", None)
 )
+
+
+def _chat_product_identity_instruction() -> str:
+    """Use the request-scoped, server-authorized tier; never infer Free."""
+    tier = current_request_tier_id()
+    return render_product_identity_instruction("chat", tier)
 
 
 class B14ServiceTransport(Protocol):
@@ -343,6 +346,8 @@ def _agent_profile(
     all (B66 quote extraction) passes ``None`` so the Chat brand cannot reach it.
     """
 
+    if product_identity == PADIEM_IDENTITY_INSTRUCTION:
+        product_identity = _chat_product_identity_instruction()
     skill_instruction = skill.system_instruction
     if product_identity is not None and skill_instruction:
         system_instruction = f"{product_identity} {skill_instruction}"
@@ -852,6 +857,7 @@ class B14Client:
         additional_system_context: str | None = None,
         model_parameters: Mapping[str, Any] | None = None,
         product_tier: str = "free",
+        verified_identity_tier: str | None = None,
     ) -> dict[str, Any]:
         """Authenticated B66 ordinary model conversation, never quote extraction.
 
@@ -890,7 +896,8 @@ class B14Client:
             title="B66 AI conversation",
             short_description="Natural-language quoting consultation without write authority",
             system_instruction=(
-                "당신은 PADIEM B66의 실제 AI 견적 상담사입니다. 인사·일반 질문·일상 대화에도 "
+                render_product_identity_instruction("b66", verified_identity_tier)
+                + " 당신은 PADIEM B66의 AI 견적 상담사입니다. 인사·일반 질문·일상 대화에도 "
                 "자연스럽게 답하세요. "
                 "사용자가 견적을 만들고 싶다고 하면 '한 번에 설명하기'와 '질문에 답하며 작성하기' "
                 "두 가지 방법을 안내하고, 이미 제공한 정보는 다시 질문하지 마세요. "

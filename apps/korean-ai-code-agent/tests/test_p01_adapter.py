@@ -830,6 +830,6 @@ def test_explicit_free_choice_allows_only_free_registered_ids():
 def test_claw_dispatch_carries_the_claw_product_identity():
     from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
     profile = _agent_profile(ProductTierLabel.FREE, selected_model_id=FREE_PRIMARY_B14_MODEL_ID)
-    assert profile.system_instruction == PADIEM_CLAW_IDENTITY_INSTRUCTION
-    assert profile.system_instruction.startswith("당신은 파디엠클로의 AI 어시스턴트입니다")
+    assert "당신은 PADIEM CLAW의 PADIEM Free 모드입니다." in profile.system_instruction
+    assert "기반 모델명" in profile.system_instruction
     assert "파디엠챗" not in profile.system_instruction

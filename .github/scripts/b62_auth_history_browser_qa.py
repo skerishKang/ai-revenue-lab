@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Page, Route, async_playwright
 
+from b62_settings_actions import sign_out_via_settings
+
 
 BASE_URL = os.environ.get("B62_AUTH_HISTORY_QA_BASE_URL", "http://127.0.0.1:8769")
 OUT_DIR = Path(os.environ.get("B62_AUTH_HISTORY_QA_OUT_DIR", ".tmp/b62-auth-history-browser-qa"))
@@ -336,7 +338,9 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await page.screenshot(path=str(OUT_DIR / f"{name}-history-new-chat.png"), full_page=True)
 
     await _open_sidebar_if_mobile(page, mobile)
-    await page.locator("#loginButton").click()
+    # #5560: the sign-out control moved into Settings > Account. The session
+    # invalidation and the guest projection are the same.
+    await sign_out_via_settings(page, label=f"{name}-logout")
     await page.wait_for_function(
         "() => document.getElementById('loginButton')?.textContent.trim() === '로그인' && document.getElementById('historySection')?.hidden === true",
         timeout=5_000,

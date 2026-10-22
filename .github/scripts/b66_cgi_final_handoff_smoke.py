@@ -40,10 +40,21 @@ FOLLOWUP_TEXT = "미터당 18000원"
 
 CLAW_TARGET_URL = "https://chat.padiem.net/"
 CLAW_GENERAL_PATH = "/api/claw/general"
+CLAW_CAPABILITIES_PATH = "/api/claw/general/capabilities"
 CLAW_SYNTHETIC_PROMPT = "테스트입니다. 한 문장으로 정상 작동 중이라고 답해주세요."
 # #3554: prior owner-selected, existing B14 registered model; no auto-selection.
-CLAW_OWNER_SELECTED_MODEL_ID = "agnes-ai/agnes-3.0-flash"
+# 2026-10-23 owner instruction: Agnes is retired from testing. Pin the
+# administrator-lane Muse model that is already the executable Plus/Pro/Max
+# primary route; the product tier declaration and B14 stay the authorities.
+CLAW_OWNER_SELECTED_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
+# One bounded dispatch per lane; the smoke runs two lanes, never a retry.
+CLAW_LANES = ("live", "evidence")
 MAX_CLAW_GENERAL_POSTS = 1
+MAX_CLAW_MODEL_DISPATCHES = 2
+CLAW_LIVE_MAX_BODY_BYTES = 2_000_000
+# Both synthetic lanes dispatch the same owner-selected model; pace the second
+# call so a provider per-minute limit is not misread as a Claw failure.
+CLAW_INTER_LANE_PAUSE_SECONDS = 65
 
 # #3751: interpretation errors have two independent 502 owners. Mirror the
 # exact product-owned header vocabulary; .github/tests checks it against the
@@ -125,7 +136,10 @@ CLAW_FAILURE_DETAIL_VOCABULARY = frozenset(
 )
 CLAW_ADMISSION_DENIED_DETAIL = "engine_admission_denied"
 _EVIDENCE_RUN_ID_RE = re.compile(r"^run_[0-9a-f]{24}$")
+_CONVERSATION_ID_RE = re.compile(r"^chat_[0-9a-f]{32}$")
 _EVIDENCE_VALUE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$")
+# B14 reports its selected route as `platform:<provider>/<model>` (#5484).
+_EVIDENCE_ROUTE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_./:-]{0,79}$")
 _EVIDENCE_ATTEMPTS_RE = re.compile(r"^\d{1,2}$")
 
 
@@ -178,7 +192,12 @@ def _bounded_evidence_headers(headers: object) -> dict[str, str]:
                 continue
             extracted[name] = value
             continue
-        pattern = _EVIDENCE_RUN_ID_RE if name == "x-padiem-claw-run-id" else _EVIDENCE_VALUE_RE
+        if name == "x-padiem-claw-run-id":
+            pattern = _EVIDENCE_RUN_ID_RE
+        elif name == "x-padiem-selected-route-id":
+            pattern = _EVIDENCE_ROUTE_ID_RE
+        else:
+            pattern = _EVIDENCE_VALUE_RE
         if not pattern.fullmatch(value):
             continue
         extracted[name] = value
@@ -344,6 +363,123 @@ def _canonical_admission_result(detail: str | None) -> str:
     return "UNPROVEN"
 
 
+def _parse_claw_live_sse(body_text: object) -> dict[str, object]:
+    """Validate the opt-in live Claw stream and return bounded evidence only.
+
+    The live lane deliberately exposes no provider headers (the route refuses
+    live+evidence together), so the verified terminal frame, the single answer
+    delta and the done frame are the load-bearing completion evidence. No
+    prompt or answer text is returned or printed.
+    """
+    if not isinstance(body_text, str) or len(body_text.encode("utf-8")) > CLAW_LIVE_MAX_BODY_BYTES:
+        raise SmokeFailure("claw_live_body_guard")
+    frames: list[tuple[str, dict]] = []
+    for block in body_text.split("\n\n"):
+        name = None
+        data_lines: list[str] = []
+        for line in block.splitlines():
+            if line.startswith("event: "):
+                name = line[len("event: "):].strip()
+            elif line.startswith("data: "):
+                data_lines.append(line[len("data: "):])
+        if name is None:
+            continue
+        if name not in ("p01_event", "delta", "done", "error"):
+            raise SmokeFailure("claw_live_unknown_frame")
+        try:
+            payload = json.loads("\n".join(data_lines))
+        except ValueError:
+            raise SmokeFailure("claw_live_json_shape") from None
+        if not isinstance(payload, dict):
+            raise SmokeFailure("claw_live_json_shape")
+        frames.append((name, payload))
+    error_frames = [payload for name, payload in frames if name == "error"]
+    if error_frames:
+        # The live stream carries no evidence headers; the bounded terminal
+        # code/detail in the error frame is the only provider classification.
+        error_code, error_detail = _bounded_error_class(json.dumps(error_frames[0]))
+        print("CLAW_LIVE_ERROR_CODE=" + (error_code or "NONE"))
+        print("CLAW_LIVE_ERROR_DETAIL=" + (error_detail or "NONE"))
+        # #5484: identify the failed run from the Core-validated events already
+        # delivered before the error, so a recurrence is traceable by run_id
+        # without logging any prompt, answer or error message text.
+        print("CLAW_LIVE_FRAMES=" + _bounded_frame_presence(body_text))
+        run_id, trace_id = _bounded_stream_identity(frames)
+        print("CLAW_LIVE_RUN_ID=" + (run_id or "NONE"))
+        print("CLAW_LIVE_TRACE_ID=" + (trace_id or "NONE"))
+        raise SmokeFailure("claw_live_error_event")
+    events = [payload for name, payload in frames if name == "p01_event"]
+    deltas = [payload for name, payload in frames if name == "delta"]
+    dones = [payload for name, payload in frames if name == "done"]
+    if not events or len(deltas) != 1 or len(dones) != 1:
+        raise SmokeFailure("claw_live_frame_count")
+    identities = {
+        (event.get("run_id"), event.get("trace_id"), event.get("app_id"))
+        for event in events
+    }
+    if len(identities) != 1 or not all(identities.pop()):
+        raise SmokeFailure("claw_live_identity")
+    sequences = [event.get("sequence") for event in events]
+    if not all(
+        isinstance(sequence, int) and not isinstance(sequence, bool)
+        for sequence in sequences
+    ):
+        raise SmokeFailure("claw_live_sequence")
+    if any(later <= earlier for earlier, later in zip(sequences, sequences[1:])):
+        raise SmokeFailure("claw_live_sequence")
+    event_ids = [event.get("event_id") for event in events]
+    if not all(isinstance(event_id, str) and event_id for event_id in event_ids):
+        raise SmokeFailure("claw_live_identity")
+    if len(set(event_ids)) != len(event_ids):
+        raise SmokeFailure("claw_live_identity")
+    if any(event.get("delivery") != "live" for event in events):
+        raise SmokeFailure("claw_live_delivery")
+    if events[-1].get("kind") != "run_completed":
+        raise SmokeFailure("claw_live_terminal")
+    delta_text = deltas[0].get("delta")
+    if not isinstance(delta_text, str) or not delta_text.strip():
+        raise SmokeFailure("claw_live_answer_missing")
+    if dones[0].get("done") is not True:
+        raise SmokeFailure("claw_live_done_missing")
+    conversation_id = dones[0].get("conversation_id")
+    if not isinstance(conversation_id, str) or not _CONVERSATION_ID_RE.fullmatch(conversation_id):
+        raise SmokeFailure("claw_live_conversation_id")
+    return {
+        "events": len(events),
+        "delta_chars": len(delta_text),
+        "terminal_kind": "run_completed",
+        "conversation_id": conversation_id,
+    }
+
+
+def _bounded_frame_presence(body_text: object) -> str:
+    """Name only the SSE frame kinds present in a partial capture."""
+    if not isinstance(body_text, str):
+        return "none"
+    names = [
+        name
+        for name in ("p01_event", "delta", "done", "error")
+        if re.search(r"(?m)^event: " + name + r"$", body_text)
+    ]
+    return ",".join(names) if names else "none"
+
+
+def _bounded_stream_identity(
+    frames: list[tuple[str, dict]],
+) -> tuple[str | None, str | None]:
+    """First Core-validated run/trace identity in a live stream, or Nones."""
+    for name, payload in frames:
+        if name != "p01_event":
+            continue
+        run_id = payload.get("run_id")
+        trace_id = payload.get("trace_id")
+        return (
+            run_id if isinstance(run_id, str) and _EVIDENCE_VALUE_RE.fullmatch(run_id) else None,
+            trace_id if isinstance(trace_id, str) and _EVIDENCE_VALUE_RE.fullmatch(trace_id) else None,
+        )
+    return None, None
+
+
 def _is_direct_provider(url: str) -> bool:
     parsed = urlparse(url)
     host = (parsed.hostname or "").lower()
@@ -365,11 +501,12 @@ def _is_direct_provider(url: str) -> bool:
 
 
 class _ClawOutboundGuard:
-    """Pre-network one-shot enforcement; never dispatch a second model request.
+    """Pre-network per-lane bound; never dispatch a second model request.
 
     Playwright's route callback executes before an HTTP request reaches the
     network. A blocked request is counted as a violation and aborted, not
-    merely discovered later in the request observer.
+    merely discovered later in the request observer. The smoke resets the
+    counter between its two bounded lanes; no lane may retry.
     """
 
     def __init__(self) -> None:
@@ -379,7 +516,12 @@ class _ClawOutboundGuard:
         self.blocked_untrusted_claw = 0
         self.blocked_wrong_model = 0
 
-    def route_request(self, route, request) -> None:
+    def reset_lane(self) -> None:
+        # Each lane owns exactly one bounded dispatch; violations persist so
+        # an abort in any lane still fails the whole smoke.
+        self.claw_posts = 0
+
+    def route_request(self, route, request, *, continue_headers=None) -> None:
         if _is_direct_provider(request.url):
             self.blocked_direct_provider += 1
             route.abort("blockedbyclient")
@@ -405,7 +547,10 @@ class _ClawOutboundGuard:
                 route.abort("blockedbyclient")
                 return
             self.claw_posts += 1
-        route.continue_()
+        if continue_headers:
+            route.continue_(headers={**request.headers, **continue_headers})
+        else:
+            route.continue_()
 
     def violation_reason(self) -> str | None:
         if self.blocked_duplicate_posts:
@@ -427,6 +572,29 @@ class _ClawOutboundGuard:
 # Product authority: message-lifecycle.js sets article.dataset.lifecycle
 # after the terminal SSE frame is applied; disappearance of .typing alone
 # does not establish a completed user-visible answer.
+# Playwright cannot read a still-streamed SSE body via response.text(), so a
+# page-side clone observes the exact bytes the app received. It never alters
+# the request or the response, and it stores no other request body.
+CLAW_SSE_CAPTURE_JS = """(() => {
+  if (window.__clawSse) return;
+  window.__clawSse = { text: "" };
+  const original = window.fetch;
+  window.fetch = async function (input, init) {
+    const response = await original.apply(this, arguments);
+    try {
+      const url = typeof input === "string" ? input : (input && input.url) || "";
+      const method = ((init && init.method) || (input && input.method) || "GET").toUpperCase();
+      if (method === "POST"
+          && url.indexOf("/api/claw/general") !== -1
+          && url.indexOf("/capabilities") === -1) {
+        const clone = response.clone();
+        clone.text().then((text) => { window.__clawSse.text = text; }).catch(() => {});
+      }
+    } catch (error) {}
+    return response;
+  };
+})();"""
+
 CLAW_ASSISTANT_COMPLETED_JS = """before => {
   const messages = Array.from(document.querySelectorAll('#messageList .assistant-message'));
   if (messages.length !== before + 1) return false;
@@ -1147,7 +1315,11 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         return 21
 
     claw_posts = 0
+    total_claw_posts = 0
+    live_header_seen = False
     guard = _ClawOutboundGuard()
+    lane_state = {"lane": CLAW_LANES[0]}
+    lane_results: dict[str, dict[str, object]] = {}
     submit_ms = 0
     complete_ms = 0
     response_status = 0
@@ -1166,18 +1338,54 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                 viewport={"width": 1440, "height": 1100},
                 # Prevent service workers from bypassing Playwright's route guard.
                 service_workers="block",
-                # #3655: opt this one canary request flow into the chat route's
-                # bounded evidence headers; the normal user surface is unchanged.
-                extra_http_headers={CLAW_EVIDENCE_REQUEST_HEADER: CLAW_EVIDENCE_MARKER},
             )
             # Intercept every browser HTTP request before egress; unlike a
             # page.on("request") observer this can abort model calls in advance.
             def guarded_route(route) -> None:
-                nonlocal claw_posts
+                nonlocal claw_posts, total_claw_posts, live_header_seen
+                request = route.request
+                if lane_state["lane"] == "evidence":
+                    # The live lane deliberately refuses evidence headers. The
+                    # evidence lane exercises the supported non-live branch by
+                    # reporting the capability as unavailable to THIS browser,
+                    # then opts that one request into the bounded headers.
+                    parsed = urlparse(request.url)
+                    if request.method == "GET" and parsed.path == CLAW_CAPABILITIES_PATH:
+                        route.fulfill(
+                            status=200,
+                            content_type="application/json",
+                            body='{"live_events_available":false}',
+                        )
+                        return
+                    if request.method == "POST" and parsed.path == CLAW_GENERAL_PATH:
+                        before = guard.claw_posts
+                        guard.route_request(
+                            route,
+                            request,
+                            continue_headers={
+                                CLAW_EVIDENCE_REQUEST_HEADER: CLAW_EVIDENCE_MARKER,
+                            },
+                        )
+                        total_claw_posts += guard.claw_posts - before
+                        claw_posts = guard.claw_posts
+                        return
+                before = guard.claw_posts
+                if (
+                    lane_state["lane"] == "live"
+                    and request.method == "POST"
+                    and urlparse(request.url).path == CLAW_GENERAL_PATH
+                ):
+                    live_header_seen = (
+                        request.headers.get("x-padiem-claw-live") == "p01-events-v1"
+                    )
                 guard.route_request(route, route.request)
+                total_claw_posts += guard.claw_posts - before
                 claw_posts = guard.claw_posts
 
             context.route("**/*", guarded_route)
+            # Installed before any app script so the wrapped fetch is the one
+            # the transport captures at module load.
+            context.add_init_script(CLAW_SSE_CAPTURE_JS)
             page = context.new_page()
             stage = "load_chat"
             page.goto(CLAW_TARGET_URL, wait_until="domcontentloaded", timeout=30000)
@@ -1212,6 +1420,25 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             )
             print("OWNER_LOGIN=PASS")
 
+            stage = "live_capability"
+            capability = context.request.get(
+                CLAW_TARGET_URL.rstrip("/") + CLAW_CAPABILITIES_PATH
+            )
+            try:
+                capability_json = capability.json()
+            except Exception:
+                capability_json = {}
+            print("CLAW_CAPABILITY_HTTP=" + str(capability.status))
+            print(
+                "CLAW_LIVE_EVENTS_AVAILABLE="
+                + (
+                    "true"
+                    if isinstance(capability_json, dict)
+                    and capability_json.get("live_events_available") is True
+                    else "false"
+                )
+            )
+
             stage = "open_claw"
             page.locator("#clawNavButton").wait_for(state="attached", timeout=15000)
             page.evaluate("() => document.getElementById('clawNavButton')?.click()")
@@ -1234,99 +1461,227 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             )
             print("CLAW_WORKSPACE=PASS")
 
-            stage = "compose"
-            # A deployed Claw Plus model must be explicitly chosen per request.
-            # Verify the input before permitting the sole model dispatch.
-            model_input = page.locator("#clawModelIdInput")
-            model_input.wait_for(state="visible", timeout=15000)
-            model_input.fill(CLAW_OWNER_SELECTED_MODEL_ID)
-            if model_input.input_value() != CLAW_OWNER_SELECTED_MODEL_ID:
-                _fail("owner_model_selection_not_bound")
-            print("OWNER_SELECTED_MODEL_ID=" + CLAW_OWNER_SELECTED_MODEL_ID)
-            before_assistants = page.locator("#messageList .assistant-message").count()
-            before_errors = page.locator("#messageList .error-box").count()
-            page.locator("#messageInput").fill(CLAW_SYNTHETIC_PROMPT)
-            if page.locator("#sendButton").is_disabled():
-                _fail("send_button_disabled")
+            for index, lane in enumerate(CLAW_LANES):
+                if index:
+                    time.sleep(CLAW_INTER_LANE_PAUSE_SECONDS)
+                lane_state["lane"] = lane
+                guard.reset_lane()
+                claw_posts = 0
+                stage = "compose_" + lane
+                # The general Claw view presents a model-free composer and keeps
+                # the explicit-ID controls in a collapsed, tier-gated panel. The
+                # request builder still reads this input, so bind the exact
+                # owner-selected model through the same field at submit time.
+                model_input = page.locator("#clawModelIdInput")
+                model_input.wait_for(state="attached", timeout=15000)
+                before_assistants = page.locator("#messageList .assistant-message").count()
+                before_errors = page.locator("#messageList .error-box").count()
+                page.locator("#messageInput").fill(CLAW_SYNTHETIC_PROMPT)
+                if page.locator("#sendButton").is_disabled():
+                    _fail("send_button_disabled")
 
-            submit_ms = int(time.time() * 1000)
-            print("SUBMIT_MS=" + str(submit_ms))
-            stage = "submit"
-            with page.expect_response(
-                lambda response: (
-                    response.request.method == "POST"
-                    and urlparse(response.url).path == CLAW_GENERAL_PATH
-                ),
-                timeout=120000,
-            ) as claw_info:
-                page.locator("#sendButton").click()
-
-            response = claw_info.value
-            stage = "response"
-            # Inspect the submitted JSON locally, never print prompt/body bytes.
-            submitted = response.request.post_data_json
-            if not isinstance(submitted, dict) or submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID:
-                _fail("owner_model_id_not_threaded_to_claw_post")
-            print("EXPLICIT_MODEL_ID_IN_CLAW_POST=PASS")
-            response_status = response.status
-            content_type = (response.headers.get("content-type") or "").lower()
-            sse_content_type = content_type.startswith("text/event-stream")
-            evidence_headers = _bounded_evidence_headers(response.headers)
-            if response_status != 200:
-                # Read the bounded terminal class from the error envelope
-                # BEFORE failing: only the closed code/detail fields survive;
-                # the message and body text are never printed or stored.
-                terminal_error_code, terminal_error_class = _bounded_error_class(
-                    response.text()
+                # Bind at submit time: a late tier-change event clears this field.
+                model_input.evaluate(
+                    """(node, value) => {
+                      node.value = value;
+                      node.dispatchEvent(new Event('input', { bubbles: true }));
+                      node.dispatchEvent(new Event('change', { bubbles: true }));
+                    }""",
+                    CLAW_OWNER_SELECTED_MODEL_ID,
                 )
-                admission_result = _canonical_admission_result(terminal_error_class)
-                _fail("claw_general_http_" + str(response_status))
-            if not sse_content_type:
-                _fail("claw_general_not_sse")
+                if model_input.input_value() != CLAW_OWNER_SELECTED_MODEL_ID:
+                    _fail("owner_model_selection_not_bound")
+                print("OWNER_SELECTED_MODEL_ID=" + CLAW_OWNER_SELECTED_MODEL_ID)
 
-            stage = "assistant_terminal_lifecycle"
-            page.wait_for_function(
-                CLAW_ASSISTANT_COMPLETED_JS,
-                arg=before_assistants,
-                timeout=120000,
-            )
+                lane_submit_ms = int(time.time() * 1000)
+                submit_ms = lane_submit_ms
+                print("SUBMIT_MS_" + lane.upper() + "=" + str(lane_submit_ms))
+                stage = "submit_" + lane
+                with page.expect_response(
+                    lambda response: (
+                        response.request.method == "POST"
+                        and urlparse(response.url).path == CLAW_GENERAL_PATH
+                    ),
+                    timeout=120000,
+                ) as claw_info:
+                    page.locator("#sendButton").click()
 
-            stage = "assistant_projection"
-            after_assistants = page.locator("#messageList .assistant-message").count()
-            assistant_projection_count = after_assistants - before_assistants
+                response = claw_info.value
+                stage = "response_" + lane
+                # Inspect the submitted JSON locally, never print prompt/body bytes.
+                submitted = response.request.post_data_json
+                if not isinstance(submitted, dict) or submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID:
+                    _fail("owner_model_id_not_threaded_to_claw_post")
+                print("EXPLICIT_MODEL_ID_IN_CLAW_POST_" + lane.upper() + "=PASS")
+                if lane == "live":
+                    print(
+                        "CLAW_LIVE_REQUEST_HEADER="
+                        + ("PRESENT" if live_header_seen else "ABSENT")
+                    )
+                response_status = response.status
+                content_type = (response.headers.get("content-type") or "").lower()
+                sse_content_type = content_type.startswith("text/event-stream")
+                if lane == "evidence":
+                    evidence_headers = _bounded_evidence_headers(response.headers)
+                if response_status != 200:
+                    # Read the bounded terminal class from the error envelope
+                    # BEFORE failing: only the closed code/detail fields survive;
+                    # the message and body text are never printed or stored.
+                    try:
+                        error_body = response.text()
+                    except Exception:
+                        error_body = ""
+                    error_content_type = (response.headers.get("content-type") or "").lower()
+                    error_content_type = error_content_type.split(";")[0].strip()
+                    print(
+                        "CLAW_ERROR_CONTENT_TYPE="
+                        + (
+                            error_content_type
+                            if error_content_type
+                            in (
+                                "application/json",
+                                "text/html",
+                                "text/plain",
+                                "text/event-stream",
+                            )
+                            else "other"
+                        )
+                    )
+                    raw_ray = response.headers.get("cf-ray")
+                    print(
+                        "CLAW_ERROR_CF_RAY="
+                        + (
+                            raw_ray
+                            if isinstance(raw_ray, str)
+                            and re.fullmatch(r"[0-9a-f]{16,20}-[A-Z]{3}", raw_ray)
+                            else "UNAVAILABLE"
+                        )
+                    )
+                    print(
+                        "CLAW_ERROR_BODY_JSON="
+                        + ("YES" if error_body.lstrip().startswith("{") else "NO")
+                    )
+                    print(
+                        "CLAW_ERROR_BODY_HTML="
+                        + (
+                            "YES"
+                            if error_body.lstrip().lower().startswith(("<!doctype", "<html"))
+                            else "NO"
+                        )
+                    )
+                    terminal_error_code, terminal_error_class = _bounded_error_class(
+                        error_body
+                    )
+                    admission_result = _canonical_admission_result(terminal_error_class)
+                    _fail("claw_general_http_" + str(response_status))
+                if not sse_content_type:
+                    _fail("claw_general_not_sse")
 
-            if claw_posts != MAX_CLAW_GENERAL_POSTS:
-                _fail("claw_post_count_" + str(claw_posts))
-            guard.assert_clean()
-            if page.locator("#messageList .error-box").count() != before_errors:
-                _fail("visible_error_box")
-            stage = "evidence_contract"
-            # #3655 evidence bounds: the measured dispatch/fallback/projection
-            # counts are load-bearing acceptance evidence, not printed claims.
-            if assistant_projection_count != 1:
-                _fail("assistant_projection_count_" + str(assistant_projection_count))
-            attempts_value = evidence_headers.get("x-padiem-provider-attempts")
-            if attempts_value != "1":
-                _fail("provider_dispatch_count_" + (attempts_value or "MISSING"))
-            fallback_value = evidence_headers.get("x-padiem-fallback-used")
-            if fallback_value != "false":
-                _fail("fallback_used_" + (fallback_value or "MISSING"))
-            if not evidence_headers.get("x-padiem-claw-run-id"):
-                _fail("missing_claw_run_ref")
-            if not evidence_headers.get("x-padiem-orchestration-run-id"):
-                _fail("missing_orchestration_run_ref")
-            if not evidence_headers.get("x-padiem-selected-route-id"):
-                _fail("missing_selected_route_id")
-            terminal_error_class = None
-            admission_result = "PASS"
+                live = None
+                if lane == "live":
+                    # Playwright cannot read a still-streamed SSE body via
+                    # response.text(); read the page-side clone of the exact
+                    # bytes the app received. The stream closes with `done`,
+                    # so this wait also distinguishes an unfinished stream.
+                    stage = "live_stream_read"
+                    try:
+                        page.wait_for_function(
+                            "() => Boolean(window.__clawSse && window.__clawSse.text)",
+                            timeout=120000,
+                        )
+                        live_body = page.evaluate("() => window.__clawSse.text")
+                    except Exception as exc:
+                        snapshot = page.evaluate(
+                            "() => (window.__clawSse && window.__clawSse.text) || ''"
+                        )
+                        print("CLAW_LIVE_CAPTURE_CHARS=" + str(len(snapshot)))
+                        print(
+                            "CLAW_LIVE_CAPTURE_FRAMES="
+                            + _bounded_frame_presence(snapshot)
+                        )
+                        raise SmokeFailure("claw_live_stream_incomplete") from exc
+                    stage = "live_stream_contract"
+                    live = _parse_claw_live_sse(live_body)
 
-            complete_ms = int(time.time() * 1000)
+                stage = "assistant_terminal_lifecycle_" + lane
+                page.wait_for_function(
+                    CLAW_ASSISTANT_COMPLETED_JS,
+                    arg=before_assistants,
+                    timeout=120000,
+                )
+
+                stage = "assistant_projection_" + lane
+                after_assistants = page.locator("#messageList .assistant-message").count()
+                assistant_projection_count = after_assistants - before_assistants
+
+                if claw_posts != MAX_CLAW_GENERAL_POSTS:
+                    _fail("claw_post_count_" + lane + "_" + str(claw_posts))
+                guard.assert_clean()
+                if page.locator("#messageList .error-box").count() != before_errors:
+                    _fail("visible_error_box")
+                if assistant_projection_count != 1:
+                    _fail("assistant_projection_count_" + str(assistant_projection_count))
+                lane_complete_ms = int(time.time() * 1000)
+                complete_ms = lane_complete_ms
+
+                if lane == "live":
+                    stage = "live_history_readback"
+                    history = context.request.get(
+                        CLAW_TARGET_URL.rstrip("/")
+                        + "/api/conversations/"
+                        + str(live["conversation_id"])
+                    )
+                    if history.status != 200:
+                        _fail("claw_live_history_http_" + str(history.status))
+                    saved = history.json().get("conversation")
+                    saved_messages = saved.get("messages") if isinstance(saved, dict) else None
+                    if not isinstance(saved_messages, list) or len(saved_messages) < 2:
+                        _fail("claw_live_history_invalid")
+                    last_message = saved_messages[-1]
+                    last_content = (
+                        last_message.get("content")
+                        if isinstance(last_message, dict)
+                        else None
+                    )
+                    if not isinstance(last_content, str) or not last_content.strip():
+                        _fail("claw_live_history_invalid")
+                    print("CLAW_LIVE_EVENTS=" + str(live["events"]))
+                    print("CLAW_LIVE_DELTA_CHARS=" + str(live["delta_chars"]))
+                    print("CLAW_LIVE_TERMINAL_KIND=" + str(live["terminal_kind"]))
+                    print("CLAW_LIVE_HISTORY_MESSAGES=" + str(len(saved_messages)))
+                    print("CLAW_LIVE_STREAM=PASS")
+                else:
+                    stage = "evidence_contract"
+                    # #3655 evidence bounds: the measured dispatch/fallback/
+                    # projection counts are load-bearing acceptance evidence.
+                    attempts_value = evidence_headers.get("x-padiem-provider-attempts")
+                    if attempts_value != "1":
+                        _fail("provider_dispatch_count_" + (attempts_value or "MISSING"))
+                    fallback_value = evidence_headers.get("x-padiem-fallback-used")
+                    if fallback_value != "false":
+                        _fail("fallback_used_" + (fallback_value or "MISSING"))
+                    if not evidence_headers.get("x-padiem-claw-run-id"):
+                        _fail("missing_claw_run_ref")
+                    if not evidence_headers.get("x-padiem-orchestration-run-id"):
+                        _fail("missing_orchestration_run_ref")
+                    if not evidence_headers.get("x-padiem-selected-route-id"):
+                        _fail("missing_selected_route_id")
+                    terminal_error_class = None
+                    admission_result = "PASS"
+                lane_results[lane] = {
+                    "http": response_status,
+                    "projection": assistant_projection_count,
+                    "elapsed_ms": lane_complete_ms - lane_submit_ms,
+                }
+                print("CLAW_LANE_" + lane.upper() + "=PASS")
+
             context.close()
             browser.close()
 
         print("COMPLETE_MS=" + str(complete_ms))
-        print("CLAW_GENERAL_POSTS=" + str(claw_posts))
-        print("MAX_CLAW_GENERAL_POSTS=1")
+        print("CLAW_GENERAL_POSTS=" + str(total_claw_posts))
+        print("MAX_CLAW_GENERAL_POSTS=" + str(MAX_CLAW_GENERAL_POSTS))
+        print("MAX_CLAW_MODEL_DISPATCHES=" + str(MAX_CLAW_MODEL_DISPATCHES))
         print("CLAW_GENERAL_HTTP=" + str(response_status))
         print("CLAW_SSE_CONTENT_TYPE=" + ("PASS" if sse_content_type else "FAIL"))
         print("ASSISTANT_MESSAGE_NONEMPTY=YES")
@@ -1334,6 +1689,8 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         print("RETRY=0")
         print("FALLBACK=0")
         print("FALLBACK_FANOUT=0")
+        print("CLAW_LIVE_LANE=PASS")
+        print("CLAW_EVIDENCE_LANE_NON_LIVE=FORCED_CAPABILITY_FALSE")
         # #3655 evidence block: correlation + admission + route + measured
         # dispatch/append counts. Values are bounded refs/enums only.
         print("CLAW_RUN_REF=" + evidence_headers.get("x-padiem-claw-run-id", "MISSING"))
@@ -1354,9 +1711,9 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         )
         print("ENGINE_ADMISSION_RESULT=" + admission_result)
         print("TERMINAL_ERROR_CLASS=" + (terminal_error_class or "NONE"))
-        # Source-truth for this lane: /api/claw/general is a terminal-SSE
-        # projection and performs no conversation-store append (#3539/#3655).
-        print("ASSISTANT_STORE_APPEND_COUNT=0")
+        # The live lane is verified against the owner history it just stored;
+        # the evidence lane keeps the terminal-SSE projection contract.
+        print("CLAW_LIVE_STORE_APPEND_COUNT=1")
         print(
             "ASSISTANT_VISIBLE_PROJECTION_COUNT=" + str(assistant_projection_count)
         )
@@ -1371,7 +1728,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         return 0
     except SmokeFailure as exc:
         print("COMPLETE_MS=" + str(int(time.time() * 1000)))
-        print("CLAW_GENERAL_POSTS=" + str(claw_posts))
+        print("CLAW_GENERAL_POSTS=" + str(total_claw_posts))
         print("CLAW_GENERAL_HTTP=" + (str(response_status) if response_status else "NONE"))
         # #3655: even a failed canary must retain its bounded terminal class
         # and whatever correlation/route evidence the served surface returned.
@@ -1399,7 +1756,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         return 22
     except Exception as exc:
         print("COMPLETE_MS=" + str(int(time.time() * 1000)))
-        print("CLAW_GENERAL_POSTS=" + str(claw_posts))
+        print("CLAW_GENERAL_POSTS=" + str(total_claw_posts))
         print("CLAW_GENERAL_HTTP=" + (str(response_status) if response_status else "NONE"))
         blocked_reason = guard.violation_reason()
         if blocked_reason:
@@ -1440,12 +1797,17 @@ def self_test() -> int:
     assert FOLLOWUP_TEXT == "미터당 18000원"
     assert CLAW_TARGET_URL == "https://chat.padiem.net/"
     assert CLAW_GENERAL_PATH == "/api/claw/general"
+    assert CLAW_CAPABILITIES_PATH == "/api/claw/general/capabilities"
+    assert CLAW_LANES == ("live", "evidence")
     assert MAX_CLAW_GENERAL_POSTS == 1
+    assert MAX_CLAW_MODEL_DISPATCHES == 2
+    assert CLAW_INTER_LANE_PAUSE_SECONDS == 65
     # #3655: bounded evidence seam contract.
     assert "engine_admission_denied" in CLAW_FAILURE_DETAIL_VOCABULARY
     assert "engine_provider_server_error" in CLAW_FAILURE_DETAIL_VOCABULARY
     assert CLAW_EVIDENCE_MARKER == "one-shot"
     _run_evidence_self_tests()
+    _run_claw_live_parser_self_tests()
     print("B66_FINAL_HANDOFF_SMOKE_SELF_TEST=PASS")
     print("DEFAULT_LIVE_EXECUTION=BLOCKED")
     print("MAX_INTERPRET_POSTS=3")
@@ -1453,11 +1815,93 @@ def self_test() -> int:
     return 0
 
 
+def _run_claw_live_parser_self_tests() -> None:
+    def frame(name: str, payload: dict) -> str:
+        return (
+            "event: " + name + "\ndata: " + json.dumps(payload, ensure_ascii=False) + "\n\n"
+        )
+
+    first = {
+        "event_id": "evt_1",
+        "run_id": "run_live",
+        "trace_id": "trace_live",
+        "app_id": "app_live",
+        "kind": "run_started",
+        "sequence": 1,
+        "timestamp_iso": "2026-10-23T00:00:00Z",
+        "delivery": "live",
+    }
+    terminal = {**first, "event_id": "evt_2", "kind": "run_completed", "sequence": 2}
+    conversation_id = "chat_" + "c" * 32
+    good = (
+        frame("p01_event", first)
+        + frame("p01_event", terminal)
+        + frame("delta", {"delta": "정상 작동 중입니다."})
+        + frame("done", {"done": True, "conversation_id": conversation_id})
+    )
+    parsed = _parse_claw_live_sse(good)
+    assert parsed["events"] == 2
+    assert parsed["delta_chars"] > 0
+    assert parsed["terminal_kind"] == "run_completed"
+    assert parsed["conversation_id"] == conversation_id
+    assert _bounded_frame_presence(good) == "p01_event,delta,done"
+    assert _bounded_frame_presence("") == "none"
+    assert _bounded_stream_identity([("p01_event", first)]) == ("run_live", "trace_live")
+    assert _bounded_stream_identity([("error", {"error": {}})]) == (None, None)
+
+    def rejects(body: str, code: str) -> None:
+        try:
+            _parse_claw_live_sse(body)
+        except SmokeFailure as exc:
+            assert str(exc) == code, (str(exc), code)
+            return
+        raise AssertionError("expected " + code)
+
+    rejects(
+        frame("p01_event", first)
+        + frame("error", {"error": {"code": "engine_execution_failed"}}),
+        "claw_live_error_event",
+    )
+    rejects(
+        frame("p01_event", {**first, "sequence": 2})
+        + frame("p01_event", {**terminal, "sequence": 1})
+        + frame("delta", {"delta": "x"})
+        + frame("done", {"done": True, "conversation_id": conversation_id}),
+        "claw_live_sequence",
+    )
+    rejects(
+        frame("p01_event", first)
+        + frame("p01_event", {**terminal, "kind": "run_failed"})
+        + frame("delta", {"delta": "x"})
+        + frame("done", {"done": True, "conversation_id": conversation_id}),
+        "claw_live_terminal",
+    )
+    rejects(
+        frame("p01_event", first)
+        + frame("p01_event", terminal)
+        + frame("delta", {"delta": "   "})
+        + frame("done", {"done": True, "conversation_id": conversation_id}),
+        "claw_live_answer_missing",
+    )
+    rejects(
+        frame("p01_event", first)
+        + frame("p01_event", terminal)
+        + frame("delta", {"delta": "x"})
+        + frame("done", {"done": True}),
+        "claw_live_conversation_id",
+    )
+    guard = _ClawOutboundGuard()
+    guard.claw_posts = 1
+    guard.reset_lane()
+    assert guard.claw_posts == 0
+
+
 def _run_evidence_self_tests() -> None:
     valid_headers = {
         "x-padiem-claw-run-id": "run_" + "a" * 24,
         "x-padiem-orchestration-run-id": "orch_test_001",
-        "x-padiem-selected-route-id": "plus.agnes-3.0-flash.v1",
+        # B14's real selected-route format, which contains `/` (#5484).
+        "x-padiem-selected-route-id": "platform:opencode-go/muse-spark-1.3-contributor",
         "x-padiem-provider-attempts": "1",
         "x-padiem-fallback-used": "false",
         "x-padiem-unlisted-header": "should-not-survive",
@@ -1467,7 +1911,7 @@ def _run_evidence_self_tests() -> None:
     assert extracted == {
         "x-padiem-claw-run-id": "run_" + "a" * 24,
         "x-padiem-orchestration-run-id": "orch_test_001",
-        "x-padiem-selected-route-id": "plus.agnes-3.0-flash.v1",
+        "x-padiem-selected-route-id": "platform:opencode-go/muse-spark-1.3-contributor",
         "x-padiem-provider-attempts": "1",
         "x-padiem-fallback-used": "false",
     }

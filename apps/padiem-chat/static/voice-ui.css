@@ -1,33 +1,16 @@
 /* #4816 voice mode toolbar and M3/M4 surfaces.
-   Microphone (M1) and waveform picker (M2/M3/M4): 44x44 CSS px touch targets. */
-#voiceWaveformButton {
-  flex: 0 0 44px;
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0;
-  display: inline-grid;
-  place-items: center;
-  position: relative;
-  border: 1px solid #bed0dd;
-  border-radius: 14px;
-  color: #587c97;
-  background: #eaf2f7;
-  box-shadow: 0 2px 8px rgba(36, 68, 92, .07);
-  cursor: pointer;
+   The microphone (M1) keeps its own 44x44 CSS px touch target.
+   #5561: the waveform picker (M2/M3/M4) no longer owns a separate button.
+   It shares the composer's primary action slot with the send arrow, so the
+   slot keeps its 44x44 touch target and only its face changes. */
+#composerForm .send-button[data-primary-action="voice"] {
+  background: #355977;
+  border-color: #294b64;
 }
-#voiceWaveformButton[aria-pressed="true"] {
-  background: #d7e4ee;
-  border-color: #9fb3c4;
-}
-#voiceWaveformButton:disabled {
-  opacity: 0.48;
-  cursor: not-allowed;
-}
-#voiceWaveformButton svg {
-  width: 20px;
-  height: 20px;
+#composerForm .send-button[data-primary-action="voice"] .send-waveform-icon {
+  width: 23px;
+  height: 23px;
+  display: block;
 }
 
 /* Mode picker popover */
