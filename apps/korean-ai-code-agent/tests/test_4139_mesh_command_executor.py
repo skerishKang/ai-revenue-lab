@@ -10,6 +10,7 @@ import io
 import subprocess
 import unittest
 from contextlib import redirect_stderr
+from unittest.mock import patch
 
 from kagent.local_agent_meshcentral_command_port import (
     EXIT_SENTINEL, MeshCentralCliCommandPort, MeshCentralCommandRefused,
@@ -401,6 +402,55 @@ class ExecutorRoutingTests(unittest.TestCase):
         self.assertIn("command_id=c", log)
         self.assertNotIn(command, log)
         self.assertNotIn("visible only in memory", log)
+    def test_timeout_phase_and_result_keep_the_same_ids(self):
+        from kagent.local_agent_meshcentral_command_port import MeshCentralCommandOutcome
+
+        port = _FakeCommandPort(MeshCentralCommandOutcome(
+            termination="timed_out", exit_code=None, output=b"",
+        ))
+        output = io.StringIO()
+        with redirect_stderr(output):
+            outcome = _executor(command_port=port).execute(_dispatch())
+        self.assertEqual(outcome.termination, "timed_out")
+        log = output.getvalue()
+        self.assertIn("phase=start", log)
+        self.assertIn("phase=result", log)
+        self.assertIn("termination=timed_out", log)
+        self.assertIn("request_id=oracle_mesh_req_test", log)
+        self.assertIn("command_id=c", log)
+    def test_submit_phase_keeps_the_same_ids_without_payload(self):
+        from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutionOutcome
+
+        port = _FakeCommandPort(None)
+        executor = _executor(command_port=port)
+        dispatch = _dispatch()
+        output = io.StringIO()
+        with redirect_stderr(output):
+            executor.submit(
+                dispatch,
+                OracleMeshExecutionOutcome(
+                    termination="exited", exit_code=0,
+                    body=b"secret-submit-body",
+                ),
+            )
+        log = output.getvalue()
+        self.assertIn("phase=submit", log)
+        self.assertIn("phase=submit_ok", log)
+        self.assertIn("request_id=oracle_mesh_req_test", log)
+        self.assertIn("command_id=c", log)
+        self.assertNotIn("secret-submit-body", log)
+
+    def test_logging_failure_never_changes_the_command_outcome(self):
+        from kagent.local_agent_meshcentral_command_port import MeshCentralCommandOutcome
+
+        port = _FakeCommandPort(MeshCentralCommandOutcome(
+            termination="exited", exit_code=0, output=b"result",
+        ))
+        executor = _executor(command_port=port)
+        with patch("builtins.print", side_effect=OSError("stderr closed")):
+            outcome = executor.execute(_dispatch())
+        self.assertEqual((outcome.termination, outcome.exit_code, outcome.body),
+                         ("exited", 0, b"result"))
     def test_read_dispatch_is_unchanged(self):
         from kagent.local_agent_meshcentral_command_port import MeshCentralCommandOutcome
         command_port = _FakeCommandPort(

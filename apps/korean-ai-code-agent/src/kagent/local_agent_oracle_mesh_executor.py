@@ -392,26 +392,34 @@ class OracleMeshExecutor:
         started: float,
         **fields: Any,
     ) -> None:
-        """Bounded phase correlation only: never command or output content."""
-        elapsed_ms = max(0, int((time.monotonic() - started) * 1000))
-        safe = " ".join(
-            f"{key}={value}"
-            for key, value in fields.items()
-            if value is not None and isinstance(value, (str, int, bool))
-        )
-        print(
-            "oracle-mesh-command"
-            f" phase={phase}"
-            f" ts={datetime.now(timezone.utc).isoformat()}"
-            f" elapsed_ms={elapsed_ms}"
-            f" dispatch_id={dispatch.dispatch_id}"
-            f" request_id={dispatch.request_id or '-'}"
-            f" command_id={dispatch.command_id}"
-            f" run_id={dispatch.run_id}"
-            + (f" {safe}" if safe else ""),
-            file=sys.stderr,
-            flush=True,
-        )
+        """Bounded phase correlation only: never command or output content.
+
+        Logging is strictly observational. A closed/broken stderr, a formatter
+        error, or a failing test double must never change the execution result.
+        """
+        try:
+            elapsed_ms = max(0, int((time.monotonic() - started) * 1000))
+            safe = " ".join(
+                f"{key}={value}"
+                for key, value in fields.items()
+                if value is not None and isinstance(value, (str, int, bool))
+            )
+            print(
+                "oracle-mesh-command"
+                f" phase={phase}"
+                f" ts={datetime.now(timezone.utc).isoformat()}"
+                f" elapsed_ms={elapsed_ms}"
+                f" dispatch_id={dispatch.dispatch_id}"
+                f" request_id={dispatch.request_id or '-'}"
+                f" command_id={dispatch.command_id}"
+                f" run_id={dispatch.run_id}"
+                + (f" {safe}" if safe else ""),
+                file=sys.stderr,
+                flush=True,
+            )
+        except Exception:
+            # Instrumentation is best-effort; the command outcome is authoritative.
+            pass
 
     def _execute_command(
         self, dispatch: OracleMeshDispatch
@@ -1081,21 +1089,32 @@ class OracleMeshExecutor:
         # memory and are still submitted, but the operator must be able to see
         # that this result is not durable across a restart.
         persist_error = self._persist_pending()
+        submit_started = time.monotonic()
+        self._trace_command(dispatch, "submit", submit_started)
         try:
             status, data = self._post(RESULT_PATH, payload)
         except OracleMeshChannelRefused:
             # Transport down: same bytes, backed off, never re-executed.
+            self._trace_command(
+                dispatch, "submit_retry", submit_started, reason="transport",
+            )
             wait = self._transient_wait_seconds()
             self._transients += 1
             return self._with_persist_warning(
                 {"ok": False, "retryable": True, "resend_pending": True,
                  "wait_seconds": wait}, persist_error)
         if status == 200 and data.get("ok") is True:
+            self._trace_command(
+                dispatch, "submit_ok", submit_started, status=status,
+            )
             self._pending = None
             self._rejections = 0
             self._transients = 0
             self._clear_persisted_pending()
             return data
+        self._trace_command(
+            dispatch, "submit_refused", submit_started, status=status,
+        )
         return self._submit_refused(status, data, persist_error)
 
     @staticmethod
