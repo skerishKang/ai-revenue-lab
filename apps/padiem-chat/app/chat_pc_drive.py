@@ -58,6 +58,9 @@ _NO_STORE_HEADERS = {
 # lane and never this one, and DB/hostname nouns are out of scope here.
 _CHAT_PC_MARKERS = (
     "내pc", "내컴퓨터", "로컬pc", "로컬컴퓨터", "com1", "mypc", "mycomputer",
+    # #3099: the possessive form ("PC의 ...") names the same PC and was
+    # silently routed to the general lane. Only the qualifier is added.
+    "pc의", "pc에",
 )
 _CHAT_PC_DRIVE_NOUNS = (
     "드라이브", "디스크", "drive", "disk",
