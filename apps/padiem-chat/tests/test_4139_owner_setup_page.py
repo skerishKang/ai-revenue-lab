@@ -199,6 +199,11 @@ assert.equal(posts,0);
 
 def test_setup_page_has_no_extra_consent_or_approve_control():
     assert 'id="pending-pc" hidden' in setup._HTML
+    # The handoff page no longer carries a guidance-only block that only sends
+    # the owner back to the Claw screen. The functional offer signal stays.
+    assert 'PC 연결 정보' not in setup._HTML
+    assert '<h2>' not in setup._HTML
+    assert '이 창은 닫아도 됩니다' in setup._HTML
     assert 'id="pending-approve"' not in setup._HTML
     assert 'id="pending-consent"' not in setup._HTML
     assert 'query.size === 1' in setup._SCRIPT

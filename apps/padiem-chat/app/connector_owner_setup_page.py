@@ -83,11 +83,11 @@ _SCRIPT = r"""
       channel.postMessage({ type: "pc_offer_ready", request_ref: linkRef });
       console.info("PADIEM_4139_STAGE=setup_handoff_posted");
       channel.close();
-      pendingState.textContent = "기존 Claw 연결 요청 화면에서 상태를 확인해 주세요.";
+      pendingState.textContent = "연결을 진행하고 있습니다. 이 창은 닫아도 됩니다.";
     } catch {
       // Never grant or POST from this page; no owner-click context here.
       console.info("PADIEM_4139_STAGE=setup_handoff_unavailable");
-      pendingState.textContent = "Claw 연결 요청 화면에서 연결을 다시 시작해 주세요.";
+      pendingState.textContent = "연결 요청을 확인할 수 없습니다. Padiem 창에서 연결을 다시 시작해 주세요.";
     }
   }
   grant.addEventListener("click", async () => {
@@ -223,9 +223,7 @@ code{font-size:.9em}
 <button type="button" id="native-launch">&#52964;&#45349;&#53552; &#49892;&#54665;</button>
 <output id="native-state" role="status" aria-live="polite">&#49444;&#52824;&#54620; &#52964;&#45349;&#53552;&#47484; &#49892;&#54665;&#54624; &#49688; &#51080;&#49845;&#45768;&#45796;. &#49436;&#48260; &#50672;&#44208;&#51008; &#46321;&#47197; &#54980; &#54869;&#51064;&#54633;&#45768;&#45796;.</output>
 <section id="pending-pc" hidden>
-<h2>PC 연결 정보 전달</h2>
-<p>설치 PC의 연결 정보가 확인됐습니다. 기존 Padiem Claw 화면에서 진행 상황을 확인하세요.</p>
-<output id="pending-state" role="status" aria-live="polite">Padiem Claw 연결 요청 화면을 확인해 주세요.</output>
+<output id="pending-state" role="status" aria-live="polite">연결을 진행하고 있습니다. 이 창은 닫아도 됩니다.</output>
 </section>
 <details id="operator-restore"><summary>&#44288;&#47532;&#51088;&#50857; &#46321;&#47197; &#48373;&#44396;</summary>
 <p>PC의 <code>padiem-connector status</code>에 표시된 기기 ID를 입력하세요.
