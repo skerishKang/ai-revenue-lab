@@ -6,13 +6,13 @@ import httpx
 import pytest
 
 from app.auto_grounding import AutoGroundingService
-from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.evidence import Evidence
 from app.grounding import GroundedChatService
 from app.main import create_app
 import app.model_policy as model_policy_module
 from app.model_policy import DEFAULT_B14_MODEL_ID
+from padiem_ai_core.dispatch_preinstruction import render_product_identity_instruction
 
 
 @pytest.fixture(autouse=True)
@@ -179,7 +179,12 @@ async def test_stable_concept_does_not_over_search() -> None:
     assert provider.search_calls == []
     assert len(seen) == 1
     assert seen[0]["messages"][0]["role"] == "system"
-    assert PADIEM_IDENTITY_INSTRUCTION in seen[0]["messages"][0]["content"]
+    # #5347: the Chat identity instruction names the request's server-authorized
+    # tier. The route bound the default "free" tier for this request, so the
+    # neutral brand sentence is not the whole instruction any more and the grade
+    # must reach the dispatch.
+    assert render_product_identity_instruction("chat", "free") in seen[0]["messages"][0]["content"]
+    assert "PADIEM Chat의 PADIEM Free 모드" in seen[0]["messages"][0]["content"]
     assert seen[0]["messages"][1:] == STABLE
     assert "max_tokens" not in seen[0]
 
