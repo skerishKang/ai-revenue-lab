@@ -245,6 +245,7 @@ globalThis.document={
 globalThis.window={addEventListener(){},location:{assign(){opens++;}},
   BroadcastChannel:class{constructor(n){assert.equal(n,'padiem-claw-pc-connect-v1');channels.push(this);}
     close(){};}};
+globalThis.MutationObserver=class{constructor(callback){}observe(){}};
 globalThis.fetch=async (url,options)=>{
   posts.push({url,options});
   return {ok:true,text:async()=>JSON.stringify({ok:true,state:'awaiting_device_confirmation',
@@ -325,6 +326,7 @@ for(const tc of tests) {
  class Channel{constructor(){channels.push(this)}close(){}}
  const context=vm.createContext({document,console:{info:(line)=>messages.push(line)},
     window:{addEventListener(){},location:{assign(){}},BroadcastChannel:Channel},
+    MutationObserver:class{constructor(callback){}observe(){}},
     fetch:async(url,opts)=>{
       calls.push({url,method:opts.method,credentials:opts.credentials});
       if(tc.failure==='fetch')throw Error('TOKEN_MUST_NOT_LOG');

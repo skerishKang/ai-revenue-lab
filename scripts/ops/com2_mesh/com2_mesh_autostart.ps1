@@ -20,11 +20,20 @@
   performs read-only queries and one bounded HTTP GET, plus a local TCP connect
   through the listener.
 
+  The record also keeps the current supervisor state and the last start attempt
+  separate. The supervisor state is a normal running state only when the
+  listener is owned by the configured process and that process is a child of a
+  process whose command line names the supervisor script. The parent command
+  line is matched in memory and only the match result is recorded: the raw
+  command line is never stored in the observation or in the record. A refusal
+  code is reported as suspected unless Task Scheduler events confirm it, and no
+  event log is read by this probe.
+
 .PARAMETER Config
   Recovery config JSON. Required keys: tunnel_task, tunnel_local_host,
   tunnel_local_port, mesh_url. Optional keys: mesh_agent_service,
-  tunnel_process_name, autostart_boot_tolerance_seconds,
-  autostart_http_timeout_seconds.
+  tunnel_process_name, tunnel_supervisor_script,
+  autostart_boot_tolerance_seconds, autostart_http_timeout_seconds.
 
 .PARAMETER ObservationFile
   Evaluate a recorded observation instead of querying the host. Used by the
@@ -70,6 +79,7 @@ function Get-AutostartConfig {
     }
     Set-AutostartDefault -Cfg $cfg -Name 'mesh_agent_service' -Value 'Mesh Agent'
     Set-AutostartDefault -Cfg $cfg -Name 'tunnel_process_name' -Value 'ssh.exe'
+    Set-AutostartDefault -Cfg $cfg -Name 'tunnel_supervisor_script' -Value 'com2_mesh_tunnel_supervisor.ps1'
     Set-AutostartDefault -Cfg $cfg -Name 'autostart_boot_tolerance_seconds' -Value 120
     Set-AutostartDefault -Cfg $cfg -Name 'autostart_http_timeout_seconds' -Value 8
     return $cfg
@@ -246,6 +256,8 @@ function Get-ListenerObservation {
     $obs = [ordered]@{
         queried = $true; listening = $false; local_address = ''
         pid = 0; process_name = ''; process_started = ''; error = ''
+        parent_pid = 0; parent_process_name = ''
+        parent_command_line_observed = $false; parent_runs_supervisor = $null; parent_error = ''
     }
     try {
         $port = [int]$Cfg.tunnel_local_port
@@ -262,6 +274,46 @@ function Get-ListenerObservation {
             $proc = Get-Process -Id $obs.pid -ErrorAction Stop
             $obs.process_name = [string]$proc.ProcessName
             $obs.process_started = ConvertTo-ObsTimeString $proc.StartTime
+
+            # The parent chain is recorded only when it can be read. A parent
+            # failure leaves the listener observation valid and marks the
+            # supervisor identity as unconfirmed.
+            try {
+                $child = Get-CimInstance -ClassName Win32_Process `
+                    -Filter ('ProcessId={0}' -f $obs.pid) -ErrorAction Stop |
+                    Select-Object -First 1
+                if (-not $child) {
+                    $obs.parent_error = 'the listener process was not found in Win32_Process'
+                } elseif ([int]$child.ParentProcessId -le 0) {
+                    $obs.parent_error = 'the listener parent pid was not observed'
+                } else {
+                    $obs.parent_pid = [int]$child.ParentProcessId
+                    $parent = Get-CimInstance -ClassName Win32_Process `
+                        -Filter ('ProcessId={0}' -f $obs.parent_pid) -ErrorAction Stop |
+                        Select-Object -First 1
+                    if (-not $parent) {
+                        $obs.parent_error = 'the listener parent process was not found'
+                    } else {
+                        $obs.parent_process_name = [string]$parent.Name
+                        # The command line is matched here and discarded. Only
+                        # the two booleans below reach the observation, so no
+                        # raw command line (or a path/secret inside it) is
+                        # written to the record.
+                        $parentCommand = [string]$parent.CommandLine
+                        if (-not [string]::IsNullOrWhiteSpace($parentCommand)) {
+                            $obs.parent_command_line_observed = $true
+                            $supervisorScript = [string]$Cfg.tunnel_supervisor_script
+                            if ([string]::IsNullOrWhiteSpace($supervisorScript)) {
+                                $supervisorScript = 'com2_mesh_tunnel_supervisor.ps1'
+                            }
+                            $obs.parent_runs_supervisor = ($parentCommand.IndexOf(
+                                $supervisorScript, [System.StringComparison]::OrdinalIgnoreCase) -ge 0)
+                        }
+                    }
+                }
+            } catch {
+                $obs.parent_error = $_.Exception.Message
+            }
         }
         return $obs
     } catch {
@@ -570,6 +622,150 @@ function Test-AutostartEvidence {
     if ($failed.Count -gt 0) { $state = 'failed' }
     elseif ($unverified.Count -gt 0) { $state = 'unverified' }
 
+    # Keep the current supervisor/link state separate from the last start
+    # attempt. The check verdicts and auto_start_state above are unchanged.
+    $checkByName = @{}
+    foreach ($entry in $checks) { $checkByName[[string]$entry.name] = $entry }
+    $listenerCheck = $checkByName['tunnel_listener_present']
+    $ownerCheck = $checkByName['tunnel_listener_process_matches']
+    $httpCheck = $checkByName['mesh_http_200']
+
+    $supervisorScript = [string]$Cfg.tunnel_supervisor_script
+    if ([string]::IsNullOrWhiteSpace($supervisorScript)) {
+        $supervisorScript = 'com2_mesh_tunnel_supervisor.ps1'
+    }
+    $childPid = 0
+    $childName = ''
+    $parentPid = 0
+    if ($listener) {
+        if ($null -ne $listener.pid) { $childPid = [int]$listener.pid }
+        $childName = [string]$listener.process_name
+        if ($null -ne $listener.parent_pid) { $parentPid = [int]$listener.parent_pid }
+    }
+
+    # The listener must be a child of the supervisor: the parent pid of the
+    # listener owner, and that parent's command line must name the supervisor
+    # script. The observation records only whether a command line was read and
+    # whether it matched, never the line itself. Anything less leaves the
+    # identity unconfirmed.
+    $supervisorIdentity = 'unknown'
+    $identityDetail = 'the listener was not observed'
+    if ($listenerCheck -and $listenerCheck.ok -eq $true) {
+        $identityDetail = 'the listener parent process was not observed'
+        $parentCommandObserved = ($listener.parent_command_line_observed -eq $true)
+        $parentRunsSupervisor = $listener.parent_runs_supervisor
+        $parentError = ''
+        if ($listener.parent_error) { $parentError = [string]$listener.parent_error }
+        if ($parentPid -le 0) {
+            $supervisorIdentity = 'unconfirmed'
+            if ($parentError) { $identityDetail = $parentError }
+        } elseif (-not $parentCommandObserved) {
+            $supervisorIdentity = 'unconfirmed'
+            $identityDetail = ('parent pid={0} was observed without a command line' -f $parentPid)
+        } elseif ($parentRunsSupervisor -eq $true) {
+            $supervisorIdentity = 'confirmed'
+            $identityDetail = ('parent pid={0} runs {1}' -f $parentPid, $supervisorScript)
+        } elseif ($parentRunsSupervisor -eq $false) {
+            $supervisorIdentity = 'mismatch'
+            $identityDetail = ('parent pid={0} does not run {1}' -f $parentPid, $supervisorScript)
+        } else {
+            $supervisorIdentity = 'unconfirmed'
+            $identityDetail = ('parent pid={0} was observed but its command line was not evaluated' -f $parentPid)
+        }
+    }
+
+    # A normal running state requires all three: the listener exists, it is
+    # owned by the configured process, and its parent is the supervisor.
+    $supervisorState = 'unknown'
+    $supervisorDetail = 'the listener state was not verified'
+    if ($listenerCheck -and $listenerCheck.ok -eq $true) {
+        $supervisorDetail = [string]$listenerCheck.detail
+        if ($ownerCheck -and $ownerCheck.ok -eq $false) {
+            $supervisorState = 'not_running'
+            $supervisorDetail += '; the listener is not owned by the expected process: ' + [string]$ownerCheck.detail
+        } elseif (-not ($ownerCheck -and $ownerCheck.ok -eq $true)) {
+            $supervisorState = 'unknown'
+            $supervisorDetail += '; the listener owner process was not verified'
+        } elseif ($supervisorIdentity -ne 'confirmed') {
+            $supervisorState = 'unknown'
+            $supervisorDetail += '; supervisor identity ' + $supervisorIdentity + ': ' + $identityDetail
+        } else {
+            $supervisorDetail += '; ' + [string]$ownerCheck.detail + '; ' + $identityDetail
+            if ($httpCheck -and $httpCheck.ok -eq $true) {
+                $supervisorState = 'running_connected'
+                $supervisorDetail += '; ' + [string]$httpCheck.detail
+            } elseif ($httpCheck -and $httpCheck.ok -eq $false) {
+                $supervisorState = 'running_disconnected'
+                $supervisorDetail += '; ' + [string]$httpCheck.detail
+            } else {
+                $supervisorState = 'running_connection_unknown'
+                if ($httpCheck) { $supervisorDetail += '; ' + [string]$httpCheck.detail }
+            }
+        }
+    } elseif ($listenerCheck -and $listenerCheck.ok -eq $false) {
+        $supervisorState = 'not_running'
+        $supervisorDetail = [string]$listenerCheck.detail
+    }
+
+    $lastRunText = ''
+    $lastResultCode = $null
+    $lastResultHex = ''
+    $attemptOutcome = 'unknown'
+    $attemptConfidence = 'unknown'
+    $attemptDetail = 'the task run info was not read'
+    if ($taskQueried) {
+        $lastRunText = [string]$task.last_run
+        if ($infoError) {
+            $attemptDetail = 'LastTaskResult was not read'
+        } elseif ($null -eq $task.last_result) {
+            $attemptDetail = 'LastTaskResult was not observed'
+        } else {
+            $lastResultCode = ConvertTo-TaskResultCode $task.last_result
+            if ($null -eq $lastResultCode) {
+                $attemptDetail = 'LastTaskResult was not an integer: ' + [string]$task.last_result
+            } else {
+                $attemptConfidence = 'observed'
+                if ($lastResultCode -ge 0 -and $lastResultCode -le 4294967295) {
+                    $lastResultHex = ('0x{0:X8}' -f $lastResultCode)
+                }
+                $attemptDetail = 'LastTaskResult=' + $lastResultCode
+                if ($lastResultHex) { $attemptDetail += ' (' + $lastResultHex + ')' }
+                if ($lastResultCode -eq 0) {
+                    $attemptOutcome = 'succeeded'
+                } elseif ($lastResultCode -eq 267009) {
+                    $attemptOutcome = 'running'
+                    $attemptDetail += ' (running)'
+                } elseif ($lastResultCode -eq 267011) {
+                    $attemptOutcome = 'not_run'
+                    $attemptDetail += ' (has not run yet)'
+                } elseif ($lastResultCode -eq 267010) {
+                    $attemptOutcome = 'disabled'
+                    $attemptDetail += ' (disabled)'
+                } elseif ($lastResultCode -eq 2147946720) {
+                    $runningConfirmed = ($supervisorIdentity -eq 'confirmed' -and
+                        ($supervisorState -eq 'running_connected' -or
+                         $supervisorState -eq 'running_disconnected' -or
+                         $supervisorState -eq 'running_connection_unknown'))
+                    if ($runningConfirmed) {
+                        # Inferred from the code plus a confirmed running
+                        # supervisor. Task Scheduler events are not read.
+                        $attemptOutcome = 'suspected_refused_while_running'
+                        $attemptConfidence = 'suspected'
+                        $attemptDetail += '; the start is suspected to have been refused while the supervisor was running; Task Scheduler events were not read'
+                    } else {
+                        $attemptOutcome = 'failed'
+                        $attemptDetail += '; the start was refused and the supervisor/child/listener chain is not confirmed running'
+                    }
+                } elseif ($lastResultCode -eq 2) {
+                    $attemptOutcome = 'duplicate_instance_exit'
+                    $attemptDetail += '; a duplicate supervisor instance exited'
+                } else {
+                    $attemptOutcome = 'failed'
+                }
+            }
+        }
+    }
+
     return [ordered]@{
         schema = 'com2_mesh_autostart/v1'
         ts = $Now.ToString('yyyy-MM-dd HH:mm:ss')
@@ -581,6 +777,23 @@ function Test-AutostartEvidence {
         checks = $checks.ToArray()
         failed_checks = $failed
         unverified_checks = $unverified
+        supervisor = [ordered]@{
+            state = $supervisorState
+            identity = $supervisorIdentity
+            identity_detail = $identityDetail
+            child_pid = $childPid
+            child_process = $childName
+            parent_pid = $parentPid
+            detail = $supervisorDetail
+        }
+        last_start_attempt = [ordered]@{
+            run = $lastRunText
+            result = $lastResultCode
+            result_hex = $lastResultHex
+            outcome = $attemptOutcome
+            confidence = $attemptConfidence
+            detail = $attemptDetail
+        }
         observation = $Observation
     }
 }

@@ -138,6 +138,11 @@ CLAW_EVIDENCE_REQUEST_HEADER = "X-Padiem-Claw-Evidence"
 CLAW_EVIDENCE_MARKER = "one-shot"
 _CLAW_RUN_ID_RE = re.compile(r"^run_[0-9a-f]{24}$")
 _EVIDENCE_VALUE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$")
+# B14 reports its selected route as `platform:<provider>/<model>`, so the
+# route header keeps the same bounded grammar plus `/`. Rejecting it dropped
+# the header for every real B14 route and left the canary without its
+# selected-route evidence (#5484).
+_CLAW_SELECTED_ROUTE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_./:-]{0,79}$")
 
 
 def _evidence_header(
@@ -168,7 +173,9 @@ def _claw_evidence_response_headers(claw_run_id: str | None, outcome: Any) -> di
     if orch_pair is not None:
         headers[orch_pair[0]] = orch_pair[1]
     route_pair = _evidence_header(
-        "X-Padiem-Selected-Route-Id", getattr(outcome, "selected_route_id", None)
+        "X-Padiem-Selected-Route-Id",
+        getattr(outcome, "selected_route_id", None),
+        _CLAW_SELECTED_ROUTE_ID_RE,
     )
     if route_pair is not None:
         headers[route_pair[0]] = route_pair[1]
