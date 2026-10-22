@@ -166,17 +166,20 @@
   #composerForm .composer-tools .model-pill { width: 112px; min-width: 112px; height: 44px; }
 }
 @media (max-width: 620px) {
-  /* The two voice controls are mounted into the action row after the first
-   * paint. Until they are there the tools row is the whole free space, and it
-   * becomes 108px narrower (two 44px controls and two 10px gaps) when they
-   * arrive. That narrower row is the row the tier pill and the web-search
+  /* The voice control is mounted into the action row after the first
+   * paint. Until it is there the tools row is the whole free space, and it
+   * becomes 54px narrower (one 44px control and one 10px gap) when it
+   * arrives. That narrower row is the row the tier pill and the web-search
    * control have to fit into, so the space they take is reserved here: the
    * tools row keeps the width it will have in the settled composer, and its
    * content never re-wraps.
    *
-   * The reservation is given back as soon as the controls are mounted, so the
-   * settled composer is laid out exactly as it is today. */
-  .composer-actions:not(:has(> #voiceMicButton)):not(:has(> #voiceWaveformButton)) #sendButton {
-    margin-left: calc(2 * 44px + 2 * 10px);
+   * The reservation is given back as soon as the control is mounted, so the
+   * settled composer is laid out exactly as it is today.
+   *
+   * #5561: the voice waveform shares the send button's slot, so only the
+   * microphone is a separate control now. */
+  .composer-actions:not(:has(> #voiceMicButton)) #sendButton {
+    margin-left: calc(44px + 10px);
   }
 }

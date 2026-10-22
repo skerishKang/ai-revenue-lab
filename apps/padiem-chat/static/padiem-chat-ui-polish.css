@@ -258,6 +258,18 @@ html[data-theme="padiem-glass"] .settings-dialog .language-option[aria-pressed="
 }
 
 /* #5434: the account entry that opens the self-service password change. */
+/* #5560: the Settings sections that replaced the standalone sidebar rows. */
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.settings-actions:not(:empty) {
+  margin-top: -4px;
+}
+
 .settings-action {
   min-height: 44px;
   padding: 0 18px;
@@ -269,6 +281,23 @@ html[data-theme="padiem-glass"] .settings-dialog .language-option[aria-pressed="
   font-size: 13px;
   font-weight: 680;
   cursor: pointer;
+}
+
+a.settings-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.settings-action:focus-visible {
+  outline: 3px solid #587c97;
+  outline-offset: 2px;
+}
+
+.settings-action[aria-busy="true"] {
+  opacity: .6;
+  cursor: progress;
 }
 
 .settings-action:hover {

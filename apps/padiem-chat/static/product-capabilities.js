@@ -419,7 +419,12 @@
     const available = auth.loaded && auth.ready && state !== "unavailable";
     accountContainer.dataset.accountState = state;
     accountContainer.hidden = !available;
-    loginButton.hidden = !available;
+    // #5560: the sign-out entry moved into Settings > Account. The sidebar
+    // keeps the sign-in affordance for a guest or an expired session, and the
+    // signed-in profile (name and avatar) is the one-step Settings entry.
+    // The button element and its text stay: the auth projection and the
+    // outputs feature read them as the session signal.
+    loginButton.hidden = !available || state === "signed_in";
     loginButton.removeAttribute("aria-busy");
     loginButton.disabled = !available;
     loginButton.setAttribute("aria-disabled", available ? "false" : "true");
@@ -463,7 +468,7 @@
     if (!loginButton || !accountContainer) return true;
     const state = auth.loaded ? auth.sessionState : "unavailable";
     const available = auth.loaded && auth.ready && state !== "unavailable";
-    if (accountContainer.hidden !== !available || loginButton.hidden !== !available) return false;
+    if (accountContainer.hidden !== !available || loginButton.hidden !== (!available || state === "signed_in")) return false;
     if (!available) {
       if (!accountName) return true;
       return accountName.hidden && accountName.textContent.trim() === "";

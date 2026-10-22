@@ -307,6 +307,11 @@
     }
 
     try {
+      // #5559: the web search really runs for this request, so the status
+      // card can say so. The label is released as soon as the request ends.
+      if (toolRequest && article) {
+        window.PadiemChatLifecycle?.setTaskHint?.(article, "searching");
+      }
       const response = await nativeFetch(nextInput, nextInit);
       if (toolRequest) {
         if (!response.ok) {
@@ -326,6 +331,16 @@
             && Array.isArray(data.evidence);
           if (groundedSearch) scheduleSources(article, data.evidence);
           if (deepResearch) scheduleSources(article, data.evidence, data.research || null);
+          // #5559: the tool and the sources really ran, so the turn records
+          // them. A request without a search tool never claims one.
+          if (article) {
+            if (groundedSearch) window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");
+            if (deepResearch) window.PadiemChatLifecycle?.recordTaskEvent?.(article, "deep_research");
+            if ((groundedSearch || deepResearch) && Array.isArray(data.evidence) && data.evidence.length) {
+              article.dataset.taskEvidence = "true";
+              window.PadiemChatLifecycle?.recordTaskEvent?.(article, "evidence");
+            }
+          }
           if (adaptedFromStream) {
             const publicSse = completedJsonAsPublicSse(data);
             if (publicSse) return publicSse;
@@ -339,6 +354,7 @@
     } finally {
       if (toolRequest) {
         toolInFlight = null;
+        if (article) window.PadiemChatLifecycle?.setTaskHint?.(article, null);
         syncControls();
       }
     }
