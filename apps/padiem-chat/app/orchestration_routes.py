@@ -149,6 +149,7 @@ async def _run_pc_lane(
     conversation_id: str | None,
     device_id: Any,
     run_id: Any = None,
+    conversation_messages: Any = None,
 ) -> tuple[str | None, str | None]:
     """Run the existing PC drive/file lane for this turn, if it applies.
 
@@ -170,6 +171,7 @@ async def _run_pc_lane(
             tier=tier,
             device_id=device_id if isinstance(device_id, str) else None,
             run_id=run_id if isinstance(run_id, str) else None,
+            conversation_messages=conversation_messages,
         )
     except ChatPCDriveError as exc:
         raise _PcLaneRefusal(exc.code, exc.user_message, exc.status_code) from exc
@@ -276,6 +278,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             conversation_id=conversation_id,
             device_id=raw.get("device_id"),
             run_id=raw.get("pc_run_id"),
+            conversation_messages=messages,
         )
     except _PcLaneRefusal as exc:
         return _error(exc.code, exc.message, exc.status_code)

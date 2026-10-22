@@ -35,7 +35,7 @@ class _B14:
         self.calls = []
 
     async def complete(self, messages, skill, additional_system_context=None):
-        self.calls.append(additional_system_context)
+        self.calls.append({"messages": tuple(messages), "contract": additional_system_context})
         return {"answer": self.answers.pop(0)}
 
 
@@ -150,10 +150,18 @@ def test_ambiguous_turn_answers_with_a_question(monkeypatch):
     assert bridge.requests == []
 
 
-def test_no_selected_pc_falls_through_without_a_model_call(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, answers=[], selected=False)
-    assert _run(request, "\uadf8 \ud3f4\ub354 \ubcf4\uc5ec\uc918") is None
-    assert b14.calls == []
+def test_no_selected_pc_general_turn_still_falls_through(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"none"}'], selected=False)
+    assert _run(request, "\uc624\ub298 \ub0a0\uc528 \uc5b4\ub54c?") is None
+    assert len(b14.calls) == 1
+    assert bridge.requests == []
+
+
+def test_no_selected_pc_clear_pc_request_is_a_refusal(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_list"}'], selected=False)
+    with pytest.raises(lane.ChatPCDriveError) as excinfo:
+        _run(request, "PC\uc758 \uadf8 \ud3f4\ub354 \ubaa9\ub85d\ub9cc \ubcf4\uc5ec\uc918")
+    assert excinfo.value.code == "chat_pc_selection_unavailable"
     assert bridge.requests == []
 
 
@@ -166,3 +174,56 @@ def test_authority_failure_falls_through(monkeypatch):
     monkeypatch.setattr(lane, "_resolve_chat_owner", _denied)
     assert _run(request, "\uadf8 \ud3f4\ub354 \ubcf4\uc5ec\uc918") is None
     assert bridge.requests == []
+
+
+def test_keyword_turn_also_uses_the_scope_decision(monkeypatch):
+    """The old keyword path no longer keeps its own two-step plan."""
+    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_list"}'])
+    _run(request, "\ub0b4 PC \ub4dc\ub77c\uc774\ube0c \ubaa9\ub85d \uc54c\ub824\uc918")
+    sent = bridge.requests[0]
+    assert [step["tool_id"] for step in sent["agent_plan"]["steps"]] == ["claw.pc.list_files"]
+    assert sent["tool_arguments"] == {"files_list": {"device_id": DEVICE}}
+
+
+def test_scope_decision_receives_prior_turns(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch, answers=['{"action":"files_read"}'])
+    history = [
+        {"role": "user", "content": "5015-conditions-20261022 \ud3f4\ub354\ub97c \ubd24\uc5b4"},
+        {"role": "assistant", "content": "\ubaa9\ub85d\uc744 \ud655\uc778\ud588\uc2b5\ub2c8\ub2e4."},
+        {"role": "user", "content": "\uadf8 \ud3f4\ub354\uc5d0\uc11c \ubb50\uac00 \uc788\uc5b4?"},
+    ]
+    asyncio.run(lane.execute_chat_pc_drive_lane(
+        request, user_text=history[-1]["content"], skill=SimpleNamespace(id="auto"),
+        model_id="m", conversation_id=None, tier="free",
+        conversation_messages=history,
+    ))
+    sent = b14.calls[0]["messages"]
+    contents = [item["content"] for item in sent]
+    assert contents[0] == history[0]["content"]
+    assert contents[1] == history[1]["content"]
+    assert contents[-1] == history[-1]["content"]
+
+
+def test_clear_pc_request_without_authority_is_not_generalised(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch, answers=[])
+
+    async def _denied(request, uid):
+        raise lane.ChatPCDriveError("chat_pc_owner_unavailable", "denied", 503)
+
+    monkeypatch.setattr(lane, "_resolve_chat_owner", _denied)
+    with pytest.raises(lane.ChatPCDriveError) as excinfo:
+        _run(request, "\ub0b4 PC \ub4dc\ub77c\uc774\ube0c \uc54c\ub824\uc918")
+    assert excinfo.value.code == "chat_pc_owner_unavailable"
+    assert bridge.requests == []
+
+
+def test_keyword_pc_request_without_authority_is_a_refusal(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch, answers=[])
+
+    async def _denied(request, uid):
+        raise lane.ChatPCDriveError("chat_pc_owner_unavailable", "denied", 503)
+
+    monkeypatch.setattr(lane, "_resolve_chat_owner", _denied)
+    with pytest.raises(lane.ChatPCDriveError) as excinfo:
+        _run(request, "\ub0b4 PC \ub4dc\ub77c\uc774\ube0c \uc54c\ub824\uc918")
+    assert excinfo.value.code == "chat_pc_owner_unavailable"

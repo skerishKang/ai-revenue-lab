@@ -387,13 +387,42 @@ def test_lane_falls_through_for_anonymous_or_non_drive():
     asyncio.run(run())
 
 
-def test_lane_tool_path_stages_chat_run_and_records_answer():
+def _wire_selection(monkeypatch):
+    """A server-verified selected PC for the unified scope decision (#5573)."""
+    import app.pc_work_context as pc_work_context
+
+    device = "node/meshdomain1/owner-pc"
+    state = SimpleNamespace(
+        devices=[SimpleNamespace(device_id=device, state="READY")],
+        selected_confirmed=True,
+        execution=SimpleNamespace(ready=True),
+    )
+
+    async def _read(request, *, owner_id, workspace_id):
+        return SimpleNamespace(
+            status=pc_work_context.SAVED_SELECTION_SELECTED, device_id=device,
+        )
+
+    async def _resolve(request, **kwargs):
+        return state
+
+    monkeypatch.setattr(pc_work_context, "read_saved_device_selection", _read)
+    monkeypatch.setattr(pc_work_context, "resolve_pc_work_context", _resolve)
+    monkeypatch.setattr(
+        pc_work_context, "render_pc_work_context", lambda ctx: "selected PC",
+    )
+
+
+def test_lane_tool_path_stages_chat_run_and_records_answer(monkeypatch):
     import app.chat_pc_drive as lane
 
     tool_decision = json.dumps({
         "action": "tool", "tool_id": CHAT_PC_QUERY_TOOL_ID, "arguments": {},
     })
-    request, b14, bridge, history = _request(model_answers=[tool_decision])
+    _wire_selection(monkeypatch)
+    request, b14, bridge, history = _request(
+        model_answers=[json.dumps({"action": "drives"}), tool_decision]
+    )
 
     async def fake_owner(req, uid):
         session = SimpleNamespace(session_id="sess-b62-1", tenant_id="tenant-1",
@@ -699,11 +728,15 @@ def test_chat_signed_endpoint_rejects_claw_product_and_wrong_command(monkeypatch
     assert status == 400
 
 
-def test_lane_complete_decision_answers_without_engine():
+def test_lane_complete_decision_answers_without_engine(monkeypatch):
     import app.chat_pc_drive as lane
 
+    _wire_selection(monkeypatch)
     request, b14, bridge, history = _request(
-        model_answers=[json.dumps({"action": "complete", "answer": "연결된 PC가 없습니다."})],
+        model_answers=[
+            json.dumps({"action": "drives"}),
+            json.dumps({"action": "complete", "answer": "\uc5f0\uacb0\ub41c PC\uac00 \uc5c6\uc2b5\ub2c8\ub2e4."}),
+        ],
         engine_answer="unused",
     )
 

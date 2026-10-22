@@ -438,9 +438,29 @@ def _no_pc_answer() -> str:
     )
 
 
+def _conversation_history(messages: Any, user_text: str) -> tuple[dict[str, str], ...]:
+    """Prior user/assistant turns, bounded, for the scope decision."""
+    if not isinstance(messages, (list, tuple)):
+        return ()
+    history: list[dict[str, str]] = []
+    for item in messages:
+        if not isinstance(item, dict):
+            continue
+        role, content = item.get("role"), item.get("content")
+        if role in {"user", "assistant"} and isinstance(content, str) and content.strip():
+            history.append({"role": role, "content": content.strip()})
+    if (
+        history
+        and history[-1]["role"] == "user"
+        and history[-1]["content"] == user_text.strip()
+    ):
+        history = history[:-1]
+    return tuple(history[-8:])
+
+
 async def _complete_with_model(
     request: Request, *, user_text: str, skill: Any,
-    tier: str, system_contract: str,
+    tier: str, system_contract: str, history: Any = None,
 ) -> str:
     """One bounded B14 text turn under the existing Chat model policy."""
     client: B14Client | None = getattr(request.app.state, "b14_client", None)
@@ -452,7 +472,7 @@ async def _complete_with_model(
     try:
         async with chat_request_tier_context(request, tier):
             result = await client.complete(
-                ({"role": "user", "content": user_text},),
+                tuple(history or ()) + ({"role": "user", "content": user_text},),
                 skill,
                 additional_system_context=system_contract,
             )
@@ -499,6 +519,7 @@ async def execute_chat_pc_drive_lane(
     tier: str,
     device_id: str | None = None,
     run_id: str | None = None,
+    conversation_messages: Any = None,
 ) -> tuple[str, str | None] | None:
     """Run the lane and return ``(answer, conversation_id)``.
 
@@ -522,68 +543,88 @@ async def execute_chat_pc_drive_lane(
         if isinstance(execution_user_text, str) and execution_user_text.strip()
         else user_text
     )
-    drive_requested = is_chat_pc_drive_query(execution_text)
-    files_requested = is_chat_pc_files_query(execution_text)
+    drive_hint = is_chat_pc_drive_query(execution_text)
+    files_hint = is_chat_pc_files_query(execution_text)
+    pc_hint = drive_hint or files_hint
     list_only = False
-    if not drive_requested and not files_requested:
-        # #5573: the word list is no longer the entry decision. When the
-        # account has a server-verified selected PC, one model step routes the
-        # turn (files list, files read, drives, none, clarify). Without a
-        # selected PC nothing is executed and no extra model call happens.
-        try:
-            session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
-        except ChatPCDriveError:
-            # A turn that matched no PC keyword must never fail because the PC
-            # lane cannot resolve its authority; it falls through instead.
-            return None
-        from .pc_work_context import (
-            SAVED_SELECTION_SELECTED, read_saved_device_selection,
-            render_pc_work_context, resolve_pc_work_context,
-        )
-        saved_here = await read_saved_device_selection(
-            request, owner_id=uid, workspace_id=workspace_id,
-        )
-        if saved_here.status != SAVED_SELECTION_SELECTED:
-            return None
-        preview = await resolve_pc_work_context(
-            request, owner_id=uid, workspace_id=workspace_id,
-            session_id=getattr(session, "session_id", None),
-            selected_device_id=saved_here.device_id,
-        )
-        action = parse_pc_action_decision(
-            await _complete_with_model(
-                request, user_text=execution_text, skill=skill, tier=tier,
-                system_contract=_pc_action_contract(
-                    execution_text, render_pc_work_context(preview),
-                ),
-            )
-        )
-        if action["action"] == "none":
-            return None
-        if action["action"] == "clarify":
-            store_here = getattr(request.app.state, "history_store", None)
-            if store_here is None:
-                return None
-            saved_id = await _save_pair(
-                store_here, uid=uid, conversation_id=conversation_id,
-                user_text=user_text, answer=action["answer"],
-            )
-            return (action["answer"], saved_id) if saved_id else None
-        if action["action"] == "drives":
-            drive_requested = True
-        else:
-            files_requested = True
-            list_only = action["action"] == "files_list"
-    files_only = files_requested and not drive_requested
-    if drive_requested or files_requested:
-        session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
-    client_run_id = _client_lane_run_id(run_id)
-    store: HistoryStore | None = getattr(request.app.state, "history_store", None)
+    store = getattr(request.app.state, "history_store", None)
     if store is None:
         raise ChatPCDriveError(
             "chat_pc_store_unavailable",
-            "대화 기록을 현재 사용할 수 없습니다.",
+            "\ub300\ud654 \uae30\ub85d\uc744 \ud604\uc7ac \uc0ac\uc6a9\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.",
         )
+    try:
+        session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
+    except ChatPCDriveError:
+        # A clear PC request must not be answered by the general model as if
+        # the PC had been reached. An ordinary turn still falls through.
+        if not pc_hint:
+            return None
+        raise ChatPCDriveError(
+            "chat_pc_owner_unavailable",
+            "PC \uc791\uc5c5 \uad8c\ud55c\uc744 \ud655\uc778\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. "
+            "\uc138\uc158\uc744 \ud655\uc778\ud55c \ub4a4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574 \uc8fc\uc138\uc694.",
+            503,
+        ) from None
+    from .pc_work_context import (
+        SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
+        read_saved_device_selection, render_pc_work_context,
+        resolve_pc_work_context,
+    )
+    saved_selection = await read_saved_device_selection(
+        request, owner_id=uid, workspace_id=workspace_id,
+    )
+    if saved_selection.status == SAVED_SELECTION_SELECTED:
+        preview = await resolve_pc_work_context(
+            request, owner_id=uid, workspace_id=workspace_id,
+            session_id=getattr(session, "session_id", None),
+            selected_device_id=saved_selection.device_id,
+        )
+        pc_context_text = render_pc_work_context(preview)
+    else:
+        pc_context_text = "no selected PC"
+    # #5573: every entry path reaches this one execution-scope decision. The
+    # word list is only a hint for how an authority/target failure is reported;
+    # it never picks the plan and never adds read.
+    action = parse_pc_action_decision(
+        await _complete_with_model(
+            request, user_text=execution_text, skill=skill, tier=tier,
+            system_contract=_pc_action_contract(execution_text, pc_context_text),
+            history=_conversation_history(conversation_messages, execution_text),
+        )
+    )
+    if action["action"] == "none":
+        # The scope call already happened before the ordinary path may issue
+        # its own model call: one extra model turn and its latency, by design.
+        return None
+    if action["action"] == "clarify":
+        saved_id = await _save_pair(
+            store, uid=uid, conversation_id=conversation_id,
+            user_text=user_text, answer=action["answer"],
+        )
+        return (action["answer"], saved_id) if saved_id else None
+    if saved_selection.status != SAVED_SELECTION_SELECTED:
+        # The scope is confirmed before the target check, so a clear PC request
+        # without a verified target is a refusal, never a general answer.
+        if saved_selection.status == SAVED_SELECTION_UNAVAILABLE:
+            raise ChatPCDriveError(
+                "chat_pc_selection_unavailable",
+                "\uc120\ud0dd\ud55c PC \uc791\uc5c5 \ub300\uc0c1\uc744 \ud655\uc778\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. "
+                "\uc7a0\uc2dc \ud6c4 \ub2e4\uc2dc \uc2dc\ub3c4\ud574 \uc8fc\uc138\uc694.",
+                503,
+            )
+        raise ChatPCDriveError(
+            "chat_pc_selection_required",
+            "\uc120\ud0dd\ub41c PC \uc791\uc5c5 \ub300\uc0c1\uc774 \uc5c6\uc2b5\ub2c8\ub2e4. \uc791\uc5c5 \ub300\uc0c1\uc744 \uba3c\uc800 \uc120\ud0dd\ud574 \uc8fc\uc138\uc694.",
+            409,
+        )
+    if action["action"] == "drives":
+        drive_requested, files_requested = True, False
+    else:
+        drive_requested, files_requested = False, True
+        list_only = action["action"] == "files_list"
+    files_only = files_requested and not drive_requested
+    client_run_id = _client_lane_run_id(run_id)
     if device_id is not None and not is_pc_device_id(device_id):
         raise ChatPCDriveError(
             "chat_pc_target_invalid",
@@ -592,15 +633,6 @@ async def execute_chat_pc_drive_lane(
         )
     await _refuse_existing_client_run_id(
         store, uid=uid, client_run_id=client_run_id,
-    )
-    from .pc_work_context import (
-        SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
-        read_saved_device_selection, render_pc_work_context,
-        resolve_pc_work_context,
-    )
-
-    saved_selection = await read_saved_device_selection(
-        request, owner_id=uid, workspace_id=workspace_id,
     )
     if device_id is not None:
         if (
