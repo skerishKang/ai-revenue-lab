@@ -15,6 +15,7 @@ CSS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
 STYLES = (STATIC / "padiem-shared-ui.css").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 ACTIONS = (STATIC / "claw-home-choices.js").read_text(encoding="utf-8")
+CONNECTION_CHIPS = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 
 
@@ -95,8 +96,12 @@ def test_product_mode_is_scoped_and_starter_actions_never_create_fake_auth():
     assert 'document.getElementById("connectorsNavButton")' in ACTIONS
     assert 'document.getElementById("messageInput")?.focus()' in ACTIONS
     assert "credentials: \"same-origin\"" in ACTIONS
-    assert '"/api/claw/local-access/devices"' in ACTIONS
-    assert "ownerScoped !== true" in ACTIONS
+    # #5556/#5562: the card opens no device read of its own; the shared state
+    # module stays the only owner-scoped reader of the canonical endpoint.
+    assert "PadiemComputerConnectionState" in ACTIONS
+    assert '"/api/claw/local-access/devices"' not in ACTIONS
+    assert '"/api/claw/local-access/devices"' in CONNECTION_CHIPS
+    assert "ownerScoped===true" in CONNECTION_CHIPS
     for forbidden in ('fetch("/api/claw/connector/enrollments/redeem",',
                       "dispatch_authorized: true", "window.location.href ="):
         assert forbidden not in ACTIONS
