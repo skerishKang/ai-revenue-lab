@@ -3,6 +3,7 @@ from __future__ import annotations
 from starlette.responses import JSONResponse
 
 from .model_policy import ClawExecutionGrade
+from .model_policy import bind_verified_member_grade
 from .platform_model_authority import is_model_admin
 
 GRADES = ("free", "plus", "pro", "max")
@@ -28,9 +29,11 @@ async def verified_member_grade(request, user_id, access=None):
     # member grade. The member record below stays the only source of a paid
     # grade for everybody else.
     if await is_model_admin(request, user_id):
+        bind_verified_member_grade("max")
         return "max"
     known = _known_grade(access)
     if known is not None:
+        bind_verified_member_grade(known)
         return known
     store = getattr(request.app.state, "b66_member_admin_store", None)
     read = getattr(store, "runtime_access", None) if store is not None else None
@@ -39,6 +42,7 @@ async def verified_member_grade(request, user_id, access=None):
             candidate = await read(user_id)
             known = _known_grade(candidate)
             if known is not None:
+                bind_verified_member_grade(known)
                 return known
         except Exception:
             pass
@@ -46,7 +50,9 @@ async def verified_member_grade(request, user_id, access=None):
     # fixtures may exercise paid grades without real production credentials.
     settings = getattr(request.app.state, "settings", None)
     if getattr(settings, "runtime_mode", None) == "mock":
+        bind_verified_member_grade("max")
         return "max"
+    bind_verified_member_grade("free")
     return "free"
 
 
@@ -102,4 +108,3 @@ async def claw_execution_tier_denial(request, user_id, grade: ClawExecutionGrade
     if grade.admin_lane:
         return await selected_admin_denial(request, user_id)
     return await selected_grade_denial(request, user_id, grade.tier_id)
-

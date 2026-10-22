@@ -75,6 +75,7 @@ class MockModel:
 
     async def complete_registered_b66_chat_model(
         self, messages, *, model, additional_system_context=None, model_parameters=None,
+        product_tier="free", verified_identity_tier=None,
     ):
         self.calls.append({
             "messages": messages, "model": model, "system": additional_system_context,

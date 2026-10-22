@@ -1340,6 +1340,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # chooses the separately authorized exact model, never a browser-provided
     # tier/model grant. PLUS here is solely the existing P01 transport profile.
     product_tier = grade.product_tier
+    # The administrator lane is not a member grade: its identity answer stays
+    # neutral instead of claiming the PLUS transport profile as a membership.
+    identity_tier_id = None if admin_lane else requested_tier
     if "tier" in data:
         user_id = current_user_id(request) if auth_ready(request) else None
         tier_denial = await claw_execution_tier_denial(request, user_id, grade)
@@ -1799,7 +1802,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
 
     if live_requested:
         from .claw_live_events import live_claw_sse
-        live_args = {"product_tier": product_tier, "subject_id": subject_id}
+        live_args = {"product_tier": product_tier, "subject_id": subject_id,
+                     "identity_tier_id": identity_tier_id}
         if initial_pc_capture:
             live_args["desktop_capture"] = True
             live_args["desktop_device_id"] = desktop_device_id
@@ -1853,7 +1857,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         )
 
     try:
-        dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
+        dispatch_args = {"product_tier": product_tier, "subject_id": subject_id,
+                         "identity_tier_id": identity_tier_id}
         if initial_pc_capture:
             dispatch_args["desktop_capture"] = True
             dispatch_args["desktop_device_id"] = desktop_device_id

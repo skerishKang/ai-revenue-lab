@@ -8,10 +8,10 @@ import httpx
 import pytest
 
 from app.attachments import MAX_IMAGE_BYTES, parse_attachments
-from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
+from padiem_ai_core.dispatch_preinstruction import render_product_identity_instruction
 from padiem_control_plane.product_tier_routes import (
     PRODUCT_TIER_ROUTES,
     ProductRouteStatus,
@@ -84,7 +84,12 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
         assert seen["body"]["model"] == DEFAULT_B14_MODEL_ID
         system_messages = [item for item in seen["body"]["messages"] if item["role"] == "system"]
         assert len(system_messages) == 1
-        assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
+        # #5347: the Chat identity instruction names the request's
+        # server-authorized tier. The route bound the default "free" tier for
+        # this request, so the neutral brand sentence is not the whole
+        # instruction any more and the grade must reach the dispatch.
+        assert render_product_identity_instruction("chat", "free") in system_messages[0]["content"]
+        assert "PADIEM Chat의 PADIEM Free 모드" in system_messages[0]["content"]
         assert seen["body"]["messages"][-1] == {"role": "user", "content": "안녕"}
         assert "max_tokens" not in seen["body"]
         assert seen["body"]["business14"]["required_capabilities"] == ["chat"]
