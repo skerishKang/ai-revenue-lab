@@ -23,6 +23,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/b62-production-code-deploy-gate.yml"
+GATE_WORKFLOW = ROOT / ".github/workflows/b62-d1-migration-065-gate.yml"
 HELPER = ROOT / ".github/scripts/b62_d1_migration_065_schema.py"
 MIGRATION = ROOT / "apps/padiem-chat/migrations/065_claw_push_subscriptions.sql"
 TABLE = "claw_push_subscription"
@@ -182,3 +183,18 @@ def test_deploy_gate_runs_the_065_preflight() -> None:
     assert "MIGRATION_065_PREDEPLOY=EXACT" in text
     # The migration file itself must trigger the gate.
     assert "065_claw_push_subscriptions.sql" in text
+
+
+def test_migration_gate_workflow_is_the_only_apply_path() -> None:
+    """The 065 table is created only through its own pinned gate."""
+    text = GATE_WORKFLOW.read_text(encoding="utf-8")
+    # An apply mode exists and needs the exact confirmation phrase.
+    assert "apply_migration_065" in text
+    assert "APPLY_B62_D1_MIGRATION_065_FROM_EXACT_MAIN" in text
+    # The apply payload is the reviewed file, never hand-written SQL.
+    assert "b62_d1_migration_065_schema.py apply" in text
+    # Drift is refused rather than mutated.
+    assert "drift)" in text
+    # The gate never deploys a Worker.
+    assert "wrangler deploy" not in text
+    assert "workers/scripts/${B62_WORKER}" in text
