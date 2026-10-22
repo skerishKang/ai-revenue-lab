@@ -1,0 +1,7 @@
+version: 2
+secret:
+  # These files contain only clearly synthetic channel/password placeholders
+  # for the #5015 read-port tests. No production credential is present.
+  ignored-paths:
+    - "apps/korean-ai-code-agent/tests/test_5015_pc_read_port.py"
+    - "apps/padiem-chat/tests/test_5015_pc_read_dispatch.py"
