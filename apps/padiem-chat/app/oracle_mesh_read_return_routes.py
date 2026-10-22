@@ -1054,6 +1054,165 @@ async def dispatch_oracle_mesh_command_intent(
     })
 
 
+async def dispatch_oracle_mesh_file_read_intent(
+    request: Request, *, wire: dict[str, Any],
+    trusted_owner: tuple[Any, str, str],
+    tool_call_ref: str,
+    target: dict[str, Any],
+    root: str,
+    relative: str,
+) -> JSONResponse:
+    """Stage ONE PC-files read on the existing kind="read" Mesh lane.
+
+    #5015: the Engine has already resolved the canonical owner, workspace and
+    deployment target (the same target the list call used). This function
+    reuses the command lane's authority checks and dispatch correlation, then
+    stages a read row instead of a shell command. It does not open a browser
+    session, does not accept a command, and does not add a second store: the
+    existing executor reads the file with ``meshctrl.js download`` and the
+    existing result route pins/stores the verified bytes.
+    """
+    session, uid, workspace_id = trusted_owner
+    if (
+        not uid or not workspace_id
+        or not getattr(session, "tenant_id", None)
+    ):
+        return _error(401, "canonical_session_required")
+
+    mesh_source = _channel_source(request)
+    if mesh_source is None or mesh_source.execution_mode != EXECUTION_MODE_MESH:
+        return _error(503, "oracle_mesh_unconfigured")
+    identity = getattr(request.app.state, "control_plane_identity_authority", None)
+    history_store = getattr(request.app.state, "history_store", None)
+    for method in (
+        "get_claw_run", "get_local_task_correlation", "create_oracle_mesh_dispatch",
+    ):
+        if not callable(getattr(history_store, method, None)):
+            return _error(503, "oracle_mesh_unconfigured")
+    if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
+        return _error(503, "oracle_mesh_unconfigured")
+
+    selected = wire.get("device_id")
+    if selected is not None and (not isinstance(selected, str) or not selected):
+        return _error(422, "oracle_mesh_device_invalid")
+    if (
+        not isinstance(tool_call_ref, str)
+        or _PC_FILES_SAFE_REF.fullmatch(tool_call_ref) is None
+        or not isinstance(root, str) or not root
+        or not isinstance(relative, str) or not relative
+        or not isinstance(target, dict)
+        or not isinstance(target.get("node_ref"), str) or not target["node_ref"]
+    ):
+        return _error(422, "oracle_mesh_file_call_invalid")
+
+    try:
+        scope = await identity.resolve_connector_owner_scope(
+            session_id=session.session_id,
+        )
+    except Exception as exc:
+        emit_stage_event(
+            stage="mesh.files_owner_scope", outcome="error", duration_ms=0,
+            code=getattr(exc, "code", None),
+        )
+        return _error(503, "oracle_mesh_device_directory_unavailable")
+    account_ref = scope.get("account_ref") if isinstance(scope, dict) else None
+    connector_workspace_ref = scope.get("workspace_ref") if isinstance(scope, dict) else None
+    if (
+        not isinstance(account_ref, str) or not account_ref
+        or not isinstance(connector_workspace_ref, str) or not connector_workspace_ref
+    ):
+        return _error(503, "oracle_mesh_device_directory_unavailable")
+
+    try:
+        run_row = await history_store.get_claw_run(uid, wire["run_id"])
+    except Exception:
+        return _error(503, "oracle_mesh_run_unavailable")
+    if (
+        not isinstance(run_row, dict)
+        or run_row.get("run_id") != wire["run_id"]
+        or run_row.get("workspace_id") != workspace_id
+        or not isinstance(run_row.get("conversation_id"), str)
+        or not run_row["conversation_id"]
+    ):
+        return _error(404, "oracle_mesh_run_unavailable")
+
+    node_ref = target["node_ref"]
+    device_id = target.get("device_id") or node_ref
+    if not isinstance(device_id, str) or not device_id:
+        return _error(422, "oracle_mesh_file_call_invalid")
+    # The target row supplies the approved root; the relative path is the
+    # caller's already-validated file inside that root. The command lane uses
+    # the same root + relative shape, so a read cannot target another folder.
+    file_path = root + "/" + relative
+
+    # #5015: the Engine file tools are per-call correlated. A broker-admitted
+    # legacy correlation belongs to the run's single-command lane and is never
+    # borrowed here; the tool call reference is the exact correlation key.
+    suffix = uuid.uuid4().hex
+    cmd_id = "oracle_mesh_cmd_" + suffix
+    request_id = "oracle_mesh_req_" + suffix
+    revision_ref = "oracle_mesh_rev_" + suffix
+    evidence_ref = None
+    # The read target is part of the correlation: a different file for the same
+    # tool call is a different request, never a silent retarget.
+    request_fingerprint = hashlib.sha256(
+        (
+            account_ref + "|" + node_ref + "|read|" + file_path
+        ).encode("utf-8")
+    ).hexdigest()
+
+    now = datetime.now(timezone.utc)
+    try:
+        dispatch = await history_store.create_oracle_mesh_dispatch(
+            user_id=uid,
+            run_id=wire["run_id"],
+            command_id=cmd_id,
+            tool_request_ref=tool_call_ref,
+            request_id=request_id,
+            revision_ref=revision_ref,
+            evidence_ref=evidence_ref,
+            request_fingerprint=request_fingerprint,
+            account_ref=account_ref,
+            workspace_ref=connector_workspace_ref,
+            device_id=device_id,
+            binding_ref=None,
+            node_ref=node_ref,
+            root_ref=_PC_FILES_READ_ROOT_REF,
+            path_relative=relative,
+            file_path=file_path,
+            expires_at=(now + _DISPATCH_TTL).isoformat(
+                timespec="milliseconds",
+            ).replace("+00:00", "Z"),
+            kind="read",
+            tool_call_ref=tool_call_ref,
+        )
+    except HistoryForbidden:
+        return _error(404, "oracle_mesh_run_unavailable")
+    except HistoryError as exc:
+        if str(exc) == "oracle mesh dispatch row exceeds the storage row bound":
+            return _error(413, "oracle_mesh_dispatch_too_large")
+        if str(exc) == "oracle mesh command execution is uncertain":
+            # A read has no PC mutation, but the existing dispatch guard still
+            # owns the decision. It is surfaced, never retried in disguise.
+            return _error(409, "oracle_mesh_command_uncertain")
+        return _error(409, "oracle_mesh_dispatch_refused")
+    except Exception:
+        return _error(503, "oracle_mesh_dispatch_unavailable")
+    return _response({
+        "ok": True,
+        "dispatch": {
+            "dispatch_id": dispatch["dispatch_id"],
+            "run_id": wire["run_id"],
+            "state": dispatch["state"],
+            "expires_at": dispatch["expires_at"],
+            "kind": "read",
+            "device_id": device_id,
+            "execution": "server_owned",
+            "broker_acknowledged": False,
+        },
+    })
+
+
 def _parse_desktop_op_text(value: Any) -> tuple[str, str | None] | None:
     """Split one ``desktop:`` op body into (op, arg), or None when malformed.
 
@@ -1290,6 +1449,29 @@ def _deployment_target_for(
     return dict(matches[0]) if len(matches) == 1 else None
 
 
+def _oracle_mesh_poll_max_bytes(dispatch: dict[str, Any]) -> int:
+    """Server-computed read bound for one dispatch row.
+
+    #5015: the Chat PC-files read is a 1 MB call; every other read consumer
+    keeps the shared 6 MB envelope. The decision is made here from the row the
+    server staged (its stable per-call reference), never from the model, the
+    executor or any request value.
+    """
+    if (dispatch.get("kind") or "read") == "read":
+        # The server-owned root marker is authoritative: the caller-supplied
+        # tool_call_ref can never decide the bound. The per-call marker is a
+        # second, same-lane hint for rows that carry it.
+        if dispatch.get("root_ref") == _PC_FILES_READ_ROOT_REF:
+            return PC_FILES_READ_MAX_BYTES
+        tool_request_ref = dispatch.get("tool_request_ref")
+        if (
+            isinstance(tool_request_ref, str)
+            and _PC_FILES_READ_TOOL_MARKER in tool_request_ref
+        ):
+            return PC_FILES_READ_MAX_BYTES
+    return _MAX_FILE_TEXT_BYTES
+
+
 async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
     """Executor poll: channel-secret proof, one claimed dispatch, one nonce."""
     mesh_source = _channel_source(request)
@@ -1352,6 +1534,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "request_fingerprint": pending["request_fingerprint"],
             "kind": pending.get("kind") or "read",
             "command_text": pending.get("command_text"),
+            "max_bytes": _oracle_mesh_poll_max_bytes(pending),
         },
     })
 
@@ -1686,6 +1869,32 @@ def _file_read_part_messages(parts: list[str]) -> list[str]:
     return messages
 
 
+async def _store_oracle_mesh_read_original(
+    history_store: Any, *, dispatch: dict[str, Any],
+    conversation_id: str, message_id: str, raw: str,
+    expected_sha256: str, expected_bytes: int,
+) -> None:
+    """Store one verified read body through the existing command-result store.
+
+    The raw bytes (file text or a bounded ``PADIEM_PC_FILE_ERROR`` marker) are
+    keyed by the same deterministic result message id the command result mode
+    already uses. No new store or DB row is introduced. The small-output method
+    is preferred because the over-budget method skips short texts; both apply
+    the same owner and dispatch-pin checks.
+    """
+    store = getattr(history_store, "store_oracle_mesh_command_result", None)
+    if not callable(store):
+        store = getattr(history_store, "store_oracle_mesh_original", None)
+    if not callable(store):
+        raise HistoryError("oracle mesh result store is unavailable")
+    await store(
+        user_id=dispatch["user_id"], dispatch_id=dispatch["dispatch_id"],
+        conversation_id=conversation_id, message_id=message_id,
+        raw=raw, expected_sha256=expected_sha256,
+        expected_bytes=expected_bytes,
+    )
+
+
 def _file_read_stored_content(
     dispatch: dict[str, Any], wire: dict[str, Any], output: str,
 ) -> str:
@@ -1889,6 +2098,11 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     #: conversation message can be split across deterministic message ids.
     command_output: str | None = None
     read_output: str | None = None
+    #: #5015: the verified read body (a successful file or a bounded error
+    #: marker) is stored through the existing original store before the
+    #: conversation message is built, so the Engine result mode can re-feed
+    #: exact bytes and the model lane sees the same error mapping.
+    read_stored_output: str | None = None
     #: #4139 desktop lane: the verified observation note, the verified
     #: screenshot bytes (None when the turn carries no image) and the op the
     #: dispatch row ordered. Messages are built after the pin below.
@@ -2048,6 +2262,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                 + "\n--- 출력 끝 ---"
             )
             read_output = verified_text if verified_text else None
+            read_stored_output = read_output
             summary = "exited/0"
             status = "completed"
     elif wire["termination"] == "cancelled":
@@ -2058,6 +2273,33 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             "로컬 러너 작업이 취소되었습니다. "
             f"명령: {dispatch['command_id']}."
         )
+    elif dispatch.get("kind") == "read":
+        # #5015: a failed read keeps its verified body. The executor reports
+        # ``PADIEM_PC_FILE_ERROR:too_large`` or ``:read_failed`` as an
+        # exited/1 body, and the Engine maps that same marker. The
+        # conversation still reports a failure, never the file as a success.
+        verified_text = _verified_result_text(dispatch, wire)
+        if verified_text is None:
+            outcome = "failed"
+            summary = "untrusted-result"
+            status = "failed"
+            content = (
+                "PC 파일 읽기 결과를 검증하지 못했습니다. "
+                f"명령: {dispatch['command_id']}, 사유: 결과 무결성 불일치."
+            )
+        else:
+            outcome = "failed"
+            # Keep the read lane's existing failure vocabulary: only a wait
+            # timeout is named as such; every other non-clean read is
+            # "failed". The verified marker body is stored separately.
+            summary = "timed_out" if wire["termination"] == "timed_out" else "failed"
+            status = summary
+            read_stored_output = verified_text if verified_text else None
+            content = (
+                "PC 파일 읽기 작업이 실패했습니다. "
+                f"명령: {dispatch['command_id']}, 상태: {wire['termination']}, "
+                f"종료 코드: {wire['exit_code']}."
+            )
     else:
         summary = "timed_out" if wire["termination"] == "timed_out" else "failed"
         status = summary
@@ -2136,6 +2378,35 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         command_id=dispatch["command_id"],
         revision_ref=dispatch["revision_ref"],
     )
+    if read_stored_output is not None:
+        # #5015: the Engine read lane retrieves the exact verified body from
+        # this existing store. Storing before the conversation projection
+        # keeps a store failure retryable with the same bytes; the executor
+        # is never asked to read the PC file again.
+        try:
+            await _store_oracle_mesh_read_original(
+                history_store, dispatch=dispatch,
+                conversation_id=conversation_id, message_id=base_message_id,
+                raw=read_stored_output,
+                expected_sha256=result_digest,
+                expected_bytes=result_size,
+            )
+        except HistoryForbidden:
+            try:
+                await history_store.finish_oracle_mesh_dispatch(
+                    dispatch_id=wire["dispatch_id"], outcome="failed",
+                )
+            except Exception:
+                pass
+            return _error(403, "oracle_mesh_conversation_forbidden")
+        except Exception:
+            try:
+                await history_store.mark_oracle_mesh_store_failed(
+                    dispatch_id=wire["dispatch_id"],
+                )
+            except Exception:
+                pass
+            return _error(503, "oracle_mesh_original_unavailable")
     if command_output is not None:
         # #5015: the Engine model lane re-feeds exact bytes, including small
         # drive inventories that never needed the over-budget original store.
@@ -2486,14 +2757,20 @@ async def _verify_engine_proof(request: Request) -> tuple[bytes | None, JSONResp
 
 # ---------------------------------------------------------------------------
 # #5015/#4976 — structured PC file tools (list/read) on the existing Mesh
-# command lane.
+# lane.
 #
 # The Engine's model-selected list_files/read_file tools send a structured op
 # and a path relative to the approved folder; they never send a shell command.
 # This server derives the approved root from the deployment ownership row's
-# mapped file, rejects traversal/absolute paths, builds the one PowerShell
-# command, and delegates to the existing command dispatch/status/result path.
-# The executor, pin, split, projection and recovery are therefore unchanged.
+# mapped file, rejects traversal/absolute paths, and then:
+#
+# * list stays on the existing kind="command" PowerShell lane, and
+# * read reuses the existing kind="read" MeshCentral download lane
+#   (``meshctrl.js download``), whose result bytes are already verified,
+#   pinned, stored and retrievable through the command result modes.
+#
+# The read dispatch carries the server-computed per-call bound so the executor
+# cannot be told to accept more than the PC file contract allows.
 # ---------------------------------------------------------------------------
 
 PC_FILES_MAX_PATH_CHARS = 2048
@@ -2501,6 +2778,13 @@ PC_FILES_LIST_DEFAULT_LIMIT = 200
 PC_FILES_LIST_MAX_LIMIT = 500
 PC_FILES_READ_MAX_BYTES = 1_000_000
 PC_FILES_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
+#: Stable per-call reference suffix the Engine uses for read_file. The poll
+#: route reads it from the dispatch row (never from a caller) to decide the
+#: bounded read size for this one call.
+_PC_FILES_READ_TOOL_MARKER = ":read_file:"
+#: Self-describing root for a PC-files read row. The real Windows path is in
+#: ``file_path``; this value only marks which lane staged the row.
+_PC_FILES_READ_ROOT_REF = "pc_files_read"
 _PC_FILES_SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,127}$")
 
 
@@ -2561,35 +2845,28 @@ def _pc_files_powershell_literal(value: str) -> str:
 def _pc_files_command(*, op: str, root: str, relative: str, limit: int) -> str:
     """Build the one command this server will execute for a file tool call.
 
-    Cmdlet-only on purpose: no native program runs, so the PC reports no exit
-    code (``no_exit_code``) and the existing result lane stays truthful. The
-    output is either one JSON object (list), the file text (read), or one fixed
-    ``PADIEM_PC_FILE_ERROR:<code>`` marker.
+    Only ``list`` uses the PowerShell command lane. ``read`` uses the existing
+    kind="read" MeshCentral download lane: the former ``ReadAllText`` command
+    timed out through the MeshCentral PowerShell reply, and replacing it with
+    another shell command is not the contract.
+
+    The list command is cmdlet-only on purpose: no native program runs, so the
+    PC reports no exit code (``no_exit_code``) and the existing result lane
+    stays truthful.
     """
+    if op != "list":
+        raise ValueError("only list uses the PowerShell command lane")
     folder = root + ("/" + relative if relative else "")
     folder_literal = _pc_files_powershell_literal(folder)
-    folder = root + ("/" + relative if relative else "")
-    folder_literal = _pc_files_powershell_literal(folder)
-    if op == "list":
-        # A plain pipeline: no nested hashtables or calculated properties.
-        # The nested form timed out through the MeshCentral PowerShell reply
-        # while the identical script completed locally, so the wire path gets
-        # the smallest command that still returns name/metadata JSON.
-        return (
-            "Get-ChildItem -LiteralPath " + folder_literal
-            + " -Force -ErrorAction Stop | Select-Object -First " + str(limit)
-            + " | Select-Object Name, Length, LastWriteTimeUtc, PSIsContainer"
-            + " | ConvertTo-Json -Compress"
-        )
-    file_literal = _pc_files_powershell_literal(root + "/" + relative)
+    # A plain pipeline: no nested hashtables or calculated properties.
+    # The nested form timed out through the MeshCentral PowerShell reply
+    # while the identical script completed locally, so the wire path gets
+    # the smallest command that still returns name/metadata JSON.
     return (
-        "$file=" + file_literal + "; "
-        "try { $item=Get-Item -LiteralPath $file -Force -ErrorAction Stop; "
-        "if($item.PSIsContainer){ '" + PC_FILES_ERROR_PREFIX + "not_a_file' "
-        "} elseif($item.Length -gt " + str(PC_FILES_READ_MAX_BYTES) + "){ '"
-        + PC_FILES_ERROR_PREFIX + "too_large' "
-        "} else { [IO.File]::ReadAllText($file,[Text.Encoding]::UTF8) } "
-        "} catch { '" + PC_FILES_ERROR_PREFIX + "read_failed' }"
+        "Get-ChildItem -LiteralPath " + folder_literal
+        + " -Force -ErrorAction Stop | Select-Object -First " + str(limit)
+        + " | Select-Object Name, Length, LastWriteTimeUtc, PSIsContainer"
+        + " | ConvertTo-Json -Compress"
     )
 
 
@@ -2826,6 +3103,22 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             return _error(503, "oracle_mesh_workspace_unavailable")
         if not command_workspace:
             return _error(503, "oracle_mesh_workspace_unavailable")
+        if op == "read":
+            # #5015: the read reuses the existing kind="read" MeshCentral
+            # download lane. No shell command is built for it.
+            return await dispatch_oracle_mesh_file_read_intent(
+                request,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                target=target,
+                root=root,
+                relative=relative,
+            )
         command = _pc_files_command(
             op=op, root=root, relative=relative,
             limit=PC_FILES_LIST_DEFAULT_LIMIT,
@@ -2852,10 +3145,11 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         dispatch = await reader(user_id=uid, dispatch_id=dispatch_id)
     except Exception:
         return _error(503, "oracle_mesh_dispatch_unavailable")
+    kind = dispatch.get("kind") if isinstance(dispatch, dict) else None
     if (
         not isinstance(dispatch, dict)
         or dispatch.get("run_id") != payload["run_id"]
-        or dispatch.get("kind") != "command"
+        or kind not in ("command", "read")
     ):
         return _error(404, "oracle_mesh_run_unavailable")
     state = dispatch.get("state")
@@ -2867,14 +3161,21 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             "dispatch": {
                 "dispatch_id": dispatch["dispatch_id"],
                 "run_id": payload["run_id"],
-                "kind": "command",
+                "kind": kind,
                 "state": state,
                 "result_sha256": dispatch.get("result_sha256"),
                 "termination": dispatch.get("termination"),
                 "exit_code": dispatch.get("exit_code"),
             },
         })
-    if state != "done":
+    # A command result is ready only after a clean terminal row. A read keeps
+    # its verified body on a failed row too (the executor's bounded
+    # PADIEM_PC_FILE_ERROR marker), so the Engine can surface the same error
+    # mapping instead of losing it to an empty outcome.
+    if kind == "read":
+        if state not in ("done", "failed"):
+            return _error(409, "oracle_mesh_result_not_ready")
+    elif state != "done":
         return _error(409, "oracle_mesh_result_not_ready")
     termination = dispatch.get("termination")
     exit_code = dispatch.get("exit_code")
@@ -2917,15 +3218,21 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         or digest != dispatch.get("result_sha256")
     ):
         return _error(503, "oracle_mesh_original_unavailable")
+    try:
+        output = content.decode("utf-8")
+    except UnicodeDecodeError:
+        return _error(503, "oracle_mesh_original_unavailable")
     return _response({
         "ok": True,
         "dispatch": {
             "dispatch_id": dispatch["dispatch_id"],
             "run_id": payload["run_id"],
-            "kind": "command",
-            "state": "done",
+            "kind": kind,
+            "state": state,
             "result_sha256": digest,
-            "output": content.decode("utf-8", errors="replace"),
+            "content_sha256": digest,
+            "content_bytes": len(content),
+            "output": output,
             "termination": termination,
             "exit_code": exit_code,
         },
