@@ -34,6 +34,13 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.tool_channel import (
+    model_supports_tools,
+    require_tool_capability,
+    validate_messages,
+    validate_tool_choice,
+    validate_tools,
+)
 from app.pilot.provider_timeout_diagnostics import log_gateway_deadline
 from app.pilot.b14_timeout_policy import GATEWAY_WALL_SECONDS
 from app.pilot.registry import get_registry
@@ -156,14 +163,13 @@ def _log_unexpected_error(event: str, request_id: str, exc: Exception) -> None:
 
 
 # Allowed fields for PilotChatRequest (dataclass field names)
-_VALID_ROLES = frozenset({"system", "user", "assistant"})
 _ALLOWED_CHAT_FIELDS = frozenset({
     "model", "messages", "temperature", "max_tokens", "stream", "tools",
+    "tool_choice",
     "business14",
     "reasoning_effort", "top_p", "top_k", "min_p",
     "presence_penalty", "repetition_penalty",
 })
-_ALLOWED_MESSAGE_FIELDS = frozenset({"role", "content"})
 _ALLOWED_B14_FIELDS = frozenset({
     "task_type", "required_capabilities", "optimize_for",
     "allow_external_fallback", "provider_order", "max_attempts",
@@ -250,21 +256,7 @@ def _validate_body(raw: Any) -> dict:
     if not msgs:
         raise _InvalidBody("messages must be a non-empty array")
 
-    validated_messages: list[dict[str, str]] = []
-    for i, msg in enumerate(msgs):
-        if not isinstance(msg, dict):
-            raise _InvalidBody(f"messages[{i}] must be a JSON object")
-        m_extra = set(msg) - _ALLOWED_MESSAGE_FIELDS
-        if m_extra:
-            raise _InvalidBody(f"messages[{i}] unexpected fields: {', '.join(sorted(m_extra))}")
-        role = msg.get("role")
-        if role not in _VALID_ROLES:
-            raise _InvalidBody(f"messages[{i}] role must be one of system/user/assistant")
-        content = msg.get("content")
-        if not isinstance(content, str) or not content.strip():
-            raise _InvalidBody(f"messages[{i}] content must be a non-empty string")
-        content = content.strip()
-        validated_messages.append({"role": role, "content": content})
+    validated_messages = validate_messages(msgs)
 
     # temperature
     temp = raw.get("temperature")
@@ -292,11 +284,13 @@ def _validate_body(raw: Any) -> dict:
         raise StreamNotSupported()
 
     # tools
-    tl = raw.get("tools")
-    if tl is not None:
-        if not isinstance(tl, list):
-            raise _InvalidBody("tools must be an array or null")
-        raise ToolsNotSupported()
+    # #5536: the tool channel. The declaration is validated here, before any
+    # provider call, so a malformed declaration never reaches a provider and
+    # never spends a credential.
+    declared_tools = validate_tools(raw.get("tools"))
+    tool_choice = validate_tool_choice(raw.get("tool_choice"), declared_tools)
+    if tool_choice is not None and not declared_tools:
+        raise _InvalidBody("tool_choice requires a declared tool")
 
     # Model-native overrides are opt-in. Reject unsupported vendor fields
     # instead of silently dropping or guessing an original-model default.
@@ -316,6 +310,8 @@ def _validate_body(raw: Any) -> dict:
         "temperature": float(temp) if temp is not None else None,
         "max_tokens": int(mt) if mt is not None else None,
         "model_parameters": native_options,
+        "tools": declared_tools,
+        "tool_choice": tool_choice,
         "business14": _validate_b14_options(raw.get("business14")),
     }
 
@@ -788,6 +784,14 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     model_id = body["model"]
     b14_opts = body.get("business14", {})
 
+    # #5536: tool calling is served only by a registered model that declares
+    # the tool capability. A pinned model is checked before any credential is
+    # resolved, so a request that declares a tool for a model that cannot
+    # serve one is refused before execution.
+    declared_tools = body.get("tools") or []
+    if declared_tools and model_id != "b14/auto":
+        require_tool_capability(model_id)
+
     from .platform_secrets import ensure_route_secrets
     await ensure_route_secrets(
         model_id,
@@ -844,6 +848,11 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         }
     ] + fallback_candidates
 
+    # #5536: the automatic route resolves to a concrete candidate, so the
+    # same capability check runs on that candidate before any provider call.
+    if declared_tools:
+        require_tool_capability(candidates[0]["model_id"])
+
     async def _invoke_upstream_raw(current: dict[str, str]) -> dict[str, Any]:
         if decision.credential_source == "platform_secret":
             return await plat.call_platform_chat_completions(
@@ -856,6 +865,11 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 max_tokens=body.get("max_tokens"),
                 **({"model_parameters": body["model_parameters"]}
                    if body.get("model_parameters") else {}),
+                # #5536: the tool declaration travels to the provider with the
+                # request. It is present only when the caller declared a tool.
+                **({"tools": body["tools"]} if body.get("tools") else {}),
+                **({"tool_choice": body["tool_choice"]}
+                   if body.get("tool_choice") is not None else {}),
             )
         raise InvalidRequest(
             "non-platform route is not routable (OpenRouter retired, #1933 S2)"
@@ -901,6 +915,25 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         succeeded = False
         unexpected_internal = False
         advance_to_next_candidate = False
+        if declared_tools and not model_supports_tools(current["model_id"]):
+            # #5536: a candidate that cannot serve a tool call is skipped
+            # without a provider call. The tool declaration is never sent to a
+            # model that cannot honor it.
+            attempt_evidence.append({
+                "attempt": attempt_count + 1,
+                "model_id": current["model_id"],
+                "upstream_model": current["upstream_model"],
+                "provider": current["provider"],
+                "route_id": current["route_id"],
+                "outcome": "error",
+                "error_code": "tools_not_supported",
+                "retry_index": 0,
+                "actual_response_model": None,
+            })
+            last_error = ToolsNotSupported(current["model_id"])
+            if idx < len(candidates) - 1:
+                advance_to_next_candidate = True
+            break
         while True:
             remaining = deadline - time.monotonic()
             if remaining <= 0:
@@ -1192,6 +1225,12 @@ async def pilot_chat_completions(
 
         # BYOK mode (legacy flow — unchanged)
         api_key = _validate_provider_key(x_business14_provider_key)
+
+        # #5536: the BYOK lane serves a caller's own provider and model, and
+        # B14 holds no capability record for it. A tool declaration is
+        # therefore refused here rather than forwarded unverified.
+        if body.get("tools"):
+            raise ToolsNotSupported(body["model"])
 
         route = resolve_route(body["model"])
 

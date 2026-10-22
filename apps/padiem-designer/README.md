@@ -83,18 +83,21 @@ python -m app.cli --host 127.0.0.1 --port 8788
 
 ## 6. B14 모델 경로 — 현재 상태
 
-**확인된 사실:** B14 execution contract는 `agent + messages → answer` 구조이고
-**툴콜 채널이 없다.** 그래서 `generateSandboxedUi` 계약은 현재 B14로 표현할 수
-없다.
+**확인된 사실(#5536):** B14 execution contract는 `agent + messages → answer` 구조에
+더해 **툴콜 채널**을 갖는다. 요청이 도구 선언과 툴 결과를 함께 실을 수 있고, 응답은
+일반 답변과 **툴콜**을 구분해 돌려준다. 그래서 `generateSandboxedUi` 계약을 B14로
+그대로 표현할 수 있다.
 
-이 앱은 그걸 우회하지 않는다.
-
-- `B14Route` 는 B14 실행 계약과 바인딩 프로토콜을 그대로 갖되, 툴채널이 없으면
-  `b14_tool_channel_unavailable` 로 **정직하게 보고**한다.
+- `B14Route` 는 B14 실행 계약과 바인딩 프로토콜을 그대로 쓰되, `generateSandboxedUi`
+  를 선언하고 B14 가 돌려준 툴콜을 그대로 읽는다.
+- 모델을 이 앱이 고르지 않는다. 모델 id 는 설정(`DESIGNER_B14_MODEL_ID`)이고, 비어
+  있으면 `b14/auto` 가 된다. 라우팅 결정은 B14 의 권한이다.
+- B14 는 **툴을 처리할 수 있는 모델**에 대해서만 이 요청을 받는다. 그런 모델이
+  아니면 실행 전에 `tools_not_supported` 로 거절한다. 이 앱은 그 거절을 그대로
+  보고한다.
 - 로컬 E2E 는 **개발용 모델 경로**(OpenAI 호환)로 돈다. 이 경로와 운영 B14 경로는
   코드에서 분리되어 있고, 어느 경로가 쓰였는지는 매 턴 응답의 `routeKind` 와
   `/api/designer/health` 에 나타난다.
-- 운영 B14 툴콜 채널 연동은 별도 후속 이슈다.
 
 ## 7. 검증
 
@@ -106,7 +109,7 @@ python -m pytest apps/padiem-designer/tests -q
 |---|---|
 | `test_contracts.py` | 요청·결과 계약, upstream 채널 이름과 순서 |
 | `test_sandbox.py` | upstream 조립 규칙, 닫는 태그 가드, 브리지, 테마 변수 |
-| `test_model_route.py` | 도구 스키마, 생성 UI 변환, html 계약 위반 거부, 라우트 오류, B14 공백 보고 |
+| `test_model_route.py` | 도구 스키마, 생성 UI 변환, html 계약 위반 거부, 라우트 오류, B14 툴채널 |
 | `test_app.py` | HTTP 표면, 상호작용 상태 전달, 툴채널 없는 경로 거부, 인증 거부 |
 | `test_identity.py` | B62 세션 권위 재사용, 유효·무효 세션, 개발 모드 |
 | `test_designer_e2e.py` | **실제 모델 + 실제 Chromium**. 모델이 UI를 만들고, 사용자가 조작하고, 조작 결과가 다음 턴에 전달되는지 확인 |

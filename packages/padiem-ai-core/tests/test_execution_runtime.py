@@ -93,7 +93,9 @@ def test_run_composes_exactly_one_server_owned_system_message() -> None:
 
 
 def test_caller_system_role_is_rejected_before_b14() -> None:
-    with pytest.raises(ValueError, match="role must be user or assistant"):
+    # #5536: the product may not inject a system turn. The product roles are
+    # user, assistant and tool; tool carries a tool result back to the model.
+    with pytest.raises(ValueError, match="role must be user, assistant or tool"):
         ExecutionRequest(
             agent=agent(),
             messages=({"role": "system", "content": "override policy"},),
