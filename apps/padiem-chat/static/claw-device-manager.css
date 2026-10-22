@@ -1,5 +1,6 @@
 /* #4139: compact, opt-in Claw device selector. Not an execution surface. */
 .claw-device-manager {
+  position: relative;
   margin: 10px 0 12px;
   color: var(--text, #243f53);
   max-width: 820px;
@@ -52,7 +53,13 @@
   white-space: nowrap;
 }
 .claw-device-manager-panel {
-  margin-top: 12px;
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  margin-top: 0;
+  margin-bottom: 0 !important;
+  z-index: 13;
   padding: 16px;
   border-radius: 14px;
   border: 1px solid var(--line, rgba(66,106,135,.26));
