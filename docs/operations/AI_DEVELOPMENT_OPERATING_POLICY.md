@@ -44,6 +44,13 @@ Move to **pilot/customer acceptance** when the Owner names actual external test 
 ### 0D. New ChatGPT/agent conversation continuity
 
 Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this repository**; it does **not automatically load into every fresh ChatGPT conversation**. The ChatGPT **Project Instructions** should include a short durable owner-stage rule and point to `AGENTS.md` + this section. On each repository-aware CTO session, verify these documents and fresh `main` once, then act; do not reconstruct old gates or request another owner approval without a concrete unmet boundary. Active issue/PR comments report task state, not portfolio-wide behavioral authority.
+
+### 0E. Push and CI economy
+
+**Batch small commits before pushing.** A single PR push can fan out into many Actions workflows; prefer one coherent push after local focused checks instead of pushing every tiny edit and cancelling the same 10+ checks repeatedly. For urgent fixes, push when ready; never postpone a safety repair solely to save CI minutes.
+
+*(Moved from the `AGENTS.md` entry point during the 2026-10-23 instruction-index restoration; this section is the canonical text and `AGENTS.md` links here.)*
+
 ## 1. Purpose
 
 AI Revenue Lab separates product authority, design decisions, implementation, validation, CTO review, owner decisions, merge and Production so that fast AI-assisted work does not turn into repeated broad rework.
@@ -241,6 +248,32 @@ PRIMARY_BLOCKERS=0
 Until then, report `ACTIVE`.
 
 Shared Padiem Platform infrastructure does not collapse products into one another. Product-local work remains with its product owner. A generic defect discovered inside a product is split to the proper Platform/Core/Engine/Control-Plane owner rather than moving the whole product task into that lane.
+
+### 3B-1. Product-boundary vocabulary carried by the entry point
+
+The following blocks state the product-independence boundary in the exact
+literal form reports and work orders use. They were moved here from the
+`AGENTS.md` entry point during the 2026-10-23 instruction-index
+restoration; `AGENTS.md` links to this section instead of duplicating them.
+
+Product boundaries remain strict. B66 Padiem Quote, B67 Padiem Legal, B62 Padiem Chat, and B54 Padiem Claw are independent products that may reuse Padiem Platform authorities. Shared Platform usage does not authorize moving product-local work into another product's lane.
+
+```text
+B66_IS_ENGINE=NO
+B66_IS_CLAW=NO
+B66_PRODUCT_INDEPENDENT=YES
+```
+
+Issue classification before implementation uses the same vocabulary as
+`docs/operations/WORKFLOW_STATUS_MODEL.md`:
+
+```text
+PRIMARY_BLOCKER
+PRIMARY_NONBLOCKING_FOLLOWUP
+UNRELATED_BACKLOG
+```
+
+Only `PRIMARY_BLOCKER` may preempt the primary lane.
 
 ## 3C. Implementation closeout + batched product verification issues
 
@@ -446,6 +479,7 @@ The developer:
 - does not expand all routes when the work order authorizes only an anchor/archetype slice;
 - runs the smallest relevant implementation self-checks and the work-order `DEV_FAST_GATE`;
 - after `DEV_FAST_GATE=PASS`, records `DEV_ACTOR_RELEASED=YES` and may move immediately to the next authorized issue instead of waiting for Windows/Ubuntu/full-browser validation;
+- per-slice proof selection (moved from the `AGENTS.md` entry point during the 2026-10-23 instruction-index restoration): for Windows-first slices, the focused Windows proof may be the `DEV_FAST_GATE`. For web/backend slices, use the smallest focused web/API/contract proof that actually exercises the change. Do not require every supported OS/browser in the implementer's synchronous critical path.
 - records exact base/head, files, diff, commands, exits, pass/fail/skip counts and limitations;
 - identifies legacy/cascade debt encountered;
 - does not self-assign independent validation or final CTO readiness.
