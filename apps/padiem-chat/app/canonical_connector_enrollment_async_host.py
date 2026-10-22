@@ -10,6 +10,7 @@ installs the one-time credential into the existing protected Windows store.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 from datetime import datetime, timezone
 import re
 from typing import Any, Protocol
@@ -156,6 +157,40 @@ class CanonicalConnectorEnrollmentAsyncHost:
             "dispatch_authorized": False,
         }
 
+    async def _recover_unconfirmed_redemption(
+        self, *, challenge_id: str, device_id: str, consent_ref: str,
+        owner_ref: str, account_ref: str, workspace_ref: str,
+    ) -> bool:
+        """Recover a redemption whose canonical outcome never came back.
+
+        The Broker derives the binding name deterministically from the
+        challenge and the device, so the exact row can be revoked through the
+        SAME canonical revocation path and then confirmed by the Broker's own
+        revoked receipt. Nothing is reported as recovered unless the Broker
+        confirmed the exact binding as revoked; an unresolved outcome stays a
+        security hold for the existing owner reconciliation flow.
+
+        Returns True only when the Broker confirmed the revocation.
+        """
+        binding_ref = "pairing-binding." + hashlib.sha256(
+            f"{challenge_id}:{device_id}".encode("utf-8")
+        ).hexdigest()[:32]
+        try:
+            revoked = await asyncio.wait_for(
+                self._broker.revoke_binding(binding_ref=binding_ref),
+                timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
+            )
+        except Exception:
+            # Either the redemption never committed (there is no binding to
+            # revoke) or the Broker could not answer. The outcome stays
+            # unconfirmed; the canonical owner reconciliation flow reads it.
+            return False
+        return (
+            type(revoked) is dict
+            and revoked.get("binding_ref") == binding_ref
+            and revoked.get("state") == "revoked"
+        )
+
     async def redeem(self, *, challenge_id: str, device_id: str, proof_ref: str) -> dict[str, Any]:
         """Redeem via persisted Broker challenge + fresh Identity owner/consent reads."""
         challenge = _ref(challenge_id, "challenge_id")
@@ -221,14 +256,32 @@ class CanonicalConnectorEnrollmentAsyncHost:
             raise IdentityBridgeError(503, "credential_handoff_unavailable", "Protected device credential installation is unavailable.") from exc
         if ready is not True:
             raise IdentityBridgeError(503, "credential_handoff_unavailable", "Protected device credential installation is unavailable.")
-        enrollment, raw_credential = await asyncio.wait_for(
-            self._broker.redeem_enrollment(
-                challenge_id=challenge, device_id=device, proof_ref=proof_ref,
-                consent_ref=authorization["consent_id"], owner_ref=authorization["owner_subject_id"],
-                account_ref=authorization["account_ref"], workspace_ref=authorization["workspace_ref"],
-            ),
-            timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
-        )
+        try:
+            enrollment, raw_credential = await asyncio.wait_for(
+                self._broker.redeem_enrollment(
+                    challenge_id=challenge, device_id=device, proof_ref=proof_ref,
+                    consent_ref=authorization["consent_id"], owner_ref=authorization["owner_subject_id"],
+                    account_ref=authorization["account_ref"], workspace_ref=authorization["workspace_ref"],
+                ),
+                timeout=CROSS_DO_RPC_TIMEOUT_SECONDS,
+            )
+        except asyncio.TimeoutError as exc:
+            # This is the canonical mutation. The Broker may still have
+            # committed it after this await gave up, so the redemption must be
+            # recovered instead of being left silently paired.
+            recovered = await self._recover_unconfirmed_redemption(
+                challenge_id=challenge, device_id=device,
+                consent_ref=authorization["consent_id"],
+                owner_ref=authorization["owner_subject_id"],
+                account_ref=authorization["account_ref"],
+                workspace_ref=authorization["workspace_ref"],
+            )
+            raise IdentityBridgeError(
+                503,
+                ("enrollment_redeem_recovered" if recovered
+                 else "enrollment_redeem_unconfirmed"),
+                "Canonical enrollment redemption could not be confirmed.",
+            ) from exc
         # Cross-DO operations cannot share one transaction. Re-read the original
         # session and current grant immediately after Broker mutation; if consent
         # was withdrawn in that window, revoke the new binding before handoff.

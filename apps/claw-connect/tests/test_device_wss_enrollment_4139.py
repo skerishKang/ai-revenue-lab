@@ -129,11 +129,11 @@ def _fake_binding(fields, *, now, expires_at):
     return SimpleNamespace(**fields)
 
 
-def run(sock, store=None, trusted=None, *, on_stage=None):
+def run(sock, store=None, trusted=None, *, on_stage=None, now=None):
     return asyncio.run(run_review_only_device_session(
         socket=sock, trusted_tls=trusted or Trusted(),
         receiver=LocalStoreCredentialReceiver(store=store or Store(), now_factory=lambda: NOW),
-        challenge_id=CID, device_id=DEVICE, pairing_code=CODE, now=NOW,
+        challenge_id=CID, device_id=DEVICE, pairing_code=CODE, now=now or NOW,
         binding_factory=_fake_binding, on_stage=on_stage,
     ))
 
@@ -528,46 +528,69 @@ def test_credential_delivery_stall_still_fails_closed_without_store_or_ack(monke
     ]
 
 
-def test_credential_window_is_capped_by_the_remaining_broker_lease():
+def test_credential_window_is_capped_by_the_remaining_broker_lease(monkeypatch):
     """#3099: the wait may never outlive the Broker gateway lease.
 
     The Broker authorizes the ``install_ack`` against the SAME lease, so a
     credential window longer than the remaining lease would let the Broker
-    refuse the ACK of a credential it already delivered.
+    refuse the ACK of a credential it already delivered. The budget is the
+    canonical lease TTL minus the locally measured handshake time minus the
+    ACK reserve - never a fixed number.
     """
     import claw_connect.device_wss_enrollment as module
 
-    lease = datetime.now(timezone.utc) + timedelta(seconds=12)
-    sock = Socket(lease_expires_at=lease.isoformat())
-    store = Store()
+    # Even the maximum client window leaves the ACK reserve inside the lease.
+    assert (
+        module.CREDENTIAL_DELIVERY_TIMEOUT_SECONDS
+        + module.INSTALL_ACK_RESERVE_SECONDS
+        <= module.GATEWAY_LEASE_TTL_SECONDS
+    )
 
-    class LateCredentialSocket(Socket):
+    class SlowHandshakeSocket(Socket):
         async def receive_text(self):
-            if self.index == 2:
-                # Later than the lease-derived window (12s lease minus the
-                # 10s ACK reserve), earlier than the 45s client ceiling.
-                await asyncio.sleep(5)
+            if self.index == 0:
+                # The handshake itself consumes lease time.
+                await asyncio.sleep(0.2)
             return await super().receive_text()
 
-    sock = LateCredentialSocket(lease_expires_at=lease.isoformat())
+    # A live lease leaves a usable window: the credential is still accepted.
+    monkeypatch.setattr(module, "GATEWAY_LEASE_TTL_SECONDS", 30.0)
+    monkeypatch.setattr(module, "INSTALL_ACK_RESERVE_SECONDS", 25.0)
+    sock, store = SlowHandshakeSocket(), Store()
+    receipt = run(sock, store)
+    assert receipt.lifecycle == "paired_offline"
+    assert store.saved and store.saved[0][1] == CREDENTIAL
+
+    # A handshake that already consumed the lease cannot carry the ACK.
+    monkeypatch.setattr(module, "GATEWAY_LEASE_TTL_SECONDS", 12.0)
+    monkeypatch.setattr(module, "INSTALL_ACK_RESERVE_SECONDS", 10.0)
+
+    class LeaseConsumingSocket(Socket):
+        async def receive_text(self):
+            if self.index == 0:
+                await asyncio.sleep(3)
+            return await super().receive_text()
+
+    sock, store = LeaseConsumingSocket(), Store()
     started = time.monotonic()
-    with pytest.raises(DeviceSessionRefused, match=r"^device_credential_response_timeout$"):
+    with pytest.raises(
+        DeviceSessionRefused, match=r"^device_credential_delivery_window_expired$",
+    ):
         run(sock, store)
-    elapsed = time.monotonic() - started
-    # It gave up on the lease-derived window, not after the 45s ceiling.
-    assert elapsed < 4.0
+    assert time.monotonic() - started >= 3.0
     assert sock.closed is True
     assert store.saved == []
     assert [entry["type"] for entry in sock.sent] == [
         "begin", "finish", "credential_fetch",
     ]
-    assert module.INSTALL_ACK_RESERVE_SECONDS > 0.0
 
 
-def test_credential_window_refuses_immediately_when_the_lease_cannot_carry_the_ack():
+def test_credential_window_refuses_immediately_when_the_lease_cannot_carry_the_ack(monkeypatch):
     """A lease that cannot still authorize the install ACK is refused at once."""
-    lease = datetime.now(timezone.utc) + timedelta(seconds=1)
-    sock = Socket(lease_expires_at=lease.isoformat())
+    import claw_connect.device_wss_enrollment as module
+
+    monkeypatch.setattr(module, "GATEWAY_LEASE_TTL_SECONDS", 0.05)
+    sock = Socket()
     store = Store()
     started = time.monotonic()
     with pytest.raises(
@@ -578,3 +601,45 @@ def test_credential_window_refuses_immediately_when_the_lease_cannot_carry_the_a
     assert sock.closed is True
     assert store.saved == []
     assert [entry["type"] for entry in sock.sent] == ["begin", "finish", "credential_fetch"]
+
+
+def test_credential_window_does_not_depend_on_any_wall_clock(monkeypatch):
+    """#3099: a clock difference between this PC and the Broker must not size
+    the window.
+
+    The Broker's absolute lease expiry is a server wall-clock value and this
+    PC's own clock can differ from it, so neither may decide how long the PC
+    waits. The window is derived from the local monotonic handshake time and
+    the canonical lease TTL only.
+    """
+    import claw_connect.device_wss_enrollment as module
+
+    monkeypatch.setattr(module, "GATEWAY_LEASE_TTL_SECONDS", 12.0)
+    monkeypatch.setattr(module, "INSTALL_ACK_RESERVE_SECONDS", 10.0)
+
+    class DelayedCredentialSocket(Socket):
+        async def receive_text(self):
+            if self.index == 2:
+                await asyncio.sleep(3)
+            return await super().receive_text()
+
+    outcomes = []
+    for lease_expires_at, session_now in (
+        # A lease that looks nearly expired on the Broker's clock.
+        ((datetime.now(timezone.utc) + timedelta(seconds=1)).isoformat(), NOW),
+        # A lease that looks far away on the Broker's clock, with this PC's
+        # own clock a year ahead of the session it was started with.
+        ("2030-01-01T00:00:00+00:00",
+         datetime.now(timezone.utc) + timedelta(days=365)),
+    ):
+        sock, store = DelayedCredentialSocket(lease_expires_at=lease_expires_at), Store()
+        try:
+            run(sock, store, now=session_now)
+            outcomes.append(("accepted", store.saved != []))
+        except DeviceSessionRefused as exc:
+            outcomes.append((str(exc), store.saved == []))
+    # Identical behaviour for both clock views: the wall clock decides nothing.
+    assert outcomes[0] == outcomes[1]
+    assert outcomes[0][0] != "accepted"
+    assert module.GATEWAY_LEASE_TTL_SECONDS > 0.0
+

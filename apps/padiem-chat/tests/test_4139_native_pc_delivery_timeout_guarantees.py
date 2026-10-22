@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime, timedelta, timezone
+import hashlib
 import time
 
 import pytest
@@ -41,8 +42,14 @@ CHALLENGE = "pairing." + "b" * 32
 DEVICE = "windows.device.1"
 PROOF = "pairing-proof:" + "c" * 64
 CREDENTIAL = b"one-time-secret-with-length"
+#: The Broker derives the binding name deterministically from the challenge
+#: and the device (see DurableBrokerGatewayBootstrap.recovery_verdict and
+#: CanonicalConnectorOwnerRecovery.check).
+BINDING_REF = "pairing-binding." + hashlib.sha256(
+    f"{CHALLENGE}:{DEVICE}".encode("utf-8")
+).hexdigest()[:32]
 BINDING = {
-    "binding_ref": "pairing-binding.1", "device_id": DEVICE,
+    "binding_ref": BINDING_REF, "device_id": DEVICE,
     "account_ref": "account.1", "workspace_ref": "workspace.1",
     "credential_ref": "credential.1", "credential_generation": 1,
     "credential_expires_at": (NOW + timedelta(days=30)).isoformat(),
@@ -87,7 +94,8 @@ class Broker:
     def __init__(self):
         self.calls = []
         self.stall_redeem = False
-        self.revoke_result = {"binding_ref": BINDING["binding_ref"], "state": "revoked"}
+        self.fail_revoke = False
+        self.revoke_result = {"binding_ref": BINDING_REF, "state": "revoked"}
 
     async def issue_enrollment_challenge(self, **kwargs):
         self.calls.append(("issue", kwargs))
@@ -118,6 +126,8 @@ class Broker:
 
     async def revoke_binding(self, *, binding_ref):
         self.calls.append(("revoke", binding_ref))
+        if self.fail_revoke:
+            raise RuntimeError("canonical revocation unconfirmed")
         return dict(self.revoke_result)
 
 
@@ -203,19 +213,45 @@ def test_timed_out_redeem_never_delivers_a_credential_or_issues_a_second_one(mon
     """The canonical mutation may commit late; nothing may be delivered after.
 
     The owner request must fail closed, the private delivery RPC must never be
-    reached, and the challenge must never be redeemed twice.
+    reached, and the challenge must never be redeemed twice. A redemption that
+    committed remotely is REVOKED through the canonical path, so the device is
+    never left silently paired.
     """
     monkeypatch.setattr(host_module, "CROSS_DO_RPC_TIMEOUT_SECONDS", 0.2)
     identity, broker, private, completion = make_completion()
     broker.stall_redeem = True
     started = time.monotonic()
-    with pytest.raises(Exception):
+    with pytest.raises(IdentityBridgeError) as exc:
         asyncio.run(completion.complete(signed_owner=session(), request_ref=REF))
     assert time.monotonic() - started < 5.0
+    # The late remote issuance was recovered, not left paired.
+    assert exc.value.code == "enrollment_redeem_recovered"
+    assert ("revoke", BINDING_REF) in broker.calls
     # Exactly one redemption attempt and no credential delivery at all.
     assert [name for name, *_ in broker.calls].count("redeem") == 1
+    assert [name for name, *_ in broker.calls].count("revoke") == 1
     private_names = [name for name, *_ in private.calls]
     assert private_names == ["status", "claim", "reserve_gateway", "auth_gateway"]
+    assert not any(name == "transfer" for name in private_names)
+    assert not any(name == "terminal" for name in private_names)
+
+
+def test_unrevocable_late_redemption_stays_a_hold_and_is_never_called_recovered(monkeypatch):
+    """#3099: an unresolved late issuance must stay a security hold.
+
+    The Broker could not confirm the revocation, so the outcome must NOT be
+    reported as recovered. The existing canonical owner reconciliation flow
+    reads the binding afterwards.
+    """
+    monkeypatch.setattr(host_module, "CROSS_DO_RPC_TIMEOUT_SECONDS", 0.2)
+    identity, broker, private, completion = make_completion()
+    broker.stall_redeem = True
+    broker.fail_revoke = True
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(completion.complete(signed_owner=session(), request_ref=REF))
+    assert exc.value.code == "enrollment_redeem_unconfirmed"
+    assert exc.value.code != "enrollment_redeem_recovered"
+    private_names = [name for name, *_ in private.calls]
     assert not any(name == "transfer" for name in private_names)
     assert not any(name == "terminal" for name in private_names)
 

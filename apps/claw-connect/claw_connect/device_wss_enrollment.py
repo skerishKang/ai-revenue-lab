@@ -22,6 +22,7 @@ import json
 import os
 from pathlib import Path
 import re
+import time
 from typing import Any, Callable, Protocol
 
 from .credential_install import ProtectedCredentialReceiverPort
@@ -55,6 +56,15 @@ INSTALL_ACK_TIMEOUT_SECONDS = 25.0
 #: was still completing. This is a CLIENT CEILING only; the effective window
 #: is additionally limited by the remaining Broker gateway lease.
 CREDENTIAL_DELIVERY_TIMEOUT_SECONDS = 45.0
+#: The Broker's canonical gateway lease. The Broker refuses BOTH this PC's
+#: ``credential_fetch`` AND its later ``install_ack`` once the lease that
+#: started at ``begin`` expired, so the credential must arrive early enough
+#: for the ACK to still be authorized. The PC mirrors that TTL exactly like it
+#: already mirrors the 90s pending-PC offer TTL, so the wait can never
+#: outlive the lease - INDEPENDENT of any clock difference between the PC
+#: and the server. The absolute ``expires_at`` the Broker sends is a server
+#: wall-clock value and is therefore NOT used to size this window.
+GATEWAY_LEASE_TTL_SECONDS = 60.0
 #: The Broker authorizes this PC's ``install_ack`` against the SAME gateway
 #: lease, so the lease must still be alive after the credential arrives. This
 #: reserve keeps that time available for the protected install and the ACK.
@@ -265,6 +275,9 @@ async def run_review_only_device_session(
             raise DeviceSessionRefused("trusted_tls_required")
         if on_stage is not None:
             on_stage("device_session_tls_verified")
+        # Monotonic, so the remaining-lease budget below never depends on the
+        # difference between this PC's clock and the Broker's clock.
+        lease_clock = time.monotonic()
         await _send(socket, {
             "type": "begin", "challenge_id": challenge_id,
             "device_id": device_id, "proof_ref": build_enrollment_proof_ref(
@@ -283,11 +296,6 @@ async def run_review_only_device_session(
             or _LEASE.fullmatch(lease) is None or not _proof(nonce)):
             raise DeviceSessionRefused("device_nonce_correlation_invalid")
         _timestamp(first["expires_at"], clock)
-        # The Broker gateway lease is the canonical clock of this session: the
-        # Broker refuses ``credential_fetch`` AND the later ``install_ack``
-        # once the lease expired, so the credential must arrive early enough
-        # for this PC to still install it and have the ACK authorized.
-        lease_expires_at = _timestamp(first["expires_at"], clock)
         if on_stage is not None:
             on_stage("device_session_nonce_verified")
         await _send(socket, {
@@ -318,11 +326,14 @@ async def run_review_only_device_session(
         # The wait for the canonical credential is bounded by the Broker lease,
         # not only by a client-side constant: the lease must still be alive
         # when this PC installs the credential and its install ACK is
-        # authorized. A window longer than the remaining lease would let the
-        # Broker refuse the ACK of a credential it already delivered.
-        lease_remaining = (
-            lease_expires_at - datetime.now(timezone.utc)
-        ).total_seconds()
+        # authorized. The budget is derived from the LOCALLY measured time
+        # since this PC sent ``begin`` and the canonical lease TTL, so it is
+        # immune to a clock difference between this PC and the Broker. The
+        # local elapsed time is always at least the Broker's own elapsed time
+        # for the same window, so this budget can only be conservative.
+        lease_remaining = GATEWAY_LEASE_TTL_SECONDS - (
+            time.monotonic() - lease_clock
+        )
         delivery_window = min(
             CREDENTIAL_DELIVERY_TIMEOUT_SECONDS,
             lease_remaining - INSTALL_ACK_RESERVE_SECONDS,
