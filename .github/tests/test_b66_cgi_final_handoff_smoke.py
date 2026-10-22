@@ -795,10 +795,23 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
             )
 
     def test_live_error_frame_prints_only_the_bounded_class(self):
+        first = {
+            "event_id": "evt_1",
+            "run_id": "run_" + "9" * 24,
+            "trace_id": "trace_live",
+            "app_id": "app_live",
+            "kind": "run_started",
+            "sequence": 1,
+            "timestamp_iso": "2026-10-23T00:00:00Z",
+            "delivery": "live",
+        }
         body = (
-            'event: error\ndata: {"error": {"code": "engine_execution_failed", '
-            '"detail": "engine_provider_rate_limited", '
-            '"message": "provider raw text"}}\n\n'
+            'event: p01_event\ndata: '
+            + json.dumps(first)
+            + "\n\nevent: error\ndata: "
+            + '{"error": {"code": "engine_execution_failed", '
+            + '"detail": "engine_provider_rate_limited", '
+            + '"message": "provider raw text"}}\n\n'
         )
         buffer = io.StringIO()
         with redirect_stdout(buffer):
@@ -807,7 +820,24 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
         output = buffer.getvalue()
         self.assertIn("CLAW_LIVE_ERROR_CODE=engine_execution_failed", output)
         self.assertIn("CLAW_LIVE_ERROR_DETAIL=engine_provider_rate_limited", output)
+        self.assertIn("CLAW_LIVE_FRAMES=p01_event,error", output)
+        self.assertIn("CLAW_LIVE_RUN_ID=run_" + "9" * 24, output)
+        self.assertIn("CLAW_LIVE_TRACE_ID=trace_live", output)
         self.assertNotIn("provider raw text", output)
+
+    def test_live_error_identity_is_dropped_when_unbounded(self):
+        body = (
+            'event: p01_event\ndata: {"run_id": "raw id with spaces", '
+            '"trace_id": "trace id with spaces"}\n\n'
+            'event: error\ndata: {"error": {"code": "engine_execution_failed"}}\n\n'
+        )
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            with self.assertRaisesRegex(module.SmokeFailure, "claw_live_error_event"):
+                module._parse_claw_live_sse(body)
+        output = buffer.getvalue()
+        self.assertIn("CLAW_LIVE_RUN_ID=NONE", output)
+        self.assertIn("CLAW_LIVE_TRACE_ID=NONE", output)
 
     def test_claw_http_failure_diagnostics_stay_bounded(self):
         text = SCRIPT.read_text(encoding="utf-8")
@@ -950,7 +980,7 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
         good = {
             "x-padiem-claw-run-id": "run_" + "b" * 24,
             "x-padiem-orchestration-run-id": "orch_test_001",
-            "x-padiem-selected-route-id": "plus.agnes-3.0-flash.v1",
+            "x-padiem-selected-route-id": "plus.muse-spark.v1",
             "x-padiem-provider-attempts": "1",
             "x-padiem-fallback-used": "false",
         }
@@ -986,7 +1016,12 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
         self.assertEqual(module._canonical_admission_result(None), "UNPROVEN")
 
     def test_owner_selected_model_is_bound_to_the_exact_claw_post(self):
-        self.assertEqual(module.CLAW_OWNER_SELECTED_MODEL_ID, "agnes-ai/agnes-3.0-flash")
+        # 2026-10-23 owner instruction: Agnes is excluded from testing; the
+        # executable administrator/paid-tier Muse route is the pinned model.
+        self.assertEqual(
+            module.CLAW_OWNER_SELECTED_MODEL_ID,
+            "opencode-go/muse-spark-1.3-contributor",
+        )
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertIn('page.locator("#clawModelIdInput")', source)
         self.assertIn("node.value = value;", source)

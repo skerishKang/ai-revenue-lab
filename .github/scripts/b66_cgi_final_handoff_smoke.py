@@ -43,7 +43,10 @@ CLAW_GENERAL_PATH = "/api/claw/general"
 CLAW_CAPABILITIES_PATH = "/api/claw/general/capabilities"
 CLAW_SYNTHETIC_PROMPT = "테스트입니다. 한 문장으로 정상 작동 중이라고 답해주세요."
 # #3554: prior owner-selected, existing B14 registered model; no auto-selection.
-CLAW_OWNER_SELECTED_MODEL_ID = "agnes-ai/agnes-3.0-flash"
+# 2026-10-23 owner instruction: Agnes is retired from testing. Pin the
+# administrator-lane Muse model that is already the executable Plus/Pro/Max
+# primary route; the product tier declaration and B14 stay the authorities.
+CLAW_OWNER_SELECTED_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
 # One bounded dispatch per lane; the smoke runs two lanes, never a retry.
 CLAW_LANES = ("live", "evidence")
 MAX_CLAW_GENERAL_POSTS = 1
@@ -390,6 +393,13 @@ def _parse_claw_live_sse(body_text: object) -> dict[str, object]:
         error_code, error_detail = _bounded_error_class(json.dumps(error_frames[0]))
         print("CLAW_LIVE_ERROR_CODE=" + (error_code or "NONE"))
         print("CLAW_LIVE_ERROR_DETAIL=" + (error_detail or "NONE"))
+        # #5484: identify the failed run from the Core-validated events already
+        # delivered before the error, so a recurrence is traceable by run_id
+        # without logging any prompt, answer or error message text.
+        print("CLAW_LIVE_FRAMES=" + _bounded_frame_presence(body_text))
+        run_id, trace_id = _bounded_stream_identity(frames)
+        print("CLAW_LIVE_RUN_ID=" + (run_id or "NONE"))
+        print("CLAW_LIVE_TRACE_ID=" + (trace_id or "NONE"))
         raise SmokeFailure("claw_live_error_event")
     events = [payload for name, payload in frames if name == "p01_event"]
     deltas = [payload for name, payload in frames if name == "delta"]
@@ -445,6 +455,22 @@ def _bounded_frame_presence(body_text: object) -> str:
         if re.search(r"(?m)^event: " + name + r"$", body_text)
     ]
     return ",".join(names) if names else "none"
+
+
+def _bounded_stream_identity(
+    frames: list[tuple[str, dict]],
+) -> tuple[str | None, str | None]:
+    """First Core-validated run/trace identity in a live stream, or Nones."""
+    for name, payload in frames:
+        if name != "p01_event":
+            continue
+        run_id = payload.get("run_id")
+        trace_id = payload.get("trace_id")
+        return (
+            run_id if isinstance(run_id, str) and _EVIDENCE_VALUE_RE.fullmatch(run_id) else None,
+            trace_id if isinstance(trace_id, str) and _EVIDENCE_VALUE_RE.fullmatch(trace_id) else None,
+        )
+    return None, None
 
 
 def _is_direct_provider(url: str) -> bool:
@@ -1813,6 +1839,8 @@ def _run_claw_live_parser_self_tests() -> None:
     assert parsed["conversation_id"] == conversation_id
     assert _bounded_frame_presence(good) == "p01_event,delta,done"
     assert _bounded_frame_presence("") == "none"
+    assert _bounded_stream_identity([("p01_event", first)]) == ("run_live", "trace_live")
+    assert _bounded_stream_identity([("error", {"error": {}})]) == (None, None)
 
     def rejects(body: str, code: str) -> None:
         try:
@@ -1865,7 +1893,7 @@ def _run_evidence_self_tests() -> None:
     valid_headers = {
         "x-padiem-claw-run-id": "run_" + "a" * 24,
         "x-padiem-orchestration-run-id": "orch_test_001",
-        "x-padiem-selected-route-id": "plus.agnes-3.0-flash.v1",
+        "x-padiem-selected-route-id": "plus.muse-spark.v1",
         "x-padiem-provider-attempts": "1",
         "x-padiem-fallback-used": "false",
         "x-padiem-unlisted-header": "should-not-survive",
@@ -1875,7 +1903,7 @@ def _run_evidence_self_tests() -> None:
     assert extracted == {
         "x-padiem-claw-run-id": "run_" + "a" * 24,
         "x-padiem-orchestration-run-id": "orch_test_001",
-        "x-padiem-selected-route-id": "plus.agnes-3.0-flash.v1",
+        "x-padiem-selected-route-id": "plus.muse-spark.v1",
         "x-padiem-provider-attempts": "1",
         "x-padiem-fallback-used": "false",
     }

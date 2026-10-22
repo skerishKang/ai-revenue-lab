@@ -408,7 +408,14 @@ class P01EngineOrchestrationClient:
             engine_code = None
             if isinstance(exc.metadata, Mapping):
                 candidate = exc.metadata.get("engine_code")
-                if isinstance(candidate, str) and candidate in P01_FAILURE_DETAIL_TOOL_STAGES:
+                # #5015 follow-up: the decoder already bounded this identifier
+                # from the Engine's own error line. Limiting classification to
+                # tool stages made every provider failure on the live lane look
+                # like a generic downstream execution fault.
+                if (
+                    isinstance(candidate, str)
+                    and _BOUNDED_ENGINE_ERROR_CODE_RE.fullmatch(candidate)
+                ):
                     engine_code = candidate
             raise P01AdapterError(
                 "p01_engine_stream_failed",
