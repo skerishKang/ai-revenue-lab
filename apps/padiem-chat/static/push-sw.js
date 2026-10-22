@@ -19,7 +19,7 @@
 
 "use strict";
 
-var DEFAULT_TITLE = "PADIEM";
+var DEFAULT_TITLE = "Padiem";
 var DEFAULT_BODY = "작업이 완료되었습니다.";
 var DEFAULT_TAG = "padiem-task";
 

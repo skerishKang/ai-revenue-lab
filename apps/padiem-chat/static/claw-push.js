@@ -269,6 +269,17 @@ const PUSH_LABELS = {
   error: "알림 설정을 변경하지 못했습니다. 알림함은 그대로 사용할 수 있습니다."
 };
 
+function pushLabel(key, fallback) {
+  /* Reuse the product's existing locale lookup when it is present. */
+  if (typeof window !== "undefined" && typeof window.uiT === "function") {
+    const translated = window.uiT(key);
+    if (typeof translated === "string" && translated && translated !== key) {
+      return translated;
+    }
+  }
+  return fallback;
+}
+
 function renderPushToggle(state) {
   const setting = document.getElementById("clawPushSetting");
   const toggle = document.getElementById("clawPushToggle");
@@ -283,7 +294,9 @@ function renderPushToggle(state) {
   }
   setting.hidden = false;
   const isOn = state === PUSH_STATE.on;
-  toggle.textContent = isOn ? PUSH_LABELS.disable : PUSH_LABELS.enable;
+  toggle.textContent = isOn
+    ? pushLabel("claw-push-disable", PUSH_LABELS.disable)
+    : pushLabel("claw-push-enable", PUSH_LABELS.enable);
   toggle.setAttribute("aria-pressed", isOn ? "true" : "false");
   toggle.disabled = state === PUSH_STATE.unsupported;
   status.textContent = PUSH_LABELS[state] || "";
