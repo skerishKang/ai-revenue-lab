@@ -206,13 +206,18 @@
       pcIntent.used = true;
       pcIntent = null;
       if (!valid) {
+        // No approval can run for this offer in this tab, so the handoff page
+        // must not wait forever: it is told the attempt failed and closes.
         pcStage("offer_context_rejected");
+        replyPcSettlement(data.request_ref, false);
         return;
       }
       pcStage("approve_post_dispatch");
       pcApprovalPending = true;
       void approveReadyPc(data.request_ref).then((approved) => {
         replyPcSettlement(data.request_ref, approved === true);
+      }).catch(() => {
+        replyPcSettlement(data.request_ref, false);
       });
     }
 

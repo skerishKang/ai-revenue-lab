@@ -201,6 +201,12 @@ def test_the_original_claw_tab_reports_the_settlement_after_the_one_post():
     assert "void approveReadyPc(data.request_ref).then((approved) => {" in HOME_JS
     assert "replyPcSettlement(data.request_ref, approved === true);" in HOME_JS
     assert 'type: approved ? "pc_offer_approved" : "pc_offer_failed",' in HOME_JS
+    # A rejected context cannot approve, so it settles as a failure instead of
+    # leaving the handoff page waiting for a reply that will never come.
+    rejected = HOME_JS.index('pcStage("offer_context_rejected")')
+    assert "replyPcSettlement(data.request_ref, false);" in HOME_JS[rejected:rejected + 160]
+    # A rejected promise is also a settled failure, never a silent wait.
+    assert "}).catch(() => {" in HOME_JS
     assert '"request_ref": requestRef' in HOME_JS or "request_ref: requestRef" in HOME_JS
     # The handoff page itself still performs no approval request.
     assert "/api/claw/connector/enrollments/approve-link" not in setup._SCRIPT
