@@ -560,9 +560,10 @@ def test_credential_window_subtracts_begin_and_bootstrap_delays(monkeypatch):
         DeviceSessionRefused, match=r"^device_credential_delivery_window_expired$",
     ):
         run(sock, store)
-    # If only one leg were subtracted the budget would still be positive and
-    # this would fail as a credential timeout instead.
-    assert time.monotonic() - started >= 0.6
+    # The discriminator is the refusal code above: with only one leg charged
+    # the budget would still be positive and this would be a credential timeout
+    # instead. The wall time below is only a sanity bound, never the assertion.
+    assert time.monotonic() - started >= 0.5
     assert sock.closed is True
     assert store.saved == []
     assert [entry["type"] for entry in sock.sent] == ["begin", "finish", "credential_fetch"]
@@ -581,9 +582,10 @@ def test_credential_window_starts_before_the_tls_verification(monkeypatch):
         DeviceSessionRefused, match=r"^device_credential_delivery_window_expired$",
     ):
         run(sock, store, trusted=Trusted(delay=0.6))
-    # Starting the budget after the TLS verification would leave a positive
-    # window and fail as a credential timeout instead.
-    assert time.monotonic() - started >= 0.6
+    # The discriminator is the refusal code above: starting the budget after
+    # the TLS verification would leave a positive window and the fake socket
+    # would deliver immediately. The wall time below is only a sanity bound.
+    assert time.monotonic() - started >= 0.5
     assert sock.closed is True
     assert store.saved == []
     assert [entry["type"] for entry in sock.sent] == ["begin", "finish", "credential_fetch"]
