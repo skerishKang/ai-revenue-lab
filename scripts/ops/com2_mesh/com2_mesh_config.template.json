@@ -18,6 +18,7 @@
   "recovery_backoff_schedule_seconds": [300, 900, 1800],
   "recovery_cooldown_seconds": 300,
   "recovery_retry_window_seconds": 3600,
+  "max_pending_seconds": 900,
   "ssh_timeout_seconds": 15,
   "tunnel_restart_wait_seconds": 20,
   "verify_timeout_seconds": 30,

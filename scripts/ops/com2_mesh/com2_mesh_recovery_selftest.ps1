@@ -63,6 +63,27 @@ function Assert-Contains {
     Write-Output ("  FAIL {0}: missing token [{1}]" -f $Label, $Token)
 }
 
+# record.ts is stamped after the probes, so equality with a start-of-check
+# timestamp is only meaningful within a small window.
+function Assert-StampWithin {
+    param([string]$Expected, [string]$Actual, [int]$Seconds, [string]$Label)
+    $format = 'yyyy-MM-dd HH:mm:ss'
+    try {
+        $delta = [Math]::Abs(([datetime]::ParseExact($Expected, $format, $null) -
+            [datetime]::ParseExact($Actual, $format, $null)).TotalSeconds)
+    } catch {
+        $script:Failures++
+        Write-Output ("  FAIL {0}: unparsable stamps [{1}] [{2}]" -f $Label, $Expected, $Actual)
+        return
+    }
+    if ($delta -le $Seconds) {
+        $script:Passes++
+        return
+    }
+    $script:Failures++
+    Write-Output ("  FAIL {0}: [{1}] is {2}s from [{3}]" -f $Label, $Actual, $delta, $Expected)
+}
+
 function Write-JsonFile {
     param([string]$Path, $Object)
     $json = $Object | ConvertTo-Json -Depth 6
@@ -75,6 +96,7 @@ function Write-StateFile {
         first_fault = ''; last_class = ''; last_ts = ''; last_code = ''
         action_key = ''; attempt_count = 0; last_attempt_at = ''
         next_attempt_at = ''; last_success_at = ''
+        class_started_at = ''; pending_since = ''; pending_action = ''; pending_deadline = ''
     }
     foreach ($k in $State.Keys) { $base[$k] = $State[$k] }
     Write-JsonFile -Path (Join-Path $Directory 'state.json') -Object $base
@@ -137,11 +159,16 @@ function Test-Case {
         [int]$LockAgeSeconds = 0,
         [bool]$ExpectLockRemoved = $true,
         [string]$DetailContains = '',
-        [string]$ErrorContains = ''
+        [string]$ErrorContains = '',
+        [hashtable]$SeedState = $null
     )
     $before = $script:Failures
     $fixturePath = Join-Path $Directory ("fixture-{0}.json" -f $Name)
     Write-JsonFile -Path $fixturePath -Object $Fixture
+
+    if ($null -ne $SeedState) {
+        Write-StateFile -Directory $Directory -State $SeedState
+    }
 
     $lockPath = Join-Path $Directory 'recovery.lock'
     Remove-Item -LiteralPath $lockPath -Force -ErrorAction SilentlyContinue
@@ -161,6 +188,7 @@ function Test-Case {
         return
     }
     $rec = $res.record
+    $script:LastRecord = $rec
     foreach ($key in $Expected.Keys) {
         Assert-Equal -Expected $Expected[$key] -Actual $rec.$key -Label ("{0} {1}" -f $Name, $key)
     }
@@ -180,6 +208,11 @@ function Test-Case {
             'remote_cause', 'com2_state_source', 'first_fault', 'attempt', 'planned_action',
             'action', 'recovery_ok', 'recovery_at', 'elapsed_sec', 'fault_age_sec',
             'retry_decision', 'retry_attempt', 'retry_max', 'next_attempt_at',
+            'recovery_state', 'class_started_at', 'class_age_sec', 'engine_elapsed_sec',
+            'action_started_at', 'action_finished_at', 'verify_window_sec',
+            'http200_observed_at', 'http200_first_observed_sec', 'http200_observed_basis',
+            'pending_since', 'pending_action', 'pending_deadline', 'pending_invalidation',
+            'max_pending_seconds', 'remote_http_reason',
             'code', 'error', 'detail')) {
         Assert-True -Value ($rec.PSObject.Properties[$field] -ne $null) -Label "$Name record field $field"
     }
@@ -190,7 +223,9 @@ function Test-Case {
     foreach ($token in @('com2_ssh=', 'tunnel_tcp=', 'mesh_http=', 'remote_cause=',
             'com2_state_source=', 'first_fault=', 'attempt=', 'action=', 'recovery_at=',
             'elapsed_sec=', 'fault_age_sec=', 'retry_decision=', 'retry_attempt=', 'retry_max=',
-            'next_attempt_at=', 'code=', 'error=')) {
+            'next_attempt_at=', 'class_started_at=', 'class_age_sec=', 'recovery_state=',
+            'pending_since=', 'pending_action=', 'pending_deadline=', 'pending_invalidation=',
+            'http200_observed_at=', 'remote_http_reason=', 'code=', 'error=')) {
         Assert-Contains -Text $healthTail -Token $token -Label "$Name health log $token"
     }
     if ($ExpectLockRemoved) {
@@ -301,6 +336,7 @@ Test-Case -Name 'com2_mesh_down_no_action' -Fixture @{
 } -Expected @{
     class = 'com2_mesh_down'; planned_action = 'record_only'; action = 'record_only'
     recovery_ok = 'no'; code = 'NO_ACTION_AVAILABLE'
+    remote_http_reason = 'remote_http_no_response'
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'com2_ssh_unreachable' -Fixture @{
@@ -315,6 +351,7 @@ Test-Case -Name 'remote_probe_failed' -Fixture @{
 } -Expected @{
     class = 'remote_probe_failed'; planned_action = 'record_only'; action = 'record_only'
     recovery_ok = 'no'; code = 'REMOTE_PROBE_FAILED'; com2_state_source = 'unverified'
+    remote_http_reason = 'remote_probe_failed'
 } -DetailContains 'not directly observed' -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'remote_probe_timeout' -Fixture @{
@@ -534,6 +571,205 @@ Assert-True -Value ($planOne.record -ne $null -and $planTwo.record -ne $null) -L
 $kept = Get-Content -LiteralPath (Join-Path $work 'state.json') -Raw | ConvertFrom-Json
 Assert-Equal -Expected 1 -Actual $kept.attempt_count -Label 'simulate does not consume attempts'
 Assert-Equal -Expected 'tunnel_broken|restart_tunnel' -Actual $kept.action_key -Label 'simulate keeps action key'
+
+# --- pending verification window -----------------------------------------
+
+function New-Stamp {
+    param([int]$OffsetSeconds)
+    return (Get-Date).AddSeconds($OffsetSeconds).ToString('yyyy-MM-dd HH:mm:ss')
+}
+
+Write-Output '-- pending is not success'
+$pendingFixture = @{
+    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
+}
+$healthyFixture2 = @{
+    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '200'
+    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
+}
+
+Test-Case -Name 'pending_active_suppresses_action' -Fixture $pendingFixture -SeedState @{
+    first_fault = (New-Stamp -600); last_class = 'tunnel_broken'
+    last_ts = (New-Stamp -60); last_code = 'RECOVERY_PENDING_HTTP_000'
+    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    last_attempt_at = (New-Stamp -60)
+    class_started_at = (New-Stamp -600)
+    pending_since = (New-Stamp -60); pending_action = 'restart_tunnel'
+    pending_deadline = (New-Stamp 600)
+} -Expected @{
+    class = 'tunnel_broken'; planned_action = 'none'; action = 'none'
+    recovery_ok = 'pending'; recovery_state = 'pending'
+    code = 'RECOVERY_PENDING_AWAITING_VERIFY'
+    retry_decision = 'pending'; retry_attempt = 1
+    pending_action = 'restart_tunnel'
+} -DetailContains 'no new action taken' -Engine $EnginePath -ConfigPath $configPath -Directory $work
+
+Test-Case -Name 'pending_expired_turns_failed' -Fixture $pendingFixture -SeedState @{
+    first_fault = (New-Stamp -1200); last_class = 'tunnel_broken'
+    last_ts = (New-Stamp -900); last_code = 'RECOVERY_PENDING_HTTP_000'
+    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    last_attempt_at = (New-Stamp -900)
+    class_started_at = (New-Stamp -1200)
+    pending_since = (New-Stamp -900); pending_action = 'restart_tunnel'
+    pending_deadline = (New-Stamp -60)
+} -Expected @{
+    class = 'tunnel_broken'; planned_action = 'none'; action = 'none'
+    recovery_ok = 'no'; recovery_state = 'failed'
+    code = 'RECOVERY_FAILED_PENDING_EXPIRED'
+    pending_invalidation = 'pending_expired'
+    pending_since = ''; pending_deadline = ''
+    retry_decision = 'pending_expired'; retry_attempt = 2
+} -DetailContains 'pending window closed' -Engine $EnginePath -ConfigPath $configPath -Directory $work
+$expiredState = Get-Content -LiteralPath (Join-Path $work 'state.json') -Raw | ConvertFrom-Json
+Assert-Equal -Expected 2 -Actual $expiredState.attempt_count -Label 'expiry consumes one attempt'
+Assert-Equal -Expected '' -Actual $expiredState.pending_since -Label 'expiry clears pending'
+Assert-True -Value ([string]$expiredState.next_attempt_at -ne '') -Label 'expiry sets the retry backoff'
+
+# The run after the expiry must obey the retry budget, not act again.
+Test-Case -Name 'pending_expiry_enters_backoff' -Fixture $pendingFixture -Expected @{
+    class = 'tunnel_broken'; planned_action = 'restart_tunnel'; action = 'skipped_backoff'
+    recovery_ok = 'no'; code = 'RECOVERY_BACKOFF'
+    retry_decision = 'backoff'; retry_attempt = 2
+} -DetailContains 'retry deferred by policy' -Engine $EnginePath -ConfigPath $configPath -Directory $work
+
+Test-Case -Name 'pending_expired_exhausts' -Fixture $pendingFixture -SeedState @{
+    first_fault = (New-Stamp -2400); last_class = 'tunnel_broken'
+    last_ts = (New-Stamp -1800); last_code = 'RECOVERY_PENDING_HTTP_000'
+    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 3
+    last_attempt_at = (New-Stamp -1800)
+    class_started_at = (New-Stamp -2400)
+    pending_since = (New-Stamp -1800); pending_action = 'restart_tunnel'
+    pending_deadline = (New-Stamp -60)
+} -Expected @{
+    class = 'tunnel_broken'; planned_action = 'none'; action = 'none'
+    recovery_ok = 'no'; recovery_state = 'failed'
+    code = 'RECOVERY_FAILED_PENDING_EXPIRED'
+    retry_decision = 'exhausted'; retry_attempt = 4; retry_max = 3
+} -DetailContains 'retry budget' -Engine $EnginePath -ConfigPath $configPath -Directory $work
+
+Test-Case -Name 'pending_resolved_on_later_check' -Fixture $healthyFixture2 -SeedState @{
+    first_fault = (New-Stamp -600); last_class = 'tunnel_broken'
+    last_ts = (New-Stamp -300); last_code = 'RECOVERY_PENDING_HTTP_000'
+    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    last_attempt_at = (New-Stamp -300)
+    class_started_at = (New-Stamp -600)
+    pending_since = (New-Stamp -300); pending_action = 'restart_tunnel'
+    pending_deadline = (New-Stamp 600)
+} -Expected @{
+    class = 'healthy'; recovery_ok = 'yes'; recovery_state = 'recovered'
+    code = 'RECOVERED_HTTP200_OBSERVED_AFTER_PENDING'
+    http200_observed_basis = 'observed_at_this_check'
+    first_fault = ''; pending_since = ''; pending_deadline = ''
+} -Engine $EnginePath -ConfigPath $configPath -Directory $work
+if ($script:LastRecord) {
+    Assert-Equal -Expected $script:LastRecord.http200_observed_at -Actual $script:LastRecord.recovery_at `
+        -Label 'observed 200 uses the check time as recovery_at'
+    Assert-True -Value ([double]$script:LastRecord.http200_first_observed_sec -gt 250) `
+        -Label 'first observation distance is reported'
+}
+$resolvedState = Get-Content -LiteralPath (Join-Path $work 'state.json') -Raw | ConvertFrom-Json
+Assert-Equal -Expected 0 -Actual $resolvedState.attempt_count -Label 'observed 200 clears attempts'
+Assert-Equal -Expected '' -Actual $resolvedState.pending_since -Label 'observed 200 clears pending'
+Assert-Equal -Expected '' -Actual $resolvedState.first_fault -Label 'observed 200 clears the episode'
+
+Write-Output '-- pending is not carried past a non-actionable class'
+Test-Case -Name 'pending_closed_when_class_not_actionable' -Fixture @{
+    com2_ssh = $false; tunnel_tcp = $true; mesh_http = '000'
+} -SeedState @{
+    first_fault = (New-Stamp -600); last_class = 'tunnel_broken'
+    last_ts = (New-Stamp -60); last_code = 'RECOVERY_PENDING_HTTP_000'
+    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    last_attempt_at = (New-Stamp -60)
+    class_started_at = (New-Stamp -600)
+    pending_since = (New-Stamp -60); pending_action = 'restart_tunnel'
+    pending_deadline = (New-Stamp 600)
+} -Expected @{
+    class = 'com2_ssh_unreachable'; action = 'record_only'; recovery_ok = 'no'
+    recovery_state = 'none'; code = 'COM2_SSH_UNREACHABLE'
+    pending_since = ''; pending_deadline = ''
+    pending_invalidation = 'class_changed'
+} -Engine $EnginePath -ConfigPath $configPath -Directory $work
+$classChangedState = Get-Content -LiteralPath (Join-Path $work 'state.json') -Raw | ConvertFrom-Json
+Assert-Equal -Expected '' -Actual $classChangedState.pending_since -Label 'class change clears pending in state'
+Assert-True -Value ([string]$classChangedState.class_started_at -ne '') -Label 'class clock set for the new class'
+
+Test-Case -Name 'pending_closed_same_class_not_actionable' -Fixture @{
+    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'OK'; remote_unit = 'active'
+} -SeedState @{
+    first_fault = (New-Stamp -600); last_class = 'com2_mesh_down'
+    last_ts = (New-Stamp -60); last_code = 'RECOVERY_PENDING_HTTP_000'
+    action_key = 'com2_mesh_down|restart_mesh_service'; attempt_count = 1
+    last_attempt_at = (New-Stamp -60)
+    class_started_at = (New-Stamp -600)
+    pending_since = (New-Stamp -60); pending_action = 'restart_mesh_service'
+    pending_deadline = (New-Stamp 600)
+} -Expected @{
+    class = 'com2_mesh_down'; action = 'record_only'; recovery_ok = 'no'
+    pending_since = ''; pending_invalidation = 'class_not_actionable'
+} -Engine $EnginePath -ConfigPath $configPath -Directory $work
+
+Test-Case -Name 'pending_closed_on_action_changed' -Fixture @{
+    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'OK'; remote_unit = 'failed'
+} -SeedState @{
+    first_fault = (New-Stamp -600); last_class = 'com2_mesh_down'
+    last_ts = (New-Stamp -60); last_code = 'RECOVERY_PENDING_HTTP_000'
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 1
+    last_attempt_at = (New-Stamp -60)
+    class_started_at = (New-Stamp -600)
+    pending_since = (New-Stamp -60); pending_action = 'start_keeper'
+    pending_deadline = (New-Stamp 600)
+} -Expected @{
+    class = 'com2_mesh_down'; planned_action = 'restart_mesh_service'
+    action = 'restart_mesh_service'; recovery_ok = 'planned'
+    code = 'PLANNED_RESTART_MESH_SERVICE'
+    retry_decision = 'execute'; retry_attempt = 0
+    pending_since = ''; pending_invalidation = 'action_changed'
+} -Engine $EnginePath -ConfigPath $configPath -Directory $work
+
+Write-Output '-- episode clock vs class clock'
+Write-StateFile -Directory $work -State @{
+    first_fault = (New-Stamp -3600); last_class = 'remote_probe_failed'
+    last_ts = (New-Stamp -300); last_code = 'REMOTE_PROBE_FAILED'
+    class_started_at = (New-Stamp -3600)
+    pending_since = ''; pending_action = ''; pending_deadline = ''
+}
+$classFixture = Join-Path $work 'fixture-class-change.json'
+Write-JsonFile -Path $classFixture -Object $pendingFixture
+$classRun = Invoke-EngineSimulate -Engine $EnginePath -ConfigPath $configPath -FixturePath $classFixture
+Assert-True -Value ($classRun.record -ne $null) -Label 'class change record present'
+if ($classRun.record) {
+    $classAge = [double]$classRun.record.class_age_sec
+    $faultAge = [double]$classRun.record.fault_age_sec
+    Assert-True -Value ($faultAge -gt 3000) -Label 'episode clock keeps the whole outage age'
+    Assert-True -Value ($classAge -lt 5) -Label 'class clock restarts at the class boundary'
+    Assert-True -Value ($classAge -lt $faultAge) -Label 'class age is distinct from episode age'
+}
+
+Write-Output '-- observed 200 is never back-dated'
+Write-StateFile -Directory $work -State @{
+    first_fault = (New-Stamp -900); last_class = 'tunnel_broken'
+    last_ts = (New-Stamp -300); last_code = 'RECOVERY_PENDING_HTTP_000'
+    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    last_attempt_at = (New-Stamp -300)
+    class_started_at = (New-Stamp -900)
+    pending_since = (New-Stamp -300); pending_action = 'restart_tunnel'
+    pending_deadline = (New-Stamp 600)
+}
+$observedFixture = Join-Path $work 'fixture-observed.json'
+Write-JsonFile -Path $observedFixture -Object $healthyFixture2
+$observedRun = Invoke-EngineSimulate -Engine $EnginePath -ConfigPath $configPath -FixturePath $observedFixture
+Assert-True -Value ($observedRun.record -ne $null) -Label 'observed 200 record present'
+if ($observedRun.record) {
+    Assert-StampWithin -Expected $observedRun.record.ts -Actual $observedRun.record.http200_observed_at `
+        -Seconds 2 -Label 'observed 200 uses the check timestamp'
+    Assert-StampWithin -Expected $observedRun.record.ts -Actual $observedRun.record.recovery_at `
+        -Seconds 2 -Label 'recovery_at is the observation time'
+    Assert-True -Value ([double]$observedRun.record.http200_first_observed_sec -gt 250) `
+        -Label 'first observation distance is reported for the recovery run'
+}
 
 # --- first-fault persistence ---------------------------------------------
 

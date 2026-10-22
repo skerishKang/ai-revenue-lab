@@ -106,6 +106,10 @@ function Get-Config {
     Set-ConfigDefault -Cfg $cfg -Name 'recovery_backoff_schedule_seconds' -Value @(300, 900, 1800)
     Set-ConfigDefault -Cfg $cfg -Name 'recovery_cooldown_seconds' -Value 300
     Set-ConfigDefault -Cfg $cfg -Name 'recovery_retry_window_seconds' -Value 3600
+    # A failed verification is pending, not failed, until this window closes.
+    # It must exceed the five-minute watchdog cycle or a slow recovery can never
+    # be observed before the deadline.
+    Set-ConfigDefault -Cfg $cfg -Name 'max_pending_seconds' -Value 900
     Set-ConfigDefault -Cfg $cfg -Name 'ssh_timeout_seconds' -Value 15
     Set-ConfigDefault -Cfg $cfg -Name 'tunnel_restart_wait_seconds' -Value 20
     Set-ConfigDefault -Cfg $cfg -Name 'verify_timeout_seconds' -Value 30
@@ -164,6 +168,15 @@ function Write-HealthLine {
         "retry_attempt=$($Record.retry_attempt)",
         "retry_max=$($Record.retry_max)",
         "next_attempt_at=$($Record.next_attempt_at)",
+        "class_started_at=$($Record.class_started_at)",
+        "class_age_sec=$($Record.class_age_sec)",
+        "recovery_state=$($Record.recovery_state)",
+        "pending_since=$($Record.pending_since)",
+        "pending_action=$($Record.pending_action)",
+        "pending_deadline=$($Record.pending_deadline)",
+        "pending_invalidation=$($Record.pending_invalidation)",
+        "http200_observed_at=$($Record.http200_observed_at)",
+        "remote_http_reason=$($Record.remote_http_reason)",
         "code=$($Record.code)",
         "error=$($Record.error)",
         "detail=$($Record.detail)"
@@ -435,7 +448,8 @@ function Get-RecordOnlyDetail {
             if ([string]$Probes.remote_keeper -eq 'unknown') {
                 return 'record only: COM2 keeper state was not directly observed; no keeper action'
             }
-            return 'no action: the COM2 keeper and the MeshCentral unit both look healthy'
+            return ('no action: remote HTTP probe returned no usable code ({0}); keeper={1} unit={2}' -f
+                $Probes.remote_http, $Probes.remote_keeper, $Probes.remote_unit)
         }
         default { return 'record only: no automatic action belongs to this failure class' }
     }
@@ -684,12 +698,14 @@ function Get-RecoveryState {
         first_fault = ''; last_class = ''; last_ts = ''; last_code = ''
         action_key = ''; attempt_count = 0; last_attempt_at = ''
         next_attempt_at = ''; last_success_at = ''
+        class_started_at = ''; pending_since = ''; pending_action = ''; pending_deadline = ''
     }
     if (-not (Test-Path -LiteralPath $Cfg.state_file)) { return $state }
     try {
         $obj = Get-Content -LiteralPath $Cfg.state_file -Raw | ConvertFrom-Json
         foreach ($k in @('first_fault', 'last_class', 'last_ts', 'last_code',
-                'action_key', 'last_attempt_at', 'next_attempt_at', 'last_success_at')) {
+                'action_key', 'last_attempt_at', 'next_attempt_at', 'last_success_at',
+                'class_started_at', 'pending_since', 'pending_action', 'pending_deadline')) {
             if ($obj.PSObject.Properties[$k]) { $state[$k] = [string]$obj.$k }
         }
         if ($obj.PSObject.Properties['attempt_count']) {
@@ -718,6 +734,16 @@ function ConvertTo-FaultAgeSeconds {
     }
 }
 
+function Get-RemoteHttpReason {
+    # A non-200 remote HTTP probe is an HTTP observation only. It is not proof
+    # that the COM2 unit stopped or that the server is broken.
+    param($Probes)
+    if (-not $Probes.remote_ok) { return 'remote_probe_failed' }
+    $code = [string]$Probes.remote_http
+    if ($code -match '^\d{3}$' -and $code -ne '000') { return 'remote_http_code' }
+    return 'remote_http_no_response'
+}
+
 # --- main -----------------------------------------------------------------
 
 if ($FunctionsOnly) { return }
@@ -740,16 +766,24 @@ try {
     $plannedAction = Get-PlannedAction -FailureClass $failureClass -Probes $probes
     $state = Get-RecoveryState -Cfg $cfg
     $firstFault = [string]$state.first_fault
+    $classStartedAt = [string]$state.class_started_at
+    $pendingSince = [string]$state.pending_since
+    $pendingAction = [string]$state.pending_action
+    $pendingDeadline = [string]$state.pending_deadline
+    $maxPending = [int]$cfg.max_pending_seconds
     $stateSource = Get-Com2StateSource -Probes $probes
     $actionKey = ('{0}|{1}' -f $failureClass, $plannedAction)
+    $nowStamp = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
 
     $attempt = ''
     $action = 'none'
     $executed = $false
     $recoveryOk = 'n/a'
+    $recoveryState = 'none'
     $recoveryAt = ''
     $elapsed = ''
     $faultAge = ''
+    $classAge = ''
     $code = ''
     $detail = ''
     $failureReason = ''
@@ -763,6 +797,11 @@ try {
     $newLastAttemptAt = [string]$state.last_attempt_at
     $newNextAttemptAt = [string]$state.next_attempt_at
     $newLastSuccessAt = [string]$state.last_success_at
+    $pendingInvalidation = ''
+    $actionStartedAt = ''
+    $actionFinishedAt = ''
+    $http200ObservedAt = ''
+    $http200ObservedSec = ''
 
     $execute = ($Mode -eq 'Live') -and (-not $DryRun) -and
         ($plannedAction -eq 'restart_tunnel' -or $plannedAction -eq 'start_keeper' -or
@@ -770,16 +809,30 @@ try {
 
     if ($failureClass -eq 'healthy') {
         $action = 'none'
-        if ($firstFault) {
-            # The previous check was a fault and the path came back without an
-            # action in this run.
-            $recoveryAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+        if ($firstFault -or $pendingSince) {
+            # HTTP 200 was observed at this check. It is evidence of recovery
+            # now, never proof that the path came back earlier.
+            $recoveryAt = $nowStamp
             $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
+            $classAge = ConvertTo-FaultAgeSeconds -FirstFault $classStartedAt -Now (Get-Date)
             $elapsed = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
             $recoveryOk = 'yes'
-            $code = 'SELF_RECOVERED_HTTP_200'
-            $detail = 'the MeshCentral path answered 200 without this check taking an action'
+            $recoveryState = 'recovered'
+            if ($pendingSince) {
+                $http200ObservedAt = $nowStamp
+                $http200ObservedSec = ConvertTo-FaultAgeSeconds -FirstFault $pendingSince -Now (Get-Date)
+                $code = 'RECOVERED_HTTP200_OBSERVED_AFTER_PENDING'
+                $detail = ('HTTP 200 observed at this check after a pending action; the observation ' +
+                    'time is an upper bound on the recovery instant, not the recovery instant itself')
+            } else {
+                $code = 'SELF_RECOVERED_HTTP_200'
+                $detail = 'the MeshCentral path answered 200 without this check taking an action'
+            }
             $firstFault = ''
+            $classStartedAt = ''
+            $pendingSince = ''
+            $pendingAction = ''
+            $pendingDeadline = ''
         } else {
             $recoveryOk = 'n/a'
             $code = 'HTTP_200'
@@ -790,10 +843,11 @@ try {
         $newAttemptCount = 0
         $newLastAttemptAt = ''
         $newNextAttemptAt = ''
-        $newLastSuccessAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+        $newLastSuccessAt = $nowStamp
     } elseif ($plannedAction -eq 'record_only') {
         $action = 'record_only'
         $recoveryOk = 'no'
+        $recoveryState = 'none'
         $detail = Get-RecordOnlyDetail -FailureClass $failureClass -Probes $probes
         $failureReason = $detail
         switch ($failureClass) {
@@ -801,8 +855,20 @@ try {
             'remote_probe_failed' { $code = 'REMOTE_PROBE_FAILED' }
             default { $code = 'NO_ACTION_AVAILABLE' }
         }
-        if (-not $firstFault) { $firstFault = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss') }
+        if (-not $firstFault) { $firstFault = $nowStamp }
+        $classChanged = ($state.last_class -ne $failureClass) -or (-not $classStartedAt)
+        if ($classChanged) { $classStartedAt = $nowStamp }
+        # A pending verdict never outlives the class that justified it. This
+        # branch permits no action, so carrying the verdict forward would later
+        # suppress an unrelated action or expire into a false failure.
+        if ($pendingSince) {
+            $pendingInvalidation = $(if ($classChanged) { 'class_changed' } else { 'class_not_actionable' })
+            $pendingSince = ''
+            $pendingAction = ''
+            $pendingDeadline = ''
+        }
         $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
+        $classAge = ConvertTo-FaultAgeSeconds -FirstFault $classStartedAt -Now (Get-Date)
         # Track the current episode so a different class does not inherit the
         # previous action's attempt budget.
         if ($newActionKey -ne $actionKey) {
@@ -812,83 +878,176 @@ try {
             $newNextAttemptAt = ''
         }
     } else {
-        if (-not $firstFault) { $firstFault = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss') }
+        if (-not $firstFault) { $firstFault = $nowStamp }
+        $classChanged = ($state.last_class -ne $failureClass) -or (-not $classStartedAt)
+        if ($classChanged) {
+            if ($pendingSince) {
+                $pendingInvalidation = 'class_changed'
+                $pendingSince = ''
+                $pendingAction = ''
+                $pendingDeadline = ''
+            }
+            $classStartedAt = $nowStamp
+        }
         $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
+        $classAge = ConvertTo-FaultAgeSeconds -FirstFault $classStartedAt -Now (Get-Date)
 
-        $retry = Get-RetryDecision -State $state -ActionKey $actionKey -Now (Get-Date) -Cfg $cfg
-        $retryDecision = [string]$retry.decision
-        $retryAttempts = [int]$retry.attempts
-        $nextAttemptAt = [string]$retry.next_attempt_at
+        # A different action within the same class also closes the verdict: it
+        # described an action that is no longer the one this class needs.
+        if ($pendingSince -and $pendingAction -ne $plannedAction) {
+            $pendingInvalidation = 'action_changed'
+            $pendingSince = ''
+            $pendingAction = ''
+            $pendingDeadline = ''
+        }
 
-        if ($retry.decision -eq 'backoff') {
-            $action = 'skipped_backoff'
+        # Pending is not success: the action ran and no HTTP 200 was observed
+        # inside the verification window. A live window suppresses a second
+        # action; after the deadline it becomes a failed attempt.
+        $pendingActive = $false
+        $pendingExpired = $false
+        $pendingEnd = $null
+        if ($pendingSince) {
+            $pendingEnd = ConvertFrom-RecoveryTime -Value $pendingDeadline
+            if ($null -eq $pendingEnd) {
+                $pendingExpired = $true
+            } elseif ((Get-Date) -lt $pendingEnd) {
+                $pendingActive = $true
+            } else {
+                $pendingExpired = $true
+            }
+        }
+
+        if ($pendingActive) {
+            $plannedAction = 'none'
+            $recoveryOk = 'pending'
+            $recoveryState = 'pending'
+            $retryDecision = 'pending'
+            $retryAttempts = [int]$state.attempt_count
+            $nextAttemptAt = [string]$state.next_attempt_at
+            $code = 'RECOVERY_PENDING_AWAITING_VERIFY'
+            $detail = ('previous action {0} is still inside its verification window (deadline {1}); ' +
+                'no new action taken') -f $pendingAction, $pendingDeadline
+        } elseif ($pendingExpired) {
+            $plannedAction = 'none'
             $recoveryOk = 'no'
-            $code = 'RECOVERY_BACKOFF'
-            $detail = ('retry deferred by policy: attempt {0}/{1}, next attempt at {2}' -f
-                $retryAttempts, $retryMax, $nextAttemptAt)
-            $failureReason = $detail
-        } elseif ($retry.decision -eq 'exhausted') {
-            $action = 'skipped_exhausted'
-            $recoveryOk = 'no'
-            $code = 'RECOVERY_RETRY_EXHAUSTED'
-            $detail = ('retry budget exhausted for this episode: attempt {0}/{1}; ' +
-                'a healthy path, a different failure class or the retry window reopens it' -f
-                $retryAttempts, $retryMax)
-            $failureReason = $detail
-        } elseif (-not (Test-LockAvailable -Cfg $cfg)) {
-            $action = 'skipped_locked'
-            $recoveryOk = 'no'
-            $code = 'RECOVERY_LOCKED'
-            $detail = 'another recovery process holds the lock'
-            $failureReason = $detail
+            $recoveryState = 'failed'
+            $pendingInvalidation = 'pending_expired'
+            $verdictAt = if ($null -ne $pendingEnd) { $pendingEnd } else { Get-Date }
+            $verdictStamp = $verdictAt.ToString('yyyy-MM-dd HH:mm:ss')
+            $newActionKey = $actionKey
+            $newAttemptCount = [int]$state.attempt_count + 1
+            $newLastAttemptAt = $verdictStamp
+            $delay = Get-RecoveryBackoffSeconds -Cfg $cfg -AttemptCount $newAttemptCount
+            $newNextAttemptAt = $verdictAt.AddSeconds($delay).ToString('yyyy-MM-dd HH:mm:ss')
+            $retryAttempts = $newAttemptCount
+            $nextAttemptAt = $newNextAttemptAt
+            $retryDecision = if ($retryMax -gt 0 -and $newAttemptCount -ge $retryMax) { 'exhausted' } else { 'pending_expired' }
+            $code = 'RECOVERY_FAILED_PENDING_EXPIRED'
+            $failureReason = ('action {0} stayed pending past {1} without an observed HTTP 200; ' +
+                'attempt {2}/{3}') -f $pendingAction, $pendingDeadline, $newAttemptCount, $retryMax
+            $detail = if ($retryDecision -eq 'exhausted') {
+                'pending window closed; retry budget exhausted for this episode'
+            } else {
+                'pending window closed; the next check may act again after the backoff'
+            }
+            $pendingSince = ''
+            $pendingAction = ''
+            $pendingDeadline = ''
         } else {
-            New-RecoveryLock -Cfg $cfg
-            try {
-                $attempt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-                $executed = $execute
-                $result = Invoke-RecoveryAction -Action $plannedAction -Probes $probes -Cfg $cfg -Execute:$execute
-                $action = $plannedAction
-                $detail = [string]$result.detail
+            $retry = Get-RetryDecision -State $state -ActionKey $actionKey -Now (Get-Date) -Cfg $cfg
+            $retryDecision = [string]$retry.decision
+            $retryAttempts = [int]$retry.attempts
+            $nextAttemptAt = [string]$retry.next_attempt_at
 
-                if ($execute) {
-                    $finalCode = Wait-MeshHttp200 -Cfg $cfg -TimeoutSeconds ([int]$cfg.verify_timeout_seconds)
-                    $elapsed = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
-                    $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
-                    if ($finalCode -eq '200') {
-                        $recoveryOk = 'yes'
-                        $recoveryAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-                        $code = 'RECOVERED_HTTP_200'
-                        $firstFault = ''
-                        $newActionKey = ''
-                        $newAttemptCount = 0
-                        $newLastAttemptAt = ''
-                        $newNextAttemptAt = ''
-                        $newLastSuccessAt = $recoveryAt
+            if ($retry.decision -eq 'backoff') {
+                $action = 'skipped_backoff'
+                $recoveryOk = 'no'
+                $recoveryState = 'deferred'
+                $code = 'RECOVERY_BACKOFF'
+                $detail = ('retry deferred by policy: attempt {0}/{1}, next attempt at {2}' -f
+                    $retryAttempts, $retryMax, $nextAttemptAt)
+                $failureReason = $detail
+            } elseif ($retry.decision -eq 'exhausted') {
+                $action = 'skipped_exhausted'
+                $recoveryOk = 'no'
+                $recoveryState = 'deferred'
+                $code = 'RECOVERY_RETRY_EXHAUSTED'
+                $detail = ('retry budget exhausted for this episode: attempt {0}/{1}; ' +
+                    'a healthy path, a different failure class or the retry window reopens it' -f
+                    $retryAttempts, $retryMax)
+                $failureReason = $detail
+            } elseif (-not (Test-LockAvailable -Cfg $cfg)) {
+                $action = 'skipped_locked'
+                $recoveryOk = 'no'
+                $recoveryState = 'locked'
+                $code = 'RECOVERY_LOCKED'
+                $detail = 'another recovery process holds the lock'
+                $failureReason = $detail
+            } else {
+                New-RecoveryLock -Cfg $cfg
+                try {
+                    $attempt = $nowStamp
+                    $executed = $execute
+                    $actionStartedAt = $attempt
+                    $result = Invoke-RecoveryAction -Action $plannedAction -Probes $probes -Cfg $cfg -Execute:$execute
+                    $action = $plannedAction
+                    $detail = [string]$result.detail
+
+                    if ($execute) {
+                        $actionFinishedAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+                        $finalCode = Wait-MeshHttp200 -Cfg $cfg -TimeoutSeconds ([int]$cfg.verify_timeout_seconds)
+                        $elapsed = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
+                        $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
+                        $classAge = ConvertTo-FaultAgeSeconds -FirstFault $classStartedAt -Now (Get-Date)
+                        if ($finalCode -eq '200') {
+                            $recoveryOk = 'yes'
+                            $recoveryState = 'recovered'
+                            $recoveryAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+                            $http200ObservedAt = $recoveryAt
+                            $http200ObservedSec = ConvertTo-FaultAgeSeconds -FirstFault $actionFinishedAt -Now (Get-Date)
+                            $code = 'RECOVERED_HTTP_200'
+                            $firstFault = ''
+                            $classStartedAt = ''
+                            $pendingSince = ''
+                            $pendingAction = ''
+                            $pendingDeadline = ''
+                            $newActionKey = ''
+                            $newAttemptCount = 0
+                            $newLastAttemptAt = ''
+                            $newNextAttemptAt = ''
+                            $newLastSuccessAt = $recoveryAt
+                        } else {
+                            # The action ran; the verification window was too
+                            # short to observe a 200. Keep waiting, bounded.
+                            $pendingSince = $actionFinishedAt
+                            $pendingAction = $plannedAction
+                            $pendingDeadline = ([datetime]::ParseExact($actionFinishedAt,
+                                'yyyy-MM-dd HH:mm:ss', $null)).AddSeconds($maxPending).ToString('yyyy-MM-dd HH:mm:ss')
+                            $recoveryOk = 'pending'
+                            $recoveryState = 'pending'
+                            $retryDecision = 'pending'
+                            $retryAttempts = [int]$state.attempt_count
+                            $nextAttemptAt = ''
+                            $newActionKey = $actionKey
+                            $newNextAttemptAt = ''
+                            $failureReason = ''
+                            $code = ('RECOVERY_PENDING_HTTP_{0}' -f $finalCode)
+                            $detail = ('{0} | no HTTP 200 observed inside {1}s; pending until {2}' -f
+                                $detail, [int]$cfg.verify_timeout_seconds, $pendingDeadline)
+                        }
                     } else {
-                        $recoveryOk = 'no'
-                        $code = ('RECOVERY_FAILED_HTTP_{0}' -f $finalCode)
-                        $failedAt = Get-Date
-                        $newActionKey = $actionKey
-                        $newAttemptCount = $retryAttempts + 1
-                        $newLastAttemptAt = $failedAt.ToString('yyyy-MM-dd HH:mm:ss')
-                        $delay = Get-RecoveryBackoffSeconds -Cfg $cfg -AttemptCount $newAttemptCount
-                        $newNextAttemptAt = $failedAt.AddSeconds($delay).ToString('yyyy-MM-dd HH:mm:ss')
-                        $retryAttempts = $newAttemptCount
-                        $nextAttemptAt = $newNextAttemptAt
-                        $failureReason = (('recovery action did not restore HTTP 200 (last {0}); ' +
-                            'attempt {1}/{2}') -f $finalCode, $newAttemptCount, $retryMax)
-                        $detail = ('{0} | next attempt {1}' -f $detail, $newNextAttemptAt)
+                        $recoveryOk = 'planned'
+                        $recoveryState = 'planned'
+                        $code = ('PLANNED_{0}' -f $plannedAction.ToUpperInvariant())
+                        if ([string]$result.detail -notmatch '^planned:') {
+                            $detail = ('planned action was not executed: {0}' -f $result.detail)
+                        }
+                        $elapsed = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
                     }
-                } else {
-                    $recoveryOk = 'planned'
-                    $code = ('PLANNED_{0}' -f $plannedAction.ToUpperInvariant())
-                    if ([string]$result.detail -notmatch '^planned:') {
-                        $detail = ('planned action was not executed: {0}' -f $result.detail)
-                    }
-                    $elapsed = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
+                } finally {
+                    Remove-RecoveryLock -Cfg $cfg
                 }
-            } finally {
-                Remove-RecoveryLock -Cfg $cfg
             }
         }
     }
@@ -922,6 +1081,22 @@ try {
         retry_attempt = [int]$retryAttempts
         retry_max = [int]$retryMax
         next_attempt_at = $nextAttemptAt
+        recovery_state = $recoveryState
+        class_started_at = $classStartedAt
+        class_age_sec = $classAge
+        engine_elapsed_sec = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
+        action_started_at = $actionStartedAt
+        action_finished_at = $actionFinishedAt
+        verify_window_sec = [int]$cfg.verify_timeout_seconds
+        http200_observed_at = $http200ObservedAt
+        http200_first_observed_sec = $http200ObservedSec
+        http200_observed_basis = $(if ($http200ObservedAt) { 'observed_at_this_check' } else { '' })
+        pending_since = $pendingSince
+        pending_action = $pendingAction
+        pending_deadline = $pendingDeadline
+        pending_invalidation = $pendingInvalidation
+        max_pending_seconds = $maxPending
+        remote_http_reason = Get-RemoteHttpReason -Probes $probes
         code = $code
         error = $failureReason
         detail = $detail
@@ -937,6 +1112,10 @@ try {
         last_attempt_at = $newLastAttemptAt
         next_attempt_at = $newNextAttemptAt
         last_success_at = $newLastSuccessAt
+        class_started_at = $classStartedAt
+        pending_since = $pendingSince
+        pending_action = $pendingAction
+        pending_deadline = $pendingDeadline
     }
     Save-RecoveryState -Cfg $cfg -State $newState
 
@@ -982,6 +1161,22 @@ try {
                 retry_attempt = 0
                 retry_max = 0
                 next_attempt_at = ''
+                recovery_state = 'failed'
+                class_started_at = ''
+                class_age_sec = ''
+                engine_elapsed_sec = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
+                action_started_at = ''
+                action_finished_at = ''
+                verify_window_sec = 0
+                http200_observed_at = ''
+                http200_first_observed_sec = ''
+                http200_observed_basis = ''
+                pending_since = ''
+                pending_action = ''
+                pending_deadline = ''
+                pending_invalidation = ''
+                max_pending_seconds = 0
+                remote_http_reason = 'engine_error'
                 code = 'ENGINE_ERROR'
                 error = $msg
                 detail = $msg

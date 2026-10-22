@@ -82,7 +82,10 @@ check / mode / class / com2_ssh / tunnel_tcp / mesh_http / remote_http /
 remote_keeper / remote_unit / remote_cause / com2_state_source / first_fault /
 attempt / planned_action / action / executed / recovery_ok / recovery_at /
 elapsed_sec / fault_age_sec / retry_decision / retry_attempt / retry_max /
-next_attempt_at / code / error / detail
+next_attempt_at / recovery_state / class_started_at / class_age_sec /
+remote_http_reason / pending_since / pending_action / pending_deadline /
+pending_invalidation / http200_observed_at / http200_first_observed_sec /
+http200_observed_basis / code / error / detail
 ```
 
 요구 필드 대응:
@@ -101,13 +104,19 @@ next_attempt_at / code / error / detail
 | 실패 원인 | `error`, `detail`, `remote_cause` |
 | 원격 상태 근거 | `com2_state_source` (`direct`/`unverified`) |
 | 재시도 결정 | `retry_decision`, `retry_attempt`, `retry_max`, `next_attempt_at` (레코드·health log), `attempt_count`, `last_attempt_at`, `last_success_at` (상태 파일) |
+| 검증 창 상태 | `recovery_state`, `pending_since`, `pending_action`, `pending_deadline`, `pending_invalidation`, `max_pending_seconds` (레코드·health log), `class_started_at`, `pending_since`, `pending_action`, `pending_deadline` (상태 파일) |
+| 장애 시계 | `first_fault`, `fault_age_sec`(에피소드), `class_started_at`, `class_age_sec`(현재 class) |
+| HTTP 200 관측 | `http200_observed_at`, `http200_first_observed_sec`, `http200_observed_basis` |
+| 원격 HTTP 성질 | `remote_http_reason` (`remote_probe_failed`/`remote_http_code`/`remote_http_no_response`) |
 | 오류 코드 | `code` |
 
 동일 장애·동일 계획 조치(`class|planned_action`)의 재시도는 에피소드 단위로 제한한다. 기본값은 최대 3회, backoff 300/900/1800초, cooldown 300초, retry window 3600초다. healthy 또는 다른 조치가 필요한 분류로 바뀌면 에피소드를 초기화한다. Simulate/DryRun은 시도 횟수를 소모하지 않는다. 설정 키는 `recovery_max_attempts`, `recovery_backoff_schedule_seconds`, `recovery_cooldown_seconds`, `recovery_retry_window_seconds`다.
 
+검증 창(`verify_timeout_seconds`, 기본 30초) 안에 HTTP 200이 없으면 조치는 실패가 아니라 pending이다. `max_pending_seconds`(기본 900초) 동안 새 조치를 억제하고, 만료될 때 시도 1회를 소모해 backoff로 들어간다. pending 중 200을 관측하면 `RECOVERED_HTTP200_OBSERVED_AFTER_PENDING`으로 복구를 기록하되 관측 시각을 복구 시각으로 쓰고 과거로 소급하지 않는다. class가 바뀌거나 같은 class에서 조치가 사라지거나 조치가 바뀌면 pending을 즉시 닫는다(`class_changed`/`class_not_actionable`/`action_changed`). 세부 계약은 `COM2_MESH_AUTO_RECOVERY_HARDENING_20261023.md` §3.4–§3.5.
+
 `recovery_log`에는 같은 값이 한 줄 JSON(`schema=com2_mesh_recovery/v1`)으로 남는다. `status_file`은 마지막 레코드 전체를 담는다.
 
-주요 코드: `HTTP_200`, `SELF_RECOVERED_HTTP_200`, `PLANNED_RESTART_TUNNEL`, `PLANNED_START_KEEPER`, `PLANNED_RESTART_MESH_SERVICE`, `RECOVERED_HTTP_200`, `RECOVERY_FAILED_HTTP_<code>`, `RECOVERY_LOCKED`, `RECOVERY_BACKOFF`, `RECOVERY_RETRY_EXHAUSTED`, `COM2_SSH_UNREACHABLE`, `REMOTE_PROBE_FAILED`, `NO_ACTION_AVAILABLE`, `ENGINE_ERROR`.
+주요 코드: `HTTP_200`, `SELF_RECOVERED_HTTP_200`, `PLANNED_RESTART_TUNNEL`, `PLANNED_START_KEEPER`, `PLANNED_RESTART_MESH_SERVICE`, `RECOVERED_HTTP_200`, `RECOVERED_HTTP200_OBSERVED_AFTER_PENDING`, `RECOVERY_FAILED_HTTP_<code>`, `RECOVERY_PENDING_HTTP_<code>`, `RECOVERY_PENDING_AWAITING_VERIFY`, `RECOVERY_FAILED_PENDING_EXPIRED`, `RECOVERY_LOCKED`, `RECOVERY_BACKOFF`, `RECOVERY_RETRY_EXHAUSTED`, `COM2_SSH_UNREACHABLE`, `REMOTE_PROBE_FAILED`, `NO_ACTION_AVAILABLE`, `ENGINE_ERROR`.
 
 `action` 값에는 조치 이름 외에 `skipped_backoff`(재시도 대기), `skipped_exhausted`(재시도 한도 소진), `skipped_locked`(다른 복구 프로세스 실행 중), `record_only`(조치 없음)가 기록된다.
 
@@ -134,6 +143,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File com2_mesh_recovery_selftest.
 - 첫 장애 시각 보존과 자기 회복 기록.
 - Windows 인용 규칙(공백·따옴표·끝 백슬래시·빈 인수).
 - 2026-10-23 추가: 원격 실패 원인별 분류, `unknown` 유닛·keeper에서 COM2 조치 미계획, `com2_state_source` 기록, 동일 에피소드 backoff·한도 소진·에피소드 초기화·Simulate 시도 미소모.
+- 2026-10-23 통합 추가(#5577 f1fe620d에서 이식): pending 활성 중 조치 억제, pending 만료의 시도 1회 소비와 backoff, 만료 예산 소진, pending 중 200 관측과 비소급 기록, class 변경·비조치 class·조치 변경에서 pending 폐기(누수 없음), 에피소드 시계와 class 시계 분리.
 
 ## 8. 안전 경계
 
