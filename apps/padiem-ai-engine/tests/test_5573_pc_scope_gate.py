@@ -105,6 +105,60 @@ def test_list_intent_blocks_the_read_step():
     assert "execution scope" in str(excinfo.value)
 
 
+def _read(path: str = "a.txt", intent: str | None = None):
+    arguments = {"path": path}
+    if intent is not None:
+        arguments["intent"] = intent
+    return {"action": "tool", "tool_id": PC_READ_FILE_TOOL_ID, "arguments": arguments}
+
+
+def test_the_ceiling_is_checked_before_the_intent_and_path_rules():
+    """Which check refuses a read in a list-only scope, measured by ordering.
+
+    The step is invalid twice over: the tool is outside the ceiling AND the
+    intent is not a reviewed value. The message that comes back names the check
+    that actually ran first, so a model cannot trade an invalid intent for an
+    in-scope tool.
+    """
+    outside = _sequence([_read(intent="everything")], allowed=LIST_ONLY)
+    with pytest.raises(PCQueryStepError) as ceiling:
+        asyncio.run(outside.next_step(_context(), object()))
+    assert "outside this execution scope" in str(ceiling.value)
+
+    inside = _sequence([_read(intent="everything")], allowed=LIST_AND_READ)
+    with pytest.raises(PCQueryStepError) as intent_rule:
+        asyncio.run(inside.next_step(_context(), object()))
+    assert "invalid or unauthorized" in str(intent_rule.value)
+
+
+def test_a_read_intent_cannot_widen_a_list_only_ceiling():
+    """The ceiling, not the model, decides whether read exists this turn.
+
+    The list step opens the read gate, and the gate is then proven open by the
+    same steps under the list+read ceiling (test_read_intent_allows_the_read_step).
+    Under a list-only ceiling the read is still refused, so only the ceiling can
+    be refusing it.
+    """
+    driver = _sequence([_list("read"), _read()], allowed=LIST_ONLY)
+    first = asyncio.run(driver.next_step(_context(), object()))
+    assert first.invocation.tool_id == PC_LIST_FILES_TOOL_ID
+    with pytest.raises(PCQueryStepError) as excinfo:
+        asyncio.run(driver.next_step(_context(), object()))
+    assert "outside this execution scope" in str(excinfo.value)
+
+
+def test_the_read_gate_refuses_before_the_invocation_is_built():
+    """Under the list+read ceiling the gate is the refusing check, and it runs
+    before the path rules: a read whose path would also be invalid is refused
+    as a scope denial, so no invocation is ever assembled for the handler.
+    """
+    driver = _sequence([_list(None), _read(path="a\tb.txt")], allowed=LIST_AND_READ)
+    asyncio.run(driver.next_step(_context(), object()))
+    with pytest.raises(PCQueryStepError) as excinfo:
+        asyncio.run(driver.next_step(_context(), object()))
+    assert "outside this execution scope" in str(excinfo.value)
+
+
 def test_read_intent_allows_the_read_step():
     driver = _sequence([_list("read"), _read()], allowed=LIST_AND_READ)
     asyncio.run(driver.next_step(_context(), object()))

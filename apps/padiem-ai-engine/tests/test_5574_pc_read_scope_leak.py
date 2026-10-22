@@ -119,6 +119,27 @@ def test_the_list_only_hint_refuses_the_wrong_read() -> None:
     assert excinfo.value.code is None
 
 
+def test_the_list_only_hint_refuses_a_read_the_model_declared() -> None:
+    """A model intent cannot widen the scope the plan admitted.
+
+    The list step declares ``intent:"read"`` — the strongest thing a model can
+    say — and under the list-only ceiling the read is still refused. The same
+    two steps are accepted under the list+read ceiling
+    (test_the_chat_lane_scope_allows_read_after_the_models_read_intent), so the
+    refusal here is the ceiling, not the intent gate.
+    """
+
+    driver, _model = _driver(
+        LIST_ONLY_SCOPE, [_list_step(intent="read"), _read_step()],
+    )
+    first = asyncio.run(driver.next_step(_context(), object()))
+    assert first.invocation.tool_id == PC_LIST_FILES_TOOL_ID
+    with pytest.raises(PCQueryStepError) as excinfo:
+        asyncio.run(driver.next_step(_context(), object()))
+    assert "outside this execution scope" in str(excinfo.value)
+    assert excinfo.value.code is None
+
+
 def test_the_models_own_list_intent_refuses_the_later_read() -> None:
     """A listing-intent turn never reads, whatever the next model step says."""
 

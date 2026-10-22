@@ -53,6 +53,7 @@ from tests.test_canonical_idempotency_identity import ReplayAdapter
 FIXTURE = Path(__file__).with_name("fixtures") / "5015_chat_pc_engine_payloads.json"
 FILES_RECORD = json.loads(FIXTURE.read_text(encoding="utf-8"))["files"]
 CHAT_APP_ID = "padiem-chat"
+DEVICE_ID = FILES_RECORD["tool_arguments"]["files"]["device_id"]
 
 # The listing-only sentence the real frontend sends on this lane, and the run
 # handle shape ``createChatPcRunId`` mints. The device target stays the one the
@@ -357,6 +358,47 @@ def test_a_listing_only_turn_with_a_wrong_read_selects_zero_read_dispatches() ->
     assert len(model.prompts) == 2
     assert READ_TARGET in model.prompts[1]
     assert "relative_path" in model.prompts[1]
+
+
+def test_a_list_only_ceiling_is_not_admitted_on_the_real_wire() -> None:
+    """Where a list-only turn is refused when it is carried as a scope hint.
+
+    ``_scope_allowed_tool_ids`` narrows the tools for ``{"files_list": ...}``
+    and the python client pairs that hint with the one-step plan
+    (``padiem_ai_engine_client/client.py``), but the Engine's own admission gate
+    lists only ``query_drives`` and the two-step list+read shape. Measured here:
+    the turn is refused before the plan, the driver and the handler exist, so
+    the ceiling can only be enforced at the step policy today and the Chat lane
+    never selects it (``chat_pc_drive.py`` passes ``list_only=False``).
+    """
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([LIST_STEP_WITH_READ_INTENT, WRONG_READ_STEP, COMPLETE_STEP])
+    transport = _transport_for(model=model, pc=pc)
+
+    request = _bridge_request()
+    request["tool_arguments"] = {"files_list": {"device_id": DEVICE_ID}}
+    plan = dict(request["agent_plan"])
+    plan["steps"] = [
+        step for step in request["agent_plan"]["steps"]
+        if step["tool_id"] == "claw.pc.list_files"
+    ]
+    request["agent_plan"] = plan
+
+    client = PadiemAiEngineClient(
+        transport=transport, app_id=CHAT_APP_ID, caller_id=CHAT_APP_ID,
+        credential="x" * 64,
+    )
+    with patch.object(asyncio, "sleep", _instant_sleep):
+        with pytest.raises(PadiemAiEngineClientError) as refusal:
+            asyncio.run(client.orchestrate(request))
+
+    assert refusal.value.code == "unsupported_orchestration_field"
+    assert refusal.value.status == 400
+    assert transport.statuses == [400]
+    # Nothing reached the PC: no context leg, no dispatch, no handler.
+    assert pc.legs == [], pc.legs
+    assert pc.ops == []
+    assert model.prompts == []
 
 
 def test_an_explicit_read_intent_still_reaches_the_read_dispatch() -> None:
