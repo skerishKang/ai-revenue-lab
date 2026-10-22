@@ -1334,6 +1334,35 @@
     }
   }
 
+  // #5479: one presentation rule for every session state, so the sign-in entry
+  // point can never disappear just because the session state could not be read.
+  //
+  // "pending" is "not read yet". "unavailable" means the server answered and
+  // reported that the session store is not ready. "unreachable" means the
+  // status request produced no answer at all: a network failure, or the Chat
+  // Worker failing to start a Python instance (the platform's NoGilError race,
+  // cloudflare/workerd#6624), which turns every route - /api/auth/status
+  // included - into a 5xx. Neither one is a signed-out account, so neither one
+  // may hide the login button: the account area and the button stay visible
+  // and enabled, and the button retries the status instead of being a dead
+  // end.
+  //
+  // The table is the rule: the projections read it, and the #5479 regression
+  // test reads the same table out of this file.
+  const SESSION_PRESENTATION = {
+    "pending": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
+    "signed_in": { "accountHidden": false, "loginHidden": true, "loginDisabled": false, "accountNameHidden": false },
+    "guest": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
+    "expired": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
+    "unavailable": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": true },
+    "unreachable": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": true }
+  };
+  function resolveSessionPresentation(sessionState) {
+    return SESSION_PRESENTATION[sessionState] || SESSION_PRESENTATION.unreachable;
+  }
+  // The other projections read the same rule so they cannot drift apart.
+  window.PadiemSessionPresentation = resolveSessionPresentation;
+
   function applyAuthState(data) {
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
@@ -1444,17 +1473,21 @@
       clearClawRecovery({ syncControls: true });
       clearClawWait();
     }
+    // #5479: "unreachable" (the status request produced no answer) is a
+    // different session state from "unavailable" (the server answered that the
+    // session store is not ready). Only the latter is the server's own word.
     const sessionState = !ready
-      ? "unavailable"
+      ? (authState.status_reachable === false ? "unreachable" : "unavailable")
       : authenticated
         ? "signed_in"
         : authState.session_state === "expired"
           ? "expired"
           : "guest";
+    const presentation = resolveSessionPresentation(sessionState);
 
     if (accountContainer) {
       accountContainer.dataset.accountState = sessionState;
-      accountContainer.hidden = sessionState === "unavailable";
+      accountContainer.hidden = presentation.accountHidden;
     }
     closeProfilePanel();
     if (accountAvatar) {
@@ -1469,15 +1502,15 @@
     // keeps only the profile (name and avatar) as the one-step Settings entry.
     // The button element and its text stay: the auth projection and the
     // outputs feature read them as the session signal.
-    loginButton.hidden = sessionState === "unavailable" || sessionState === "signed_in";
-    loginButton.disabled = !ready;
+    loginButton.hidden = presentation.loginHidden;
+    loginButton.disabled = presentation.loginDisabled;
     syncAuthDialogMethods();
-    loginButton.setAttribute("aria-disabled", ready ? "false" : "true");
+    loginButton.setAttribute("aria-disabled", presentation.loginDisabled ? "true" : "false");
 
-    if (sessionState === "unavailable") {
+    if (sessionState === "unavailable" || sessionState === "unreachable") {
       loginButton.textContent = uiT("login");
-      loginButton.title = uiT("login-unavailable-title");
-      accountName.hidden = true;
+      loginButton.title = uiT(sessionState === "unreachable" ? "login-unreachable-title" : "login-unavailable-title");
+      accountName.hidden = presentation.accountNameHidden;
       accountName.textContent = "";
       clearHistoryUI();
       clearProjectsUI();
@@ -2279,7 +2312,12 @@
       syncApprovedMemoryVisibility();
       syncClawRunHistoryVisibility();
     } catch (_) {
-      applyAuthState({ ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false });
+      // #5479: a status request that never produced an answer is "unreachable",
+      // not "signed out". The Chat Worker can fail every route, /api/auth/status
+      // included, when the runtime loses the GIL while it starts a Python
+      // instance (NoGilError, cloudflare/workerd#6624). The sign-in entry point
+      // stays visible and the login button retries the status.
+      applyAuthState({ ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false, status_reachable: false });
     }
   }
   async function openSavedConversation(id) {
@@ -3218,7 +3256,16 @@
     }
   }
   loginButton.addEventListener("click", async () => {
-    if (!authState.ready) return;
+    if (!authState.ready) {
+      // #5479: the session state is unknown, so the button retries it instead of
+      // doing nothing. A dead entry point is what locked people out when the
+      // Chat Worker failed to answer /api/auth/status.
+      await loadAuthStatus();
+      if (!authState.ready) {
+        setNote(uiT(authState.status_reachable === false ? "login-unreachable-title" : "login-unavailable-title"), "error");
+        return;
+      }
+    }
     if (!authState.authenticated) {
       openAuthDialog();
       return;

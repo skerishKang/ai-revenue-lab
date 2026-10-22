@@ -33,6 +33,17 @@
     sessionState: "unavailable",
     displayName: "",
     memberGrade: "free",
+    // #5479: true while the status endpoint has not answered yet. A request
+    // that produced no answer at all sets it to false, which is a different
+    // situation and gets its own session state.
+    statusReachable: true,
+  });
+  // #5479: the status request produced no answer. This is not "not read yet"
+  // and not the server's own "unavailable".
+  const UNREACHABLE_AUTH = Object.freeze({
+    ...EMPTY_AUTH,
+    sessionState: "unreachable",
+    statusReachable: false,
   });
 
   const TIER_ORDER = Object.freeze(["free", "plus", "pro", "max"]);
@@ -278,6 +289,8 @@
       loginTitle: "Google 계정으로 로그인합니다",
       logoutTitle: "현재 계정에서 로그아웃합니다",
       expiredTitle: "세션이 만료되었습니다. 다시 로그인합니다",
+      unavailableTitle: "로그인 기능이 설정되지 않았습니다",
+      unreachableTitle: "로그인 상태를 확인하지 못했습니다. 다시 시도해 주세요",
     }),
     en: Object.freeze({
       guest: "Guest",
@@ -289,6 +302,8 @@
       loginTitle: "Sign in with your Google account",
       logoutTitle: "Sign out of the current account",
       expiredTitle: "Your session expired. Sign in again",
+      unavailableTitle: "Login is not configured",
+      unreachableTitle: "Could not verify your sign-in status. Please try again",
     }),
   });
 
@@ -349,6 +364,7 @@
       sessionState,
       displayName,
       memberGrade: authenticated && TIER_ORDER.includes(data.member_grade) ? data.member_grade : "free",
+      statusReachable: true,
     });
   }
 
@@ -417,29 +433,52 @@
     return accountAvatar;
   }
 
+  function sessionStateForPresentation() {
+    // #5479: three different situations, three different session states.
+    // "pending" is "not read yet", "unavailable" is the server's own word for a
+    // session store that is not ready, and "unreachable" is a status request
+    // that produced no answer at all.
+    if (auth.loaded) return auth.sessionState;
+    return auth.statusReachable === false ? "unreachable" : "pending";
+  }
+
+  function sessionPresentation(state) {
+    // The same rule app.js applies, so the two projections cannot drift apart.
+    const shared = typeof window.PadiemSessionPresentation === "function"
+      ? window.PadiemSessionPresentation(state)
+      : { accountHidden: state === "pending", loginHidden: state === "pending" || state === "signed_in", loginDisabled: state === "pending", accountNameHidden: state !== "guest" && state !== "expired" && state !== "signed_in" };
+    return shared;
+  }
+
   function syncAccountPresentation() {
     if (!loginButton || !accountContainer) return;
     const copy = currentAccountCopy();
-    const state = auth.loaded ? auth.sessionState : "unavailable";
+    const state = sessionStateForPresentation();
     const available = auth.loaded && auth.ready && state !== "unavailable";
+    const shared = sessionPresentation(state);
     accountContainer.dataset.accountState = state;
-    accountContainer.hidden = !available;
+    accountContainer.hidden = shared.accountHidden;
     // #5560: the sign-out entry moved into Settings > Account. The sidebar
     // keeps the sign-in affordance for a guest or an expired session, and the
     // signed-in profile (name and avatar) is the one-step Settings entry.
     // The button element and its text stay: the auth projection and the
     // outputs feature read them as the session signal.
-    loginButton.hidden = !available || state === "signed_in";
+    // #5479: an unknown session state keeps the sign-in entry point reachable.
+    loginButton.hidden = shared.loginHidden;
     loginButton.removeAttribute("aria-busy");
-    loginButton.disabled = !available;
-    loginButton.setAttribute("aria-disabled", available ? "false" : "true");
+    loginButton.disabled = shared.loginDisabled;
+    loginButton.setAttribute("aria-disabled", shared.loginDisabled ? "true" : "false");
 
     if (!available) {
       if (accountName) {
-        accountName.hidden = true;
+        accountName.hidden = shared.accountNameHidden;
         setText(accountName, "");
       }
       if (accountAvatar) accountAvatar.hidden = true;
+      setText(loginButton, copy.login);
+      loginButton.title = state === "unreachable"
+        ? copy.unreachableTitle
+        : state === "unavailable" ? copy.unavailableTitle : copy.loginTitle;
       return;
     }
 
@@ -471,9 +510,10 @@
 
   function accountPresentationMatchesTrustedState() {
     if (!loginButton || !accountContainer) return true;
-    const state = auth.loaded ? auth.sessionState : "unavailable";
+    const state = sessionStateForPresentation();
     const available = auth.loaded && auth.ready && state !== "unavailable";
-    if (accountContainer.hidden !== !available || loginButton.hidden !== (!available || state === "signed_in")) return false;
+    const shared = sessionPresentation(state);
+    if (accountContainer.hidden !== shared.accountHidden || loginButton.hidden !== shared.loginHidden) return false;
     if (!available) {
       if (!accountName) return true;
       return accountName.hidden && accountName.textContent.trim() === "";
@@ -1820,9 +1860,9 @@
         cache: "no-store",
       });
       const data = await response.json().catch(() => null);
-      nextAuth = response.ok ? projectAuth(data) : EMPTY_AUTH;
+      nextAuth = response.ok ? projectAuth(data) : UNREACHABLE_AUTH;
     } catch (_) {
-      nextAuth = EMPTY_AUTH;
+      nextAuth = UNREACHABLE_AUTH;
     }
     auth = nextAuth;
     authEpoch += 1;
