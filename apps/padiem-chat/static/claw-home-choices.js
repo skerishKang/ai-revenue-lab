@@ -161,12 +161,30 @@
                "PC registration was requested. Checking the actual status.");
         const check = document.getElementById("clawComputerDeviceStatusButton");
         if (check && !check.disabled) check.click();
+        return true;
       } catch {
         pcStage("approve_failed");
         pcNote("PC 연결 요청이 완료되지 않았습니다. 자동 재시도하지 않습니다.",
                "The PC connection request did not complete. It will not retry automatically.");
+        return false;
       } finally {
         pcApprovalPending = false;
+      }
+    }
+
+    // The intermediate handoff page owns no approval authority. It only learns
+    // that THIS tab finished the one approve attempt, so it can close itself
+    // after the settlement instead of guessing from the app launch. The reply
+    // carries the same opaque request ref the offer arrived with.
+    function replyPcSettlement(requestRef, approved) {
+      if (!pcChannel) return;
+      try {
+        pcChannel.postMessage({
+          type: approved ? "pc_offer_approved" : "pc_offer_failed",
+          request_ref: requestRef,
+        });
+      } catch {
+        // The page closes on its own timeout; nothing else may be inferred.
       }
     }
 
@@ -193,7 +211,9 @@
       }
       pcStage("approve_post_dispatch");
       pcApprovalPending = true;
-      void approveReadyPc(data.request_ref);
+      void approveReadyPc(data.request_ref).then((approved) => {
+        replyPcSettlement(data.request_ref, approved === true);
+      });
     }
 
     function startPcConnectionFromOriginalClick() {
