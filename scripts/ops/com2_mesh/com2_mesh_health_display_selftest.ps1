@@ -223,7 +223,7 @@ $observation = [ordered]@{
         queried = $true; listening = $true; local_address = '127.0.0.1'
         pid = 20796; process_name = 'ssh'; process_started = '2026-10-23 02:35:56'; error = ''
         parent_pid = 43668; parent_process_name = 'powershell'
-        parent_command_line = 'powershell.exe -NoProfile -File C:\Padiem\com2_mesh_tunnel_supervisor.ps1 -Config C:\Padiem\com2-mesh-config.json'
+        parent_command_line_observed = $true; parent_runs_supervisor = $true
         parent_error = ''
     }
     mesh_http = [ordered]@{ queried = $true; code = 200; error = '' }

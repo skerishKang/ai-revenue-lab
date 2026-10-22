@@ -77,7 +77,7 @@ function New-Observation {
             queried = $true; listening = $true; local_address = '127.0.0.1'
             pid = 30500; process_name = 'ssh'; process_started = '2026-10-23 01:00:16'; error = ''
             parent_pid = 29000; parent_process_name = 'powershell'
-            parent_command_line = 'powershell.exe -NoProfile -File C:\Padiem\com2_mesh_tunnel_supervisor.ps1 -Config C:\Padiem\com2-mesh-config.json'
+            parent_command_line_observed = $true; parent_runs_supervisor = $true
             parent_error = ''
         }
         mesh_http = [ordered]@{ queried = $true; code = 200; error = '' }
@@ -263,10 +263,15 @@ Assert-Equal -Expected 'True' -Actual ([string]$listenerObs.listening) -Label 'l
 Assert-Equal -Expected 30500 -Actual $listenerObs.pid -Label 'listener child pid'
 Assert-Equal -Expected 29000 -Actual $listenerObs.parent_pid -Label 'listener parent pid'
 Assert-Equal -Expected 'powershell.exe' -Actual $listenerObs.parent_process_name -Label 'listener parent name'
-Assert-True -Value ($listenerObs.parent_command_line -match 'com2_mesh_tunnel_supervisor\.ps1') -Label 'listener parent command line'
+Assert-True -Value ($listenerObs.parent_command_line_observed -eq $true) -Label 'listener parent command line observed'
+Assert-True -Value ($listenerObs.parent_runs_supervisor -eq $true) -Label 'listener parent matches the supervisor'
+Assert-Equal -Expected 0 -Actual @($listenerObs.Keys | Where-Object { $_ -eq 'parent_command_line' }).Count `
+    -Label 'listener observation carries no raw command line'
 Assert-Equal -Expected '' -Actual $listenerObs.parent_error -Label 'listener parent query has no error'
 Assert-Equal -Expected 'True' -Actual ([string]$orphanObs.listening) -Label 'orphan listener still observed'
 Assert-Equal -Expected 0 -Actual $orphanObs.parent_pid -Label 'orphan listener parent pid'
+Assert-Equal -Expected 'False' -Actual ([string]$orphanObs.parent_command_line_observed) `
+    -Label 'orphan listener observes no command line'
 Assert-True -Value ([string]$orphanObs.parent_error) -Label 'orphan listener records the parent failure'
 
 # --- verified baseline ----------------------------------------------------
@@ -380,7 +385,8 @@ $identityUnknown = New-Observation
 $identityUnknown.tunnel_task.last_result = 2147946720
 $identityUnknown.listener.parent_pid = 0
 $identityUnknown.listener.parent_process_name = ''
-$identityUnknown.listener.parent_command_line = ''
+$identityUnknown.listener.parent_command_line_observed = $false
+$identityUnknown.listener.parent_runs_supervisor = $null
 $identityUnknown.listener.parent_error = 'access denied'
 $identityUnknownRecord = Test-AutostartEvidence -Observation $identityUnknown -Cfg $probeConfig -Now $now
 Assert-Equal -Expected 'unconfirmed' -Actual $identityUnknownRecord.supervisor.identity `
@@ -402,7 +408,8 @@ Assert-Equal -Expected 'failed' -Actual $identityUnknownRecord.auto_start_state 
 
 $identityNoCommand = New-Observation
 $identityNoCommand.tunnel_task.last_result = 2147946720
-$identityNoCommand.listener.parent_command_line = ''
+$identityNoCommand.listener.parent_command_line_observed = $false
+$identityNoCommand.listener.parent_runs_supervisor = $null
 $identityNoCommandRecord = Test-AutostartEvidence -Observation $identityNoCommand -Cfg $probeConfig -Now $now
 Assert-Equal -Expected 'unconfirmed' -Actual $identityNoCommandRecord.supervisor.identity `
     -Label 'parent without command line identity'
@@ -415,7 +422,8 @@ Assert-Equal -Expected 'observed' -Actual $identityNoCommandRecord.last_start_at
 
 $identityMismatch = New-Observation
 $identityMismatch.tunnel_task.last_result = 2147946720
-$identityMismatch.listener.parent_command_line = 'powershell.exe -NoProfile -File C:\Padiem\other_tunnel.ps1'
+$identityMismatch.listener.parent_command_line_observed = $true
+$identityMismatch.listener.parent_runs_supervisor = $false
 $identityMismatchRecord = Test-AutostartEvidence -Observation $identityMismatch -Cfg $probeConfig -Now $now
 Assert-Equal -Expected 'mismatch' -Actual $identityMismatchRecord.supervisor.identity `
     -Label 'mismatched parent identity'
@@ -598,6 +606,8 @@ if ($cliRecord) {
     Assert-Equal -Expected 'confirmed' -Actual $cliRecord.supervisor.identity -Label 'cli supervisor identity survives json'
     Assert-Equal -Expected 30500 -Actual $cliRecord.supervisor.child_pid -Label 'cli supervisor child pid survives json'
     Assert-Equal -Expected 29000 -Actual $cliRecord.supervisor.parent_pid -Label 'cli supervisor parent pid survives json'
+    Assert-True -Value (@($cliRecord.observation.listener.PSObject.Properties.Name) -notcontains 'parent_command_line') `
+        -Label 'cli record carries no raw parent command line'
     Assert-Equal -Expected 'succeeded' -Actual $cliRecord.last_start_attempt.outcome -Label 'cli attempt outcome survives json'
     Assert-Equal -Expected 'observed' -Actual $cliRecord.last_start_attempt.confidence -Label 'cli attempt confidence survives json'
 }

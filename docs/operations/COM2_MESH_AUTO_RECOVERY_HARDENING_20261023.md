@@ -490,7 +490,7 @@ $status.auto_start_probe_ts = if ($autostart) { [string]$autostart.ts } else { "
 - `supervisor`: `state`, `identity`, `identity_detail`, `child_pid`, `child_process`, `parent_pid`, `detail`.
 - `last_start_attempt`: `run`, `result`, `result_hex`, `outcome`, `confidence`, `detail`.
 
-리스너 관측(`Get-ListenerObservation`)에는 `parent_pid`, `parent_process_name`, `parent_command_line`, `parent_error`를 추가했다. 부모 조회가 실패해도 리스너 관측 자체는 유효하게 유지되고 `parent_error`에만 실패 사유를 기록한다.
+리스너 관측(`Get-ListenerObservation`)에는 `parent_pid`, `parent_process_name`, `parent_command_line_observed`, `parent_runs_supervisor`, `parent_error`를 추가했다. 부모 명령행은 조회 직후 메모리에서 supervisor 스크립트 이름과 대조하고 버린다. 관측·레코드에는 명령행을 읽었는지 여부(`parent_command_line_observed`)와 대조 결과(`parent_runs_supervisor`)만 남고, 전체 명령행 문자열이나 그 안의 경로·인자·비밀값은 기록하지 않는다. 부모 조회가 실패해도 리스너 관측 자체는 유효하게 유지되고 `parent_error`에만 실패 사유를 기록한다.
 
 ### 11.5 health 표시 연결 (재현 가능한 저장소 변경)
 

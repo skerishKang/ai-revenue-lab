@@ -23,9 +23,11 @@
   The record also keeps the current supervisor state and the last start attempt
   separate. The supervisor state is a normal running state only when the
   listener is owned by the configured process and that process is a child of a
-  process whose command line names the supervisor script. A refusal code is
-  reported as suspected unless Task Scheduler events confirm it, and no event
-  log is read by this probe.
+  process whose command line names the supervisor script. The parent command
+  line is matched in memory and only the match result is recorded: the raw
+  command line is never stored in the observation or in the record. A refusal
+  code is reported as suspected unless Task Scheduler events confirm it, and no
+  event log is read by this probe.
 
 .PARAMETER Config
   Recovery config JSON. Required keys: tunnel_task, tunnel_local_host,
@@ -254,7 +256,8 @@ function Get-ListenerObservation {
     $obs = [ordered]@{
         queried = $true; listening = $false; local_address = ''
         pid = 0; process_name = ''; process_started = ''; error = ''
-        parent_pid = 0; parent_process_name = ''; parent_command_line = ''; parent_error = ''
+        parent_pid = 0; parent_process_name = ''
+        parent_command_line_observed = $false; parent_runs_supervisor = $null; parent_error = ''
     }
     try {
         $port = [int]$Cfg.tunnel_local_port
@@ -292,7 +295,20 @@ function Get-ListenerObservation {
                         $obs.parent_error = 'the listener parent process was not found'
                     } else {
                         $obs.parent_process_name = [string]$parent.Name
-                        $obs.parent_command_line = [string]$parent.CommandLine
+                        # The command line is matched here and discarded. Only
+                        # the two booleans below reach the observation, so no
+                        # raw command line (or a path/secret inside it) is
+                        # written to the record.
+                        $parentCommand = [string]$parent.CommandLine
+                        if (-not [string]::IsNullOrWhiteSpace($parentCommand)) {
+                            $obs.parent_command_line_observed = $true
+                            $supervisorScript = [string]$Cfg.tunnel_supervisor_script
+                            if ([string]::IsNullOrWhiteSpace($supervisorScript)) {
+                                $supervisorScript = 'com2_mesh_tunnel_supervisor.ps1'
+                            }
+                            $obs.parent_runs_supervisor = ($parentCommand.IndexOf(
+                                $supervisorScript, [System.StringComparison]::OrdinalIgnoreCase) -ge 0)
+                        }
                     }
                 }
             } catch {
@@ -629,27 +645,32 @@ function Test-AutostartEvidence {
 
     # The listener must be a child of the supervisor: the parent pid of the
     # listener owner, and that parent's command line must name the supervisor
-    # script. Anything less leaves the identity unconfirmed.
+    # script. The observation records only whether a command line was read and
+    # whether it matched, never the line itself. Anything less leaves the
+    # identity unconfirmed.
     $supervisorIdentity = 'unknown'
     $identityDetail = 'the listener was not observed'
     if ($listenerCheck -and $listenerCheck.ok -eq $true) {
         $identityDetail = 'the listener parent process was not observed'
-        $parentCommand = ''
-        if ($null -ne $listener.parent_command_line) { $parentCommand = [string]$listener.parent_command_line }
+        $parentCommandObserved = ($listener.parent_command_line_observed -eq $true)
+        $parentRunsSupervisor = $listener.parent_runs_supervisor
         $parentError = ''
         if ($listener.parent_error) { $parentError = [string]$listener.parent_error }
         if ($parentPid -le 0) {
             $supervisorIdentity = 'unconfirmed'
             if ($parentError) { $identityDetail = $parentError }
-        } elseif ([string]::IsNullOrWhiteSpace($parentCommand)) {
+        } elseif (-not $parentCommandObserved) {
             $supervisorIdentity = 'unconfirmed'
             $identityDetail = ('parent pid={0} was observed without a command line' -f $parentPid)
-        } elseif ($parentCommand.IndexOf($supervisorScript, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+        } elseif ($parentRunsSupervisor -eq $true) {
             $supervisorIdentity = 'confirmed'
             $identityDetail = ('parent pid={0} runs {1}' -f $parentPid, $supervisorScript)
-        } else {
+        } elseif ($parentRunsSupervisor -eq $false) {
             $supervisorIdentity = 'mismatch'
             $identityDetail = ('parent pid={0} does not run {1}' -f $parentPid, $supervisorScript)
+        } else {
+            $supervisorIdentity = 'unconfirmed'
+            $identityDetail = ('parent pid={0} was observed but its command line was not evaluated' -f $parentPid)
         }
     }
 
