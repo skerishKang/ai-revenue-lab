@@ -49,6 +49,10 @@ Backend/runtime and repository-boundary authorities remain:
 - `BACKEND_MVP_OPERATING_POLICY.md`
 - `EXTERNAL_DEVELOPMENT_PROJECTS_POLICY.md` — external product source/issue authority; Global Classroom currently remains in `skerishKang/global-classroom` with no internal source copy or product-issue duplication
 - `CLOUDFLARE_CREDENTIAL_OPERATIONS.md`
+- `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md` — model/provider selection, routing, credential binding and activation are owner-only decisions
+- `GITHUB_REPORT_HANDOFF_POLICY.md` — COMPACT/EXTENDED report modes and LONG-mode workdiary conditions
+- `LOCAL_DOCKER_AVOIDANCE_POLICY.md` — local Docker is not a default development or deployment path
+- `MULTI_MACHINE_LOCAL_WORKTREE_POLICY.md` — machine-local clones/worktrees; freshly fetched remote head is the only cross-machine truth
 - `../portfolio/BUSINESS_REGISTRY.md`
 - `../portfolio/BUSINESS_EXPANSION_LINEAGE.md`
 - `../portfolio/BUSINESS_CANDIDATE_BACKLOG.md`

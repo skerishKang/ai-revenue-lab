@@ -2,60 +2,9 @@
 
 This file is the repository-wide entry point for AI-assisted work. A more specific `AGENTS.md` may add constraints for a subtree but may not weaken these repository-wide safety and evidence rules.
 
-## Owner-facing Korean report language — explicit instruction (2026-10-16)
+## Where the rules live
 
-- **Forbidden wording:** Do not use the Korean adversative connector `다만` anywhere in Owner-facing Korean answers, interim/final status reports, handoff messages, GitHub PR/Issue progress summaries, or explanations. This is an explicit repeated Owner preference, not an optional stylistic suggestion. Before sending Korean prose to the Owner, inspect the final answer for the exact expression and rewrite it.
-- Do not immediately follow an Owner instruction with that connector or with rhetorical exceptions that narrow the requested work, presume refusal, add needless approval gates, or redirect the task without evidence.
-- When genuine limitations exist, **report the facts directly and separately** using `현재 확인 상태:`, `확인된 제약:`, `원인:`, `해결 방법:`, `다음 실행:`. Continue independently authorized work. Never hide actual security, legal, authentication, data-isolation, or deployment constraints.
-- Preserve verbatim external source code/logs/legal quotations when their literal content is necessary; the prohibition governs the assistant's authored prose, not source-data mutation. It does not create new product permissions or override real security enforcement.
-- New GitHub-aware agent sessions must read this rule. Existing conversations/workers may require instruction reload; committing this document does not automatically edit their runtime instructions.
-
-## Cloudflare account scope — Owner decision (2026-10-21)
-
-- **Padiem AI work in this repository uses the Cloudflare account `Charliekant`.** This includes the existing Chat/Engine Worker deployment, diagnostics and log-reading tasks.
-- The separate Cloudflare account named **`Padiem` is for other businesses** and is outside the current Padiem AI operations scope. The Padiem product/domain name does not select that Cloudflare account.
-- Before Cloudflare work, read [Cloudflare Credential Operations §0](docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md). Resolve the account ID and authentication from the existing authorized sources for `Charliekant`. If a local or workflow configuration resolves to `Padiem`, report the scope mismatch; do not guess from account-list order or silently rewrite live credentials.
-
-## Non-public company governance (read before business decisions)
-
-This repository contains **public development and engineering policy**, not the authoritative text of PADIEM's internal business policy. Business instructions are local-only on the authorized **Padiem-Command-Center** PC:
-
-- Local Governance root: `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance` (consult its `README.md` for the current document index).
-- Business policy: read the applicable documents under `사업방침/`, including `00_사업방침_원칙.md` and `02_고객경험_사전위임_자동화_대표결정.md`.
-- Technical/CTO operating policy: then read the applicable documents under `운영방침/`, including `00_고객경험_사전위임_자동실행_운영기준.md` and `01_CTO_에이전트_운영규칙.md`. The former `사업방침/01_CTO_에이전트_운영규칙.md` is only a compatibility relocation notice.
-- Web CTO: read through the connected **Desktop Commander**. Local models: read through their authorized computer filesystem.
-- **Decision order:** latest explicit Owner instruction → local non-public business policy for business/product decisions → GitHub development/technical operating policies → dated issue history. Do not publish the business documents or reproduce their substantive contents in GitHub Issues, PRs or code.
-- If this folder cannot be accessed, or the Owner's decision conflicts with an existing technical gate and the resolution is not specified, explain the exact uncertainty and **ask the Owner**. Do not independently create new business exclusions, customer-facing required approval steps, or permissions grants. Actual runtime/code/OS behavior must still be reported truthfully.
-
-## Web Claw execution identity (Owner decision 2026-10-20)
-
-- **Web Claw is a locally executing computer AI agent controlled through the web.** The authenticated web conversation coordinates with the user's authorized Connector, which executes local file, shell and application tasks; it is not a cloud-only chatbot. Do not import arbitrary cloud-chat content restrictions to locally authorized work.
-- The product's normal connection UX is **Connect computer -> Confirm**, not CLI commands, copied pairing codes, repeated login or manual agent registration. Continue to report real connector and authentication states accurately.
-- An authorized user and their agent must be able to use that user's original business content, including credentials supplied for a requested operation. Avoid blanket refusal, masking, truncation or arbitrary quantity limits in authorized work. Prefer invoking secrets locally rather than unnecessarily transmitting them to model providers; do not publish secrets in shared diagnostics.
-- Enforce actual account/workspace/device authorization before local execution and cross-tenant reads. Real technical and mandatory legal restrictions are reported with evidence, not invented as prelaunch customer restrictions.
-- Canonical public implementation guidance: `docs/architecture/WEB_CLAW_LOCAL_AGENT_EXECUTION_PRINCIPLE_20261020.md`. Private business and operating decisions remain only in COM1 Governance.
-
-## Every session: evidence-based blocker resolution
-
-- **Session entry:** On a new repository-aware agent/CTO session, read this `AGENTS.md` and the relevant current local private Governance documents through the authorized COM1 connection before making business/product decisions. Record what was actually read; if the private source is unavailable, state `NOT_READ` and the specific access limitation. A fresh general ChatGPT conversation does **not** automatically import this file; mirror this minimal rule in ChatGPT Project Instructions. Do not claim automatic loading or a completed read without evidence.
-- **No bare refusal or indefinite HOLD:** If a task is blocked, report `observed failure point + verified cause (or clearly marked unknown) + practical fix + alternative + next action + exact Owner decision needed (if any)`. Explore the smallest authorized repair/reuse path and continue independent permitted work. Do not invent approvals, policies or external technical barriers.
-- **Legal/compliance issues:** Present the specific issue, relevant verifiable law/license/terms, factual assumptions and lawful choices for the Owner's informed decision. Avoid condescending lectures or unsupported definitive legal conclusions; ask a concise question when material facts are missing. Never hide an actual prohibition, bypass security/authorization constraints or implement unlawful behavior.
-- **Owner decision respect:** Do not unilaterally impose new customer-facing restrictions or multiple logins/approval gates; check the private policy and ask the Owner if a real business decision remains unresolved. Avoid repeating irrelevant tests or document churn in place of the requested working outcome.
-
-## Public engineering context (business stage: local governance source)
-
-**Public engineering reality:** this repository is maintained with limited development capacity. The business/customer deployment stage is decided in the **local private Governance source linked above**, not inferred from this public paragraph. Existing live domains, owner accounts, secrets, D1 records, configured approvals and technical boundaries still require truthful handling.
-
-**CTO default is finish working features, not accumulate validation gates.** For a normal bounded task: implement or reuse the smallest working change -> run the focused regression and already required relevant CI -> perform **one** representative actual B14/Worker/browser integration check when the claimed behavior needs a live check -> fix a reproduced failure -> decide merge/close. Do not transform an ordinary one-model test, one-field fix or internal demo into a multi-phase certification project.
-
-- **Batch small commits before pushing.** A single PR push can fan out into many Actions workflows; prefer one coherent push after local focused checks instead of pushing every tiny edit and cancelling the same 10+ checks repeatedly. For urgent fixes, push when ready; never postpone a safety repair solely to save CI minutes.
-- **No test-on-test spiral.** Before adding a test or making it a blocker, state the new failure it can detect, why current evidence cannot detect it, and whether that failure prevents today's functional goal. If no concrete new risk exists, reuse existing passing evidence and move forward. More green tests, repeated unchanged CI, extra validators, new policy files and extra open issues are not progress by themselves.
-- **Right-size a model experiment.** For an owner-authorized, already registered B14 candidate, prefer one small synthetic request through the existing approved route, one HTTP/provider/model/error verdict, no auto-retry or fallback. A real 429/504 is a useful test outcome; don't require proving future provider availability before trying once. If a real platform/tool authorization denial occurs, stop there and report that exact restriction; never bypass it with another credential, client or path.
-- **Solo-owner governance.** The CTO executes delegated ordinary review/merge/deployment decisions using the configured protection and release workflow. Do not invent a second independent human reviewer, a second owner login or repeated ceremonial approvals. Real access restrictions, branch protection, security, auth/tenant isolation, destructive writes, secret leakage, billing and release-specific manual gates remain binding.
-- **Close completed work.** Distinguish implementation acceptance from consolidated end-to-end acceptance: close a bounded implementation/evaluation issue when its approved deliverable is satisfied (including a documented no-go). Keep genuinely unproven runtime acceptance in the existing product integration issue; do not open a fresh verification issue for each source PR.
-- **Priority when instructions seem to conflict:** apply the current Owner's explicit project stage and the canonical operating policy below to choose **the minimum sufficient evidence**, while retaining actual platform protections and the non-negotiable safety boundaries. An older checklist does not silently raise the required validation level.
-- **Every fresh repository-aware CTO/agent session:** read this section and the current main + canonical stage policy before planning work; treat older issue text as dated evidence, not a fresh order. An unrelated ChatGPT thread does **not** automatically ingest this repository file; mirror these principles in the ChatGPT Project Instructions for cross-thread continuity.
-- **Browser QA re-entry/tool identity:** Before authenticated browser testing, read `docs/operations/UI_UX_TABBIT_QUICKCHECK_20261012.md` §4 and the latest **executed** evidence in the existing integration issue. Tabbit LocalAgent `tabbit-cli` and BSK `bsk` are different controls; BSK may connect to Chrome, not Tabbit. Reuse the expressly authorized working browser/session; Desktop Commander only transports CLI commands. Do not silently substitute TinyFish, user-desktop `pyautogui`, or manual DevTools console input. Verify the actual authenticated browser, preserve user focus/tabs, use bounded approval and POST counts, and stop/release the agent session on completion. This is a tool-selection safeguard, not a new reviewer, sign-in, or production-release gate.
+This file carries only the repository-wide behavior every agent must apply to any task in this repository. Detailed operating procedure is stated once in the canonical documents below; this entry point links to them instead of repeating them. Text that is not here was moved to, or was already stated in, one of those documents -- check there before concluding a rule was deleted.
 
 Details and stage-transition rules: `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` §0 and `docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md`.
 Canonical operating documents:
@@ -75,9 +24,56 @@ Canonical operating documents:
 
 For any model/provider question, start at [the shared model documentation index](docs/models/README.md); do not rely on a product README's copied model list as live registry/route evidence. The index points separately to OWNER policy, B14 source, product route declarations and Production verification. It does not grant model-change authority.
 
-**Public disclosure minimization:** New public Issues, PR narratives and operational documentation should use generic execution contracts instead of listing internal provider choices, model-to-tier assignments, or credential binding inventories. Keep the detailed selection, internal binding-slot map and disclosure decisions in authorized COM1 private Governance. Preserve model/provider identifiers in executable source or tests only where required for correct protocol dispatch and independent safety checks; never publish credential values. Existing public history is not erased by a new notice. Do not misrepresent required external attribution or contractual disclosures.
+**Public disclosure minimization:** follow `docs/governance/DOCUMENTATION_AUTHORITY_MODEL.md` section 12, which holds the canonical wording.
 
 Latest owner B14 model-selection reference: `docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md`. An older B14 source/catalog entry proves only that it exists in that source, not that the OWNER approves it. Distinguish selection from registration and Production availability; the ledger is NOT a second approval policy.
+
+## Owner-facing Korean report language — explicit instruction (2026-10-16)
+
+- **Forbidden wording:** Do not use the Korean adversative connector `다만` anywhere in Owner-facing Korean answers, interim/final status reports, handoff messages, GitHub PR/Issue progress summaries, or explanations. This is an explicit repeated Owner preference, not an optional stylistic suggestion. Before sending Korean prose to the Owner, inspect the final answer for the exact expression and rewrite it.
+- Do not immediately follow an Owner instruction with that connector or with rhetorical exceptions that narrow the requested work, presume refusal, add needless approval gates, or redirect the task without evidence.
+- When genuine limitations exist, **report the facts directly and separately** using `현재 확인 상태:`, `확인된 제약:`, `원인:`, `해결 방법:`, `다음 실행:`. Continue independently authorized work. Never hide actual security, legal, authentication, data-isolation, or deployment constraints.
+- Preserve verbatim external source code/logs/legal quotations when their literal content is necessary; the prohibition governs the assistant's authored prose, not source-data mutation. It does not create new product permissions or override real security enforcement.
+- New GitHub-aware agent sessions must read this rule. Existing conversations/workers may require instruction reload; committing this document does not automatically edit their runtime instructions.
+
+## Cloudflare account scope — Owner decision (2026-10-21)
+
+- Padiem AI work in this repository uses the Cloudflare account `Charliekant`, including Chat/Engine Worker deployment, diagnostics and log reading. The separate Cloudflare account named `Padiem` belongs to other businesses and is outside this scope; the product or domain name never selects the account.
+- Before Cloudflare work, read [Cloudflare Credential Operations §0](docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md). Resolve the account ID and authentication from the existing authorized sources for `Charliekant`. If a local or workflow configuration resolves to `Padiem`, report the scope mismatch; do not guess from account-list order or silently rewrite live credentials.
+
+## Non-public company governance (read before business decisions)
+
+This repository contains **public development and engineering policy**, not the authoritative text of PADIEM's internal business policy. Business instructions are local-only on the authorized **Padiem-Command-Center** PC:
+
+- Local Governance root: `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance` (consult its `README.md` for the current document index).
+- Business policy: read the applicable documents under `사업방침/`, including `00_사업방침_원칙.md` and `02_고객경험_사전위임_자동화_대표결정.md`.
+- Technical/CTO operating policy: then read the applicable documents under `운영방침/`, including `00_고객경험_사전위임_자동실행_운영기준.md` and `01_CTO_에이전트_운영규칙.md`. The former `사업방침/01_CTO_에이전트_운영규칙.md` is only a compatibility relocation notice.
+- Web CTO: read through the connected **Desktop Commander**. Local models: read through their authorized computer filesystem.
+- **Decision order:** latest explicit Owner instruction → local non-public business policy for business/product decisions → GitHub development/technical operating policies → dated issue history. Do not publish the business documents or reproduce their substantive contents in GitHub Issues, PRs or code.
+- If this folder cannot be accessed, or the Owner's decision conflicts with an existing technical gate and the resolution is not specified, explain the exact uncertainty and **ask the Owner**. Do not independently create new business exclusions, customer-facing required approval steps, or permissions grants. Actual runtime/code/OS behavior must still be reported truthfully.
+
+## Web Claw execution identity (Owner decision 2026-10-20)
+
+- **Web Claw is a locally executing computer AI agent controlled through the web.** The authenticated web conversation coordinates with the user's authorized Connector, which executes local file, shell and application tasks; it is not a cloud-only chatbot. Do not import arbitrary cloud-chat content restrictions to locally authorized work.
+- Canonical public implementation guidance: `docs/architecture/WEB_CLAW_LOCAL_AGENT_EXECUTION_PRINCIPLE_20261020.md`. Private business and operating decisions remain only in COM1 Governance.
+
+## Every session: evidence-based blocker resolution
+
+- **Session entry:** On a new repository-aware agent/CTO session, read this `AGENTS.md` and the relevant current local private Governance documents through the authorized COM1 connection before making business/product decisions. Record what was actually read; if the private source is unavailable, state `NOT_READ` and the specific access limitation. A fresh general ChatGPT conversation does **not** automatically import this file; mirror this minimal rule in ChatGPT Project Instructions. Do not claim automatic loading or a completed read without evidence.
+- **No bare refusal or indefinite HOLD:** If a task is blocked, report `observed failure point + verified cause (or clearly marked unknown) + practical fix + alternative + next action + exact Owner decision needed (if any)`. Explore the smallest authorized repair/reuse path and continue independent permitted work. Do not invent approvals, policies or external technical barriers.
+- **Legal/compliance issues:** Present the specific issue, relevant verifiable law/license/terms, factual assumptions and lawful choices for the Owner's informed decision. Avoid condescending lectures or unsupported definitive legal conclusions; ask a concise question when material facts are missing. Never hide an actual prohibition, bypass security/authorization constraints or implement unlawful behavior.
+- **Owner decision respect:** Do not unilaterally impose new customer-facing restrictions or multiple logins/approval gates; check the private policy and ask the Owner if a real business decision remains unresolved. Avoid repeating irrelevant tests or document churn in place of the requested working outcome.
+
+## Public engineering context (business stage: local governance source)
+
+**CTO default is finish working features, not accumulate validation gates.** For a normal bounded task: implement or reuse the smallest working change -> run the focused regression and already required relevant CI -> perform **one** representative actual B14/Worker/browser integration check when the claimed behavior needs a live check -> fix a reproduced failure -> decide merge/close. Do not transform an ordinary one-model test, one-field fix or internal demo into a multi-phase certification project.
+
+- **Batch small commits before pushing** -- see `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` section 0E.
+- **No test-on-test spiral, one representative live check, close completed work** -- section 0A of the same policy.
+- **Solo-owner governance: do not invent a second reviewer or repeat a recorded approval; real protections stay binding. A blocked live model experiment is reported, not routed around** -- section 0B.
+- **Fresh repository-aware session: read this file plus current `main` and the canonical stage policy once, then act** -- section 0D.
+- **Priority when instructions seem to conflict:** apply the Owner's explicit current project stage and the canonical policy to choose **the minimum sufficient evidence**, while retaining actual platform protections and the non-negotiable rules below. An older checklist or issue text does not silently raise the required validation level.
+- **Browser QA tool identity:** before authenticated browser testing, read `docs/operations/UI_UX_TABBIT_QUICKCHECK_20261012.md` section 4 and the latest executed evidence in the existing integration issue; `tabbit-cli` and `bsk` are different controls, and the expressly authorized working browser session is reused. This is a tool-selection safeguard, not a new reviewer, sign-in, or production-release gate.
 
 ## Owner-facing communication: direct conclusion and next action
 
@@ -146,20 +142,7 @@ BUT_IMPLEMENTATION_AND_INDEPENDENT_LOCAL_VALIDATION
 MUST_NOT_BE_CLAIMED_BY_THE_SAME_ACTOR_FOR_THE_SAME_REVISION
 ```
 
-Independent validation is required only when the work contract needs evidence that implementation self-check + relevant CI cannot supply, such as real browser/OS/hardware/local-service behavior, high-risk environment composition, or an explicitly reserved independent gate. For a tiny deterministic bug fix with a focused load-bearing regression, default to `NOT_REQUIRED` unless one of those conditions applies; do not commission a second validator merely because the issue is P0/P1.
-
-If environment constraints require the implementer to execute local checks too, report them as implementation self-checks/non-independent verification and leave the independent gate pending only when the work contract actually requires it. "independent gate pending" is not a mergeable state: before merge the PR must record either a completed `LOCAL_VALIDATION_REPORT.md` instantiation for the exact head, or `NOT_REQUIRED` with an explicit reason.
-
-Independent validation must also be **discoverable from the PR itself**. A private report that cannot be found from the reviewed PR is insufficient audit trail. Before merge, the PR review/comment history must record:
-
-```text
-INDEPENDENT_VALIDATOR=<actor>
-VALIDATED_HEAD=<exact SHA>
-RESULT=PASSED/FAILED/BLOCKED
-REPORT_POINTER=<immutable report/artifact pointer or NOT_REQUIRED reason>
-```
-
-The Web CTO re-checks that this record names the exact head being merged.
+When independent validation is actually required, what the validator records and how that record must be discoverable from the PR is defined in `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` section 10 and `docs/operations/templates/LOCAL_VALIDATION_REPORT.md`.
 
 ## Fast development gate and parallel validation
 
@@ -179,11 +162,7 @@ FULL_VALIDATION=PASS
 → required before merge when configured/relevant
 ```
 
-A failing asynchronous validator blocks merge of the affected revision, not unrelated development progress. If a validator fixes source, that actor becomes a repair/implementation actor for the new revision; the modified run is not independent validation of the new head. The repair may be revalidated by another independent actor while the original implementation worker continues other work.
-
-For Windows-first slices, the focused Windows proof may be the `DEV_FAST_GATE`. For web/backend slices, use the smallest focused web/API/contract proof that actually exercises the change. Do not require every supported OS/browser in the implementer's synchronous critical path.
-
-See issue #3429 for the CI/workflow optimization program.
+A failing asynchronous validator blocks merge of the affected revision, not unrelated development progress. Per-slice proof selection and the repair/implementation-actor consequence: `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` sections 2, 8 and 10.
 
 ## Product-evidence stages are flexible
 
@@ -202,19 +181,13 @@ COMMERCIAL_HARDENING
 OPERATING_PRODUCT
 ```
 
-UI, UX, backend, live providers, local runtime, or service-led operations may start when they are materially required for that evidence goal and explicitly included in scope. Their verdicts remain separate so one kind of evidence is never presented as another.
+The same stage list and the rule that verdicts of different kinds remain separate are canonical in `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` section 3 and `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`.
 
 ## MVP delivery closure
 
 A customer handoff or pilot deadline is an operating constraint, not an invitation to keep expanding validation indefinitely.
 
-For an MVP that already has a defined primary journey:
-
-- treat only **concrete, evidenced** primary-journey failure, auth/authz bypass, secret/private-data leakage, data corruption/destructive behavior, or another explicitly accepted P0/P1 condition as a handoff blocker;
-- record newly discovered lower-severity defects, hardening ideas, broad refactors, speculative risks, and unrelated debt as follow-up work rather than silently expanding the current blocker set;
-- validate a narrow fix with the smallest load-bearing regression first, then rely on relevant configured CI, then run the bounded Production smoke needed for the customer promise;
-- do not rerun unrelated full suites or previously passed journeys merely because time has passed or `main` moved; first determine whether the new commits affect the tested behavior, dependency, authority, configuration, or deployment surface;
-- when broad validation is proposed after the MVP acceptance matrix is otherwise satisfied, the Web CTO must state the concrete claim it protects and why existing evidence is insufficient.
+The evidenced handoff-blocker set, validation budget, fixed handoff gate, final smoke budget and terminal rule are canonical in `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` section 3A.
 
 Default MVP closeout flow:
 
@@ -228,12 +201,6 @@ confirmed blocker
 → customer handoff
 → non-blocking hardening continues after handoff
 ```
-
-Once the accepted handoff blocker set is zero and the required Production smoke passes, continued exploratory validation must not delay delivery unless it produces new concrete blocker evidence.
-
-Handoff-gating checks must be named **before** the final fix/deploy whenever practical. Automatically triggered but unrelated CI jobs may continue in the background; their existence does not make them handoff gates. A P1/P2 or backlog item does not block an MVP merely because it is open. Only the owner or a new concrete P0/P1 customer-impacting finding may promote it into the handoff blocker set.
-
-After the final Production-changing revision, run the agreed primary-journey smoke once. Repeat the same smoke only if the deployed revision changes, the first result is ambiguous/failed, or a new concrete defect affects that journey.
 
 ## Finish-first execution mode
 
@@ -249,43 +216,11 @@ BACKGROUND_LANES=READ_ONLY_OR_VALIDATION
 UNRELATED_NEW_FEATURE_IMPLEMENTATION=FROZEN
 ```
 
+The canonical machine-readable blocks for this mode, including the product-boundary vocabulary, are `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` sections 3B and 3B-1; the issue-classification vocabulary is `docs/operations/WORKFLOW_STATUS_MODEL.md`.
+
 Parallel work is allowed only when it helps finish the same primary axis: blocker removal, exact-head validation, CI diagnosis, forensic investigation, or directly required platform integration. A free implementation worker must not select an unrelated issue merely to stay busy.
 
-For the current Padiem cycle, the primary axis is:
-
-```text
-Padiem Platform
--> canonical identity/account/workspace
--> required entitlement/admission
--> Padiem AI Engine
--> Padiem Core / B14
--> B54 Padiem Claw
--> user-visible result
-```
-
-Architecture is decided top-down, but implementation proceeds from the **lowest missing dependency upward** until the user-visible vertical slice is complete.
-
-A discovered issue must be classified before implementation:
-
-```text
-PRIMARY_BLOCKER
-PRIMARY_NONBLOCKING_FOLLOWUP
-UNRELATED_BACKLOG
-```
-
-Only `PRIMARY_BLOCKER` may preempt the primary lane.
-
-Source-complete or merged-main is not terminal completion for a Finish-first axis. The applicable terminal definition includes Production activation, end-to-end reference-product proof, a user-visible result, rollback readiness, and zero primary blockers.
-
-Product boundaries remain strict. B66 Padiem Quote, B67 Padiem Legal, B62 Padiem Chat, and B54 Padiem Claw are independent products that may reuse Padiem Platform authorities. Shared Platform usage does not authorize moving product-local work into another product's lane.
-
-```text
-B66_IS_ENGINE=NO
-B66_IS_CLAW=NO
-B66_PRODUCT_INDEPENDENT=YES
-```
-
-The fast-development rule means “do not wait on unrelated validation”; it does **not** mean “start an unrelated feature after every fast-gate pass.” Validators may run in parallel while the implementation actor continues the same primary axis.
+The fast-development rule means "do not wait on unrelated validation"; it does **not** mean "start an unrelated feature after every fast-gate pass."
 
 ## Default responsibility flow
 
@@ -356,24 +291,7 @@ For bounded bug fixes/tiny glue with directly reviewable diff + focused tests/CI
 REPORT_MODE=COMPACT
 ```
 
-The compact Issue/PR comment is the complete report. Do **not** create a separate workdiary report merely because the task is Padiem/CLAW.
-
-Use:
-
-```text
-REPORT_MODE=LONG
-REPORT_REPO=skerishKang/workdiary
-REPORT_PATH=padiem-reports/YYYY-MM-DD/<CLAW>/<task>.md
-REPORT_COMMIT=<immutable workdiary commit SHA>
-```
-
-only for materially complex/high-risk work, large evidence packages, independent local/browser/hardware validation, migrations/destructive/auth-secret boundary work, incident investigations, or when CENTRAL explicitly requests it.
-
-Google Drive/rclone reporting is disabled. Do not retry quota failures or perform Drive delete/trash cleanup. Prefer GitHub Actions artifacts for screenshots, Playwright traces and large logs. Never put password/secret/token/cookie/private-key/database-credential values into reports, comments or artifacts.
-
-A LONG-mode report-write failure blocks only work that actually requires LONG mode; it must not manufacture a blocker for a COMPACT-eligible tiny fix.
-
-Follow `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`.
+The compact Issue/PR comment is the complete report in COMPACT mode. LONG mode, the report repository and path, the disabled Google Drive/rclone path, secret safety and report-write failure handling are canonical in `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`.
 
 ## Required templates
 

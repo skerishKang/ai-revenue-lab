@@ -199,3 +199,9 @@ BUSINESS_AND_INTERNAL_PLATFORM_IDS_NOT_MIXED = YES
 SOURCE_PRESENT_EQ_PRODUCTION_ACTIVE = NO
 HISTORICAL_EVIDENCE_PRESERVED = YES
 ```
+
+## 12. Public disclosure minimization
+
+*(Moved from the `AGENTS.md` entry point during the 2026-10-23 instruction-index restoration; this section is the canonical text and `AGENTS.md` links here.)*
+
+**Public disclosure minimization:** New public Issues, PR narratives and operational documentation should use generic execution contracts instead of listing internal provider choices, model-to-tier assignments, or credential binding inventories. Keep the detailed selection, internal binding-slot map and disclosure decisions in authorized COM1 private Governance. Preserve model/provider identifiers in executable source or tests only where required for correct protocol dispatch and independent safety checks; never publish credential values. Existing public history is not erased by a new notice. Do not misrepresent required external attribution or contractual disclosures.
