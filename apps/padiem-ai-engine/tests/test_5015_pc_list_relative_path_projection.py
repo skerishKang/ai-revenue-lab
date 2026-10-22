@@ -261,7 +261,14 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
         results=(observed,),
     )
 
-    step = asyncio.run(StructuredPCQueryStepDriver(select_step=select_step).next_step(
+    # #5573: the read runs under the server-granted list+read scope the Chat
+    # lane ships for a PC files turn. The model's own intent is not needed and
+    # is not pre-fixed here.
+    step = asyncio.run(StructuredPCQueryStepDriver(
+        select_step=select_step,
+        allowed_tool_ids=frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID}),
+        legacy_read_allowed=True,
+    ).next_step(
         context,
         object(),
     ))

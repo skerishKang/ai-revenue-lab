@@ -160,7 +160,15 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
             "answer": "읽은 내용: " + observations[-1]["output"]["content"],
         }
 
-    driver = StructuredPCQueryStepDriver(select_step=select_step)
+    # #5573: a read needs a server-granted scope. The Chat lane ships the
+    # trusted legacy list+read hint for every PC files turn, so the production
+    # scope is exactly this one. The model's own intent is neither required
+    # nor pre-fixed here: the grant comes from the server, not from the model.
+    driver = StructuredPCQueryStepDriver(
+        select_step=select_step,
+        allowed_tool_ids=frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID}),
+        legacy_read_allowed=True,
+    )
     first = asyncio.run(driver.next_step(
         AgentStepContext.with_results(run_id="run_5015", step_index=1,
                          input_text="폴더 목록을 보고 TXT를 읽어줘", results=()),
