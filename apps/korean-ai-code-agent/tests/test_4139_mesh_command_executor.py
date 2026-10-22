@@ -9,6 +9,7 @@ from __future__ import annotations
 import io
 import subprocess
 import unittest
+from contextlib import redirect_stderr
 
 from kagent.local_agent_meshcentral_command_port import (
     EXIT_SENTINEL, MeshCentralCliCommandPort, MeshCentralCommandRefused,
@@ -141,6 +142,43 @@ class CommandPortTests(unittest.TestCase):
         self.assertEqual(outcome.termination, "timed_out")
         self.assertIsNone(outcome.exit_code)
 
+    def test_phase_observer_sees_spawn_and_reply_without_payload(self):
+        phases = []
+        port = _port(_Completed(0, ("ok\n" + EXIT_SENTINEL + "0\n\n").encode()))
+        port.run_command(
+            node_ref=NODE, command="hostname.exe", timeout_seconds=45,
+            phase_observer=phases.append,
+        )
+        self.assertEqual(phases, ["spawn", "reply"])
+
+    def test_streaming_timeout_phase_is_reported(self):
+        phases = []
+
+        class _Proc:
+            def __init__(self):
+                self.stdin = io.BytesIO()
+                self.stdout = io.BytesIO()
+                self.stderr = io.BytesIO()
+
+            def poll(self):
+                return None
+
+            def kill(self):
+                return None
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=lambda argv, **kw: _Proc(),
+        )
+        outcome = port.run_command(
+            node_ref=NODE, command="hostname.exe", timeout_seconds=1,
+            phase_observer=phases.append,
+        )
+        self.assertEqual(outcome.termination, "timed_out")
+        self.assertEqual(phases, ["spawn", "timeout"])
+
     def test_client_failure_is_no_reply(self):
         port = _port(_Completed(1, b""))
         outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
@@ -256,7 +294,7 @@ class CommandPortTests(unittest.TestCase):
         )
 
         class _RefusingPort:
-            def run_command(self, *, node_ref, command, timeout_seconds):
+            def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None):
                 raise MeshCentralCommandRefused(
                     "the wrapped command exceeds the OS single-argument limit"
                 )
@@ -280,7 +318,7 @@ class _FakeCommandPort:
         self._outcome = outcome
         self.calls = []
 
-    def run_command(self, *, node_ref, command, timeout_seconds):
+    def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None):
         self.calls.append((node_ref, command, timeout_seconds))
         return self._outcome
 
@@ -304,11 +342,11 @@ def _executor(command_port=None, read_port=None):
     )
 
 
-def _dispatch(kind="command", command="hostname.exe"):
+def _dispatch(kind="command", command="hostname.exe", request_id="oracle_mesh_req_test"):
     return OracleMeshDispatch(
         dispatch_id="dsp-1", nonce="n" * 32, node_ref=NODE,
         file_path="command" if kind == "command" else "C:\\x.txt",
-        command_id="c", run_id="run-1", kind=kind,
+        command_id="c", run_id="run-1", request_id=request_id, kind=kind,
         command_text=command if kind == "command" else None,
     )
 
@@ -327,6 +365,42 @@ class ExecutorRoutingTests(unittest.TestCase):
         self.assertEqual(read_port.calls, [])
         self.assertEqual(command_port.calls[0][1], "hostname.exe")
 
+    def test_poll_retains_the_server_request_id_for_trace_correlation(self):
+        def transport(path, payload):
+            return 200, {"ok": True, "dispatch": {
+                "dispatch_id": "dsp-1", "nonce": "n", "node_ref": NODE,
+                "file_path": "command", "command_id": "c", "run_id": "run-1",
+                "request_id": "oracle_mesh_req_trace", "kind": "command",
+                "command_text": "hostname.exe",
+            }}
+
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net",
+            channel_secret=SECRET,
+            read_port=_ReadPort(),
+            command_port=_FakeCommandPort(None),
+            transport=transport,
+        )
+        dispatch = executor.poll_once()
+        self.assertEqual(dispatch.request_id, "oracle_mesh_req_trace")
+
+    def test_command_phase_log_has_ids_and_no_payload(self):
+        from kagent.local_agent_meshcentral_command_port import MeshCentralCommandOutcome
+
+        command = "DO_NOT_LOG_THIS_COMMAND_5015"
+        port = _FakeCommandPort(MeshCentralCommandOutcome(
+            termination="exited", exit_code=0, output=b"visible only in memory",
+        ))
+        output = io.StringIO()
+        with redirect_stderr(output):
+            _executor(command_port=port).execute(_dispatch(command=command))
+        log = output.getvalue()
+        self.assertIn("phase=start", log)
+        self.assertIn("phase=result", log)
+        self.assertIn("request_id=oracle_mesh_req_test", log)
+        self.assertIn("command_id=c", log)
+        self.assertNotIn(command, log)
+        self.assertNotIn("visible only in memory", log)
     def test_read_dispatch_is_unchanged(self):
         from kagent.local_agent_meshcentral_command_port import MeshCentralCommandOutcome
         command_port = _FakeCommandPort(

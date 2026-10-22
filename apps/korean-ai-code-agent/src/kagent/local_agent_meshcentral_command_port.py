@@ -220,8 +220,21 @@ class MeshCentralCliCommandPort:
         self._work_dir = work_dir
 
     def run_command(
-        self, *, node_ref: str, command: str, timeout_seconds: int = 60
+        self,
+        *,
+        node_ref: str,
+        command: str,
+        timeout_seconds: int = 60,
+        phase_observer: Callable[[str], None] | None = None,
     ) -> MeshCentralCommandOutcome:
+        def phase(name: str) -> None:
+            if callable(phase_observer):
+                try:
+                    phase_observer(name)
+                except Exception:
+                    # Instrumentation must never alter command execution.
+                    pass
+
         if not isinstance(node_ref, str) or not node_ref.strip():
             raise MeshCentralCommandRefused("node_ref is required")
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, int):
@@ -256,12 +269,14 @@ class MeshCentralCliCommandPort:
             )
         if self._popen_factory is None:
             # Buffered fallback for callers that only inject a command runner.
+            phase("spawn")
             try:
                 completed = self._run(
                     argv, input=password + "\n", timeout=timeout_seconds,
                 )
             except Exception as exc:
                 if type(exc).__name__ == "TimeoutExpired":
+                    phase("timeout")
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
                     )
@@ -269,18 +284,22 @@ class MeshCentralCliCommandPort:
                     "the official meshcentral client failed"
                 ) from exc
             if getattr(completed, "returncode", None) != 0:
+                phase("reply")
                 return MeshCentralCommandOutcome(
                     termination="no_reply", exit_code=None, output=b"",
                 )
             raw = getattr(completed, "stdout", b"") or b""
             if isinstance(raw, str):
                 raw = raw.encode("utf-8", errors="replace")
-            return self._from_transcript(raw)
-        return self._run_streaming(argv, password, timeout_seconds)
+            outcome = self._from_transcript(raw)
+            phase("reply")
+            return outcome
+        return self._run_streaming(argv, password, timeout_seconds, phase)
 
     # ---- streaming execution -------------------------------------------
     def _run_streaming(
-        self, argv: list[str], password: str, timeout_seconds: int
+        self, argv: list[str], password: str, timeout_seconds: int,
+        phase: Callable[[str], None],
     ) -> MeshCentralCommandOutcome:
         """Read the child's transcript in bounded chunks.
 
@@ -299,6 +318,7 @@ class MeshCentralCliCommandPort:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
+        phase("spawn")
         chunks: list[bytes] = []
         total = 0
         oversize = False
@@ -311,12 +331,14 @@ class MeshCentralCliCommandPort:
             while True:
                 if time.monotonic() > deadline:
                     process.kill()
+                    phase("timeout")
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
                     )
                 remaining = deadline - time.monotonic()
                 if remaining <= 0:
                     process.kill()
+                    phase("timeout")
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
                     )
@@ -339,10 +361,13 @@ class MeshCentralCliCommandPort:
             raise MeshCentralCommandRefused("the official meshcentral client failed") from None
         raw = b"".join(chunks)
         if oversize:
+            phase("reply")
             return MeshCentralCommandOutcome(
                 termination="output_too_large", exit_code=None, output=b"",
             )
-        return self._from_transcript(raw)
+        outcome = self._from_transcript(raw)
+        phase("reply")
+        return outcome
 
     def _from_transcript(self, raw: bytes) -> MeshCentralCommandOutcome:
         if not raw:

@@ -12,9 +12,12 @@ from __future__ import annotations
 import hashlib
 import json
 import ssl
+import sys
+import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any, Callable, Optional
 
 from .contracts import ContractError
@@ -93,6 +96,9 @@ class OracleMeshDispatch:
     file_path: str
     command_id: str
     run_id: str
+    #: #5015: server correlation id from the dispatch, when an older server
+    #: supplies it. Used only for bounded phase logs, never for execution.
+    request_id: str | None = None
     #: #4139: "read" (the 047 file lane) or "command" (the 048 terminal lane).
     kind: str = "read"
     #: The exact single-line command for kind="command"; never used for a read.
@@ -296,6 +302,9 @@ class OracleMeshExecutor:
                         "chat channel returned an unbounded read limit"
                     )
                 max_bytes = supplied
+        request_id = dispatch.get("request_id")
+        if request_id is not None:
+            request_id = _require_text(request_id, "request_id")
         return OracleMeshDispatch(
             dispatch_id=_require_text(dispatch.get("dispatch_id"), "dispatch_id"),
             nonce=_require_text(dispatch.get("nonce"), "nonce"),
@@ -303,6 +312,7 @@ class OracleMeshExecutor:
             file_path=_require_text(dispatch.get("file_path"), "file_path"),
             command_id=_require_text(dispatch.get("command_id"), "command_id"),
             run_id=_require_text(dispatch.get("run_id"), "run_id"),
+            request_id=request_id,
             kind=kind,
             command_text=command_text,
             max_bytes=max_bytes,
@@ -375,6 +385,34 @@ class OracleMeshExecutor:
             )
         return OracleMeshExecutionOutcome(termination="exited", exit_code=0, body=raw)
 
+    def _trace_command(
+        self,
+        dispatch: OracleMeshDispatch,
+        phase: str,
+        started: float,
+        **fields: Any,
+    ) -> None:
+        """Bounded phase correlation only: never command or output content."""
+        elapsed_ms = max(0, int((time.monotonic() - started) * 1000))
+        safe = " ".join(
+            f"{key}={value}"
+            for key, value in fields.items()
+            if value is not None and isinstance(value, (str, int, bool))
+        )
+        print(
+            "oracle-mesh-command"
+            f" phase={phase}"
+            f" ts={datetime.now(timezone.utc).isoformat()}"
+            f" elapsed_ms={elapsed_ms}"
+            f" dispatch_id={dispatch.dispatch_id}"
+            f" request_id={dispatch.request_id or '-'}"
+            f" command_id={dispatch.command_id}"
+            f" run_id={dispatch.run_id}"
+            + (f" {safe}" if safe else ""),
+            file=sys.stderr,
+            flush=True,
+        )
+
     def _execute_command(
         self, dispatch: OracleMeshDispatch
     ) -> OracleMeshExecutionOutcome:
@@ -390,20 +428,31 @@ class OracleMeshExecutor:
             # A command dispatch on an executor that was not composed with a
             # command port is a misconfiguration, not a silent no-op.
             raise OracleMeshChannelRefused("command execution is not configured")
+        started = time.monotonic()
+        self._trace_command(dispatch, "start", started)
+
+        def phase(phase_name: str) -> None:
+            self._trace_command(dispatch, phase_name, started)
+
         try:
             observed = self._command_port.run_command(
                 node_ref=dispatch.node_ref,
                 command=dispatch.command_text or "",
                 timeout_seconds=max(1, self._timeout * 2),
+                phase_observer=phase,
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralCommandRefused":
                 # The port refused before the PC was asked. Collapsing that into
                 # ``no_reply`` would report a silent console for a command that
                 # never ran, so the two observations stay separate.
+                self._trace_command(dispatch, "refused", started, reason="port")
                 return OracleMeshExecutionOutcome(
                     termination="not_executed", exit_code=None, body=b"",
                 )
+            self._trace_command(
+                dispatch, "error", started, error_type=type(exc).__name__,
+            )
             return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
         termination = getattr(observed, "termination", "no_reply")
         if termination not in (
@@ -425,9 +474,17 @@ class OracleMeshExecutor:
         if len(raw) > MAX_COMMAND_BYTES:
             # Oversize output is never truncated; the body is withheld and the
             # observed exit code is still carried.
+            self._trace_command(
+                dispatch, "result", started, termination="output_too_large",
+                output_bytes=0,
+            )
             return OracleMeshExecutionOutcome(
                 termination="output_too_large", exit_code=exit_code, body=b"",
             )
+        self._trace_command(
+            dispatch, "result", started, termination=termination,
+            output_bytes=len(raw),
+        )
         return OracleMeshExecutionOutcome(
             termination=termination, exit_code=exit_code, body=raw,
         )
