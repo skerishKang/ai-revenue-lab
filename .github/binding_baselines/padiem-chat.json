@@ -252,7 +252,19 @@
       "type": "plain_text"
     },
     {
+      "name": "PADIEM_WEB_XLSX_QUOTE_WRITE_DURABLE_ENABLED",
+      "type": "plain_text"
+    },
+    {
       "name": "PADIEM_WEB_XLSX_QUOTE_WRITE_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_WEB_XLSX_QUOTE_WRITE_ENGINE_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_WEB_XLSX_QUOTE_WRITE_OWNER_DECISION_ENABLED",
       "type": "plain_text"
     },
     {
