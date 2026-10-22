@@ -83,44 +83,87 @@ is the source of truth; the push result never rewrites it.
 - No new customer-facing approval rule, account/role regime, or business
   policy.
 
-## BLOCKED — the browser client (an owner decision, not a coding gap)
+## BLOCKED — the browser client (RESOLVED 2026-10-23)
 
-The **browser** half of Web Push cannot be implemented in this product's static
-JavaScript under the current privacy gate.
+The browser half was blocked on an owner decision about the service-worker
+allowance in the browser-persistence privacy gate. **That decision was given on
+2026-10-23: the service worker Web Push requires is allowed.** The gate was not
+weakened; it gained one narrow, reviewed allowance.
 
-`apps/padiem-chat/static/*` is scanned by `.github/scripts/b62_browser_persistence_audit.py`,
-which **forbids** `navigator.serviceWorker` (together with `localStorage`,
-`sessionStorage`, `indexedDB`, `document.cookie`, `cookieStore` and
-`CacheStorage`). The only allowance the gate knows is one reviewed
-`sessionStorage` key for the Android handoff inside `app.js`; there is no
-allowance for a service worker.
+### The allowance, exactly
 
-Web Push has no alternative: `PushManager.subscribe()` requires a registered
-service worker to receive the push. So a Web Push client and the existing
-browser-persistence privacy gate are in direct conflict.
+`.github/scripts/b62_browser_persistence_audit.py` still forbids
+`localStorage`, `sessionStorage`, `indexedDB`, `document.cookie`, `cookieStore`,
+`CacheStorage` and `navigator.serviceWorker` everywhere. The one addition is:
 
-The gate is an owner-set protection ("all user state stays server-side, never
-in the browser"), and weakening it to ship a push client is a product/privacy
-decision that this change does not take. The guard was left exactly as it is.
+| Constraint | Value |
+| --- | --- |
+| One client file | `apps/padiem-chat/static/claw-push.js` |
+| One declared path | `const PADIEM_PUSH_SW_PATH = "/push-sw.js";` (exactly once) |
+| Closed call shapes | `register(PADIEM_PUSH_SW_PATH)`, `ready`, `getRegistration()` |
+| Service worker | `apps/padiem-chat/static/push-sw.js` (scanned like any other file) |
 
-**What is needed to unblock it:** an owner decision to allow a reviewed
-service-worker allowance (the same shape as the Android handoff allowance:
-one file, one reviewed key, one exact call shape) or a different delivery
-mechanism. Until then the server-side contract below is complete and tested,
-and the browser half stays unimplemented.
+Any other file, any second declaration, or any other `navigator.serviceWorker`
+call shape still fails the gate. The service worker itself stores nothing: no
+cache, no browser storage, no cookie, and no fetch handler that could persist a
+response.
 
-**What is still missing after that decision:** the browser opt-in/opt-out
-module, the receiving service worker, and the wiring of the delivery seam
-into the existing terminal-run event path.
+### What the browser half now does
 
-0. **The browser client** — blocked above; needs the owner decision on a
-   service-worker allowance.
-1. **Push authority configuration** — a VAPID key pair and a push binding on
-   the B62 Worker are required before any browser can subscribe. Until then
-   the capability endpoint reports `enabled=false` and the browser is not
-   offered a toggle that could never deliver. No push key is created here.
-2. **D1 migration 065** — the additive device-endpoint table is **not applied**
-   in Production. It needs the protected migration gate procedure.
+| Piece | Role |
+| --- | --- |
+| `static/claw-push.js` | permission request on user gesture, subscribe/unsubscribe, server register/unregister, sign-out cleanup, the inbox toggle |
+| `static/push-sw.js` | background `push` receipt, `notificationclick` focus-or-open, `pushsubscriptionchange` local cleanup |
+| `static/index.html` | the toggle in the existing inbox header (`#clawPushSetting`) |
+| `static/app.js` | sign-out drops this device's subscription |
+
+A denied permission, an unsupported browser and a deployment with no VAPID
+authority are three different reported states. In all three the existing web
+inbox keeps working unchanged.
+
+## Server delivery — now connected
+
+| Piece | Role |
+| --- | --- |
+| `app/claw_web_push_sender.py` | RFC 8291 `aes128gcm` payload encryption and RFC 8292 VAPID over Workers `crypto.subtle` |
+| `app/claw_automation_push_notification.py` | the terminal-run to device notification seam |
+| `app/claw_automation_background_execution.py` | calls the seam after the existing Task/Alert projection |
+| `app/app_factory.py` | builds the VAPID authority and sender from Worker bindings |
+| `.github/scripts/b62_d1_migration_065_schema.py` | the 065 deploy-gate preflight |
+
+### Why WebCrypto and not `pywebpush`
+
+The Chat Worker is a Pyodide build whose committed lock carries no
+`cryptography` wheel, so `pywebpush`/`py-vapid` cannot be imported there.
+Workers do expose `crypto.subtle`, and this repository already uses it through
+Pyodide FFI in `app/connector_worker_webcrypto_verify.py`. The sender follows
+that same reviewed pattern.
+
+The encryption is verified against an **independent decryptor** written from RFC
+8291 §3.3-§3.5 in `tests/test_5034_web_push_sender.py`, not against itself.
+
+### Delivery invariants
+
+- `INBOX_IS_SOURCE_OF_TRUTH` — the Task/Alert record is written first; the push
+  is strictly additional.
+- `NO_JOB_RERUN` — a push failure never re-executes the automation.
+- `DEDUP_BY_RUN` — the existing projection's own `created` answer gates the
+  notification, so a re-projected run cannot notify twice.
+- `MINIMAL_LOCK_SCREEN` — a short status plus the inbox link. No document
+  content, no ERP data, no secret, no run output.
+- `GONE_SUBSCRIPTION_IS_REMOVED` — a 404/410 from the push service drops the row.
+- `PUSH_NEVER_RAISES` — every failure is a reported outcome, never a crash in
+  the automation lane.
+
+## Still required before this is live
+
+1. **VAPID key pair** — `PADIEM_PUSH_VAPID_PRIVATE_KEY`,
+   `PADIEM_PUSH_VAPID_PUBLIC_KEY` and `PADIEM_PUSH_VAPID_SUBJECT` must be set as
+   Worker secrets. Until then the capability route reports `enabled=false` and
+   no toggle is offered. No key is created by this change.
+2. **D1 migration 065** — the additive table must be applied through the
+   protected deploy gate. The preflight now refuses a deploy whose 065 schema is
+   not `EXACT`.
 3. **Real device reception** — browser background delivery is a separate fact
    from web-inbox persistence and is not verified by this source change.
 4. **Chat Worker deployment** — not performed by this change.

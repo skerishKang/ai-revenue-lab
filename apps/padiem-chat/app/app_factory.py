@@ -241,6 +241,7 @@ from .claw_push_subscriptions import (
     claw_push_subscription_register,
     claw_push_subscription_unregister,
 )
+from .claw_web_push_sender import VapidAuthority, WebPushSender
 from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH, local_runner_result
 from .claw_device_directory_routes import (
     CLAW_DEVICE_DIRECTORY_PATH, CLAW_PC_PAUSE_PATH, CLAW_PC_RESUME_PATH,
@@ -428,6 +429,10 @@ def create_app(
     central_model_policy_signing_key: str = "",
     claw_task_alert_store=None,
     claw_push_subscription_store=None,
+    claw_push_vapid_private_key: str | None = None,
+    claw_push_vapid_public_key: str | None = None,
+    claw_push_vapid_subject: str | None = None,
+    claw_push_transport=None,
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
     telemetry_emitter=None,
@@ -1538,6 +1543,28 @@ def create_app(
         except Exception:
             _push_subscription_store = None
     app.state.claw_push_subscription_store = _push_subscription_store
+
+    # #5034 Web Push delivery authority. The VAPID private key is a server-only
+    # secret: it is never logged, never returned to a browser and never placed in
+    # [vars]. Only the public half reaches the capability route. With no key the
+    # capability route honestly reports enabled=false and the web inbox is
+    # unaffected.
+    _push_public_key = (claw_push_vapid_public_key or "").strip() or None
+    _push_private_key = (claw_push_vapid_private_key or "").strip() or None
+    _push_subject = (claw_push_vapid_subject or "").strip() or None
+    _push_authority = None
+    if _push_private_key and _push_public_key and _push_subject:
+        _push_authority = VapidAuthority(
+            private_key=_push_private_key,
+            public_key=_push_public_key,
+            subject=_push_subject,
+        )
+    app.state.claw_push_public_key = _push_public_key
+    app.state.claw_push_sender = (
+        WebPushSender(authority=_push_authority, transport=claw_push_transport)
+        if _push_authority is not None and claw_push_transport is not None
+        else None
+    )
 
     # #2834 Native Padiem Calendar Phase B-2: durable D1 store.
     # Fail-closed: if d1_binding is present but D1CalendarStore construction

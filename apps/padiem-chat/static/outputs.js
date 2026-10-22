@@ -609,15 +609,21 @@
     const locale = window.__padiemLocale;
     if (locale && typeof locale.text === "function") {
       const expired = accountState === "expired";
+      // #5479: an unreachable auth status is not "login not configured"; the
+      // button stays reachable and says that the status could not be read.
+      const unreachable = accountState === "unreachable";
+      const unavailable = accountState === "unavailable" || loginButton.disabled;
       const nextText = locale.text(expired ? "sign-in-again" : authenticated ? "logout" : "login");
       const nextTitle = locale.text(
         expired
           ? "expired-title"
-          : loginButton.disabled
-            ? "login-unavailable-title"
-            : authenticated
-              ? "logout-title"
-              : "login-title"
+          : unreachable
+            ? "login-unreachable-title"
+            : unavailable
+              ? "login-unavailable-title"
+              : authenticated
+                ? "logout-title"
+                : "login-title"
       );
       if (loginButton.textContent !== nextText) loginButton.textContent = nextText;
       if (loginButton.title !== nextTitle) loginButton.title = nextTitle;

@@ -2,7 +2,7 @@
   "use strict";
 
   const VALID_LOCALES = ["ko", "en"];
-  const TRUSTED_AUTH_SESSION_STATES = new Set(["unavailable", "guest", "signed_in", "expired"]);
+  const TRUSTED_AUTH_SESSION_STATES = new Set(["pending", "unavailable", "unreachable", "guest", "signed_in", "expired"]);
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const nativeConfirm = typeof window.confirm === "function" ? window.confirm.bind(window) : null;
 
@@ -50,6 +50,7 @@
       "nav-claw": "Claw", "nav-connectors": "Connectors", "nav-skills": "Skills", "nav-files": "라이브러리", "nav-alerts": "알림", "nav-tasks": "작업", "nav-calendar": "캘린더", "nav-meeting": "회의록", "meeting-kicker": "Padiem Meeting", "meeting-title": "회의록", "meeting-records-title": "회의 기록", "meeting-record-title-label": "회의 제목", "meeting-records-empty": "저장된 회의 기록이 없습니다.", "workspace-menu": "워크스페이스 메뉴",
       "claw-inbox-kicker": "Padiem Claw Inbox", "claw-inbox-tasks-title": "작업", "claw-inbox-alerts-title": "알림",
       "claw-inbox-help": "최근 항목만 표시되며 현재 로그인 계정과 워크스페이스 범위 안에서만 조회됩니다.",
+      "claw-push-enable": "이 기기에서 알림 받기", "claw-push-disable": "이 기기 알림 끄기",
       "claw-inbox-loading": "불러오는 중…", "claw-inbox-empty-tasks": "최근 작업이 없습니다.", "claw-inbox-empty-alerts": "최근 알림이 없습니다.", "claw-inbox-error": "목록을 불러오지 못했습니다. 다시 시도해 주세요.",
       "claw-inbox-mark-done": "완료", "claw-inbox-reopen": "다시 열기", "claw-inbox-dismiss": "닫기", "claw-inbox-restore": "복원",
       "nav-automation": "자동화",
@@ -215,7 +216,7 @@
       "main-menu": "주요 메뉴", "chat-menu": "채팅 메뉴", "account-settings": "계정 및 설정", "home-aria": "Padiem Chat 홈", "home-open": "Padiem Home 열기",
       "coming-soon": "준비 중", "login-after": "로그인 후", "checking": "확인 중", "setup-needed": "설정 필요", "empty": "비어 있음", "create-new": "새로 만들기",
       "projects-empty": "아직 프로젝트가 없습니다.", "history-title": "최근 대화", "history-empty": "저장된 대화가 없습니다.", "outputs-empty": "저장한 답변이 없습니다.",
-      "create-project-aria": "새 프로젝트 만들기", "login-unavailable-title": "로그인 기능이 설정되지 않았습니다", "login-title": "Google 또는 이메일로 로그인합니다", "logout-title": "현재 계정에서 로그아웃합니다", "expired-title": "세션이 만료되었습니다. 다시 로그인합니다",
+      "create-project-aria": "새 프로젝트 만들기", "login-unavailable-title": "로그인 기능이 설정되지 않았습니다", "login-unreachable-title": "로그인 상태를 확인하지 못했습니다. 다시 시도해 주세요", "login-title": "Google 또는 이메일로 로그인합니다", "logout-title": "현재 계정에서 로그아웃합니다", "expired-title": "세션이 만료되었습니다. 다시 로그인합니다",
       "settings-close": "설정 닫기", "theme-picker": "테마 선택", "language-picker": "언어 선택", "starter-grid": "추천 질문", "writing-starter-title": "글쓰기 도움", "writing-starter-copy": "메일 · 문장 · 초안", "web-starter-title": "웹에서 찾아줘", "web-starter-copy": "웹 검색 · 준비 중",
       "composer": "메시지 작성", "project-banner": "프로젝트", "project-edit": "지침·파일", "project-exit": "나가기", "attachment-preview-alt": "선택한 사진 미리보기", "attachment-remove": "첨부 파일 제거",
       "message-input-label": "메시지 입력", "web-unavailable-title": "웹 검색은 준비 중입니다", "research-unavailable-title": "심층 리서치는 현재 사용할 수 없습니다", "cancel": "취소", "cancel-answer": "답변 생성 취소", "send": "메시지 보내기",
@@ -283,6 +284,7 @@
       "nav-claw": "Claw", "nav-connectors": "Connectors", "nav-skills": "Skills", "nav-files": "Library", "nav-alerts": "Alerts", "nav-tasks": "Tasks", "nav-calendar": "Calendar", "nav-meeting": "Meeting notes", "meeting-kicker": "Padiem Meeting", "meeting-title": "Meeting notes", "meeting-records-title": "Meeting records", "meeting-record-title-label": "Meeting title", "meeting-records-empty": "No saved meeting records yet.", "workspace-menu": "Workspace menu",
       "claw-inbox-kicker": "Padiem Claw Inbox", "claw-inbox-tasks-title": "Tasks", "claw-inbox-alerts-title": "Alerts",
       "claw-inbox-help": "Only recent items are shown, scoped to the signed-in account and current workspace.",
+      "claw-push-enable": "Get alerts on this device", "claw-push-disable": "Turn off alerts on this device",
       "claw-inbox-loading": "Loading…", "claw-inbox-empty-tasks": "No recent tasks.", "claw-inbox-empty-alerts": "No recent alerts.", "claw-inbox-error": "Could not load the inbox. Please try again.",
       "claw-inbox-mark-done": "Mark done", "claw-inbox-reopen": "Reopen", "claw-inbox-dismiss": "Dismiss", "claw-inbox-restore": "Restore",
       "nav-automation": "Automation",
@@ -448,7 +450,7 @@
       "main-menu": "Main menu", "chat-menu": "Chat menu", "account-settings": "Account and settings", "home-aria": "Padiem Chat home", "home-open": "Open Padiem Home",
       "coming-soon": "Coming soon", "login-after": "Log in first", "checking": "Checking", "setup-needed": "Setup needed", "empty": "Empty", "create-new": "Create new",
       "projects-empty": "No projects yet.", "history-title": "Recent conversations", "history-empty": "No saved conversations.", "outputs-empty": "No saved answers.",
-      "create-project-aria": "Create a new project", "login-unavailable-title": "Login is not configured", "login-title": "Log in with Google or your email", "logout-title": "Log out of the current account", "expired-title": "Your session expired. Sign in again",
+      "create-project-aria": "Create a new project", "login-unavailable-title": "Login is not configured", "login-unreachable-title": "Could not verify your sign-in status. Please try again", "login-title": "Log in with Google or your email", "logout-title": "Log out of the current account", "expired-title": "Your session expired. Sign in again",
       "settings-close": "Close settings", "theme-picker": "Theme selection", "language-picker": "Language selection", "starter-grid": "Suggested prompts", "writing-starter-title": "Writing help", "writing-starter-copy": "Emails · sentences · drafts", "web-starter-title": "Search the web", "web-starter-copy": "Web search · coming soon",
       "composer": "Message composer", "project-banner": "Project", "project-edit": "Instructions & files", "project-exit": "Exit", "attachment-preview-alt": "Selected image preview", "attachment-remove": "Remove attachment",
       "message-input-label": "Message input", "web-unavailable-title": "Web search is coming soon", "research-unavailable-title": "Deep research is currently unavailable", "cancel": "Cancel", "cancel-answer": "Cancel answer generation", "send": "Send message",
@@ -569,6 +571,15 @@
     const state = accountRoot?.dataset.accountState || "";
     const raw = button.textContent.trim();
 
+    if (state === "unreachable") {
+      // #5479: the status request produced no answer. This is not a signed-out
+      // account, so the button keeps the sign-in label and says why.
+      button.dataset.authenticated = "false";
+      button.textContent = text("login", lang);
+      button.title = text("login-unreachable-title", lang);
+      return;
+    }
+
     if (state === "expired" || raw === "다시 로그인" || raw === "Sign in again") {
       button.dataset.authenticated = "false";
       button.textContent = text("sign-in-again", lang);
@@ -578,7 +589,7 @@
 
     if (state === "signed_in" || raw === "로그아웃" || raw === "Log out") {
       button.dataset.authenticated = "true";
-    } else if (state === "guest" || state === "unavailable" || raw === "로그인" || raw === "Log in") {
+    } else if (state === "guest" || state === "unavailable" || state === "pending" || raw === "로그인" || raw === "Log in") {
       button.dataset.authenticated = "false";
     }
 
