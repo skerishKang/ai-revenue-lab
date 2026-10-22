@@ -683,18 +683,22 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
         self.assertNotIn('page.on("request", observe_request)', owner)
         self.assertNotIn("assistant-message:last-of-type .typing", owner)
 
-    def test_claw_advanced_model_panel_is_opened_before_exact_id_entry(self):
-        # The exact-ID input moved inside a collapsed <details> panel. Entering
-        # the model without opening it would time out before the one dispatch.
+    def test_claw_general_model_uses_the_verified_selector(self):
+        # The raw exact-ID panel is Plus-only and display:none for Free, so
+        # the general view must bind the model through its verified selector
+        # before the one dispatch, without a hidden-panel click.
         text = SCRIPT.read_text(encoding="utf-8")
         owner = text[text.index("def run_claw_owner_one_shot("):text.index("\ndef self_test(")]
-        advanced = owner.index('page.locator("details.claw-model-advanced")')
-        opened = owner.index('advanced.locator("summary").click()', advanced)
-        visible = owner.index(
-            'model_input.wait_for(state="visible", timeout=15000)', opened
+        selector = owner.index('page.locator("#clawVerifiedModelSelect")')
+        offered = owner.index('if CLAW_OWNER_SELECTED_MODEL_ID not in offered:', selector)
+        selected = owner.index('model_select.select_option(CLAW_OWNER_SELECTED_MODEL_ID)', offered)
+        bound = owner.index(
+            'if model_input.input_value() != CLAW_OWNER_SELECTED_MODEL_ID:', selected
         )
-        self.assertLess(advanced, opened)
-        self.assertLess(opened, visible)
+        self.assertLess(selector, offered)
+        self.assertLess(offered, selected)
+        self.assertLess(selected, bound)
+        self.assertNotIn("details.claw-model-advanced", owner)
 
     @unittest.skipUnless(shutil.which("node"), "Node required to evaluate terminal predicate")
     def test_terminal_lifecycle_js_negative_controls(self):
@@ -824,7 +828,7 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
         self.assertEqual(module.CLAW_OWNER_SELECTED_MODEL_ID, "agnes-ai/agnes-3.0-flash")
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertIn('page.locator("#clawModelIdInput")', source)
-        self.assertIn("model_input.fill(CLAW_OWNER_SELECTED_MODEL_ID)", source)
+        self.assertIn("model_select.select_option(CLAW_OWNER_SELECTED_MODEL_ID)", source)
         self.assertIn("response.request.post_data_json", source)
         self.assertIn('submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID', source)
         self.assertIn("EXPLICIT_MODEL_ID_IN_CLAW_POST=PASS", source)
