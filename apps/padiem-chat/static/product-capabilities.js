@@ -446,7 +446,12 @@
     // The same rule app.js applies, so the two projections cannot drift apart.
     const shared = typeof window.PadiemSessionPresentation === "function"
       ? window.PadiemSessionPresentation(state)
-      : { accountHidden: state === "pending", loginHidden: state === "pending" || state === "signed_in", loginDisabled: state === "pending", accountNameHidden: state !== "guest" && state !== "expired" && state !== "signed_in" };
+      : {
+        accountHidden: state === "pending" || state === "unavailable",
+        loginHidden: state === "pending" || state === "unavailable" || state === "signed_in",
+        loginDisabled: state === "pending" || state === "unavailable",
+        accountNameHidden: state !== "guest" && state !== "expired" && state !== "signed_in",
+      };
     return shared;
   }
 

@@ -1337,15 +1337,17 @@
   // #5479: one presentation rule for every session state, so the sign-in entry
   // point can never disappear just because the session state could not be read.
   //
-  // "pending" is "not read yet". "unavailable" means the server answered and
-  // reported that the session store is not ready. "unreachable" means the
-  // status request produced no answer at all: a network failure, or the Chat
-  // Worker failing to start a Python instance (the platform's NoGilError race,
-  // cloudflare/workerd#6624), which turns every route - /api/auth/status
-  // included - into a 5xx. Neither one is a signed-out account, so neither one
-  // may hide the login button: the account area and the button stay visible
-  // and enabled, and the button retries the status instead of being a dead
-  // end.
+  // "pending" is "not read yet". "unavailable" is the server's own word: it
+  // answered that the session store is not ready, so there is nothing to sign
+  // into and the account area stays hidden (the reviewed contract the account
+  // session browser QA pins). "unreachable" is the status request producing no
+  // answer at all: a network failure, or the Chat Worker failing to start a
+  // Python instance (the platform's NoGilError race, cloudflare/workerd#6624),
+  // which turns every route - /api/auth/status included - into a 5xx. That is
+  // not a signed-out account and not a server verdict, so it must not remove
+  // the only way to obtain a session: the account area and the login button
+  // stay visible and enabled, and the button retries the status instead of
+  // being a dead end.
   //
   // The table is the rule: the projections read it, and the #5479 regression
   // test reads the same table out of this file.
@@ -1354,7 +1356,7 @@
     "signed_in": { "accountHidden": false, "loginHidden": true, "loginDisabled": false, "accountNameHidden": false },
     "guest": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
     "expired": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": false },
-    "unavailable": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": true },
+    "unavailable": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
     "unreachable": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": true }
   };
   function resolveSessionPresentation(sessionState) {

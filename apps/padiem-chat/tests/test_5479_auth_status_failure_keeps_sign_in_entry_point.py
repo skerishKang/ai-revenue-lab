@@ -94,14 +94,13 @@ def _old_presentation(old_state: str) -> dict:
 
 
 def test_the_shipped_presentation_rule_keeps_the_sign_in_entry_point_reachable():
-    """The rule every projection reads keeps the button for every unknown state."""
+    """The rule every projection reads keeps the button when the state is unread."""
     table = _presentation_table()
     assert set(table) == set(SESSION_STATES)
-    for state in ("unavailable", "unreachable"):
-        row = table[state]
-        assert row["accountHidden"] is False, f"{state} hid the account area"
-        assert row["loginHidden"] is False, f"{state} hid the login button"
-        assert row["loginDisabled"] is False, f"{state} disabled the login button"
+    row = table["unreachable"]
+    assert row["accountHidden"] is False, "an unread state hid the account area"
+    assert row["loginHidden"] is False, "an unread state hid the login button"
+    assert row["loginDisabled"] is False, "an unread state disabled the login button"
     # A signed-in account still shows its profile instead of the sign-in button.
     assert table["signed_in"]["loginHidden"] is True
     # A guest and an expired session both need the sign-in button.
@@ -111,6 +110,23 @@ def test_the_shipped_presentation_rule_keeps_the_sign_in_entry_point_reachable()
     # "pending" is "not read yet": nothing is claimed, so nothing is shown.
     assert table["pending"]["loginHidden"] is True
     assert table["pending"]["loginDisabled"] is True
+
+
+def test_the_server_own_verdict_still_hides_the_entry_point():
+    """``unavailable`` is the server's word and keeps the reviewed contract.
+
+    When the server answers that the session store is not ready there is
+    nothing to sign into, so the account area and the login button stay
+    hidden. The account session browser QA pins exactly this, and this fix
+    does not move it.
+    """
+    table = _presentation_table()
+    assert table["unavailable"]["accountHidden"] is True
+    assert table["unavailable"]["loginHidden"] is True
+    assert table["unavailable"]["loginDisabled"] is True
+    # Only the unread state differs from it.
+    assert table["unreachable"]["loginHidden"] is False
+    assert table["unreachable"]["loginDisabled"] is False
 
 
 def test_an_unread_state_is_not_claimed_as_an_unknown_one():
