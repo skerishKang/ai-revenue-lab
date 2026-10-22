@@ -138,6 +138,8 @@ CLAW_ADMISSION_DENIED_DETAIL = "engine_admission_denied"
 _EVIDENCE_RUN_ID_RE = re.compile(r"^run_[0-9a-f]{24}$")
 _CONVERSATION_ID_RE = re.compile(r"^chat_[0-9a-f]{32}$")
 _EVIDENCE_VALUE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$")
+# B14 reports its selected route as `platform:<provider>/<model>` (#5484).
+_EVIDENCE_ROUTE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_./:-]{0,79}$")
 _EVIDENCE_ATTEMPTS_RE = re.compile(r"^\d{1,2}$")
 
 
@@ -190,7 +192,12 @@ def _bounded_evidence_headers(headers: object) -> dict[str, str]:
                 continue
             extracted[name] = value
             continue
-        pattern = _EVIDENCE_RUN_ID_RE if name == "x-padiem-claw-run-id" else _EVIDENCE_VALUE_RE
+        if name == "x-padiem-claw-run-id":
+            pattern = _EVIDENCE_RUN_ID_RE
+        elif name == "x-padiem-selected-route-id":
+            pattern = _EVIDENCE_ROUTE_ID_RE
+        else:
+            pattern = _EVIDENCE_VALUE_RE
         if not pattern.fullmatch(value):
             continue
         extracted[name] = value
@@ -1893,7 +1900,8 @@ def _run_evidence_self_tests() -> None:
     valid_headers = {
         "x-padiem-claw-run-id": "run_" + "a" * 24,
         "x-padiem-orchestration-run-id": "orch_test_001",
-        "x-padiem-selected-route-id": "plus.muse-spark.v1",
+        # B14's real selected-route format, which contains `/` (#5484).
+        "x-padiem-selected-route-id": "platform:opencode-go/muse-spark-1.3-contributor",
         "x-padiem-provider-attempts": "1",
         "x-padiem-fallback-used": "false",
         "x-padiem-unlisted-header": "should-not-survive",
@@ -1903,7 +1911,7 @@ def _run_evidence_self_tests() -> None:
     assert extracted == {
         "x-padiem-claw-run-id": "run_" + "a" * 24,
         "x-padiem-orchestration-run-id": "orch_test_001",
-        "x-padiem-selected-route-id": "plus.muse-spark.v1",
+        "x-padiem-selected-route-id": "platform:opencode-go/muse-spark-1.3-contributor",
         "x-padiem-provider-attempts": "1",
         "x-padiem-fallback-used": "false",
     }

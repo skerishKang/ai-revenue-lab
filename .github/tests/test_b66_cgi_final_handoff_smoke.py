@@ -980,12 +980,19 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
         good = {
             "x-padiem-claw-run-id": "run_" + "b" * 24,
             "x-padiem-orchestration-run-id": "orch_test_001",
-            "x-padiem-selected-route-id": "plus.muse-spark.v1",
+            # B14's real selected-route format, which contains `/` (#5484).
+            "x-padiem-selected-route-id": "platform:opencode-go/muse-spark-1.3-contributor",
             "x-padiem-provider-attempts": "1",
             "x-padiem-fallback-used": "false",
         }
         self.assertEqual(module._bounded_evidence_headers(good), good)
         self.assertEqual(module._bounded_evidence_headers({"x-padiem-claw-run-id": "junk"}), {})
+        self.assertEqual(
+            module._bounded_evidence_headers(
+                {"x-padiem-selected-route-id": "not a route id!"}
+            ),
+            {},
+        )
         self.assertEqual(module._bounded_evidence_headers(None), {})
 
     def test_bounded_error_class_never_carries_message_or_free_text(self):
