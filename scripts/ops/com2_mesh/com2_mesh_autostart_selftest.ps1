@@ -145,6 +145,10 @@ Assert-Equal -Expected 'Mesh Agent' -Actual $probeConfig.mesh_agent_service -Lab
 Assert-Equal -Expected 'ssh.exe' -Actual $probeConfig.tunnel_process_name -Label 'default listener process'
 Assert-Equal -Expected 120 -Actual $probeConfig.autostart_boot_tolerance_seconds -Label 'default boot tolerance'
 Assert-Equal -Expected 8 -Actual $probeConfig.autostart_http_timeout_seconds -Label 'default http timeout'
+Assert-Equal -Expected 2147946720 -Actual (ConvertTo-TaskResultCode ([uint32]2147946720)) -Label 'task result UInt32 above Int32'
+Assert-Equal -Expected 4294967295 -Actual (ConvertTo-TaskResultCode ([uint32]::MaxValue)) -Label 'task result UInt32 max'
+Assert-Equal -Expected 267009 -Actual (ConvertTo-TaskResultCode '267009') -Label 'task result numeric string'
+Assert-Equal -Expected '' -Actual ([string](ConvertTo-TaskResultCode 'not a number')) -Label 'task result invalid is null'
 
 $badConfigObject = [ordered]@{
     tunnel_local_host = '127.0.0.1'
@@ -156,6 +160,43 @@ Write-JsonFile -Path $badConfigPath -Object $badConfigObject
 $badConfigRejected = $false
 try { [void](Get-AutostartConfig -Path $badConfigPath) } catch { $badConfigRejected = $true }
 Assert-True -Value $badConfigRejected -Label 'missing tunnel_task rejected'
+
+# --- host query -----------------------------------------------------------
+
+Write-Output '-- host query above Int32'
+$mockTask = [pscustomobject]@{
+    Settings = [pscustomobject]@{ Enabled = $true }
+    State = 4
+    Triggers = @([pscustomobject]@{
+        CimClass = [pscustomobject]@{ CimClassName = 'MSFT_TaskTimeTrigger' }
+        Enabled = $true
+        Repetition = [pscustomobject]@{ Interval = 'PT5M'; Duration = '' }
+    })
+}
+function Get-CimInstance {
+    [CmdletBinding()]
+    param($Namespace, $ClassName, $Filter)
+    return $mockTask
+}
+function Get-ScheduledTaskInfo {
+    [CmdletBinding()]
+    param($TaskName)
+    return [pscustomobject]@{
+        LastRunTime = [datetime]'2026-10-23 02:41:41'
+        LastTaskResult = [uint32]2147946720
+        NextRunTime = [datetime]'2026-10-23 02:46:46'
+    }
+}
+try {
+    $hostObs = Get-TunnelTaskObservation -TaskName 'PADIEM-Mesh-Tunnel'
+} finally {
+    Remove-Item -LiteralPath function:Get-CimInstance -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath function:Get-ScheduledTaskInfo -ErrorAction SilentlyContinue
+}
+Assert-Equal -Expected 2147946720 -Actual $hostObs.last_result -Label 'observed UInt32 result is kept'
+Assert-Equal -Expected '' -Actual $hostObs.info_error -Label 'observed UInt32 result has no info error'
+$resultType = if ($null -ne $hostObs.last_result) { $hostObs.last_result.GetType().Name } else { '' }
+Assert-Equal -Expected 'Int64' -Actual $resultType -Label 'observed result is Int64'
 
 # --- verified baseline ----------------------------------------------------
 
@@ -215,6 +256,16 @@ $runningTask.tunnel_task.last_result = 267009
 $runningRecord = Test-AutostartEvidence -Observation $runningTask -Cfg $probeConfig -Now $now
 Assert-Check -Record $runningRecord -Name 'tunnel_task_last_result_ok' -Expected 'true' -Label 'running task result'
 Assert-Equal -Expected 'verified' -Actual $runningRecord.auto_start_state -Label 'running task state'
+
+$errorResult = New-Observation
+$errorResult.tunnel_task.last_result = 2147946720
+$errorResultRecord = Test-AutostartEvidence -Observation $errorResult -Cfg $probeConfig -Now $now
+Assert-Check -Record $errorResultRecord -Name 'tunnel_task_last_result_ok' -Expected 'false' -Label 'UInt32 error result'
+Assert-Equal -Expected 'False' -Actual ([string]$errorResultRecord.auto_start_verified) -Label 'UInt32 error result verified flag'
+Assert-Equal -Expected 'failed' -Actual $errorResultRecord.auto_start_state -Label 'UInt32 error result state'
+Assert-ListContains -List $errorResultRecord.failed_checks -Name 'tunnel_task_last_result_ok' -Label 'UInt32 error result failed list'
+Assert-Equal -Expected 'LastTaskResult=2147946720 (0x800710E0)' `
+    -Actual (Get-Check -Record $errorResultRecord -Name 'tunnel_task_last_result_ok').detail -Label 'UInt32 error result detail'
 
 $bootOnly = New-Observation
 $bootOnly.tunnel_task.next_run = ''
