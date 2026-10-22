@@ -65,7 +65,10 @@ def test_auth_derived_avatar_is_safe_text_and_not_fake_account_status():
     assert "Array.from(displayName)[0]" in APP
     assert "accountAvatar.textContent" in APP
     assert "innerHTML" not in APP.split('const firstCharacter = displayName',1)[1].split('loginButton.hidden',1)[0]
-    assert 'accountContainer.hidden = sessionState === "unavailable"' in APP
+    # #5479: the account area no longer disappears with the login button when
+    # the session state could not be read. The rule is shared, not inlined here.
+    assert 'accountContainer.hidden = presentation.accountHidden;' in APP
+    assert 'accountContainer.hidden = sessionState === "unavailable"' not in APP
     account_button_css = CSS.rsplit(".sidebar-account .login-button {", 1)[1].split("}", 1)[0]
     assert "min-height: 44px" in account_button_css
     assert "flex: 0 0 auto" in account_button_css
