@@ -9,11 +9,10 @@ Two routes exist and they are deliberately different in kind.
 
 ``B14Route``
     Speaks PADIEM's B14 execution contract through the same transport protocol
-    the B62 product uses. B14's execution request is an *answer-only* contract
-    today: it carries an agent profile and messages and returns an answer. It
-    has no tool-call channel, so the generative-UI contract cannot be expressed
-    over it yet. This route therefore reports that gap exactly instead of
-    pretending to work, and the app surfaces the gap in its status.
+    the B62 product uses. Since #5536 that contract carries a tool channel, so
+    the generative-UI contract is expressed over it directly: the route
+    declares ``generateSandboxedUi`` and reads the model's tool call out of
+    the B14 answer.
 
 Neither route selects a model. The model id comes from configuration, and the
 product's model id comes from the B14 registry through the product route.
@@ -38,6 +37,14 @@ from .contracts import (
     GeneratedUi,
     ModelTurn,
 )
+
+#: The B14 chat-completions path. The same path the shared Core client and
+#: the B62 product post to.
+B14_CHAT_COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
+
+#: The B14 automatic route. It is the default when no model id is configured,
+#: and B14 owns which model that route serves.
+B14_AUTO_MODEL_ID = "b14/auto"
 
 
 @dataclass(frozen=True, slots=True)
@@ -306,10 +313,15 @@ class OpenAICompatibleRoute:
 class B14Route:
     """The product route, spoken through the B14 execution contract.
 
-    The B14 execution request carries an agent profile and messages and returns
-    an answer. It has no tool-call channel, so the generative-UI contract cannot
-    be expressed over it today. The route reports that gap rather than
-    approximating it, so an operator sees the real state of the binding.
+    #5536: the B14 execution contract now carries a tool channel. The route
+    declares ``generateSandboxedUi``, sends the caller's turn to B14, and
+    reads the model's tool call out of the answer. The same transport protocol
+    the B62 product uses is spoken here, so no second client is introduced.
+
+    The route selects no model: the model id comes from configuration, and B14
+    owns the routing decision. When the routed model cannot serve a tool
+    call, B14 refuses the request before execution and this route reports
+    that refusal as it is.
     """
 
     kind = "b14"
@@ -320,7 +332,7 @@ class B14Route:
 
     @property
     def supports_tool_calls(self) -> bool:
-        return False
+        return True
 
     async def generate(self, request: ModelRequest) -> ModelTurn:
         if self._transport is None or not self._settings.b14_base_url:
@@ -330,13 +342,123 @@ class B14Route:
                 "The B14 route is not bound in this process. It is reached "
                 "through a service binding in the Worker runtime.",
             )
-        raise DesignerError(
-            501,
-            "b14_tool_channel_unavailable",
-            "The B14 execution contract is answer-only today and carries no "
-            "tool-call channel, so the generateSandboxedUi contract cannot be "
-            "expressed over it yet. The interface is in place; the tool channel "
-            "is the missing piece.",
+
+        messages: list[dict[str, Any]] = [
+            {"role": "system", "content": request.system_prompt}
+        ]
+        for entry in request.history:
+            role = entry.get("role")
+            content = entry.get("content")
+            if isinstance(role, str) and isinstance(content, str):
+                messages.append({"role": role, "content": content})
+        messages.append({"role": "user", "content": request.user_prompt})
+
+        url = self._settings.b14_base_url.rstrip("/") + B14_CHAT_COMPLETIONS_PATH
+        payload = {
+            "model": self._settings.b14_model_id or B14_AUTO_MODEL_ID,
+            "messages": messages,
+            "tools": [designer_tool_schema()],
+            "tool_choice": {
+                "type": "function",
+                "function": {"name": DESIGNER_TOOL_NAME},
+            },
+            "max_tokens": self._settings.model_max_tokens,
+        }
+
+        turn: ModelTurn | None = None
+        for attempt in range(self._settings.model_tool_retries + 1):
+            attempt_payload = dict(payload)
+            if attempt:
+                # A model that answered in prose did not produce a preview.
+                # The app asks once more, explicitly, and reports the retry.
+                attempt_payload["messages"] = [
+                    *messages[:-1],
+                    {
+                        "role": "user",
+                        "content": (
+                            request.user_prompt
+                            + "\n\nCall the generateSandboxedUi tool now. Do not "
+                            "answer with text only."
+                        ),
+                    },
+                ]
+            turn = await self._post(url=url, payload=attempt_payload)
+            if turn.tool_calls:
+                break
+        assert turn is not None
+        return turn
+
+    async def _post(self, *, url: str, payload: Mapping[str, Any]) -> ModelTurn:
+        post_json = getattr(self._transport, "post_json", None)
+        if not callable(post_json):
+            raise DesignerError(
+                503,
+                "b14_route_not_bound",
+                "The B14 route is not bound in this process. It is reached "
+                "through a service binding in the Worker runtime.",
+            )
+        try:
+            status_code, body = await post_json(url, dict(payload))
+        except DesignerError:
+            raise
+        except Exception as exc:
+            raise DesignerError(
+                502,
+                "model_route_unreachable",
+                f"The model route could not be reached: {type(exc).__name__}",
+            ) from exc
+
+        if status_code >= 400:
+            raise DesignerError(
+                502,
+                "model_route_error",
+                f"The model route answered HTTP {status_code}.",
+            )
+
+        if isinstance(body, (bytes, bytearray)):
+            try:
+                body = body.decode("utf-8")
+            except UnicodeDecodeError as exc:
+                raise DesignerError(
+                    502,
+                    "model_route_invalid_response",
+                    "The model route answered a body that is not UTF-8 text.",
+                ) from exc
+        try:
+            parsed = json.loads(body) if isinstance(body, str) else body
+        except ValueError as exc:
+            raise DesignerError(
+                502,
+                "model_route_invalid_response",
+                "The model route answered a body that is not JSON.",
+            ) from exc
+
+        if not isinstance(parsed, Mapping):
+            raise DesignerError(
+                502,
+                "model_route_invalid_response",
+                "The model route answered a body that is not a JSON object.",
+            )
+
+        choices = parsed.get("choices") or []
+        if not choices:
+            raise DesignerError(
+                502,
+                "model_route_empty_response",
+                "The model route returned no choice.",
+            )
+        first = choices[0] if isinstance(choices[0], Mapping) else {}
+        message = first.get("message")
+        message = message if isinstance(message, Mapping) else {}
+        raw_calls = message.get("tool_calls") or []
+        calls = [call for call in raw_calls if isinstance(call, Mapping)]
+        text = message.get("content") if isinstance(message.get("content"), str) else ""
+
+        return ModelTurn(
+            text=text or "",
+            tool_calls=tuple(calls),
+            model_id=str(parsed.get("model") or self._settings.b14_model_id or ""),
+            route_kind=self.kind,
         )
 
 

@@ -182,10 +182,101 @@ def test_a_provider_error_is_reported_as_a_route_error() -> None:
     assert error.value.code == "model_route_error"
 
 
-def test_the_b14_route_reports_the_missing_tool_channel_instead_of_pretending() -> None:
-    route = B14Route(_settings(model_route="b14"))
+class _FakeB14Transport:
+    """The service-binding transport protocol the B62 product uses."""
 
-    assert route.supports_tool_calls is False
+    def __init__(self, *, status_code: int = 200, body: dict | None = None) -> None:
+        self.status_code = status_code
+        self.body = body if body is not None else _TOOL_CALL_BODY
+        self.calls: list[tuple[str, dict]] = []
+
+    async def post_json(self, url: str, payload: dict) -> tuple[int, bytes]:
+        self.calls.append((url, payload))
+        return self.status_code, json.dumps(self.body).encode("utf-8")
+
+
+_TOOL_CALL_BODY = {
+    "id": "chatcmpl-designer",
+    "object": "chat.completion",
+    "model": "inception/mercury-2.5",
+    "choices": [
+        {
+            "index": 0,
+            "finish_reason": "tool_calls",
+            "message": {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [
+                    {
+                        "id": "call_1",
+                        "type": "function",
+                        "function": {
+                            "name": "generateSandboxedUi",
+                            "arguments": json.dumps(
+                                {"css": ".a{}", "html": "<div></div>"}
+                            ),
+                        },
+                    }
+                ],
+            },
+        }
+    ],
+}
+
+
+def _b14_settings(**overrides) -> Settings:
+    base = {
+        "model_route": "b14",
+        "b14_base_url": "https://b14.invalid",
+        "b14_model_id": "inception/mercury-2.5",
+    }
+    base.update(overrides)
+    return Settings(**base)
+
+
+def test_the_b14_route_declares_the_tool_and_reads_the_call_out_of_the_answer() -> None:
+    transport = _FakeB14Transport()
+    route = B14Route(_b14_settings(), transport=transport)
+
+    assert route.supports_tool_calls is True
+
+    import asyncio
+
+    turn = asyncio.run(
+        route.generate(ModelRequest(system_prompt="system", user_prompt="make a form"))
+    )
+
+    assert len(turn.tool_calls) == 1
+    assert turn.tool_calls[0]["id"] == "call_1"
+    assert turn.route_kind == "b14"
+
+    url, payload = transport.calls[0]
+    assert url == "https://b14.invalid/api/pilot/v1/chat/completions"
+    assert payload["model"] == "inception/mercury-2.5"
+    assert payload["tools"][0]["function"]["name"] == "generateSandboxedUi"
+    assert payload["tool_choice"] == {
+        "type": "function",
+        "function": {"name": "generateSandboxedUi"},
+    }
+    assert [message["role"] for message in payload["messages"]] == ["system", "user"]
+
+
+def test_the_b14_route_uses_the_automatic_route_when_no_model_is_configured() -> None:
+    transport = _FakeB14Transport()
+    route = B14Route(_b14_settings(b14_model_id=""), transport=transport)
+
+    import asyncio
+
+    asyncio.run(
+        route.generate(ModelRequest(system_prompt="system", user_prompt="make a form"))
+    )
+
+    _, payload = transport.calls[0]
+    assert payload["model"] == "b14/auto"
+
+
+def test_the_b14_route_is_refused_when_it_is_not_bound() -> None:
+    route = B14Route(_b14_settings())
 
     import asyncio
 
@@ -194,3 +285,26 @@ def test_the_b14_route_reports_the_missing_tool_channel_instead_of_pretending() 
 
     assert error.value.status_code == 503
     assert error.value.code == "b14_route_not_bound"
+
+
+def test_a_b14_refusal_is_reported_as_a_route_error() -> None:
+    transport = _FakeB14Transport(
+        status_code=400,
+        body={
+            "error": {
+                "code": "tools_not_supported",
+                "message": "tool capability 없음",
+            }
+        },
+    )
+    route = B14Route(_b14_settings(), transport=transport)
+
+    import asyncio
+
+    with pytest.raises(DesignerError) as error:
+        asyncio.run(
+            route.generate(ModelRequest(system_prompt="s", user_prompt="u"))
+        )
+
+    assert error.value.status_code == 502
+    assert error.value.code == "model_route_error"
