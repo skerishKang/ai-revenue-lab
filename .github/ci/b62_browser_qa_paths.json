@@ -18,6 +18,7 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_auth_history_browser_qa.py",
       ".github/scripts/b62_account_session_browser_qa.py",
+      ".github/scripts/b62_settings_actions.py",
       "!apps/padiem-chat/app/b66_*",
       "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
@@ -32,6 +33,7 @@
       ".github/scripts/b62_mode_presentation_browser_qa.py",
       ".github/scripts/b62_capability_presentation_browser_qa.py",
       ".github/scripts/b62_interaction_polish_browser_qa.py",
+      ".github/scripts/b62_settings_actions.py",
       ".github/scripts/b62_product_surface_certification_browser_qa.py",
       ".github/scripts/b62_product_surface_certification_evidence_qa.py",
       ".github/scripts/b62_post_certification_browser_qa.py",
@@ -54,6 +56,7 @@
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_conversation_export_browser_qa.py",
+      ".github/scripts/b62_settings_actions.py",
       "!apps/padiem-chat/app/b66_*",
       "!apps/padiem-chat/static/b66-quote-runtime.js",
       "!apps/padiem-chat/static/claw-web-xlsx-sources.js"

@@ -22,7 +22,9 @@
   const exportButton = document.createElement("button");
   exportButton.type = "button";
   exportButton.id = "conversationExportButton";
-  exportButton.className = "login-button conversation-export-button";
+  // #5560: the export entry is a Settings action now, so it carries the
+  // settings button skin instead of the sidebar session button skin.
+  exportButton.className = "settings-action conversation-export-button";
   exportButton.textContent = localeText("export", "대화 내보내기");
   exportButton.setAttribute("aria-label", localeText("export-aria", "현재 대화를 텍스트 파일로 내보내기"));
   exportButton.hidden = true;

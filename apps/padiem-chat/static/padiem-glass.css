@@ -159,8 +159,7 @@ html[data-theme="padiem-glass"] .side-item,
 html[data-theme="padiem-glass"] .recent-item,
 html[data-theme="padiem-glass"] .sidebar-bottom .settings-button,
 html[data-theme="padiem-glass"] .sidebar-account,
-html[data-theme="padiem-glass"] .login-button,
-html[data-theme="padiem-glass"] .conversation-export-button {
+html[data-theme="padiem-glass"] .login-button {
   background: rgba(241, 245, 248, .12);
   color: rgba(255, 255, 255, .92);
   border-color: rgba(255, 255, 255, .20);

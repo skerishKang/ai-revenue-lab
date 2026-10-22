@@ -104,13 +104,18 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-mode-ba
 .settings-dialog {
   width: min(620px, calc(100vw - 32px));
   max-width: 620px;
+  /* #5560: the settings screen owns the admin, data and account sections
+   * now, so it is taller than the viewport on a phone. The screen scrolls
+   * instead of clipping its last sections out of reach. */
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   margin: auto;
   padding: 0;
   border: 0;
   border-radius: 28px;
   background: transparent;
   color: var(--text);
-  overflow: visible;
 }
 
 .settings-dialog::backdrop {

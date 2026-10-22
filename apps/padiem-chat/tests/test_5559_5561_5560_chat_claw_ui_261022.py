@@ -277,6 +277,65 @@ def test_the_locale_carries_the_new_settings_copy() -> None:
         assert f'"{key}":' in en, key
 
 
+def test_the_settings_screen_stays_reachable_on_a_phone() -> None:
+    """The screen owns three more sections now, so it scrolls instead of clipping."""
+    css = _read("padiem-chat-ui-polish.css")
+    block = css[css.index(".settings-dialog {"):]
+    block = block[: block.index("}")]
+    assert "max-height: calc(100dvh - 32px);" in block
+    assert "overflow-y: auto;" in block
+    # The export entry carries the settings button skin, not the sidebar one.
+    export = _read("conversation-export.js")
+    assert 'exportButton.className = "settings-action conversation-export-button";' in export
+
+
+@requires_browser
+def test_the_settings_actions_are_reachable_at_390px(browser, server):
+    """Every new settings entry can be scrolled to and used on a phone."""
+    page = browser.new_page(viewport={"width": 390, "height": 844})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_timeout(1200)
+    page.evaluate(
+        """() => {
+          const dialog = document.getElementById('settingsDialog');
+          if (dialog && dialog.open) return;
+          const profile = document.getElementById('accountProfileButton');
+          if (profile) profile.click();
+          if (dialog && !dialog.open) {
+            const button = document.getElementById('settingsButton');
+            if (button) button.click();
+          }
+          if (dialog && !dialog.open && typeof dialog.showModal === 'function') dialog.showModal();
+        }"""
+    )
+    page.wait_for_timeout(400)
+    state = page.evaluate(
+        """() => {
+          const dialog = document.getElementById('settingsDialog');
+          const account = document.getElementById('accountSettingsSection');
+          return {
+            open: Boolean(dialog && dialog.open),
+            scrollable: Boolean(dialog && dialog.scrollHeight > dialog.clientHeight),
+            exportInSettings: Boolean(document.getElementById('dataSettingsActions')),
+            logoutInAccount: Boolean(document.getElementById('settingsLogoutButton')),
+            accountHidden: account ? account.hidden : null,
+          };
+        }"""
+    )
+    assert state["open"] is True, state
+    # The screen scrolls, so the last sections are not clipped out of reach.
+    assert state["scrollable"] is True, state
+    assert state["exportInSettings"] is True, state
+    assert state["logoutInAccount"] is True, state
+    # Without a session there is nothing to sign out of, so the account
+    # section stays closed. The sign-in affordance stays in the sidebar.
+    assert state["accountHidden"] is True, state
+    assert not errors, errors
+    page.close()
+
+
 # ── browser contracts ──────────────────────────────────────────────────────
 
 
