@@ -167,6 +167,9 @@ async def test_executable_tier_selectors_survive_browser_validation_then_strip_b
         ]
         assert len(system_messages) == 1
         assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
+        # Owner-approved product branding for the Chat surface (#owner 2026-10):
+        # answers identify as 파디엠챗, never as the generic Padiem assistant.
+        assert "파디엠챗" in system_messages[0]["content"]
 
 
 @pytest.mark.asyncio

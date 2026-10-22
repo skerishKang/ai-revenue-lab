@@ -47,13 +47,18 @@ from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES: int | None = None
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES  # import compatibility
 
-# Product identity policy. Padiem Chat is a general Korean-first assistant;
-# upstream model/provider identities are not part of the user-facing product.
-# The instruction is a branding policy, not an answer-style or length cap.
+# Product identity policy. Padiem Chat is the 파디엠챗 product: a general
+# Korean-first assistant. Unsolicited model/provider self-introduction is
+# forbidden (#5347). "너 누구야?" is answered as the 파디엠챗 assistant. When the
+# user explicitly asks which model is in use, the answer must be accurate and
+# grounded only in actual model/routing information provided to this
+# conversation; fabricating a provider/model identity is forbidden.
 PADIEM_IDENTITY_INSTRUCTION = (
-    "당신은 파디엠(Padiem)이 제공하는 AI 어시스턴트입니다. "
-    "자신의 모델 이름, 제조사, 버전, 아키텍처를 밝히지 마세요. "
-    "모델이나 제조사를 묻는 질문에는 '파디엠이 제공하는 AI 어시스턴트입니다'라고만 답하세요."
+    "당신은 파디엠챗의 AI 어시스턴트입니다. 제품 정체성 외의 모델 이름, 제조사, 버전, "
+    "아키텍처를 먼저 말하지 마세요. '너 누구야?'에는 파디엠챗의 AI 어시스턴트로 답하세요. "
+    "사용자가 명시적으로 현재 모델이나 제조사를 물으면, 이 대화 지침이나 이번 요청 "
+    "문맥에 제공된 실제 모델 정보가 있을 때만 그 근거로 정확히 답하고, 확인하지 "
+    "못한 모델이나 제조사를 추측해서 말하지 마세요."
 )
 
 
@@ -325,18 +330,24 @@ def _agent_profile(
     skill: TaskMode,
     model: str,
     required_capabilities: tuple[str, ...],
+    product_identity: str | None = PADIEM_IDENTITY_INSTRUCTION,
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
     product_tier: str | None = None,
     tier_stream_fallback: bool = False,
 ) -> AgentProfile:
-    """Convert B62-owned TaskMode/model policy into the locked Core contract."""
+    """Convert B62-owned TaskMode/model policy into the locked Core contract.
+
+    ``product_identity`` defaults to the Padiem Chat brand. A path that owns a
+    product-local identity (B66 quote dialogue) or is not user-facing prose at
+    all (B66 quote extraction) passes ``None`` so the Chat brand cannot reach it.
+    """
 
     skill_instruction = skill.system_instruction
-    if skill_instruction:
-        system_instruction = f"{PADIEM_IDENTITY_INSTRUCTION} {skill_instruction}"
+    if product_identity is not None and skill_instruction:
+        system_instruction = f"{product_identity} {skill_instruction}"
     else:
-        system_instruction = PADIEM_IDENTITY_INSTRUCTION
+        system_instruction = product_identity or skill_instruction
 
     return AgentProfile(
         id=f"b62-{skill.id}",
@@ -375,6 +386,7 @@ def _execution_request(
     model: str,
     required_capabilities: tuple[str, ...],
     additional_system_context: str | None,
+    product_identity: str | None = PADIEM_IDENTITY_INSTRUCTION,
     dispatch_sample: datetime | None = None,
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
@@ -386,6 +398,7 @@ def _execution_request(
             skill=skill,
             model=model,
             required_capabilities=required_capabilities,
+            product_identity=product_identity,
             max_retries=max_retries,
             model_parameters=model_parameters,
             product_tier=product_tier,
@@ -404,6 +417,7 @@ def _multimodal_execution_request(
     skill: TaskMode,
     model: str,
     additional_system_context: str | None,
+    product_identity: str | None = PADIEM_IDENTITY_INSTRUCTION,
     dispatch_sample: datetime | None = None,
 ) -> MultimodalExecutionRequest:
     return MultimodalExecutionRequest(
@@ -411,6 +425,7 @@ def _multimodal_execution_request(
             skill=skill,
             model=model,
             required_capabilities=("chat", "image"),
+            product_identity=product_identity,
         ),
         messages=tuple(messages),
         additional_system_context=_trusted_dispatch_context(
@@ -697,6 +712,7 @@ class B14Client:
         model_parameters: Mapping[str, Any] | None = None,
         completed_response_budget_bytes: int = MAX_CONFIGURED_B14_RESPONSE_BYTES,
         product_tier: str | None = None,
+        product_identity: str | None = PADIEM_IDENTITY_INSTRUCTION,
     ) -> dict[str, Any]:
         request = _execution_request(
             messages,
@@ -704,6 +720,7 @@ class B14Client:
             model=model,
             required_capabilities=("chat",),
             additional_system_context=additional_system_context,
+            product_identity=product_identity,
             dispatch_sample=self._dispatch_wall_clock(),
             max_retries=max_retries,
             model_parameters=model_parameters,
@@ -903,6 +920,9 @@ class B14Client:
             max_retries=0,
             before_dispatch=self._prepare_registered_quote_dispatch,
             product_tier=product_tier,
+            # The B66 dialogue owns its product identity in ``dialogue_mode``;
+            # the Padiem Chat brand must never become its second persona.
+            product_identity=None,
             **kwargs,
         )
 
@@ -979,6 +999,9 @@ class B14Client:
             # budgets. No same-route retry or arbitrary catalog fallback;
             # the preselected tier grade backup in B14 remains enabled.
             completed_response_budget_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
+            # Structured extraction is not a user persona: it carries no
+            # product identity, only the trusted clock and its extraction ask.
+            product_identity=None,
             **({"product_tier": product_tier} if product_tier is not None else {}),
             **native_kwargs,
         )
