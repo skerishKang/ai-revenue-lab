@@ -504,7 +504,7 @@ $status.auto_start_probe_ts = if ($autostart) { [string]$autostart.ts } else { "
 
 ### 11.6 테스트·변형 증거
 
-- `com2_mesh_autostart_selftest.ps1`: 181 PASS / 0 FAIL. baseline, UInt32 오류(`suspected_refused_while_running`/`suspected`, 코드·시각 보존), `identityUnknown`(부모 pid 0), `identityNoCommand`(부모 명령행 빈 값), `identityMismatch`(다른 스크립트), `ownerUnknown`(소유 프로세스 이름 빈 값) fixture를 포함한다. 기존 실패 판정 보존을 단정한다.
+- `com2_mesh_autostart_selftest.ps1`: 185 PASS / 0 FAIL. baseline, UInt32 오류(`suspected_refused_while_running`/`suspected`, 코드·시각 보존), `identityUnknown`(부모 pid 0), `identityNoCommand`(부모 명령행 빈 값), `identityMismatch`(다른 스크립트), `ownerUnknown`(소유 프로세스 이름 빈 값) fixture를 포함한다. 기존 실패 판정 보존을 단정한다.
 - `com2_mesh_health_display_selftest.ps1`: 90 PASS / 0 FAIL. 표시 클래스 계약, 필드 복사 계약, 프로브 end-to-end, 패치 적용기(dry run 불변 해시, `DEADBEEF` 거부, 앵커 없음 거부, apply 후 구문 오류 0, 실행 결과 필드/HTML 추가, 모듈 없이 실행 시 무충돌)를 포함한다.
 - 변형 테스트: 프로브(outcome 이름, confidence, 코드 매처, identity 게이트, 명령행 일치, 부모 pid 누락)와 표시 모듈(ok 클래스가 identity 무시, 구형 스키마→running, result 소거, confidence 강제) 변형을 모두 주입해 해당 테스트가 실패함을 확인했다. 부모 명령행 빈 값 분기의 초기 변형이 탈출해 `identityNoCommand` fixture를 추가했고, 이후 해당 변형은 4건에서 실패한다.
 - 패치 적용기는 운영 base의 임시 사본에서 dry run(파일 불변)과 apply(백업 해시 = base, 새 해시 `F6D4C9FA77AEECB4D8C1B3430D4DD3AD6A60117B63CFB8455D53377306602CEF`, parse_errors=0)를 검증한 뒤 임시 사본을 제거했다.
