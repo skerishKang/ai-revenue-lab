@@ -93,9 +93,14 @@
       "pending_pc_expired", "canonical_consent_unavailable",
       "canonical_consent_unconfirmed", "canonical_challenge_unavailable",
       "canonical_challenge_invalid", "pc_delivery_unconfirmed",
+      // #3099: the canonical Broker already holds an ACTIVE binding for this
+      // device. Keep the exact code so the owner sees "already registered"
+      // instead of a generic failure or a credential timeout.
+      "duplicate_device_binding",
     ]);
 
     async function approveReadyPc(requestRef) {
+      let alreadyRegistered = false;
       try {
         // Existing authenticated, same-origin/CSRF-guarded owner POST contract.
         let response;
@@ -126,6 +131,14 @@
             // Diagnostic body unavailable; preserve the HTTP status and reject.
           }
           pcStage("approve_denied_" + safeCode);
+          if (safeCode === "duplicate_device_binding") {
+            // A definite canonical answer, not a timeout: this device already
+            // has an ACTIVE Broker binding. Guide the owner to check the
+            // existing registration instead of retrying.
+            alreadyRegistered = true;
+            pcNote("이미 등록된 기기입니다. 기존 등록 상태를 확인해 주세요.",
+                   "This computer is already registered. Check its current state.");
+          }
           throw new Error("owner_approval_refused");
         }
         let raw;
@@ -163,7 +176,7 @@
         if (check && !check.disabled) check.click();
       } catch {
         pcStage("approve_failed");
-        pcNote("PC 연결 요청이 완료되지 않았습니다. 자동 재시도하지 않습니다.",
+        if (!alreadyRegistered) pcNote("PC 연결 요청이 완료되지 않았습니다. 자동 재시도하지 않습니다.",
                "The PC connection request did not complete. It will not retry automatically.");
       } finally {
         pcApprovalPending = false;
