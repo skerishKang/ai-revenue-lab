@@ -133,7 +133,9 @@
 
   function phaseText(next) {
     if (next === phases.ATTACHMENT_LOADING) return copy("파일을 안전하게 확인하고 있습니다.", "Checking the file before attaching it.");
-    if (next === phases.PREPARING) return copy("요청을 준비하고 있습니다.", "Preparing your request.");
+    // #5559: the waiting state is the status card above the answer, so the
+    // composer does not repeat it under the input.
+    if (next === phases.PREPARING) return "";
     if (next === phases.STREAMING) return copy("답변을 전달하고 있습니다. 필요하면 취소할 수 있습니다.", "Delivering the response. You can cancel if needed.");
     if (next === phases.CANCELLING) return copy("답변 생성을 취소하고 있습니다.", "Cancelling response generation.");
     return "";
@@ -146,8 +148,9 @@
     form.dataset.interactionPhase = next;
     form.setAttribute("aria-busy", next === phases.IDLE ? "false" : "true");
     statusNode.dataset.phase = next;
-    statusNode.textContent = phaseText(next);
-    statusNode.hidden = next === phases.IDLE;
+    const message = phaseText(next);
+    statusNode.textContent = message;
+    statusNode.hidden = next === phases.IDLE || !message;
     if (changed) {
       document.dispatchEvent(new CustomEvent("padiem:interaction-phase", {
         detail: { phase: next },

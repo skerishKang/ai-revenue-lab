@@ -28,6 +28,8 @@
   const settingsDialog = document.getElementById("settingsDialog");
   const settingsCloseButton = document.getElementById("settingsCloseButton");
   const accountSettingsSection = document.getElementById("accountSettingsSection");
+  const accountPasswordActions = document.getElementById("accountPasswordActions");
+  const settingsLogoutButton = document.getElementById("settingsLogoutButton");
   const passwordChangeOpen = document.getElementById("passwordChangeOpen");
   const passwordChangeDialog = document.getElementById("passwordChangeDialog");
   const passwordChangeDialogClose = document.getElementById("passwordChangeDialogClose");
@@ -276,6 +278,9 @@
     }
   });
   sendButton.addEventListener("click", () => {
+    // #5561: an empty composer shows the voice waveform, so the empty-message
+    // notice belongs to the send arrow only.
+    if (window.PadiemVoiceMenu?.isVoicePrimaryAction?.()) return;
     if (!input.value.trim() && !inFlight) showComposerInlineHint("composer-empty-message");
   });
 
@@ -290,6 +295,10 @@
     cancelStreamButton.hidden = !inFlight;
     cancelStreamButton.disabled = !inFlight;
     cancelStreamButton.setAttribute("aria-disabled", inFlight ? "false" : "true");
+    // #5561: the primary action slot shows the voice waveform for an empty
+    // composer and the send arrow once there is text. The composer is the
+    // authority for the input value, so it asks the voice module to re-read it.
+    window.PadiemVoiceMenu?.syncPrimaryAction?.();
     if (window.PadiemConversationComposer?.resizeTextarea) {
       window.PadiemConversationComposer.resizeTextarea(input, { maxHeight: 180 });
     } else {
@@ -561,10 +570,13 @@
   function renderTyping(article) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
+    // #5559: the waiting state is the status card, so the answer body keeps
+    // only the marker the sources and export flows read. It no longer draws a
+    // second set of waiting dots, and it no longer repeats the status for a
+    // screen reader.
     const typing = document.createElement("span");
     typing.className = "typing";
-    typing.setAttribute("aria-label", uiT("answer-preparing"));
-    typing.append(document.createElement("i"), document.createElement("i"), document.createElement("i"));
+    typing.setAttribute("aria-hidden", "true");
     content.appendChild(typing);
   }
   function renderStoredAssistant(text, stored) {
@@ -1338,8 +1350,13 @@
     }
     // #5434: the password change is offered only for an account that owns a
     // password credential. The server owns that fact.
+    // #5560: the Account section itself carries the sign-out entry for every
+    // signed-in account; only the password change is method-specific.
     if (accountSettingsSection) {
-      accountSettingsSection.hidden = !(authenticated && authState.account_method === "password");
+      accountSettingsSection.hidden = !authenticated;
+    }
+    if (accountPasswordActions) {
+      accountPasswordActions.hidden = !(authenticated && authState.account_method === "password");
     }
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
@@ -1448,7 +1465,11 @@
         ? (firstCharacter ? firstCharacter.toLocaleUpperCase() : "●")
         : sessionState === "expired" ? "!" : "●";
     }
-    loginButton.hidden = sessionState === "unavailable";
+    // #5560: the sign-out entry moved into Settings > Account, so the sidebar
+    // keeps only the profile (name and avatar) as the one-step Settings entry.
+    // The button element and its text stay: the auth projection and the
+    // outputs feature read them as the session signal.
+    loginButton.hidden = sessionState === "unavailable" || sessionState === "signed_in";
     loginButton.disabled = !ready;
     syncAuthDialogMethods();
     loginButton.setAttribute("aria-disabled", ready ? "false" : "true");
@@ -2679,8 +2700,10 @@
             content.replaceChildren();
             paragraph = document.createElement("p");
             content.appendChild(paragraph);
-            // The template's "answer-preparing" label stays during streaming;
-            // no repetitive runtime line is rendered on first delta.
+            // #5559: the first token is a real fact. The status moves from
+            // "preparing" to "generating" and the step is recorded.
+            article.dataset.answerStarted = "true";
+            window.PadiemChatLifecycle?.recordTaskEvent?.(article, "answer_started");
           }
           answer += data.delta;
           paragraph.textContent = answer;
@@ -2828,6 +2851,11 @@
     updateComposer();
     const article = addAssistantShell(uiT("answer-preparing"), "preparing");
     activeRequestArticle = article;
+    // #5559: the status card is the one status surface of this turn. It is
+    // rendered from the first moment, so the reader sees the real state while
+    // the answer is still being produced.
+    window.PadiemChatLifecycle?.recordTaskEvent?.(article, "request_sent");
+    window.PadiemChatLifecycle?.renderTaskStatus?.(article);
     renderTyping(article);
     try {
       // #5222: wait for the account's tier restore to settle before the tier
@@ -3042,6 +3070,9 @@
     showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
+    // #5561: the composer is empty again, so the primary action slot returns
+    // to the voice waveform.
+    updateComposer();
     const outbound = conversationState.outboundWithUser(prompt);
     const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
     if (success && selectedAttachment === attachmentSnapshot) clearAttachment();
@@ -3162,12 +3193,10 @@
     event.preventDefault();
     closeProjectDialog();
   });
-  loginButton.addEventListener("click", async () => {
-    if (!authState.ready) return;
-    if (!authState.authenticated) {
-      openAuthDialog();
-      return;
-    }
+  // #5560: one sign-out implementation, reached from the sidebar session
+  // button and from Settings > Account. The server session invalidation and
+  // the local conversation reset are the same in both paths.
+  async function signOutCurrentAccount() {
     try {
       await fetch("/api/auth/logout", { method: "POST", headers: { "Accept": "application/json" } });
     } finally {
@@ -3175,7 +3204,31 @@
       clearProjectsUI();
       await loadAuthStatus();
     }
+  }
+  loginButton.addEventListener("click", async () => {
+    if (!authState.ready) return;
+    if (!authState.authenticated) {
+      openAuthDialog();
+      return;
+    }
+    await signOutCurrentAccount();
   });
+  if (settingsLogoutButton) {
+    settingsLogoutButton.addEventListener("click", async () => {
+      if (!authState.ready || !authState.authenticated) return;
+      settingsLogoutButton.disabled = true;
+      settingsLogoutButton.setAttribute("aria-disabled", "true");
+      settingsLogoutButton.setAttribute("aria-busy", "true");
+      try {
+        closeSettings();
+        await signOutCurrentAccount();
+      } finally {
+        settingsLogoutButton.disabled = false;
+        settingsLogoutButton.setAttribute("aria-disabled", "false");
+        settingsLogoutButton.removeAttribute("aria-busy");
+      }
+    });
+  }
   if (authDialogClose) authDialogClose.addEventListener("click", closeAuthDialog);
   if (authDialog) {
     authDialog.addEventListener("cancel", (event) => {

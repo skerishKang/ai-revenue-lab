@@ -248,6 +248,7 @@
   }
 
   function stopArticleTts(article) {
+    if (article && article.dataset) article.dataset.ttsSpeaking = "false";
     const waiting = article && article._ttsWaiting ? article._ttsWaiting : null;
     if (waiting) {
       waiting.active = false;
@@ -272,6 +273,14 @@
   function toggleArticleTts(article, button, text) {
     if (article._ttsPlayer) {
       stopArticleTts(article);
+      return;
+    }
+    // #5559: the answer carries one playback control. The M3 auto-speech has
+    // no button of its own, so this action stops it instead of starting a
+    // second reading of the same answer.
+    if (article && article.dataset && article.dataset.ttsSpeaking === "true") {
+      window.PadiemVoiceAnswer?.stop?.();
+      article.dataset.ttsSpeaking = "false";
       return;
     }
     const lib = ttsApi();

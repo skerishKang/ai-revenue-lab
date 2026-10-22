@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Browser, Page, Playwright, Route, async_playwright
 
+from b62_settings_actions import open_settings, settings_action_target, sign_out_via_settings
+
 
 BASE_URL = os.environ.get("B62_AUTH_HISTORY_QA_BASE_URL", "http://127.0.0.1:8769")
 OUT_DIR = Path(os.environ.get("B62_AUTH_HISTORY_QA_OUT_DIR", ".tmp/b62-auth-history-browser-qa"))
@@ -324,6 +326,7 @@ async def _assert_visible_state(
     label: str,
     button_text: str,
     account_text: str,
+    settings_action: bool = False,
 ) -> dict[str, Any]:
     snapshot = await _account_snapshot(page)
     if snapshot.get("state") != expected or snapshot.get("rootHidden"):
@@ -334,10 +337,16 @@ async def _assert_visible_state(
         raise AssertionError(f"wrong account copy at {label}: {snapshot}")
     if snapshot.get("buttonDisabled") or snapshot.get("ariaDisabled") != "false":
         raise AssertionError(f"account action must be operable at {label}: {snapshot}")
+    if settings_action:
+        # #5560: the sign-out control moved into Settings > Account. The
+        # evidence is unchanged: the action is a visible 44px touch target.
+        target = await settings_action_target(page, "#settingsLogoutButton", label=f"{label}-{expected}-action")
+    else:
+        target = _validate_target(snapshot, f"{label}-{expected}-action")
     return {
         "state": expected,
         "hidden": False,
-        "target": _validate_target(snapshot, f"{label}-{expected}-action"),
+        "target": target,
         "status": "PASS",
     }
 
@@ -568,8 +577,9 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
                 label=label,
                 button_text="로그아웃",
                 account_text=USER_NAME,
+                settings_action=True,
             )
-            await _click_dom(page, "#loginButton", label=f"{label}-logout")
+            await sign_out_via_settings(page, label=f"{label}-logout")
             await _wait_counter(state, "logout_posts", 1, label=label)
             await _wait_state(page, "guest", label=f"{label}-logout-guest")
             result["guest"] = await _assert_visible_state(

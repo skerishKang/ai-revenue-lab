@@ -329,6 +329,13 @@
 }
 
 /* Streaming signal -------------------------------------------------------- */
+/* #5559: the waiting state is the status card. The typing marker stays in
+   the answer body as the "the answer is not written yet" marker that the
+   sources and export flows read, but an empty marker draws nothing, so the
+   user does not see the same waiting state twice. */
+.app-shell:is([data-state="chat"],[data-state="claw"]) .typing:empty {
+  display: none !important;
+}
 .app-shell:is([data-state="chat"],[data-state="claw"]) .typing {
   min-height: 34px;
   gap: 6px;

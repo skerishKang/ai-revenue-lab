@@ -20,6 +20,32 @@
     return article && article.querySelector ? article.querySelector("[data-runtime-label]") : null;
   }
 
+  // #5559: the status card is the single status surface of a turn, so the
+  // small badge in the answer meta row does not show a second copy of the
+  // same status. The badge element and its text stay (the transition still
+  // runs through it); only its visibility follows the card.
+  function statusCardElement(article) {
+    return article && article.querySelector ? article.querySelector('[data-orchestration-ui="kit"]') : null;
+  }
+
+  // The card owns the live status of a running turn. The badge owns the
+  // terminal outcome ("연결 오류", "생성 취소됨"), so the two never show the
+  // same thing at the same time and the outcome keeps its own wording.
+  function cardShowsLiveStatus(article) {
+    const lifecycle = article && article.dataset ? article.dataset.lifecycle : null;
+    return lifecycle === states.STREAMING || lifecycle === states.WAITING_APPROVAL;
+  }
+
+  function syncBadgeVisibility(article) {
+    const marker = runtimeLabelMarker(article);
+    if (!marker) return;
+    if (!marker.textContent.trim()) {
+      marker.hidden = true;
+      return;
+    }
+    marker.hidden = Boolean(statusCardElement(article)) && cardShowsLiveStatus(article);
+  }
+
   // #5453: the status chip carries the sweep while the turn is really
   // running. The chip's own text always names the real state, so the movement
   // only says "still going" - it never pretends to be a progress bar. A
@@ -50,7 +76,7 @@
       }
       marker.textContent = value;
     }
-    marker.hidden = false;
+    syncBadgeVisibility(article);
     if (state) marker.dataset.runtimeState = state;
     syncActivitySweep(article);
   }
@@ -64,6 +90,114 @@
     applyRuntimeLabel(article, "", RUNTIME_LABEL_STATE.STATUS);
   }
 
+  // #5559: one status surface for Chat and Claw.
+  //
+  // The card is the single status display of a turn. Its header is the
+  // clickable status label, and its body carries the real steps of the turn,
+  // the tools that ran, the evidence and the terminal outcome. Nothing here
+  // invents a stage: a label exists only when the matching real event
+  // happened or the real lifecycle state says so.
+  const taskStatusCatalog = Object.freeze({
+    preparing: Object.freeze({ state: "active", ko: "답변 준비 중", en: "Preparing answer" }),
+    generating: Object.freeze({ state: "active", ko: "답변 생성 중", en: "Generating answer" }),
+    searching: Object.freeze({ state: "active", ko: "웹 검색 중", en: "Searching the web" }),
+    tool: Object.freeze({ state: "active", ko: "도구 작업 중", en: "Tool in progress" }),
+    approval: Object.freeze({ state: "paused", ko: "확인 대기 중", en: "Waiting for confirmation" }),
+  });
+
+  // The real steps of a turn. Each one is recorded only when it actually
+  // happened, so the card can never show a step that did not occur.
+  const taskEventCatalog = Object.freeze({
+    request_sent: Object.freeze({ ko: "요청을 전달했어요.", en: "Your request was sent." }),
+    answer_started: Object.freeze({ ko: "답변을 만들기 시작했어요.", en: "Started building the answer." }),
+    web_search: Object.freeze({ ko: "웹 검색을 사용했어요.", en: "Used web search." }),
+    deep_research: Object.freeze({ ko: "심층 리서치를 사용했어요.", en: "Used deep research." }),
+    evidence: Object.freeze({ ko: "출처와 근거를 확인했어요.", en: "Checked the sources and evidence." }),
+  });
+
+  function taskEvents(article) {
+    const raw = article && article.dataset ? article.dataset.taskEvents : "";
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter((key) => typeof key === "string" && taskEventCatalog[key]);
+    } catch (_) {
+      return [];
+    }
+  }
+
+  // The real live status of this turn. The Claw lane already has a recorded
+  // stage; the plain lane uses its own real facts.
+  function taskStatusFor(article, presentation) {
+    const lifecycle = article && article.dataset ? article.dataset.lifecycle : null;
+    if (lifecycle === states.WAITING_APPROVAL) return labeledStatus(taskStatusCatalog.approval);
+    const hint = article && article.dataset ? article.dataset.taskHint : "";
+    if (hint && taskStatusCatalog[hint]) return labeledStatus(taskStatusCatalog[hint]);
+    if (presentation && presentation.latest && presentation.latest.state === "active") return null;
+    if (lifecycle === states.STREAMING) {
+      return labeledStatus(article.dataset.answerStarted === "true"
+        ? taskStatusCatalog.generating
+        : taskStatusCatalog.preparing);
+    }
+    return null;
+  }
+
+  function labeledStatus(item) {
+    if (!item) return null;
+    return Object.freeze({ state: item.state, label: text(item.ko, item.en) });
+  }
+
+  function taskStages(article) {
+    return taskEvents(article).map((key, index) => {
+      const item = taskEventCatalog[key];
+      return Object.freeze({
+        group: "agent",
+        state: "ready",
+        label: text(item.ko, item.en),
+        sequence: index + 1,
+      });
+    });
+  }
+
+  function recordTaskEvent(article, key) {
+    if (!article || !taskEventCatalog[key]) return;
+    const events = taskEvents(article);
+    if (!events.includes(key)) events.push(key);
+    article.dataset.taskEvents = JSON.stringify(events);
+    refreshTaskStatus(article);
+  }
+
+  function setTaskHint(article, key) {
+    if (!article) return;
+    const next = key && taskStatusCatalog[key] ? key : "";
+    if ((article.dataset.taskHint || "") === next) return;
+    article.dataset.taskHint = next;
+    refreshTaskStatus(article);
+  }
+
+  function refreshTaskStatus(article) {
+    if (!article || typeof article.querySelector !== "function") return;
+    if (!statusCardElement(article)) return;
+    const presentation = presentationModel(null, article.dataset.lifecycle || null, false);
+    renderTaskCard(article, {
+      stages: taskStages(article),
+      status: taskStatusFor(article, presentation),
+      evidenceAvailable: article.dataset.taskEvidence === "true",
+      approval: null,
+      terminal: terminalFor(article),
+      preview: false,
+      live: false,
+    }, {});
+  }
+
+  function terminalFor(article) {
+    const lifecycle = article && article.dataset ? article.dataset.lifecycle : null;
+    if (!lifecycle || !terminalCatalog[lifecycle]) return null;
+    const item = terminalCatalog[lifecycle];
+    return Object.freeze({ key: lifecycle, state: item.state, label: text(item.ko, item.en) });
+  }
+
   window.PadiemChatLifecycle = Object.freeze({
     states,
     runtimeLabelStates: RUNTIME_LABEL_STATE,
@@ -73,6 +207,9 @@
     set(article, state) {
       if (!article || !Object.values(states).includes(state)) return;
       article.dataset.lifecycle = state;
+      // The card takes over the live status; the badge takes the terminal
+      // outcome back when the turn ends.
+      syncBadgeVisibility(article);
       syncActivitySweep(article);
       article.dispatchEvent(new CustomEvent("padiem:message-lifecycle", {
         bubbles: true,
@@ -81,6 +218,11 @@
     },
     applyRuntimeLabel,
     releasePreparingRuntimeLabel,
+    // #5559: the one status surface. A turn records its real steps and the
+    // card renders them; nothing else shows a second copy of the status.
+    renderTaskStatus,
+    recordTaskEvent,
+    setTaskHint,
   });
 
   const orchestrationKinds = Object.freeze({
@@ -371,8 +513,12 @@
     section.appendChild(card);
   }
 
-  function renderCapabilityKit(article, model, handlers = {}) {
-    if (!article || typeof article.querySelector !== "function") return model;
+  // #5559: the one card renderer. Chat and Claw use this same component, so
+  // the status label, the steps, the evidence and the outcome look and behave
+  // the same in both products.
+  function renderTaskCard(article, view, handlers = {}) {
+    if (!article || typeof article.querySelector !== "function") return null;
+    ensureCapabilityStyles();
     // #5221: the work card is a disclosure, so the reader keeps the answer
     // primary and opens the real stages only when they want them. The choice
     // survives a re-render, so a live stage update never closes the card the
@@ -380,18 +526,14 @@
     const previousDisclosure = article.querySelector(".capability-kit-disclosure");
     const wasOpen = previousDisclosure ? previousDisclosure.open : null;
     removeExisting(article);
-    if (!model.valid) return model;
-    ensureCapabilityStyles();
 
-    const preview = article.dataset.capabilityPreview === "synthetic";
-    const presentation = presentationModel(model, article.dataset.lifecycle || null, preview);
     const body = article.querySelector(".assistant-body") || article;
     const content = article.querySelector(".assistant-content");
     const section = document.createElement("section");
     section.className = "capability-kit";
     section.dataset.orchestrationUi = "kit";
     section.dataset.capabilityPresentation = "true";
-    section.dataset.preview = preview ? "synthetic" : "live-contract";
+    section.dataset.preview = view.preview ? "synthetic" : "live-contract";
     section.setAttribute("aria-label", text("AI 작업 진행 상태", "AI task status"));
 
     const disclosure = document.createElement("details");
@@ -399,7 +541,7 @@
     // An approval needs the reader, and the synthetic preview is a UI
     // verification surface: both stay open. Every other turn starts closed
     // and keeps the reader's own choice.
-    if (wasOpen === null) disclosure.open = Boolean(presentation.approval) || preview;
+    if (wasOpen === null) disclosure.open = Boolean(view.approval) || view.preview;
     else disclosure.open = wasOpen;
 
     const header = document.createElement("summary");
@@ -410,14 +552,12 @@
     status.className = "capability-current";
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
-    status.textContent = presentation.latest ? presentation.latest.label : model.statusText;
+    status.textContent = view.statusLabel || "";
     // #5453: the sweep only rides a stage that is really still running.
-    const live = Boolean(presentation.latest) && presentation.latest.state === "active"
-      && !presentation.terminal;
-    if (live) status.classList.add("padiem-activity-sweep");
+    if (view.live) status.classList.add("padiem-activity-sweep");
     header.append(heading, status);
 
-    if (preview) {
+    if (view.preview) {
       const badge = document.createElement("span");
       badge.className = "capability-preview-badge";
       badge.textContent = text("합성 미리보기 · 실제 실행 아님", "Synthetic preview · not a live run");
@@ -435,7 +575,7 @@
     const stageList = document.createElement("ol");
     stageList.className = "capability-stage-list";
     stageList.setAttribute("aria-label", text("작업 단계", "Task stages"));
-    for (const stage of presentation.stages) {
+    for (const stage of view.stages) {
       const row = document.createElement("li");
       row.className = "capability-stage";
       row.dataset.capabilityGroup = stage.group;
@@ -451,7 +591,7 @@
     }
     disclosure.appendChild(stageList);
 
-    if (presentation.evidenceAvailable) {
+    if (view.evidenceAvailable) {
       const evidence = document.createElement("div");
       evidence.className = "capability-evidence";
       evidence.dataset.capabilityGroup = "evidence";
@@ -461,15 +601,17 @@
 
     section.appendChild(disclosure);
 
-    renderApprovalCard(section, presentation, handlers);
+    renderApprovalCard(section, view, handlers);
 
-    const terminal = document.createElement("div");
-    terminal.className = "capability-terminal";
-    terminal.dataset.capabilityTerminal = "true";
-    terminal.hidden = true;
-    section.appendChild(terminal);
+    if (view.terminalLine !== false) {
+      const terminal = document.createElement("div");
+      terminal.className = "capability-terminal";
+      terminal.dataset.capabilityTerminal = "true";
+      terminal.hidden = true;
+      section.appendChild(terminal);
+    }
 
-    if (preview) {
+    if (view.preview) {
       const truth = document.createElement("p");
       truth.className = "capability-preview-truth";
       truth.textContent = text(
@@ -480,6 +622,56 @@
     }
 
     body.insertBefore(section, content || null);
+    // #5559: the card is the single live status surface, so the meta-row
+    // badge does not show a second copy of it. The badge keeps the terminal
+    // outcome, which the card does not repeat.
+    syncBadgeVisibility(article);
+    return section;
+  }
+
+  // #5559: a plain Chat turn has no orchestration events, but it still has a
+  // real status and real steps. The same card renders them.
+  function renderTaskStatus(article, handlers = {}) {
+    if (!article || typeof article.querySelector !== "function") return null;
+    if (article.dataset.capabilityPreview === "synthetic") return null;
+    const status = taskStatusFor(article, null);
+    renderTaskCard(article, {
+      stages: taskStages(article),
+      status,
+      statusLabel: status ? status.label : "",
+      evidenceAvailable: article.dataset.taskEvidence === "true",
+      approval: null,
+      terminal: terminalFor(article),
+      // #5559: the plain lane keeps its outcome in the answer meta badge, so
+      // the card does not repeat it.
+      terminalLine: false,
+      preview: false,
+      live: Boolean(status) && status.state === "active",
+    }, handlers);
+    bindLifecyclePresentation(article, null);
+    syncTerminalPresentation(article, article.dataset.lifecycle || null, null);
+    return article;
+  }
+
+  function renderCapabilityKit(article, model, handlers = {}) {
+    if (!article || typeof article.querySelector !== "function") return model;
+    if (!model.valid) {
+      renderTaskStatus(article, handlers);
+      return model;
+    }
+    const preview = article.dataset.capabilityPreview === "synthetic";
+    const presentation = presentationModel(model, article.dataset.lifecycle || null, preview);
+    renderTaskCard(article, {
+      stages: presentation.stages,
+      status: null,
+      statusLabel: presentation.latest ? presentation.latest.label : model.statusText,
+      evidenceAvailable: presentation.evidenceAvailable,
+      approval: presentation.approval,
+      terminal: presentation.terminal,
+      preview,
+      live: Boolean(presentation.latest) && presentation.latest.state === "active"
+        && !presentation.terminal,
+    }, handlers);
     bindLifecyclePresentation(article, model.terminal);
     syncTerminalPresentation(article, article.dataset.lifecycle || null, model.terminal);
     return model;

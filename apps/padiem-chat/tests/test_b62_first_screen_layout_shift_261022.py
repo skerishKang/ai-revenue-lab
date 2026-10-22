@@ -191,20 +191,22 @@ def test_the_web_search_control_keeps_its_slot_before_the_capability_arrives():
 
 
 def test_the_voice_controls_space_is_reserved_and_given_back():
-    """The voice controls are mounted after the first paint.
+    """The voice control is mounted after the first paint.
 
-    Their space is reserved while they are missing, and the reservation is
-    given back when they are there, so the settled composer is laid out
-    exactly as it is today.
+    Its space is reserved while it is missing, and the reservation is given
+    back when it is there, so the settled composer is laid out exactly as it
+    is today. #5561: the voice waveform shares the send button's slot, so the
+    microphone is the only separate voice control.
     """
     css = preview_rules()
     rule = re.search(
-        r"\.composer-actions:not\(:has\(> #voiceMicButton\)\):not\(:has\(> #voiceWaveformButton\)\)"
+        r"\.composer-actions:not\(:has\(> #voiceMicButton\)\)"
         r" #sendButton\s*\{(?P<body>[^}]*)\}",
         css,
     )
     assert rule is not None, "the voice control space reservation is missing"
     assert "margin-left" in rule.group("body")
+    assert "calc(44px + 10px)" in rule.group("body")
 
 
 def test_no_control_is_hidden_from_the_user_by_the_reservations():
@@ -342,7 +344,7 @@ def test_the_settled_composer_is_the_composer_of_today(browser, server):
             webVisible: Boolean(web) && getComputedStyle(web).visibility === 'visible',
             webHidden: web ? web.hasAttribute('hidden') : null,
             micMounted: Boolean(document.getElementById('voiceMicButton')),
-            waveMounted: Boolean(document.getElementById('voiceWaveformButton')),
+            waveMounted: Boolean(document.querySelector('#sendButton .send-waveform-icon')),
           };
         }"""
     )
@@ -352,10 +354,17 @@ def test_the_settled_composer_is_the_composer_of_today(browser, server):
     # The capability arrived and the web-search control is shown.
     assert state["webHidden"] is False, state
     assert state["webVisible"] is True, state
-    # The voice controls are mounted and the composer is laid out.
+    # The voice controls are mounted and the composer is laid out. #5561: the
+    # waveform shares the send button's slot, so the slot carries the icon.
     assert state["micMounted"] is True, state
     assert state["waveMounted"] is True, state
-    assert state["tools"] is not None and state["tools"][3] == 94, state
+    # #5561: the voice waveform shares the send button's slot, so the action
+    # row holds one voice control less. The tools row keeps its own width and
+    # now fits on one line at 390px, so the settled composer is more compact.
+    assert state["tools"] is not None and state["tools"][3] == 44, state
     assert state["form"] is not None, state
+    # The tools row stays inside the composer: no control is pushed out of
+    # the frame.
+    assert state["tools"][0] + state["tools"][2] <= state["form"][0] + state["form"][2], state
     assert not errors, errors
     page.close()
