@@ -96,7 +96,7 @@ def seed_db():
     password_uid = _password_user_id("skerish-password")
     forged_uid = "usr_" + "f" * 32
     rows = (
-        (super_uid, "google", "google-charlie", "charliekant@gmail.com"),
+        (super_uid, "google", "google-charlie", "owner@example.test"),
         (admin_uid, "google", "google-skerish", "skerish@naver.com"),
         (member_uid, "google", "google-member", "member@example.test"),
         (password_uid, "google", "password:skerish-password", "pw@example.test"),
