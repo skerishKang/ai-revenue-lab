@@ -538,10 +538,10 @@ async def api_chat_stream(request: Request):
         reference_context = auto_plan.prepared.context
         # The auto-grounding plan replaces the context it was handed; the
         # verified PC state must still reach this model call (#5015).
-        if pc_work_text:
+        if pc_work_result:
             reference_context = (
                 reference_context + "\n\n" if reference_context else ""
-            ) + pc_work_text
+            ) + pc_work_result
 
     client: B14Client = request.app.state.b14_client
     async with chat_request_tier_context(request, raw.get("tier", "free")):
