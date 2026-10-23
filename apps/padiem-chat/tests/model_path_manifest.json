@@ -25,6 +25,7 @@
     "test_attachments.py": "B14_MANAGED",
     "test_auto_grounding.py": "B14_MANAGED",
     "test_b62_2544_completed_timeout.py": "B14_MANAGED",
+    "test_5474_chat_anonymous_model_gate.py": "B14_MANAGED",
     "test_b66_3906_reasoning_level.py": "B14_MANAGED",
     "test_b66_3977_core_reasoning_transport.py": "B14_MANAGED",
     "test_b66_ai_chat_routes_4466.py": "B14_MANAGED",

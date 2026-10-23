@@ -75,6 +75,10 @@ async def claw_inbox_list(request: Request) -> JSONResponse:
     if store is None:
         return _error(503, "inbox_unavailable", "Inbox is unavailable.")
     workspace_id = await _resolve_memory_workspace(request, uid)
+    if workspace_id is None:
+        return _error(
+            503, "workspace_unresolved", "Inbox workspace could not be resolved."
+        )
     try:
         if kind == "tasks":
             records = await _call(store.list_tasks(workspace_id, limit=_STORE_SCAN_LIMIT))
@@ -82,6 +86,10 @@ async def claw_inbox_list(request: Request) -> JSONResponse:
         else:
             records = await _call(store.list_alerts(workspace_id, member_id=uid, limit=_STORE_SCAN_LIMIT))
             items = [item.safe_dict() for item in records][:limit]
+    except ValueError:
+        return _error(400, "identifier_rejected", "Inbox identifier was rejected.")
+    except WorkspaceStorageError:
+        return _error(503, "inbox_query_failed", "Inbox could not be loaded.")
     except Exception:
         return _error(503, "inbox_read_failed", "Inbox could not be loaded.")
     return JSONResponse(

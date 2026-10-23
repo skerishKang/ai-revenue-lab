@@ -42,6 +42,10 @@ on:
       - ".github/tests/test_b62_code_deploy_served_preflight.py"
       - ".github/scripts/b62_claw_live_config_activation.py"
       - ".github/scripts/b62_d1_migration_008_schema.py"
+      # #5034: the inbox list/mark-read routes read claw_task_alert, so migration
+      # 010 must be live and schema-verified before inbox code is uploaded.
+      - ".github/scripts/b62_d1_migration_010_schema.py"
+      - "apps/padiem-chat/migrations/010_claw_task_alert.sql"
       - ".github/scripts/b62_d1_migration_040_schema.py"
       - ".github/tests/test_b62_d1_migration_040_gate.py"
       - "apps/padiem-chat/migrations/040_claw_web_xlsx_p01_decision_release.sql"
@@ -481,6 +485,10 @@ jobs:
           assert "B62_D1_MIGRATION_062_SCHEMA=EXACT" in workflow
           assert "MIGRATION_062_PREDEPLOY=EXACT" in workflow
           assert "b62_d1_migration_062_schema.py" in workflow
+          # #5034: inbox routes read claw_task_alert; 010 must be EXACT predeploy.
+          assert "B62_D1_MIGRATION_010_SCHEMA=EXACT" in workflow
+          assert "MIGRATION_010_PREDEPLOY=EXACT" in workflow
+          assert "b62_d1_migration_010_schema.py" in workflow
           assert "claw_pc_device_selection" in workflow
           assert "PRAGMA table_info(claw_web_xlsx_p01_decision_receipts)" in workflow
           assert "APPLICATION_ROW_READ=0" in workflow
@@ -1461,6 +1469,54 @@ jobs:
             | tee "${RUNNER_TEMP}/b62-d1-065-schema-verdict.txt"
           grep -qx 'B62_D1_MIGRATION_065_SCHEMA=EXACT' "${RUNNER_TEMP}/b62-d1-065-schema-verdict.txt"
           echo 'MIGRATION_065_PREDEPLOY=EXACT'
+          echo "D1_SCHEMA_QUERY=READ_ONLY"
+          echo "APPLICATION_ROW_READ=0"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+          echo "PRODUCTION_MUTATION=0"
+
+      # #5034: the inbox list/mark-read routes read claw_task_alert, so 010 must be
+      # live and EXACT before inbox code is uploaded. Schema metadata only:
+      # no D1 write, no application row read.
+      - name: Prove #5034 010 task-alert schema before code deploy
+        if: ${{ inputs.mode == 'deploy_production_code' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          from pathlib import Path
+          payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+          bindings=payload.get("result",{}).get("bindings",[]) if payload.get("success") is True else []
+          matching=[b for b in bindings if isinstance(b,dict)
+                    and b.get("name")==sys.argv[2] and b.get("type")=="d1"]
+          if len(matching)!=1:
+                raise SystemExit("TASK_ALERT_D1_010_BINDING_INVALID")
+          value=matching[0].get("id")
+          if not isinstance(value,str) or re.fullmatch(r"[0-9a-fA-F-]{32,36}",value) is None:
+            raise SystemExit("TASK_ALERT_D1_010_BINDING_INVALID")
+          print(value)
+          PY
+          )"
+          test -n "${db_id}"
+          echo "::add-mask::${db_id}"
+          query="${RUNNER_TEMP}/b62-d1-010-schema-query.json"
+          response="${RUNNER_TEMP}/b62-d1-010-schema-response.json"
+          python3 - "${query}" <<'PY'
+          import json, sys
+          sql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('claw_task_alert','idx_claw_task_alert_workspace_created','idx_claw_task_alert_workspace_kind_status','idx_claw_task_alert_member_updated') ORDER BY name;
+          PRAGMA table_info(claw_task_alert);
+          PRAGMA index_info(idx_claw_task_alert_workspace_created);"""
+          with open(sys.argv[1], 'w', encoding='utf-8') as handle:
+              json.dump({'sql': sql}, handle)
+          PY
+          curl -fsS --max-time 30 -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${db_id}/query" \
+            --data-binary "@${query}" -o "${response}"
+          python3 .github/scripts/b62_d1_migration_010_schema.py "${response}" \
+            | tee "${RUNNER_TEMP}/b62-d1-010-schema-verdict.txt"
+          grep -qx 'B62_D1_MIGRATION_010_SCHEMA=EXACT' "${RUNNER_TEMP}/b62-d1-010-schema-verdict.txt"
+          echo 'MIGRATION_010_PREDEPLOY=EXACT'
           echo "D1_SCHEMA_QUERY=READ_ONLY"
           echo "APPLICATION_ROW_READ=0"
           echo "D1_IDENTIFIER_OUTPUT=0"

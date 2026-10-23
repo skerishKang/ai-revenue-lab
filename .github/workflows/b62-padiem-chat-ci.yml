@@ -1,37 +1,10 @@
 name: B62 Padiem Chat CI
 
 on:
-  # #3753: a B62-relevant change that reaches main is verified on main, not only
-  # in the review lane. The paths set here is the same set as `pull_request`
-  # below and has to stay identical: a narrower push filter would let a merge
-  # land unverified, and a broader one would run this 222-file Chat suite plus
-  # the Worker runtime probes for every unrelated main commit.
+  # #5678: every main push runs the full Chat regression, including changes
+  # the PR classifier can safely route to a focused lane.
   push:
     branches: [main]
-    paths:
-      - "apps/padiem-chat/**"
-      - "apps/korean-ai-platform/**"
-      - "packages/padiem-ai-core/**"
-      # Same reason as `pull_request`: the shared product-tier declaration is a
-      # Chat dependency.
-      - "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
-      - "reference/business-62-padiem-chat-v1/**"
-      - ".github/scripts/b62_cloudflare_*.py"
-      - ".github/scripts/b14_model_registration_ci_plan.py"
-      - ".github/scripts/b62_ci_impact_scope_3989.py"
-      - ".github/tests/test_b62_ci_impact_scope_3989.py"
-      # #5341: the shared Core import-scope proof and its contract test
-      # decide which Core changes need the complete B62 regression.
-      - ".github/scripts/ci_core_import_scope.py"
-      - ".github/tests/test_5341_core_import_scope.py"
-      # CI implementation itself: probe runner/test changes require real B62 checks.
-      - ".github/scripts/b62_worker_probe_*.sh"
-      - ".github/scripts/b62_worker_probe_shared_assertions.py"
-      - ".github/tests/test_3989_b62_worker_probe_parallel.py"
-      - ".github/tests/test_3989_b62_worker_shared_runtime.py"
-      - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"
-      - ".github/workflows/b62-padiem-chat-ci.yml"
-      - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   pull_request:
     paths:
       - "apps/padiem-chat/**"
@@ -63,7 +36,7 @@ on:
 permissions:
   contents: read
 
-# #3989: Only the latest B62-relevant main commit needs an expensive full
+# #3989: Only the latest main commit needs an expensive full
 # regression; a later qualifying push contains all earlier merged source.
 # Preserve separate PR groups and keep manual dispatch runs independent.
 # This is test-only: deploy / migration workflows have their own non-cancellable
@@ -152,7 +125,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Locked dependencies
@@ -179,7 +152,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
       - name: Locked B62 test dependencies
         run: uv sync --locked --extra dev
       - name: Run every changed UI-test module (bounded, fail closed)
@@ -205,6 +178,7 @@ jobs:
     steps:
       - name: Enforce selected lane and both relevant checks
         env:
+          MAIN_PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           LANE: ${{ needs.registry-ci-plan.outputs.lane }}
           SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}
           PLAN_RESULT: ${{ needs.registry-ci-plan.result }}
@@ -219,11 +193,17 @@ jobs:
         run: |
           set -euo pipefail
           test "$PLAN_RESULT" = success
+          # Focused PR lanes still require a skipped full suite; main requires
+          # an executed, successful full suite without changing other jobs.
+          EXPECTED_FOCUSED_FULL=skipped
+          if [ "$MAIN_PUSH" = true ]; then
+            EXPECTED_FOCUSED_FULL=success
+          fi
           if [ "$LANE" = model_registration_only ]; then
             test "$QUICK_RESULT" = success
             test "$UI_RESULT" = skipped
             test "$MIXED_RESULT" = skipped
-            test "$FULL_RESULT" = skipped
+            test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"
             test "$WORKER_RESULT" = skipped
             test "$MM_RESULT" = skipped
             echo 'B62_CI_MODE=MODEL_REGISTRATION_ONLY'
@@ -234,13 +214,13 @@ jobs:
             test "$MM_RESULT" = success
             test "$UI_RESULT" = skipped
             test "$MIXED_RESULT" = skipped
-            test "$FULL_RESULT" = skipped
+            test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"
             test "$WORKER_RESULT" = skipped
             test "$QUICK_RESULT" = skipped
             echo 'B62_CI_MODE=B14_TESTS_ONLY'
           elif [ "$SCOPE" = b14_attempt_only ]; then
             test "$ATTEMPT_RESULT" = success
-            test "$FULL_RESULT" = skipped
+            test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"
             test "$WORKER_RESULT" = skipped
             echo 'B62_CI_MODE=B14_ATTEMPT_FOCUSED'
           elif [ "$SCOPE" = core_focused_only ]; then
@@ -250,16 +230,16 @@ jobs:
             test "$PARSER_RESULT" = success
             test "$UI_RESULT" = skipped
             test "$MIXED_RESULT" = skipped
-            test "$FULL_RESULT" = skipped
+            test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"
             test "$WORKER_RESULT" = skipped
             test "$MM_RESULT" = skipped
             test "$QUICK_RESULT" = skipped
             echo 'B62_CI_MODE=CORE_FOCUSED'
           elif [ "$SCOPE" = static_only ]; then
-            # The UI suite is required; all unchanged runtimes must be skipped.
+            # The UI suite is required; main also requires the full regression.
             test "$UI_RESULT" = success
             test "$MIXED_RESULT" = skipped
-            test "$FULL_RESULT" = skipped
+            test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"
             test "$WORKER_RESULT" = skipped
             test "$MM_RESULT" = skipped
             test "$QUICK_RESULT" = skipped
@@ -267,7 +247,7 @@ jobs:
           elif [ "$SCOPE" = ui_mixed ]; then
             test "$UI_RESULT" = success
             test "$MIXED_RESULT" = success
-            test "$FULL_RESULT" = skipped
+            test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"
             test "$WORKER_RESULT" = skipped
             test "$MM_RESULT" = skipped
             test "$QUICK_RESULT" = skipped
@@ -391,14 +371,14 @@ jobs:
           python-version: '3.12'
       - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
         with:
-          version: '0.12.5'
+          version: '0.13.5'
       - run: uv sync --locked --extra dev
       - run: uv run --locked python -m pytest -q tests/test_owner_tier_fallback_dispatch_261015.py tests/test_3977_provider_default_temperature_bridge.py tests/test_attachments.py tests/test_dispatch_quota_refund.py tests/test_documents.py tests/test_grounding.py tests/test_service_binding.py tests/test_skills.py
 
   b62-full-suite:
     name: B62 full regression
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}
+    if: ${{ !cancelled() && ((github.event_name == 'push' && github.ref == 'refs/heads/main') || (needs.registry-ci-plan.result == 'success' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -415,7 +395,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
       - name: Verify committed host lock is current
         run: uv lock --check
       - name: Resolve B62 with shared Core path dependency
@@ -457,7 +437,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
       - name: Verify committed host lock is current
         run: uv lock --check
       - name: Resolve B62 with shared Core path dependency
@@ -522,7 +502,7 @@ jobs:
       - name: Install uv for B14 pilot
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
       - name: Install B14 test dependencies
         run: uv pip install --system -e . 'pytest>=8.3,<9' 'pytest-asyncio>=0.24,<1'
       - name: Compile B14 pilot

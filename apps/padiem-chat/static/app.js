@@ -2397,6 +2397,18 @@
     },
   });
 
+  // #5034 LOCAL4: the common notification inbox deep-links into the existing
+  // Claw inbox view focused on the exact item, so a notification never opens a
+  // second copy of the task/alert list. Read-only handle: it moves the view
+  // only and grants no new authority.
+  window.PadiemInboxOpener = Object.freeze({
+    open: (kind, itemId) => {
+      if (!authState.authenticated || (kind !== "alerts" && kind !== "tasks")) return false;
+      openClawInboxTarget(kind, typeof itemId === "string" && itemId ? itemId : "");
+      return true;
+    },
+  });
+
   // Hark's private web XLSX intake creates a separate trusted owner-owned
   // work conversation. This explicit navigation never guesses that it was the
   // currently displayed chat or fabricates an assistant answer/file READ grant.

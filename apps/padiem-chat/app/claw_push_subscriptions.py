@@ -162,8 +162,25 @@ class D1ClawPushSubscriptionStore:
             raw = await self._stmt(sql, *values).all()
         except Exception as exc:
             raise WorkspaceStorageError(f"D1 read failed: {exc}") from exc
-        rows = raw if isinstance(raw, list) else list(raw)
-        return [_row_to_dict(r) for r in rows]
+        if isinstance(raw, (list, tuple)):
+            rows = raw
+        elif isinstance(raw, dict):
+            rows = raw.get("results")
+        else:
+            rows = getattr(raw, "results", None)
+            if rows is None:
+                try:
+                    rows = list(raw)
+                except (TypeError, ValueError) as exc:
+                    raise WorkspaceStorageError(f"D1 read failed: {exc}") from exc
+        if rows is None:
+            raise WorkspaceStorageError("D1 read failed: missing results")
+        output: list[dict[str, Any]] = []
+        for row in rows:
+            item = _row_to_dict(row)
+            if item is not None:
+                output.append(item)
+        return output
 
     @staticmethod
     def _to_record(row: dict[str, Any]) -> PushSubscription:

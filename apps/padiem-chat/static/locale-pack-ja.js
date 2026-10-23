@@ -542,7 +542,7 @@
       "footer": "気軽に質問してみてください",
       "main-menu": "メインメニュー",
       "chat-menu": "チャットメニュー",
-      "new-chat-search-group": "新しいチャットと会話検索",
+      "sidebar-actions-group": "新しいチャット・会話検索・通知ボックス",
       "tools-connections-menu": "ツールと接続",
       "attach-file": "ファイルを添付",
       "account-settings": "アカウントと設定",

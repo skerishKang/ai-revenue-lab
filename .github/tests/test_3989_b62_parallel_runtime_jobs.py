@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import tempfile
+import textwrap
 import unittest
 
 WORKFLOW = Path(__file__).resolve().parents[1] / "workflows" / "b62-padiem-chat-ci.yml"
@@ -41,13 +42,18 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$WORKER_RESULT" = skipped', self.aggregate)
         self.assertIn('test "$PLAN_RESULT" = success', self.aggregate)
 
-    def test_both_parallel_jobs_depend_on_same_fail_closed_plan(self):
+    def test_parallel_jobs_preserve_pr_plan_with_main_host_override(self):
         condition = "if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}"
         for block in [self.host, self.worker]:
             self.assertIn("needs: registry-ci-plan", block)
-            self.assertIn(condition, block)
             self.assertIn("runs-on: ubuntu-latest", block)
             self.assertIn("timeout-minutes: 12", block)
+        self.assertIn(condition, self.worker)
+        original = condition.removeprefix("if: ${{ ").removesuffix(" }}")
+        self.assertIn(original, self.host)
+        self.assertIn("!cancelled()", self.host)
+        self.assertIn("github.event_name == 'push' && github.ref == 'refs/heads/main'", self.host)
+        self.assertIn("needs.registry-ci-plan.result == 'success'", self.host)
         self.assertNotIn("needs: b62-full-suite", self.worker)
         self.assertNotIn("needs: b62-worker-suite", self.host)
 
@@ -63,7 +69,8 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("B62_CI_MODE=B14_TESTS_ONLY", self.aggregate)
         self.assertIn('test "$MM_RESULT" = success', self.aggregate)
         for name in ("UI_RESULT", "MIXED_RESULT", "FULL_RESULT", "WORKER_RESULT", "QUICK_RESULT"):
-            self.assertIn('test "$' + name + '" = skipped', self.aggregate)
+            expected = '"$EXPECTED_FOCUSED_FULL"' if name == "FULL_RESULT" else "skipped"
+            self.assertIn('test "$' + name + '" = ' + expected, self.aggregate)
 
     def test_host_keeps_full_python_tests_and_core_safety(self):
         runner = (WORKFLOW.parents[1] / "scripts" / "b62_host_pytest_overlap_4070.sh").read_text(encoding="utf-8")
@@ -85,7 +92,7 @@ class ParallelB62JobsContract(unittest.TestCase):
             "uses: actions/checkout@v4",
             "uses: actions/setup-python@v5",
             "uses: actions/setup-node@v4",
-            "version: \"0.12.5\"",
+            "version: \"0.13.5\"",
             "uv lock --check",
             "uv sync --locked --extra dev",
             "Verify locked host dependency versions",
@@ -161,7 +168,8 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$UI_RESULT" = success',self.aggregate)
         self.assertIn("B62_CI_MODE=STATIC_UI_ONLY",self.aggregate)
         for x in ("FULL_RESULT","WORKER_RESULT","MM_RESULT","QUICK_RESULT"):
-            self.assertIn('test "$'+x+'" = skipped',self.aggregate)
+            expected = '"$EXPECTED_FOCUSED_FULL"' if x == "FULL_RESULT" else "skipped"
+            self.assertIn('test "$'+x+'" = '+expected,self.aggregate)
 
     def test_b14_only_keeps_full_b62_chat_b14_and_worker_bundle_gates(self):
         # The b14_only shortcut is allowed only at the live Workerd step.
@@ -185,7 +193,7 @@ class ParallelB62JobsContract(unittest.TestCase):
     def test_registry_quick_path_still_has_aggregator_and_is_not_blocked(self):
         self.assertIn("if: ${{ needs.registry-ci-plan.outputs.lane == 'model_registration_only' }}", self.registry)
         self.assertIn('test "$QUICK_RESULT" = success', self.aggregate)
-        self.assertIn('test "$FULL_RESULT" = skipped', self.aggregate)
+        self.assertIn('test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"', self.aggregate)
         self.assertIn('test "$WORKER_RESULT" = skipped', self.aggregate)
         self.assertIn('test "$MM_RESULT" = skipped', self.aggregate)
 
@@ -193,7 +201,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         pilot = job("b14-multimodal-test", self.source)
         self.assertIn('python-version: "3.12"', pilot)
         self.assertIn("astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9", pilot)
-        self.assertIn('version: "0.12.5"', pilot)
+        self.assertIn('version: "0.13.5"', pilot)
         self.assertIn("uv pip install --system -e . 'pytest>=8.3,<9' 'pytest-asyncio>=0.24,<1'", pilot)
         self.assertIn("python -m compileall -q app/pilot app/factory.py", pilot)
         self.assertIn("python -m pytest -q tests/test_multimodal.py tests/test_pilot.py", pilot)
@@ -256,12 +264,101 @@ class ParallelB62JobsContract(unittest.TestCase):
             'elif [ "$SCOPE" = static_only ]')[0]
         self.assertIn('test "$MM_RESULT" = success', b14_tests_only_branch)
 
-    def test_classifier_tests_and_both_impact_triggers_retained(self):
+    def test_classifier_tests_and_pr_paths_retained_with_unfiltered_main(self):
         self.assertIn("test_3989_b62_parallel_runtime_jobs.py -q", self.plan)
-        self.assertEqual(self.source.count('      - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"'), 2)
+        self.assertEqual(self.source.count('      - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"'), 1)
         self.assertIn("b62_ci_impact_scope_3989.py", self.plan)
-        self.assertEqual(self.source.count('      - ".github/workflows/b62-padiem-chat-ci.yml"'), 2)
+        self.assertEqual(self.source.count('      - ".github/workflows/b62-padiem-chat-ci.yml"'), 1)
 
+
+
+    def test_main_full_suite_ignores_classifier_but_pr_and_manual_keep_it(self):
+        expression = re.search(r"^    if: \$\{\{ (.+) \}\}$", self.host, re.M).group(1)
+        reduced = ("static_only", "ui_mixed", "core_focused_only",
+                   "b14_tests_only", "b14_attempt_only")
+        for event, ref in (("push", "refs/heads/main"),
+                           ("push", "refs/heads/feature"),
+                           ("pull_request", "refs/pull/1/merge"),
+                           ("workflow_dispatch", "refs/heads/main")):
+            for scope in (*reduced, "full", "chat_only", "tests_only", "b14_only", ""):
+                for lane in ("model_registration_only", "full", ""):
+                    for result in ("success", "failure", "skipped"):
+                        for cancelled in (False, True):
+                            with self.subTest(event=event, ref=ref, scope=scope,
+                                              lane=lane, result=result, cancelled=cancelled):
+                                replacements = {
+                                    "github.event_name": repr(event),
+                                    "github.ref": repr(ref),
+                                    "needs.registry-ci-plan.outputs.scope": repr(scope),
+                                    "needs.registry-ci-plan.outputs.lane": repr(lane),
+                                    "needs.registry-ci-plan.result": repr(result),
+                                    "!cancelled()": repr(not cancelled),
+                                }
+                                evaluated = expression
+                                for key, value in replacements.items():
+                                    evaluated = evaluated.replace(key, value)
+                                evaluated = evaluated.replace("&&", "and").replace("||", "or")
+                                expected = not cancelled and (
+                                    (event == "push" and ref == "refs/heads/main")
+                                    or (result == "success" and lane != "model_registration_only"
+                                        and scope not in reduced)
+                                )
+                                self.assertEqual(eval(evaluated, {"__builtins__": {}}), expected)
+
+    def test_main_push_has_no_path_filter_and_e2e_keeps_the_pr_contract(self):
+        push = self.source.split("  push:\n", 1)[1].split("  pull_request:", 1)[0]
+        self.assertEqual(push.strip(), "branches: [main]")
+        e2e = (WORKFLOW.parent / "web-desktop-nonmodel-e2e.yml").read_text(encoding="utf-8")
+        push = e2e.split("  push:\n", 1)[1].split("  pull_request:", 1)[0]
+        self.assertEqual(push.strip(), "branches: [main]")
+        pr = e2e.split("  pull_request:\n", 1)[1].split("  workflow_dispatch:", 1)[0]
+        self.assertEqual(pr.strip(), 'paths:\n      - "tests/e2e/**"\n'
+                                    '      - ".github/workflows/web-desktop-nonmodel-e2e.yml"')
+        block = job("e2e", e2e)
+        self.assertIsNone(re.search(r"^    if:", block, re.M))
+        self.assertIn("os: [ubuntu-latest, windows-latest]", block)
+        self.assertIn("uv run --locked python -m pytest ../../tests/e2e -q", block)
+
+    def test_main_aggregate_requires_full_success_without_changing_pr_lane_results(self):
+        script = self.aggregate.split("        run: |\n", 1)[1].split("\n      - name:", 1)[0]
+        script = textwrap.dedent(script)
+        self.assertIn("MAIN_PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}",
+                      self.aggregate)
+        cases = (
+            ("model_registration_only", "full", ("QUICK_RESULT",)),
+            ("full", "b14_tests_only", ("MM_RESULT",)),
+            ("full", "b14_attempt_only", ("ATTEMPT_RESULT",)),
+            ("full", "core_focused_only", ("PARSER_RESULT",)),
+            ("full", "static_only", ("UI_RESULT",)),
+            ("full", "ui_mixed", ("UI_RESULT", "MIXED_RESULT")),
+            ("full", "full", ("WORKER_RESULT", "MM_RESULT")),
+            ("full", "b14_only", ("WORKER_RESULT", "MM_RESULT")),
+        )
+        result_keys = ("UI_RESULT", "MIXED_RESULT", "PARSER_RESULT", "ATTEMPT_RESULT",
+                       "WORKER_RESULT", "MM_RESULT", "QUICK_RESULT")
+        for main_push in (False, True):
+            for lane, scope, selected in cases:
+                env = dict(os.environ, LANE=lane, SCOPE=scope, PLAN_RESULT="success",
+                           MAIN_PUSH=str(main_push).lower(),
+                           **{key: "success" if key in selected else "skipped" for key in result_keys})
+                expected_full = "success" if main_push or (lane == "full" and scope in ("full", "b14_only")) else "skipped"
+                for result in ("success", "failure", "skipped", "cancelled"):
+                    with self.subTest(main_push=main_push, lane=lane, scope=scope, result=result):
+                        proc = subprocess.run(["bash", "-c", script], env=dict(env, FULL_RESULT=result),
+                                              capture_output=True, text=True, timeout=10)
+                        self.assertEqual(proc.returncode == 0, result == expected_full, proc.stderr)
+                # The main exception cannot waive an unrelated required lane failure.
+                required_results = ("PLAN_RESULT", *selected)
+                if scope == "full" and lane == "full":
+                    # #5002: the independent B14 failure is not a product gate.
+                    required_results = tuple(key for key in required_results if key != "MM_RESULT")
+                for required in required_results:
+                    proc = subprocess.run(
+                        ["bash", "-c", script],
+                        env=dict(env, FULL_RESULT=expected_full, **{required: "failure"}),
+                        capture_output=True, text=True, timeout=10,
+                    )
+                    self.assertNotEqual(proc.returncode, 0, required)
 
     def _exercise_host_overlap(self, scope="full", fail_target=""):
         script = WORKFLOW.parents[1] / "scripts" / "b62_host_pytest_overlap_4070.sh"

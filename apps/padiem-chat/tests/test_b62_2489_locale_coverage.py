@@ -94,7 +94,7 @@ def test_4807_reproduced_aria_labels_are_locale_bound_across_all_sources():
     # zh-CN switch because their aria-labels never entered the locale binding
     # system. Each binding must exist and every locale source must declare it.
     html = read("index.html")
-    assert 'data-locale-aria-label="new-chat-search-group"' in html
+    assert 'data-locale-aria-label="sidebar-actions-group"' in html
     assert 'data-locale-aria-label="tools-connections-menu"' in html
     assert 'data-locale-aria-label="document-formats"' in html
     assert 'data-locale-aria-label="attach-file"' in html
@@ -103,7 +103,7 @@ def test_4807_reproduced_aria_labels_are_locale_bound_across_all_sources():
     for name in ("locale.js", "locale-pack-ja.js", "locale-pack-zh-CN.js"):
         source = read(name)
         for key in (
-            "new-chat-search-group", "tools-connections-menu", "attach-file",
+            "sidebar-actions-group", "tools-connections-menu", "attach-file",
             "connection-status-check",
         ):
             assert f'"{key}":' in source, (name, key)

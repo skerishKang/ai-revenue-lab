@@ -542,7 +542,7 @@
       "footer": "轻松提问吧",
       "main-menu": "主菜单",
       "chat-menu": "聊天菜单",
-      "new-chat-search-group": "新对话与会话搜索",
+      "sidebar-actions-group": "新对话、会话搜索与通知箱",
       "tools-connections-menu": "工具与连接",
       "attach-file": "附加文件",
       "account-settings": "账号与设置",

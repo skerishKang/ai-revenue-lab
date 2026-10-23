@@ -42,6 +42,10 @@ _NATIVE_FAILURE_CODES = frozenset({
     "native_pc_protected_gateway_unavailable", "native_pc_canonical_result_invalid",
     "enrollment_credential_handoff_failed",
     "native_pc_terminal_unconfirmed", "native_pc_terminal_revoke_unconfirmed",
+    # #3099: the canonical Broker already holds an ACTIVE binding for this
+    # device. That is a definite "already registered" answer, not an unknown
+    # handoff failure, so the owner must be told which one happened.
+    "duplicate_device_binding",
 })
 
 

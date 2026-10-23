@@ -1,6 +1,27 @@
 (() => {
   "use strict";
 
+  const STATUS_LABELS = {
+    queued: "준비중",
+    working: "변환중",
+    reviewed: "검토중",
+    done: "완료",
+    failed: "실패",
+  };
+
+  const ERROR_MESSAGES = {
+    unauthorized: "로그인이 필요합니다.",
+    document_convert_unavailable: "지금은 변환을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+    document_convert_not_found: "작업을 찾을 수 없습니다. 새 작업을 시작해 주세요.",
+    convert_store_unavailable: "작업 기록을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    convert_failed: "변환에 실패했습니다. 다시 시도해 주세요.",
+    invalid_archive: "ZIP 파일을 열 수 없습니다.",
+    empty_archive: "ZIP 파일 안에 변환할 PDF가 없습니다.",
+    invalid_document: "PDF 또는 ZIP 파일만 올릴 수 있습니다.",
+    document_too_large: "파일이 너무 큽니다.",
+    pdf_magic_mismatch: "PDF 형식이 아니거나 손상된 파일입니다.",
+  };
+
   function el(tag, cls, text) {
     const n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -8,8 +29,50 @@
     return n;
   }
 
-  function authHeaders(extra) {
-    return Object.assign({ "Content-Type": "application/octet-stream" }, extra || {});
+  function statusChip(status) {
+    const known = Object.prototype.hasOwnProperty.call(STATUS_LABELS, status);
+    const chip = el("span", "pdfmd-status-chip", known ? STATUS_LABELS[status] : "확인 필요");
+    chip.dataset.status = known ? status : "unknown";
+    return chip;
+  }
+
+  function modeLabel(mode) {
+    return mode === "verify" ? "검증 변환" : "빠른 변환";
+  }
+
+  function describeError(err, fallback) {
+    if (err && err.code && ERROR_MESSAGES[err.code]) return ERROR_MESSAGES[err.code];
+    if (err && err.status === 401) return ERROR_MESSAGES.unauthorized;
+    return fallback || "잠시 후 다시 시도해 주세요.";
+  }
+
+  function pad(value) {
+    return String(value).padStart(2, "0");
+  }
+
+  function formatWhen(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "날짜 없음";
+    return (
+      date.getFullYear() + "." + pad(date.getMonth() + 1) + "." + pad(date.getDate()) +
+      " " + pad(date.getHours()) + ":" + pad(date.getMinutes())
+    );
+  }
+
+  function countLabel(count) {
+    return (Number(count) || 0) + "개 파일";
+  }
+
+  function emptyBlock(title, detail, steps) {
+    const box = el("div", "pdfmd-empty");
+    box.appendChild(el("strong", null, title));
+    if (detail) box.appendChild(el("p", null, detail));
+    if (steps && steps.length) {
+      const list = document.createElement("ol");
+      steps.forEach((step) => list.appendChild(el("li", null, step)));
+      box.appendChild(list);
+    }
+    return box;
   }
 
   async function api(path, opts) {
@@ -40,16 +103,16 @@
 
   window.initPdfMdUtility = function (panel) {
     panel.replaceChildren();
+    panel.classList.add("pdfmd-shell");
 
     const header = el("div", "pdfmd-header");
     header.appendChild(el("h3", null, "PDF → Markdown 변환"));
-    const desc = el("p", "pdfmd-desc", "PDF 파일을 Markdown으로 변환합니다. 빠른 변환은 텍스트 레이어를 그대로 옮기고, 검증 변환은 원본과 결과의 일치도를 함께 보여줍니다. OCR(정밀 변환)은 현재 지원되지 않습니다.");
-    header.appendChild(desc);
+    header.appendChild(el("p", "pdfmd-desc", "PDF나 ZIP을 올려 변환하면 원본과 Markdown을 나란히 비교하고 내려받을 수 있습니다. OCR(정밀 변환)은 지원하지 않습니다."));
     panel.appendChild(header);
 
     // Mode + job controls
     const controls = el("div", "pdfmd-controls");
-    const modeLabel = el("label", null, "변환 모드 ");
+    const modeField = el("label", null, "변환 방식 ");
     const modeSel = document.createElement("select");
     modeSel.id = "pdfmdMode";
     [["fast", "빠른 변환"], ["verify", "검증 변환"]].forEach(([v, t]) => {
@@ -58,29 +121,46 @@
       if (v === "fast") o.selected = true;
       modeSel.appendChild(o);
     });
-    modeLabel.appendChild(modeSel);
-    controls.appendChild(modeLabel);
+    modeField.appendChild(modeSel);
+    controls.appendChild(modeField);
 
-    const newJobBtn = el("button", "pdfmd-btn", "새 작업 만들기");
+    const newJobBtn = el("button", "pdfmd-btn", "새 작업");
     newJobBtn.type = "button";
+    newJobBtn.hidden = true;
     controls.appendChild(newJobBtn);
 
     const jobIdSpan = el("span", "pdfmd-jobid", "");
+    jobIdSpan.hidden = true;
     controls.appendChild(jobIdSpan);
     panel.appendChild(controls);
 
-    // Upload area
+    // Upload area: one large, keyboard-operable target. The picker is the
+    // primary action on mobile, where drag-and-drop copy alone is no help.
     const drop = el("div", "pdfmd-drop");
-    drop.textContent = "PDF 또는 ZIP 파일을 여기에 끌어다 놓거나 클릭하여 선택하세요 (다중 선택 가능)";
+    drop.setAttribute("role", "button");
+    drop.tabIndex = 0;
+    drop.setAttribute("aria-label", "PDF 또는 ZIP 파일 선택");
+    const dropTitle = el("span", "pdfmd-drop-title", "PDF 파일을 선택하세요");
+    const dropSub = el("span", "pdfmd-drop-sub", "끌어다 놓거나 눌러서 선택 · ZIP과 여러 파일도 가능");
+    dropSub.id = "pdfmdDropHint";
+    const dropCta = el("span", "pdfmd-drop-cta", "파일 선택");
+    drop.appendChild(dropTitle);
+    drop.appendChild(dropSub);
+    drop.appendChild(dropCta);
+    drop.setAttribute("aria-describedby", "pdfmdDropHint");
+    panel.appendChild(drop);
+
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.multiple = true;
     fileInput.accept = ".pdf,.zip,application/pdf,application/zip";
     fileInput.hidden = true;
-    drop.appendChild(fileInput);
-    panel.appendChild(drop);
+    panel.appendChild(fileInput);
 
     const uploadStatus = el("div", "pdfmd-status", "");
+    uploadStatus.id = "pdfmdStatus";
+    uploadStatus.setAttribute("role", "status");
+    uploadStatus.setAttribute("aria-live", "polite");
     panel.appendChild(uploadStatus);
 
     // Items
@@ -90,16 +170,27 @@
     // Preview
     const previewWrap = el("div", "pdfmd-preview");
     previewWrap.hidden = true;
-    const previewTitle = el("h4", null, "원본 / 변환본 비교");
+    const previewTitle = el("h4", null, "원본과 변환본 비교");
     previewWrap.appendChild(previewTitle);
     const previewGrid = el("div", "pdfmd-preview-grid");
+
+    const origPane = el("div", "pdfmd-pane");
+    origPane.appendChild(el("span", "pdfmd-pane-label", "원본 PDF"));
     const origFrame = document.createElement("iframe");
     origFrame.className = "pdfmd-iframe";
     origFrame.title = "원본 PDF";
+    origPane.appendChild(origFrame);
+
+    const mdPane = el("div", "pdfmd-pane");
+    mdPane.appendChild(el("span", "pdfmd-pane-label", "Markdown 변환본"));
     const mdView = document.createElement("pre");
     mdView.className = "pdfmd-md";
-    previewGrid.appendChild(origFrame);
-    previewGrid.appendChild(mdView);
+    mdView.tabIndex = 0;
+    mdView.setAttribute("aria-label", "Markdown 변환본");
+    mdPane.appendChild(mdView);
+
+    previewGrid.appendChild(origPane);
+    previewGrid.appendChild(mdPane);
     previewWrap.appendChild(previewGrid);
     panel.appendChild(previewWrap);
 
@@ -110,23 +201,48 @@
     panel.appendChild(archiveBtn);
 
     // History
-    const histHeader = el("h4", null, "작업 이력");
+    const histHeader = el("h4", "pdfmd-history-head", "작업 이력");
     panel.appendChild(histHeader);
     const histList = el("div", "pdfmd-history");
     panel.appendChild(histList);
 
     let currentJobId = null;
     let currentItems = [];
+    let lastUploadError = "";
+
+    function markActiveHistory() {
+      histList.querySelectorAll(".pdfmd-history-item").forEach((btn) => {
+        if (btn.dataset.jobId === currentJobId) btn.setAttribute("aria-current", "true");
+        else btn.removeAttribute("aria-current");
+      });
+    }
 
     function setJobId(id) {
+      if (id !== currentJobId) {
+        previewWrap.hidden = true;
+        mdView.textContent = "";
+        origFrame.removeAttribute("src");
+      }
       currentJobId = id;
-      jobIdSpan.textContent = id ? "작업: " + id : "";
+      jobIdSpan.textContent = id ? "작업 " + id.slice(-8) : "";
+      jobIdSpan.title = id || "";
+      jobIdSpan.hidden = !id;
+      newJobBtn.hidden = !id;
       archiveBtn.hidden = !id;
+      markActiveHistory();
+    }
+
+    function startNewJob() {
+      currentItems = [];
+      setJobId(null);
+      uploadStatus.textContent = "새 작업을 시작합니다. 파일을 선택하세요.";
+      renderItems();
+      drop.focus();
     }
 
     async function createJob() {
       const mode = modeSel.value;
-      uploadStatus.textContent = "작업 생성 중...";
+      uploadStatus.textContent = "작업을 준비하는 중...";
       try {
         const data = await api("/api/document-conversions", {
           method: "POST",
@@ -134,26 +250,30 @@
           body: JSON.stringify({ mode: mode }),
         });
         setJobId(data.job.id);
-        uploadStatus.textContent = "작업이 생성되었습니다.";
+        uploadStatus.textContent = "작업이 준비되었습니다. 파일을 올려 주세요.";
         await loadJob();
+        await loadHistory();
       } catch (e) {
-        uploadStatus.textContent = "작업 생성 실패: " + e.message;
+        uploadStatus.textContent = "작업을 만들지 못했습니다. " + describeError(e);
       }
     }
 
-    newJobBtn.addEventListener("click", createJob);
+    newJobBtn.addEventListener("click", startNewJob);
+    modeSel.addEventListener("change", () => {
+      if (currentJobId) uploadStatus.textContent = "변환 방식은 새 작업부터 적용됩니다.";
+    });
 
     async function uploadFile(file) {
+      lastUploadError = "";
       if (!currentJobId) await createJob();
-      if (!currentJobId) return;
+      if (!currentJobId) return false;
       const isZip = file.name.toLowerCase().endsWith(".zip") || file.type === "application/zip";
       const mediaType = isZip ? "application/zip" : "application/pdf";
       const buf = await file.arrayBuffer();
       uploadStatus.textContent = file.name + " 업로드 중...";
       try {
-        const res = await fetch("/api/document-conversions/" + currentJobId + "/files", {
+        const data = await api("/api/document-conversions/" + currentJobId + "/files", {
           method: "POST",
-          credentials: "include",
           headers: {
             "Content-Type": "application/octet-stream",
             "X-Padiem-Filename": encodeURIComponent(file.name),
@@ -161,28 +281,49 @@
           },
           body: buf,
         });
-        if (!res.ok) {
-          let code = "http_" + res.status;
-          try { const j = await res.json(); if (j && j.error && j.error.code) code = j.error.code; } catch (_) {}
-          throw new Error(code);
-        }
-        const data = await res.json();
         if (data.rejected && data.rejected.length) {
-          uploadStatus.textContent = file.name + " 일부 거부: " + data.rejected.map(r => r.name + "(" + r.code + ")").join(", ");
-        } else {
-          uploadStatus.textContent = file.name + " 업로드 완료";
+          const rejected = data.rejected.map((r) => r.name + ": " + describeError({ code: r.code }, "지원하지 않는 파일입니다.")).join(" / ");
+          lastUploadError = rejected;
+          uploadStatus.textContent = "일부 파일을 올리지 못했습니다. " + rejected;
+          await loadJob();
+          return false;
         }
+        uploadStatus.textContent = file.name + " 업로드 완료";
         await loadJob();
+        return true;
       } catch (e) {
-        uploadStatus.textContent = file.name + " 업로드 실패: " + e.message;
+        lastUploadError = describeError(e);
+        uploadStatus.textContent = file.name + " 업로드 실패. " + lastUploadError;
+        return false;
       }
     }
 
     async function uploadFiles(files) {
-      for (const f of files) await uploadFile(f);
+      if (!files.length) return;
+      let uploaded = 0;
+      let failed = 0;
+      for (const f of files) {
+        if (await uploadFile(f)) uploaded += 1;
+        else failed += 1;
+      }
+      if (uploaded && !failed) {
+        uploadStatus.textContent = uploaded + "개 파일 업로드 완료. 목록에서 '변환 실행'을 눌러 주세요.";
+      } else if (uploaded && failed) {
+        uploadStatus.textContent = uploaded + "개 업로드 완료, " + failed + "개 파일을 올리지 못했습니다. " + (lastUploadError || "파일 형식을 확인해 주세요.");
+      }
+      if (uploaded) await loadHistory();
     }
 
-    drop.addEventListener("click", () => fileInput.click());
+    function openPicker() {
+      fileInput.click();
+    }
+    drop.addEventListener("click", openPicker);
+    drop.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openPicker();
+      }
+    });
     drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("dragover"); });
     drop.addEventListener("dragleave", () => drop.classList.remove("dragover"));
     drop.addEventListener("drop", (e) => {
@@ -196,97 +337,141 @@
     });
 
     async function loadJob() {
-      if (!currentJobId) return;
+      if (!currentJobId) {
+        renderItems();
+        return;
+      }
       try {
         const data = await api("/api/document-conversions/" + currentJobId);
         currentItems = data.items || [];
         renderItems();
       } catch (e) {
-        uploadStatus.textContent = "작업 조회 실패: " + e.message;
+        uploadStatus.textContent = "작업을 불러오지 못했습니다. " + describeError(e);
       }
     }
 
     function renderItems() {
       itemsWrap.replaceChildren();
-      if (!currentItems.length) return;
+      if (!currentJobId) {
+        itemsWrap.appendChild(emptyBlock("첫 PDF를 변환해 보세요.", null, [
+          "PDF 또는 ZIP 파일을 선택합니다.",
+          "목록에서 '변환 실행'을 누릅니다.",
+          "원본과 Markdown을 비교하고 내려받습니다.",
+        ]));
+        return;
+      }
+      if (!currentItems.length) {
+        itemsWrap.appendChild(emptyBlock("이 작업에는 아직 파일이 없습니다.", "위에서 PDF 또는 ZIP 파일을 선택하세요.", null));
+        return;
+      }
       const list = el("div", "pdfmd-itemlist");
       currentItems.forEach((item) => {
         const card = el("div", "pdfmd-item");
         const title = el("div", "pdfmd-item-title", item.page_count ? item.name + " (" + item.page_count + "쪽)" : item.name);
         card.appendChild(title);
-        const status = el("div", "pdfmd-item-status", "상태: " + item.status + (item.error_code ? " (" + item.error_code + ")" : ""));
-        card.appendChild(status);
+
+        const meta = el("div", "pdfmd-item-meta");
+        meta.appendChild(statusChip(item.status));
+        if (item.character_count) {
+          meta.appendChild(el("span", "pdfmd-item-count", Number(item.character_count).toLocaleString("ko-KR") + "자"));
+        }
+        card.appendChild(meta);
+
+        if (item.error_code) {
+          const err = el("div", "pdfmd-warn", describeError({ code: item.error_code }, "변환에 실패했습니다."));
+          err.title = item.error_code;
+          card.appendChild(err);
+        }
 
         const actions = el("div", "pdfmd-item-actions");
-        const runBtn = el("button", "pdfmd-btn", "변환 실행");
-        runBtn.type = "button";
-        runBtn.disabled = item.has_markdown;
-        runBtn.addEventListener("click", async () => {
-          runBtn.disabled = true;
-          uploadStatus.textContent = item.name + " 변환 중...";
-          try {
-            await api("/api/document-conversions/items/" + item.id + "/run", { method: "POST" });
-            uploadStatus.textContent = item.name + " 변환 완료";
-            await loadJob();
-          } catch (e) {
-            uploadStatus.textContent = item.name + " 변환 실패: " + e.message;
-            await loadJob();
-          }
-        });
-        actions.appendChild(runBtn);
 
-        if (item.has_markdown) {
-          const reviewBtn = el("button", "pdfmd-btn", "검토 완료");
-          reviewBtn.type = "button";
-          reviewBtn.addEventListener("click", async () => {
+        if (!item.has_markdown) {
+          const runBtn = el("button", "pdfmd-btn pdfmd-btn-primary", item.status === "failed" ? "다시 변환" : "변환 실행");
+          runBtn.type = "button";
+          runBtn.setAttribute("aria-label", item.name + " " + runBtn.textContent);
+          runBtn.addEventListener("click", async () => {
+            runBtn.disabled = true;
+            uploadStatus.textContent = item.name + " 변환 중...";
             try {
-              await api("/api/document-conversions/items/" + item.id + "/review", { method: "POST" });
+              await api("/api/document-conversions/items/" + item.id + "/run", { method: "POST" });
+              uploadStatus.textContent = item.name + " 변환 완료. 원본과 결과를 비교해 보세요.";
               await loadJob();
-            } catch (e) { uploadStatus.textContent = "검토 실패: " + e.message; }
+              await loadHistory();
+            } catch (e) {
+              uploadStatus.textContent = item.name + " 변환 실패. " + describeError(e);
+              await loadJob();
+              await loadHistory();
+            }
           });
-          actions.appendChild(reviewBtn);
+          actions.appendChild(runBtn);
+        } else {
+          const previewBtn = el("button", "pdfmd-btn pdfmd-btn-primary", "비교 보기");
+          previewBtn.type = "button";
+          previewBtn.setAttribute("aria-label", item.name + " 원본과 변환본 비교");
+          previewBtn.addEventListener("click", async () => {
+            previewWrap.hidden = false;
+            mdView.textContent = "Markdown을 불러오는 중...";
+            origFrame.src = "/api/document-conversions/items/" + item.id + "/original?display=inline";
+            try {
+              const res = await fetch("/api/document-conversions/items/" + item.id + "/markdown?display=inline", { credentials: "include" });
+              if (!res.ok) throw new Error("http_" + res.status);
+              mdView.textContent = await res.text();
+            } catch (e) {
+              mdView.textContent = "미리보기를 불러오지 못했습니다. " + describeError(e);
+            }
+          });
+          actions.appendChild(previewBtn);
 
           const mdBtn = el("button", "pdfmd-btn", "MD 다운로드");
           mdBtn.type = "button";
+          mdBtn.setAttribute("aria-label", item.name + " Markdown 다운로드");
           mdBtn.addEventListener("click", async () => {
             const res = await fetch("/api/document-conversions/items/" + item.id + "/markdown", { credentials: "include" });
-            if (!res.ok) { uploadStatus.textContent = "다운로드 실패"; return; }
+            if (!res.ok) { uploadStatus.textContent = "Markdown 다운로드에 실패했습니다."; return; }
             const blob = await res.blob();
             downloadBlob(blob, (item.name.replace(/\.[^.]+$/, "") || "document") + ".md");
           });
           actions.appendChild(mdBtn);
 
-          const origBtn = el("button", "pdfmd-btn", "원본 다운로드");
+          const origBtn = el("button", "pdfmd-btn", "원본 PDF");
           origBtn.type = "button";
+          origBtn.setAttribute("aria-label", item.name + " 원본 PDF 다운로드");
           origBtn.addEventListener("click", async () => {
             const res = await fetch("/api/document-conversions/items/" + item.id + "/original", { credentials: "include" });
-            if (!res.ok) { uploadStatus.textContent = "다운로드 실패"; return; }
+            if (!res.ok) { uploadStatus.textContent = "원본 PDF 다운로드에 실패했습니다."; return; }
             const blob = await res.blob();
             downloadBlob(blob, (item.name.replace(/\.[^.]+$/, "") || "document") + ".pdf");
           });
           actions.appendChild(origBtn);
 
-          const previewBtn = el("button", "pdfmd-btn", "비교 보기");
-          previewBtn.type = "button";
-          previewBtn.addEventListener("click", async () => {
-            previewWrap.hidden = false;
-            origFrame.src = "/api/document-conversions/items/" + item.id + "/original?display=inline";
-            try {
-              const res = await fetch("/api/document-conversions/items/" + item.id + "/markdown?display=inline", { credentials: "include" });
-              const text = await res.text();
-              mdView.textContent = text;
-            } catch (e) { mdView.textContent = "미리보기 실패: " + e.message; }
-          });
-          actions.appendChild(previewBtn);
+          if (item.status !== "done") {
+            const reviewBtn = el("button", "pdfmd-btn", "검토 완료");
+            reviewBtn.type = "button";
+            reviewBtn.setAttribute("aria-label", item.name + " 검토 완료");
+            reviewBtn.addEventListener("click", async () => {
+              try {
+                await api("/api/document-conversions/items/" + item.id + "/review", { method: "POST" });
+                await loadJob();
+                await loadHistory();
+              } catch (e) {
+                uploadStatus.textContent = "검토 상태를 저장하지 못했습니다. " + describeError(e);
+              }
+            });
+            actions.appendChild(reviewBtn);
+          }
         }
 
         const delBtn = el("button", "pdfmd-btn", "삭제");
         delBtn.type = "button";
+        delBtn.setAttribute("aria-label", item.name + " 삭제");
         delBtn.addEventListener("click", async () => {
           try {
             await api("/api/document-conversions/items/" + item.id, { method: "DELETE" });
             await loadJob();
-          } catch (e) { uploadStatus.textContent = "삭제 실패: " + e.message; }
+            await loadHistory();
+          } catch (e) {
+            uploadStatus.textContent = "파일을 삭제하지 못했습니다. " + describeError(e);
+          }
         });
         actions.appendChild(delBtn);
 
@@ -308,25 +493,47 @@
 
     archiveBtn.addEventListener("click", async () => {
       if (!currentJobId) return;
-      const res = await fetch("/api/document-conversions/" + currentJobId + "/archive", { credentials: "include" });
-      if (!res.ok) { uploadStatus.textContent = "ZIP 다운로드 실패"; return; }
-      const blob = await res.blob();
-      downloadBlob(blob, "pdf-to-markdown-" + currentJobId + ".zip");
+      archiveBtn.disabled = true;
+      try {
+        const res = await fetch("/api/document-conversions/" + currentJobId + "/archive", { credentials: "include" });
+        if (!res.ok) {
+          uploadStatus.textContent = "ZIP 다운로드에 실패했습니다.";
+          return;
+        }
+        const blob = await res.blob();
+        downloadBlob(blob, "pdf-to-markdown-" + currentJobId + ".zip");
+      } catch (e) {
+        uploadStatus.textContent = "ZIP 다운로드에 실패했습니다. " + describeError(e);
+      } finally {
+        archiveBtn.disabled = false;
+      }
     });
 
     async function loadHistory() {
+      histList.replaceChildren(el("p", "pdfmd-empty", "작업 이력을 불러오는 중..."));
       try {
         const data = await api("/api/document-conversions?limit=50");
         histList.replaceChildren();
         const jobs = data.jobs || [];
-        if (!jobs.length) { histList.textContent = "이력이 없습니다."; return; }
+        if (!jobs.length) {
+          histList.appendChild(emptyBlock("아직 작업 이력이 없습니다.", "첫 파일을 변환하면 여기에 기록됩니다.", null));
+          return;
+        }
         const ul = document.createElement("ul");
         ul.className = "pdfmd-history-list";
         jobs.forEach((job) => {
           const li = document.createElement("li");
-          const btn = document.createElement("button");
+          const btn = el("button", "pdfmd-history-item");
           btn.type = "button";
-          btn.textContent = job.id + " (" + job.status + ", " + job.item_count + "개, " + job.mode + ")";
+          btn.dataset.jobId = job.id;
+          const main = el("span", "pdfmd-history-main");
+          const when = formatWhen(job.created_at);
+          main.appendChild(el("span", "pdfmd-history-when", when));
+          main.appendChild(el("span", "pdfmd-history-meta", countLabel(job.item_count) + " · " + modeLabel(job.mode)));
+          btn.appendChild(main);
+          const chip = statusChip(job.status);
+          btn.appendChild(chip);
+          btn.setAttribute("aria-label", when + ", " + countLabel(job.item_count) + ", " + modeLabel(job.mode) + ", 상태 " + chip.textContent);
           btn.addEventListener("click", async () => {
             setJobId(job.id);
             await loadJob();
@@ -335,11 +542,18 @@
           ul.appendChild(li);
         });
         histList.appendChild(ul);
+        markActiveHistory();
       } catch (e) {
-        histList.textContent = "이력 조회 실패: " + e.message;
+        histList.replaceChildren();
+        if (e.status === 401) {
+          histList.appendChild(emptyBlock("로그인하면 작업 이력을 볼 수 있습니다.", null, null));
+        } else {
+          histList.appendChild(emptyBlock("작업 이력을 불러오지 못했습니다.", describeError(e), null));
+        }
       }
     }
 
+    renderItems();
     loadHistory();
   };
 })();

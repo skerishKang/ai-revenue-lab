@@ -438,6 +438,17 @@ def _no_pc_answer() -> str:
     )
 
 
+def _no_pc_lane_answer(files_only: bool) -> str:
+    """Truthful refusal for a PC request that has no verified target (pre-#5574 wording)."""
+    if files_only:
+        return (
+            "검증된 PC 연결을 확인하지 못해 파일 목록을 조회할 수 없습니다. "
+            "PC 연결을 먼저 확인한 뒤 다시 요청해 주세요. "
+            "연결되지 않은 PC의 파일을 추측해서 안내하지 않았습니다."
+        )
+    return _no_pc_answer()
+
+
 def _conversation_history(messages: Any, user_text: str) -> tuple[dict[str, str], ...]:
     """Prior user/assistant turns, bounded, for the scope decision."""
     if not isinstance(messages, (list, tuple)):
@@ -554,6 +565,15 @@ async def execute_chat_pc_drive_lane(
         if isinstance(execution_user_text, str) and execution_user_text.strip()
         else user_text
     )
+    # Lane entry (restored 2026-10-24, interim until the tool-calling entry
+    # lands): only a PC drive/file request enters this lane; every other turn
+    # keeps the ordinary streaming path and pays no extra call. The AI still
+    # selects the tool itself inside the Engine step (#5573).
+    drive_requested = is_chat_pc_drive_query(execution_text)
+    files_requested = is_chat_pc_files_query(execution_text)
+    if not drive_requested and not files_requested:
+        return None
+    files_only = files_requested and not drive_requested
     list_only = False
     client_run_id = _client_lane_run_id(run_id)
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
@@ -638,12 +658,22 @@ async def execute_chat_pc_drive_lane(
                 "선택한 PC가 서버 실행 대상과 일치하지 않습니다. 작업 대상을 다시 선택해 주세요.",
                 403,
             )
-    if not pc_context.devices:
-        # No verified PC exists for this account: the turn has no PC context
-        # and the ordinary path continues without any extra call.
-        return None
+    if not pc_context.devices and not pc_context.tool_available:
+        # Neither a Broker device nor a usable server-owned Mesh target: this
+        # PC request has nothing to run on, so answer truthfully instead of
+        # letting the general model guess. An empty Broker list alone never
+        # demotes a working Mesh target (pc_work_context contract; the
+        # 2026-10-22 list/read baseline ran Mesh-only).
+        answer = _no_pc_lane_answer(files_only)
+        saved_id = await _save_pair(
+            store, uid=uid, conversation_id=conversation_id,
+            user_text=user_text, answer=answer,
+        )
+        if saved_id is None:
+            raise ChatPCDriveError("conversation_not_found", "대화를 찾을 수 없습니다.", 404)
+        return answer, saved_id
     if not await _check_mesh_grant(request, session, device_id=device_id):
-        answer = _no_pc_answer()
+        answer = _no_pc_lane_answer(files_only)
         saved_id = await _save_pair(
             store, uid=uid, conversation_id=conversation_id,
             user_text=user_text, answer=answer,
@@ -654,11 +684,12 @@ async def execute_chat_pc_drive_lane(
 
     pc_work_text = render_pc_work_context(pc_context)
 
-    # #5573 / Option A: one Engine call for every turn with a verified PC
-    # context. The Engine's existing step driver selects the tool (drives,
-    # list, read) or completes a non-PC turn; the Chat app no longer runs a
-    # separate classification call. Prior turns travel in the system context so
-    # the same call can resolve "그 폴더" and similar follow-ups.
+    # #5573 / Option A: one Engine call for every PC request with a verified
+    # PC context (the entry pre-check above keeps ordinary turns on the
+    # streaming path). The Engine's existing step driver selects the tool
+    # (drives, list, read); the Chat app runs no separate classification
+    # call. Prior turns travel in the system context so the same call can
+    # resolve "그 폴더" and similar follow-ups.
     transcript = _conversation_transcript(conversation_messages)
     additional_context = pc_work_text if not transcript else (
         pc_work_text + "\n\nRecent conversation:\n" + transcript
