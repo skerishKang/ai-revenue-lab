@@ -55,6 +55,7 @@
     "test_b54_claw_general_hold_quota_and_evidence.py": "MOCK",
     "test_b54_claw_general_model_hold.py": "MOCK",
     "test_b54_claw_general_p01_routing.py": "MOCK",
+    "test_5554_claw_general_ttft_path.py": "MOCK",
     "test_b66_b14_free_first_resolver.py": "MOCK",
     "test_b66_manual_model_choice_contract.py": "MOCK",
     "test_b66_quote_runtime.py": "MOCK"
