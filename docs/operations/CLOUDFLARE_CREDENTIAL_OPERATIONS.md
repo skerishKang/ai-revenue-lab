@@ -128,6 +128,16 @@ NEXT=<최소 다음 동작 또는 필요한 사용자 조치 1개>
 
 관련 역사 자료: 비공개 운영 저장소 `skerishKang/ai-revenue-operations`의 `incidents/2026-07-31-cloudflare-pages-credential-401.md`. [2026-10-15 read-only run](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38693899424)은 당시 B66 스키마 성공 기록입니다.
 
+## 8. 운영 Worker secret·binding 변경 — Owner 결정 선행 (2026-10-23)
+
+운영 Worker의 secret/binding 추가·삭제(`wrangler secret put`/`delete`, 대시보드 변경 포함)는 D3 운영 변경입니다.
+
+1. 실행 전에 Owner 결정을 해당 이슈 코멘트로 기록합니다(바인딩 이름·타입, 목적). 결정 기록이 없으면 실행하지 않습니다.
+2. 같은 변경은 reviewed baseline(`.github/binding_baselines/<worker>.json`) PR을 동반합니다. baseline과 live 집합이 다르면 `b62-production-code-deploy-gate.yml`의 `cloudflare_readonly`가 drift로 fail-closed되어 이후 모든 Chat 코드 배포가 막힙니다.
+3. 실행 후 이슈에 남기는 기록: 바인딩 이름·타입, 실행 기기, KST 시각, wrangler 로그 파일명. 값·토큰·계정 ID는 기록하지 않습니다.
+4. 운영 기기에 저장된 `wrangler login` 세션으로는 어느 로컬 모델이든 Owner 계정 이름으로 이 변경을 실행할 수 있습니다. 로그의 계정 이름은 실행 주체나 승인의 증거가 아니며, 이슈의 결정 기록만 승인의 증거입니다.
+5. 기준 사례 2026-10-23: `PADIEM_PUSH_VAPID_PRIVATE_KEY`·`PADIEM_PUSH_VAPID_PUBLIC_KEY`·`PADIEM_PUSH_VAPID_SUBJECT`(모두 `secret_text`)가 07:55 KST COMP1에서 사전 결정 없이 설정됨 → 게이트 run 39869329825·39869577820 binding drift 실패 → Owner 사후 승인([#5034 코멘트](https://github.com/skerishKang/ai-revenue-lab/issues/5034#issuecomment-6354398761)) → baseline 정합화 #5609 → 정식 배포 run 39878432983. 사후 승인은 이 건에 한하며 결정 생략의 선례가 아닙니다.
+
 ## 공식 참고
 
 - [Wrangler 일반 명령·인증 선택 및 OAuth 갱신](https://developers.cloudflare.com/workers/wrangler/commands/general/)

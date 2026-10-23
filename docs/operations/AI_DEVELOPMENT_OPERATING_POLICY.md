@@ -51,6 +51,13 @@ Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this re
 
 *(Moved from the `AGENTS.md` entry point during the 2026-10-23 instruction-index restoration; this section is the canonical text and `AGENTS.md` links here.)*
 
+#### 0E-1. Duplicate-work prevention and push scope (Owner session 2026-10-23)
+
+- **Claim before fixing shared breakage.** Before repairing a failing `main` check, or starting a bounded fix another lane could also pick up, post a one-line claim comment (`수정 착수`) on the originating PR or the tracking issue. If a claim already exists, do not start; coordinate in that thread.
+- **Fresh-fetch before PR creation and before every push.** If the intended change has already landed on `origin/main`, stop and report instead of applying it. 2026-10-23 cases: #5610 duplicated #5609; #5619 overlapped #5623 and had to be reduced.
+- **Force-push scope.** No force push to `main`, to protected branches, or to a branch owned by or inherited from another worker. Publishing a rebase of one's own PR branch uses `--force-with-lease=<branch>:<known remote head>` only.
+- **Skipped is not pass.** A `success` run whose suite was skipped by the changeset classifier is not green evidence for that suite; cite the latest run in which the suite actually executed. Latent `main` failures surfaced this way on 2026-10-23 (#5605, #5618 merged while `B62 full regression` was skipped).
+
 ## 1. Purpose
 
 AI Revenue Lab separates product authority, design decisions, implementation, validation, CTO review, owner decisions, merge and Production so that fast AI-assisted work does not turn into repeated broad rework.
