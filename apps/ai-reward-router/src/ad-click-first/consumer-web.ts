@@ -46,6 +46,29 @@ function formatFreshness(value: string): string {
   return `${yyyy}.${mm}.${dd} 확인`;
 }
 
+function formatVerifiedAtKst(value: string): string {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return '최근 확인';
+  const kst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  const yyyy = kst.getUTCFullYear();
+  const mm = String(kst.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(kst.getUTCDate()).padStart(2, '0');
+  const hh = String(kst.getUTCHours()).padStart(2, '0');
+  const mi = String(kst.getUTCMinutes()).padStart(2, '0');
+  return `${yyyy}.${mm}.${dd} ${hh}:${mi} KST 확인`;
+}
+
+function renderPrimaryNav(activeId: 'HOME' | 'TODAY' | 'BROWSE' | null): string {
+  const items: ReadonlyArray<{ id: 'HOME' | 'TODAY' | 'BROWSE'; href: string; label: string }> = Object.freeze([
+    Object.freeze({ id: 'HOME', href: '/', label: '홈' }),
+    Object.freeze({ id: 'TODAY', href: '/today', label: '오늘 바로 적립' }),
+    Object.freeze({ id: 'BROWSE', href: '/browse', label: '수익 기회' }),
+  ]);
+  return items
+    .map((item) => `<a class="nav-item${item.id === activeId ? ' nav-item--active' : ''}" href="${item.href}"${item.id === activeId ? ' aria-current="page"' : ''}>${item.label}</a>`)
+    .join('');
+}
+
 function renderBrandMark(className: string): string {
   return `<svg class="${className}" viewBox="0 0 32 32" fill="none" aria-hidden="true">
     <path d="M6 25V7h8.5c5.2 0 8.5 2.8 8.5 7.1 0 4.4-3.3 7.2-8.5 7.2H10" stroke="currentColor" stroke-linecap="round" stroke-width="1.6" />
@@ -409,9 +432,7 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
       ${renderEmptyState()}
     </section>`;
 
-  const navItems = viewModel.primaryNavigation
-    .map((item) => `<a class="nav-item nav-item--active" href="#available-now" aria-current="page">${escapeHtml(item.label)}</a>`)
-    .join('') + '<a class="nav-item" href="/browse">수익 기회</a>';
+  const navItems = renderPrimaryNav('HOME');
 
   const hero = `
       <section class="hero" aria-labelledby="hero-title">
@@ -450,7 +471,7 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
       ${renderEmptyState()}
     </section>`;
 
-  const navItems = `<a class="nav-item nav-item--active" href="#available-now" aria-current="page">오늘 바로 적립</a><a class="nav-item" href="/browse">수익 기회</a>`;
+  const navItems = renderPrimaryNav('TODAY');
 
   const hero = `
       <section class="hero" aria-labelledby="hero-title">
@@ -503,7 +524,7 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
       <p class="later-tier-notice">${escapeHtml(viewModel.laterTierNotice)}</p>
     </section>`;
 
-  const navItems = `<a class="nav-item" href="/">홈</a><a class="nav-item" href="/today">오늘 추천</a><a class="nav-item nav-item--active" href="/browse" aria-current="page">수익 기회</a>`;
+  const navItems = renderPrimaryNav('BROWSE');
 
   const hero = `
       <section class="hero" aria-labelledby="hero-title">
@@ -545,7 +566,7 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
         </div>
         <div class="detail-meta">
           <span>출처 · ${escapeHtml(card.sourceId)}</span>
-          <span>최종 검증 · ${formatFreshness(card.lastVerifiedAt)}</span>
+          <span>최종 검증 · ${formatVerifiedAtKst(card.lastVerifiedAt)}</span>
         </div>
         <div class="detail-actions">
           ${safeOutboundHref(card.canonicalDestinationUrl) ? `<a class="reward-cta detail-cta" href="${safeOutboundHref(card.canonicalDestinationUrl)}" target="_blank" rel="noopener noreferrer nofollow">공식 제공처에서 참여하기<span aria-hidden="true"> ↗</span></a>` : ''}
@@ -563,7 +584,7 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
       </div>
     </section>`;
 
-  const navItems = `<a class="nav-item" href="/">홈</a><a class="nav-item" href="/today">오늘 추천</a><a class="nav-item" href="/browse">수익 기회</a>`;
+  const navItems = renderPrimaryNav(null);
 
   const hero = `
       <section class="hero" aria-labelledby="hero-title">
