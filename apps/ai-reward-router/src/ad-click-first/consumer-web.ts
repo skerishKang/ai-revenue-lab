@@ -73,70 +73,188 @@ function renderCard(card: AdClickConsumerCard): string | null {
 
 function renderEmptyState(): string {
   return `<div class="empty-state" role="status" data-empty-state="NO_LIVE_REWARD_SUPPLY">
-    <div class="empty-state__mark" aria-hidden="true">✓</div>
+    <div class="empty-state__mark" aria-hidden="true">P</div>
     <h3>지금 참여 가능한 적립을 확인 중이에요</h3>
     <p>실제로 참여할 수 있고 보상 조건이 확인된 항목만 보여드릴게요.</p>
+    <ul class="empty-steps">
+      <li>광고·클릭·방문처럼 짧게 끝나는 적립부터 준비됩니다.</li>
+      <li>검증된 공급자가 연결되면 여기에 바로 표시됩니다.</li>
+      <li>조건과 보상은 참여 전 외부 페이지에서 다시 확인하세요.</li>
+    </ul>
   </div>`;
 }
 
-function renderShell(viewModel: { mode: string; issueNumber: number | null }, navItems: string, hero: string, content: string): string {
+function renderHowItWorks(): string {
+  return `<section class="how-it-works" aria-labelledby="how-title">
+    <div class="section-head">
+      <h2 id="how-title">참여 방식</h2>
+      <span>짧은 행동부터</span>
+    </div>
+    <ol class="how-steps">
+      <li>
+        <span class="how-step__num" aria-hidden="true">1</span>
+        <div class="how-step__body">
+          <h3>짧은 적립 선택</h3>
+          <p>광고 보기, 클릭, 방문처럼 짧게 끝나는 항목만 먼저 준비돼요.</p>
+        </div>
+      </li>
+      <li>
+        <span class="how-step__num" aria-hidden="true">2</span>
+        <div class="how-step__body">
+          <h3>조건과 보상 확인</h3>
+          <p>보상 단가, 소요 시간, 참여 조건을 참여 전에 확인해요.</p>
+        </div>
+      </li>
+      <li>
+        <span class="how-step__num" aria-hidden="true">3</span>
+        <div class="how-step__body">
+          <h3>외부 페이지에서 적립</h3>
+          <p>공급자 공식 페이지에서 완료하면 보상이 적립돼요.</p>
+        </div>
+      </li>
+    </ol>
+  </section>`;
+}
+
+function renderShell(
+  viewModel: { mode: string; issueNumber: number | null },
+  navItems: string,
+  hero: string,
+  content: string,
+  options: { howItWorks?: boolean } = {},
+): string {
   return `<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
-  <title>바로 적립 | B64</title>
+  <meta name="color-scheme" content="dark" />
+  <title>AI Reward Router | PADIEM</title>
   <style>
     :root {
-      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #14251f;
-      background: #f5f8f5;
+      color-scheme: dark;
+      --bg: #07090d;
+      --bg-soft: #0d1117;
+      --surface: rgba(255,255,255,.06);
+      --surface-strong: rgba(255,255,255,.10);
+      --line: rgba(255,255,255,.14);
+      --text: #f4f6fb;
+      --muted: rgba(255,255,255,.68);
+      --accent: #88c9ff;
+      --accent-strong: #5fb3ff;
+      --gold: #efc984;
+      --radius: 14px;
+      --radius-lg: 20px;
+      font-family: "SUIT Variable", "SUIT", "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
       font-synthesis: none;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; min-width: 320px; background: #f5f8f5; color: #14251f; }
-    a { color: inherit; }
-    .shell { width: min(100%, 760px); margin: 0 auto; padding: 0 20px 56px; }
-    .topbar { position: sticky; top: 0; z-index: 10; margin: 0 -20px; padding: 14px 20px 10px; background: rgba(245,248,245,.94); backdrop-filter: blur(14px); }
-    .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: -.02em; text-decoration: none; }
-    .brand-mark { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 10px; background: #173f31; color: white; font-size: 13px; }
-    .trust-note { font-size: 12px; color: #63736c; }
-    .primary-nav { display: flex; gap: 8px; padding-top: 12px; overflow-x: auto; scrollbar-width: none; }
+    body { margin: 0; min-width: 320px; background: var(--bg); color: var(--text); }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(100%, 1080px); margin: 0 auto; padding: 0 20px 64px; }
+    .topbar { position: sticky; top: 0; z-index: 10; margin: 0 -20px; padding: 11px 20px 9px; background: rgba(7,9,13,.82); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+    .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; letter-spacing: .16em; }
+    .brand-mark { width: 26px; height: 26px; flex: 0 0 auto; filter: drop-shadow(0 0 12px rgba(136,201,255,.25)); }
+    .brand-wordmark { line-height: 1; }
+    .brand-divider { width: 1px; height: 14px; background: var(--line); flex: 0 0 auto; }
+    .brand-product { font-size: 12px; font-weight: 500; letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
+    .trust-note { font-size: 11px; color: var(--muted); white-space: nowrap; }
+    .primary-nav { display: flex; gap: 6px; padding-top: 12px; overflow-x: auto; scrollbar-width: none; flex-wrap: wrap; }
     .primary-nav::-webkit-scrollbar { display: none; }
-    .nav-item { flex: 0 0 auto; padding: 9px 14px; border-radius: 999px; text-decoration: none; font-size: 14px; font-weight: 700; }
-    .nav-item--active { background: #173f31; color: #fff; }
-    .hero { padding: 44px 2px 28px; }
-    .eyebrow { margin: 0 0 10px; color: #3c705b; font-size: 13px; font-weight: 800; letter-spacing: .02em; }
-    .hero h1 { margin: 0; max-width: 520px; font-size: clamp(32px, 8vw, 52px); line-height: 1.02; letter-spacing: -.055em; }
-    .hero p { margin: 18px 0 0; max-width: 540px; color: #64716c; font-size: 16px; line-height: 1.65; }
-    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 18px 0 14px; }
-    .section-head h2 { margin: 0; font-size: 20px; letter-spacing: -.025em; }
-    .section-head span { color: #718078; font-size: 12px; }
-    .reward-grid { display: grid; gap: 12px; }
-    .reward-card { padding: 18px; border: 1px solid #dfe7e2; border-radius: 22px; background: #fff; box-shadow: 0 9px 28px rgba(29,61,48,.055); }
+    .nav-item { flex: 0 0 auto; padding: 8px 14px; border-radius: 999px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--muted); border: 1px solid transparent; transition: color .16s ease, background .16s ease, border-color .16s ease; }
+    .nav-item:hover { color: var(--text); }
+    .nav-item--active { background: var(--surface-strong); color: var(--text); border-color: var(--line); }
+    .category-tabs { display: flex; gap: 6px; padding: 2px 0 0; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+    .category-tabs::-webkit-scrollbar { display: none; }
+    .hero { padding: 28px 0 16px; }
+    .eyebrow { margin: 0 0 12px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .hero h1 { margin: 0; max-width: 640px; font-size: clamp(26px, 6.4vw, 56px); line-height: 1.04; letter-spacing: -.05em; font-weight: 700; }
+    .hero p { margin: 14px 0 0; max-width: 560px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin: 16px 0 12px; flex-wrap: wrap; }
+    .section-head h2 { margin: 0; font-size: 20px; letter-spacing: -.02em; font-weight: 700; }
+    .section-head span { color: var(--muted); font-size: 12px; }
+    .reward-grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+    .reward-card { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); backdrop-filter: blur(8px); transition: border-color .16s ease, transform .16s ease; }
+    .reward-card:hover { border-color: rgba(136,201,255,.35); transform: translateY(-2px); }
     .reward-card__topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .action-chip { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 999px; background: #e9f3ed; color: #2d614c; font-size: 12px; font-weight: 800; }
-    .freshness { color: #87938e; font-size: 11px; }
-    .reward-card h3 { margin: 15px 0 13px; font-size: 19px; line-height: 1.35; letter-spacing: -.025em; }
+    .action-chip { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; background: rgba(136,201,255,.14); color: var(--accent); font-size: 12px; font-weight: 700; border: 1px solid rgba(136,201,255,.25); }
+    .freshness { color: var(--muted); font-size: 11px; }
+    .reward-card h3 { margin: 14px 0 12px; font-size: 18px; line-height: 1.3; letter-spacing: -.02em; font-weight: 600; }
     .reward-card__reward { display: flex; align-items: baseline; gap: 9px; }
-    .reward-card__reward strong { color: #173f31; font-size: 24px; letter-spacing: -.03em; }
-    .reward-card__reward span { color: #6f7d77; font-size: 12px; font-weight: 700; }
-    .condition { margin: 12px 0 0; color: #4e5d57; font-size: 14px; line-height: 1.55; }
-    .reward-card__meta { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 15px 0 16px; color: #73817b; font-size: 12px; }
-    .reward-cta { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 15px; background: #173f31; color: #fff; text-decoration: none; font-size: 14px; font-weight: 800; transition: transform .16s ease, background .16s ease; }
-    .reward-cta:hover { background: #235945; transform: translateY(-1px); }
-    .reward-cta:focus-visible, .nav-item:focus-visible, .brand:focus-visible { outline: 3px solid #7cad96; outline-offset: 3px; }
-    .empty-state { display: grid; justify-items: center; padding: 56px 24px; border: 1px dashed #cad8d0; border-radius: 24px; background: rgba(255,255,255,.66); text-align: center; }
-    .empty-state__mark { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #e6f2eb; color: #2e654f; font-weight: 900; }
-    .empty-state h3 { margin: 15px 0 8px; font-size: 18px; letter-spacing: -.02em; }
-    .empty-state p { margin: 0; max-width: 360px; color: #718078; font-size: 14px; line-height: 1.6; }
-    .footer-note { margin: 24px 0 0; color: #8a958f; font-size: 11px; line-height: 1.6; text-align: center; }
+    .reward-card__reward strong { color: var(--gold); font-size: 24px; letter-spacing: -.03em; font-weight: 700; }
+    .reward-card__reward span { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .condition { margin: 12px 0 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .reward-card__meta { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 14px 0 16px; color: var(--muted); font-size: 12px; }
+    .reward-cta { display: flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 22px; border-radius: 999px; background: var(--accent); color: #07090d; text-decoration: none; font-size: 14px; font-weight: 700; transition: background .16s ease, transform .16s ease; }
+    .reward-cta:hover { background: var(--accent-strong); transform: translateY(-1px); }
+    .detail-link { display: inline-block; margin-top: 10px; font-size: 13px; color: var(--accent); font-weight: 600; }
+    .detail-link:hover { text-decoration: underline; }
+    .reward-cta:focus-visible, .nav-item:focus-visible, .brand:focus-visible, .detail-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .empty-state { display: grid; justify-items: center; padding: 48px 24px; border: 1px dashed var(--line); border-radius: var(--radius-lg); background: var(--surface); text-align: center; }
+    .empty-state__mark { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(136,201,255,.14); color: var(--accent); font-weight: 800; font-size: 18px; }
+    .empty-state h3 { margin: 16px 0 8px; font-size: 18px; letter-spacing: -.02em; font-weight: 700; }
+    .empty-state p { margin: 0; max-width: 360px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .empty-steps { list-style: none; padding: 0; margin: 18px 0 0; max-width: 420px; display: grid; gap: 8px; }
+    .empty-steps li { position: relative; padding-left: 18px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .empty-steps li::before { content: ""; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+    .how-it-works { padding: 8px 0 0; }
+    .how-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: 1fr; }
+    .how-step { display: flex; align-items: flex-start; gap: 14px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
+    .how-step__num { flex: 0 0 auto; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(136,201,255,.14); color: var(--accent); font-weight: 700; font-size: 14px; }
+    .how-step__body h3 { margin: 0 0 4px; font-size: 15px; font-weight: 700; letter-spacing: -.01em; }
+    .how-step__body p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .later-tier-notice { margin: 14px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
+    .footer-note { margin: 32px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; text-align: center; }
+    .filter-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: end; padding: 10px 0 6px; }
+    .filter-bar label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--muted); font-weight: 600; min-width: 0; }
+    .filter-bar input, .filter-bar select { width: 100%; padding: 9px 12px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; min-width: 0; }
+    .filter-bar button { grid-column: 1 / -1; padding: 10px 20px; border-radius: 999px; border: 1px solid var(--accent); background: var(--accent); color: #07090d; font-size: 14px; font-weight: 700; cursor: pointer; min-height: 44px; }
+    .filter-bar button:hover { background: var(--accent-strong); }
+    .detail-card { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
+    .detail-card h2 { margin: 12px 0 16px; font-size: 22px; line-height: 1.3; letter-spacing: -.03em; font-weight: 700; }
+    .detail-reward { display: flex; align-items: baseline; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+    .detail-reward strong { color: var(--gold); font-size: 30px; line-height: 1; letter-spacing: -.03em; font-weight: 700; }
+    .detail-reward span { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .detail-facts { display: grid; gap: 14px; padding: 16px 0; }
+    .detail-fact { display: grid; gap: 3px; }
+    .detail-fact__label { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+    .detail-fact__value { font-size: 15px; line-height: 1.5; }
+    .detail-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 12px 0 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    .detail-cta { margin-top: 0; }
+    .category-tabs .nav-item { font-size: 12px; }
     @media (min-width: 680px) {
       .shell { padding-left: 28px; padding-right: 28px; }
       .topbar { margin-left: -28px; margin-right: -28px; padding-left: 28px; padding-right: 28px; }
+      .brand-product { font-size: 13px; }
       .reward-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .how-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .filter-bar { grid-template-columns: 1fr 1fr auto; }
+      .filter-bar button { grid-column: auto; }
+    }
+    @media (min-width: 1024px) {
+      .reward-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .detail-list { grid-template-columns: 140px 1fr; }
+    }
+    @media (max-width: 480px) {
+      .topbar { padding: 9px 16px 7px; }
+      .brand { font-size: 15px; }
+      .brand-mark { width: 22px; height: 22px; }
+      .brand-divider { height: 12px; }
+      .brand-product { font-size: 11px; }
+      .trust-note { display: none; }
+      .primary-nav { padding-top: 8px; gap: 4px; }
+      .nav-item { padding: 6px 10px; font-size: 12px; }
+      .hero { padding: 20px 0 12px; }
+      .hero h1 { font-size: clamp(24px, 7vw, 32px); }
+      .hero p { font-size: 14px; margin-top: 10px; }
+      .eyebrow { margin-bottom: 8px; }
+      .section-head { margin: 12px 0 10px; }
+      .reward-card { padding: 16px; }
+      .reward-card h3 { font-size: 16px; margin: 10px 0 8px; }
+      .reward-card__reward strong { font-size: 20px; }
+      .empty-state { padding: 36px 18px; }
+      .how-step { padding: 14px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
@@ -147,7 +265,16 @@ function renderShell(viewModel: { mode: string; issueNumber: number | null }, na
   <div class="shell" data-consumer-mode="${viewModel.mode}" data-issue="${viewModel.issueNumber}">
     <header class="topbar">
       <div class="brand-row">
-        <a class="brand" href="#top" aria-label="B64 바로 적립 홈"><span class="brand-mark" aria-hidden="true">B64</span><span>바로 적립</span></a>
+        <a class="brand" href="#top" aria-label="PADIEM AI Reward Router">
+          <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M6 25V7h8.5c5.2 0 8.5 2.8 8.5 7.1 0 4.4-3.3 7.2-8.5 7.2H10" stroke="currentColor" stroke-linecap="round" stroke-width="1.6" />
+            <path d="M10 11h4.5c2.5 0 4 1.1 4 3.1s-1.5 3.2-4 3.2H10" stroke="url(#padiem-mark)" stroke-linecap="round" stroke-width="1.6" />
+            <defs><linearGradient id="padiem-mark" x1="10" y1="11" x2="19" y2="19" gradientUnits="userSpaceOnUse"><stop stop-color="#8BCBFF" /><stop offset="1" stop-color="#F0C77C" /></linearGradient></defs>
+          </svg>
+          <span class="brand-wordmark">PADIEM</span>
+          <span class="brand-divider" aria-hidden="true"></span>
+          <span class="brand-product">AI Reward Router</span>
+        </a>
         <span class="trust-note">확인된 적립만 표시</span>
       </div>
       <nav class="primary-nav" aria-label="주요 메뉴">${navItems}</nav>
@@ -155,6 +282,7 @@ function renderShell(viewModel: { mode: string; issueNumber: number | null }, na
     <main id="top">
       ${hero}
       ${content}
+      ${options.howItWorks ? renderHowItWorks() : ''}
       <p class="footer-note">보상과 참여 조건은 제공처의 최신 기준을 따릅니다. 참여 전 외부 페이지의 조건을 다시 확인해 주세요.</p>
     </main>
   </div>
@@ -195,7 +323,7 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
         <p>${escapeHtml(viewModel.hero.description)}</p>
       </section>`;
 
-  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, content);
+  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, content, { howItWorks: true });
 }
 
 // Backwards/alias exports for compatibility with alternate naming used by tests/CTO contracts.
@@ -289,7 +417,7 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
       <nav class="category-tabs" aria-label="카테고리">${categoryTabs}</nav>
       ${filterForm}`;
 
-  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content);
+  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content, { howItWorks: true });
 }
 
 export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOpportunityDetailViewModel): string {
@@ -297,21 +425,36 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
   const content = card
     ? `<section id="opportunity-detail" aria-labelledby="detail-title">
       <div class="detail-card">
+        <p class="eyebrow">수익 기회 상세</p>
         <h2 id="detail-title">${escapeHtml(card.title)}</h2>
-        <dl class="detail-list">
-          <dt>제공 업체</dt><dd>${escapeHtml(card.sourceId)}</dd>
-          <dt>보상</dt><dd>${escapeHtml(card.rewardLabel)} (${escapeHtml(card.certainty === 'GUARANTEED' ? '확정 보상' : '조건 충족 시')})</dd>
-          <dt>예상 소요 시간</dt><dd>약 ${card.estimatedActiveSeconds}초</dd>
-          <dt>참여 자격·조건</dt><dd>${escapeHtml(card.conditionSummary)}</dd>
-          <dt>출처</dt><dd>${escapeHtml(card.sourceId)}</dd>
-          <dt>최종 검증 시각</dt><dd>${escapeHtml(card.lastVerifiedAt)}</dd>
-        </dl>
-        ${safeOutboundHref(card.canonicalDestinationUrl) ? `<a class="reward-cta" href="${safeOutboundHref(card.canonicalDestinationUrl)}" target="_blank" rel="noopener noreferrer nofollow">공식 사이트에서 참여하기<span aria-hidden="true"> ↗</span></a>` : ''}
+        <div class="detail-reward">
+          <strong>${escapeHtml(card.rewardLabel)}</strong>
+          <span>${escapeHtml(card.certainty === 'GUARANTEED' ? '확정 보상' : '조건 충족 시')}</span>
+        </div>
+        <div class="detail-facts">
+          <div class="detail-fact">
+            <span class="detail-fact__label">예상 소요 시간</span>
+            <span class="detail-fact__value">약 ${card.estimatedActiveSeconds}초</span>
+          </div>
+          <div class="detail-fact">
+            <span class="detail-fact__label">참여 자격·조건</span>
+            <span class="detail-fact__value">${escapeHtml(card.conditionSummary)}</span>
+          </div>
+          <div class="detail-fact">
+            <span class="detail-fact__label">보상 제공 업체</span>
+            <span class="detail-fact__value">${escapeHtml(card.sourceId)}</span>
+          </div>
+        </div>
+        <div class="detail-meta">
+          <span>출처 · ${escapeHtml(card.sourceId)}</span>
+          <span>최종 검증 · ${escapeHtml(card.lastVerifiedAt)}</span>
+        </div>
+        ${safeOutboundHref(card.canonicalDestinationUrl) ? `<a class="reward-cta detail-cta" href="${safeOutboundHref(card.canonicalDestinationUrl)}" target="_blank" rel="noopener noreferrer nofollow">공식 제공처에서 참여하기<span aria-hidden="true"> ↗</span></a>` : ''}
       </div>
     </section>`
     : `<section id="opportunity-detail" aria-labelledby="detail-title">
       <div class="empty-state" role="status" data-empty-state="NO_LIVE_REWARD_SUPPLY">
-        <div class="empty-state__mark" aria-hidden="true">✓</div>
+        <div class="empty-state__mark" aria-hidden="true">P</div>
         <h3>수익 기회를 찾을 수 없습니다</h3>
         <p>요청한 기회가 없거나 현재 공개되지 않은 상태입니다.</p>
       </div>
