@@ -161,9 +161,22 @@ The encryption is verified against an **independent decryptor** written from RFC
    `PADIEM_PUSH_VAPID_PUBLIC_KEY` and `PADIEM_PUSH_VAPID_SUBJECT` must be set as
    Worker secrets. Until then the capability route reports `enabled=false` and
    no toggle is offered. No key is created by this change.
+   **Status 2026-10-23:** the three secrets were set from COMP1 at 07:55 KST and
+   approved by the Owner afterwards ([#5034 comment](https://github.com/skerishKang/ai-revenue-lab/issues/5034#issuecomment-6354398761));
+   the reviewed baseline was aligned by #5609. The capability route is therefore
+   enabled in production. Names only; values are never recorded.
 2. **D1 migration 065** — the additive table must be applied through the
    protected deploy gate. The preflight now refuses a deploy whose 065 schema is
    not `EXACT`.
+   **Status 2026-10-23:** the 065 subscription table exists in production (read-only
+   row count 0 at 09:1x KST). An `EXACT` verdict from the gate preflight is not
+   recorded for run 39878432983 (that job ran in a separate mode); treat the
+   schema as applied but not gate-attested.
 3. **Real device reception** — browser background delivery is a separate fact
    from web-inbox persistence and is not verified by this source change.
+   **Status 2026-10-23:** still not verified; subscriptions were 0 at the time of
+   the Owner decision. Actual push delivery is a separate verification task.
 4. **Chat Worker deployment** — not performed by this change.
+   **Status 2026-10-23:** `main` `701fbdd` (includes #5600 and #5602) was deployed
+   through the protected gate, run 39878432983 (success); served version per the
+   operator report `3f2e022b-7fb1-4aa4-b6b5-67c45f79d40a`.
