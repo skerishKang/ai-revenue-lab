@@ -314,6 +314,19 @@ from .project_file_routes import (
     project_file_original,
     project_files_collection,
 )
+from .document_convert_routes import (
+    convert_item_detail,
+    convert_item_delete,
+    convert_item_markdown,
+    convert_item_original,
+    convert_item_review,
+    convert_item_run,
+    convert_job_archive,
+    convert_job_detail,
+    convert_job_files,
+    convert_jobs_collection,
+)
+from .document_convert_store import D1DocumentConvertStore
 from .drive_case_folder_routes import (
     drive_case_folder_delete,
     drive_case_folder_put,
@@ -537,6 +550,18 @@ def create_app(
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}/files/{file_id}/original", project_file_original, methods=["GET"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
+        # #5568 PDF→Markdown utility: a work ledger per upload session, one conversion
+        # per item, and owner-scoped reads of both the original and the result.
+        Route("/api/document-conversions", convert_jobs_collection, methods=["GET", "POST"]),
+        Route("/api/document-conversions/{job_id}", convert_job_detail, methods=["GET"]),
+        Route("/api/document-conversions/{job_id}/files", convert_job_files, methods=["POST"]),
+        Route("/api/document-conversions/{job_id}/archive", convert_job_archive, methods=["GET"]),
+        Route("/api/document-conversions/items/{item_id}", convert_item_detail, methods=["GET"]),
+        Route("/api/document-conversions/items/{item_id}", convert_item_delete, methods=["DELETE"]),
+        Route("/api/document-conversions/items/{item_id}/run", convert_item_run, methods=["POST"]),
+        Route("/api/document-conversions/items/{item_id}/review", convert_item_review, methods=["POST"]),
+        Route("/api/document-conversions/items/{item_id}/markdown", convert_item_markdown, methods=["GET"]),
+        Route("/api/document-conversions/items/{item_id}/original", convert_item_original, methods=["GET"]),
         Route(
             "/api/projects/{project_id}/drive-case-folder",
             drive_case_folder_status,
@@ -980,6 +1005,12 @@ def create_app(
         else D1AccountModelSelectionStore(d1_binding) if d1_binding is not None else None
     )
     app.state.project_file_store = project_file_store
+    # #5568: the PDF→Markdown ledger reuses the same D1 and the same private workspace R2
+    # binding as project files, so no new secret or binding is introduced. Without the
+    # migrated table the route fails closed with 503 instead of serving an in-memory ledger.
+    app.state.document_convert_store = (
+        D1DocumentConvertStore(d1_binding) if d1_binding is not None else None
+    )
     app.state.saved_output_store = saved_output_store
     # Separate deployment gate: migrate and audit the D1 schema before enabling.
     # A B66-scoped Google administrator is NOT a global model administrator.

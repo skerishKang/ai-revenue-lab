@@ -61,10 +61,21 @@
   margin-bottom: 0 !important;
   z-index: 13;
   padding: 16px;
+  max-height: min(240px, 40vh);
+  overflow-y: auto;
+  pointer-events: none;
   border-radius: 14px;
   border: 1px solid var(--line, rgba(66,106,135,.26));
   background: var(--surface, rgba(255,255,255,.86));
   box-shadow: 0 7px 30px rgba(20,51,73,.06);
+}
+.claw-device-manager-panel button,
+.claw-device-manager-panel a,
+.claw-device-manager-panel input,
+.claw-device-manager-panel select,
+.claw-device-manager-panel textarea,
+.claw-device-manager-panel label {
+  pointer-events: auto;
 }
 .claw-device-manager-head {
   display: flex;
