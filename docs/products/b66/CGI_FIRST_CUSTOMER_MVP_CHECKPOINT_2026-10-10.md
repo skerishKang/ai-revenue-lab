@@ -35,7 +35,7 @@
 
 [이슈 #4117](https://github.com/skerishKang/ai-revenue-lab/issues/4117) 신설(2026-10-10): 기존 CGI 화면은 Sol 원본에서 추출한 **PNG + DOM 텍스트**, 다운로드/Drive PDF는 별도 Canvas→JPEG **단일 페이지 래스터 PDF**다. Sol 6.1 원본 양식을 활용하더라도 **인증한 native Sol PDF의 페이지/벡터/바이트와 동일하지 않다**. 4품목 이상 HTML 미리보기는 인증 Sol 미리보기가 아니고 실제 브라우저 PDF는 행수 초과로 거절될 수 있다. [PR #4111](https://github.com/skerishKang/ai-revenue-lab/pull/4111)의 CLI 원본 Sol 다중 페이지 구현은 main 소스로만 통합됐고, 현재 웹앱 PDF 생성·프리뷰·Drive로 직접 연결되지 않았다.
 
-**김범신 대표 최종 인수 = 같은 QuoteCore/승인된 Saved Skill → native Sol PDF 한 건 → 화면에서 동일 PDF 미리보기 → 동일 SHA PDF 다운로드 → 고객 Drive에 동일 PDF 저장(선택) → D1 실제 인수.** 1~3 기존 v1 인증 SHA는 보존하고 4+는 별도 새 v2 인증/실행 권위 필요. Python/Windows 글꼴·Node 런타임과 1페이지 전용 Worker의 차이를 해결하기 전에는 '고객 Sol v2 READY' 주장 금지. 기존 Drive 연결·파일 저장 E2E는 그대로 PASS_REPORTED로 유지하되 **파일 출처가 native Sol인지 여부는 미검증**. 본 체크포인트는 `CUSTOMER_CGI_SOL_PREVIEW_PARITY=NOT_READY`, `CGI_FINAL_MVP_READY=NO`를 우선한다.
+**고객A 대표 최종 인수 = 같은 QuoteCore/승인된 Saved Skill → native Sol PDF 한 건 → 화면에서 동일 PDF 미리보기 → 동일 SHA PDF 다운로드 → 고객 Drive에 동일 PDF 저장(선택) → D1 실제 인수.** 1~3 기존 v1 인증 SHA는 보존하고 4+는 별도 새 v2 인증/실행 권위 필요. Python/Windows 글꼴·Node 런타임과 1페이지 전용 Worker의 차이를 해결하기 전에는 '고객 Sol v2 READY' 주장 금지. 기존 Drive 연결·파일 저장 E2E는 그대로 PASS_REPORTED로 유지하되 **파일 출처가 native Sol인지 여부는 미검증**. 본 체크포인트는 `CUSTOMER_CGI_SOL_PREVIEW_PARITY=NOT_READY`, `CGI_FINAL_MVP_READY=NO`를 우선한다.
 
 ## 1. 확정된 릴리스 근거
 
@@ -68,7 +68,7 @@
 | 고객 본인 Google Drive | **새 Production LOCAL3 보고:** 기존 내용 있는 견적에서 취소 처리 분기 초안/합계 보존 PASS, 실제 대화상자 승인으로 견적 교체 및 QuoteCore 680,000+68,000=748,000 일치 PASS, JSON/PDF 파일 2쌍·로그아웃·다른 계정 UI 세션 격리 PASS | **네이티브 취소 클릭, 새 브라우저, 실기기, late-callback, 서버 타계정 403/404, 파일 바이트 해시 등은 NOT_TESTED**. B66 계정 자체 Google 로그인도 별도 | LOCAL3 [#3871](https://github.com/skerishKang/ai-revenue-lab/issues/3871) |
 | 고객 전달 패키지 | [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076) 신설 | 개인정보 제거된 시연 흐름·화면 증거·제약·승인한 출력 범위·연락/재현 절차 | LOCAL2 + CENTRAL |
 
-**PDF Owner lock:** 김범신 CGI 출력에는 **기존 Sol 6.1에서 출발한 단일 승인 구현만** 사용한다. 3품목 초과를 HTML 인쇄/GLM/모델 생성 PDF로 대체할 수 없다. Sol은 최초 템플릿 분석·엔지니어링, 반복 출력은 **결정적 코드 + QuoteCore**(PDF 출력 모델 호출 0). 자동 범용 원본 학습기·두 번째 고객 양식 인증·고객 원본 R2 보관·음성 입력은 이번 CGI 고객 인수를 자동 차단하는 조건이 아니다.
+**PDF Owner lock:** 고객A CGI 출력에는 **기존 Sol 6.1에서 출발한 단일 승인 구현만** 사용한다. 3품목 초과를 HTML 인쇄/GLM/모델 생성 PDF로 대체할 수 없다. Sol은 최초 템플릿 분석·엔지니어링, 반복 출력은 **결정적 코드 + QuoteCore**(PDF 출력 모델 호출 0). 자동 범용 원본 학습기·두 번째 고객 양식 인증·고객 원본 R2 보관·음성 입력은 이번 CGI 고객 인수를 자동 차단하는 조건이 아니다.
 
 ## 3. 병렬 업무 경계
 
