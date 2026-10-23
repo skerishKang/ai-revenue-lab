@@ -385,13 +385,9 @@ class StructuredPCQueryStepDriver:
         # Supplied by the trusted plan, never by the model step. The model may
         # choose the tool id; it may not choose or widen the execution target.
         self._static_arguments = dict(static_arguments or {})
-        # #5573: the trusted plan also fixes the execution scope. ``None`` keeps
-        # the legacy binding unchanged; a set is a hard allowlist enforced
-        # before any invocation is returned.
+        # The trusted plan fixes the execution scope before any invocation.
+        # Legacy drive/list calls may omit it; a read requires an admitted ceiling.
         self._allowed_tool_ids = allowed_tool_ids
-        # #5574: a read never starts authorized. An explicit model intent:"read"
-        # list step opens it; an explicit intent:"list" step closes it again.
-        self._read_allowed = False
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
         # #4379: the driver resolves the results it needs through their
@@ -416,8 +412,9 @@ class StructuredPCQueryStepDriver:
             tool_id = decision.get("tool_id")
             arguments = decision.get("arguments")
             if (
-                self._allowed_tool_ids is not None
-                and tool_id not in self._allowed_tool_ids
+                (self._allowed_tool_ids is not None
+                 and tool_id not in self._allowed_tool_ids)
+                or (self._allowed_tool_ids is None and tool_id == PC_READ_FILE_TOOL_ID)
             ):
                 raise PCQueryStepError(
                     "model tool selection is outside this execution scope",
@@ -437,12 +434,14 @@ class StructuredPCQueryStepDriver:
             ):
                 path = arguments.get("path")
                 intent = arguments.get("intent")
-                if intent is not None and intent not in {"list", "read"}:
+                if "intent" in arguments and intent not in ("list", "read"):
                     raise PCQueryStepError(
                         "model tool selection is invalid or unauthorized",
                         detail="tool_selection_invalid",
                     )
-                if tool_id == PC_READ_FILE_TOOL_ID and not self._read_allowed:
+                # The admitted ceiling supplies the ops. Intent can only narrow
+                # this step; read/missing intent never adds a permission.
+                if tool_id == PC_READ_FILE_TOOL_ID and intent == "list":
                     raise PCQueryStepError(
                         "model tool selection is outside this execution scope",
                         detail="tool_scope_denied",
@@ -451,11 +450,6 @@ class StructuredPCQueryStepDriver:
                     isinstance(path, str) and 0 < len(path) <= 2048
                     and not any(ord(ch) < 32 for ch in path)
                 ):
-                    if tool_id == PC_LIST_FILES_TOOL_ID:
-                        if intent == "list":
-                            self._read_allowed = False
-                        elif intent == "read":
-                            self._read_allowed = True
                     return AgentStepDecision.use_tool(
                         ToolInvocation(tool_id=tool_id, arguments={"path": path})
                     )

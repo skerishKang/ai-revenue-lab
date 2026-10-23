@@ -555,8 +555,8 @@ def _model_step_payload(answer: str) -> Any:
 def _scope_allowed_tool_ids(tool_arguments: Any) -> frozenset[str] | None:
     """The execution scope carried by the trusted plan hint (#5573).
 
-    Only the reviewed hints narrow the tool set; anything else keeps the
-    legacy binding (``None``) so unrelated callers are not changed.
+    Reviewed hints supply the file-tool ceiling. Other hints carry no read
+    ceiling; legacy drive/list calls remain available.
     """
     if not isinstance(tool_arguments, Mapping):
         return None
@@ -631,9 +631,10 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             )
             + "Listing intent: include \"intent\":\"list\" in claw.pc.list_files when the "
             "user only asks what is in a folder; include \"intent\":\"read\" only when "
-            "the user clearly asks to read or explain a file's content. read_file is "
-            "refused unless a list step declared \"intent\":\"read\". After a "
-            "list-intent listing, complete; never call read_file.\n"
+            "the user clearly asks to read or explain a file's content. Intent is optional. "
+            "The admitted plan is the tool ceiling: intent:list restricts that step "
+            "to listing; intent:read or missing intent never widens the ceiling. "
+            "After a listing-only request, complete from the listing.\n"
             "If the turn is not about the PC, complete with a truthful concise answer.\n"
             + "Return exactly one JSON object. Tool: {\"action\":\"tool\",\"tool_id\":\"...\","
             "\"arguments\":{...}}. Completion: {\"action\":\"complete\",\"answer\":\"...\"}. "
@@ -666,9 +667,8 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
                 "model response is not valid JSON", detail="model_response_not_json",
             ) from exc
 
-    # The plan hint is the turn's tool ceiling, never a per-step grant: the
-    # driver starts read-closed and only the model's explicit read intent
-    # opens it (#5574).
+    # Ops derive from the admitted plan ceiling. The optional model intent
+    # may narrow a step to listing; it never opens or widens the ceiling.
     return StructuredPCQueryStepDriver(
         select_step=select_step, static_arguments=static_arguments,
         allowed_tool_ids=allowed_tool_ids,

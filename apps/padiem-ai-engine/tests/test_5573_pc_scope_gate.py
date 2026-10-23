@@ -48,16 +48,14 @@ def test_list_is_allowed_in_a_list_only_scope():
     assert decision.invocation.tool_id == PC_LIST_FILES_TOOL_ID
 
 
-def test_read_is_refused_until_the_read_intent_opens_it():
-    # #5574: a list+read scope is a ceiling, not a grant.
+def test_read_without_intent_uses_the_admitted_full_ceiling():
     driver = _driver(PC_READ_FILE_TOOL_ID, LIST_AND_READ)
-    with pytest.raises(PCQueryStepError) as excinfo:
-        asyncio.run(driver.next_step(_context(), object()))
-    assert "execution scope" in str(excinfo.value)
+    decision = asyncio.run(driver.next_step(_context(), object()))
+    assert decision.invocation.tool_id == PC_READ_FILE_TOOL_ID
 
 
 def test_read_without_intent_is_refused_without_an_allowlist():
-    # The closed default belongs to the step policy, not to one plan hint.
+    # A missing ceiling cannot acquire read permission from the model.
     driver = _driver(PC_READ_FILE_TOOL_ID, None)
     with pytest.raises(PCQueryStepError) as excinfo:
         asyncio.run(driver.next_step(_context(), object()))
@@ -97,7 +95,7 @@ def _read():
 
 def test_list_intent_blocks_the_read_step():
     # The ceiling permits read; the model's own list intent is what refuses it.
-    driver = _sequence([_list("list"), _read()], allowed=LIST_AND_READ)
+    driver = _sequence([_list("list"), _read(intent="list")], allowed=LIST_AND_READ)
     first = asyncio.run(driver.next_step(_context(), object()))
     assert first.invocation.tool_id == PC_LIST_FILES_TOOL_ID
     with pytest.raises(PCQueryStepError) as excinfo:
@@ -134,10 +132,9 @@ def test_the_ceiling_is_checked_before_the_intent_and_path_rules():
 def test_a_read_intent_cannot_widen_a_list_only_ceiling():
     """The ceiling, not the model, decides whether read exists this turn.
 
-    The list step opens the read gate, and the gate is then proven open by the
-    same steps under the list+read ceiling (test_read_intent_allows_the_read_step).
-    Under a list-only ceiling the read is still refused, so only the ceiling can
-    be refusing it.
+    A read intent has no widening effect. The same steps are accepted under
+    the list+read ceiling (test_read_intent_allows_the_read_step), so only the
+    admitted ceiling refuses this read.
     """
     driver = _sequence([_list("read"), _read()], allowed=LIST_ONLY)
     first = asyncio.run(driver.next_step(_context(), object()))
@@ -152,7 +149,7 @@ def test_the_read_gate_refuses_before_the_invocation_is_built():
     before the path rules: a read whose path would also be invalid is refused
     as a scope denial, so no invocation is ever assembled for the handler.
     """
-    driver = _sequence([_list(None), _read(path="a\tb.txt")], allowed=LIST_AND_READ)
+    driver = _sequence([_list(None), _read(path="a\tb.txt", intent="list")], allowed=LIST_AND_READ)
     asyncio.run(driver.next_step(_context(), object()))
     with pytest.raises(PCQueryStepError) as excinfo:
         asyncio.run(driver.next_step(_context(), object()))
@@ -166,24 +163,29 @@ def test_read_intent_allows_the_read_step():
     assert second.invocation.tool_id == PC_READ_FILE_TOOL_ID
 
 
-def test_a_list_intent_closes_a_read_intent_the_same_turn_opened():
-    driver = _sequence([_list("read"), _list("list"), _read()], allowed=LIST_AND_READ)
-    asyncio.run(driver.next_step(_context(), object()))
-    asyncio.run(driver.next_step(_context(), object()))
+def test_list_intent_narrows_only_its_step():
+    driver = _sequence(
+        [_read(intent="list"), _read()], allowed=LIST_AND_READ,
+    )
     with pytest.raises(PCQueryStepError) as excinfo:
         asyncio.run(driver.next_step(_context(), object()))
     assert "execution scope" in str(excinfo.value)
+    decision = asyncio.run(driver.next_step(_context(), object()))
+    assert decision.invocation.tool_id == PC_READ_FILE_TOOL_ID
 
 
-def test_unknown_intent_is_refused():
-    driver = _sequence([_list("everything")])
+@pytest.mark.parametrize("intent", ["everything", "", None, [], {}])
+def test_unknown_intent_is_refused(intent):
+    step = _list(None)
+    step["arguments"]["intent"] = intent
+    driver = _sequence([step], allowed=LIST_AND_READ)
     with pytest.raises(PCQueryStepError) as excinfo:
         asyncio.run(driver.next_step(_context(), object()))
     assert "invalid or unauthorized" in str(excinfo.value)
 
 
-def test_missing_intent_does_not_grant_read():
-    driver = _sequence([_list(None), _read()], allowed=LIST_AND_READ)
+def test_missing_intent_does_not_widen_a_list_only_ceiling():
+    driver = _sequence([_list(None), _read()], allowed=LIST_ONLY)
     asyncio.run(driver.next_step(_context(), object()))
     with pytest.raises(PCQueryStepError) as excinfo:
         asyncio.run(driver.next_step(_context(), object()))

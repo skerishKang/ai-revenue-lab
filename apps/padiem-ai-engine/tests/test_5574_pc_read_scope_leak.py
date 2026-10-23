@@ -7,14 +7,12 @@ The Chat lane always ships the trusted list+read plan hint
 the REAL engine composition (``build_live_pc_query_driver``) with a model
 that wrongly answers a listing-only request with a read step.
 
-The hint is the turn's tool ceiling, never a per-step grant: the driver
-starts read-closed, so the wrong read is refused before any invocation
-exists. A legitimate read still works when the model declares
-``intent:"read"`` on its listing step, inside the same scope hint.
+The admitted hint supplies the tool ceiling. A list-only ceiling refuses
+read; a full ceiling permits it with missing or read intent. Intent:list
+narrows only its own step. The model never grants a permission.
 
-Nothing in the wrong-read case pre-fixes the model's intent: the wrongly
-returned read IS the case under test. Model intent declarations are
-exercised only in the separate cases.
+A listing-only user context that still receives the full plan retains the
+current production risk; model-selected plan admission is the second slice.
 """
 
 from __future__ import annotations
@@ -81,9 +79,12 @@ def _list_step(intent: str | None = None) -> str:
     )
 
 
-def _read_step() -> str:
+def _read_step(intent: str | None = None) -> str:
+    arguments: dict[str, Any] = {"path": "a.txt"}
+    if intent is not None:
+        arguments["intent"] = intent
     return json.dumps(
-        {"action": "tool", "tool_id": PC_READ_FILE_TOOL_ID, "arguments": {"path": "a.txt"}},
+        {"action": "tool", "tool_id": PC_READ_FILE_TOOL_ID, "arguments": arguments},
         ensure_ascii=False,
     )
 
@@ -91,8 +92,8 @@ def _read_step() -> str:
 def test_the_chat_lane_scope_allows_read_after_the_models_read_intent() -> None:
     """The legitimate read path inside the same scope hint is unchanged.
 
-    The model still selects the read tool itself; one explicit read intent on
-    its listing step opens the gate, and a later list intent closes it again.
+    The model selects the read tool inside the admitted ceiling. Its read
+    intent neither grants permission nor changes the ceiling.
     """
 
     driver, _model = _driver(
@@ -141,26 +142,18 @@ def test_the_list_only_hint_refuses_a_read_the_model_declared() -> None:
 
 
 def test_the_models_own_list_intent_refuses_the_later_read() -> None:
-    """A listing-intent turn never reads, whatever the next model step says."""
+    """A read step that narrows itself to listing is refused."""
 
-    driver, _model = _driver(CHAT_LANE_SCOPE, [_list_step(intent="list"), _read_step()])
+    driver, _model = _driver(CHAT_LANE_SCOPE, [_list_step(), _read_step(intent="list")])
     asyncio.run(driver.next_step(_context(), object()))
     with pytest.raises(PCQueryStepError) as excinfo:
         asyncio.run(driver.next_step(_context(), object()))
     assert "outside this execution scope" in str(excinfo.value)
 
 
-def test_a_listing_only_request_must_not_produce_a_read_invocation() -> None:
-    """The #5574 invariant, stated without any intent shortcut.
-
-    The model lists without declaring an intent and then wrongly answers
-    read. The read must be refused at the step boundary so the runtime never
-    receives an invocation and the handler never dispatches.
-    """
-
+def test_missing_intent_preserves_the_admitted_full_ceiling() -> None:
+    """The gate does not classify user text or require a model intent field."""
     driver, _model = _driver(CHAT_LANE_SCOPE, [_list_step(), _read_step()])
     asyncio.run(driver.next_step(_context(), object()))
-    with pytest.raises(PCQueryStepError) as excinfo:
-        asyncio.run(driver.next_step(_context(), object()))
-    assert "outside this execution scope" in str(excinfo.value)
-    assert excinfo.value.code is None
+    decision = asyncio.run(driver.next_step(_context(), object()))
+    assert decision.invocation.tool_id == PC_READ_FILE_TOOL_ID

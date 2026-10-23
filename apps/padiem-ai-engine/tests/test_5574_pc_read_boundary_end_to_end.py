@@ -1,29 +1,11 @@
-"""#5574: a listing-only Chat turn cannot reach a read dispatch, end to end.
+"""#5574: admitted ceiling and optional narrowing intent across the real wire.
 
-The defect was measured at the step policy (test_5574_pc_read_scope_leak.py).
-This file proves the same refusal across every leg the product actually runs,
-so a fix that only satisfies the policy unit test cannot pass here:
+The recorded Chat request runs through the real Engine admission, Core agent
+runtime, step driver, authorization and signed tool handlers. Scripted model
+answers and a recording PC endpoint replace all provider and PC calls.
 
-    real PadiemAiEngineClient.orchestrate      (the client Chat itself uses)
-    -> real AdmissionBoundOrchestrationEngineService.orchestrate_payload
-       (trusted admission, the owner/run/device binding, the real runner)
-    -> real Core plan bridge and BoundedAgentRuntime
-    -> real build_live_pc_query_driver / StructuredPCQueryStepDriver
-    -> real ToolRuntime PC handlers over the real signed dispatch legs
-    -> a recording fake PC endpoint
-
-Exactly two things are fake, as the work order requires: the model step (a
-scripted B14 that answers a listing without intent and then a wrong read) and
-the PC endpoint behind the signed callback. No PC, Mesh, provider or network
-call happens.
-
-The request is not hand-written either. It is the recorded Chat wire that
-``apps/padiem-chat/tests/test_5015_chat_pc_engine_wire_fixture.py`` keeps
-byte-identical to what the production builders and this same client emit, with
-only the user text (the listing-only sentence the frontend harness sends) and
-the run handle swapped. The first test pins every remaining field against that
-record, so the list+read ceiling and the two-step plan this chain executes are
-the ones the Chat lane really ships.
+The full-plan record remains the shape Chat currently emits. List-only plan
+admission (A1) and refusal before read dispatch (A3) are retained separately.
 """
 
 from __future__ import annotations
@@ -32,11 +14,13 @@ import asyncio
 import json
 import sys
 from pathlib import Path
+from dataclasses import replace
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
 from padiem_ai_core.pc_device_identity import is_pc_device_id
+from padiem_ai_core.tool_runtime import ToolRuntime
 
 from app.claw_pc_query_step_driver import (
     build_chat_pc_query_tool_binding,
@@ -98,6 +82,10 @@ LIST_STEP_WITH_READ_INTENT = json.dumps(
 WRONG_READ_STEP = json.dumps(
     {"action": "tool", "tool_id": "claw.pc.read_file", "arguments": {"path": READ_TARGET}},
     ensure_ascii=False,
+)
+READ_STEP_WITH_LIST_INTENT = json.dumps(
+    {"action": "tool", "tool_id": "claw.pc.read_file",
+     "arguments": {"path": READ_TARGET, "intent": "list"}},
 )
 COMPLETE_STEP = json.dumps(
     {"action": "complete", "answer": "폴더에 2개 항목이 있습니다."},
@@ -309,9 +297,12 @@ def test_the_engine_executes_the_ceiling_and_plan_the_chat_lane_ships() -> None:
     ]
 
     pc = _FakePcEndpoint()
-    transport = _transport_for(model=_ScriptedModel([LIST_STEP, WRONG_READ_STEP]), pc=pc)
-    with pytest.raises(PadiemAiEngineClientError):
-        _orchestrate(transport)
+    transport = _transport_for(
+        model=_ScriptedModel([LIST_STEP, WRONG_READ_STEP, COMPLETE_STEP]), pc=pc,
+    )
+    _orchestrate(transport)
+    assert transport.statuses == [200]
+    assert pc.ops == ["list", "read"]
 
     assert len(transport.bodies) == 1
     assert transport.urls[0].endswith("/internal/v1/orchestrate"), transport.urls
@@ -325,8 +316,8 @@ def test_the_engine_executes_the_ceiling_and_plan_the_chat_lane_ships() -> None:
     assert sent["execution_context"] == {"trace_id": sent["trace_id"]}
 
 
-def test_a_listing_only_turn_with_a_wrong_read_selects_zero_read_dispatches() -> None:
-    """The user asked for a listing; the model's wrong read must not execute.
+def test_a_list_intent_read_step_selects_zero_read_dispatches() -> None:
+    """A model step narrowed to listing cannot execute a read.
 
     Measured on the handler side rather than on the policy side: the folder
     listing runs and returns a genuinely readable ``relative_path``, the model
@@ -334,7 +325,7 @@ def test_a_listing_only_turn_with_a_wrong_read_selects_zero_read_dispatches() ->
     endpoint still receives exactly one dispatch, for the listing.
     """
     pc = _FakePcEndpoint()
-    model = _ScriptedModel([LIST_STEP, WRONG_READ_STEP])
+    model = _ScriptedModel([LIST_STEP, READ_STEP_WITH_LIST_INTENT])
     transport = _transport_for(model=model, pc=pc)
 
     with pytest.raises(PadiemAiEngineClientError) as refusal:
@@ -440,9 +431,8 @@ def test_an_admitted_list_only_plan_refuses_read_intent_before_dispatch(
 def test_an_explicit_read_intent_still_reaches_the_read_dispatch() -> None:
     """Differential proof: the gate closes on the unauthorized read only.
 
-    Same chain, same ceiling, same plan. When the model declares the read the
-    user actually asked for, the read handler runs and the dispatch happens, so
-    the refusal above is a scope decision and not a broken lane.
+    Same chain and full ceiling: optional read intent has no effect. The read
+    handler still runs through authorization and the signed callback.
     """
     pc = _FakePcEndpoint()
     model = _ScriptedModel([LIST_STEP_WITH_READ_INTENT, WRONG_READ_STEP, COMPLETE_STEP])
@@ -466,3 +456,81 @@ def test_an_explicit_read_intent_still_reaches_the_read_dispatch() -> None:
         leg for leg in pc.dispatches if leg["op"] == "read"
     ]
     assert [leg["path"] for leg in read_legs] == [READ_TARGET], read_legs
+
+
+@pytest.mark.parametrize(
+    "list_only,intent,allowed",
+    [
+        pytest.param(True, "read", False, id="1-list-only-read-intent-denied"),
+        pytest.param(True, None, False, id="2-list-only-missing-intent-denied"),
+        pytest.param(False, None, True, id="3-full-missing-intent-authorized"),
+        pytest.param(False, "list", False, id="4-full-list-intent-denied"),
+        pytest.param(False, "read", True, id="5-full-read-intent-authorized"),
+    ],
+)
+def test_admitted_ceiling_and_optional_step_intent(
+    list_only, intent, allowed, monkeypatch,
+) -> None:
+    """The five Owner cases traverse admission, the step gate and real auth."""
+    read = json.loads(WRONG_READ_STEP)
+    if intent is not None:
+        read["arguments"]["intent"] = intent
+    answers = [LIST_STEP, json.dumps(read), COMPLETE_STEP]
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel(answers)
+    transport = _transport_for(model=model, pc=pc)
+    run = _orchestrate_list_only if list_only else _orchestrate
+    original_execute = ToolRuntime.execute
+    read_authorizations = []
+
+    async def observed_execute(runtime, invocation, agent_profile, authorization):
+        if invocation.tool_id == "claw.pc.read_file":
+            read_authorizations.append(authorization.granted_auth_scopes)
+        return await original_execute(runtime, invocation, agent_profile, authorization)
+
+    monkeypatch.setattr(ToolRuntime, "execute", observed_execute)
+    if allowed:
+        result = run(transport)
+        assert result["execution"]["metadata"]["status"] == "completed"
+        assert transport.statuses == [200]
+        assert pc.ops == ["list", "read"]
+        assert len(read_authorizations) == 1
+        assert "claw.pc.read_file" in read_authorizations[0]
+    else:
+        with pytest.raises(PadiemAiEngineClientError) as refusal:
+            run(transport)
+        assert refusal.value.code == "agent_step_failed"
+        assert transport.statuses == [400]
+        assert pc.ops == ["list"]
+        assert read_authorizations == []
+        assert len(model.prompts) == 2
+
+    # Case 3 also removes the server-granted read scope in a differential run.
+    # Real ToolRuntime authorization must refuse it before a read dispatch.
+    if not list_only and intent is None:
+        denied_codes = []
+
+        async def without_read_scope(runtime, invocation, agent_profile, authorization):
+            if invocation.tool_id == "claw.pc.read_file":
+                authorization = replace(
+                    authorization,
+                    granted_auth_scopes=tuple(
+                        scope for scope in authorization.granted_auth_scopes
+                        if scope != "claw.pc.read_file"
+                    ),
+                )
+            try:
+                return await original_execute(runtime, invocation, agent_profile, authorization)
+            except Exception as exc:
+                denied_codes.append(getattr(exc, "code", None))
+                raise
+
+        monkeypatch.setattr(ToolRuntime, "execute", without_read_scope)
+        denied_pc = _FakePcEndpoint()
+        denied_transport = _transport_for(
+            model=_ScriptedModel(answers), pc=denied_pc,
+        )
+        with pytest.raises(PadiemAiEngineClientError):
+            _orchestrate(denied_transport)
+        assert denied_codes == ["tool_auth_scope_missing"]
+        assert denied_pc.ops == ["list"]
