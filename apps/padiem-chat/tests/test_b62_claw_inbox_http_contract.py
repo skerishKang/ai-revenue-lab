@@ -28,8 +28,10 @@ from starlette.testclient import TestClient
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
+from app.control_plane_identity import IdentityBridgeError
 from app.control_plane_identity import PADIEM_CHAT_PRODUCT_ID
 from app.control_plane_identity_shadow import IdentityShadowRecord
+from app.workspace_storage import WorkspaceStorageError
 from kagent.claw_memory import (
     ClawAlert,
     ClawAlertKind,
@@ -414,6 +416,57 @@ def test_store_read_failure_never_returns_a_success_shape() -> None:
     assert response.json()["ok"] is False
     assert response.json()["error"]["code"] == "inbox_read_failed"
     assert "items" not in response.json()
+
+
+@pytest.mark.parametrize("kind", ["tasks", "alerts"])
+def test_d1_read_failure_reports_query_failed(kind: str) -> None:
+    store = MagicMock()
+    setattr(store, f"list_{kind}", AsyncMock(side_effect=WorkspaceStorageError("d1 read failed")))
+    client = _client(store)
+    response = client.get(f"/api/claw/inbox/{kind}")
+    assert response.status_code == 503
+    assert response.json()["ok"] is False
+    assert response.json()["error"]["code"] == "inbox_query_failed"
+    assert "items" not in response.json()
+
+
+@pytest.mark.parametrize("kind", ["tasks", "alerts"])
+def test_client_side_value_error_is_rejected_as_identifier_rejected(kind: str) -> None:
+    store = MagicMock()
+    setattr(store, f"list_{kind}", AsyncMock(side_effect=ValueError("bad id")))
+    client = _client(store)
+    response = client.get(f"/api/claw/inbox/{kind}")
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "identifier_rejected"
+
+
+def test_unresolvable_workspace_is_reported_as_workspace_unresolved() -> None:
+    store = MagicMock()
+    store.list_tasks = AsyncMock(side_effect=AssertionError("store must not be touched"))
+    store.list_alerts = AsyncMock(side_effect=AssertionError("store must not be touched"))
+    settings = _google_settings()
+    app = create_app(settings=settings, history_store=MagicMock(), claw_task_alert_store=store)
+    app.state.identity_shadow_store = _make_identity_shadow_store()
+    failing_authority = MagicMock()
+    failing_authority.resolve_auth_session = AsyncMock(
+        side_effect=IdentityBridgeError(
+            503, "control_plane_session_unavailable", "Canonical auth session is unavailable."
+        )
+    )
+    app.state.control_plane_identity_authority = failing_authority
+    client = TestClient(app, base_url="https://chat.example.test")
+    client.cookies.set(
+        SESSION_COOKIE,
+        create_session_token(settings, SIGNED_IN_USER_ID),
+        domain="chat.example.test",
+        path="/",
+    )
+    response = client.get(LIST_TASKS)
+    assert response.status_code == 503
+    assert response.json()["ok"] is False
+    assert response.json()["error"]["code"] == "workspace_unresolved"
+    store.list_tasks.assert_not_awaited()
+    store.list_alerts.assert_not_awaited()
 
 
 # ── 7. payload validation ──────────────────────────────────────────────────
