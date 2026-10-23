@@ -407,5 +407,74 @@ class ClaimGateTests(unittest.TestCase):
         self.assertEqual(len(polled), 1)
 
 
+class PollPresenceTests(unittest.TestCase):
+    """#5553: presence rides on the existing poll, and never blocks it."""
+
+    def _executor(self, presence_provider=None, transport=None, gate=None):
+        return OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net",
+            channel_secret=SECRET,
+            read_port=_StubPort(),
+            transport=transport,
+            claim_gate=gate,
+            presence_provider=presence_provider,
+        )
+
+    def test_the_poll_carries_the_presence_beat(self):
+        seen: dict = {}
+
+        def transport(path, payload):
+            seen["path"] = path
+            seen["payload"] = payload
+            return 200, {"ok": True, "dispatch": None}
+
+        executor = self._executor(
+            lambda: [{"device_id": NODE, "connected": True}], transport
+        )
+        self.assertIsNone(executor.run_once())
+        self.assertEqual(seen["path"], POLL_PATH)
+        self.assertEqual(
+            seen["payload"], {"presence": [{"device_id": NODE, "connected": True}]}
+        )
+
+    def test_a_failed_presence_probe_omits_the_field_and_polls(self):
+        probed = []
+
+        def broken_provider():
+            probed.append(True)
+            raise RuntimeError("listdevices refused")
+
+        seen: dict = {}
+
+        def transport(path, payload):
+            seen["path"] = path
+            seen["payload"] = payload
+            return 200, {"ok": True, "dispatch": None}
+
+        executor = self._executor(broken_provider, transport)
+        self.assertIsNone(executor.run_once())
+        self.assertEqual(probed, [True])
+        # The historical body is untouched: no presence key, poll still runs.
+        self.assertEqual(seen["path"], POLL_PATH)
+        self.assertIsNone(seen["payload"])
+
+    def test_an_inactive_host_polls_without_presence_at_all(self):
+        polled = []
+        probed = []
+
+        def transport(*_args, **_kwargs):
+            polled.append(True)
+            raise AssertionError("an inactive host must not poll")
+
+        def provider():
+            probed.append(True)
+            return [{"device_id": NODE, "connected": True}]
+
+        executor = self._executor(provider, transport, gate=lambda: False)
+        self.assertIsNone(executor.run_once())
+        self.assertEqual(polled, [])
+        self.assertEqual(probed, [])
+
+
 if __name__ == "__main__":
     unittest.main()

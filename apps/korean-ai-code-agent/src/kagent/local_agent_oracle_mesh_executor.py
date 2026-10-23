@@ -28,6 +28,8 @@ POLL_PATH = "/api/claw/connector/mesh-reads/poll"
 RESULT_PATH = "/api/claw/connector/mesh-reads/result"
 #: Header carrying the deployment channel secret on both legs.
 CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
+#: #5553: bound shared with the Chat poll route's presence envelope.
+MAX_PRESENCE_ENTRIES = 8
 #: Cloudflare's Browser Integrity Check blocks the default Python-urllib
 #: signature (error 1010) at the edge, before the channel secret is ever
 #: evaluated. This executor is a first-party product client, so it identifies
@@ -153,6 +155,7 @@ class OracleMeshExecutor:
         transport: Optional[Callable[..., tuple[int, dict[str, Any]]]] = None,
         pending_dir: Optional[str] = None,
         claim_gate: Optional[Callable[[], bool]] = None,
+        presence_provider: Optional[Callable[[], Any]] = None,
     ) -> None:
         if not isinstance(chat_origin, str) or not chat_origin.startswith("https://"):
             raise ContractError("the chat channel must be an https origin")
@@ -194,6 +197,13 @@ class OracleMeshExecutor:
         if claim_gate is not None and not callable(claim_gate):
             raise ContractError("the claim gate must be callable")
         self._claim_gate = claim_gate
+        # #5553: an optional presence observation that rides on the ONE
+        # authenticated poll. It is derived from the local MeshCentral probe,
+        # never from caller input, and a probe failure removes the field
+        # instead of blocking the poll.
+        if presence_provider is not None and not callable(presence_provider):
+            raise ContractError("the presence provider must be callable")
+        self._presence_provider = presence_provider
 
     # ---- channel -------------------------------------------------------
     def _https_post(
@@ -265,9 +275,48 @@ class OracleMeshExecutor:
             raise OracleMeshChannelRefused("chat channel transport refused") from exc
 
     # ---- legs ----------------------------------------------------------
+    def _poll_payload(self) -> Optional[dict[str, Any]]:
+        """The optional presence beat for this poll, or None when absent.
+
+        The executor observes; it never claims ONLINE. The server re-derives
+        the canonical device/account from the deployment map and stamps the
+        receipt itself. Any probe failure, malformed value or empty result
+        omits the field entirely so the poll proceeds exactly as before.
+        """
+        provider = self._presence_provider
+        if provider is None:
+            return None
+        try:
+            rows = provider()
+            if not isinstance(rows, (list, tuple)):
+                return None
+            if not rows or len(rows) > MAX_PRESENCE_ENTRIES:
+                return None
+            entries: list[dict[str, Any]] = []
+            for row in rows:
+                if type(row) is not dict or set(row) != {"device_id", "connected"}:
+                    return None
+                device_id = row["device_id"]
+                connected = row["connected"]
+                if (
+                    not isinstance(device_id, str)
+                    or not device_id
+                    or len(device_id) > 256
+                    or any(ord(ch) < 33 or ord(ch) > 126 for ch in device_id)
+                ):
+                    return None
+                if type(connected) is not bool:
+                    return None
+                entries.append({"device_id": device_id, "connected": connected})
+        except Exception:
+            # The beat is evidence, not work: a failed probe must never turn
+            # into a channel refusal that stalls the queue.
+            return None
+        return {"presence": entries}
+
     def poll_once(self) -> Optional[OracleMeshDispatch]:
         """Claim the oldest dispatch, or None when the queue is empty."""
-        status, data = self._post(POLL_PATH, None)
+        status, data = self._post(POLL_PATH, self._poll_payload())
         if status != 200 or data.get("ok") is not True:
             raise OracleMeshChannelRefused("chat channel refused the poll")
         dispatch = data.get("dispatch")
@@ -1180,6 +1229,7 @@ def make_oracle_mesh_executor(
     work_dir: str | None = None,
     timeout_seconds: int = 30,
     claim_gate: Optional[Callable[[], bool]] = None,
+    presence_provider: Optional[Callable[[], Any]] = None,
 ) -> OracleMeshExecutor:
     """Build the executor with the REAL official meshctrl read port.
 
@@ -1259,6 +1309,7 @@ def make_oracle_mesh_executor(
         timeout_seconds=timeout_seconds,
         pending_dir=work_dir,
         claim_gate=claim_gate,
+        presence_provider=presence_provider,
     )
 
 
@@ -1305,6 +1356,8 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
       ORACLE_MESH_URL               optional, default wss://127.0.0.1:4443
       ORACLE_MESH_WORK_DIR          optional scratch directory
       ORACLE_MESH_POLL_SECONDS      optional idle interval, default 5
+      MESH_FAILOVER_DEVICE_ID       optional target device; when set, the
+                                    poll carries that device's presence beat
     Secrets are read from files at call time; they never appear on argv.
     """
     import os
@@ -1320,6 +1373,32 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
         return value
 
     try:
+        mesh_url = env.get("ORACLE_MESH_URL", "").strip() or "wss://127.0.0.1:4443"
+        password_provider = deployment_secret_password_provider(
+            need("ORACLE_MESH_PASSWORD_FILE")
+        )
+        # #5553: observe presence only for the device this deployment names.
+        # An unnamed target omits the field instead of guessing a device.
+        presence_provider = None
+        presence_device_id = env.get("MESH_FAILOVER_DEVICE_ID", "").strip()
+        if presence_device_id:
+            from .local_agent_mesh_failover import MeshCentralDevicePresence
+
+            presence = MeshCentralDevicePresence(
+                meshctrl_js=need("ORACLE_MESH_MESHCTRL_JS"),
+                mesh_url=mesh_url,
+                login_user=need("ORACLE_MESH_LOGIN_USER"),
+                password_provider=password_provider,
+            )
+
+            def presence_provider():
+                return [
+                    {
+                        "device_id": presence_device_id,
+                        "connected": presence.is_connected(presence_device_id),
+                    }
+                ]
+
         executor = make_oracle_mesh_executor(
             chat_origin=need("ORACLE_MESH_CHAT_ORIGIN"),
             channel_secret=_read_secret_file(
@@ -1327,11 +1406,10 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             ),
             meshctrl_js=need("ORACLE_MESH_MESHCTRL_JS"),
             login_user=need("ORACLE_MESH_LOGIN_USER"),
-            password_provider=deployment_secret_password_provider(
-                need("ORACLE_MESH_PASSWORD_FILE")
-            ),
-            mesh_url=env.get("ORACLE_MESH_URL", "").strip() or "wss://127.0.0.1:4443",
+            password_provider=password_provider,
+            mesh_url=mesh_url,
             work_dir=env.get("ORACLE_MESH_WORK_DIR", "").strip() or None,
+            presence_provider=presence_provider,
         )
         idle = max(1, min(int(env.get("ORACLE_MESH_POLL_SECONDS", "5") or 5), 300))
     except (ContractError, ValueError) as exc:
