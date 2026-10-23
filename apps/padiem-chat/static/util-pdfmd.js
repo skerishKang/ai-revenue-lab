@@ -212,7 +212,7 @@
       const list = el("div", "pdfmd-itemlist");
       currentItems.forEach((item) => {
         const card = el("div", "pdfmd-item");
-        const title = el("div", "pdfmd-item-title", item.name + " (" + item.page_count + "쪽)");
+        const title = el("div", "pdfmd-item-title", item.page_count ? item.name + " (" + item.page_count + "쪽)" : item.name);
         card.appendChild(title);
         const status = el("div", "pdfmd-item-status", "상태: " + item.status + (item.error_code ? " (" + item.error_code + ")" : ""));
         card.appendChild(status);

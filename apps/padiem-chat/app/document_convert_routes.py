@@ -8,6 +8,13 @@ away — the state lives in D1 and R2, not in the page.
 Storage reuses the private workspace R2 binding and the existing bounded binary
 upload reader; the conversion reuses Core's reviewed pypdf boundary through
 ``padiem_ai_core.pdf_markdown``. No new binding, account system or job engine.
+
+The hot upload path stays at the magic check + R2 + D1: it does not run the
+expensive pypdf inspection, so a PDF upload cannot push the Worker past its
+resource budget (#5568 production 503). The page count and native-text state
+are deferred to the explicit conversion step, which is the only pypdf site on
+this surface. A magic-valid but unreadable body is a queued item that fails at
+conversion time.
 """
 
 from __future__ import annotations
@@ -42,7 +49,6 @@ from padiem_ai_core.document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
     DocumentNormalizationError,
     _read_member_bounded,
-    inspect_pdf,
     validate_ooxml_member_name,
 )
 from padiem_ai_core.pdf_markdown import (
@@ -64,10 +70,6 @@ UPLOAD_MEDIA_TYPE = "application/octet-stream"
 UPLOAD_MEDIA_TYPES = frozenset({PDF_MEDIA_TYPE, ZIP_MEDIA_TYPE})
 MAX_JOB_BODY_BYTES = 4_096
 _NO_STORE = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"}
-
-#: What Screen A shows before a single conversion runs. The state string is Core's
-#: own, so a scan is reported as the inspection found it rather than re-labelled here.
-_UPLOAD_PROBE_KEYS = ("page_count", "byte_size", "native_text_state")
 
 #: Core stays locale-free, so the sentence is owned here. It states the absence and
 #: states that nothing was guessed — the page is never silently left blank.
@@ -240,25 +242,6 @@ async def _resolve_job(request: Request):
     return uid, ledger, bucket, job, None
 
 
-def _upload_probe(name: str, payload: bytes) -> tuple[int, dict[str, object] | None]:
-    """Page count and native-text state, from the reviewed inspection boundary.
-
-    Core's own state string is carried through, so a scan is reported exactly as
-    the inspection found it rather than re-labelled into a warning here.
-
-    A member whose magic bytes are valid but whose body cannot be inspected is
-    not rejected at upload: it becomes a queued item that fails at conversion
-    time, so one bad file cannot abort a multi-file upload.
-    """
-
-    try:
-        inspection = inspect_pdf(name=name, media_type=PDF_MEDIA_TYPE, payload=payload)
-    except DocumentNormalizationError:
-        return 0, None
-    probe = {key: getattr(inspection, key) for key in _UPLOAD_PROBE_KEYS}
-    return int(inspection.page_count), probe
-
-
 def _pdf_members(spool):
     """Yield every member of an uploaded archive, path-checked and inflate-bounded.
 
@@ -326,17 +309,20 @@ async def convert_job_files(request: Request):
                     continue
                 item = None
                 try:
-                    page_count, probe = _upload_probe(name, payload)
+                    # #5568 CPU offload: keep the hot upload path at the magic
+                    # check + R2 + D1. The expensive pypdf inspection (page
+                    # count, native-text state) is deferred to the explicit
+                    # conversion step, so a PDF upload cannot push the Worker
+                    # past its resource budget. A magic-valid but unreadable
+                    # body becomes a queued item that fails at conversion time,
+                    # exactly as the module contract already describes.
                     item = await ledger.add_item(
-                        uid, job.id, name=name, page_count=page_count, probe=probe
+                        uid, job.id, name=name, page_count=0, probe=None
                     )
                     await _r2_call(
                         bucket, "put", item.original_key, payload,
                         httpMetadata={"contentType": PDF_MEDIA_TYPE},
                     )
-                except DocumentNormalizationError as exc:
-                    rejected.append({"name": name[:120], "code": exc.code})
-                    continue
                 except Exception:
                     if item is not None:
                         await _discard(ledger, bucket, uid, item.id, item.original_key)
