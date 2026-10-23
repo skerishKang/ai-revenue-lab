@@ -446,7 +446,7 @@
       });
       dlB.addEventListener("click", () => { downloadText(output.value, "meeting.txt"); });
 
-﻿      async function refreshArchive(arc) {
+      async function refreshArchive(arc) {
         if (!currentPid) currentPid = await ensureProject();
         if (!currentPid) return;
         const files = await listProjectFiles(currentPid);
