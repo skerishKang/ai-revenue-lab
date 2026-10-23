@@ -64,8 +64,10 @@ _QUERY_STOPWORDS = frozenset(
         "검색",
         "검색해",
         "검색해서",
+        "검색결과",
         "찾아봐",
         "찾아줘",
+        "찾아서",
         "확인",
         "확인해",
         "확인해줘",
@@ -73,12 +75,35 @@ _QUERY_STOPWORDS = frozenset(
         "검증해줘",
         "알려줘",
         "알려주세요",
+        "알려",
         "뭐야",
         "무엇",
         "맞아",
         "맞지",
         "웹에서",
         "인터넷에서",
+        "온라인에서",
+        "출처",
+        "제목",
+        "제목과",
+        "결과",
+        "함께",
+        "적어줘",
+        "적어",
+        "보여줘",
+        "보여",
+        "어떻게",
+        "얼마",
+        "얼마인지",
+        "기준",
+        "기준일",
+        "날짜",
+        "년",
+        "월",
+        "일",
+        "url",
+        "링크",
+        "주소",
         "current",
         "latest",
         "recent",
@@ -91,6 +116,11 @@ _QUERY_STOPWORDS = frozenset(
         "tell",
         "me",
         "please",
+        "source",
+        "title",
+        "result",
+        "results",
+        "date",
     }
 )
 
@@ -383,10 +413,15 @@ def _relevance(query: str, evidence: Evidence) -> tuple[float, tuple[str, ...]]:
     if not any_matches:
         return 0.0, ("no_exact_query_token_match",)
 
-    count = len(query_terms)
-    title_coverage = len(set(title_matches)) / count
-    snippet_coverage = len(set(snippet_matches)) / count
-    host_coverage = len(set(host_matches)) / count
+    # Score by the number of distinct query terms that actually match the
+    # retrieved source instead of their coverage over the whole query. A long
+    # natural-language question carries many non-topical words (dates, source
+    # display instructions, answer format requests) that are already filtered
+    # above, but any residual ones must not dilute the score of an on-topic
+    # result: the denominator no longer grows with the question length.
+    title_match_count = len(set(title_matches))
+    snippet_match_count = len(set(snippet_matches))
+    host_match_count = len(set(host_matches))
 
     normalized_query = " ".join(query_terms)
     normalized_title = " ".join(_normalized_tokens(evidence.title))
@@ -394,9 +429,9 @@ def _relevance(query: str, evidence: Evidence) -> tuple[float, tuple[str, ...]]:
 
     score = min(
         1.0,
-        (0.5 * title_coverage)
-        + (0.3 * snippet_coverage)
-        + (0.05 * host_coverage)
+        (0.2 * title_match_count)
+        + (0.2 * snippet_match_count)
+        + (0.05 * host_match_count)
         + phrase_bonus,
     )
     reasons: list[str] = []
