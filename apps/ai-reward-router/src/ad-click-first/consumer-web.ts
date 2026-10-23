@@ -128,8 +128,8 @@ function renderShell(
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
-  <title>바로 적립 | B64</title>
+  <meta name="color-scheme" content="dark" />
+  <title>AI Reward Router | PADIEM</title>
   <style>
     :root {
       color-scheme: dark;
@@ -152,23 +152,26 @@ function renderShell(
     body { margin: 0; min-width: 320px; background: var(--bg); color: var(--text); }
     a { color: inherit; text-decoration: none; }
     .shell { width: min(100%, 1080px); margin: 0 auto; padding: 0 20px 64px; }
-    .topbar { position: sticky; top: 0; z-index: 10; margin: 0 -20px; padding: 16px 20px 12px; background: rgba(7,9,13,.72); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
-    .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.03em; font-size: 18px; }
-    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #07090d; font-size: 12px; font-weight: 800; }
-    .trust-note { font-size: 12px; color: var(--muted); }
+    .topbar { position: sticky; top: 0; z-index: 10; margin: 0 -20px; padding: 11px 20px 9px; background: rgba(7,9,13,.82); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+    .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; letter-spacing: .16em; }
+    .brand-mark { width: 26px; height: 26px; flex: 0 0 auto; filter: drop-shadow(0 0 12px rgba(136,201,255,.25)); }
+    .brand-wordmark { line-height: 1; }
+    .brand-divider { width: 1px; height: 14px; background: var(--line); flex: 0 0 auto; }
+    .brand-product { font-size: 12px; font-weight: 500; letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
+    .trust-note { font-size: 11px; color: var(--muted); white-space: nowrap; }
     .primary-nav { display: flex; gap: 6px; padding-top: 12px; overflow-x: auto; scrollbar-width: none; flex-wrap: wrap; }
     .primary-nav::-webkit-scrollbar { display: none; }
     .nav-item { flex: 0 0 auto; padding: 8px 14px; border-radius: 999px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--muted); border: 1px solid transparent; transition: color .16s ease, background .16s ease, border-color .16s ease; }
     .nav-item:hover { color: var(--text); }
     .nav-item--active { background: var(--surface-strong); color: var(--text); border-color: var(--line); }
-    .category-tabs { display: flex; gap: 6px; padding: 4px 0 0; overflow-x: auto; scrollbar-width: none; flex-wrap: wrap; }
+    .category-tabs { display: flex; gap: 6px; padding: 2px 0 0; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
     .category-tabs::-webkit-scrollbar { display: none; }
-    .hero { padding: 56px 0 24px; }
+    .hero { padding: 28px 0 16px; }
     .eyebrow { margin: 0 0 12px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    .hero h1 { margin: 0; max-width: 640px; font-size: clamp(30px, 6vw, 56px); line-height: 1.0; letter-spacing: -.055em; font-weight: 700; }
-    .hero p { margin: 18px 0 0; max-width: 560px; color: var(--muted); font-size: 16px; line-height: 1.6; }
-    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 24px 0 14px; flex-wrap: wrap; }
+    .hero h1 { margin: 0; max-width: 640px; font-size: clamp(26px, 6.4vw, 56px); line-height: 1.04; letter-spacing: -.05em; font-weight: 700; }
+    .hero p { margin: 14px 0 0; max-width: 560px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin: 16px 0 12px; flex-wrap: wrap; }
     .section-head h2 { margin: 0; font-size: 20px; letter-spacing: -.02em; font-weight: 700; }
     .section-head span { color: var(--muted); font-size: 12px; }
     .reward-grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
@@ -203,26 +206,55 @@ function renderShell(
     .how-step__body p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
     .later-tier-notice { margin: 14px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
     .footer-note { margin: 32px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; text-align: center; }
-    .filter-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; padding: 12px 0 8px; }
-    .filter-bar label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); font-weight: 600; }
-    .filter-bar input, .filter-bar select { padding: 9px 12px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; min-width: 140px; }
-    .filter-bar button { padding: 9px 20px; border-radius: 999px; border: 1px solid var(--accent); background: var(--accent); color: #07090d; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .filter-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: end; padding: 10px 0 6px; }
+    .filter-bar label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--muted); font-weight: 600; min-width: 0; }
+    .filter-bar input, .filter-bar select { width: 100%; padding: 9px 12px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; min-width: 0; }
+    .filter-bar button { grid-column: 1 / -1; padding: 10px 20px; border-radius: 999px; border: 1px solid var(--accent); background: var(--accent); color: #07090d; font-size: 14px; font-weight: 700; cursor: pointer; min-height: 44px; }
     .filter-bar button:hover { background: var(--accent-strong); }
-    .detail-card { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
-    .detail-card h2 { margin: 0 0 16px; font-size: 22px; letter-spacing: -.03em; font-weight: 700; }
-    .detail-list { display: grid; grid-template-columns: 120px 1fr; gap: 8px 16px; margin: 0 0 20px; }
-    .detail-list dt { color: var(--muted); font-size: 13px; font-weight: 600; }
-    .detail-list dd { margin: 0; font-size: 14px; line-height: 1.5; }
+    .detail-card { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
+    .detail-card h2 { margin: 12px 0 16px; font-size: 22px; line-height: 1.3; letter-spacing: -.03em; font-weight: 700; }
+    .detail-reward { display: flex; align-items: baseline; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+    .detail-reward strong { color: var(--gold); font-size: 30px; line-height: 1; letter-spacing: -.03em; font-weight: 700; }
+    .detail-reward span { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .detail-facts { display: grid; gap: 14px; padding: 16px 0; }
+    .detail-fact { display: grid; gap: 3px; }
+    .detail-fact__label { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+    .detail-fact__value { font-size: 15px; line-height: 1.5; }
+    .detail-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 12px 0 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    .detail-cta { margin-top: 0; }
     .category-tabs .nav-item { font-size: 12px; }
     @media (min-width: 680px) {
       .shell { padding-left: 28px; padding-right: 28px; }
       .topbar { margin-left: -28px; margin-right: -28px; padding-left: 28px; padding-right: 28px; }
+      .brand-product { font-size: 13px; }
       .reward-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .how-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .filter-bar { grid-template-columns: 1fr 1fr auto; }
+      .filter-bar button { grid-column: auto; }
     }
     @media (min-width: 1024px) {
       .reward-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .detail-list { grid-template-columns: 140px 1fr; }
+    }
+    @media (max-width: 480px) {
+      .topbar { padding: 9px 16px 7px; }
+      .brand { font-size: 15px; }
+      .brand-mark { width: 22px; height: 22px; }
+      .brand-divider { height: 12px; }
+      .brand-product { font-size: 11px; }
+      .trust-note { display: none; }
+      .primary-nav { padding-top: 8px; gap: 4px; }
+      .nav-item { padding: 6px 10px; font-size: 12px; }
+      .hero { padding: 20px 0 12px; }
+      .hero h1 { font-size: clamp(24px, 7vw, 32px); }
+      .hero p { font-size: 14px; margin-top: 10px; }
+      .eyebrow { margin-bottom: 8px; }
+      .section-head { margin: 12px 0 10px; }
+      .reward-card { padding: 16px; }
+      .reward-card h3 { font-size: 16px; margin: 10px 0 8px; }
+      .reward-card__reward strong { font-size: 20px; }
+      .empty-state { padding: 36px 18px; }
+      .how-step { padding: 14px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
@@ -233,7 +265,16 @@ function renderShell(
   <div class="shell" data-consumer-mode="${viewModel.mode}" data-issue="${viewModel.issueNumber}">
     <header class="topbar">
       <div class="brand-row">
-        <a class="brand" href="#top" aria-label="B64 바로 적립 홈"><span class="brand-mark" aria-hidden="true">B64</span><span>바로 적립</span></a>
+        <a class="brand" href="#top" aria-label="PADIEM AI Reward Router">
+          <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M6 25V7h8.5c5.2 0 8.5 2.8 8.5 7.1 0 4.4-3.3 7.2-8.5 7.2H10" stroke="currentColor" stroke-linecap="round" stroke-width="1.6" />
+            <path d="M10 11h4.5c2.5 0 4 1.1 4 3.1s-1.5 3.2-4 3.2H10" stroke="url(#padiem-mark)" stroke-linecap="round" stroke-width="1.6" />
+            <defs><linearGradient id="padiem-mark" x1="10" y1="11" x2="19" y2="19" gradientUnits="userSpaceOnUse"><stop stop-color="#8BCBFF" /><stop offset="1" stop-color="#F0C77C" /></linearGradient></defs>
+          </svg>
+          <span class="brand-wordmark">PADIEM</span>
+          <span class="brand-divider" aria-hidden="true"></span>
+          <span class="brand-product">AI Reward Router</span>
+        </a>
         <span class="trust-note">확인된 적립만 표시</span>
       </div>
       <nav class="primary-nav" aria-label="주요 메뉴">${navItems}</nav>
@@ -384,21 +425,36 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
   const content = card
     ? `<section id="opportunity-detail" aria-labelledby="detail-title">
       <div class="detail-card">
+        <p class="eyebrow">수익 기회 상세</p>
         <h2 id="detail-title">${escapeHtml(card.title)}</h2>
-        <dl class="detail-list">
-          <dt>제공 업체</dt><dd>${escapeHtml(card.sourceId)}</dd>
-          <dt>보상</dt><dd>${escapeHtml(card.rewardLabel)} (${escapeHtml(card.certainty === 'GUARANTEED' ? '확정 보상' : '조건 충족 시')})</dd>
-          <dt>예상 소요 시간</dt><dd>약 ${card.estimatedActiveSeconds}초</dd>
-          <dt>참여 자격·조건</dt><dd>${escapeHtml(card.conditionSummary)}</dd>
-          <dt>출처</dt><dd>${escapeHtml(card.sourceId)}</dd>
-          <dt>최종 검증 시각</dt><dd>${escapeHtml(card.lastVerifiedAt)}</dd>
-        </dl>
-        ${safeOutboundHref(card.canonicalDestinationUrl) ? `<a class="reward-cta" href="${safeOutboundHref(card.canonicalDestinationUrl)}" target="_blank" rel="noopener noreferrer nofollow">공식 사이트에서 참여하기<span aria-hidden="true"> ↗</span></a>` : ''}
+        <div class="detail-reward">
+          <strong>${escapeHtml(card.rewardLabel)}</strong>
+          <span>${escapeHtml(card.certainty === 'GUARANTEED' ? '확정 보상' : '조건 충족 시')}</span>
+        </div>
+        <div class="detail-facts">
+          <div class="detail-fact">
+            <span class="detail-fact__label">예상 소요 시간</span>
+            <span class="detail-fact__value">약 ${card.estimatedActiveSeconds}초</span>
+          </div>
+          <div class="detail-fact">
+            <span class="detail-fact__label">참여 자격·조건</span>
+            <span class="detail-fact__value">${escapeHtml(card.conditionSummary)}</span>
+          </div>
+          <div class="detail-fact">
+            <span class="detail-fact__label">보상 제공 업체</span>
+            <span class="detail-fact__value">${escapeHtml(card.sourceId)}</span>
+          </div>
+        </div>
+        <div class="detail-meta">
+          <span>출처 · ${escapeHtml(card.sourceId)}</span>
+          <span>최종 검증 · ${escapeHtml(card.lastVerifiedAt)}</span>
+        </div>
+        ${safeOutboundHref(card.canonicalDestinationUrl) ? `<a class="reward-cta detail-cta" href="${safeOutboundHref(card.canonicalDestinationUrl)}" target="_blank" rel="noopener noreferrer nofollow">공식 제공처에서 참여하기<span aria-hidden="true"> ↗</span></a>` : ''}
       </div>
     </section>`
     : `<section id="opportunity-detail" aria-labelledby="detail-title">
       <div class="empty-state" role="status" data-empty-state="NO_LIVE_REWARD_SUPPLY">
-        <div class="empty-state__mark" aria-hidden="true">✓</div>
+        <div class="empty-state__mark" aria-hidden="true">P</div>
         <h3>수익 기회를 찾을 수 없습니다</h3>
         <p>요청한 기회가 없거나 현재 공개되지 않은 상태입니다.</p>
       </div>
