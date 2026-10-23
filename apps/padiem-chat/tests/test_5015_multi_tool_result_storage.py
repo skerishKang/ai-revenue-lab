@@ -33,7 +33,7 @@ import pytest
 
 from app import oracle_mesh_read_return_routes as routes
 from app.claw_routes import claw_pending_result
-from app.history import D1HistoryStore, HistoryError, HistoryForbidden
+from app.history import D1HistoryStore, HistoryError, HistoryForbidden, PRODUCT_SCOPE_CHAT
 from app.claw_local_task_result_projection import result_message_id
 
 MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
@@ -131,8 +131,8 @@ def _database() -> sqlite3.Connection:
         )
     connection.execute(
         "INSERT INTO conversations (id,user_id,title,created_at,updated_at,product_scope) "
-        "VALUES (?,?,'title','2026-01-01','2026-01-01','chat')",
-        (CONVERSATION, OWNER),
+        "VALUES (?,?,'title','2026-01-01','2026-01-01',?)",
+        (CONVERSATION, OWNER, PRODUCT_SCOPE_CHAT),
     )
     connection.commit()
     return connection
@@ -848,6 +848,58 @@ def test_pending_result_resolves_a_canonical_chat_pc_run(monkeypatch):
         assert result["run_id"] == RUN
         assert result["conversation_id"] == CONVERSATION
         assert result["status"] == "running"
+    finally:
+        connection.close()
+
+
+def test_pending_result_recovers_final_answer_without_mistaking_scope_notice(monkeypatch):
+    """#5567 GET recovery excludes the persisted <run_id>_scope message."""
+    import app.claw_routes as claw_routes
+    from app import chat_pc_drive
+
+    monkeypatch.setattr(claw_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(claw_routes, "current_user_id", lambda request: OWNER)
+    connection = _database()
+    try:
+        _stage_run(connection, status="running")
+        store = _store(connection)
+        claim = {"version": 1, "requested": "files_list", "admitted": "files_list",
+                 "source": "declared", "ops": ["list"], "app_id": "padiem-chat"}
+        asyncio.run(store.pin_pc_run_scope(user_id=OWNER, run_id=RUN, claim=claim))
+        notice = next(row for row in _messages(connection) if row["id"] == RUN + "_scope")
+        assert notice["content"].startswith("목록만 조회합니다.")
+        # A scope announcement alone is neither a terminal nor an answer.
+        response = asyncio.run(claw_pending_result(_pending_request(RUN, store)))
+        assert response.status_code == 200
+        pending = json.loads(response.body)["result"]
+        assert pending["status"] == "running" and "answer" not in pending
+
+        _stage_command(store, "list")
+        asyncio.run(store.append_local_task_result(
+            user_id=OWNER, run_id=RUN,
+            message_id=_command_message_id("oracle_mesh_cmd_list", "oracle_mesh_rev_list"),
+            command_scope="oracle_mesh_cmd_list", summary="no_exit_code",
+            content=LIST_TEXT, status="completed",
+        ))
+        _finish_command(connection, "list")
+        final_answer = "승인된 폴더의 파일 목록을 확인했습니다."
+        assert asyncio.run(chat_pc_drive._append_lane_answer(
+            _lane_request(), store, uid=OWNER, run_id=RUN, content=final_answer,
+        )) is True
+        # Recreate the store to exercise persisted recovery after the POST
+        # response was lost, rather than an in-memory answer cache.
+        response = asyncio.run(claw_pending_result(_pending_request(RUN, _store(connection))))
+        assert response.status_code == 200
+        result = json.loads(response.body)["result"]
+        assert result["run_id"] == RUN and result["conversation_id"] == CONVERSATION
+        assert result["status"] == "completed"
+        assert result["answer_source"] == "pc_command_result"
+        assert result["answer"] == LIST_TEXT + "\n" + final_answer
+        assert notice["content"] not in result["answer"]
+        assert "목록만 조회합니다." not in result["answer"]
+        assert "<!--pc_scope:" not in result["answer"]
+        assert len(_messages(connection)) == 3
+        assert connection.execute("SELECT COUNT(*) FROM oracle_mesh_dispatch").fetchone()[0] == 1
     finally:
         connection.close()
 

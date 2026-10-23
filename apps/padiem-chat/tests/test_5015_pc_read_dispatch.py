@@ -452,8 +452,12 @@ def test_scope_cannot_widen_or_downgrade_to_the_legacy_wire(monkeypatch):
 def test_new_chat_accepts_old_engine_wire_with_all_original_guards(monkeypatch):
     state = _state(monkeypatch)
     read = _base_payload(op="read", path="notes.txt", tool_call_ref=READ_CALL)
-    status, body = _dispatch(state, read)
-    assert status == 200 and body["dispatch"]["kind"] == "read"
+    request = _SignedRequest(state, read)
+    assert "X-Claw-PC-Scope" not in request.headers
+    assert "X-Claw-PC-Scope-Proof" not in request.headers
+    response = asyncio.run(routes.oracle_mesh_engine_chat_files_call(request))
+    assert response.status_code == 200
+    assert json.loads(response.body)["dispatch"]["kind"] == "read"
     state = _state(monkeypatch)
     status, body = _dispatch(state, {**read, "path": "../outside.txt"})
     assert status == 422 and state.history_store.rows == {}

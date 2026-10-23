@@ -124,6 +124,7 @@ class _FakePcEndpoint:
 
     def __init__(self) -> None:
         self.legs: list[dict] = []
+        self.requests: list[_Request] = []
         self.rows: dict[str, dict] = {}
         self.claims: list[dict] = []
 
@@ -142,6 +143,7 @@ class _FakePcEndpoint:
     async def fetch(self, request: _Request) -> _Response:
         import hashlib
         import hmac
+        self.requests.append(request)
         encoded = request.headers.get("X-Claw-PC-Scope")
         if encoded is not None:
             proof = hmac.new(SIGNING_SECRET.encode(),
@@ -602,6 +604,25 @@ def test_old_chat_wire_and_new_engine_keep_closed_body_and_optional_scope_header
     assert set(pc.dispatches[0]) == {"subject_id", "run_id", "device_id", "mode", "op", "path", "tool_call_ref"}
     assert pc.claims and all(c["admitted"] == "files" for c in pc.claims)
     assert len(model.prompts) == 3
+    # Freeze the pre-scope wire serialization, not just the decoded key set.
+    # In particular, the second context request adds headers to the first
+    # request's exact legacy bytes; no plan/claim enters any JSON body.
+    legacy_fields = {
+        "context": ("device_id", "mode", "run_id", "subject_id"),
+        "dispatch": ("device_id", "mode", "op", "path", "run_id", "subject_id", "tool_call_ref"),
+        "command_status": ("dispatch_id", "mode", "run_id", "subject_id"),
+        "result": ("dispatch_id", "mode", "run_id", "subject_id"),
+    }
+    for request, leg in zip(pc.requests, pc.legs, strict=True):
+        expected = json.dumps({key: leg[key] for key in legacy_fields[leg["mode"]]},
+                              separators=(",", ":")).encode("utf-8")
+        assert request.body.encode("utf-8") == expected
+    context_requests = [request for request, leg in zip(pc.requests, pc.legs, strict=True)
+                        if leg["mode"] == "context"]
+    assert len(context_requests) == 2
+    assert "X-Claw-PC-Scope" not in context_requests[0].headers
+    assert "X-Claw-PC-Scope" in context_requests[1].headers
+    assert context_requests[0].body.encode("utf-8") == context_requests[1].body.encode("utf-8")
 
 
 def test_scope_decision_reuses_first_call_with_conversation_and_selected_model():

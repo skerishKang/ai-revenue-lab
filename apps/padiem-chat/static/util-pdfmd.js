@@ -40,6 +40,31 @@
     return mode === "verify" ? "검증 변환" : "빠른 변환";
   }
 
+  const MODE_HELP = {
+    fast: ["pdfmd-mode-help-fast", "빠른 변환: PDF의 텍스트만 곧바로 Markdown으로 옮깁니다. 디지털 PDF를 빠르게 확인할 때 적합합니다."],
+    verify: ["pdfmd-mode-help-verify", "검증 변환: 같은 변환에 페이지별 문자 일치도·숫자 보존·읽기 순서 검토를 더합니다. 숫자·조항 대조가 중요할 때 적합합니다."],
+  };
+
+  const HISTORY_GROUPS = [
+    ["today", "pdfmd-history-today", "오늘"],
+    ["yesterday", "pdfmd-history-yesterday", "어제"],
+    ["this-week", "pdfmd-history-this-week", "이번 주"],
+    ["earlier", "pdfmd-history-earlier", "이전"],
+  ];
+
+  // Live copy comes from the shared locale authority; the fallback keeps the
+  // utility readable when locale.js is not loaded (tests, isolated harness).
+  function copy(key, fallback) {
+    const locale = window.__padiemLocale;
+    if (locale && typeof locale.text === "function") {
+      try {
+        const value = locale.text(key);
+        if (value && value !== key) return value;
+      } catch (_) {}
+    }
+    return fallback;
+  }
+
   function describeError(err, fallback) {
     if (err && err.code && ERROR_MESSAGES[err.code]) return ERROR_MESSAGES[err.code];
     if (err && err.status === 401) return ERROR_MESSAGES.unauthorized;
@@ -63,10 +88,16 @@
     return (Number(count) || 0) + "개 파일";
   }
 
-  function emptyBlock(title, detail, steps) {
+  function emptyBlock(title, detail, steps, titleKey, detailKey) {
     const box = el("div", "pdfmd-empty");
-    box.appendChild(el("strong", null, title));
-    if (detail) box.appendChild(el("p", null, detail));
+    const head = el("strong", null, title);
+    if (titleKey) head.dataset.localeKey = titleKey;
+    box.appendChild(head);
+    if (detail) {
+      const note = el("p", null, detail);
+      if (detailKey) note.dataset.localeKey = detailKey;
+      box.appendChild(note);
+    }
     if (steps && steps.length) {
       const list = document.createElement("ol");
       steps.forEach((step) => list.appendChild(el("li", null, step)));
@@ -122,6 +153,7 @@
       modeSel.appendChild(o);
     });
     modeField.appendChild(modeSel);
+    modeSel.setAttribute("aria-describedby", "pdfmdModeHelp");
     controls.appendChild(modeField);
 
     const newJobBtn = el("button", "pdfmd-btn", "새 작업");
@@ -133,6 +165,16 @@
     jobIdSpan.hidden = true;
     controls.appendChild(jobIdSpan);
     panel.appendChild(controls);
+
+    const modeHelp = el("p", "pdfmd-mode-help");
+    modeHelp.id = "pdfmdModeHelp";
+    panel.appendChild(modeHelp);
+    function updateModeHelp() {
+      const [key, fallback] = MODE_HELP[modeSel.value] || MODE_HELP.fast;
+      modeHelp.dataset.localeKey = key;
+      modeHelp.textContent = copy(key, fallback);
+    }
+    updateModeHelp();
 
     // Upload area: one large, keyboard-operable target. The picker is the
     // primary action on mobile, where drag-and-drop copy alone is no help.
@@ -200,15 +242,32 @@
     archiveBtn.hidden = true;
     panel.appendChild(archiveBtn);
 
-    // History
+    // History: client-side date grouping and filtering. The list API carries
+    // no filenames, so names join the search index as jobs are opened.
     const histHeader = el("h4", "pdfmd-history-head", "작업 이력");
     panel.appendChild(histHeader);
+    const histTools = el("div", "pdfmd-history-tools");
+    histTools.hidden = true;
+    const histSearch = document.createElement("input");
+    histSearch.type = "search";
+    histSearch.id = "pdfmdHistorySearch";
+    histSearch.className = "pdfmd-history-search";
+    histSearch.autocomplete = "off";
+    histSearch.setAttribute("data-locale-placeholder", "pdfmd-history-search-placeholder");
+    histSearch.setAttribute("data-locale-aria-label", "pdfmd-history-search-label");
+    histSearch.placeholder = copy("pdfmd-history-search-placeholder", "날짜·파일명·상태로 검색");
+    histSearch.setAttribute("aria-label", copy("pdfmd-history-search-label", "작업 이력 검색"));
+    histTools.appendChild(histSearch);
+    panel.appendChild(histTools);
     const histList = el("div", "pdfmd-history");
     panel.appendChild(histList);
 
     let currentJobId = null;
     let currentItems = [];
     let lastUploadError = "";
+    let historyJobs = [];
+    let historyQuery = "";
+    const itemNames = new Map();
 
     function markActiveHistory() {
       histList.querySelectorAll(".pdfmd-history-item").forEach((btn) => {
@@ -260,6 +319,7 @@
 
     newJobBtn.addEventListener("click", startNewJob);
     modeSel.addEventListener("change", () => {
+      updateModeHelp();
       if (currentJobId) uploadStatus.textContent = "변환 방식은 새 작업부터 적용됩니다.";
     });
 
@@ -344,7 +404,9 @@
       try {
         const data = await api("/api/document-conversions/" + currentJobId);
         currentItems = data.items || [];
+        itemNames.set(currentJobId, currentItems.map((item) => item.name).filter(Boolean));
         renderItems();
+        if (historyQuery.trim()) renderHistory();
       } catch (e) {
         uploadStatus.textContent = "작업을 불러오지 못했습니다. " + describeError(e);
       }
@@ -509,41 +571,112 @@
       }
     });
 
+    function historyGroup(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "earlier";
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const day = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const age = Math.round((today - day) / 86400000);
+      if (age <= 0) return "today";
+      if (age === 1) return "yesterday";
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+      return day >= monday ? "this-week" : "earlier";
+    }
+
+    function jobText(job) {
+      return [
+        formatWhen(job.created_at),
+        job.created_at || "",
+        job.id || "",
+        job.id ? job.id.slice(-8) : "",
+        modeLabel(job.mode),
+        STATUS_LABELS[job.status] || "",
+        countLabel(job.item_count),
+      ].concat(itemNames.get(job.id) || []).join(" ").toLowerCase();
+    }
+
+    function matchesQuery(job, query) {
+      if (!query) return true;
+      const haystack = jobText(job);
+      return query.split(/\s+/).every((token) => haystack.indexOf(token) !== -1);
+    }
+
+    function historyRow(job) {
+      const li = document.createElement("li");
+      const btn = el("button", "pdfmd-history-item");
+      btn.type = "button";
+      btn.dataset.jobId = job.id;
+      const main = el("span", "pdfmd-history-main");
+      const when = formatWhen(job.created_at);
+      main.appendChild(el("span", "pdfmd-history-when", when));
+      main.appendChild(el("span", "pdfmd-history-meta", countLabel(job.item_count) + " · " + modeLabel(job.mode)));
+      btn.appendChild(main);
+      const chip = statusChip(job.status);
+      btn.appendChild(chip);
+      btn.setAttribute("aria-label", when + ", " + countLabel(job.item_count) + ", " + modeLabel(job.mode) + ", 상태 " + chip.textContent);
+      btn.addEventListener("click", async () => {
+        setJobId(job.id);
+        await loadJob();
+      });
+      li.appendChild(btn);
+      return li;
+    }
+
+    function renderHistory() {
+      histList.replaceChildren();
+      if (!historyJobs.length) {
+        histList.appendChild(emptyBlock("아직 작업 이력이 없습니다.", "첫 파일을 변환하면 여기에 기록됩니다.", null));
+        return;
+      }
+      const query = historyQuery.trim().toLowerCase();
+      const groups = { today: [], yesterday: [], "this-week": [], earlier: [] };
+      let matched = 0;
+      historyJobs.forEach((job) => {
+        if (!matchesQuery(job, query)) return;
+        groups[historyGroup(job.created_at)].push(job);
+        matched += 1;
+      });
+      if (!matched) {
+        histList.appendChild(emptyBlock(
+          copy("pdfmd-history-no-match", "검색 결과가 없습니다."),
+          copy("pdfmd-history-no-match-detail", "다른 날짜나 파일명으로 검색해 보세요."),
+          null,
+          "pdfmd-history-no-match",
+          "pdfmd-history-no-match-detail",
+        ));
+        return;
+      }
+      HISTORY_GROUPS.forEach(([key, localeKey, fallback]) => {
+        if (!groups[key].length) return;
+        const head = el("h5", "pdfmd-history-group", copy(localeKey, fallback));
+        head.dataset.localeKey = localeKey;
+        histList.appendChild(head);
+        const ul = document.createElement("ul");
+        ul.className = "pdfmd-history-list";
+        groups[key].forEach((job) => ul.appendChild(historyRow(job)));
+        histList.appendChild(ul);
+      });
+      markActiveHistory();
+    }
+
+    histSearch.addEventListener("input", () => {
+      historyQuery = histSearch.value;
+      renderHistory();
+    });
+
     async function loadHistory() {
+      histTools.hidden = true;
       histList.replaceChildren(el("p", "pdfmd-empty", "작업 이력을 불러오는 중..."));
       try {
         const data = await api("/api/document-conversions?limit=50");
-        histList.replaceChildren();
-        const jobs = data.jobs || [];
-        if (!jobs.length) {
-          histList.appendChild(emptyBlock("아직 작업 이력이 없습니다.", "첫 파일을 변환하면 여기에 기록됩니다.", null));
-          return;
-        }
-        const ul = document.createElement("ul");
-        ul.className = "pdfmd-history-list";
-        jobs.forEach((job) => {
-          const li = document.createElement("li");
-          const btn = el("button", "pdfmd-history-item");
-          btn.type = "button";
-          btn.dataset.jobId = job.id;
-          const main = el("span", "pdfmd-history-main");
-          const when = formatWhen(job.created_at);
-          main.appendChild(el("span", "pdfmd-history-when", when));
-          main.appendChild(el("span", "pdfmd-history-meta", countLabel(job.item_count) + " · " + modeLabel(job.mode)));
-          btn.appendChild(main);
-          const chip = statusChip(job.status);
-          btn.appendChild(chip);
-          btn.setAttribute("aria-label", when + ", " + countLabel(job.item_count) + ", " + modeLabel(job.mode) + ", 상태 " + chip.textContent);
-          btn.addEventListener("click", async () => {
-            setJobId(job.id);
-            await loadJob();
-          });
-          li.appendChild(btn);
-          ul.appendChild(li);
-        });
-        histList.appendChild(ul);
-        markActiveHistory();
+        historyJobs = data.jobs || [];
+        histTools.hidden = !historyJobs.length;
+        renderHistory();
       } catch (e) {
+        historyJobs = [];
+        histTools.hidden = true;
         histList.replaceChildren();
         if (e.status === 401) {
           histList.appendChild(emptyBlock("로그인하면 작업 이력을 볼 수 있습니다.", null, null));
