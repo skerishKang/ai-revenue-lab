@@ -1106,7 +1106,7 @@
     <section id="meetingView" class="standalone-view meeting-view" aria-labelledby="meetingTitle" hidden>
       <div class="meeting-panel">
        <header class="standalone-view-header meeting-header"><div><p class="standalone-view-kicker" data-locale-key="meeting-kicker">Padiem Meeting</p><h2 class="standalone-view-title" id="meetingTitle" data-locale-key="meeting-title">회의록</h2></div></header>
-       <p class="meeting-help">녹음·실시간 받아쓰기는 별도 기능입니다. 시작을 누르면 마이크 사용 권한을 요청합니다. 브라우저 음성 인식은 브라우저 제공자의 외부 서비스를 사용할 수 있습니다.</p>
+        <p class="meeting-help">시작을 누르면 마이크 권한을 요청합니다. 선택한 모드로 녹음과 전사가 진행됩니다.</p>
        <fieldset class="meeting-modes"><legend>회의 방식 선택</legend>
         <label><input type="radio" name="meetingMode" value="record" checked> 녹음만</label>
         <label><input type="radio" name="meetingMode" value="transcribe"> 실시간 전사만</label>
@@ -1117,7 +1117,7 @@
        <label for="meetingTranscript">전사 원문 (편집 가능)</label><textarea id="meetingTranscript" rows="8" placeholder="실시간 전사 내용을 이곳에서 확인할 수 있습니다."></textarea>
        <p id="meetingInterim" role="status" class="meeting-interim"></p>
        <div class="meeting-exports"><button type="button" id="meetingDownloadAudio" disabled>녹음 파일 다운로드</button><button type="button" id="meetingDownloadText" disabled>전사 TXT 다운로드</button><button type="button" id="meetingSaveAudioDrive" disabled>녹음 Google Drive 저장</button><button type="button" id="meetingSaveTextDrive" disabled>전사 Google Drive 저장</button><button type="button" id="meetingDraftInClaw" disabled>Claw로 회의록 초안 만들기</button></div>
-       <p class="meeting-storage-note">Google Drive 직접 저장은 쓰기 권한 연결이 필요합니다. 현재는 파일을 기기에 다운로드해 보관할 수 있습니다. 서버에 원본을 올리지 않으며 새로고침하면 임시 기록이 사라집니다.</p>
+        <p class="meeting-storage-note">Drive 저장은 쓰기 권한 연결이 필요합니다. 저장되지 않은 기록은 새로고침 시 사라집니다.</p>
        <section class="meeting-records" aria-labelledby="meetingRecordsTitle">
         <h3 id="meetingRecordsTitle" data-locale-key="meeting-records-title">회의 기록</h3>
         <div class="meeting-records-new"><label for="meetingTitleInput" data-locale-key="meeting-record-title-label">회의 제목</label><input id="meetingTitleInput" type="text" maxlength="80" autocomplete="off" placeholder="예: 10월 운영 회의" /><button type="button" id="meetingSaveTitle" disabled>제목 저장</button></div>

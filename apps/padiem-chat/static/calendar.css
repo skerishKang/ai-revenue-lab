@@ -78,7 +78,7 @@ html[data-theme="padiem-glass"] .sidebar {
 }
 
 .calendar-view-kicker {
-  margin: 0 0 2px;
+  margin: 0 0 4px;
   font-size: 11px;
   letter-spacing: 0.08em;
   opacity: 0.55;
@@ -618,12 +618,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   -webkit-backdrop-filter: blur(28px) saturate(106%);
   overflow: visible;
 }
-html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view-title {
-  font-size: clamp(25px, 2.2vw, 32px);
-  font-weight: 740;
-  letter-spacing: -.035em;
-  color: #1a2731;
-}
 html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view-help {
   color: #52616e;
   opacity: 1;
@@ -952,15 +946,21 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
 
 .app-shell[data-state="calendar"] .calendar-view-header > div:has(> .calendar-error) {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   column-gap: 8px;
-  row-gap: 2px;
+  /* The gap belongs to the error line, not to the eyebrow/title pair: a container
+     row-gap lands on top of the shared kicker margin and pushes the title 2px
+     below the row the other four views sit on. The direction is stated too, so the
+     shared column rule below cannot turn this row into a centred column. */
+  row-gap: 0;
 }
 .app-shell[data-state="calendar"] .calendar-view-header > div > .calendar-view-kicker {
   flex-basis: 100%;
 }
 .app-shell[data-state="calendar"] .calendar-view-header > div > .calendar-error {
+  margin-top: 2px;
   margin-left: 0;
   max-width: 240px;
 }

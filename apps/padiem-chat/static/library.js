@@ -57,6 +57,29 @@
   let partialFailure = false;
   let complete = false;
 
+  function friendlyType(mediaType) {
+    const map = {
+      "application/pdf": "PDF",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "Excel",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "Word",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation": "PowerPoint",
+      "application/vnd.ms-excel": "Excel",
+      "application/msword": "Word",
+      "application/vnd.ms-powerpoint": "PowerPoint",
+      "text/plain": "텍스트",
+      "text/markdown": "Markdown",
+      "text/csv": "CSV",
+      "text/html": "HTML",
+      "image/png": "PNG",
+      "image/jpeg": "JPEG",
+      "image/gif": "GIF",
+      "image/webp": "WebP",
+      "application/zip": "ZIP",
+      "application/json": "JSON",
+    };
+    return map[mediaType] || mediaType || "";
+  }
+
   function copy(ko, en) {
     return document.documentElement.lang.toLowerCase().startsWith("en") ? en : ko;
   }
@@ -115,10 +138,11 @@
       "이보다 오래된 저장 파일이 있습니다.",
       "Older stored files are available.",
     ),
-    meta: (chars, mediaType) => copy(
-      `${mediaType} · ${chars.toLocaleString()}자`,
-      `${mediaType} · ${chars.toLocaleString()} characters`,
-    ),
+    meta: (chars, mediaType) => {
+      const type = friendlyType(mediaType);
+      if (!type) return copy(`${chars.toLocaleString()}자`, `${chars.toLocaleString()} characters`);
+      return copy(`${type} · ${chars.toLocaleString()}자`, `${type} · ${chars.toLocaleString()} characters`);
+    },
     open: () => copy("프로젝트에서 열기", "Open in project"),
     openBlocked: () => copy(
       "지금 열 수 없습니다. 진행 중인 요청을 마친 뒤 다시 시도하세요.",
