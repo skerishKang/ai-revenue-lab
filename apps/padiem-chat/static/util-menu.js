@@ -104,6 +104,7 @@
       speech: document.getElementById("utilSpeechPanel"),
       sns: document.getElementById("utilSnsPanel"),
       meeting: document.getElementById("utilMeetingPanel"),
+      pdfmd: document.getElementById("utilPdfmdPanel"),
     };
 
     let lastPayload = null;
@@ -127,6 +128,10 @@
         Object.keys(panels).forEach((k) => { if (panels[k]) panels[k].hidden = k !== key; });
         if (key === "sns" && !panels.sns.dataset.loaded) buildSns();
         if (key === "meeting" && !panels.meeting.dataset.loaded) buildMeeting();
+        if (key === "pdfmd" && !panels.pdfmd.dataset.loaded) {
+          panels.pdfmd.dataset.loaded = "1";
+          if (typeof window.initPdfMdUtility === "function") window.initPdfMdUtility(panels.pdfmd);
+        }
       });
     });
 

@@ -399,6 +399,7 @@
             <button class="util-tab active" data-util="speech">축사·인사말</button>
             <button class="util-tab" data-util="sns">SNS 홍보 <span class="util-soon">준비 중</span></button>
             <button class="util-tab" data-util="meeting">회의정리·책 제작 <span class="util-soon">준비 중</span></button>
+            <button class="util-tab" data-util="pdfmd">PDF → Markdown</button>
           </nav>
           <div class="util-panel" id="utilSpeechPanel">
             <form class="util-form" id="utilSpeechForm">
@@ -431,6 +432,7 @@
           <div class="util-panel" id="utilMeetingPanel" hidden>
             <p class="util-soon-msg">회의정리·책 제작 서비스는 준비 중입니다.</p>
           </div>
+          <div class="util-panel" id="utilPdfmdPanel" hidden></div>
         </section>
         <section class="claw-inbox" id="clawAutomation" aria-labelledby="clawAutomationTitle" tabindex="-1" hidden>
           <div class="claw-inbox-header">
@@ -1285,6 +1287,7 @@
   <script src="./claw-connection-state.js"></script>
   <script src="./claw-composer-connection-status.js"></script>
   <script src="./util-menu.js" defer></script>
+<script src="./util-pdfmd.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->
   <script src="./claw-device-guidance.js"></script>
