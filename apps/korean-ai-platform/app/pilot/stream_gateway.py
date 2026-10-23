@@ -96,10 +96,10 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
     if get_catalog_by_id(model_id) is None:
         raise UnsupportedModel(model_id)
 
-    # #5536: the preview streaming lane carries text only. A tool declaration
-    # is refused here rather than silently dropped on the way to the provider.
+    # #5573 slice 3-A: only a capability-declared Google native wire carries tools.
     if body.get("tools"):
-        raise StreamNotSupported()
+        from .google_provider import require_stream_tool_support
+        require_stream_tool_support(model_id)
 
     # Slice 12 is deliberately text-only. The installed multimodal validator
     # may accept structured content for the canonical endpoint; preview
@@ -219,7 +219,17 @@ def _encode_event(
     attempt_count: int = 1,
     fallback_used: bool = False,
 ) -> bytes:
+    if event.tool_call is not None:
+        call = event.tool_call
+        return b"event: tool_call\n" + _encode_data_frame({
+            "id": call.id, "name": call.name,
+            "arguments": call.arguments, "index": call.index,
+        })
     if event.done:
+        if event.finish_reason is not None:
+            return b"event: done\n" + _encode_data_frame({
+                "finish_reason": event.finish_reason,
+            })
         return b"data: [DONE]\n\n"
 
     choices: list[dict[str, Any]]
@@ -419,6 +429,10 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
             if not platform_provider_id:
                 raise InvalidRequest("platform_secret route missing provider binding.")
 
+            if body.get("tools"):
+                from .google_provider import require_stream_tool_support
+                require_stream_tool_support(selected_model, platform_provider_id)
+
             iterator = stream_platform_chat_completions(
                 model_id=selected_model,
                 upstream_model=upstream_model,
@@ -429,6 +443,8 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                 max_tokens=body.get("max_tokens"),
                 **({"model_parameters": body["model_parameters"]}
                    if body.get("model_parameters") else {}),
+                **({"tools": body["tools"], "tool_choice": body.get("tool_choice")}
+                   if body.get("tools") else {}),
                 transport=transport,
             )
 
@@ -443,7 +459,7 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                     except StopAsyncIteration as exc:
                         raise MalformedUpstreamResponse() from exc
                     initial_events.append(event)
-                    if event.done or (
+                    if event.done or event.tool_call is not None or (
                         isinstance(event.delta_content, str)
                         and bool(event.delta_content.strip())
                     ):

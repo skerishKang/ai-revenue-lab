@@ -531,6 +531,8 @@ async def stream_platform_chat_completions(
     temperature: float | None = None,
     max_tokens: int | None = None,
     model_parameters: dict[str, Any] | None = None,
+    tools: list[dict[str, Any]] | None = None,
+    tool_choice: Any = None,
     transport: httpx.AsyncBaseTransport | None = None,
     session_id: str | None = None,
 ) -> Any:
@@ -542,6 +544,10 @@ async def stream_platform_chat_completions(
     import os
 
     spec = _require_spec(platform_provider_id)
+
+    if tools:
+        from .google_provider import require_stream_tool_support
+        require_stream_tool_support(model_id, platform_provider_id)
 
     provider_mode = _provider_mode()
 
@@ -558,7 +564,7 @@ async def stream_platform_chat_completions(
                 finish_reason="stop",
                 usage=StreamUsage(0, 0, 0),
             ),
-            StreamEvent(done=True),
+            StreamEvent(done=True, finish_reason="stop" if tools else None),
         ):
             yield event
         return
@@ -583,6 +589,20 @@ async def stream_platform_chat_completions(
     _require_owner_allowed_live_model(
         model_id, upstream_model, platform_provider_id
     )
+    if tools:
+        from .google_provider import stream_google_tool_calls
+        tool_stream = stream_google_tool_calls(
+            model_id=model_id, upstream_model=upstream_model, spec=spec,
+            messages=messages, tools=tools, tool_choice=tool_choice,
+            temperature=temperature, max_tokens=max_tokens,
+            model_parameters=model_parameters, transport=transport,
+        )
+        try:
+            async for event in tool_stream:
+                yield event
+        finally:
+            await tool_stream.aclose()
+        return
     from .worker_env import load_request_secret
     await load_request_secret(spec.credential_binding_name)
     headers = _request_headers(spec, model_id=model_id)

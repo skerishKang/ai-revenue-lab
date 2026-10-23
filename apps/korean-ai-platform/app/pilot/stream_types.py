@@ -32,6 +32,24 @@ class StreamUsage:
 
 
 @dataclass(frozen=True, slots=True)
+class StreamToolCall:
+    """One complete function call, never an executable partial argument chunk."""
+
+    id: str
+    name: str
+    arguments: str
+    index: int
+
+    def __post_init__(self) -> None:
+        if isinstance(self.index, bool) or not isinstance(self.index, int) or self.index < 0:
+            raise ValueError("tool call index must be a non-negative integer")
+        if not all(isinstance(value, str) and value for value in (self.id, self.name, self.arguments)):
+            raise ValueError("tool call fields must be non-empty strings")
+        if not isinstance(json.loads(self.arguments), dict):
+            raise ValueError("tool call arguments must encode an object")
+
+
+@dataclass(frozen=True, slots=True)
 class StreamEvent:
     response_id: str | None = None
     model: str | None = None
@@ -39,6 +57,7 @@ class StreamEvent:
     finish_reason: str | None = None
     usage: StreamUsage | None = None
     done: bool = False
+    tool_call: StreamToolCall | None = None
 
     def __post_init__(self) -> None:
         for name in ("response_id", "model", "delta_content", "finish_reason"):
@@ -49,12 +68,14 @@ class StreamEvent:
             raise ValueError("usage must be StreamUsage or None")
         if not isinstance(self.done, bool):
             raise ValueError("done must be a boolean")
+        if self.tool_call is not None and not isinstance(self.tool_call, StreamToolCall):
+            raise ValueError("tool_call must be StreamToolCall or None")
         if self.done and (
             self.delta_content is not None
-            or self.finish_reason is not None
             or self.usage is not None
+            or self.tool_call is not None
         ):
-            raise ValueError("done event must not contain delta, finish reason, or usage")
+            raise ValueError("done event must not contain delta, tool call, or usage")
 
 
 def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
