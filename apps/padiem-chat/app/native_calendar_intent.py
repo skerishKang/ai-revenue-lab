@@ -76,9 +76,26 @@ def _time_bounds(text: str) -> tuple[str | None, str | None]:
 def parse_native_calendar_intent(text: str, *, timezone_name: str | None = None) -> dict:
     answer = {"version": "native-calendar-tool.v1", "op": "none", "args": {}}
     text = text.strip()
-    if not any(w in text for w in READ_WORDS + CREATE_WORDS):
+    if not text:
         return answer
-    is_create = any(w in text for w in ("등록", "추가", "잡아", "생성", "schedule", "book"))
+    is_writing = any(m in text for m in (
+        "정리", "요약", "회의록", "회의 내용", "활동 기록", "활동집",
+        "원고", "초안", "bullet", "항목으로", "작성", "만들어 주",
+        "만들어줘", "생성해 주", "생성해줘", "생성해 주세요",
+    ))
+    has_calendar_noun = any(w in text for w in ("일정", "스케줄", "약속"))
+    has_create_verb = any(w in text for w in ("등록", "추가", "잡아"))
+    has_read_verb = any(w in text for w in ("보여", "조회", "알려", "확인"))
+    # Writing/summarization intent overrides incidental calendar vocabulary
+    # unless an explicit calendar scheduling verb is present.
+    if is_writing and not has_create_verb:
+        if not (has_calendar_noun and has_read_verb):
+            return answer
+    if is_writing and not has_calendar_noun:
+        return answer
+    if not (has_calendar_noun or has_create_verb or "생성" in text):
+        return answer
+    is_create = has_create_verb or ("생성" in text and has_calendar_noun)
     if timezone_name is None:
         # Explicit timezone only; no server-local inference.
         return {"version": "native-calendar-tool.v1", "op": "clarify",
@@ -131,6 +148,8 @@ def parse_native_calendar_intent(text: str, *, timezone_name: str | None = None)
             },
         }
     else:
+        if not has_calendar_noun:
+            return answer
         if "이번 주" in text or "this week" in text.lower():
             start = today - timedelta(days=today.weekday())
             end = start + timedelta(days=6)
