@@ -55,6 +55,8 @@ def test_compact_controls_keep_practical_40_to_44px_targets() -> None:
         ".theme-option",
         ".language-option",
         ".settings-done",
+        ".pdfmd-btn",
+        ".pdfmd-history-list button",
     ):
         assert selector in POLISH
     assert "min-width: 40px;" in POLISH

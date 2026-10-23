@@ -116,7 +116,9 @@ html[data-theme="padiem-glass"] .sidebar .account-name {
 .settings-close,
 .theme-option,
 .language-option,
-.settings-done {
+.settings-done,
+.pdfmd-btn,
+.pdfmd-history-list button {
   min-width: 40px;
   min-height: 40px;
 }
@@ -131,7 +133,9 @@ html[data-theme="padiem-glass"] .sidebar .account-name {
 }
 
 .project-form-actions button,
-.saved-output-actions button {
+.saved-output-actions button,
+.pdfmd-btn,
+.pdfmd-history-list button {
   min-height: 44px;
 }
 
