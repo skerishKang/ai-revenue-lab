@@ -752,6 +752,9 @@
     const paragraph = document.createElement("p");
     paragraph.textContent = data.answer;
     content.appendChild(paragraph);
+    if (Array.isArray(data.evidence) && data.evidence.length && window.PadiemSearchSources && typeof window.PadiemSearchSources.render === "function") {
+      window.PadiemSearchSources.render(article, data.evidence);
+    }
     const label = article.querySelector("[data-runtime-label]");
     // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
     // A finished answer releases the preparing chip; a real status stays.

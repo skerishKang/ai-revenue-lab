@@ -77,11 +77,12 @@ class _FakeAutoGrounding:
         self._prepared = prepared
         self.calls: list[dict] = []
 
-    async def prepare(self, messages, *, skill, additional_system_context=None):
+    async def prepare(self, messages, *, skill, additional_system_context=None, explicit_search=False):
         self.calls.append({
             "messages": messages,
             "skill": skill,
             "additional_system_context": additional_system_context,
+            "explicit_search": explicit_search,
         })
         plan = SimpleNamespace(prepared=self._prepared)
         return plan
