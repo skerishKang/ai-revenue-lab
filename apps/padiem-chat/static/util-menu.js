@@ -475,17 +475,25 @@
           cb.type = "checkbox";
           cb.value = f.id;
           cb.className = "util-book-check";
+          cb.setAttribute("aria-label", f.name + " 책/활동집에 포함");
           li.appendChild(cb);
           const btn = document.createElement("button");
           btn.type = "button";
           btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
           btn.style.flex = "1";
           btn.addEventListener("click", async () => {
-            const res = await fetch("/api/projects/" + currentPid + "/files/" + f.id, { credentials: "include" });
+            const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(f.id), { credentials: "include" });
             if (res.ok) {
               const data = await res.json();
               const out = document.getElementById("utilMeetingOutput");
-              if (out) out.value = "[저장된 파일: " + f.name + "]";
+              if (out && data && typeof data.content === "string") {
+                out.value = data.content;
+                result.hidden = false;
+              } else {
+                alert("저장된 회의 기록의 본문을 읽을 수 없습니다.");
+              }
+            } else {
+              alert("저장된 회의 기록을 열지 못했습니다.");
             }
           });
           li.appendChild(btn);
@@ -511,27 +519,30 @@
         bookBtn.addEventListener("click", async () => {
           const checked = Array.from(document.querySelectorAll(".util-book-check:checked"));
           if (!checked.length) { alert("선택된 기록이 없습니다."); return; }
-          const ids = checked.map((c) => c.value);
-          const contents = [];
-          for (const fid of ids) {
-            const res = await fetch("/api/projects/" + currentPid + "/files/" + fid, { credentials: "include" });
-            if (res.ok) {
-              const data = await res.json();
-              const name = data && data.file ? data.file.name : fid;
-              contents.push("[기록: " + name + "]");
-            }
-          }
           bookResult.hidden = false;
-          bookOutput.value = "생성 중...";
-          let prompt = "다음은 사용자가 선택한 활동 기록 목록입니다.\n\n";
-          prompt += contents.join("\n") + "\n\n";
-          prompt += "위 기록을 바탕으로 다음을 생성해 주세요:\n";
-          prompt += "1. 책/활동집 제목 후보 3개\n";
-          prompt += "2. 목차 (5-8장)\n";
-          prompt += "3. 각 장별 원고 초안 (200-400자)\n";
-          prompt += "4. 마무리 인사\n\n";
-          prompt += "주의: 원본 기록에 없는 사건, 날짜, 발언을 사실처럼 추가하지 마세요. 선택된 기록의 내용만 사용하세요.";
+          bookOutput.value = "선택한 회의 기록을 불러오는 중...";
           try {
+            const contents = [];
+            for (const checkbox of checked) {
+              const file = meetingFiles.find((item) => item.id === checkbox.value);
+              if (!file) continue;
+              const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(file.id), { credentials: "include" });
+              if (!res.ok) throw new Error("선택한 회의 기록을 불러오지 못했습니다: " + file.name);
+              const data = await res.json();
+              if (!data || !data.file || typeof data.content !== "string" || !data.content.trim()) {
+                throw new Error("선택한 회의 기록의 본문이 비어 있거나 올바르지 않습니다: " + file.name);
+              }
+              contents.push("[기록: " + data.file.name + "]\n" + data.content);
+            }
+            let prompt = "다음은 사용자가 선택한 활동 기록 본문입니다. 각 기록의 이름을 출처로 유지하세요.\n\n";
+            prompt += contents.join("\n\n") + "\n\n";
+            prompt += "위 기록을 바탕으로 다음을 생성해 주세요:\n";
+            prompt += "1. 책/활동집 제목 후보 3개\n";
+            prompt += "2. 목차 (5-8장)\n";
+            prompt += "3. 각 장별 원고 초안 (200-400자)\n";
+            prompt += "4. 마무리 인사\n\n";
+            prompt += "주의: 원본 기록에 없는 사건, 날짜, 발언을 사실처럼 추가하지 마세요. 근거가 있는 내용과 제안/해석을 구분하세요. 각 장 끝에 근거가 된 기록 파일명을 표시하세요.";
+            bookOutput.value = "생성 중...";
             bookOutput.value = await apiChat(prompt);
           } catch (e) {
             bookOutput.value = "생성 실패: " + (e && e.message ? e.message : e);
@@ -543,7 +554,8 @@
         });
         bookRegen.addEventListener("click", () => { bookBtn.click(); });
         bookDl.addEventListener("click", () => { downloadText(bookOutput.value, "book-draft.txt"); });
-      }      refreshArchive(archive);
+      }
+      refreshArchive(archive);
     }
   });
 })();
