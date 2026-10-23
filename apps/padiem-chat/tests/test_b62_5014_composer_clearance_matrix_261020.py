@@ -183,8 +183,9 @@ def open_surface(page, url, product: str) -> None:
             }, ensure_ascii=False),
         ),
     )
-    page.evaluate("() => document.getElementById('clawDeviceManagerToggle')?.click()")
-    page.wait_for_timeout(400)
+    # The computer directory is an overlay owned by the shared composer (#5599);
+    # it is exercised by its own tests and must not be treated as a composer-
+    # clearance obstruction here.
 
 
 def assert_no_overlap(measured, context: str) -> None:
@@ -308,11 +309,12 @@ def test_the_reserved_space_is_measured_not_an_arbitrary_inset():
     ):
         text = (STATIC / sheet).read_text(encoding="utf-8")
         assert forbidden not in text, f"{sheet} still pins an arbitrary inset: {forbidden}"
-    # The directory panel leaves the fixed composer area, so the fixed area
-    # cannot grow over the content above it.
+    # #5599 mounts the directory panel inside the shared composer's root, so the
+    # panel stays within the composer width and its open/close state is owned by
+    # the same root that carries the toggle.
     manager = (STATIC / "claw-device-manager.js").read_text(encoding="utf-8")
-    assert "composerColumn.insertBefore(panel, composerArea)" in manager
-    assert "root.append(toggle, panel)" not in manager
+    assert "root.append(toggle, panel)" in manager
+    assert "composerColumn.insertBefore(panel, composerArea)" not in manager
 
 
 WORKBENCH_BOX = """() => {
