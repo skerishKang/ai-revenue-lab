@@ -26,6 +26,28 @@ KILO_PROVIDER = "Kilo Gateway / NVIDIA"
 KILO_CHAT_URL = "https://stream-fixture.example/v1/chat/completions"
 
 
+@pytest.mark.asyncio
+async def test_google_tool_stream_consumer_close_releases_response(monkeypatch):
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setattr(rcfg, "provider_mode", "live")
+    chunk = {"candidates": [{"content": {"parts": [
+        {"functionCall": {"name": "pc_files", "args": {"plan": "files_list"}}},
+    ]}}]}
+    stream = FragmentedStream([("data: " + json.dumps(chunk) + "\n\n").encode()])
+    iterator = plat.stream_platform_chat_completions(
+        model_id="google/gemini-3.1-flash-lite", upstream_model="gemini-3.1-flash-lite",
+        provider="Google AI Studio", platform_provider_id="google",
+        messages=[{"role": "user", "content": "List only"}],
+        tools=[{"type": "function", "function": {"name": "pc_files", "parameters": {"type": "object", "properties": {}}}}],
+        transport=httpx.MockTransport(lambda req: httpx.Response(200, stream=stream)),
+    )
+    event = await anext(iterator)
+    assert event.tool_call.name == "pc_files"
+    assert event.tool_call.index == 0
+    await iterator.aclose()
+    assert stream.closed
+
+
 class FragmentedStream(httpx.AsyncByteStream):
     def __init__(self, chunks: list[bytes]):
         self.chunks = chunks
