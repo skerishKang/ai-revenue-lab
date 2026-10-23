@@ -306,6 +306,7 @@ from .desktop_conversation_routes import (
 )
 from .grounding import GroundedChatService
 from .history import HistoryStore
+from .model_call_record_store import D1ModelCallRecordStore
 from .password_reset import PasswordResetService
 from .password_reset_store import D1PasswordResetStore
 from .project_file_routes import (
@@ -1010,6 +1011,11 @@ def create_app(
     # migrated table the route fails closed with 503 instead of serving an in-memory ledger.
     app.state.document_convert_store = (
         D1DocumentConvertStore(d1_binding) if d1_binding is not None else None
+    )
+    # #5318 slice A: durable model call records (audit/cost authority, separate
+    # from the usage/quota ledger). Fails closed when D1 is absent.
+    app.state.model_call_record_store = (
+        D1ModelCallRecordStore(d1_binding) if d1_binding is not None else None
     )
     app.state.saved_output_store = saved_output_store
     # Separate deployment gate: migrate and audit the D1 schema before enabling.
