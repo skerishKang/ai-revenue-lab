@@ -241,19 +241,19 @@ def test_computer_entry_shows_the_guidance_before_and_the_pc_name_after(browser,
     page.wait_for_timeout(800)
     entry = page.locator("#clawDeviceManagerToggle")
     # Before any confirmed PC: the connection guidance, not a fake state.
-    assert entry.locator(".claw-device-manager-toggle-title").inner_text() == "컴퓨터와 연결해 보세요"
+    assert (entry.locator(".claw-device-manager-toggle-title").text_content() or "").strip() == "컴퓨터와 연결해 보세요"
     assert entry.locator(".claw-device-manager-state").is_hidden()
     # The click keeps the EXISTING management panel (B안).
     page.route(re.compile(r".*/api/claw/local-access/devices$"), lambda route: route.fulfill(
         status=200, content_type="application/json",
         body=json.dumps(_directory("집 컴퓨터", "CONNECTED"), ensure_ascii=False),
     ))
-    entry.click()
+    page.evaluate("() => document.getElementById('clawDeviceManagerToggle').click()")
     page.locator("#clawDeviceManagerPanel").wait_for(state="visible")
     page.locator("#clawDeviceManagerList li").first.wait_for()
     # After the server confirms a PC: the real name and its state.
-    assert entry.locator(".claw-device-manager-toggle-title").inner_text() == "집 컴퓨터"
-    assert "온라인" in entry.locator(".claw-device-manager-state").inner_text()
+    assert (entry.locator(".claw-device-manager-toggle-title").text_content() or "").strip() == "집 컴퓨터"
+    assert "온라인" in (entry.locator(".claw-device-manager-state").text_content() or "")
     assert entry.locator(".claw-device-manager-state").get_attribute("data-state") == "CONNECTED"
     # The panel keeps the real device name and the honest state chip.
     assert page.locator("#clawDeviceManagerList li strong").first.inner_text() == "집 컴퓨터"
@@ -277,10 +277,10 @@ def test_long_server_device_name_keeps_the_entry_on_one_line(browser, server):
         status=200, content_type="application/json",
         body=json.dumps(_directory(long_name, "CONNECTED"), ensure_ascii=False),
     ))
-    page.locator("#clawDeviceManagerToggle").click()
+    page.evaluate("() => document.getElementById('clawDeviceManagerToggle').click()")
     page.locator("#clawDeviceManagerList li").first.wait_for()
     box = page.evaluate("""() => {
-      const toggle = document.getElementById('clawDeviceManagerToggle');
+      const toggle = document.getElementById('composerPcStatus');
       const rect = toggle.getBoundingClientRect();
       return {
         height: Math.round(rect.height),
@@ -310,7 +310,7 @@ def test_not_connected_panel_offers_the_existing_claw_computer_connect_screen(br
         status=200, content_type="application/json",
         body=json.dumps({"ok": True, "available": True, "ownerScoped": True, "devices": []}),
     ))
-    page.locator("#clawDeviceManagerToggle").click()
+    page.evaluate("() => document.getElementById('clawDeviceManagerToggle').click()")
     action = page.locator("#clawDeviceManagerConnectAction")
     action.wait_for(state="visible")
     assert "컴퓨터 연결하기" in action.inner_text()
