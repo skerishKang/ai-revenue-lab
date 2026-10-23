@@ -1131,7 +1131,21 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     width: 30px !important;
     height: 30px !important;
   }
+  /* #4807: CJK hero/card text needs locale-aware wrapping instead of
+     inheriting Latin-only letter-spacing and one-line sizing. */
+  .empty-state h1,
+  .claw-hero-line,
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .starter strong {
+    overflow-wrap: anywhere;
+    text-wrap: wrap;
+    word-break: break-word;
+  }
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .starter strong {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     font-size: 12px !important;
     overflow-wrap: anywhere;
     line-height: 1.3;
@@ -1163,4 +1177,22 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
       var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
     );
   }
+}
+
+
+/* #4807: CJK hero/card copy needs locale-aware wrapping at every viewport,
+   and connector card titles may use two lines instead of overflowing. */
+.empty-state h1,
+.claw-hero-line {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .starter strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }

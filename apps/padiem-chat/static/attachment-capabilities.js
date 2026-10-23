@@ -47,7 +47,7 @@
   const labelsFor = (formats, separator) => formats.map((format) => format.label).join(separator);
 
   function copy(lang) {
-    const language = lang === "en" ? "en" : "ko";
+    const language = lang === "ja" || lang === "zh-CN" ? lang : lang === "en" ? "en" : "ko";
     const imageLabels = labelsFor(images, language === "en" ? ", " : "·");
     const documentLabels = labelsFor(allDocuments, language === "en" ? ", " : "·");
     const textLabels = labelsFor(textDocuments, language === "en" ? ", " : "·");
@@ -62,6 +62,30 @@
         unsupportedFormat: `Supported attachment formats: ${imageLabels}, ${documentLabels}.`,
         textTooLarge: "Text documents must be 96 KiB or smaller.",
         textTooLong: "Text documents must be 40,000 characters or fewer.",
+      });
+    }
+
+    if (language === "ja") {
+      return Object.freeze({
+        imageFormats: imageLabels,
+        documentFormats: documentLabels,
+        idleNote: `画像（${imageLabels}）または文書（${documentLabels}）を1件添付できます。`,
+        fileButtonTitle: `画像（${imageLabels}）または文書（${textLabels}、最大96 KiB／40,000文字、${binaryLabels}）を1件添付します。`,
+        unsupportedFormat: `対応する添付形式：${imageLabels}・${documentLabels}。`,
+        textTooLarge: "テキスト文書は96 KiB以下にしてください。",
+        textTooLong: "テキスト文書は40,000文字以下にしてください。",
+      });
+    }
+
+    if (language === "zh-CN") {
+      return Object.freeze({
+        imageFormats: imageLabels,
+        documentFormats: documentLabels,
+        idleNote: `可附加一张图片（${imageLabels}）或一个文档（${documentLabels}）。`,
+        fileButtonTitle: `附加一张图片（${imageLabels}）或一个文档（${textLabels}，不超过 96 KiB／40,000 字符；${binaryLabels}）。`,
+        unsupportedFormat: `支持的附件格式：${imageLabels}、${documentLabels}。`,
+        textTooLarge: "文本文件不得超过 96 KiB。",
+        textTooLong: "文本文件不得超过 40,000 个字符。",
       });
     }
 

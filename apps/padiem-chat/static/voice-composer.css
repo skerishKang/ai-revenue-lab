@@ -271,7 +271,28 @@
 }
 .starter-grid .document-formats-panel[hidden] { display: none !important; }
 .starter-grid .document-formats-panel p { margin: 5px 0 0; }
+/* #4807: en label overlaps the upload card; the toggle stays compact and
+   the connection switch label follows the card edge when the label is short. */
+.app-shell[data-state="chat"] .document-formats-toggle {
+  top: 6px;
+  right: 9px;
+  max-width: calc(100% - 18px);
+  padding: 3px 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.claw-connection-label {
+  max-width: 96px;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
 @media (max-width: 620px) {
+  .app-shell[data-state="chat"] .document-formats-toggle {
+    right: 9px;
+    max-width: calc(100% - 18px);
+  }
   #composerForm .composer-inline-hint { top: 30px; right: 8px; font-size: 11px; }
   .app-shell[data-state="chat"] .starter-grid > .starter,
   .app-shell[data-state="chat"] .starter-grid > .document-starter-shell,

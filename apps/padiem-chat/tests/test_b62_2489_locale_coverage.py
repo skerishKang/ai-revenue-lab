@@ -89,6 +89,26 @@ def test_runtime_translation_calls_reference_declared_keys():
     assert runtime_keys <= keys
 
 
+def test_4807_reproduced_aria_labels_are_locale_bound_across_all_sources():
+    # #4807 browser finding: these accessible names stayed Korean after a
+    # zh-CN switch because their aria-labels never entered the locale binding
+    # system. Each binding must exist and every locale source must declare it.
+    html = read("index.html")
+    assert 'data-locale-aria-label="new-chat-search-group"' in html
+    assert 'data-locale-aria-label="tools-connections-menu"' in html
+    assert 'data-locale-aria-label="document-formats"' in html
+    assert 'data-locale-aria-label="attach-file"' in html
+    assert 'data-locale-title="attach-file"' in html
+
+    for name in ("locale.js", "locale-pack-ja.js", "locale-pack-zh-CN.js"):
+        source = read(name)
+        for key in (
+            "new-chat-search-group", "tools-connections-menu", "attach-file",
+            "connection-status-check",
+        ):
+            assert f'"{key}":' in source, (name, key)
+
+
 def test_explicit_locale_preference_uses_url_without_browser_storage():
     locale = read("locale.js")
 
