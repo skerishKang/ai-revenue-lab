@@ -390,50 +390,6 @@
           <p class="claw-inbox-empty" id="clawInboxEmpty" data-locale-key="claw-inbox-empty-tasks" hidden>최근 작업이 없습니다.</p>
           <div class="claw-inbox-list" id="clawInboxList" role="list"></div>
         </section>
-        <section class="util-view" id="utilView" aria-labelledby="utilTitle" hidden>
-          <header class="util-header">
-            <h2 id="utilTitle">유틸</h2>
-            <p class="util-tagline">AI 홍보·기록 비서</p>
-          </header>
-          <nav class="util-tabs">
-            <button class="util-tab active" data-util="speech">축사·인사말</button>
-            <button class="util-tab" data-util="sns">SNS 홍보 <span class="util-soon">준비 중</span></button>
-            <button class="util-tab" data-util="meeting">회의정리·책 제작 <span class="util-soon">준비 중</span></button>
-            <button class="util-tab" data-util="pdfmd">PDF → Markdown</button>
-          </nav>
-          <div class="util-panel" id="utilSpeechPanel">
-            <form class="util-form" id="utilSpeechForm">
-              <label>행사명 <input name="event" type="text" required /></label>
-              <label>행사 날짜 <input name="date" type="date" /></label>
-              <label>장소 <input name="place" type="text" /></label>
-              <label>행사 성격 <input name="nature" type="text" placeholder="예: 창립기념식" /></label>
-              <label>참석 대상 <input name="audience" type="text" /></label>
-              <label>작성자/직책 <input name="author" type="text" /></label>
-              <label>주요 메시지 <textarea name="message" rows="3"></textarea></label>
-              <label>강조 내용 <textarea name="emphasis" rows="2"></textarea></label>
-              <label>분량 <select name="length"><option value="short">짧게</option><option value="medium" selected>보통</option><option value="long">길게</option></select></label>
-              <label>말투 <select name="tone"><option value="formal" selected>공식</option><option value="warm">따뜻한</option><option value="concise">간결</option></select></label>
-              <label>기존 축사 샘플 (말투 반영) <textarea name="style" rows="4" placeholder="기존 축사/인사말 원문 붙여넣기"></textarea></label>
-              <button type="submit" class="util-generate">초안 생성</button>
-            </form>
-            <div class="util-result" id="utilSpeechResult" hidden>
-              <h3>생성 결과</h3>
-              <textarea id="utilSpeechOutput" rows="12"></textarea>
-              <div class="util-actions">
-                <button type="button" id="utilSpeechCopy">복사</button>
-                <button type="button" id="utilSpeechRegenerate">다시 생성</button>
-                <button type="button" id="utilSpeechDownload">TXT 다운로드</button>
-              </div>
-            </div>
-          </div>
-          <div class="util-panel" id="utilSnsPanel" hidden>
-            <p class="util-soon-msg">SNS 홍보 서비스는 준비 중입니다.</p>
-          </div>
-          <div class="util-panel" id="utilMeetingPanel" hidden>
-            <p class="util-soon-msg">회의정리·책 제작 서비스는 준비 중입니다.</p>
-          </div>
-          <div class="util-panel" id="utilPdfmdPanel" hidden></div>
-        </section>
         <section class="claw-inbox" id="clawAutomation" aria-labelledby="clawAutomationTitle" tabindex="-1" hidden>
           <div class="claw-inbox-header">
             <div class="claw-inbox-heading">
@@ -579,6 +535,50 @@
           <div class="claw-inbox-list" id="clawAutomationList" role="list"></div>
           <p class="claw-inbox-help" id="clawAutomationSchedulerNote" data-locale-key="claw-automation-scheduler-note">‘규칙 설정’은 규칙에 저장된 설정값이며, 자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다.</p>
         </section>
+      </section>
+      <section class="util-view" id="utilView" aria-labelledby="utilTitle" hidden>
+        <header class="util-header">
+          <h2 id="utilTitle">유틸</h2>
+          <p class="util-tagline">AI 홍보·기록 비서</p>
+        </header>
+        <nav class="util-tabs">
+          <button class="util-tab active" data-util="speech">축사·인사말</button>
+          <button class="util-tab" data-util="sns">SNS 홍보</button>
+          <button class="util-tab" data-util="meeting">회의정리·책 제작</button>
+          <button class="util-tab" data-util="pdfmd">PDF → Markdown</button>
+        </nav>
+        <div class="util-panel" id="utilSpeechPanel">
+          <form class="util-form" id="utilSpeechForm">
+            <label>행사명 <input name="event" type="text" required /></label>
+            <label>행사 날짜 <input name="date" type="date" /></label>
+            <label>장소 <input name="place" type="text" /></label>
+            <label>행사 성격 <input name="nature" type="text" placeholder="예: 창립기념식" /></label>
+            <label>참석 대상 <input name="audience" type="text" /></label>
+            <label>작성자/직책 <input name="author" type="text" /></label>
+            <label>주요 메시지 <textarea name="message" rows="3"></textarea></label>
+            <label>강조 내용 <textarea name="emphasis" rows="2"></textarea></label>
+            <label>분량 <select name="length"><option value="short">짧게</option><option value="medium" selected>보통</option><option value="long">길게</option></select></label>
+            <label>말투 <select name="tone"><option value="formal" selected>공식</option><option value="warm">따뜻한</option><option value="concise">간결</option></select></label>
+            <label>기존 축사 샘플 (말투 반영) <textarea name="style" rows="4" placeholder="기존 축사/인사말 원문 붙여넣기"></textarea></label>
+            <button type="submit" class="util-generate">초안 생성</button>
+          </form>
+          <div class="util-result" id="utilSpeechResult" hidden>
+            <h3>생성 결과</h3>
+            <textarea id="utilSpeechOutput" rows="12"></textarea>
+            <div class="util-actions">
+              <button type="button" id="utilSpeechCopy">복사</button>
+              <button type="button" id="utilSpeechRegenerate">다시 생성</button>
+              <button type="button" id="utilSpeechDownload">TXT 다운로드</button>
+            </div>
+          </div>
+        </div>
+        <div class="util-panel" id="utilSnsPanel" hidden>
+          <p class="util-soon-msg">SNS 홍보 화면을 열 수 없습니다.</p>
+        </div>
+        <div class="util-panel" id="utilMeetingPanel" hidden>
+          <p class="util-soon-msg">회의정리·책 제작 화면을 열 수 없습니다.</p>
+        </div>
+        <div class="util-panel" id="utilPdfmdPanel" hidden></div>
       </section>
       <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>
         <header class="calendar-view-header">
