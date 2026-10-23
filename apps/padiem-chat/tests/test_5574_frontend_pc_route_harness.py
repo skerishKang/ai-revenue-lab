@@ -70,7 +70,7 @@ ACCOUNT_REF = "acct-5574"
 DEVICE_ID = "office-pc"
 WORKSPACE_ID = "memory-5574"
 CHROME_5574_TEXT = "내PC office-pc 폴더에서 파일 목록 보여줘"
-FOLLOWUP_5574_TEXT = "그 폴더 안에 뭐 있어?"
+FOLLOWUP_5574_TEXT = "\ub0b4 PC\uc758 \uadf8 \ud3f4\ub354 \ud30c\uc77c \ubaa9\ub85d \ubcf4\uc5ec\uc918"
 GENERAL_5574_TEXT = "보고서 배경캐릭터 배치를 상의하고 싶어"
 
 
@@ -403,6 +403,10 @@ class _RecordingEngineBridge(B62EngineOrchestrationBridge):
                 run["result_summary"] = f"engine result payload {self._answer_index}"
         return SimpleNamespace(
             answer=f"PC-folder-answer-{self._answer_index}",
+            conversation_id=fields.get("conversation_id"),
+            user_text=fields["user_text"],
+            orchestration={"status": "completed"},
+            decision_status="completed",
             public={"answer": f"PC-folder-answer-{self._answer_index}"},
         )
 
@@ -796,23 +800,15 @@ def test_create_chat_pc_run_id_contract_is_self_consistent() -> None:
     assert '"chat_pcq_"' in source
 
 
-def test_no_device_account_pc_turn_falls_through_to_general_without_lane_work() -> None:
-    """An account with zero Broker devices never reaches the Engine.
-
-    The explicit pc_run_id openers the lane on /api/chat/stream, but the
-    directory truth (no devices) is a fall-through, not a refusal: the
-    ordinary B14 stream leg answers, paying exactly one B14 call and no
-    Engine call and no staged pc run.
-    """
+def test_mesh_only_pc_turn_reaches_engine_without_broker_devices() -> None:
+    """A server-owned Mesh target works without a Broker directory row."""
 
     async def flow():
-        harness = _PcHarness(device_rows=[], saved_device=None)
-        harness.b14 = _AnsweringB14()
+        harness = _PcHarness(device_rows=[])
         steps = [
             {
                 "messages": [{"role": "user", "content": CHROME_5574_TEXT}],
                 "mint": True,
-                "selectedDevice": False,
             },
         ]
         result = await _run_flow(harness, steps, orchestration=False)
@@ -823,14 +819,15 @@ def test_no_device_account_pc_turn_falls_through_to_general_without_lane_work() 
     assert step["pc_run_id"] and step["pc_run_id"].startswith("chat_pcq_")
     assert not _has_call(step, "POST", "/api/orchestration"), step["calls"]
     assert _has_call(step, "POST", "/api/chat/stream"), step["calls"]
+    assert step["generic_error"] is None
     assert step["answer"].strip() != "", step
-    assert len(step["events"]) >= 2
-    assert harness.bridge.requests == [], harness.bridge.requests
-    assert harness.store.runs == {}, harness.store.runs
-    assert len(harness.b14.calls) == 1, harness.b14.calls
-    call = harness.b14.calls[0]
-    assert call["skill"].id == "auto"
-    assert call["messages"][-1]["content"] == CHROME_5574_TEXT
+    assert step["events"] == ["delta", "done"]
+    assert len(harness.bridge.requests) == 1
+    call = harness.bridge.requests[0]
+    assert call["tool_arguments"] == {"files": {"device_id": DEVICE_ID}}
+    assert call["session_id"] == step["pc_run_id"]
+    _assert_pc_run_completed(harness, step["pc_run_id"])
+    _assert_b14_untouched(harness)
 
 
 def test_pc_list_turn_runs_one_lane_call_with_the_saved_target_and_completes() -> None:
@@ -888,37 +885,44 @@ def test_pc_list_turn_runs_one_lane_call_with_the_saved_target_and_completes() -
     assert harness.mesh.calls and harness.mesh.calls[0]["device_id"] == DEVICE_ID
 
 
-def test_visual_general_turn_is_priced_exactly_like_any_pc_turn() -> None:
-    """The files lane runs for every turn of a pc-connected account.
-
-    The pc store row and the single Engine call are the same for a plain
-    discussion turn as for a pc request: the Engine decides inside its one
-    call. The pc row is still staged and completed either way.
-    """
+@pytest.mark.parametrize("orchestration", [True, False])
+def test_general_turn_keeps_ordinary_route_without_pc_work(orchestration) -> None:
+    """PC selection does not stage a PC run or replace ordinary streaming."""
 
     async def flow():
         harness = _PcHarness()
+        if not orchestration:
+            harness.b14 = _AnsweringB14()
         steps = [
             {
                 "messages": [{"role": "user", "content": GENERAL_5574_TEXT}],
                 "mint": True,
             },
         ]
-        result = await _run_flow(harness, steps, orchestration=True)
+        result = await _run_flow(harness, steps, orchestration=orchestration)
         return harness, result
 
     harness, result = asyncio.run(flow())
     step = result["steps"][0]
-    minted = step["pc_run_id"]
-    assert _has_call(step, "POST", "/api/orchestration")
-    assert len(harness.bridge.requests) == 1, harness.bridge.requests
-    call = harness.bridge.requests[0]
-    assert call["tool_arguments"] == {"files": {"device_id": DEVICE_ID}}
-    assert call["agent_plan"]
-    assert call["subject_id"] == SUBJECT_ID
-    row = _assert_pc_run_completed(harness, minted)
-    assert row["status"] == "completed"
-    _assert_b14_untouched(harness)
+    assert step["generic_error"] is None
+    assert step["answer"].strip()
+    assert harness.store.runs == {}
+    if orchestration:
+        assert _has_call(step, "POST", "/api/orchestration")
+        assert len(harness.bridge.requests) == 1
+        call = harness.bridge.requests[0]
+        assert not call.get("agent_plan")
+        assert not call.get("tool_arguments")
+        assert call.get("session_id") != step["pc_run_id"]
+        _assert_b14_untouched(harness)
+    else:
+        assert _has_call(step, "POST", "/api/chat/stream")
+        assert harness.bridge.requests == []
+        assert len(harness.b14.calls) == 1
+        assert step["events"] == ["delta", "delta", "done"]
+        call = harness.b14.calls[0]
+        assert call["skill"].id == "auto"
+        assert call["messages"][-1]["content"] == GENERAL_5574_TEXT
 
 
 def test_followup_reuses_conversation_and_leaves_more_prior_turns_in_the_call() -> None:

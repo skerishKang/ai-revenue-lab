@@ -1,4 +1,4 @@
-"""#5573 Option A: one Engine call decides the PC tool, no pre-classification."""
+"""#5573 interim entry: Mesh-only PC requests run; ordinary turns fall through."""
 
 from __future__ import annotations
 
@@ -61,23 +61,23 @@ def _selection(selected):
     return _read
 
 
-_DEVICES = [SimpleNamespace(device_id=DEVICE, state="READY")]
-
-
-async def _resolve_context(request, **kwargs):
-    devices = _DEVICES if _WIRE_DEVICES[0] else []
-    return SimpleNamespace(
-        devices=devices,
-        selected_confirmed=True,
-        execution=SimpleNamespace(ready=True),
+def _wire(monkeypatch, *, selected=True, devices=True, mesh_ready=True):
+    context = pc_work_context.PcWorkContext(
+        broker_status="ready" if devices else "no_device",
+        devices=(
+            pc_work_context.PcWorkDevice(DEVICE, None, "CONNECTED", True),
+        ) if devices else (),
+        execution=pc_work_context.PcExecutionTarget(
+            status="ready" if mesh_ready else "no_target",
+            device_id=DEVICE if mesh_ready else None,
+        ),
+        mapping="confirmed" if mesh_ready else "unknown",
+        selected_device_id=DEVICE if selected is True else None,
     )
 
+    async def _resolve_context(request, **kwargs):
+        return context
 
-_WIRE_DEVICES = [True]
-
-
-def _wire(monkeypatch, *, selected=True, devices=True):
-    _WIRE_DEVICES[0] = devices
     b14 = _B14()
     bridge = _Bridge()
     request = SimpleNamespace(
@@ -126,12 +126,12 @@ def test_one_engine_call_with_the_files_plan(monkeypatch):
     assert b14.calls == []
 
 
-def test_follow_up_without_keywords_carries_the_prior_turns(monkeypatch):
+def test_explicit_pc_follow_up_carries_the_prior_turns(monkeypatch):
     request, b14, bridge = _wire(monkeypatch)
     history = [
         {"role": "user", "content": "5015-conditions-20261022 \ud3f4\ub354\ub97c \ubd24\uc5b4"},
         {"role": "assistant", "content": "\ubaa9\ub85d\uc744 \ud655\uc778\ud588\uc2b5\ub2c8\ub2e4."},
-        {"role": "user", "content": "\uadf8 \ud3f4\ub354 \uc548\uc5d0 \ubb50 \uc788\uc5b4?"},
+        {"role": "user", "content": "\ub0b4 PC\uc758 \uadf8 \ud3f4\ub354 \ud30c\uc77c \ubaa9\ub85d \ubcf4\uc5ec\uc918"},
     ]
     result = _run(request, history[-1]["content"], messages=history)
     assert result == ("ok", CONVERSATION)
@@ -141,8 +141,8 @@ def test_follow_up_without_keywords_carries_the_prior_turns(monkeypatch):
     assert b14.calls == []
 
 
-def test_no_verified_pc_makes_no_call(monkeypatch):
-    request, b14, bridge = _wire(monkeypatch, selected=None, devices=False)
+def test_unclassified_followup_keeps_ordinary_lane(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch)
     assert _run(request, "\uadf8 \ud3f4\ub354 \uc548\uc5d0 \ubb50 \uc788\uc5b4?") is None
     assert bridge.requests == []
     assert b14.calls == []
@@ -164,18 +164,73 @@ def test_authority_failure_falls_through_without_a_call(monkeypatch):
         raise lane.ChatPCDriveError("chat_pc_owner_unavailable", "denied", 503)
 
     monkeypatch.setattr(lane, "_resolve_chat_owner", _denied)
-    assert _run(request, "\uc624\ub298 \ub0a8\uc528 \uc5b4\ub54c?") is None
+    assert _run(request, "\ub0b4 PC\uc758 \ud3f4\ub354 \ud30c\uc77c \ubaa9\ub85d \ubcf4\uc5ec\uc918") is None
     assert bridge.requests == []
     assert b14.calls == []
+
 
 
 def test_browser_supplied_target_is_refused_when_it_mismatches(monkeypatch):
     request, b14, bridge = _wire(monkeypatch)
     with pytest.raises(lane.ChatPCDriveError) as excinfo:
         asyncio.run(lane.execute_chat_pc_drive_lane(
-            request, user_text="PC\uc758 \ud3f4\ub354", skill=SimpleNamespace(id="auto"),
+            request, user_text="\ub0b4 PC\uc758 \ud3f4\ub354 \ubaa9\ub85d", skill=SimpleNamespace(id="auto"),
             model_id="m", conversation_id=None, tier="free",
             device_id="node/meshdomain1/other-pc",
         ))
     assert excinfo.value.code == "chat_pc_selection_stale"
     assert bridge.requests == []
+
+
+def test_mesh_only_pc_list_request_enters_files_lane(monkeypatch):
+    """(a) An empty Broker directory never hides a usable Mesh target."""
+    request, b14, bridge = _wire(monkeypatch, devices=False)
+    calls = []
+    execute = lane._execute_chat_pc_files_lane
+
+    async def _record(request, **kwargs):
+        calls.append(kwargs)
+        return await execute(request, **kwargs)
+
+    monkeypatch.setattr(lane, "_execute_chat_pc_files_lane", _record)
+    result = _run(request, "\ub0b4 PC\uc758 sample \ud3f4\ub354 \ud30c\uc77c \ubaa9\ub85d \ubcf4\uc5ec\uc918")
+    assert result == ("ok", CONVERSATION)
+    assert len(calls) == len(bridge.requests) == 1
+    assert calls[0]["device_id"] == DEVICE
+    assert bridge.requests[0]["tool_arguments"] == {"files": {"device_id": DEVICE}}
+    assert b14.calls == []
+
+
+def test_general_question_with_verified_pc_keeps_ordinary_lane(monkeypatch):
+    """(b) A verified PC does not route a weather question to Engine."""
+    request, b14, bridge = _wire(monkeypatch)
+
+    async def _unexpected(*args, **kwargs):
+        pytest.fail("ordinary turn must not enter the PC files lane")
+
+    monkeypatch.setattr(lane, "_execute_chat_pc_files_lane", _unexpected)
+    assert _run(request, "\uc624\ub298 \ub0a0\uc528 \uc5b4\ub54c?") is None
+    assert bridge.requests == []
+    assert b14.calls == []
+
+
+def test_pc_list_without_devices_or_mesh_returns_truthful_refusal(monkeypatch):
+    """(c) No target means a fixed refusal, never a guessed model answer."""
+    request, b14, bridge = _wire(
+        monkeypatch, selected=None, devices=False, mesh_ready=False,
+    )
+    saved = []
+
+    async def _record_pair(store, **kwargs):
+        saved.append(kwargs)
+        return CONVERSATION
+
+    monkeypatch.setattr(lane, "_save_pair", _record_pair)
+    result = _run(request, "\ub0b4 PC\uc758 sample \ud3f4\ub354 \ud30c\uc77c \ubaa9\ub85d \ubcf4\uc5ec\uc918")
+    assert result[0].startswith(
+        "\uac80\uc99d\ub41c PC \uc5f0\uacb0\uc744 \ud655\uc778\ud558\uc9c0 \ubabb\ud574 \ud30c\uc77c \ubaa9\ub85d\uc744"
+    )
+    assert result[1] == CONVERSATION
+    assert len(saved) == 1 and saved[0]["answer"] == result[0]
+    assert bridge.requests == []
+    assert b14.calls == []
