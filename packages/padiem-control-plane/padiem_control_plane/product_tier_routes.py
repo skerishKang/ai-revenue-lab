@@ -64,6 +64,7 @@ TIER_FALLBACK_B14_MODELS = {
     "pro": ("google/gemma-4-31b-it",),
     "plus": ("google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
     "free": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
+    "admin": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
 }
 
 # Owner decision 2026-10-21 (#2505): OpenCode Go free models are not execution
@@ -95,6 +96,7 @@ class ProductTierLabel(str, Enum):
     PLUS = "Padiem Plus"
     PRO = "Padiem Pro"
     MAX = "Padiem Max"
+    ADMIN = "Padiem 관리자"
 
 class ProductRouteStatus(str, Enum):
     EXECUTABLE = "executable"
@@ -259,6 +261,21 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
             ),),
         )
         for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)
+    ),
+    # interim: admin chat uses the Free route until paid routes are verified
+    ProductTierDefinition(
+        label=ProductTierLabel.ADMIN,
+        routes=(ProductTierRoute(
+            route_id="free.gemini-3.1-flash-lite.v1",
+            status=ProductRouteStatus.EXECUTABLE,
+            model_family="gemini-3.1-flash-lite",
+            provider_id="google",
+            model_id=FREE_PRIMARY_B14_MODEL_ID,
+            upstream_model="gemini-3.1-flash-lite",
+            credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+            credential_binding="PADIEM_B14_CREDENTIAL_03",
+            evidence="Interim admin lane reuses the Free route until paid routes are verified.",
+        ),),
     ),
 )
 validate_product_tier_routes(PRODUCT_TIER_ROUTES)

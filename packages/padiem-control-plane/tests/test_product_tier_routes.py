@@ -49,9 +49,24 @@ def _executables() -> dict[ProductTierLabel, ProductTierRoute]:
             found[tier.label] = route
     return found
 
-def test_contract_defines_exactly_four_padiem_tiers() -> None:
+def test_contract_defines_exactly_all_padiem_tiers() -> None:
     assert [tier.label for tier in PRODUCT_TIER_ROUTES] == list(ProductTierLabel)
     assert PRODUCT_TIER_POLICY_VERSION == "padiem.product_tier_routes.v1"
+
+def test_admin_tier_reuses_the_free_route_until_paid_routes_are_verified() -> None:
+    from padiem_control_plane.product_tier_routes import TIER_FALLBACK_B14_MODELS
+    free = active_route_for(ProductTierLabel.FREE)
+    admin = active_route_for(ProductTierLabel.ADMIN)
+    assert free is not None and admin is not None
+    assert admin.route_id == free.route_id
+    assert admin.status is free.status
+    assert admin.model_family == free.model_family
+    assert admin.provider_id == free.provider_id
+    assert admin.model_id == free.model_id
+    assert admin.upstream_model == free.upstream_model
+    assert admin.credential_mode is free.credential_mode
+    assert admin.credential_binding == free.credential_binding
+    assert TIER_FALLBACK_B14_MODELS["admin"] == TIER_FALLBACK_B14_MODELS["free"]
 
 def test_current_tiers_contain_only_active_models() -> None:
     from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID, TIER_FALLBACK_B14_MODELS
@@ -63,6 +78,7 @@ def test_current_tiers_contain_only_active_models() -> None:
     assert TIER_FALLBACK_B14_MODELS["free"] == ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it")
     for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX):
         assert routes[label].model_id == MUSE_B14_MODEL_ID
+    assert routes[ProductTierLabel.ADMIN].model_id == FREE_PRIMARY_B14_MODEL_ID
     assert all(len(tier.routes) == 1 for tier in PRODUCT_TIER_ROUTES)
     assert all(r.status is ProductRouteStatus.EXECUTABLE for r in routes.values())
 
@@ -77,7 +93,7 @@ def test_no_user_visible_auto_or_fallback_anywhere() -> None:
 
 def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
     executables = _executables()
-    assert len(executables) == 4
+    assert len(executables) == 5
     for tier, route in executables.items():
         assert route.provider_id, f"{tier.value}: explicit provider_id required"
         assert route.model_id, f"{tier.value}: explicit model_id required"
@@ -115,7 +131,7 @@ def test_two_executable_routes_in_one_tier_fail_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="at most one executable"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.FREE), duplicate, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), duplicate, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
 
 def test_two_max_executable_routes_fail_closed() -> None:
@@ -126,7 +142,7 @@ def test_two_max_executable_routes_fail_closed() -> None:
     )
     bad = ProductTierDefinition(label=ProductTierLabel.MAX, routes=max_tier.routes + (extra_route,))
     with pytest.raises(ProductTierRoutesError, match="at most one executable"):
-        validate_product_tier_routes((get_tier(ProductTierLabel.FREE), get_tier(ProductTierLabel.PLUS), get_tier(ProductTierLabel.PRO), bad))
+        validate_product_tier_routes((get_tier(ProductTierLabel.FREE), get_tier(ProductTierLabel.PLUS), get_tier(ProductTierLabel.PRO), bad, get_tier(ProductTierLabel.ADMIN)))
 
 def test_retired_model_as_executable_fails_closed() -> None:
     tier = ProductTierDefinition(
@@ -144,7 +160,7 @@ def test_retired_model_as_executable_fails_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="retired model may never be executable"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.FREE), get_tier(ProductTierLabel.PLUS), tier, get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), get_tier(ProductTierLabel.PLUS), tier, get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
 
 def test_silent_fallback_serving_is_inexpressible() -> None:
@@ -155,7 +171,7 @@ def test_silent_fallback_serving_is_inexpressible() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="silent fallback"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
 
 def test_unsupported_policy_version_fails_closed() -> None:
@@ -166,7 +182,7 @@ def test_unsupported_policy_version_fails_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="unsupported policy version"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
 
 def test_undocumented_non_executable_route_fails_closed() -> None:
@@ -182,7 +198,7 @@ def test_undocumented_non_executable_route_fails_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="hold/retirement reason"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
 
 
@@ -205,9 +221,9 @@ def test_active_tier_routes_match_the_current_b14_model_registry() -> None:
     from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID
     file=REPO_ROOT/"apps"/"korean-ai-platform"/"app"/"pilot"/"b14_models.json"
     models={row["id"]: row for row in json.loads(file.read_text(encoding="utf-8"))["models"]}
-    assert len(_executables())==4
+    assert len(_executables())==5
     for label, route in _executables().items():
-        expected = FREE_PRIMARY_B14_MODEL_ID if label is ProductTierLabel.FREE else MUSE_B14_MODEL_ID
+        expected = FREE_PRIMARY_B14_MODEL_ID if label in (ProductTierLabel.FREE, ProductTierLabel.ADMIN) else MUSE_B14_MODEL_ID
         assert route.model_id == expected
         assert models[route.model_id]["enabled"] is True
 
