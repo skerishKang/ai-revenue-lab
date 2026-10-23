@@ -7,6 +7,9 @@
 - The sections below retain the #5578 source/recovery design and its earlier evidence; they do not imply that the legacy tunnel is the current COM1 connection path.
 - Removal of the obsolete tunnel task/supervisor and review of the #5578 layers are deferred until 2026-10-25 or later and tracked in #5643.
 - This note records observed state only. No task, service, runtime setting, restart or reboot was changed to produce it.
+- COM2 transition: the portproxy maps `192.168.0.101:4443` to `127.0.0.1:4443`; firewall event 2097 records creation of `PADIEM-Mesh-4443-from-COM1` at 13:36:57 KST by local Windows account `user`, allowing inbound TCP 4443 only from `192.168.0.2`. The portproxy change time and individual/model operator are not retained in the evidence read.
+- COM1 transition: `MeshAgent.msh.bak-20261023` was created at 13:40:02 KST; `MeshServer` changed from loopback to `wss://192.168.0.101:4443/agent.ashx` at 13:40:22 KST, followed by the current Mesh Agent process starting at 13:41:13 KST. These are filesystem/process timestamps; the COM1 modifying actor is `NOT_RECORDED`.
+- Rollback path (not executed; separate operational authorization required): restore the dated `.msh` backup and the existing loopback tunnel/supervisor path, then restart Mesh Agent and verify reconnection before removing the COM2 portproxy/firewall additions. Preserve the backup and legacy task until that recovery path is confirmed.
 
 - 구현: `scripts/ops/com2_mesh/` 아래 엔진, 터널 supervisor, 작업 XML 템플릿, 자동 시작 관측 프로브, selftest 3종
 - 설정 예시: `scripts/ops/com2_mesh/com2_mesh_config.template.json`
