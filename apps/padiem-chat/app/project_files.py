@@ -54,8 +54,8 @@ class ProjectFileRecord:
     created_at: str = ""
     updated_at: str = ""
 
-    def public_dict(self) -> dict[str, Any]:
-        return {
+    def public_dict(self, *, include_content: bool = False) -> dict[str, Any]:
+        data = {
             "id": self.id,
             "project_id": self.project_id,
             "name": self.name,
@@ -64,6 +64,9 @@ class ProjectFileRecord:
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
+        if include_content:
+            data["content_text"] = self.content_text
+        return data
 
 
 class ProjectFileStore(Protocol):

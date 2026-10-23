@@ -315,7 +315,7 @@ async def project_file_detail(request: Request):
             return _unavailable()
         if record is None:
             return _not_found()
-        return JSONResponse({"file": record.public_dict()})
+        return JSONResponse({"file": record.public_dict(include_content=True)})
 
     try:
         # An original exists only for the new raw-binary project upload path.

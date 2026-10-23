@@ -14,6 +14,7 @@
 .util-result textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
 .util-actions { display: flex; gap: 8px; margin-top: 8px; }
 .util-actions button { padding: 8px 14px; border: 1px solid #ddd; border-radius: 6px; background: #fff; cursor: pointer; }
+.util-actions .util-save { min-width: 72px; }
 .util-saved-list, .util-archive { margin-top: 16px; }
 .util-saved-list ul, .util-archive ul { list-style: none; padding: 0; }
 .util-saved-list li, .util-archive li { margin: 4px 0; }
