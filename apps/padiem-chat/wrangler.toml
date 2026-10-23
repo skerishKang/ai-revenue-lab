@@ -158,3 +158,10 @@ PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED = "enabled"
 PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED = "enabled"
 PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED = "enabled"
 PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED = "enabled"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+[observability.logs]
+enabled = true
+invocation_logs = true
