@@ -261,7 +261,7 @@
           const inp = document.createElement("input");
           inp.name = name; inp.type = "text";
           if (req) inp.required = true;
-          if (name === "photo") inp.placeholder = "https://...";
+          if (name === "photo") inp.placeholder = "photo URL";
           l.appendChild(inp);
         }
         form.appendChild(l);
