@@ -56,6 +56,7 @@
   <link rel="stylesheet" href="./standalone-views.css" />
   <link rel="stylesheet" href="./meeting-capture.css" />
   <link rel="stylesheet" href="./claw-focus-layout.css" />
+  <link rel="stylesheet" href="./notification-inbox.css" />
   <!-- #4643 shared Chat/Claw microphone entry. Inert until a server-granted
        recognizer is registered and a signed-in session exists. -->
   <link rel="stylesheet" href="./voice-composer.css" />
@@ -92,9 +93,10 @@
            empty/text area starts a chat; the right icon invokes existing #4471 Search. -->
       <!-- Chat + Claw: one top-level interaction group. -->
       <div class="sidebar-chat-claw-group">
-        <div class="sidebar-actions-row sidebar-unified-row" role="group" aria-label="새 채팅과 대화 검색">
+        <div class="sidebar-actions-row sidebar-unified-row" role="group" data-locale-aria-label="sidebar-actions-group" aria-label="새 채팅, 대화 검색, 알림함">
         <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span data-locale-key="new-chat">새 채팅</span></button>
         <button class="side-item sidebar-search-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" data-locale-aria-label="search-conversation-hold" aria-label="대화 검색 준비 중" data-locale-title="search-conversation-hold" title="대화 검색 준비 중"><span class="side-icon" aria-hidden="true">⌕</span><span class="visually-hidden" data-locale-key="search">검색</span></button>
+        <button class="side-item notification-inbox-bell" id="notificationsBellButton" type="button" hidden data-locale-aria-label="notification-inbox-bell" aria-label="알림함" data-locale-title="notification-inbox-bell" title="알림함" aria-haspopup="dialog" aria-expanded="false" aria-controls="notificationInbox"><span class="side-icon" aria-hidden="true">◈</span><span class="visually-hidden" data-locale-key="notification-inbox-bell">알림함</span><span class="notification-inbox-badge" id="notificationInboxBadge" hidden></span></button>
       </div>
         <nav class="side-nav" data-locale-aria-label="chat-menu" aria-label="채팅 메뉴">
           <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
@@ -1254,6 +1256,10 @@
   <script src="./voice-answer-ui.js"></script>
   <script src="./voice-call-ui.js"></script>
   <script src="./app.js"></script>
+  <!-- #5034 LOCAL4: the common notification inbox. Presentation-only over the
+       existing /api/claw/inbox/{alerts,tasks} contract: no new endpoint, no
+       second inbox, no polling loop. -->
+  <script src="./notification-inbox.js"></script>
   <script src="./meeting-drive-upload.js"></script>
   <script src="./meeting-capture.js"></script>
   <script src="./sidebar-section-collapse.js"></script>
