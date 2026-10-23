@@ -368,21 +368,8 @@ def test_a_listing_only_turn_with_a_wrong_read_selects_zero_read_dispatches() ->
     assert "relative_path" in model.prompts[1]
 
 
-def test_a_list_only_ceiling_is_not_admitted_on_the_real_wire() -> None:
-    """Where a list-only turn is refused when it is carried as a scope hint.
-
-    ``_scope_allowed_tool_ids`` narrows the tools for ``{"files_list": ...}``
-    and the python client pairs that hint with the one-step plan
-    (``padiem_ai_engine_client/client.py``), but the Engine's own admission gate
-    lists only ``query_drives`` and the two-step list+read shape. Measured here:
-    the turn is refused before the plan, the driver and the handler exist, so
-    the ceiling can only be enforced at the step policy today and the Chat lane
-    never selects it (``chat_pc_drive.py`` passes ``list_only=False``).
-    """
-    pc = _FakePcEndpoint()
-    model = _ScriptedModel([LIST_STEP_WITH_READ_INTENT, WRONG_READ_STEP, COMPLETE_STEP])
-    transport = _transport_for(model=model, pc=pc)
-
+def _list_only_request() -> dict:
+    """The existing client-admitted one-step plan and its closed scope hint."""
     request = _bridge_request()
     request["tool_arguments"] = {"files_list": {"device_id": DEVICE_ID}}
     plan = dict(request["agent_plan"])
@@ -391,22 +378,63 @@ def test_a_list_only_ceiling_is_not_admitted_on_the_real_wire() -> None:
         if step["tool_id"] == "claw.pc.list_files"
     ]
     request["agent_plan"] = plan
+    return request
 
+
+def _orchestrate_list_only(transport, *, selected_device=True) -> dict:
+    request = _list_only_request()
+    if not selected_device:
+        request.pop("tool_arguments")
     client = PadiemAiEngineClient(
         transport=transport, app_id=CHAT_APP_ID, caller_id=CHAT_APP_ID,
         credential="x" * 64,
     )
     with patch.object(asyncio, "sleep", _instant_sleep):
-        with pytest.raises(PadiemAiEngineClientError) as refusal:
-            asyncio.run(client.orchestrate(request))
+        return asyncio.run(client.orchestrate(request))
 
-    assert refusal.value.code == "unsupported_orchestration_field"
+
+def test_a_list_only_ceiling_is_admitted_on_the_real_wire() -> None:
+    """The canonical list-only plan reaches the real driver and signed handler."""
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([LIST_STEP, COMPLETE_STEP])
+    transport = _transport_for(model=model, pc=pc)
+
+    orchestration = _orchestrate_list_only(transport)
+
+    assert transport.statuses == [200]
+    assert pc.ops == ["list"], pc.dispatches
+    assert pc.modes == ["context", "dispatch", "command_status", "result"]
+    assert len(model.prompts) == 2
+    assert orchestration["execution"]["metadata"]["status"] == "completed"
+
+
+@pytest.mark.parametrize("selected_device", [True, False])
+def test_an_admitted_list_only_plan_refuses_read_intent_before_dispatch(
+    selected_device: bool,
+) -> None:
+    """Even intent:read cannot widen the admitted plan, with or without a target."""
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([LIST_STEP_WITH_READ_INTENT, WRONG_READ_STEP, COMPLETE_STEP])
+    transport = _transport_for(model=model, pc=pc)
+
+    with pytest.raises(PadiemAiEngineClientError) as refusal:
+        _orchestrate_list_only(transport, selected_device=selected_device)
+
+    assert refusal.value.code == "agent_step_failed"
     assert refusal.value.status == 400
+    assert refusal.value.retryable is False
     assert transport.statuses == [400]
-    # Nothing reached the PC: no context leg, no dispatch, no handler.
-    assert pc.legs == [], pc.legs
-    assert pc.ops == []
-    assert model.prompts == []
+    # Admission succeeded: the model and list handler ran before the step gate.
+    assert len(model.prompts) == 2
+    assert READ_TARGET in model.prompts[1]
+    assert "read_file is not available" in model.prompts[0]
+    assert pc.ops == ["list"], pc.dispatches
+    assert len([leg for leg in pc.dispatches if leg["op"] == "read"]) == 0
+    assert pc.modes == ["context", "dispatch", "command_status", "result"]
+    target = DEVICE_ID if selected_device else None
+    assert [leg["device_id"] for leg in pc.legs if leg["mode"] in {"context", "dispatch"}] == [
+        target, target,
+    ]
 
 
 def test_an_explicit_read_intent_still_reaches_the_read_dispatch() -> None:
