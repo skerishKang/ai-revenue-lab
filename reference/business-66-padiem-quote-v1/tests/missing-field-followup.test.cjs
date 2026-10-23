@@ -60,7 +60,7 @@ const CGI_SKILL = SavedQuoteSkill.buildSkill(Object.assign({}, CGI_SKILL_BASE, {
 }));
 const CGI_PROFILE = {
   company: "CGI상사",
-  representative: "김범신",
+  representative: "홍길동",
   businessNumber: "111-11-11111",
   address: "서울특별시",
   phone: "02-000-0000",
