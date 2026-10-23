@@ -224,7 +224,9 @@
           const res = await fetch("/api/projects/" + currentPid + "/files/" + f.id, { credentials: "include" });
           if (res.ok) {
             const data = await res.json();
-            speechOutput.value = (data && data.file && data.file.name) ? "[저장된 파일: " + data.file.name + "]" : "[저장된 파일]";
+            const content = (data && data.file && (data.file.content || data.file.text)) ? (data.file.content || data.file.text) : "";
+            if (content) speechOutput.value = content;
+            else speechOutput.value = (data && data.file && data.file.name) ? "[저장된 파일: " + data.file.name + "]" : "[저장된 파일]";
             speechResult.hidden = false;
           }
         });
@@ -310,8 +312,9 @@
       const actions = el("div", "util-actions");
       const copyB = el("button", null, "복사"); copyB.type = "button"; copyB.id = "utilSnsCopy";
       const regenB = el("button", null, "다시 생성"); regenB.type = "button"; regenB.id = "utilSnsRegen";
+      const saveB = el("button", null, "저장"); saveB.type = "button"; saveB.id = "utilSnsSave";
       const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilSnsDownload";
-      actions.append(copyB, regenB, dlB);
+      actions.append(copyB, regenB, saveB, dlB);
       result.append(h3, output, actions);
 
       panel.replaceChildren(form, result);
@@ -352,6 +355,20 @@
         try { await navigator.clipboard.writeText(output.value); copyB.textContent = "복사됨"; setTimeout(() => { copyB.textContent = "복사"; }, 1500); } catch (_) {}
       });
       dlB.addEventListener("click", () => { downloadText(output.value, "sns-" + platform + ".txt"); });
+      saveB.addEventListener("click", async () => {
+        const text = output.value.trim();
+        if (!text) return;
+        if (!currentPid) currentPid = await ensureProject();
+        if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
+        const name = (h3.textContent || "sns").trim() + ".txt";
+        const file = await saveProjectFile(currentPid, name, text);
+        if (file) {
+          saveB.textContent = "저장됨";
+          setTimeout(() => { saveB.textContent = "저장"; }, 1500);
+        } else {
+          alert("저장 실패");
+        }
+      });
     }
 
     // Meeting builder
@@ -470,7 +487,7 @@
             if (res.ok) {
               const data = await res.json();
               const out = document.getElementById("utilMeetingOutput");
-              if (out) out.value = "[저장된 파일: " + f.name + "]";
+              if (out) { const c = (data && data.file && (data.file.content || data.file.text)) ? (data.file.content || data.file.text) : ""; if (c) out.value = c; else out.value = "[저장된 파일: " + f.name + "]"; }
             }
           });
           li.appendChild(btn);
