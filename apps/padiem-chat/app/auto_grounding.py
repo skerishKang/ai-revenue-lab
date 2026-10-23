@@ -58,7 +58,9 @@ class AutoGroundingService:
             getattr(web_provider, "_automatic_search_enabled", True)
         )
 
-    def decide(self, messages: list[dict[str, str]], *, skill: TaskMode) -> SearchDecision:
+    def decide(self, messages: list[dict[str, str]], *, skill: TaskMode, explicit_search: bool = False) -> SearchDecision:
+        if explicit_search:
+            return SearchDecision(SearchDisposition.MUST_SEARCH, "explicit_search_request", latest_user_question(messages))
         decision = decide_search(latest_user_question(messages), task_id=skill.id)
         # Automatic grounding is a live factuality feature. Preview providers created
         # from mock Settings explicitly disable it. MockWebProvider evidence is QA-only
@@ -80,8 +82,9 @@ class AutoGroundingService:
         *,
         skill: TaskMode,
         additional_system_context: str | None,
+        explicit_search: bool = False,
     ) -> AutoGroundingPlan:
-        decision = self.decide(messages, skill=skill)
+        decision = self.decide(messages, skill=skill, explicit_search=explicit_search)
         if not decision.requires_search:
             return AutoGroundingPlan(decision=decision, prepared=None)
 
