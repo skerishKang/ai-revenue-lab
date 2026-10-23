@@ -57,6 +57,7 @@ Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this re
 - **Fresh-fetch before PR creation and before every push.** If the intended change has already landed on `origin/main`, stop and report instead of applying it. 2026-10-23 cases: #5610 duplicated #5609; #5619 overlapped #5623 and had to be reduced.
 - **Force-push scope.** No force push to `main`, to protected branches, or to a branch owned by or inherited from another worker. Publishing a rebase of one's own PR branch uses `--force-with-lease=<branch>:<known remote head>` only.
 - **Skipped is not pass.** A `success` run whose suite was skipped by the changeset classifier is not green evidence for that suite; cite the latest run in which the suite actually executed. Latent `main` failures surfaced this way on 2026-10-23 (#5605, #5618 merged while `B62 full regression` was skipped).
+- Since #5680 (2026-10-24) every push to main runs B62 full regression and the web-desktop E2E unconditionally; PR lanes keep the changeset classifier.
 
 ## 1. Purpose
 
