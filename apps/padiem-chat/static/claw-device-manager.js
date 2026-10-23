@@ -14,15 +14,15 @@
     ko: {
       title: "연결된 내 컴퓨터",
       close: "닫기",
-      refresh: "연결 상태 새로고침",
-      help: "연결된 컴퓨터를 확인합니다. PC 작업은 별도의 승인이 필요합니다.",
+      refresh: "새로고침",
+      help: "PC 작업은 별도 승인 후 진행됩니다.",
       entryTitle: "컴퓨터와 연결해 보세요",
       entryDescription: "내 컴퓨터의 파일과 프로그램을 Padiem에서 사용할 수 있어요.",
       connectAction: "컴퓨터 연결하기",
       loading: "서버에서 컴퓨터 연결 상태를 확인하고 있습니다.",
       unavailable: "컴퓨터 연결 서비스가 아직 준비되지 않았습니다. 연결된 PC를 확인할 수 없습니다.",
       unconfigured: "컴퓨터 연결 서비스가 아직 설정되지 않았습니다. 연결 서비스가 설정되면 이 목록을 확인할 수 있습니다.",
-      readFailed: "연결 서비스 조회 중 문제가 발생했습니다. 잠시 후 ‘연결 상태 새로고침’으로 다시 확인해 주세요.",
+      readFailed: "연결 서비스 조회 중 문제가 발생했습니다. 잠시 후 다시 새로고침을 눌러 확인해 주세요.",
       login: "로그인한 뒤 내 컴퓨터 목록을 확인할 수 있습니다.",
       failed: "연결 상태를 확인하지 못했습니다. 다시 시도해 주세요.",
       empty: "현재 계정에서 확인된 컴퓨터가 없습니다. Claw Connect 설치·연결을 먼저 완료해 주세요.",
@@ -43,15 +43,15 @@
     en: {
       title: "My connected computers",
       close: "Close",
-      refresh: "Refresh connection status",
-      help: "Review connected devices. Running local tasks requires separate approval.",
+      refresh: "Refresh",
+      help: "Local PC work still needs separate approval.",
       entryTitle: "Connect your computer",
       entryDescription: "Use the files and programs on your computer in Padiem.",
       connectAction: "Connect a computer",
       loading: "Checking your devices with the server.",
       unavailable: "Computer connection service is not ready yet. Device status cannot be confirmed.",
       unconfigured: "The computer connection service is not configured yet. Once it is set up, this list can be shown.",
-      readFailed: "Something went wrong while reading the connection service. Please check again shortly with ‘Refresh connection status’.",
+      readFailed: "Something went wrong while reading the connection service. Press ‘Refresh’ to check again.",
       login: "Sign in to view your computers.",
       failed: "Could not verify device status. Please retry.",
       empty: "No computers confirmed for this account. Install and pair Claw Connect first.",
@@ -116,15 +116,17 @@
     panel.setAttribute("aria-labelledby", "clawDeviceManagerTitle");
     panel.hidden = true;
     const head = element("div", "claw-device-manager-head");
+    // The panel title, its short refresh action and the close button share one
+    // line: refresh sits next to the title and close stays on the right. The
+    // close button is declared before refresh in the DOM so a keyboard user
+    // still reaches the refresh action with a forward Tab from it.
     const title = element("h2", "", "");
     title.id = "clawDeviceManagerTitle";
     const close = element("button", "claw-device-manager-close");
     close.type = "button";
-    const help = element("p", "claw-device-manager-help");
-    const actions = element("div", "claw-device-manager-actions");
     const refresh = element("button", "claw-device-manager-refresh");
     refresh.type = "button";
-    actions.appendChild(refresh);
+    const help = element("p", "claw-device-manager-help");
     const status = element("p", "claw-device-manager-status");
     status.id = "clawDeviceManagerStatus";
     status.setAttribute("role", "status");
@@ -133,8 +135,8 @@
     list.id = "clawDeviceManagerList";
     list.hidden = true;
     // The not-connected guidance and its one action into the EXISTING Claw
-    // computer connect screen. It is appended last so the panel's existing
-    // control order (close, refresh, device rows) is unchanged.
+    // computer connect screen. It is appended last so the panel's control
+    // order (refresh, close, device rows) stays the same.
     const connect = element("div", "claw-device-manager-connect");
     connect.id = "clawDeviceManagerConnect";
     const connectTitle = element("h3", "claw-device-manager-connect-title");
@@ -143,8 +145,8 @@
     connectAction.id = "clawDeviceManagerConnectAction";
     connectAction.type = "button";
     connect.append(connectTitle, connectCopy, connectAction);
-    head.append(title, close);
-    panel.append(head, help, actions, status, list, connect);
+    head.append(title, close, refresh);
+    panel.append(head, help, status, list, connect);
     // The directory panel is owned by the shared composer: it opens directly
     // above the composer area, stays inside the composer's width and never
     // overlaps the message input.
@@ -280,10 +282,20 @@
         const item = element("li", "claw-device-manager-item");
         const detail = element("div", "claw-device-manager-detail");
         const name = element("strong", "", device.deviceName || device.deviceId);
+        name.title = device.deviceName || device.deviceId;
         const meta = element("small", "", device.platform || "");
+        // The server-owned ID stays a detail value: truncated on screen and
+        // readable in full on hover or focus, never a line of its own.
+        if (device.deviceId && device.deviceId !== (device.deviceName || "")) {
+          const id = element("small", "claw-device-manager-id", device.deviceId);
+          id.title = device.deviceId;
+          detail.append(name, meta, id);
+        } else {
+          detail.append(name, meta);
+        }
         const chip = element("span", "claw-device-manager-state", deviceLabel(device));
         chip.dataset.state = device.state;
-        detail.append(name, meta, chip);
+        detail.append(chip);
         const pick = element("button", "claw-device-manager-select", t.choose);
         pick.type = "button";
         pick.disabled = !device.selectable;
@@ -558,12 +570,13 @@
     });
     close.addEventListener("click", closePanel);
     // Close when clicking outside the panel. The composer status control that
-    // opens it is handled separately so the opening click does not close it.
+    // opens it, and the first-screen computer card that reuses the same entry,
+    // are handled separately so the opening click does not close it.
     document.addEventListener("click", (event) => {
       if (!opened) return;
       const target = event && event.target;
       if (target && typeof target.closest === "function" &&
-          target.closest("#composerPcStatus")) return;
+          target.closest("#composerPcStatus, #pcConnectStarter")) return;
       if (root.contains(target)) return;
       closePanel();
     });
