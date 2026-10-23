@@ -446,7 +446,7 @@
       });
       dlB.addEventListener("click", () => { downloadText(output.value, "meeting.txt"); });
 
-      async function refreshArchive(arc) {
+﻿      async function refreshArchive(arc) {
         if (!currentPid) currentPid = await ensureProject();
         if (!currentPid) return;
         const files = await listProjectFiles(currentPid);
@@ -459,12 +459,27 @@
           arc.appendChild(p);
           return;
         }
+        const bookBtn = el("button", "util-generate", "선택 기록으로 책/활동집 초안 생성");
+        bookBtn.type = "button";
+        bookBtn.id = "utilBookGenerate";
+        bookBtn.style.marginBottom = "8px";
+        arc.appendChild(bookBtn);
+
         const ul = document.createElement("ul");
         meetingFiles.forEach((f) => {
           const li = document.createElement("li");
+          li.style.display = "flex";
+          li.style.alignItems = "center";
+          li.style.gap = "8px";
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.value = f.id;
+          cb.className = "util-book-check";
+          li.appendChild(cb);
           const btn = document.createElement("button");
           btn.type = "button";
           btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+          btn.style.flex = "1";
           btn.addEventListener("click", async () => {
             const res = await fetch("/api/projects/" + currentPid + "/files/" + f.id, { credentials: "include" });
             if (res.ok) {
@@ -477,8 +492,58 @@
           ul.appendChild(li);
         });
         arc.appendChild(ul);
-      }
-      refreshArchive(archive);
+
+        const bookResult = el("div", "util-result");
+        bookResult.id = "utilBookResult";
+        bookResult.hidden = true;
+        const bookH = el("h3", null, "책/활동집 초안");
+        const bookOutput = document.createElement("textarea");
+        bookOutput.id = "utilBookOutput";
+        bookOutput.rows = 16;
+        const bookActions = el("div", "util-actions");
+        const bookCopy = el("button", null, "복사"); bookCopy.type = "button";
+        const bookRegen = el("button", null, "다시 생성"); bookRegen.type = "button";
+        const bookDl = el("button", null, "TXT 다운로드"); bookDl.type = "button";
+        bookActions.append(bookCopy, bookRegen, bookDl);
+        bookResult.append(bookH, bookOutput, bookActions);
+        arc.appendChild(bookResult);
+
+        bookBtn.addEventListener("click", async () => {
+          const checked = Array.from(document.querySelectorAll(".util-book-check:checked"));
+          if (!checked.length) { alert("선택된 기록이 없습니다."); return; }
+          const ids = checked.map((c) => c.value);
+          const contents = [];
+          for (const fid of ids) {
+            const res = await fetch("/api/projects/" + currentPid + "/files/" + fid, { credentials: "include" });
+            if (res.ok) {
+              const data = await res.json();
+              const name = data && data.file ? data.file.name : fid;
+              contents.push("[기록: " + name + "]");
+            }
+          }
+          bookResult.hidden = false;
+          bookOutput.value = "생성 중...";
+          let prompt = "다음은 사용자가 선택한 활동 기록 목록입니다.\n\n";
+          prompt += contents.join("\n") + "\n\n";
+          prompt += "위 기록을 바탕으로 다음을 생성해 주세요:\n";
+          prompt += "1. 책/활동집 제목 후보 3개\n";
+          prompt += "2. 목차 (5-8장)\n";
+          prompt += "3. 각 장별 원고 초안 (200-400자)\n";
+          prompt += "4. 마무리 인사\n\n";
+          prompt += "주의: 원본 기록에 없는 사건, 날짜, 발언을 사실처럼 추가하지 마세요. 선택된 기록의 내용만 사용하세요.";
+          try {
+            bookOutput.value = await apiChat(prompt);
+          } catch (e) {
+            bookOutput.value = "생성 실패: " + (e && e.message ? e.message : e);
+          }
+        });
+
+        bookCopy.addEventListener("click", async () => {
+          try { await navigator.clipboard.writeText(bookOutput.value); bookCopy.textContent = "복사됨"; setTimeout(() => { bookCopy.textContent = "복사"; }, 1500); } catch (_) {}
+        });
+        bookRegen.addEventListener("click", () => { bookBtn.click(); });
+        bookDl.addEventListener("click", () => { downloadText(bookOutput.value, "book-draft.txt"); });
+      }      refreshArchive(archive);
     }
   });
 })();
