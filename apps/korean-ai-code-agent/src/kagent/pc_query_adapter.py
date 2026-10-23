@@ -42,6 +42,7 @@ import time
 from typing import Any, Awaitable, Callable, Mapping
 
 from padiem_ai_core.agent_definition import AgentExecutionBudget, BoundedAgentDefinition
+from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
 from padiem_ai_core.agent_profile_adapter import (
     CompiledAgentProfile,
     ToolRuntimeBinding,
@@ -71,6 +72,14 @@ PC_QUERY_CANONICAL_AGENT_ID = "agent:padiem:claw-pc-query@1"
 # and the signed callback resolve the Chat product, user and conversation.
 CHAT_APP_ID = "padiem-chat"
 CHAT_PC_QUERY_AGENT_ID = "agent:padiem:chat-pc-query@1"
+# The only product app / agent pairs this PC query contract may be built for.
+# One product can never borrow the other's identity: a Chat app id with the
+# Claw agent id (or the reverse) is refused before a tool is registered, so an
+# internally consistent but crossed contract cannot pass.
+PC_QUERY_PRODUCT_AGENTS: Mapping[str, str] = {
+    CLAW_APP_ID: PC_QUERY_AGENT_ID,
+    CHAT_APP_ID: CHAT_PC_QUERY_AGENT_ID,
+}
 PC_DRIVES_TOOL_ID = "claw.pc.query_drives"
 PC_DRIVES_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-query-drives@1"
 PC_LIST_FILES_TOOL_ID = "claw.pc.list_files"
@@ -112,6 +121,21 @@ class PCQueryStepError(ValueError):
         super().__init__(message)
         # Outside the closed set the detail is dropped rather than passed on.
         self.code = detail if detail in PC_STEP_FAILURE_DETAILS else None
+
+
+def validate_pc_query_product_identity(*, app_id: str, agent_id: str) -> None:
+    """Fail closed unless the product app and agent are a reviewed pair.
+
+    An internally consistent contract (matching authorization, profile and
+    plan) is not enough on its own: a crossed pair such as the Chat app id
+    with the Claw agent id would still be self-consistent. Only the pairs in
+    :data:`PC_QUERY_PRODUCT_AGENTS` may be used.
+    """
+    expected = PC_QUERY_PRODUCT_AGENTS.get(app_id)
+    if expected is None:
+        raise ValueError("pc query product app is not a reviewed product")
+    if expected != agent_id:
+        raise ValueError("pc query product app and agent are not a reviewed pair")
 
 
 def selected_device_id(arguments: Any) -> str | None:
@@ -341,6 +365,7 @@ class PcQueryProductContract:
 
 def build_pc_query_product_contract(*, app_id: str, agent_id: str) -> PcQueryProductContract:
     """Compile the product agent, policy and authorization for one lane."""
+    validate_pc_query_product_identity(app_id=app_id, agent_id=agent_id)
     definition = pc_query_agent_definition(agent_id)
     compiled = compile_agent_profile(definition, pc_query_agent_policy())
     return PcQueryProductContract(
@@ -469,6 +494,40 @@ def plan_step_arguments(tool_arguments: Any, step_id: str) -> dict[str, Any]:
     return dict(entry)
 
 
+def pc_query_agent_plan(agent_id: str) -> AgentPlan:
+    """The product plan for the verified PC drive lane.
+
+    One read-only drive step. The plan carries no executable arguments: the
+    server-owned target travels as the trusted plan argument, never from the
+    model.
+    """
+    return AgentPlan(
+        agent_id=agent_id,
+        steps=(
+            AgentPlanStep(
+                step_id="query_drives",
+                objective="Query verified PC filesystem drives",
+                tool_id=PC_DRIVES_TOOL_ID,
+            ),
+        ),
+    )
+
+
+def pc_query_plan_arguments(device_id: str | None) -> dict[str, Any]:
+    """The trusted plan arguments for the drive step.
+
+    ``device_id`` is the server-chosen target. It is validated with the same
+    reviewed device-id grammar the tool handler uses, so an invalid target
+    never reaches the dispatch.
+    """
+    if device_id is None:
+        return {}
+    return plan_step_arguments(
+        {"query_drives": {"device_id": selected_device_id({"device_id": device_id})}},
+        "query_drives",
+    )
+
+
 __all__ = [
     "CHAT_APP_ID",
     "CHAT_ENGINE_PC_DRIVE_URL",
@@ -484,6 +543,7 @@ __all__ = [
     "PC_QUERY_AGENT_ID",
     "PC_QUERY_CANONICAL_AGENT_ID",
     "PC_QUERY_OWNER",
+    "PC_QUERY_PRODUCT_AGENTS",
     "PC_QUERY_SCOPE",
     "PC_READ_FILE_CANONICAL_TOOL_ID",
     "PC_READ_FILE_SCOPE",
@@ -498,12 +558,15 @@ __all__ = [
     "pc_drives_tool_spec",
     "pc_list_files_tool_spec",
     "pc_query_agent_definition",
+    "pc_query_agent_plan",
     "pc_query_agent_policy",
     "pc_query_authorization",
+    "pc_query_plan_arguments",
     "pc_query_registry_entries",
     "pc_read_file_tool_spec",
     "plan_step_arguments",
     "register_pc_query_drives_tool",
     "selected_device_id",
     "signed_chat_call",
+    "validate_pc_query_product_identity",
 ]
