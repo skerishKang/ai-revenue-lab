@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="./capability-nav.css" />
   <link rel="stylesheet" href="./claw-manual-intake.css" />
   <link rel="stylesheet" href="./claw-workspace.css" />
+  <link rel="stylesheet" href="./util-menu.css" />
   <link rel="stylesheet" href="./claw-quote-compare.css" />
   <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
@@ -105,6 +106,7 @@
         <button class="side-item" id="automationNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">◷</span><span data-locale-key="nav-automation">Automation</span></button>
         <button class="side-item" id="filesNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">라이브러리</span></button>
         <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
+        <button class="side-item" id="utilNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">U</span><span data-locale-key="nav-util">유틸</span></button>
       </nav>
       <nav class="side-nav" aria-label="도구 및 연결">
         <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
@@ -387,6 +389,48 @@
           </div>
           <p class="claw-inbox-empty" id="clawInboxEmpty" data-locale-key="claw-inbox-empty-tasks" hidden>최근 작업이 없습니다.</p>
           <div class="claw-inbox-list" id="clawInboxList" role="list"></div>
+        </section>
+        <section class="util-view" id="utilView" aria-labelledby="utilTitle" hidden>
+          <header class="util-header">
+            <h2 id="utilTitle">유틸</h2>
+            <p class="util-tagline">AI 홍보·기록 비서</p>
+          </header>
+          <nav class="util-tabs">
+            <button class="util-tab active" data-util="speech">축사·인사말</button>
+            <button class="util-tab" data-util="sns">SNS 홍보 <span class="util-soon">준비 중</span></button>
+            <button class="util-tab" data-util="meeting">회의정리·책 제작 <span class="util-soon">준비 중</span></button>
+          </nav>
+          <div class="util-panel" id="utilSpeechPanel">
+            <form class="util-form" id="utilSpeechForm">
+              <label>행사명 <input name="event" type="text" required /></label>
+              <label>행사 날짜 <input name="date" type="date" /></label>
+              <label>장소 <input name="place" type="text" /></label>
+              <label>행사 성격 <input name="nature" type="text" placeholder="예: 창립기념식" /></label>
+              <label>참석 대상 <input name="audience" type="text" /></label>
+              <label>작성자/직책 <input name="author" type="text" /></label>
+              <label>주요 메시지 <textarea name="message" rows="3"></textarea></label>
+              <label>강조 내용 <textarea name="emphasis" rows="2"></textarea></label>
+              <label>분량 <select name="length"><option value="short">짧게</option><option value="medium" selected>보통</option><option value="long">길게</option></select></label>
+              <label>말투 <select name="tone"><option value="formal" selected>공식</option><option value="warm">따뜻한</option><option value="concise">간결</option></select></label>
+              <label>기존 축사 샘플 (말투 반영) <textarea name="style" rows="4" placeholder="기존 축사/인사말 원문 붙여넣기"></textarea></label>
+              <button type="submit" class="util-generate">초안 생성</button>
+            </form>
+            <div class="util-result" id="utilSpeechResult" hidden>
+              <h3>생성 결과</h3>
+              <textarea id="utilSpeechOutput" rows="12"></textarea>
+              <div class="util-actions">
+                <button type="button" id="utilSpeechCopy">복사</button>
+                <button type="button" id="utilSpeechRegenerate">다시 생성</button>
+                <button type="button" id="utilSpeechDownload">TXT 다운로드</button>
+              </div>
+            </div>
+          </div>
+          <div class="util-panel" id="utilSnsPanel" hidden>
+            <p class="util-soon-msg">SNS 홍보 서비스는 준비 중입니다.</p>
+          </div>
+          <div class="util-panel" id="utilMeetingPanel" hidden>
+            <p class="util-soon-msg">회의정리·책 제작 서비스는 준비 중입니다.</p>
+          </div>
         </section>
         <section class="claw-inbox" id="clawAutomation" aria-labelledby="clawAutomationTitle" tabindex="-1" hidden>
           <div class="claw-inbox-header">
@@ -1240,6 +1284,7 @@
        management panel; it adds no endpoint, no pairing and no polling loop. -->
   <script src="./claw-connection-state.js"></script>
   <script src="./claw-composer-connection-status.js"></script>
+  <script src="./util-menu.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->
   <script src="./claw-device-guidance.js"></script>

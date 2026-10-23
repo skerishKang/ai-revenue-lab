@@ -252,6 +252,12 @@
       host.textContent = url.hostname;
 
       copy.append(title, host);
+      if (typeof item.retrieved_at === "string" && item.retrieved_at.trim()) {
+        const retrieved = document.createElement("small");
+        retrieved.className = "answer-source-retrieved-at";
+        retrieved.textContent = item.retrieved_at.trim();
+        copy.append(retrieved);
+      }
       anchor.append(number, copy);
       row.appendChild(anchor);
       list.appendChild(row);
@@ -279,6 +285,7 @@
   // in the same contract, so the same renderer shows it.
   window.PadiemSearchSources = Object.freeze({
     render: renderSources,
+    isActive: () => activeTool === "web_search",
   });
 
   window.fetch = async (inputValue, init) => {

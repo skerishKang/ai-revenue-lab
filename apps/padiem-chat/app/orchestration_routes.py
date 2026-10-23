@@ -339,11 +339,20 @@ async def api_orchestration(request: Request) -> JSONResponse:
     grounded_evidence: list[dict[str, Any]] = []
     if callable(prepare_grounding):
         try:
-            auto_plan = await prepare_grounding(
-                messages,
-                skill=skill,
-                additional_system_context=None,
-            )
+            _explicit = bool(raw.get("web_search")) if isinstance(raw, dict) else False
+            try:
+                auto_plan = await prepare_grounding(
+                    messages,
+                    skill=skill,
+                    additional_system_context=None,
+                    explicit_search=_explicit,
+                )
+            except TypeError:
+                auto_plan = await prepare_grounding(
+                    messages,
+                    skill=skill,
+                    additional_system_context=None,
+                )
         except GroundingError as exc:
             return _error(exc.code, exc.user_message, exc.status_code)
         prepared = getattr(auto_plan, "prepared", None)
@@ -387,6 +396,15 @@ async def api_orchestration(request: Request) -> JSONResponse:
         payload["conversation_id"] = saved_id
     return JSONResponse(payload)
 
+def _resume_skill():
+    try:
+        from .task_modes import get_task_mode
+
+        return get_task_mode("auto")
+    except Exception:
+        from types import SimpleNamespace
+
+        return SimpleNamespace(id="auto")
 
 async def api_orchestration_resume(request: Request) -> JSONResponse:
     bridge = _bridge(request)
@@ -407,6 +425,32 @@ async def api_orchestration_resume(request: Request) -> JSONResponse:
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)
 
+    # #4469: resume must keep the same public evidence contract as the
+    # original grounded turn, so the sources survive an approval continuation.
+    grounded_evidence: list[dict[str, Any]] = []
+    auto_grounding = getattr(request.app.state, "auto_grounding", None)
+    prepare_grounding = getattr(auto_grounding, "prepare", None)
+    if callable(prepare_grounding) and isinstance(result.user_text, str) and result.user_text.strip():
+        try:
+            try:
+                auto_plan = await prepare_grounding(
+                    [{"role": "user", "content": result.user_text}],
+                    skill=_resume_skill(),
+                    additional_system_context=None,
+                    explicit_search=False,
+                )
+            except TypeError:
+                auto_plan = await prepare_grounding(
+                    [{"role": "user", "content": result.user_text}],
+                    skill=_resume_skill(),
+                    additional_system_context=None,
+                )
+        except GroundingError:
+            auto_plan = None
+        prepared = getattr(auto_plan, "prepared", None) if auto_plan is not None else None
+        if prepared is not None:
+            grounded_evidence = public_grounding_evidence(prepared.evidence)
+
     saved_id = await _save_terminal_history(
         request,
         user_id=uid,
@@ -419,6 +463,10 @@ async def api_orchestration_resume(request: Request) -> JSONResponse:
         "answer": result.answer,
         "decision_status": result.decision_status,
     }
+    if grounded_evidence:
+        payload["answer_status"] = "answered_with_evidence"
+        payload["evidence"] = grounded_evidence
+        payload["tool"] = {"id": "web_search", "title": "웹 검색"}
     if saved_id is not None:
         payload["conversation_id"] = saved_id
     return JSONResponse(payload)

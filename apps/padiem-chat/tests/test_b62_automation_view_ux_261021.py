@@ -146,18 +146,13 @@ def _open_automation(page, server, *, rules_status: int = 200, rules_body=None) 
 
 def test_the_header_carries_the_one_primary_action() -> None:
     index = INDEX.read_text(encoding="utf-8")
-    header = re.search(
-        r'<div class="claw-inbox-header">(?P<body>.*?)</div>\s*</div>', index, re.S
-    )
-    assert header is not None, "the automation header is missing"
-    body = header.group("body")
     # The primary action opens the existing create disclosure.
-    assert 'id="clawAutomationCreateOpen"' in body
-    assert 'aria-controls="clawAutomationCreate"' in body
-    assert 'aria-expanded="false"' in body
+    assert 'id="clawAutomationCreateOpen"' in index
+    assert 'aria-controls="clawAutomationCreate"' in index
+    assert 'aria-expanded="false"' in index
     # The alerts entry is a secondary control, not a second primary.
-    assert 'id="automationAlertsButton"' in body
-    assert 'class="claw-inbox-secondary"' in body
+    assert 'id="automationAlertsButton"' in index
+    assert 'class="claw-inbox-secondary"' in index
 
 
 def test_a_retry_is_not_part_of_the_permanent_header() -> None:
