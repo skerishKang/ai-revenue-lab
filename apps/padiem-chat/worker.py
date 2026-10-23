@@ -38,8 +38,10 @@ from app.platform_admin_roles import D1PlatformAdminRoleStore
 from app.central_model_route_runtime import resolve_claw_tier_model_from_stores
 from app.claw_local_access_composition import (
     build_claw_local_access_source_with_diagnostic,
+    build_mesh_presence_generation_resolver,
 )
 from app.claw_device_directory_routes import build_broker_device_directory_source
+from app.mesh_device_presence_store import D1MeshDevicePresenceStore
 from app.desktop_conversation_authority import (
     build_desktop_device_session_authority_with_diagnostic,
 )
@@ -1419,19 +1421,37 @@ class Default(WorkerEntrypoint):
                     and getattr(self.env, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED", None) == "true"
                     and getattr(_worker_app.state.claw_p01_adapter, "subject_identity_lane", False) is True
                 )
+                # #5553: the server-recorded Mesh presence receipt (migration
+                # 067) is one ONLINE evidence kind for the SAME canonical
+                # source. Absent D1 leaves it unset; the executor poll then
+                # records nothing and every answer stays unchanged.
+                mesh_presence_store = (
+                    D1MeshDevicePresenceStore(db_binding)
+                    if db_binding is not None
+                    else None
+                )
+                if mesh_presence_store is not None:
+                    _worker_app.state.mesh_device_presence_store = mesh_presence_store
+                _worker_app.state.mesh_presence_generation_resolver = (
+                    build_mesh_presence_generation_resolver(self.env)
+                )
                 # #3094: compose the concrete canonical local-access source
                 # from a trusted broker-authority binding only. When the
                 # trusted runtime is absent (today's deploy) the composition
                 # yields None and the app keeps the fail-closed unconfigured
                 # source installed by create_app.
                 claw_local_access_source, _claw_local_access_diag = (
-                    build_claw_local_access_source_with_diagnostic(self.env)
+                    build_claw_local_access_source_with_diagnostic(
+                        self.env, presence_store=mesh_presence_store,
+                    )
                 )
                 if claw_local_access_source is not None:
                     _worker_app.state.claw_local_access_source = claw_local_access_source
                 # #4139: second consumer of the SAME trusted broker service
                 # binding. Never infer a device list from local browser state.
-                device_directory_source = build_broker_device_directory_source(self.env)
+                device_directory_source = build_broker_device_directory_source(
+                    self.env, presence_store=mesh_presence_store,
+                )
                 if device_directory_source is not None:
                     _worker_app.state.claw_device_directory_source = device_directory_source
                 # #5015: owner/workspace-scoped preferred PC target. The saved

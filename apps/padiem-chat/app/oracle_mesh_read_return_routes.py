@@ -51,6 +51,8 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
+from padiem_ai_core.pc_device_identity import is_pc_device_id
+
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
 from .claw_memory_routes import _resolve_memory_workspace
@@ -119,6 +121,13 @@ _MAX_PATH_VALUE_CHARS = 32_767
 _SAFE_REF_CHARS = frozenset(
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:@+-"
 )
+#: #5553 optional executor presence beat carried on the poll. It is additive:
+#: the poll body, response and authorization are unchanged when it is absent
+#: or malformed, and every derived identity is resolved server-side.
+_PRESENCE_BODY_KEYS = frozenset({"presence"})
+_PRESENCE_ENTRY_KEYS = frozenset({"device_id", "connected"})
+_MAX_PRESENCE_ENTRIES = 8
+_MAX_PRESENCE_BODY_BYTES = 8192
 #: #4139 read lane envelope, shared with the command lane and the executor.
 _MAX_FILE_TEXT_BYTES = _MAX_RESULT_BODY_BYTES
 _EXECUTOR = "oracle_management_host"
@@ -345,6 +354,33 @@ class OracleMeshReturnSource:
         if rows_for_path:
             return rows_for_path[0].get("device_id") or rows_for_path[0]["node_ref"]
         return selected_device_id or ""
+
+    def device_scope(self, *, device_id: str) -> dict[str, Any] | None:
+        """Server-derived canonical identity for one reported Mesh device.
+
+        A presence beat names a Mesh node. The canonical PC device id, the
+        verified account and the ownership row all come from the deployment
+        map — never from the request. An unmapped or ambiguous device yields
+        ``None`` so nothing is written.
+        """
+        if not is_pc_device_id(device_id):
+            return None
+        matches = [
+            row for row in self._rows
+            if row.get("device_id") == device_id or row.get("node_ref") == device_id
+        ]
+        if not matches:
+            return None
+        accounts = {row["account_ref"] for row in matches}
+        canonical = {row.get("device_id") or row["node_ref"] for row in matches}
+        if len(accounts) != 1:
+            return None
+        if len(canonical) != 1 or not is_pc_device_id(next(iter(canonical))):
+            return None
+        return {
+            "device_id": next(iter(canonical)),
+            "account_ref": next(iter(accounts)),
+        }
 
     def check_channel_secret(self, presented: Any) -> bool:
         """Constant-time proof check for the Oracle executor channel."""
@@ -1472,6 +1508,101 @@ def _oracle_mesh_poll_max_bytes(dispatch: dict[str, Any]) -> int:
     return _MAX_FILE_TEXT_BYTES
 
 
+async def _read_presence(request: Request) -> list[dict[str, Any]] | None:
+    """The optional presence beat, or ``None`` when absent or malformed.
+
+    Never raises and never refuses the poll: a body that is not this exact
+    shape is reported as no evidence, which leaves the poll response and the
+    executor contract byte-for-byte unchanged.
+    """
+    media = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    if media != "application/json":
+        return None
+    try:
+        declared = request.headers.get("content-length")
+        if declared is not None and (
+            not declared.isdecimal() or int(declared) > _MAX_PRESENCE_BODY_BYTES
+        ):
+            logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_body_bound")
+            return None
+        raw = await request.body()
+    except Exception:
+        logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_body_read")
+        return None
+    if not raw or len(raw) > _MAX_PRESENCE_BODY_BYTES:
+        return None
+    try:
+        value = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, TypeError):
+        logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_json")
+        return None
+    if type(value) is not dict:
+        logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_shape")
+        return None
+    if not value:
+        # The historical executor body (or any empty JSON object) is simply
+        # "no beat", not malformed.
+        return None
+    if set(value) != _PRESENCE_BODY_KEYS:
+        logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_shape")
+        return None
+    entries = value.get("presence")
+    if not isinstance(entries, list) or not 1 <= len(entries) <= _MAX_PRESENCE_ENTRIES:
+        logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_entries")
+        return None
+    parsed: list[dict[str, Any]] = []
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != _PRESENCE_ENTRY_KEYS:
+            logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_entry_shape")
+            return None
+        device_id = entry.get("device_id")
+        connected = entry.get("connected")
+        if not is_pc_device_id(device_id) or type(connected) is not bool:
+            logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_entry_value")
+            return None
+        parsed.append({"device_id": device_id, "connected": connected})
+    return parsed
+
+
+async def _record_mesh_presence(
+    request: Request, source: "OracleMeshReturnSource", entries: list[dict[str, Any]],
+) -> None:
+    """UPSERT the server-stamped receipt; every failure is log-only."""
+    store = getattr(request.app.state, "mesh_device_presence_store", None)
+    if not callable(getattr(store, "upsert", None)):
+        return
+    resolver = getattr(request.app.state, "mesh_presence_generation_resolver", None)
+    received_at = datetime.now(timezone.utc)
+    for entry in entries:
+        scope = source.device_scope(device_id=entry["device_id"])
+        if scope is None:
+            logging.getLogger(__name__).warning("oracle_mesh_presence=device_unmapped")
+            continue
+        generation = None
+        if callable(resolver):
+            try:
+                generation = resolver(
+                    account_ref=scope["account_ref"],
+                    device_id=scope["device_id"],
+                )
+                if hasattr(generation, "__await__"):
+                    generation = await generation
+            except Exception:
+                generation = None
+        if type(generation) is not int or not 1 <= generation <= 1_000_000:
+            logging.getLogger(__name__).warning("oracle_mesh_presence=generation_unresolved")
+            continue
+        try:
+            await store.upsert(
+                device_id=scope["device_id"],
+                connected=entry["connected"],
+                received_at=received_at,
+                credential_generation=generation,
+            )
+        except Exception:
+            logging.getLogger(__name__).warning("oracle_mesh_presence=store_failed")
+
+
 async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
     """Executor poll: channel-secret proof, one claimed dispatch, one nonce."""
     mesh_source = _channel_source(request)
@@ -1484,6 +1615,15 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
         return _error(503, "oracle_mesh_unconfigured")
     if not callable(getattr(history_store, "claim_oracle_mesh_dispatch", None)):
         return _error(503, "oracle_mesh_unconfigured")
+    # #5553: an optional presence beat is recorded before the claim. It can
+    # never change the claim, the response or the authorization, and every
+    # failure is log-only so an older executor keeps its exact contract.
+    try:
+        presence = await _read_presence(request)
+        if presence:
+            await _record_mesh_presence(request, mesh_source, presence)
+    except Exception:
+        logging.getLogger(__name__).warning("oracle_mesh_presence=ignored")
     # Existing authenticated HTTPS channel, not a second broker. Optional
     # bounded wait is only enabled by the Oracle executor; legacy consumers
     # retain their immediate response. D1 remains the durable source of truth.

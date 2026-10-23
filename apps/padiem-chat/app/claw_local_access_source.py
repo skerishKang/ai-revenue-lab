@@ -208,6 +208,46 @@ def _mesh_presence_receipt(value: Any) -> MeshPresenceReceipt | None:
     )
 
 
+def mesh_presence_facts(
+    row: Any, binding: Mapping[str, Any] | None,
+) -> dict[str, Any] | None:
+    """The receipt block for one stored presence row, or ``None``.
+
+    The stored row carries only what the server recorded (device, connected,
+    receipt time, credential generation). Account and workspace correlation
+    come from the same Broker binding facts the projection already reads, so a
+    row can never smuggle a foreign account or workspace. A row for another
+    device is refused rather than retargeted.
+    """
+
+    if not isinstance(row, Mapping) or not isinstance(binding, Mapping):
+        return None
+    device_id = _text(row.get("device_id"))
+    generation = _int(row.get("credential_generation"))
+    observed_at = _text(row.get("received_at"))
+    connected = row.get("connected")
+    account_ref = _text(binding.get("account_ref"))
+    if device_id is None or generation is None or observed_at is None:
+        return None
+    if type(connected) is not bool or account_ref is None:
+        return None
+    if device_id != _text(binding.get("device_id")):
+        return None
+    workspace_ref = binding.get("workspace_ref")
+    if workspace_ref is not None:
+        workspace_ref = _text(workspace_ref)
+        if workspace_ref is None:
+            return None
+    return {
+        "device_id": device_id,
+        "account_ref": account_ref,
+        "workspace_ref": workspace_ref,
+        "credential_generation": generation,
+        "observed_at": observed_at,
+        "connected": connected,
+    }
+
+
 def project_mesh_online_binding(
     *,
     binding: DeviceBinding,
@@ -276,10 +316,43 @@ class CanonicalClawLocalAccessTruthSource:
 
     configured = True
 
-    def __init__(self, *, port: TrustedLocalAccessDeviceTruthPort) -> None:
+    def __init__(
+        self,
+        *,
+        port: TrustedLocalAccessDeviceTruthPort,
+        presence_store: Any = None,
+    ) -> None:
         if not callable(getattr(port, "device_truth", None)):
             raise TypeError("local access trusted port must expose device_truth()")
         self._port = port
+        #: #5553 — one server-recorded Mesh presence receipt, read by the same
+        #: canonical access source. Absent store means today's exact answer.
+        self._presence_store = presence_store
+
+    async def _facts_with_mesh_presence(
+        self, facts: Mapping[str, Any],
+    ) -> Mapping[str, Any]:
+        """Add the stored presence receipt to the broker facts, or leave them."""
+
+        store = self._presence_store
+        if store is None:
+            return facts
+        binding = _mapping(facts.get("binding"))
+        device_id = _text(binding.get("device_id")) if binding is not None else None
+        if device_id is None:
+            return facts
+        try:
+            row = store.load(device_id)
+            if hasattr(row, "__await__"):
+                row = await row
+        except Exception:
+            return facts
+        block = mesh_presence_facts(row, binding)
+        if block is None:
+            return facts
+        merged = dict(facts)
+        merged["mesh_presence"] = block
+        return merged
 
     async def project_local_access(
         self,
@@ -304,6 +377,11 @@ class CanonicalClawLocalAccessTruthSource:
         facts = _mapping(envelope.get("device_truth"))
         if facts is None:
             return None
+
+        # #5553: the stored server-recorded Mesh receipt joins the same fact
+        # block, so one decision still covers broker session, heartbeat and
+        # Mesh liveness.
+        facts = await self._facts_with_mesh_presence(facts)
 
         canonical_state = self._canonical_state(facts, now=now)
         if canonical_state is None:
