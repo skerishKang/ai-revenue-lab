@@ -58,10 +58,14 @@ DEFAULT_CHAT_PROFILE = "free"
 FREE_B14_MODEL_ID = FREE_PRIMARY_B14_MODEL_ID
 PADIEM_FREE = "Padiem Free"
 AUTO_B14_MODEL_ID = "b14/auto"
-# Administrator-only exact model, provisioned by the verified global model
-# admin gate in member_grade_access/chat_routes — never part of the Free..
-# Max product-tier routes, aliases, or the shared declaration.
-ADMIN_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
+# Administrator lane model follows the shared Control Plane declaration:
+# #5685 declares an interim ADMIN route (the Free Google route), so the Muse
+# hold model below applies only while that route is absent. Provisioned by
+# the verified global model admin gate in member_grade_access/chat_routes;
+# never part of the Free..Max product-tier routes, aliases, or hold lanes.
+ADMIN_B14_MODEL_ID = _contract_route_or_hold_id(
+    ProductTierLabel.ADMIN, "opencode-go/muse-spark-1.3-contributor"
+)
 
 TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
     "plus": ProductTierLabel.PLUS,
@@ -352,12 +356,14 @@ def resolve_tier_policy(
         )
     if normalized == "admin":
         # Verified global model admins only; entitlement is proven by the
-        # Chat route's central admin gate before provider dispatch. The exact
-        # administrator model is pinned here and never routed via b14/auto.
+        # Chat route's central admin gate before provider dispatch. The lane
+        # follows the shared Control Plane admin route (#5685 interim: the
+        # Free Google route), never routes via b14/auto, and carries the
+        # transport profile that matches the resolved model.
         return ResolvedModelPolicy(
             model_id=ADMIN_B14_MODEL_ID,
             messages=_strip_hidden_tier_alias(messages),
-            profile="high",
+            profile="free" if ADMIN_B14_MODEL_ID == FREE_B14_MODEL_ID else "high",
         )
     label = TIER_ID_TO_LABEL.get(normalized)
     if label is None:
