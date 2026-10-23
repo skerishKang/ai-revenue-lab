@@ -88,6 +88,18 @@ test('unsupported methods fail closed with 405', async () => {
   assertSecurityHeaders(response);
 });
 
+test('/today renders an honest zero-supply P0 Today Route at the dedicated route', async () => {
+  const handler = createEmptySupplyConsumerHttpHandler();
+  const response = await handler(new Request('https://b64.example/today'));
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') ?? '', /text\/html/);
+  assertSecurityHeaders(response);
+  const html = await response.text();
+  assert.match(html, /data-consumer-mode="TODAY_ROUTE_AD_CLICK_FIRST"/);
+  assert.match(html, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
+  assert.doesNotMatch(html, /설문|마이크로태스크|단기 프로젝트|구직/);
+});
+
 test('unknown routes return secured 404 responses', async () => {
   const handler = createEmptySupplyConsumerHttpHandler();
   const response = await handler(new Request('https://b64.example/survey'));

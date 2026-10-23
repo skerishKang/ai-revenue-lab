@@ -1,6 +1,6 @@
-import { buildAdClickFirstConsumerHome } from '../ad-click-first/consumer-home.js';
+import { buildAdClickFirstConsumerHome, buildAdClickFirstTodayRoute } from '../ad-click-first/consumer-home.js';
 import type { AdClickConsumerCandidate } from '../ad-click-first/consumer-card.js';
-import { renderAdClickFirstConsumerWeb } from '../ad-click-first/consumer-web.js';
+import { renderAdClickFirstConsumerWeb, renderAdClickFirstTodayRouteWeb } from '../ad-click-first/consumer-web.js';
 
 export type ConsumerCandidateLoader = (
   request: Request,
@@ -102,7 +102,7 @@ export function createConsumerHttpHandler(
       return healthResponse(request);
     }
 
-    if (url.pathname !== '/' && url.pathname !== '/earn') {
+    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today') {
       return notFound(request);
     }
 
@@ -113,8 +113,17 @@ export function createConsumerHttpHandler(
       return supplyUnavailable(request);
     }
 
-    const viewModel = buildAdClickFirstConsumerHome(candidates);
-    const html = renderAdClickFirstConsumerWeb(viewModel);
+    if (url.pathname === '/today') {
+      const todayViewModel = buildAdClickFirstTodayRoute(candidates);
+      const html = renderAdClickFirstTodayRouteWeb(todayViewModel);
+      return responseForMethod(request, html, {
+        status: 200,
+        headers: { 'content-type': 'text/html; charset=utf-8' },
+      });
+    }
+
+    const homeViewModel = buildAdClickFirstConsumerHome(candidates);
+    const html = renderAdClickFirstConsumerWeb(homeViewModel);
 
     return responseForMethod(request, html, {
       status: 200,
