@@ -37,6 +37,8 @@
   }
   html[data-theme="padiem-glass"] body .app-shell[data-state="library"] .library-view {
     background: #f2f5f7;
+    position: relative;
+    z-index: 2;
   }
 }
 
