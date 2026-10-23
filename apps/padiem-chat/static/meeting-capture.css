@@ -71,6 +71,14 @@
     overflow-y: auto;
     overscroll-behavior-y: contain;
   }
+  /* The Glass theme paints a fixed decorative portrait at z-index 1 behind the
+     content column. At <921px the meeting view is not inside the six-panel frame,
+     so its semi-transparent surface lets the portrait and the body's dark gradient
+     show through as a band across the top and a haze over the whole panel.
+     Raise the surface opacity so the meeting workspace reads as its own page. */
+  html[data-theme="padiem-glass"] body .app-shell[data-state="meeting"] .meeting-view {
+    background: rgba(242, 245, 247, 0.96);
+  }
 }
 @media (min-width: 921px) {
   /* Inside the glass frame, .meeting-view is already the bordered glass panel with
