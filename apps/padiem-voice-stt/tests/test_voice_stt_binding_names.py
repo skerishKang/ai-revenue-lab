@@ -111,6 +111,7 @@ def test_binding_report_matches_expected_state():
         # #5050: the Claw Engine desktop proof binding is also Chat-owned.
         # #5320: the B14 server-to-server caller proof binding is Chat-owned.
         "chat_worker_secret_bindings": [
+            "B66_ALERT_RESEND_API_KEY",
             "CLAW_ENGINE_DESKTOP_SECRET",
             "ORACLE_MESH_CHANNEL_SECRET",
             "ORACLE_MESH_OWNERSHIP_MAP",
