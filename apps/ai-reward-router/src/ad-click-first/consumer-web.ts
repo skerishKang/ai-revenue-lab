@@ -1,5 +1,6 @@
 import type {
   AdClickFirstConsumerHomeViewModel,
+  AdClickFirstTodayRouteViewModel,
 } from './consumer-home.js';
 import type { AdClickConsumerCard } from './consumer-card.js';
 
@@ -75,27 +76,7 @@ function renderEmptyState(): string {
   </div>`;
 }
 
-/**
- * Deterministic, dependency-free consumer HTML renderer for the current B64 P0 lane.
- * It only accepts the already policy-filtered consumer Home view-model. A malformed
- * outbound URL is suppressed again at render time as defense in depth.
- */
-export function renderAdClickFirstConsumerWeb(
-  viewModel: AdClickFirstConsumerHomeViewModel,
-): string {
-  const renderedCards = viewModel.sections
-    .flatMap((section) => section.cards)
-    .map(renderCard)
-    .filter((card): card is string => card !== null);
-
-  const content = renderedCards.length > 0
-    ? `<div class="reward-grid" data-visible-card-count="${renderedCards.length}">${renderedCards.join('\n')}</div>`
-    : renderEmptyState();
-
-  const navItems = viewModel.primaryNavigation
-    .map((item) => `<a class="nav-item nav-item--active" href="#available-now" aria-current="page">${escapeHtml(item.label)}</a>`)
-    .join('');
-
+function renderShell(viewModel: { mode: string; issueNumber: number | null }, navItems: string, hero: string, content: string): string {
   return `<!doctype html>
 <html lang="ko">
 <head>
@@ -169,21 +150,80 @@ export function renderAdClickFirstConsumerWeb(
       <nav class="primary-nav" aria-label="주요 메뉴">${navItems}</nav>
     </header>
     <main id="top">
-      <section class="hero" aria-labelledby="hero-title">
-        <p class="eyebrow">${escapeHtml(viewModel.hero.eyebrow)}</p>
-        <h1 id="hero-title">${escapeHtml(viewModel.hero.title)}</h1>
-        <p>${escapeHtml(viewModel.hero.description)}</p>
-      </section>
-      <section id="available-now" aria-labelledby="available-title">
-        <div class="section-head">
-          <h2 id="available-title">${escapeHtml(viewModel.sections[0]?.title ?? '바로 가능한 적립')}</h2>
-          <span>${renderedCards.length > 0 ? `${renderedCards.length}개 확인됨` : '실시간 확인'}</span>
-        </div>
-        ${content}
-      </section>
+      ${hero}
+      ${content}
       <p class="footer-note">보상과 참여 조건은 제공처의 최신 기준을 따릅니다. 참여 전 외부 페이지의 조건을 다시 확인해 주세요.</p>
     </main>
   </div>
 </body>
 </html>`;
+}
+
+export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHomeViewModel): string {
+  const renderedCards = viewModel.sections
+    .flatMap((section) => section.cards)
+    .map(renderCard)
+    .filter((card): card is string => card !== null);
+
+  const content = renderedCards.length > 0
+    ? `<section id="available-now" aria-labelledby="available-title">
+      <div class="section-head">
+        <h2 id="available-title">${escapeHtml(viewModel.sections[0]?.title ?? '바로 가능한 적립')}</h2>
+        <span>${renderedCards.length}개 확인됨</span>
+      </div>
+      <div class="reward-grid" data-visible-card-count="${renderedCards.length}">${renderedCards.join('\n')}</div>
+    </section>`
+    : `<section id="available-now" aria-labelledby="available-title">
+      <div class="section-head">
+        <h2 id="available-title">${escapeHtml(viewModel.sections[0]?.title ?? '바로 가능한 적립')}</h2>
+        <span>실시간 확인</span>
+      </div>
+      ${renderEmptyState()}
+    </section>`;
+
+  const navItems = viewModel.primaryNavigation
+    .map((item) => `<a class="nav-item nav-item--active" href="#available-now" aria-current="page">${escapeHtml(item.label)}</a>`)
+    .join('');
+
+  const hero = `
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">${escapeHtml(viewModel.hero.eyebrow)}</p>
+        <h1 id="hero-title">${escapeHtml(viewModel.hero.title)}</h1>
+        <p>${escapeHtml(viewModel.hero.description)}</p>
+      </section>`;
+
+  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, content);
+}
+
+export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRouteViewModel): string {
+  const renderedCards = viewModel.cards
+    .map(renderCard)
+    .filter((card): card is string => card !== null);
+
+  const content = renderedCards.length > 0
+    ? `<section id="available-now" aria-labelledby="available-title">
+      <div class="section-head">
+        <h2 id="available-title">오늘 바로 가능한 적립</h2>
+        <span>${renderedCards.length}개 확인됨</span>
+      </div>
+      <div class="reward-grid" data-visible-card-count="${renderedCards.length}">${renderedCards.join('\n')}</div>
+    </section>`
+    : `<section id="available-now" aria-labelledby="available-title">
+      <div class="section-head">
+        <h2 id="available-title">오늘 바로 가능한 적립</h2>
+        <span>실시간 확인</span>
+      </div>
+      ${renderEmptyState()}
+    </section>`;
+
+  const navItems = `<a class="nav-item nav-item--active" href="#available-now" aria-current="page">오늘 바로 적립</a>`;
+
+  const hero = `
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">오늘 추천 우선순위로</p>
+        <h1 id="hero-title">지금 바로 할 수 있는 적립</h1>
+        <p>짧고 안전하게 끝나는 적립만 먼저 보여드릴게요.</p>
+      </section>`;
+
+  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content);
 }
