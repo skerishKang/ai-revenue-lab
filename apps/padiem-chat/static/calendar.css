@@ -693,6 +693,17 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   grid-template-columns: repeat(7, minmax(0, 1fr));
   min-width: 495px;
 }
+@media (max-width: 480px) {
+  .calendar-visual-weekdays,
+  .calendar-month-grid,
+  .calendar-week-grid {
+    min-width: 0;
+    grid-template-columns: repeat(7, minmax(46px, 1fr));
+  }
+  .calendar-visual-weekday { padding: 10px 1px; font-size: 11px; }
+  .calendar-visual-date { font-size: 11px; }
+  .calendar-visual-event { padding: 2px 4px; font-size: 10px; }
+}
 .calendar-visual-weekdays {
   background: rgba(222,233,241,.56);
   border-bottom: 1px solid #d8e4ec;
