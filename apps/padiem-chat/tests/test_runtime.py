@@ -361,7 +361,12 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert 'TIER_ORDER = Object.freeze(["free", "plus", "pro", "max"])' in product_capabilities
     assert 'let selectedTier = "free";' in product_capabilities
     assert '<div class="starter-grid" aria-label="추천 질문">' in html
-    assert 'data-skill="explain"' in html
+    # #5634: the first card is the computer connection entry, so the simple
+    # prompt anchor leaves the first screen. The remaining cards keep the
+    # skill routing.
+    assert 'id="pcConnectStarter"' in html
+    assert 'data-skill="explain"' not in html
+    assert 'data-skill="auto"' in html
     assert 'data-skill="plan"' in html
     assert 'id="recentTitle"' not in html
     assert 'id="attachmentButton"' in html
