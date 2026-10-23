@@ -557,8 +557,8 @@
   async function deleteOutput() {
     if (!activeOutput || !outputsReady) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: "저장한 답변을 삭제할까요?",
-      message: "저장한 답변만 삭제합니다. 원래 대화는 삭제되지 않습니다.",
+      title: uiT("saved-output-delete-title"),
+      message: uiT("saved-output-delete-message"),
       cancelLabel: "취소",
       confirmLabel: "삭제",
     });

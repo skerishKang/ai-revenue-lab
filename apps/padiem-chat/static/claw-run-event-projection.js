@@ -64,7 +64,8 @@
 
   function label(kind, lang = "ko") {
     const translated = COPY[kind];
-    return translated ? translated[lang === "en" ? 1 : 0] : null;
+    const locale = (window.__padiemLocale && typeof window.__padiemLocale.getCurrent === "function") ? window.__padiemLocale.getCurrent() : (String(lang).toLowerCase().startsWith("en") ? "en" : "ko");
+    return translated ? translated[locale === "en" ? 1 : 0] : null;
   }
   window.PadiemClawRunEventProjection = Object.freeze({ create, label });
 })();

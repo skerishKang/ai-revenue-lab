@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VALID_LOCALES = ["ko", "en"];
+  const VALID_LOCALES = ["ko", "en", "zh-CN", "ja"];
   const TRUSTED_AUTH_SESSION_STATES = new Set(["pending", "unavailable", "unreachable", "guest", "signed_in", "expired"]);
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const nativeConfirm = typeof window.confirm === "function" ? window.confirm.bind(window) : null;
@@ -480,6 +480,28 @@
     }
   };
 
+  // #4807: zh-CN and ja are data packs loaded before this file. Korean remains
+  // the canonical source and the fallback for any missing key.
+  const externalPacks = window.PadiemLocalePacks || {};
+  Object.assign(labels.ko, {
+    "language-name-ko": "한국어",
+    "language-name-en": "English",
+    "language-name-zh-CN": "중국어(간체)",
+    "language-name-ja": "일본어",
+    "saved-output-delete-message": "저장한 답변만 삭제합니다. 원래 대화는 삭제되지 않습니다.",
+    "saved-output-delete-title": "저장한 답변을 삭제할까요?"
+  });
+  Object.assign(labels.en, {
+    "language-name-ko": "Korean",
+    "language-name-en": "English",
+    "language-name-zh-CN": "Chinese (Simplified)",
+    "language-name-ja": "Japanese",
+    "saved-output-delete-message": "Only the saved answer is deleted. The original conversation remains.",
+    "saved-output-delete-title": "Delete saved answer?"
+  });
+  labels["zh-CN"] = Object.freeze({ ...(externalPacks["zh-CN"] || {}) });
+  labels.ja = Object.freeze({ ...(externalPacks.ja || {}) });
+
   const promptCopy = {
     ko: {
       explain: "AI를 아주 쉽게 설명해줘", trip: "3박 4일 제주도 가족 여행 계획을 짜줘", dinner: "오늘 저녁 메뉴를 세 가지 추천해줘",
@@ -488,20 +510,34 @@
     en: {
       explain: "Explain AI in very simple terms.", trip: "Plan a four-day family trip to Jeju.", dinner: "Suggest three dinner ideas for tonight.",
       starterExplain: "Explain what AI is in very simple terms for someone using it for the first time.", starterLife: "Suggest things my family can do near home this weekend.", starterWriting: "Draft an email or short piece of writing for the intended audience and purpose."
+    },
+    "zh-CN": {
+      explain: "用非常简单的方式解释什么是 AI", trip: "帮我制定济州岛四天三夜家庭旅行计划", dinner: "推荐三种今晚的晚餐菜单",
+      starterExplain: "向第一次使用 AI 的人用非常简单的方式解释什么是 AI", starterLife: "推荐这个周末适合和家人一起在家附近做的事情", starterWriting: "根据目的和读者，起草一封电子邮件或一段文字"
+    },
+    ja: {
+      explain: "AIについてとてもわかりやすく説明して", trip: "済州島3泊4日の家族旅行プランを立てて", dinner: "今夜の夕食メニューを3つ提案して",
+      starterExplain: "AIを初めて使う人に、AIとは何かをとてもわかりやすく説明して", starterLife: "今週末に家族と家の近くでできることを提案して", starterWriting: "目的と読み手に合わせて、メールや文章の下書きを作成して"
     }
   };
 
   const exactPairs = [
-    ["프로젝트 삭제", "Delete project"], ["관리", "Manage"], ["삭제", "Delete"], ["저장", "Save"], ["복사", "Copy"], ["다운로드", "Download"],
-    ["답변 준비 중", "Preparing answer"], ["저장된 대화", "Saved conversation"], ["모의 응답 · 실제 모델 호출 없음", "Preview response · no live model call"], ["AI 응답", "AI response"],
-    ["어떤 AI가 답했나요?", "Which AI answered?"], ["다시 시도", "Try again"], ["응답 시간 초과", "Response timed out"], ["연결 오류", "Connection error"],
-    ["설정 필요", "Setup needed"], ["로그인 후", "Log in first"], ["확인 중", "Checking"], ["새로 만들기", "Create new"], ["비어 있음", "Empty"],
-    ["프로젝트 지침·파일", "Project instructions & files"], ["새 프로젝트", "New project"], ["복사됨", "Copied"], ["복사 실패", "Copy failed"], ["저장됨", "Saved"], ["저장 실패", "Save failed"],
-    ["코드", "Code"], ["표", "Table"], ["CSV 다운로드", "Download CSV"], ["출처", "Sources"], ["대화 내보내기", "Export conversation"], ["답변 작업", "Answer actions"]
+    ["프로젝트 삭제", "Delete project", "删除项目", "プロジェクトを削除"], ["관리", "Manage", "管理", "管理"], ["삭제", "Delete", "删除", "削除"], ["저장", "Save", "保存", "保存"], ["복사", "Copy", "复制", "コピー"], ["다운로드", "Download", "下载", "ダウンロード"],
+    ["답변 준비 중", "Preparing answer", "正在准备回答", "回答を準備中"], ["저장된 대화", "Saved conversation", "已保存的对话", "保存済みの会話"], ["모의 응답 · 실제 모델 호출 없음", "Preview response · no live model call", "模拟回答 · 未调用实际模型", "模擬応答 · 実際のモデル呼び出しなし"], ["AI 응답", "AI response", "AI 回答", "AI回答"],
+    ["어떤 AI가 답했나요?", "Which AI answered?", "哪个 AI 回答了？", "どのAIが回答しましたか？"], ["다시 시도", "Try again", "重试", "再試行"], ["응답 시간 초과", "Response timed out", "响应超时", "応答タイムアウト"], ["연결 오류", "Connection error", "连接错误", "接続エラー"],
+    ["설정 필요", "Setup needed", "需要设置", "設定が必要"], ["로그인 후", "Log in first", "登录后", "ログイン後"], ["확인 중", "Checking", "正在确认", "確認中"], ["새로 만들기", "Create new", "新建", "新規作成"], ["비어 있음", "Empty", "空", "空"],
+    ["프로젝트 지침·파일", "Project instructions & files", "项目指示与文件", "プロジェクトの指示・ファイル"], ["새 프로젝트", "New project", "新建项目", "新しいプロジェクト"], ["복사됨", "Copied", "已复制", "コピーしました"], ["복사 실패", "Copy failed", "复制失败", "コピーに失敗しました"], ["저장됨", "Saved", "已保存", "保存しました"], ["저장 실패", "Save failed", "保存失败", "保存に失敗しました"],
+    ["코드", "Code", "代码", "コード"], ["표", "Table", "表格", "表"], ["CSV 다운로드", "Download CSV", "下载 CSV", "CSVをダウンロード"], ["출처", "Sources", "来源", "出典"], ["대화 내보내기", "Export conversation", "导出对话", "会話をエクスポート"], ["답변 작업", "Answer actions", "回答操作", "回答の操作"]
   ];
 
   function normalizeLocale(value) {
-    return VALID_LOCALES.includes(value) ? value : null;
+    const raw = String(value || "").trim().toLowerCase().replace(/_/g, "-");
+    if (!raw) return null;
+    if (raw === "ko" || raw.startsWith("ko-")) return "ko";
+    if (raw === "en" || raw.startsWith("en-")) return "en";
+    if (raw === "zh" || raw === "zh-cn" || raw === "zh-hans" || raw.startsWith("zh-hans-") || raw.startsWith("zh-cn-")) return "zh-CN";
+    if (raw === "ja" || raw.startsWith("ja-")) return "ja";
+    return null;
   }
 
   function getUrlLocale() {
@@ -513,12 +549,12 @@
   }
 
   function getCurrent() {
-    return document.documentElement.lang === "en" ? "en" : "ko";
+    return normalizeLocale(document.documentElement.lang) || "ko";
   }
 
   function text(key, lang = getCurrent(), variables = null) {
     const locale = normalizeLocale(lang) || "ko";
-    let value = labels[locale][key] || labels.ko[key] || key;
+    let value = labels[locale]?.[key] ?? labels.ko[key] ?? labels.en[key] ?? key;
     if (variables && typeof variables === "object") {
       Object.entries(variables).forEach(([name, replacement]) => {
         value = value.replaceAll(`{${name}}`, String(replacement));
@@ -527,23 +563,24 @@
     return value;
   }
 
-  function setText(selector, key, lang) {
+  function setText(selector, key, locale) {
     const element = document.querySelector(selector);
-    const value = text(key, lang);
+    const value = text(key, locale);
     if (element && element.textContent !== value) element.textContent = value;
   }
 
-  function setAttribute(selector, attribute, key, lang) {
+  function setAttribute(selector, attribute, key, locale) {
     const element = document.querySelector(selector);
     if (!element) return;
-    const value = text(key, lang);
+    const value = text(key, locale);
     if (element.getAttribute(attribute) !== value) element.setAttribute(attribute, value);
   }
 
   function setPrompt(selector, key, lang) {
     const element = document.querySelector(selector);
     if (!element) return;
-    const value = promptCopy[lang][key];
+    const locale = normalizeLocale(lang) || "ko";
+    const value = promptCopy[locale]?.[key] || promptCopy.ko[key];
     if (value && element.dataset.prompt !== value) element.dataset.prompt = value;
   }
 
@@ -555,20 +592,21 @@
     if (heading.querySelector(".claw-hero-line")) {
       for (const key of ("hello", "ask", "claw-home-intro", "claw-home-question")) {
         const target = heading.querySelector('[data-locale-key="' + key + '"]');
-        if (target) target.textContent = text(key, lang);
+        if (target) target.textContent = text(key, locale);
       }
       return;
     }
     const first = document.createElement("span");
     first.dataset.localeKey = "hello";
-    first.textContent = text("hello", lang);
+    first.textContent = text("hello", locale);
     const second = document.createElement("span");
     second.dataset.localeKey = "ask";
-    second.textContent = text("ask", lang);
+    second.textContent = text("ask", locale);
     heading.replaceChildren(first, document.createElement("br"), second);
   }
 
   function syncLoginButton(lang) {
+    const locale = normalizeLocale(lang) || "ko";
     const button = document.getElementById("loginButton");
     if (!button) return;
     const accountRoot = button.closest(".sidebar-account");
@@ -579,31 +617,31 @@
       // #5479: the status request produced no answer. This is not a signed-out
       // account, so the button keeps the sign-in label and says why.
       button.dataset.authenticated = "false";
-      button.textContent = text("login", lang);
-      button.title = text("login-unreachable-title", lang);
+      button.textContent = text("login", locale);
+      button.title = text("login-unreachable-title", locale);
       return;
     }
 
-    if (state === "expired" || raw === "다시 로그인" || raw === "Sign in again") {
+    if (state === "expired" || raw === "다시 로그인" || raw === "Sign in again" || raw === "重新登录" || raw === "再ログイン" || raw === "重新登录" || raw === "再ログイン") {
       button.dataset.authenticated = "false";
-      button.textContent = text("sign-in-again", lang);
-      button.title = text("expired-title", lang);
+      button.textContent = text("sign-in-again", locale);
+      button.title = text("expired-title", locale);
       return;
     }
 
-    if (state === "signed_in" || raw === "로그아웃" || raw === "Log out") {
+    if (state === "signed_in" || raw === "로그아웃" || raw === "Log out" || raw === "登出" || raw === "ログアウト" || raw === "登出" || raw === "ログアウト") {
       button.dataset.authenticated = "true";
-    } else if (state === "guest" || state === "unavailable" || state === "pending" || raw === "로그인" || raw === "Log in") {
+    } else if (state === "guest" || state === "unavailable" || state === "pending" || raw === "로그인" || raw === "Log in" || raw === "登录" || raw === "ログイン" || raw === "登录" || raw === "ログイン") {
       button.dataset.authenticated = "false";
     }
 
     const authenticated = button.dataset.authenticated === "true";
-    button.textContent = authenticated ? text("logout", lang) : text("login", lang);
+    button.textContent = authenticated ? text("logout", locale) : text("login", locale);
     button.title = state === "unavailable" || button.disabled
-      ? text("login-unavailable-title", lang)
+      ? text("login-unavailable-title", locale)
       : authenticated
-        ? text("logout-title", lang)
-        : text("login-title", lang);
+        ? text("logout-title", locale)
+        : text("login-title", locale);
   }
 
   function syncLoginButtonFromCapability(event) {
@@ -616,6 +654,7 @@
   }
 
   function applyStaticBindings(lang) {
+    const locale = normalizeLocale(lang) || "ko";
     const textBindings = [
       ["#newChatButton span:last-child", "new-chat"], ["#sidebarSearchButton span:last-child", "search"], ["#projectsNavButton span:nth-child(2)", "projects"], ["#outputsNavButton span:nth-child(2)", "saved"],
       ["#recentTitle", "recent"], [".recent-item:nth-of-type(1)", "easy"], [".recent-item:nth-of-type(2)", "trip"], [".recent-item:nth-of-type(3)", "dinner"], [".model-pill span:last-child", "mode"],
@@ -627,14 +666,14 @@
       ["#projectFilesEmpty", "project-files-empty"], [".project-files-note", "project-files-note"], ["#projectDialogCancel", "cancel"], ["#projectSaveButton", "save"],
       ["#savedOutputDialogTitle", "saved-output-title"], ["label[for='savedOutputTitleInput']", "title"], ["#savedOutputCopy", "copy-action"], ["#savedOutputDownload", "download"], ["#savedOutputRename", "save-title"], ["#savedOutputDelete", "delete"], ["#cancelStreamButton", "cancel"]
     ];
-    textBindings.forEach(([selector, key]) => setText(selector, key, lang));
+    textBindings.forEach(([selector, key]) => setText(selector, key, locale));
     document.querySelectorAll("[data-locale-key]").forEach((element) => {
       const key = element.dataset.localeKey;
-      if (key) element.textContent = text(key, lang);
+      if (key) element.textContent = text(key, locale);
     });
     document.querySelectorAll("[data-locale-aria-label]").forEach((element) => {
       const key = element.dataset.localeAriaLabel;
-      if (key) element.setAttribute("aria-label", text(key, lang));
+      if (key) element.setAttribute("aria-label", text(key, locale));
     });
     [
       ["data-locale-placeholder", "placeholder", "localePlaceholder"],
@@ -649,35 +688,35 @@
         // tooltip keeps its hint on the chip. Writing a native title here
         // would show the browser popup next to the chip.
         if (attribute === "data-locale-title" && element.hasAttribute("data-padiem-tooltip")) return;
-        element.setAttribute(target, text(key, lang));
+        element.setAttribute(target, text(key, locale));
       });
     });
     // The shared chip label follows the locale like any other hint.
     document.querySelectorAll("[data-padiem-tooltip][data-locale-title]").forEach((element) => {
       const key = element.dataset.localeTitle;
       if (!key) return;
-      element.setAttribute("data-padiem-tooltip", text(key, lang));
+      element.setAttribute("data-padiem-tooltip", text(key, locale));
       element.removeAttribute("title");
     });
     setCombinedHeading(lang);
     const input = document.getElementById("messageInput");
-    if (input) input.placeholder = text("input", lang);
+    if (input) input.placeholder = text("input", locale);
     const projectName = document.getElementById("projectNameInput");
-    if (projectName) projectName.placeholder = text("project-name-placeholder", lang);
+    if (projectName) projectName.placeholder = text("project-name-placeholder", locale);
     const projectInstructions = document.getElementById("projectInstructionsInput");
-    if (projectInstructions) projectInstructions.placeholder = text("project-instructions-placeholder", lang);
+    if (projectInstructions) projectInstructions.placeholder = text("project-instructions-placeholder", locale);
     const clawSender = document.getElementById("clawSender");
-    if (clawSender) clawSender.placeholder = text("claw-sender-placeholder", lang);
+    if (clawSender) clawSender.placeholder = text("claw-sender-placeholder", locale);
     // #2532: the Claw request placeholder now lives on #messageInput and is re-applied
     // by app.js on the padiem:localechange event while data-state="claw".
     const instructionLabel = document.querySelector("label[for='projectInstructionsInput']");
     if (instructionLabel) {
       const primary = instructionLabel.querySelector("[data-project-instructions-label]");
       const optional = instructionLabel.querySelector("[data-project-instructions-optional]");
-      if (primary) primary.textContent = text("project-instructions", lang);
-      if (optional) optional.textContent = text("optional", lang);
+      if (primary) primary.textContent = text("project-instructions", locale);
+      if (optional) optional.textContent = text("optional", locale);
     }
-    setText(".project-form-note", "project-instructions-note", lang);
+    setText(".project-form-note", "project-instructions-note", locale);
     [
       ["#sidebar", "aria-label", "main-menu"], ["#mobileClose", "aria-label", "close-menu"], [".brand", "aria-label", "home-aria"], [".home-link", "aria-label", "home-open"], [".side-nav", "aria-label", "chat-menu"], ["#workspaceNav", "aria-label", "workspace-menu"],
       ["#projectCreateButton", "aria-label", "create-project-aria"], [".sidebar-bottom", "aria-label", "account-settings"], ["#mobileMenu", "aria-label", "open-menu"], [".model-pill", "aria-label", "mode"], ["#settingsCloseButton", "aria-label", "settings-close"],
@@ -685,25 +724,27 @@
       ["#removeAttachment", "aria-label", "attachment-remove"], [".composer-tools .tool-button:nth-of-type(2)", "title", "web-unavailable-title"], ["#deepResearchButton", "title", "research-unavailable-title"], ["#cancelStreamButton", "aria-label", "cancel-answer"], ["#sendButton", "aria-label", "send"],
       ["#projectDialogClose", "aria-label", "project-close"], ["#savedOutputClose", "aria-label", "saved-output-close"], ["#savedOutputContent", "aria-label", "saved-output-content"],
       ["#clawManualForm", "aria-label", "claw-form-aria"], [".claw-chips", "aria-label", "claw-actions-aria"], ["#connectorsDialog .capability-grid, #connectorsViewBody .capability-grid", "aria-label", "connectors-grid-aria"], ["#skillsDialog .capability-grid", "aria-label", "skills-grid-aria"], [".claw-disabled-controls", "aria-label", "coming-features-aria"]
-    ].forEach(([selector, attribute, key]) => setAttribute(selector, attribute, key, lang));
+    ].forEach(([selector, attribute, key]) => setAttribute(selector, attribute, key, locale));
     const messageLabel = document.querySelector("label[for='messageInput']");
-    if (messageLabel) messageLabel.textContent = text("message-input-label", lang);
+    if (messageLabel) messageLabel.textContent = text("message-input-label", locale);
     setPrompt(".recent-item:nth-of-type(1)", "explain", lang);
     setPrompt(".recent-item:nth-of-type(2)", "trip", lang);
     setPrompt(".recent-item:nth-of-type(3)", "dinner", lang);
     // #5634: the first first-screen card is the computer connection entry, not a
     // prompt, so it carries no data-prompt and gets no prompt copy.
     setPrompt(".starter:nth-child(2)", "starterLife", lang);
-    setPrompt("#writingStarterButton", "starterWriting", lang);
+    setPrompt("#writingStarterButton", "starterWriting", locale);
   }
 
   function syncAttachmentCapabilityCopy(lang) {
+    const locale = normalizeLocale(lang) || "ko";
     if (!attachmentCapabilities) return;
     const capabilityCopy = attachmentCapabilities.copy(lang);
     const documentCopy = document.querySelector(".starter:nth-child(3) small");
     if (documentCopy) {
       const formats = capabilityCopy.documentFormats;
-      documentCopy.textContent = lang === "en" ? formats : formats.split("·").join(" · \u200b");
+      const locale = normalizeLocale(lang) || "ko";
+      documentCopy.textContent = locale === "en" ? formats : formats.split("·").join(" · \u200b");
     }
     const attachmentInput = document.getElementById("attachmentFileInput");
     if (attachmentInput) attachmentInput.accept = attachmentCapabilities.accept;
@@ -712,27 +753,31 @@
   }
 
   function syncGlassCopy(lang) {
+    const locale = normalizeLocale(lang) || "ko";
     const glassTheme = document.querySelector('[data-theme-value="padiem-glass"]');
-    if (glassTheme) glassTheme.textContent = text("glass-theme", lang);
+    if (glassTheme) glassTheme.textContent = text("glass-theme", locale);
     const label = document.querySelector(".glass-variant-label");
-    if (label) label.textContent = text("glass-background", lang);
+    if (label) label.textContent = text("glass-background", locale);
     const group = document.querySelector(".glass-variant-picker");
-    if (group) group.setAttribute("aria-label", text("glass-background-selection", lang));
+    if (group) group.setAttribute("aria-label", text("glass-background-selection", locale));
     const a = document.querySelector('[data-glass-variant-value="female"]');
     const b = document.querySelector('[data-glass-variant-value="male"]');
-    if (a) a.textContent = text("glass-a", lang);
-    if (b) b.textContent = text("glass-b", lang);
+    if (a) a.textContent = text("glass-a", locale);
+    if (b) b.textContent = text("glass-b", locale);
   }
 
   function exactTranslation(value, lang) {
     const raw = String(value || "").trim();
-    for (const [ko, en] of exactPairs) {
-      if (raw === ko || raw === en) return lang === "en" ? en : ko;
+    const locale = normalizeLocale(lang) || "ko";
+    const index = locale === "ko" ? 0 : locale === "en" ? 1 : locale === "zh-CN" ? 2 : 3;
+    for (const pair of exactPairs) {
+      if (pair.includes(raw)) return pair[index] || pair[0];
     }
     return raw;
   }
 
   function localizeExistingDynamicControls(lang) {
+    const locale = normalizeLocale(lang) || "ko";
     const selectors = [
       ".project-manage", ".project-file-row button", ".history-delete", "#projectDeleteButton", ".demo-label[data-runtime-label]", ".retry-button",
       ".answer-actions", ".answer-action", ".rich-code-header > span", ".rich-code-copy", ".rich-table-actions > span", ".rich-table-download", ".answer-sources-title", "#conversationExportButton"
@@ -743,42 +788,61 @@
     }));
     document.querySelectorAll(".project-manage").forEach((button) => {
       const name = button.closest(".project-row")?.querySelector(".project-item")?.textContent || "";
-      if (name) button.setAttribute("aria-label", lang === "en" ? `Manage project ‘${name}’` : `‘${name}’ 프로젝트 관리`);
+      if (name) if (locale === "en") button.setAttribute("aria-label", `Manage project ‘${name}’`);
+      else if (locale === "zh-CN") button.setAttribute("aria-label", `管理“${name}”项目`);
+      else if (locale === "ja") button.setAttribute("aria-label", `「${name}」プロジェクトを管理`);
+      else button.setAttribute("aria-label", `‘${name}’ 프로젝트 관리`);
     });
     document.querySelectorAll(".history-delete").forEach((button) => {
       const title = button.closest(".history-row")?.querySelector(".history-item")?.textContent || "";
-      if (title) button.setAttribute("aria-label", lang === "en" ? `Delete conversation ‘${title}’` : `‘${title}’ 대화 삭제`);
+      if (title) if (locale === "en") button.setAttribute("aria-label", `Delete conversation ‘${title}’`);
+      else if (locale === "zh-CN") button.setAttribute("aria-label", `删除“${title}”对话`);
+      else if (locale === "ja") button.setAttribute("aria-label", `「${title}」の会話を削除`);
+      else button.setAttribute("aria-label", `‘${title}’ 대화 삭제`);
     });
     const projectDelete = document.getElementById("projectDeleteButton");
-    if (projectDelete) projectDelete.setAttribute("aria-label", text("project-delete-aria", lang));
+    if (projectDelete) projectDelete.setAttribute("aria-label", text("project-delete-aria", locale));
     const answerActions = document.querySelectorAll(".answer-actions");
-    answerActions.forEach((element) => element.setAttribute("aria-label", text("answer-actions", lang)));
+    answerActions.forEach((element) => element.setAttribute("aria-label", text("answer-actions", locale)));
     const sources = document.querySelectorAll(".answer-sources");
-    sources.forEach((element) => element.setAttribute("aria-label", text("sources-aria", lang)));
+    sources.forEach((element) => element.setAttribute("aria-label", text("sources-aria", locale)));
     const exportButton = document.getElementById("conversationExportButton");
-    if (exportButton) exportButton.setAttribute("aria-label", text("export-aria", lang));
-    if (exportButton) exportButton.textContent = text("export", lang);
+    if (exportButton) exportButton.setAttribute("aria-label", text("export-aria", locale));
+    if (exportButton) exportButton.textContent = text("export", locale);
   }
 
   function translateConfirmMessage(message, lang) {
     const raw = String(message || "");
+    const locale = normalizeLocale(lang) || "ko";
     let match = raw.match(/^‘(.+)’ 파일을 프로젝트에서 삭제할까요\?$|^Remove ‘(.+)’ from this project\?$/);
     if (match) {
       const name = match[1] || match[2];
-      return lang === "en" ? `Remove ‘${name}’ from this project?` : `‘${name}’ 파일을 프로젝트에서 삭제할까요?`;
+      if (locale === "en") return `Remove ‘${name}’ from this project?`;
+      if (locale === "zh-CN") return `将“${name}”从该项目中删除？删除后无法恢复。`;
+      if (locale === "ja") return `「${name}」をこのプロジェクトから削除します。削除したファイルは復元できません。`;
+      return `‘${name}’ 파일을 프로젝트에서 삭제할까요?`;
     }
     match = raw.match(/^‘(.+)’ 대화를 삭제할까요\?\n삭제한 대화는 되돌릴 수 없습니다\.$|^Delete conversation ‘(.+)’\?\nThis cannot be undone\.$/);
     if (match) {
       const title = match[1] || match[2];
-      return lang === "en" ? `Delete conversation ‘${title}’?\nThis cannot be undone.` : `‘${title}’ 대화를 삭제할까요?\n삭제한 대화는 되돌릴 수 없습니다.`;
+      if (locale === "en") return `Delete conversation ‘${title}’?\nThis cannot be undone.`;
+      if (locale === "zh-CN") return `将删除“${title}”对话。删除后无法恢复。`;
+      if (locale === "ja") return `「${title}」の会話を削除します。削除した会話は復元できません。`;
+      return `‘${title}’ 대화를 삭제할까요?\n삭제한 대화는 되돌릴 수 없습니다.`;
     }
     match = raw.match(/^‘(.+)’ 프로젝트를 삭제할까요\?\n프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다\. 삭제한 프로젝트는 되돌릴 수 없습니다\.$|^Delete project ‘(.+)’\?\nIts conversations remain, but the project link is removed\. This cannot be undone\.$/);
     if (match) {
       const name = match[1] || match[2];
-      return lang === "en" ? `Delete project ‘${name}’?\nIts conversations remain, but the project link is removed. This cannot be undone.` : `‘${name}’ 프로젝트를 삭제할까요?\n프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 되돌릴 수 없습니다.`;
+      if (locale === "en") return `Delete project ‘${name}’?\nIts conversations remain, but the project link is removed. This cannot be undone.`;
+      if (locale === "zh-CN") return `将删除“${name}”项目。项目中的对话会保留，但项目关联将被解除。删除后无法恢复。`;
+      if (locale === "ja") return `「${name}」プロジェクトを削除します。プロジェクトの会話は残りますが、プロジェクトとの紐付けは解除されます。削除したプロジェクトは復元できません。`;
+      return `‘${name}’ 프로젝트를 삭제할까요?\n프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 되돌릴 수 없습니다.`;
     }
     if (raw === "이 저장한 답변을 삭제할까요? 원래 대화는 삭제되지 않습니다." || raw === "Delete this saved answer? The original conversation will remain.") {
-      return lang === "en" ? "Delete this saved answer? The original conversation will remain." : "이 저장한 답변을 삭제할까요? 원래 대화는 삭제되지 않습니다.";
+      if (locale === "en") return "Delete this saved answer? The original conversation will remain.";
+      if (locale === "zh-CN") return "仅删除已保存的回答，原始对话不会被删除。";
+      if (locale === "ja") return "保存した回答のみを削除します。元の会話は削除されません。";
+      return "이 저장한 답변을 삭제할까요? 원래 대화는 삭제되지 않습니다.";
     }
     return raw;
   }
@@ -792,6 +856,8 @@
 
   function persistLocale(lang) {
     try {
+      const normalized = normalizeLocale(lang) || "ko";
+      lang = normalized;
       const url = new URL(window.location.href);
       if (url.searchParams.get("lang") === lang) return;
       url.searchParams.set("lang", lang);

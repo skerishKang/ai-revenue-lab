@@ -65,7 +65,7 @@
       pcNote("\uCEF4\uD4E8\uD130\uB97C \uC5F0\uACB0\uD558\uB824\uBA74 \uBA3C\uC800 Padiem\uC5D0 \uB85C\uADF8\uC778\uD574 \uC8FC\uC138\uC694.",
              "Sign in to Padiem before connecting your computer.");
       const hint = document.getElementById("clawPcCardStatus");
-      if (hint) hint.textContent = document.documentElement.lang === "en"
+      if (hint) hint.textContent = (window.__padiemLocale && window.__padiemLocale.getCurrent ? window.__padiemLocale.getCurrent()==="en" : document.documentElement.lang==="en")
         ? "Sign in first" : "\uB85C\uADF8\uC778\uD558\uC138\uC694";
       const login = document.getElementById("loginButton");
       const account = document.querySelector(".sidebar-account");
@@ -79,7 +79,7 @@
     function pcNote(ko, en) {
       const note = document.getElementById("clawComputerLiveStatus");
       if (!note) return;
-      note.textContent = document.documentElement.lang === "en" ? en : ko;
+      note.textContent = ((window.__padiemLocale && window.__padiemLocale.getCurrent && window.__padiemLocale.getCurrent()==="en") ? en : ko);
       note.hidden = false;
     }
 
@@ -319,7 +319,7 @@
       if (!isClawHome()) return;
       const history = document.getElementById("historySection");
       const list = document.getElementById("historyList");
-      const en = document.documentElement.lang === "en";
+      const en = (window.__padiemLocale && window.__padiemLocale.getCurrent ? window.__padiemLocale.getCurrent()==="en" : document.documentElement.lang==="en");
       if (!history || history.hidden) {
         // A signed-in owner may have a temporarily unavailable history API.
         // Never click the signed-in logout button on that error path.
@@ -386,7 +386,7 @@
     if (!statusText || typeof state !== "string") return;
     const copy = COMPUTER_STATE_COPY[state];
     if (!copy) return;
-    const en = document.documentElement.lang === "en";
+    const en = (window.__padiemLocale && window.__padiemLocale.getCurrent ? window.__padiemLocale.getCurrent()==="en" : document.documentElement.lang==="en");
     statusText.textContent = en ? copy[1] : copy[0];
     statusText.hidden = false;
     const card = document.getElementById("connectorComputerCard");

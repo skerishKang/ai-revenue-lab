@@ -500,7 +500,8 @@
   ]);
 
   function copy(lang) {
-    return COPY[lang === "en" ? "en" : "ko"];
+    const locale = (window.__padiemLocale && typeof window.__padiemLocale.getCurrent === "function") ? window.__padiemLocale.getCurrent() : (String(lang).toLowerCase().startsWith("en") ? "en" : "ko");
+    return COPY[locale === "en" ? "en" : "ko"];
   }
 
   // ---------------------------------------------------------------------------

@@ -59,7 +59,8 @@
   }
   function copy(state, lang = "ko") {
     const item = COPY[state] || COPY.unknown;
-    return lang === "en" || String(lang).toLowerCase().startsWith("en-") ? item.en : item.ko;
+    const locale = (window.__padiemLocale && typeof window.__padiemLocale.getCurrent === "function") ? window.__padiemLocale.getCurrent() : (String(lang).toLowerCase().startsWith("en") ? "en" : "ko");
+    return locale === "en" ? item.en : item.ko;
   }
   window.PadiemClawRecoveryTruth = Object.freeze({ create, copy });
 })();
