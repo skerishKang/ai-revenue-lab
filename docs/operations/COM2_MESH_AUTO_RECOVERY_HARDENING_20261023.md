@@ -1,5 +1,13 @@
 # COM2 Mesh 자동 복구 강화 — 재부팅 후 자동 시작 (2026-10-23)
 
+## 2026-10-23 operational transition
+
+- Read-only observation at 20:58 KST: the running COM1 Mesh Agent process has an established direct TCP connection to `192.168.0.101:4443`.
+- `PADIEM-Mesh-Tunnel` has `Settings.Enabled=false`. Its reported task state was still `Running`; disabled scheduling does not establish that an existing task or supervisor has stopped or been removed.
+- The sections below retain the #5578 source/recovery design and its earlier evidence; they do not imply that the legacy tunnel is the current COM1 connection path.
+- Removal of the obsolete tunnel task/supervisor and review of the #5578 layers are deferred until 2026-10-25 or later and tracked in #5643.
+- This note records observed state only. No task, service, runtime setting, restart or reboot was changed to produce it.
+
 - 구현: `scripts/ops/com2_mesh/` 아래 엔진, 터널 supervisor, 작업 XML 템플릿, 자동 시작 관측 프로브, selftest 3종
 - 설정 예시: `scripts/ops/com2_mesh/com2_mesh_config.template.json`
 - 관련: `docs/operations/COM2_MESH_AUTO_RECOVERY_20261021.md` (기존 복구 엔진), `docs/operations/COM2_PRIMARY_RUNTIME_SUPERVISOR_AND_TUNNEL_20261019.md`
