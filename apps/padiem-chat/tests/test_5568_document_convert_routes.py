@@ -207,14 +207,18 @@ async def test_upload_convert_review_download_journey():
         assert created.status_code == 201, created.text
         item = created.json()["items"][0]
         assert item["status"] == "queued"
-        assert item["page_count"] == 1
-        assert item["report"]["native_text_state"] == "native_text_present"
+        # The hot upload path is pypdf-free: page count and the native-text
+        # probe are deferred to the conversion step, not computed at upload.
+        assert item["page_count"] == 0
+        assert item["report"] is None
 
         run = await client.post(f"/api/document-conversions/items/{item['id']}/run")
         assert run.status_code == 200, run.text
         ran = run.json()["item"]
         assert ran["status"] == "reviewed"
         assert ran["has_markdown"] is True
+        # The conversion is the pypdf site: it back-fills the page count.
+        assert ran["page_count"] == 1
 
         downloaded = await client.get(f"/api/document-conversions/items/{item['id']}/markdown")
         assert downloaded.status_code == 200
@@ -266,13 +270,19 @@ async def test_multi_pdf_zip_uploads_one_item_per_pdf_member():
         assert created.status_code == 201, created.text
         items = created.json()["items"]
         assert {item["name"] for item in items} == {"first.pdf", "second.pdf"}
-        pages = {item["name"]: item["page_count"] for item in items}
-        assert pages == {"first.pdf": 1, "second.pdf": 2}
+        # Deferred inspection: uploads carry no pypdf page count.
+        assert {item["name"]: item["page_count"] for item in items} == {"first.pdf": 0, "second.pdf": 0}
         assert created.json()["rejected"] == [{"name": "notes.txt", "code": "pdf_magic_mismatch"}]
 
         for item in items:
             run = await client.post(f"/api/document-conversions/items/{item['id']}/run")
             assert run.status_code == 200, run.text
+            # The conversion back-fills the real page count.
+        pages = {
+            item["name"]: (await client.get(f"/api/document-conversions/items/{item['id']}")).json()["item"]["page_count"]
+            for item in items
+        }
+        assert pages == {"first.pdf": 1, "second.pdf": 2}
         bundle = await client.get(f"/api/document-conversions/{job_id}/archive")
         assert bundle.status_code == 200
         with __import__("zipfile").ZipFile(io.BytesIO(bundle.content)) as built:
@@ -293,7 +303,9 @@ async def test_scan_only_pdf_is_marked_unreadable_not_guessed():
         created = await upload(client, job_id, pdf_bytes(texts=[""]), name="스캔.pdf")
         assert created.status_code == 201, created.text
         item = created.json()["items"][0]
-        assert item["report"]["native_text_state"] == "no_native_text_ocr_may_be_required"
+        # Deferred inspection: the scan-only state is no longer probed at
+        # upload; it surfaces through the conversion report instead.
+        assert item["report"] is None
 
         run = await client.post(f"/api/document-conversions/items/{item['id']}/run")
         assert run.status_code == 200, run.text
@@ -513,3 +525,58 @@ async def test_report_is_stored_bounded_and_never_carries_document_text():
     ).fetchone()[0]
     assert len(raw) <= 12_000
     assert done.status == "reviewed"
+
+
+@pytest.mark.asyncio
+async def test_upload_is_pypdf_free_and_conversion_still_parses():
+    """#5568 production 503 fix, as a load-bearing regression.
+
+    The hot upload path must not construct a pypdf reader (that is what pushed
+    the Worker past its resource budget). The conversion step remains the single
+    pypdf site and must still parse.
+    """
+    import pypdf
+
+    real_reader = pypdf.PdfReader
+    uploads: list[int] = []
+    conversions: list[int] = []
+
+    class _Forbid:
+        def __init__(self, *args, **kwargs):
+            uploads.append(1)
+            raise AssertionError("pypdf must not run on the upload hot path")
+
+    class _Recording:
+        def __init__(self, *args, **kwargs):
+            conversions.append(1)
+            self._real = real_reader(*args, **kwargs)
+
+        def __getattr__(self, name):
+            return getattr(self._real, name)
+
+    client, _app = await build_client()
+    try:
+        job_id = await open_job(client)
+        with pytest.MonkeyPatch.context() as patch:
+            patch.setattr(pypdf, "PdfReader", _Forbid)
+            created = await upload(
+                client, job_id, pdf_bytes(texts=["Deferred 1 page 1"]), name="defer.pdf"
+            )
+        assert created.status_code == 201, created.text
+        assert uploads == [], "pypdf ran on the upload path"
+        item = created.json()["items"][0]
+        assert item["page_count"] == 0
+        assert item["report"] is None
+
+        with pytest.MonkeyPatch.context() as patch:
+            patch.setattr(pypdf, "PdfReader", _Recording)
+            run = await client.post(f"/api/document-conversions/items/{item['id']}/run")
+        assert run.status_code == 200, run.text
+        assert conversions, "conversion must still run pypdf"
+        ran = run.json()["item"]
+        assert ran["page_count"] == 1
+        assert ran["has_markdown"] is True
+        markdown = await client.get(f"/api/document-conversions/items/{item['id']}/markdown")
+        assert "Deferred 1 page 1" in markdown.text
+    finally:
+        await client.aclose()
