@@ -1,7 +1,7 @@
 {
   "worker": "padiem-chat",
-  "reviewed_utc": "2026-10-21",
-  "source_served_version": "46cae2f7-1700-4bc0-9bae-89ed81873f20",
+  "reviewed_utc": "2026-10-23",
+  "source_served_version": "507408da-abbb-411b-b2eb-9306a47bb6bc",
   "bindings": [
     {
       "name": "ASSETS",
@@ -238,6 +238,18 @@
     {
       "name": "PADIEM_KIRAAI_API_KEY",
       "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_PUSH_VAPID_PRIVATE_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_PUSH_VAPID_PUBLIC_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_PUSH_VAPID_SUBJECT",
+      "type": "secret_text"
     },
     {
       "name": "PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED",
