@@ -1,6 +1,9 @@
 name: Web Desktop Non-Model E2E (3098)
 
 on:
+  # #5678: post-merge coverage is unconditional; PR paths stay scoped.
+  push:
+    branches: [main]
   pull_request:
     paths:
       - "tests/e2e/**"
