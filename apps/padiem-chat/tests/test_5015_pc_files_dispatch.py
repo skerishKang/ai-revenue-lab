@@ -187,3 +187,37 @@ def test_tool_call_ref_must_be_bounded():
             asyncio.run(store.create_oracle_mesh_dispatch(**arguments))
     finally:
         connection.close()
+
+
+def test_scope_notice_is_persistent_owner_scoped_and_cannot_be_replaced():
+    from app.history import HistoryForbidden
+    store, connection = _store()
+    try:
+        for column in ("status", "result_summary", "conversation_id", "workspace_id", "updated_at", "action"):
+            connection.execute("ALTER TABLE claw_run_history ADD COLUMN " + column + " TEXT")
+        connection.executescript(
+            "CREATE TABLE conversations (id TEXT PRIMARY KEY, user_id TEXT);"
+            "CREATE TABLE messages (id TEXT PRIMARY KEY, conversation_id TEXT, role TEXT, content TEXT, "
+            "created_at TEXT, sequence_number INTEGER, UNIQUE(conversation_id,sequence_number));"
+        )
+        connection.execute("INSERT INTO conversations VALUES (?,?)", ("chat_scope", OWNER))
+        connection.execute("UPDATE claw_run_history SET conversation_id='chat_scope',status='running',action='pc_files_query'")
+        connection.commit()
+        claim = {"version": 1, "requested": "files", "admitted": "files_list", "source": "declared",
+                 "ops": ["list"], "app_id": "padiem-chat"}
+        asyncio.run(store.pin_pc_run_scope(user_id=OWNER, run_id=RUN, claim=claim))
+        restarted = D1HistoryStore(_DB(connection))
+        assert asyncio.run(restarted.get_pc_run_scope(user_id=OWNER, run_id=RUN)) == claim
+        asyncio.run(restarted.pin_pc_run_scope(user_id=OWNER, run_id=RUN, claim=claim))
+        with pytest.raises(HistoryForbidden):
+            asyncio.run(restarted.pin_pc_run_scope(user_id=OWNER, run_id=RUN,
+                claim={**claim, "admitted": "files", "ops": ["list", "read"]}))
+        assert asyncio.run(restarted.get_pc_run_scope(user_id="other-owner", run_id=RUN)) is None
+        with pytest.raises(HistoryForbidden):
+            asyncio.run(restarted.pin_pc_run_scope(user_id="other-owner", run_id=RUN, claim=claim))
+        rows = connection.execute("SELECT content FROM messages").fetchall()
+        assert len(rows) == 1
+        assert rows[0]["content"].startswith("목록만 조회합니다. 파일 내용은 읽지 않습니다.")
+        assert connection.execute("SELECT status FROM claw_run_history").fetchone()["status"] == "running"
+    finally:
+        connection.close()

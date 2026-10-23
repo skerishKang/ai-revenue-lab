@@ -92,6 +92,18 @@ PC_QUERY_OWNER: ContextVar[tuple[str, str, str, str | None] | None] = ContextVar
     "claw_pc_query_owner", default=None
 )
 
+# One mutable container is bound by Engine before Core creates its step/handler
+# tasks. Child-task ContextVar assignments would not reach the sibling handler.
+PC_QUERY_RUN_SCOPE: ContextVar[dict[str, Any] | None] = ContextVar(
+    "pc_query_run_scope", default=None,
+)
+PC_REQUEST_SCOPE_TOOLS = {
+    "files_list": frozenset({PC_LIST_FILES_TOOL_ID}),
+    "files": PC_FILE_TOOL_IDS,
+    "query_drives": frozenset({PC_DRIVES_TOOL_ID}),
+    "none": frozenset(),
+}
+
 
 # #5015: the closed set of PC step details this product may name. Core keeps
 # only the identifier, so a support read can tell these apart without the model
@@ -380,14 +392,64 @@ class StructuredPCQueryStepDriver:
         select_step: Callable[..., Awaitable[Mapping[str, Any]]],
         static_arguments: Mapping[str, Any] | None = None,
         allowed_tool_ids: frozenset[str] | None = None,
+        record_scope: Callable[..., Awaitable[None]] | None = None,
     ):
         self._select_step = select_step
+        self._record_scope = record_scope
         # Supplied by the trusted plan, never by the model step. The model may
         # choose the tool id; it may not choose or widen the execution target.
         self._static_arguments = dict(static_arguments or {})
         # The trusted plan fixes the execution scope before any invocation.
         # Legacy drive/list calls may omit it; a read requires an admitted ceiling.
         self._allowed_tool_ids = allowed_tool_ids
+        self._request_scope_enabled = False
+        self.scope_state: dict[str, Any] = {}
+        self.request_context = ""
+
+    def configure_request_scope(self, authorization: ToolAuthorizationContext, *, ceiling_tool_ids=None, request_context=None) -> None:
+        """Engine-only: intersect the trusted plan with actual server grants."""
+        self._request_scope_enabled = True
+        self.request_context = request_context if isinstance(request_context, str) else ""
+        shared = PC_QUERY_RUN_SCOPE.get()
+        self.scope_state = shared if shared is not None else {}
+        scopes = getattr(authorization, "granted_auth_scopes", ())
+        external = getattr(authorization, "externally_authorized_tools", frozenset())
+        ceiling = ceiling_tool_ids if ceiling_tool_ids is not None else self._allowed_tool_ids
+        self._allowed_tool_ids = frozenset(
+            tool for tool in (ceiling or ())
+            if tool in scopes and tool in external
+        )
+        existing = self.scope_state.get("claim")
+        if isinstance(existing, dict):
+            self._allowed_tool_ids &= PC_REQUEST_SCOPE_TOOLS.get(existing.get("admitted"), frozenset())
+
+    def _admit_request_scope(self, decision: Mapping[str, Any]) -> None:
+        """First decision only; neither later plans nor intent can widen it."""
+        if "claim" in self.scope_state:
+            return
+        proposed = decision.get("plan")
+        source = "declared"
+        if "plan" not in decision:
+            source = "decision"
+            first_tool = decision.get("tool_id")
+            proposed = {
+                PC_LIST_FILES_TOOL_ID: "files_list",
+                PC_READ_FILE_TOOL_ID: "files",
+                PC_DRIVES_TOOL_ID: "query_drives",
+            }.get(first_tool) if decision.get("action") == "tool" and isinstance(first_tool, str) else None
+        if not isinstance(proposed, str) or proposed not in PC_REQUEST_SCOPE_TOOLS or proposed == "none":
+            proposed, source = "none", "missing"
+        allowed = PC_REQUEST_SCOPE_TOOLS[proposed] & (self._allowed_tool_ids or frozenset())
+        admitted = next((name for name, tools in PC_REQUEST_SCOPE_TOOLS.items() if tools == allowed), "none")
+        # Unrepresentable partial grants fail closed; no implicit list grant.
+        self._allowed_tool_ids = PC_REQUEST_SCOPE_TOOLS[admitted]
+        self.scope_state["claim"] = {
+            "version": 1, "requested": proposed, "admitted": admitted,
+            "source": source,
+            "ops": [op for op, tool in (("list", PC_LIST_FILES_TOOL_ID),
+                    ("read", PC_READ_FILE_TOOL_ID), ("drives", PC_DRIVES_TOOL_ID))
+                    if tool in self._allowed_tool_ids],
+        }
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
         # #4379: the driver resolves the results it needs through their
@@ -397,6 +459,36 @@ class StructuredPCQueryStepDriver:
                         "output": result.output_copy()} for result in resolved]
         decision = await self._select_step(context=context, compiled_profile=compiled_profile,
                                            observations=tuple(observations))
+        if self._request_scope_enabled:
+            first = "claim" not in self.scope_state
+            self._admit_request_scope(decision if isinstance(decision, Mapping) else {})
+            claim = self.scope_state["claim"]
+            if first:
+                # Closed, non-sensitive fields only; never prompt/path/content.
+                print("pc_scope_admission=" + json.dumps(claim, sort_keys=True), flush=True)
+                if self._record_scope is not None:
+                    await self._record_scope()
+            missing = first and claim["source"] == "missing"
+            try:
+                if missing:
+                    raise PCQueryStepError("request scope is missing", detail="tool_scope_denied")
+                return self._decision(decision, observations)
+            except PCQueryStepError:
+                # A narrowed permission is an observation to the same run, not
+                # an HTTP 400. One recovery decision cannot widen the fixed run.
+                observation = {"event": "pc_scope_denied", "pc_scope": dict(claim),
+                               "tool_dispatched": False}
+                repaired = await self._select_step(
+                    context=context, compiled_profile=compiled_profile,
+                    observations=tuple(observations) + (observation,),
+                )
+                try:
+                    return self._decision(repaired, observations)
+                except PCQueryStepError:
+                    return AgentStepDecision.complete("요청 범위와 허용 권한 안에서 PC 작업을 완료하지 못했습니다. 파일 내용은 추가로 읽지 않았습니다.")
+        return self._decision(decision, observations)
+
+    def _decision(self, decision, observations) -> AgentStepDecision:
         if not isinstance(decision, Mapping):
             raise PCQueryStepError("model step must be an object", detail="model_step_not_object")
         if decision.get("action") == "complete":
@@ -411,6 +503,8 @@ class StructuredPCQueryStepDriver:
         if decision.get("action") == "tool":
             tool_id = decision.get("tool_id")
             arguments = decision.get("arguments")
+            if not isinstance(tool_id, str):
+                raise PCQueryStepError("model tool selection is invalid or unauthorized", detail="tool_selection_invalid")
             if (
                 (self._allowed_tool_ids is not None
                  and tool_id not in self._allowed_tool_ids)

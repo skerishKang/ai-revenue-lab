@@ -396,6 +396,7 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
         # admission-bound logical request. Neither comes from model arguments.
         from app.claw_desktop_step_driver import CLAW_APP_ID, _ENGINE_DESKTOP_OWNER
         from app.claw_pc_query_step_driver import CHAT_APP_ID, _PC_QUERY_OWNER
+        from kagent.pc_query_adapter import PC_QUERY_RUN_SCOPE
         desktop_owner = None
         pc_query_owner = None
         if binding.app_id in (CLAW_APP_ID, CHAT_APP_ID) and binding.subject_id is not None:
@@ -412,6 +413,7 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                 )
         desktop_scope_token = _ENGINE_DESKTOP_OWNER.set(desktop_owner)
         pc_query_scope_token = _PC_QUERY_OWNER.set(pc_query_owner)
+        pc_run_scope_token = PC_QUERY_RUN_SCOPE.set({} if pc_query_owner else None)
         original_token: Token[OriginalAdmissionBinding | None] = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
         result_token = _ACTIVE_TERMINAL_RESULT.set(None)
         dispatch_evidence = ExecutionDispatchEvidence()
@@ -455,6 +457,7 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
             _ACTIVE_ORIGINAL_ADMISSION.reset(original_token)
             _ENGINE_DESKTOP_OWNER.reset(desktop_scope_token)
             _PC_QUERY_OWNER.reset(pc_query_scope_token)
+            PC_QUERY_RUN_SCOPE.reset(pc_run_scope_token)
 
     async def resume_payload(self, payload: Any):  # noqa: C901 - lifecycle gate must stay linear
         """Resume only with fresh non-widening trusted admission before claim."""

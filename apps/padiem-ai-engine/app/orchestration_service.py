@@ -744,6 +744,7 @@ class OrchestrationEngineService:
             for step in orch_req.agent_plan.steps
         )
         ceiling = {
+            (("query_drives", "claw.pc.query_drives"),): "query_drives",
             (("list_files", "claw.pc.list_files"),): "files_list",
             (("list_files", "claw.pc.list_files"),
              ("read_file", "claw.pc.read_file")): "files",
@@ -755,14 +756,17 @@ class OrchestrationEngineService:
             tool_arguments = {ceiling: dict(
                 (tool_arguments or {}).get(ceiling, {}),
             )}
-        return replace(
-            orch_req,
-            agent_step_driver=self._pc_query_step_driver_factory(
+        driver = self._pc_query_step_driver_factory(
                 model_id, exec_req.agent.model_policy,
                 exec_req.agent.task_type, exec_req.agent.optimize_for,
                 tool_arguments=tool_arguments,
-            ),
         )
+        configure_scope = getattr(driver, "configure_request_scope", None)
+        if callable(configure_scope):
+            configure_scope(orch_req.tool_authorization,
+                ceiling_tool_ids=frozenset(step.tool_id for step in orch_req.agent_plan.steps),
+                request_context=exec_req.additional_system_context)
+        return replace(orch_req, agent_step_driver=driver)
 
     @staticmethod
     def _assert_resumed_invocation_matches(
@@ -1686,14 +1690,12 @@ class OrchestrationEngineService:
                     "Resolved model is unavailable.",
                     status_code=503,
                 )
-            orch_req = replace(
-                orch_req,
-                agent_step_driver=self._pc_query_step_driver_factory(
-                    stream_model_id, exec_req.agent.model_policy,
-                    exec_req.agent.task_type, exec_req.agent.optimize_for,
-                    tool_arguments=orch_req.tool_arguments,
-                ),
+            attached = self._attach_pc_query_step_driver(
+                app_id=app_id, orch_req=orch_req, exec_req=exec_req,
             )
+            if isinstance(attached, ServiceResponse):
+                return attached
+            orch_req = attached
 
         # The synchronous sink receives events in emission order (Core's emit
         # closures deliver synchronously); an unbounded asyncio.Queue never
@@ -1711,12 +1713,15 @@ class OrchestrationEngineService:
         # is ever created. Bind the owner only for the exact canonical
         # PC-query plan; every other stream keeps the unset default.
         from app.claw_pc_query_step_driver import _PC_QUERY_OWNER
+        from kagent.pc_query_adapter import PC_QUERY_RUN_SCOPE
 
         pc_owner_token = _PC_QUERY_OWNER.set(_pc_query_stream_owner(app_id, orch_req))
+        pc_scope_token = PC_QUERY_RUN_SCOPE.set(getattr(orch_req.agent_step_driver, "scope_state", None))
         try:
             task = asyncio.create_task(runner.run(orch_req))
         finally:
             _PC_QUERY_OWNER.reset(pc_owner_token)
+            PC_QUERY_RUN_SCOPE.reset(pc_scope_token)
         first_event_task = asyncio.ensure_future(queue.get())
         done, _pending = await asyncio.wait(
             {first_event_task, task},

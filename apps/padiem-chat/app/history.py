@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import inspect
+import json
 import re
 import uuid
 from dataclasses import dataclass
@@ -1704,6 +1705,59 @@ class D1HistoryStore:
             status, _now_iso(), summary, summary, run_id, user_id,
         )
         return _changed_rows(result) > 0
+
+    async def get_pc_run_scope(self, *, user_id: str, run_id: str) -> dict[str, Any] | None:
+        """The immutable scope notice in the run's existing conversation."""
+        row = await self._first(
+            "SELECT m.content FROM messages m JOIN claw_run_history r "
+            "ON r.conversation_id=m.conversation_id "
+            "JOIN conversations c ON c.id=m.conversation_id AND c.user_id=r.user_id "
+            "WHERE r.user_id=? AND r.run_id=? AND m.id=?",
+            user_id, run_id, run_id + "_scope",
+        )
+        if row is None:
+            return None
+        try:
+            content = row["content"]
+            claim = json.loads(content.split("\n<!--pc_scope:", 1)[1].removesuffix("-->"))
+            if not isinstance(claim, dict):
+                raise ValueError("invalid scope")
+            return claim
+        except (KeyError, IndexError, TypeError, ValueError) as exc:
+            raise HistoryError("stored PC scope is invalid") from exc
+
+    async def pin_pc_run_scope(self, *, user_id: str, run_id: str, claim: dict[str, Any]) -> None:
+        """Record before dispatch, once per owner/run; never alter its terminal."""
+        owned = await self.get_claw_run(user_id, run_id)
+        if not isinstance(owned, dict) or not owned.get("conversation_id"):
+            raise HistoryForbidden("PC run is not owned")
+        message_id = run_id + "_scope"
+        if len(message_id) > 128:
+            raise HistoryError("PC scope message id is invalid")
+        labels = {
+            "files_list": "목록만 조회합니다. 파일 내용은 읽지 않습니다.",
+            "files": "요청한 파일의 목록과 내용을 확인합니다.",
+            "query_drives": "드라이브 목록만 조회합니다.",
+            "none": "허용된 PC 작업 범위를 확인하지 못했습니다.",
+        }
+        encoded = json.dumps(claim, sort_keys=True, separators=(",", ":"))
+        if claim.get("admitted") not in labels or len(encoded) > 1024:
+            raise HistoryError("PC scope claim is invalid")
+        content = labels[claim["admitted"]] + "\n<!--pc_scope:" + encoded + "-->"
+        cid = owned["conversation_id"]
+        # A concurrent conflicting admission loses INSERT OR IGNORE and the
+        # read-back comparison refuses it. Existing messages carry the record;
+        # no new authority table, migration, or terminal-status write is needed.
+        await self._run(
+            "INSERT OR IGNORE INTO messages (id,conversation_id,role,content,created_at,sequence_number) "
+            "SELECT ?,c.id,'assistant',?,?,COALESCE((SELECT MAX(sequence_number) "
+            "FROM messages WHERE conversation_id=c.id),0)+1 FROM conversations c "
+            "JOIN claw_run_history r ON r.conversation_id=c.id AND r.user_id=c.user_id "
+            "WHERE c.id=? AND r.user_id=? AND r.run_id=?",
+            message_id, content, _now_iso(), cid, user_id, run_id,
+        )
+        if await self.get_pc_run_scope(user_id=user_id, run_id=run_id) != claim:
+            raise HistoryForbidden("PC run scope is already fixed")
 
     async def get_claw_run(self, user_id: str, run_id: str) -> dict[str, Any] | None:
         """#3139 — the owner-scoped origin row for one Claw run.

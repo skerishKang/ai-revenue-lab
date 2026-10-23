@@ -73,6 +73,16 @@ class _History:
         self.originals: dict[str, bytes] = {}
         self.message_ids: dict[str, str] = {}
         self._seq = 0
+        self.scopes = {}
+
+    async def get_pc_run_scope(self, *, user_id, run_id):
+        return self.scopes.get((user_id, run_id))
+
+    async def pin_pc_run_scope(self, *, user_id, run_id, claim):
+        key = (user_id, run_id)
+        if key in self.scopes and self.scopes[key] != claim:
+            raise routes.HistoryForbidden("fixed")
+        self.scopes[key] = dict(claim)
 
     async def get_claw_run(self, user_id, run_id):
         if user_id != OWNER or run_id != RUN:
@@ -130,7 +140,7 @@ class _History:
 
 
 class _SignedRequest:
-    def __init__(self, state, payload, *, secret=SECRET):
+    def __init__(self, state, payload, *, secret=SECRET, scope=None):
         raw = json.dumps(payload, sort_keys=True).encode("utf-8")
         stamp = str(int(time.time()))
         proof = hmac.new(
@@ -143,6 +153,13 @@ class _SignedRequest:
             "X-Claw-Engine-Proof": proof,
         }
         self._raw = raw
+        if scope is not None:
+            encoded = json.dumps(scope, sort_keys=True, separators=(",", ":"))
+            self.headers["X-Claw-PC-Scope"] = encoded
+            self.headers["X-Claw-PC-Scope-Proof"] = hmac.new(
+                secret.encode(), stamp.encode() + b"." + raw + b"." + encoded.encode(),
+                hashlib.sha256,
+            ).hexdigest()
 
     async def body(self):
         return self._raw
@@ -394,3 +411,71 @@ def test_read_result_store_bound_is_one_mb_for_pc_files_and_six_mb_otherwise():
     assert routes._verified_read_result_text(
         {"root_ref": "other-read-lane"}, wire,
     ) == oversized
+
+
+def _scope_claim(plan="files_list"):
+    return {"version": 1, "requested": plan, "admitted": plan,
+            "source": "declared", "ops": ["list"] if plan == "files_list" else ["list", "read"],
+            "app_id": "padiem-chat"}
+
+
+def _scoped_dispatch(state, payload, claim):
+    response = asyncio.run(routes.oracle_mesh_engine_chat_files_call(
+        _SignedRequest(state, payload, scope=claim),
+    ))
+    return response.status_code, json.loads(response.body)
+
+
+def test_list_ceiling_refuses_kind_read_at_the_real_dispatch_boundary(monkeypatch):
+    state = _state(monkeypatch)
+    claim = _scope_claim()
+    status, body = _scoped_dispatch(state, _base_payload(), claim)
+    assert status == 200 and body["dispatch"]["kind"] == "command"
+    status, body = _scoped_dispatch(state, _base_payload(
+        op="read", path="notes.txt", tool_call_ref=READ_CALL), claim)
+    assert status == 403 and body["error"]["code"] == "pc_scope_denied"
+    assert [row["kind"] for row in state.history_store.rows.values()] == ["command"]
+    assert state.history_store.scopes[(OWNER, RUN)] == claim
+
+
+def test_scope_cannot_widen_or_downgrade_to_the_legacy_wire(monkeypatch):
+    state = _state(monkeypatch)
+    assert _scoped_dispatch(state, _base_payload(), _scope_claim())[0] == 200
+    read = _base_payload(op="read", path="notes.txt", tool_call_ref=READ_CALL)
+    status, body = _scoped_dispatch(state, read, _scope_claim("files"))
+    assert status == 403 and body["error"]["code"] == "pc_scope_frozen"
+    status, body = _dispatch(state, read)
+    assert status == 403 and body["error"]["code"] == "pc_scope_required"
+    assert [row["kind"] for row in state.history_store.rows.values()] == ["command"]
+
+
+def test_new_chat_accepts_old_engine_wire_with_all_original_guards(monkeypatch):
+    state = _state(monkeypatch)
+    read = _base_payload(op="read", path="notes.txt", tool_call_ref=READ_CALL)
+    status, body = _dispatch(state, read)
+    assert status == 200 and body["dispatch"]["kind"] == "read"
+    state = _state(monkeypatch)
+    status, body = _dispatch(state, {**read, "path": "../outside.txt"})
+    assert status == 422 and state.history_store.rows == {}
+
+
+def test_scope_proof_binds_claim_to_the_exact_signed_body(monkeypatch):
+    state = _state(monkeypatch)
+    request = _SignedRequest(state, _base_payload(), scope=_scope_claim())
+    request.headers["X-Claw-PC-Scope"] = json.dumps(_scope_claim("files"))
+    response = asyncio.run(routes.oracle_mesh_engine_chat_files_call(request))
+    assert response.status_code == 401
+    assert json.loads(response.body)["error"]["code"] == "pc_scope_proof_invalid"
+    assert state.history_store.rows == {}
+
+
+def test_full_ceiling_keeps_read_and_server_target_path_checks(monkeypatch):
+    state = _state(monkeypatch)
+    read = _base_payload(op="read", path="notes.txt", tool_call_ref=READ_CALL)
+    status, body = _scoped_dispatch(state, read, _scope_claim("files"))
+    assert status == 200 and body["dispatch"]["kind"] == "read"
+    state = _state(monkeypatch)
+    assert _scoped_dispatch(state, {**read, "path": "../outside.txt"}, _scope_claim("files"))[0] == 422
+    assert state.history_store.rows == {}
+    assert _scoped_dispatch(state, {**read, "device_id": "foreign-pc"}, _scope_claim("files"))[0] == 403
+    assert state.history_store.rows == {}
