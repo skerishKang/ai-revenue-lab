@@ -75,7 +75,7 @@ def test_server_accepts_only_a_canonical_client_recovery_handle():
     chat_routes = (ROOT / "app" / "chat_routes.py").read_text(encoding="utf-8")
     assert chat_routes.count("run_id=raw.get(\"pc_run_id\")") == 2
     contract = (ROOT / "app" / "request_contract.py").read_text(encoding="utf-8")
-    assert "\"pc_run_id\"}" in contract
+    assert "\"pc_run_id\", \"web_search\"}" in contract
     assert "validate_chat_pc_run_id" in contract
 
 def test_request_contract_accepts_only_the_canonical_pc_run_handle():
