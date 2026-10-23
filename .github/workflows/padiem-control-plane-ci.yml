@@ -80,7 +80,7 @@ jobs:
       - name: Install uv for Python Worker packaging
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: '0.12.5'
+          version: '0.13.5'
 
       # #3989: full pytest and all six Worker --dry-run packages remain mandatory.
       # The packaging subtree is a disposable checkout-byte copy, preventing

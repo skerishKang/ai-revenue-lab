@@ -152,7 +152,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
           enable-cache: true
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Locked dependencies
@@ -179,7 +179,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
       - name: Locked B62 test dependencies
         run: uv sync --locked --extra dev
       - name: Run every changed UI-test module (bounded, fail closed)
@@ -391,7 +391,7 @@ jobs:
           python-version: '3.12'
       - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
         with:
-          version: '0.12.5'
+          version: '0.13.5'
       - run: uv sync --locked --extra dev
       - run: uv run --locked python -m pytest -q tests/test_owner_tier_fallback_dispatch_261015.py tests/test_3977_provider_default_temperature_bridge.py tests/test_attachments.py tests/test_dispatch_quota_refund.py tests/test_documents.py tests/test_grounding.py tests/test_service_binding.py tests/test_skills.py
 
@@ -415,7 +415,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
       - name: Verify committed host lock is current
         run: uv lock --check
       - name: Resolve B62 with shared Core path dependency
@@ -457,7 +457,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
       - name: Verify committed host lock is current
         run: uv lock --check
       - name: Resolve B62 with shared Core path dependency
@@ -522,7 +522,7 @@ jobs:
       - name: Install uv for B14 pilot
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          version: "0.12.5"
+          version: "0.13.5"
       - name: Install B14 test dependencies
         run: uv pip install --system -e . 'pytest>=8.3,<9' 'pytest-asyncio>=0.24,<1'
       - name: Compile B14 pilot
