@@ -128,6 +128,13 @@ database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 [vars]
 PADIEM_ENGINE_AGENT_DURABLE_ENABLED = "true"
 
+[observability]
+enabled = true
+head_sampling_rate = 1
+[observability.logs]
+enabled = true
+invocation_logs = true
+
 # #2786 Stage 11-C M3-2: preview-only Agent pilot lane.
 #
 # A dedicated worker with NO services, NO D1 and NO secrets. The Production
