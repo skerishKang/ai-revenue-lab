@@ -379,11 +379,15 @@ class StructuredPCQueryStepDriver:
         *,
         select_step: Callable[..., Awaitable[Mapping[str, Any]]],
         static_arguments: Mapping[str, Any] | None = None,
+        allowed_tool_ids: frozenset[str] | None = None,
     ):
         self._select_step = select_step
         # Supplied by the trusted plan, never by the model step. The model may
         # choose the tool id; it may not choose or widen the execution target.
         self._static_arguments = dict(static_arguments or {})
+        # The trusted plan fixes the execution scope before any invocation.
+        # Legacy drive/list calls may omit it; a read requires an admitted ceiling.
+        self._allowed_tool_ids = allowed_tool_ids
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
         # #4379: the driver resolves the results it needs through their
@@ -407,6 +411,15 @@ class StructuredPCQueryStepDriver:
         if decision.get("action") == "tool":
             tool_id = decision.get("tool_id")
             arguments = decision.get("arguments")
+            if (
+                (self._allowed_tool_ids is not None
+                 and tool_id not in self._allowed_tool_ids)
+                or (self._allowed_tool_ids is None and tool_id == PC_READ_FILE_TOOL_ID)
+            ):
+                raise PCQueryStepError(
+                    "model tool selection is outside this execution scope",
+                    detail="tool_scope_denied",
+                )
             if tool_id == PC_DRIVES_TOOL_ID and arguments == {} and not observations:
                 # The server-verified target travels as a trusted plan argument;
                 # the model still cannot name a device.
@@ -417,9 +430,22 @@ class StructuredPCQueryStepDriver:
             if (
                 tool_id in PC_FILE_TOOL_IDS
                 and isinstance(arguments, Mapping)
-                and set(arguments) == {"path"}
+                and set(arguments) <= {"path", "intent"}
             ):
                 path = arguments.get("path")
+                intent = arguments.get("intent")
+                if "intent" in arguments and intent not in ("list", "read"):
+                    raise PCQueryStepError(
+                        "model tool selection is invalid or unauthorized",
+                        detail="tool_selection_invalid",
+                    )
+                # The admitted ceiling supplies the ops. Intent can only narrow
+                # this step; read/missing intent never adds a permission.
+                if tool_id == PC_READ_FILE_TOOL_ID and intent == "list":
+                    raise PCQueryStepError(
+                        "model tool selection is outside this execution scope",
+                        detail="tool_scope_denied",
+                    )
                 if (
                     isinstance(path, str) and 0 < len(path) <= 2048
                     and not any(ord(ch) < 32 for ch in path)

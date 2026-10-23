@@ -373,7 +373,7 @@ _PC_QUERY_STREAM_AGENT_IDS = frozenset({
 _PC_QUERY_STREAM_APP_IDS = frozenset({"b54-padiem-claw", "padiem-chat"})
 
 # #5015: the PC execution target is a wire field only for one exact product
-# app/agent pair and one of the two canonical PC plan shapes. Every other
+# app/agent pair and one of the canonical PC plan shapes. Every other
 # payload keeps tool_arguments an unsupported field.
 _PC_QUERY_APP_AGENT_PAIRS = {
     "b54-padiem-claw": "agent:padiem:claw-pc-query@1",
@@ -381,6 +381,7 @@ _PC_QUERY_APP_AGENT_PAIRS = {
 }
 _PC_QUERY_PLAN_SHAPES = (
     (("query_drives", "claw.pc.query_drives"),),
+    (("list_files", "claw.pc.list_files"),),
     (("list_files", "claw.pc.list_files"), ("read_file", "claw.pc.read_file")),
 )
 
@@ -454,7 +455,7 @@ def _pc_query_selected_device(tool_arguments: Any) -> str | None:
     """The server-provided device hint for the PC tool plan, never model text."""
     if not isinstance(tool_arguments, dict):
         return None
-    for target_key in ("query_drives", "files"):
+    for target_key in ("query_drives", "files", "files_list"):
         if set(tool_arguments) != {target_key}:
             continue
         target = tool_arguments.get(target_key)
@@ -632,10 +633,13 @@ class OrchestrationEngineService:
         if plan.agent_id not in _PC_PLAN_AGENT_IDS:
             return
         step_ids = {step.step_id for step in plan.steps}
-        if tuple(
+        shape = tuple(
             (step.step_id, getattr(step, "tool_id", None))
             for step in plan.steps
-        ) == (
+        )
+        if shape == (("list_files", "claw.pc.list_files"),):
+            step_ids = {"files_list"}
+        elif shape == (
             ("list_files", "claw.pc.list_files"),
             ("read_file", "claw.pc.read_file"),
         ):
@@ -734,12 +738,29 @@ class OrchestrationEngineService:
                 f"Resolved {label} model is unavailable.",
                 status_code=503,
             )
+        tool_arguments = orch_req.tool_arguments
+        shape = tuple(
+            (step.step_id, getattr(step, "tool_id", None))
+            for step in orch_req.agent_plan.steps
+        )
+        ceiling = {
+            (("list_files", "claw.pc.list_files"),): "files_list",
+            (("list_files", "claw.pc.list_files"),
+             ("read_file", "claw.pc.read_file")): "files",
+        }.get(shape)
+        if ceiling is not None:
+            # The admitted plan fixes the ceiling even when the owner has no
+            # explicit device hint. This internal marker is never a target or
+            # a grant; owner resolution still uses the original request.
+            tool_arguments = {ceiling: dict(
+                (tool_arguments or {}).get(ceiling, {}),
+            )}
         return replace(
             orch_req,
             agent_step_driver=self._pc_query_step_driver_factory(
                 model_id, exec_req.agent.model_policy,
                 exec_req.agent.task_type, exec_req.agent.optimize_for,
-                tool_arguments=orch_req.tool_arguments,
+                tool_arguments=tool_arguments,
             ),
         )
 

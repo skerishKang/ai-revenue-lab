@@ -324,7 +324,7 @@ class _History:
         self.pairs.append((user_text, answer))
         return conversation_id or ("chat_" + "n" * 32)
 
-    async def record_chat_pc_drive_run(self, *, user_id, run_id, workspace_id, user_text, conversation_id):
+    async def record_chat_pc_drive_run(self, *, user_id, run_id, workspace_id, user_text, conversation_id, **extra):
         assert run_id.startswith("chat_pcq_")
         self.staged = {"run_id": run_id, "workspace_id": workspace_id}
         return conversation_id or ("chat_" + "s" * 32)
@@ -387,12 +387,39 @@ def test_lane_falls_through_for_anonymous_or_non_drive():
     asyncio.run(run())
 
 
-def test_lane_tool_path_stages_chat_run_and_records_answer():
+def _wire_selection(monkeypatch):
+    """A server-verified selected PC for the unified scope decision (#5573)."""
+    import app.pc_work_context as pc_work_context
+
+    device = "node/meshdomain1/owner-pc"
+    state = SimpleNamespace(
+        devices=[SimpleNamespace(device_id=device, state="READY")],
+        selected_confirmed=True,
+        execution=SimpleNamespace(ready=True),
+    )
+
+    async def _read(request, *, owner_id, workspace_id):
+        return SimpleNamespace(
+            status=pc_work_context.SAVED_SELECTION_SELECTED, device_id=device,
+        )
+
+    async def _resolve(request, **kwargs):
+        return state
+
+    monkeypatch.setattr(pc_work_context, "read_saved_device_selection", _read)
+    monkeypatch.setattr(pc_work_context, "resolve_pc_work_context", _resolve)
+    monkeypatch.setattr(
+        pc_work_context, "render_pc_work_context", lambda ctx: "selected PC",
+    )
+
+
+def test_lane_tool_path_stages_chat_run_and_records_answer(monkeypatch):
     import app.chat_pc_drive as lane
 
     tool_decision = json.dumps({
         "action": "tool", "tool_id": CHAT_PC_QUERY_TOOL_ID, "arguments": {},
     })
+    _wire_selection(monkeypatch)
     request, b14, bridge, history = _request(model_answers=[tool_decision])
 
     async def fake_owner(req, uid):
@@ -418,7 +445,7 @@ def test_lane_tool_path_stages_chat_run_and_records_answer():
         lane._resolve_chat_owner, lane._check_mesh_grant = old_owner, old_grant
     assert result is not None
     answer, conversation_id = result
-    assert "C:" in answer
+    assert answer == "C: 드라이브가 있습니다."
     assert conversation_id == "chat_" + "s" * 32
     # Engine got the Chat product lane: chat agent, chat session, canonical subject.
     sent = bridge.requests[0]
@@ -699,14 +726,14 @@ def test_chat_signed_endpoint_rejects_claw_product_and_wrong_command(monkeypatch
     assert status == 400
 
 
-def test_lane_complete_decision_answers_without_engine():
+def test_selected_pc_always_uses_the_single_engine_lane(monkeypatch):
     import app.chat_pc_drive as lane
 
+    _wire_selection(monkeypatch)
     request, b14, bridge, history = _request(
-        model_answers=[json.dumps({"action": "complete", "answer": "연결된 PC가 없습니다."})],
-        engine_answer="unused",
+        model_answers=[],
+        engine_answer="ok",
     )
-
     async def fake_owner(req, uid):
         session = SimpleNamespace(session_id="sess-b62-1", tenant_id="tenant-1",
                                   subject=SimpleNamespace(subject_id="sub_" + "a" * 32))
@@ -729,9 +756,11 @@ def test_lane_complete_decision_answers_without_engine():
         lane.auth_ready, lane.current_user_id = old_ready, old_uid
         lane._resolve_chat_owner, lane._check_mesh_grant = old_owner, old_grant
     assert result is not None
-    assert result[0] == "연결된 PC가 없습니다."
-    assert bridge.requests == []
-    assert history.staged is None
+    assert result is not None
+    assert len(bridge.requests) == 1
+    assert bridge.requests[0]["tool_arguments"] == {
+        "files": {"device_id": "node/meshdomain1/owner-pc"},
+    }
 
 def test_5015_mesh_grant_internal_diagnostics_are_fixed_codes_only(caplog):
     """Observe which existing gate refused, without exposing account/session values."""

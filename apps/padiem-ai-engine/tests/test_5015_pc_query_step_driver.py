@@ -146,7 +146,7 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
         if not observations:
             return {
                 "action": "tool", "tool_id": PC_LIST_FILES_TOOL_ID,
-                "arguments": {"path": "."},
+                "arguments": {"path": ".", "intent": "read"},
             }
         if len(observations) == 1:
             listed = json.loads(observations[0]["output"]["output"])
@@ -160,7 +160,12 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
             "answer": "읽은 내용: " + observations[-1]["output"]["content"],
         }
 
-    driver = StructuredPCQueryStepDriver(select_step=select_step)
+    # #5573/#5574: the Chat lane ships the trusted list+read ceiling for every
+    # PC files turn; the model's explicit read intent opens the per-turn gate.
+    driver = StructuredPCQueryStepDriver(
+        select_step=select_step,
+        allowed_tool_ids=frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID}),
+    )
     first = asyncio.run(driver.next_step(
         AgentStepContext.with_results(run_id="run_5015", step_index=1,
                          input_text="폴더 목록을 보고 TXT를 읽어줘", results=()),

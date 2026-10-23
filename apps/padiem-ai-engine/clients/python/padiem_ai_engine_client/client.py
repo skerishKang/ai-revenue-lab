@@ -107,6 +107,10 @@ _PC_PLAN_STEPS = MappingProxyType({
         ("list_files", "claw.pc.list_files"),
         ("read_file", "claw.pc.read_file"),
     ),
+    #: #5573: a listing-only request. The plan carries the list step alone, so
+    #: the Engine is told not to read; the Engine still refuses ``read_file``
+    #: for this hint. The table stays closed: any other shape is refused.
+    "files_list": (("list_files", "claw.pc.list_files"),),
 })
 #: Canonical PC device identity grammar (#5172). This client package has no
 #: runtime dependency, so the two patterns are copied verbatim from
@@ -133,7 +137,7 @@ def _trusted_pc_tool_arguments(agent_plan: Any, tool_arguments: Any) -> bool:
         return False
     if agent_plan.get("agent_id") not in _PC_PLAN_AGENT_IDS:
         return False
-    if set(tool_arguments) not in ({"query_drives"}, {"files"}):
+    if set(tool_arguments) not in ({"query_drives"}, {"files"}, {"files_list"}):
         return False
     key = next(iter(tool_arguments))
     steps = agent_plan.get("steps")

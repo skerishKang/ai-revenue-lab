@@ -431,11 +431,9 @@ async def api_chat_stream(request: Request):
         if not usage_decision.allowed:
             return _usage_denied_response(usage_decision)
 
-    # #5015 Chat PC drive lane: signed-in, tool/attachment-free turns asking
-    # for verified PC drives run the shared Mesh tool contract under the b62
-    # Chat product. Anything else (including anonymous users) falls through
-    # to the existing path unchanged.
-    if browser_project_id is None:
+    # #5015/#5573: only an explicit client PC run handle enters the PC lane.
+    # Ordinary chat keeps the existing stream path unchanged.
+    if browser_project_id is None and raw.get("pc_run_id") is not None:
         from .chat_pc_drive import ChatPCDriveError, execute_chat_pc_drive_lane
         try:
             lane_outcome = await execute_chat_pc_drive_lane(
@@ -899,9 +897,12 @@ async def api_chat(request: Request) -> JSONResponse:
         if not usage_decision.allowed:
             return _usage_denied_response(usage_decision)
 
-    # #5015 Chat PC drive lane (non-streaming twin of the stream hook above):
-    # tool/attachment/project turns and anonymous users fall through unchanged.
-    if browser_project_id is None and tool_request is None and not attachments:
+    # #5015/#5573: explicit client PC run handle only; ordinary JSON chat is
+    # untouched and never enters the PC lane.
+    if (
+        browser_project_id is None and tool_request is None and not attachments
+        and raw.get("pc_run_id") is not None
+    ):
         from .chat_pc_drive import run_chat_pc_drive_lane
         lane_response = await run_chat_pc_drive_lane(
             request, user_text=latest_user_text, skill=skill,
