@@ -28,8 +28,10 @@ owns.
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 import json
+import time
 from .native_calendar_intent import parse_native_calendar_intent, latest_user_text as latest_native_calendar_text
 from .native_calendar_adapter import execute_native_calendar_plan
 import re
@@ -87,6 +89,7 @@ from .claw_routes import (
     _resolve_intake_session_reference,
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
+from .request_telemetry import emit_stage_event
 from .auth_routes import auth_ready, current_user_id
 from .history import HISTORY_PREVIEW_SUFFIX, HistoryContextIncomplete, validate_conversation_id, PRODUCT_SCOPE_CHAT
 
@@ -106,6 +109,100 @@ CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
 # Same canonical device identity grammar the Broker device directory and the
 # saved PC preference expose, including the composed Mesh node identity.
+
+
+# #5554: bounded per-stage timing for the Claw turn. The route already had a
+# whole-request duration, which cannot say which of the (many) serial Engine,
+# D1 and provider steps actually held the answer. These stage events use the
+# existing request telemetry contract: a fixed stage name, a duration and the
+# request id only - never the message, model response, session or file text.
+CLAW_STAGE_ROUTE = "claw.route"
+CLAW_STAGE_HISTORY = "claw.history"
+CLAW_STAGE_SESSION = "claw.b54_session"
+CLAW_STAGE_DRIVE = "claw.drive"
+CLAW_STAGE_PC_CONTEXT = "claw.pc_context"
+CLAW_STAGE_CATALOG = "claw.catalog"
+CLAW_STAGE_QUOTA = "claw.quota"
+CLAW_STAGE_JUDGEMENT = "claw.search_judgement"
+CLAW_STAGE_ANSWER = "claw.answer"
+CLAW_STAGE_PERSIST = "claw.persist"
+
+
+def _claw_stage(stage: str, started: float, *, outcome: str = "ok") -> None:
+    """Emit one bounded stage duration; telemetry never fails the turn."""
+    try:
+        emit_stage_event(
+            stage=stage,
+            outcome=outcome,
+            duration_ms=(time.perf_counter() - started) * 1000.0,
+        )
+    except Exception:
+        pass
+
+
+async def _claw_timed(stage: str, awaitable: Any) -> Any:
+    """Await one preflight read and record its own duration."""
+    started = time.perf_counter()
+    try:
+        return await awaitable
+    finally:
+        _claw_stage(stage, started)
+
+
+async def _no_session_read() -> None:
+    """Keep the preflight gather's shape when no identity lane is composed."""
+    return None
+
+
+def _drain_task_result(task: "asyncio.Task[Any]") -> None:
+    """Retrieve a background result the turn may never await.
+
+    A turn refused by the PC target checks returns before the roster is
+    evaluated. Retrieving the outcome here keeps that bounded metadata read
+    from surfacing as an unretrieved task error; it never changes a response.
+    """
+    if task.cancelled():
+        return
+    try:
+        task.exception()
+    except Exception:
+        pass
+
+
+def _start_selectable_model_read(
+    request: Any, selected_model_id: str | None, central_route_model_id: str | None
+) -> tuple["asyncio.Task[Any] | None", bool]:
+    """#5614: start the model-roster read before the PC work context.
+
+    The roster read and the PC work context are independent reads of the same
+    signed request, and the roster read used to run strictly after the PC one.
+    Starting it first lets the two overlap on the wire.
+
+    Returns ``(task, unavailable)``. ``unavailable`` reproduces the exact 503
+    the sequential code returned when the composed catalog authority cannot
+    list models at all - the refusal is still raised at its original position
+    (after the PC target checks), never earlier.
+    """
+
+    if selected_model_id is None and central_route_model_id is None:
+        return None, False
+    resolver = getattr(
+        getattr(getattr(request, "app", None), "state", None),
+        "b14_model_choice_resolver",
+        None,
+    )
+    if resolver is None:
+        return None, False
+    list_fn = getattr(resolver, "list_selectable_models", None)
+    if not callable(list_fn):
+        return None, True
+    try:
+        read = _claw_timed(CLAW_STAGE_CATALOG, list_fn())
+    except Exception:
+        return None, True
+    task = asyncio.ensure_future(read)
+    task.add_done_callback(_drain_task_result)
+    return task, False
 
 
 def _combine_system_context(*parts: str | None) -> str | None:
@@ -1188,6 +1285,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     - no manual-intake/quote/order, B66, connector, Memory or sandbox semantics
       are involved.
     """
+    turn_started = time.perf_counter()
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
@@ -1399,6 +1497,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         central_route_model_id = selected_model_id
         selected_model_id = None
 
+    _claw_stage(CLAW_STAGE_ROUTE, turn_started)
+
     # #3929: optional SAME-CONVERSATION follow-ups are verified against the
     # existing owner-scoped D1 conversation before quota/provider. No model,
     # filename, query string or user-reported owner can bind a conversation.
@@ -1408,40 +1508,69 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if conversation_error is not None:
         return conversation_error
 
-    # Load ONLY prior messages from the reverified owner-scoped server history.
-    # A browser-supplied array of prior turns never becomes model context.
-    try:
-        model_user_text = await _owner_claw_context(request, conversation_id, user_text)
-    except HistoryContextIncomplete:
-        return _error(409, "conversation_context_incomplete",
-                      "이전 대화 원문을 복원할 수 없습니다. 새 대화를 시작하거나 원문을 다시 입력해 주세요.")
-    except Exception:
-        return _error(503, "conversation_authority_unavailable",
-                      "대화 문맥을 안전하게 확인할 수 없습니다.")
-
-    # Explicit transport/resource failure before quota; do not silently
-    # truncate the owned prior context or present an Engine ingress guard as a
-    # provider model-token ceiling. Full serialized Engine checks stay active.
     # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
     # usage gate and before any P01/Engine dispatch, so a failed revalidation
     # never consumes quota and never reaches a provider.
     adapter: P01CoreOrchestrationAdapter | None = getattr(
         request.app.state, "claw_p01_adapter", None
     )
+    has_identity_lane = (
+        adapter is not None
+        and getattr(adapter, "subject_identity_lane", False) is True
+    )
+
+    # Explicit transport/resource failure before quota; do not silently
+    # truncate the owned prior context or present an Engine ingress guard as a
+    # provider model-token ceiling. Full serialized Engine checks stay active.
+    #
+    # #5554: the owned history read, the canonical B54 session and the Drive
+    # grounding are three independent reads of the same signed request. They
+    # used to run one after another, so a short Claw message paid their sum
+    # before the model was even asked. They are issued together now and each
+    # keeps its own stage duration. The refusals below are still evaluated in
+    # the original order (history, then the session lane, then Drive), each
+    # read is still fail-closed, and nothing reaches a quota, a provider or a
+    # PC lane while these preflight reads are in flight.
+    if has_identity_lane:
+        from .b54_canonical_session import resolve_current_b54_canonical_session
+
+        session_read = _claw_timed(
+            CLAW_STAGE_SESSION, resolve_current_b54_canonical_session(request)
+        )
+    else:
+        session_read = _claw_timed(CLAW_STAGE_SESSION, _no_session_read())
+    # Load ONLY prior messages from the reverified owner-scoped server history.
+    # A browser-supplied array of prior turns never becomes model context.
+    # Use the signed owner and Control Plane workspace for the connected Drive.
+    # Never let browser-provided historical turns choose file access.
+    history_read, b54_session, drive_result = await asyncio.gather(
+        _claw_timed(
+            CLAW_STAGE_HISTORY,
+            _owner_claw_context(request, conversation_id, user_text),
+        ),
+        session_read,
+        _claw_timed(CLAW_STAGE_DRIVE, drive_general_grounding(request, user_text)),
+        return_exceptions=True,
+    )
+    if isinstance(history_read, Exception):
+        if isinstance(history_read, HistoryContextIncomplete):
+            return _error(409, "conversation_context_incomplete",
+                          "이전 대화 원문을 복원할 수 없습니다. 새 대화를 시작하거나 원문을 다시 입력해 주세요.")
+        return _error(503, "conversation_authority_unavailable",
+                      "대화 문맥을 안전하게 확인할 수 없습니다.")
+    if isinstance(history_read, BaseException):
+        raise history_read
+    model_user_text = history_read
+
     subject_id: str | None = None
     authorized_workspace_id: str | None = None
     canonical_session_id: str | None = None
-    if conversation_id is not None and (
-        adapter is None or getattr(adapter, "subject_identity_lane", False) is not True
-    ):
+    if conversation_id is not None and not has_identity_lane:
         return _error(403, "canonical_b54_session_unavailable",
                       "인증된 Claw 실행 권한을 확인할 수 없습니다.")
-    if adapter is not None and getattr(
-        adapter, "subject_identity_lane", False
-    ) is True:
-        from .b54_canonical_session import resolve_current_b54_canonical_session
-
-        b54_session = await resolve_current_b54_canonical_session(request)
+    if has_identity_lane:
+        if isinstance(b54_session, BaseException):
+            raise b54_session
         if b54_session is None:
             return _error(
                 403,
@@ -1456,12 +1585,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 return _error(403, "workspace_scope_unavailable",
                               "대화 작업 공간을 확인할 수 없습니다.")
 
-    # Use the signed owner and Control Plane workspace for the connected
-    # Drive. Never let browser-provided historical turns choose file access.
-    try:
-        drive_context, drive_sources = await drive_general_grounding(request, user_text)
-    except DriveGroundingError as exc:
-        return _error(exc.status_code, exc.code, exc.message)
+    if isinstance(drive_result, Exception):
+        if isinstance(drive_result, DriveGroundingError):
+            return _error(drive_result.status_code, drive_result.code, drive_result.message)
+        raise drive_result
+    if isinstance(drive_result, BaseException):
+        raise drive_result
+    drive_context, drive_sources = drive_result
 
     # #5015: one per-request, server-verified PC work context. It reads BOTH
     # the owner/workspace-scoped Broker directory the "내 컴퓨터" panel shows
@@ -1470,6 +1600,14 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # permission. It is not an execution grant: dispatch re-verifies the owner
     # and the exact target.
     pc_work_text: str | None = None
+    pc_context_started = time.perf_counter()
+    # #5614: the account's selectable-model roster is an independent read, so
+    # it starts here and is evaluated after the PC block. The PC target checks
+    # therefore still decide first and still fail closed; only the read itself
+    # overlaps.
+    catalog_task, catalog_unavailable = _start_selectable_model_read(
+        request, selected_model_id, central_route_model_id,
+    )
     pc_owner = current_user_id(request) if auth_ready(request) else None
     if isinstance(pc_owner, str) and pc_owner:
         from .claw_memory_routes import _resolve_memory_workspace
@@ -1552,33 +1690,34 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             if pc_files_requested:
                 pc_files_device_id = selected_pc_device_id
         pc_work_text = render_pc_work_context(pc_context)
+    _claw_stage(CLAW_STAGE_PC_CONTEXT, pc_context_started)
 
     # #3790: in the production Worker Claw uses the central model
     # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
     # before quota/P01. Test-only deployments without this optional view still
     # rely on B14's final exact-ID execution authority.
-    if selected_model_id is not None or central_route_model_id is not None:
-        choice_authority = getattr(request.app.state, "b14_model_choice_resolver", None)
-        if choice_authority is not None:
-            list_fn = getattr(choice_authority, "list_selectable_models", None)
-            if not callable(list_fn):
-                return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
-            try:
-                available = await list_fn()
-                if not isinstance(available, list):
-                    raise ValueError("invalid model roster")
-                eligible_ids = {row["model_id"] for row in available}
-            except (Exception,):
-                return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
-            target_model = selected_model_id or central_route_model_id
-            if target_model not in eligible_ids:
-                # Only a server-resolved central route may advance to its
-                # explicitly configured fallback. A member choice never does.
-                if (selected_model_id is None
-                        and claw_route.fallback_model_id in eligible_ids):
-                    central_route_model_id = claw_route.fallback_model_id
-                else:
-                    return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 모델을 선택해 주세요.")
+    #
+    # #5614: the read was started before the PC work context and is only
+    # EVALUATED here, so this refusal still comes after the PC target checks.
+    if catalog_unavailable:
+        return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
+    if catalog_task is not None:
+        try:
+            available = await catalog_task
+            if not isinstance(available, list):
+                raise ValueError("invalid model roster")
+            eligible_ids = {row["model_id"] for row in available}
+        except (Exception,):
+            return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
+        target_model = selected_model_id or central_route_model_id
+        if target_model not in eligible_ids:
+            # Only a server-resolved central route may advance to its
+            # explicitly configured fallback. A member choice never does.
+            if (selected_model_id is None
+                    and claw_route.fallback_model_id in eligible_ids):
+                central_route_model_id = claw_route.fallback_model_id
+            else:
+                return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 모델을 선택해 주세요.")
 
     live_requested = (
         request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
@@ -1593,6 +1732,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # the helper returns None without touching any store, keeping the exact
     # historical first-turn path below byte-for-byte identical. When enabled,
     # a missing canonical subject or tenant fails closed here, pre-quota.
+    quota_started = time.perf_counter()
     first_turn_context: B54VerifiedCodingContextV1 | None = None
     if conversation_id is None:
         try:
@@ -1607,6 +1747,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             return _error(gate_exc.status_code, gate_exc.code, gate_exc.message)
 
     denial = await _usage_gate_denial(request)
+    _claw_stage(CLAW_STAGE_QUOTA, quota_started)
     if denial is not None:
         return denial
 
@@ -1750,10 +1891,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         # call before the Engine PC tool dispatch.
         grounding_context, search_sources = None, ()
     elif drive_context is None:
+        judgement_started = time.perf_counter()
         grounding_context, search_sources = await _claw_public_search_grounding(
             request, adapter, model_user_text,
             model_id=selected_model_id or central_route_model_id,
         )
+        _claw_stage(CLAW_STAGE_JUDGEMENT, judgement_started)
     else:
         grounding_context, search_sources = drive_context, drive_sources
 
@@ -1877,7 +2020,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             dispatch_args["central_route_model_id"] = central_route_model_id
         if combined_system_context is not None:
             dispatch_args["additional_system_context"] = combined_system_context
+        answer_started = time.perf_counter()
         outcome = await adapter.execute(run, **dispatch_args)
+        _claw_stage(CLAW_STAGE_ANSWER, answer_started)
     except P01AdapterError as exc:
         if staged_conversation_id is not None:
             await _mark_staged_run_failed(request, run.run_id)
@@ -1974,6 +2119,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
 
     # Preserve the existing completed-path persistence contract; the live
     # callback above now uses the exact same authority and read-model logic.
+    persist_started = time.perf_counter()
     saved_conversation_id = await _record_completed_claw_result(
         request, run_id=run.run_id, conversation_id=conversation_id,
         user_text=user_text, answer=outcome.answer,
@@ -1981,6 +2127,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         first_turn_grant=first_turn_context,
         staged_conversation_id=staged_conversation_id,
     )
+    _claw_stage(CLAW_STAGE_PERSIST, persist_started)
     return _claw_general_sse(
         outcome.answer,
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
