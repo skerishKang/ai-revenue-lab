@@ -1,0 +1,610 @@
+[
+  {
+    "name": "padiem-glass-820x1180",
+    "state": "login",
+    "theme": "padiem-glass",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(22, 30, 38, 0.32)",
+      "backdropFilter": "blur(8px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "linear-gradient(160deg, rgba(246, 249, 251, 0.76), rgba(216, 224, 229, 0.56))",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(255, 255, 255, 0.66)",
+      "borderRadius": "18px",
+      "backdropFilter": "blur(34px) saturate(1.12)"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(22, 30, 38, 0.32)",
+      "backdropFilter": "blur(8px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(23, 33, 42)",
+      "borderColor": "rgba(255, 255, 255, 0.78)",
+      "backdropFilter": "blur(30px) saturate(1.08)"
+    }
+  },
+  {
+    "name": "padiem-glass-820x1180",
+    "state": "signup"
+  },
+  {
+    "name": "padiem-glass-820x1180",
+    "state": "reset"
+  },
+  {
+    "name": "padiem-glass-390x844",
+    "state": "login",
+    "theme": "padiem-glass",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(22, 30, 38, 0.32)",
+      "backdropFilter": "blur(8px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "linear-gradient(160deg, rgba(246, 249, 251, 0.76), rgba(216, 224, 229, 0.56))",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(255, 255, 255, 0.66)",
+      "borderRadius": "18px",
+      "backdropFilter": "blur(34px) saturate(1.12)"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(22, 30, 38, 0.32)",
+      "backdropFilter": "blur(8px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(23, 33, 42)",
+      "borderColor": "rgba(255, 255, 255, 0.78)",
+      "backdropFilter": "blur(30px) saturate(1.08)"
+    }
+  },
+  {
+    "name": "padiem-glass-1440x900",
+    "state": "login",
+    "theme": "padiem-glass",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(22, 30, 38, 0.32)",
+      "backdropFilter": "blur(8px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "linear-gradient(160deg, rgba(246, 249, 251, 0.76), rgba(216, 224, 229, 0.56))",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(255, 255, 255, 0.66)",
+      "borderRadius": "18px",
+      "backdropFilter": "blur(34px) saturate(1.12)"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(22, 30, 38, 0.32)",
+      "backdropFilter": "blur(8px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(23, 33, 42)",
+      "borderColor": "rgba(255, 255, 255, 0.78)",
+      "backdropFilter": "blur(30px) saturate(1.08)"
+    }
+  },
+  {
+    "name": "padiem-glass-1920x1080",
+    "state": "login",
+    "theme": "padiem-glass",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(22, 30, 38, 0.32)",
+      "backdropFilter": "blur(8px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "linear-gradient(160deg, rgba(246, 249, 251, 0.76), rgba(216, 224, 229, 0.56))",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(255, 255, 255, 0.66)",
+      "borderRadius": "18px",
+      "backdropFilter": "blur(34px) saturate(1.12)"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(23, 32, 42)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(22, 30, 38, 0.32)",
+      "backdropFilter": "blur(8px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(23, 33, 42)",
+      "borderColor": "rgba(255, 255, 255, 0.78)",
+      "backdropFilter": "blur(30px) saturate(1.08)"
+    }
+  },
+  {
+    "name": "dark-820x1180",
+    "state": "login",
+    "theme": "dark",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgb(26, 35, 45)",
+      "backgroundImage": "none",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgb(75, 100, 120)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(162, 213, 245)",
+      "color": "rgb(19, 38, 55)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgb(75, 100, 120)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "dark-820x1180",
+    "state": "signup"
+  },
+  {
+    "name": "dark-820x1180",
+    "state": "reset"
+  },
+  {
+    "name": "dark-390x844",
+    "state": "login",
+    "theme": "dark",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgb(26, 35, 45)",
+      "backgroundImage": "none",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgb(75, 100, 120)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(162, 213, 245)",
+      "color": "rgb(19, 38, 55)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgb(75, 100, 120)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "dark-1440x900",
+    "state": "login",
+    "theme": "dark",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgb(26, 35, 45)",
+      "backgroundImage": "none",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgb(75, 100, 120)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(162, 213, 245)",
+      "color": "rgb(19, 38, 55)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgb(75, 100, 120)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "dark-1920x1080",
+    "state": "login",
+    "theme": "dark",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgb(26, 35, 45)",
+      "backgroundImage": "none",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgb(75, 100, 120)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(162, 213, 245)",
+      "color": "rgb(19, 38, 55)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(237, 245, 252)",
+      "borderColor": "rgb(75, 100, 120)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "light-820x1180",
+    "state": "login",
+    "theme": "light",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(127, 127, 127, 0.24)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(255, 255, 255, 0.72)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "light-390x844",
+    "state": "login",
+    "theme": "light",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(127, 127, 127, 0.24)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(255, 255, 255, 0.72)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "light-1440x900",
+    "state": "login",
+    "theme": "light",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(127, 127, 127, 0.24)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(255, 255, 255, 0.72)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "light-1920x1080",
+    "state": "login",
+    "theme": "light",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(127, 127, 127, 0.24)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(25, 25, 29)",
+      "borderColor": "rgba(255, 255, 255, 0.72)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "cinematic-820x1180",
+    "state": "login",
+    "theme": "cinematic",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgba(10, 14, 22, 0.72)",
+      "backgroundImage": "none",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(127, 127, 127, 0.24)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(255, 255, 255, 0.72)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "cinematic-390x844",
+    "state": "login",
+    "theme": "cinematic",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgba(10, 14, 22, 0.72)",
+      "backgroundImage": "none",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(127, 127, 127, 0.24)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(255, 255, 255, 0.72)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "cinematic-1440x900",
+    "state": "login",
+    "theme": "cinematic",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgba(10, 14, 22, 0.72)",
+      "backgroundImage": "none",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(127, 127, 127, 0.24)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(255, 255, 255, 0.72)",
+      "backdropFilter": "none"
+    }
+  },
+  {
+    "name": "cinematic-1920x1080",
+    "state": "login",
+    "theme": "cinematic",
+    "authOpen": true,
+    "authBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "authPanel": {
+      "backgroundColor": "rgba(10, 14, 22, 0.72)",
+      "backgroundImage": "none",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(127, 127, 127, 0.24)",
+      "borderRadius": "18px",
+      "backdropFilter": "none"
+    },
+    "authPrimary": {
+      "backgroundColor": "rgb(17, 17, 17)",
+      "color": "rgb(255, 255, 255)"
+    },
+    "authGoogle": {
+      "backgroundColor": "rgba(127, 127, 127, 0.08)",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(127, 127, 127, 0.28)"
+    },
+    "settingsBackdrop": {
+      "backgroundColor": "rgba(18, 24, 31, 0.38)",
+      "backdropFilter": "blur(10px)"
+    },
+    "settingsPanel": {
+      "backgroundColor": "rgba(247, 250, 252, 0.94)",
+      "color": "rgb(247, 248, 250)",
+      "borderColor": "rgba(255, 255, 255, 0.72)",
+      "backdropFilter": "none"
+    }
+  }
+]
