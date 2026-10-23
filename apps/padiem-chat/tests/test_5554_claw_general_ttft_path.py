@@ -31,6 +31,8 @@ import pytest
 import app.claw_general_routes as general_routes_module
 from app.drive_general_grounding import DriveGroundingError
 from app.history import HistoryContextIncomplete
+from app import claw_routes as claw_routes_module
+from app import request_telemetry as telemetry_module
 
 import test_b54_claw_general_p01_routing as base
 
@@ -90,8 +92,12 @@ def _install_barrier(monkeypatch: pytest.MonkeyPatch, barrier: _Barrier) -> None
             raise AssertionError("the history read never started")
         return None, ()
 
+    async def _session_ref(request, data):
+        return None, None
+
     monkeypatch.setattr(general_routes_module, "_owner_claw_context", _history)
     monkeypatch.setattr(general_routes_module, "drive_general_grounding", _drive)
+    monkeypatch.setattr(claw_routes_module, "_resolve_intake_session_reference", _session_ref)
 
 
 def _record_stages(monkeypatch: pytest.MonkeyPatch) -> list[dict]:
@@ -100,6 +106,7 @@ def _record_stages(monkeypatch: pytest.MonkeyPatch) -> list[dict]:
     def _capture(*, stage, outcome, duration_ms, **extra):
         events.append({"stage": stage, "outcome": outcome, "duration_ms": duration_ms, **extra})
 
+    monkeypatch.setattr(telemetry_module, "emit_stage_event", _capture)
     monkeypatch.setattr(general_routes_module, "emit_stage_event", _capture)
     return events
 

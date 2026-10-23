@@ -398,29 +398,38 @@ async def api_chat_stream(request: Request):
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
     identity_question = is_padiem_identity_question(latest_user_text)
-    try:
-        drive_context, drive_sources = (
-            (None, ()) if identity_question
-            else await drive_general_grounding(request, latest_user_text)
-        )
-    except DriveGroundingError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
-    if drive_context:
-        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
 
-    # #5015: the same server-verified PC work context the Claw composer
-    # receives, so a NEW Chat conversation recognizes the account's connected
-    # PC and the one read-only PC tool without a browser-supplied claim. The
-    # context is an observation, never an execution grant.
-    pc_work_text: str | None = None
-    if uid is not None:
+    async def _drive_preflight() -> tuple[str | None, tuple[dict[str, str], ...]]:
+        if identity_question:
+            return (None, ())
+        return await drive_general_grounding(request, latest_user_text)
+
+    async def _pc_preflight() -> str | None:
+        if uid is None:
+            return None
         from .pc_work_context import build_pc_work_context_text
 
-        pc_work_text = await build_pc_work_context_text(request, owner_id=uid)
-        if pc_work_text:
-            reference_context = (
-                reference_context + "\n\n" if reference_context else ""
-            ) + pc_work_text
+        try:
+            result = await build_pc_work_context_text(request, owner_id=uid)
+        except Exception:
+            return None
+        return result if isinstance(result, str) else None
+
+    drive_result, pc_work_result = await asyncio.gather(_drive_preflight(), _pc_preflight(), return_exceptions=True)
+
+    if isinstance(drive_result, DriveGroundingError):
+        return JSONResponse({"error": {"code": drive_result.code, "message": drive_result.message}}, status_code=drive_result.status_code)
+
+    if isinstance(drive_result, BaseException):
+        drive_result = (None, ())
+
+    drive_context, drive_sources = drive_result if isinstance(drive_result, tuple) else (None, ())
+    if drive_context:
+        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
+    if isinstance(pc_work_result, str):
+        reference_context = (
+            reference_context + "\n\n" if reference_context else ""
+        ) + pc_work_result
 
     if request.app.state.usage_gate_enforced:
         usage_gate: UsageGate = request.app.state.usage_gate
@@ -867,28 +876,38 @@ async def api_chat(request: Request) -> JSONResponse:
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
     identity_question = is_padiem_identity_question(latest_user_text)
-    try:
-        drive_context, drive_sources = (
-            (None, ()) if identity_question
-            else await drive_general_grounding(request, latest_user_text)
-        )
-    except DriveGroundingError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
-    if drive_context:
-        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
 
-    # #5015: the same server-verified PC work context the Claw composer
-    # receives, so a NEW Chat conversation recognizes the account's connected
-    # PC and the one read-only PC tool without a browser-supplied claim. The
-    # context is an observation, never an execution grant.
-    if uid is not None:
+    async def _drive_preflight() -> tuple[str | None, tuple[dict[str, str], ...]]:
+        if identity_question:
+            return (None, ())
+        return await drive_general_grounding(request, latest_user_text)
+
+    async def _pc_preflight() -> str | None:
+        if uid is None:
+            return None
         from .pc_work_context import build_pc_work_context_text
 
-        pc_work_text = await build_pc_work_context_text(request, owner_id=uid)
-        if pc_work_text:
-            reference_context = (
-                reference_context + "\n\n" if reference_context else ""
-            ) + pc_work_text
+        try:
+            result = await build_pc_work_context_text(request, owner_id=uid)
+        except Exception:
+            return None
+        return result if isinstance(result, str) else None
+
+    drive_result, pc_work_result = await asyncio.gather(_drive_preflight(), _pc_preflight(), return_exceptions=True)
+
+    if isinstance(drive_result, DriveGroundingError):
+        return JSONResponse({"error": {"code": drive_result.code, "message": drive_result.message}}, status_code=drive_result.status_code)
+
+    if isinstance(drive_result, BaseException):
+        drive_result = (None, ())
+
+    drive_context, drive_sources = drive_result if isinstance(drive_result, tuple) else (None, ())
+    if drive_context:
+        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
+    if isinstance(pc_work_result, str):
+        reference_context = (
+            reference_context + "\n\n" if reference_context else ""
+        ) + pc_work_result
 
     if request.app.state.usage_gate_enforced:
         usage_gate: UsageGate = request.app.state.usage_gate

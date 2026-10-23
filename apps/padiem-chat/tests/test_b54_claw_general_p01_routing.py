@@ -92,8 +92,8 @@ class _AuthStore:
     async def get_user(self, user_id: str):
         return None
 
-    async def get_conversation(self, user_id: str, conversation_id: str):
-        return None
+    async def get_conversation(self, user_id: str, conversation_id: str, product_scope: str):
+        return {"id": conversation_id} if conversation_id else None
 
 
 def _make_outcome(*, status: str = "completed", answer: str | None = "P01 결과"):
