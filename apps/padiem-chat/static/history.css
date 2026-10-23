@@ -134,9 +134,19 @@
   color: inherit;
 }
 
+/* #5666: use the shared settings-dialog dim. The auth-only 52% black dim made
+   every auth screen darker than any other popup in all four themes and hid the
+   page context behind the modal. */
 .auth-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.52);
-  backdrop-filter: blur(6px);
+  background: rgba(18, 24, 31, 0.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+html[data-theme="padiem-glass"] .auth-dialog::backdrop {
+  background: rgba(22, 30, 38, 0.32);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .auth-panel {
@@ -148,6 +158,31 @@
   background: var(--panel, #fff);
   color: var(--text, #202124);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+}
+
+/* #5666: the Glass theme reads var(--panel) at 46% alpha, which composited
+   into a murky gray over the dark backdrop. Give the auth panel the same
+   translucent surface as the settings dialog so it matches the shared Glass
+   visual language instead of dimming it away. */
+html[data-theme="padiem-glass"] .auth-panel {
+  background: linear-gradient(160deg, rgba(246, 249, 251, 0.76), rgba(216, 224, 229, 0.56));
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  box-shadow: 0 30px 90px rgba(17, 25, 33, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(34px) saturate(112%);
+  -webkit-backdrop-filter: blur(34px) saturate(112%);
+}
+
+/* #5666: the dark theme keeps its flat panel but gets the shared dialog
+   border/text treatment, and a primary CTA that is visible on it — the same
+   colors the dark theme already uses for its composer send button. */
+html[data-theme="dark"] .auth-panel {
+  color: #edf5fc;
+  border-color: #4b6478;
+}
+
+html[data-theme="dark"] .auth-primary {
+  background: #a2d5f5;
+  color: #132637;
 }
 
 .auth-header {
