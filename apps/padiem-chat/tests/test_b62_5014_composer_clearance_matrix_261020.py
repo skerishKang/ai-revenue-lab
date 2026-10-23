@@ -308,11 +308,11 @@ def test_the_reserved_space_is_measured_not_an_arbitrary_inset():
     ):
         text = (STATIC / sheet).read_text(encoding="utf-8")
         assert forbidden not in text, f"{sheet} still pins an arbitrary inset: {forbidden}"
-    # The directory panel leaves the fixed composer area, so the fixed area
-    # cannot grow over the content above it.
+    # The directory panel is owned by the shared composer: it opens directly
+    # above the composer area, inside the composer's width.
     manager = (STATIC / "claw-device-manager.js").read_text(encoding="utf-8")
-    assert "composerColumn.insertBefore(panel, composerArea)" in manager
-    assert "root.append(toggle, panel)" not in manager
+    assert "root.append(toggle, panel)" in manager
+    assert "composerColumn.insertBefore(panel, composerArea)" not in manager
 
 
 WORKBENCH_BOX = """() => {
