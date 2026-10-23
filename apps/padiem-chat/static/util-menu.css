@@ -1,0 +1,26 @@
+.util-view { padding: 16px; max-width: 900px; margin: 0 auto; }
+.util-header h2 { margin: 0 0 4px; }
+.util-tagline { color: #666; margin: 0 0 12px; }
+.util-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.util-tab { padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px; background: #fff; cursor: pointer; }
+.util-tab.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.util-soon { font-size: 11px; color: #999; margin-left: 4px; }
+.util-panel { display: block; }
+.util-form { display: flex; flex-direction: column; gap: 10px; }
+.util-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.util-form input, .util-form textarea, .util-form select { padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+.util-generate { padding: 10px 16px; background: #4f46e5; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.util-result { margin-top: 16px; }
+.util-result textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+.util-actions { display: flex; gap: 8px; margin-top: 8px; }
+.util-actions button { padding: 8px 14px; border: 1px solid #ddd; border-radius: 6px; background: #fff; cursor: pointer; }
+.util-saved-list, .util-archive { margin-top: 16px; }
+.util-saved-list ul, .util-archive ul { list-style: none; padding: 0; }
+.util-saved-list li, .util-archive li { margin: 4px 0; }
+.util-saved-list button, .util-archive button { padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px; background: #fff; cursor: pointer; width: 100%; text-align: left; }
+.util-empty { color: #999; font-size: 13px; }
+.util-soon-msg { color: #999; padding: 20px; text-align: center; }
+@media (max-width: 600px) {
+  .util-view { padding: 12px; }
+  .util-tabs { flex-wrap: wrap; }
+}
