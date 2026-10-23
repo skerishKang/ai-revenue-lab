@@ -25,6 +25,17 @@
   padding: 28px clamp(18px, 4vw, 44px) 40px;
 }
 
+/* At <=920px the library view is not inside the six-panel frame, so it has no
+   opaque surface of its own. The z-index above keeps it over the portrait, but
+   without a background the portrait still renders through the whole page.
+   Give it the same surface the meeting view uses so the library reads as its
+   own page at the narrow breakpoint. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="library"] .library-view {
+    background: rgba(242, 245, 247, 0.96);
+  }
+}
+
 .app-shell[data-state="library"] .library-view {
   display: flex;
 }
