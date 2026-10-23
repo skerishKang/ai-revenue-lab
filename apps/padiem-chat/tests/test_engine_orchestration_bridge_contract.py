@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from padiem_ai_engine_client import PadiemAiEngineClientError
+
 from app.orchestration_bridge import (
     B62EngineOrchestrationBridge,
     B62OrchestrationError,
@@ -331,3 +333,68 @@ def test_browser_transport_never_calls_engine_internal_routes_directly() -> None
     assert "document." not in transport
     assert "PadiemChatOrchestrationController" in lifecycle
     assert "orchestrationUi.render" in lifecycle
+
+
+class FailingEngineClient:
+    """The Engine transport refuses before any orchestration body exists."""
+
+    def __init__(self, code, message: str, status: int | None) -> None:
+        self.error = PadiemAiEngineClientError(code, message, status=status)
+
+    async def orchestrate(self, request):
+        raise self.error
+
+
+def _start_failing(error: PadiemAiEngineClientError) -> B62OrchestrationError:
+    client = FailingEngineClient(error.code, str(error), error.status)
+    bridge = B62EngineOrchestrationBridge(client=client, store=FakeStore())
+    with pytest.raises(B62OrchestrationError) as captured:
+        asyncio.run(
+            bridge.start(
+                user_id="usr_0123456789abcdef0123456789abcdef",
+                messages=[{"role": "user", "content": "질문"}],
+                skill=get_task_mode("auto"),
+                model_id="kilo/minimax-minimax-m3-free",
+                user_text="질문",
+                conversation_id=None,
+            )
+        )
+    return captured.value
+
+
+@pytest.mark.parametrize(
+    ("engine_code", "status", "expected_copy"),
+    (
+        ("upstream_auth_error", 403, "인증"),
+        ("upstream_server_error", 502, "오류"),
+        ("timeout", 504, "시간이 초과"),
+    ),
+)
+def test_engine_failure_code_crosses_the_bridge_with_product_copy(engine_code, status, expected_copy) -> None:
+    """#5568: the browser gets the bounded code, never the Engine's text."""
+    raw = "RAW PROVIDER BODY https://provider.internal/v1 secret sk-live-123"
+    failure = _start_failing(PadiemAiEngineClientError(engine_code, raw, status=status))
+
+    assert failure.code == engine_code
+    assert failure.status_code == status
+    assert expected_copy in failure.user_message
+    assert "RAW PROVIDER" not in failure.user_message
+    assert "provider.internal" not in failure.user_message
+    assert "sk-live" not in failure.user_message
+
+
+def test_unlisted_engine_code_collapses_to_unknown_error_without_leaking_the_code() -> None:
+    """#5568: an allowlist miss is a bounded category, never echoed verbatim."""
+    failure = _start_failing(
+        PadiemAiEngineClientError(
+            "provider_route_private_42",
+            "internal route https://provider.internal/v1 failed",
+            status=500,
+        )
+    )
+
+    assert failure.code == "unknown_error"
+    assert failure.status_code == 500
+    assert "provider_route_private_42" not in failure.user_message
+    assert "provider.internal" not in failure.user_message
+    assert failure.user_message == "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요."
