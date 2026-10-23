@@ -23,7 +23,10 @@ from pypdf import PdfWriter
 from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject, NumberObject
 
 import padiem_ai_core.pdf_markdown as pdf_markdown
-from padiem_ai_core import document_normalization
+from padiem_ai_core.document_normalization import (
+    MAX_PDF_PAGES as _CORE_MAX_PDF_PAGES,
+    MAX_PDF_PAGE_TEXT_CHARS as _CORE_MAX_PDF_PAGE_TEXT_CHARS,
+)
 from padiem_ai_core.document_normalization import DocumentNormalizationError
 from padiem_ai_core.pdf_markdown import (
     CONVERT_MODE_FAST,
@@ -435,13 +438,13 @@ def test_agreement_numbers_are_never_labelled_accuracy() -> None:
 
 def test_conversion_reuses_core_bounds_and_invents_no_ceiling() -> None:
     assert re.findall(r"^MAX_[A-Z0-9_]+ = ", ENGINE_SOURCE, re.MULTILINE) == []
-    assert pdf_markdown.MAX_PDF_PAGES is document_normalization.MAX_PDF_PAGES
+    assert pdf_markdown.MAX_PDF_PAGES is _CORE_MAX_PDF_PAGES
     assert (
         pdf_markdown.MAX_PDF_PAGE_TEXT_CHARS
-        is document_normalization.MAX_PDF_PAGE_TEXT_CHARS
+        is _CORE_MAX_PDF_PAGE_TEXT_CHARS
     )
     with pytest.raises(DocumentNormalizationError) as too_long:
-        convert(blank_pdf(document_normalization.MAX_PDF_PAGES + 1))
+        convert(blank_pdf(_CORE_MAX_PDF_PAGES + 1))
     assert too_long.value.code == "pdf_page_limit"
 
 
