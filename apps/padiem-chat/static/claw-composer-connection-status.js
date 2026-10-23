@@ -237,6 +237,11 @@
     }
 
     function openExistingPanel() {
+      const shell = document.querySelector(".app-shell");
+      if (shell && shell.dataset.clawComposerCollapsed === "true") {
+        const composerToggle = document.getElementById("clawMobileComposerToggle");
+        if (composerToggle) composerToggle.click();
+      }
       const toggle = document.getElementById("clawDeviceManagerToggle");
       if (toggle) {
         toggle.click();
