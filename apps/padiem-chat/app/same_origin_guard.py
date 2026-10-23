@@ -284,6 +284,17 @@ class SameOriginGuardMiddleware:
             and path.endswith("/files")
         ):
             return None
+        # #5568 PDF/ZIP originals for the Markdown utility are raw binary on one
+        # owner-scoped upload route, declaring their document type in a header. The
+        # exact Origin, cookie and route-local owner checks above still apply.
+        if (
+            scope.get("method") == "POST"
+            and media_type == "application/octet-stream"
+            and len(path.split("/")) == 5
+            and path.startswith("/api/document-conversions/")
+            and path.endswith("/files")
+        ):
+            return None
         # No body and no declared type (e.g. an empty POST/DELETE) is fine;
         # any declared non-JSON type, or a body without a JSON type, is not.
         if media_type or _body_present(scope):
