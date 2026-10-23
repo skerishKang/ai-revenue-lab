@@ -2805,6 +2805,40 @@ _PC_FILES_READ_ROOT_REF = "pc_files_read"
 _PC_FILES_SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,127}$")
 
 
+def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
+    """Authenticate the optional ceiling without widening the legacy body."""
+    import hmac
+    encoded = request.headers.get("X-Claw-PC-Scope")
+    proof = request.headers.get("X-Claw-PC-Scope-Proof")
+    if encoded is None and proof is None:
+        return None, None  # Old Engine compatibility; existing auth still runs.
+    if not isinstance(encoded, str) or len(encoded) > 1024 or not isinstance(proof, str):
+        return None, _error(401, "pc_scope_proof_invalid")
+    secret = getattr(request.app.state, "claw_engine_desktop_secret", "")
+    timestamp = request.headers.get("X-Claw-Engine-Time", "")
+    expected = hmac.new(secret.encode(), timestamp.encode() + b"." + raw + b"." + encoded.encode(), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(proof, expected):
+        return None, _error(401, "pc_scope_proof_invalid")
+    try:
+        claim = json.loads(encoded)
+    except (ValueError, TypeError):
+        return None, _error(422, "pc_scope_claim_invalid")
+    scopes = {"files_list": ["list"], "files": ["list", "read"], "query_drives": ["drives"], "none": []}
+    if (
+        not isinstance(claim, dict)
+        or set(claim) != {"version", "requested", "admitted", "source", "ops", "app_id"}
+        or type(claim["version"]) is not int or claim["version"] != 1
+        or not isinstance(claim["requested"], str) or claim["requested"] not in scopes
+        or not isinstance(claim["admitted"], str) or claim["admitted"] not in scopes
+        or claim["ops"] != scopes[claim["admitted"]]
+        or not set(claim["ops"]).issubset(scopes[claim["requested"]])
+        or claim["source"] not in ("declared", "decision", "missing")
+        or claim["app_id"] != ("padiem-chat" if product == "chat" else "b54-padiem-claw")
+    ):
+        return None, _error(422, "pc_scope_claim_invalid")
+    return claim, None
+
+
 def _pc_files_text(value: Any, *, limit: int) -> str | None:
     if not isinstance(value, str) or not value or len(value) > limit:
         return None
@@ -3020,6 +3054,9 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         return proof_error if proof_error is not None else _error(
             401, "claw_engine_proof_required",
         )
+    scope_claim, scope_error = _engine_pc_scope_claim(request, raw, product=product)
+    if scope_error is not None:
+        return scope_error
     try:
         payload = json.loads(raw)
     except (ValueError, TypeError):
@@ -3072,6 +3109,14 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     ):
         return _error(404, "oracle_mesh_run_unavailable")
 
+    scope_reader = getattr(history_store, "get_pc_run_scope", None)
+    try:
+        saved_scope = await scope_reader(user_id=uid, run_id=payload["run_id"]) if callable(scope_reader) else None
+    except Exception:
+        return _error(503, "pc_scope_store_unavailable")
+    if saved_scope is not None and scope_claim != saved_scope:
+        return _error(403, "pc_scope_required" if scope_claim is None else "pc_scope_frozen")
+
     resolved, target_error = await _engine_pc_files_target(
         request, session=session, selected_device_id=selected,
     )
@@ -3080,6 +3125,17 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     target = resolved["target"]
     root = resolved["root"]
     device_id = target.get("device_id") or target["node_ref"]
+
+    if mode in ("context", "dispatch") and scope_claim is not None:
+        scope_pinner = getattr(history_store, "pin_pc_run_scope", None)
+        if not callable(scope_pinner):
+            return _error(503, "pc_scope_store_unavailable")
+        try:
+            await scope_pinner(user_id=uid, run_id=payload["run_id"], claim=scope_claim)
+        except HistoryForbidden:
+            return _error(403, "pc_scope_frozen")
+        except Exception:
+            return _error(503, "pc_scope_store_unavailable")
 
     if mode == "context":
         folder_name = root.rsplit("/", 1)[-1]
@@ -3103,6 +3159,10 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         op = payload.get("op")
         if op not in ("list", "read"):
             return _error(422, "oracle_mesh_file_op_invalid")
+        # The independently signed ceiling is enforced before either dispatch
+        # constructor. The existing owner/path/size/idempotency checks follow.
+        if scope_claim is not None and op not in scope_claim["ops"]:
+            return _error(403, "pc_scope_denied")
         relative = _pc_files_relative_path(payload.get("path"))
         if relative is None:
             return _error(422, "oracle_mesh_file_path_invalid")
@@ -3169,6 +3229,8 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         or kind not in ("command", "read")
     ):
         return _error(404, "oracle_mesh_run_unavailable")
+    if scope_claim is not None and kind == "read" and "read" not in scope_claim["ops"]:
+        return _error(403, "pc_scope_denied")
     state = dispatch.get("state")
     if state not in {"pending", "received", "store_failed", "done", "failed"}:
         return _error(503, "oracle_mesh_dispatch_unavailable")

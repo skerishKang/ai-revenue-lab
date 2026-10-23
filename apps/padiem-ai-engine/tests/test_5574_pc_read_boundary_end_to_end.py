@@ -69,12 +69,12 @@ READ_TARGET = "meshcentral-padiem-trial.txt"
 SIGNING_SECRET = "5574-issue-local-signing-secret-not-a-real-credential"
 
 LIST_STEP = json.dumps(
-    {"action": "tool", "tool_id": "claw.pc.list_files", "arguments": {"path": "."}},
+    {"plan": "files", "action": "tool", "tool_id": "claw.pc.list_files", "arguments": {"path": "."}},
     ensure_ascii=False,
 )
 LIST_STEP_WITH_READ_INTENT = json.dumps(
     {
-        "action": "tool", "tool_id": "claw.pc.list_files",
+        "plan": "files", "action": "tool", "tool_id": "claw.pc.list_files",
         "arguments": {"path": ".", "intent": "read"},
     },
     ensure_ascii=False,
@@ -124,7 +124,9 @@ class _FakePcEndpoint:
 
     def __init__(self) -> None:
         self.legs: list[dict] = []
+        self.requests: list[_Request] = []
         self.rows: dict[str, dict] = {}
+        self.claims: list[dict] = []
 
     @property
     def dispatches(self) -> list[dict]:
@@ -139,6 +141,16 @@ class _FakePcEndpoint:
         return [leg["mode"] for leg in self.legs]
 
     async def fetch(self, request: _Request) -> _Response:
+        import hashlib
+        import hmac
+        self.requests.append(request)
+        encoded = request.headers.get("X-Claw-PC-Scope")
+        if encoded is not None:
+            proof = hmac.new(SIGNING_SECRET.encode(),
+                request.headers["X-Claw-Engine-Time"].encode() + b"." + request.body.encode() + b"." + encoded.encode(),
+                hashlib.sha256).hexdigest()
+            assert request.headers["X-Claw-PC-Scope-Proof"] == proof
+            self.claims.append(json.loads(encoded))
         body = json.loads(request.body)
         self.legs.append(body)
         mode = body["mode"]
@@ -216,11 +228,18 @@ def _bridge_request() -> dict:
     return request
 
 
-def _chain(*, model: _ScriptedModel, pc: _FakePcEndpoint):
+def _chain(*, model: _ScriptedModel, pc: _FakePcEndpoint, allow_read=True):
     """The production composition, with only the two fakes the work order allows."""
     binding = build_chat_pc_query_tool_binding(
         service=pc, request_factory=_Request, secret=SIGNING_SECRET,
     )
+    if not allow_read:
+        authority = binding.authorities["agent:padiem:chat-pc-query@1"]
+        binding.authorities["agent:padiem:chat-pc-query@1"] = replace(
+            authority, authorization=replace(authority.authorization,
+                granted_auth_scopes=tuple(scope for scope in authority.authorization.granted_auth_scopes
+                                          if scope != "claw.pc.read_file")),
+        )
 
     # Mirrors worker_identity's pc_query_step_driver_factory wiring, including
     # the positional argument shape the service calls it with.
@@ -328,36 +347,23 @@ def test_a_list_intent_read_step_selects_zero_read_dispatches() -> None:
     endpoint still receives exactly one dispatch, for the listing.
     """
     pc = _FakePcEndpoint()
-    model = _ScriptedModel([LIST_STEP, READ_STEP_WITH_LIST_INTENT])
+    model = _ScriptedModel([LIST_STEP, READ_STEP_WITH_LIST_INTENT, COMPLETE_STEP])
     transport = _transport_for(model=model, pc=pc)
 
-    with pytest.raises(PadiemAiEngineClientError) as refusal:
-        _orchestrate(transport)
+    result = _orchestrate(transport)
 
     # The claim itself: the signed PC endpoint got the listing and nothing else.
     assert pc.ops == ["list"], pc.dispatches
-    assert pc.modes == ["context", "dispatch", "command_status", "result"], pc.modes
+    assert pc.modes == ["context", "context", "dispatch", "command_status", "result"], pc.modes
 
-    # The refusal crosses the real client as the Engine's own bounded code.
-    assert refusal.value.code == "agent_step_failed"
-    assert refusal.value.status == 400
-    assert refusal.value.retryable is False
-    assert transport.statuses == [400]
-    # Measured Engine body. The Chat-side boundary regression replays these
-    # exact bytes: apps/padiem-chat/tests/test_5574_frontend_pc_engine_wire_boundary.py
-    assert transport.response_bodies == [{
-        "ok": False,
-        "error": {
-            "code": "agent_step_failed",
-            "message": "Agent step execution failed.",
-            "retryable": False,
-            "metadata": None,
-        },
-    }], transport.response_bodies
+    # The slice-2 refusal is returned to the model in the same run, not a 400.
+    assert transport.statuses == [200]
+    assert result["execution"]["metadata"]["status"] == "completed"
+    assert "pc_scope_denied" in model.prompts[2]
 
     # The wrong read was reachable, not scripted away: the second step prompt
     # carried the projected path the read step then named.
-    assert len(model.prompts) == 2
+    assert len(model.prompts) == 3
     assert READ_TARGET in model.prompts[1]
     assert "relative_path" in model.prompts[1]
 
@@ -397,7 +403,7 @@ def test_a_list_only_ceiling_is_admitted_on_the_real_wire() -> None:
 
     assert transport.statuses == [200]
     assert pc.ops == ["list"], pc.dispatches
-    assert pc.modes == ["context", "dispatch", "command_status", "result"]
+    assert pc.modes == ["context", "context", "dispatch", "command_status", "result"]
     assert len(model.prompts) == 2
     assert orchestration["execution"]["metadata"]["status"] == "completed"
 
@@ -411,23 +417,22 @@ def test_an_admitted_list_only_plan_refuses_read_intent_before_dispatch(
     model = _ScriptedModel([LIST_STEP_WITH_READ_INTENT, WRONG_READ_STEP, COMPLETE_STEP])
     transport = _transport_for(model=model, pc=pc)
 
-    with pytest.raises(PadiemAiEngineClientError) as refusal:
-        _orchestrate_list_only(transport, selected_device=selected_device)
-
-    assert refusal.value.code == "agent_step_failed"
-    assert refusal.value.status == 400
-    assert refusal.value.retryable is False
-    assert transport.statuses == [400]
+    result = _orchestrate_list_only(transport, selected_device=selected_device)
+    assert result["execution"]["metadata"]["status"] == "completed"
+    assert transport.statuses == [200]
     # Admission succeeded: the model and list handler ran before the step gate.
-    assert len(model.prompts) == 2
+    assert len(model.prompts) == 3
+    assert "pc_scope_denied" in model.prompts[2]
+    assert all(claim["ops"] == ["list"] for claim in pc.claims)
+    assert pc.claims
     assert READ_TARGET in model.prompts[1]
     assert "read_file is not available" in model.prompts[0]
     assert pc.ops == ["list"], pc.dispatches
     assert len([leg for leg in pc.dispatches if leg["op"] == "read"]) == 0
-    assert pc.modes == ["context", "dispatch", "command_status", "result"]
+    assert pc.modes == ["context", "context", "dispatch", "command_status", "result"]
     target = DEVICE_ID if selected_device else None
     assert [leg["device_id"] for leg in pc.legs if leg["mode"] in {"context", "dispatch"}] == [
-        target, target,
+        target, target, target,
     ]
 
 
@@ -501,13 +506,13 @@ def test_admitted_ceiling_and_optional_step_intent(
         assert len(read_authorizations) == 1
         assert "claw.pc.read_file" in read_authorizations[0]
     else:
-        with pytest.raises(PadiemAiEngineClientError) as refusal:
-            run(transport, selected_device=selected_device)
-        assert refusal.value.code == "agent_step_failed"
-        assert transport.statuses == [400]
+        result = run(transport, selected_device=selected_device)
+        assert result["execution"]["metadata"]["status"] == "completed"
+        assert transport.statuses == [200]
         assert pc.ops == ["list"]
         assert read_authorizations == []
-        assert len(model.prompts) == 2
+        assert len(model.prompts) == 3
+        assert "pc_scope_denied" in model.prompts[2]
 
     # Case 3 also removes the server-granted read scope in a differential run.
     # Real ToolRuntime authorization must refuse it before a read dispatch.
@@ -538,3 +543,109 @@ def test_admitted_ceiling_and_optional_step_intent(
             run(denied_transport, selected_device=selected_device)
         assert denied_codes == ["tool_auth_scope_missing"]
         assert denied_pc.ops == ["list"]
+
+
+@pytest.mark.parametrize("declared", [True, False], ids=["declared", "derived-first-decision"])
+def test_request_scope_list_is_fixed_across_later_read_and_plan(declared):
+    first = json.loads(LIST_STEP_WITH_READ_INTENT)
+    if declared:
+        first["plan"] = "files_list"
+    else:
+        first.pop("plan")
+    later = json.loads(WRONG_READ_STEP)
+    later["plan"] = "files"
+    later["arguments"]["intent"] = "read"
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([json.dumps(first), json.dumps(later), COMPLETE_STEP])
+    transport = _transport_for(model=model, pc=pc)
+    result = _orchestrate(transport)
+    assert transport.statuses == [200]
+    assert result["execution"]["metadata"]["status"] == "completed"
+    assert pc.ops == ["list"]
+    assert len(model.prompts) == 3  # No classifier or duplicate first B14 call.
+    assert "pc_scope_denied" in model.prompts[-1]
+    assert pc.claims and all(c["requested"] == c["admitted"] == "files_list" for c in pc.claims)
+    assert all(c["ops"] == ["list"] for c in pc.claims)
+    assert all(c["source"] == ("declared" if declared else "decision") for c in pc.claims)
+
+
+def test_missing_scope_and_first_decision_is_an_observation_not_user_400():
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([json.dumps({"action": "unknown"}), COMPLETE_STEP])
+    transport = _transport_for(model=model, pc=pc)
+    result = _orchestrate(transport)
+    assert transport.statuses == [200]
+    assert result["execution"]["metadata"]["status"] == "completed"
+    assert pc.ops == []
+    assert len(model.prompts) == 2
+    assert '"admitted": "none"' in model.prompts[1]
+    assert "pc_scope_denied" in model.prompts[1]
+
+
+def test_request_files_is_reduced_by_server_read_permission_before_dispatch():
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([LIST_STEP, WRONG_READ_STEP, COMPLETE_STEP])
+    transport = _InProcessEngineTransport(_chain(model=model, pc=pc, allow_read=False))
+    result = _orchestrate(transport)
+    assert transport.statuses == [200]
+    assert result["execution"]["metadata"]["status"] == "completed"
+    assert pc.ops == ["list"]
+    assert pc.claims and all(c["requested"] == "files" and c["admitted"] == "files_list" for c in pc.claims)
+    assert all(c["ops"] == ["list"] for c in pc.claims)
+    assert "pc_scope_denied" in model.prompts[-1]
+
+
+def test_old_chat_wire_and_new_engine_keep_closed_body_and_optional_scope_headers():
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([LIST_STEP, WRONG_READ_STEP, COMPLETE_STEP])
+    transport = _transport_for(model=model, pc=pc)
+    _orchestrate(transport)
+    assert pc.ops == ["list", "read"]
+    assert set(pc.dispatches[0]) == {"subject_id", "run_id", "device_id", "mode", "op", "path", "tool_call_ref"}
+    assert pc.claims and all(c["admitted"] == "files" for c in pc.claims)
+    assert len(model.prompts) == 3
+    # Freeze the pre-scope wire serialization, not just the decoded key set.
+    # In particular, the second context request adds headers to the first
+    # request's exact legacy bytes; no plan/claim enters any JSON body.
+    legacy_fields = {
+        "context": ("device_id", "mode", "run_id", "subject_id"),
+        "dispatch": ("device_id", "mode", "op", "path", "run_id", "subject_id", "tool_call_ref"),
+        "command_status": ("dispatch_id", "mode", "run_id", "subject_id"),
+        "result": ("dispatch_id", "mode", "run_id", "subject_id"),
+    }
+    for request, leg in zip(pc.requests, pc.legs, strict=True):
+        expected = json.dumps({key: leg[key] for key in legacy_fields[leg["mode"]]},
+                              separators=(",", ":")).encode("utf-8")
+        assert request.body.encode("utf-8") == expected
+    context_requests = [request for request, leg in zip(pc.requests, pc.legs, strict=True)
+                        if leg["mode"] == "context"]
+    assert len(context_requests) == 2
+    assert "X-Claw-PC-Scope" not in context_requests[0].headers
+    assert "X-Claw-PC-Scope" in context_requests[1].headers
+    assert context_requests[0].body.encode("utf-8") == context_requests[1].body.encode("utf-8")
+
+
+def test_scope_decision_reuses_first_call_with_conversation_and_selected_model():
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([LIST_STEP, COMPLETE_STEP])
+    transport = _transport_for(model=model, pc=pc)
+    request = _bridge_request()
+    request["additional_system_context"] = "Prior user: list the same approved folder only."
+    client = PadiemAiEngineClient(transport=transport, app_id=CHAT_APP_ID,
+        caller_id=CHAT_APP_ID, credential="x" * 64)
+    with patch.object(asyncio, "sleep", _instant_sleep):
+        asyncio.run(client.orchestrate(request))
+    assert len(model.prompts) == 2
+    assert "Prior user: list the same approved folder only." in model.prompts[0]
+    assert transport.bodies[0]["agent"] == FILES_RECORD["agent"]
+
+
+def test_separate_runs_do_not_reuse_the_previous_turn_ceiling():
+    first = json.loads(LIST_STEP)
+    first["plan"] = "files_list"
+    for step, expected in ((json.dumps(first), ["list"]), (LIST_STEP, ["list", "read"])):
+        pc = _FakePcEndpoint()
+        model = _ScriptedModel([step, WRONG_READ_STEP, COMPLETE_STEP])
+        _orchestrate(_transport_for(model=model, pc=pc))
+        assert pc.ops == expected
+        assert pc.claims and pc.claims[0]["ops"] == expected
