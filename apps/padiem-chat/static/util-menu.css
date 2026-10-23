@@ -1,4 +1,10 @@
-.util-view { padding: 16px; max-width: 900px; margin: 0 auto; }
+/* #5608: the util page is a top-level view owned by its own shell state, the
+ * same way Calendar/Connectors/Automation/Meeting/Library are gated. Hidden
+ * everywhere else; the shared conversation column and bottom composer stay
+ * hidden while the util page is open. */
+.util-view { display: none; padding: 16px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+.app-shell[data-state="util"] .util-view { display: block; flex: 1 1 auto; min-height: 0; overflow-y: auto; position: relative; z-index: 2; }
+.app-shell[data-state="util"] .conversation, .app-shell[data-state="util"] .composer-wrap { display: none !important; }
 .util-header h2 { margin: 0 0 4px; }
 .util-tagline { color: #666; margin: 0 0 12px; }
 .util-tabs { display: flex; gap: 8px; margin-bottom: 16px; }

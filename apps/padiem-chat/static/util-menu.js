@@ -111,16 +111,16 @@
     let lastPayload = null;
     let currentPid = null;
 
+    // #5608: the util page is its own shell state. The sibling views are gated
+    // by CSS (util-menu.css), so entering the state is enough and navigating to
+    // any other view restores them -- no per-view cleanup needed here.
     function showUtil() {
-      document.querySelectorAll(".claw-workspace, .conversation").forEach((e) => {
-        if (e.id !== "utilView") e.hidden = true;
-      });
+      const shell = document.querySelector(".app-shell");
+      if (shell) shell.dataset.state = "util";
       utilView.hidden = false;
+      utilNav.setAttribute("aria-current", "page");
     }
-    function hideUtil() { utilView.hidden = true; }
-    utilNav.addEventListener("click", () => {
-      if (utilView.hidden) showUtil(); else hideUtil();
-    });
+    utilNav.addEventListener("click", showUtil);
     tabs.forEach((tab) => {
       tab.addEventListener("click", () => {
         tabs.forEach((t) => t.classList.remove("active"));
@@ -227,11 +227,18 @@
         btn.type = "button";
         btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
         btn.addEventListener("click", async () => {
-          const res = await fetch("/api/projects/" + currentPid + "/files/" + f.id, { credentials: "include" });
+          const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(f.id), { credentials: "include" });
           if (res.ok) {
             const data = await res.json();
-            speechOutput.value = (data && data.file && data.file.name) ? "[저장된 파일: " + data.file.name + "]" : "[저장된 파일]";
-            speechResult.hidden = false;
+            const content = data && data.file && (data.file.content || data.file.text);
+            if (typeof content === "string") {
+              speechOutput.value = content;
+              speechResult.hidden = false;
+            } else {
+              alert("저장된 축사의 본문을 읽을 수 없습니다.");
+            }
+          } else {
+            alert("저장된 축사를 열지 못했습니다.");
           }
         });
         li.appendChild(btn);

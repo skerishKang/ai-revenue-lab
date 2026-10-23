@@ -357,8 +357,10 @@
     // New Chat no longer shows a mode hint: the redundant label was removed
     // when the sidebar actions row was rearranged (B62 split-search task).
     if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
-    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation" || state === "meeting") ? "false" : "page");
+    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation" || state === "meeting" || state === "util") ? "false" : "page");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
+    const utilNav = document.getElementById("utilNavButton");
+    if (utilNav) utilNav.setAttribute("aria-current", state === "util" ? "page" : "false");
     const meetingNav = document.getElementById("meetingNavButton");
     if (meetingNav) meetingNav.setAttribute("aria-current", state === "meeting" ? "page" : "false");
     const connectorsNav = document.getElementById("connectorsNavButton");
