@@ -154,6 +154,57 @@ async def _no_session_read() -> None:
     return None
 
 
+def _drain_task_result(task: "asyncio.Task[Any]") -> None:
+    """Retrieve a background result the turn may never await.
+
+    A turn refused by the PC target checks returns before the roster is
+    evaluated. Retrieving the outcome here keeps that bounded metadata read
+    from surfacing as an unretrieved task error; it never changes a response.
+    """
+    if task.cancelled():
+        return
+    try:
+        task.exception()
+    except Exception:
+        pass
+
+
+def _start_selectable_model_read(
+    request: Any, selected_model_id: str | None, central_route_model_id: str | None
+) -> tuple["asyncio.Task[Any] | None", bool]:
+    """#5614: start the model-roster read before the PC work context.
+
+    The roster read and the PC work context are independent reads of the same
+    signed request, and the roster read used to run strictly after the PC one.
+    Starting it first lets the two overlap on the wire.
+
+    Returns ``(task, unavailable)``. ``unavailable`` reproduces the exact 503
+    the sequential code returned when the composed catalog authority cannot
+    list models at all - the refusal is still raised at its original position
+    (after the PC target checks), never earlier.
+    """
+
+    if selected_model_id is None and central_route_model_id is None:
+        return None, False
+    resolver = getattr(
+        getattr(getattr(request, "app", None), "state", None),
+        "b14_model_choice_resolver",
+        None,
+    )
+    if resolver is None:
+        return None, False
+    list_fn = getattr(resolver, "list_selectable_models", None)
+    if not callable(list_fn):
+        return None, True
+    try:
+        read = _claw_timed(CLAW_STAGE_CATALOG, list_fn())
+    except Exception:
+        return None, True
+    task = asyncio.ensure_future(read)
+    task.add_done_callback(_drain_task_result)
+    return task, False
+
+
 def _combine_system_context(*parts: str | None) -> str | None:
     """Join optional trusted context blocks in a fixed order.
 
@@ -1550,6 +1601,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # and the exact target.
     pc_work_text: str | None = None
     pc_context_started = time.perf_counter()
+    # #5614: the account's selectable-model roster is an independent read, so
+    # it starts here and is evaluated after the PC block. The PC target checks
+    # therefore still decide first and still fail closed; only the read itself
+    # overlaps.
+    catalog_task, catalog_unavailable = _start_selectable_model_read(
+        request, selected_model_id, central_route_model_id,
+    )
     pc_owner = current_user_id(request) if auth_ready(request) else None
     if isinstance(pc_owner, str) and pc_owner:
         from .claw_memory_routes import _resolve_memory_workspace
@@ -1638,30 +1696,28 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
     # before quota/P01. Test-only deployments without this optional view still
     # rely on B14's final exact-ID execution authority.
-    catalog_started = time.perf_counter()
-    if selected_model_id is not None or central_route_model_id is not None:
-        choice_authority = getattr(request.app.state, "b14_model_choice_resolver", None)
-        if choice_authority is not None:
-            list_fn = getattr(choice_authority, "list_selectable_models", None)
-            if not callable(list_fn):
-                return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
-            try:
-                available = await list_fn()
-                if not isinstance(available, list):
-                    raise ValueError("invalid model roster")
-                eligible_ids = {row["model_id"] for row in available}
-            except (Exception,):
-                return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
-            target_model = selected_model_id or central_route_model_id
-            if target_model not in eligible_ids:
-                # Only a server-resolved central route may advance to its
-                # explicitly configured fallback. A member choice never does.
-                if (selected_model_id is None
-                        and claw_route.fallback_model_id in eligible_ids):
-                    central_route_model_id = claw_route.fallback_model_id
-                else:
-                    return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 모델을 선택해 주세요.")
-    _claw_stage(CLAW_STAGE_CATALOG, catalog_started)
+    #
+    # #5614: the read was started before the PC work context and is only
+    # EVALUATED here, so this refusal still comes after the PC target checks.
+    if catalog_unavailable:
+        return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
+    if catalog_task is not None:
+        try:
+            available = await catalog_task
+            if not isinstance(available, list):
+                raise ValueError("invalid model roster")
+            eligible_ids = {row["model_id"] for row in available}
+        except (Exception,):
+            return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
+        target_model = selected_model_id or central_route_model_id
+        if target_model not in eligible_ids:
+            # Only a server-resolved central route may advance to its
+            # explicitly configured fallback. A member choice never does.
+            if (selected_model_id is None
+                    and claw_route.fallback_model_id in eligible_ids):
+                central_route_model_id = claw_route.fallback_model_id
+            else:
+                return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 모델을 선택해 주세요.")
 
     live_requested = (
         request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
