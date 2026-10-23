@@ -13,4 +13,6 @@ TIER_FALLBACK_B14_MODELS: dict[str, tuple[str, ...]] = {
     "pro": ("google/gemma-4-31b-it",),
     "plus": ("google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
     "free": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
+    # interim: admin chat uses the Free route until paid routes are verified
+    "admin": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
 }
