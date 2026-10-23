@@ -21,7 +21,10 @@ from starlette.responses import JSONResponse
 from .auth_routes import auth_ready, current_user_id
 from .same_origin_guard import expected_browser_origin
 from .claw_memory_routes import _resolve_memory_workspace
-from .claw_local_access_source import CanonicalClawLocalAccessTruthSource
+from .claw_local_access_source import (
+    CanonicalClawLocalAccessTruthSource,
+    mesh_presence_facts,
+)
 from .pc_work_context import (
     PC_SCOPE_OWNER_UNAVAILABLE,
     PcConnectorScope,
@@ -67,7 +70,7 @@ class BrokerDeviceDirectorySource:
 
     configured = True
 
-    def __init__(self, binding: Any) -> None:
+    def __init__(self, binding: Any, presence_store: Any = None) -> None:
         port = getattr(binding, "device_directory", None)
         if not callable(port):
             raise TypeError("canonical broker directory RPC unavailable")
@@ -76,6 +79,9 @@ class BrokerDeviceDirectorySource:
         # #5080: same trusted service binding, additive presentation metadata
         # only. Absent on an older Broker and then simply omitted.
         self._android_profiles = getattr(binding, "android_saf_profiles", None)
+        # #5553: the server-recorded Mesh presence receipt joins the same
+        # canonical decision. Absent store keeps today's exact state.
+        self._presence_store = presence_store
 
     async def list_devices(
         self, *, owner_id: str, workspace_id: str, now: datetime
@@ -124,8 +130,20 @@ class BrokerDeviceDirectorySource:
             # Uses exactly the G4 source's authoritative server-backed ONLINE
             # algorithm. Offline/expired/revoked cannot be promoted by a stale
             # session or heartbeat. Unknown evidence fails closed.
+            row_facts = facts
+            if self._presence_store is not None:
+                try:
+                    presence_row = self._presence_store.load(device_id)
+                    if inspect.isawaitable(presence_row):
+                        presence_row = await presence_row
+                except Exception:
+                    presence_row = None
+                block = mesh_presence_facts(presence_row, binding)
+                if block is not None:
+                    row_facts = dict(facts)
+                    row_facts["mesh_presence"] = block
             try:
-                state = CanonicalClawLocalAccessTruthSource._canonical_state(facts, now=now)
+                state = CanonicalClawLocalAccessTruthSource._canonical_state(row_facts, now=now)
             except Exception:
                 return None
             if state is None:
@@ -198,13 +216,15 @@ class BrokerDeviceDirectorySource:
         return {"ok": True, "usagePaused": paused}
 
 
-def build_broker_device_directory_source(env: Any) -> BrokerDeviceDirectorySource | None:
+def build_broker_device_directory_source(
+    env: Any, presence_store: Any = None,
+) -> BrokerDeviceDirectorySource | None:
     """Trusted Worker composition only; missing/invalid binding is unconfigured."""
     binding = binding_value(env, LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME)
     if binding is None:
         return None
     try:
-        return BrokerDeviceDirectorySource(binding)
+        return BrokerDeviceDirectorySource(binding, presence_store=presence_store)
     except Exception:
         return None
 

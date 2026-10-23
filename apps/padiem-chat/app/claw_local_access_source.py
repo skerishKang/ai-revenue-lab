@@ -24,6 +24,13 @@ Authority boundary
   When the projection refuses, the source falls back to the broker-reported
   canonical state, and a fallback that would ever read ``online`` is refused
   outright (fail closed from ONLINE on projection failure).
+* Mesh execution liveness is a separate server-recorded fact: the **Mesh
+  presence receipt** — one device-connection observation (``conn >= 1``)
+  stamped with the server's own receipt time. ``project_mesh_online_binding``
+  projects it under the same correlation, credential-generation and
+  inside-lifetime rules the heartbeat uses, plus the server's Mesh heartbeat
+  staleness bound. A browser-supplied connection flag, a missing receipt or a
+  stale receipt never yields ONLINE.
 * The Web vocabulary translation stays in ``app.claw_local_projection`` (G4).
   This module only reports canonical state values to the route; it never maps
   them to Web labels itself.
@@ -39,7 +46,8 @@ Authority boundary
 Contract markers
 ----------------
 ``DEVICE_STATE_SOURCE = "canonical:LOCAL_AGENT_BROKER_AUTHORITY device_truth RPC"``
-``ONLINE_DECISION_AUTHORITY = "kagent.local_agent_server_projection"``
+``ONLINE_DECISION_AUTHORITY = "kagent.local_agent_server_projection + app.claw_local_access_source.project_mesh_online_binding"``
+``MESH_ONLINE_EVIDENCE_SOURCE = "server_recorded_mesh_presence_receipt"``
 ``SECOND_DEVICE_LIFECYCLE_AUTHORITY = False``
 ``NEW_LIFECYCLE_STATE_CREATED = 0``
 ``HANDOFF_VALUE_MINTED_OR_PARSED = False``
@@ -50,7 +58,8 @@ Contract markers
 
 from __future__ import annotations
 
-from datetime import datetime
+from dataclasses import dataclass, replace
+from datetime import datetime, timezone
 from types import MappingProxyType
 from typing import Any, Mapping, Protocol
 
@@ -60,8 +69,11 @@ from kagent.local_agent_pairing import DeviceBinding, DeviceLifecycle, DeviceSes
 from kagent.local_agent_server_projection import project_server_backed_online_binding
 
 __all__ = [
+    "MESH_PRESENCE_MAX_AGE_SECONDS",
+    "MeshPresenceReceipt",
     "TrustedLocalAccessDeviceTruthPort",
     "CanonicalClawLocalAccessTruthSource",
+    "project_mesh_online_binding",
 ]
 
 # The only broker-reported canonical states this source may consume. The
@@ -76,6 +88,32 @@ _BROKER_CANONICAL_STATES: Mapping[str, DeviceLifecycle] = MappingProxyType(
 )
 
 _TEXT_MAX = 512
+
+# The server's own Mesh heartbeat staleness bound (#5462,
+# ``kagent.local_agent_mesh_failover.DEFAULT_HEARTBEAT_STALE_SECONDS``). A Mesh
+# presence receipt older than this is not liveness: the failover controller
+# already stops treating such a heartbeat as proof of execution, so the ONLINE
+# projection refuses at exactly the same age.
+MESH_PRESENCE_MAX_AGE_SECONDS = 180
+
+
+@dataclass(frozen=True, slots=True)
+class MeshPresenceReceipt:
+    """One server-recorded Mesh connection observation.
+
+    Every field is recorded server-side: ``device_id`` is the Mesh node the
+    server observed, ``connected`` is the MeshCentral ``conn >= 1`` fact,
+    ``observed_at`` is the server's own receipt time, and
+    ``credential_generation`` is the canonical generation the observation was
+    recorded against. No browser or request value feeds this receipt.
+    """
+
+    device_id: str
+    account_ref: str
+    credential_generation: int
+    observed_at: datetime
+    connected: bool = True
+    workspace_ref: str | None = None
 
 
 class TrustedLocalAccessDeviceTruthPort(Protocol):
@@ -128,6 +166,145 @@ def _mapping(value: Any) -> Mapping[str, Any] | None:
     return value if isinstance(value, Mapping) else None
 
 
+def _aware(value: Any, field_name: str) -> datetime:
+    if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
+        raise ContractError(f"{field_name} must be timezone-aware")
+    return value.astimezone(timezone.utc)
+
+
+def _mesh_presence_receipt(value: Any) -> MeshPresenceReceipt | None:
+    """Read one server-recorded Mesh presence receipt, or ``None`` if malformed.
+
+    ``None`` means "no usable Mesh evidence", never "offline": the caller keeps
+    the broker-reported state in that case.
+    """
+
+    facts = _mapping(value)
+    if facts is None:
+        return None
+    device_id = _text(facts.get("device_id"))
+    account_ref = _text(facts.get("account_ref"))
+    credential_generation = _int(facts.get("credential_generation"))
+    observed_at = _parse_iso(facts.get("observed_at"))
+    connected = facts.get("connected")
+    workspace_ref = facts.get("workspace_ref")
+    if workspace_ref is not None:
+        workspace_ref = _text(workspace_ref)
+        if workspace_ref is None:
+            return None
+    if device_id is None or account_ref is None:
+        return None
+    if credential_generation is None or observed_at is None:
+        return None
+    if not isinstance(connected, bool):
+        return None
+    return MeshPresenceReceipt(
+        device_id=device_id,
+        account_ref=account_ref,
+        credential_generation=credential_generation,
+        observed_at=observed_at,
+        connected=connected,
+        workspace_ref=workspace_ref,
+    )
+
+
+def mesh_presence_facts(
+    row: Any, binding: Mapping[str, Any] | None,
+) -> dict[str, Any] | None:
+    """The receipt block for one stored presence row, or ``None``.
+
+    The stored row carries only what the server recorded (device, connected,
+    receipt time, credential generation). Account and workspace correlation
+    come from the same Broker binding facts the projection already reads, so a
+    row can never smuggle a foreign account or workspace. A row for another
+    device is refused rather than retargeted.
+    """
+
+    if not isinstance(row, Mapping) or not isinstance(binding, Mapping):
+        return None
+    device_id = _text(row.get("device_id"))
+    generation = _int(row.get("credential_generation"))
+    observed_at = _text(row.get("received_at"))
+    connected = row.get("connected")
+    account_ref = _text(binding.get("account_ref"))
+    if device_id is None or generation is None or observed_at is None:
+        return None
+    if type(connected) is not bool or account_ref is None:
+        return None
+    if device_id != _text(binding.get("device_id")):
+        return None
+    workspace_ref = binding.get("workspace_ref")
+    if workspace_ref is not None:
+        workspace_ref = _text(workspace_ref)
+        if workspace_ref is None:
+            return None
+    return {
+        "device_id": device_id,
+        "account_ref": account_ref,
+        "workspace_ref": workspace_ref,
+        "credential_generation": generation,
+        "observed_at": observed_at,
+        "connected": connected,
+    }
+
+
+def project_mesh_online_binding(
+    *,
+    binding: DeviceBinding,
+    presence: MeshPresenceReceipt,
+    now: datetime,
+) -> DeviceBinding:
+    """Project one server-recorded Mesh presence receipt to ONLINE.
+
+    This is a projection *inside* the one ONLINE decision, not a second
+    lifecycle authority: it returns the same ``DeviceBinding`` type, and the
+    caller's fallback stays the broker-reported state. The invariants mirror
+    the server heartbeat rule (``project_server_backed_online_binding``):
+
+    1. the binding is a redeemed ``PAIRED_OFFLINE`` device;
+    2. the receipt correlates with that exact binding (device, account and,
+       when present, workspace) and reports the same credential generation;
+    3. the observation falls inside the binding's own credential lifetime;
+    4. the observation is not in the future and is no older than the Mesh
+       heartbeat staleness bound;
+    5. the receipt actually claims a connected device.
+
+    A missing, foreign, stale or disconnected receipt raises ``ContractError``;
+    the caller falls back to the broker-reported state, never to ONLINE.
+    """
+
+    if not isinstance(binding, DeviceBinding):
+        raise ContractError("binding must be DeviceBinding")
+    if binding.state is not DeviceLifecycle.PAIRED_OFFLINE:
+        raise ContractError(
+            "Mesh ONLINE projection requires a redeemed PAIRED_OFFLINE binding; "
+            f"{binding.state.value} is not a projection source"
+        )
+    if not isinstance(presence, MeshPresenceReceipt):
+        raise ContractError("presence must be MeshPresenceReceipt")
+    now = _aware(now, "now")
+    observed_at = _aware(presence.observed_at, "mesh presence observed_at")
+
+    if presence.connected is not True:
+        raise ContractError("mesh presence does not claim a connected device")
+    if presence.device_id != binding.device_id:
+        raise ContractError("mesh presence does not correlate with the device binding")
+    if presence.account_ref != binding.account_ref:
+        raise ContractError("mesh presence does not correlate with the device account")
+    if presence.workspace_ref is not None and presence.workspace_ref != binding.workspace_ref:
+        raise ContractError("mesh presence does not correlate with the device workspace")
+    if presence.credential_generation != binding.credential_generation:
+        raise ContractError("mesh presence belongs to a different credential generation")
+    if not (binding.issued_at <= observed_at < binding.credential_expires_at):
+        raise ContractError("mesh presence was not observed inside the binding lifetime")
+    if observed_at > now:
+        raise ContractError("mesh presence observation cannot be in the future")
+    if (now - observed_at).total_seconds() > MESH_PRESENCE_MAX_AGE_SECONDS:
+        raise ContractError("mesh presence is stale; ONLINE projection is refused")
+
+    return replace(binding, state=DeviceLifecycle.ONLINE)
+
+
 class CanonicalClawLocalAccessTruthSource:
     """Read one owner-scoped canonical projection from the trusted boundary.
 
@@ -139,10 +316,43 @@ class CanonicalClawLocalAccessTruthSource:
 
     configured = True
 
-    def __init__(self, *, port: TrustedLocalAccessDeviceTruthPort) -> None:
+    def __init__(
+        self,
+        *,
+        port: TrustedLocalAccessDeviceTruthPort,
+        presence_store: Any = None,
+    ) -> None:
         if not callable(getattr(port, "device_truth", None)):
             raise TypeError("local access trusted port must expose device_truth()")
         self._port = port
+        #: #5553 — one server-recorded Mesh presence receipt, read by the same
+        #: canonical access source. Absent store means today's exact answer.
+        self._presence_store = presence_store
+
+    async def _facts_with_mesh_presence(
+        self, facts: Mapping[str, Any],
+    ) -> Mapping[str, Any]:
+        """Add the stored presence receipt to the broker facts, or leave them."""
+
+        store = self._presence_store
+        if store is None:
+            return facts
+        binding = _mapping(facts.get("binding"))
+        device_id = _text(binding.get("device_id")) if binding is not None else None
+        if device_id is None:
+            return facts
+        try:
+            row = store.load(device_id)
+            if hasattr(row, "__await__"):
+                row = await row
+        except Exception:
+            return facts
+        block = mesh_presence_facts(row, binding)
+        if block is None:
+            return facts
+        merged = dict(facts)
+        merged["mesh_presence"] = block
+        return merged
 
     async def project_local_access(
         self,
@@ -167,6 +377,11 @@ class CanonicalClawLocalAccessTruthSource:
         facts = _mapping(envelope.get("device_truth"))
         if facts is None:
             return None
+
+        # #5553: the stored server-recorded Mesh receipt joins the same fact
+        # block, so one decision still covers broker session, heartbeat and
+        # Mesh liveness.
+        facts = await self._facts_with_mesh_presence(facts)
 
         canonical_state = self._canonical_state(facts, now=now)
         if canonical_state is None:
@@ -199,11 +414,16 @@ class CanonicalClawLocalAccessTruthSource:
         """The canonical lifecycle for the broker's facts, decided by #3080.
 
         The single invariant: only a broker-reported ``paired_offline`` device
-        may attempt the server-backed ONLINE projection. A device the broker
-        already reports as ``revoked`` or ``credential_expired`` — or any
-        unknown vocabulary — returns that exact fail-closed state and never
-        reaches the ONLINE rule, so an expired credential cannot be resurrected
-        into a connected claim by a still-current session or heartbeat.
+        may attempt an ONLINE projection. A device the broker already reports
+        as ``revoked`` or ``credential_expired`` — or any unknown vocabulary —
+        returns that exact fail-closed state and never reaches an ONLINE rule,
+        so an expired credential cannot be resurrected into a connected claim
+        by a still-current session, heartbeat or Mesh receipt.
+
+        Two server-recorded evidence kinds feed the same decision, in order:
+        the canonical broker session + heartbeat receipt, then the Mesh
+        presence receipt. Either one may produce ONLINE; neither is required,
+        and a refusal from both falls back to the broker state.
         """
 
         broker_state = facts.get("canonical_state")
@@ -221,6 +441,8 @@ class CanonicalClawLocalAccessTruthSource:
         session_facts = _mapping(facts.get("session"))
         if binding_facts is None:
             return None
+
+        presence = _mesh_presence_receipt(facts.get("mesh_presence"))
 
         try:
             binding = DeviceBinding(
@@ -276,6 +498,16 @@ class CanonicalClawLocalAccessTruthSource:
                 return projected.state
             except ContractError:
                 pass
+        if presence is not None:
+            try:
+                projected = project_mesh_online_binding(
+                    binding=binding,
+                    presence=presence,
+                    now=now,
+                )
+                return projected.state
+            except ContractError:
+                pass
         # Fail closed from ONLINE on projection failure: the broker can never
         # report online, so this guard is structural, but if any upstream ever
         # did, unusable evidence must not preserve a connected claim.
@@ -295,7 +527,12 @@ async def _maybe_await(value: Any) -> Any:
 # ---------------------------------------------------------------------------
 
 DEVICE_STATE_SOURCE = "canonical:LOCAL_AGENT_BROKER_AUTHORITY device_truth RPC"
-ONLINE_DECISION_AUTHORITY = "kagent.local_agent_server_projection"
+ONLINE_DECISION_AUTHORITY = (
+    "kagent.local_agent_server_projection + "
+    "app.claw_local_access_source.project_mesh_online_binding"
+)
+MESH_ONLINE_EVIDENCE_SOURCE = "server_recorded_mesh_presence_receipt"
+MESH_PRESENCE_CLIENT_VALUES_ACCEPTED = False
 SECOND_DEVICE_LIFECYCLE_AUTHORITY = False
 NEW_LIFECYCLE_STATE_CREATED = 0
 HANDOFF_VALUE_MINTED_OR_PARSED = False
