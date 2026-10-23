@@ -39,7 +39,7 @@
   }
 
   window.initPdfMdUtility = function (panel) {
-    panel.innerHTML = "";
+    panel.replaceChildren();
 
     const header = el("div", "pdfmd-header");
     header.appendChild(el("h3", null, "PDF → Markdown 변환"));
@@ -207,7 +207,7 @@
     }
 
     function renderItems() {
-      itemsWrap.innerHTML = "";
+      itemsWrap.replaceChildren();
       if (!currentItems.length) return;
       const list = el("div", "pdfmd-itemlist");
       currentItems.forEach((item) => {
@@ -317,7 +317,7 @@
     async function loadHistory() {
       try {
         const data = await api("/api/document-conversions?limit=50");
-        histList.innerHTML = "";
+        histList.replaceChildren();
         const jobs = data.jobs || [];
         if (!jobs.length) { histList.textContent = "이력이 없습니다."; return; }
         const ul = document.createElement("ul");
