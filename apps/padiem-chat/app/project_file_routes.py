@@ -315,7 +315,10 @@ async def project_file_detail(request: Request):
             return _unavailable()
         if record is None:
             return _not_found()
-        return JSONResponse({"file": record.public_dict()})
+        # The detail route is already authenticated and scoped to the current
+        # owner and project. Keep collection/public projections content-free,
+        # while allowing the owner to reopen the stored text document.
+        return JSONResponse({"file": {**record.public_dict(), "content": record.content_text}})
 
     try:
         # An original exists only for the new raw-binary project upload path.
