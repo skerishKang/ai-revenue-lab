@@ -214,6 +214,13 @@
       const open = !panel.hidden;
       button.setAttribute("aria-controls", PANEL_ID);
       button.setAttribute("aria-expanded", open ? "true" : "false");
+      // #5634: the first-screen computer card is the second visible entry into
+      // this same panel, so it carries the same expanded state.
+      const card = document.getElementById("pcConnectStarter");
+      if (card) {
+        card.setAttribute("aria-controls", PANEL_ID);
+        card.setAttribute("aria-expanded", open ? "true" : "false");
+      }
       const active = document.activeElement;
       if (open) {
         if (!active || active === button || active === document.body) {
@@ -273,6 +280,11 @@
     }
 
     button.addEventListener("click", openExistingPanel);
+
+    // #5634: the first first-screen card reuses this control's exact panel path,
+    // so the computer connection entry has one implementation in both places.
+    const starterCard = document.getElementById("pcConnectStarter");
+    if (starterCard) starterCard.addEventListener("click", openExistingPanel);
 
     // The shared snapshot is the only input. This module never reads the
     // directory endpoint itself, so it can never become a second reader or a

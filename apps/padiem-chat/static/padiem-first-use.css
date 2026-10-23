@@ -52,6 +52,28 @@
   display: none !important;
 }
 
+/* #5634: the greeting plus the four entry cards sit in the upper part of the
+ * first screen instead of its middle, so the top : bottom spacing of the
+ * screen is about 1 : 2. The band is the space between the top of the content
+ * column and the fixed composer; its free height after the block is divided in
+ * three, and the block takes the top third. Measured on main at 1440x900: the
+ * content column starts at 94px, the composer starts 177px above the bottom,
+ * the four-card block is 476px tall (565px in Claw, its two hero lines), which
+ * gives the 747px and 836px offsets below. The floor keeps the block readable
+ * in a very short window, where the ratio cannot hold at all. The phone keeps
+ * its own 16px start: there the block is taller than the screen, so the
+ * screen scrolls instead of the ratio holding. */
+@media (min-width: 641px) {
+  .app-shell:is([data-state="home"], [data-state="chat"])
+    .conversation:has(#emptyState:not([hidden])) {
+      padding-top: max(12px, calc((100dvh - 747px) / 3));
+    }
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"]
+    ~ .conversation:has(#emptyState:not([hidden])) {
+      padding-top: max(12px, calc((100dvh - 836px) / 3));
+    }
+}
+
 /* Give the composer slightly stronger first-use hierarchy without changing hooks.
  * The first screen is the authority for the Glass input box: the Glass chat
  * state carries the same border, shadow and text size in
