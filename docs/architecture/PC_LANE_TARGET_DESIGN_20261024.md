@@ -1,0 +1,48 @@
+# PC 레인 목표 설계 — 2026-10-24
+
+CENTRAL CTO 작성, Owner 승인 범위. 추적: #5573. 2차 구현: #5689.
+이 문서는 목표 계약이며, 병합·배포·운영 검증 완료를 뜻하지 않습니다. 실제 상태와 증빙은 해당 PR에 기록합니다.
+
+## 1. 요구 (#5573, Owner)
+
+1. 키워드 목록이 아니라 문장·대화 맥락으로 AI가 도구를 고른다.
+2. 모든 일반 대화에 별도 분류 호출을 붙이지 않는다.
+3. 일반 스트리밍·BYOK·tier/alias·선택 모델을 보존한다.
+4. 권한(소유자·워크스페이스·기기·경로·크기·멱등성)은 서버가 검증한다.
+5. 목록만 요청한 턴은 파일 내용을 읽지 않는다.
+6. Native(Broker) 등록은 Mesh 파일 작업의 선행조건이 아니다.
+
+## 2. 핵심 원칙 — 실행 상한
+
+**실행 상한(ceiling) = 사용자 요청 범위 ∩ 서버 허용 범위.** 모델은 상한 안에서 도구를 고를 뿐, 상한을 만들거나 넓히지 못한다.
+
+- 사용자 요청 범위: 그 턴의 사용자 발화가 요구한 것(`files_list` 목록만 / `files` 내용 읽기 포함 / `query_drives`). 같은 모델 호출의 **첫 단계에서 "요청 해석"으로 선언**하고 서버가 기록한다. 이것은 모델이 하고 싶은 도구가 아니라 사용자가 요구한 범위의 해석이다. 선언이 없으면 첫 도구 결정에서 파생하고, 둘 다 없으면 거부한다(가장 좁은 쪽으로 폴백).
+- 서버 허용 범위: 권한·tier 정책이 허용하는 최대 범위. `admitted = min(요청 범위, 허용 범위)`. 깎인 결과로 생기는 step 거부는 사용자 400이 아니라 모델에 관찰(observation)로 돌려 같은 run에서 완료하게 한다.
+- 상한은 run(턴) 단위로 고정된다. 이후 step의 `intent`·도구 선택은 좁히기만 가능하다(`intent:list` → 그 step은 목록만; `intent:read`·누락 → 효과 없음).
+- 이중 강제: Engine step 게이트에 더해 **Chat의 PC 도구 API(dispatch 생성)** 가 서명 claim의 상한을 보고 `files_list`에서는 `kind=read` dispatch를 거부한다. 요구 5의 최종 보장선이다.
+- 한계를 명시한다: "사용자가 무엇을 요구했는가"의 의미 해석은 모델이 한다. 서버는 (a) 해석이 선언된 뒤 넓어지지 않음 (b) 권한 초과 불가 (c) 선언·admit 결과의 기록과 UI 표시("목록만 조회합니다")를 보장한다.
+
+## 3. 단계
+
+- **0단계(완료, 2026-10-24)**: 복원. 키워드 진입 임시 복원, Mesh 전용 자격 복구, Engine ceiling 게이트(#5574·#5653).
+- **2차**: 레인 안에서 "요청 범위 선언 → Engine admit → 서명 claim → Chat 전달 → dispatch 경계 강제". 진입은 아직 키워드.
+- **3차**: 진입을 일반 스트리밍 호출의 tool-calling(#5597 채널)에 통합. 검증된 PC가 있으면 PC 도구를 도구 목록에 노출하고, 모델이 도구를 고르는 시점에 2차의 선언·admit가 일어난다. 일반 답변은 그대로 스트리밍, 분류 호출 0, 키워드 게이트 제거. PC 도구 실행은 서버가 하므로 BYOK/tier/모델 선택과 무관하다.
+
+## 4. 2차 수용 기준
+
+1. 선언 `files_list` + `intent:read`/`read_file` → step 거부, read dispatch 0, ops == ['list'].
+2. 선언 누락 → 첫 decision에서 파생; 둘 다 없음 → 거부(모델 관찰로 반환, 사용자 400 아님).
+3. 권한이 read 불허 + 선언 `files` → `files_list`로 깎여 admit.
+4. Chat dispatch: claim 상한 `files_list` + `kind=read` → 거부.
+5. 첫 B14 호출 중복 0. 검증 PC 계정의 일반 질문 → Engine 호출 0(스트리밍 경로 무변경).
+6. wire 양방향 호환(Engine 새/Chat 옛, Chat 새/Engine 옛). 새 필드는 optional.
+7. 별도 분류 호출 0(호출 카운트 테스트).
+8. 배포 후 실제 제품 1회: Broker 0·Mesh 전용 계정으로 목록(list 1/read 0)·읽기(read 1·SHA 일치).
+
+기준 1~7은 기존 테스트 파일에 코딩하고 PR 본문에 테스트 이름을 매핑한다. 기준 6은 Chat의 헤더 없는 레거시 경로와 Engine의 레거시 본문 바이트 불변을 각각 증명한다. 기준 8은 배포 후 실제 제품 증빙으로 기록한다. 범위 안내 메시지(`<run_id>_scope`)가 있는 대화에서도 #5567 pending-result GET 복구가 최종 답변을 반환하고 안내문을 결과로 오인하지 않아야 한다.
+
+## 5. 범위·배포
+
+- 변경 후보: Engine `claw_pc_query_step_driver.py`·`orchestration_service.py`, KAgent `pc_query_adapter.py`, Chat `chat_pc_drive.py`(passthrough)·PC 도구 API(dispatch 경계), wire `orchestration_bridge.py`·`client.py`. 기존 테스트 파일에 추가, 새 스위트 금지.
+- 배포 순서: Engine(자체 게이트) → Chat(b62 게이트). 각 exact main.
+- 금지: 새 Broker 등록 요구, 별도 분류 호출, 키워드 게이트 확장, 모델·tier·BYOK 정책 변경.
