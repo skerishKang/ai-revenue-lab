@@ -73,6 +73,13 @@
     URL.revokeObjectURL(url);
   }
 
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+
   ready(() => {
     const utilNav = document.getElementById("utilNavButton");
     const utilView = document.getElementById("utilView");
@@ -103,8 +110,8 @@
     let currentPid = null;
 
     function showUtil() {
-      document.querySelectorAll(".claw-workspace, .conversation").forEach((el) => {
-        if (el.id !== "utilView") el.hidden = true;
+      document.querySelectorAll(".claw-workspace, .conversation").forEach((e) => {
+        if (e.id !== "utilView") e.hidden = true;
       });
       utilView.hidden = false;
     }
@@ -175,7 +182,6 @@
     });
     if (downloadBtn) downloadBtn.addEventListener("click", () => { downloadText(speechOutput.value, "speech.txt"); });
 
-    // Save to project file
     saveBtn.addEventListener("click", async () => {
       const text = speechOutput.value.trim();
       if (!text) return;
@@ -192,7 +198,6 @@
       }
     });
 
-    // Saved speeches list
     const savedList = document.createElement("div");
     savedList.id = "utilSpeechSaved";
     savedList.className = "util-saved-list";
@@ -203,9 +208,10 @@
       if (!currentPid) return;
       const files = await listProjectFiles(currentPid);
       const speechFiles = files.filter((f) => (f.name || "").endsWith(".txt"));
-      savedList.innerHTML = "";
+      savedList.replaceChildren();
       if (!speechFiles.length) {
-        savedList.innerHTML = "<p class='util-empty'>저장된 축사가 없습니다.</p>";
+        const p = el("p", "util-empty", "저장된 축사가 없습니다.");
+        savedList.appendChild(p);
         return;
       }
       const ul = document.createElement("ul");
@@ -216,10 +222,11 @@
         btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
         btn.addEventListener("click", async () => {
           const res = await fetch("/api/projects/" + currentPid + "/files/" + f.id, { credentials: "include" });
-          if (!res.ok) return;
-          const data = await res.json();
-          // file detail doesn't include text; fetch original? Use list. For now show name.
-          speechOutput.value = "[저장된 파일: " + f.name + "] (내용은 프로젝트 파일에서 확인)";
+          if (res.ok) {
+            const data = await res.json();
+            speechOutput.value = (data && data.file && data.file.name) ? "[저장된 파일: " + data.file.name + "]" : "[저장된 파일]";
+            speechResult.hidden = false;
+          }
         });
         li.appendChild(btn);
         ul.appendChild(li);
@@ -232,44 +239,84 @@
       const panel = panels.sns;
       if (!panel || panel.dataset.loaded) return;
       panel.dataset.loaded = "1";
-      panel.innerHTML = `
-        <form class="util-form" id="utilSnsForm">
-          <label>행사명 <input name="event" type="text" required /></label>
-          <label>날짜·장소 <input name="whenwhere" type="text" /></label>
-          <label>주요 내용 <textarea name="content" rows="3" required></textarea></label>
-          <label>사진 URL <input name="photo" type="text" placeholder="https://..." /></label>
-          <label>메모 <textarea name="memo" rows="2"></textarea></label>
-          <label>대상 독자 <input name="audience" type="text" /></label>
-          <label>문체 <select name="tone"><option value="casual">캐주얼</option><option value="professional" selected>전문적</option><option value="emotional">감성적</option></select></label>
-          <div class="util-sns-tabs">
-            <button type="button" class="util-sns-tab active" data-platform="blog">블로그</button>
-            <button type="button" class="util-sns-tab" data-platform="facebook">페이스북</button>
-            <button type="button" class="util-sns-tab" data-platform="instagram">인스타그램</button>
-          </div>
-          <button type="submit" class="util-generate">생성</button>
-        </form>
-        <div class="util-result" id="utilSnsResult" hidden>
-          <h3 id="utilSnsTitle">블로그 게시글</h3>
-          <textarea id="utilSnsOutput" rows="12"></textarea>
-          <div class="util-actions">
-            <button type="button" id="utilSnsCopy">복사</button>
-            <button type="button" id="utilSnsRegen">다시 생성</button>
-            <button type="button" id="utilSnsDownload">TXT 다운로드</button>
-          </div>
-        </div>`;
-      const form = panel.querySelector("#utilSnsForm");
-      const result = panel.querySelector("#utilSnsResult");
-      const output = panel.querySelector("#utilSnsOutput");
-      const title = panel.querySelector("#utilSnsTitle");
-      const tabs = panel.querySelectorAll(".util-sns-tab");
+      const form = el("form", "util-form");
+      form.id = "utilSnsForm";
+      // fields
+      const fields = [
+        ["event", "행사명", "text", true],
+        ["whenwhere", "날짜·장소", "text", false],
+        ["content", "주요 내용", "textarea", true],
+        ["photo", "사진 URL", "text", false],
+        ["memo", "메모", "textarea", false],
+        ["audience", "대상 독자", "text", false],
+      ];
+      fields.forEach(([name, label, type, req]) => {
+        const l = el("label", null, label + " ");
+        if (type === "textarea") {
+          const ta = document.createElement("textarea");
+          ta.name = name; ta.rows = (name === "content" ? 3 : 2);
+          if (req) ta.required = true;
+          l.appendChild(ta);
+        } else {
+          const inp = document.createElement("input");
+          inp.name = name; inp.type = "text";
+          if (req) inp.required = true;
+          if (name === "photo") inp.placeholder = "https://...";
+          l.appendChild(inp);
+        }
+        form.appendChild(l);
+      });
+      const toneLabel = el("label", null, "문체 ");
+      const toneSel = document.createElement("select");
+      toneSel.name = "tone";
+      [["casual", "캐주얼"], ["professional", "전문적"], ["emotional", "감성적"]].forEach(([v, t]) => {
+        const o = document.createElement("option");
+        o.value = v; o.textContent = t;
+        if (v === "professional") o.selected = true;
+        toneSel.appendChild(o);
+      });
+      toneLabel.appendChild(toneSel);
+      form.appendChild(toneLabel);
+
+      const tabDiv = el("div", "util-sns-tabs");
+      const tabNames = { blog: "블로그", facebook: "페이스북", instagram: "인스타그램" };
       let platform = "blog";
-      tabs.forEach((t) => t.addEventListener("click", () => {
-        tabs.forEach((x) => x.classList.remove("active"));
-        t.classList.add("active");
-        platform = t.dataset.platform;
-        const names = { blog: "블로그 게시글", facebook: "페이스북 게시글", instagram: "인스타그램 게시글" };
-        title.textContent = names[platform];
-      }));
+      Object.keys(tabNames).forEach((key) => {
+        const b = el("button", "util-sns-tab" + (key === "blog" ? " active" : ""), tabNames[key]);
+        b.type = "button";
+        b.dataset.platform = key;
+        b.addEventListener("click", () => {
+          tabDiv.querySelectorAll(".util-sns-tab").forEach((x) => x.classList.remove("active"));
+          b.classList.add("active");
+          platform = key;
+          title.textContent = tabNames[key] + " 게시글";
+        });
+        tabDiv.appendChild(b);
+      });
+      form.appendChild(tabDiv);
+
+      const submitBtn = el("button", "util-generate", "생성");
+      submitBtn.type = "submit";
+      form.appendChild(submitBtn);
+
+      const result = el("div", "util-result");
+      result.id = "utilSnsResult";
+      result.hidden = true;
+      const h3 = el("h3", null, "블로그 게시글");
+      h3.id = "utilSnsTitle";
+      const output = document.createElement("textarea");
+      output.id = "utilSnsOutput";
+      output.rows = 12;
+      const actions = el("div", "util-actions");
+      const copyB = el("button", null, "복사"); copyB.type = "button"; copyB.id = "utilSnsCopy";
+      const regenB = el("button", null, "다시 생성"); regenB.type = "button"; regenB.id = "utilSnsRegen";
+      const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilSnsDownload";
+      actions.append(copyB, regenB, dlB);
+      result.append(h3, output, actions);
+
+      panel.replaceChildren(form, result);
+      const title = h3;
+
       async function gen() {
         const d = new FormData(form);
         const event = (d.get("event") || "").trim();
@@ -300,11 +347,11 @@
         catch (e) { output.value = "생성 실패: " + (e && e.message ? e.message : e); }
       }
       form.addEventListener("submit", (e) => { e.preventDefault(); gen(); });
-      panel.querySelector("#utilSnsRegen").addEventListener("click", gen);
-      panel.querySelector("#utilSnsCopy").addEventListener("click", async () => {
-        try { await navigator.clipboard.writeText(output.value); panel.querySelector("#utilSnsCopy").textContent = "복사됨"; setTimeout(() => { panel.querySelector("#utilSnsCopy").textContent = "복사"; }, 1500); } catch (_) {}
+      regenB.addEventListener("click", gen);
+      copyB.addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(output.value); copyB.textContent = "복사됨"; setTimeout(() => { copyB.textContent = "복사"; }, 1500); } catch (_) {}
       });
-      panel.querySelector("#utilSnsDownload").addEventListener("click", () => { downloadText(output.value, "sns-" + platform + ".txt"); });
+      dlB.addEventListener("click", () => { downloadText(output.value, "sns-" + platform + ".txt"); });
     }
 
     // Meeting builder
@@ -312,31 +359,55 @@
       const panel = panels.meeting;
       if (!panel || panel.dataset.loaded) return;
       panel.dataset.loaded = "1";
-      panel.innerHTML = `
-        <form class="util-form" id="utilMeetingForm">
-          <label>회의명 <input name="title" type="text" required /></label>
-          <label>회의 일시 <input name="when" type="datetime-local" /></label>
-          <label>참석자 <input name="attendees" type="text" placeholder="쉼표 구분" /></label>
-          <label>회의 내용 <textarea name="content" rows="6" required></textarea></label>
-          <button type="submit" class="util-generate">요약 생성</button>
-        </form>
-        <div class="util-result" id="utilMeetingResult" hidden>
-          <h3>회의 요약</h3>
-          <textarea id="utilMeetingOutput" rows="12"></textarea>
-          <div class="util-actions">
-            <button type="button" id="utilMeetingCopy">복사</button>
-            <button type="button" id="utilMeetingSave">저장</button>
-            <button type="button" id="utilMeetingDownload">TXT 다운로드</button>
-          </div>
-        </div>
-        <div class="util-archive" id="utilMeetingArchive">
-          <h3>활동 기록</h3>
-          <p class="util-empty">저장된 회의 기록이 없습니다.</p>
-        </div>`;
-      const form = panel.querySelector("#utilMeetingForm");
-      const result = panel.querySelector("#utilMeetingResult");
-      const output = panel.querySelector("#utilMeetingOutput");
-      const archive = panel.querySelector("#utilMeetingArchive");
+      const form = el("form", "util-form");
+      form.id = "utilMeetingForm";
+      const fields = [
+        ["title", "회의명", "text", true],
+        ["when", "회의 일시", "datetime-local", false],
+        ["attendees", "참석자", "text", false],
+        ["content", "회의 내용", "textarea", true],
+      ];
+      fields.forEach(([name, label, type, req]) => {
+        const l = el("label", null, label + " ");
+        if (type === "textarea") {
+          const ta = document.createElement("textarea");
+          ta.name = name; ta.rows = (name === "content" ? 6 : 2);
+          if (req) ta.required = true;
+          l.appendChild(ta);
+        } else {
+          const inp = document.createElement("input");
+          inp.name = name; inp.type = type;
+          if (req) inp.required = true;
+          l.appendChild(inp);
+        }
+        form.appendChild(l);
+      });
+      const submitBtn = el("button", "util-generate", "요약 생성");
+      submitBtn.type = "submit";
+      form.appendChild(submitBtn);
+
+      const result = el("div", "util-result");
+      result.id = "utilMeetingResult";
+      result.hidden = true;
+      const h3 = el("h3", null, "회의 요약");
+      const output = document.createElement("textarea");
+      output.id = "utilMeetingOutput";
+      output.rows = 12;
+      const actions = el("div", "util-actions");
+      const copyB = el("button", null, "복사"); copyB.type = "button"; copyB.id = "utilMeetingCopy";
+      const saveB = el("button", null, "저장"); saveB.type = "button"; saveB.id = "utilMeetingSave";
+      const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilMeetingDownload";
+      actions.append(copyB, saveB, dlB);
+      result.append(h3, output, actions);
+
+      const archive = el("div", "util-archive");
+      archive.id = "utilMeetingArchive";
+      const archiveH = el("h3", null, "활동 기록");
+      const archiveEmpty = el("p", "util-empty", "저장된 회의 기록이 없습니다.");
+      archive.append(archiveH, archiveEmpty);
+
+      panel.replaceChildren(form, result, archive);
+
       async function gen() {
         const d = new FormData(form);
         const title = (d.get("title") || "").trim();
@@ -355,10 +426,10 @@
         catch (e) { output.value = "생성 실패: " + (e && e.message ? e.message : e); }
       }
       form.addEventListener("submit", (e) => { e.preventDefault(); gen(); });
-      panel.querySelector("#utilMeetingCopy").addEventListener("click", async () => {
-        try { await navigator.clipboard.writeText(output.value); panel.querySelector("#utilMeetingCopy").textContent = "복사됨"; setTimeout(() => { panel.querySelector("#utilMeetingCopy").textContent = "복사"; }, 1500); } catch (_) {}
+      copyB.addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(output.value); copyB.textContent = "복사됨"; setTimeout(() => { copyB.textContent = "복사"; }, 1500); } catch (_) {}
       });
-      panel.querySelector("#utilMeetingSave").addEventListener("click", async () => {
+      saveB.addEventListener("click", async () => {
         const text = output.value.trim();
         if (!text) return;
         if (!currentPid) currentPid = await ensureProject();
@@ -366,45 +437,48 @@
         const name = (form.querySelector("[name=title]")?.value || "회의").trim() + ".txt";
         const file = await saveProjectFile(currentPid, name, text);
         if (file) {
-          panel.querySelector("#utilMeetingSave").textContent = "저장됨";
-          setTimeout(() => { panel.querySelector("#utilMeetingSave").textContent = "저장"; }, 1500);
+          saveB.textContent = "저장됨";
+          setTimeout(() => { saveB.textContent = "저장"; }, 1500);
           await refreshArchive(archive);
         } else {
           alert("저장 실패");
         }
       });
-      panel.querySelector("#utilMeetingDownload").addEventListener("click", () => { downloadText(output.value, "meeting.txt"); });
-      refreshArchive(archive);
-    }
+      dlB.addEventListener("click", () => { downloadText(output.value, "meeting.txt"); });
 
-    async function refreshArchive(archive) {
-      if (!currentPid) currentPid = await ensureProject();
-      if (!currentPid) return;
-      const files = await listProjectFiles(currentPid);
-      const meetingFiles = files.filter((f) => (f.name || "").endsWith(".txt"));
-      archive.innerHTML = "<h3>활동 기록</h3>";
-      if (!meetingFiles.length) {
-        archive.innerHTML += "<p class='util-empty'>저장된 회의 기록이 없습니다.</p>";
-        return;
-      }
-      const ul = document.createElement("ul");
-      meetingFiles.forEach((f) => {
-        const li = document.createElement("li");
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
-        btn.addEventListener("click", async () => {
-          const res = await fetch("/api/projects/" + currentPid + "/files/" + f.id, { credentials: "include" });
-          if (res.ok) {
-            const data = await res.json();
-            const out = document.getElementById("utilMeetingOutput");
-            if (out) out.value = "[저장된 파일: " + f.name + "]";
-          }
+      async function refreshArchive(arc) {
+        if (!currentPid) currentPid = await ensureProject();
+        if (!currentPid) return;
+        const files = await listProjectFiles(currentPid);
+        const meetingFiles = files.filter((f) => (f.name || "").endsWith(".txt"));
+        arc.replaceChildren();
+        const h = el("h3", null, "활동 기록");
+        arc.appendChild(h);
+        if (!meetingFiles.length) {
+          const p = el("p", "util-empty", "저장된 회의 기록이 없습니다.");
+          arc.appendChild(p);
+          return;
+        }
+        const ul = document.createElement("ul");
+        meetingFiles.forEach((f) => {
+          const li = document.createElement("li");
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+          btn.addEventListener("click", async () => {
+            const res = await fetch("/api/projects/" + currentPid + "/files/" + f.id, { credentials: "include" });
+            if (res.ok) {
+              const data = await res.json();
+              const out = document.getElementById("utilMeetingOutput");
+              if (out) out.value = "[저장된 파일: " + f.name + "]";
+            }
+          });
+          li.appendChild(btn);
+          ul.appendChild(li);
         });
-        li.appendChild(btn);
-        ul.appendChild(li);
-      });
-      archive.appendChild(ul);
+        arc.appendChild(ul);
+      }
+      refreshArchive(archive);
     }
   });
 })();
