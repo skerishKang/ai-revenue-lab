@@ -1,34 +1,74 @@
 /* #5608: the util page is a top-level view owned by its own shell state, the
  * same way Calendar/Connectors/Automation/Meeting/Library are gated. Hidden
  * everywhere else; the shared conversation column and bottom composer stay
- * hidden while the util page is open. */
-.util-view { display: none; padding: 16px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+ * hidden while the util page is open. Layout contract mirrors .standalone-view
+ * (#5028); surfaces and controls reuse the shared theme tokens — same family
+ * as .meeting-panel and the .pdfmd-shell block below. No new tokens. */
+.util-view { display: none; padding: 28px clamp(18px, 4vw, 44px) 40px; max-width: 960px; margin: 0 auto; width: 100%; box-sizing: border-box; }
 .app-shell[data-state="util"] .util-view { display: block; flex: 1 1 auto; min-height: 0; overflow-y: auto; position: relative; z-index: 2; }
 .app-shell[data-state="util"] .conversation, .app-shell[data-state="util"] .composer-wrap { display: none !important; }
-.util-header h2 { margin: 0 0 4px; }
-.util-tagline { color: #666; margin: 0 0 12px; }
+/* Shared standalone-view header contract (kicker/title scale from #5028). */
+.util-header h2 { margin: 0 0 4px; font-size: clamp(24px, 3vw, 32px); line-height: 1.25; letter-spacing: -0.02em; color: var(--text, #17202a); }
+.util-tagline { color: var(--muted, #5b6672); margin: 0 0 16px; font-size: 13px; }
 .util-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-.util-tab { padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px; background: #fff; cursor: pointer; }
-.util-tab.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
-.util-soon { font-size: 11px; color: #999; margin-left: 4px; }
+.util-tab { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.util-tab:hover { background: var(--accent-soft); border-color: var(--accent); }
+.util-tab.active { background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); border-color: var(--accent, #6557e8); }
+.util-tab:focus-visible,
+.util-generate:focus-visible,
+.util-form input:focus-visible,
+.util-form textarea:focus-visible,
+.util-form select:focus-visible,
+.util-actions button:focus-visible,
+.util-saved-list button:focus-visible,
+.util-archive button:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 2px;
+}
+.util-soon { font-size: 11px; color: var(--muted, #5b6672); margin-left: 4px; }
+/* Glass surface for the three form panels — the pdfmd panel keeps its own
+ * .pdfmd-shell below, so it is excluded here to avoid stacking two surfaces. */
+#utilSpeechPanel, #utilSnsPanel, #utilMeetingPanel {
+  padding: clamp(18px, 3.5vw, 34px);
+  border: 1px solid var(--glass-chat-border, var(--card-border, rgba(255, 255, 255, .42)));
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--card-bg, rgba(239, 243, 246, .48)));
+  box-shadow: var(--card-shadow, var(--shadow, 0 18px 48px rgba(28, 38, 49, .14)));
+  color: var(--text, #17202a);
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
+  box-sizing: border-box;
+}
 .util-panel { display: block; }
-.util-form { display: flex; flex-direction: column; gap: 10px; }
-.util-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
-.util-form input, .util-form textarea, .util-form select { padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-.util-generate { padding: 10px 16px; background: #4f46e5; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.util-form { display: flex; flex-direction: column; gap: 12px; }
+.util-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--text, #17202a); }
+.util-form input, .util-form textarea, .util-form select { min-height: 44px; padding: 8px 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 14px; }
+.util-generate { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border: none; border-radius: 10px; background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); cursor: pointer; font: inherit; font-size: 14px; font-weight: 650; }
+.util-generate:hover:not(:disabled) { filter: brightness(.96); }
+.util-generate:disabled { opacity: .5; cursor: not-allowed; }
 .util-result { margin-top: 16px; }
-.util-result textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+.util-result textarea { width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 14px; box-sizing: border-box; }
 .util-actions { display: flex; gap: 8px; margin-top: 8px; }
-.util-actions button { padding: 8px 14px; border: 1px solid #ddd; border-radius: 6px; background: #fff; cursor: pointer; }
+.util-actions button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; cursor: pointer; }
+.util-actions button:hover { background: var(--accent-soft); border-color: var(--accent); }
 .util-actions .util-save { min-width: 72px; }
 .util-saved-list, .util-archive { margin-top: 16px; }
 .util-saved-list ul, .util-archive ul { list-style: none; padding: 0; }
 .util-saved-list li, .util-archive li { margin: 4px 0; }
-.util-saved-list button, .util-archive button { padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px; background: #fff; cursor: pointer; width: 100%; text-align: left; }
-.util-empty { color: #999; font-size: 13px; }
-.util-soon-msg { color: #999; padding: 20px; text-align: center; }
+.util-saved-list button, .util-archive button { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); cursor: pointer; width: 100%; text-align: left; }
+.util-saved-list button:hover, .util-archive button:hover { background: var(--accent-soft); border-color: var(--accent); }
+.util-empty { color: var(--muted, #5b6672); font-size: 13px; }
+.util-soon-msg { color: var(--muted, #5b6672); padding: 20px; text-align: center; }
+/* Glass theme below 921px: the util page sits outside the six-panel frame, so
+ * the same opaque-page contract as the meeting view applies — hide the shell
+ * portrait fragments and give the page its own opaque surface. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="util"] .glass-shell-portrait,
+  html[data-theme="padiem-glass"] body .app-shell[data-state="util"] .glass-shell-frag { opacity: 0 !important; }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="util"] .util-view { background: #f2f5f7; position: relative; z-index: 2; }
+}
 @media (max-width: 600px) {
-  .util-view { padding: 12px; }
+  .util-view { padding: 12px 10px 28px; }
   .util-tabs { flex-wrap: wrap; }
 }
 
