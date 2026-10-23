@@ -486,8 +486,9 @@
             if (res.ok) {
               const data = await res.json();
               const out = document.getElementById("utilMeetingOutput");
-              if (out && data && typeof data.content === "string") {
-                out.value = data.content;
+              const content = data && data.file && (data.file.content || data.file.text);
+              if (out && typeof content === "string") {
+                out.value = content;
                 result.hidden = false;
               } else {
                 alert("저장된 회의 기록의 본문을 읽을 수 없습니다.");
@@ -529,10 +530,10 @@
               const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(file.id), { credentials: "include" });
               if (!res.ok) throw new Error("선택한 회의 기록을 불러오지 못했습니다: " + file.name);
               const data = await res.json();
-              if (!data || !data.file || typeof data.content !== "string" || !data.content.trim()) {
+              if (!data || !data.file || typeof data.file.content !== "string" || !data.file.content.trim()) {
                 throw new Error("선택한 회의 기록의 본문이 비어 있거나 올바르지 않습니다: " + file.name);
               }
-              contents.push("[기록: " + data.file.name + "]\n" + data.content);
+              contents.push("[기록: " + data.file.name + "]\n" + data.file.content);
             }
             let prompt = "다음은 사용자가 선택한 활동 기록 본문입니다. 각 기록의 이름을 출처로 유지하세요.\n\n";
             prompt += contents.join("\n\n") + "\n\n";

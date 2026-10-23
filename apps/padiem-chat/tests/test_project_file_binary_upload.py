@@ -265,7 +265,7 @@ async def test_project_file_detail_returns_text_only_to_owning_project_member():
 
         detail = await client.get(f"/api/projects/{project.id}/files/{file_id}")
         assert detail.status_code == 200
-        assert detail.json()["content"] == "비공개 회의 본문"
+        assert detail.json()["file"]["content"] == "비공개 회의 본문"
         assert detail.json()["file"]["name"] == "회의.txt"
 
         foreign = await other_client.get(f"/api/projects/{project.id}/files/{file_id}")
