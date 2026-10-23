@@ -83,6 +83,8 @@
   }
   html[data-theme="padiem-glass"] body .app-shell[data-state="meeting"] .meeting-view {
     background: #f2f5f7;
+    position: relative;
+    z-index: 2;
   }
 }
 @media (min-width: 921px) {
