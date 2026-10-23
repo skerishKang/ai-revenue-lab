@@ -1196,3 +1196,26 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+
+/* #4807 CENTRAL review: the starter text column keeps fit-content width and
+   its grid track sizes to max-content, so long ja/en titles paint past the
+   card border on narrow grids (measured 5–52px). body-wide keep-all leaves
+   Japanese with no break points, so the title also needs an anywhere
+   fallback; balance keeps the resulting two-line titles even. */
+.starter > span:last-child {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 100%;
+}
+.starter-grid .starter strong {
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+/* #4807 CENTRAL review: the 88px display greeting is tuned for the Korean
+   copy; Japanese wrapped to 8 lines and crowded the cards out of the fold.
+   ja keeps the same composition at ~60% scale with natural CJK tracking. */
+html[lang="ja"] body .empty-state h1 {
+  font-size: clamp(30px, 3.8vw, 52px);
+  line-height: 1.16;
+  letter-spacing: 0;
+}
