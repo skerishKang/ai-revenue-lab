@@ -1,6 +1,17 @@
-import { buildAdClickFirstConsumerHome, buildAdClickFirstTodayRoute } from '../ad-click-first/consumer-home.js';
+import {
+  buildAdClickFirstConsumerHome,
+  buildAdClickFirstTodayRoute,
+  buildAdClickFirstBrowse,
+  buildAdClickFirstOpportunityDetail,
+  type ConsumerBrowseCategory,
+} from '../ad-click-first/consumer-home.js';
 import type { AdClickConsumerCandidate } from '../ad-click-first/consumer-card.js';
-import { renderAdClickFirstConsumerWeb, renderAdClickFirstTodayRouteWeb } from '../ad-click-first/consumer-web.js';
+import {
+  renderAdClickFirstConsumerWeb,
+  renderAdClickFirstTodayRouteWeb,
+  renderAdClickFirstBrowseWeb,
+  renderAdClickFirstOpportunityDetailWeb,
+} from '../ad-click-first/consumer-web.js';
 
 export type ConsumerCandidateLoader = (
   request: Request,
@@ -102,7 +113,10 @@ export function createConsumerHttpHandler(
       return healthResponse(request);
     }
 
-    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today') {
+    const isBrowse = url.pathname === '/browse' || url.pathname === '/explore' || url.pathname === '/opportunities';
+    const isDetail = url.pathname === '/detail' || url.pathname === '/opportunity';
+
+    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail) {
       return notFound(request);
     }
 
@@ -116,6 +130,40 @@ export function createConsumerHttpHandler(
     if (url.pathname === '/today') {
       const todayViewModel = buildAdClickFirstTodayRoute(candidates);
       const html = renderAdClickFirstTodayRouteWeb(todayViewModel);
+      return responseForMethod(request, html, {
+        status: 200,
+        headers: { 'content-type': 'text/html; charset=utf-8' },
+      });
+    }
+
+    if (isBrowse) {
+      const categoryParam = url.searchParams.get('category');
+      const validCategories: ConsumerBrowseCategory[] = ['ALL', 'AD_CLICK', 'SURVEY', 'USABILITY', 'MICROTASK', 'SHORT_GIG'];
+      const category = (validCategories.includes(categoryParam as ConsumerBrowseCategory) ? categoryParam : 'ALL') as ConsumerBrowseCategory;
+      const query = url.searchParams.get('q') ?? '';
+      const maxRaw = url.searchParams.get('maxSeconds');
+      const maxSeconds = maxRaw && Number.isFinite(Number(maxRaw)) && Number(maxRaw) > 0 ? Number(maxRaw) : null;
+      const browseViewModel = buildAdClickFirstBrowse(candidates, { category, query, maxSeconds });
+      const html = renderAdClickFirstBrowseWeb(browseViewModel);
+      return responseForMethod(request, html, {
+        status: 200,
+        headers: { 'content-type': 'text/html; charset=utf-8' },
+      });
+    }
+
+    if (isDetail) {
+      const id = url.searchParams.get('id') ?? '';
+      if (!id) {
+        return notFound(request);
+      }
+      const detailViewModel = buildAdClickFirstOpportunityDetail(candidates, id);
+      if (!detailViewModel.found) {
+        return responseForMethod(request, renderAdClickFirstOpportunityDetailWeb(detailViewModel), {
+          status: 404,
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        });
+      }
+      const html = renderAdClickFirstOpportunityDetailWeb(detailViewModel);
       return responseForMethod(request, html, {
         status: 200,
         headers: { 'content-type': 'text/html; charset=utf-8' },

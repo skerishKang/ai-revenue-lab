@@ -108,6 +108,46 @@ test('unknown routes return secured 404 responses', async () => {
   assert.equal(await response.text(), 'Not Found');
 });
 
+test('/browse renders an honest zero-supply P0 browse surface', async () => {
+  const handler = createEmptySupplyConsumerHttpHandler();
+  const response = await handler(new Request('https://b64.example/browse'));
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') ?? '', /text\/html/);
+  assertSecurityHeaders(response);
+  const html = await response.text();
+  assert.match(html, /data-consumer-mode="OPPORTUNITY_BROWSE_AD_CLICK_FIRST"/);
+  assert.match(html, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
+});
+
+test('/browse filters by query and maxSeconds', async () => {
+  const handler = createConsumerHttpHandler({ loadCandidates: () => [liveAd] });
+  const r1 = await handler(new Request('https://b64.example/browse?q=광고'));
+  assert.equal(r1.status, 200);
+  assert.match(await r1.text(), /data-visible-card-count="1"/);
+  const r2 = await handler(new Request('https://b64.example/browse?maxSeconds=10'));
+  assert.equal(r2.status, 200);
+  assert.match(await r2.text(), /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
+});
+
+test('/detail renders a known opportunity and 404s an unknown one', async () => {
+  const handler = createConsumerHttpHandler({ loadCandidates: () => [liveAd] });
+  const ok = await handler(new Request('https://b64.example/detail?id=http-live-ad'));
+  assert.equal(ok.status, 200);
+  const okHtml = await ok.text();
+  assert.match(okHtml, /data-consumer-mode="OPPORTUNITY_DETAIL_AD_CLICK_FIRST"/);
+  assert.match(okHtml, /15초 광고 보기/);
+  const missing = await handler(new Request('https://b64.example/detail?id=nope'));
+  assert.equal(missing.status, 404);
+  assertSecurityHeaders(missing);
+});
+
+test('/detail without id returns 404', async () => {
+  const handler = createEmptySupplyConsumerHttpHandler();
+  const response = await handler(new Request('https://b64.example/detail'));
+  assert.equal(response.status, 404);
+  assertSecurityHeaders(response);
+});
+
 test('candidate loader failure returns 503 instead of pretending supply is empty', async () => {
   const handler = createConsumerHttpHandler({
     loadCandidates: () => { throw new Error('provider unavailable'); },
