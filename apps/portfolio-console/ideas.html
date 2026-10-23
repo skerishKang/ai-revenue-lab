@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Portfolio Ideas · AI Revenue Lab</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0e12;--panel:#11161d;--panel2:#151b23;--text:#eef2f6;--muted:#8e99a8;--line:#28313d;--accent:#d7e4f6;--good:#73c9a5;--warn:#dfbd72;--bad:#d98383;--violet:#a99adf}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif}button,input,select{font:inherit}
+a{color:inherit}.wrap{max-width:1480px;margin:0 auto;padding:22px}.top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:8px 0 20px;border-bottom:1px solid var(--line)}.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:800}.top h1{font-size:34px;margin:8px 0 8px}.top p{margin:0;color:var(--muted);max-width:820px;line-height:1.7}.back{border:1px solid var(--line);padding:9px 12px;border-radius:10px;text-decoration:none;background:var(--panel)}.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:18px 0}.stat{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:14px}.stat strong{display:block;font-size:24px}.stat span{color:var(--muted);font-size:12px}.controls{display:grid;grid-template-columns:1fr 220px 220px auto;gap:10px;align-items:end;margin:18px 0}.field{display:flex;flex-direction:column;gap:6px}.field span{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.08em}.field input,.field select{width:100%;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:11px 12px}.reset{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:11px 14px;cursor:pointer}.meta{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:8px 0 12px;color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:16px;min-height:230px;display:flex;flex-direction:column;gap:10px}.row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.id{font:700 12px ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted)}.chip{font-size:10px;font-weight:900;letter-spacing:.05em;border:1px solid var(--line);padding:5px 7px;border-radius:999px;white-space:nowrap}.chip.IDEA{color:var(--accent)}.chip.SCREENING{color:var(--warn)}.chip.PAUSED{color:var(--warn)}.chip.LEGACY_ASSET_REVALIDATION{color:var(--violet)}.chip.DUPLICATE{color:var(--bad)}.chip.DEPRIORITIZED{color:var(--muted)}.domain{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#a6b4c5}.card h2{font-size:18px;margin:0}.ko{font-size:13px;color:#bdc8d4}.summary{font-size:13px;line-height:1.65;color:#e0e6ed}.note{margin-top:auto;padding-top:10px;border-top:1px solid var(--line);font-size:12px;line-height:1.55;color:var(--muted)}.empty{grid-column:1/-1;border:1px dashed var(--line);border-radius:16px;padding:30px;text-align:center;color:var(--muted)}.policy{margin-top:22px;border:1px solid var(--line);background:var(--panel2);border-radius:16px;padding:16px;line-height:1.7;color:#c9d2dc}.policy strong{color:white}.footer{margin:24px 0 8px;color:var(--muted);font-size:12px;text-align:right}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.controls{grid-template-columns:1fr 1fr}.reset{height:43px}}@media(max-width:650px){.wrap{padding:14px}.top{flex-direction:column}.top h1{font-size:28px}.grid,.stats,.controls{grid-template-columns:1fr}.card{min-height:0}.back{width:100%;text-align:center}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="top">
+  <div>
+    <div class="eyebrow">AI REVENUE LAB · PERSISTENT IDEA LEDGER</div>
+    <h1>아이디어 보관함</h1>
+    <p>Business 번호를 붙이기 전의 후보, 보류·중복·후순위 아이디어까지 모두 남깁니다. 다음 세션은 새 아이디어를 만들기 전에 이 목록부터 확인합니다.</p>
+  </div>
+  <a class="back" href="./index.html">← Portfolio Console</a>
+</header>
+<section class="stats" id="stats"></section>
+<section class="controls" aria-label="아이디어 필터">
+  <label class="field"><span>SEARCH</span><input id="q" type="search" placeholder="제목, 분야, 설명 검색"></label>
+  <label class="field"><span>DOMAIN</span><select id="domain"><option value="all">전체 분야</option></select></label>
+  <label class="field"><span>STATUS</span><select id="status"><option value="all">전체 상태</option></select></label>
+  <button id="reset" class="reset" type="button">초기화</button>
+</section>
+<div class="meta"><span id="count"></span><span>번호 없음 ≠ 미등록. 이 화면의 목적은 아이디어 보존입니다.</span></div>
+<section class="grid" id="grid"></section>
+<section class="policy"><strong>운영 규칙</strong><br>새 아이디어 → 원장 등록 → Business/GitHub/Drive/과거 세션 중복검사 → 조사·기술검증 → GO / NARROW / PAUSE / KILL / DUPLICATE → 살아남은 것만 Business 번호 승격. KILL·DUPLICATE도 삭제하지 않습니다.</section>
+<div class="footer">Source of truth: docs/portfolio/IDEA_LEDGER.md</div>
+</main>
+<script src="./ideas-data.js"></script>
+<script>
+(() => {
+  const ideas = Array.isArray(window.ARL_IDEAS) ? window.ARL_IDEAS : [];
+  const $ = s => document.querySelector(s);
+  const q = $('#q'), domain = $('#domain'), status = $('#status'), grid = $('#grid'), count = $('#count'), stats = $('#stats');
+  const unique = (xs) => [...new Set(xs)].sort((a,b)=>a.localeCompare(b,'ko'));
+  unique(ideas.map(x=>x.domain)).forEach(v=>domain.insertAdjacentHTML('beforeend',`<option value="${v}">${v}</option>`));
+  unique(ideas.map(x=>x.status)).forEach(v=>status.insertAdjacentHTML('beforeend',`<option value="${v}">${v}</option>`));
+  function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+  function visible(){const needle=q.value.trim().toLowerCase();return ideas.filter(x=>{const h=`${x.id} ${x.domain} ${x.title} ${x.koreanTitle} ${x.summary} ${x.note}`.toLowerCase();return (!needle||h.includes(needle))&&(domain.value==='all'||x.domain===domain.value)&&(status.value==='all'||x.status===status.value);});}
+  function renderStats(){const groups=[['전체',ideas.length],['IDEA',ideas.filter(x=>x.status==='IDEA').length],['SCREENING',ideas.filter(x=>x.status==='SCREENING').length],['PAUSED',ideas.filter(x=>x.status==='PAUSED').length],['중복/후순위',ideas.filter(x=>['DUPLICATE','DEPRIORITIZED'].includes(x.status)).length]];stats.innerHTML=groups.map(([k,v])=>`<div class="stat"><strong>${v}</strong><span>${k}</span></div>`).join('');}
+  function render(){const list=visible();count.textContent=`${ideas.length}개 중 ${list.length}개 표시`;grid.innerHTML=list.length?list.map(x=>`<article class="card"><div class="row"><span class="id">${esc(x.id)}</span><span class="chip ${esc(x.status)}">${esc(x.status)}</span></div><div class="domain">${esc(x.domain)}</div><h2>${esc(x.title)}</h2><div class="ko">${esc(x.koreanTitle)}</div><div class="summary">${esc(x.summary)}</div><div class="note">${esc(x.note)}</div></article>`).join(''):'<div class="empty">조건에 맞는 아이디어가 없습니다.</div>';}
+  [q,domain,status].forEach(el=>el.addEventListener(el===q?'input':'change',render));
+  $('#reset').addEventListener('click',()=>{q.value='';domain.value='all';status.value='all';render();});
+  renderStats();render();
+})();
+</script>
+</body>
+</html>
