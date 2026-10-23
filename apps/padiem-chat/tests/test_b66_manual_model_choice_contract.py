@@ -181,7 +181,6 @@ class _VerifiedAdmin:
 
 def test_b66_admin_option_needs_central_verification_and_uses_muse():
     from app.b66_grade_models import B66_ADMIN_GRADE
-    from app.model_policy import ADMIN_B14_MODEL_ID
     ordinary = _client(_Store(), _Interpreter())
     ordinary.app.state.b66_member_admin_store = _NoAdmin()
     ordinary.app.state.b66_quote_model_resolver = _GeminiAndMuse()
@@ -199,7 +198,11 @@ def test_b66_admin_option_needs_central_verification_and_uses_muse():
     rows = admin.get("/api/b66/quote/models").json()["tiers"]
     admin_row = next(t for t in rows if t["tier"] == B66_ADMIN_GRADE)
     assert admin_row["name"] == "Padiem 관리자"
-    assert admin_row["model_id"] == ADMIN_B14_MODEL_ID
+    # The B66 quote admin option stays on the contract Muse model; the Chat
+    # composer admin chip is the lane that follows ADMIN_B14_MODEL_ID.
+    from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID
+
+    assert admin_row["model_id"] == MUSE_B14_MODEL_ID
 
 
 class _GeminiAndMuse:
