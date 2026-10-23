@@ -1,6 +1,6 @@
-"""#5573 Option A over the real POST /api/orchestration route.
+"""#5573 interim PC entry over the real POST /api/orchestration route.
 
-One Engine call carries the whole turn; the model and Engine seams are fakes,
+Explicit PC requests carry the whole turn into Engine; the model and Engine seams are fakes,
 so no provider and no PC is contacted.
 """
 
@@ -103,7 +103,7 @@ def _wire(monkeypatch, *, selected=True, devices=True, owner_raises=False):
     async def _resolve(request, **kwargs):
         rows = [type("D", (), {"device_id": DEVICE, "state": "READY"})()] if devices else []
         return type("Ctx", (), {
-            "devices": rows, "selected_confirmed": True,
+            "devices": rows, "selected_confirmed": True, "tool_available": True,
             "execution": type("E", (), {"ready": True})(),
         })()
 
@@ -141,16 +141,18 @@ def _pc_plan_requests(bridge):
     return [req for req in bridge.requests if "agent_plan" in req]
 
 
-async def test_possessive_qualifier_reaches_one_engine_call(monkeypatch):
+@pytest.mark.parametrize("qualifier, expected_pc_calls", [(POSSESSIVE, 0), (INNER, 1)])
+async def test_interim_pc_qualifier_controls_pc_lane_entry(monkeypatch, qualifier, expected_pc_calls):
     app, b14, bridge = _wire(monkeypatch)
-    response = await _post(app, [{"role": "user", "content": POSSESSIVE + DEEP + LIST}])
+    response = await _post(app, [{"role": "user", "content": qualifier + DEEP + LIST}])
     assert response.status_code == 200, response.text
     requests = _pc_plan_requests(bridge)
-    assert len(requests) == 1
-    assert requests[0]["tool_arguments"] == {"files": {"device_id": DEVICE}}
-    assert [step["tool_id"] for step in requests[0]["agent_plan"]["steps"]] == [
-        "claw.pc.list_files", "claw.pc.read_file",
-    ]
+    assert len(requests) == expected_pc_calls
+    if expected_pc_calls:
+        assert requests[0]["tool_arguments"] == {"files": {"device_id": DEVICE}}
+        assert [step["tool_id"] for step in requests[0]["agent_plan"]["steps"]] == [
+            "claw.pc.list_files", "claw.pc.read_file",
+        ]
     assert b14.calls == []
 
 
@@ -164,12 +166,12 @@ async def test_inner_qualifier_read_request_keeps_the_read_plan(monkeypatch):
     assert b14.calls == []
 
 
-async def test_follow_up_without_keywords_carries_the_prior_turns(monkeypatch):
+async def test_explicit_pc_follow_up_carries_the_prior_turns(monkeypatch):
     app, b14, bridge = _wire(monkeypatch)
     messages = [
         {"role": "user", "content": "5015-conditions-20261022 \ud3f4\ub354\ub97c \ubd24\uc5b4"},
         {"role": "assistant", "content": "\ubaa9\ub85d\uc744 \ud655\uc778\ud588\uc2b5\ub2c8\ub2e4."},
-        {"role": "user", "content": "\uadf8 \ud3f4\ub354 \uc548\uc5d0 \ubb50 \uc788\uc5b4?"},
+        {"role": "user", "content": INNER + "\uadf8 \ud3f4\ub354 \ud30c\uc77c \ubaa9\ub85d \ubcf4\uc5ec\uc918"},
     ]
     response = await _post(app, messages)
     assert response.status_code == 200, response.text
@@ -190,7 +192,7 @@ async def test_account_without_a_verified_pc_keeps_the_general_path(monkeypatch)
 
 async def test_unreadable_selection_fails_closed_before_any_call(monkeypatch):
     app, b14, bridge = _wire(monkeypatch, selected=False)
-    response = await _post(app, [{"role": "user", "content": POSSESSIVE + DEEP + LIST}])
+    response = await _post(app, [{"role": "user", "content": INNER + DEEP + LIST}])
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "chat_pc_selection_unavailable"
     assert bridge.requests == []
@@ -200,7 +202,7 @@ async def test_unreadable_selection_fails_closed_before_any_call(monkeypatch):
 async def test_browser_target_override_is_refused(monkeypatch):
     app, b14, bridge = _wire(monkeypatch)
     response = await _post(
-        app, [{"role": "user", "content": POSSESSIVE + DEEP + LIST}],
+        app, [{"role": "user", "content": INNER + DEEP + LIST}],
         device_id="node/meshdomain1/other-owner-pc",
     )
     assert response.status_code == 409
