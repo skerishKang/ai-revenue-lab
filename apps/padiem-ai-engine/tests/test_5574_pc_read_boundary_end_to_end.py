@@ -272,14 +272,17 @@ def _transport_for(*, model: _ScriptedModel, pc: _FakePcEndpoint) -> _InProcessE
     return _InProcessEngineTransport(_chain(model=model, pc=pc))
 
 
-def _orchestrate(transport: _InProcessEngineTransport) -> dict:
+def _orchestrate(transport: _InProcessEngineTransport, *, selected_device: bool = True) -> dict:
     """One turn through the real client, with the handler's PC wait bounded."""
     client = PadiemAiEngineClient(
         transport=transport, app_id=CHAT_APP_ID, caller_id=CHAT_APP_ID,
         credential="x" * 64,
     )
+    request = _bridge_request()
+    if not selected_device:
+        request.pop("tool_arguments", None)
     with patch.object(asyncio, "sleep", _instant_sleep):
-        return asyncio.run(client.orchestrate(_bridge_request()))
+        return asyncio.run(client.orchestrate(request))
 
 
 def _without_turn(payload: dict) -> dict:
@@ -468,8 +471,9 @@ def test_an_explicit_read_intent_still_reaches_the_read_dispatch() -> None:
         pytest.param(False, "read", True, id="5-full-read-intent-authorized"),
     ],
 )
+@pytest.mark.parametrize("selected_device", [True, False], ids=["target", "no-target"])
 def test_admitted_ceiling_and_optional_step_intent(
-    list_only, intent, allowed, monkeypatch,
+    list_only, intent, allowed, selected_device, monkeypatch,
 ) -> None:
     """The five Owner cases traverse admission, the step gate and real auth."""
     read = json.loads(WRONG_READ_STEP)
@@ -490,7 +494,7 @@ def test_admitted_ceiling_and_optional_step_intent(
 
     monkeypatch.setattr(ToolRuntime, "execute", observed_execute)
     if allowed:
-        result = run(transport)
+        result = run(transport, selected_device=selected_device)
         assert result["execution"]["metadata"]["status"] == "completed"
         assert transport.statuses == [200]
         assert pc.ops == ["list", "read"]
@@ -498,7 +502,7 @@ def test_admitted_ceiling_and_optional_step_intent(
         assert "claw.pc.read_file" in read_authorizations[0]
     else:
         with pytest.raises(PadiemAiEngineClientError) as refusal:
-            run(transport)
+            run(transport, selected_device=selected_device)
         assert refusal.value.code == "agent_step_failed"
         assert transport.statuses == [400]
         assert pc.ops == ["list"]
@@ -531,6 +535,6 @@ def test_admitted_ceiling_and_optional_step_intent(
             model=_ScriptedModel(answers), pc=denied_pc,
         )
         with pytest.raises(PadiemAiEngineClientError):
-            _orchestrate(denied_transport)
+            run(denied_transport, selected_device=selected_device)
         assert denied_codes == ["tool_auth_scope_missing"]
         assert denied_pc.ops == ["list"]

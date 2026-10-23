@@ -739,15 +739,21 @@ class OrchestrationEngineService:
                 status_code=503,
             )
         tool_arguments = orch_req.tool_arguments
-        if tuple(
+        shape = tuple(
             (step.step_id, getattr(step, "tool_id", None))
             for step in orch_req.agent_plan.steps
-        ) == (("list_files", "claw.pc.list_files"),):
+        )
+        ceiling = {
+            (("list_files", "claw.pc.list_files"),): "files_list",
+            (("list_files", "claw.pc.list_files"),
+             ("read_file", "claw.pc.read_file")): "files",
+        }.get(shape)
+        if ceiling is not None:
             # The admitted plan fixes the ceiling even when the owner has no
             # explicit device hint. This internal marker is never a target or
             # a grant; owner resolution still uses the original request.
-            tool_arguments = {"files_list": dict(
-                (tool_arguments or {}).get("files_list", {}),
+            tool_arguments = {ceiling: dict(
+                (tool_arguments or {}).get(ceiling, {}),
             )}
         return replace(
             orch_req,
