@@ -389,7 +389,7 @@
   }
 
   function currentAccountCopy() {
-    return ACCOUNT_COPY[document.documentElement.lang === "en" ? "en" : "ko"];
+    return ACCOUNT_COPY[(window.__padiemLocale && typeof window.__padiemLocale.getCurrent==="function" ? window.__padiemLocale.getCurrent() : (document.documentElement.lang==="en"?"en":"ko"))];
   }
 
   function expectedAccountActionText() {
@@ -508,7 +508,7 @@
     }
     setText(accountName, copy.guest);
     accountName.hidden = false;
-    setText(avatar, document.documentElement.lang === "en" ? "G" : "게");
+    setText(avatar, (window.__padiemLocale && window.__padiemLocale.getCurrent ? window.__padiemLocale.getCurrent()==="en" : document.documentElement.lang==="en") ? "G" : "게");
     setText(loginButton, copy.login);
     loginButton.title = copy.loginTitle;
   }
@@ -547,7 +547,7 @@
   }
 
   function currentModeCopy() {
-    return TIER_COPY[document.documentElement.lang === "en" ? "en" : "ko"];
+    return TIER_COPY[(window.__padiemLocale && typeof window.__padiemLocale.getCurrent==="function" ? window.__padiemLocale.getCurrent() : (document.documentElement.lang==="en"?"en":"ko"))];
   }
 
   function ensureModeStyles() {
@@ -697,7 +697,7 @@
   }
 
   function customCopy() {
-    return CUSTOM_COPY[document.documentElement.lang === "en" ? "en" : "ko"];
+    return CUSTOM_COPY[(window.__padiemLocale && typeof window.__padiemLocale.getCurrent==="function" ? window.__padiemLocale.getCurrent() : (document.documentElement.lang==="en"?"en":"ko"))];
   }
 
   function customProvider() {

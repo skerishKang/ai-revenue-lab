@@ -47,6 +47,34 @@
       executableHint: "The PC is an execution target, but its online state is not confirmed. Click to check it again.",
       preparingHint: "The computer connection feature is not available yet. Click to open the guide.",
     },
+    ja: {
+      connect: "コンピューターを接続",
+      connected: "PC 接続済み",
+      connecting: "接続を確認中",
+      disconnected: "PC 未接続",
+      check: "接続の確認が必要です",
+      preparing: "準備中",
+      connectHint: "コンピューターは接続されていません。クリックして接続案内を開きます。",
+      connectedHint: "コンピューターが接続されています。クリックして接続情報を確認します。",
+      connectingHint: "コンピューターの接続状態を確認しています。クリックして接続案内を開きます。",
+      checkHint: "コンピューターの接続状態を確認できませんでした。クリックして再確認します。",
+      executableHint: "PC は実行対象ですが、オンライン状態を確認できません。クリックして再確認します。",
+      preparingHint: "コンピューター接続機能は準備中です。クリックして案内を開きます。",
+    },
+    "zh-CN": {
+      connect: "连接电脑",
+      connected: "电脑已连接",
+      connecting: "正在确认连接",
+      disconnected: "电脑未连接",
+      check: "需要确认连接",
+      preparing: "准备中",
+      connectHint: "电脑尚未连接。点击打开连接指南。",
+      connectedHint: "电脑已连接。点击查看已连接的电脑信息。",
+      connectingHint: "正在确认电脑连接状态。点击打开连接指南。",
+      checkHint: "无法确认电脑连接状态。点击重新检查。",
+      executableHint: "电脑已设为执行目标，但尚未确认在线状态。点击重新检查。",
+      preparingHint: "电脑连接功能正在准备中。点击打开指南。",
+    },
   });
 
   function locale() {
@@ -54,7 +82,7 @@
       typeof window.__padiemLocale.getCurrent === "function"
         ? window.__padiemLocale.getCurrent()
         : document.documentElement.lang;
-    return current === "en" ? COPY.en : COPY.ko;
+    return COPY[current] || COPY.ko;
   }
 
   function element(tag, className) {

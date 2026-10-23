@@ -112,7 +112,7 @@
   const MAX_PRIVATE_ASSET_BYTES = 256 * 1024;
 
   function copy() {
-    return COPY[document.documentElement.lang === "en" ? "en" : "ko"];
+    return COPY[(window.__padiemLocale && typeof window.__padiemLocale.getCurrent==="function" ? window.__padiemLocale.getCurrent() : (document.documentElement.lang==="en"?"en":"ko"))];
   }
 
   function validRuntime(data) {
@@ -309,7 +309,7 @@
     messageLabel.append(messageText, message);
 
     const modelLabel = el("label", "b66-quote-field");
-    const modelText = el("span", "", document.documentElement.lang === "en" ? "AI tier" : "AI 등급");
+    const modelText = el("span", "", (window.__padiemLocale && window.__padiemLocale.getCurrent ? window.__padiemLocale.getCurrent()==="en" : document.documentElement.lang==="en") ? "AI tier" : "AI 등급");
     modelText.dataset.b66QuoteModelLabel = "true";
     const modelSelect = document.createElement("select");
     modelSelect.id = "b66QuoteModelSelect";
@@ -320,7 +320,7 @@
     // /api/b66/quote/models, so the control never offers a level the selected
     // model does not actually support. The provider default is first.
     const reasoningLabel = el("label", "b66-quote-field");
-    const reasoningText = el("span", "", document.documentElement.lang === "en"
+    const reasoningText = el("span", "", (window.__padiemLocale && window.__padiemLocale.getCurrent ? window.__padiemLocale.getCurrent()==="en" : document.documentElement.lang==="en")
       ? "Reasoning level" : "추론 수준");
     reasoningText.dataset.b66QuoteReasoningLabel = "true";
     const reasoningSelect = document.createElement("select");
@@ -755,7 +755,7 @@
     select.replaceChildren();
     const placeholder = document.createElement("option");
     placeholder.value = "";
-    placeholder.textContent = document.documentElement.lang === "en"
+    placeholder.textContent = (window.__padiemLocale && window.__padiemLocale.getCurrent ? window.__padiemLocale.getCurrent()==="en" : document.documentElement.lang==="en")
       ? "Select a model" : "\uBAA8\uB378\uC744 \uC120\uD0DD\uD558\uC138\uC694";
     select.append(placeholder);
     select.disabled = true;
