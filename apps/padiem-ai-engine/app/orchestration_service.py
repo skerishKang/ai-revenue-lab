@@ -432,6 +432,23 @@ def _pc_tool_arguments_gate(payload: Any) -> AgentPlan | None:
     return _canonical_pc_plan(payload.get("app_id"), plan)
 
 
+def _validated_pc_declared_plan(payload: Any) -> str | None:
+    """An optional request interpretation, never server authority."""
+    if not isinstance(payload, Mapping) or "declared_plan" not in payload:
+        return None
+    declared = payload["declared_plan"]
+    if not isinstance(declared, str) or declared not in {"files_list", "files", "query_drives"}:
+        raise ServiceContractError(
+            "invalid_plan", "declared_plan must name a supported PC request scope.", status_code=422,
+        )
+    plan = _parse_agent_plan(payload.get("agent_plan"))
+    if _canonical_pc_plan(payload.get("app_id"), plan) is None:
+        raise ServiceContractError(
+            "invalid_plan", "declared_plan requires a canonical product PC plan.", status_code=422,
+        )
+    return declared
+
+
 def _validated_pc_tool_arguments(
     payload: Any,
 ) -> dict[str, dict[str, Any]] | None:
@@ -715,6 +732,7 @@ class OrchestrationEngineService:
         app_id: str,
         orch_req: OrchestrationRequest,
         exec_req: ExecutionRequest,
+        declared_plan: str | None = None,
     ) -> OrchestrationRequest | ServiceResponse:
         """Bind the owner-selected step driver to the exact product PC plan.
 
@@ -763,9 +781,16 @@ class OrchestrationEngineService:
         )
         configure_scope = getattr(driver, "configure_request_scope", None)
         if callable(configure_scope):
+            # Keep legacy driver calls identical when no declaration is sent.
+            scope_options = {"declared_plan": declared_plan} if declared_plan is not None else {}
             configure_scope(orch_req.tool_authorization,
                 ceiling_tool_ids=frozenset(step.tool_id for step in orch_req.agent_plan.steps),
-                request_context=exec_req.additional_system_context)
+                request_context=exec_req.additional_system_context, **scope_options)
+        elif declared_plan is not None:
+            return _service_error(
+                "pc_query_model_unavailable", "PC request scope admission is unavailable.",
+                status_code=503,
+            )
         return replace(orch_req, agent_step_driver=driver)
 
     @staticmethod
@@ -1019,6 +1044,7 @@ class OrchestrationEngineService:
             if k in payload
         }
         try:
+            _validated_pc_declared_plan(payload)
             _, exec_req, ctx = build_execution_request(exec_payload)
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
@@ -1111,6 +1137,7 @@ class OrchestrationEngineService:
             )
         attached = self._attach_pc_query_step_driver(
             app_id=app_id, orch_req=orch_req, exec_req=exec_req,
+            declared_plan=payload.get("declared_plan"),
         )
         if isinstance(attached, ServiceResponse):
             return attached
@@ -1692,6 +1719,7 @@ class OrchestrationEngineService:
                 )
             attached = self._attach_pc_query_step_driver(
                 app_id=app_id, orch_req=orch_req, exec_req=exec_req,
+                declared_plan=payload.get("declared_plan"),
             )
             if isinstance(attached, ServiceResponse):
                 return attached
@@ -1715,6 +1743,20 @@ class OrchestrationEngineService:
         from app.claw_pc_query_step_driver import _PC_QUERY_OWNER
         from kagent.pc_query_adapter import PC_QUERY_RUN_SCOPE
 
+        declared_identity_token = None
+        if "declared_plan" in payload:
+            # The stream task needs the same material replay identity as JSON.
+            # Leave the legacy context untouched when this field is absent.
+            from app.orchestration_idempotency_service import _initial_execution_fingerprint
+            from app.idempotency_identity import (
+                set_canonical_idempotency_fingerprint,
+                reset_canonical_idempotency_fingerprint,
+            )
+            declared_fingerprint = _initial_execution_fingerprint(payload)
+            if declared_fingerprint is None:
+                return _service_error("invalid_plan", "PC request scope identity is invalid.", status_code=422)
+            request_fingerprint_value = declared_fingerprint
+            declared_identity_token = set_canonical_idempotency_fingerprint(declared_fingerprint)
         pc_owner_token = _PC_QUERY_OWNER.set(_pc_query_stream_owner(app_id, orch_req))
         pc_scope_token = PC_QUERY_RUN_SCOPE.set(getattr(orch_req.agent_step_driver, "scope_state", None))
         try:
@@ -1722,6 +1764,8 @@ class OrchestrationEngineService:
         finally:
             _PC_QUERY_OWNER.reset(pc_owner_token)
             PC_QUERY_RUN_SCOPE.reset(pc_scope_token)
+            if declared_identity_token is not None:
+                reset_canonical_idempotency_fingerprint(declared_identity_token)
         first_event_task = asyncio.ensure_future(queue.get())
         done, _pending = await asyncio.wait(
             {first_event_task, task},

@@ -649,3 +649,182 @@ def test_separate_runs_do_not_reuse_the_previous_turn_ceiling():
         _orchestrate(_transport_for(model=model, pc=pc))
         assert pc.ops == expected
         assert pc.claims and pc.claims[0]["ops"] == expected
+
+
+
+def _orchestrate_declared(transport, declared_plan, *, selected_device=True):
+    request = _bridge_request()
+    request["declared_plan"] = declared_plan
+    if not selected_device:
+        request.pop("tool_arguments")
+    client = PadiemAiEngineClient(
+        transport=transport, app_id=CHAT_APP_ID, caller_id=CHAT_APP_ID, credential="x" * 64,
+    )
+    with patch.object(asyncio, "sleep", _instant_sleep):
+        return asyncio.run(client.orchestrate(request))
+
+
+@pytest.mark.parametrize("selected_device", [True, False])
+def test_external_list_declaration_precedes_model_plan_and_blocks_read(selected_device):
+    pc = _FakePcEndpoint()
+    read = json.loads(WRONG_READ_STEP)
+    read.update(plan="files")
+    read["arguments"]["intent"] = "read"
+    model = _ScriptedModel([LIST_STEP, json.dumps(read), COMPLETE_STEP])
+    original_execute = model.execute
+
+    async def observe_admitted_before_model(request):
+        assert pc.claims and pc.claims[-1]["admitted"] == "files_list"
+        return await original_execute(request)
+
+    model.execute = observe_admitted_before_model
+    transport = _transport_for(model=model, pc=pc)
+    result = _orchestrate_declared(transport, "files_list", selected_device=selected_device)
+    assert result["execution"]["metadata"]["status"] == "completed"
+    assert transport.statuses == [200]
+    assert transport.bodies[0]["declared_plan"] == "files_list"
+    assert pc.ops == ["list"]  # read dispatch 0, despite intent:read and later plan:files.
+    assert all(c["requested"] == c["admitted"] == "files_list" for c in pc.claims)
+    assert all(c["ops"] == ["list"] and c["source"] == "declared" for c in pc.claims)
+    assert len(model.prompts) == 3
+    assert "In your FIRST step declare" not in model.prompts[0]
+    assert "server admitted files_list" in model.prompts[0]
+    assert "pc_scope_denied" in model.prompts[-1]
+
+
+def test_external_files_declaration_is_capped_by_server_read_grant():
+    pc = _FakePcEndpoint()
+    first = json.loads(LIST_STEP)
+    first["plan"] = "files_list"  # The external declaration still supplies requested.
+    model = _ScriptedModel([json.dumps(first), WRONG_READ_STEP, COMPLETE_STEP])
+    transport = _InProcessEngineTransport(_chain(model=model, pc=pc, allow_read=False))
+    result = _orchestrate_declared(transport, "files")
+    assert result["execution"]["metadata"]["status"] == "completed"
+    assert transport.statuses == [200]
+    assert pc.ops == ["list"]
+    assert all(c["requested"] == "files" and c["admitted"] == "files_list" for c in pc.claims)
+    assert all(c["ops"] == ["list"] for c in pc.claims)
+    assert len(model.prompts) == 3 and "pc_scope_denied" in model.prompts[-1]
+
+
+def test_external_scope_needs_no_model_redeclaration_or_extra_call():
+    pc = _FakePcEndpoint()
+    first = json.loads(LIST_STEP)
+    first.pop("plan")
+    model = _ScriptedModel([json.dumps(first), WRONG_READ_STEP, COMPLETE_STEP])
+    transport = _transport_for(model=model, pc=pc)
+    _orchestrate_declared(transport, "files")
+    assert pc.ops == ["list", "read"]  # Without the external scope, first list derives list-only.
+    assert len(model.prompts) == 3
+    assert all(c["requested"] == c["admitted"] == "files" for c in pc.claims)
+    assert all("In your FIRST step declare" not in prompt for prompt in model.prompts)
+
+
+@pytest.mark.parametrize("invalid", [None, "", "none", "FILES", " files", "read", [], {}])
+@pytest.mark.parametrize("stream", [False, True])
+def test_invalid_external_plan_is_422_before_any_model_or_pc_call(invalid, stream):
+    from app.orchestration_service import ORCHESTRATION_STREAM_PATH
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([])
+    service = _chain(model=model, pc=pc)
+    payload = {**FILES_RECORD, "declared_plan": invalid}
+
+    async def exercise():
+        if stream:
+            return await service.prepare_stream(
+                method="POST", path=ORCHESTRATION_STREAM_PATH,
+                content_type="application/json", body=json.dumps(payload).encode(),
+            )
+        return await service.orchestrate_payload(payload)
+
+    response = asyncio.run(exercise())
+    assert response.status_code == 422
+    assert response.body["error"]["code"] == "invalid_plan"
+    assert model.prompts == [] and pc.requests == []
+
+
+def test_external_declaration_cannot_make_a_non_pc_request_pc_eligible():
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([])
+    payload = {**FILES_RECORD, "declared_plan": "files_list"}
+    payload.pop("agent_plan")
+    payload.pop("tool_arguments")
+    response = asyncio.run(_chain(model=model, pc=pc).orchestrate_payload(payload))
+    assert response.status_code == 422 and response.body["error"]["code"] == "invalid_plan"
+    assert model.prompts == [] and pc.requests == []
+
+
+def test_streaming_wire_admits_external_list_scope_before_dispatch():
+    from app.orchestration_service import ORCHESTRATION_STREAM_PATH
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([LIST_STEP, WRONG_READ_STEP, COMPLETE_STEP])
+    service = _chain(model=model, pc=pc)
+    payload = {**FILES_RECORD, "declared_plan": "files_list"}
+
+    async def exercise():
+        prepared = await service.prepare_stream(
+            method="POST", path=ORCHESTRATION_STREAM_PATH,
+            content_type="application/json", body=json.dumps(payload).encode(),
+        )
+        assert prepared.__class__.__name__ == "PreparedOrchestrationStream"
+        return [line async for line in service.iter_ndjson(prepared)]
+
+    with patch.object(asyncio, "sleep", _instant_sleep):
+        lines = asyncio.run(exercise())
+    assert lines and pc.ops == ["list"]
+    assert pc.claims and all(c["admitted"] == "files_list" for c in pc.claims)
+    assert len(model.prompts) == 3
+
+
+def test_external_declaration_is_part_of_replay_identity():
+    from app.orchestration_idempotency_service import _initial_execution_fingerprint
+    legacy = _initial_execution_fingerprint(FILES_RECORD)
+    variants = [
+        _initial_execution_fingerprint({**FILES_RECORD, "declared_plan": name})
+        for name in ("files_list", "files", "query_drives")
+    ]
+    assert legacy is not None and all(value is not None for value in variants)
+    assert len({legacy, *variants}) == 4
+    assert _initial_execution_fingerprint({**FILES_RECORD, "declared_plan": None}) is None
+
+
+
+@pytest.mark.parametrize("stream", [False, True])
+def test_changed_external_scope_cannot_replay_under_the_same_key(stream):
+    from app.orchestration_service import ORCHESTRATION_STREAM_PATH
+    pc = _FakePcEndpoint()
+    model = _ScriptedModel([LIST_STEP, COMPLETE_STEP])
+    service = _chain(model=model, pc=pc)
+    payload = {
+        **FILES_RECORD, "declared_plan": "files_list",
+        "execution_context": {**FILES_RECORD["execution_context"], "idempotency_key": "idem_declared"},
+    }
+
+    async def invoke(body):
+        if not stream:
+            return await service.orchestrate_payload(body)
+        prepared = await service.prepare_stream(
+            method="POST", path=ORCHESTRATION_STREAM_PATH,
+            content_type="application/json", body=json.dumps(body).encode(),
+        )
+        if hasattr(prepared, "status_code"):
+            return prepared
+        return "".join([line async for line in service.iter_ndjson(prepared)])
+
+    async def exercise():
+        first = await invoke(payload)
+        if isinstance(first, str):
+            assert '"type":"error"' not in first
+        else:
+            assert first.status_code == 200
+        assert len(model.prompts) == 2 and pc.ops == ["list"]
+        second = await invoke({**payload, "declared_plan": "files"})
+        if isinstance(second, str):
+            assert "idempotency_conflict" in second
+        else:
+            assert second.status_code == 409
+            assert second.body["error"]["code"] == "idempotency_conflict"
+        assert len(model.prompts) == 2 and pc.ops == ["list"]
+
+    with patch.object(asyncio, "sleep", _instant_sleep):
+        asyncio.run(exercise())

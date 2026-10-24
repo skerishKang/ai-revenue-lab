@@ -51,7 +51,7 @@ _ORCHESTRATION_OPTIONS = frozenset({
 _ORCHESTRATION_RESUME_OPTIONS = frozenset({
     "agent_plan", "recovery_policy", "max_retries", "subject_id",
 })
-_ORCHESTRATE_ALLOWED = _EXEC_FIELDS | _ORCHESTRATION_OPTIONS | {"tool_arguments"}
+_ORCHESTRATE_ALLOWED = _EXEC_FIELDS | _ORCHESTRATION_OPTIONS | {"tool_arguments", "declared_plan"}
 _RESUME_ALLOWED = (
     _EXEC_FIELDS | {"continuation_ref", "decision", "tool_arguments"}
 ) | _ORCHESTRATION_RESUME_OPTIONS

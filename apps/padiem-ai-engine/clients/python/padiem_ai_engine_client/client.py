@@ -61,6 +61,7 @@ _EXECUTION_ALLOWED = frozenset(
 _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
     {
         "subject_id",
+        "declared_plan",
         "agent_plan",
         "tool_arguments",
         "recovery_policy",
@@ -168,6 +169,7 @@ ORCHESTRATION_FIELD_PARITY = MappingProxyType(
         "execution_context": "SUPPORTED_AND_MAPPED",
         "subject_id": "SUPPORTED_AND_MAPPED",
         "agent_plan": "SUPPORTED_AND_MAPPED",
+        "declared_plan": "PC_REQUEST_SCOPE_DECLARATION_ONLY",
         "recovery_policy": "SUPPORTED_AND_MAPPED",
         "max_retries": "SUPPORTED_AND_MAPPED",
         "require_evidence": "SUPPORTED_AND_MAPPED",
@@ -358,6 +360,12 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         raise PadiemAiEngineClientError(
             "invalid_engine_request", "Engine request contains unsupported fields"
         )
+    if "declared_plan" in data:
+        declared = data["declared_plan"]
+        if not isinstance(declared, str) or declared not in _PC_PLAN_STEPS:
+            raise PadiemAiEngineClientError(
+                "invalid_engine_request", "declared_plan must be files_list, files, or query_drives"
+            )
     if "agent" not in data or "messages" not in data:
         raise PadiemAiEngineClientError(
             "invalid_engine_request", "Engine request requires agent and messages"
@@ -369,6 +377,7 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         "trace_id",
         "subject_id",
         "agent_plan",
+        "declared_plan",
         "tool_arguments",
         "recovery_policy",
         "max_retries",
