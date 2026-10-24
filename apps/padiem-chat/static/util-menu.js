@@ -54,6 +54,46 @@
     return data && data.file ? data.file : null;
   }
 
+  // #5728: photos persist through the SAME project-file channel as text
+  // drafts — binary original upload, owner/project scoped, no new limits.
+  async function uploadProjectImage(pid, file) {
+    const res = await fetch("/api/projects/" + pid + "/files", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "X-Padiem-Filename": encodeURIComponent(file.name),
+        "X-Padiem-Media-Type": file.type,
+      },
+      body: file,
+    });
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => null);
+    return data && data.file ? data.file : null;
+  }
+
+  async function deleteProjectFile(pid, fileId) {
+    const res = await fetch("/api/projects/" + pid + "/files/" + encodeURIComponent(fileId), {
+      method: "DELETE",
+      credentials: "include",
+    });
+    return res.ok || res.status === 404;
+  }
+
+  async function fetchOriginalDataUrl(pid, fileId) {
+    const res = await fetch("/api/projects/" + pid + "/files/" + encodeURIComponent(fileId) + "/original", {
+      credentials: "include",
+    });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  }
+
   async function listProjectFiles(pid) {
     const res = await fetch("/api/projects/" + pid + "/files", { credentials: "include" });
     if (!res.ok) return [];
@@ -443,11 +483,13 @@
         });
       }
 
-      photoList.addEventListener("click", (ev) => {
+      photoList.addEventListener("click", async (ev) => {
         const target = ev.target;
         if (!target || !target.dataset) return;
-        const id = Number(target.dataset.photoId);
-        const index = photos.findIndex((p) => p.id === id);
+        // Stored photos carry server ids like "file_<hex>"; local-only rows
+        // carry numeric ids. Compare as strings so both resolve.
+        const id = String(target.dataset.photoId);
+        const index = photos.findIndex((p) => String(p.id) === id);
         if (index < 0) return;
         if (target.dataset.move) {
           const to = index + Number(target.dataset.move);
@@ -455,23 +497,53 @@
           const [moved] = photos.splice(index, 1);
           photos.splice(to, 0, moved);
         } else if (target.dataset.action === "remove") {
+          if (photos[index].id && currentPid) {
+            const gone = await deleteProjectFile(currentPid, photos[index].id);
+            if (!gone) { alert("사진 삭제 실패: " + photos[index].name); return; }
+          }
           photos.splice(index, 1);
         } else {
           return;
         }
         renderPhotoList();
+
+      // #5728: re-entry restores the persisted photo set (server order).
+      // Order changes stay session-scoped; the saved set itself is durable.
+      (async () => {
+        if (!currentPid) currentPid = await ensureProject();
+        if (!currentPid) return;
+        const files = await listProjectFiles(currentPid);
+        const imageFiles = files.filter((f) => f.media_type === "image/png"
+          || f.media_type === "image/jpeg" || f.media_type === "image/webp");
+        if (photos.length || !imageFiles.length) return;
+        for (const meta of imageFiles) {
+          const dataUrl = await fetchOriginalDataUrl(currentPid, meta.id);
+          if (!dataUrl) continue;
+          photos.push({ id: meta.id, name: meta.name, dataUrl: dataUrl, position: "auto" });
+        }
+        renderPhotoList();
+        renderPreview();
+      })();
         renderPreview();
       });
 
       photoAdd.addEventListener("click", () => photoInput.click());
       photoInput.addEventListener("change", async () => {
         const files = Array.from(photoInput.files || []);
+        const failed = [];
         for (const file of files) {
-          if (file && String(file.type || "").indexOf("image/") === 0) {
-            const item = await readPhotoFile(file);
-            if (item) photos.push(item);
-          }
+          if (!file || String(file.type || "").indexOf("image/") !== 0) continue;
+          // #5728: a photo joins the composition only once the project-file
+          // upload succeeded — the thumbnail and the stored original are the
+          // same bytes, and a failed upload never looks "saved".
+          if (!currentPid) currentPid = await ensureProject();
+          if (!currentPid) { failed.push(file.name); continue; }
+          const stored = await uploadProjectImage(currentPid, file);
+          if (!stored) { failed.push(file.name); continue; }
+          const item = await readPhotoFile(file);
+          if (item) { item.id = stored.id; photos.push(item); }
         }
+        if (failed.length) alert("사진 저장 실패: " + failed.join(", "));
         photoInput.value = "";
         renderPhotoList();
         renderPreview();
