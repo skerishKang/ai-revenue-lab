@@ -266,6 +266,12 @@ class SameOriginGuardMiddleware:
         # Origin and canonical session checks are unchanged.
         if scope.get("method") == "POST" and path == "/api/chat" and media_type == "application/octet-stream":
             return None
+        # #2505: the Claw general lane accepts the SAME binary attachment frame,
+        # so the shared attachment contract does not become a JSON-only lane on
+        # one product. The exact Origin, cookie and route-local authority checks
+        # above are unchanged; only the body media type is admitted.
+        if scope.get("method") == "POST" and path == "/api/claw/general" and media_type == "application/octet-stream":
+            return None
         # Voice audio is a raw browser POST on two exact authenticated routes.
         # The Origin check above and each route's canonical session remain mandatory.
         if (

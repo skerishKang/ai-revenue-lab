@@ -35,7 +35,7 @@
       "owner-model-preview-unavailable": "모델 현황을 확인할 수 없습니다.",
       "owner-model-preview-hold": "사용 준비 중",
 
-      "claw-model-text-only-error": "Claw 모델 선택은 현재 텍스트 요청만 지원합니다.",
+      "claw-image-attachment-unsupported": "Claw는 아직 사진 첨부를 모델에 전달할 수 없습니다. 사진은 Chat에서 사용해 주세요.",
       "claw-model-choice-label": "실행 모델 ID (등록된 모델)",
       "claw-model-choice-hint": "등록된 모델 ID 직접 입력 · 자동 대체 없음",
       "claw-model-choice-placeholder": "등록된 모델 ID를 입력하세요",
@@ -295,7 +295,7 @@
       "owner-model-preview-unavailable": "Model status is unavailable.",
       "owner-model-preview-hold": "Not yet ready",
 
-      "claw-model-text-only-error": "Claw model selection currently supports text requests only.",
+      "claw-image-attachment-unsupported": "Claw cannot pass an attached photo to its model yet. Use Chat for photos.",
       "claw-model-choice-label": "Model ID (available model)",
       "claw-model-choice-hint": "Enter an exact registered model ID · no automatic fallback",
       "claw-model-choice-placeholder": "Enter a registered model ID",

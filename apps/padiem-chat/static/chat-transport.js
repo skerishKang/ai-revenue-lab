@@ -113,21 +113,28 @@
       : wire;
   }
 
-  async function requestCompleted(payload, signal) {
-    const wire = withDeviceSelection(payload);
+  // #2505: one attachment wire for both product lanes. A text document stays in
+  // the JSON body; a binary original (PDF/DOCX/PPTX/XLSX) or an image travels as
+  // the header+bytes frame the server decodes. Chat and Claw send the same
+  // bytes, so neither lane grows its own attachment encoding.
+  function attachmentRequestBody(wire) {
     const attachment = Array.isArray(wire.attachments) && wire.attachments.length === 1 ? wire.attachments[0] : null;
     const binary = attachment && attachment.file;
-    let body = JSON.stringify(wire);
-    let contentType = "application/json";
-    if (binary) {
-      const metadata = { ...wire, attachments: [{ type: attachment.type, name: attachment.name, media_type: attachment.media_type }] };
-      const header = new TextEncoder().encode(JSON.stringify(metadata));
-      if (header.byteLength > 65536) throw new Error("첨부 메타데이터가 너무 큽니다.");
-      const prefix = new Uint8Array(4);
-      new DataView(prefix.buffer).setUint32(0, header.byteLength, false);
-      body = new Blob([prefix, header, binary], { type: "application/octet-stream" });
-      contentType = "application/octet-stream";
-    }
+    if (!binary) return { body: JSON.stringify(wire), contentType: "application/json" };
+    const metadata = { ...wire, attachments: [{ type: attachment.type, name: attachment.name, media_type: attachment.media_type }] };
+    const header = new TextEncoder().encode(JSON.stringify(metadata));
+    if (header.byteLength > 65536) throw new Error("첨부 메타데이터가 너무 큽니다.");
+    const prefix = new Uint8Array(4);
+    new DataView(prefix.buffer).setUint32(0, header.byteLength, false);
+    return {
+      body: new Blob([prefix, header, binary], { type: "application/octet-stream" }),
+      contentType: "application/octet-stream",
+    };
+  }
+
+  async function requestCompleted(payload, signal) {
+    const wire = withDeviceSelection(payload);
+    const { body, contentType } = attachmentRequestBody(wire);
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": contentType, "Accept": "application/json" },
@@ -261,15 +268,18 @@
     // /api/chat/stream direct-B14 route: an unavailable P01 lane surfaces as a
     // bounded error instead of silently changing products.
     const liveReady = await clawLiveEventsAvailable(signal);
-    const headers = { "Content-Type": "application/json", "Accept": "text/event-stream" };
-    if (liveReady) headers["X-Padiem-Claw-Live"] = "p01-events-v1";
     // Reuse the existing owner-scoped PC chooser; no manual device ID input.
     // The selected id is only a hint: canonical Identity/Broker decide authority.
     const wired = withDeviceSelection(payload);
+    // #2505: an attached document uses the same wire as Chat, including the
+    // binary frame for a PDF/DOCX/PPTX/XLSX original.
+    const { body, contentType: requestContentType } = attachmentRequestBody(wired);
+    const headers = { "Content-Type": requestContentType, "Accept": "text/event-stream" };
+    if (liveReady) headers["X-Padiem-Claw-Live"] = "p01-events-v1";
     const response = await fetch("/api/claw/general", {
       method: "POST",
       headers,
-      body: JSON.stringify(wired),
+      body,
       signal,
     });
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
