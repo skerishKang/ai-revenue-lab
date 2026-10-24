@@ -16,6 +16,7 @@ from .history import HistoryStore, validate_project_id
 from .project_files import (
     BINARY_PROJECT_FILE_MEDIA,
     DEFAULT_OWNER_FILES_PAGE,
+    IMAGE_PROJECT_FILE_MEDIA,
     MAX_OWNER_FILES_PAGE,
     OwnerFileCursorError,
     ProjectFileLimitError,
@@ -181,15 +182,22 @@ async def project_files_collection(request: Request) -> JSONResponse:
         try:
             name = unquote(encoded_name, encoding="utf-8", errors="strict")
             async with open_bounded_spooled_request(request, max_bytes=MAX_BINARY_DOCUMENT_BYTES) as spool:
-                # Local Core PDF parsing can use the seekable spool directly.
-                # The Worker isolated-parser wire contract still requires bytes.
-                source = spool if media_type == "application/pdf" and not production_worker_runtime() else spool.read()
-                parsed = parse_binary_document_via_authority(
-                    name=name, media_type=media_type, payload=source,
-                )
-                created = await store.create_file(
-                    uid, pid, parsed.name, _extracted_media_type(parsed.media_type), parsed.text,
-                )
+                if media_type in IMAGE_PROJECT_FILE_MEDIA:
+                    # #5728 — an image is preserved byte-for-byte: no document
+                    # parser runs, the stored record keeps its original
+                    # media_type and an empty text body, and the owner re-reads
+                    # the exact original through the /original route.
+                    created = await store.create_file(uid, pid, name, media_type, "")
+                else:
+                    # Local Core PDF parsing can use the seekable spool directly.
+                    # The Worker isolated-parser wire contract still requires bytes.
+                    source = spool if media_type == "application/pdf" and not production_worker_runtime() else spool.read()
+                    parsed = parse_binary_document_via_authority(
+                        name=name, media_type=media_type, payload=source,
+                    )
+                    created = await store.create_file(
+                        uid, pid, parsed.name, _extracted_media_type(parsed.media_type), parsed.text,
+                    )
                 workspace_store = getattr(request.app.state, "workspace_document_store", None)
                 bucket = getattr(workspace_store, "r2_bucket", None)
                 if bucket is None:
@@ -246,7 +254,10 @@ async def project_file_original(request: Request) -> Response:
     store: ProjectFileStore = request.app.state.project_file_store
     try:
         record = await store.get_file(uid, pid, fid)
-        if record is None or record.media_type not in {"extracted/pdf", "extracted/docx"}:
+        if record is None or (
+            record.media_type not in {"extracted/pdf", "extracted/docx"}
+            and record.media_type not in IMAGE_PROJECT_FILE_MEDIA
+        ):
             return _not_found()
         workspace_store = getattr(request.app.state, "workspace_document_store", None)
         bucket = getattr(workspace_store, "r2_bucket", None)
@@ -255,7 +266,11 @@ async def project_file_original(request: Request) -> Response:
         obj = await _r2_call(bucket, "get", _project_original_object_key(uid, pid, fid))
         if obj is None:
             return _not_found()
-        media = "application/pdf" if record.media_type == "extracted/pdf" else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        if record.media_type in IMAGE_PROJECT_FILE_MEDIA:
+            # #5728 — stored originals return with their exact stored type.
+            media = record.media_type
+        else:
+            media = "application/pdf" if record.media_type == "extracted/pdf" else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         body = getattr(obj, "body", None)
 
         async def original_chunks():
@@ -325,7 +340,7 @@ async def project_file_detail(request: Request):
         record = await store.get_file(uid, pid, fid)
         if record is None:
             return _not_found()
-        if record.media_type in {"extracted/pdf", "extracted/docx"}:
+        if record.media_type in {"extracted/pdf", "extracted/docx"} or record.media_type in IMAGE_PROJECT_FILE_MEDIA:
             workspace_store = getattr(request.app.state, "workspace_document_store", None)
             bucket = getattr(workspace_store, "r2_bucket", None)
             if bucket is not None:

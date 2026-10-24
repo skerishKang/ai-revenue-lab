@@ -11,7 +11,12 @@ from .documents import MAX_DOCUMENT_CHARS, validate_document_fields
 
 PDF_MEDIA_TYPE = "application/pdf"
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE})
+#: #5728 — SNS photo composition stores its images through the same
+#: project-file channel. The set matches the chat attachment allow-list
+#: (attachments.py); no new size or count limits are introduced, images reuse
+#: the existing binary body bound (MAX_BINARY_DOCUMENT_BYTES).
+IMAGE_PROJECT_FILE_MEDIA = frozenset({"image/png", "image/jpeg", "image/webp"})
+BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE} | IMAGE_PROJECT_FILE_MEDIA)
 
 
 def _extracted_media_type(original_media_type: str) -> str:

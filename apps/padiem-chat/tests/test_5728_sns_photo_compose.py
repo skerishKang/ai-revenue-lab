@@ -155,8 +155,13 @@ class FakeFormData {
 }
 
 class FakeFileReader {
-  readAsDataURL(file) {
-    this.result = "data:image/png;base64," + Buffer.from(String(file.name)).toString("base64");
+  readAsDataURL(source) {
+    let text = String(source && source.name ? source.name : "");
+    if (!text && source && typeof source.arrayBuffer === "function") {
+      const buf = source.arrayBuffer();
+      text = buf && buf.__syncBytes ? Buffer.from(buf.__syncBytes).toString("utf8").replace(/^img:/, "") : "stored.png";
+    }
+    this.result = "data:image/png;base64," + Buffer.from(text).toString("base64");
     if (typeof this.onload === "function") this.onload();
   }
 }
@@ -216,24 +221,51 @@ mk("div", "utilMeetingOutput");
 const chatRequests = [];
 const storedFiles = [];
 function json(data) { return { ok: true, status: 200, json: async () => data }; }
+const requestsLog = [];
 async function fetch(url, opts) {
   opts = opts || {};
   const method = (opts.method || "GET").toUpperCase();
+  requestsLog.push({ method: method, url: String(url).split("?")[0] });
   const path = String(url).split("?")[0];
-  const body = opts.body ? JSON.parse(opts.body) : null;
+  const body = typeof opts.body === "string" ? JSON.parse(opts.body) : null;
   if (method === "POST" && path === "/api/chat") {
     chatRequests.push(body);
     return json({ answer: "첫 문단입니다.\n\n둘째 문단입니다.\n\n마지막 문단입니다." });
   }
+  // #5728 storage: binary image upload / stored-original read / delete.
+  if (method === "POST" && path === "/api/projects/p1/files" && opts.headers && String(opts.headers["Content-Type"] || "").indexOf("octet-stream") >= 0) {
+    const fname = decodeURIComponent(opts.headers["X-Padiem-Filename"] || "");
+    const ftype = opts.headers["X-Padiem-Media-Type"] || "";
+    const id = "file_" + String(1000 + storedFiles.length).padStart(32, "0").slice(-32);
+    storedFiles.push({ id, name: fname, media_type: ftype, binary: true });
+    return json({ file: { id, name: fname, media_type: ftype, content_chars: 0 } });
+  }
+  const originalMatch = /^\/api\/projects\/p1\/files\/(file_\d+)\/original$/.exec(path);
+  if (method === "GET" && originalMatch) {
+    const found = storedFiles.find((f) => f.id === originalMatch[1] && f.binary);
+    if (!found) return { ok: false, status: 404, json: async () => ({}) };
+    const bytes = new TextEncoder().encode("img:" + found.name);
+    return {
+      ok: true, status: 200,
+      headers: { get: (k) => (String(k).toLowerCase() === "content-type" ? found.media_type : null) },
+      blob: async () => ({ arrayBuffer: () => ({ __syncBytes: bytes }) }),
+    };
+  }
+  const deleteMatch = /^\/api\/projects\/p1\/files\/(file_\d+)$/.exec(path);
+  if (method === "DELETE" && deleteMatch) {
+    const idx = storedFiles.findIndex((f) => f.id === deleteMatch[1]);
+    if (idx >= 0) storedFiles.splice(idx, 1);
+    return { ok: true, status: 204, json: async () => ({}) };
+  }
   if (method === "GET" && path === "/api/projects") return json({ projects: [{ id: "p1", name: "유틸 작업" }] });
   if (method === "POST" && path === "/api/projects") return json({ project: { id: "p1", name: "유틸 작업" } });
-  if (method === "POST" && path === "/api/projects/p1/files") {
+  if (method === "POST" && path === "/api/projects/p1/files" && body) {
     const file = { id: "f" + (storedFiles.length + 1), name: body.name, media_type: body.media_type, content_chars: body.text.length };
     storedFiles.push(file);
     return json({ file });
   }
   if (method === "GET" && path === "/api/projects/p1/files") {
-    return json({ files: storedFiles.map((f) => ({ id: f.id, name: f.name, media_type: f.media_type, content_chars: f.content_chars })) });
+    return json({ files: storedFiles.map((f) => ({ id: f.id, name: f.name, media_type: f.media_type, content_chars: f.content_chars || 0 })) });
   }
   return { ok: false, status: 404, json: async () => ({}) };
 }
@@ -348,7 +380,17 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const note = preview.children[preview.children.length - 1].textContent;
   if (note.indexOf("자동 게시") < 0) fail("PREVIEW_NOTE_MISSING_NO_PUBLISH_DISCLAIMER");
 
-  console.log(JSON.stringify({ ok: true, photos: root.findAll(".util-photo-item").length, promptHead: prompt.slice(0, 60), blogSeq: seq.slice(0, 6), alerts }));
+  // 9) #5728 storage sync: additions became binary uploads, removal issued a
+  // server DELETE that actually dropped the stored original.
+  const binaryUploads = storedFiles.filter((f) => f.binary);
+  if (binaryUploads.length !== 2) fail("PHOTOS_NOT_UPLOADED", { stored: storedFiles.length });
+  const deleteCalls = requestsLog.filter((r) => r.method === "DELETE" && /files\/file_\d+$/.test(r.url));
+  if (deleteCalls.length !== 1) fail("REMOVE_DID_NOT_DELETE_STORED", { deletes: deleteCalls.length });
+  const storedNames = storedFiles.filter((f) => f.binary).map((f) => f.name);
+  if (storedNames.indexOf("b.png") >= 0) fail("STORED_ORIGINAL_NOT_DROPPED");
+  if (storedNames.length !== 2) fail("UPLOAD_COUNT_WRONG", { storedNames: storedNames });
+
+  console.log(JSON.stringify({ ok: true, photos: root.findAll(".util-photo-item").length, promptHead: prompt.slice(0, 60), blogSeq: seq.slice(0, 6), storedBinary: storedFiles.filter((f) => f.binary).length, alerts }));
 })().catch((e) => { console.log(JSON.stringify({ ok: false, fail: "HARNESS_EXCEPTION", extra: String(e && e.stack || e) })); process.exit(1); });
 """
 
