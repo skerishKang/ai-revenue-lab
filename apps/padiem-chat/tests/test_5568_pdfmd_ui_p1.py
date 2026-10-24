@@ -306,6 +306,15 @@ function buttonByText(label) {
   await flush();
   await flush();
 
+  // 0) #5711: new work is paused; the COM2 notice replaces the picker action.
+  const noticeText = root.findAll(".pdfmd-status").map(text).join(" ");
+  if (!noticeText.includes("서비스 준비 중 · 신규 업로드 및 변환 일시 중단")) fail("PAUSE_NOTICE_MISSING", noticeText);
+  const drop = root.findAll(".pdfmd-drop")[0];
+  if (!drop) fail("DROP_ZONE_MISSING");
+  if (drop.getAttribute("role") !== null) fail("PAUSED_DROP_STILL_BUTTON");
+  const dropCta = drop.querySelector(".pdfmd-drop-cta");
+  if (!dropCta || !text(dropCta).includes("업로드 일시 중단")) fail("PAUSED_DROP_COPY_MISSING", dropCta && text(dropCta));
+
   // 1) History rows render one localized chip each.
   const rows = root.findAll(".pdfmd-history-item");
   if (rows.length !== 5) fail("HISTORY_NOT_RENDERED", rows.length);
@@ -336,7 +345,8 @@ function buttonByText(label) {
   if (warn !== "PDF 형식이 아니거나 손상된 파일입니다.") fail("RAW_ERROR_LEAKED", warn);
   const actions = root.findAll(".pdfmd-item-actions").map(text);
   if (!actions[0].includes("비교 보기") || actions[0].includes("변환 실행")) fail("PRIMARY_ACTION_WRONG", actions[0]);
-  if (!actions[1].includes("다시 변환")) fail("RETRY_ACTION_MISSING", actions[1]);
+  if (actions[1].includes("다시 변환") || actions[1].includes("변환 실행")) fail("PAUSED_RETRY_RENDERED", actions[1]);
+  if (!actions[1].includes("삭제")) fail("PAUSED_DELETE_MISSING", actions[1]);
   if (rows[0].getAttribute("aria-current") !== "true") fail("ACTIVE_ROW_NOT_MARKED");
 
   // 4) Preview shows labelled panes, a real markdown body and a taller frame.
@@ -352,11 +362,10 @@ function buttonByText(label) {
   const frame = panel.querySelector(".pdfmd-iframe");
   if (!String(frame.src).includes("/original?display=inline")) fail("IFRAME_SRC_NOT_SET", frame.src);
 
-  // 5) A new job clears the previous preview and returns to onboarding.
-  await buttonByText("새 작업").dispatch("click");
-  await flush();
-  if (panel.querySelector(".pdfmd-preview").hidden !== true) fail("PREVIEW_NOT_CLEARED");
-  if (!text(panel.querySelector(".pdfmd-items")).includes("첫 PDF를 변환해 보세요.")) fail("NEW_JOB_NO_ONBOARDING");
+  // 5) Paused: the new-work control stays hidden.
+  const newJob = buttonByText("새 작업");
+  if (!newJob) fail("NEW_JOB_BUTTON_MISSING");
+  if (newJob.hidden !== true) fail("NEW_JOB_VISIBLE_WHILE_PAUSED");
 
   // 6) Guests get a login explanation, not a raw unauthorized string.
   historyMode = "unauthorized";
@@ -375,6 +384,9 @@ function buttonByText(label) {
     itemActions: actions,
     paneLabels: labels,
     markdownLoaded: true,
+    pauseNotice: noticeText.trim(),
+    dropCta: dropCta ? text(dropCta) : "",
+    newJobHidden: newJob ? newJob.hidden === true : null,
     guestState: historyText.trim(),
   }));
 })().catch((error) => {
@@ -426,7 +438,12 @@ def test_item_cards_show_friendly_errors_and_correct_actions() -> None:
     payload = _run_harness()
     assert "비교 보기" in payload["itemActions"][0]
     assert "변환 실행" not in payload["itemActions"][0]
-    assert "다시 변환" in payload["itemActions"][1]
+    # #5711: retry is paused; only the existing delete action remains.
+    assert "다시 변환" not in payload["itemActions"][1]
+    assert "삭제" in payload["itemActions"][1]
+    assert "신규 업로드 및 변환 일시 중단" in payload["pauseNotice"]
+    assert "업로드 일시 중단" in payload["dropCta"]
+    assert payload["newJobHidden"] is True
 
 
 def test_preview_labels_markdown_and_guest_state() -> None:

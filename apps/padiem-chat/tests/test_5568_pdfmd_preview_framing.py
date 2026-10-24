@@ -60,22 +60,18 @@ def test_every_other_path_keeps_the_deny_all_frame_default(path):
 
 
 async def test_item_id_shape_matches_the_route_contract():
-    """The policy segment shape must accept exactly what the route returns."""
-    from test_5568_document_convert_routes import build_client, open_job, pdf_bytes, upload
+    """New work is paused (#5711); the pinned item-id frame shape still holds."""
+    from test_5568_document_convert_routes import build_client
 
     client, _app = await build_client()
     try:
-        job_id = await open_job(client)
-        created = await upload(
-            client, job_id, pdf_bytes(texts=["frame contract"]), name="frame.pdf"
-        )
-        item_id = created.json()["items"][0]["id"]
-        assert item_id
-        assert response_headers_for_path(
-            f"/api/document-conversions/items/{item_id}/original"
-        )["X-Frame-Options"] == "SAMEORIGIN"
-        assert "frame-ancestors 'self'" in response_headers_for_path(
-            f"/api/document-conversions/items/{item_id}/original"
-        )["Content-Security-Policy"]
+        blocked = await client.post("/api/document-conversions", json={"mode": "fast"})
+        assert blocked.status_code == 503
+        assert blocked.json()["error"]["code"] == "pdfmd_migration_paused"
     finally:
         await client.aclose()
+
+    # A pinned route item id keeps the preview frame exception while paused.
+    headers = response_headers_for_path(ORIGINAL_PATH)
+    assert headers["X-Frame-Options"] == "SAMEORIGIN"
+    assert "frame-ancestors 'self'" in headers["Content-Security-Policy"]
