@@ -609,6 +609,107 @@ def test_route_tools_capability_is_catalog_authoritative(row, expected):
     assert asyncio.run(scenario()) is expected
 
 
+class _RegistryTransport:
+    """The real B14 ``/api/pilot/models`` answer: an object, never a list.
+
+    The B66 registry view parses the raw bytes itself; the guard's catalog
+    source consumes an already-decoded body. Both read the same payload here.
+    """
+
+    def __init__(self, payload):
+        self.payload = payload
+        self.calls = []
+
+    async def get_json(self, path):
+        self.calls.append(path)
+        return 200, json.dumps(self.payload, ensure_ascii=False).encode("utf-8")
+
+    async def decoded_json(self, path):
+        self.calls.append(path)
+        return 200, self.payload
+
+
+def _real_registry_payload(model_id, capabilities, *, enabled=True):
+    provider, _, tail = model_id.partition("/")
+    route = {
+        "id": model_id,
+        "provider_id": provider,
+        "owner_excluded": False,
+        "capabilities": list(capabilities),
+    }
+    catalog_row = {"id": model_id, "provider_id": provider, "name": tail}
+    return {
+        "models": [],
+        "configured": True,
+        "mode": "multi-provider",
+        "catalog": [catalog_row] if enabled else [],
+        "registered_routes": [route],
+        "model_groups": {},
+    }
+
+
+def _registry_request(**state_fields):
+    from app.chat_pc_drive import chat_pc_route_declares_tools
+
+    state = SimpleNamespace(**state_fields)
+    request = SimpleNamespace(app=SimpleNamespace(state=state))
+    return request, chat_pc_route_declares_tools
+
+
+def test_the_tools_capability_is_read_from_the_real_b14_registry_view():
+    """The live B14 registry is an object, so the normalized view decides.
+
+    Production withheld the PC tools from a PC-capable account: the raw catalog
+    source only accepts a JSON list, so in front of the real payload it sees no
+    rows and the ``tools`` declaration could never reach the request. The read
+    now goes through ``b14_model_choice_resolver``, the existing
+    owner-allowed/live-ready B14 view Claw and B66 already consume.
+    """
+    from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
+    from app.final_dispatch_guard_wiring import SimpleB14CatalogSource
+
+    payload = _real_registry_payload(FREE_B14_MODEL_ID, ["chat", "coding", "tools"])
+    transport = _RegistryTransport(payload)
+    raw_source = SimpleB14CatalogSource(transport.decoded_json)
+    request, reader = _registry_request(
+        b14_catalog_source=raw_source,
+        b14_model_choice_resolver=B66ExplicitQuoteModelResolver(transport),
+    )
+    assert asyncio.run(reader(request, FREE_B14_MODEL_ID)) is True
+
+    # The same payload proves nothing through the raw source alone: an unknown
+    # capability stays withheld instead of a guess exposing the tools.
+    request, reader = _registry_request(
+        b14_catalog_source=raw_source, b14_model_choice_resolver=None,
+    )
+    assert asyncio.run(reader(request, FREE_B14_MODEL_ID)) is False
+
+    def view(capabilities, *, enabled=True):
+        resolver = B66ExplicitQuoteModelResolver(_RegistryTransport(
+            _real_registry_payload(FREE_B14_MODEL_ID, capabilities, enabled=enabled),
+        ))
+        request, reader = _registry_request(
+            b14_catalog_source=None, b14_model_choice_resolver=resolver,
+        )
+        return asyncio.run(reader(request, FREE_B14_MODEL_ID))
+
+    assert view(["chat"]) is False
+    assert view(["chat", "tools"], enabled=False) is False
+    assert asyncio.run(raw_source.list_registered_models()) == []
+
+
+def test_raw_catalog_source_sees_no_rows_in_the_real_b14_payload():
+    """Why the normalized view is required: the object payload is not a list."""
+    from app.final_dispatch_guard_wiring import SimpleB14CatalogSource
+
+    transport = _RegistryTransport(
+        _real_registry_payload(FREE_B14_MODEL_ID, ["tools"]),
+    )
+    source = SimpleB14CatalogSource(transport.decoded_json)
+    assert asyncio.run(source.list_registered_models()) == []
+
+
+
 PC_RUN = "chat_pcq_" + "e" * 32
 
 
