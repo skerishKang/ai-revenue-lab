@@ -104,3 +104,60 @@
 배포·복구 결과는 본 문서가 아니라 #5479 이슈 코멘트에 실행 시각·버전 ID·응답 상태와
 함께 기록한다. 배포 직전 활성 버전 ID를 읽기 전용으로 기록하고, 그 ID를
 `rollback_production_code`의 `previous_version_id`로 사용한다.
+
+## 8. 3.14 운영 전환 실측과 롤백 (2026-10-25)
+
+§7의 구현을 실제 운영에 배포하고 측정한 결과, **KDF는 해결됐고 런타임은 실패**했다.
+
+### 8.1 배포
+
+- 병합: PR #5741(`0d816573`) → PR #5746(`2dfd460d`). 보호 배포 run `40109855217` SUCCESS.
+- 운영 활성 버전: `git-2dfd460d535cfb2653dc7c6a14acc3ed2b805cd0` (Pyodide 3.14).
+- 배포 직전 활성 버전(롤백 대상): `065f62d2-c3c8-4890-9606-ceddf9e232c5` (`git-cccbb5b5`, 3.13).
+- 배포 게이트 smoke/secret/binding readback: PASS.
+
+### 8.2 운영 엣지 3.14 측정 (KDF 정상)
+
+| 검사 | 결과 |
+|---|---|
+| `POST /api/auth/password/register` | 200 (cryptography로 해시) |
+| 세션 `/api/auth/status` | `authenticated:true`, `account_method:password` |
+| 로그인(정답) | 200 |
+| 로그인(오답) | 401 JSON `invalid_credentials` |
+| 비밀번호 변경 + 새 비밀번호 로그인 | 200 / 200, 이전 비밀번호 401 |
+| 없는 계정 로그인(220k 더미 KDF 경로) | 401 JSON — **3.14에서 KDF 전체 실행 확인** |
+
+즉 `NoGilError`의 원인이던 `hashlib.pbkdf2_hmac` 부재·WebCrypto 10만 상한 문제는 운영 엣지에서 해소됐다.
+
+### 8.3 런타임 결함 (롤백 원인)
+
+동일 3.14 배포에서 동시성/반복 요청이 실패했다.
+
+| 검사 | 3.14 (`git-2dfd460d`) | 3.13 (`git-cccbb5b5`) |
+|---|---|---|
+| 순차 `GET /health` 25회 | **6회 HTTP 500** | 25회 200 |
+| 동시 `/api/auth/status` 8 | **3회 500** | 8회 200 |
+| 동시 로그인 8 | **1회 500 + 1회 503** | 8회 401 |
+
+Workers tail 확정 예외:
+
+```
+SystemError: Cannot enter a promising task from inside another running promising task.
+This is a bug in Pyodide.
+```
+
+- 1회는 `introspection.CpuLimitExceeded: Python Worker exceeded CPU time limit` (CPU 8ms 계정).
+- `NoGilError`는 3.14 구간에서 **0건**.
+- `/health`는 KDF를 쓰지 않는데도 실패했다 → KDF·앱 로직 문제가 아니라 **Pyodide async 브리지 결함**이다.
+
+### 8.4 롤백
+
+- `rollback_production_code` 모드로 기록된 `065f62d2` 복구 성공 (run `40111743619`, 활성 `git-cccbb5b5`).
+- 복구 후 재측정: 순차 `/health` 25/25 200, 동시 status 8/8 200, 동시 로그인 8/8 401, tail 예외 0건.
+- 같은 모드가 두 번 실패했다: 1차는 공개 origin health 증명이 당시 500 때문에 BLOCKED, 2차는 main SHA 이동. 둘 다 mutation 0.
+
+### 8.5 결론·다음
+
+- 저장 자격증명·회원 데이터·KDF는 변경 없이 유지된다. 3.14용 구현은 dev 의존성과 테스트로 보존하고, Worker 번들에는 넣지 않는다(§7.2 표는 3.14 경로를 재개할 때 그대로 사용).
+- 남은 차단점은 **Pyodide 3.14 async 브리지(`promising task`) 결함**이며 app/KDF로 우회할 수 없다. 상류(Cloudflare/Pyodide) 보고 대상이다.
+- 다음 실행: ① 최소 재현(단일 isolate에 `await` 체인 다수) 상류 리포트 ② 차기 3.14 스냅샷에서 동일 A/B 재측정 ③ 재개 시 이 문서 §8.3 표를 합격 기준으로 사용.

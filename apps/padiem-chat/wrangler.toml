@@ -1,23 +1,26 @@
 name = "padiem-chat"
 main = "worker.py"
-# #5479: the Chat Worker runs on the Pyodide 3.14 snapshot (CPython 3.14),
-# the runtime Cloudflare published for the `NoGilError` initialization race
-# (cloudflare/workerd#6624).
+# #5479: the Chat Worker stays on the Pyodide 3.13 snapshot (CPython 3.13.2).
 #
-# 3.14 ships no `_hashlib`, and CPython 3.14 removed the pure-Python PBKDF2
-# fallback, so `hashlib.pbkdf2_hmac` does not exist there. The password KDF
-# therefore dispatches to the bundled `cryptography` package (OpenSSL
-# PBKDF2HMAC) — declared in pyproject dependencies and carried by the
-# committed pylock — and the stored credential format is unchanged:
-# `pbkdf2_sha512$220000$...` verifies byte-for-byte on both runtimes, so no
-# member password or hash is re-derived or migrated.
+# The 3.14 snapshot (compatibility date 2026-09-08 or later) is the runtime
+# Cloudflare published for the `NoGilError` initialization race
+# (cloudflare/workerd#6624). The password-KDF half of that move is solved and
+# unit-proven in app/password_kdf.py (bundled cryptography, stored
+# pbkdf2_sha512$220000$ credential byte-identical), and it was deployed to the
+# real edge on 2026-10-24 and measured:
 #
-# Workers' WebCrypto is NOT the fallback: the Production edge refuses PBKDF2
-# above 100,000 iterations and the stored cost is 220,000 (#5736 deployed that
-# combination and every password request answered HTTP 500). The shared
-# Workerd lane boots THIS compatibility date and gates on a real 3.14
-# stored-cost round trip before any release.
-compatibility_date = "2026-09-08"
+#   sequential GET /health         3.14: 6 of 25 failed   | 3.13: 0 of 25
+#   concurrent /api/auth/status    3.14: 3 of 8  failed   | 3.13: 0 of 8
+#   concurrent password login      3.14: 2 of 8  failed   | 3.13: 0 of 8
+#
+# Every 3.14 failure was HTTP 500 (one 503 exceededCpu) with
+# `SystemError: Cannot enter a promising task from inside another running
+# promising task. This is a bug in Pyodide.` — the NoGilError is gone and a
+# broader Python-async-bridge failure replaced it. Production was rolled back
+# to the recorded 3.13 version and verified clean, so this date stays here
+# until the platform fixes that path. Evidence: docs/operations/
+# 5479-py314-runtime-incident-20261024.md §8.
+compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
 base_dir = ".b66-worker-src"

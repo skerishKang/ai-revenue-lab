@@ -196,11 +196,11 @@ def test_combined_probe_ready_line_carries_the_async_kdf_state() -> None:
 
 
 def test_the_deployed_compatibility_date_is_still_pinned() -> None:
-    """The 3.14 date travels through the protected deploy config, not a preview."""
+    """The date stays on the runtime the edge actually serves reliably."""
     import tomllib
 
     manifest = tomllib.loads(CHAT_MANIFEST.read_text(encoding="utf-8"))
-    assert manifest["compatibility_date"] == "2026-09-08"
+    assert manifest["compatibility_date"] == "2026-08-25"
     assert "python_workers" in manifest["compatibility_flags"]
 
 
