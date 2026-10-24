@@ -51,10 +51,13 @@ CHAT_MANIFEST = CHAT_ROOT / "wrangler.toml"
 #: hashing cannot run.
 PYTHON_314_COMPATIBILITY_DATE = "2026-09-08"
 
-#: The compatibility date the Chat Worker deploys: Pyodide 3.14, the
-#: published ``NoGilError`` fix, whose password KDF is the bundled
-#: ``cryptography`` package rather than ``hashlib.pbkdf2_hmac``.
-DEPLOYED_COMPATIBILITY_DATE = PYTHON_314_COMPATIBILITY_DATE
+#: The compatibility date the Chat Worker deploys: Pyodide 3.13 / CPython
+#: 3.13.2, which provides ``hashlib.pbkdf2_hmac``. The 3.14 move was measured
+#: on the real edge on 2026-10-24 and rolled back: it removed ``NoGilError``
+#: but answered 6 of 25 sequential ``/health`` requests with HTTP 500
+#: (``SystemError: Cannot enter a promising task from inside another running
+#: promising task. This is a bug in Pyodide.``).
+DEPLOYED_COMPATIBILITY_DATE = "2026-08-25"
 
 #: The real Workerd/Pyodide probe scripts. Each one used to hardcode a
 #: compatibility date, which let the CI lane prove a runtime that Production
@@ -218,7 +221,7 @@ def test_the_production_deploy_config_carries_the_deployed_compatibility_date(
     )
     parsed = tomllib.loads(generated)
     assert parsed["compatibility_date"] == manifest["compatibility_date"]
-    assert parsed["compatibility_date"] == PYTHON_314_COMPATIBILITY_DATE
+    assert parsed["compatibility_date"] == DEPLOYED_COMPATIBILITY_DATE
     assert "python_workers" in parsed["compatibility_flags"]
 
 

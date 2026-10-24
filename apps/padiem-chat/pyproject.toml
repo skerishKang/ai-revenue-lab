@@ -11,19 +11,6 @@ dependencies = [
   "starlette>=0.37,<1",
   "httpx>=0.27,<1",
   "uvicorn>=0.30,<1",
-  # #5479: the password KDF on the Pyodide 3.14 snapshot. That runtime has no
-  # `_hashlib`, so `hashlib.pbkdf2_hmac` does not exist there, and Workers'
-  # WebCrypto PBKDF2 refuses the stored 220,000-iteration cost on the
-  # Production edge (measured, #5736). The bundled OpenSSL PBKDF2HMAC is the
-  # provider that serves the unchanged `pbkdf2_sha512$220000$...` credential
-  # at 269 ms (isolated 3.14 Workerd lane).
-  #
-  # The exact pins are the Pyodide v314 wasm wheels: cryptography 47.0.0, and
-  # cffi 2.0.0 because cffi 2.1.1 has no wasm wheel and cannot be built for
-  # emscripten. Vendoring this way adds no new resolution path — the Worker
-  # build already installs the committed lock for the Pyodide platform.
-  "cryptography==47.0.0",
-  "cffi==2.0.0",
   # #5023: the Calendar contracts validate explicit timezone identifiers
   # against the real IANA database (a shape-valid but nonexistent zone such as
   # "Mars/Olympus" must be refused at write time). The Worker runtime ships no
@@ -41,7 +28,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "cryptography>=42,<48",  # widened to include the bundled 47.0.0 Worker wheel
+  "cryptography>=42,<47",
   "PyMuPDF==1.26.3",
   "pytest>=8,<10",
   "pytest-asyncio>=0.23,<2",
