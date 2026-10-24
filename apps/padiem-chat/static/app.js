@@ -593,9 +593,25 @@
     content.appendChild(paragraph);
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
+  function renderWebGroundingNotice(content, notice, metadata) {
+    const code = metadata && metadata.web_grounding_error;
+    const key = code === "web_grounding_no_evidence" ? "web-grounding-no-evidence-notice"
+      : ["web_grounding_auth_error", "web_grounding_unavailable"].includes(code) ? "web-grounding-unavailable-notice" : null;
+    if (!key || typeof notice !== "string") return;
+    let note = content.querySelector(".web-grounding-notice");
+    if (!note) {
+      note = document.createElement("p");
+      note.className = "web-grounding-notice reference-note";
+      note.setAttribute("role", "status");
+      content.prepend(note);
+    }
+    note.dataset.localeKey = key;
+    note.textContent = uiT(key);
+  }
   function renderAnswer(article, result) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
+    renderWebGroundingNotice(content, result.notice, result.metadata);
     // #5573: the live PC scope notice is its own line above the answer.
     window.PadiemChatPcScopeNotice?.render?.(content, window.PadiemChatPcScopeNotice?.value?.(result));
     const paragraph = document.createElement("p");
@@ -2575,6 +2591,7 @@
       used.textContent = uiT("project-files-used", { count: data.project_files_used });
       article.querySelector(".assistant-content").appendChild(used);
     }
+    renderWebGroundingNotice(article.querySelector(".assistant-content"), data.notice, data.metadata);
     // #5573: the live PC scope notice is its own line above the answer.
     window.PadiemChatPcScopeNotice?.render?.(
       article.querySelector(".assistant-content"),

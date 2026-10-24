@@ -58,6 +58,7 @@ class GroundingError(Exception):
     status_code: int
     code: str
     user_message: str
+    source_code: str | None = None
 
     def __str__(self) -> str:
         return self.user_message
@@ -90,6 +91,10 @@ class _CoreWebProviderAdapter:
             found = await self._provider.search(query, limit=limit)
         except WebToolError as exc:
             raise WebRuntimeError(exc.code, exc.user_message, exc.status_code) from exc
+        except Exception as exc:
+            raise WebRuntimeError("web_unavailable", "웹 검색을 사용할 수 없습니다.", 502) from exc
+        if not isinstance(found, (list, tuple)):
+            raise WebRuntimeError("web_invalid_response", "웹 검색 응답 형식을 확인하지 못했습니다.", 502)
         return [_to_core_evidence(item) for item in found if isinstance(item, CoreEvidence)]
 
     async def fetch(self, url: str) -> CoreEvidence:
@@ -97,23 +102,35 @@ class _CoreWebProviderAdapter:
             item = await self._provider.fetch(url)
         except WebToolError as exc:
             raise WebRuntimeError(exc.code, exc.user_message, exc.status_code) from exc
+        except Exception as exc:
+            raise WebRuntimeError("web_unavailable", "웹 검색을 사용할 수 없습니다.", 502) from exc
         if not isinstance(item, CoreEvidence):
             raise WebRuntimeError("web_invalid_response", "웹 근거 응답 형식이 올바르지 않습니다.", 502)
         return _to_core_evidence(item)
 
 
 def _translate_core_error(exc: GroundingRuntimeError) -> GroundingError:
-    product_messages = {
-        "context_budget_exceeded": "프로젝트 지침과 웹 근거를 함께 처리하기에는 컨텍스트가 너무 큽니다.",
-        "no_evidence": "답변에 사용할 수 있는 웹 근거를 찾지 못했습니다.",
-        "research_web_unavailable": "심층 리서치에 사용할 웹 근거를 가져오지 못했습니다.",
-        "invalid_tool_input": "검색어 또는 공개 웹 주소 형식이 올바르지 않습니다.",
-    }
-    return GroundingError(
-        exc.status_code,
-        exc.code,
-        product_messages.get(exc.code, exc.message),
+    # Input/URL validation remains a refusal; provider errors never borrow
+    # the model authentication vocabulary or echo a provider response.
+    if exc.code in {"invalid_tool_input", "tool_input_required", "unsupported_tool"}:
+        return GroundingError(exc.status_code, exc.code, "검색 요청 형식이 올바르지 않습니다.")
+    if exc.code in {"no_evidence", "web_grounding_no_evidence"}:
+        return GroundingError(exc.status_code, "web_grounding_no_evidence", "웹 근거를 찾지 못했습니다.", source_code=exc.code)
+    if exc.status_code in {401, 403} or exc.code in {"upstream_auth_error", "web_grounding_auth_error"}:
+        return GroundingError(exc.status_code, "web_grounding_auth_error", "웹 검색 인증을 확인하지 못했습니다.", source_code=exc.code)
+    return GroundingError(exc.status_code, "web_grounding_unavailable", "웹 검색을 사용할 수 없습니다.", source_code=exc.code)
+
+
+def grounding_fallback_fields(error: GroundingError) -> dict:
+    error = _translate_core_error(GroundingRuntimeError(error.code, "", error.status_code))
+    if error.code not in {"web_grounding_auth_error", "web_grounding_unavailable", "web_grounding_no_evidence"}:
+        error = GroundingError(error.status_code, "web_grounding_unavailable", "웹 검색을 사용할 수 없습니다.")
+    notice = (
+        "웹 근거를 찾지 못해 근거 없이 답변합니다"
+        if error.code == "web_grounding_no_evidence"
+        else "웹 검색을 사용할 수 없어 근거 없이 답변합니다"
     )
+    return {"notice": notice, "metadata": {"web_grounding_error": error.code}}
 
 
 def prepare_grounding_context(
@@ -192,7 +209,14 @@ class GroundedChatService:
                 max_total_context_chars=MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
             )
         except GroundingRuntimeError as exc:
-            raise _translate_core_error(exc) from exc
+            error = _translate_core_error(exc)
+            if not error.code.startswith("web_grounding_"):
+                raise error from exc
+            result = await self._b14_client.complete(
+                messages, skill=_DEEP_RESEARCH_SKILL,
+                additional_system_context=additional_system_context,
+            )
+            return {**result, **grounding_fallback_fields(error)}
 
         result = grounded.synthesis
         public_result = {
@@ -255,7 +279,14 @@ class GroundedChatService:
             else:
                 raise GroundingError(422, "unsupported_tool", "지원하지 않는 도구입니다.")
         except GroundingRuntimeError as exc:
-            raise _translate_core_error(exc) from exc
+            error = _translate_core_error(exc)
+            if not error.code.startswith("web_grounding_"):
+                raise error from exc
+            result = await self._b14_client.complete(
+                messages, skill=skill,
+                additional_system_context=additional_system_context,
+            )
+            return {**result, **grounding_fallback_fields(error)}
 
         result = grounded.synthesis
         return {

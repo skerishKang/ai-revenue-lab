@@ -97,7 +97,7 @@ async def test_browser_tool_contract_is_allow_list_only():
 
 
 @pytest.mark.asyncio
-async def test_web_provider_off_stops_before_b14():
+async def test_web_provider_off_discloses_failure_and_calls_the_model():
     b14_calls = 0
 
     async def b14_handler(request):
@@ -121,9 +121,11 @@ async def test_web_provider_off_stops_before_b14():
             "/api/chat",
             json={"messages": USER_MESSAGES, "mode": "auto", "tool": "web_search"},
         )
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "web_tools_off"
-    assert b14_calls == 0
+    assert response.status_code == 200
+    assert response.json()["metadata"]["web_grounding_error"] == "web_grounding_unavailable"
+    assert response.json()["notice"] == "웹 검색을 사용할 수 없어 근거 없이 답변합니다"
+    assert "evidence" not in response.json()
+    assert b14_calls == 1
 
 
 @pytest.mark.asyncio
@@ -267,7 +269,7 @@ class EmptyProvider:
 
 
 @pytest.mark.asyncio
-async def test_empty_evidence_never_calls_b14_or_claims_grounded_success():
+async def test_empty_evidence_calls_the_model_without_claiming_grounded_success():
     b14_calls = 0
 
     async def b14_handler(request):
@@ -294,12 +296,13 @@ async def test_empty_evidence_never_calls_b14_or_claims_grounded_success():
             "/api/chat",
             json={"messages": USER_MESSAGES, "mode": "auto", "tool": "web_search"},
         )
-    assert response.status_code == 404
+    assert response.status_code == 200
     body = response.json()
-    assert body["error"]["code"] == "no_evidence"
+    assert body["metadata"]["web_grounding_error"] == "web_grounding_no_evidence"
+    assert body["notice"] == "웹 근거를 찾지 못해 근거 없이 답변합니다"
     assert "answer_status" not in body
     assert "evidence" not in body
-    assert b14_calls == 0
+    assert b14_calls == 1
 
 
 @pytest.mark.asyncio

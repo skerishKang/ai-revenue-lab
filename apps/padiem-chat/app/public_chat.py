@@ -70,8 +70,19 @@ def public_chat_result(result: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(result, dict):
         raise TypeError("chat result must be a dict")
 
-    return {
+    public = {
         key: _public_value(result[key])
         for key in _PUBLIC_TOP_LEVEL_KEYS
         if key in result
     }
+    notice = result.get("notice")
+    if notice in (
+        "웹 검색을 사용할 수 없어 근거 없이 답변합니다",
+        "웹 근거를 찾지 못해 근거 없이 답변합니다",
+    ):
+        public["notice"] = notice
+    metadata = result.get("metadata")
+    code = metadata.get("web_grounding_error") if isinstance(metadata, dict) else None
+    if code in ("web_grounding_auth_error", "web_grounding_unavailable", "web_grounding_no_evidence"):
+        public["metadata"] = {"web_grounding_error": code}
+    return public

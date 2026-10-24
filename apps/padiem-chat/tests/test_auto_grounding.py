@@ -190,7 +190,7 @@ async def test_stable_concept_does_not_over_search() -> None:
 
 
 @pytest.mark.asyncio
-async def test_required_search_with_web_off_fails_before_laguna() -> None:
+async def test_required_search_with_web_off_continues_with_a_notice() -> None:
     b14_calls = 0
 
     async def b14_handler(request: httpx.Request) -> httpx.Response:
@@ -205,9 +205,10 @@ async def test_required_search_with_web_off_fails_before_laguna() -> None:
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat", json={"messages": CURRENT, "mode": "auto"})
 
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "web_tools_off"
-    assert b14_calls == 0
+    assert response.status_code == 200
+    assert response.json()["metadata"]["web_grounding_error"] == "web_grounding_unavailable"
+    assert response.json()["notice"] == "웹 검색을 사용할 수 없어 근거 없이 답변합니다"
+    assert b14_calls == 1
 
 
 @pytest.mark.asyncio
@@ -269,13 +270,13 @@ class EmptyProvider:
 
 
 @pytest.mark.asyncio
-async def test_stream_required_search_with_no_evidence_never_calls_laguna() -> None:
+async def test_stream_required_search_with_no_evidence_continues_with_a_notice() -> None:
     b14_calls = 0
 
     async def b14_handler(request: httpx.Request) -> httpx.Response:
         nonlocal b14_calls
         b14_calls += 1
-        return httpx.Response(500)
+        return httpx.Response(200, headers={"content-type": "text/event-stream"}, content=stream_frame("모델 답변") + b"data: [DONE]\n\n")
 
     app = create_app(
         Settings(
@@ -291,6 +292,9 @@ async def test_stream_required_search_with_no_evidence_never_calls_laguna() -> N
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat/stream", json={"messages": CURRENT, "mode": "auto"})
 
-    assert response.status_code == 404
-    assert response.json()["error"]["code"] == "no_evidence"
-    assert b14_calls == 0
+    assert response.status_code == 200
+    done = [data for event, data in parse_public_sse(response.text) if event == "done"][-1]
+    assert done["metadata"]["web_grounding_error"] == "web_grounding_no_evidence"
+    assert done["notice"] == "웹 근거를 찾지 못해 근거 없이 답변합니다"
+    assert "evidence" not in done
+    assert b14_calls == 1

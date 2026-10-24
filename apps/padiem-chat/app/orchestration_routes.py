@@ -14,7 +14,7 @@ from .auth_routes import auth_ready, current_user_id
 from .b14_client import PADIEM_IDENTITY_INSTRUCTION, _chat_product_identity_instruction
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .central_model_route_runtime import chat_request_tier_context
-from .grounding import GroundingError
+from .grounding import GroundingError, grounding_fallback_fields
 from .history import HistoryForbidden, HistoryStore
 from .history import PRODUCT_SCOPE_CHAT
 from .member_grade_access import selected_admin_denial, selected_grade_denial
@@ -177,7 +177,7 @@ async def _run_pc_lane(
             conversation_messages=conversation_messages,
         )
     except ChatPCDriveError as exc:
-        raise _PcLaneRefusal(exc.code, exc.user_message, exc.status_code) from exc
+        raise _PcLaneRefusal(exc.code, exc.user_message, exc.status_code, cause=exc.cause) from exc
     if outcome is None:
         return None, None
     answer, lane_conversation_id = outcome
@@ -187,11 +187,12 @@ async def _run_pc_lane(
 class _PcLaneRefusal(Exception):
     """A bounded refusal from the existing PC lane."""
 
-    def __init__(self, code: str, user_message: str, status_code: int) -> None:
+    def __init__(self, code: str, user_message: str, status_code: int, *, cause: str | None = None) -> None:
         super().__init__(code)
         self.code = code
         self.user_message = user_message
         self.status_code = status_code
+        self.cause = cause
 
 
 def public_grounding_evidence(items: Any) -> list[dict[str, Any]]:
@@ -314,7 +315,10 @@ async def api_orchestration(request: Request) -> JSONResponse:
             conversation_messages=messages,
         )
     except _PcLaneRefusal as exc:
-        return _error(exc.code, exc.user_message, exc.status_code)
+        error = {"code": exc.code, "message": exc.user_message}
+        if exc.cause is not None:
+            error["cause"] = exc.cause
+        return JSONResponse({"error": error}, status_code=exc.status_code)
     if pc_lane_answer is not None:
         # The PC lane already persisted the verified exchange in its own
         # conversation, so the answer is not stored a second time here.
@@ -345,6 +349,8 @@ async def api_orchestration(request: Request) -> JSONResponse:
     prepare_grounding = getattr(auto_grounding, "prepare", None)
     grounding_context: str | None = None
     grounded_evidence: list[dict[str, Any]] = []
+    grounding_notice: dict[str, Any] = {}
+    auto_plan = None
     if callable(prepare_grounding):
         try:
             _explicit = bool(raw.get("web_search")) if isinstance(raw, dict) else False
@@ -362,7 +368,9 @@ async def api_orchestration(request: Request) -> JSONResponse:
                     additional_system_context=None,
                 )
         except GroundingError as exc:
-            return _error(exc.code, exc.user_message, exc.status_code)
+            grounding_notice = grounding_fallback_fields(exc)
+        if getattr(auto_plan, "error", None) is not None:
+            grounding_notice = grounding_fallback_fields(auto_plan.error)
         prepared = getattr(auto_plan, "prepared", None)
         if prepared is not None:
             grounding_context = prepared.context
@@ -394,6 +402,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
         "answer": result.answer,
         "decision_status": result.decision_status,
     }
+    payload.update(grounding_notice)
     if grounded_evidence:
         # The browser contract for a grounded answer: the same tool marker and
         # the same public evidence the Chat stream route already returns.

@@ -240,14 +240,15 @@ async def test_malformed_planner_falls_back_to_original_query_without_exposing_r
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(("provider_fail", "expected_status", "expected_code"), [(False, 404, "no_evidence"), (True, 502, "research_web_unavailable")])
-async def test_zero_usable_evidence_never_calls_final_synthesis(provider_fail, expected_status, expected_code):
+@pytest.mark.parametrize(("provider_fail", "expected_code"), [(False, "web_grounding_no_evidence"), (True, "web_grounding_unavailable")])
+async def test_zero_usable_evidence_continues_with_a_notice_and_no_research_claim(provider_fail, expected_code):
     b14_calls = 0
 
     async def handler(request):
         nonlocal b14_calls
         b14_calls += 1
-        return httpx.Response(200, json=b14_payload('{"queries":["query one","query two","query three"]}'))
+        answer = '{"queries":["query one","query two","query three"]}' if b14_calls == 1 else "일반 모델 답변입니다."
+        return httpx.Response(200, json=b14_payload(answer))
 
     provider = EmptyProvider(fail=provider_fail)
     app = create_app(
@@ -259,12 +260,14 @@ async def test_zero_usable_evidence_never_calls_final_synthesis(provider_fail, e
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat", json={"messages": MESSAGES, "mode": "auto", "tool": "deep_research"})
 
-    assert response.status_code == expected_status
+    assert response.status_code == 200
     body = response.json()
-    assert body["error"]["code"] == expected_code
-    assert "answer" not in body and "evidence" not in body and "research" not in body
+    assert body["metadata"] == {"web_grounding_error": expected_code}
+    assert body["notice"] == ("웹 검색을 사용할 수 없어 근거 없이 답변합니다" if provider_fail else "웹 근거를 찾지 못해 근거 없이 답변합니다")
+    assert body["answer"] == "일반 모델 답변입니다."
+    assert "error" not in body and "evidence" not in body and "research" not in body
     assert "PRIVATE-UPSTREAM-DETAIL" not in json.dumps(body)
-    assert b14_calls == 1
+    assert b14_calls == 2
     assert provider.search_calls == 3
     assert provider.fetch_calls == 0
 
