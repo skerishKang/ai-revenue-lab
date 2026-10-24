@@ -55,6 +55,16 @@ from .document_convert_store import (
 _MIGRATION = Path(__file__).resolve().parent.parent.joinpath("migrations").joinpath("066_document_convert_jobs.sql")
 
 
+class QueuedClaim:
+    """A claimed item plus its owner id (ConvertItemRecord has no user_id)."""
+
+    __slots__ = ("item", "user_id")
+
+    def __init__(self, item: ConvertItemRecord, user_id: str) -> None:
+        self.item = item
+        self.user_id = user_id
+
+
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
@@ -275,6 +285,54 @@ class Com2SqliteLedger:
             user_id,
         )
         return True
+
+    async def claim_next_queued_item(self) -> ConvertItemRecord | None:
+        """Atomically move the oldest queued item to ``working`` and return it.
+
+        #5568 U2: the worker loop must never process the same item twice. The
+        claim is one ``BEGIN IMMEDIATE`` transaction — the queued→working flip
+        is conditioned on the status staying ``queued``, so a second worker
+        (or a restarted loop racing a live one) cannot claim the same row.
+        Returns ``None`` when the queue is empty.
+        """
+
+        def _claim_sync() -> dict[str, Any] | None:
+            conn = self._connect()
+            try:
+                conn.execute("BEGIN IMMEDIATE")
+                row = conn.execute(
+                    "SELECT id, job_id, user_id, name, status, page_count, character_count, "
+                    "original_key, markdown_key, report_json, error_code, created_at, updated_at "
+                    "FROM document_convert_items WHERE status = ? "
+                    "ORDER BY created_at, rowid LIMIT 1",
+                    (JOB_STATUS_QUEUED,),
+                ).fetchone()
+                if row is None:
+                    conn.commit()
+                    return None
+                now = _now_iso()
+                conn.execute(
+                    "UPDATE document_convert_items SET status = ?, updated_at = ? "
+                    "WHERE id = ? AND status = ?",
+                    (JOB_STATUS_WORKING, now, row["id"], JOB_STATUS_QUEUED),
+                )
+                conn.commit()
+                return dict(row)
+            finally:
+                conn.close()
+
+        row = await asyncio.to_thread(_claim_sync)
+        return QueuedClaim(_item_from_row(row), row["user_id"]) if row is not None else None
+
+    async def working_items(self) -> list[ConvertItemRecord]:
+        """Items a previous worker left in ``working`` (crash recovery input)."""
+        rows = await self._all(
+            "SELECT id, job_id, user_id, name, status, page_count, character_count, "
+            "original_key, markdown_key, report_json, error_code, created_at, updated_at "
+            "FROM document_convert_items WHERE status = ? ORDER BY updated_at",
+            JOB_STATUS_WORKING,
+        )
+        return [QueuedClaim(_item_from_row(row), row["user_id"]) for row in rows]
 
     async def refresh_job(self, user_id: str, job_id: str) -> ConvertJobRecord | None:
         """Roll the item states up into the job state the owner sees."""
