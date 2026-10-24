@@ -1691,11 +1691,15 @@ jobs:
             versions="${RUNNER_TEMP}/b62-versions-after.json"
             bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions?page=1&per_page=1" "${versions}"
             latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
-            if [ -n "${latest}" ] && [ "${latest}" = "${active}" ]; then
+            if [ -n "${latest}" ] && [ "${latest}" = "${active}" ] && [ "${active}" != "${PREVIOUS_VERSION_ID}" ]; then
               break
             fi
             sleep 5
           done
+          if [ "${latest}" != "${active}" ] || [ "${active}" = "${PREVIOUS_VERSION_ID}" ]; then
+            echo "ACTIVE_VERSION_NOT_ADVANCED active=${active:-unset} previous=${PREVIOUS_VERSION_ID} latest=${latest:-unset}"
+            exit 1
+          fi
           test "${latest}" = "${active}"
           test "${active}" != "${PREVIOUS_VERSION_ID}"
           echo "NEW_VERSION_ACTIVE=PASS"
