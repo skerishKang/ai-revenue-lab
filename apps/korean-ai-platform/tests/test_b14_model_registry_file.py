@@ -229,7 +229,9 @@ def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
     import tomllib
     bindings = tomllib.loads(wrangler)["secrets_store_secrets"]
     for binding, secret_name in (
-        ("PADIEM_B14_CREDENTIAL_11", "PADIEM_OPENCODE_API_KEY"),
+        # Owner decision 2026-10-25: the Go slot points at its neutral
+        # duplicate Secrets Store entity, not at the provider-named original.
+        ("PADIEM_B14_CREDENTIAL_11", "PADIEM_B14_CREDENTIAL_11"),
         ("PADIEM_B14_CREDENTIAL_14", "PADIEM_ZANSLAB_API_KEY"),
     ):
         matches = [x for x in bindings if x["binding"] == binding]
