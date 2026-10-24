@@ -6,6 +6,8 @@ import hmac
 import re
 import secrets
 
+from app.password_kdf import apbkdf2_sha512 as _pbkdf2_dispatch
+
 USERNAME_MIN_CHARS = 4
 USERNAME_MAX_CHARS = 32
 PASSWORD_MIN_CHARS = 8
@@ -160,11 +162,35 @@ def hash_password(password: str) -> str:
     return f"{PASSWORD_HASH_PREFIX}${PBKDF2_ITERATIONS}${_b64(salt)}${_b64(derived)}"
 
 
-def verify_password(password: object, encoded: str | None) -> bool:
-    candidate = password if isinstance(password, str) else ""
-    stored = encoded if isinstance(encoded, str) and encoded else _DUMMY_HASH
+async def hash_password_async(password: str) -> str:
+    """Runtime-dispatching hash: the C path on 3.13, WebCrypto on 3.14.
+
+    #5479/#5664: the sync :func:`hash_password` stays exactly as Production
+    runs it today (Pyodide 3.13 provides ``hashlib.pbkdf2_hmac``). The async
+    form dispatches through app.password_kdf so a runtime move that removes
+    ``_hashlib`` keeps deriving the same PBKDF2-HMAC-SHA512 bytes — the
+    stored credential format does not change.
+    """
+    validate_password(password)
+    salt = secrets.token_bytes(PBKDF2_SALT_BYTES)
+    derived = await _pbkdf2_dispatch(
+        password.encode("utf-8"),
+        salt,
+        PBKDF2_ITERATIONS,
+        PBKDF2_DKLEN,
+    )
+    return f"{PASSWORD_HASH_PREFIX}${PBKDF2_ITERATIONS}${_b64(salt)}${_b64(derived)}"
+
+
+def _verify_parameters(encoded: str | None) -> tuple[bytes, int, int, bytes]:
+    """salt, iterations, dklen, expected — with the bounded dummy fallback.
+
+    Still performs one bounded dummy KDF for malformed/missing rows so they do
+    not become an obvious cheap username oracle (unchanged #5424 semantics).
+    """
+    candidate = encoded if isinstance(encoded, str) and encoded else _DUMMY_HASH
     try:
-        prefix, iterations_raw, salt_raw, digest_raw = stored.split("$", 3)
+        prefix, iterations_raw, salt_raw, digest_raw = candidate.split("$", 3)
         if prefix != PASSWORD_HASH_PREFIX:
             raise ValueError("unsupported password hash")
         iterations = int(iterations_raw)
@@ -175,19 +201,34 @@ def verify_password(password: object, encoded: str | None) -> bool:
         if len(salt) < 16 or len(expected) != PBKDF2_DKLEN:
             raise ValueError("invalid password hash")
     except (ValueError, TypeError):
-        # Still perform one bounded dummy KDF so malformed/missing rows do not
-        # become an obvious cheap username oracle.
-        stored = _DUMMY_HASH
-        _, iterations_raw, salt_raw, digest_raw = stored.split("$", 3)
+        _, iterations_raw, salt_raw, digest_raw = _DUMMY_HASH.split("$", 3)
         iterations = int(iterations_raw)
         salt = _b64decode(salt_raw)
         expected = _b64decode(digest_raw)
+    return salt, iterations, len(expected), expected
 
+
+def verify_password(password: object, encoded: str | None) -> bool:
+    candidate = password if isinstance(password, str) else ""
+    salt, iterations, dklen, expected = _verify_parameters(encoded)
     actual = hashlib.pbkdf2_hmac(
         PBKDF2_ALGORITHM,
         candidate.encode("utf-8"),
         salt,
         iterations,
-        dklen=len(expected),
+        dklen=dklen,
+    )
+    return hmac.compare_digest(actual, expected)
+
+
+async def verify_password_async(password: object, encoded: str | None) -> bool:
+    """Runtime-dispatching verify: the async twin of :func:`verify_password`."""
+    candidate = password if isinstance(password, str) else ""
+    salt, iterations, dklen, expected = _verify_parameters(encoded)
+    actual = await _pbkdf2_dispatch(
+        candidate.encode("utf-8"),
+        salt,
+        iterations,
+        dklen,
     )
     return hmac.compare_digest(actual, expected)

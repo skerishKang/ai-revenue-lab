@@ -646,13 +646,13 @@ async def test_verifier_runs_for_missing_and_existing_identifiers(monkeypatch) -
     from app import auth_routes
 
     calls = []
-    real_verify = auth_routes.verify_password
+    real_verify = auth_routes.verify_password_async
 
-    def counting(password, encoded):
+    async def counting(password, encoded):
         calls.append(encoded)
-        return real_verify(password, encoded)
+        return await real_verify(password, encoded)
 
-    monkeypatch.setattr(auth_routes, "verify_password", counting)
+    monkeypatch.setattr(auth_routes, "verify_password_async", counting)
     store = MemoryStore()
     encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
@@ -1074,13 +1074,13 @@ async def test_verifier_runs_exactly_once_per_attempt(monkeypatch) -> None:
     import app.auth_routes as auth_routes
 
     calls: list[object] = []
-    original = auth_routes.verify_password
+    original = auth_routes.verify_password_async
 
-    def counting_verify(password, encoded):
+    async def counting_verify(password, encoded):
         calls.append(encoded)
-        return original(password, encoded)
+        return await original(password, encoded)
 
-    monkeypatch.setattr(auth_routes, "verify_password", counting_verify)
+    monkeypatch.setattr(auth_routes, "verify_password_async", counting_verify)
 
     store = MemoryStore()
     abuse = InMemoryAuthAbuseStore()
@@ -1319,13 +1319,13 @@ async def test_failure_durable_shape_is_equalized_across_classes(
     import app.auth_routes as auth_routes
 
     kdf_calls: list[object] = []
-    original = auth_routes.verify_password
+    original = auth_routes.verify_password_async
 
-    def counting_verify(password, encoded):
+    async def counting_verify(password, encoded):
         kdf_calls.append(encoded)
-        return original(password, encoded)
+        return await original(password, encoded)
 
-    monkeypatch.setattr(auth_routes, "verify_password", counting_verify)
+    monkeypatch.setattr(auth_routes, "verify_password_async", counting_verify)
 
     abuse = ShapeProbeAbuseStore()
     store = ShapeProbeHistoryStore()

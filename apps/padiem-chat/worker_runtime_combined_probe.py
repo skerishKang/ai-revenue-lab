@@ -73,6 +73,47 @@ def _password_kdf_state() -> str:
         return "missing"
 
 
+async def _password_kdf_async_state() -> str:
+    """``ok`` when the async auth dispatch and the WebCrypto bridge hold.
+
+    #5479/#5664: the auth routes now call the runtime-dispatching async twins
+    (``hash_password_async``/``verify_password_async``), which use the C
+    ``hashlib`` path on 3.13 and the Workers WebCrypto bridge on a 3.14
+    snapshot without ``_hashlib``. This state proves both inside the real
+    runtime: a production-cost round trip, and — with the non-C dispatch
+    forced so the bridge runs against this runtime's real ``js.crypto.subtle``
+    — byte-identity with the pure-Python RFC 2898 reference at a bounded
+    iteration count.
+    """
+    try:
+        from app import password_kdf
+        from app.password_auth import (
+            hash_password_async,
+            verify_password_async,
+        )
+
+        stored = await hash_password_async("runtime-probe-password")
+        if not await verify_password_async("runtime-probe-password", stored):
+            return "async-verify-failed"
+        salt = bytes.fromhex("c8ade6e8d0d15e5a2e14aabf5e5d8f4a")
+        previous = password_kdf.FORCE_NON_C_PATH
+        try:
+            password_kdf.FORCE_NON_C_PATH = True
+            bridged = await password_kdf.pbkdf2_sha512_webcrypto(
+                b"runtime-probe-bridged", salt, 2_000, 32
+            )
+        finally:
+            password_kdf.FORCE_NON_C_PATH = previous
+        reference = password_kdf.pbkdf2_sha512_python(
+            b"runtime-probe-bridged", salt, 2_000, 32
+        )
+        if bridged != reference:
+            return "webcrypto-mismatch"
+        return "ok"
+    except Exception:
+        return "missing"
+
+
 def _timezone_database_state() -> str:
     """``ok`` when this runtime can resolve a real IANA zone.
 
@@ -113,11 +154,16 @@ class Default(WorkerEntrypoint):
             # answer every password login with HTTP 500.
             # #5023: the same holds for the IANA timezone database the
             # Calendar contracts validate against.
+            # #5664: the ready line also carries the runtime-dispatching auth
+            # KDF state (async routes + WebCrypto bridge), so a compatibility
+            # date move is provable in this lane before Production takes it.
             import sys
 
+            kdf_async = await _password_kdf_async_state()
             return Response(
                 f"ok {sys.version_info.major}.{sys.version_info.minor} "
-                f"kdf={_password_kdf_state()} tz={_timezone_database_state()}",
+                f"kdf={_password_kdf_state()} kdfasync={kdf_async} "
+                f"tz={_timezone_database_state()}",
                 status=200,
             )
         if url.path != "/probe":

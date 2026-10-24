@@ -45,12 +45,12 @@ from .control_plane_identity import (
 from .history import HistoryConflict, HistoryStore, PasswordCredential
 from .password_auth import (
     PasswordAuthError,
-    hash_password,
+    hash_password_async,
     normalize_display_name,
     normalize_email,
     normalize_login_identifier,
     normalize_username,
-    verify_password,
+    verify_password_async,
     validate_password,
 )
 from .password_reset import (
@@ -694,7 +694,7 @@ async def password_register(request: Request) -> JSONResponse:
         password = validate_password(
             data.get("password"), identifier=login_identifier
         )
-        encoded = hash_password(password)
+        encoded = await hash_password_async(password)
     except PasswordAuthError as exc:
         return _auth_error(400, exc.code, exc.message)
 
@@ -787,7 +787,7 @@ async def password_login(request: Request) -> JSONResponse:
         return _auth_error(503, "auth_storage_error", "로그인 정보를 확인하지 못했습니다.")
 
     # Always execute the verifier, including for a missing identifier.
-    password_ok = verify_password(password, credential.password_hash if credential else None)
+    password_ok = await verify_password_async(password, credential.password_hash if credential else None)
     now = datetime.now(timezone.utc)
 
     # #3501/#3508: lock state is server-owned and never disclosed. A
@@ -942,7 +942,7 @@ async def password_change(request: Request) -> JSONResponse:
             "이 계정은 Google 로그인 계정이라 비밀번호를 변경할 수 없습니다.",
         )
 
-    if not verify_password(current_password, credential.password_hash):
+    if not await verify_password_async(current_password, credential.password_hash):
         # The current password is the proof of ownership. A wrong one never
         # reaches the hash and never changes any stored value.
         return _auth_error(401, "invalid_credentials", "현재 비밀번호가 올바르지 않습니다.")
@@ -955,7 +955,7 @@ async def password_change(request: Request) -> JSONResponse:
     # runs no further key derivation: the Worker's CPU budget for one request
     # fits the same two derivations the login path already runs, and a third
     # one is what made this route exceed the limit in Production.
-    encoded = hash_password(validated)
+    encoded = await hash_password_async(validated)
 
     # End the session first: a session that cannot be ended leaves the
     # credential untouched, so the user can simply try again.
@@ -1036,7 +1036,7 @@ async def password_reset_request(request: Request) -> JSONResponse:
 
     # Always run the verifier, including for an unknown identifier, so the
     # answer time does not reveal whether the address owns an account.
-    verify_password("", credential.password_hash if credential else None)
+    await verify_password_async("", credential.password_hash if credential else None)
 
     await service.record_request(
         identifier=identifier,
@@ -1120,7 +1120,7 @@ async def password_reset_confirm(request: Request) -> JSONResponse:
         validated = validate_password(new_password, identifier=credential.user.email)
     except PasswordAuthError as exc:
         return _auth_error(400, exc.code, exc.message)
-    encoded = hash_password(validated)
+    encoded = await hash_password_async(validated)
 
     # End every session of this account first. A session that cannot be ended
     # leaves the credential untouched, so the member can retry with the same
