@@ -1,21 +1,22 @@
 name = "padiem-chat"
 main = "worker.py"
-# #5479/#5664: the Chat Worker moves to the Pyodide 3.14 snapshot
-# (CPython 3.14.2) via compatibility date 2026-09-08 — the runtime Cloudflare
-# published for the `NoGilError` initialization race (cloudflare/workerd#6624).
+# #5479: the Chat Worker stays on the Pyodide 3.13 snapshot (CPython 3.13.2).
 #
-# The 3.14 snapshot ships no `_hashlib` and CPython 3.14 removed the
-# pure-Python PBKDF2 fallback, so `hashlib.pbkdf2_hmac` does not exist there.
-# That blocker is resolved by #5732: the password KDF now dispatches to
-# Workers' native WebCrypto (`js.crypto.subtle.deriveBits`, PBKDF2/SHA-512)
-# when the C `hashlib` path is absent, producing byte-identical
-# `pbkdf2_sha512$220000$...` credentials. The stored credential format is
-# unchanged, so no account or hash migration is involved.
+# The 3.14 snapshot (compatibility date 2026-09-08 or later, the
+# `python_workers_314` flag) is the runtime Cloudflare published for the
+# `NoGilError` initialization race (cloudflare/workerd#6624), but it cannot
+# run this Worker's password hashing: that snapshot ships no `_hashlib`, and
+# CPython 3.14 removed the pure-Python PBKDF2 fallback, so
+# `hashlib.pbkdf2_hmac` does not exist there. A deployed 3.14 Worker answers
+# every password login with HTTP 500
+# (`AttributeError: module 'hashlib' has no attribute 'pbkdf2_hmac'`).
 #
-# The real Workerd/Pyodide CI lane boots THIS compatibility date and asserts
-# `kdf=ok kdfasync=ok tz=ok` before any release, so a runtime that cannot run
-# the Worker's auth or Calendar contracts cannot reach Production.
-compatibility_date = "2026-09-08"
+# Moving this Worker to 3.14 therefore requires a password KDF the runtime
+# actually provides, which changes the stored credential format and is an
+# owner-level credential decision, not a runtime bump. Until then the date
+# stays here, and the real Workerd/Pyodide CI lane proves that the deployed
+# runtime still provides the password KDF before any release.
+compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
 base_dir = ".b66-worker-src"
