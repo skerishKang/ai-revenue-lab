@@ -78,6 +78,12 @@
 .util-tabs[hidden] { display: none; }
 .util-submenu[hidden] { display: none; }
 .util-nav-group { display: grid; gap: 2px; }
+/* The util parent mirrors the Claw row's unmistakable active treatment while
+ * any of its tools is open (claw-workspace.css #clawNavButton contract). */
+#utilNavButton[aria-current="page"] {
+  background: var(--accent-soft, rgba(101, 87, 232, .12));
+  box-shadow: inset 3px 0 0 var(--accent, #6557e8);
+}
 .side-item .side-chevron { margin-left: auto; color: var(--muted, #5b6672); font-size: 15px; line-height: 1; }
 .util-submenu { display: grid; gap: 2px; padding-left: 30px; }
 .util-submenu-item {
