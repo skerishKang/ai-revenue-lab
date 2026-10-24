@@ -320,6 +320,16 @@ function renderShell(
     .category-tabs .nav-item { font-size: 12px; }
     .nav-item[aria-disabled="true"] { color: var(--faint); cursor: default; }
 
+    .hero--browse { padding-bottom: 8px; }
+    .hero--browse h1 { font-size: clamp(30px, 4.5vw, 48px); }
+    .hero--browse p { margin-top: 10px; }
+    .browse-toolbar { padding: 4px 0 8px; }
+    .browse-toolbar .category-tabs { padding-top: 8px; }
+    .browse-toolbar .filter-bar { padding-top: 10px; }
+    .detail-page { padding-top: 10px; }
+    .detail-page .back-link { margin-bottom: 16px; }
+    .detail-card__eyebrow { margin: 0 0 6px; }
+    .detail-card h2 { margin-top: 6px; }
     .back-link { display: inline-flex; align-items: center; gap: 6px; margin: 18px 0 0; font-size: 13px; color: var(--muted); font-weight: 600; }
     .back-link:hover { color: var(--text); }
 
@@ -393,6 +403,16 @@ function renderShell(
       .cta-link { font-size: 12px; }
       .intro-desc { font-size: 13px; }
       .hero { padding: 20px 0 14px; }
+      .hero--browse { padding: 15px 0 2px; }
+      .hero--browse h1 { font-size: 27px; }
+      .hero--browse p { margin: 7px 0 0; font-size: 13px; line-height: 1.45; }
+      .browse-toolbar .category-tabs { padding-top: 8px; }
+      .browse-toolbar .filter-bar { gap: 8px; padding: 8px 0 0; }
+      .browse-toolbar .filter-bar button { min-height: 44px; }
+      .browse-toolbar + #available-now .section-head { margin-top: 12px; }
+      .detail-page { padding-top: 4px; }
+      .detail-page .back-link { margin: 12px 0 15px; }
+      .detail-reward { flex-wrap: wrap; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
@@ -519,13 +539,13 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
   const filterForm = `<form class="filter-bar" method="GET" action="/browse" role="search" aria-label="수익 기회 필터">
     <input type="hidden" name="category" value="${escapeHtml(viewModel.selectedCategory)}" />
     <label>검색 <input type="search" name="q" value="${escapeHtml(viewModel.filters.query)}" placeholder="기회 제목" /></label>
-    <label>최대 소요 시간(초) <select name="maxSeconds">
+    <label>소요 시간 <select name="maxSeconds">
       <option value="" ${viewModel.filters.maxSeconds === null ? 'selected' : ''}>전체</option>
       <option value="60" ${viewModel.filters.maxSeconds === 60 ? 'selected' : ''}>60초 이하</option>
       <option value="120" ${viewModel.filters.maxSeconds === 120 ? 'selected' : ''}>2분 이하</option>
       <option value="300" ${viewModel.filters.maxSeconds === 300 ? 'selected' : ''}>5분 이하</option>
     </select></label>
-    <button type="submit">필터 적용</button>
+    <button type="submit">기회 찾기</button>
   </form>`;
 
   const content = renderedCards.length > 0
@@ -548,15 +568,17 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
   const navItems = renderPrimaryNav('BROWSE');
 
   const hero = `
-      <section class="hero" aria-labelledby="hero-title">
-        <p class="eyebrow">수익 기회 탐색</p>
-        <h1 id="hero-title">참여 가능한 수익 기회</h1>
-        <p>확인된 조건과 보상만 표시합니다. 미확인 정보는 추정하지 않습니다.</p>
+      <section class="hero hero--browse" aria-labelledby="hero-title">
+        <p class="eyebrow">PADIEM · REWARD OPPORTUNITIES</p>
+        <h1 id="hero-title">수익 기회 찾기</h1>
+        <p>참여 조건과 보상이 확인된 기회를 탐색하세요.</p>
       </section>
-      <nav class="category-tabs" aria-label="카테고리">${categoryTabs}</nav>
-      ${filterForm}`;
+      <div class="browse-toolbar">
+        <nav class="category-tabs" aria-label="카테고리">${categoryTabs}</nav>
+        ${filterForm}
+      </div>`;
 
-  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content, { howItWorks: true });
+  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content, { howItWorks: false });
 }
 
 export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOpportunityDetailViewModel): string {
@@ -565,7 +587,7 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
     ? `<a class="back-link" href="/browse">← 수익 기회 목록</a>
     <section id="opportunity-detail" aria-labelledby="detail-title">
       <div class="detail-card">
-        <p class="eyebrow">수익 기회 상세</p>
+        <p class="eyebrow detail-card__eyebrow">수익 기회 상세</p>
         <h2 id="detail-title">${escapeHtml(card.title)}</h2>
         <div class="detail-reward">
           <strong>${escapeHtml(card.rewardLabel)}</strong>
@@ -574,7 +596,7 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
         <div class="detail-facts">
           <div class="detail-fact">
             <span class="detail-fact__label">예상 소요 시간</span>
-            <span class="detail-fact__value">약 ${card.estimatedActiveSeconds}초</span>
+            <span class="detail-fact__value">${formatActiveTime(card.estimatedActiveSeconds)}</span>
           </div>
           <div class="detail-fact">
             <span class="detail-fact__label">참여 자격·조건</span>
@@ -607,12 +629,7 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
 
   const navItems = renderPrimaryNav(null);
 
-  const hero = `
-      <section class="hero" aria-labelledby="hero-title">
-        <p class="eyebrow">수익 기회 상세</p>
-        <h1 id="hero-title">${card ? escapeHtml(card.title) : '수익 기회 상세'}</h1>
-        <p>${card ? '조건을 확인한 뒤 외부 제공처에서 참여하세요.' : '요청한 기회를 확인할 수 없습니다.'}</p>
-      </section>`;
-
-  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content);
+  // Keep one semantic title within the detail card; the hero previously repeated it.
+  const hero = '<h1 class="visually-hidden">수익 기회 상세</h1>';
+  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, `<div class="detail-page">${content}</div>`);
 }
