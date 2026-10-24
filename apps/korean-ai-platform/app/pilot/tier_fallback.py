@@ -13,6 +13,7 @@ TIER_FALLBACK_B14_MODELS: dict[str, tuple[str, ...]] = {
     "pro": ("google/gemma-4-31b-it",),
     "plus": ("google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
     "free": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
-    # interim: admin chat uses the Free route until paid routes are verified
-    "admin": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
+    # Owner decision 2026-10-24: the administrator lane runs on opencode-go,
+    # so its fallback roller mirrors the Max grade (contract drift guard).
+    "admin": ("opencode-go/muse-spark-1.3-contributor",),
 }

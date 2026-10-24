@@ -53,20 +53,20 @@ def test_contract_defines_exactly_all_padiem_tiers() -> None:
     assert [tier.label for tier in PRODUCT_TIER_ROUTES] == list(ProductTierLabel)
     assert PRODUCT_TIER_POLICY_VERSION == "padiem.product_tier_routes.v1"
 
-def test_admin_tier_reuses_the_free_route_until_paid_routes_are_verified() -> None:
+def test_admin_tier_runs_on_opencode_go_muse_per_owner_decision_2026_10_24() -> None:
     from padiem_control_plane.product_tier_routes import TIER_FALLBACK_B14_MODELS
-    free = active_route_for(ProductTierLabel.FREE)
+    max_route = active_route_for(ProductTierLabel.MAX)
     admin = active_route_for(ProductTierLabel.ADMIN)
-    assert free is not None and admin is not None
-    assert admin.route_id == free.route_id
-    assert admin.status is free.status
-    assert admin.model_family == free.model_family
-    assert admin.provider_id == free.provider_id
-    assert admin.model_id == free.model_id
-    assert admin.upstream_model == free.upstream_model
-    assert admin.credential_mode is free.credential_mode
-    assert admin.credential_binding == free.credential_binding
-    assert TIER_FALLBACK_B14_MODELS["admin"] == TIER_FALLBACK_B14_MODELS["free"]
+    assert max_route is not None and admin is not None
+    assert admin.route_id == "admin.muse-spark-1.3-contributor.v1"
+    assert admin.status is max_route.status
+    assert admin.model_family == max_route.model_family
+    assert admin.provider_id == max_route.provider_id
+    assert admin.model_id == max_route.model_id
+    assert admin.upstream_model == max_route.upstream_model
+    assert admin.credential_mode is max_route.credential_mode
+    assert admin.credential_binding == max_route.credential_binding
+    assert TIER_FALLBACK_B14_MODELS["admin"] == TIER_FALLBACK_B14_MODELS["max"]
 
 def test_current_tiers_contain_only_active_models() -> None:
     from padiem_control_plane.product_tier_routes import MUSE_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID, TIER_FALLBACK_B14_MODELS
@@ -76,9 +76,8 @@ def test_current_tiers_contain_only_active_models() -> None:
     assert routes[ProductTierLabel.FREE].route_id == "free.gemini-3.1-flash-lite.v1"
     assert routes[ProductTierLabel.FREE].provider_id == "google"
     assert TIER_FALLBACK_B14_MODELS["free"] == ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it")
-    for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX):
+    for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX, ProductTierLabel.ADMIN):
         assert routes[label].model_id == MUSE_B14_MODEL_ID
-    assert routes[ProductTierLabel.ADMIN].model_id == FREE_PRIMARY_B14_MODEL_ID
     assert all(len(tier.routes) == 1 for tier in PRODUCT_TIER_ROUTES)
     assert all(r.status is ProductRouteStatus.EXECUTABLE for r in routes.values())
 
@@ -223,7 +222,7 @@ def test_active_tier_routes_match_the_current_b14_model_registry() -> None:
     models={row["id"]: row for row in json.loads(file.read_text(encoding="utf-8"))["models"]}
     assert len(_executables())==5
     for label, route in _executables().items():
-        expected = FREE_PRIMARY_B14_MODEL_ID if label in (ProductTierLabel.FREE, ProductTierLabel.ADMIN) else MUSE_B14_MODEL_ID
+        expected = FREE_PRIMARY_B14_MODEL_ID if label is ProductTierLabel.FREE else MUSE_B14_MODEL_ID
         assert route.model_id == expected
         assert models[route.model_id]["enabled"] is True
 

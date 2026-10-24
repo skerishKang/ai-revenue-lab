@@ -64,7 +64,9 @@ TIER_FALLBACK_B14_MODELS = {
     "pro": ("google/gemma-4-31b-it",),
     "plus": ("google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
     "free": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
-    "admin": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
+    # Owner decision 2026-10-24: the administrator lane runs on opencode-go,
+    # so its fallback roller mirrors the Max grade.
+    "admin": ("opencode-go/muse-spark-1.3-contributor",),
 }
 
 # Owner decision 2026-10-21 (#2505): OpenCode Go free models are not execution
@@ -262,19 +264,19 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         )
         for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)
     ),
-    # interim: admin chat uses the Free route until paid routes are verified
+    # Owner decision 2026-10-24: administrator lane runs on opencode-go.
     ProductTierDefinition(
         label=ProductTierLabel.ADMIN,
         routes=(ProductTierRoute(
-            route_id="free.gemini-3.1-flash-lite.v1",
+            route_id="admin.muse-spark-1.3-contributor.v1",
             status=ProductRouteStatus.EXECUTABLE,
-            model_family="gemini-3.1-flash-lite",
-            provider_id="google",
-            model_id=FREE_PRIMARY_B14_MODEL_ID,
-            upstream_model="gemini-3.1-flash-lite",
+            model_family="muse-spark",
+            provider_id="opencode-go",
+            model_id=MUSE_B14_MODEL_ID,
+            upstream_model=MUSE_B14_UPSTREAM_MODEL,
             credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-            credential_binding="PADIEM_B14_CREDENTIAL_03",
-            evidence="Interim admin lane reuses the Free route until paid routes are verified.",
+            credential_binding="PADIEM_B14_CREDENTIAL_11",
+            evidence="Owner decision 2026-10-24: administrator lane runs on opencode-go.",
         ),),
     ),
 )
