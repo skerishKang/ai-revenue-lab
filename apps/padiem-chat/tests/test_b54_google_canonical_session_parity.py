@@ -522,6 +522,7 @@ class _GoogleSettings:
     auth_mode = "google"
     session_secret = "google-parity-session-secret-not-real-0000"
     session_max_age_seconds = 3600
+    cookie_secure = True  # #5115: session_cookie_kwargs reads the deployment flag
     google_client_id = "parity-client.apps.googleusercontent.com"
     google_client_secret = "parity-client-secret"
     public_base_url = "https://chat.example.test"
