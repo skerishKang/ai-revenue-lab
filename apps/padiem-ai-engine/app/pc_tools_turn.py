@@ -13,7 +13,10 @@ from typing import Any
 import json
 import uuid
 
-from padiem_ai_core import AgentPlanExecutor, ExecutionResult, OrchestrationError, RunStatus
+from padiem_ai_core.agent_execution_bridge import AgentPlanExecutor
+from padiem_ai_core.execution_runtime import ExecutionResult
+from padiem_ai_core.orchestration import OrchestrationError
+from padiem_ai_core.contracts import RunStatus
 from padiem_ai_core.tool_channel import ToolDefinition
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 from app.service import ServiceContractError
