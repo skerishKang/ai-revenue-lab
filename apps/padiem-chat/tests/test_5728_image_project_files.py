@@ -51,6 +51,19 @@ PNG_1x1 = (
     "+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
 )
 
+# Real JPEG and WebP headers: the image lane validates the declared media
+# type against the actual bytes, so the fixtures must be honest images.
+JPEG_1x1 = b64.b64encode(
+    bytes([0xFF, 0xD8, 0xFF, 0xE0]) + b"JFIF" + bytes([0])
+    + bytes([0x01, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00])
+    + bytes([0xFF, 0xD9])
+).decode()
+
+_webp_payload = b"WEBP" + b"VP8 " + (4).to_bytes(4, "little") + bytes([0, 0, 0, 0])
+WEBP_MINIMAL = b64.b64encode(
+    b"RIFF" + (len(_webp_payload)).to_bytes(4, "little") + _webp_payload
+).decode()
+
 
 class _R2WithGet(_MemoryR2):
     async def get(self, key, **kwargs):
@@ -83,7 +96,11 @@ async def test_image_media_set_is_the_attachment_family():
 async def test_all_three_image_types_store_original_bytes_without_parsing(media):
     app, store, bucket, owner, project, client = await _owner_app_client()
     try:
-        raw = b"\x89IMAGE-ORIGINAL-" + media.encode()
+        raw = {
+            "image/png": b64.b64decode(PNG_1x1),
+            "image/jpeg": b64.b64decode(JPEG_1x1),
+            "image/webp": b64.b64decode(WEBP_MINIMAL),
+        }[media]
         response = await post_binary(
             client, f"/api/projects/{project.id}/files",
             name="harbor.png", media_type=media, base64=b64.b64encode(raw).decode(),
@@ -170,6 +187,25 @@ async def test_another_owner_is_denied_and_the_copy_survives():
         assert any(created["id"] in k for k in bucket.objects)
     finally:
         await stranger_client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_mislabeled_bytes_are_rejected_and_store_nothing():
+    """The parser-free image lane still refuses a body that does not match
+    its declared media type — the same honesty the document path gets from
+    its parser's format checks (a text payload renamed .png is not a PNG)."""
+    app, store, bucket, owner, project, client = await _owner_app_client()
+    try:
+        response = await post_binary(
+            client, f"/api/projects/{project.id}/files",
+            name="가짜.png", media_type="image/png",
+            base64=__import__("base64", fromlist=["b64encode"]).b64encode(b"this is definitely not an image").decode(),
+        )
+        assert response.status_code == 422
+        assert not bucket.objects
+        assert not store.files
+    finally:
+        await client.aclose()
 
 
 @pytest.mark.asyncio

@@ -18,6 +18,24 @@ DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingm
 IMAGE_PROJECT_FILE_MEDIA = frozenset({"image/png", "image/jpeg", "image/webp"})
 BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE} | IMAGE_PROJECT_FILE_MEDIA)
 
+#: #5728 — the same honesty the document path enforces through its parser:
+#: the declared image media type must match the bytes actually uploaded, so a
+#: text payload renamed to .png can never masquerade as a stored original.
+_IMAGE_MAGIC: dict[str, tuple[bytes, ...]] = {
+    "image/png": (b"\x89PNG\r\n\x1a\n",),
+    "image/jpeg": (b"\xff\xd8\xff",),
+}
+
+
+def image_media_type_matches(media_type: str, head: bytes) -> bool:
+    if media_type == "image/webp":
+        # RIFF container: the WEBP form tag sits at offset 8.
+        return head[:4] == b"RIFF" and head[8:12] == b"WEBP"
+    signature = _IMAGE_MAGIC.get(media_type)
+    if signature is None:
+        return False
+    return any(head.startswith(prefix) for prefix in signature)
+
 
 def _extracted_media_type(original_media_type: str) -> str:
     # Canonicalize extracted media types: DOCX → extracted/docx, PDF → extracted/pdf
