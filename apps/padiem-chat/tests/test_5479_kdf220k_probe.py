@@ -95,10 +95,13 @@ def test_h1_py314_local_ok_is_not_an_edge_pass():
         pytest.skip("bash required for shell contract")
 
     source = _LANE_PATH.read_text(encoding="utf-8")
+    # Slice ONLY the runtime-minor gate: the provider gate that #5741 added
+    # below it reads B62_WORKER_PASSWORD_KDF_C_PATH and a "provider" field
+    # this matrix does not exercise, so it must stay outside the harness.
     shell_gate = source.split("# H1: local 3.14 Workerd", 1)[1].split(
-        "# #5479: the 220,000-iteration alternatives", 1
+        "# #5479: the stored cost must be served", 1
     )[0]
-    script = 'KDF220K_BODY=\'{}\'\n' + "# H1: local 3.14 Workerd" + shell_gate
+    script_header = "# H1: local 3.14 Workerd" + shell_gate
     for minor, state, expect_ok in [
         (13, "ok", True),
         (14, "ok", False),
@@ -106,7 +109,10 @@ def test_h1_py314_local_ok_is_not_an_edge_pass():
         (13, "webcrypto-iteration-cap", False),
     ]:
         body = json.dumps({"state": state, "runtime_minor": minor})
-        result = subprocess.run(["bash", "-c", script.format(body)], capture_output=True, text=True)
+        # Concatenate instead of str.format: the sliced gate carries literal
+        # bash braces (${EXPECTED_KDF_PROVIDER}) that format() reads as fields.
+        script = "KDF220K_BODY='" + body + "'\n" + script_header
+        result = subprocess.run(["bash", "-c", script], capture_output=True, text=True)
         assert (result.returncode == 0) is expect_ok, (minor, state, result.stderr)
         if minor == 14:
             assert "UNVERIFIED_PY314" in result.stderr
