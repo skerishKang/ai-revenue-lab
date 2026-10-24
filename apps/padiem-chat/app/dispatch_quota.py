@@ -71,6 +71,33 @@ async def _refund_active_reservation() -> bool:
     return refunded_all
 
 
+async def _close_delegated_stream(stream: Any) -> None:
+    """Close the stream this wrapper created, exactly once, inside its close.
+
+    Delegating with a plain ``async for ... yield`` abandons the delegated async
+    generator. The SSE route closes the outermost generator it was handed, which
+    raises GeneratorExit at the wrapper's ``yield``; without explicit ownership
+    the base stream below it stays suspended and its whole B14 chain (model
+    stream, HTTP response, Service Binding reader) is only closed later by the
+    event loop's asynchronous-generator finalizer, in a detached task (#4317).
+    That finalizer-time close is where the Worker reports ``RuntimeError: async
+    generator ignored GeneratorExit``, including on successful 200 responses.
+
+    Each generator keeps exactly one owner, so this never closes a stream twice:
+    the wrapper closes what it created and nothing else closes it.
+    """
+    closer = getattr(stream, "aclose", None)
+    if not callable(closer):
+        return
+    try:
+        await closer()
+    except Exception:
+        # Cleanup only. A close failure must not replace the stream result or the
+        # bounded error already handed to the caller with raw transport detail;
+        # real streaming exceptions still propagate through the ``async for``.
+        pass
+
+
 class DispatchAwareUsageCounterStore:
     """Keep one exact authorization receipt only until B14 dispatch becomes possible.
 
@@ -168,14 +195,22 @@ class DispatchAwareB14Client(B14Client):
 
     async def stream_text_preview(self, *args, **kwargs):
         await self._prepare_stream_dispatch()
-        async for event in super().stream_text_preview(*args, **kwargs):
-            yield event
+        stream = super().stream_text_preview(*args, **kwargs)
+        try:
+            async for event in stream:
+                yield event
+        finally:
+            await _close_delegated_stream(stream)
 
     async def stream_text_auto(self, messages, *args, **kwargs):
         await self._reject_non_executable_policy(messages)
         await self._prepare_stream_dispatch()
-        async for event in super().stream_text_auto(messages, *args, **kwargs):
-            yield event
+        stream = super().stream_text_auto(messages, *args, **kwargs)
+        try:
+            async for event in stream:
+                yield event
+        finally:
+            await _close_delegated_stream(stream)
 
     async def _prepare_registered_quote_dispatch(self) -> None:
         _mark_active_reservation_dispatched()
