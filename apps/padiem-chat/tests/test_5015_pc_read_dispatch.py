@@ -72,8 +72,33 @@ class _History:
         self.rows: dict[str, dict] = {}
         self.originals: dict[str, bytes] = {}
         self.message_ids: dict[str, str] = {}
+        self.status_writes: list[tuple[str, str, str]] = []
+        self.run_rows = {
+            RUN: {
+                "run_id": RUN, "user_id": OWNER, "conversation_id": CONVERSATION,
+                "workspace_id": WORKSPACE, "status": "pending",
+                "result_summary": None,
+            },
+        }
         self._seq = 0
         self.scopes = {}
+
+    async def update_claw_run_status(
+        self, user_id, run_id, status, result_summary=None,
+    ):
+        """Mirror of the guarded D1 settle (#2961), write-for-write.
+
+        Owner + run id address the row, a completed row is never reopened and a
+        summary-free call never blanks the run's own terminal summary.
+        """
+        self.status_writes.append((user_id, run_id, status))
+        row = self.run_rows.get(run_id)
+        if row is None or row["user_id"] != user_id or row["status"] == "completed":
+            return False
+        row["status"] = status
+        if result_summary is not None:
+            row["result_summary"] = result_summary
+        return True
 
     async def get_pc_run_scope(self, *, user_id, run_id):
         return self.scopes.get((user_id, run_id))
@@ -85,12 +110,10 @@ class _History:
         self.scopes[key] = dict(claim)
 
     async def get_claw_run(self, user_id, run_id):
-        if user_id != OWNER or run_id != RUN:
+        row = self.run_rows.get(run_id)
+        if user_id != OWNER or row is None:
             return None
-        return {
-            "run_id": RUN, "conversation_id": CONVERSATION,
-            "workspace_id": WORKSPACE, "status": "pending",
-        }
+        return dict(row)
 
     async def get_local_task_correlation(self, user_id, run_id):
         del user_id, run_id
@@ -483,3 +506,85 @@ def test_full_ceiling_keeps_read_and_server_target_path_checks(monkeypatch):
     assert state.history_store.rows == {}
     assert _scoped_dispatch(state, {**read, "device_id": "foreign-pc"}, _scope_claim("files"))[0] == 403
     assert state.history_store.rows == {}
+
+
+# ------------------------------------------------------- progress projection
+# #5573 3-D-2: the conversation reads its own run row, so a PC step the Engine
+# actually reached has to show up there as "running" before any answer exists.
+
+def _context_payload(**overrides):
+    payload = {"subject_id": SUBJECT, "run_id": RUN, "device_id": None, "mode": "context"}
+    payload.update(overrides)
+    return payload
+
+
+def test_a_reached_pc_dispatch_projects_running_without_touching_the_answer(monkeypatch):
+    """The dispatch observation is the first real fact that the PC tool ran."""
+    state = _state(monkeypatch)
+    status, body = _dispatch(state, _base_payload())
+    assert status == 200, body
+    assert state.history_store.status_writes == [(OWNER, RUN, "running")], (
+        state.history_store.status_writes
+    )
+    row = state.history_store.run_rows[RUN]
+    assert row["status"] == "running", row
+    # Progress is a projection, never the run's terminal answer.
+    assert row["result_summary"] is None, row
+
+
+def test_the_device_context_call_never_claims_a_pc_step_is_running(monkeypatch):
+    """Context is tool discovery: no PC work happened, so the run stays pending."""
+    state = _state(monkeypatch)
+    status, body = _dispatch(state, _context_payload())
+    assert status == 200, body
+    assert state.history_store.status_writes == []
+    assert state.history_store.run_rows[RUN]["status"] == "pending"
+
+
+def test_a_status_poll_of_a_running_step_projects_running_too(monkeypatch):
+    """The Engine polls the step it dispatched; either leg may be the first one seen."""
+    state = _state(monkeypatch)
+    status, body = _dispatch(state, _base_payload())
+    assert status == 200, body
+    dispatch_id = body["dispatch"]["dispatch_id"]
+    state.history_store.status_writes.clear()
+
+    status, polled = _dispatch(state, {
+        "subject_id": SUBJECT, "run_id": RUN,
+        "dispatch_id": dispatch_id, "mode": "command_status",
+    })
+    assert status == 200, polled
+    assert state.history_store.status_writes == [(OWNER, RUN, "running")]
+
+
+def test_a_completed_run_is_never_reopened_by_a_late_progress_step(monkeypatch):
+    state = _state(monkeypatch)
+    settled = state.history_store.run_rows[RUN]
+    settled["status"] = "completed"
+    settled["result_summary"] = "already sealed answer"
+    status, body = _dispatch(state, _base_payload())
+    assert status == 200, body
+    assert state.history_store.status_writes == [(OWNER, RUN, "running")]
+    assert settled["status"] == "completed", settled
+    assert settled["result_summary"] == "already sealed answer", settled
+
+
+def test_a_progress_write_failure_does_not_lose_the_pc_step(monkeypatch):
+    """The answer must not depend on a status chip the user has not seen yet."""
+    state = _state(monkeypatch)
+
+    async def _unavailable(*args, **kwargs):
+        raise RuntimeError("d1 write unavailable")
+
+    state.history_store.update_claw_run_status = _unavailable
+    status, body = _dispatch(state, _base_payload())
+    assert status == 200, body
+    assert body["dispatch"]["kind"] == "command"
+    assert state.history_store.run_rows[RUN]["status"] == "pending"
+
+
+def test_a_run_the_owner_does_not_have_gets_no_progress_write(monkeypatch):
+    state = _state(monkeypatch)
+    status, body = _dispatch(state, _base_payload(run_id="chat_pcq_" + "e" * 24))
+    assert status == 404, body
+    assert state.history_store.status_writes == []

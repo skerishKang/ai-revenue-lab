@@ -278,3 +278,61 @@ def test_browser_never_presents_a_model_reply_as_a_verified_pc_result():
     assert poll.index('result.answer_source !== "pc_command_result"') < poll.index(
         "content.replaceChildren();"
     )
+
+
+# ---------------------------------------------------------------- #5573 3-D-2
+# The conversation polls its own run row for progress, so the row the server
+# moved to "running" has to reach the status chip — and a chip that showed a
+# running step must be settled by the run's real outcome.
+
+def _pc_poll_source() -> str:
+    from pathlib import Path
+
+    app_js = (
+        Path(__file__).resolve().parents[1] / "static" / "app.js"
+    ).read_text(encoding="utf-8")
+    poll = app_js.split("async function waitForAcceptedPcRun(", 1)[1]
+    return poll.split("async function requestStreamingAnswer(", 1)[0]
+
+
+def test_the_pc_wait_loop_shows_the_server_observed_running_step():
+    poll = _pc_poll_source()
+    observed = poll.index('result.status === "running"')
+    painted = poll.index('showPcRuntimeStatus(article, "tool_started")')
+    # The chip is applied inside the same branch that keeps waiting and before
+    # the loop continues, so an observed running state cannot be skipped.
+    assert observed < painted < poll.index("continue;")
+    # A still-pending run invents nothing: it keeps the preparing chip.
+    assert poll.count("tool_started") == 1
+
+
+def test_a_pc_running_chip_is_never_left_stale_by_the_outcome():
+    poll = _pc_poll_source()
+    assert poll.index('showPcRuntimeStatus(article, "run_failed")') < poll.index(
+        "MESSAGE_LIFECYCLE.FAILED"
+    )
+    # A model reply is not a completed PC execution, so the running chip is
+    # released instead of confirmed.
+    released = poll.index('applyRuntimeLabel?.(article, "", "status")')
+    assert released < poll.index("MESSAGE_LIFECYCLE.COMPLETED")
+    # The verified PC result settles the chip after the preparing release, so
+    # the release can never erase the terminal wording.
+    assert poll.index("releasePreparingRuntimeLabel") < poll.index(
+        'showPcRuntimeStatus(article, "run_completed")'
+    )
+
+
+def test_the_pc_progress_kinds_exist_in_the_real_stage_vocabulary():
+    """An unknown kind yields no copy, and a missing chip would fail silently."""
+    from pathlib import Path
+
+    table = (
+        Path(__file__).resolve().parents[1] / "static" / "claw-run-event-projection.js"
+    ).read_text(encoding="utf-8")
+    for kind in ("tool_started", "run_completed", "run_failed"):
+        rows = [line for line in table.splitlines() if line.strip().startswith(kind + ":")]
+        assert len(rows) == 1, rows
+        pair = rows[0].split("[", 1)[1].rsplit("]", 1)[0]
+        ko, _, en = pair.partition('", "')
+        assert ko.startswith('"') and en.endswith('"'), pair
+        assert ko[1:].strip() and en[:-1].strip(), pair
