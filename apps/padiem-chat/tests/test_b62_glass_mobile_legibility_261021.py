@@ -200,15 +200,18 @@ def test_the_narrow_window_raises_the_theme_surface_alpha() -> None:
 def test_the_standalone_views_take_a_sheet_on_a_narrow_window() -> None:
     """Their header and tagline sit straight on the page, not on a card."""
     body = _narrow_window_block(PORTRAIT_CSS.read_text(encoding="utf-8"))
-    alpha = None
+    # #5028: the sheet went fully opaque so the whole standalone page family
+    # (Automation, Connectors, Meeting, Library) shares one frame colour.
+    opaque = None
     for selector, declarations in _rules(body):
         if ".standalone-view" not in selector:
             continue
-        match = re.search(r"background: rgba\(242, 245, 247, (?P<alpha>[0-9.]+)\);", declarations)
+        match = re.search(r"background: (?P<col>#f2f5f7|rgb\(242, 245, 247\)|rgba\(242, 245, 247, (?P<alpha>[0-9.]+)\));", declarations)
         if match is not None:
-            alpha = _alpha(match.group("alpha"))
-    assert alpha is not None, "the standalone views have no narrow-window sheet"
-    assert alpha >= 0.85, alpha
+            col = match.group("col")
+            opaque = 1.0 if (col.startswith("#") or col.startswith("rgb(")) else _alpha(match.group("alpha"))
+    assert opaque is not None, "the standalone views have no narrow-window sheet"
+    assert opaque >= 0.96, opaque
 
 
 def test_the_wide_screen_keeps_the_theme_surfaces() -> None:

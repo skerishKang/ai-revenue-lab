@@ -24,7 +24,7 @@
       connected: "PC 연결됨",
       connecting: "연결 확인 중",
       disconnected: "컴퓨터 미연결",
-      check: "연결 확인 필요",
+      check: "상태 확인 불가",
       preparing: "준비 중",
       connectHint: "컴퓨터가 연결되어 있지 않습니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
       connectedHint: "컴퓨터가 연결되어 있습니다. 클릭하면 연결된 컴퓨터 정보를 확인합니다.",
@@ -38,7 +38,7 @@
       connected: "PC connected",
       connecting: "Checking…",
       disconnected: "PC not connected",
-      check: "Connection needs confirmation",
+      check: "Status unavailable",
       preparing: "Coming soon",
       connectHint: "No computer is connected. Click to open the computer connection guide.",
       connectedHint: "A computer is connected. Click to review the connected computer.",
@@ -84,6 +84,40 @@
     const stand = document.createElementNS(SVG_NS, "path");
     stand.setAttribute("d", "M8 21h8M12 17v4");
     svg.append(screen, stand);
+    return svg;
+  }
+
+  /* #5553: one small mark per state, drawn inside the screen of the monitor so
+     the four states differ by wording, colour AND icon — never by colour alone.
+     connected=check, connecting=clock (state being read), disconnected=slash
+     across the screen, unavailable=alert, preparing=dotted screen. */
+  function stateMark(state) {
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "2.2");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("focusable", "false");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("class", "composer-pc-status-mark");
+    const mark = document.createElementNS(SVG_NS, "path");
+    if (state === "connected") {
+      mark.setAttribute("d", "M7.5 10.5l3 3 6-6");
+    } else if (state === "connecting" || state === "preparing") {
+      const circle = document.createElementNS(SVG_NS, "circle");
+      circle.setAttribute("cx", "12");
+      circle.setAttribute("cy", "10.5");
+      circle.setAttribute("r", "3.6");
+      svg.append(circle);
+      mark.setAttribute("d", "M12 8.7v1.8l1.4 1.1");
+    } else if (state === "disconnected") {
+      mark.setAttribute("d", "M7 14.5L17 6.5");
+    } else {
+      mark.setAttribute("d", "M12 6.8v4.6M12 14.1v.01");
+    }
+    svg.append(mark);
     return svg;
   }
 
@@ -161,6 +195,11 @@
       state = next;
       button.dataset.state = next;
       label.textContent = labelFor(next);
+      // #5553: the mark inside the monitor swaps with the state, so the glyph
+      // itself — not only the dot colour — names the state.
+      const previousMark = icon.querySelector(".composer-pc-status-mark");
+      if (previousMark) previousMark.remove();
+      icon.append(stateMark(next));
       const hint = hintFor(next);
       button.setAttribute("aria-label", hint);
       // The shared product tooltip replaces the native popup, so the owner

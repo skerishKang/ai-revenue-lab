@@ -321,14 +321,15 @@ async def _desktop_long_answer_probe(browser: Browser) -> dict[str, Any]:
         #             - clamp(360px,32vw,560px) - 48px) }
         #   .composer-wrap { left: calc(rail + clamp(48px,4vw,72px) + 16px);
         #                    width: min(1168px, ... - 80px) }
-        # At 1920x1080 that resolves the lane to exactly 988px and insets the
-        # composer 16px inside it (988 - 28 == 960, x +14 after rounding). This
-        # probe runs at 1920x1080 only, so assert the design that actually ships:
-        # the composer is a deliberate inner inset of the reading lane, never a
-        # rival lane. Measured at 1280/1440/1920 the width delta is a constant
-        # 28px and the left gutter delta a constant -14px, so a fixed inset is
-        # the invariant; absolute lane bounds would just re-encode one viewport.
-        if abs(conversation_box["width"] - 988) > 1:
+        # #5661 (2026-10-24) capped the lane at 960px so the hero, the starters
+        # and the composer stop widening with the viewport; at 1920x1080 the
+        # formula (988) now resolves to the 960px cap. This probe runs at
+        # 1920x1080 only, so assert the design that actually ships: the composer
+        # is a deliberate inner inset of the reading lane, never a rival lane.
+        # Measured at 1280/1440/1920 the width delta is a constant 28px and the
+        # left gutter delta a constant -14px, so a fixed inset is the invariant;
+        # absolute lane bounds would just re-encode one viewport.
+        if abs(conversation_box["width"] - 960) > 1:
             raise AssertionError(f"large desktop active-chat lane out of target: {conversation_box}")
 
         inset = conversation_box["width"] - composer_box["width"]

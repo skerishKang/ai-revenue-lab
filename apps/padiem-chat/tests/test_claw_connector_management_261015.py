@@ -19,7 +19,9 @@ def test_existing_connectors_page_has_explicit_connect_and_remove_actions():
     assert 'src="./claw-connector-management.js"' in HTML
     assert HTML.index('src="./app.js"') < HTML.index('src="./claw-connector-management.js"')
     assert 'data-google-connector-connect="google-drive"' in HTML
-    assert '연결 삭제는 계정 인증을 제거하는 것' in HTML
+    # #5555 owner decision 2026-10-23: the header disclosure (and the long
+    # disconnect explanation) is removed from the screen entirely.
+    assert '연결 삭제는 계정 인증을 제거하는 것' not in HTML
     assert 'id="connectorComputerCard"' in HTML  # unchanged Windows area
 
 
