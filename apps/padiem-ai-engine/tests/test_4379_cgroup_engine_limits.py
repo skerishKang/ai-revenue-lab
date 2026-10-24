@@ -17,9 +17,9 @@ def test_the_engine_model_route_declares_no_padiem_body_total() -> None:
     )
 
     assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is None
-    # The non-model Engine guard stays where it was: loosening the model path
-    # is not a licence to loosen the tool, control, memory and approval
-    # routes in the same sweep.
+    # The non-model Engine guard stays a bounded guard: releasing the model path
+    # is not a licence to release the tool, control, memory and approval routes.
+    # #5573 raised its value 128 KiB -> 1 MiB by Owner decision; it is not removed.
     assert MAX_REQUEST_BODY_BYTES == 1024 * 1024  # Owner decision 2026-10-24 (#5573)
 
 

@@ -70,8 +70,9 @@ from app.tool_projection import EngineToolBinding, TrustedToolAuthority
 CLAW_ENGINE_PC_FILES_URL = "https://padiem-chat.internal/internal/claw/engine-pc-files"
 CHAT_ENGINE_PC_FILES_URL = "https://padiem-chat.internal/internal/chat/engine-pc-files"
 PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
-#: #5015: the Chat PC-files read is bounded server-side at 1 MB. The Engine
-#: re-checks the delivered bytes defensively; it never raises the bound.
+#: #5015: the Chat PC-files read is bounded server-side at 1 MB. This constant is
+#: the Engine's defensive re-check of the delivered bytes, and #5573 raised it above
+#: that Chat server bound deliberately.
 # Owner decision 2026-10-24 (#5573): 1,000,000 -> 20,000,000 (Engine re-check bound only).
 PC_FILES_READ_MAX_BYTES = 20_000_000
 
