@@ -132,6 +132,8 @@
     URL.revokeObjectURL(url);
   }
 
+  const PDFMD_NEW_WORK_DISABLED = true; // #5710 COM2 migration, existing downloads remain.
+
   window.initPdfMdUtility = function (panel) {
     panel.replaceChildren();
     panel.classList.add("pdfmd-shell");
@@ -140,6 +142,12 @@
     header.appendChild(el("h3", null, "PDF → Markdown 변환"));
     header.appendChild(el("p", "pdfmd-desc", "PDF나 ZIP을 올려 변환하면 원본과 Markdown을 나란히 비교하고 내려받을 수 있습니다. OCR(정밀 변환)은 지원하지 않습니다."));
     panel.appendChild(header);
+    if (PDFMD_NEW_WORK_DISABLED) {
+      header.querySelector(".pdfmd-desc").textContent = "문서 처리 서버를 COM2로 이전 중입니다. 신규 PDF·ZIP 업로드 및 변환은 일시 중단하며, 기존 작업 이력과 결과 다운로드는 이용할 수 있습니다.";
+      const notice = el("p", "pdfmd-status", "서비스 준비 중 · 신규 업로드 및 변환 일시 중단");
+      notice.setAttribute("role", "status");
+      panel.appendChild(notice);
+    }
 
     // Mode + job controls
     const controls = el("div", "pdfmd-controls");
@@ -153,6 +161,7 @@
       modeSel.appendChild(o);
     });
     modeField.appendChild(modeSel);
+    modeSel.disabled = PDFMD_NEW_WORK_DISABLED;
     modeSel.setAttribute("aria-describedby", "pdfmdModeHelp");
     controls.appendChild(modeField);
 
@@ -191,12 +200,24 @@
     drop.appendChild(dropCta);
     drop.setAttribute("aria-describedby", "pdfmdDropHint");
     panel.appendChild(drop);
+    if (PDFMD_NEW_WORK_DISABLED) {
+      drop.removeAttribute("role");
+      drop.removeAttribute("tabindex");
+      drop.removeAttribute("aria-label");
+      drop.classList.add("pdfmd-paused");
+      drop.style.cursor = "not-allowed";
+      drop.style.opacity = "0.65";
+      dropTitle.textContent = "PDF 업로드 준비 중";
+      dropSub.textContent = "COM2 이전 완료 후 이용할 수 있습니다.";
+      dropCta.textContent = "업로드 일시 중단";
+    }
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.multiple = true;
     fileInput.accept = ".pdf,.zip,application/pdf,application/zip";
     fileInput.hidden = true;
+    fileInput.disabled = PDFMD_NEW_WORK_DISABLED;
     panel.appendChild(fileInput);
 
     const uploadStatus = el("div", "pdfmd-status", "");
@@ -286,12 +307,13 @@
       jobIdSpan.textContent = id ? "작업 " + id.slice(-8) : "";
       jobIdSpan.title = id || "";
       jobIdSpan.hidden = !id;
-      newJobBtn.hidden = !id;
+      newJobBtn.hidden = PDFMD_NEW_WORK_DISABLED || !id;
       archiveBtn.hidden = !id;
       markActiveHistory();
     }
 
     function startNewJob() {
+      if (PDFMD_NEW_WORK_DISABLED) return;
       currentItems = [];
       setJobId(null);
       uploadStatus.textContent = "새 작업을 시작합니다. 파일을 선택하세요.";
@@ -300,6 +322,7 @@
     }
 
     async function createJob() {
+      if (PDFMD_NEW_WORK_DISABLED) return;
       const mode = modeSel.value;
       uploadStatus.textContent = "작업을 준비하는 중...";
       try {
@@ -324,6 +347,7 @@
     });
 
     async function uploadFile(file) {
+      if (PDFMD_NEW_WORK_DISABLED) return false;
       lastUploadError = "";
       if (!currentJobId) await createJob();
       if (!currentJobId) return false;
@@ -359,6 +383,7 @@
     }
 
     async function uploadFiles(files) {
+      if (PDFMD_NEW_WORK_DISABLED) return;
       if (!files.length) return;
       let uploaded = 0;
       let failed = 0;
@@ -375,6 +400,7 @@
     }
 
     function openPicker() {
+      if (PDFMD_NEW_WORK_DISABLED) return;
       fileInput.click();
     }
     drop.addEventListener("click", openPicker);
@@ -384,10 +410,11 @@
         openPicker();
       }
     });
-    drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("dragover"); });
+    drop.addEventListener("dragover", (e) => { e.preventDefault(); if (!PDFMD_NEW_WORK_DISABLED) drop.classList.add("dragover"); });
     drop.addEventListener("dragleave", () => drop.classList.remove("dragover"));
     drop.addEventListener("drop", (e) => {
       e.preventDefault();
+      if (PDFMD_NEW_WORK_DISABLED) return;
       drop.classList.remove("dragover");
       if (e.dataTransfer && e.dataTransfer.files) uploadFiles(Array.from(e.dataTransfer.files));
     });
@@ -447,7 +474,7 @@
 
         const actions = el("div", "pdfmd-item-actions");
 
-        if (!item.has_markdown) {
+        if (!item.has_markdown && !PDFMD_NEW_WORK_DISABLED) {
           const runBtn = el("button", "pdfmd-btn pdfmd-btn-primary", item.status === "failed" ? "다시 변환" : "변환 실행");
           runBtn.type = "button";
           runBtn.setAttribute("aria-label", item.name + " " + runBtn.textContent);
@@ -466,7 +493,7 @@
             }
           });
           actions.appendChild(runBtn);
-        } else {
+        } else if (item.has_markdown) {
           const previewBtn = el("button", "pdfmd-btn pdfmd-btn-primary", "비교 보기");
           previewBtn.type = "button";
           previewBtn.setAttribute("aria-label", item.name + " 원본과 변환본 비교");
