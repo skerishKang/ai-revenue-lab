@@ -383,8 +383,8 @@ def test_engine_failure_code_crosses_the_bridge_with_product_copy(engine_code, s
     assert "sk-live" not in failure.user_message
 
 
-def test_unlisted_engine_code_collapses_to_unknown_error_without_leaking_the_code() -> None:
-    """#5568: an allowlist miss is a bounded category, never echoed verbatim."""
+def test_identifier_code_outside_the_copy_map_crosses_with_the_generic_message() -> None:
+    """#5568: a well-formed Engine code crosses; the copy stays product-authored."""
     failure = _start_failing(
         PadiemAiEngineClientError(
             "provider_route_private_42",
@@ -393,8 +393,27 @@ def test_unlisted_engine_code_collapses_to_unknown_error_without_leaking_the_cod
         )
     )
 
+    assert failure.code == "provider_route_private_42"
+    assert failure.status_code == 500
+    assert "provider.internal" not in failure.user_message
+    assert failure.user_message == "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요."
+
+
+@pytest.mark.parametrize(
+    "engine_code",
+    ("Provider Route Private", "provider/internal", "업스트림오류", "sk-live-123", "", "a" * 65),
+)
+def test_non_identifier_engine_code_collapses_to_unknown_error(engine_code: str) -> None:
+    """#5568: anything that is not a bounded identifier is never echoed."""
+    failure = _start_failing(
+        PadiemAiEngineClientError(
+            engine_code,
+            "internal route https://provider.internal/v1 failed",
+            status=500,
+        )
+    )
+
     assert failure.code == "unknown_error"
     assert failure.status_code == 500
-    assert "provider_route_private_42" not in failure.user_message
     assert "provider.internal" not in failure.user_message
     assert failure.user_message == "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요."

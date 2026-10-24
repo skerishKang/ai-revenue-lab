@@ -361,11 +361,11 @@ def project_cancel_result(raw: Any) -> dict[str, Any]:
     return {"events": events, "approval_pause": None, "continuation_ref": None, "answer": None}
 
 
-# #5568: the Chat composer may show one bounded reason line for a failed
-# orchestration turn. Only codes this product already owns cross to the
-# browser; every other Engine code collapses to unknown_error, so an upstream
-# route/stage identifier and the Engine's own error text can never project.
-# The copy is authored here and never copied from the Engine response.
+# #5568: the Chat composer may show one reason line for a failed orchestration
+# turn. A code crosses only as a well-formed identifier; anything else becomes
+# unknown_error. The copy is authored here and never copied from the Engine
+# response, so provider text and route/stack fragments cannot project.
+_ENGINE_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
 _ENGINE_ERROR_MESSAGES: dict[str, str] = {
     "upstream_auth_error": "AI 서비스 인증 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.",
     "upstream_request_error": "현재 AI 모델이 요청을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.",
@@ -385,7 +385,7 @@ _UNKNOWN_ENGINE_ERROR_MESSAGE = "AI 작업을 처리하지 못했습니다. 다�
 
 
 def _engine_error(exc: PadiemAiEngineClientError) -> B62OrchestrationError:
-    code = exc.code if isinstance(exc.code, str) and exc.code in _ENGINE_ERROR_MESSAGES else "unknown_error"
+    code = exc.code if isinstance(exc.code, str) and _ENGINE_ERROR_CODE_RE.match(exc.code) else "unknown_error"
     status = exc.status if isinstance(exc.status, int) and 400 <= exc.status <= 599 else 502
     return B62OrchestrationError(
         code,
